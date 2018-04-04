@@ -11,20 +11,15 @@ function.
 ##############################################################################
 # Start by importing the necessary modules.
 
-import datetime
-
-import numpy as np
 import matplotlib.pyplot as plt
-from pandas import DataFrame
 from astropy.convolution import convolve, Box1DKernel
 
 from sunpy.timeseries import TimeSeries
-import sunpy.data.sample
+from sunpy.data.sample import NOAAINDICES_TIMESERIES as noaa_ind
 
 ###############################################################################
 # Let's first create a TimeSeries from sample data
-ts_noaa_ind = sunpy.timeseries.TimeSeries(
-    sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
+ts_noaa_ind = TimeSeries(noaa_ind, source='NOAAIndices')
 
 # #############################################################################
 # Now we will extract data values from the TimeSeries and apply a BoxCar filter
