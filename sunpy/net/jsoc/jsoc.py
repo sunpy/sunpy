@@ -89,7 +89,7 @@ class JSOCClient(object):
 
     It exposes a similar API to the VSO client, although the underlying model
     is more complex. The JSOC stages data before you can download it, so a JSOC
-    query is a three stage process, first you query the JSOC for records,
+    query is a three stage process. First you query the JSOC for records,
     a table of these records is returned. Then you can request these records to
     be staged for download and then you can download them.
     The last two stages of this process are bundled together into the `fetch()`
@@ -98,18 +98,18 @@ class JSOCClient(object):
 
     .. warning::
 
-        JSOC now requires you to register your email address before requesting
+        JSOC requires you to register your email address before requesting
         data. See `this <http://jsoc.stanford.edu/ajax/register_email.html>`
 
     Notes
     -----
     The full list of 'series' is available through this `site <http://jsoc.stanford.edu>`
 
-    JSOC now requires a validated email address, you can pass in your validated email address
+    JSOC requires a validated email address, you can pass in your validated email address
     using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
     with JSOC beforehand `here <http://jsoc.stanford.edu/ajax/register_email.html>`.
 
-    The backend of SunPy's JSOC Client uses `drms package <https://github.com/kbg/drms>`
+    The backend of SunPy's JSOC Client uses `drms package <https://github.com/sunpy/drms>`
     The tutorials can be found `here <https://drms.readthedocs.io/en/stable/tutorial.html>`
     This can be used to build complex queries, by directly inputting the query string.
 
@@ -126,7 +126,7 @@ class JSOCClient(object):
         >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
         ...                          a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
-        the response object holds the records that your query will return:
+        The response object holds the records that your query will return:
 
         >>> print(response)   # doctest: +ELLIPSIS  +REMOTE_DATA
                 DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
@@ -184,7 +184,7 @@ class JSOCClient(object):
         ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
         ...                          a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
-        the response object holds the records that your query will return:
+        The response object holds the records that your query will return:
 
         >>> print(response)  # doctest: +REMOTE_DATA
                 DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
@@ -204,9 +204,6 @@ class JSOCClient(object):
 
         >>> requests.id  # doctest: +SKIP
         'JSOC_20171205_372'
-
-        >>> requests.status  # doctest: +SKIP
-        0
 
     You can also check the status of the request, which will print out a status
     message and return you the status code, a code of 1 means it is not ready
@@ -237,7 +234,7 @@ class JSOCClient(object):
         """
         Build a JSOC query and submit it to JSOC for processing.
 
-        Takes a variable number of :mod:`sunpy.net.jsoc.attrs` as parameters,
+        Takes a variable number of `~sunpy.net.jsoc.attrs` as parameters,
         which are chained together using the AND (`&`) operator.
 
         Complex queries to be easily formed using logical operators such as
@@ -245,7 +242,7 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        query : a variable number of :mod:`sunpy.net.jsoc.attrs`
+        query : a variable number of `~sunpy.net.jsoc.attrs`
                 as parameters, which are chained together using
                 the AND (`&`) operator.
 
@@ -364,7 +361,7 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        query : a variable number of :mod:`sunpy.net.jsoc.attrs`
+        query : a variable number of `~sunpy.net.jsoc.attrs`
                 as parameters, which are chained together using
                 the AND (`&`) operator.
 
@@ -426,8 +423,8 @@ class JSOCClient(object):
         requests : `~drms.ExportRequest` Object or
                    a list of  `~drms.ExportRequest` objects
 
-                   Request Id can be accessed by requests.id
-                   Request status can be accessed by requests.status
+            Request Id can be accessed by requests.id
+            Request status can be accessed by requests.status
 
         """
 
@@ -455,7 +452,7 @@ class JSOCClient(object):
 
     def check_request(self, requests):
         """
-        Check the status of a request and print out a message about it
+        Check the status of a request and print out a message about it.
 
         Parameters
         ----------
@@ -466,7 +463,8 @@ class JSOCClient(object):
         Returns
         -------
         status : int or list
-            A status or list of status' that were returned by JSOC
+            A status or list of status' that were returned by JSOC.
+
         """
         # Convert IDs to a list if not already
         if not isiterable(requests) or isinstance(requests, drms.ExportRequest):
@@ -500,7 +498,7 @@ class JSOCClient(object):
     def fetch(self, jsoc_response, path=None, overwrite=False, progress=True,
               max_conn=5, downloader=None, sleep=10):
         """
-        Make the request for the data in jsoc_response and wait for it to be
+        Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
 
         Parameters
@@ -529,8 +527,9 @@ class JSOCClient(object):
 
         Returns
         -------
-        results : a :class:`sunpy.net.vso.Results` instance
+        results : a `~sunpy.net.vso.Results` instance
             A Results object
+
         """
 
         # Make staging request to JSOC
@@ -567,27 +566,26 @@ class JSOCClient(object):
     def get_request(self, requests, path=None, overwrite=False, progress=True,
                     max_conn=5, downloader=None, results=None):
         """
-        Query JSOC to see if request_id is ready for download.
+        Query JSOC to see if the request(s) is ready for download.
 
-        If the request is ready for download, download it.
+        If the request is ready for download, it will then download it.
 
         Parameters
         ----------
-        requests : `~drms.ExportRequest`, `str`, `list`
+        requests : `~drms.ExportRequest`, str, list
             `~drms.ExportRequest` objects or `str` request IDs or lists
-            thereof, returned by
-            `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
+            returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
 
-        path : `string`
+        path : string
             Path to save data to, defaults to SunPy download dir.
 
-        overwrite : `bool`
+        overwrite : bool
             Replace files with the same name if True.
 
-        progress : `bool`
+        progress : bool
             Print progress info to terminal.
 
-        max_conns : `int`
+        max_conns : int
             Maximum number of download connections.
 
         downloader : `~sunpy.net.download.Downloader`
@@ -600,6 +598,7 @@ class JSOCClient(object):
         -------
         res: `~sunpy.net.download.Results`
             A `~sunpy.net.download.Results` instance or `None` if no URLs to download
+
         """
         c = drms.Client()
 
@@ -689,6 +688,61 @@ class JSOCClient(object):
                         segment='', primekey={}, **kwargs):
         """
         Take the query arguments and build a record string.
+
+        All the primekeys are now stored in primekey dict, including Time and Wavelength
+        which were passed through pre-defined attributes. The following piece of code,
+        extracts the passed prime-keys and arranges it in the order as it appears in the
+        JSOC database.
+
+        `pkeys_isTime` is a Pandas DataFrame, whose index values are the Prime-key names
+        and the column stores a boolean value, identifying whether the prime-key is a
+        Time-type prime-key or not. Since, time-type prime-keys exist by different names,
+        we made it uniform in the above piece of code, by storing the time-type primekey
+        with a single name `TIME`.
+
+        Considering an example, if the primekeys that exist for a given series are
+        ['HARPNUM', 'T_OBS', 'WAVELNTH'], we will consider three different cases of the
+        passed primekeys.
+
+        pkeys_isTime.index.values = ['HARPNUM', 'T_OBS', 'WAVELNTH']
+
+        Case 1
+        ------
+
+        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI',
+                    'HARPNUM' : '4864',
+                    'WAVELNTH': '605'}
+
+        If the primekey dict is as above, then pkstr should be as:
+
+        pkstr = '{4864}{2014.01.01_00:00:45_TAI}{605}'
+
+        Case 2
+        ------
+
+        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI',
+                    'WAVELNTH': '605'}
+
+        If the primekey dict is as above, then pkstr should be as:
+
+        pkstr = '{}{2014.01.01_00:00:45_TAI}{605}'
+
+        Case 3
+        ------
+
+        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI'}
+
+        If the primekey dict is as above, then pkstr should be as:
+
+        pkstr = '{}{2014.01.01_00:00:45_TAI}'
+
+        The idea behind this should be clear. We build up the `pkstr` string
+        containing the values of the prime-keys passed in the same order as
+        it occurs in the list `pkeys_isTime.index.values`, i.e. how it is stored
+        in the online database. Any missing prime-keys should be compensated by
+        an empty {}, if it occurs before any passed prime-key. Any empty curly braces
+        that is present at last of the pkstr, can be skipped.
+
         """
 
         # Extract and format segment
@@ -763,61 +817,6 @@ class JSOCClient(object):
             primekey['WAVELNTH'] = wavelength
 
         # Extract and format primekeys
-        '''
-        All the primekeys are now stored in primekey dict, including Time and Wavelength
-        which were passed through pre-defined attributes. The following piece of code,
-        extracts the passed prime-keys and arranges it in the order as it appears in the
-        JSOC database.
-
-        `pkeys_isTime` is a Pandas DataFrame, whose index values are the Prime-key names
-        and the column stores a boolean value, identifying whether the prime-key is a
-        Time-type prime-key or not. Since, time-type prime-keys exist by different names,
-        we made it uniform in the above piece of code, by storing the time-type primekey
-        with a single name `TIME`.
-
-        Considering an example, if the primekeys that exist for a given series are
-        ['HARPNUM', 'T_OBS', 'WAVELNTH'], we will consider three different cases of the
-        passed primekeys.
-
-        pkeys_isTime.index.values = ['HARPNUM', 'T_OBS', 'WAVELNTH']
-
-        Case 1
-        ------
-
-        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI',
-                    'HARPNUM' : '4864',
-                    'WAVELNTH': '605'}
-
-        If the primekey dict is as above, then pkstr should be as:
-
-        pkstr = '{4864}{2014.01.01_00:00:45_TAI}{605}'
-
-        Case 2
-        ------
-
-        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI',
-                    'WAVELNTH': '605'}
-
-        If the primekey dict is as above, then pkstr should be as:
-
-        pkstr = '{}{2014.01.01_00:00:45_TAI}{605}'
-
-        Case 3
-        ------
-
-        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI'}
-
-        If the primekey dict is as above, then pkstr should be as:
-
-        pkstr = '{}{2014.01.01_00:00:45_TAI}'
-
-        The idea behind this should be clear. We build up the `pkstr` string
-        containing the values of the prime-keys passed in the same order as
-        it occurs in the list `pkeys_isTime.index.values`, i.e. how it is stored
-        in the online database. Any missing prime-keys should be compensated by
-        an empty {}, if it occurs before any passed prime-key. Any empty curly braces
-        that is present at last of the pkstr, can be skipped.
-        '''
         pkstr = ''
         c = drms.Client()
         si = c.info(series)
@@ -847,7 +846,7 @@ class JSOCClient(object):
 
     def _lookup_records(self, iargs):
         """
-        Do a LookData request to JSOC to workout what results the query returns
+        Do a LookData request to JSOC to workout what results the query returns.
         """
 
         keywords_default = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH']

@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 import pytest
 
 import astropy.units as u
 
 import sunpy.net.jsoc as jsoc
 import sunpy.net.jsoc.attrs as attrs
-from sunpy.net.attr import Attr, AttrOr, AttrAnd
+from sunpy.net.attr import AttrOr, AttrAnd
 
 
 @pytest.mark.parametrize(("attr1, attr2"),
