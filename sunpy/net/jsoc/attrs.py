@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
 from astropy.time import Time as astropyTime
@@ -5,7 +6,7 @@ from astropy.time import Time as astropyTime
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr
 from sunpy.net.vso.attrs import _VSOSimpleAttr, _Range
 from sunpy.net.vso.attrs import Time as VSOTime
-from sunpy.net.vso.attrs import Wavelength, Sample
+from sunpy.net.vso.attrs import Wavelength
 
 from sunpy.time import parse_time
 from sunpy.time import TimeRange as _TimeRange
@@ -35,11 +36,6 @@ class Time(VSOTime):
 
     end : SunPy Time String
         The end time of the range.
-
-    near : SunPy Time String
-        Return a singular record closest in time to this value as possible,
-        inside the start and end window. Note: not all providers support this
-        functionality.
 
     """
     def __init__(self, start, end=None):
@@ -89,7 +85,7 @@ class PrimeKey(Attr):
 class Segment(Attr):
     """
     Segments choose which files to download when there are more than
-    one present for each record e.g. 'image'
+    one present for each record e.g. 'image'.
     """
     def __init__(self, value):
         Attr.__init__(self)
@@ -114,7 +110,7 @@ class Protocol(_VSOSimpleAttr):
 
 class Notify(_VSOSimpleAttr):
     """
-    An email address to get a notification to when JSOC has staged your request
+    An email address to get a notification to when JSOC has staged your request.
     """
 
     def __init__(self, value):

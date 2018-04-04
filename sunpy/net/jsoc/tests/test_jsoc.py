@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Mar 26 20:17:06 2014
-
-@author: stuart
-"""
 import os
 import tempfile
 import datetime
@@ -14,7 +9,6 @@ from astropy.time import Time as astropyTime
 import astropy.units as u
 import pytest
 
-from sunpy.time import parse_time
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
 from sunpy.net.download import Results
 import sunpy.net.jsoc.attrs as attrs
