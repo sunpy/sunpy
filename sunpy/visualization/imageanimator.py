@@ -1036,11 +1036,11 @@ class ImageAnimatorWCS(ImageAnimator):
         axes.coords[1].set_ticks(spacing = tick_spacing * self.wcs.wcs.cunit[1], exclude_overlapping=True)
 
         if xlabel is None:
-            axes.coords[2].set_axislabel('Galactic Latitude')
+            axes.coords[2].set_axislabel(self.wcs.wcs.ctype[0])
         else:
             axes.coords[2].set_axislabel(xlabel)
         if ylabel is None:
-            axes.coords[1].set_axislabel('Galactic Longitude')
+            axes.coords[1].set_axislabel(self.wcs.wcs.ctype[1])
         else:
             axes.coords[1].set_axislabel(ylabel)
 
