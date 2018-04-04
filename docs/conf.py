@@ -95,7 +95,7 @@ intersphinx_mapping.pop('h5py', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/latest/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
-intersphinx_mapping['drms'] = ('https://drms.readthedocs.io/en/stable/', None)
+intersphinx_mapping['drms'] = ('http://docs.sunpy.org/projects/drms/en/stable/', None)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

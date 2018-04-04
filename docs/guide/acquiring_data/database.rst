@@ -179,7 +179,7 @@ In section 3, more advanced formats of the slicing syntax are introduced.
     >>> len(entry.fits_header_entries)
     191
     >>> for fits_header_entry in entry.fits_header_entries[:10]:
-    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))   # doctest:
+    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))
     SIMPLE
     	True
     BITPIX
@@ -202,7 +202,7 @@ In section 3, more advanced formats of the slicing syntax are introduced.
     	1977.01.01_00:00:00_TAI
 
     >>> for fits_key_comment in entry.fits_key_comments:
-    ...     print('{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment))   # doctest:
+    ...     print('{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment))
     SIMPLE
     	conforms to FITS standard
     BITPIX

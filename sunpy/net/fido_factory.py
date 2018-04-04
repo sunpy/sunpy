@@ -287,30 +287,11 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> from sunpy.net import Fido, attrs as a
         >>> import astropy.units as u
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
-        [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=3>
-             Start Time           End Time      Source Instrument Wavelength
-               str19               str19         str6     str4       str3
-        ------------------- ------------------- ------ ---------- ----------
-        2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-        2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-        2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan]
 
         Query for data from Nobeyama Radioheliograph and RHESSI
 
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
         ...     (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
-        [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=3>
-             Start Time           End Time      Source Instrument   Wavelength
-               str19               str19         str4     str4        str14
-        ------------------- ------------------- ------ ---------- --------------
-        2012-03-04 00:00:00 2012-03-05 00:00:00   NAOJ       NORH 17000000.0 kHz
-        2012-03-05 00:00:00 2012-03-06 00:00:00   NAOJ       NORH 17000000.0 kHz
-        2012-03-06 00:00:00 2012-03-07 00:00:00   NAOJ       NORH 17000000.0 kHz, <class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=2>
-             Start Time           End Time      Source Instrument Wavelength
-               str19               str19         str6     str6       str3
-        ------------------- ------------------- ------ ---------- ----------
-        2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan
-        2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan]
 
         Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
 
@@ -320,31 +301,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         ...                        a.Instrument('AIA'),
         ...                        a.Wavelength(304*u.angstrom, 304*u.angstrom),
         ...                        a.vso.Sample(10*u.minute))  # doctest: +REMOTE_DATA
-        [<QTable length=288>
-           Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
-                                                       ...             Angstrom
-               str19               str19         str3  ...   str8      float64
-        ------------------- ------------------- ------ ... -------- --------------
-        2012-03-04 14:00:08 2012-03-04 14:00:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-05 00:30:08 2012-03-05 00:30:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 00:30:08 2012-03-04 00:30:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 20:40:08 2012-03-04 20:40:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 19:10:08 2012-03-04 19:10:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-05 18:30:08 2012-03-05 18:30:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 14:20:08 2012-03-04 14:20:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 15:00:08 2012-03-04 15:00:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 06:40:08 2012-03-04 06:40:09    SDO ... FULLDISK 304.0 .. 304.0
-                        ...                 ...    ... ...      ...            ...
-        2012-03-04 18:40:08 2012-03-04 18:40:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-05 07:10:08 2012-03-05 07:10:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-05 09:00:08 2012-03-05 09:00:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 09:40:08 2012-03-04 09:40:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 01:00:08 2012-03-04 01:00:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 13:50:08 2012-03-04 13:50:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-05 15:30:08 2012-03-05 15:30:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-05 08:50:08 2012-03-05 08:50:09    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 21:00:00 2012-03-04 21:00:01    SDO ... FULLDISK 304.0 .. 304.0
-        2012-03-05 19:00:08 2012-03-05 19:00:09    SDO ... FULLDISK 304.0 .. 304.0]
 
         Parameters
         ----------
@@ -395,19 +351,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
-        [<QTable length=8>
-           Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
-                                                       ...             Angstrom
-               str19               str19         str4  ...   str8      float64
-        ------------------- ------------------- ------ ... -------- --------------
-        2012-03-04 01:00:13 2012-03-04 01:00:25   SOHO ... FULLDISK 171.0 .. 171.0
-        2012-03-04 01:06:09 2012-03-04 01:08:11   SOHO ... FULLDISK 284.0 .. 284.0
-        2012-03-04 01:13:49 2012-03-04 01:14:01   SOHO ... FULLDISK 195.0 .. 195.0
-        2012-03-04 01:19:41 2012-03-04 01:20:13   SOHO ... FULLDISK 304.0 .. 304.0
-        2012-03-04 13:00:15 2012-03-04 13:00:27   SOHO ... FULLDISK 171.0 .. 171.0
-        2012-03-04 13:06:11 2012-03-04 13:08:13   SOHO ... FULLDISK 284.0 .. 284.0
-        2012-03-04 13:13:51 2012-03-04 13:14:03   SOHO ... FULLDISK 195.0 .. 195.0
-        2012-03-04 13:19:45 2012-03-04 13:20:18   SOHO ... FULLDISK 304.0 .. 304.0]
         >>> downresp = Fido.fetch(unifresp)  # doctest: +SKIP
         >>> file_paths = downresp.wait()  # doctest: +SKIP
         """
