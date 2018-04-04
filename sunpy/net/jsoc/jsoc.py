@@ -621,7 +621,7 @@ class JSOCClient(object):
         # A Results object tracks the number of downloads requested and the
         # number that have been completed.
         if results is None:
-            results = Results(lambda _: downloader.stop())
+            results = Results(lambda _: downloader.stop(), done=lambda maps: [v['path'] for v in maps.values()])
 
         urls = []
         for request in requests:
@@ -635,20 +635,20 @@ class JSOCClient(object):
 
                     if not overwrite and is_file:
                         print_message = "Skipping download of file {} as it " \
-                                        "has already been downloaded." \
+                                        "has already been downloaded. " \
                                         "If you want to redownload the data, "\
                                         "please set overwrite to True"
                         print(print_message.format(data['filename']))
                         # Add the file on disk to the output
-                        #results.require([paths[index]])
-                        #results.poke()
+                        results.map_.update({data['filename']:
+                                            {'path': paths[index].args[0]}})
 
             else:
                 if progress:
                     self.check_request(request)
         if urls:
             if progress:
-                print_message = "{0} URLs found for download. Totalling {1}MB"
+                print_message = "{0} URLs found for download. Full request totalling {1}MB"
                 print(print_message.format(len(urls), request._d['size']))
             for i, url in enumerate(urls):
                 downloader.download(url, callback=results.require([url]),
