@@ -72,7 +72,6 @@ class UnifiedResponse(Sequence):
                 else:
                     raise ValueError(
                         "{} is not a valid input to UnifiedResponse.".format(type(lst)))
-        print(tmplst)
         self._list = tmplst
 
     def __len__(self):
