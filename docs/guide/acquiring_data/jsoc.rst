@@ -539,10 +539,10 @@ downloaded. Only then, can we download them. The download request can be staged 
 
 The function `~sunpy.net.jsoc.JSOCClient.request_data` stages the request.
 It returns a `drms.ExportRequest` object, which has many attributes.
-The most important ones are ``ExportRequest id`` and ``status``. Only when the status is 0, we can
+The most important ones are ``id`` and ``status``. Only when the status is 0, we can
 move to the third step, i.e. downloading the data.
 
-If you are making more than 1 query at a time, it will return a list of ExportRequest objects. Hence, access the
+If you are making more than 1 query at a time, it will return a list of `~drms.ExportRequest` objects. Hence, access the
 list elements accordingly. You can get the id and status of the request (if it is not a list) by:
 
     >>> requests.id  # doctest: +SKIP
@@ -554,7 +554,10 @@ You can also check the status of a request made by:
 
     >>> status = client.check_request(requests)  # doctest: +SKIP
 
-You can pass a list of ExportRequest objects, and a list of status' will be returned.
+You can pass a list of `~drms.ExportRequest` objects, and a list of status' will be returned.
+
+
+You can wait for the by calling the `~drms.ExportRequest.wait` method.
 
 Downloading data
 ^^^^^^^^^^^^^^^^
