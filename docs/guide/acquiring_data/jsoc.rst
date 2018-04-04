@@ -33,6 +33,11 @@ SunPy's Fido module is in `sunpy.net`.  It can be imported as follows:
 The JSOC client handles the particulars of how the data from
 the data provider is downloaded to your computer.
 
+.. warning::
+
+    You must have an email address registered with JSOC before you are allowed to make a request.
+    See `this <http://jsoc.stanford.edu/ajax/register_email.html>` to register your email address.
+
 Querying the JSOC
 -----------------
 
@@ -56,8 +61,11 @@ Constructing a Basic Query
 
 Let's start with a very simple query.  We could ask for all ``hmi.v_45s`` series data
 between January 1st from 00:00 to 01:00, 2014.
+We can add email address to the search query with the :mod:`jsoc.Notify` attribute.
+Please note you can search without this but right now, you can not add the email address after the search.
 
-    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s')
+    ...                   a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
@@ -125,6 +133,12 @@ that are specified to construct the query.
 ``a.jsoc.Series()`` is compulsory to be provided in each of the jsoc queries. Apart from this,
 at least one PrimeKey must be passed (generally ``a.jsoc.Time()``).
 
+The third argument
+
+    ``a.jsoc.Notify('sunpy@sunpy.org')``
+
+tells JSOC what email address you are registered with and to email when your request is ready to download.
+
 Querying with other PrimeKeys
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -132,7 +146,7 @@ Other than Time, one other PrimeKey is supported with in-built attribute.
 In case of AIA series, ``a.jsoc.Wavelength()`` can be passed as a PrimeKey::
 
     >>> import astropy.units as u
-    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...                               a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
 
 Note that, only Time and Wavelength are in-built attributes here. If you need to pass any other PrimeKey,
@@ -170,7 +184,7 @@ If you want to get a manual set of keywords in the response object, you can pass
 `~sunpy.net.jsoc.attrs.Keys` attribute.
 
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                   a.jsoc.Series('hmi.v_45s'),
+    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...                   a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS']))  # doctest: +REMOTE_DATA
 
 The parameter passed into ``a.jsoc.Keys()`` can be either a list of strings, or a string with keywords seperated by
@@ -211,7 +225,7 @@ Also, if you provide an incorrect segment name, it will throw a meaningful error
 by the given series::
 
     >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.sharp_720s'),
+    ...             a.jsoc.Series('hmi.sharp_720s'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...             a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
     Traceback (most recent call last):
     ...
@@ -221,7 +235,7 @@ by the given series::
 To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`` using ``AND`` operator::
 
     >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...             a.jsoc.Series('hmi.sharp_720s'),
+    ...             a.jsoc.Series('hmi.sharp_720s'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...             a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -261,7 +275,7 @@ using `~sunpy.net.jsoc.attrs.Sample`. In other words, if you need to query for `
 between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
 
     >>> import astropy.units as u
-    >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...             a.jsoc.Series('hmi.v_45s'), a.jsoc.Sample(10*u.min))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -290,7 +304,7 @@ Complex queries can be built using OR operators.
 
 Let's look for 2 different series data at the same time::
 
-    >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
@@ -356,7 +370,7 @@ hmi.v_45s data from two separate days::
 
     >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
     ...             a.jsoc.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
-    ...             a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...             a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
@@ -452,7 +466,7 @@ Making a query
 ^^^^^^^^^^^^^^
 
 Querying JSOC using the JSOC client is very similar to what we were doing with Fido.
-The biggest difference is that JSOC requires a registered email address before you are allowed to make a request.
+As above, we have to make sure we have an email address registered with JSOC before you are allowed to make a request.
 See `this <http://jsoc.stanford.edu/ajax/register_email.html>` to register your email address.
 We can add email address to the search query with the :mod:`jsoc.Notify` attribute.
 Please note you can search without this but right now, you can not add the email address after the search.::
