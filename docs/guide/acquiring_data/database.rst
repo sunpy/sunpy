@@ -163,52 +163,52 @@ number of saved database entries. To get the first entry of the database,
 the database is empty, this expression raises an :exc:`IndexError`.
 In section 3, more advanced formats of the slicing syntax are introduced.
 
-    >>> import sunpy.data.sample
-    >>> database.add_from_file(sunpy.data.sample.AIA_171_IMAGE)
-    >>> len(database)
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> database.add_from_file(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> len(database)  # doctest: +REMOTE_DATA
     1
-    >>> entry = database[0]
-    >>> entry.path == sunpy.data.sample.AIA_171_IMAGE
+    >>> entry = database[0]  # doctest: +REMOTE_DATA
+    >>> entry.path == sunpy.data.sample.AIA_171_IMAGE  # doctest: +REMOTE_DATA
     True
-    >>> entry.wavemin, entry.wavemax
+    >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
     (17.1, 17.1)
-    >>> entry.instrument
+    >>> entry.instrument  # doctest: +REMOTE_DATA
     'AIA_3'
-    >>> entry.observation_time_start, entry.observation_time_end
+    >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
     (datetime.datetime(2011, 6, 7, 6, 33, 2, 770000), None)
-    >>> len(entry.fits_header_entries)
+    >>> len(entry.fits_header_entries)  # doctest: +REMOTE_DATA
     191
     >>> for fits_header_entry in entry.fits_header_entries[:10]:
-    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))   # doctest: +NORMALIZE_WHITESPACE
+    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))  # doctest: +REMOTE_DATA
     SIMPLE
-    	True
+        True
     BITPIX
-    	-32
+        -32
     NAXIS
-    	2
+        2
     NAXIS1
-    	1024
+        1024
     NAXIS2
-    	1024
+        1024
     BLD_VERS
-    	V5R12X
+        V5R12X
     LVL_NUM
-    	1.5
+        1.5
     T_REC
-    	2011-06-07T06:33:03Z
+        2011-06-07T06:33:03Z
     TRECSTEP
-    	1.0
+        1.0
     TRECEPOC
-    	1977.01.01_00:00:00_TAI
+        1977.01.01_00:00:00_TAI
 
     >>> for fits_key_comment in entry.fits_key_comments:
-    ...     print('{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment))   # doctest: +NORMALIZE_WHITESPACE
+    ...     print('{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment))  # doctest: +REMOTE_DATA
     SIMPLE
-    	conforms to FITS standard
+        conforms to FITS standard
     BITPIX
-    	array data type
+        array data type
     NAXIS
-    	number of array dimensions
+        number of array dimensions
 
 
 2.2 Adding entries from a directory of FITS files
@@ -222,12 +222,12 @@ In the following example case, setting this parameter is required because the
 file ``sunpy.data.sample.AIA_171_IMAGE`` was already added, which is located
 in the directory ``sampledata_dir``
 
-    >>> from sunpy import config
-    >>> sampledata_dir = config.get("downloads", "sample_dir")
-    >>> database.default_waveunit = 'angstrom'
+    >>> from sunpy import config  # doctest: +REMOTE_DATA
+    >>> sampledata_dir = config.get("downloads", "sample_dir")  # doctest: +REMOTE_DATA
+    >>> database.default_waveunit = 'angstrom'  # doctest: +REMOTE_DATA
     >>> database.add_from_dir(sampledata_dir, ignore_already_added=True,
-    ...                       time_string_parse_format="%d/%m/%Y")
-    >>> len(database)
+    ...                       time_string_parse_format="%d/%m/%Y")  # doctest: +REMOTE_DATA
+    >>> len(database)  # doctest: +REMOTE_DATA
     58
 
 2.3 Adding entries using the VSO interface
@@ -344,7 +344,7 @@ cannot be found or is not set.
     >>> from sunpy.database.tables import display_entries
     >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
      id observation_time_start ...      wavemin            wavemax
     --- ---------------------- ... ------------------ ------------------
       1    2011-06-07 06:33:02 ...               17.1               17.1
@@ -380,7 +380,7 @@ for more information.
 
     >>> print(display_entries(database[9::10],
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end instrument wavemin wavemax
     --- ---------------------- -------------------- ---------- ------- -------
      10    2011-06-07 06:39:31                  N/A      AIA_2    19.3    19.3
@@ -410,7 +410,7 @@ method to remove those where there is no time set:
     38
     >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
      id observation_time_start ...      wavemin            wavemax
     --- ---------------------- ... ------------------ ------------------
       1    2011-06-07 06:33:02 ...               17.1               17.1
@@ -453,7 +453,7 @@ all values that have a wavelength of 20nm or higher:
     >>> print(display_entries(
     ...     filter(lambda entry: entry.starred, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end instrument wavemin wavemax
     --- ---------------------- -------------------- ---------- ------- -------
       4    2011-06-07 06:33:02                  N/A      AIA_2    21.1    21.1
@@ -486,7 +486,7 @@ year:
     >>> print(display_entries(
     ...     filter(lambda entry: spring in entry.tags, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end instrument wavemin wavemax
     --- ---------------------- -------------------- ---------- ------- -------
      22    2014-04-09 06:00:12                  N/A      AIA_3    17.1    17.1
@@ -510,7 +510,7 @@ observation time (because it's possible, not because it is accurate!):
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
      id observation_time_start ...      wavemin            wavemax
     --- ---------------------- ... ------------------ ------------------
       1    2011-06-07 06:33:02 ...               17.1               17.1
@@ -565,7 +565,7 @@ the entries with no end of observation time are back.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end ...  tags  starred
     --- ---------------------- -------------------- ... ------ -------
       1    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    N/A      No
@@ -603,7 +603,7 @@ stored end of observation time.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end ...  tags  starred
     --- ---------------------- -------------------- ... ------ -------
       1    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    N/A      No
@@ -657,7 +657,7 @@ The following query returns the data that was added in section 2.3.2:
     >>> print(display_entries(
     ...     database.search(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'), vso.attrs.Instrument('AIA')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end instrument wavemin wavemax
     --- ---------------------- -------------------- ---------- ------- -------
      63    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
@@ -679,7 +679,7 @@ check `astropy.units`.
     >>> print(display_entries(
     ...     database.search(vso.attrs.Wavelength(1.0*u.nm, 2.0*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest:  +REMOTE_DATA
      id observation_time_start ...      wavemin            wavemax
     --- ---------------------- ... ------------------ ------------------
       1    2011-06-07 06:33:02 ...               17.1               17.1
@@ -716,7 +716,7 @@ with the value 'Angstrom':
     >>> print(display_entries(
     ...     database.search(dbattrs.Tag('spring') | dbattrs.Starred(), ~dbattrs.FitsHeaderEntry('WAVEUNIT', 'Angstrom')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end ... wavemax  tags  starred
     --- ---------------------- -------------------- ... ------- ------ -------
      22    2014-04-09 06:00:12                  N/A ...    17.1 spring      No
@@ -752,7 +752,7 @@ to 10 and therefore removes the 5 entries that been used least recently.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
      id observation_time_start ...      wavemin            wavemax
      --- ---------------------- ... ------------------ ------------------
       8    2011-06-07 06:33:07 ...               19.3               19.3
