@@ -101,21 +101,21 @@ class GenericMap(NDData):
     >>> import sunpy.map
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-    >>> aia   # doctest:  +FLOAT_CMP +REMOTE_DATA
+    >>> aia   # doctest: +REMOTE_DATA
     SunPy Map
     ---------
-    Observatory:                SDO
-    Instrument:                 AIA 3
-    Detector:           AIA
-    Measurement:                171.0 Angstrom
-    Wavelength:                 171.0 Angstrom
-    Observation Date:   2011-06-07 06:33:02
-    Exposure Time:              0.234256 s
-    Dimension:          [ 1024.  1024.] pix
-    Coordinate System:  helioprojective
-    Scale:                      [ 2.402792  2.402792] arcsec / pix
-    Reference Pixel:    [ 512.5  512.5] pix
-    Reference Coord:    [ 3.22309951  1.38578135] arcsec
+    Observatory:		 SDO
+    Instrument:		 AIA 3
+    Detector:		 AIA
+    Measurement:		 171.0 Angstrom
+    Wavelength:		 171.0 Angstrom
+    Observation Date:	 2011-06-07 06:33:02
+    Exposure Time:		 0.234256 s
+    Dimension:		 [1024. 1024.] pix
+    Coordinate System:	 helioprojective
+    Scale:			 [2.402792 2.402792] arcsec / pix
+    Reference Pixel:	 [512.5 512.5] pix
+    Reference Coord:	 [3.22309951 1.38578135] arcsec
     <BLANKLINE>
     array([[ -96.,    7.,   -2., ..., -128., -128., -128.],
            [ -97.,   -5.,    0., ...,  -99., -104., -128.],
@@ -126,7 +126,8 @@ class GenericMap(NDData):
            [-128., -128., -128., ..., -128., -128., -128.]], dtype=float32)
 
 
-    >>> aia.spatial_units
+
+    >>> aia.spatial_units   # doctest: +REMOTE_DATA
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
     >>> aia.peek()   # doctest: +SKIP
 
@@ -1201,50 +1202,51 @@ Reference Coord:\t {refcoord}
         Examples
         --------
         >>> import astropy.units as u
+        >>> from astropy.coordinates import SkyCoord
         >>> import sunpy.map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
         >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
-        >>> aia.submap(bl, tr)   # doctest:  +FLOAT_CMP +REMOTE_DATA
+        >>> aia.submap(bl, tr)   # doctest: +REMOTE_DATA
         SunPy Map
         ---------
-        Observatory:                SDO
-        Instrument:                 AIA 3
-        Detector:           AIA
-        Measurement:                171.0 Angstrom
-        Wavelength:                 171.0 Angstrom
-        Observation Date:   2011-06-07 06:33:02
-        Exposure Time:              0.234256 s
-        Dimension:          [ 334.  334.] pix
-        Coordinate System:  helioprojective
-        Scale:                      [ 2.402792  2.402792] arcsec / pix
-        Reference Pixel:    [ 127.5  126.5] pix
-        Reference Coord:    [ 3.22309951  1.38578135] arcsec
+        Observatory:		 SDO
+        Instrument:		 AIA 3
+        Detector:		 AIA
+        Measurement:		 171.0 Angstrom
+        Wavelength:		 171.0 Angstrom
+        Observation Date:	 2011-06-07 06:33:02
+        Exposure Time:		 0.234256 s
+        Dimension:		 [334. 334.] pix
+        Coordinate System:	 helioprojective
+        Scale:			 [2.402792 2.402792] arcsec / pix
+        Reference Pixel:	 [127.5 126.5] pix
+        Reference Coord:	 [3.22309951 1.38578135] arcsec
         <BLANKLINE>
-        array([[  451.,   566.,   586., ...,  1179.,  1005.,   978.],
-               [  475.,   515.,   556., ...,  1026.,  1011.,  1009.],
-               [  547.,   621.,   621., ...,   935.,  1074.,  1108.],
+        array([[ 451.,  566.,  586., ..., 1179., 1005.,  978.],
+               [ 475.,  515.,  556., ..., 1026., 1011., 1009.],
+               [ 547.,  621.,  621., ...,  935., 1074., 1108.],
                ...,
-               [  203.,   195.,   226., ...,   612.,   580.,   561.],
-               [  207.,   213.,   233., ...,   651.,   622.,   537.],
-               [  230.,   236.,   222., ...,   516.,   586.,   591.]], dtype=float32)
+               [ 203.,  195.,  226., ...,  612.,  580.,  561.],
+               [ 207.,  213.,  233., ...,  651.,  622.,  537.],
+               [ 230.,  236.,  222., ...,  516.,  586.,  591.]], dtype=float32)
 
-        >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +FLOAT_CMP +REMOTE_DATA
+        >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +REMOTE_DATA
         SunPy Map
         ---------
-        Observatory:                SDO
-        Instrument:                 AIA 3
-        Detector:           AIA
-        Measurement:                171.0 Angstrom
-        Wavelength:                 171.0 Angstrom
-        Observation Date:   2011-06-07 06:33:02
-        Exposure Time:              0.234256 s
-        Dimension:          [ 5.  5.] pix
-        Coordinate System:  helioprojective
-        Scale:                      [ 2.402792  2.402792] arcsec / pix
-        Reference Pixel:    [ 512.5  512.5] pix
-        Reference Coord:    [ 3.22309951  1.38578135] arcsec
+        Observatory:		 SDO
+        Instrument:		 AIA 3
+        Detector:		 AIA
+        Measurement:		 171.0 Angstrom
+        Wavelength:		 171.0 Angstrom
+        Observation Date:	 2011-06-07 06:33:02
+        Exposure Time:		 0.234256 s
+        Dimension:		 [5. 5.] pix
+        Coordinate System:	 helioprojective
+        Scale:			 [2.402792 2.402792] arcsec / pix
+        Reference Pixel:	 [512.5 512.5] pix
+        Reference Coord:	 [3.22309951 1.38578135] arcsec
         <BLANKLINE>
         array([[-96.,   7.,  -2.,  -3.,  -1.],
                [-97.,  -5.,   0.,   0.,   1.],

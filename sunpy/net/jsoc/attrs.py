@@ -26,6 +26,9 @@ class Series(_VSOSimpleAttr):
 
 class Time(VSOTime):
     """
+    This is a specific JSOC Time attr that has support for TAI.
+    Passing in a VSO Time attr will cause the JSOC client to error.
+
     Specify the time range of the query.
 
     Parameters

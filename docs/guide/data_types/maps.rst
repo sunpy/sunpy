@@ -95,7 +95,7 @@ attributes. A number of other attributes are also available, for example the
 
 To get a list of all of the attributes check the documentation by typing::
 
-    >>> help(my_map)   # doctest: +SKIP
+    >>> help(my_map)  # doctest: +SKIP
 
 Many attributes and functions of the map classes accept and return
 `~astropy.units.quantity.Quantity` or `~astropy.coordinates.SkyCoord` objects,
@@ -297,7 +297,7 @@ do so as follows.
 
 or you can just change the colormap for the map itself as follows::
 
-    >>> smap.plot_settings['cmap'] = plt.get_cmap('sohoeit171')   # doctest: +SKIP
+    >>> smap.plot_settings['cmap'] = plt.get_cmap('sohoeit171')  # doctest: +SKIP
 
 The normalization is also set automatically and is chosen so that all the
 data from minimum to maximum is displayed as best as possible for most cases.
@@ -343,14 +343,14 @@ this kind of data in plots without altering the data is to clip it. This can be 
 very easily when initializing the normalization variable. For example::
 
     >>> import matplotlib.colors as colors
-    >>> norm = colors.Normalize(vmin=smap.min(), vmax=smap.mean() + 3 *smap.std())   # doctest: +SKIP
+    >>> norm = colors.Normalize(vmin=smap.min(), vmax=smap.mean() + 3 *smap.std())  # doctest: +SKIP
 
 This clips out many of the brightest pixels. If you'd like to see what areas of
 your images got clipped set the following values::
 
-    >>> cmap = cmap.plot_settings['cmap']   # doctest: +SKIP
-    >>> cmap.set_over('red', 1.0)   # doctest: +SKIP
-    >>> cmap.set_under('green', 1.0)   # doctest: +SKIP
+    >>> cmap = cmap.plot_settings['cmap']  # doctest: +SKIP
+    >>> cmap.set_over('red', 1.0)  # doctest: +SKIP
+    >>> cmap.set_under('green', 1.0)  # doctest: +SKIP
 
 This will color the areas above and below in red and green respectively
 (similar to this `example <https://matplotlib.org/examples/pylab_examples/image_masked.html>`_).
@@ -540,7 +540,7 @@ functionality that a scientist would want therefore a map also contains a number
 of map-specific methods such as resizing a map or grabbing a subview. To get
 a list of the methods available for a map type::
 
-    >>> help(my_map)   # doctest: +SKIP
+    >>> help(my_map)  # doctest: +SKIP
 
 and check out the methods section!
 
