@@ -135,7 +135,7 @@ at least one PrimeKey must be passed (generally ``a.jsoc.Time()``).
 
 The third argument::
 
-    >>> a.jsoc.Notify('sunpy@sunpy.org')
+    >>> a.jsoc.Notify('sunpy@sunpy.org')  # doctest: +SKIP
 
 tells JSOC what email address you are registered with and to email when your request is ready to download.
 
