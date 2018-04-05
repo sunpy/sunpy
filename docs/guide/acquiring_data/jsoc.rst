@@ -61,7 +61,7 @@ Constructing a Basic Query
 
 Let's start with a very simple query.  We could ask for all ``hmi.v_45s`` series data
 between January 1st from 00:00 to 01:00, 2014.
-We can add email address to the search query with the :mod:`jsoc.Notify` attribute.
+We can add email address to the search query with the `~sunpy.net.jsoc.attrs.Notify` attribute.
 Please note you can search without this but right now, you can not add the email address after the search.
 
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'),
