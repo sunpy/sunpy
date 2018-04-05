@@ -99,18 +99,18 @@ class JSOCClient(object):
     .. warning::
 
         JSOC requires you to register your email address before requesting
-        data. See `this <http://jsoc.stanford.edu/ajax/register_email.html>`
+        data. `See this on how to register <http://jsoc.stanford.edu/ajax/register_email.html>_`.
 
     Notes
     -----
-    The full list of 'series' is available through this `site <http://jsoc.stanford.edu>`
+    The full list of ``Series`` is available through this `site <http://jsoc.stanford.edu>`_.
 
     JSOC requires a validated email address, you can pass in your validated email address
     using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
-    with JSOC beforehand `here <http://jsoc.stanford.edu/ajax/register_email.html>`.
+    with JSOC beforehand `here <http://jsoc.stanford.edu/ajax/register_email.html>`_.
 
-    The backend of SunPy's JSOC Client uses `drms package <https://github.com/sunpy/drms>`
-    The tutorials can be found `here <https://drms.readthedocs.io/en/stable/tutorial.html>`
+    The backend of SunPy's JSOC Client uses `drms package <https://github.com/sunpy/drms>`_.
+    The tutorials can be found `here <http://docs.sunpy.org/projects/en/stable/tutorial.html>`_.
     This can be used to build complex queries, by directly inputting the query string.
 
     Examples
@@ -171,6 +171,7 @@ class JSOCClient(object):
 
         ValueError: Email address is invalid or not registered
 
+
     *Example 2*
 
     Query the JSOC for some AIA 171 data, and separate out the staging and the
@@ -209,7 +210,7 @@ class JSOCClient(object):
     message and return you the status code, a code of 1 means it is not ready
     to download and a code of 0 means the request is staged and ready. A code
     of 6 means an error, which is commonly that the request has not had time to
-    get into the queue.::
+    get into the queue::
 
         >>> requests.status  # doctest: +SKIP
         0
@@ -220,7 +221,7 @@ class JSOCClient(object):
         >>> res = client.get_request(requests)  # doctest: +SKIP
 
     This returns a Results instance which can be used to watch the progress
-    of the download.::
+    of the download::
 
         >>> res.wait(progress=True)   # doctest: +SKIP
 
@@ -240,7 +241,7 @@ class JSOCClient(object):
         ----------
         query : a variable number of `~sunpy.net.jsoc.attrs`
                 as parameters, which are chained together using
-                the AND (`&`) operator.
+                the ``AND`` (``&``) operator.
 
         Returns
         -------
@@ -253,7 +254,7 @@ class JSOCClient(object):
         *Example 1*
 
         Request all AIA 304 image data between 2014-01-01T00:00 and
-        2014-01-01T01:00.::
+        2014-01-01T01:00::
 
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
@@ -279,7 +280,7 @@ class JSOCClient(object):
 
         *Example 2*
 
-        Request keyword data of hmi.v_45s for certain specific keywords only.::
+        Request keyword data of ``hmi.v_45s`` for certain specific keywords only::
 
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
@@ -308,7 +309,7 @@ class JSOCClient(object):
 
             *Example 3*
 
-        Request data of aia.lev1_euv_12s on the basis of primekeys other than T_REC.::
+        Request data of ``aia.lev1_euv_12s`` on the basis of PrimeKeys other than ``T_REC``::
 
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
@@ -350,16 +351,16 @@ class JSOCClient(object):
     def search_metadata(self, *query, **kwargs):
         """
         Get the metadata of all the files obtained in a search query.
-        Builds a jsoc query, similar to query() method, and takes similar inputs.
+        Builds a jsoc query, similar to query method, and takes similar inputs.
 
         Complex queries to be easily formed using logical operators such as
-        `&` and `|`, in the same way as the query() function.
+        ``&`` and ``|``, in the same way as the query function.
 
         Parameters
         ----------
         query : a variable number of `~sunpy.net.jsoc.attrs`
                 as parameters, which are chained together using
-                the AND (`&`) operator.
+                the ``AND`` (``&``) operator.
 
         Returns
         -------
@@ -373,7 +374,7 @@ class JSOCClient(object):
         2014-01-01T01:00.
 
         Since, the function only performs a lookdata, and does not make a proper export
-        request, attributes like Segment need not be passed.::
+        request, attributes like Segment need not be passed::
 
             >>> import astropy.units as u
             >>> from sunpy.net import jsoc
@@ -416,7 +417,7 @@ class JSOCClient(object):
 
         Returns
         -------
-        requests : `~drms.ExportRequest` Object or
+        requests : `~drms.ExportRequest` object or
                    a list of  `~drms.ExportRequest` objects
 
             Request Id can be accessed by requests.id
@@ -459,7 +460,7 @@ class JSOCClient(object):
 
         Returns
         -------
-        status : int or list
+        status : `int` or `list`
             A status or list of status' that were returned by JSOC.
 
         """
@@ -503,28 +504,28 @@ class JSOCClient(object):
         jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             A response object
 
-        path : string
+        path : `str`
             Path to save data to, defaults to SunPy download dir
 
-        overwrite : bool
+        overwrite : `bool`
             Replace files with the same name if True
 
-        progress : bool
+        progress : `bool`
             Print progress info to terminal
 
-        max_conns : int
+        max_conns : `int`
             Maximum number of download connections.
 
-        downloader: `~sunpy.download.Downloader` instance
+        downloader: `~sunpy.net.download.Downloader` instance
             A Custom downloader to use
 
-        sleep : int
+        sleep : `int`
             The number of seconds to wait between calls to JSOC to check the status
             of the request.
 
         Returns
         -------
-        results : a `~sunpy.net.vso.Results` instance
+        results : a `~sunpy.net.download.Results` instance
             A Results object
 
         """
@@ -565,20 +566,20 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        requests : `~drms.ExportRequest`, str, list
+        requests : `~drms.ExportRequest`, `str`, `list`
             `~drms.ExportRequest` objects or `str` request IDs or lists
             returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
 
-        path : string
+        path : `str`
             Path to save data to, defaults to SunPy download dir.
 
-        overwrite : bool
+        overwrite : `bool`
             Replace files with the same name if True.
 
-        progress : bool
+        progress : `bool`
             Print progress info to terminal.
 
-        max_conns : int
+        max_conns : `int`
             Maximum number of download connections.
 
         downloader : `~sunpy.net.download.Downloader`
