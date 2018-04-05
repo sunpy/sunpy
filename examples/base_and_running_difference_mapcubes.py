@@ -22,8 +22,10 @@ aiamapcube = sunpy.map.Map(AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE,
                            AIA_193_CUTOUT03_IMAGE, cube=True)
 
 ############################################################################
-# In case of running difference, we loop through all the maps in the aiamapcube and differentially rotate each map
-# in the mapcube with respect to the previous map, while in case of base difference we only differentially 
+# In case of running difference, we loop through all the maps in the
+# aiamapcube and differentially rotate each map in the mapcube
+# with respect to the previous map
+# while in case of base difference we only differentially
 # rotate each map in the mapcube to the time of the base map.
 # We then store all such difference maps in a list.
 base_diffmap = []
