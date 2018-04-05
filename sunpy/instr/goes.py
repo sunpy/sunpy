@@ -814,7 +814,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
     2014-01-01 00:00:06.564999  9.298800e-08  0.000004
 
     >>> goeslc_new = calculate_radiative_loss_rate(goeslc)  # doctest: +REMOTE_DATA
-    >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    >>> goeslc_new.data   # doctest:  +REMOTE_DATA
                                         xrsa      xrsb  temperature            em  \\
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004     6.270239  6.440648e+48
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004     6.270239  6.440648e+48
@@ -1073,7 +1073,7 @@ def calculate_xray_luminosity(goeslc):
     2014-01-01 00:00:06.564999  9.298800e-08  0.000004
 
     >>> goeslc_new = calculate_xray_luminosity(goeslc)  # doctest: +REMOTE_DATA
-    >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    >>> goeslc_new.data   # doctest:  +REMOTE_DATA
                                         xrsa      xrsb  luminosity_xrsa  \\
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004     2.498454e+16
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004     2.498454e+16

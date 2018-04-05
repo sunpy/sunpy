@@ -116,16 +116,15 @@ specified `time: u.s`::
 This may still not be quite as we want it, since we wanted the input time in seconds but the output is in m/min.
 We can correct this by defining the function with an additional annotation::
 
-  @u.quantity_input
-  def speed(length: u.m, time: u.s) -> u.m/u.s:
-      return length / time
+  >>> @u.quantity_input
+  ... def speed(length: u.m, time: u.s) -> u.m/u.s:
+  ...     return length / time
 
 This will force the output of the function to be converted to m/s before returning, so that you will always
 have the same units on the output from this function::
 
-  >>> speed(1*u.m, 1*u.minute)  # doctest: +SKIP
-  <Quantity 0.016666666666666666 m / s>
-
+  >>> speed(1*u.m, 1*u.minute)
+  <Quantity 0.01666667 m / s>
 
 Physical Coordinates in SunPy
 -----------------------------
