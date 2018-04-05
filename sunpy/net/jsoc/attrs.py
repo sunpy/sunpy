@@ -12,7 +12,7 @@ from sunpy.time import parse_time
 from sunpy.time import TimeRange as _TimeRange
 
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
+__all__ = ['Series', 'Time', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 
 
 class Series(_VSOSimpleAttr):
