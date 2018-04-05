@@ -7,7 +7,7 @@ as well as certain other missions and instruments. These data are available from
 which can be directly accessed by the online `JSOC interface <http://jsoc.stanford.edu/ajax/lookdata.html>`_.
 
 SunPy's JSOC Client provides an easier interface to query for JSOC data and make export requests.
-It uses `drms module <https://drms.readthedocs.io/>`_ as its backend, and exposes a similar API as
+It uses `drms module <http://docs.sunpy.org/projects/drms>`_ as its backend, and exposes a similar API as
 the VSO Client.
 
 There are two ways of downloading JSOC data. One way is using Sunpy's unified search interface,
@@ -133,9 +133,9 @@ that are specified to construct the query.
 ``a.jsoc.Series()`` is compulsory to be provided in each of the jsoc queries. Apart from this,
 at least one PrimeKey must be passed (generally ``a.jsoc.Time()``).
 
-The third argument
+The third argument::
 
-``a.jsoc.Notify('sunpy@sunpy.org')``
+    >>> a.jsoc.Notify('sunpy@sunpy.org')
 
 tells JSOC what email address you are registered with and to email when your request is ready to download.
 
@@ -272,7 +272,7 @@ To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`
 Using Sample
 ^^^^^^^^^^^^
 In case you need to query for data, at some interval of time, say every 10 min, you can pass it
-using `~sunpy.net.attrs.Sample`. In other words, if you need to query for `hmi.v_45s` series data
+using `~sunpy.net.attrs.Sample`. In other words, if you need to query for ``hmi.v_45s`` series data
 between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
 
     >>> import astropy.units as u
@@ -301,7 +301,7 @@ into seconds.
 Constructing complex queries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Complex queries can be built using OR operators.
+Complex queries can be built using ``OR`` operators.
 
 Let's look for 2 different series data at the same time::
 
@@ -364,10 +364,10 @@ Let's look for 2 different series data at the same time::
     <BLANKLINE>
     <BLANKLINE>
 
-The two series names are joined together by the operator "|".
+The two series names are joined together by the operator ``|``.
 This is the ``OR`` operator.  Think of the above query as setting a set
 of conditions which get passed to the JSOC.  Let's say you want all the
-hmi.v_45s data from two separate days::
+``hmi.v_45s`` data from two separate days::
 
     >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
     ...             a.jsoc.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
@@ -469,9 +469,9 @@ Making a query
 
 Querying JSOC using the JSOC client is very similar to what we were doing with Fido.
 As above, we have to make sure we have an email address registered with JSOC before you are allowed to make a request.
-See `this <http://jsoc.stanford.edu/ajax/register_email.html>` to register your email address.
-We can add email address to the search query with the :mod:`jsoc.Notify` attribute.
-Please note you can search without this but right now, you can not add the email address after the search.::
+See `this <http://jsoc.stanford.edu/ajax/register_email.html>_` to register your email address.
+We can add email address to the search query with the :ref:`jsoc.Notify` attribute.
+Please note you can search without this but right now, you can not add the email address after the search::
 
     >>> from sunpy.net import attrs as a
     >>> res = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
@@ -514,6 +514,6 @@ Once the status code is 0 you can download the data using the
 
     >>> res = client.get_request(requests)  # doctest: +SKIP
 
-This returns a Results instance which can be used to watch the progress of the download.::
+This returns a Results instance which can be used to watch the progress of the download::
 
     >>> res.wait(progress=True)   # doctest: +SKIP
