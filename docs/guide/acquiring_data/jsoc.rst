@@ -116,18 +116,18 @@ pass an Astropy Time object, like::
 
     >>> import astropy.time
 
-Then, the Time attribute can be passed as
+Then, the Time attribute can be passed as::
 
-    ``a.jsoc.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'), astropy.time.Time('2014-01-01T01:00:00', scale='tai'))``
+    >>> a.jsoc.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'), astropy.time.Time('2014-01-01T01:00:00', scale='tai'))  # doctest: +SKIP
 
-The second argument
+The second argument::
 
-    ``a.jsoc.Series('hmi.v_45s')``
+    >>> a.jsoc.Series('hmi.v_45s')  # doctest: +SKIP
 
 sets the series we are looking for.
 
 So what is going on here?
-The notion is that a JSOC query has a set of attribute objects, described in ``a.jsoc``,
+The notion is that a JSOC query has a set of attribute objects, imported as ``a.jsoc``,
 that are specified to construct the query.
 
 ``a.jsoc.Series()`` is compulsory to be provided in each of the jsoc queries. Apart from this,
@@ -135,7 +135,7 @@ at least one PrimeKey must be passed (generally ``a.jsoc.Time()``).
 
 The third argument
 
-    ``a.jsoc.Notify('sunpy@sunpy.org')``
+``a.jsoc.Notify('sunpy@sunpy.org')``
 
 tells JSOC what email address you are registered with and to email when your request is ready to download.
 
@@ -146,22 +146,24 @@ Other than Time, one other PrimeKey is supported with in-built attribute.
 In case of AIA series, ``a.jsoc.Wavelength()`` can be passed as a PrimeKey::
 
     >>> import astropy.units as u
-    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
-    ...                               a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
+    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                               a.jsoc.Notify('sunpy@sunpy.org'),
+    ...                               a.jsoc.Series('aia.lev1_euv_12s'),
+    ...                               a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
 
 Note that, only Time and Wavelength are in-built attributes here. If you need to pass any other PrimeKey,
-it should be passed like this:
+it should be passed like this::
 
-    ``a.jsoc.PrimeKey('HARPNUM', '4864')``
+    >>> a.jsoc.PrimeKey('HARPNUM', '4864')  # doctest: +SKIP
 
-If 2 or more PrimeKeys need to be passed together:
+If 2 or more PrimeKeys need to be passed together::
 
-    ``a.jsoc.PrimeKey('HARPNUM', '4864') & a.jsoc.PrimeKey('CAMERA', '2')``
+    >>> a.jsoc.PrimeKey('HARPNUM', '4864') & a.jsoc.PrimeKey('CAMERA', '2')  # doctest: +SKIP
 
 Also, note that the pre-defined primkeys, Time and Wavelength can also be passed as above, but you need to
-specify the exact keyword for it. For e.g. by:
+specify the exact keyword for it. For e.g. by::
 
-    ``a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')``
+    >>> a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')  # doctest: +SKIP
 
 If the correct keyword is not specified, or the passed PrimeKey is not supported by the given series, a
 meaningful error will be thrown, which will give you the PrimeKey supported by that series. Hence, by looking
@@ -188,9 +190,8 @@ If you want to get a manual set of keywords in the response object, you can pass
     ...                   a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS']))  # doctest: +REMOTE_DATA
 
 The parameter passed into ``a.jsoc.Keys()`` can be either a list of strings, or a string with keywords seperated by
-comma and a space. Meaning to say,:
-
-    ``a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS'])`` and ``jsoc.attrs.Keys('TELESCOP, INSTRUME, T_OBS')``
+comma and a space. Meaning to say,: ``a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS'])`` and
+``jsoc.attrs.Keys('TELESCOP, INSTRUME, T_OBS')``
 
 both are correct.
 
@@ -473,7 +474,8 @@ We can add email address to the search query with the :mod:`jsoc.Notify` attribu
 Please note you can search without this but right now, you can not add the email address after the search.::
 
     >>> from sunpy.net import attrs as a
-    >>> res = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'),
+    >>> res = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                     a.jsoc.Series('hmi.v_45s'),
     ...                     a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
 
 Apart from the function name, everything is same. You need to pass the same values in the
