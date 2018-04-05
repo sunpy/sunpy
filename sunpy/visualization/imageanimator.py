@@ -1025,7 +1025,8 @@ class ImageAnimatorWCS(ImageAnimator):
             self._add_colorbar(im)
         return im
 
-    def plot_user_input(self, axes, tick_spacing, x_tick_position = None, y_tick_position = None,  xlabel = None, ylabel = None ):
+    def plot_user_input(self, axes, tick_spacing, x_tick_position=None,
+                                    y_tick_position=None,  xlabel=None, ylabel=None):
         """Lets the user set the tick spacing and tick labels with proper tick position."""
         self._set_image_axis_units(unit_x_axis, unit_y_axis)
         if self.unit_x_axis is not None:
@@ -1033,11 +1034,11 @@ class ImageAnimatorWCS(ImageAnimator):
         if self.unit_y_axis is not None:
             axes.coords[1].set_format_unit(self.unit_y_axis)
 
-        if not isinstance(tick_spacing, u.Quantity ):
+        if not isinstance(tick_spacing, u.Quantity):
             raise TypeError("Astropy Quantities should be provided")
         else:
-            axes.coords[2].set_ticks(spacing = tick_spacing , exclude_overlapping=True)
-            axes.coords[1].set_ticks(spacing = tick_spacing , exclude_overlapping=True)
+            axes.coords[2].set_ticks(spacing=tick_spacing, exclude_overlapping=True)
+            axes.coords[1].set_ticks(spacing=tick_spacing, exclude_overlapping=True)
 
         if xlabel is None:
             axes.coords[2].set_axislabel(self.wcs.wcs.ctype[0])
@@ -1056,8 +1057,6 @@ class ImageAnimatorWCS(ImageAnimator):
             axes.coords[1].set_axislabel_position(y_tick_position)
         else:
             axes.coords[1].set_axislabel_position('l')
-
-
 
     def update_plot(self, val, im, slider):
         """Updates plot based on slider/array dimension being iterated."""
