@@ -245,8 +245,8 @@ Example (:class:`sunpy.map.Map`) ::
 
     Examples
     --------
-    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    >>> aia.T
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)   # doctest: +REMOTE_DATA
+    >>> aia.T   # doctest: +REMOTE_DATA
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
     [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
@@ -254,12 +254,12 @@ Example (:class:`sunpy.map.Map`) ::
     [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
     [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
-    >>> aia.header['cunit1']
+    >>> aia.header['cunit1']   # doctest: +REMOTE_DATA
     'arcsec'
-    >>> aia.show()
-    >>> import matplotlib.cm as cm
-    >>> import matplotlib.colors as colors
-    >>> aia.peek(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.show()  # doctest: +REMOTE_DATA
+    >>> import matplotlib.cm as cm  # doctest: +REMOTE_DATA
+    >>> import matplotlib.colors as colors  # doctest: +REMOTE_DATA
+    >>> aia.peek(cmap=cm.hot, norm=colors.Normalize(1, 2048))  # doctest: +REMOTE_DATA
 
     See Also
     --------

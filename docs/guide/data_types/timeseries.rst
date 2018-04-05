@@ -31,8 +31,8 @@ To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries` type the
 following into your interactive Python shell: ::
 
     >>> import sunpy.timeseries as ts
-    >>> import sunpy.data.sample
-    >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')  # doctest: +REMOTE_DATA
 
 This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time
 series from a GOES XRS FITS file. The TimeSeries factory uses `sunpy.io.fits` to
