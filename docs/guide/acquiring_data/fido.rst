@@ -30,7 +30,7 @@ Examples of these attributes are `a.Time <sunpy.net.vso.attrs.Time>`,
 client specific, such as `a.vso <sunpy.net.vso.attrs>` or
 `a.jsoc <sunpy.net.jsoc.attrs>`.::
 
-    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
+    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
@@ -40,17 +40,19 @@ instructions on how to download data using Fido, see :ref:`downloading_data`.
 To see a summary of results of our query, simple type the name of the
 variable set to the Fido search, in this case, result::
 
-    >>> result  # doctest: +SKIP
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe6258ab630>
+    >>> result  # doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
-
+    <BLANKLINE>
     3 Results from the LYRAClient:
-        Start Time           End Time      Source Instrument Wavelength
-          str19               str19         str6     str4       str3
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    <BLANKLINE>
+    <BLANKLINE>
 
 Queries can be made more flexible or specific by adding more attrs objects to
 the `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` search. Specific
@@ -58,8 +60,20 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
 `a.Wavelength <sunpy.net.vso.attrs.Wavelength>` attribute::
 
     >>> import astropy.units as u
-    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('norh'),
-    ...                      a.Wavelength(17*u.GHz))  # doctest: +REMOTE_DATA
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('norh'),
+    ...             a.Wavelength(17*u.GHz))  # doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    3 Results from the NoRHClient:
+         Start Time           End Time      Source Instrument   Wavelength
+           str19               str19         str4     str4        str14
+    ------------------- ------------------- ------ ---------- --------------
+    2012-03-04 00:00:00 2012-03-05 00:00:00   NAOJ       NORH 17000000.0 kHz
+    2012-03-05 00:00:00 2012-03-06 00:00:00   NAOJ       NORH 17000000.0 kHz
+    2012-03-06 00:00:00 2012-03-07 00:00:00   NAOJ       NORH 17000000.0 kHz
+    <BLANKLINE>
+    <BLANKLINE>
 
 Data of a given cadence can also be specified using the Sample attribute. To
 search for data at a given cadence use the
@@ -70,19 +84,64 @@ like this which are client specific will result in
 `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` only searching that
 client for results, in this case VSO.::
 
-    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
-    ...                      a.Wavelength(171*u.angstrom), a.vso.Sample(10*u.minute))  # doctest: +REMOTE_DATA
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
+    ...             a.Wavelength(171*u.angstrom), a.vso.Sample(10*u.minute))  # doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    289 Results from the VSOClient:
+       Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
+                                                   ...             Angstrom
+           str19               str19         str3  ...   str8      float64
+    ------------------- ------------------- ------ ... -------- --------------
+    2012-03-05 04:30:00 2012-03-05 04:30:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 09:10:00 2012-03-04 09:10:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 22:50:00 2012-03-05 22:50:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 20:50:00 2012-03-05 20:50:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 01:00:00 2012-03-04 01:00:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 15:40:00 2012-03-04 15:40:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 12:40:00 2012-03-05 12:40:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 10:50:00 2012-03-05 10:50:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 01:50:00 2012-03-04 01:50:01    SDO ... FULLDISK 171.0 .. 171.0
+                    ...                 ...    ... ...      ...            ...
+    2012-03-04 07:40:00 2012-03-04 07:40:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 05:10:00 2012-03-05 05:10:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 08:00:00 2012-03-05 08:00:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 20:10:00 2012-03-04 20:10:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 07:30:00 2012-03-04 07:30:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 00:00:00 2012-03-05 00:00:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 13:50:00 2012-03-05 13:50:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 15:20:00 2012-03-05 15:20:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 08:10:00 2012-03-05 08:10:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 02:50:00 2012-03-04 02:50:01    SDO ... FULLDISK 171.0 .. 171.0
+    <BLANKLINE>
+    <BLANKLINE>
 
 To search for data from multiple instruments, wavelengths, times etc., use the
 pipe ``|`` operator. This joins queries together just as the logical ``OR``
 operator would::
 
-    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-    ...                      a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
-
-    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
-    ...                      a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))  # doctest: +REMOTE_DATA
-
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'),
+    ...             a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 2 Providers:
+    <BLANKLINE>
+    3 Results from the LYRAClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    <BLANKLINE>
+    2 Results from the RHESSIClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str6       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan
+    2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan
+    <BLANKLINE>
+    <BLANKLINE>
 
 Indexing search results
 -----------------------
@@ -105,30 +164,33 @@ If you then wanted to inspect just the LYRA data for the whole time range
 specified in the search, you would index this response to see just the
 results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
 
-    >>> results[0, :]  # doctest: +SKIP
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe61fdf1b00>
+    >>> results[0, :]  # doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
-
+    <BLANKLINE>
     2 Results from the LYRAClient:
-        Start Time           End Time      Source Instrument Wavelength
-          str19               str19         str6     str4       str3
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
     2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
-
+    <BLANKLINE>
+    <BLANKLINE>
 
 Or, equivalently::
 
-    >>> results[0]  # doctest: +SKIP
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe625811748>
+    >>> results[0]  # doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
-
+    <BLANKLINE>
     2 Results from the LYRAClient:
-        Start Time           End Time      Source Instrument Wavelength
-          str19               str19         str6     str4       str3
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
     2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+    <BLANKLINE>
+    <BLANKLINE>
 
 
 Normal slicing operations work as with any other Python sequence, e.g.

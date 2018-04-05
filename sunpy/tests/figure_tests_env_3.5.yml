@@ -105,3 +105,4 @@ dependencies:
     - pytest-doctestplus==0.1.2
     - pytest-openfiles==0.2.0
     - pytest-remotedata==0.2.0
+    - drms

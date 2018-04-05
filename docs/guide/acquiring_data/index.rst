@@ -12,6 +12,7 @@ kind of solar data from different places.
 
     sample-data
     fido
-    database
+    jsoc
     hek
     helioviewer
+    database

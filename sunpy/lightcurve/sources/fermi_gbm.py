@@ -45,7 +45,10 @@ class GBMSummaryLightCurve(LightCurve):
     Examples
     --------
     >>> from sunpy.lightcurve import GBMSummaryLightCurve
-    >>> gbm = GBMSummaryLightCurve.create('2011-06-07')   # doctest: +SKIP
+    >>> gbm = GBMSummaryLightCurve.create('2011-06-07')   # doctest: +REMOTE_DATA
+    No detector specified. Detector with smallest mean angle to Sun is n5
+    Using Detector n5
+    For Fermi detector pointing information, use tools in sunpy/instr/fermi
     >>> gbm.peek()   # doctest: +SKIP
 
     References
