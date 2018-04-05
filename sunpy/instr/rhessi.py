@@ -478,10 +478,11 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
 
     Examples
     --------
+    This example is broken.
     >>> import sunpy.data
-    >>> import sunpy.data.sample
+    >>> import sunpy.data.sample  # doctest: +SKIP
     >>> import sunpy.instr.rhessi as rhessi
-    >>> map = rhessi.backprojection(sunpy.data.sample.RHESSI_EVENT_LIST)   # doctest: +SKIP
+    >>> map = rhessi.backprojection(sunpy.data.sample.RHESSI_IMAGE)  # doctest: +SKIP
     >>> map.peek()   # doctest: +SKIP
     """
     pixel_size = pixel_size.to(u.arcsec)

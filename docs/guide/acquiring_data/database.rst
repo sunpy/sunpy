@@ -163,52 +163,52 @@ number of saved database entries. To get the first entry of the database,
 the database is empty, this expression raises an :exc:`IndexError`.
 In section 3, more advanced formats of the slicing syntax are introduced.
 
-    >>> import sunpy.data.sample
-    >>> database.add_from_file(sunpy.data.sample.AIA_171_IMAGE)
-    >>> len(database)
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> database.add_from_file(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> len(database)  # doctest: +REMOTE_DATA
     1
-    >>> entry = database[0]
-    >>> entry.path == sunpy.data.sample.AIA_171_IMAGE
+    >>> entry = database[0]  # doctest: +REMOTE_DATA
+    >>> entry.path == sunpy.data.sample.AIA_171_IMAGE  # doctest: +REMOTE_DATA
     True
-    >>> entry.wavemin, entry.wavemax
+    >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
     (17.1, 17.1)
-    >>> entry.instrument
+    >>> entry.instrument  # doctest: +REMOTE_DATA
     'AIA_3'
-    >>> entry.observation_time_start, entry.observation_time_end
+    >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
     (datetime.datetime(2011, 6, 7, 6, 33, 2, 770000), None)
-    >>> len(entry.fits_header_entries)
+    >>> len(entry.fits_header_entries)  # doctest: +REMOTE_DATA
     191
     >>> for fits_header_entry in entry.fits_header_entries[:10]:
-    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))
+    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))  # doctest: +REMOTE_DATA
     SIMPLE
-    	True
+        True
     BITPIX
-    	-32
+        -32
     NAXIS
-    	2
+        2
     NAXIS1
-    	1024
+        1024
     NAXIS2
-    	1024
+        1024
     BLD_VERS
-    	V5R12X
+        V5R12X
     LVL_NUM
-    	1.5
+        1.5
     T_REC
-    	2011-06-07T06:33:03Z
+        2011-06-07T06:33:03Z
     TRECSTEP
-    	1.0
+        1.0
     TRECEPOC
-    	1977.01.01_00:00:00_TAI
+        1977.01.01_00:00:00_TAI
 
     >>> for fits_key_comment in entry.fits_key_comments:
-    ...     print('{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment))
+    ...     print('{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment))  # doctest: +REMOTE_DATA
     SIMPLE
-    	conforms to FITS standard
+        conforms to FITS standard
     BITPIX
-    	array data type
+        array data type
     NAXIS
-    	number of array dimensions
+        number of array dimensions
 
 
 2.2 Adding entries from a directory of FITS files
@@ -222,12 +222,12 @@ In the following example case, setting this parameter is required because the
 file ``sunpy.data.sample.AIA_171_IMAGE`` was already added, which is located
 in the directory ``sampledata_dir``
 
-    >>> from sunpy import config
-    >>> sampledata_dir = config.get("downloads", "sample_dir")
-    >>> database.default_waveunit = 'angstrom'
+    >>> from sunpy import config  # doctest: +REMOTE_DATA
+    >>> sampledata_dir = config.get("downloads", "sample_dir")  # doctest: +REMOTE_DATA
+    >>> database.default_waveunit = 'angstrom'  # doctest: +REMOTE_DATA
     >>> database.add_from_dir(sampledata_dir, ignore_already_added=True,
-    ...                       time_string_parse_format="%d/%m/%Y")
-    >>> len(database)
+    ...                       time_string_parse_format="%d/%m/%Y")  # doctest: +REMOTE_DATA
+    >>> len(database)  # doctest: +REMOTE_DATA
     58
 
 2.3 Adding entries using the VSO interface

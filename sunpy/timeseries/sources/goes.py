@@ -36,8 +36,8 @@ class XRSTimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample
-    >>> goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
     >>> goes.peek()   # doctest: +SKIP
 
     References

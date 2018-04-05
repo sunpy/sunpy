@@ -258,18 +258,17 @@ If you want to obtain a un-realized coordinate frame corresponding to a
 `~sunpy.map.GenericMap` object you can do the following::
 
   >>> import sunpy.map
-  >>> from sunpy.data.sample import AIA_171_IMAGE
-
-  >>> amap = sunpy.map.Map(AIA_171_IMAGE)
-  >>> amap.observer_coordinate  # doctest: +FLOAT_CMP
+  >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
+  >>> amap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+  >>> amap.observer_coordinate  # doctest: +FLOAT_CMP +REMOTE_DATA
   <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
       ( 0.,  0.048591,   1.51846026e+11)>
 
 
 which is equivalent to::
 
-  >>> from astropy.wcs.utils import wcs_to_celestial_frame
-  >>> wcs_to_celestial_frame(amap.wcs)  # doctest: +FLOAT_CMP
+  >>> from astropy.wcs.utils import wcs_to_celestial_frame # doctest: +REMOTE_DATA
+  >>> wcs_to_celestial_frame(amap.wcs)  # doctest: +FLOAT_CMP +REMOTE_DATA
   <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
         ( 0.,  0.048591,   1.51846026e+11)>)>
 
