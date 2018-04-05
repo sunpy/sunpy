@@ -40,15 +40,19 @@ instructions on how to download data using Fido, see :ref:`downloading_data`.
 To see a summary of results of our query, simple type the name of the
 variable set to the Fido search, in this case, result::
 
-    >>> result # doctest: +ELLIPSIS +REMOTE_DATA
+    >>> result  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
+    <BLANKLINE>
+    3 Results from the LYRAClient:
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    <BLANKLINE>
+    <BLANKLINE>
 
 Queries can be made more flexible or specific by adding more attrs objects to
 the `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` search. Specific
