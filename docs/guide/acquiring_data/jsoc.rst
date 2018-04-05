@@ -194,7 +194,7 @@ comma and a space. Meaning to say,:
 
 both are correct.
 
-Passing an incorrect keyword won't through an error, but the corresponding column in the astropy table will
+Passing an incorrect keyword won't through an error, but the corresponding column in the table will
 contain ``Invalid KeyLink``.
 
 To get all of the keywords, you can either use the `~sunpy.net.jsoc.JSOCClient.search_metadata` method,
@@ -204,7 +204,7 @@ or alternatively pass ``a.jsoc.Keys('***ALL***')`` with the series name and Prim
 Using Segments
 ^^^^^^^^^^^^^^
 In some cases, more than 1 file are present for the same set of query. These data are distinguished by what are called
-``Segments``. It is necessary to specify the "Segment" which you need to download. Providing a segment won't have any affect
+Segments. It is necessary to specify the "Segment" which you need to download. Providing a segment won't have any affect
 on the response object returned, but this will be required later, while making an export request.
 
 A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained by::
@@ -271,7 +271,7 @@ To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`
 Using Sample
 ^^^^^^^^^^^^
 In case you need to query for data, at some interval of time, say every 10 min, you can pass it
-using `~sunpy.net.jsoc.attrs.Sample`. In other words, if you need to query for `hmi.v_45s` series data
+using `~sunpy.net.attrs.Sample`. In other words, if you need to query for `hmi.v_45s` series data
 between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
 
     >>> import astropy.units as u
@@ -294,7 +294,7 @@ between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
     <BLANKLINE>
     <BLANKLINE>
 
-Note that the argument passed in ``a.jsoc.Sample()`` must be an Astropy quantity, convertible
+Note that the argument passed in ``a.Sample()`` must be an Astropy quantity, convertible
 into seconds.
 
 Constructing complex queries
@@ -446,10 +446,11 @@ you can download them by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch
 Using JSOCClient for complex usage
 ----------------------------------
 
-Fido interface uses ``JSOCClient`` in its backend, which combines the last 2 stages the JSOC process into
-one. You can directly use the JSOC client to make queries, instead of the Fido client. This will allow you
-to separate the 3 stages of the JSOC process, and perform it individually, hence allowing a greater
-control over the whole process.
+Fido interface uses `~sunpy.net.jsoc.JSOCClient` in its backend, and combines
+the last 2 stages the JSOC process into one. You can directly use the JSOC
+client to make queries, instead of the Fido client. This will allow you to
+separate the 3 stages of the JSOC process, and perform it individually, hence
+allowing a greater control over the whole process.
 
 Setup
 ^^^^^
@@ -501,12 +502,6 @@ list elements accordingly. You can get the id and status of the request (if it i
     JSOC_20170713_1461
     >>> requests.status  # doctest: +SKIP
     0
-
-You can also check the status of a request made by::
-
-    >>> status = client.check_request(requests)  # doctest: +SKIP
-
-You can pass a list of `~drms.ExportRequest` objects, and a list of status' will be returned.
 
 
 Downloading data
