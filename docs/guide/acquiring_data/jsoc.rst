@@ -64,7 +64,7 @@ between January 1st from 00:00 to 01:00, 2014.
 We can add email address to the search query with the :mod:`jsoc.Notify` attribute.
 Please note you can search without this but right now, you can not add the email address after the search.
 
-    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s')
+    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'),
     ...                   a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
@@ -276,7 +276,7 @@ between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
 
     >>> import astropy.units as u
     >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
-    ...             a.jsoc.Series('hmi.v_45s'), a.jsoc.Sample(10*u.min))  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...             a.jsoc.Series('hmi.v_45s'), a.Sample(10*u.min))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
