@@ -18,9 +18,9 @@ type the following into your Python shell::
 
     >>> import sunpy
     >>> import sunpy.map
-    >>> import sunpy.data.sample
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
 
-    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
 
 The variable my_map is an `~sunpy.map.sources.AIAMap` object. To create one from a
 local FITS file try the following::
@@ -55,22 +55,22 @@ Inspecting maps
 A map contains a number of data-associated attributes. To get a quick look at
 your map simply type::
 
-    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    >>> my_map   # doctest: +NORMALIZE_WHITESPACE
+    >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> my_map  # doctest: +REMOTE_DATA
     SunPy Map
     ---------
-    Observatory:		 SDO
-    Instrument:		 AIA 3
-    Detector:		 AIA
-    Measurement:		 171.0 Angstrom
-    Wavelength:		 171.0 Angstrom
-    Observation Date:	 2011-06-07 06:33:02
-    Exposure Time:		 0.234256 s
-    Dimension:		 [1024. 1024.] pix
-    Coordinate System:	 helioprojective
-    Scale:			 [2.402792 2.402792] arcsec / pix
-    Reference Pixel:	 [512.5 512.5] pix
-    Reference Coord:	 [3.22309951 1.38578135] arcsec
+    Observatory:         SDO
+    Instrument:      AIA 3
+    Detector:        AIA
+    Measurement:         171.0 Angstrom
+    Wavelength:      171.0 Angstrom
+    Observation Date:    2011-06-07 06:33:02
+    Exposure Time:       0.234256 s
+    Dimension:       [1024. 1024.] pix
+    Coordinate System:   helioprojective
+    Scale:           [2.402792 2.402792] arcsec / pix
+    Reference Pixel:     [512.5 512.5] pix
+    Reference Coord:     [3.22309951 1.38578135] arcsec
     <BLANKLINE>
     array([[ -96.,    7.,   -2., ..., -128., -128., -128.],
            [ -97.,   -5.,    0., ...,  -99., -104., -128.],
@@ -115,9 +115,9 @@ The data in a SunPy Map object is accessible through the
 NumPy `~numpy.ndarray`, so for example, to get
 the 0th element in the array ::
 
-    >>> my_map.data[0, 0]
+    >>> my_map.data[0, 0]  # doctest: +REMOTE_DATA
     -96.0
-    >>> my_map.data[0][0]
+    >>> my_map.data[0][0]  # doctest: +REMOTE_DATA
     -96.0
 
 One important fact to remember is that the first
@@ -129,9 +129,9 @@ Data attributes like `~numpy.ndarray.dtype` and
 `~sunpy.map.GenericMap.dimensions` are accessible through
 the SunPyGenericMap object ::
 
-    >>> my_map.dimensions
+    >>> my_map.dimensions  # doctest: +REMOTE_DATA
     PixelPair(x=<Quantity 1024. pix>, y=<Quantity 1024. pix>)
-    >>> my_map.dtype
+    >>> my_map.dtype  # doctest: +REMOTE_DATA
     dtype('>f4')
 
 Here the dimensions attribute is similar to the `~numpy.ndarray.shape`
@@ -149,17 +149,17 @@ original data in the map intact make sure to copy it.
 Some basic statistical functions on the data array are also passed through to Map
 objects::
 
-    >>> my_map.min()
+    >>> my_map.min()  # doctest: +REMOTE_DATA
     -128.0
-    >>> my_map.max()
+    >>> my_map.max()  # doctest: +REMOTE_DATA
     192131.0
-    >>> my_map.mean()
+    >>> my_map.mean()  # doctest: +REMOTE_DATA
     427.0214
 
 but you can also access all the other `~numpy.ndarray` functions and attributes
 but accessing the data array directly. For example::
 
-    >>> my_map.data.std()
+    >>> my_map.data.std()  # doctest: +REMOTE_DATA
     826.40955
 
 Plotting
@@ -245,7 +245,7 @@ The Map object chooses the appropriate colormap for you when it is created as
 long as it recognizes the instrument. To see what colormaps are available::
 
     >>> import sunpy.cm
-    >>> sunpy.cm.cmlist.keys()   # doctest: +NORMALIZE_WHITESPACE
+    >>> sunpy.cm.cmlist.keys()   # doctest:
     dict_keys(['sdoaia94', 'sdoaia131', 'sdoaia171', 'sdoaia193', 'sdoaia211',
     'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700', 'sdoaia4500',
     'sohoeit171', 'sohoeit195', 'sohoeit284', 'sohoeit304', 'soholasco2',
@@ -506,12 +506,12 @@ if the 'composite' keyword is set to True, then a `~sunpy.map.CompositeMap` obje
 returned.  This is useful if the maps are of a different type (e.g. different
 instruments).  For example, to create a simple composite map::
 
-    >>> my_maps = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE, sunpy.data.sample.RHESSI_IMAGE, composite=True)
+    >>> my_maps = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE, sunpy.data.sample.RHESSI_IMAGE, composite=True)  # doctest: +REMOTE_DATA
 
 A `~sunpy.map.CompositeMap` is different from a regular SunPy `~sunpy.map.GenericMap` object and therefore
 different associated methods. To list which maps are part of your composite map use::
 
-    >>> my_maps.list_maps()
+    >>> my_maps.list_maps()  # doctest: +REMOTE_DATA
     [<class 'sunpy.map.sources.soho.EITMap'>, <class 'sunpy.map.sources.rhessi.RHESSIMap'>]
 
 The following code adds a new map (which must be instantiated first), sets
@@ -550,9 +550,9 @@ A `~sunpy.map.MapCube` is an ordered list of maps.  By default, the maps are ord
 their observation date, from earlier maps to later maps. A `~sunpy.map.MapCube` can be
 created by supplying multiple existing maps::
 
-    >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)
-    >>> mc = sunpy.map.Map([map1, map2], cube=True)
+    >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
+    >>> mc = sunpy.map.Map([map1, map2], cube=True)  # doctest: +REMOTE_DATA
 
 or by providing a directory full of image files::
 
@@ -566,7 +566,7 @@ list::
 Mapcubes can hold maps that have different shapes.  To test if all the
 maps in a `~sunpy.map.MapCube` have the same shape::
 
-    >>> mc.all_maps_same_shape()
+    >>> mc.all_maps_same_shape()  # doctest: +REMOTE_DATA
     True
 
 It is often useful to return the image data in a `~sunpy.map.MapCube` as a single
@@ -608,7 +608,7 @@ To coalign a `~sunpy.map.MapCube`, simply import
 the function and apply it to your `~sunpy.map.MapCube`::
 
     >>> from sunpy.image.coalignment import mapcube_coalign_by_match_template
-    >>> coaligned = mapcube_coalign_by_match_template(mc)
+    >>> coaligned = mapcube_coalign_by_match_template(mc)  # doctest: +REMOTE_DATA
 
 This will return a new `~sunpy.map.MapCube`, coaligned to a template extracted from the
 center of the first map in the `~sunpy.map.MapCube`, with the map dimensions clipped as
@@ -623,7 +623,7 @@ If you just want to calculate the shifts required to compensate for solar
 rotation relative to the first map in the `~sunpy.map.MapCube` without applying them, use::
 
     >>> from sunpy.image.coalignment import calculate_match_template_shift
-    >>> shifts = calculate_match_template_shift(mc)
+    >>> shifts = calculate_match_template_shift(mc)  # doctest: +REMOTE_DATA
 
 This is the function used to calculate the shifts in `~sunpy.map.MapCube` coalignment
 function above.  Please see `~sunpy.image.coalignment.calculate_match_template_shift` to learn more about its features.
@@ -658,7 +658,7 @@ To apply this form of solar derotation to a `~sunpy.map.MapCube`, simply import 
 function and apply it to your `~sunpy.map.MapCube`::
 
     >>> from sunpy.physics.transforms.solar_rotation import mapcube_solar_derotate
-    >>> derotated = mapcube_solar_derotate(mc)
+    >>> derotated = mapcube_solar_derotate(mc)  # doctest: +REMOTE_DATA
 
 For more info see `~sunpy.physics.transforms.solar_rotation.mapcube_solar_derotate`.
 
@@ -666,7 +666,7 @@ If you just want to calculate the shifts required to compensate for solar
 rotation relative to the first map in the `~sunpy.map.MapCube` without applying them, use::
 
     >>> from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift
-    >>> shifts = calculate_solar_rotate_shift(mc)
+    >>> shifts = calculate_solar_rotate_shift(mc)  # doctest: +REMOTE_DATA
 
 Please consult the docstring of the `~sunpy.image.coalignment.mapcube_coalign_by_match_template` function in order to learn about
 the features of this function.

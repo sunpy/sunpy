@@ -44,8 +44,8 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample
-    >>> gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')   # doctest: +SKIP
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')  # doctest: +REMOTE_DATA
     >>> gbm.peek()   # doctest: +SKIP
 
     References

@@ -113,14 +113,14 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     Examples
     --------
 
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> from sunpy.physics.solar_rotation import mapcube_solar_derotate
-    >>> import sunpy.data.sample
-    >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)
-    >>> mc = sunpy.map.Map([map1, map2], cube=True)
-    >>> derotated_mc = mapcube_solar_derotate(mc)
-    >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)
-    >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)
+    >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
+    >>> mc = sunpy.map.Map([map1, map2], cube=True)  # doctest: +REMOTE_DATA
+    >>> derotated_mc = mapcube_solar_derotate(mc)  # doctest: +REMOTE_DATA
+    >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)  # doctest: +REMOTE_DATA
+    >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)  # doctest: +REMOTE_DATA
     """
 
     # Size of the data

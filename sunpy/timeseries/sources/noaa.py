@@ -37,8 +37,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample
-    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')  # doctest: +REMOTE_DATA
     >>> noaa.peek()   # doctest: +SKIP
 
     References
@@ -184,8 +184,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample
-    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')  # doctest: +REMOTE_DATA
     >>> noaa.peek()   # doctest: +SKIP
 
     References

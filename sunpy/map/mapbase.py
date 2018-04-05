@@ -99,9 +99,9 @@ class GenericMap(NDData):
     Examples
     --------
     >>> import sunpy.map
-    >>> import sunpy.data.sample
-    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    >>> aia   # doctest: +NORMALIZE_WHITESPACE +FLOAT_CMP
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> aia   # doctest:  +FLOAT_CMP +REMOTE_DATA
     SunPy Map
     ---------
     Observatory:                SDO
@@ -126,9 +126,9 @@ class GenericMap(NDData):
            [-128., -128., -128., ..., -128., -128., -128.]], dtype=float32)
 
 
-    >>> aia.spatial_units
+    >>> aia.spatial_units  # doctest: +REMOTE_DATA
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
-    >>> aia.peek()   # doctest: +SKIP
+    >>> aia.peek()  # doctest: +REMOTE_DATA
 
     Notes
     -----
@@ -1202,11 +1202,11 @@ Reference Coord:\t {refcoord}
         --------
         >>> import astropy.units as u
         >>> import sunpy.map
-        >>> import sunpy.data.sample
-        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-        >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)
-        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)
-        >>> aia.submap(bl, tr)   # doctest: +NORMALIZE_WHITESPACE +FLOAT_CMP
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
+        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
+        >>> aia.submap(bl, tr)   # doctest:  +FLOAT_CMP +REMOTE_DATA
         SunPy Map
         ---------
         Observatory:                SDO
@@ -1230,7 +1230,7 @@ Reference Coord:\t {refcoord}
                [  207.,   213.,   233., ...,   651.,   622.,   537.],
                [  230.,   236.,   222., ...,   516.,   586.,   591.]], dtype=float32)
 
-        >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +NORMALIZE_WHITESPACE +FLOAT_CMP
+        >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +FLOAT_CMP +REMOTE_DATA
         SunPy Map
         ---------
         Observatory:                SDO
