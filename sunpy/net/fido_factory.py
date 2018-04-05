@@ -351,7 +351,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
-        >>> downresp = Fido.fetch(unifresp)  # doctest: +SKIP
+        >>> downresp = Fido.fetch(unifresp)  # doctest: +REMOTE_DATA
         >>> file_paths = downresp.wait()  # doctest: +SKIP
         """
         wait = kwargs.pop("wait", True)

@@ -192,7 +192,7 @@ the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.data` attribute.  The
 data is implemented as a Pandas `~pandas.DataFrame`, so to get a look at what
 data you have available use: ::
 
-    >>> my_timeseries.data  # doctest: +SKIP
+    >>> my_timeseries.data
 
 You can also get a quick overview of that data using: ::
 

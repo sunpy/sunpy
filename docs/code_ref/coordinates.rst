@@ -144,9 +144,9 @@ It is also possible to transform to any coordinate system implemented in Astropy
     >>> greenbelt_frame = AltAz(obstime=time, location=greenbelt)
 
     >>> west_limb = SkyCoord(900*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime=time)
-    >>> west_limb.transform_to(greenbelt_frame)  # doctest: +FLOAT_CMP +REMOTE_DATA +SKIP
+    >>> west_limb.transform_to(greenbelt_frame)  # doctest: +REMOTE_DATA
     <SkyCoord (AltAz: obstime=2017-07-11 15:00:00.000, location=(1126916.53031967, -4833386.58391627, 3992696.622115747) m, pressure=0.0 hPa, temperature=0.0 deg_C, relative_humidity=0, obswl=1.0 micron): (az, alt, distance) in (deg, deg, m)
-        ( 111.40839095,  57.1664571,   1.51860261e+11)>
+        (111.40839101, 57.16645715, 1.51860261e+11)>
 
 
 Observer Location Information
@@ -260,17 +260,16 @@ If you want to obtain a un-realized coordinate frame corresponding to a
   >>> import sunpy.map
   >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
   >>> amap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-  >>> amap.observer_coordinate  # doctest: +FLOAT_CMP +REMOTE_DATA
-  <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
-      ( 0.,  0.048591,   1.51846026e+11)>
-
+  >>> amap.observer_coordinate  # doctest: +REMOTE_DATA
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+        (0., 0.048591, 1.51846026e+11)>
 
 which is equivalent to::
 
   >>> from astropy.wcs.utils import wcs_to_celestial_frame # doctest: +REMOTE_DATA
-  >>> wcs_to_celestial_frame(amap.wcs)  # doctest: +FLOAT_CMP +REMOTE_DATA
-  <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
-        ( 0.,  0.048591,   1.51846026e+11)>)>
+  >>> wcs_to_celestial_frame(amap.wcs)  # doctest: +REMOTE_DATA
+    <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+        (0., 0.048591, 1.51846026e+11)>)>
 
 
 .. automodapi:: sunpy.coordinates
