@@ -130,7 +130,6 @@ coordinates is::
    <SkyCoord (Helioprojective: obstime=2017-07-26 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, AU)
        (0., 5.31701821, 1.01567428)>): (Tx, Ty) in arcsec
        (0., 0.)>
-
    >>> c.transform_to(frames.HeliographicCarrington)
    <SkyCoord (HeliographicCarrington: obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, km)
       (283.99298362, 5.31701821, 695508.00000058)>
@@ -138,13 +137,11 @@ coordinates is::
 It is also possible to transform to any coordinate system implemented in Astropy. This can be used to find the position of the solar limb in AltAz equatorial coordinates::
 
     >>> from astropy.coordinates import EarthLocation, AltAz
-
     >>> time = '2017-07-11 15:00'
     >>> greenbelt = EarthLocation(lat=39.0044*u.deg, lon=-76.8758*u.deg)
     >>> greenbelt_frame = AltAz(obstime=time, location=greenbelt)
-
     >>> west_limb = SkyCoord(900*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime=time)
-    >>> west_limb.transform_to(greenbelt_frame)  # doctest: +REMOTE_DATA
+    >>> west_limb.transform_to(greenbelt_frame)
     <SkyCoord (AltAz: obstime=2017-07-11 15:00:00.000, location=(1126916.53031967, -4833386.58391627, 3992696.622115747) m, pressure=0.0 hPa, temperature=0.0 deg_C, relative_humidity=0, obswl=1.0 micron): (az, alt, distance) in (deg, deg, m)
         (111.40839101, 57.16645715, 1.51860261e+11)>
 
