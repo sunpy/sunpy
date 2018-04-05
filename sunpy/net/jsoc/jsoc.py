@@ -110,7 +110,7 @@ class JSOCClient(object):
     with JSOC beforehand `here <http://jsoc.stanford.edu/ajax/register_email.html>`_.
 
     The backend of SunPy's JSOC Client uses `drms package <https://github.com/sunpy/drms>`_.
-    The tutorials can be found `here <http://docs.sunpy.org/projects/en/stable/tutorial.html>`_.
+    The tutorials can be `found here <http://docs.sunpy.org/projects/en/stable/tutorial.html>`_.
     This can be used to build complex queries, by directly inputting the query string.
 
     Examples
