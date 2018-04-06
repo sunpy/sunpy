@@ -71,7 +71,7 @@ class CompositeMap(object):
     ...                          sunpy.data.sample.EIT_195_IMAGE,
     ...                          composite=True)  # doctest: +REMOTE_DATA
     >>> comp_map.add_map(sunpy.map.Map(sunpy.data.sample.RHESSI_IMAGE))  # doctest: +REMOTE_DATA
-    >>> comp_map.peek()  # doctest: +REMOTE_DATA
+    >>> comp_map.peek()  # doctest: +SKIP
 
     """
     def __init__(self, *args, **kwargs):

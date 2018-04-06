@@ -214,11 +214,12 @@ available columns: ::
 You can access the 0th element in the column `xrsa` with: ::
 
     >>> my_timeseries.data['xrsa'][0]
-    9.9999997e-10
+    1e-09
 
 You can also grab all of the data at a particular time: ::
 
-    >>> my_timeseries.data['xrsa']['2012-06-01 00:00']
+    >>> my_timeseries.data['xrsa']['2011-06-07 00:00:02.008999']
+    1e-09
 
 This will return a list of entries with times that match the accuracy of the time
 you provide. You can consider the data as x or y values: ::
@@ -295,8 +296,9 @@ method which will either add a new column or update a current column if the
 colname is already present. This can take numpy array or preferably an Astropy
 `~astropy.units.quantity.Quantity` value.  For example: ::
 
-    >>> values = u.Quantity(my_timeseries.data['xrsa'].values, my_timeseries.units['xrsa']) * 1000
-    >>> my_timeseries.add_column('new col', values)
+    >>> values = u.Quantity(my_timeseries.data['xrsa'].values[:-2], my_timeseries.units['xrsa']) * 20.5
+    >>> my_timeseries.add_column('new col', values)  # doctest: +ELLIPSIS
+    <sunpy.timeseries.sources.goes.XRSTimeSeries object at ...>
 
 Note that the values will be converted into the column units if an Astropy
 `~astropy.units.quantity.Quantity` is given. Caution should be taken when adding
@@ -394,7 +396,7 @@ If you want to take the data from your TimeSeries and use it as a `~astropy.tabl
 this can be done using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.to_table`
 method.  For example: ::
 
-    >>> table = my_timeseries.to_table()
+    >>> table = my_timeseries_trunc.to_table()
 
 Note that this `~astropy.table.table.Table` will contain a mixin column for
 containing the Astropy `~astropy.time.core.Time` object representing the index,
@@ -404,6 +406,31 @@ objects have some very nice options for viewing the data, including the basic
 console view: ::
 
     >>> table
+    <Table length=21089>
+                 date               xrsa     xrsb
+                                   W / m2   W / m2
+            datetime64[ns]        float32  float32
+    ----------------------------- ------- ----------
+    2011-06-06T23:59:59.961999000     0.1 1.8871e-07
+    2011-06-07T00:00:04.058999000   1e-09 1.8609e-07
+    2011-06-07T00:00:08.151999000   1e-09 1.8609e-07
+    2011-06-07T00:00:12.248999000   1e-09 1.8609e-07
+    2011-06-07T00:00:16.344999000   1e-09 1.8084e-07
+    2011-06-07T00:00:20.441999000   1e-09 1.8084e-07
+    2011-06-07T00:00:24.534999000   1e-09 1.8084e-07
+    2011-06-07T00:00:28.631999000   1e-09 1.8346e-07
+    2011-06-07T00:00:32.728999000   1e-09 1.8346e-07
+                              ...     ...        ...
+    2011-06-07T23:59:20.768999000   1e-09  1.651e-07
+    2011-06-07T23:59:24.864999000   1e-09 1.5985e-07
+    2011-06-07T23:59:28.961999000   1e-09 1.5985e-07
+    2011-06-07T23:59:33.058999000   1e-09 1.6248e-07
+    2011-06-07T23:59:37.151999000   1e-09 1.6248e-07
+    2011-06-07T23:59:41.248999000   1e-09 1.5985e-07
+    2011-06-07T23:59:45.344999000   1e-09 1.5723e-07
+    2011-06-07T23:59:49.441999000   1e-09 1.6248e-07
+    2011-06-07T23:59:53.538999000   1e-09 1.5985e-07
+    2011-06-07T23:59:57.631999000   1e-09 1.5985e-07
 
 and the more sophisticated browser view using the `~astropy.table.table.Table.show_in_browser`
 method: ::
@@ -431,6 +458,22 @@ You can easily get an overview of the metadata, this will show you a basic
 representation of the metadata entries that are relevant to this TimeSeries. ::
 
     >>> meta
+    |-------------------------------------------------------------------------------------------------|
+    |TimeRange                  | Columns         | Meta                                              |
+    |-------------------------------------------------------------------------------------------------|
+    |2011-06-06 23:59:59.961999 | xrsa            | simple: True                                      |
+    |            to             | xrsb            | bitpix: 8                                         |
+    |2011-06-07 23:59:57.631999 |                 | naxis: 0                                          |
+    |                           |                 | extend: True                                      |
+    |                           |                 | date: 26/06/2012                                  |
+    |                           |                 | numext: 3                                         |
+    |                           |                 | telescop: GOES 15                                 |
+    |                           |                 | instrume: X-ray Detector                          |
+    |                           |                 | object: Sun                                       |
+    |                           |                 | origin: SDAC/GSFC                                 |
+    |                           |                 | ...                                               |
+    |-------------------------------------------------------------------------------------------------|
+    <BLANKLINE>
 
 The data within a `~sunpy.timeseries.metadata.TimeSeriesMetaData` object is
 stored as a list of tuples, each tuple representing the metadata from a source
@@ -483,10 +526,11 @@ just the relevant `~sunpy.util.metadata.MetaDict` objects.  For example: ::
 
     >>> tsmd_return = my_timeseries.meta.find(colname='xrsa', time='2012-06-01 00:00:33.904999')
     >>> tsmd_return.metas
+    []
 
 Note, the colname and time filters are optional, but omitting both filters just
 returns an identical `~sunpy.timeseries.metadata.TimeSeriesMetaData` object to
-the TimeSeries original.  A common use case for the metadata is to find out the
+the TimeSeries original. A common use case for the metadata is to find out the
 instrument/s that gathered the data and in this case you can use the
 `~sunpy.timeseries.metadata.TimeSeriesMetaData.get` method.  This method takes a
 single key string or list of key strings with the optional filters and will
@@ -497,6 +541,7 @@ method: ::
 
     >>> tsmd_return = my_timeseries.meta.get('telescop', colname='xrsa')
     >>> tsmd_return.values()
+    ['GOES 15']
 
 Note `~sunpy.timeseries.metadata.TimeSeriesMetaData.values` removes duplicate
 strings and sorts the returned list.  You can update the values for these
@@ -504,7 +549,7 @@ entries efficiently using the `~sunpy.timeseries.metadata.TimeSeriesMetaData.upd
 method which takes a dictionary argument and updates the values to each of the
 dictionaries that match the given colname and time filters, for example: ::
 
-    >>> my_timeseries.meta.upate({'telescop': 'G15'}, colname='xrsa', overwrite=True)
+    >>> my_timeseries.meta.update({'telescop': 'G15'}, colname='xrsa', overwrite=True)
 
 Here we have to specify the overwrite=False keyword parameter to allow us to
 overwrite values for keys already present in the `~sunpy.util.metadata.MetaDict`
