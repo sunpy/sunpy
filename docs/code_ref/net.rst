@@ -37,6 +37,15 @@ VSO
 .. automodapi:: sunpy.net.vso.attrs
    :headings: #~
 
+JSOC
+----
+
+.. automodapi:: sunpy.net.jsoc
+    :headings: ^#
+
+.. automodapi:: sunpy.net.jsoc.attrs
+    :headings: #~
+
 
 HEK
 ---
@@ -55,14 +64,4 @@ HELIO
     :headings: ^#
 
 .. automodapi:: sunpy.net.helio.hec
-    :headings: #~
-
-
-JSOC
-----
-
-.. automodapi:: sunpy.net.jsoc
-    :headings: ^#
-
-.. automodapi:: sunpy.net.jsoc.attrs
     :headings: #~
