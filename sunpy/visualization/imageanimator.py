@@ -719,7 +719,7 @@ class ImageAnimator(ArrayAnimator):
         # Define marker to determine if plot axes values are supplied via array of
         # pixel values or min max pair. This will determine the type of image produced
         # and hence how to plot and update it.
-        self.non_regular_plot_axis = False
+        self._non_regular_plot_axis = False
         # Run init for parent class
         super(ImageAnimator, self).__init__(data, image_axes=image_axes,
                                             axis_ranges=axis_ranges, **kwargs)
@@ -730,8 +730,8 @@ class ImageAnimator(ArrayAnimator):
         extent = []
         # reverse because numpy is in y-x and extent is x-y
         for i in self.image_axes[::-1]:
-            if self.non_regular_plot_axis is False and len(self.axis_ranges[i]) > 2:
-                self.non_regular_plot_axis = True
+            if self._non_regular_plot_axis is False and len(self.axis_ranges[i]) > 2:
+                self._non_regular_plot_axis = True
             extent.append(self.axis_ranges[i][0])
             extent.append(self.axis_ranges[i][-1])
 
@@ -741,7 +741,7 @@ class ImageAnimator(ArrayAnimator):
         imshow_args.update(self.imshow_kwargs)
 
         # If value along an axis is set with an array, generate a NonUniformImage
-        if self.non_regular_plot_axis:
+        if self._non_regular_plot_axis:
             # If user has inverted the axes, transpose the data so the dimensions match.
             if self.image_axes[0] < self.image_axes[1]:
                 data = self.data[self.frame_index].transpose()
@@ -756,18 +756,12 @@ class ImageAnimator(ArrayAnimator):
             # Define the xlim and ylim bearing in mind that the pixel values along
             # the axes are plotted in the middle of the pixel.  Therefore make sure
             # there's half a pixel buffer either side of the ends of the axis ranges.
-            xlim = (self.axis_ranges[self.image_axes[0]][0] - \
-                    (self.axis_ranges[self.image_axes[0]][1] - \
-                     self.axis_ranges[self.image_axes[0]][0]) / 2.,
-                    self.axis_ranges[self.image_axes[0]][-1] + \
-                    (self.axis_ranges[self.image_axes[0]][-1] - \
-                     self.axis_ranges[self.image_axes[0]][-2]) / 2.)
-            ylim = (self.axis_ranges[self.image_axes[1]][0] - \
-                    (self.axis_ranges[self.image_axes[1]][1] - \
-                     self.axis_ranges[self.image_axes[1]][0]) / 2.,
-                    self.axis_ranges[self.image_axes[1]][-1] + \
-                    (self.axis_ranges[self.image_axes[1]][-1] - \
-                     self.axis_ranges[self.image_axes[1]][-2]) / 2.)
+            x_ranges = self.axis_ranges[self.image_axes[0]]
+            xlim = (x_ranges[0] - (x_ranges[1] - x_ranges[0]) / 2.,
+                    x_ranges[-1] + (x_ranges[-1] - x_ranges[-2]) / 2.)
+            y_ranges = self.axis_ranges[self.image_axes[1]]
+            ylim = (y_ranges[0] - (y_ranges[1] - y_ranges[0]) / 2.,
+                    y_ranges[-1] + (y_ranges[-1] - y_ranges[-2]) / 2.)
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
         else:
@@ -785,7 +779,7 @@ class ImageAnimator(ArrayAnimator):
         ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
         self.frame_slice[ax_ind] = ind
         if val != slider.cval:
-            if self.non_regular_plot_axis:
+            if self._non_regular_plot_axis:
                 if self.image_axes[0] < self.image_axes[1]:
                     data = self.data[self.frame_index].transpose()
                 else:
