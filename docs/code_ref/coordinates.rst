@@ -72,7 +72,7 @@ Accessing Coordinates
 
 Individual coordinates can be accessed via attributes on the SkyCoord object,
 but the names of the components of the coordinates for each frame differ. For a full
-description of all the properties of the frames see `~sunpy.coordinates.frames`.
+description of all the properties of the frames see `sunpy.coordinates.frames`.
 
 `~sunpy.coordinates.Helioprojective`
 ####################################
