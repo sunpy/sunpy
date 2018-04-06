@@ -47,7 +47,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
 
         HeliographicStonyhurst(lon, lat, obstime)
         HeliographicStonyhurst(lon, lat, radius, obstime)
-        HeliographicStonyhurst(x, y, z, obstime)
+        HeliographicStonyhurst(x, y, z, obstime, representation='cartesian')
 
     Parameters
     ----------
