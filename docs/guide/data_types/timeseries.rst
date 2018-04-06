@@ -71,7 +71,7 @@ factory to work as intended.
 You can create a single time series from multiple files for a given source using
 the keyword argument ``concatenate=True``, such as:
 
-    >>> my_timeseries = ts.TimeSeries('/mydirectory/myts1.fits', '/mydirectory/myts2.fits', source='XRS', concatenate=True)   # doctest: +SKIP
+    >>> my_timeseries = ts.TimeSeries('/mydirectory/myts1.fits', '/mydirectory/myts2.fits', source='XRS', concatenate=True)  # doctest: +SKIP
 
 Note these must all be from the same source if using
 `~sunpy.timeseries.TimeSeriesBase.concatenate` from within the TimeSeries
@@ -170,7 +170,6 @@ update method, with the explicit user-given values taking precedence.
     >>> units = OrderedDict([('intensity', u.W/u.m**2)])
     >>> ts_table = ts.TimeSeries(table, meta, units)
 
-.. doctest-skip-all
 
 3. Inspecting TimeSeries & Getting at the Data
 -----------------------------------------------
