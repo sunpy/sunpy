@@ -141,8 +141,8 @@ It is also possible to transform to any coordinate system implemented in Astropy
     >>> greenbelt = EarthLocation(lat=39.0044*u.deg, lon=-76.8758*u.deg)
     >>> greenbelt_frame = AltAz(obstime=time, location=greenbelt)
     >>> west_limb = SkyCoord(900*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime=time)
-    >>> west_limb.transform_to(greenbelt_frame)  # doctest: +REMOTE_DATA
-    Downloading http://maia.usno.navy.mil/ser7/finals2000A.all [Done]
+    >>> west_limb.transform_to(greenbelt_frame)  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...
     <SkyCoord (AltAz: obstime=2017-07-11 15:00:00.000, location=(1126916.53031967, -4833386.58391627, 3992696.622115747) m, pressure=0.0 hPa, temperature=0.0 deg_C, relative_humidity=0, obswl=1.0 micron): (az, alt, distance) in (deg, deg, m)
         (111.40839101, 57.16645715, 1.51860261e+11)>
 
@@ -177,6 +177,7 @@ position on the solar sphere. The conversion can be performed as follows::
   >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, observer="earth", obstime="2017-07-26", frame=frames.Helioprojective)
 
   Define a new Helioprojective frame with a different observer.
+  >>> import sunpy.coordinates
   >>> hpc_out = sunpy.coordinates.Helioprojective(observer="venus", obstime="2017-07-26")
 
   Perform the transformation from one to the other.
@@ -185,7 +186,6 @@ position on the solar sphere. The conversion can be performed as follows::
 An example with two maps, named ``aia`` and ``stereo``::
 
   >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia.coordinate_frame)  # doctest: +SKIP
-
   >>> hpc2 = hpc1.transform_to(stereo.coordinate_frame)  # doctest: +SKIP
 
 
