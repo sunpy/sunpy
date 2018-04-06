@@ -2125,6 +2125,7 @@ class ImageAnimatorWCS(ImageAnimator):
         else:
             ax.coords[1].set_axislabel_position('l')
 
+
     def update_plot(self, val, im, slider):
         """Updates plot based on slider/array dimension being iterated."""
         val = int(val)
