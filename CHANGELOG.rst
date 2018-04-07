@@ -1,5 +1,5 @@
-0.9.0
-=====
+0.9.0 (Unreleased)
+==================
 
 New Features
 ------------
@@ -17,8 +17,9 @@ New Features
 API Changes
 -----------
 
-- `sunpy.coordinates.representation` has been removed. Longitude wrapping is now done in the constructor of the frames. [#2431]
-- Propagation of ``obstime`` in the coordinate frame transformation has changed, this means in general when transforming directly between frames (not `~astropy.coordinates.SkyCoord`) you will have to specify ``obstime`` in more places. [#2461]
+- ``sunpy.coordinates.representation`` has been removed. Longitude wrapping is now done in the constructor of the frames. [#2431]
+- Propagation of ``obstime`` in the coordinate frame transformation has changed, this means in general when transforming directly between frames (not
+  ``SkyCoord``) you will have to specify ``obstime`` in more places. [#2461]
 - Transforming between Heliographic Stonyhurst and Carrington now requires that ``obstime`` be defined and the same on both the input and output frames. [#2461]
 - Removed the figure return from .peek() [#2487]
 
