@@ -50,6 +50,7 @@ Bug Fixes
 - The documentation build now uses the Sphinx configuration from sphinx-astropy rather than from astropy-helpers.[#2494]
 - Migrate to hypothesis.strategies.datetimes [#2368]
 - Prevent a deprecation warning due to truth values of Quantity [#2358]
+- parse_time now parses numpy.datetime64 correctly. [#2572]
 
 0.8.5
 =====

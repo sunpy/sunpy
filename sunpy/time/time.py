@@ -129,8 +129,8 @@ def _parse_dt64(dt):
     """
     Parse a single numpy datetime64 object
     """
-    # Validate (in an agnostic way) that we are getting a datetime rather than a date
-    return datetime(*(dt.astype(datetime).timetuple()[:6]))
+    # Convert to microsecond precision because datetime cannot handle nanoseconds
+    return dt.astype('M8[us]').astype(datetime)
 
 
 def parse_time(time_string, time_format='', **kwargs):
