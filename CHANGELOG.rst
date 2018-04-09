@@ -51,6 +51,7 @@ Bug Fixes
 - Migrate to hypothesis.strategies.datetimes [#2368]
 - Prevent a deprecation warning due to truth values of Quantity [#2358]
 - Print a warning when heliographic longitude is set to it's default value of 0 [#2480]
+- parse_time now parses numpy.datetime64 correctly. [#2572]
 
 0.8.5
 =====

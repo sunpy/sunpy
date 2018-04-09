@@ -21,7 +21,7 @@ locations, in the following order:
 To display where the currently active :file:`sunpyrc` file was loaded from,
 one can do the following::
 
-  >>> import sunpy
+  >>> import sunpy # doctest: +SKIP
   >>> sunpy.print_config()   # doctest: +SKIP
 
 To maintain your own customizations place a copy of the default sunpyrc file
