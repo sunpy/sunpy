@@ -10,6 +10,7 @@ This module provides the `Fido
 """
 # This module was initially developed under funding provided by Google Summer
 # of Code 2014
+from __future__ import print_function, absolute_import
 from collections import Sequence
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
@@ -20,8 +21,8 @@ from sunpy.net.dataretriever.clients import CLIENTS
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.vso import VSOClient, QueryResponse as vsoQueryResponse
 
-from . import attr
-from . import attrs as a
+from sunpy.net import attr
+from sunpy.net import attrs as a
 
 __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory', 'DownloadResponse']
 
@@ -71,7 +72,6 @@ class UnifiedResponse(Sequence):
                 else:
                     raise ValueError(
                         "{} is not a valid input to UnifiedResponse.".format(type(lst)))
-
         self._list = tmplst
 
     def __len__(self):
@@ -249,8 +249,8 @@ query_walker = attr.AttrWalker()
 
 @query_walker.add_creator(attr.AttrAnd)
 def _create_and(walker, query, factory):
-    att = {type(x) for x in query.attrs}
-    if a.Time not in att:
+    is_time = any([isinstance(x, a.Time) for x in query.attrs])
+    if not is_time:
         error = "The following part of the query did not have a time specified:\n"
         for at in query.attrs:
             error += str(at) + ', '
@@ -286,7 +286,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         >>> from sunpy.net import Fido, attrs as a
         >>> import astropy.units as u
-        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
 
         Query for data from Nobeyama Radioheliograph and RHESSI
 

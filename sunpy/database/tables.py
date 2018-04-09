@@ -564,20 +564,20 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     >>> from sunpy.net import Fido, attrs
     >>> from sunpy.database.tables import entries_from_fido_search_result
     >>> sr = Fido.search(attrs.Time("2012/1/1", "2012/1/2"),
-    ...     attrs.Instrument('lyra'))
-    >>> entries = entries_from_fido_search_result(sr)
-    >>> entry = next(entries)
-    >>> entry.source
+    ...     attrs.Instrument('lyra')) # doctest: +REMOTE_DATA
+    >>> entries = entries_from_fido_search_result(sr) # doctest: +REMOTE_DATA
+    >>> entry = next(entries) # doctest: +REMOTE_DATA
+    >>> entry.source # doctest: +REMOTE_DATA
     'Proba2'
-    >>> entry.provider
+    >>> entry.provider # doctest: +REMOTE_DATA
     'esa'
-    >>> entry.physobs
+    >>> entry.physobs # doctest: +REMOTE_DATA
     'irradiance'
-    >>> entry.fileid
+    >>> entry.fileid # doctest: +REMOTE_DATA
     'http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits'
-    >>> entry.observation_time_start, entry.observation_time_end
+    >>> entry.observation_time_start, entry.observation_time_end # doctest: +REMOTE_DATA
     (datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0))
-    >>> entry.instrument
+    >>> entry.instrument # doctest: +REMOTE_DATA
     'lyra'
 
     """

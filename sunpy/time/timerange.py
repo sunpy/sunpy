@@ -298,7 +298,7 @@ class TimeRange(object):
         >>> import astropy.units as u
         >>> from sunpy.time import TimeRange
         >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 01:20')
-        >>> time_range.window(60*60*u.s, window=12*u.s)   # doctest: +NORMALIZE_WHITESPACE +SKIP
+        >>> time_range.window(60*60*u.s, window=12*u.s)   # doctest:  +SKIP
         [   <sunpy.time.timerange.TimeRange object at 0x7f0214bfc208>
             Start: 2010-03-04 00:10:00
             End:   2010-03-04 00:10:12

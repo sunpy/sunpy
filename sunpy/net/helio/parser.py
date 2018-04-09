@@ -90,7 +90,7 @@ def endpoint_parser(link):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA +NORMALIZE_WHITESPACE
+    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
     ['http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService?wsdl',
     'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0?wsdl',
     'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0b?wsdl',
