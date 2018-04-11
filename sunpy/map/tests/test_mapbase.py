@@ -675,3 +675,12 @@ def test_more_than_two_dimensions():
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim is 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
+
+
+def test_missing_metadata_warnings():
+    # Checks that warnings for missing metadata are only raised once
+    with pytest.warns(Warning) as record:
+        array_map = sunpy.map.Map(np.random.rand(20, 15), {})
+        array_map.peek()
+    # There should be 4 warnings for missing metadata
+    assert len([w for w in record if 'Missing metadata' in str(w)]) == 4
