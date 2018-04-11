@@ -24,10 +24,10 @@ from sunpy.data.sample import RHESSI_TIMESERIES
 ts = sunpy.timeseries.TimeSeries(RHESSI_TIMESERIES)
 
 ###############################################################################
-# We now use SciPy's periodogram(~scipy.signal.periodogram) to estimate the power 
-# spectra of the first column of the Timeseries. The first column contains X-Ray 
-# emmisions in the range of 3-6 keV. An alterantive version is Astropy's 
-# Lomb-Scargle Periodograms(~astropy.stats.LombScargle).
+# We now use SciPy's periodogram(`~scipy.signal.periodogram`) to estimate the 
+# power spectra of the first column of the Timeseries. The first column contains
+# X-Ray emmisions in the range of 3-6 keV. An alterantive version is Astropy's 
+# Lomb-Scargle Periodograms(`~astropy.stats.LombScargle`).
 
 x_ray = ts.columns[0]
 # The suitable value for fs would be 0.25 Hz as the time step is 4 s.
