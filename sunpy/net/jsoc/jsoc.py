@@ -840,7 +840,7 @@ class JSOCClient(object):
         Do a LookData request to JSOC to workout what results the query returns.
         """
 
-        keywords_default = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH']
+        keywords_default = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
         isMeta = iargs.get('meta', False)
         c = drms.Client()
 
