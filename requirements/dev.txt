@@ -1,4 +1,4 @@
-# Dependencies required for development and tests
+# Dependencies required to develop SunPy and run the test suite.
 
 -r base.txt
 -r extra.txt
