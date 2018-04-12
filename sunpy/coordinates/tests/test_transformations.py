@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose

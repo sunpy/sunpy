@@ -45,16 +45,19 @@ class GBMSummaryLightCurve(LightCurve):
     Examples
     --------
     >>> from sunpy.lightcurve import GBMSummaryLightCurve
-    >>> gbm = GBMSummaryLightCurve.create('2011-06-07')   # doctest: +SKIP
+    >>> gbm = GBMSummaryLightCurve.create('2011-06-07')   # doctest: +REMOTE_DATA
+    No detector specified. Detector with smallest mean angle to Sun is n5
+    Using Detector n5
+    For Fermi detector pointing information, use tools in sunpy/instr/fermi
     >>> gbm.peek()   # doctest: +SKIP
 
     References
     ----------
-    * `Fermi Mission Homepage <http://fermi.gsfc.nasa.gov>`_
-    * `Fermi GBM Homepage <http://gammaray.nsstc.nasa.gov/gbm/>`_
-    * `Fermi Science Support Center <http://fermi.gsfc.nasa.gov/ssc/>`_
-    * `Fermi Data Product <http://fermi.gsfc.nasa.gov/ssc/data/access/>`_
-    * `GBM Instrument Papers <http://gammaray.msfc.nasa.gov/gbm/publications/>`_
+    * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`_
+    * `Fermi GBM Homepage <https://fermi.gsfc.nasa.gov/science/instruments/gbm.html>`_
+    * `Fermi Science Support Center <https://fermi.gsfc.nasa.gov/ssc/>`_
+    * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`_
+    * `GBM Instrument Papers <http://gammaray.nsstc.nasa.gov/gbm/publications/instrument_journal_gbm.html>`_
     """
 
     def peek(self, **kwargs):
@@ -93,7 +96,7 @@ class GBMSummaryLightCurve(LightCurve):
     @classmethod
     def _get_url_for_date(cls, date, **kwargs):
         """Returns the url for Fermi/GBM data for the given date."""
-        baseurl = 'http://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
+        baseurl = 'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
         # date is a datetime object
         if 'detector' in kwargs:
             det = _parse_detector(kwargs['detector'])

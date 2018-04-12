@@ -45,19 +45,18 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample
-
-    >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')  # doctest: +REMOTE_DATA
     >>> eve = sunpy.timeseries.TimeSeries("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')  # doctest: +REMOTE_DATA
     >>> eve.peek(subplots=True)    # doctest: +SKIP
 
     References
     ----------
-    * `SDO Mission Homepage <http://sdo.gsfc.nasa.gov>`_
+    * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`_
     * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`_
     * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`_
     * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`_
-    * `Instrument Paper <http://link.springer.com/article/10.1007%2Fs11207-009-9487-6>`_
+    * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`_
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'eve'

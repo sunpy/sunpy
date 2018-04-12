@@ -44,17 +44,17 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample
-    >>> gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')   # doctest: +SKIP
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')  # doctest: +REMOTE_DATA
     >>> gbm.peek()   # doctest: +SKIP
 
     References
     ----------
-    * `Fermi Mission Homepage <http://fermi.gsfc.nasa.gov>`_
-    * `Fermi GBM Homepage <http://gammaray.nsstc.nasa.gov/gbm/>`_
-    * `Fermi Science Support Center <http://fermi.gsfc.nasa.gov/ssc/>`_
-    * `Fermi Data Product <http://fermi.gsfc.nasa.gov/ssc/data/access/>`_
-    * `GBM Instrument Papers <http://gammaray.msfc.nasa.gov/gbm/publications/>`_
+    * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`_
+    * `Fermi GBM Homepage <https://fermi.gsfc.nasa.gov/science/instruments/gbm.html>`_
+    * `Fermi Science Support Center <https://fermi.gsfc.nasa.gov/ssc/>`_
+    * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`_
+    * `GBM Instrument Papers <http://gammaray.nsstc.nasa.gov/gbm/publications/instrument_journal_gbm.html>`_
     """
 
     # Class attribute used to specify the source class of the TimeSeries.

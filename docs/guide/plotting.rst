@@ -4,7 +4,7 @@
 Plotting in SunPy
 -----------------
 
-SunPy makes use of `matplotlib <http://matplotlib.org/>`_ for all of its
+SunPy makes use of `matplotlib <https://matplotlib.org/>`_ for all of its
 plotting - as such, it tries to follow the matplotlib plotting philosophy. It is
 therefore useful to go over how matplotlib works as background.
 
@@ -12,7 +12,7 @@ therefore useful to go over how matplotlib works as background.
 ----------------------
 
 The tutorial provided here is a summary of one that can be found in the `matplotlib
-usage documentation <http://matplotlib.org/faq/usage_faq.html>`_.
+usage documentation <https://matplotlib.org/faq/usage_faq.html>`_.
 
 Matplotlib provides two main pathways for plotting. One is meant for interactive use
 (e.g. command-line) and the other for non-interactive use (e.g. modules). It is important
@@ -45,7 +45,7 @@ command only works once. If you were to call `~matplotlib.pyplot.show` again
 after the above code is executed nothing happens. This confusing behavior
 is something that the matplotlib devs get complaints about often and so this may change.
 A discussion about this can be found `here
-<http://stackoverflow.com/questions/5524858/matplotlib-show-doesnt-work-twice>`_.
+<https://stackoverflow.com/questions/5524858/matplotlib-show-doesnt-work-twice>`_.
 Don't be confused by another command called `~matplotlib.pyplot.draw`.
 This is only used while in interactive mode.
 

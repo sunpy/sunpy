@@ -52,7 +52,7 @@ LONG_DESCRIPTION = "SunPy is a Python library for solar physics data analysis."
 # to get from other parts of the setup infrastructure
 builtins._ASTROPY_PACKAGE_NAME_ = PACKAGENAME
 
-# VERSION should be PEP386 compatible (http://www.python.org/dev/peps/pep-0386)
+# VERSION should be PEP386 compatible (https://www.python.org/dev/peps/pep-0386)
 VERSION = '0.9.dev'
 
 # Indicates if this version is a release version

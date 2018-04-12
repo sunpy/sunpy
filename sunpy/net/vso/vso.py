@@ -322,7 +322,7 @@ class VSOClient(object):
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> client.search(
         ...    vso.attrs.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+        ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest:  +REMOTE_DATA
         <QTable length=5>
            Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
                                                        ...             Angstrom

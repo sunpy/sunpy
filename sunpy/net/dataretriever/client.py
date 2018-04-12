@@ -2,12 +2,22 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
+from __future__ import print_function, absolute_import
+
 import copy
 import os
 import datetime
 from abc import ABCMeta
 from collections import OrderedDict, namedtuple
 from functools import partial
+
+# Python 3:
+# Remove in 1.0: Py2 does not have pathlib
+try:
+    import pathlib
+    HAS_PATHLIB = True
+except ImportError:
+    HAS_PATHLIB = False
 
 import numpy as np
 import astropy.table
@@ -21,8 +31,8 @@ from sunpy.util.config import get_and_create_download_dir
 from sunpy import config
 from sunpy.util import deprecated
 
-from ..download import Downloader, Results
-from ..vso.attrs import Time, Wavelength, _Range
+from sunpy.net.download import Downloader, Results
+from sunpy.net.vso.attrs import Time, Wavelength, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -332,10 +342,24 @@ class GenericClient(object):
         qres : `~sunpy.net.dataretriever.QueryResponse`
             Results to download.
 
+        path : string or pathlib.Path
+            Path to the download directory
+
+        error_callback : Function
+            Callback function for error during downloads
+
         Returns
         -------
         Results Object
         """
+        # Check for type of path
+        if path is not None:
+            if HAS_PATHLIB and isinstance(path, pathlib.Path):
+                path = str(path.absolute())
+            elif not isinstance(path, six.string_types):
+                err = "path should be either 'pathlib.Path' or 'str'. "\
+                    "Got '{}'.".format(type(path))
+                raise TypeError(err)
 
         urls = [qrblock.url for qrblock in qres]
 

@@ -98,7 +98,7 @@ Plotting
 
 SunPy uses a matplotlib-like interface to its plotting so more complex plots can
 be built by combining SunPy with matplotlib. If you're not familiar with
-plotting in matplotlib, you should `learn the basics <http://matplotlib.org/users/tutorials.html>`__
+plotting in matplotlib, you should `learn the basics <https://matplotlib.org/users/tutorials.html>`__
 before continuing with this guide.
 
 Let's begin by creating a simple plot of an AIA image. To make things easy,
@@ -180,7 +180,7 @@ are stored in a dictionary. The following code grabs the dictionary and gets all
 keys.::
 
     >>> solar_constants = con.constants
-    >>> solar_constants.keys()   # doctest: +NORMALIZE_WHITESPACE
+    >>> solar_constants.keys()
     dict_keys(['mass', 'radius', 'luminosity', 'mean distance',
                'perihelion distance', 'aphelion distance', 'age',
                'solar flux unit', 'visual magnitude', 'average angular size',
@@ -308,7 +308,7 @@ Obtaining Data
 --------------
 
 SunPy supports searching for and fetching data from a variety of sources,
-including the `VSO <http://virtualsolar.org/>`__ and the
+including the `VSO <https://virtualsolar.org/>`__ and the
 `JSOC <http://jsoc.stanford.edu/>`__. The majority of SunPy's clients can be
 queried using the `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` interface. An example of searching the VSO using this
 is below::
@@ -316,21 +316,7 @@ is below::
   >>> from sunpy.net import Fido, attrs as a
 
   >>> results = Fido.search(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
-  ...                       a.Instrument('EIT'))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
-
-  ...
-  Results from 1 Provider:
-
-  4 Results from the VSOClient:
-    Start Time [1]       End Time [1]    Source Instrument   Type   Wavelength [2]
-                                                                        Angstrom
-        str19               str19         str4     str3      str8      float64
-  ------------------- ------------------- ------ ---------- -------- --------------
-  2011-09-20 01:00:15 2011-09-20 01:00:27   SOHO        EIT FULLDISK 171.0 .. 171.0
-  2011-09-20 01:06:13 2011-09-20 01:08:15   SOHO        EIT FULLDISK 284.0 .. 284.0
-  2011-09-20 01:13:53 2011-09-20 01:14:05   SOHO        EIT FULLDISK 195.0 .. 195.0
-  2011-09-20 01:19:47 2011-09-20 01:20:19   SOHO        EIT FULLDISK 304.0 .. 304.0
-
+  ...                       a.Instrument('EIT'))   # doctest:  +REMOTE_DATA
   >>> Fido.fetch(results, path="./directory/")  # doctest: +SKIP
   ['./directory/efz20110920.010015',
    './directory/efz20110920.010613',
@@ -359,23 +345,20 @@ A simple example of this is shown below::
   >>> db.commit()  # doctest: +REMOTE_DATA
 
   >>> db  # doctest: +SKIP
-  <Table length=12>
-  id  observation_time_start observation_time_end ...    download_time      size
+  <Table length=10>
+   id  observation_time_start observation_time_end ...    download_time      size
   str2         str19                 str19         ...        str19          str7
   ---- ---------------------- -------------------- ... ------------------- -------
-    1    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2017-08-03 19:41:00 66200.0
-    2    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2017-08-03 19:41:00 66200.0
-    3    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2017-08-03 19:41:00 66200.0
-    4    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2017-08-03 19:41:00 66200.0
-    5    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2017-08-03 19:41:01 66200.0
-    6    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2017-08-03 19:41:01 66200.0
-    7    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2017-08-03 19:41:01 66200.0
-    8    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2017-08-03 19:41:01 66200.0
-    9    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2017-08-03 19:41:01 66200.0
-   10    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2017-08-03 19:41:01 66200.0
-   11    2011-09-20 02:15:00  2011-09-20 02:15:01 ... 2017-08-03 19:42:19 66200.0
-   12    2011-09-20 02:15:00  2011-09-20 02:15:01 ... 2017-08-03 19:42:19 66200.0
-
+     1    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2018-03-01 21:02:33 66200.0
+     2    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2018-03-01 21:02:33 66200.0
+     3    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2018-03-01 21:02:33 66200.0
+     4    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2018-03-01 21:02:33 66200.0
+     5    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2018-03-01 21:02:33 66200.0
+     6    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2018-03-01 21:02:33 66200.0
+     7    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2018-03-01 21:02:33 66200.0
+     8    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2018-03-01 21:02:33 66200.0
+     9    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2018-03-01 21:02:33 66200.0
+    10    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2018-03-01 21:02:33 66200.0
 
 If you then do a second query::
 

@@ -60,8 +60,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample
-    >>> my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
 
     The SunPy TimeSeries factory accepts a wide variety of inputs for creating time series
 
@@ -286,7 +286,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
                 # Convert the data argument into a Pandas DataFrame if needed.
                 if isinstance(data, Table):
-                    # We have an AstroPy Table:
+                    # We have an Astropy Table:
                     data, meta, units = self._from_table(data)
                 elif isinstance(data, np.ndarray):
                     # We have a numpy ndarray. We assume the first column is a dt index

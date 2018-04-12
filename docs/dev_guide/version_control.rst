@@ -1,9 +1,11 @@
+.. _version_control:
+
 Version Control
 ===============
 
-Source-code for SunPy is managed using `Git <http://git-scm.com>`_,
+Source-code for SunPy is managed using `Git <https://git-scm.com>`_,
 a Distributed Version Control system. Code branches are hosted on
-`GitHub.com <http://github.com/sunpy/sunpy>`_, a free project hosting website
+`GitHub.com <https://github.com/sunpy/sunpy>`_, a free project hosting website
 for Open-Source software. To contribute to SunPy you will need to create an
 account on GitHub.
 
@@ -22,7 +24,7 @@ Getting Started
 ###############
 
 Creating your own fork of SunPy on GitHub is easy to do. Go ahead and create
-a free account on `create an account on GitHub <https://github.com/signup/free>`_.
+a free account on `create an account on GitHub <https://github.com/join>`_.
 Github has some `great resources to help <https://help.github.com/>`_.
 Here is a quick overview of the process.
 
@@ -32,7 +34,7 @@ Adding an SSH key to GitHub
 Next, you need to tell GitHub who you are. In order to push any code to GitHub
 you need to create a public SSH key and associate it with your GitHub account.
 For instructions on how this is done, see the article on GitHub on
-`Setting up git <http://help.github.com/set-up-git-redirect>`_ under
+`Setting up git <https://help.github.com/set-up-git-redirect>`_ under
 "Set Up SSH Keys". You only need to do this once, although if you plan to
 work from multiple computers you will need to go through the process for each
 computer.
@@ -64,7 +66,7 @@ changes are completed, and have been verified to work, should they be
 requested to be merged into the SunPy code base (through a pull request).
 GitHub provides a simple mechanism to setup your own
 personal repo by providing an option to `fork a repository
-<http://help.github.com/fork-a-repo/>`_. When you create a fork of a GitHub
+<https://help.github.com/fork-a-repo/>`_. When you create a fork of a GitHub
 project, a copy of the repo will automatically be created for you, and a link
 will be provided which you can use to download the code to your machine and
 begin working on it.
@@ -79,7 +81,7 @@ local machine, edit and run: ::
 
 or: ::
 
- git clone http://github.com/sunpy/sunpy.git
+ git clone https://github.com/sunpy/sunpy.git
 
 By default your fork of the repo on GitHub is identified by the name `origin`.
 In order to keep the fork up to date with the main repo, it is useful to add it
@@ -307,6 +309,66 @@ the resolution of the conflict with: ::
    git commit -m "Resolved conflict between my and online version of file.py"
 
 You can then proceed to push this change up to your branch.
+
+Rebasing
+^^^^^^^^
+
+Sometimes it might be better to instead of merging in upstream/master, to rebase on top of upstream/master, or if you would like to clean up  your commit history if you deem it messy.
+**However**, be warned that rebasing is a nuclear option.
+If it goes wrong, it fundamentally changes your git history, there is no way back if you do not have a copy somewhere else, say a local branch for example.
+You can also back out of a rebase during the process.
+
+We will have a brief example here but since rebasing is a major step (depending on the complexity of the pull request) we would recommend checking out one of these tutorials on the subject: `tutorial 1 <https://www.digitalocean.com/community/tutorials/how-to-rebase-and-update-a-pull-request>`_ and `tutorial 2 <https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase>`_.
+
+With the above warning in mind, you can create a local copy of the branch you want to rebase ::
+
+    git commit -m "My last messy commit"
+    git checkout -b MyCleanNewFeature
+
+and you still have your git history from `MyCleanNewFeature` in its branch
+
+If you are on your own branch and you have upstream added as a remote.
+You can do ::
+
+    git rebase upstream/master
+
+which will rebase your commits on top of upstream/master and if there are no major changes, it should complete with no problem.
+If you add a `-i`, this will turn on interactive mode ::
+
+    git rebase -i upstream/master
+
+you should see something like this ::
+
+    pick 2231360 some old commit
+    pick g3s62dc some mid commit you want to remove
+    pick ee2adc2 Adds new feature
+    # Rebase 2cf755d..ee2adc2 onto 2cf755d (9 commands)
+    #
+    # Commands:
+    # p, pick = use commit
+    # r, reword = use commit, but edit the commit message
+    # e, edit = use commit, but stop for amending
+    # s, squash = use commit, but meld into previous commit
+    # f, fixup = like "squash", but discard this commit's log message
+    # x, exec = run command (the rest of the line) using shell
+    # d, drop = remove commit
+
+Here you can change `pick` to any of the other commands that are listed and have that change the commits in your local history.
+So if you wanted to remove the middle commit you would change ::
+
+    pick g3s62dc some mid commit you want to remove
+
+to ::
+
+    drop g3s62dc some mid commit you want to remove
+
+or if you wanted to keep the changes merge that commit into the previous commit ::
+
+    squash g3s62dc some mid commit you want to remove
+
+Now when you exit the screen, git will now apply the changes you are after.
+
+If any problem arises, git will tell you and allow you either work through the problem using `git mergetool` or to abort the process `git rebase --abort`.
 
 Backporting contribution
 ^^^^^^^^^^^^^^^^^^^^^^^^

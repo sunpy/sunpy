@@ -691,12 +691,6 @@ def test_norh_invalid_peek(norh_test_ts):
         empty_ts.peek()
 
 
-"""
-def test_goes_peek(goes_test_ts):
-    goes_test_ts.peek()
-"""
-
-
 def test_lyra_invalid_peek(lyra_test_ts):
     a = lyra_test_ts.time_range.start - datetime.timedelta(days=2)
     b = lyra_test_ts.time_range.start - datetime.timedelta(days=1)

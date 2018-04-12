@@ -136,7 +136,7 @@ def test_entries_from_fido_search_result(fido_search_result):
     # 2 entries from goes
     assert entries[56] == DatabaseEntry(
         source='nasa', provider='sdac', physobs='irradiance',
-        fileid='http://umbra.nascom.nasa.gov/goes/fits/2012/go1520120101.fits',
+        fileid='https://umbra.nascom.nasa.gov/goes/fits/2012/go1520120101.fits',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,

@@ -4,16 +4,18 @@ from __future__ import print_function, absolute_import
 import os
 import time
 import warnings
+from functools import partial
+from collections import Sequence
 
-import requests
 import numpy as np
+import pandas as pd
 import astropy.units as u
 import astropy.time
 import astropy.table
 from astropy.utils.misc import isiterable
+import drms
 
 from sunpy import config
-from sunpy.time import parse_time, TimeRange
 from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
@@ -23,12 +25,20 @@ from sunpy.util import deprecated
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
-JSOC_INFO_URL = 'http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_info'
-JSOC_EXPORT_URL = 'http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_fetch'
-BASE_DL_URL = 'http://jsoc.stanford.edu'
+
+PKEY_LIST_TIME = {'T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
+                  'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime'}
 
 
-class JSOCResponse(object):
+def simple_path(path, sock, url):
+    return path
+
+
+class NotExportedError(Exception):
+    pass
+
+
+class JSOCResponse(Sequence):
     def __init__(self, table=None):
         """
         table : `astropy.table.Table`
@@ -36,7 +46,7 @@ class JSOCResponse(object):
 
         self.table = table
         self.query_args = None
-        self.requestIDs = None
+        self.requests = None
 
     def __str__(self):
         return str(self.table)
@@ -53,11 +63,24 @@ class JSOCResponse(object):
         else:
             return len(self.table)
 
+    def __getitem__(self, item):
+        return type(self)(self.table[item])
+
+    def __iter__(self):
+        return (t for t in [self])
+
     def append(self, table):
         if self.table is None:
             self.table = table
         else:
             self.table = astropy.table.vstack([self.table, table])
+
+    def response_block_properties(self):
+        """
+        Returns a set of class attributes on all the response blocks.
+        """
+        warnings.warn("The JSOC client does not support response block properties", UserWarning)
+        return set()
 
 
 class JSOCClient(object):
@@ -66,145 +89,244 @@ class JSOCClient(object):
 
     It exposes a similar API to the VSO client, although the underlying model
     is more complex. The JSOC stages data before you can download it, so a JSOC
-    query is a three stage process, first you query the JSOC for records,
+    query is a three stage process. First you query the JSOC for records,
     a table of these records is returned. Then you can request these records to
     be staged for download and then you can download them.
-    The last two stages of this process are bundled together into the `get()`
+    The last two stages of this process are bundled together into the `fetch()`
     method, but they can be separated if you are performing a large or complex
     query.
 
     .. warning::
-        JSOC now requires you to register your email address before requesting
-        data. See this site: http://jsoc.stanford.edu/ajax/register_email.html
+
+        JSOC requires you to register your email address before requesting
+        data. `See this on how to register <http://jsoc.stanford.edu/ajax/register_email.html>_`.
 
     Notes
     -----
-    This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
-    Therefore that is a good resource if things are mis-behaving.
-    The full list of 'series' is available through this site: http://jsoc.stanford.edu/
+    The full list of ``Series`` is available through this `site <http://jsoc.stanford.edu>`_.
 
-    You can build more complex queries by specifying parameters to POST to JSOC via keyword
-    arguments. You can generate these kwargs using the Export Data page at JSOC.
-
-    JSOC now requires a validated email address, you can pass in your validated email address
+    JSOC requires a validated email address, you can pass in your validated email address
     using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
-    with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
+    with JSOC beforehand `here <http://jsoc.stanford.edu/ajax/register_email.html>`_.
 
+    The backend of SunPy's JSOC Client uses `drms package <https://github.com/sunpy/drms>`_.
+    The tutorials can be `found here <http://docs.sunpy.org/projects/en/stable/tutorial.html>`_.
+    This can be used to build complex queries, by directly inputting the query string.
 
     Examples
     --------
 
     *Example 1*
 
-    Query JSOC for some HMI data at 45 second cadence:
+    Query JSOC for some HMI data at 45 second cadence::
 
-    >>> from sunpy.net import jsoc
-    >>> from sunpy.net import attrs as a
-    >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-    >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                         a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
+        >>> from sunpy.net import jsoc
+        >>> from sunpy.net import attrs as a
+        >>> client = jsoc.JSOCClient()
+        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
+        ...                          a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
-    the response object holds the records that your query will return:
+        The response object holds the records that your query will return:
 
-    >>> print(response)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REMOTE_DATA
-            DATE         TELESCOP  INSTRUME  ... WAVELNTH     WAVEUNIT
-    -------------------- -------- ---------- ... -------- ---------------
-    2014-01-05T17:44:53Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-                     ...      ...        ... ...      ...             ...
-    2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    Length = 81 rows
+        >>> print(response)   # doctest: +ELLIPSIS  +REMOTE_DATA
+                DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
+        -------------------- -------- ---------- ----------------------- --------
+        2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
+        2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI   6173.0
+        2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI   6173.0
+        2014-01-05T17:49:26Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI   6173.0
+        2014-01-05T17:50:34Z  SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI   6173.0
+        2014-01-05T17:51:43Z  SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI   6173.0
+        2014-01-05T17:52:51Z  SDO/HMI HMI_FRONT2 2014.01.01_00:05:07_TAI   6173.0
+        2014-01-05T17:53:59Z  SDO/HMI HMI_FRONT2 2014.01.01_00:05:52_TAI   6173.0
+        2014-01-05T17:55:08Z  SDO/HMI HMI_FRONT2 2014.01.01_00:06:37_TAI   6173.0
+        2014-01-05T17:56:17Z  SDO/HMI HMI_FRONT2 2014.01.01_00:07:22_TAI   6173.0
+        2014-01-05T17:57:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:08:07_TAI   6173.0
+        2014-01-05T17:58:34Z  SDO/HMI HMI_FRONT2 2014.01.01_00:08:52_TAI   6173.0
+        2014-01-05T17:59:42Z  SDO/HMI HMI_FRONT2 2014.01.01_00:09:37_TAI   6173.0
+        2014-01-05T18:00:50Z  SDO/HMI HMI_FRONT2 2014.01.01_00:10:22_TAI   6173.0
 
-    You can then make the request and download the data:
+    You can then make the request and download the data::
 
-    >>> res = client.fetch(response)   # doctest: +SKIP
+        >>> res = client.fetch(response)   # doctest: +SKIP
 
     This returns a Results instance which can be used to watch the progress
     of the download.
 
-    >>> res.wait(progress=True)   # doctest: +SKIP
+    Note
+    ----
+    A registered email address is not required if you only need to query for data,
+    it is used only if you need to make an export request. For example,::
+
+        >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
+        ...                          a.jsoc.Series('hmi.m_45s'))  # doctest: +REMOTE_DATA
+
+    The above is a successful query operation, and will return query responses as before.
+
+    But, this response object cannot be used to make an export request and will throw an
+    error if done so::
+
+        >>> res = client.fetch(response)   # doctest: +SKIP
+
+        ValueError: Email address is invalid or not registered
+
 
     *Example 2*
 
     Query the JSOC for some AIA 171 data, and separate out the staging and the
-    download steps:
+    download steps::
 
-    >>> import astropy.units as u
-    >>> from sunpy.net import jsoc
-    >>> from sunpy.net import attrs as a
-    >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-    >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
-    ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
-    ...                         a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
+        >>> import astropy.units as u
+        >>> from sunpy.net import jsoc
+        >>> from sunpy.net import attrs as a
+        >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+        >>> response = client.search(a.jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
+        ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
+        ...                          a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
-    the response object holds the records that your query will return:
+        The response object holds the records that your query will return:
 
-    >>> print(response)  # doctest: +REMOTE_DATA
-            DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH WAVEUNIT
-    -------------------- -------- -------- ----------------------- -------- --------
-    2014-01-06T15:07:12Z  SDO/AIA    AIA_3 2013-12-31T23:59:36.34Z      171 angstrom
-    2014-01-06T15:07:12Z  SDO/AIA    AIA_3 2013-12-31T23:59:48.34Z      171 angstrom
-    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:00.34Z      171 angstrom
-    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171 angstrom
+        >>> print(response)  # doctest: +REMOTE_DATA
+                DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
+        -------------------- -------- -------- ----------------------- --------
+        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171
+        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:24.34Z      171
+        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:36.34Z      171
+        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:48.34Z      171
 
-    You can then make the request:
 
-    >>> requestIDs = client.request_data(response)  # doctest: +SKIP
-    [u'JSOC_20140724_952']
+    You can then make the request::
 
-    This returns a list of all the request identifiers for your query.
+        >>> requests = client.request_data(response)  # doctest: +SKIP
 
-    You can then check the status of the request, which will print out a status
+    This returns a list of all the ExportRequest objects for your query. You can
+    get the ExportRequest ID ::
+
+        >>> requests.id  # doctest: +SKIP
+        'JSOC_20171205_372'
+
+    You can also check the status of the request, which will print out a status
     message and return you the status code, a code of 1 means it is not ready
     to download and a code of 0 means the request is staged and ready. A code
     of 6 means an error, which is commonly that the request has not had time to
-    get into the queue.
+    get into the queue::
 
-    >>> status = client.check_request(requestIDs)  # doctest: +SKIP
-    Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
+        >>> requests.status  # doctest: +SKIP
+        0
 
     Once the status code is 0 you can download the data using the `get_request`
-    method:
+    method::
 
-    >>> res = client.get_request(requestIDs)  # doctest: +SKIP
+        >>> res = client.get_request(requests)  # doctest: +SKIP
 
     This returns a Results instance which can be used to watch the progress
-    of the download.
+    of the download::
 
-    >>> res.wait(progress=True)   # doctest: +SKIP
+        >>> res.wait(progress=True)   # doctest: +SKIP
+
     """
 
     def search(self, *query, **kwargs):
         """
         Build a JSOC query and submit it to JSOC for processing.
 
-        Takes a variable number of :mod:`sunpy.net.jsoc.attrs` as parameters,
+        Takes a variable number of `~sunpy.net.jsoc.attrs` as parameters,
         which are chained together using the AND (`&`) operator.
 
         Complex queries to be easily formed using logical operators such as
         `&` and `|`, in the same way as the VSO client.
 
-        Examples
-        --------
-        Request all AIA 304 image data between 2010-01-01T00:00 and
-        2010-01-01T01:00 in rice compressed form.
-
-        >>> import astropy.units as u
-        >>> from sunpy.net import jsoc
-        >>> from sunpy.net import attrs as a
-        >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-        >>> response = client.search(a.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
-        ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
-        ...                         a.jsoc.Compression('rice'), a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
+        Parameters
+        ----------
+        query : a variable number of `~sunpy.net.jsoc.attrs`
+                as parameters, which are chained together using
+                the ``AND`` (``&``) operator.
 
         Returns
         -------
-        results : JSOCResults object
+        response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             A collection of records that the query returns.
+
+        Examples
+        --------
+
+        *Example 1*
+
+        Request all AIA 304 image data between 2014-01-01T00:00 and
+        2014-01-01T01:00::
+
+            >>> import astropy.units as u
+            >>> from sunpy.net import jsoc
+            >>> from sunpy.net import attrs as a
+            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+            >>> response = client.search(a.jsoc.Time('2017-09-06T12:00:00', '2017-09-06T12:02:00'),
+            ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
+            ...                          a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
+            >>> print(response)  # doctest: +REMOTE_DATA
+                    DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
+            -------------------- -------- -------- ----------------------- --------
+            2017-09-12T14:11:11Z  SDO/AIA    AIA_4 2017-09-06T12:00:08.57Z      304
+            2017-09-12T14:11:11Z  SDO/AIA    AIA_4 2017-09-06T12:00:18.58Z      304
+            2017-09-12T14:11:11Z  SDO/AIA    AIA_4 2017-09-06T12:00:32.49Z      304
+            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:00:42.58Z      304
+            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:00:56.33Z      304
+            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:01:06.58Z      304
+            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:01:20.96Z      304
+            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:01:30.58Z      304
+            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:01:44.91Z      304
+            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:01:54.57Z      304
+            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:02:08.90Z      304
+
+        *Example 2*
+
+        Request keyword data of ``hmi.v_45s`` for certain specific keywords only::
+
+            >>> import astropy.units as u
+            >>> from sunpy.net import jsoc
+            >>> from sunpy.net import attrs as a
+            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+            >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
+            ...                          a.jsoc.Series('hmi.v_45s'),
+            ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
+            >>> print(response)  # doctest: +SKIP
+                     T_REC            DATAMEAN     OBS_VR
+            ----------------------- ----------- -----------
+            2014.01.01_00:00:45_TAI 1906.518188 1911.202614
+            2014.01.01_00:01:30_TAI 1908.876221 1913.945512
+            2014.01.01_00:02:15_TAI   1911.7771 1916.667999
+            2014.01.01_00:03:00_TAI 1913.422485 1919.369924
+            2014.01.01_00:03:45_TAI 1916.500488 1922.050862
+            2014.01.01_00:04:30_TAI 1920.414795 1924.711005
+            2014.01.01_00:05:15_TAI 1922.636963  1927.35015
+            2014.01.01_00:06:00_TAI 1924.697388 1929.968523
+            2014.01.01_00:06:45_TAI 1927.758301 1932.566451
+            2014.01.01_00:07:30_TAI 1929.646118  1935.14288
+            2014.01.01_00:08:15_TAI 1932.097046 1937.698521
+            2014.01.01_00:09:00_TAI 1935.728638  1940.23353
+            2014.01.01_00:09:45_TAI 1937.754028 1942.747605
+            2014.01.01_00:10:30_TAI  1940.14624 1945.241147
+
+            *Example 3*
+
+        Request data of ``aia.lev1_euv_12s`` on the basis of PrimeKeys other than ``T_REC``::
+
+            >>> import astropy.units as u
+            >>> from sunpy.net import jsoc
+            >>> from sunpy.net import attrs as a
+            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+            >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
+            ...                          a.jsoc.Series('aia.lev1_euv_12s'),
+            ...                          a.jsoc.PrimeKey('WAVELNTH','171'))  # doctest: +REMOTE_DATA
+            >>> print(response)  # doctest: +REMOTE_DATA
+                    DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
+            -------------------- -------- -------- ----------------------- --------
+            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171
+            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:24.34Z      171
+            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:36.34Z      171
+            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:48.34Z      171
+            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:01:00.34Z      171
+            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:01:12.34Z      171
         """
 
         return_results = JSOCResponse()
@@ -214,11 +336,9 @@ class JSOCClient(object):
             iargs = kwargs.copy()
             iargs.update(block)
             blocks.append(iargs)
-
             return_results.append(self._lookup_records(iargs))
 
         return_results.query_args = blocks
-
         return return_results
 
     @deprecated('0.8', alternative='JSOCClient.search')
@@ -228,156 +348,203 @@ class JSOCClient(object):
         """
         return self.search(*query, **kwargs)
 
-    def request_data(self, jsoc_response, **kwargs):
+    def search_metadata(self, *query, **kwargs):
         """
-        Request that JSOC stages the data for download.
+        Get the metadata of all the files obtained in a search query.
+        Builds a jsoc query, similar to query method, and takes similar inputs.
+
+        Complex queries to be easily formed using logical operators such as
+        ``&`` and ``|``, in the same way as the query function.
 
         Parameters
         ----------
-        jsoc_response : JSOCResponse object
+        query : a variable number of `~sunpy.net.jsoc.attrs`
+                as parameters, which are chained together using
+                the ``AND`` (``&``) operator.
+
+        Returns
+        -------
+        res : `~pandas.DataFrame` object
+            A collection of metadata of all the files.
+
+        Example
+        -------
+
+        Request metadata or all all AIA 304 image data between 2014-01-01T00:00 and
+        2014-01-01T01:00.
+
+        Since, the function only performs a lookdata, and does not make a proper export
+        request, attributes like Segment need not be passed::
+
+            >>> import astropy.units as u
+            >>> from sunpy.net import jsoc
+            >>> from sunpy.net import attrs as a
+            >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
+            >>> metadata = client.search_metadata(
+            ...                         a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
+            ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
+            >>> print(metadata[['T_OBS', 'WAVELNTH']])  # doctest: +REMOTE_DATA
+                                                                        T_OBS  WAVELNTH
+            aia.lev1_euv_12s[2014-01-01T00:00:01Z][304]  2014-01-01T00:00:08.57Z       304
+            aia.lev1_euv_12s[2014-01-01T00:00:13Z][304]  2014-01-01T00:00:20.58Z       304
+            aia.lev1_euv_12s[2014-01-01T00:00:25Z][304]  2014-01-01T00:00:32.57Z       304
+            aia.lev1_euv_12s[2014-01-01T00:00:37Z][304]  2014-01-01T00:00:44.58Z       304
+            aia.lev1_euv_12s[2014-01-01T00:00:49Z][304]  2014-01-01T00:00:56.57Z       304
+            aia.lev1_euv_12s[2014-01-01T00:01:01Z][304]  2014-01-01T00:01:08.59Z       304
+
+        """
+        query = and_(*query)
+        blocks = []
+        res = pd.DataFrame()
+        for block in walker.create(query):
+            iargs = kwargs.copy()
+            iargs.update(block)
+            iargs.update({'meta': True})
+            blocks.append(iargs)
+            res = res.append(self._lookup_records(iargs))
+
+        return res
+
+    def request_data(self, jsoc_response, **kwargs):
+        """
+        Request that JSOC stages the data for download. This method will not
+        wait for the request to be staged.
+
+        Parameters
+        ----------
+        jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             The results of a query
 
         Returns
         -------
-        requestIDs : list of strings
-            List of the JSOC request identifiers
+        requests : `~drms.ExportRequest` object or
+                   a list of  `~drms.ExportRequest` objects
+
+            Request Id can be accessed by requests.id
+            Request status can be accessed by requests.status
 
         """
-        # A little (hidden) debug feature
-        return_responses = kwargs.pop('return_resp', False)
-        if len(kwargs):
-            warn_message = "request_data got unexpected keyword arguments {0}"
-            raise TypeError(warn_message.format(list(kwargs.keys())))
 
-        # Do a multi-request for each query block
-        responses = []
-        requestIDs = []
+        requests = []
+        self.query_args = jsoc_response.query_args
         for block in jsoc_response.query_args:
-            # Do a multi-request for each query block
-            responses.append(self._multi_request(**block))
-            for i, response in enumerate(responses[-1]):
-                if response.status_code != 200:
-                    warn_message = "Query {0} retuned code {1}"
-                    warnings.warn(
-                        Warning(warn_message.format(i, response.status_code)))
-                    responses.pop(i)
-                elif response.json()['status'] != 2:
-                    warn_message = "Query {0} retuned status {1} with error {2}"
-                    json_response = response.json()
-                    json_status = json_response['status']
-                    json_error = json_response['error']
-                    warnings.warn(Warning(warn_message.format(i, json_status,
-                                                              json_error)))
-                    responses[-1].pop(i)
 
-            # Extract the IDs from the JSON
-            requestIDs += [response.json()['requestid'] for response in responses[-1]]
+            ds = self._make_recordset(**block)
+            cd = drms.Client(email=block.get('notify', ''))
+            protocol = block.get('protocol', 'fits')
 
-        if return_responses:
-            return responses
+            if protocol != 'fits' and protocol != 'as-is':
+                error_message = "Protocols other than fits and as-is are "\
+                                "are not supported."
+                raise TypeError(error_message)
 
-        return requestIDs
+            method = 'url' if protocol == 'fits' else 'url_quick'
+            r = cd.export(ds, method=method, protocol=protocol)
 
-    def check_request(self, requestIDs):
+            requests.append(r)
+
+        if len(requests) == 1:
+            return requests[0]
+        return requests
+
+    @deprecated('0.9', alternative='drms.ExportRequest.status')
+    def check_request(self, requests):
         """
-        Check the status of a request and print out a message about it
+        Check the status of a request and print out a message about it.
 
         Parameters
         ----------
-        requestIDs : list or string
-            A list of requestIDs to check
+        requests :  `~drms.ExportRequest` object or
+                   a list of  `~drms.ExportRequest` objects,
+                   returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`
 
         Returns
         -------
-        status : list
-            A list of status' that were returned by JSOC
+        status : `int` or `list`
+            A status or list of status' that were returned by JSOC.
+
         """
         # Convert IDs to a list if not already
-        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
-            requestIDs = [requestIDs]
+        if not isiterable(requests) or isinstance(requests, drms.ExportRequest):
+            requests = [requests]
 
         allstatus = []
-        for request_id in requestIDs:
-            u = self._request_status(request_id)
-            status = int(u.json()['status'])
+        for request in requests:
+            status = request.status
 
-            if status == 0:  # Data ready to download
+            if status == request._status_code_ok:  # Data ready to download
                 print("Request {0} was exported at {1} and is ready to "
-                      "download.".format(u.json()['requestid'],
-                                         u.json()['exptime']))
-            elif status == 1:
-                print_message = "Request {0} was submitted {1} seconds ago, " \
+                      "download.".format(request.id,
+                                         request._d['exptime']))
+            elif status in request._status_codes_pending:
+                print_message = "Request {0} was submitted {1} seconds ago, "\
                                 "it is not ready to download."
-                print(print_message.format(u.json()['requestid'],
-                                           u.json()['wait']))
+                print(print_message.format(request.id,
+                                           request._d['wait']))
             else:
                 print_message = "Request returned status: {0} with error: {1}"
-                json_status = u.json()['status']
-                json_error = u.json()['error']
+                json_status = request.status
+                json_error = request._d.get('error', '')
                 print(print_message.format(json_status, json_error))
 
             allstatus.append(status)
 
+        if len(allstatus) == 1:
+            return allstatus[0]
         return allstatus
 
     def fetch(self, jsoc_response, path=None, overwrite=False, progress=True,
-            max_conn=5, downloader=None, sleep=10):
+              max_conn=5, downloader=None, sleep=10):
         """
-        Make the request for the data in jsoc_response and wait for it to be
+        Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
 
         Parameters
         ----------
-        jsoc_response : JSOCResponse object
+        jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             A response object
 
-        path : string
+        path : `str`
             Path to save data to, defaults to SunPy download dir
 
-        overwrite : bool
+        overwrite : `bool`
             Replace files with the same name if True
 
-        progress : bool
+        progress : `bool`
             Print progress info to terminal
 
-        max_conns : int
+        max_conns : `int`
             Maximum number of download connections.
 
-        downloader: `sunpy.download.Downloader` instance
+        downloader: `~sunpy.net.download.Downloader` instance
             A Custom downloader to use
 
-        sleep : int
+        sleep : `int`
             The number of seconds to wait between calls to JSOC to check the status
             of the request.
 
         Returns
         -------
-        results : a :class:`sunpy.net.vso.Results` instance
+        results : a `~sunpy.net.download.Results` instance
             A Results object
+
         """
 
         # Make staging request to JSOC
-        requestIDs = self.request_data(jsoc_response)
+        responses = self.request_data(jsoc_response)
+        # Make response iterable
+        if not isiterable(responses):
+            responses = [responses]
         # Add them to the response for good measure
-        jsoc_response.requestIDs = requestIDs
+        jsoc_response.requests = [r for r in responses]
         time.sleep(sleep/2.)
 
         r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
 
-        while requestIDs:
-            for i, request_id in enumerate(requestIDs):
-                u = self._request_status(request_id)
-
-                if progress:
-                    self.check_request(request_id)
-
-                if u.status_code == 200 and u.json()['status'] == '0':
-                    rID = requestIDs.pop(i)
-                    r = self.get_request(rID, path=path, overwrite=overwrite,
-                                         progress=progress, results=r)
-
-                else:
-                    time.sleep(sleep)
+        for response in responses:
+            response.wait(verbose=progress)
+            r = self.get_request(response, path=path, overwrite=overwrite,
+                                 progress=progress, results=r)
 
         return r
 
@@ -388,53 +555,82 @@ class JSOCClient(object):
         See `~sunpy.net.jsoc.jsoc.JSOCClient.fetch`
         """
         return self.fetch(jsoc_response, path=path, overwrite=overwrite, progress=progress,
-            max_conn=max_conn, downloader=downloader, sleep=sleep)
+                          max_conn=max_conn, downloader=downloader, sleep=sleep)
 
-
-    def get_request(self, requestIDs, path=None, overwrite=False, progress=True,
+    def get_request(self, requests, path=None, overwrite=False, progress=True,
                     max_conn=5, downloader=None, results=None):
         """
-        Query JSOC to see if request_id is ready for download.
+        Query JSOC to see if the request(s) is ready for download.
 
-        If the request is ready for download, download it.
+        If the request is ready for download, it will then download it.
 
         Parameters
         ----------
-        requestIDs : list or string
-            One or many requestID strings
+        requests : `~drms.ExportRequest`, `str`, `list`
+            `~drms.ExportRequest` objects or `str` request IDs or lists
+            returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
 
-        path : string
-            Path to save data to, defaults to SunPy download dir
+        path : `str`
+            Path to save data to, defaults to SunPy download dir.
 
-        overwrite : bool
-            Replace files with the same name if True
+        overwrite : `bool`
+            Replace files with the same name if True.
 
-        progress : bool
-            Print progress info to terminal
+        progress : `bool`
+            Print progress info to terminal.
 
-        max_conns : int
+        max_conns : `int`
             Maximum number of download connections.
 
-        downloader : `sunpy.download.Downloader` instance
+        downloader : `~sunpy.net.download.Downloader`
             A Custom downloader to use
 
-        results: Results instance
-            A Results manager to use.
+        results: `~sunpy.net.download.Results`
+            A `~sunpy.net.download.Results` manager to use.
 
         Returns
         -------
-        res: Results
-            A Results instance or None if no URLs to download
+        res: `~sunpy.net.download.Results`
+            A `~sunpy.net.download.Results` instance or `None` if no URLs to download
+
         """
+        c = drms.Client()
 
-        # Convert IDs to a list if not already
+        # Convert Responses to a list if not already
+        if isinstance(requests, six.string_types) or not isiterable(requests):
+            requests = [requests]
 
-        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
-            requestIDs = [requestIDs]
+        # Ensure all the requests are drms ExportRequest objects
+        for i, request in enumerate(requests):
+            if isinstance(request, six.string_types):
+                r = c.export_from_id(request)
+                requests[i] = r
 
+        # We only download if all are finished
+        if not all([r.has_succeeded() for r in requests]):
+            raise NotExportedError("Can not download as not all the requests"
+                                   "have been exported for download yet.")
+
+        # Ensure path has a {file} in it
         if path is None:
-            path = config.get('downloads', 'download_dir')
-        path = os.path.expanduser(path)
+            default_dir = config.get("downloads", "download_dir")
+            path = os.path.join(default_dir, '{file}')
+        elif isinstance(path, six.string_types) and '{file}' not in path:
+            path = os.path.join(path, '{file}')
+
+        paths = []
+        for request in requests:
+            for filename in request.data['filename']:
+                # Ensure we don't duplicate the file extension
+                ext = os.path.splitext(filename)[1]
+                if path.endswith(ext):
+                    fname = path.strip(ext)
+                else:
+                    fname = path
+                fname = fname.format(file=filename)
+                fname = os.path.expanduser(fname)
+                fname = partial(simple_path, fname)
+                paths.append(fname)
 
         if downloader is None:
             downloader = Downloader(max_conn=max_conn, max_total=max_conn)
@@ -442,39 +638,35 @@ class JSOCClient(object):
         # A Results object tracks the number of downloads requested and the
         # number that have been completed.
         if results is None:
-            results = Results(lambda _: downloader.stop())
+            results = Results(lambda _: downloader.stop(),
+                              done=lambda maps: [v['path'] for v in maps.values()])
 
         urls = []
-        for request_id in requestIDs:
-            u = self._request_status(request_id)
+        for request in requests:
 
-            if u.status_code == 200 and u.json()['status'] == '0':
-                for ar in u.json()['data']:
-                    is_file = os.path.isfile(os.path.join(path, ar['filename']))
+            if request.status == 0:
+                for index, data in request.data.iterrows():
+                    is_file = os.path.isfile(paths[index].args[0])
                     if overwrite or not is_file:
-                        url_dir = BASE_DL_URL + u.json()['dir'] + '/'
-                        urls.append(urllib.parse.urljoin(url_dir, ar['filename']))
+                        url_dir = request.request_url + '/'
+                        urls.append(urllib.parse.urljoin(url_dir, data['filename']))
 
-                    else:
+                    if not overwrite and is_file:
                         print_message = "Skipping download of file {} as it " \
-                                        "has already been downloaded"
-                        print(print_message.format(ar['filename']))
+                                        "has already been downloaded. " \
+                                        "If you want to redownload the data, "\
+                                        "please set overwrite to True"
+                        print(print_message.format(data['filename']))
                         # Add the file on disk to the output
-                        results.map_.update({ar['filename']:
-                                            {'path': os.path.join(path, ar['filename'])}})
-
-                if progress:
-                    print_message = "{0} URLs found for download. Totalling {1}MB"
-                    print(print_message.format(len(urls), u.json()['size']))
-
-            else:
-                if progress:
-                    self.check_request(request_id)
-
+                        results.map_.update({data['filename']:
+                                            {'path': paths[index].args[0]}})
         if urls:
-            for url in urls:
+            if progress:
+                print_message = "{0} URLs found for download. Full request totalling {1}MB"
+                print(print_message.format(len(urls), request._d['size']))
+            for i, url in enumerate(urls):
                 downloader.download(url, callback=results.require([url]),
-                                    errback=lambda x: print(x), path=path)
+                                    errback=lambda x: print(x), path=paths[i])
 
         else:
             # Make Results think it has finished.
@@ -483,189 +675,260 @@ class JSOCClient(object):
 
         return results
 
-    def _process_time(self, time):
+    def _make_recordset(self, series, start_time='', end_time='', wavelength='',
+                        segment='', primekey={}, **kwargs):
         """
-        Take a UTC time string or datetime instance and generate a astropy.time
-        object in TAI frame. Alternatively convert a astropy time object to TAI
+        Take the query arguments and build a record string.
 
-        Parameters
-        ----------
-        time: six.string_types or datetime or astropy.time
-            Input time
+        All the primekeys are now stored in primekey dict, including Time and Wavelength
+        which were passed through pre-defined attributes. The following piece of code,
+        extracts the passed prime-keys and arranges it in the order as it appears in the
+        JSOC database.
 
-        Returns
-        -------
-        datetime, in TAI
+        `pkeys_isTime` is a Pandas DataFrame, whose index values are the Prime-key names
+        and the column stores a boolean value, identifying whether the prime-key is a
+        Time-type prime-key or not. Since, time-type prime-keys exist by different names,
+        we made it uniform in the above piece of code, by storing the time-type primekey
+        with a single name `TIME`.
+
+        Considering an example, if the primekeys that exist for a given series are
+        ['HARPNUM', 'T_OBS', 'WAVELNTH'], we will consider three different cases of the
+        passed primekeys.
+
+        pkeys_isTime.index.values = ['HARPNUM', 'T_OBS', 'WAVELNTH']
+
+        Case 1
+        ------
+
+        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI',
+                    'HARPNUM' : '4864',
+                    'WAVELNTH': '605'}
+
+        If the primekey dict is as above, then pkstr should be as:
+
+        pkstr = '{4864}{2014.01.01_00:00:45_TAI}{605}'
+
+        Case 2
+        ------
+
+        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI',
+                    'WAVELNTH': '605'}
+
+        If the primekey dict is as above, then pkstr should be as:
+
+        pkstr = '{}{2014.01.01_00:00:45_TAI}{605}'
+
+        Case 3
+        ------
+
+        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI'}
+
+        If the primekey dict is as above, then pkstr should be as:
+
+        pkstr = '{}{2014.01.01_00:00:45_TAI}'
+
+        The idea behind this should be clear. We build up the `pkstr` string
+        containing the values of the prime-keys passed in the same order as
+        it occurs in the list `pkeys_isTime.index.values`, i.e. how it is stored
+        in the online database. Any missing prime-keys should be compensated by
+        an empty {}, if it occurs before any passed prime-key. Any empty curly braces
+        that is present at last of the pkstr, can be skipped.
+
         """
-        # Convert from any input (in UTC) to TAI
-        if isinstance(time, six.string_types):
-            time = parse_time(time)
-
-        time = astropy.time.Time(time, scale='utc')
-        time = time.tai  # Change the scale to TAI
-
-        return time.datetime
-
-    def _make_recordset(self, start_time, end_time, series, wavelength='',
-                        segment='', **kwargs):
-        # Build the dataset string
-        # Extract and format Wavelength
-        if wavelength:
-            if not series.startswith('aia'):
-                raise TypeError("This series does not support the wavelength attribute.")
-            else:
-                if isinstance(wavelength, list):
-                    wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
-                    wavelength = str(wavelength)
-                else:
-                    wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
         # Extract and format segment
-        if segment != '':
+        # Convert list of segments into a comma-separated string
+        if segment:
+            if isinstance(segment, list):
+                segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
             segment = '{{{segment}}}'.format(segment=segment)
 
+        # Extract and format sample
         sample = kwargs.get('sample', '')
         if sample:
             sample = '@{}s'.format(sample)
 
-        dataset = '{series}[{start}-{end}{sample}]{wavelength}{segment}'.format(
-                   series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                   end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                   sample=sample,
-                   wavelength=wavelength, segment=segment)
+        # Populate primekeys dict with Time and Wavelength values
+        if start_time and end_time:
+            # Check whether any primekey listed in PKEY_LIST_TIME has been passed through
+            # PrimeKey() attribute. If yes, raise an error, since Time can only be passed
+            # either through PrimeKey() attribute or Time() attribute.
+            if not any(x in PKEY_LIST_TIME for x in primekey):
+                timestr = '{start}-{end}{sample}'.format(
+                        start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                        end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                        sample=sample)
+            else:
+                error_message = "Time attribute has been passed both as a Time()"\
+                                " and PrimeKey(). Please provide any one of them"\
+                                " or separate them by OR operator."
+                raise ValueError(error_message)
+
+        else:
+            # This is executed when Time has not been passed through Time() attribute.
+            # `match` stores all the time-type prime-keys that has been passed through
+            # PrimeKey() attribute. The length of `match` won't ever be greater than 1,
+            # but it is a good idea to keep a check.
+            match = set(primekey.keys()) & PKEY_LIST_TIME
+            if len(match) > 1:
+                error_message = "Querying of series, having more than 1 Time-type "\
+                                "prime-keys is not yet supported. Alternative is to "\
+                                "use only one of the primekey to query for series data."
+                raise ValueError(error_message)
+
+            if match:
+                timestr = '{0}'.format(primekey.pop(list(match)[0], ''))
+            else:
+                timestr = ''
+
+        if wavelength:
+            if not primekey.get('WAVELNTH', ''):
+                if isinstance(wavelength, list):
+                    wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
+                    wavelength = str(wavelength)
+                else:
+                    wavelength = '{0}'.format(int(np.ceil(wavelength.to(u.AA).value)))
+
+            else:
+                # This is executed when wavelength has been passed both through PrimeKey()
+                # and Wavelength().
+                error_message = "Wavelength attribute has been passed both as a Wavelength()"\
+                                " and PrimeKey(). Please provide any one of them"\
+                                " or separate them by OR operator."
+                raise ValueError(error_message)
+
+        else:
+            # This is executed when wavelength has been passed through PrimeKey().
+            wavelength = '{0}'.format(primekey.pop('WAVELNTH', ''))
+
+        # Populate primekey dict with formatted Time and Wavlength.
+        if timestr:
+            primekey['TIME'] = timestr
+        if wavelength:
+            primekey['WAVELNTH'] = wavelength
+
+        # Extract and format primekeys
+        pkstr = ''
+        c = drms.Client()
+        si = c.info(series)
+        pkeys_isTime = si.keywords.loc[si.primekeys].is_time
+        for pkey in pkeys_isTime.index.values:
+            # The loop is iterating over the list of prime-keys existing for the given series.
+            if len(primekey) > 0:
+                if pkeys_isTime[pkey]:
+                    pkstr += '[{0}]'.format(primekey.pop('TIME', ''))
+                else:
+                    pkstr += '[{0}]'.format(primekey.pop(pkey, ''))
+            else:
+                break
+                # break because we can skip adding {} at the end of pkstr, if the primekey
+                # dict is empty.
+
+        if not pkstr:
+            # pkstr cannot be totally empty
+            error_message = "Atleast one PrimeKey must be passed."
+            raise ValueError(error_message)
+
+        dataset = '{series}{primekey}{segment}'.format(series=series,
+                                                       primekey=pkstr,
+                                                       segment=segment)
 
         return dataset
 
-    def _make_query_payload(self, start_time, end_time, series, notify=None,
-                            protocol='FITS', compression='rice', **kwargs):
-        """
-        Build the POST payload for the query parameters
-        """
-
-        if protocol.upper() == 'FITS' and compression and compression.lower() == 'rice':
-            jprotocol = 'FITS,compress Rice'
-        elif protocol.upper() == 'FITS':
-            jprotocol = 'FITS, **NONE**'
-        else:
-            jprotocol = protocol
-
-        if not notify:
-            raise ValueError("JSOC queries now require a valid email address "
-                             "before they will be accepted by the server")
-
-        dataset = self._make_recordset(start_time, end_time, series, **kwargs)
-        kwargs.pop('wavelength', None)
-        kwargs.pop('sample', None)
-
-        # Build full POST payload
-        payload = {'ds': dataset,
-                   'format': 'json',
-                   'method': 'url',
-                   'notify': notify,
-                   'op': 'exp_request',
-                   'process': 'n=0|no_op',
-                   'protocol': jprotocol,
-                   'requestor': 'none',
-                   'filenamefmt': '{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
-
-        payload.update(kwargs)
-        return payload
-
-    def _send_jsoc_request(self, start_time, end_time, series, notify=None,
-                           protocol='FITS', compression='rice', **kwargs):
-        """
-        Request that JSOC stages data for download
-
-        This routine puts in a POST request to JSOC
-        """
-
-        payload = self._make_query_payload(start_time, end_time, series,
-                                           notify=notify, protocol=protocol,
-                                           compression=compression, **kwargs)
-
-        r = requests.post(JSOC_EXPORT_URL, data=payload)
-
-        if r.status_code != 200:
-            exception_message = "JSOC POST Request returned code {0}"
-            raise Exception(exception_message.format(r.status_code))
-
-        return r, r.json()
-
     def _lookup_records(self, iargs):
         """
-        Do a LookData request to JSOC to workout what results the query returns
+        Do a LookData request to JSOC to workout what results the query returns.
         """
-        keywords = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH',
-                    'WAVEUNIT']
 
-        if not all([k in iargs for k in ('start_time', 'end_time', 'series')]):
-            error_message = "Both Time and Series must be specified for a "\
-                            "JSOC Query"
+        keywords_default = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH']
+        isMeta = iargs.get('meta', False)
+        c = drms.Client()
+
+        if isMeta:
+            keywords = '**ALL**'
+        else:
+            keywords = iargs.get('keys', keywords_default)
+
+        if 'series' not in iargs:
+            error_message = "Series must be specified for a JSOC Query"
             raise ValueError(error_message)
 
-        postthis = {'ds': self._make_recordset(**iargs),
-                    'op': 'rs_list',
-                    'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
-                    'seg': '**NONE**',
-                    'link': '**NONE**'}
+        if not isinstance(keywords, list) and not isinstance(keywords, six.string_types):
+            error_message = "Keywords can only be passed as a list or "\
+                            "comma-separated strings."
+            raise TypeError(error_message)
 
-        r = requests.get(JSOC_INFO_URL, params=postthis)
+        # Raise errors for PrimeKeys
+        # Get a set of the PrimeKeys that exist for the given series, and check
+        # whether the passed PrimeKeys is a subset of that.
+        pkeys = c.pkeys(iargs['series'])
+        pkeys_passed = iargs.get('primekey', None)  # pkeys_passes is a dict, with key-value pairs.
+        if pkeys_passed is not None:
+            if not set(list(pkeys_passed.keys())) <= set(pkeys):
+                error_message = "Unexpected PrimeKeys were passed. The series {series} "\
+                                "supports the following PrimeKeys {pkeys}"
+                raise ValueError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
-        result = r.json()
+        # Raise errors for wavelength
+        wavelength = iargs.get('wavelength', '')
+        if wavelength:
+            if 'WAVELNTH' not in pkeys:
+                error_message = "The series {series} does not support wavelength attribute."\
+                                "The following primekeys are supported {pkeys}"
+                raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
-        out_table = {}
-        if 'keywords' in result:
-            for col in result['keywords']:
-                out_table.update({col['name']: col['values']})
+        # Raise errors for segments
+        # Get a set of the segments that exist for the given series, and check
+        # whether the passed segments is a subset of that.
+        si = c.info(iargs['series'])
+        segs = list(si.segments.index.values)          # Fetches all valid segment names
+        segs_passed = iargs.get('segment', None)
+        if segs_passed is not None:
 
-            # sort the table before returning
-            return astropy.table.Table(out_table)[keywords]
+            if not isinstance(segs_passed, list) and not isinstance(segs_passed, six.string_types):
+                error_message = "Segments can only be passed as a comma-separated"\
+                                " string or a list of strings."
+                raise TypeError(error_message)
 
+            elif isinstance(segs_passed, six.string_types):
+                segs_passed = segs_passed.replace(' ', '').split(',')
+
+            if not set(segs_passed) <= set(segs):
+                error_message = "Unexpected Segments were passed. The series {series} "\
+                                "contains the following Segments {segs}"
+                raise ValueError(error_message.format(series=iargs['series'], segs=segs))
+
+            iargs['segment'] = segs_passed
+
+        # If Time has been passed as a PrimeKey, convert the Time object into TAI time scale,
+        # and then, convert it to datetime object.
+
+        iargs['start_time'] = iargs['start_time'].tai.datetime
+        iargs['end_time'] = iargs['end_time'].tai.datetime
+
+        ds = self._make_recordset(**iargs)
+
+        # Convert the list of keywords into comma-separated string.
+        if isinstance(keywords, list):
+            key = str(keywords)[1:-1].replace(' ', '').replace("'", '')
         else:
+            key = keywords
+
+        r = c.query(ds, key=key, rec_index=isMeta)
+
+        # If the method was called from search_metadata(), return a Pandas Dataframe,
+        # otherwise return astropy.table
+        if isMeta:
+            return r
+
+        if r is None or r.empty:
             return astropy.table.Table()
-
-    def _multi_request(self, **kwargs):
-        """
-        Make a series of requests to avoid the 100GB limit
-        """
-        start_time = kwargs.pop('start_time', None)
-        end_time = kwargs.pop('end_time', None)
-        series = kwargs.pop('series', None)
-        if any(x is None for x in (start_time, end_time, series)):
-            return []
-        start_time = self._process_time(start_time)
-        end_time = self._process_time(end_time)
-        tr = TimeRange(start_time, end_time)
-        returns = []
-        response, json_response = self._send_jsoc_request(start_time, end_time,
-                                                          series, **kwargs)
-
-        # We skip these lines because a massive request is not a practical test.
-        error_response = 'Request exceeds max byte limit of 100000MB'
-        if (json_response['status'] == 3 and
-                json_response['error'] == error_response):  # pragma: no cover
-            returns.append(self._multi_request(tr.start(), tr.center(), series, **kwargs)[0])
-            # pragma: no cover
-            returns.append(self._multi_request(tr.center(), tr.end(), series, **kwargs)[0])
-            # pragma: no cover
-
         else:
-            returns.append(response)
-
-        return returns
-
-    def _request_status(self, request_id):
-        """
-        GET the status of a request ID
-        """
-        payload = {'op': 'exp_status', 'requestid': request_id}
-        u = requests.get(JSOC_EXPORT_URL, params=payload)
-
-        return u
+            return astropy.table.Table.from_pandas(r)
 
     @classmethod
     def _can_handle_query(cls, *query):
-        chkattr = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength',
-                   'Time', 'Segment']
+        chkattr = ['Series', 'Protocol', 'Notify', 'Wavelength', 'Time',
+                   'Segment', 'Keys', 'PrimeKey', 'Sample']
 
         return all([x.__class__.__name__ in chkattr for x in query])
