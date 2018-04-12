@@ -40,9 +40,9 @@ class NoRHTimeSeries(GenericTimeSeries):
 
     Examples
     --------
-    >>> import sunpy.data.sample
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> import sunpy.timeseries
-    >>> norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_TIMESERIES, source='NoRH')
+    >>> norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_TIMESERIES, source='NoRH')  # doctest: +REMOTE_DATA
     >>> norh.peek()   # doctest: +SKIP
 
     References

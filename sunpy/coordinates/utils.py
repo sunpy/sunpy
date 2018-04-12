@@ -69,12 +69,11 @@ class GreatArc(object):
     >>> import astropy.units as u
     >>> from sunpy.coordinates.utils import GreatArc
     >>> import sunpy.map
-    >>> from sunpy.data.sample import AIA_171_IMAGE
-
-    >>> m = sunpy.map.Map(AIA_171_IMAGE)
-    >>> a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=m.coordinate_frame)
-    >>> b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=m.coordinate_frame)
-    >>> great_arc = GreatArc(a, b)
+    >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
+    >>> m = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=m.coordinate_frame)  # doctest: +REMOTE_DATA
+    >>> b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=m.coordinate_frame)  # doctest: +REMOTE_DATA
+    >>> great_arc = GreatArc(a, b)  # doctest: +REMOTE_DATA
     >>> ax = plt.subplot(projection=m)  # doctest: +SKIP
     >>> m.plot(axes=ax)  # doctest: +SKIP
     >>> ax.plot_coord(great_arc.coordinates(), color='c')  # doctest: +SKIP

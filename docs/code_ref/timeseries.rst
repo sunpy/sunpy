@@ -29,8 +29,8 @@ factory can determine the source implicitly, but it's good practice to explicitl
 The following example shows the factory loading a sample file::
 
     >>> import sunpy.timeseries as ts
-    >>> import sunpy.data.sample
-    >>> goes = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> goes = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')  # doctest: +REMOTE_DATA
 
 The `~sunpy.timeseries.TimeSeries` factory will load the file and create the timeseries
 instance. The following instrument classes are supported.

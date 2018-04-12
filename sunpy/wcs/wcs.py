@@ -167,8 +167,8 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     Examples
     --------
     >>> import sunpy.wcs
-    >>> sunpy.wcs.convert_hpc_hcc(40.0, 32.0, z=True) # doctest: +FLOAT_CMP
-    (28876152.176423457, 23100922.071266972, 694524220.8157959)
+    >>> sunpy.wcs.convert_hpc_hcc(40.0, 32.0, z=True)
+    (28876152.176423457, 23100922.07126697, 694524220.8157959)
 
     """
     c = np.array([_convert_angle_units(unit=angle_units),
@@ -227,7 +227,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     Examples
     --------
     >>> import sunpy.wcs
-    >>> sunpy.wcs.convert_hcc_hpc(28748691, 22998953) # doctest: +FLOAT_CMP
+    >>> sunpy.wcs.convert_hcc_hpc(28748691, 22998953)
     (39.823439773829705, 31.858751644835717)
 
     """
@@ -294,9 +294,9 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     Examples
     --------
     >>> import sunpy.wcs
-    >>> sunpy.wcs.convert_hcc_hg(230000.0,45000000.0, # doctest: +FLOAT_CMP
+    >>> sunpy.wcs.convert_hcc_hg(230000.0,45000000.0,
     ...                          z=695508000.0 + 8000000.0, radius=True)
-    (0.01873188196651189, 3.6599471896203317, 704945784.41465974)
+    (0.01873188196651189, 3.6599471896203317, 704945784.4146597)
     """
     if z is None:
         z = np.sqrt(rsun_meters**2 - x**2 - y**2)
@@ -352,7 +352,7 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
     Examples
     --------
     >>> import sunpy.wcs
-    >>> sunpy.wcs.convert_hg_hcc(0.01873188196651189, 3.6599471896203317, # doctest: +FLOAT_CMP
+    >>> sunpy.wcs.convert_hg_hcc(0.01873188196651189, 3.6599471896203317,
     ...                          r=704945784.41465974, z=True)
     (230000.0, 45000000.0, 703508000.0)
     """
@@ -420,8 +420,8 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, a
     Examples
     --------
     >>> import sunpy.wcs
-    >>> sunpy.wcs.convert_hg_hpc(34.0, 45.0, b0_deg=-7.064078, l0_deg=0.0) # doctest: +FLOAT_CMP
-    (380.05656560308898, 743.78281283290016)
+    >>> sunpy.wcs.convert_hg_hpc(34.0, 45.0, b0_deg=-7.064078, l0_deg=0.0)
+    (380.056565603089, 743.7828128329002)
     """
 
     tempx, tempy = convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=b0_deg, l0_deg=l0_deg, occultation=occultation)
@@ -461,8 +461,8 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
     Examples
     --------
     >>> import sunpy.wcs
-    >>> sunpy.wcs.convert_hpc_hg(382, 748, b0_deg=-7.064078, l0_deg=0.0) # doctest: +FLOAT_CMP
-    (34.504653439914669, 45.443143275518182)
+    >>> sunpy.wcs.convert_hpc_hg(382, 748, b0_deg=-7.064078, l0_deg=0.0)
+    (34.50465343991467, 45.44314327551818)
     """
     tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
     lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)

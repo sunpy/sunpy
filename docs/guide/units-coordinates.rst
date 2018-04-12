@@ -205,17 +205,16 @@ constructed from the header information. This can be accessed using
 ``.coordinate_frame``::
 
   >>> import sunpy.map
-  >>> from sunpy.data.sample import AIA_171_IMAGE
-
-  >>> m = sunpy.map.Map(AIA_171_IMAGE)
-  >>> m.coordinate_frame
+  >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
+  >>> m = sunpy.map.Map(AIA_171_IMAGE) # doctest: +REMOTE_DATA
+  >>> m.coordinate_frame  # doctest: +REMOTE_DATA
     <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
         (0., 0.048591, 1.51846026e+11)>)>
 
 This can be used when creating a `~astropy.coordinates.SkyCoord` object to set
 the coordinate system to that image::
 
-  >>> SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame)
+  >>> SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame) # doctest: +REMOTE_DATA
   <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
       (0., 0.048591, 1.51846026e+11)>): (Tx, Ty) in arcsec
       (100., 10.)>
@@ -225,7 +224,7 @@ on top of the map::
 
   >>> import matplotlib.pyplot as plt
 
-  >>> ax = plt.subplot(projection=m)
+  >>> ax = plt.subplot(projection=m)  # doctest: +REMOTE_DATA
   >>> m.plot()  # doctest: +SKIP
   >>> ax.plot_coord(c, 'o')  # doctest: +SKIP
 

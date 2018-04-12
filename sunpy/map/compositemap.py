@@ -66,12 +66,12 @@ class CompositeMap(object):
     Examples
     --------
     >>> import sunpy.map
-    >>> import sunpy.data.sample
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> comp_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE,
     ...                          sunpy.data.sample.EIT_195_IMAGE,
-    ...                          composite=True)
-    >>> comp_map.add_map(sunpy.map.Map(sunpy.data.sample.RHESSI_IMAGE))
-    >>> comp_map.peek()   # doctest: +SKIP
+    ...                          composite=True)  # doctest: +REMOTE_DATA
+    >>> comp_map.add_map(sunpy.map.Map(sunpy.data.sample.RHESSI_IMAGE))  # doctest: +REMOTE_DATA
+    >>> comp_map.peek()  # doctest: +SKIP
 
     """
     def __init__(self, *args, **kwargs):

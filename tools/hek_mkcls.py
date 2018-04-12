@@ -15,7 +15,7 @@ to use completion.
 
 Events are EventType objects. When they are directly ORed together, they are
 joined together so that only one query is sent to the query. They may not
-be ANDed together because an event cannot be of multiple types.	
+be ANDed together because an event cannot be of multiple types.
 
 Events also have attributes which are _StringParamAttrWrapper, that means that
 they overload the Python operators for strings and return a _ParamAttr for
@@ -50,7 +50,7 @@ NAMES = defaultdict(lambda: None, {
 })
 # These are just groups for attributes that are not _ListAttrs themselves.
 OTHER = ['Area', 'BoundBox', 'Bound', 'OBS', 'Skel', 'FRM', 'Event', 'Outflow']
-# There is no underscore after Wave in the names of the API, so we do not 
+# There is no underscore after Wave in the names of the API, so we do not
 # need to remove it.
 OTHER_NOPAD = ['Wave', 'Veloc', 'Freq', 'Intens']
 # Every attribute that neither starts with something in EVENTS, OTHER or
@@ -252,7 +252,7 @@ def mk_gen(rest):
 def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'):
     if name is None:
         name = key
-    
+
     keys = sorted(
         [(k, v) for k, v in fields.iteritems() if k.startswith(key)]
     )
@@ -283,20 +283,20 @@ if __name__ == '__main__':
             'attrs.py')
         if len(sys.argv) <= 1 else sys.argv[1]
     )
-    
+
     if dest == '-':
         fd = sys.stdout
     else:
         fd = open(dest, 'w')
-    
+
     tmplfd = open(tmpl)
-    
+
     while True:
         buf = tmplfd.read(BUFFER)
         if not buf:
             break
         fd.write(buf)
-    
+
     fd.write('\n\n')
     fd.write('\n\n'.join(mk_cls(evt, used, name=NAMES[evt]) for evt in EVENTS))
     fd.write('\n\n')
@@ -305,5 +305,3 @@ if __name__ == '__main__':
     fd.write('\n\n'.join(mk_cls(evt, used, 1, 0, 0, NAMES[evt], 'object') for evt in OTHER))
     fd.write('\n\n')
     fd.write(mk_gen(set(fields) - used))
-    
-
