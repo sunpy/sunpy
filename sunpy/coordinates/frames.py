@@ -29,32 +29,46 @@ from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribut
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
 
-__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington', 'Heliocentric', 'Helioprojective']
+__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington', 'Heliocentric',
+           'Helioprojective']
 
 
 class HeliographicStonyhurst(BaseCoordinateFrame):
     """
-    A coordinate or frame in the Stonyhurst Heliographic
-    system.
+    A coordinate or frame in the Stonyhurst Heliographic system.
 
-    This frame has its origin at the solar centre and the north pole above the
-    solar north pole, and the zero line on longitude pointing towards the
-    Earth.
+    In a cartesian representation this is also known as the Heliocentric
+    Earth Equatorial (HEEQ) system. This frame has its origin at the solar
+    centre and the north pole above the solar north pole, and the zero line on
+    longitude pointing towards the Earth.
+
+    A new instance can be created using the following signatures
+    (note that all the arguments must be supplied as keywords)::
+
+        HeliographicStonyhurst(lon, lat, obstime)
+        HeliographicStonyhurst(lon, lat, radius, obstime)
+        HeliographicStonyhurst(x, y, z, obstime, representation='cartesian')
 
     Parameters
     ----------
-    representation: `~astropy.coordinates.BaseRepresentation` or `None`
+    representation : `~astropy.coordinates.BaseRepresentation` or `None`
         A representation object or None to have no data.
-    lon: `Angle` object.
+    lon : `~astropy.coordinates.Angle`, optional
         The longitude for this object (``lat`` must also be given and
         ``representation`` must be None).
-    lat: `Angle` object.
+    lat : `~astropy.coordinates.Angle`, optional
         The latitude for this object (``lon`` must also be given and
         ``representation`` must be None).
-    radius: `astropy.units.Quantity` object.
+    radius : `~astropy.units.Quantity`, optional
         This quantity holds the radial distance. If not specified, it is, by
-        default, the radius of the photosphere. Optional.
-    obstime: SunPy Time
+        default, the radius of the photosphere.
+    x : `~astropy.units.Quantity`, optional
+        x coordinate.
+    y : `~astropy.units.Quantity`, optional
+        y coordinate.
+    z : `~astropy.units.Quantity`, optional
+        z coordinate.
+    obstime: `~sunpy.time.Time`
         The date and time of the observation, used to convert to heliographic
         carrington coordinates.
 
@@ -95,6 +109,12 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
                                   RepresentationMapping(reprname='distance',
                                                         framename='radius',
                                                         defaultunit=None)],
+        CartesianRepresentation: [RepresentationMapping(reprname='x',
+                                                        framename='x'),
+                                  RepresentationMapping(reprname='y',
+                                                        framename='y'),
+                                  RepresentationMapping(reprname='z',
+                                                        framename='z')]
     }
 
     obstime = TimeFrameAttributeSunPy()

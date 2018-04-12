@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
 import numpy as np
 
 import pytest
@@ -201,11 +202,19 @@ def test_wrapping_off():
     assert_quantity_allclose(hpc1.Tx.wrap_angle, 360*u.deg)
 
 
-
 # ==============================================================================
 # ## Heliographic Tests
 # ==============================================================================
 
+def test_HEE_creation():
+    # Smoke test to make sure HEE constructors work fine
+    _ = HeliographicStonyhurst(lon=0*u.deg, lat=90*u.deg,
+                               obstime=datetime(2018, 12, 21))
+    _ = HeliographicStonyhurst(lon=0*u.deg, lat=90*u.deg, radius=1*u.km,
+                               obstime=datetime(2018, 12, 21))
+    _ = HeliographicStonyhurst(x=1*u.km, y=1*u.km, z=1*u.km,
+                               obstime=datetime(2018, 12, 21),
+                               representation='cartesian')
 
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
