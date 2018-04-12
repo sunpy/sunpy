@@ -47,8 +47,8 @@ class LYRATimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample
-    >>> lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES)
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES)  # doctest: +REMOTE_DATA
     >>> lyra.peek()   # doctest: +SKIP
 
     References

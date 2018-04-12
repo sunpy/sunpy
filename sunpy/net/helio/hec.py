@@ -163,7 +163,7 @@ class HECClient(object):
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
         >>> start = '2005/01/03'
         >>> end = '2005/12/03'
-        >>> temp = hc.time_query(start, end, max_records=10)   # doctest: +SKIP +REMOTE_DATA
+        >>> temp = hc.time_query(start, end, max_records=10)   # doctest: +REMOTE_DATA
 
         """
         while table is None:
@@ -193,7 +193,7 @@ class HECClient(object):
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> print(hc.get_table_names())   # doctest: +SKIP
+        >>> print(hc.get_table_names())   # doctest: +REMOTE_DATA
         [('timed_see_flare',) ('hi_event',) ('yohkoh_flare_list',)
          ('wind_mfi_bs_crossing_time',) ('seeds_soho',) ('seeds_stb',)
          ...

@@ -10,7 +10,7 @@ Fido ~`sunpy.net.fido_factory.UnifiedDownloaderFactory` can be used like so::
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Instrument('lyra'))  # doctest: +REMOTE_DATA
-    >>> files = Fido.fetch(results)  # doctest: +REMOTE_DATA
+    >>> files = Fido.fetch(results)  # doctest: +SKIP
 
 .. automodapi:: sunpy.net
    :no-heading:
@@ -37,6 +37,15 @@ VSO
 .. automodapi:: sunpy.net.vso.attrs
    :headings: #~
 
+JSOC
+----
+
+.. automodapi:: sunpy.net.jsoc
+    :headings: ^#
+
+.. automodapi:: sunpy.net.jsoc.attrs
+    :headings: #~
+
 
 HEK
 ---
@@ -55,14 +64,4 @@ HELIO
     :headings: ^#
 
 .. automodapi:: sunpy.net.helio.hec
-    :headings: #~
-
-
-JSOC
-----
-
-.. automodapi:: sunpy.net.jsoc
-    :headings: ^#
-
-.. automodapi:: sunpy.net.jsoc.attrs
     :headings: #~

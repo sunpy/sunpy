@@ -89,7 +89,7 @@ def vso_attribute_parse(phrase):
     >>> len(q)  # doctest: +REMOTE_DATA
     19
 
-    >>> hek2vso.vso_attribute_parse(q[9])  # doctest: +REMOTE_DATA +FLOAT_CMP
+    >>> hek2vso.vso_attribute_parse(q[9])  # doctest: +REMOTE_DATA
     [<Time(datetime.datetime(2011, 8, 9, 7, 22, 38), datetime.datetime(2011, 8, 9, 8, 32, 2), None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
