@@ -45,9 +45,9 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
     Examples
     --------
-    >>> import sunpy.data.sample
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> import sunpy.timeseries
-    >>> rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_TIMESERIES)
+    >>> rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_TIMESERIES)  # doctest: +REMOTE_DATA
     >>> rhessi.peek()   # doctest: +SKIP
 
     References

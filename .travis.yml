@@ -24,7 +24,7 @@ cache:
   directories:
   - $HOME/sunpy/data
 
-# Configure the build environment. Global varibles are defined for all configurations.
+# Configure the build environment. Global variables are defined for all configurations.
 env:
     global:
         - COLUMNS=180
@@ -54,7 +54,7 @@ matrix:
     fast_finish: true
 
     include:
-         # We order the jobs, in terms of the maintaniers mood
+         # We order the jobs, in terms of the maintainers mood
          # Order of tests run in build stages
          - python: 3.6
            stage: Initial tests
@@ -72,7 +72,7 @@ matrix:
            env: MAIN_CMD="py.test"
                 SETUP_CMD="--remote-data -k-figure --cov --cov-config sunpy/tests/coveragerc ./docs/"
 
-         # Python 2.7 (implicit astropy 2)
+         # Python 2.7 (implicit Astropy 2)
          - python: 2.7
            stage: Comprehensive tests
            env: SETUP_CMD='test'
@@ -89,7 +89,7 @@ matrix:
            stage: Comprehensive tests
            env: SETUP_CMD='test --figure-only --coverage' CONDA_DEPENDENCIES=''
 
-         # Python 3.5 with astropy 2
+         # Python 3.5 with Astropy 2
          - python: 3.5
            stage: Comprehensive tests
            env: ASTROPY_VERSION='lts'
@@ -117,7 +117,7 @@ matrix:
            env: SETUP_CMD='test --figure-only' ASTROPY_VERSION='dev'
                 CONDA_DEPENDENCIES='astropy'
 
-         # Previous numpy is tested on an older python version
+         # Previous NumPy is tested on an older Python version
          - python: 3.5
            stage: Cron tests
            env: NUMPY_VERSION=$PREVIOUS_NUMPY
@@ -133,8 +133,8 @@ install:
     - source ci-helpers/travis/setup_conda.sh
 
 before_script:
-    # Download the sample data for the build of the documentation.
-    - if [[ $SETUP_CMD != *egg_info* ]]; then python -m "sunpy.data.sample"; fi
+    # Download the sample data for the online builds only.
+    - if [[ $SETUP_CMD == *online-only* ]] || [[ $SETUP_CMD == *remote-data* ]]; then python -m "sunpy.data.sample"; fi
     - if [[ $MAIN_CMD == py.test* ]]; then pip install -e ./; fi
     - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
 

@@ -3,6 +3,7 @@
 import abc
 
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
 import matplotlib.animation as mplanim
@@ -525,6 +526,21 @@ class ArrayAnimator(BaseFuncAnimator):
             raise ValueError("spatial_axes and slider_axes mismatch")
 
         self.axis_ranges = self._sanitize_axis_ranges(axis_ranges, data)
+        # Due to some reason, if a slider axis range is of length two and the
+        # difference between the entries is 1, the slider start and end both get
+        # set to the 0th value stopping the animation updating the plot.
+        # In this case iterate the latter element by one to get the desired behaviour.
+        hacked_axis_ranges = [False] * len(self.axis_ranges)
+        index_changed = [None] * len(self.axis_ranges)
+        for i in range(len(self.axis_ranges)):
+            if len(self.axis_ranges[i]) == 2 and data.shape[i] == 2:
+                if 0 <= (self.axis_ranges[i][-1] - self.axis_ranges[i][0]) <= 1:
+                    axis_ranges[i][-1] += 1
+                    index_changed[i] = -1
+                elif -1 <= (self.axis_ranges[i][-1] - self.axis_ranges[i][0]) <= 0:
+                    axis_ranges[i][0] -= 1
+                    index_changed[i] = 0
+                hacked_axis_ranges[i] = True
 
         # create data slice
         self.frame_slice = [slice(None)] * self.naxis
@@ -535,6 +551,15 @@ class ArrayAnimator(BaseFuncAnimator):
                        'slider_ranges': [self.axis_ranges[i] for i in self.slider_axes]}
         base_kwargs.update(kwargs)
         BaseFuncAnimator.__init__(self, data, **base_kwargs)
+
+        # Undo hack of length 2 axis ranges
+        for i in np.arange(len(self.axis_ranges)):
+            if len(self.axis_ranges[i]) == 2 and data.shape[i] == 2:
+                if hacked_axis_ranges[i]:
+                    if index_changed[i] == 0:
+                        axis_ranges[i][0] += 1
+                    elif index_changed[i] == -1:
+                        axis_ranges[i][-1] -= 1
 
     @property
     def frame_index(self):
@@ -580,7 +605,7 @@ class ArrayAnimator(BaseFuncAnimator):
         """
         # If no axis range at all make it all [min,max] pairs
         if axis_ranges is None:
-            axis_ranges = [[0, i] for i in data.shape]
+            axis_ranges = [None] * data.ndim
 
         # need the same number of axis ranges as axes
         if len(axis_ranges) != data.ndim:
@@ -589,17 +614,17 @@ class ArrayAnimator(BaseFuncAnimator):
         # For each axis validate and translate the axis_ranges
         for i, d in enumerate(data.shape):
             # If [min,max] pair or None
-            if axis_ranges[i] is None or len(axis_ranges[i]) == 2:
+            if axis_ranges[i] is None or (len(axis_ranges[i]) == 2 and d > 2):
                 # If min==max or None
                 if axis_ranges[i] is None or axis_ranges[i][0] == axis_ranges[i][1]:
                     if i in self.slider_axes:
-                        axis_ranges[i] = np.linspace(0, d, d)
+                        axis_ranges[i] = np.arange(0, d+1)
                     else:
                         axis_ranges[i] = [0, d]
                         # min max pair for slider axes should be converted
                         # to an array
                 elif i in self.slider_axes:
-                    axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][1], d)
+                    axis_ranges[i] = np.arange(axis_ranges[i][0], axis_ranges[i][1]+1)
 
             # If we have a whole list of values for the axis, make sure we are a slider axis.
             elif len(axis_ranges[i]) == d or axis_ranges[i].shape == data.shape:
@@ -610,6 +635,7 @@ class ArrayAnimator(BaseFuncAnimator):
                 raise ValueError("axis_ranges must be None or a list with length equal to number "
                                  "of axes in data whose elements are either None, [min,max], "
                                  "or a list/array of same length as the plot/image axis of data.")
+
         return axis_ranges
 
     @abc.abstractmethod
@@ -690,6 +716,10 @@ class ImageAnimator(ArrayAnimator):
         # Define number of slider axes.
         self.naxis = data.ndim
         self.num_sliders = self.naxis-2
+        # Define marker to determine if plot axes values are supplied via array of
+        # pixel values or min max pair. This will determine the type of image produced
+        # and hence how to plot and update it.
+        self._non_regular_plot_axis = False
         # Run init for parent class
         super(ImageAnimator, self).__init__(data, image_axes=image_axes,
                                             axis_ranges=axis_ranges, **kwargs)
@@ -700,15 +730,43 @@ class ImageAnimator(ArrayAnimator):
         extent = []
         # reverse because numpy is in y-x and extent is x-y
         for i in self.image_axes[::-1]:
-            extent += self.axis_ranges[i]
+            if self._non_regular_plot_axis is False and len(self.axis_ranges[i]) > 2:
+                self._non_regular_plot_axis = True
+            extent.append(self.axis_ranges[i][0])
+            extent.append(self.axis_ranges[i][-1])
 
         imshow_args = {'interpolation': 'nearest',
                        'origin': 'lower',
-                       'extent': extent,
-                       }
-
+                       'extent': extent}
         imshow_args.update(self.imshow_kwargs)
-        im = ax.imshow(self.data[self.frame_index], **imshow_args)
+
+        # If value along an axis is set with an array, generate a NonUniformImage
+        if self._non_regular_plot_axis:
+            # If user has inverted the axes, transpose the data so the dimensions match.
+            if self.image_axes[0] < self.image_axes[1]:
+                data = self.data[self.frame_index].transpose()
+            else:
+                data = self.data[self.frame_index]
+            # Initialize a NonUniformImage with the relevant data and axis values and
+            # add the image to the axes.
+            im = mpl.image.NonUniformImage(ax, **imshow_args)
+            im.set_data(self.axis_ranges[self.image_axes[0]],
+                        self.axis_ranges[self.image_axes[1]], data)
+            ax.add_image(im)
+            # Define the xlim and ylim bearing in mind that the pixel values along
+            # the axes are plotted in the middle of the pixel.  Therefore make sure
+            # there's half a pixel buffer either side of the ends of the axis ranges.
+            x_ranges = self.axis_ranges[self.image_axes[0]]
+            xlim = (x_ranges[0] - (x_ranges[1] - x_ranges[0]) / 2.,
+                    x_ranges[-1] + (x_ranges[-1] - x_ranges[-2]) / 2.)
+            y_ranges = self.axis_ranges[self.image_axes[1]]
+            ylim = (y_ranges[0] - (y_ranges[1] - y_ranges[0]) / 2.,
+                    y_ranges[-1] + (y_ranges[-1] - y_ranges[-2]) / 2.)
+            ax.set_xlim(xlim)
+            ax.set_ylim(ylim)
+        else:
+            # Else produce a more basic plot with regular axes.
+            im = ax.imshow(self.data[self.frame_index], **imshow_args)
         if self.if_colorbar:
             self._add_colorbar(im)
 
@@ -721,39 +779,16 @@ class ImageAnimator(ArrayAnimator):
         ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
         self.frame_slice[ax_ind] = ind
         if val != slider.cval:
-            im.set_array(self.data[self.frame_index])
+            if self._non_regular_plot_axis:
+                if self.image_axes[0] < self.image_axes[1]:
+                    data = self.data[self.frame_index].transpose()
+                else:
+                    data = self.data[self.frame_index]
+                im.set_data(self.axis_ranges[self.image_axes[0]],
+                            self.axis_ranges[self.image_axes[1]], data)
+            else:
+                im.set_array(self.data[self.frame_index])
             slider.cval = val
-
-    def _sanitize_axis_ranges(self, axis_ranges, data):
-        """
-        This method takes the various allowed values of axis_ranges and returns
-        them in a standardized way for the rest of the class to use.
-
-        The outputted axis_ranges describe the physical coordinates of the
-        array axes.
-
-        The allowed values of axis_range is either None or a list.
-        If axis_ranges is None then all axes are assumed to be not scaled and
-        use array indices.
-
-        Where axis_ranges is a list it must have the same length as the number
-        of axis as the array and each element must be one of the following:
-
-            * None: Build a min,max pair or linspace array of array indices
-            * [min, max]: leave for image axes or convert to a array for slider axes
-            (from min to max in axis length steps)
-            * [min, max] pair where min == max: convert to array indies min,max pair or array.
-            * array of axis length, check that it was passed for a slider axes and do nothing
-            if it was, error if it is not.
-        """
-        # Run super class's version of this function.
-        axis_ranges = super(ImageAnimator, self)._sanitize_axis_ranges(axis_ranges, data)
-        # Check that axis ranges which are array type are only for slider axes.
-        for i, d in enumerate(data.shape):
-            if len(axis_ranges[i]) == d:
-                if i not in self.slider_axes:
-                    raise ValueError("Slider axes mis-match, non-slider axes need [min,max] pairs")
-        return axis_ranges
 
 
 class LineAnimator(ArrayAnimator):
@@ -844,9 +879,8 @@ class LineAnimator(ArrayAnimator):
         # Check inputs.
         self.plot_axis_index = int(plot_axis_index)
         if self.plot_axis_index not in range(-data.ndim, data.ndim):
-            raise ValueError("plot_axis_index must be either 0 or 1 (or equivalent "
-                             "negative indices) referring to the axis of data to be "
-                             "used for a single plot.")
+            raise ValueError("plot_axis_index must be within range of number of data dimensions"
+                             " (or equivalent negative indices).")
         if data.ndim < 2:
             raise ValueError("data must have at least two dimensions.  One for data "
                              "for each single plot and at least one for time/iteration.")

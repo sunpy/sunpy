@@ -1,5 +1,6 @@
 # Author: David PS <dps.helio -?- gmail.com>
 
+# TODO: REMOVE UNITTEST
 import unittest
 from sunpy.roi.chaincode import Chaincode
 import numpy as np
@@ -60,11 +61,3 @@ class CCTests(unittest.TestCase):
     def testSubBoundingBoxY(self):
         cc = Chaincode([0, 0], "44464660012075602223")
         self.failUnless(cc.subBoundingBox(yedge=[-1, 0.5]) == [0, 3])
-
-
-
-def main():
-    unittest.main()
-
-if __name__ == '__main__':
-    main()

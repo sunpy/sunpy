@@ -289,7 +289,7 @@ class JSOCClient(object):
             >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
             ...                          a.jsoc.Series('hmi.v_45s'),
             ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +REMOTE_DATA +FLOAT_CMP +SKIP
+            >>> print(response)  # doctest: +SKIP
                      T_REC            DATAMEAN     OBS_VR
             ----------------------- ----------- -----------
             2014.01.01_00:00:45_TAI 1906.518188 1911.202614

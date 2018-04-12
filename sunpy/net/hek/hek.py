@@ -153,15 +153,3 @@ class Response(dict):
             return xml_to_dict(response)
         else:
             return response
-
-
-if __name__ == '__main__':
-    import pprint
-    from sunpy.net.hek import attrs as a
-
-    c = HEKClient()
-    b = c.search(
-        a.Time((2010, 1, 1), (2010, 1, 2)) | a.Time((2010, 1, 3), (2010, 1, 4)),
-        a.AR, a.FL
-    )
-    pprint(b[0].vso_all)

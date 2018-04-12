@@ -99,23 +99,23 @@ class GenericMap(NDData):
     Examples
     --------
     >>> import sunpy.map
-    >>> import sunpy.data.sample
-    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    >>> aia   # doctest:  +FLOAT_CMP
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+    >>> aia   # doctest: +REMOTE_DATA
     SunPy Map
     ---------
-    Observatory:                SDO
-    Instrument:                 AIA 3
-    Detector:           AIA
-    Measurement:                171.0 Angstrom
-    Wavelength:                 171.0 Angstrom
-    Observation Date:   2011-06-07 06:33:02
-    Exposure Time:              0.234256 s
-    Dimension:          [ 1024.  1024.] pix
-    Coordinate System:  helioprojective
-    Scale:                      [ 2.402792  2.402792] arcsec / pix
-    Reference Pixel:    [ 512.5  512.5] pix
-    Reference Coord:    [ 3.22309951  1.38578135] arcsec
+    Observatory:		 SDO
+    Instrument:		 AIA 3
+    Detector:		 AIA
+    Measurement:		 171.0 Angstrom
+    Wavelength:		 171.0 Angstrom
+    Observation Date:	 2011-06-07 06:33:02
+    Exposure Time:		 0.234256 s
+    Dimension:		 [1024. 1024.] pix
+    Coordinate System:	 helioprojective
+    Scale:			 [2.402792 2.402792] arcsec / pix
+    Reference Pixel:	 [512.5 512.5] pix
+    Reference Coord:	 [3.22309951 1.38578135] arcsec
     <BLANKLINE>
     array([[ -96.,    7.,   -2., ..., -128., -128., -128.],
            [ -97.,   -5.,    0., ...,  -99., -104., -128.],
@@ -126,7 +126,8 @@ class GenericMap(NDData):
            [-128., -128., -128., ..., -128., -128., -128.]], dtype=float32)
 
 
-    >>> aia.spatial_units
+
+    >>> aia.spatial_units   # doctest: +REMOTE_DATA
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
     >>> aia.peek()   # doctest: +SKIP
 
@@ -198,6 +199,13 @@ class GenericMap(NDData):
 
         # Setup some attributes
         self._nickname = None
+        # These are palceholders for default attributes, which are only set
+        # once if their data isn't present in the map metadata.
+        self._default_time = None
+        self._default_dsun = None
+        self._default_carrington_longitude = None
+        self._default_heliographic_lattitude = None
+        self._default_heliographic_longitude = None
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
@@ -417,11 +425,14 @@ Reference Coord:\t {refcoord}
         """Image observation time."""
         time = self.meta.get('date-obs', None)
         if time is None:
-            warnings.warn_explicit("Missing metadata for observation time."
-                                   " Using current time.",
-                                   Warning, __file__,
-                                   inspect.currentframe().f_back.f_lineno)
-            time = 'now'
+            if self._default_time is None:
+                warnings.warn_explicit(
+                    "Missing metadata for observation time:"
+                    " setting observation time to current time",
+                    Warning, __file__,
+                    inspect.currentframe().f_back.f_lineno)
+                self._default_time = parse_time('now')
+            time = self._default_time
         return parse_time(time)
 
     @property
@@ -435,11 +446,13 @@ Reference Coord:\t {refcoord}
         dsun = self.meta.get('dsun_obs', None)
 
         if dsun is None:
-            warnings.warn_explicit("Missing metadata for Sun-spacecraft"
-                                   " separation: assuming Sun-Earth distance",
-                                   Warning, __file__,
-                                   inspect.currentframe().f_back.f_lineno)
-            dsun = get_sunearth_distance(self.date).to(u.m)
+            if self._default_dsun is None:
+                warnings.warn_explicit("Missing metadata for Sun-spacecraft"
+                                       " separation: assuming Sun-Earth distance",
+                                       Warning, __file__,
+                                       inspect.currentframe().f_back.f_lineno)
+                self._default_dsun = get_sunearth_distance(self.date).to(u.m)
+            return self._default_dsun
 
         return u.Quantity(dsun, 'm')
 
@@ -593,11 +606,13 @@ Reference Coord:\t {refcoord}
         carrington_longitude = self.meta.get('crln_obs', None)
 
         if carrington_longitude is None:
-            warnings.warn_explicit("Missing metadata for Carrington longitude:"
-                                   " assuming Earth-based observer",
-                                   Warning, __file__,
-                                   inspect.currentframe().f_back.f_lineno)
-            carrington_longitude = get_sun_L0(self.date)
+            if self._default_carrington_longitude is None:
+                warnings.warn_explicit("Missing metadata for Carrington longitude:"
+                                       " assuming Earth-based observer",
+                                       Warning, __file__,
+                                       inspect.currentframe().f_back.f_lineno)
+                self._default_carrington_longitude = get_sun_L0(self.date)
+            carrington_longitude = self._default_carrington_longitude
 
         if isinstance(carrington_longitude, six.string_types):
             carrington_longitude = float(carrington_longitude)
@@ -612,11 +627,13 @@ Reference Coord:\t {refcoord}
                                                             self.meta.get('solar_b0', None)))
 
         if heliographic_latitude is None:
-            warnings.warn_explicit("Missing metadata for heliographic latitude:"
-                                   " assuming Earth-based observer",
-                                   Warning, __file__,
-                                   inspect.currentframe().f_back.f_lineno)
-            heliographic_latitude = get_sun_B0(self.date)
+            if self._default_heliographic_lattitude is None:
+                warnings.warn_explicit("Missing metadata for heliographic latitude:"
+                                       " assuming Earth-based observer",
+                                       Warning, __file__,
+                                       inspect.currentframe().f_back.f_lineno)
+                self._default_heliographic_lattitude = get_sun_B0(self.date)
+            heliographic_latitude = self._default_heliographic_lattitude
 
         if isinstance(heliographic_latitude, six.string_types):
             heliographic_latitude = float(heliographic_latitude)
@@ -626,7 +643,17 @@ Reference Coord:\t {refcoord}
     @property
     def heliographic_longitude(self):
         """Heliographic longitude."""
-        heliographic_longitude = self.meta.get('hgln_obs', 0.)
+        heliographic_longitude = self.meta.get('hgln_obs', None)
+
+        if heliographic_longitude is None:
+            if self._default_heliographic_longitude is None:
+                warnings.warn_explicit(
+                    "Missing metadata for heliographic longitude: "
+                    "assuming longitude of 0 degrees",
+                    Warning, __file__,
+                    inspect.currentframe().f_back.f_lineno)
+                self._default_heliographic_longitude = 0
+            heliographic_longitude = self._default_heliographic_longitude
 
         if isinstance(heliographic_longitude, six.string_types):
             heliographic_longitude = float(heliographic_longitude)
@@ -1201,50 +1228,51 @@ Reference Coord:\t {refcoord}
         Examples
         --------
         >>> import astropy.units as u
+        >>> from astropy.coordinates import SkyCoord
         >>> import sunpy.map
-        >>> import sunpy.data.sample
-        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-        >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)
-        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)
-        >>> aia.submap(bl, tr)   # doctest:  +FLOAT_CMP
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
+        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
+        >>> aia.submap(bl, tr)   # doctest: +REMOTE_DATA
         SunPy Map
         ---------
-        Observatory:                SDO
-        Instrument:                 AIA 3
-        Detector:           AIA
-        Measurement:                171.0 Angstrom
-        Wavelength:                 171.0 Angstrom
-        Observation Date:   2011-06-07 06:33:02
-        Exposure Time:              0.234256 s
-        Dimension:          [ 334.  334.] pix
-        Coordinate System:  helioprojective
-        Scale:                      [ 2.402792  2.402792] arcsec / pix
-        Reference Pixel:    [ 127.5  126.5] pix
-        Reference Coord:    [ 3.22309951  1.38578135] arcsec
+        Observatory:		 SDO
+        Instrument:		 AIA 3
+        Detector:		 AIA
+        Measurement:		 171.0 Angstrom
+        Wavelength:		 171.0 Angstrom
+        Observation Date:	 2011-06-07 06:33:02
+        Exposure Time:		 0.234256 s
+        Dimension:		 [334. 334.] pix
+        Coordinate System:	 helioprojective
+        Scale:			 [2.402792 2.402792] arcsec / pix
+        Reference Pixel:	 [127.5 126.5] pix
+        Reference Coord:	 [3.22309951 1.38578135] arcsec
         <BLANKLINE>
-        array([[  451.,   566.,   586., ...,  1179.,  1005.,   978.],
-               [  475.,   515.,   556., ...,  1026.,  1011.,  1009.],
-               [  547.,   621.,   621., ...,   935.,  1074.,  1108.],
+        array([[ 451.,  566.,  586., ..., 1179., 1005.,  978.],
+               [ 475.,  515.,  556., ..., 1026., 1011., 1009.],
+               [ 547.,  621.,  621., ...,  935., 1074., 1108.],
                ...,
-               [  203.,   195.,   226., ...,   612.,   580.,   561.],
-               [  207.,   213.,   233., ...,   651.,   622.,   537.],
-               [  230.,   236.,   222., ...,   516.,   586.,   591.]], dtype=float32)
+               [ 203.,  195.,  226., ...,  612.,  580.,  561.],
+               [ 207.,  213.,  233., ...,  651.,  622.,  537.],
+               [ 230.,  236.,  222., ...,  516.,  586.,  591.]], dtype=float32)
 
-        >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest:  +FLOAT_CMP
+        >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +REMOTE_DATA
         SunPy Map
         ---------
-        Observatory:                SDO
-        Instrument:                 AIA 3
-        Detector:           AIA
-        Measurement:                171.0 Angstrom
-        Wavelength:                 171.0 Angstrom
-        Observation Date:   2011-06-07 06:33:02
-        Exposure Time:              0.234256 s
-        Dimension:          [ 5.  5.] pix
-        Coordinate System:  helioprojective
-        Scale:                      [ 2.402792  2.402792] arcsec / pix
-        Reference Pixel:    [ 512.5  512.5] pix
-        Reference Coord:    [ 3.22309951  1.38578135] arcsec
+        Observatory:		 SDO
+        Instrument:		 AIA 3
+        Detector:		 AIA
+        Measurement:		 171.0 Angstrom
+        Wavelength:		 171.0 Angstrom
+        Observation Date:	 2011-06-07 06:33:02
+        Exposure Time:		 0.234256 s
+        Dimension:		 [5. 5.] pix
+        Coordinate System:	 helioprojective
+        Scale:			 [2.402792 2.402792] arcsec / pix
+        Reference Pixel:	 [512.5 512.5] pix
+        Reference Coord:	 [3.22309951 1.38578135] arcsec
         <BLANKLINE>
         array([[-96.,   7.,  -2.,  -3.,  -1.],
                [-97.,  -5.,   0.,   0.,   1.],
