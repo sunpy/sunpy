@@ -104,7 +104,7 @@ def endpoint_parser(link):
     endpoint_page = link_test(link)
     if endpoint_page is None:
         return None
-    soup = BeautifulSoup(endpoint_page)
+    soup = BeautifulSoup(endpoint_page, 'html.parser')
     endpoints = []
     for web_link in soup.find_all('a'):
         url = web_link.get('href')

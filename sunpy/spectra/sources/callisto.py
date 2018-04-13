@@ -69,7 +69,7 @@ def search(start, end, instruments=None, url=DEFAULT_URL):
         directory = url + day.strftime('%Y/%m/%d/')
         opn = urllib.request.urlopen(directory)
         try:
-            soup = BeautifulSoup(opn)
+            soup = BeautifulSoup(opn, 'html.parser')
             for link in soup.find_all("a"):
                 href = link.get("href")
                 for prefix, parser in PARSERS:
