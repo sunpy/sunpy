@@ -21,7 +21,7 @@ from sunpy.data.sample import NOAAINDICES_TIMESERIES as noaa_ind
 # Let's first create a TimeSeries from sample data
 ts_noaa_ind = TimeSeries(noaa_ind, source='NOAAIndices')
 
-# #############################################################################
+###############################################################################
 # Now we will extract data values from the TimeSeries and apply a BoxCar filter
 # to get smooth data. Boxcar smoothing is equivalent to taking our signal and
 # using it to make a new signal where each element is the average of w adjacent
