@@ -1,7 +1,7 @@
 """
-==================================================
-Base Difference and Running Difference in Mapcubes
-==================================================
+=======================================
+Base and Running Difference in Mapcubes
+=======================================
 
 This example illustrates how to do base and running differencing with a MapCube.
 Base differencing uses a fixed reference point when compared to running difference.
