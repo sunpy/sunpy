@@ -4,7 +4,7 @@ Base and Running Difference in Mapcubes
 =======================================
 
 This example illustrates how to do base and running differencing with a MapCube.
-Base differencing uses a fixed reference point when compared to running difference.
+Base differencing uses a fixed map when compared to running difference.
 """
 
 import matplotlib.pyplot as plt
@@ -17,7 +17,7 @@ from sunpy.data.sample import AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE, AI
 
 ###############################################################################
 # We create the MapCube using the AIA_193_CUTOUT sample data.
-# To create a MapCube, we can call Map directly but add in a keyword to output a MapCube instead.
+# To create a MapCube, we can call Map directly and add in a keyword to output a MapCube instead.
 aiamapcube = sunpy.map.Map(AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE,
                            AIA_193_CUTOUT03_IMAGE, cube=True)
 
@@ -25,9 +25,9 @@ aiamapcube = sunpy.map.Map(AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE,
 # In case of running difference, we loop through all the maps in the
 # aiamapcube and differentially rotate each map in the mapcube
 # with respect to the previous map
-# while in case of base difference we only differentially
+# while in case of base difference we differentially
 # rotate each map in the mapcube to the time of the base map.
-# We then store all such difference maps in a list.
+# We then store all the difference maps in a list.
 base_diffmap = []
 running_diffmap = []
 for i, map_i in enumerate(aiamapcube[1:]):
