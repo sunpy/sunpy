@@ -225,7 +225,7 @@ class Scraper(object):
             try:
                 opn = urlopen(directory)
                 try:
-                    soup = BeautifulSoup(opn, "lxml")
+                    soup = BeautifulSoup(opn, "html.parser")
                     for link in soup.find_all("a"):
                         href = link.get("href")
                         if href.endswith(self.pattern.split('.')[-1]):
