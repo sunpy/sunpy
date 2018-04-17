@@ -1,4 +1,4 @@
-# Optional dependencies for extra functionality
+# Optional dependencies needed for extra functionality within SunPy.
 
 -r base.txt
 

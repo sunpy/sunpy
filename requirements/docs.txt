@@ -1,4 +1,4 @@
-# Dependencies required to build the documentation
+# Dependencies required to build the documentation.
 
 -r base.txt
 -r dev.txt
