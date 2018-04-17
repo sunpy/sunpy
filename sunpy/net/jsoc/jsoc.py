@@ -129,22 +129,22 @@ class JSOCClient(object):
         The response object holds the records that your query will return:
 
         >>> print(response)   # doctest: +ELLIPSIS  +REMOTE_DATA
-                DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
-        -------------------- -------- ---------- ----------------------- --------
-        2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
-        2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI   6173.0
-        2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI   6173.0
-        2014-01-05T17:49:26Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI   6173.0
-        2014-01-05T17:50:34Z  SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI   6173.0
-        2014-01-05T17:51:43Z  SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI   6173.0
-        2014-01-05T17:52:51Z  SDO/HMI HMI_FRONT2 2014.01.01_00:05:07_TAI   6173.0
-        2014-01-05T17:53:59Z  SDO/HMI HMI_FRONT2 2014.01.01_00:05:52_TAI   6173.0
-        2014-01-05T17:55:08Z  SDO/HMI HMI_FRONT2 2014.01.01_00:06:37_TAI   6173.0
-        2014-01-05T17:56:17Z  SDO/HMI HMI_FRONT2 2014.01.01_00:07:22_TAI   6173.0
-        2014-01-05T17:57:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:08:07_TAI   6173.0
-        2014-01-05T17:58:34Z  SDO/HMI HMI_FRONT2 2014.01.01_00:08:52_TAI   6173.0
-        2014-01-05T17:59:42Z  SDO/HMI HMI_FRONT2 2014.01.01_00:09:37_TAI   6173.0
-        2014-01-05T18:00:50Z  SDO/HMI HMI_FRONT2 2014.01.01_00:10:22_TAI   6173.0
+                T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+        ----------------------- -------- ---------- -------- -------
+        2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:05:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:06:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:06:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:07:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:08:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:09:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:09:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+        2014.01.01_00:10:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
 
     You can then make the request and download the data::
 
@@ -188,13 +188,12 @@ class JSOCClient(object):
         The response object holds the records that your query will return:
 
         >>> print(response)  # doctest: +REMOTE_DATA
-                DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
-        -------------------- -------- -------- ----------------------- --------
-        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171
-        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:24.34Z      171
-        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:36.34Z      171
-        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:48.34Z      171
-
+               T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
+        -------------------- -------- -------- -------- -------
+        2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
+        2014-01-01T00:00:13Z  SDO/AIA    AIA_3      171    2145
+        2014-01-01T00:00:25Z  SDO/AIA    AIA_3      171    2145
+        2014-01-01T00:00:37Z  SDO/AIA    AIA_3      171    2145
 
     You can then make the request::
 
@@ -264,19 +263,19 @@ class JSOCClient(object):
             ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
             ...                          a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
-                    DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
-            -------------------- -------- -------- ----------------------- --------
-            2017-09-12T14:11:11Z  SDO/AIA    AIA_4 2017-09-06T12:00:08.57Z      304
-            2017-09-12T14:11:11Z  SDO/AIA    AIA_4 2017-09-06T12:00:18.58Z      304
-            2017-09-12T14:11:11Z  SDO/AIA    AIA_4 2017-09-06T12:00:32.49Z      304
-            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:00:42.58Z      304
-            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:00:56.33Z      304
-            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:01:06.58Z      304
-            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:01:20.96Z      304
-            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:01:30.58Z      304
-            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:01:44.91Z      304
-            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:01:54.57Z      304
-            2017-09-12T14:11:12Z  SDO/AIA    AIA_4 2017-09-06T12:02:08.90Z      304
+                   T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
+            -------------------- -------- -------- -------- -------
+            2017-09-06T11:59:59Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:00:11Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:00:23Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:00:35Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:00:47Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:00:59Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:01:11Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:01:23Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:01:35Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:01:47Z  SDO/AIA    AIA_4      304    2194
+            2017-09-06T12:01:59Z  SDO/AIA    AIA_4      304    2194
 
         *Example 2*
 
@@ -289,23 +288,23 @@ class JSOCClient(object):
             >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
             ...                          a.jsoc.Series('hmi.v_45s'),
             ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +SKIP
-                     T_REC            DATAMEAN     OBS_VR
-            ----------------------- ----------- -----------
-            2014.01.01_00:00:45_TAI 1906.518188 1911.202614
-            2014.01.01_00:01:30_TAI 1908.876221 1913.945512
-            2014.01.01_00:02:15_TAI   1911.7771 1916.667999
-            2014.01.01_00:03:00_TAI 1913.422485 1919.369924
-            2014.01.01_00:03:45_TAI 1916.500488 1922.050862
-            2014.01.01_00:04:30_TAI 1920.414795 1924.711005
-            2014.01.01_00:05:15_TAI 1922.636963  1927.35015
-            2014.01.01_00:06:00_TAI 1924.697388 1929.968523
-            2014.01.01_00:06:45_TAI 1927.758301 1932.566451
-            2014.01.01_00:07:30_TAI 1929.646118  1935.14288
-            2014.01.01_00:08:15_TAI 1932.097046 1937.698521
-            2014.01.01_00:09:00_TAI 1935.728638  1940.23353
-            2014.01.01_00:09:45_TAI 1937.754028 1942.747605
-            2014.01.01_00:10:30_TAI  1940.14624 1945.241147
+            >>> print(response)  # doctest: +REMOTE_DATA
+                         T_REC               DATAMEAN            OBS_VR
+            ----------------------- ------------------ ------------------
+            2014.01.01_00:00:45_TAI        1906.518188        1911.202614
+            2014.01.01_00:01:30_TAI        1908.876221        1913.945512
+            2014.01.01_00:02:15_TAI          1911.7771 1916.6679989999998
+            2014.01.01_00:03:00_TAI        1913.422485 1919.3699239999999
+            2014.01.01_00:03:45_TAI        1916.500488        1922.050862
+            2014.01.01_00:04:30_TAI        1920.414795 1924.7110050000001
+            2014.01.01_00:05:15_TAI        1922.636963         1927.35015
+            2014.01.01_00:06:00_TAI 1924.6973879999998        1929.968523
+            2014.01.01_00:06:45_TAI        1927.758301 1932.5664510000001
+            2014.01.01_00:07:30_TAI        1929.646118         1935.14288
+            2014.01.01_00:08:15_TAI        1932.097046        1937.698521
+            2014.01.01_00:09:00_TAI 1935.7286379999998         1940.23353
+            2014.01.01_00:09:45_TAI        1937.754028        1942.747605
+            2014.01.01_00:10:30_TAI 1940.1462399999998        1945.241147
 
             *Example 3*
 
@@ -319,14 +318,15 @@ class JSOCClient(object):
             ...                          a.jsoc.Series('aia.lev1_euv_12s'),
             ...                          a.jsoc.PrimeKey('WAVELNTH','171'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
-                    DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
-            -------------------- -------- -------- ----------------------- --------
-            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171
-            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:24.34Z      171
-            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:36.34Z      171
-            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:48.34Z      171
-            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:01:00.34Z      171
-            2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:01:12.34Z      171
+                   T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
+            -------------------- -------- -------- -------- -------
+            2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
+            2014-01-01T00:00:13Z  SDO/AIA    AIA_3      171    2145
+            2014-01-01T00:00:25Z  SDO/AIA    AIA_3      171    2145
+            2014-01-01T00:00:37Z  SDO/AIA    AIA_3      171    2145
+            2014-01-01T00:00:49Z  SDO/AIA    AIA_3      171    2145
+            2014-01-01T00:01:01Z  SDO/AIA    AIA_3      171    2145
+
         """
 
         return_results = JSOCResponse()
