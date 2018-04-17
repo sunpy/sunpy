@@ -137,7 +137,6 @@ release = versionmod.version
 
 try:
     from sunpy_sphinx_theme.conf import *
-    html_sidebars = {'**': ['docsidebar.html']}
 except ImportError:
     html_theme = 'default'
 

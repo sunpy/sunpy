@@ -126,7 +126,7 @@ matrix:
            stage: Cron tests
            # Pip Upstream checks
            env: SETUP_COMD='test' CONDA_DEPENDENCIES=''
-                PIP_DEPENDENCIES='Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy'
+                PIP_DEPENDENCIES='Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy drms'
 
 install:
     - git clone --depth 1 git://github.com/astropy/ci-helpers.git
@@ -136,7 +136,7 @@ before_script:
     # Download the sample data for the online builds only.
     - if [[ $SETUP_CMD == *online-only* ]] || [[ $SETUP_CMD == *remote-data* ]]; then python -m "sunpy.data.sample"; fi
     - if [[ $MAIN_CMD == py.test* ]]; then pip install -e ./; fi
-    - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
+    - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; python -m "sunpy.data.sample"; fi
 
 script:
     - $MAIN_CMD $SETUP_CMD
