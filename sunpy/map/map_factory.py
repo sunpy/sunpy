@@ -15,7 +15,7 @@ from sunpy.map.mapcube import MapCube
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
-from sunpy.util.net import download_file, download_file_with_cache
+from sunpy.util.net import download_file_with_cache
 from sunpy.util import expand_list
 from sunpy.util.metadata import MetaDict
 from sunpy.util.config import get_and_create_download_dir
