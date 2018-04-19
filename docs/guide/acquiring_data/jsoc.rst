@@ -52,8 +52,8 @@ supported in any Series by:
 
 The most common PrimeKey, that is supported by every Series is Time, that is denoted by
 T_REC or T_OBS. Hence, Time can always be passed as an attribute while building a query.
-Wavelength is another pre-defined attributes which is a PrimeKey.
-Other PrimeKeys which needs to be passed, should be manually passed in
+Wavelength is another pre-defined attribute which is a PrimeKey.
+Other PrimeKeys which need to be passed should be manually passed in
 `~sunpy.net.jsoc.attrs.PrimeKey`. This will be explained later in detail.
 
 Constructing a Basic Query
@@ -71,7 +71,7 @@ This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
 the attrs objects in the above call. It does not download the files.
 
-To see a summary of results of our query, simple type the name of the
+To see a summary of results of our query, simply type the name of the
 variable set to the Fido search, in this case, res::
 
     >>> res  # doctest: +REMOTE_DATA +ELLIPSIS
@@ -161,16 +161,16 @@ If 2 or more PrimeKeys need to be passed together::
 
     >>> a.jsoc.PrimeKey('HARPNUM', '4864') & a.jsoc.PrimeKey('CAMERA', '2')  # doctest: +SKIP
 
-Also, note that the pre-defined primkeys, Time and Wavelength can also be passed as above, but you need to
+Also, note that the pre-defined primekeys, Time and Wavelength can also be passed as above, but you need to
 specify the exact keyword for it. For e.g. by::
 
     >>> a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')  # doctest: +SKIP
 
 If the correct keyword is not specified, or the passed PrimeKey is not supported by the given series, a
-meaningful error will be thrown, which will give you the PrimeKey supported by that series. Hence, by looking
+meaningful error will be thrown, which will give you the PrimeKeys supported by that series. Hence, by looking
 at the error, one can easily retry building the query with correct PrimeKeys.
 
-Other important thing to note is that, Wavelength when passed through in-built attribute, should be passed as a
+Another important thing to note is that, Wavelength when passed through in-built attribute, should be passed as an
 Astropy quantity. Specifying spectral units in arguments is necessary or an error will be raised.
 For more information on units, see `~astropy.units`.
 But, when the same is passed through PrimeKey attribute, it should be passed as a string. All
@@ -196,7 +196,7 @@ comma and a space. Meaning to say,: ``a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OB
 
 both are correct.
 
-Passing an incorrect keyword won't through an error, but the corresponding column in the table will
+Passing an incorrect keyword won't throw an error, but the corresponding column in the table will
 contain ``Invalid KeyLink``.
 
 To get all of the keywords, you can either use the `~sunpy.net.jsoc.JSOCClient.search_metadata` method,
@@ -471,8 +471,8 @@ Making a query
 
 Querying JSOC using the JSOC client is very similar to what we were doing with Fido.
 As above, we have to make sure we have an email address registered with JSOC before you are allowed to make a request.
-See `this <http://jsoc.stanford.edu/ajax/register_email.html>_` to register your email address.
-We can add email address to the search query with the :mod:`jsoc.Notify` attribute.
+See `this <http://jsoc.stanford.edu/ajax/register_email.html>`__ to register your email address.
+We can add an email address to the search query with the :mod:`jsoc.Notify` attribute.
 Please note you can search without this but right now, you can not add the email address after the search::
 
     >>> from sunpy.net import attrs as a
@@ -480,9 +480,9 @@ Please note you can search without this but right now, you can not add the email
     ...                     a.jsoc.Series('hmi.v_45s'),
     ...                     a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
 
-Apart from the function name, everything is same. You need to pass the same values in the
+Apart from the function name, everything is the same. You need to pass the same values in the
 `~sunpy.net.jsoc.JSOCClient.search` as you did in `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search`.
-Complex queries can be built in a similar way, and all other things are same.
+Complex queries can be built in a similar way, and all other things are the same.
 
 Staging the request
 ^^^^^^^^^^^^^^^^^^^
