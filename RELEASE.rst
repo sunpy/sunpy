@@ -52,7 +52,7 @@ Where a \* indicates their first contribution to SunPy.
 
 In addition to the contributions to the core SunPy library, I would like to
 thank Kolja Glogowski for his help with the JSOC project, and welcome his
-package 'drms' as a SunPy affiliated package, which is now powering our JOSC
+package 'drms' as a SunPy affiliated package, which is now powering our JSOC
 client.  Finally, I would like to thank David Pérez-Suárez and Brigitta Sipocz,
 who are leading the GSOC process for OpenAstronomy, which is of massive benifit
 to the SunPy communtiy.
