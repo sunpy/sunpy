@@ -471,7 +471,7 @@ Making a query
 
 Querying JSOC using the JSOC client is very similar to what we were doing with Fido.
 As above, we have to make sure we have an email address registered with JSOC before you are allowed to make a request.
-See `this <http://jsoc.stanford.edu/ajax/register_email.html>_` to register your email address.
+See `this <http://jsoc.stanford.edu/ajax/register_email.html>`_ to register your email address.
 We can add an email address to the search query with the :mod:`jsoc.Notify` attribute.
 Please note you can search without this but right now, you can not add the email address after the search::
 
