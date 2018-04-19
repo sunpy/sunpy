@@ -2,9 +2,9 @@
 
 .. _whatsnew-0.9:
 
-**************************
+************************
 What's New in SunPy 0.9?
-**************************
+************************
 
 Overview
 ========
@@ -14,8 +14,11 @@ and bugfixes compared to the 0.8.x series of releases.  The 0.9.x
 series will be the last series of SunPy releases to support Python 2.
 This is because Python 2 will not be maintained after 2019 - see
 https://pythonclock.org/.  The 0.9.x series will receive bugfix
-support only up until the and of life of Python 2.  No significant new
-functionality will be added to the 0.9.x series.
+support only up until the and of life of Python 2.
+No significant new functionality will be added to the 0.9.x series,
+which will also be the last version to include ``sunpy.spectra``,
+``sunpy.lightcurve`` and ``sunpy.wcs``, all of which were deprecated
+in 0.8.
 
 SunPy 1.0 and higher will support Python 3 only.  All new
 functionality will be available only in SunPy 1.0 and higher.
@@ -31,11 +34,11 @@ fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
-* ??? commits have been added since 0.8
-* ??? issues have been closed since 0.8
-* ??? pull requests have been merged since 0.8
+* 807 commits have been added since 0.8
+* 310 issues have been closed since 0.8
+* 147 pull requests have been merged since 0.8
 * 90 distinct people have contributed code
-* ??? new contributors
+* 19 new contributors
 
 .. _whatsnew-0.9-python:
 
@@ -48,48 +51,77 @@ SunPy is tested against Python 2.7, 3.5 and 3.6.
 .. _whatsnew-0.9-jsoc:
 
 Improvements to JSOC functionality
-==============================
+==================================
 
-Provides greater access to the JSOC search capabilities by 
-using the DRMS library. improves robustness, search by any JSOC prime
-key, search metadata only. Search by any series::
+JSOC search capabilities have been improved.  It is now possible to search
+using any JSOC prime key, to search the metadata only, or to search by any
+series.  SunPy's JSOC functionality uses the DRMS library, which is now a
+SunPy affiliated package.  We would like to thank Kolja Glogowski for the
+DRMS package and for his help with the JSOC project.
+
+When using a JSOC query in Fido, you must provide a JSOC series and at
+least one PrimeKey (for example a start time and end time)::
 
 
     >>> from sunpy.net import Fido, attrs as a
 
-    >>> attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
-    >>> result = Fido.search(attrs_time, a.Instrument('eit'))
+    >>> result = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('me@email.org')))
     >>> result
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x7f581489bb70>
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fca7050d6a0>
     Results from 1 Provider:
 
-    1 Results from the VSOClient:
-        Start Time [1]       End Time [1]    Source Instrument   Type   Wavelength [2]
-                                                                          Angstrom
-        str19               str19         str4     str3      str8      float64
-    ------------------- ------------------- ------ ---------- -------- --------------
-    2005-01-01 00:12:10 2005-01-01 00:12:22   SOHO        EIT FULLDISK 195.0 .. 195.0
+    81 Results from the JSOCClient:
+             T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+             str23            str7     str10    float64   int64
+    ----------------------- -------- ---------- -------- -------
+    2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+                        ...      ...        ...      ...     ...
+    2014.01.01_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
 
-    >>> attrs_time = a.Time('2016/10/22 00:00', '2016/10/25 23:59')
-    >>> result = Fido.search(attrs_time, a.Instrument('lyra'))
+    >>> result = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Notify('me@email.org'), a.jsoc.PrimeKey('WAVELNTH', '171'))
+
     >>> result
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x11dfd8048>
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fca2981e1d0>
     Results from 1 Provider:
 
-    4 Results from the LYRAClient:
-         Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str6     str4       str3
-    ------------------- ------------------- ------ ---------- ----------
-    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
-    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
-    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
-    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
+    301 Results from the JSOCClient:
+           T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
+           str20           str7     str5    int64    int64
+    -------------------- -------- -------- -------- -------
+    2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:00:13Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:00:25Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:00:37Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:00:49Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:01:01Z  SDO/AIA    AIA_3      171    2145
+                     ...      ...      ...      ...     ...
+    2014-01-01T00:58:49Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:59:01Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:59:13Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:59:25Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:59:37Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:59:49Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T01:00:01Z  SDO/AIA    AIA_3      171    2145
 
 Data is downloaded using::
 
     >>> files = Fido.fetch(result)
 
-which returns a set of filepaths to the data.
+which returns a set of filepaths to the downloaded data.
+
+For more information on accessing JSOC data using SunPy please
+`consult the documentation <http://docs.sunpy.org/guide/acquiring_data/jsoc.rst>`_.
 
 
 .. _whatsnew-0.9-renamed-removed:
@@ -97,9 +129,8 @@ which returns a set of filepaths to the data.
 Renamed/removed functionality
 =============================
 
-
 sunpy.coordinates.representations
------------------------------------------
+---------------------------------
 
 The package ``sunpy.coordinates.representations`` has been removed.
 
