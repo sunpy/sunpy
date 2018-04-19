@@ -99,7 +99,7 @@ class JSOCClient(object):
     .. warning::
 
         JSOC requires you to register your email address before requesting
-        data. `See this on how to register <http://jsoc.stanford.edu/ajax/register_email.html>_`.
+        data. `See this on how to register <http://jsoc.stanford.edu/ajax/register_email.html>`__.
 
     Notes
     -----
