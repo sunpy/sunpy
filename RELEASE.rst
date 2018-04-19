@@ -1,6 +1,6 @@
 The SunPy project is happy to announce the release of SunPy 0.9.0.
 
-SunPy v0.9.0 contains 801 commits from 30 people, 19 of which are first time
+SunPy v0.9.0  contains 806 commits from 31 people, 19 of which are first time
 contributors to SunPy.
 
 This release introduces a rewritten JSOC client and various other improvements
@@ -15,6 +15,7 @@ Python 2, which is 1st Jan 2020.
 
 
 The people who have contributed to the code for this release are::
+
 
     Nabil Freij
     Stuart Mumford
@@ -34,6 +35,7 @@ The people who have contributed to the code for this release are::
     Shresth Verma  *
     Sanjeev Dubey  *
     Brigitta Sipocz
+    Andrew Leonard
     Nick Murphy  *
     Shane Maloney
     Carlos Molina  *
