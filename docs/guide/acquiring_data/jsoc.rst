@@ -170,7 +170,7 @@ If the correct keyword is not specified, or the passed PrimeKey is not supported
 meaningful error will be thrown, which will give you the PrimeKeys supported by that series. Hence, by looking
 at the error, one can easily retry building the query with correct PrimeKeys.
 
-Anther important thing to note is that, Wavelength when passed through in-built attribute, should be passed as an
+Another important thing to note is that, Wavelength when passed through in-built attribute, should be passed as an
 Astropy quantity. Specifying spectral units in arguments is necessary or an error will be raised.
 For more information on units, see `~astropy.units`.
 But, when the same is passed through PrimeKey attribute, it should be passed as a string. All
@@ -471,7 +471,7 @@ Making a query
 
 Querying JSOC using the JSOC client is very similar to what we were doing with Fido.
 As above, we have to make sure we have an email address registered with JSOC before you are allowed to make a request.
-See `this <http://jsoc.stanford.edu/ajax/register_email.html>`_ to register your email address.
+See `this <http://jsoc.stanford.edu/ajax/register_email.html>`__ to register your email address.
 We can add an email address to the search query with the :mod:`jsoc.Notify` attribute.
 Please note you can search without this but right now, you can not add the email address after the search::
 
