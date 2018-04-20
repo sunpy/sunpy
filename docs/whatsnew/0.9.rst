@@ -37,7 +37,7 @@ By the numbers:
 * 807 commits have been added since 0.8
 * 310 issues have been closed since 0.8
 * 147 pull requests have been merged since 0.8
-* 90 distinct people have contributed code
+* 34 people have contributed since 0.8
 * 19 new contributors
 
 .. _whatsnew-0.9-python:
