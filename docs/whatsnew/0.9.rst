@@ -10,17 +10,16 @@ Overview
 ========
 
 SunPy 0.9 brings improved support for downloading data from the JSOC
-and bugfixes compared to the 0.8.x series of releases.  The 0.9.x
+and bugfixes compared to the 0.8.x series of releases. The 0.9.x
 series will be the last series of SunPy releases to support Python 2.
-This is because Python 2 will not be maintained after 2019 - see
-https://pythonclock.org/.  The 0.9.x series will receive bugfix
-support only up until the and of life of Python 2.
-No significant new functionality will be added to the 0.9.x series,
-which will also be the last version to include ``sunpy.spectra``,
-``sunpy.lightcurve`` and ``sunpy.wcs``, all of which were deprecated
+This is because Python 2 `will not be maintained after 2019 <https://python3statement.org/>`_.
+The 0.9.x series will receive bugfixs only up until the and of life of Python 2 (around 18 months).
+No new functionality will be added to the 0.9.x series,
+which will also be the last version to include `sunpy.spectra`,
+`sunpy.lightcurve` and `sunpy.wcs`, all of which were deprecated
 in 0.8.
 
-SunPy 1.0 and higher will support Python 3 only.  All new
+SunPy 1.0 and higher will support Python 3 only. All new
 functionality will be available only in SunPy 1.0 and higher.
 
 On this page, you can read about some of the big changes in this release:
@@ -40,12 +39,12 @@ By the numbers:
 * 34 people have contributed since 0.8
 * 19 new contributors
 
-There have been numerous improvements to many parts of SunPy,
-notably in the content and testing of SunPy's documentation, and
+There have been numerous improvements to large parts of SunPy,
+notably in the content of SunPy's documentation, and
 the continuous integration testing of SunPy. In addition, SunPy
-co-oordinate system functionality has been improved, and
+co-ordinate system functionality has been improved, and
 the transformation between SunPy specific co-ordinate systems
-and those implemented by Astropy is now tested. The ``sunpy.map.CompositeMap``
+and those implemented by Astropy is now tested. The `sunpy.map.CompositeMap`
 object has received numerous bugfixes, improving its functionality.
 Bugfixes for various animation functionality have also been
 implemented.
