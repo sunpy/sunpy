@@ -1,0 +1,151 @@
+.. doctest-skip-all
+
+.. _whatsnew-0.9:
+
+************************
+What's New in SunPy 0.9?
+************************
+
+Overview
+========
+
+SunPy 0.9 brings improved support for downloading data from the JSOC
+and bugfixes compared to the 0.8.x series of releases. The 0.9.x
+series will be the last series of SunPy releases to support Python 2.
+This is because Python 2 `will not be maintained after 2019 <https://python3statement.org/>`_.
+The 0.9.x series will receive bugfixs only up until the and of life of Python 2 (around 18 months).
+No new functionality will be added to the 0.9.x series,
+which will also be the last version to include `sunpy.spectra`,
+`sunpy.lightcurve` and `sunpy.wcs`, all of which were deprecated
+in 0.8.
+
+SunPy 1.0 and higher will support Python 3 only. All new
+functionality will be available only in SunPy 1.0 and higher.
+
+On this page, you can read about some of the big changes in this release:
+
+* :ref:`whatsnew-0.9-python`
+* :ref:`whatsnew-0.9-jsoc`
+* :ref:`whatsnew-0.9-renamed-removed`
+
+SunPy 0.9 includes a large number of smaller improvements and bug
+fixes, which are described in the :ref:`changelog`.
+
+By the numbers:
+
+* 807 commits have been added since 0.8
+* 310 issues have been closed since 0.8
+* 147 pull requests have been merged since 0.8
+* 34 people have contributed since 0.8
+* 19 new contributors
+
+There have been numerous improvements to large parts of SunPy,
+notably in the content of SunPy's documentation, and
+the continuous integration testing of SunPy. In addition, SunPy
+co-ordinate system functionality has been improved, and
+the transformation between SunPy specific co-ordinate systems
+and those implemented by Astropy is now tested. The `sunpy.map.CompositeMap`
+object has received numerous bugfixes, improving its functionality.
+Bugfixes for various animation functionality have also been
+implemented.
+
+
+.. _whatsnew-0.9-python:
+
+Supported versions of Python
+============================
+
+SunPy is tested against Python 2.7, 3.5 and 3.6.
+
+
+.. _whatsnew-0.9-jsoc:
+
+Improvements to JSOC functionality
+==================================
+
+JSOC search capabilities have been improved.  It is now possible to search
+using any JSOC prime key, to search the metadata only, or to search by any
+series.  SunPy's JSOC functionality uses the DRMS library, which is now a
+SunPy affiliated package.  We would like to thank Kolja Glogowski for the
+DRMS package and for his help with the JSOC project.
+
+When using a JSOC query in Fido, you must provide a JSOC series and at
+least one PrimeKey (for example a start time and end time)::
+
+
+    >>> from sunpy.net import Fido, attrs as a
+
+    >>> result = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('me@email.org')))
+    >>> result
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fca7050d6a0>
+    Results from 1 Provider:
+
+    81 Results from the JSOCClient:
+             T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
+             str23            str7     str10    float64   int64
+    ----------------------- -------- ---------- -------- -------
+    2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:02:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:03:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:04:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+                        ...      ...        ...      ...     ...
+    2014.01.01_00:56:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:57:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:58:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+
+    >>> result = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Notify('me@email.org'), a.jsoc.PrimeKey('WAVELNTH', '171'))
+
+    >>> result
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fca2981e1d0>
+    Results from 1 Provider:
+
+    301 Results from the JSOCClient:
+           T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
+           str20           str7     str5    int64    int64
+    -------------------- -------- -------- -------- -------
+    2014-01-01T00:00:01Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:00:13Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:00:25Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:00:37Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:00:49Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:01:01Z  SDO/AIA    AIA_3      171    2145
+                     ...      ...      ...      ...     ...
+    2014-01-01T00:58:49Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:59:01Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:59:13Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:59:25Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:59:37Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T00:59:49Z  SDO/AIA    AIA_3      171    2145
+    2014-01-01T01:00:01Z  SDO/AIA    AIA_3      171    2145
+
+Data is downloaded using::
+
+    >>> files = Fido.fetch(result)
+
+which returns a set of filepaths to the downloaded data.
+
+For more information on accessing JSOC data using SunPy please
+`consult the documentation <http://docs.sunpy.org/guide/acquiring_data/jsoc.rst>`_.
+
+
+.. _whatsnew-0.9-renamed-removed:
+
+Renamed/removed functionality
+=============================
+
+sunpy.coordinates.representations
+---------------------------------
+
+The package ``sunpy.coordinates.representations`` has been removed.
+
+Full change log
+===============
+
+To see a detailed list of all changes in version v0.9, including changes in
+API, please see the :ref:`changelog`.

@@ -1,54 +1,58 @@
-The SunPy project is happy to announce the release of SunPy 0.8.0.
+The SunPy project is happy to announce the release of SunPy 0.9.0.
 
-SunPy 0.8 is the next major release of SunPy and contains 1442 commits in over 200 pull requests, closing 163 issues from 35 people, 17 of whom have never contributed before.
+SunPy v0.9.0 contains 807 commits in 147 merged pull requests closing 310
+issues from 31 people, 19 of which are first time contributors to SunPy.
 
-This release is a large milestone for the SunPy library.
-It contains large new features that have been in development for a number of years, and will form the foundation of SunPy for the future.
-The main additions are ``sunpy.net.Fido`` and ``sunpy.timeseries``, as well as major upgrades to ``sunpy.coordinates``.
-Along with this it deprecates some old parts of SunPy that have been rewritten, two submodules ``sunpy.lightcurve`` and ``sunpy.wcs`` have been superseded by ``sunpy.timeseries`` and ``sunpy.coordinates`` respectively.
+This release introduces a rewritten JSOC client and various other improvements
+to the library.  This release will be the last in the 0.x series of releases,
+with the next release planned to be v1.0.  This release will be the last major
+version to support Python 2, and will also be the last version to include
+``sunpy.spectra``, ``sunpy.lightcurve`` and ``sunpy.wcs``, all of which were
+deprecated in 0.8.
 
-The people who have contributed to the code for this release are:
+We will be supporting bug fixes to the 0.9 release until the end of life of
+Python 2, which is 1st Jan 2020.
 
-::
 
-    Stuart Mumford
-    Jack Ireland
+The people who have contributed to the code for this release are::
+
     Nabil Freij
-    Punyaslok Pattnaik
-    Alex Hamilton
-    Ankit Kumar *
-    David Pérez-Suárez
-    Steven Christe
-    Rishabh Sharma
-    Albert Y. Shih
-    Sudarshan Konge
+    Stuart Mumford
+    Nitin Choudhary
+    David Stansby  *
+    Prateek Chanda
+    Jack Ireland
     Daniel Ryan
-    Ankit Baruah *
+    Himanshu  *
+    Yash Jain  *
+    James Paul Mason  *
+    Michael Charlton
+    Vishnunarayan K I.  *
+    Swapnil Sharma  *
+    Albert Y. Shih
+    David Pérez-Suárez
+    Shresth Verma  *
+    Sanjeev Dubey  *
     Brigitta Sipocz
-    Prateek Chanda *
     Andrew Leonard
-    Sanskar Modi
-    Nitin Choudhary *
-    Agneet Chatterjee *
-    Michael Charlton *
-    Rajul Srivastava
-    Dhruv Goel *
-    Garrison Taylor *
-    Serge Zahniy *
-    Andrew Inglis
-    Ankit
-    Joe Letts *
-    Shane Maloney *
-    Adrian Price-Whelan *
-    Dan D'Avella *
-    Duygu Keşkek *
-    Fionnlagh Mackenzie Dover *
-    Kalpesh Krishna *
-    Kaustubh Hiware *
-    Larry Manley
+    Nick Murphy  *
+    Shane Maloney
+    Carlos Molina  *
+    Yash Kothari  *
+    Dang Trung Kien  *
+    Gulshan Mittal  *
+    Rajasekhar Reddy Mekala  *
+    S Shashank  *
+    Tannmay Yadav  *
+    Will Barnes  *
+    Yudhik Agrawal  *
+    codetriage-readme-bot  *
 
-Where an \* indicates their first contribution.
+Where a \* indicates their first contribution to SunPy.
 
-In addition to the code contributions I would like to highlight the work of Nabil Freij who has done a lot of work in the last few months releasing bug fixes for the 0.7 series as well as a lot of behind the scenes work on SunPy’s tooling.
-I would also like to thank Duygu Keşkek who has redesigned the sunpy.org page and the documentation as part of her GSOC project.
-Finally, I would like to welcome Monica Bobra and Sabrina Savage to the SunPy Board.
+In addition to the contributions to the core SunPy library, we would like to
+thank Kolja Glogowski for his help with the JSOC project, and welcome his
+package 'drms' as a SunPy affiliated package, which is now powering our JSOC
+client.  Finally, we would like to thank David Pérez-Suárez and Brigitta Sipocz,
+who are leading the GSOC process for OpenAstronomy, which is of massive benefit
+to the SunPy community.
