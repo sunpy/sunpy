@@ -1,10 +1,8 @@
 # Base dependencies required to install and run SunPy.
 
 numpy>=1.11
-astropy>=2.0.3
+astropy>=2.0.3>=3.0.2
 scipy
 pandas>=0.12.0
 matplotlib>=1.3
 drms
-# This is due to upstream bug
-pytest
