@@ -397,7 +397,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
         as `memmap` for FITS files.
         """
-
+        concatenate = kwargs.pop('concatenate', False)
         # Hack to get around Python 2.x not backporting PEP 3102.
         silence_errors = kwargs.pop('silence_errors', False)
 
@@ -475,7 +475,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         new_timeseries += already_timeseries
 
         # Concatenate the timeseries into one if specified.
-        concatenate = kwargs.get('concatenate', False)
         if concatenate:
             # Merge all these timeseries into one.
             full_timeseries = new_timeseries.pop(0)
@@ -524,7 +523,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
 
         WidgetType = self._get_matching_widget(**kwargs)
-
+        source = kwargs.pop('source', None)
         # Dealing with the fact that timeseries filetypes are less consistent
         # (then maps), we use a _parse_file() method embedded into each
         # instrument subclass.
