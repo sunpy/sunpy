@@ -112,7 +112,7 @@ class GenericTimeSeries:
     # Class attribute used to specify the source class of the TimeSeries.
     _source = None
 
-    def __init__(self, data, meta=None, units=None, **kwargs):
+    def __init__(self, data, meta=None, units=None):
         self.data = data
         tr = TimeRange(self.data.index.min(), self.data.index.max())
         # Check metadata input
@@ -466,7 +466,7 @@ class GenericTimeSeries:
 
                 warnings.warn("Unknown value for "+meta_property.upper(), Warning)
 
-    def _validate_units(self, units, **kwargs):
+    def _validate_units(self, units):
         """
         Validates the astropy unit-information associated with a TimeSeries.
 
@@ -491,7 +491,7 @@ class GenericTimeSeries:
 
         return result
 
-    def _sanitize_units(self, **kwargs):
+    def _sanitize_units(self):
         """
         Sanitises the collections.OrderedDict used to store the units.
         Primarily this method will:
@@ -516,7 +516,7 @@ class GenericTimeSeries:
         # Now use the amended units Ordered Dictionary
         self.units = units
 
-    def _sanitize_metadata(self, **kwargs):
+    def _sanitize_metadata(self):
         """
         Sanitises the TimeSeriesMetaData object used to store the metadata.
         Primarily this method will:
@@ -538,7 +538,7 @@ class GenericTimeSeries:
 
 # #### Export/Output Methods #### #
 
-    def to_table(self, **kwargs):
+    def to_table(self):
         """
         Return an Astropy Table of the give TimeSeries object.
 
