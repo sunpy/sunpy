@@ -163,7 +163,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         else:
             return False
 
-    def _validate_units(self, units, **kwargs):
+    def _validate_units(self, units):
         """
         Validates the astropy unit-information associated with a TimeSeries.
         Should be a dictionary of some form (but not MetaDict) with only
@@ -185,7 +185,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Passed all the tests
         return result
 
-    def _from_table(self, t, **kwargs):
+    def _from_table(self, t):
         """
         Extract the data, metadata and units from an astropy table for use in
         constructing a TimeSeries.
