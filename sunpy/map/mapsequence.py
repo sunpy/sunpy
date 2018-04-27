@@ -36,7 +36,7 @@ class MapSequence(object):
         Apply a derotation to the data (Not Implemented)
 
     To coalign a mapsequence so that solar features remain on the same pixels,
-    please see the "Coalignment of mapsequences" note below.
+    please see the "Coalignment of MapSequences" note below.
 
     Attributes
     ----------
@@ -48,7 +48,7 @@ class MapSequence(object):
     >>> import sunpy.map
     >>> mapsequence = sunpy.map.Map('images/*.fits', sequence=True)   # doctest: +SKIP
 
-    Mapsequences can be co-aligned using the routines in sunpy.image.coalignment.
+    MapSequences can be co-aligned using the routines in sunpy.image.coalignment.
     """
     #pylint: disable=W0613,E1101
     def __init__(self, *args, **kwargs):
