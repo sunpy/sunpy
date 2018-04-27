@@ -24,7 +24,7 @@ class MapSequence(object):
     """
     MapSequence
 
-    A series of spatially aligned Maps.
+    A series of Maps in a single object.
 
     Parameters
     ----------
