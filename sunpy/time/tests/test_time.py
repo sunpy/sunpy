@@ -136,7 +136,7 @@ def test_parse_time_now():
     assert isinstance(parse_time('now'), datetime) is True
 
 
-def test_ISO():
+def test_parse_time_ISO():
     assert parse_time('1966-02-03') == LANDING
     assert (
         parse_time('1966-02-03T20:17:40') == datetime(1966, 2, 3, 20, 17, 40)
