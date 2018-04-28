@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
-from datetime import datetime
+from datetime import datetime, date
 
 from sunpy import time
 from sunpy.time import parse_time, is_time_in_given_format, get_day, find_time
@@ -125,6 +125,16 @@ def test_parse_time_astropy():
     astropy_time = parse_time(astropy.time.Time(['2016-01-02T23:00:01']))
 
     assert astropy_time == datetime(year=2016, month=1, day=2, hour=23, minute=0, second=1)
+
+
+def test_parse_time_datetime():
+    dt = datetime(2014, 2, 7, 16, 47, 51, 8288)
+    assert parse_time(dt) == dt
+
+
+def test_parse_time_date():
+    dt = date(1966, 2, 3)
+    assert parse_time(dt) == datetime(1966, 2, 3)
 
 
 def test_parse_time_now():
