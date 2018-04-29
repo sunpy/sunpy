@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 from datetime import datetime, date
+import re
 
 from sunpy import time
 from sunpy.time import parse_time, is_time_in_given_format, get_day, find_time
@@ -225,7 +226,9 @@ def test_time_string_parse_format():
     with pytest.raises(ValueError):
         parse_time('01/06/2012')
     with pytest.raises(ValueError):
-        parse_time('01/06/2012', time_string_parse_format='%d/%m/%m')
+        parse_time('01/06/2012', _time_string_parse_format='%d/%Y/%m')
+    with pytest.raises(re.error):
+        parse_time('01/06/2012', _time_string_parse_format='%d/%m/%m')
 
     with pytest.raises(ValueError):
         parse_time('2016', _time_string_parse_format='zz')
