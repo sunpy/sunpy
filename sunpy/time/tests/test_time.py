@@ -78,6 +78,7 @@ def test_parse_time_numpy_date():
 
     assert isinstance(dts, np.ndarray)
     assert all([isinstance(dt, datetime) for dt in dts])
+    assert np.all(dts == inputs.astype('M8[s]'))
 
 
 def test_parse_time_numpy_datetime():
