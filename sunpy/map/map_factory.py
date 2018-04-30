@@ -259,7 +259,14 @@ class MapFactory(BasicRegistrationFactory):
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
+        
+        # MapCube Deprecation
         cube = kwargs.pop('cube', False)
+        if cube:
+            warnings.warn('MapCube is now deprecated and renamed MapSequence. 
+                          Please use the syntax Map(sequence=True) instead of Map(cube=True).',
+                          DeprecationWarning, stacklevel=2)
+            
         sequence = kwargs.pop('sequence', False)
         silence_errors = kwargs.pop('silence_errors', False)
 
