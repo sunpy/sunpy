@@ -11,6 +11,23 @@ pip-run: &pip-install
     . venv/bin/activate
     pip install -q -r requirements/docs.txt
 
+image-conda-run: &image-conda-install
+  name: Install Python dependencies for figure tests
+  command: |
+    wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O $HOME/miniconda.sh
+    chmod +x $HOME/miniconda.sh && $HOME/miniconda.sh -b
+    export PATH=$HOME/miniconda2/bin:$PATH
+    conda update --yes conda
+    conda env create -f sunpy/tests/figure_tests_env_3.5.yml
+
+image-run: &image-tests
+  name: Run image tests
+  command: |
+    export PATH=$HOME/miniconda2/bin:$PATH
+    conda env list
+    source activate sunpy-figure-tests-3.5
+    python setup.py test --figure-only --coverage
+
 version: 2
 jobs:
   egg-info-36:
@@ -33,6 +50,14 @@ jobs:
     steps:
       - checkout
       - run: python setup.py egg_info
+
+  figure-tests-35:
+    docker:
+      - image: circleci/python:3.5
+    steps:
+      - checkout
+      - run: *image-conda-install
+      - run: *image-tests
 
   html-docs:
     docker:
@@ -67,6 +92,10 @@ workflows:
       - egg-info-36
       - egg-info-35
       - egg-info-27
+
+  figure-tests:
+    jobs:
+      - figure-tests-35
 
   test-documentation:
     jobs:
