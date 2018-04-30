@@ -10,6 +10,7 @@ import astropy.io.fits
 import sunpy
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.compositemap import CompositeMap
+from sunpy.map.mapcube import MapCube
 from sunpy.map.mapsequence import MapSequence
 
 from sunpy.io.file_tools import read_file
@@ -241,6 +242,9 @@ class MapFactory(BasicRegistrationFactory):
         composite : boolean, optional
             Indicates if collection of maps should be returned as a CompositeMap
 
+        cube : boolean, optional
+            Indicates if collection of maps should be returned as a MapCube
+        
         sequence : boolean, optional
             Indicates if collection of maps should be returned as a MapSequence
 
@@ -255,6 +259,7 @@ class MapFactory(BasicRegistrationFactory):
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
+        cube = kwargs.pop('cube', False)
         sequence = kwargs.pop('sequence', False)
         silence_errors = kwargs.pop('silence_errors', False)
 
@@ -280,6 +285,10 @@ class MapFactory(BasicRegistrationFactory):
 
         new_maps += already_maps
 
+        # If the list is meant to be a cube, instantiate a map cube
+        if cube:
+            return MapCube(new_maps, **kwargs)
+        
         # If the list is meant to be a sequence, instantiate a map sequence
         if sequence:
             return MapSequence(new_maps, **kwargs)
