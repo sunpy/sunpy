@@ -17,7 +17,6 @@ environment:
       ASTROPY_VERSION: "stable"
 
   matrix:
-      - PYTHON_VERSION: "2.7"
       - PYTHON_VERSION: "3.6"
 
 
@@ -37,5 +36,4 @@ install:
 build: false
 
 test_script:
-    - if %PYTHON_VERSION%==2.7 (%CMD_IN_ENV% python -m sunpy.data.sample)
     - "%CMD_IN_ENV% python setup.py test"
