@@ -6,7 +6,10 @@ from functools import singledispatch
 import numpy as np
 import pandas
 from sunpy.extern import six
+from sunpy.time.utime import TimeUTime
 
+from . import astropy_time as ap
+import astropy.units as u
 import astropy.time
 
 __all__ = ['find_time', 'parse_time', 'is_time',
@@ -79,7 +82,7 @@ def _regex_parse_time(inp, format):
     try:
         hour = match.group("hour")
     except IndexError:
-        return inp, timedelta(days=0)
+        return inp, astropy.time.TimeDelta(u.day*0)
     if match.group("hour") == "24":
         if not all(
                    _n_or_eq(_group_or_none(match, g, int), 00)
@@ -87,8 +90,8 @@ def _regex_parse_time(inp, format):
                   ):
             raise ValueError
         from_, to = match.span("hour")
-        return inp[:from_] + "00" + inp[to:], timedelta(days=1)
-    return inp, timedelta(days=0)
+        return inp[:from_] + "00" + inp[to:], astropy.time.TimeDelta(u.day*1)
+    return inp, astropy.time.TimeDelta(u.day*0)
 
 
 def find_time(string, format):
@@ -176,7 +179,7 @@ def convert_time_tuple(time_string, **kwargs):
 @convert_time.register(float)
 @convert_time.register(int)
 def convert_time_float(time_string, **kwargs):
-    return datetime(1979, 1, 1) + timedelta(0, time_string)
+    return ap.Time(time_string, format='utime')
 
 
 @convert_time.register(np.datetime64)
@@ -202,7 +205,7 @@ def convert_time_str(time_string, **kwargs):
     # remove trailing zeros and the final dot to allow any
     # number of zeros. This solves issue #289
     if '.' in time_string:
-            time_string = time_string.rstrip("0").rstrip(".")
+        time_string = time_string.rstrip("0").rstrip(".")
     for time_format in TIME_FORMAT_LIST:
         try:
             try:
@@ -212,7 +215,8 @@ def convert_time_str(time_string, **kwargs):
                 break
             if ts is None:
                 continue
-            return datetime.strptime(ts, time_format) + time_delta
+            return ap.Time.strptime(ts, time_format,
+                                    format='isot') + time_delta
         except ValueError:
             pass
     time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
@@ -220,14 +224,16 @@ def convert_time_str(time_string, **kwargs):
         ts, time_delta = _regex_parse_time(time_string,
                                            time_string_parse_format)
         if ts and time_delta:
-            return datetime.strptime(ts, time_string_parse_format) + time_delta
+            return ap.Time.strptime(ts, time_string_parse_format,
+                                    format='isot') + time_delta
         else:
-            return datetime.strptime(time_string, time_string_parse_format)
+            return ap.Time.strptime(time_string, time_string_parse_format,
+                                    format='isot')
     # when no format matches, call default fucntion
     convert_time.dispatch(object)(time_string, **kwargs)
 
 
-def parse_time(time_string, time_format='', **kwargs):
+def parse_time(time_string, time_format='', time_scale='', **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
@@ -254,7 +260,7 @@ def parse_time(time_string, time_format='', **kwargs):
     if time_format == 'utime':
         return convert_time(float(time_string), **kwargs)
     elif time_string is 'now':
-        return datetime.utcnow()
+        return ap.Time.now()
     else:
         return convert_time(time_string, **kwargs)
 

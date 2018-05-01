@@ -5,6 +5,7 @@ import re
 
 from sunpy import time
 from sunpy.time import parse_time, is_time_in_given_format, get_day, find_time
+import sunpy.time.astropy_time as ap
 
 import astropy.time
 import numpy as np
@@ -13,7 +14,7 @@ from sunpy.extern.six.moves import range
 
 import pytest
 
-LANDING = datetime(1966, 2, 3)
+LANDING = ap.Time('1966-02-03', format='isot')
 
 
 def test_parse_time_24():
@@ -34,10 +35,9 @@ def test_parse_time_tuple():
 
 
 def test_parse_time_int():
-    assert parse_time(765548612.0, 'utime') == datetime(2003, 4, 5,
-                                                        12, 23, 32)
-    assert parse_time(1009685652.0, 'utime') == datetime(2010, 12, 30,
-                                                         4, 14, 12)
+    assert parse_time(765548612.0, 'utime').jd == ap.Time('2003-4-5T12:23:32').jd
+
+    assert parse_time(1009685652.0, 'utime').jd == ap.Time('2010-12-30T4:14:12').jd
 
 
 def test_parse_time_pandas_timestamp():
@@ -145,45 +145,47 @@ def test_parse_time_now():
     """
     # TODO: once mocking support is merged in, we can perform a like for like comparison,
     #       the following at least ensures that 'now' is a legal argument.
-    assert isinstance(parse_time('now'), datetime) is True
+    assert isinstance(parse_time('now'), astropy.time.Time) is True
 
 
 def test_parse_time_ISO():
-    assert parse_time('1966-02-03') == LANDING
+    dt1 = ap.Time('1966-02-03T20:17:40')
+    assert parse_time('1966-02-03').jd == LANDING.jd
     assert (
-        parse_time('1966-02-03T20:17:40') == datetime(1966, 2, 3, 20, 17, 40)
+        parse_time('1966-02-03T20:17:40').jd == dt1.jd
     )
     assert (
-        parse_time('19660203T201740') == datetime(1966, 2, 3, 20, 17, 40)
+        parse_time('19660203T201740').jd == dt1.jd
     )
 
+    dt2 = ap.Time('2007-05-04T21:08:12.999999')
+    dt3 = ap.Time('2007-05-04T21:08:12')
+    dt4 = ap.Time('2007-05-04T21:08:00')
+    dt5 = ap.Time('2007-05-04')
+
     lst = [
-        ('2007-05-04T21:08:12.999999',
-         datetime(2007, 5, 4, 21, 8, 12, 999999)),
-        ('20070504T210812.999999',
-         datetime(2007, 5, 4, 21, 8, 12, 999999)),
-        ('2007/05/04 21:08:12.999999',
-         datetime(2007, 5, 4, 21, 8, 12, 999999)),
-        ('2007-05-04 21:08:12.999999',
-         datetime(2007, 5, 4, 21, 8, 12, 999999)),
-        ('2007/05/04 21:08:12', datetime(2007, 5, 4, 21, 8, 12)),
-        ('2007-05-04 21:08:12', datetime(2007, 5, 4, 21, 8, 12)),
-        ('2007-05-04 21:08', datetime(2007, 5, 4, 21, 8)),
-        ('2007-05-04T21:08:12', datetime(2007, 5, 4, 21, 8, 12)),
-        ('20070504T210812', datetime(2007, 5, 4, 21, 8, 12)),
-        ('2007-May-04 21:08:12', datetime(2007, 5, 4, 21, 8, 12)),
-        ('2007-May-04 21:08', datetime(2007, 5, 4, 21, 8)),
-        ('2007-May-04', datetime(2007, 5, 4)),
-        ('2007-05-04', datetime(2007, 5, 4)),
-        ('2007/05/04', datetime(2007, 5, 4)),
-        ('04-May-2007', datetime(2007, 5, 4)),
-        ('04-May-2007 21:08:12.999999', datetime(2007, 5, 4, 21, 8, 12, 999999)),
-        ('20070504_210812', datetime(2007, 5, 4, 21, 8, 12)),
-        ('2007.05.04_21:08:12_TAI', datetime(2007, 5, 4, 21, 8, 12)),
+        ('2007-05-04T21:08:12.999999', dt2),
+        ('20070504T210812.999999', dt2),
+        ('2007/05/04 21:08:12.999999', dt2),
+        ('2007-05-04 21:08:12.999999', dt2),
+        ('2007/05/04 21:08:12', dt3),
+        ('2007-05-04 21:08:12', dt3),
+        ('2007-05-04 21:08', dt4),
+        ('2007-05-04T21:08:12', dt3),
+        ('20070504T210812', dt3),
+        ('2007-May-04 21:08:12', dt3),
+        ('2007-May-04 21:08', dt4),
+        ('2007-May-04', dt5),
+        ('2007-05-04', dt5),
+        ('2007/05/04', dt5),
+        ('04-May-2007', dt5),
+        ('04-May-2007 21:08:12.999999', dt2),
+        ('20070504_210812', dt3),
+        ('2007.05.04_21:08:12_TAI', dt3),
     ]
 
     for k, v in lst:
-        assert parse_time(k) == v
+        assert parse_time(k).jd == v.jd
 
 
 def test_break_time():

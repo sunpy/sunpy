@@ -3,7 +3,7 @@ import astropy.time
 import numpy as np
 
 from time import strftime, strptime
-from datetime import date
+from datetime import date, datetime
 
 
 class Time(astropy.time.Time):
@@ -45,8 +45,13 @@ class Time(astropy.time.Time):
         iterator = np.nditer([time_array, None], op_dtypes=[time_array.dtype, 'U30'])
 
         for time, formatted in iterator:
-            time_tuple = strptime(to_string(time), format_string)
-            formatted[...] = '{}-{}-{}T{}:{}:{}'.format(*time_tuple)
+            # TODO: Make this same as astropy version
+            if '%f' in format_string:
+                fstring = str(datetime.strptime(to_string(time), format_string))
+                formatted[...] = fstring.replace(' ', 'T')
+            else:
+                time_tuple = strptime(to_string(time), format_string)
+                formatted[...] = '{}-{}-{}T{}:{}:{}'.format(*time_tuple)
 
         format = kwargs.pop('format', None)
         out = cls(*iterator.operands[1:], format='isot', **kwargs)
