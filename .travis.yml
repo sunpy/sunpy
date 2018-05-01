@@ -117,10 +117,10 @@ matrix:
            env: SETUP_CMD='test --figure-only' ASTROPY_VERSION='dev'
                 CONDA_DEPENDENCIES='astropy'
 
-         # Previous NumPy is tested on an older Python version
-         - python: 3.5
-           stage: Cron tests
-           env: NUMPY_VERSION=$PREVIOUS_NUMPY
+         # Previous numpy is tested on an older python version
+         # - python: 3.5
+         #   stage: Cron tests
+         #   env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
          - python: 3.6
            stage: Cron tests
