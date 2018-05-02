@@ -563,6 +563,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     Examples
     --------
     >>> from sunpy.image.coalignment import mapcube_coalign_by_match_template as mc_coalign
+
     >>> coaligned_mc = mc_coalign(mc)   # doctest: +SKIP
     >>> coaligned_mc = mc_coalign(mc, layer_index=-1)   # doctest: +SKIP
     >>> coaligned_mc = mc_coalign(mc, clip=False)   # doctest: +SKIP
@@ -579,9 +580,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     yshift_keep = np.zeros_like(xshift_keep)
 
     if shift is None:
-        shifts = calculate_match_template_shift(mc, template=template,
-                                                layer_index=layer_index,
-                                                func=func)
+        shifts = calculate_match_template_shift(mc, template=template, layer_index=layer_index, func=func)
         xshift_arcseconds = shifts['x']
         yshift_arcseconds = shifts['y']
     else:
