@@ -263,8 +263,7 @@ class MapFactory(BasicRegistrationFactory):
         # MapCube Deprecation
         cube = kwargs.pop('cube', False)
         if cube:
-            warnings.warn('MapCube is now deprecated and renamed MapSequence. 
-                          Please use the syntax Map(sequence=True) instead of Map(cube=True).',
+            warnings.warn('MapCube is now deprecated and renamed MapSequence. Please use the syntax Map(sequence=True) instead of Map(cube=True).',
                           DeprecationWarning, stacklevel=2)
             
         sequence = kwargs.pop('sequence', False)
