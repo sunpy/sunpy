@@ -18,23 +18,16 @@ LANDING = ap.Time('1966-02-03', format='isot')
 
 
 def test_parse_time_24():
-    # Once https://github.com/astropy/astropy/issues/6970 is fixed,
-    # remove .jd from equality check
-    assert parse_time("2010-10-10T24:00:00").jd == astropy.time.Time('2010-10-11').jd
+    assert parse_time("2010-10-10T24:00:00") == ap.Time('2010-10-11')
 
 
 def test_parse_time_24_2():
-    # Once https://github.com/astropy/astropy/issues/6970 is fixed,
-    # remove .jd from equality check
-    assert parse_time("2010-10-10T24:00:00.000000").jd == astropy.time.Time('2010-10-11').jd
+    assert parse_time("2010-10-10T24:00:00.000000") == ap.Time('2010-10-11')
 
 
 def test_parse_time_trailing_zeros():
     # see issue #289 at https://github.com/sunpy/sunpy/issues/289
-
-    # Once https://github.com/astropy/astropy/issues/6970 is fixed,
-    # remove .jd from equality check
-    assert parse_time('2010-10-10T00:00:00.00000000').jd == astropy.time.Time('2010-10-10').jd
+    assert parse_time('2010-10-10T00:00:00.00000000') == ap.Time('2010-10-10')
 
 
 def test_parse_time_tuple():
@@ -98,9 +91,7 @@ def test_parse_time_numpy_date():
 
     dts = parse_time(inputs)
 
-    assert isinstance(dts, np.ndarray)
-    assert all([isinstance(dt, datetime) for dt in dts])
-    assert np.all(dts == inputs.astype('M8[s]'))
+    assert isinstance(dts, astropy.time.Time)
 
 
 def test_parse_time_numpy_datetime():
@@ -108,41 +99,41 @@ def test_parse_time_numpy_datetime():
 
     dts = parse_time(inputs)
 
-    assert isinstance(dts, np.ndarray)
-    assert all([isinstance(dt, datetime) for dt in dts])
+    assert isinstance(dts, astropy.time.Time)
 
 
 def test_parse_time_individual_numpy_datetime():
     dt64 = np.datetime64('2005-02-01T00')
     dt = parse_time(dt64)
 
-    assert isinstance(dt, datetime)
+    assert isinstance(dt, astropy.time.Time)
+    assert dt == ap.Time('2005-02-01', format='isot')
 
 
 def test_parse_time_numpy_datetime_timezone():
     dt64 = np.datetime64('2014-02-07T16:47:51-0500')
     dt = parse_time(dt64)
 
-    assert dt == datetime(2014, 2, 7, 21, 47, 51)
+    assert dt == ap.Time('2014-02-07T21:47:51', format='isot')
 
 
 def test_parse_time_numpy_datetime_ns():
     dt64 = np.datetime64('2014-02-07T16:47:51.008288000')
     dt = parse_time(dt64)
 
-    assert dt == datetime(2014, 2, 7, 16, 47, 51, 8288)
+    assert dt == ap.Time('2014-02-07T16:47:51.008288000', format='isot')
 
     dt64 = np.datetime64('2014-02-07T16:47:51.008288123')
     dt = parse_time(dt64)
 
-    assert dt == datetime(2014, 2, 7, 16, 47, 51, 8288)
+    assert dt == ap.Time('2014-02-07T16:47:51.008288123', format='isot')
 
 
 def test_parse_time_numpy_datetime_round():
     dt64 = np.datetime64('2014-02-07T16:47:51.008288999')
     dt = parse_time(dt64)
 
-    assert dt == datetime(2014, 2, 7, 16, 47, 51, 8288)
+    assert dt == ap.Time('2014-02-07T16:47:51.008288999')
 
 
 def test_parse_time_astropy():
@@ -175,10 +166,10 @@ def test_ISO():
     dt1 = ap.Time('1966-02-03T20:17:40')
     assert parse_time('1966-02-03').jd == LANDING.jd
     assert (
-        parse_time('1966-02-03T20:17:40').jd == dt1.jd
+        parse_time('1966-02-03T20:17:40') == dt1
     )
     assert (
-        parse_time('19660203T201740').jd == dt1.jd
+        parse_time('19660203T201740') == dt1
     )
 
     dt2 = ap.Time('2007-05-04T21:08:12.999999')
@@ -208,7 +199,7 @@ def test_ISO():
     ]
 
     for k, v in lst:
-        assert parse_time(k).jd == v.jd
+        assert parse_time(k) == v
 
 
 def test_break_time():
