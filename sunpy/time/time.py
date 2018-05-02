@@ -205,7 +205,7 @@ def convert_time_str(time_string, **kwargs):
             if ts is None:
                 continue
             return ap.Time.strptime(ts, time_format,
-                                    format='isot') + time_delta
+                                    format='isot', **kwargs) + time_delta
         except ValueError:
             pass
     time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
@@ -214,15 +214,15 @@ def convert_time_str(time_string, **kwargs):
                                            time_string_parse_format)
         if ts and time_delta:
             return ap.Time.strptime(ts, time_string_parse_format,
-                                    format='isot') + time_delta
+                                    format='isot', **kwargs) + time_delta
         else:
             return ap.Time.strptime(time_string, time_string_parse_format,
-                                    format='isot')
+                                    format='isot', **kwargs)
     # when no format matches, call default fucntion
     convert_time.dispatch(object)(time_string, **kwargs)
 
 
-def parse_time(time_string, time_format='', time_scale='', **kwargs):
+def parse_time(time_string, time_format='', out_format='isot', **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
@@ -247,11 +247,15 @@ def parse_time(time_string, time_format='', time_scale='', **kwargs):
     datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
     if time_format == 'utime':
-        return convert_time(float(time_string), **kwargs)
+        rt = convert_time(float(time_string), **kwargs)
     elif time_string is 'now':
-        return ap.Time.now()
+        rt = ap.Time.now()
     else:
-        return convert_time(time_string, **kwargs)
+        rt = convert_time(time_string, **kwargs)
+
+    rt = rt.replicate(out_format)
+
+    return rt
 
 
 def is_time(time_string, time_format=''):
