@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import glob
 from collections import OrderedDict
+import warnings
 
 import numpy as np
 import astropy.io.fits
