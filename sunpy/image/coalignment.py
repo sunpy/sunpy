@@ -516,6 +516,8 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     One way of checking this is to animate the original `~sunpy.map.MapCube`,
     animate the coaligned `~sunpy.map.MapCube`, and compare the differences you
     see to the calculated shifts.
+
+
     Parameters
     ----------
     mc : `sunpy.map.MapCube`
@@ -555,7 +557,9 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
         `~sunpy.map.MapCube`.  If a shift is passed in to the function, that
         shift is applied to the input `~sunpy.map.MapCube` and the template
         matching algorithm is not used.
+
     The remaining keyword arguments are sent to `sunpy.image.coalignment.apply_shifts`.
+
     Returns
     -------
     output : `sunpy.map.MapCube`
