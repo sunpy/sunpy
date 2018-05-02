@@ -1,5 +1,5 @@
 #
-# Testing functions for a mapcube solar derotation functionality.
+# Testing functions for a mapsequence solar derotation functionality.
 #
 import os
 from copy import deepcopy
@@ -14,7 +14,7 @@ from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy.data.test
 import sunpy.map
-from sunpy.physics.solar_rotation import calculate_solar_rotate_shift, mapcube_solar_derotate
+from sunpy.physics.solar_rotation import calculate_solar_rotate_shift, mapsequence_solar_derotate
 
 
 @pytest.fixture
@@ -30,54 +30,54 @@ def aia171_test_submap(aia171_test_map):
 
 
 @pytest.fixture
-def aia171_test_mapcube(aia171_test_submap):
+def aia171_test_mapsequence(aia171_test_submap):
     m2header = deepcopy(aia171_test_submap.meta)
     m2header['date-obs'] = '2011-02-15T01:00:00.34'
     m2 = sunpy.map.Map((aia171_test_submap.data, m2header))
     m3header = deepcopy(aia171_test_submap.meta)
     m3header['date-obs'] = '2011-02-15T02:00:00.34'
     m3 = sunpy.map.Map((aia171_test_submap.data, m3header))
-    return sunpy.map.Map([aia171_test_submap, m2, m3], cube=True)
+    return sunpy.map.Map([aia171_test_submap, m2, m3], sequence=True)
 
 
-# Known displacements for these mapcube layers when the layer index is set to 0
+# Known displacements for these mapsequence layers when the layer index is set to 0
 @pytest.fixture
 def known_displacements_layer_index0():
     return {'x': np.asarray([-0.146552, -9.927367, -19.729643]),
             'y': np.asarray([-0.18597, 0.064922, 0.303616])}
 
 
-# Known displacements for these mapcube layers when the layer index is set to 1
+# Known displacements for these mapsequence layers when the layer index is set to 1
 @pytest.fixture
 def known_displacements_layer_index1():
     return {'x': np.asarray([9.611735, -0.146552, -9.927367]),
             'y': np.asarray([-0.449032, -0.18597, 0.064922])}
 
 
-def test_calculate_solar_rotate_shift(aia171_test_mapcube, known_displacements_layer_index0, known_displacements_layer_index1):
+def test_calculate_solar_rotate_shift(aia171_test_mapsequence, known_displacements_layer_index0, known_displacements_layer_index1):
     # Test that the default works
-    test_output = calculate_solar_rotate_shift(aia171_test_mapcube)
+    test_output = calculate_solar_rotate_shift(aia171_test_mapsequence)
     assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index0['x'], rtol=5e-2, atol=1e-5)
     assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index0['y'], rtol=5e-2, atol=1e-5)
 
     # Test that the rotation relative to a nonzero layer_index works
-    test_output = calculate_solar_rotate_shift(aia171_test_mapcube, layer_index=1)
+    test_output = calculate_solar_rotate_shift(aia171_test_mapsequence, layer_index=1)
     assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index1['x'], rtol=5e-2, atol=1e-5)
     assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index1['y'], rtol=5e-2, atol=1e-5)
 
 
-def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
-    # Test that a mapcube is returned when the clipping is False.
-    tmc = mapcube_solar_derotate(aia171_test_mapcube, clip=False)
-    assert(isinstance(tmc, sunpy.map.MapCube))
+def test_mapsequence_solar_derotate(aia171_test_mapsequence, aia171_test_submap):
+    # Test that a mapsequence is returned when the clipping is False.
+    tmc = mapsequence_solar_derotate(aia171_test_mapsequence, clip=False)
+    assert(isinstance(tmc, sunpy.map.MapSequence))
 
     # Test that all entries have the same shape when clipping is False
     for m in tmc:
         assert(m.data.shape == aia171_test_submap.data.shape)
 
-    # Test that a mapcube is returned on default clipping (clipping is True)
-    tmc = mapcube_solar_derotate(aia171_test_mapcube)
-    assert(isinstance(tmc, sunpy.map.MapCube))
+    # Test that a mapsequence is returned on default clipping (clipping is True)
+    tmc = mapsequence_solar_derotate(aia171_test_mapsequence)
+    assert(isinstance(tmc, sunpy.map.MapSequence))
 
     # Test that the shape of data is correct when clipped
     clipped_shape = (24, 19)
@@ -86,8 +86,8 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
 
     # Test that the returned reference pixels are correctly displaced.
     layer_index = 0
-    derotated = mapcube_solar_derotate(aia171_test_mapcube, clip=True, layer_index=layer_index)
-    tshift = calculate_solar_rotate_shift(aia171_test_mapcube, layer_index=layer_index)
+    derotated = mapsequence_solar_derotate(aia171_test_mapsequence, clip=True, layer_index=layer_index)
+    tshift = calculate_solar_rotate_shift(aia171_test_mapsequence, layer_index=layer_index)
     derotated_reference_pixel_at_layer_index = derotated[layer_index].reference_pixel
     for i, m_derotated in enumerate(derotated):
         for i_s, s in enumerate(['x', 'y']):
