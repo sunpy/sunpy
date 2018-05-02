@@ -124,9 +124,10 @@ def test_parse_time_numpy_datetime_round():
 
 
 def test_parse_time_astropy():
-    astropy_time = parse_time(astropy.time.Time(['2016-01-02T23:00:01']))
+    ip = astropy.time.Time(['2016-01-02T23:00:01'])
+    astropy_time = parse_time(ip)
 
-    assert astropy_time == datetime(year=2016, month=1, day=2, hour=23, minute=0, second=1)
+    assert astropy_time == ip
 
 
 def test_parse_time_datetime():

@@ -173,7 +173,7 @@ def convert_time_date(time_string, **kwargs):
 
 @convert_time.register(tuple)
 def convert_time_tuple(time_string, **kwargs):
-    return datetime(*time_string)
+    return ap.Time('{}-{}-{}'.format(*time_string))
 
 
 @convert_time.register(float)
@@ -197,7 +197,7 @@ def convert_time_npndarray(time_string, **kwargs):
 
 @convert_time.register(astropy.time.Time)
 def convert_time_astropy(time_string, **kwargs):
-    return time_string.datetime
+    return time_string
 
 
 @convert_time.register(str)
