@@ -497,6 +497,89 @@ class DatabaseEntry(Base):
             instrument=instrument, size=size,
             wavemin=wavemin, wavemax=wavemax)
 
+    @classmethod
+    def _from_fido_search_result_block(cls, sr_block, default_waveunit=None):
+        """Make a new :class:`DatabaseEntry` instance from a Fido search
+        result block.
+
+        Parameters
+        ----------
+        sr_block : sunpy.net.dataretriever.client.QueryResponseBlock
+            A query result block is usually not created directly; instead,
+            one gets instances of
+            ``sunpy.net.dataretriever.client.QueryResponseBlock`` by iterating
+            over each element of a Fido search result.
+        default_waveunit : str, optional
+            The wavelength unit that is used if it cannot be found in the
+            `sr_block`.
+
+        Examples
+        --------
+        >>> from sunpy.net import Fido, attrs
+        >>> from sunpy.database.tables import DatabaseEntry
+        >>> sr = Fido.search(attrs.Time("2012/1/1", "2012/1/2"),
+        ...    attrs.Instrument('lyra'))
+        >>> entry = DatabaseEntry._from_fido_search_result_block(sr[0][0])
+        >>> entry.source
+        'Proba2'
+        >>> entry.provider
+        'esa'
+        >>> entry.physobs
+        'irradiance'
+        >>> entry.fileid
+        'http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits'
+        >>> entry.observation_time_start, entry.observation_time_end
+        (datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0))
+        >>> entry.instrument
+        'lyra'
+
+        """
+        # All attributes of DatabaseEntry that are not in QueryResponseBlock
+        # are set as None for now.
+        source = getattr(sr_block, 'source', None)
+        provider = getattr(sr_block, 'provider', None)
+        physobs = getattr(sr_block, 'physobs', None)
+        if physobs is not None:
+            physobs = str(physobs)
+        instrument = getattr(sr_block, 'instrument', None)
+        time_start = sr_block.time.start
+        time_end = sr_block.time.end
+        
+        wavelengths = getattr(sr_block, 'wave', None)
+        wavelength_temp = {}
+        if isinstance(wavelength_temp, tuple):
+            # Tuple of values
+            wavelength_temp['wavemin'] = wavelengths[0]
+            wavelength_temp['wavemax'] = wavelengths[1]
+        else:
+            # Single Value
+            wavelength_temp['wavemin'] = wavelength_temp['wavemax'] = wavelengths
+
+        final_values = {}
+        for key, val in wavelength_temp.items():
+            if isinstance(val, quantity.Quantity):
+                unit = getattr(val, 'unit', None)
+                if unit is None:
+                    if default_waveunit is not None:
+                        unit = Unit(default_waveunit)
+                    else:
+                        raise WaveunitNotFoundError(sr_block)
+                final_values[key] = unit.to(nm, float(val.value), equivalencies.spectral())
+            elif val is None or np.isnan(val):
+                final_values[key] = val
+
+        wavemin = final_values['wavemin']
+        wavemax = final_values['wavemax']
+
+        #sr_block.url of a QueryResponseBlock attribute is stored in fileid
+        fileid = str(sr_block.url) if sr_block.url is not None else None
+        size = None
+        return cls(
+            source=source, provider=provider, physobs=physobs, fileid=fileid,
+            observation_time_start=time_start, observation_time_end=time_end,
+            instrument=instrument, size=size,
+            wavemin=wavemin, wavemax=wavemax)
+
     def __eq__(self, other):
 
         if self.wavemin is None and other.wavemin is None:
