@@ -46,7 +46,7 @@ SunPy implements support for the following solar physics coordinate systems:
 * Heliographic Carrington `~sunpy.coordinates.frames.HeliographicCarrington`
 
 for a complete description of these frames see `sunpy.coordinates.frames`, for
-a more detailed description of the frames see `Thompson (2006) <http://dx.doi.org/10.1051/0004-6361:20054262>`_
+a more detailed description of the frames see `Thompson (2006) <https://doi.org/10.1051/0004-6361:20054262>`_
 
 
 `~astropy.coordinates.SkyCoord` and all other `~astropy.coordinates` objects
@@ -130,7 +130,6 @@ coordinates is::
    <SkyCoord (Helioprojective: obstime=2017-07-26 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, AU)
        (0., 5.31701821, 1.01567428)>): (Tx, Ty) in arcsec
        (0., 0.)>
-
    >>> c.transform_to(frames.HeliographicCarrington)
    <SkyCoord (HeliographicCarrington: obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, km)
       (283.99298362, 5.31701821, 695508.00000058)>
@@ -138,15 +137,13 @@ coordinates is::
 It is also possible to transform to any coordinate system implemented in Astropy. This can be used to find the position of the solar limb in AltAz equatorial coordinates::
 
     >>> from astropy.coordinates import EarthLocation, AltAz
-
     >>> time = '2017-07-11 15:00'
     >>> greenbelt = EarthLocation(lat=39.0044*u.deg, lon=-76.8758*u.deg)
     >>> greenbelt_frame = AltAz(obstime=time, location=greenbelt)
-
     >>> west_limb = SkyCoord(900*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime=time)
-    >>> west_limb.transform_to(greenbelt_frame)  # doctest: +FLOAT_CMP +REMOTE_DATA
+    >>> west_limb.transform_to(greenbelt_frame)  # doctest: +SKIP
     <SkyCoord (AltAz: obstime=2017-07-11 15:00:00.000, location=(1126916.53031967, -4833386.58391627, 3992696.622115747) m, pressure=0.0 hPa, temperature=0.0 deg_C, relative_humidity=0, obswl=1.0 micron): (az, alt, distance) in (deg, deg, m)
-        ( 111.40839095,  57.1664571,   1.51860261e+11)>
+        (111.40839101, 57.16645715, 1.51860261e+11)>
 
 
 Observer Location Information
@@ -179,6 +176,7 @@ position on the solar sphere. The conversion can be performed as follows::
   >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, observer="earth", obstime="2017-07-26", frame=frames.Helioprojective)
 
   Define a new Helioprojective frame with a different observer.
+  >>> import sunpy.coordinates
   >>> hpc_out = sunpy.coordinates.Helioprojective(observer="venus", obstime="2017-07-26")
 
   Perform the transformation from one to the other.
@@ -187,7 +185,6 @@ position on the solar sphere. The conversion can be performed as follows::
 An example with two maps, named ``aia`` and ``stereo``::
 
   >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia.coordinate_frame)  # doctest: +SKIP
-
   >>> hpc2 = hpc1.transform_to(stereo.coordinate_frame)  # doctest: +SKIP
 
 
@@ -258,20 +255,18 @@ If you want to obtain a un-realized coordinate frame corresponding to a
 `~sunpy.map.GenericMap` object you can do the following::
 
   >>> import sunpy.map
-  >>> from sunpy.data.sample import AIA_171_IMAGE
-
-  >>> amap = sunpy.map.Map(AIA_171_IMAGE)
-  >>> amap.observer_coordinate  # doctest: +FLOAT_CMP
-  <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
-      ( 0.,  0.048591,   1.51846026e+11)>
-
+  >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
+  >>> amap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+  >>> amap.observer_coordinate  # doctest: +REMOTE_DATA
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+        (0., 0.048591, 1.51846026e+11)>
 
 which is equivalent to::
 
-  >>> from astropy.wcs.utils import wcs_to_celestial_frame
-  >>> wcs_to_celestial_frame(amap.wcs)  # doctest: +FLOAT_CMP
-  <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
-        ( 0.,  0.048591,   1.51846026e+11)>)>
+  >>> from astropy.wcs.utils import wcs_to_celestial_frame # doctest: +REMOTE_DATA
+  >>> wcs_to_celestial_frame(amap.wcs)  # doctest: +REMOTE_DATA
+    <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+        (0., 0.048591, 1.51846026e+11)>)>
 
 
 .. automodapi:: sunpy.coordinates
@@ -298,6 +293,6 @@ Attribution
 
 Some of this documentation was adapted from Astropy under the terms of the `BSD
 License
-<https://raw.githubusercontent.com/astropy/astropy/master/licenses/LICENSE.rst>`_.
+<https://raw.githubusercontent.com/astropy/astropy/master/LICENSE.rst>`_.
 
 This package was initially developed by Pritish Chakraborty as part of GSOC 2014 and Stuart Mumford.

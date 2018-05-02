@@ -50,7 +50,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 
     References
     ----------
-    | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
+    | https://scipy-cookbook.readthedocs.io/items/Rebinning.html
     """
 
     # Verify that number dimensions requested matches original shape
@@ -215,7 +215,7 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
     References
     ----------
     Taken from
-    http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
+    https://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
 
     """
     # make sure the input dimensions are integers

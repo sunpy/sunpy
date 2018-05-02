@@ -9,7 +9,7 @@ the GOES/XRS instrument, see [Ref1]_.  GOES/XRS has become
 the "standard candle" for solar coronal observations due its longevity and
 consistency.  The GOES event list, based on GOES/XRS observations, has
 become the standard solar flare catalogue.
-See http://www.ngdc.noaa.gov/stp/solar/solarflares.html for information
+See https://www.ngdc.noaa.gov/stp/solar/solarflares.html for information
 on the GOES event list definitions and data.
 
 The functions in this module provide useful software to analyse GOES/XRS
@@ -41,7 +41,7 @@ References
 ----------
 
 .. [Ref1] Hanser, F.A., & Sellers, F.B. 1996, Proc. SPIE, 2812, 344
-.. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI: `10.1051/0004-6361/200911712 <https://dx.doi.org/10.1051/0004-6361/200911712>`__
+.. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI: `10.1051/0004-6361/200911712 <https://doi.org/10.1051/0004-6361/200911712>`__
 
 """
 
@@ -814,7 +814,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
     2014-01-01 00:00:06.564999  9.298800e-08  0.000004
 
     >>> goeslc_new = calculate_radiative_loss_rate(goeslc)  # doctest: +REMOTE_DATA
-    >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    >>> goeslc_new.data   # doctest:  +REMOTE_DATA
                                         xrsa      xrsb  temperature            em  \\
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004     6.270239  6.440648e+48
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004     6.270239  6.440648e+48
@@ -1073,7 +1073,7 @@ def calculate_xray_luminosity(goeslc):
     2014-01-01 00:00:06.564999  9.298800e-08  0.000004
 
     >>> goeslc_new = calculate_xray_luminosity(goeslc)  # doctest: +REMOTE_DATA
-    >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    >>> goeslc_new.data   # doctest:  +REMOTE_DATA
                                         xrsa      xrsb  luminosity_xrsa  \\
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004     2.498454e+16
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004     2.498454e+16

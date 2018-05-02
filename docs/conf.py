@@ -28,11 +28,39 @@
 import os
 import datetime
 import sys
+from distutils.version import LooseVersion
 
-ON_RTD = os.environ.get('READTHEDOCS') == 'True'
-ON_TRAVIS = os.environ.get('TRAVIS') == 'true'
+from sphinx import __version__
+SPHINX_LT_17 = LooseVersion(__version__) < LooseVersion('1.7')
 
-if ON_RTD:
+# -- Convert Sphinx Warnings to output to stdout not stderr---------------------
+if not SPHINX_LT_17:
+    import logging
+    from sphinx.util.logging import NAMESPACE, WarningStreamHandler, SafeEncodingWriter
+
+    sphinxlogger = logging.getLogger(NAMESPACE)
+    handlers = sphinxlogger.handlers
+    warninghandler = list(filter(lambda x: isinstance(x, WarningStreamHandler), handlers))[0]
+    warninghandler.stream = SafeEncodingWriter(stream=sys.stdout)
+
+# -- Import Base config from sphinx-astropy ------------------------------------
+try:
+    from sphinx_astropy.conf.v1 import *
+except ImportError:
+    print('ERROR: the documentation requires the sphinx-astropy package to be installed')
+    sys.exit(1)
+
+try:
+    import sphinx_gallery
+    if on_rtd and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
+        # Gallery takes too long on RTD to build unless you have extra build time.
+        has_sphinx_gallery = False
+    else:
+        has_sphinx_gallery = True
+except ImportError:
+    has_sphinx_gallery = False
+
+if on_rtd:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
     os.environ['HOME'] = '/home/docs/'
     os.environ['LANG'] = 'C'
@@ -41,56 +69,33 @@ if ON_RTD:
 try:
     import suds
 except ImportError:
-    raise ImportError('suds could not be imported, please install the '
-                      '"suds-jerko" package and try again')
+    print('ERROR: suds could not be imported and the documentation requires the suds-jerko package to be installed')
+    sys.exit(1)
 
-try:
-    import astropy_helpers
-except ImportError:
-    # Building from inside the docs directory?
-    if os.path.basename(os.getcwd()) == 'docs':
-        a_h_path = os.path.abspath(os.path.join('..', 'astropy_helpers'))
-        if os.path.isdir(a_h_path):
-            sys.path.insert(1, a_h_path)
+from sunpy import version as versionmod
 
-    # If that doesn't work trying to import from astropy_helpers below will
-    # still blow up
-
-    # Load all of the global Astropy configuration
-from astropy_helpers.sphinx.conf import *
-from sunpy.extern import six
-import sunpy
-
-# -- Shut up numpy warnings from WCSAxes
-
+# -- Shut up numpy warnings from WCSAxes --------------------------------------
 import numpy as np
 np.seterr(invalid='ignore')
 
 # -- Download Sample Data -----------------------------------------------------
-
 import sunpy.data.sample
 
 # -- General configuration ----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '1.5'
+needs_sphinx = '1.6'
 
 # To perform a Sphinx version check that needs to be more specific than
 # major.minor, call `check_sphinx_version("x.y.z")` here.
 check_sphinx_version(needs_sphinx)
 
-# The intersphinx_mapping in astropy_helpers.sphinx.conf refers to astropy for
-# the benefit of affiliated packages who want to refer to objects in the
-# astropy core.  However, we don't want to cyclically reference astropy in its
-# own build so we remove it here.
-#del intersphinx_mapping['astropy']
-
-# add any custom intersphinx for sunpy
+# Add any custom intersphinx for SunPy
 intersphinx_mapping.pop('h5py', None)
-intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/latest/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
+intersphinx_mapping['drms'] = ('http://docs.sunpy.org/projects/drms/en/stable/', None)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -100,6 +105,13 @@ exclude_patterns.append('_templates')
 if 'templates_path' not in locals():  # in case parent conf.py defines it
     templates_path = []
 templates_path.append('_templates')
+
+# For the linkcheck
+linkcheck_ignore = [r" https://doi.org/\d+",
+                    r"https://riot.im/\d+",
+                    r"https://github.com/\d+",
+                    r"http://docs.sunpy.org/\d+"]
+linkcheck_anchors = False
 
 # This is added to the end of RST files - a good place to put substitutions to
 # be used globally.
@@ -111,7 +123,6 @@ rst_epilog += """
 """.format(sunpy)
 
 # -- Project information ------------------------------------------------------
-
 project = u'SunPy'
 author = u'The SunPy Community'
 copyright = u'{}, {}'.format(datetime.datetime.now().year, author)
@@ -119,53 +130,69 @@ copyright = u'{}, {}'.format(datetime.datetime.now().year, author)
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-
 # The short X.Y version.
-version = sunpy.__version__.split('-', 1)[0]
+version = versionmod.version.split('-', 1)[0]
 # The full version, including alpha/beta/rc tags.
-release = sunpy.__version__
+release = versionmod.version
 
 try:
     from sunpy_sphinx_theme.conf import *
-
-    html_sidebars = {'**': ['docsidebar.html']}
-
 except ImportError:
     html_theme = 'default'
 
-# Custom sidebar templates, maps document names to template names.
-# html_sidebars = {}
+try:
+    import ruamel.yaml as yaml
+    has_yaml = True
+    # Load data about stability
+    with open('./dev_guide/sunpy_stability.yaml', 'r') as estability:
+        sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
+
+    html_context = {
+        'sunpy_modules': sunpy_modules
+    }
+
+    def rstjinja(app, docname, source):
+        """
+        Render our pages as a jinja template for fancy templating goodness.
+        """
+        # Make sure we're outputting HTML
+        if app.builder.format != 'html':
+            return
+        src = source[0]
+        if "Current status" in src[:20]:
+            rendered = app.builder.templates.render_string(
+                src, app.config.html_context
+            )
+            source[0] = rendered
+except ImportError:
+    has_yaml = False
+    print('Warning: Stability of SunPy API page of the documentation requires the ruamel.yaml package to be installed')
 
 # The name of an image file (within the static path) to use as favicon of the
-# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# docs. This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 html_favicon = "./logo/favicon.ico"
-
-# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
-# using the given strftime format.
-# html_last_updated_fmt = ''
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 html_title = '{0} v{1}'.format(project, release)
 
-
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + 'doc'
 
 # -- Options for LaTeX output --------------------------------------------------
-
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [('index', project + '.tex', project + u' Documentation', author, 'manual')]
 
 # -- Options for manual page output --------------------------------------------
-
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [('index', project.lower(), project + u' Documentation', [author], 1)]
 
 # -- Swap to Napoleon ---------------------------------------------------------
+# Remove numpydoc
+extensions.remove('numpydoc')
 extensions.append('sphinx.ext.napoleon')
 
 # Disable having a separate return type row
@@ -173,19 +200,11 @@ napoleon_use_rtype = False
 # Disable google style docstrings
 napoleon_google_docstring = False
 
-# -- Options for the edit_on_github extension ----------------------------------------
-extensions.remove('astropy_helpers.extern.numpydoc')
-extensions.append('sphinx.ext.napoleon')
+extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
 
-# Disable having a separate return type row
-napoleon_use_rtype = False
-# Disable google style docstrings
-napoleon_google_docstring = False
-extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
-
+# -- Options for the edit_on_github extension ---------------------------------
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
-from sunpy import version as versionmod
 edit_on_github_project = "sunpy/sunpy"
 if versionmod.release:
     edit_on_github_branch = "v{0}.{1}.x".format(versionmod.major, versionmod.minor)
@@ -193,48 +212,36 @@ else:
     edit_on_github_branch = "master"
 edit_on_github_source_root = ""
 edit_on_github_doc_root = "docs"
-
 edit_on_github_skip_regex = '_.*|generated/.*'
-
 github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 
 # -- Options for the Sphinx gallery -------------------------------------------
+if has_sphinx_gallery:
+    extensions += ["sphinx_gallery.gen_gallery"]
+    sphinx_gallery_conf = {
+        'backreferences_dir':
+        'generated{}modules'.format(os.sep),  # path to store the module using example template
+        'filename_pattern':
+        '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
+        'examples_dirs': os.path.join('..', 'examples'),  # path to the examples scripts
+        'gallery_dirs': os.path.join('generated',
+                                    'gallery'),  # path to save gallery generated examples
+        'default_thumb_file': os.path.join('.', 'logo', 'sunpy_icon_128x128.png'),
+        'reference_url': {
+            'sunpy': None,
+            'astropy': 'http://docs.astropy.org/en/stable/',
+            'matplotlib': 'https://matplotlib.org/',
+            'numpy': 'http://docs.scipy.org/doc/numpy/',
+        },
+        'abort_on_example_error': True,
+        'plot_gallery': True
+    }
 
-if ON_RTD and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
-    def setup(app):
-        app.warn('The gallery build takes too long on RTD, so the '
-                 'gallery will not be built.  You will probably see '
+def setup(app):
+    if not has_sphinx_gallery:
+        app.warn('The sphinx_gallery extension is not installed, so the '
+                 'gallery will not be built. You will probably see '
                  'additional warnings about undefined references due '
                  'to this.')
-
-else:
-    try:
-        import sphinx_gallery
-        extensions += ["sphinx_gallery.gen_gallery"]
-
-        sphinx_gallery_conf = {
-            'backreferences_dir':
-            'generated{}modules'.format(os.sep),  # path to store the module using example template
-            'filename_pattern':
-            '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
-            'examples_dirs': os.path.join('..', 'examples'),  # path to the examples scripts
-            'gallery_dirs': os.path.join('generated',
-                                        'gallery'),  # path to save gallery generated examples
-            'default_thumb_file': os.path.join('.', 'logo', 'sunpy_icon_128x128.png'),
-            'reference_url': {
-                'sunpy': None,
-                'astropy': 'http://docs.astropy.org/en/stable/',
-                'matplotlib': 'http://matplotlib.org/',
-                'numpy': 'http://docs.scipy.org/doc/numpy/',
-            },
-            'abort_on_example_error': True,
-            'plot_gallery': True
-        }
-
-    except ImportError:
-
-        def setup(app):
-            app.warn('The sphinx_gallery extension is not installed, so the '
-                    'gallery will not be built.  You will probably see '
-                    'additional warnings about undefined references due '
-                    'to this.')
+    if has_yaml:
+        app.connect("source-read", rstjinja)

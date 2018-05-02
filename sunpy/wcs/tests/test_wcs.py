@@ -27,7 +27,7 @@ def l0():
     return 0.0
 
 # the following known_answers come from equivalent queries to IDL
-# WCS implementation (http://hesperia.gsfc.nasa.gov/ssw/gen/idl/wcs/)
+# WCS implementation (https://hesperia.gsfc.nasa.gov/ssw/gen/idl/wcs/)
 
 
 def test_convert_angle_units():

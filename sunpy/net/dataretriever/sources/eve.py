@@ -13,6 +13,7 @@ from ..client import GenericClient
 
 
 __all__ = ['EVEClient']
+
 BASEURL = ('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
            'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
 
@@ -30,8 +31,8 @@ class EVEClient(GenericClient):
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
     ...                       a.Instrument('EVE'), a.Level(0))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +SKIP
-    ...
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the EVEClient:
@@ -47,7 +48,7 @@ class EVEClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        Returns list of URLS corresponding to value of input timerange.
+        Return list of URLS corresponding to value of input timerange.
 
         Parameters
         ----------
@@ -58,8 +59,8 @@ class EVEClient(GenericClient):
         -------
         urls : list
             list of URLs corresponding to the requested time range
-        """
 
+        """
         # If start of time range is before 00:00, converted to such, so
         # files of the requested time ranger are included.
         # This is done because the archive contains daily files.

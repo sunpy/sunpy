@@ -334,6 +334,3 @@ class RGBCompositeMap(sunpy.map.MapCube):
 
         axes.imshow(self, origin='lower', aspect='normal', **matplot_args)
         return figure
-
-if __name__ == '__main__':
-    sys.exit(main())

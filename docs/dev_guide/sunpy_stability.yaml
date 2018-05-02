@@ -1,0 +1,54 @@
+cm:
+  status: mature
+  comments: Should see minor change in 1.0.
+coordinates:
+  status: dev
+  comments: Should be stable, but more features are being added that might require backwards incompatible changes.
+data:
+  status: mature
+  comments: Should see no change in 1.0.
+database:
+  status: dev
+  comments: Undergoing activate changes with each major release.
+image:
+  status: dev
+  comments:
+instr:
+  status: dev
+  comments:
+io:
+  status: stable
+  comments: Should see no changes in 1.0 release.
+lightcurve:
+  status: deprecated
+  comments: Deprecated in 0.8, will be removed in 1.0.
+map:
+  status: stable
+  comments: Stable in 0.9, mature in 1.0.
+net:
+  status: stable
+  comments: We intend to maintain backwards compatibility post 0.9.
+physics:
+  status: dev
+  comments:
+roi:
+  status: planned
+  comments: There is very little functionality.
+spectra:
+  status: deprecated
+  comments: Deprecated in 0.8, will be removed in 1.0.
+sun:
+  status: pendingdep
+  comments: Certainly in for a large refactor pre-1.0.
+time:
+  status: dev
+  comments: Will see major changes in 1.0.
+timeseries:
+  status: stable
+  comments: No plans to change what we currently have but only add to it.
+visualization:
+  status: stable
+  comments: No plans to change what we currently have but only add to it.
+wcs:
+  status: deprecated
+  comments: Deprecated in 0.8, will be removed in 1.0.

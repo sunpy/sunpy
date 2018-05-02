@@ -65,11 +65,11 @@ def test_concatenate_with_overlap(overlap_factor):
     concat_lc = lc1.concatenate(lc2)
     assert len(concat_lc.data) == (len(lc1.data) + len(lc2.data) - overlap_factor)
     # check that the times are correct
-    assert np.all(concat_lc.data.index[0:len(dates)] == lc1.data.index)
+    assert (concat_lc.data.index[0:len(dates)] == lc1.data.index).all()
     # check that the original data is still there
-    assert np.all(concat_lc.data.index[-len(lc2.data)+overlap_factor:] == lc2.data.index[overlap_factor:])
+    assert (concat_lc.data.index[-len(lc2.data)+overlap_factor:] == lc2.data.index[overlap_factor:]).all()
     # check that the new data is there
-    assert np.all(concat_lc.data[-len(lc2.data)+overlap_factor:] == lc2.data[overlap_factor:])
+    np.testing.assert_allclose(concat_lc.data[-len(lc2.data)+overlap_factor:], lc2.data[overlap_factor:])
 
 
 def test_concatenate_meta():
@@ -93,5 +93,3 @@ def test_concatenate_fail():
     eve = sunpy.lightcurve.EVELightCurve.create(EVE_AVERAGES_CSV)
     with pytest.raises(TypeError):
         lc1.concatenate(eve)
-
-

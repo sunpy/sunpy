@@ -402,11 +402,11 @@ def get_detector_separation_angles(detector_radecs, sunpos):
     Parameters
     ----------
     detector_radecs : `dict`
-            the RA/DEC for each NaI detector as AstroPy quantities. Obtained
+            the RA/DEC for each NaI detector as Astropy quantities. Obtained
             from the fermi.nai_detector_radecs function
     sunpos : `list`
             Two-element list containing the RA/DEC of the Sun position as
-            AstroPy Quantities, e.g. [<Longitude 73.94 deg>,
+            Astropy Quantities, e.g. [<Longitude 73.94 deg>,
             <Latitude 22.66 deg>]
 
     """
@@ -427,10 +427,10 @@ def separation_angle(radec1, radec2):
     Parameters
     ----------
     radec1 : `list`
-           A two-element list containing an RA/DEC position as AstroPy Quantities,
+           A two-element list containing an RA/DEC position as Astropy Quantities,
            e.g. [<Longitude 73.94 deg>, <Latitude 22.66 deg>]
     radec2 : `list`
-           A two-element list containing an RA/DEC position as AstroPy Quantities,
+           A two-element list containing an RA/DEC position as Astropy Quantities,
            e.g. [<Longitude 73.94 deg>, <Latitude 22.66 deg>]
 
     """

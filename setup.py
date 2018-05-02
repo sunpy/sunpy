@@ -52,8 +52,8 @@ LONG_DESCRIPTION = "SunPy is a Python library for solar physics data analysis."
 # to get from other parts of the setup infrastructure
 builtins._ASTROPY_PACKAGE_NAME_ = PACKAGENAME
 
-# VERSION should be PEP386 compatible (http://www.python.org/dev/peps/pep-0386)
-VERSION = '0.9.dev'
+# VERSION should be PEP386 compatible (https://www.python.org/dev/peps/pep-0386)
+VERSION = '1.0.dev'
 
 # Indicates if this version is a release version
 RELEASE = 'dev' not in VERSION
@@ -108,7 +108,7 @@ package_info['package_data'][PACKAGENAME].extend(c_files)
 extras_require = {'database': ["sqlalchemy"],
                   'image': ["scikit-image"],
                   'jpeg2000': ["glymur"],
-                  'net': ["suds-jurko", "beautifulsoup4", "requests", "dateutil"],
+                  'net': ["suds-jurko", "beautifulsoup4", "requests", "python-dateutil"],
                   'tests': ["pytest", "pytest-cov", "pytest-mock", "pytest-rerunfailures", "mock", "hypothesis"]}
 extras_require['all'] = extras_require['database'] + extras_require['image'] + \
                         extras_require['net'] + extras_require['tests']
@@ -121,7 +121,8 @@ setup(name=PACKAGENAME,
                         'astropy>=2.0.3',
                         'scipy',
                         'pandas>=0.12.0',
-                        'matplotlib>=1.3'],
+                        'matplotlib>=1.3',
+                        'pytest'],  # Upstream bug fix
       extras_require=extras_require,
       provides=[PACKAGENAME],
       author=AUTHOR,

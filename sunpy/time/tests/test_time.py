@@ -95,6 +95,32 @@ def test_parse_time_individual_numpy_datetime():
     assert isinstance(dt, datetime)
 
 
+def test_parse_time_numpy_datetime_timezone():
+    dt64 = np.datetime64('2014-02-07T16:47:51-0500')
+    dt = parse_time(dt64)
+
+    assert dt == datetime(2014, 2, 7, 21, 47, 51)
+
+
+def test_parse_time_numpy_datetime_ns():
+    dt64 = np.datetime64('2014-02-07T16:47:51.008288000')
+    dt = parse_time(dt64)
+
+    assert dt == datetime(2014, 2, 7, 16, 47, 51, 8288)
+
+    dt64 = np.datetime64('2014-02-07T16:47:51.008288123')
+    dt = parse_time(dt64)
+
+    assert dt == datetime(2014, 2, 7, 16, 47, 51, 8288)
+
+
+def test_parse_time_numpy_datetime_round():
+    dt64 = np.datetime64('2014-02-07T16:47:51.008288999')
+    dt = parse_time(dt64)
+
+    assert dt == datetime(2014, 2, 7, 16, 47, 51, 8288)
+
+
 def test_parse_time_astropy():
     astropy_time = parse_time(astropy.time.Time(['2016-01-02T23:00:01']))
 

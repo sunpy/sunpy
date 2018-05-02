@@ -85,7 +85,7 @@ we might want the distance and time as inputs::
 
 However, this requires that length and time both have the appropriate units. We therefore want to use
 `~astropy.units.quantity_input` to enforce this, here we use
-`function annotations <http://python-3-for-scientists.readthedocs.io/en/latest/python3_user_features.html#function-annotations>`__
+`function annotations <https://python-3-for-scientists.readthedocs.io/en/latest/python3_features.html#function-annotations>`__
 to specify the units (this is a Python 3.5+ feature, see the
 `~astropy.units.quantity_input` documentation for more details and Python 2 instructions)::
 
@@ -116,16 +116,15 @@ specified `time: u.s`::
 This may still not be quite as we want it, since we wanted the input time in seconds but the output is in m/min.
 We can correct this by defining the function with an additional annotation::
 
-  @u.quantity_input
-  def speed(length: u.m, time: u.s) -> u.m/u.s:
-      return length / time
+  >>> @u.quantity_input
+  ... def speed(length: u.m, time: u.s) -> u.m/u.s:
+  ...     return length / time
 
 This will force the output of the function to be converted to m/s before returning, so that you will always
 have the same units on the output from this function::
 
-  >>> speed(1*u.m, 1*u.minute)  # doctest: +SKIP
-  <Quantity 0.016666666666666666 m / s>
-
+  >>> speed(1*u.m, 1*u.minute)
+  <Quantity 0.01666667 m / s>
 
 Physical Coordinates in SunPy
 -----------------------------
@@ -206,17 +205,16 @@ constructed from the header information. This can be accessed using
 ``.coordinate_frame``::
 
   >>> import sunpy.map
-  >>> from sunpy.data.sample import AIA_171_IMAGE
-
-  >>> m = sunpy.map.Map(AIA_171_IMAGE)
-  >>> m.coordinate_frame
+  >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
+  >>> m = sunpy.map.Map(AIA_171_IMAGE) # doctest: +REMOTE_DATA
+  >>> m.coordinate_frame  # doctest: +REMOTE_DATA
     <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
         (0., 0.048591, 1.51846026e+11)>)>
 
 This can be used when creating a `~astropy.coordinates.SkyCoord` object to set
 the coordinate system to that image::
 
-  >>> SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame)
+  >>> SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame) # doctest: +REMOTE_DATA
   <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
       (0., 0.048591, 1.51846026e+11)>): (Tx, Ty) in arcsec
       (100., 10.)>
@@ -226,7 +224,7 @@ on top of the map::
 
   >>> import matplotlib.pyplot as plt
 
-  >>> ax = plt.subplot(projection=m)
+  >>> ax = plt.subplot(projection=m)  # doctest: +REMOTE_DATA
   >>> m.plot()  # doctest: +SKIP
   >>> ax.plot_coord(c, 'o')  # doctest: +SKIP
 

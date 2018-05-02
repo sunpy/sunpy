@@ -40,9 +40,9 @@ class NoRHTimeSeries(GenericTimeSeries):
 
     Examples
     --------
-    >>> import sunpy.data.sample
+    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> import sunpy.timeseries
-    >>> norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_TIMESERIES, source='NoRH')
+    >>> norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_TIMESERIES, source='NoRH')  # doctest: +REMOTE_DATA
     >>> norh.peek()   # doctest: +SKIP
 
     References
@@ -73,12 +73,6 @@ class NoRHTimeSeries(GenericTimeSeries):
         ----------
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
-
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -95,8 +89,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes.set_ylabel('Correlation')
         axes.legend()
 
-        plt.show()
-        return figure
+        figure.show()
 
     @classmethod
     def _parse_file(cls, filepath):

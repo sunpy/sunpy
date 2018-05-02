@@ -16,12 +16,12 @@ You can create an ROI object with the following: ::
 
 This creates an roi called result for the specific time range. Querying the newly created ROI gives the following: ::
 
-    >>> result   # doctest: +NORMALIZE_WHITESPACE
+    >>> result
     SunPy Region-of-interest (ROI) object
     -------------------------------------
-    Source: 		LYRA LYTAF
-    Start time:		2011-02-15T04:34:09
-    End time: 		2011-02-15T04:48:21
-    Event description:	UV occult.
+    Source:         LYRA LYTAF
+    Start time:     2011-02-15T04:34:09
+    End time:       2011-02-15T04:48:21
+    Event description:  UV occult.
 
 Check out the code reference for the time range object for more information.

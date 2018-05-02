@@ -85,3 +85,10 @@ def test_main_figures(monkeypatch):
     args = sunpy.tests.main(figure=True)
     assert args in (['-p no:warnings', 'sunpy'],
                     ['-p no:warnings', root_dir])
+
+
+def test_main_figure_only(monkeypatch):
+    monkeypatch.setattr(pytest, 'main', lambda x: x)
+    args = sunpy.tests.main(figure_only=True)
+    assert args in (['-m figure', '-p no:warnings', 'sunpy'],
+                    ['-m figure', '-p no:warnings', root_dir])

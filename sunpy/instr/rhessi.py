@@ -82,11 +82,11 @@ def get_obssumm_dbase_file(time_range):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, hdrs = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> fname, hdrs = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
 
     References
     ----------
-    | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
+    | https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing%20Summary%20Data
 
     .. note::
         This API is currently limited to providing data from whole days only.
@@ -124,19 +124,21 @@ def parse_obssumm_dbase_file(filename):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, _ = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
-    >>> rhessi.parse_obssumm_dbase_file(fname)   # doctest: +SKIP
+    >>> fname, _ = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
+    >>> file_names = rhessi.parse_obssumm_dbase_file(fname)   # doctest: +REMOTE_DATA
+    >>> file_names['filename'][::5]   # doctest: +REMOTE_DATA
+    ['hsi_obssumm_20110401_043.fit', 'hsi_obssumm_20110406_041.fit', 'hsi_obssumm_20110411_024.fit', 'hsi_obssumm_20110416_016.fit', 'hsi_obssumm_20110421_025.fit', 'hsi_obssumm_20110426_022.fit']
 
     References
     ----------
-    | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
+    | https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing%20Summary%20Data
 
     .. note::
         This API is currently limited to providing data from whole days only.
 
     """
     # An example dbase file can be found at:
-    # http://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
+    # https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
 
     with open(filename) as fd:
         reader = csv.reader(fd, delimiter=' ', skipinitialspace=True)
@@ -192,8 +194,8 @@ def get_obssum_filename(time_range):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.get_obssum_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
-    ['http://soleil.i4ds.ch/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits']
+    >>> rhessi.get_obssum_filename(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
+    ['https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits']
 
     .. note::
         This API is currently limited to providing data from whole days only.
@@ -242,7 +244,7 @@ def get_obssumm_file(time_range):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, hdrs = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> fname, hdrs = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
 
     .. note::
         This API is currently limited to providing data from whole days only.
@@ -276,8 +278,8 @@ def parse_obssumm_file(filename):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, _ = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
-    >>> data = rhessi.parse_obssumm_file(fname)   # doctest: +SKIP
+    >>> fname, _ = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
+    >>> data = rhessi.parse_obssumm_file(fname)   # doctest: +REMOTE_DATA
 
     """
 
@@ -353,7 +355,7 @@ def uncompress_countrate(compressed_countrate):
 
     References
     ----------
-    Hsi_obs_summ_decompress.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
+    Hsi_obs_summ_decompress.pro `<https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
     """
 
     # Ensure uncompressed counts are between 0 and 255
@@ -386,7 +388,7 @@ def hsi_linecolors():
 
     References
     ----------
-    hsi_linecolors.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro>`_
+    hsi_linecolors.pro `<https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro>`_
     """
     return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange',
             'olive')
@@ -476,13 +478,12 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
 
     Examples
     --------
+    This example is broken.
     >>> import sunpy.data
-    >>> import sunpy.data.sample
+    >>> import sunpy.data.sample  # doctest: +SKIP
     >>> import sunpy.instr.rhessi as rhessi
-    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
-    >>> map = rhessi.backprojection(sunpy.data.sample.RHESSI_EVENT_LIST)   # doctest: +SKIP
+    >>> map = rhessi.backprojection(sunpy.data.sample.RHESSI_IMAGE)  # doctest: +SKIP
     >>> map.peek()   # doctest: +SKIP
-
     """
     pixel_size = pixel_size.to(u.arcsec)
     image_dim = np.array(image_dim.to(u.pix).value, dtype=int)

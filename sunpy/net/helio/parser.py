@@ -90,7 +90,7 @@ def endpoint_parser(link):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA +NORMALIZE_WHITESPACE
+    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
     ['http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService?wsdl',
     'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0?wsdl',
     'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0b?wsdl',
@@ -104,7 +104,7 @@ def endpoint_parser(link):
     endpoint_page = link_test(link)
     if endpoint_page is None:
         return None
-    soup = BeautifulSoup(endpoint_page)
+    soup = BeautifulSoup(endpoint_page, 'html.parser')
     endpoints = []
     for web_link in soup.find_all('a'):
         url = web_link.get('href')

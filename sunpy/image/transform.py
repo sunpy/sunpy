@@ -77,7 +77,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     Although this function is analogous to the IDL's rot() function, it does not
     use the same algorithm as the IDL rot() function.
-    IDL's rot() calls the `POLY_2D <http://www.exelisvis.com/docs/poly_2d.html>`_
+    IDL's rot() calls the `POLY_2D <http://www.harrisgeospatial.com/docs/poly_2d.html>`_
     method to calculate the inverse mapping of original to target pixel
     coordinates. This is a polynomial geometrical transformation.
     Then optionally it uses a bicubic convolution interpolation
