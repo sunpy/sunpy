@@ -18,16 +18,23 @@ LANDING = ap.Time('1966-02-03', format='isot')
 
 
 def test_parse_time_24():
-    assert parse_time("2010-10-10T24:00:00") == datetime(2010, 10, 11)
+    # Once https://github.com/astropy/astropy/issues/6970 is fixed,
+    # remove .jd from equality check
+    assert parse_time("2010-10-10T24:00:00").jd == astropy.time.Time('2010-10-11').jd
 
 
 def test_parse_time_24_2():
-    assert parse_time("2010-10-10T24:00:00.000000") == datetime(2010, 10, 11)
+    # Once https://github.com/astropy/astropy/issues/6970 is fixed,
+    # remove .jd from equality check
+    assert parse_time("2010-10-10T24:00:00.000000").jd == astropy.time.Time('2010-10-11').jd
 
 
 def test_parse_time_trailing_zeros():
     # see issue #289 at https://github.com/sunpy/sunpy/issues/289
-    assert parse_time('2010-10-10T00:00:00.00000000') == datetime(2010, 10, 10)
+
+    # Once https://github.com/astropy/astropy/issues/6970 is fixed,
+    # remove .jd from equality check
+    assert parse_time('2010-10-10T00:00:00.00000000').jd == astropy.time.Time('2010-10-10').jd
 
 
 def test_parse_time_tuple():
@@ -35,40 +42,55 @@ def test_parse_time_tuple():
 
 
 def test_parse_time_int():
+    # Once https://github.com/astropy/astropy/issues/6970 is fixed,
+    # remove .jd from equality check
     assert parse_time(765548612.0, 'utime').jd == ap.Time('2003-4-5T12:23:32').jd
 
     assert parse_time(1009685652.0, 'utime').jd == ap.Time('2010-12-30T4:14:12').jd
 
 
 def test_parse_time_pandas_timestamp():
-    ts = pandas.Timestamp(LANDING)
+    ts = pandas.Timestamp(datetime(*(1966, 2, 3)))
 
     dt = parse_time(ts)
 
-    assert isinstance(dt, datetime)
+    assert isinstance(dt, astropy.time.Time)
     assert dt == LANDING
 
 
 def test_parse_time_pandas_series():
     inputs = [datetime(2012, 1, i) for i in range(1, 13)]
     ind = pandas.Series(inputs)
+    as_inps = ap.Time(inputs)
 
     dts = parse_time(ind)
 
-    assert isinstance(dts, np.ndarray)
-    assert all([isinstance(dt, datetime) for dt in dts])
-    assert list(dts) == inputs
+    assert isinstance(dts, astropy.time.Time)
+    assert np.all(dts == as_inps)
+
+
+def test_parse_time_pandas_series_2():
+    inputs = [[datetime(2012, 1, 1, 0, 0), datetime(2012, 1, 2, 0, 0)],
+              [datetime(2012, 1, 3, 0, 0), datetime(2012, 1, 4, 0, 0)]]
+    ind = pandas.Series(inputs)
+    as_inps = ap.Time(inputs)
+
+    apts = parse_time(ind)
+
+    assert isinstance(apts, astropy.time.Time)
+    assert np.all(apts == as_inps)
+    assert apts.shape == as_inps.shape
 
 
 def test_parse_time_pandas_index():
     inputs = [datetime(2012, 1, i) for i in range(1, 13)]
     ind = pandas.DatetimeIndex(inputs)
+    as_inps = ap.Time(inputs)
 
     dts = parse_time(ind)
 
-    assert isinstance(dts, np.ndarray)
-    assert all([isinstance(dt, datetime) for dt in dts])
-    assert list(dts) == inputs
+    assert isinstance(dts, astropy.time.Time)
+    assert np.all(dts == as_inps)
 
 
 def test_parse_time_numpy_date():
@@ -149,7 +171,7 @@ def test_parse_time_now():
     assert isinstance(parse_time('now'), astropy.time.Time) is True
 
 
-def test_parse_time_ISO():
+def test_ISO():
     dt1 = ap.Time('1966-02-03T20:17:40')
     assert parse_time('1966-02-03').jd == LANDING.jd
     assert (
