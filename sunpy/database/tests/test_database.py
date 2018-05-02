@@ -687,7 +687,7 @@ def test_add_entries_from_fido_search_result_ignore_duplicates(database, fido_se
     assert len(database) == 2*65
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entry_fido_search_result(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
@@ -698,7 +698,7 @@ def test_add_entry_fido_search_result(database, fido_search_result):
     assert len(database) == 65
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_fido_search_result_JSOC_client(database):
     assert len(database) == 0
     search_result = Fido.search(
@@ -710,7 +710,7 @@ def test_add_entries_from_fido_search_result_JSOC_client(database):
         database.add_from_fido_search_result(search_result)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_fido_search_result_duplicates(database,
         fido_search_result):
     assert len(database) == 0
@@ -720,7 +720,7 @@ def test_add_entries_from_fido_search_result_duplicates(database,
         database.add_from_fido_search_result(fido_search_result)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_fido_search_result_ignore_duplicates(database,
         fido_search_result):
     assert len(database) == 0
@@ -730,7 +730,7 @@ def test_add_entries_from_fido_search_result_ignore_duplicates(database,
     assert len(database) == 2*65
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entry_fido_search_result(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
@@ -741,7 +741,7 @@ def test_add_entry_fido_search_result(database, fido_search_result):
     assert len(database) == 65
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_fido_search_result_JSOC_client(database):
     assert len(database) == 0
     search_result = Fido.search(
@@ -753,7 +753,7 @@ def test_add_entries_from_fido_search_result_JSOC_client(database):
         database.add_from_fido_search_result(search_result)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_fido_search_result_duplicates(database,
         fido_search_result):
     assert len(database) == 0
@@ -763,7 +763,7 @@ def test_add_entries_from_fido_search_result_duplicates(database,
         database.add_from_fido_search_result(fido_search_result)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_fido_search_result_ignore_duplicates(database,
         fido_search_result):
     assert len(database) == 0
