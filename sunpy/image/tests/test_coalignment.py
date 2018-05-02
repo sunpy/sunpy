@@ -9,7 +9,7 @@ import numpy as np
 from astropy import units as u
 from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift as sp_shift
-from sunpy.map import Map, MapSequence
+from sunpy.map import Map, MapCube, MapSequence
 import pytest
 import os
 import sunpy.data.test
@@ -17,8 +17,8 @@ from sunpy.image.coalignment import parabolic_turning_point, \
     repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
     calculate_clipping, get_correlation_shifts, find_best_match_location, \
     match_template_to_layer, clip_edges, \
-    calculate_match_template_shift, mapsequence_coalign_by_match_template,\
-    apply_shifts
+    calculate_match_template_shift, mapcube_coalign_by_match_template,\
+    mapsequence_coalign_by_match_template, apply_shifts
 from sunpy.extern.six.moves import range
 
 @pytest.fixture
