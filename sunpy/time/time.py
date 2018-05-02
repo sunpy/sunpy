@@ -129,14 +129,6 @@ def _astropy_time(time):
     return time if isinstance(time, astropy.time.Time) else astropy.time.Time(parse_time(time))
 
 
-def _parse_dt64(dt):
-    """
-    Parse a single numpy datetime64 object
-    """
-    # Convert to microsecond precision because datetime cannot handle nanoseconds
-    return dt.astype('M8[us]').astype(datetime)
-
-
 @singledispatch
 def convert_time(time_string, **kwargs):
     # default case when no type matches
@@ -181,13 +173,13 @@ def convert_time_float(time_string, **kwargs):
 
 @convert_time.register(np.datetime64)
 def convert_time_npdatetime64(time_string, **kwargs):
-    return _parse_dt64(time_string)
+    return ap.Time(str(time_string.astype('M8[ns]')))
 
 
 @convert_time.register(np.ndarray)
 def convert_time_npndarray(time_string, **kwargs):
     if 'datetime64' in str(time_string.dtype):
-        return np.array([_parse_dt64(dt) for dt in time_string])
+        return ap.Time([str(dt.astype('M8[ns]')) for dt in time_string])
     else:
         return convert_time.dispatch(object)(time_string, **kwargs)
 
