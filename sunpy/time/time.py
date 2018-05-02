@@ -145,30 +145,27 @@ def convert_time(time_string, **kwargs):
 
 @convert_time.register(pandas.Timestamp)
 def convert_time_pandasTimestamp(time_string, **kwargs):
-    return time_string.to_pydatetime()
+    return ap.Time(time_string)
 
 
 @convert_time.register(pandas.Series)
 def convert_time_pandasSeries(time_string, **kwargs):
-    if 'datetime64' in str(time_string.dtype):
-        return np.array([dt.to_pydatetime() for dt in time_string])
-    else:
-        convert_time.dispatch(object)(time_string, **kwargs)
+    return ap.Time(time_string.tolist())
 
 
 @convert_time.register(pandas.DatetimeIndex)
 def convert_time_pandasDatetimeIndex(time_string, **kwargs):
-    return time_string._mpl_repr()
+    return ap.Time(time_string.tolist())
 
 
 @convert_time.register(datetime)
 def convert_time_datetime(time_string, **kwargs):
-    return time_string
+    return ap.Time(time_string)
 
 
 @convert_time.register(date)
 def convert_time_date(time_string, **kwargs):
-    return datetime.combine(time_string, time())
+    return ap.Time(datetime.combine(time_string, time()))
 
 
 @convert_time.register(tuple)
