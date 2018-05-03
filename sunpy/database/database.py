@@ -462,7 +462,7 @@ class Database(object):
             raise TypeError('unexpected keyword argument {0!r}'.format(k))
 
         entries_list = tables.entries_from_fido_search_result(search_result,
-            default_waveunit=self.default_waveunit)
+                                                              default_waveunit=self.default_waveunit)
         entries_list = list(entries_list)
 
         remove_list = []
@@ -471,7 +471,7 @@ class Database(object):
             for database_entry in self:
                 if database_entry.path is not None and sr_entry._compare_attributes(database_entry,
                     ["source", "provider", "physobs", "fileid", "observation_time_start",
-                    "observation_time_end", "instrument", "size", "wavemin", "wavemax"]):
+                     "observation_time_end", "instrument", "size", "wavemin", "wavemax"]):
                     if not overwrite:
                         remove_list.append(qr)
                     else:
@@ -915,7 +915,8 @@ class Database(object):
             query_result, client=client, path=path, progress=progress, overwrite=overwrite))
 
     def download_from_fido_search_result(self, search_result,
-            path=None, wait=True, progress=False, ignore_already_added=False, overwrite=False):
+                                         path=None, wait=True, progress=False,
+                                         ignore_already_added=False, overwrite=False):
         if not search_result:
             return
         self.add_many(
