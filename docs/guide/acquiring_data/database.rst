@@ -344,7 +344,7 @@ cannot be found or is not set.
     >>> from sunpy.database.tables import display_entries
     >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA +SKIP
      id observation_time_start ...      wavemin            wavemax
     --- ---------------------- ... ------------------ ------------------
       1    2011-06-07 06:33:02 ...               17.1               17.1
@@ -762,7 +762,7 @@ to 10 and therefore removes the 5 entries that been used least recently.
      12    2011-06-07 06:52:19 ...               19.3               19.3
      13    2011-06-07 06:58:43 ...               19.3               19.3
      14    2011-06-07 20:37:52 ...               19.5               19.5
-     21    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
+     21    2011-06-07 06:33:29 ...               17.4               17.4
      22    2014-04-09 06:00:12 ...               17.1               17.1
      58    2011-06-06 00:00:00 ...                N/A                N/A
 
@@ -784,11 +784,11 @@ Let's clear the database first.
 Now get the Fido search result and pass it into the 
 :meth:`Database.add_from_fido_search_result()` method.
 
-    >>> from sunpy.net import Fido, attrs as a
+    >>> from sunpy.net import Fido, attrs as a   # doctest:  +REMOTE_DATA
     >>> search_result = Fido.search(a.Time("2012/1/1", "2012/1/2"),
-    ...                              a.Instrument('lyra'))
-    >>> database.add_from_fido_search_result(search_result)
-    >>> len(database)
+    ...                              a.Instrument('lyra'))   # doctest:  +REMOTE_DATA
+    >>> database.add_from_fido_search_result(search_result)   # doctest:  +REMOTE_DATA
+    >>> len(database)   # doctest:  +REMOTE_DATA
     2
 
 9.2 Downloading
@@ -802,9 +802,9 @@ number of FITS headers. The :meth:`Database.download_from_fido_search_result()`
 method also accepts an optional keyword argument `path` which determines the 
 download path of each file.
 
-    >>> database.download_from_fido_search_result(search_result)
+    >>> database.download_from_fido_search_result(search_result)   # doctest:  +REMOTE_DATA
     >>> display_entries(database, ['id', 'observation_time_start', 
-    ...                     'observation_time_end', 'instrument', 'source'])
+    ...                     'observation_time_end', 'instrument', 'source'])   # doctest:  +REMOTE_DATA
     id observation_time_start observation_time_end instrument source
     -- ---------------------- -------------------- ---------- ------
     1  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
