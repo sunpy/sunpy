@@ -800,14 +800,18 @@ resulting search result determines the number of entries that will be added
 to the database. The number of entries that will be added depends on the total 
 number of FITS headers. The :meth:`Database.download_from_fido_search_result()` 
 method also accepts an optional keyword argument `path` which determines the 
-download path of each file.
+download path of each file. Here, the first 2 entries are from the `add` operation
+shown above, and the next 4 entries are from the `download` operation.
 
     >>> database.download_from_fido_search_result(search_result)   # doctest:  +REMOTE_DATA
     >>> print(display_entries(database, ['id', 'observation_time_start', 
     ...                     'observation_time_end', 'instrument', 'source']))   # doctest:  +REMOTE_DATA
     id observation_time_start observation_time_end instrument source
     -- ---------------------- -------------------- ---------- ------
-    1  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
-    2  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
-    3  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
-    4  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
+    1    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+    2    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+    3    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+    4    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+    5    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+    6    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+
