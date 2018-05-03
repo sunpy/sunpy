@@ -344,7 +344,7 @@ cannot be found or is not set.
     >>> from sunpy.database.tables import display_entries
     >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA +SKIP
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
      id observation_time_start ...      wavemin            wavemax
     --- ---------------------- ... ------------------ ------------------
       1    2011-06-07 06:33:02 ...               17.1               17.1
