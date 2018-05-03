@@ -2,6 +2,8 @@ import numpy as np
 
 from . base import ArrayAnimator
 
+__all__ = ['LineAnimator']
+
 
 class LineAnimator(ArrayAnimator):
     """
