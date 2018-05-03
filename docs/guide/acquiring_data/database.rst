@@ -803,8 +803,8 @@ method also accepts an optional keyword argument `path` which determines the
 download path of each file.
 
     >>> database.download_from_fido_search_result(search_result)   # doctest:  +REMOTE_DATA
-    >>> display_entries(database, ['id', 'observation_time_start', 
-    ...                     'observation_time_end', 'instrument', 'source'])   # doctest:  +REMOTE_DATA
+    >>> print(display_entries(database, ['id', 'observation_time_start', 
+    ...                     'observation_time_end', 'instrument', 'source']))   # doctest:  +REMOTE_DATA
     id observation_time_start observation_time_end instrument source
     -- ---------------------- -------------------- ---------- ------
     1  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
