@@ -6,10 +6,10 @@ import sunpy.io
 import sunpy.time
 import sunpy.map
 
-__all__ = ['SJI_to_sequence']
+__all__ = ['SJI_to_cube']
 
 
-def SJI_to_sequence(filename, start=0, stop=None, hdu=0):
+def SJI_to_cube(filename, start=0, stop=None, hdu=0):
     """
     Read a SJI file and return a MapSequence
 
