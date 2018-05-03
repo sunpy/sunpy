@@ -11,7 +11,7 @@ import numpy.ma as ma
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.visualization.mapcubeanimator import MapCubeAnimator
+from sunpy.visualization.animator import MapCubeAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.visualization import axis_labels_from_ctype
 from sunpy.util import expand_list
