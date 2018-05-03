@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import abc
+from functools import partial
 
 import numpy as np
 import matplotlib as mpl
@@ -15,83 +16,6 @@ from sunpy.extern import six
 from sunpy.extern.six.moves import range
 
 __all__ = ['BaseFuncAnimator', 'ImageAnimator', 'LineAnimator', 'ImageAnimatorWCS']
-
-
-class SliderPB(widgets.Slider):
-    __doc__ = widgets.Slider.__doc__
-
-    def __init__(self, ax, label, valmin, valmax, valinit=0.5, valfmt='%1.2f',
-                 closedmin=True, closedmax=True, slidermin=None,
-                 slidermax=None, dragging=True, **kwargs):
-
-        widgets.Slider.__init__(self, ax, label, valmin, valmax,
-                                valinit=valinit, valfmt=valfmt,
-                                closedmin=closedmin, closedmax=closedmax,
-                                slidermin=slidermin, slidermax=slidermax,
-                                dragging=dragging, **kwargs)
-        self.changed_args = {}
-
-    def set_val(self, val):
-        xy = self.poly.xy
-        xy[2] = val, 1
-        xy[3] = val, 0
-        self.poly.xy = xy
-        self.valtext.set_text(self.valfmt % val)
-        if self.drawon:
-            self.ax.figure.canvas.draw()
-        self.val = val
-        if not self.eventson:
-            return
-        for cid, func in self.observers.items():
-            func(val, *self.changed_args[cid])
-
-    def on_changed(self, func, *args):
-        """
-        When the slider value is changed, call *func* with the new
-        slider position
-
-        A connection id is returned which can be used to disconnect
-        """
-        cid = self.cnt
-        self.observers[cid] = func
-        self.changed_args[cid] = args
-        self.cnt += 1
-        return cid
-
-
-class ButtonPB(widgets.Button):
-    def __init__(self, ax, label, image=None,
-                 color='0.85', hovercolor='0.95'):
-
-        widgets.Button.__init__(self, ax, label, image=image,
-                                color=color, hovercolor=hovercolor)
-
-        self.clicked_args = {}
-
-    def on_clicked(self, func, *args):
-        """
-        When the button is clicked, call this *func* with event
-
-        A connection id is returned which can be used to disconnect
-        """
-        cid = self.cnt
-        self.observers[cid] = func
-        self.clicked_args[cid] = args
-        self.cnt += 1
-        return cid
-
-    def _release(self, event):
-        if self.ignore(event):
-            return
-        if event.canvas.mouse_grabber != self.ax:
-            return
-        event.canvas.release_mouse(self.ax)
-        if not self.eventson:
-            return
-        if event.inaxes != self.ax:
-            return
-        for cid, func in self.observers.items():
-            func(event, *self.clicked_args[cid])
 
 
 class BaseFuncAnimator(object):
@@ -383,12 +307,12 @@ class BaseFuncAnimator(object):
                 nx1 = -3
             locator = self.divider.new_locator(nx=0, ny=x, nx1=nx1)
             self.sliders[-1].set_axes_locator(locator)
-            sframe = SliderPB(self.sliders[-1], "{slide:d}".format(slide=i),
-                              self.slider_ranges[i][0],
-                              self.slider_ranges[i][-1]-1,
-                              valinit=self.slider_ranges[i][0],
-                              valfmt='%4.1f')
-            sframe.on_changed(self._slider_changed, sframe)
+            sframe = widgets.Slider(self.sliders[-1], "{slide:d}".format(slide=i),
+                                    self.slider_ranges[i][0],
+                                    self.slider_ranges[i][-1]-1,
+                                    valinit=self.slider_ranges[i][0],
+                                    valfmt='%4.1f')
+            sframe.on_changed(partial(self._slider_changed, slider=sframe))
             sframe.slider_ind = i
             sframe.cval = sframe.val
             self.sliders[-1]._slider = sframe
@@ -402,14 +326,17 @@ class BaseFuncAnimator(object):
             locator = self.divider.new_locator(nx=nx, ny=x)
 
             self.slider_buttons[-1].set_axes_locator(locator)
-            butt = ButtonPB(self.slider_buttons[-1], ">")
-            butt.on_clicked(self._click_slider_button, butt, sframe)
+            butt = widgets.Button(self.slider_buttons[-1], ">")
+            butt.on_clicked(partial(self._click_slider_button, button=butt, slider=sframe))
             butt.clicked = False
             self.slider_buttons[-1]._button = butt
 
 # =============================================================================
 #   Widget callbacks
 # =============================================================================
+    def _slider_changed(self, val, slider):
+        self.slider_functions[slider.slider_ind](val, self.im, slider)
+
     def _click_slider_button(self, event, button, slider):
         self._set_active_slider(slider.slider_ind)
         if button.clicked:
@@ -449,9 +376,6 @@ class BaseFuncAnimator(object):
         else:
             s.set_val(s.val-1)
         self.fig.canvas.draw()
-
-    def _slider_changed(self, val, slider):
-        self.slider_functions[slider.slider_ind](val, self.im, slider)
 
 
 @six.add_metaclass(abc.ABCMeta)
