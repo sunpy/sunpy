@@ -806,12 +806,11 @@ shown above, and the next 4 entries are from the `download` operation.
     >>> database.download_from_fido_search_result(search_result)   # doctest:  +REMOTE_DATA
     >>> print(display_entries(database, ['id', 'observation_time_start', 
     ...                     'observation_time_end', 'instrument', 'source']))   # doctest:  +REMOTE_DATA
-    id observation_time_start observation_time_end instrument source
-    -- ---------------------- -------------------- ---------- ------
-    1    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
-    2    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
-    3    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
-    4    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
-    5    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
-    6    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
-
+     id observation_time_start observation_time_end instrument source
+    --- ---------------------- -------------------- ---------- ------
+      1    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+      2    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+      3    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+      4    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+      5    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
+      6    2012-01-01 00:00:00  2012-01-02 00:00:00       lyra Proba2
