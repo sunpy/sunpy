@@ -18,7 +18,8 @@ from sqlalchemy.ext.declarative import declarative_base
 import numpy as np
 
 from sunpy.time import parse_time, TimeRange
-from sunpy.io import fits, file_tools as sunpy_filetools
+import sunpy.io
+from sunpy.io import file_tools as sunpy_filetools
 from sunpy.util import print_table
 from sunpy.extern.six.moves import map
 from sunpy.extern import six
@@ -351,7 +352,6 @@ class DatabaseEntry(Base):
             instrument=instrument, size=size,
             wavemin=wavemin, wavemax=wavemax)
 
-
     @classmethod
     def _from_fido_search_result_block(cls, sr_block, default_waveunit=None):
         """Make a new :class:`DatabaseEntry` instance from a Fido search
@@ -400,7 +400,7 @@ class DatabaseEntry(Base):
         instrument = getattr(sr_block, 'instrument', None)
         time_start = sr_block.time.start
         time_end = sr_block.time.end
-        
+
         wavelengths = getattr(sr_block, 'wave', None)
         wavelength_temp = {}
         if isinstance(wavelength_temp, tuple):
@@ -675,7 +675,7 @@ def entries_from_file(file, default_waveunit=None, time_string_parse_format=None
     111
 
     """
-    headers = fits.get_header(file)
+    headers = sunpy.io.read_file_header(file)
     if isinstance(file, (str, six.text_type)):
         filename = file
     else:
@@ -694,7 +694,7 @@ def entries_from_file(file, default_waveunit=None, time_string_parse_format=None
                     entry.fits_key_comments.append(FitsKeyComment(k, v))
                 continue
             entry.fits_header_entries.append(FitsHeaderEntry(key, value))
-        waveunit = fits.extract_waveunit(header)
+        waveunit = sunpy.io.fits.extract_waveunit(header)
         entry.hdu_index = headers.index(header)
         if waveunit is None:
             waveunit = default_waveunit
@@ -706,7 +706,7 @@ def entries_from_file(file, default_waveunit=None, time_string_parse_format=None
                 raise WaveunitNotConvertibleError(waveunit)
         try:
             instrument_name = next(x for x in entry.fits_header_entries if x.key == 'TELESCOP').value
-        except:
+        except Exception:
             pass
 
         for header_entry in entry.fits_header_entries:
