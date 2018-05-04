@@ -330,10 +330,9 @@ def day_of_year(time_string):
     216.01252314814815
 
     """
-    SECONDS_IN_DAY = 60 * 60 * 24.0
     time = parse_time(time_string)
-    time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
-    return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
+    time_diff = time - ap.Time.strptime(time.strftime('%Y'), '%Y')
+    return time_diff.jd + 1
 
 
 def break_time(t='now', time_format=''):
