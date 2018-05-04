@@ -5,10 +5,7 @@ SunPy visualization
 
 .. automodapi:: sunpy.visualization
 
-.. automodapi:: sunpy.visualization.mapcubeanimator
-    :headings: ^#
-
-.. automodapi:: sunpy.visualization.imageanimator
+.. automodapi:: sunpy.visualization.animator
     :headings: ^#
 
 .. automodapi:: sunpy.visualization.wcsaxes_compat

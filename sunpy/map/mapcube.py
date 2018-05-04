@@ -1,6 +1,5 @@
 """A Python MapCube Object"""
 from __future__ import absolute_import, division, print_function
-#pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 from copy import deepcopy
 
@@ -11,7 +10,7 @@ import numpy.ma as ma
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.visualization.mapcubeanimator import MapCubeAnimator
+from sunpy.visualization.animator import MapCubeAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.visualization import axis_labels_from_ctype
 from sunpy.util import expand_list
@@ -50,7 +49,6 @@ class MapCube(object):
 
     Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
-    #pylint: disable=W0613,E1101
     def __init__(self, *args, **kwargs):
         """Creates a new Map instance"""
 

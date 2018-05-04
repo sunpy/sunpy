@@ -2,13 +2,15 @@
 
 from copy import deepcopy
 
-from sunpy.visualization import imageanimator, wcsaxes_compat, axis_labels_from_ctype
+from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype
 from sunpy.visualization.wcsaxes_compat import _FORCE_NO_WCSAXES
+
+from .base import BaseFuncAnimator
 
 __all__ = ['MapCubeAnimator']
 
 
-class MapCubeAnimator(imageanimator.BaseFuncAnimator):
+class MapCubeAnimator(BaseFuncAnimator):
     """
     Create an interactive viewer for a MapCube
 
@@ -61,8 +63,7 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         slider_functions = [self.updatefig]
         slider_ranges = [[0, len(mapcube.maps)]]
 
-        imageanimator.BaseFuncAnimator.__init__(
-            self, mapcube.maps, slider_functions, slider_ranges, **kwargs)
+        super().__init__(mapcube.maps, slider_functions, slider_ranges, **kwargs)
 
         if annotate:
             self._annotate_plot(0)
