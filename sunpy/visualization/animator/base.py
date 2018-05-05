@@ -435,31 +435,16 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             slider_axes.remove(x)
 
         if len(slider_axes) != self.num_sliders:
-            raise ValueError("Specific the same number of axes as sliders!")
+            raise ValueError("Number of slider axes mismatch!")
         self.slider_axes = slider_axes
 
         # Verify that combined slider_axes and image_axes make all axes
         ax = self.slider_axes + self.image_axes
         ax.sort()
         if ax != list(range(self.naxis)):
-            raise ValueError("spatial_axes and slider_axes mismatch")
+            raise ValueError("Number of image and slider axes do not match total number of axes.")
 
-        self.axis_ranges = self._sanitize_axis_ranges(axis_ranges, data)
-        # Due to some reason, if a slider axis range is of length two and the
-        # difference between the entries is 1, the slider start and end both get
-        # set to the 0th value stopping the animation updating the plot.
-        # In this case iterate the latter element by one to get the desired behaviour.
-        hacked_axis_ranges = [False] * len(self.axis_ranges)
-        index_changed = [None] * len(self.axis_ranges)
-        for i in range(len(self.axis_ranges)):
-            if len(self.axis_ranges[i]) == 2 and data.shape[i] == 2:
-                if 0 <= (self.axis_ranges[i][-1] - self.axis_ranges[i][0]) <= 1:
-                    axis_ranges[i][-1] += 1
-                    index_changed[i] = -1
-                elif -1 <= (self.axis_ranges[i][-1] - self.axis_ranges[i][0]) <= 0:
-                    axis_ranges[i][0] -= 1
-                    index_changed[i] = 0
-                hacked_axis_ranges[i] = True
+        self.axis_ranges, self.extent = self._sanitize_axis_ranges(axis_ranges, data.shape)
 
         # create data slice
         self.frame_slice = [slice(None)] * self.naxis
@@ -467,18 +452,9 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             self.frame_slice[i] = 0
 
         base_kwargs = {'slider_functions': [self.update_plot] * self.num_sliders,
-                       'slider_ranges': [self.axis_ranges[i] for i in self.slider_axes]}
+                       'slider_ranges': self.axis_ranges[self.slider_axes]}
         base_kwargs.update(kwargs)
         BaseFuncAnimator.__init__(self, data, **base_kwargs)
-
-        # Undo hack of length 2 axis ranges
-        for i in np.arange(len(self.axis_ranges)):
-            if len(self.axis_ranges[i]) == 2 and data.shape[i] == 2:
-                if hacked_axis_ranges[i]:
-                    if index_changed[i] == 0:
-                        axis_ranges[i][0] += 1
-                    elif index_changed[i] == -1:
-                        axis_ranges[i][-1] -= 1
 
     @property
     def frame_index(self):
@@ -500,7 +476,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         """
         self.sliders[i]._slider.label.set_text(label)
 
-    def _sanitize_axis_ranges(self, axis_ranges, data):
+    def _sanitize_axis_ranges(self, axis_ranges, data_shape):
         """
         This method takes the various allowed values of axis_ranges and returns
         them in a standardized way for the rest of the class to use.
@@ -522,40 +498,76 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             * array of axis length, check that it was passed for a slider axes and do nothing
             if it was, error if it is not.
         """
+        ndim = len(data_shape)
         # If no axis range at all make it all [min,max] pairs
         if axis_ranges is None:
-            axis_ranges = [None] * data.ndim
+            axis_ranges = [None] * ndim
 
         # need the same number of axis ranges as axes
-        if len(axis_ranges) != data.ndim:
+        if len(axis_ranges) != ndim:
             raise ValueError("Length of axis_ranges must equal number of axes")
 
-        # For each axis validate and translate the axis_ranges
-        for i, d in enumerate(data.shape):
-            # If [min,max] pair or None
-            if axis_ranges[i] is None or (len(axis_ranges[i]) == 2 and d > 2):
-                # If min==max or None
-                if axis_ranges[i] is None or axis_ranges[i][0] == axis_ranges[i][1]:
-                    if i in self.slider_axes:
-                        axis_ranges[i] = np.arange(0, d+1)
-                    else:
-                        axis_ranges[i] = [0, d]
-                        # min max pair for slider axes should be converted
-                        # to an array
-                elif i in self.slider_axes:
-                    axis_ranges[i] = np.arange(axis_ranges[i][0], axis_ranges[i][1]+1)
+        # Define error message for incompatible axis_range input.
+        incompatible_axis_ranges_error_message = lambda j: \
+          "Unrecognized format for {0}th entry in axis_ranges: {1}\n" + \
+          "axis_ranges must be None, a [min, max] pair, or " + \
+          "an array-like giving the edge values of each pixel, " + \
+          "i.e. length must be length of axis + 1.".format(j, axis_ranges[j])
 
-            # If we have a whole list of values for the axis, make sure we are a slider axis.
-            elif len(axis_ranges[i]) == d or axis_ranges[i].shape == data.shape:
-                axis_ranges[i] = np.array(axis_ranges[i])
+        # Define function for converting pixel edges to pixel centers
+        edges_to_centers = lambda axis_range: \
+          (axis_range[1:] - axis_range[:-1])/2 + axis_range[:-1]
 
-            # If above criteria are not met, raise an error.
+        # If axis range not given, define a function such that the range goes
+        # from -0.5 to number of pixels-0.5.  Thus, the center of the pixels
+        # along the axis will correspond to integer values.
+        none_image_axis_range = lambda j: [-0.5, data_shape[j]-0.5]
+        # For each axis validate and translate the axis_ranges. For image axes,
+        # also determine the plot extent.  To do this, iterate through image and slider
+        # axes separately.  Iterate through image axes in reverse order
+        # because numpy is in y-x and extent is x-y.
+        extent = []
+        for i in self.image_axes[::-1]:
+            if axis_ranges[i] is None:
+                extent = extent + none_image_axis_range(i)
+                axis_ranges[i] = np.array(none_image_axis_range(i))
             else:
-                raise ValueError("axis_ranges must be None or a list with length equal to number "
-                                 "of axes in data whose elements are either None, [min,max], "
-                                 "or a list/array of same length as the plot/image axis of data.")
+                # Set extent.
+                extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
+                # Depending on length of axis_ranges[i], leave unchanged,
+                # convert to pixel centers of raise an error due to incompatible format.
+                if len(axis_ranges[i]) == 2:
+                    axis_ranges[i] = np.asarray(axis_ranges[i])
+                elif len(axis_ranges[i]) == d+1:
+                    # If array of individual pixel edges supplied, first set extent
+                    # from first and list pixel edge, then convert axis_ranges to pixel centers.
+                    # The reason that pixel edges are required as input rather than centers
+                    # is so that the plot extent can be derived from axis_ranges (above)
+                    # and APIs using both [min, max] pair and manual definition of each pixel
+                    # values can be unambiguously and simultanously supported.
+                    extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
+                    axis_ranges[i] = np.asarray(axis_ranges[i])
+                    axis_ranges[i] = edges_to_centers(axis_ranges[i])
+                else:
+                    raise ValueError(incompatible_axis_ranges_error_message(i))
+        # For each axis validate and translate the axis_ranges.
+        for i in self.slider_axes:
+            if axis_ranges[i] is None:
+                    axis_ranges[i] = np.arange(data_shape[i])
+            elif len(axis_ranges[i]) == 2:
+                axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1], data_shape[i])
+            elif len(axis_ranges[i]) == d+1:
+                # If array of individual pixel edges supplied, convert to pixel centers.
+                axis_ranges[i] = np.asarray(axis_ranges[i])
+                axis_ranges[i] = edges_to_centers(axis_ranges[i])
+            else:
+                raise ValueError(incompatible_axis_ranges_error_message(i))
+            # If axis is a slider axis, redefine axis range as pixel centers so lendiscard last edge and
+            # represent each slider pixel by its lower edge.
+            #if i in self.slider_axes:
+            #    axis_ranges[i] = axis_ranges[i][:-1]
 
-        return axis_ranges
+        return np.asarray(axis_ranges), extent
 
     @abc.abstractmethod
     def plot_start_image(self):  # pragma: no cover
