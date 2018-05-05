@@ -553,13 +553,14 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         # For each axis validate and translate the axis_ranges.
         for i in self.slider_axes:
             if axis_ranges[i] is None:
-                    axis_ranges[i] = np.arange(data_shape[i])
+                    axis_ranges[i] = np.arange(data_shape[i]+1)
             elif len(axis_ranges[i]) == 2:
-                axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1], data_shape[i])
+                axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
+                                             data_shape[i]+1)
             elif len(axis_ranges[i]) == d+1:
                 # If array of individual pixel edges supplied, convert to pixel centers.
                 axis_ranges[i] = np.asarray(axis_ranges[i])
-                axis_ranges[i] = edges_to_centers(axis_ranges[i])
+                #axis_ranges[i] = edges_to_centers(axis_ranges[i])
             else:
                 raise ValueError(incompatible_axis_ranges_error_message(i))
             # If axis is a slider axis, redefine axis range as pixel centers so lendiscard last edge and
