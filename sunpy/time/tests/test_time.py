@@ -43,7 +43,7 @@ def test_parse_time_int():
 
 
 def test_parse_time_pandas_timestamp():
-    ts = pandas.Timestamp(datetime(*(1966, 2, 3)))
+    ts = pandas.Timestamp(datetime(1966, 2, 3))
 
     dt = parse_time(ts)
 
@@ -128,12 +128,10 @@ def test_parse_time_numpy_datetime_ns():
 
     assert dt == ap.Time('2014-02-07T16:47:51.008288123', format='isot')
 
-
-def test_parse_time_numpy_datetime_round():
-    dt64 = np.datetime64('2014-02-07T16:47:51.008288999')
+    dt64 = np.datetime64('2014-02-07T16:47:51.234565999')
     dt = parse_time(dt64)
 
-    assert dt == ap.Time('2014-02-07T16:47:51.008288999')
+    assert dt == ap.Time('2014-02-07T16:47:51.234565999')
 
 
 def test_parse_time_astropy():
