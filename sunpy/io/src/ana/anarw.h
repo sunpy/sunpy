@@ -1,5 +1,8 @@
 #ifndef __ANARW_H__      // __ANACOMPRESS_H__
 #define __ANARW_H__      // __ANACOMPRESS_H__
+#include "types.h"
+#pragma once
+
 
 #define ANA_VAR_SZ {1,2,4,4,8,8}
 
@@ -18,12 +21,13 @@
 #define M_TM_INPRO       0  
 #define M_TM_INFUN      -1
 
-
+#ifndef __TYPE_H__
 // Helper routines
 void bswapi64(int64_t *x, int n);
 void bswapi32(int32_t *x, int n);
 void bswapi16(int16_t *x, int n);
 int ck_synch_hd(FILE *fin, fzhead_t *fh, int t_endian);
+#endif
 
 // Ana I/O routines
 char *ana_fzhead(char *file_name); // fzhead subroutine	

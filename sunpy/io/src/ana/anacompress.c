@@ -14,7 +14,7 @@ int anacrunchrun8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,in
  struct compresshead *ch;
  uint8_t	*p;
  unsigned nb;
- unsigned register i,j,r1;
+ int i,j,r1;
  int	r0,r2,r3,mask,fac, nrun, lrun, ic;
  int	*dif, *d, nc, zq, yq, *dd;
  int	i2,k,iy;
@@ -189,9 +189,9 @@ int anacrunch8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,int t
   uint8_t bits[8]={1,2,4,8,16,32,64,128};
  struct compresshead *ch;
 
- unsigned nb,ixa,ixb;
- unsigned register i,j,r1,in;
- int r0,r2,r3,mask,fac;
+ unsigned nb,ixa,ixb,in;
+ int i,r1;
+ int r0,r2,r3,mask,fac,j;
  int i2,k,iy;
 
  union { int i; short w; unsigned char b[4]; } y;
@@ -292,8 +292,8 @@ int anacrunchrun(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int
   uint8_t bits[8]={1,2,4,8,16,32,64,128};
   struct compresshead *ch;
  short *p;
- unsigned nb;
- unsigned register i,j,r1;
+ int nb;
+ int i,j,r1;
  int	r0,r2,r3,mask,fac, nrun, lrun, ic;
  int	*dif, *d, nc, zq, yq, *dd;
 
@@ -470,7 +470,8 @@ int anacrunch(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int t_
 // nx, bit slice size slice, returns # of bytes in x
  {
   uint8_t bits[8]={1,2,4,8,16,32,64,128};
-  unsigned register i,j,r1,in;
+  int i,j,r1;
+  unsigned int in;
   int r0,r2,r3,mask,fac;
 
   union{
@@ -488,7 +489,7 @@ int anacrunch(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int t_
   for(i=0;i<slice;i++) mask*=2;
   fac=mask;
   mask-=1;                                // no inline expon. in C
-  unsigned nb;                            // determine the # of bytes to transfer to 32 bit int for fixed portion
+  int nb;                            // determine the # of bytes to transfer to 32 bit int for fixed portion
   if(slice==0){
     nb=0;
   }else{
@@ -618,10 +619,10 @@ int anacrunch32(uint8_t *x,int32_t *array,int slice,int nx,int ny,int limit,int 
   uint8_t bits[8]={1,2,4,8,16,32,64,128};
   struct compresshead *ch;
 
- unsigned int nb,ixa,ixb,big=0;
- unsigned register i,j,r1,in;
- int r0,r2,fac;
- long long	r3, mask, y64;
+ unsigned int nb,ixa,ixb,big=0,in;
+ int i,r1;
+ int r0, j, r3, r2;
+ long long mask, y64, fac;
  int i2,k,iy;
 
  union { int i; short w; unsigned char b[4]; } y;
