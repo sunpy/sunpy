@@ -546,8 +546,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                     # and APIs using both [min, max] pair and manual definition of each pixel
                     # values can be unambiguously and simultanously supported.
                     extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
-                    axis_ranges[i] = np.asarray(axis_ranges[i])
-                    axis_ranges[i] = edges_to_centers(axis_ranges[i])
+                    axis_ranges[i] = edges_to_centers(np.asarray(axis_ranges[i]))
                 else:
                     raise ValueError(incompatible_axis_ranges_error_message(i))
         # For each axis validate and translate the axis_ranges.
@@ -559,14 +558,9 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                                              data_shape[i]+1)
             elif len(axis_ranges[i]) == data_shape[i]+1:
                 # If array of individual pixel edges supplied, convert to pixel centers.
-                axis_ranges[i] = np.asarray(axis_ranges[i])
-                #axis_ranges[i] = edges_to_centers(axis_ranges[i])
+                axis_ranges[i] = edges_to_centers(np.asarray(axis_ranges[i]))
             else:
                 raise ValueError(incompatible_axis_ranges_error_message(i))
-            # If axis is a slider axis, redefine axis range as pixel centers so lendiscard last edge and
-            # represent each slider pixel by its lower edge.
-            #if i in self.slider_axes:
-            #    axis_ranges[i] = axis_ranges[i][:-1]
 
         return np.asarray(axis_ranges), extent
 
