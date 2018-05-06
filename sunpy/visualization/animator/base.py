@@ -91,6 +91,9 @@ class BaseFuncAnimator:
         # Set active slider
         self.active_slider = 0
 
+        # Set initial indices used to get slider vals from axis_ranges.
+        self.val_ind = [0] * self.num_sliders
+
         # Set a blank timer
         self.timer = None
 
@@ -305,7 +308,7 @@ class BaseFuncAnimator:
             self.sliders[-1].set_axes_locator(locator)
             sframe = widgets.Slider(self.sliders[-1], "{slide:d}".format(slide=i),
                                     self.slider_ranges[i][0],
-                                    self.slider_ranges[i][-1]-1,
+                                    self.slider_ranges[i][-1],
                                     valinit=self.slider_ranges[i][0],
                                     valfmt='%4.1f')
             sframe.on_changed(partial(self._slider_changed, slider=sframe))
@@ -360,9 +363,12 @@ class BaseFuncAnimator:
     def _step(self, slider):
         s = slider
         if s.val >= s.valmax:
+            self.val_ind[self.active_slider] = 0
             s.set_val(s.valmin)
         else:
-            s.set_val(s.val+1)
+            self.val_ind[self.active_slider] = self.val_ind[self.active_slider] + 1
+            s.set_val(self.axis_ranges[self.slider_axes[self.active_slider]][
+                self.val_ind[self.active_slider]])
         self.fig.canvas.draw()
 
     def _previous(self, slider):
@@ -557,6 +563,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             elif len(axis_ranges[i]) == 2:
                 axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
                                              data_shape[i]+1)
+                axis_ranges[i] = edges_to_centers(axis_ranges[i])
             elif len(axis_ranges[i]) == data_shape[i]+1:
                 # If array of individual pixel edges supplied, convert to pixel centers.
                 axis_ranges[i] = np.asarray(axis_ranges[i])
