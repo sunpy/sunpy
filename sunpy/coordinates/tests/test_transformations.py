@@ -155,3 +155,15 @@ def test_hgs_hgc_roundtrip():
 
     assert_quantity_allclose(hgsout.lat, hgsin.lat)
     assert_quantity_allclose(hgsout.lon, hgsin.lon)
+
+
+def test_dateobs_hgs_hgc_roundtrip():
+    obstime = "2011-01-01"
+
+    hgsin = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, obstime=obstime)
+
+    hgcout = hgsin.transform_to(HeliographicCarrington(obstime=obstime))
+    hgsout = hgcout.transform_to(HeliographicStonyhurst(obstime=obstime))
+
+    assert hgsin.obstime == hgcout.obstime
+    assert hgsout.obstime == hgcout.obstime
