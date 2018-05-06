@@ -82,7 +82,7 @@ def _regex_parse_time(inp, format):
     try:
         hour = match.group("hour")
     except IndexError:
-        return inp, astropy.time.TimeDelta(u.day*0)
+        return inp, astropy.time.TimeDelta(0*u.day)
     if match.group("hour") == "24":
         if not all(
                    _n_or_eq(_group_or_none(match, g, int), 00)
@@ -90,8 +90,8 @@ def _regex_parse_time(inp, format):
                   ):
             raise ValueError
         from_, to = match.span("hour")
-        return inp[:from_] + "00" + inp[to:], astropy.time.TimeDelta(u.day*1)
-    return inp, astropy.time.TimeDelta(u.day*0)
+        return inp[:from_] + "00" + inp[to:], astropy.time.TimeDelta(1*u.day)
+    return inp, astropy.time.TimeDelta(0*u.day)
 
 
 def find_time(string, format):
@@ -135,11 +135,6 @@ def convert_time(time_string, **kwargs):
     raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
 
 
-@convert_time.register(pandas.Timestamp)
-def convert_time_pandasTimestamp(time_string, **kwargs):
-    return ap.Time(time_string)
-
-
 @convert_time.register(pandas.Series)
 def convert_time_pandasSeries(time_string, **kwargs):
     return ap.Time(time_string.tolist())
@@ -150,6 +145,7 @@ def convert_time_pandasDatetimeIndex(time_string, **kwargs):
     return ap.Time(time_string.tolist())
 
 
+@convert_time.register(pandas.Timestamp)
 @convert_time.register(datetime)
 def convert_time_datetime(time_string, **kwargs):
     return ap.Time(time_string)
@@ -157,7 +153,7 @@ def convert_time_datetime(time_string, **kwargs):
 
 @convert_time.register(date)
 def convert_time_date(time_string, **kwargs):
-    return ap.Time(datetime.combine(time_string, time()))
+    return ap.Time(time_string.isoformat())
 
 
 @convert_time.register(tuple)
