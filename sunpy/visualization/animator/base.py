@@ -552,7 +552,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         # For each axis validate and translate the axis_ranges.
         for i in self.slider_axes:
             if axis_ranges[i] is None:
-                    axis_ranges[i] = np.arange(data_shape[i]+1)
+                    axis_ranges[i] = np.arange(data_shape[i])
             elif len(axis_ranges[i]) == 2:
                 axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
                                              data_shape[i]+1)
