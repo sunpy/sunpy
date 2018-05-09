@@ -17,7 +17,6 @@ image-conda-run: &image-conda-install
     wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O $HOME/miniconda.sh
     chmod +x $HOME/miniconda.sh && $HOME/miniconda.sh -b
     export PATH=$HOME/miniconda2/bin:$PATH
-    conda update --yes conda
     conda env create -f sunpy/tests/figure_tests_env_3.5.yml
 
 image-run: &image-tests
