@@ -132,10 +132,7 @@ def _astropy_time(time):
 @singledispatch
 def convert_time(time_string, format=None, **kwargs):
     # default case when no type matches
-    try:
-        return ap.Time(time_string, format=format, **kwargs)
-    except (ValueError, TypeError):
-        raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
+    return ap.Time(time_string, format=format, **kwargs)
 
 
 @convert_time.register(pandas.Series)
@@ -148,12 +145,6 @@ def convert_time_pandasDatetimeIndex(time_string, **kwargs):
     return ap.Time(time_string.tolist(), **kwargs)
 
 
-@convert_time.register(pandas.Timestamp)
-@convert_time.register(datetime)
-def convert_time_datetime(time_string, **kwargs):
-    return ap.Time(time_string, **kwargs)
-
-
 @convert_time.register(date)
 def convert_time_date(time_string, **kwargs):
     return ap.Time(time_string.isoformat(), **kwargs)
@@ -162,12 +153,6 @@ def convert_time_date(time_string, **kwargs):
 @convert_time.register(tuple)
 def convert_time_tuple(time_string, **kwargs):
     return ap.Time('{}-{}-{}'.format(*time_string), **kwargs)
-
-
-@convert_time.register(float)
-@convert_time.register(int)
-def convert_time_float(time_string, **kwargs):
-    return ap.Time(time_string, format='utime', **kwargs)
 
 
 @convert_time.register(np.datetime64)
@@ -204,7 +189,7 @@ def convert_time_str(time_string, **kwargs):
             if ts is None:
                 continue
             return ap.Time.strptime(ts, time_format,
-                                    format='isot', **kwargs) + time_delta
+                                    **kwargs) + time_delta
         except ValueError:
             pass
     time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
@@ -213,10 +198,10 @@ def convert_time_str(time_string, **kwargs):
                                            time_string_parse_format)
         if ts and time_delta:
             return ap.Time.strptime(ts, time_string_parse_format,
-                                    format='isot', **kwargs) + time_delta
+                                    **kwargs) + time_delta
         else:
             return ap.Time.strptime(time_string, time_string_parse_format,
-                                    format='isot', **kwargs)
+                                    **kwargs)
     # when no format matches, call default fucntion
     return convert_time.dispatch(object)(time_string, **kwargs)
 
@@ -245,17 +230,15 @@ def parse_time(time_string, format=None, **kwargs):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
     datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
-    if format:
-        rt = convert_time.dispatch(object)(time_string, format, **kwargs)
-    elif time_string is 'now':
+    if time_string is 'now':
         rt = ap.Time.now()
     else:
-        rt = convert_time(time_string, **kwargs)
+        rt = convert_time(time_string, format=format, **kwargs)
 
     return rt
 
 
-def is_time(time_string, time_format=''):
+def is_time(time_string, time_format=None):
     """
     Returns true if the input is a valid date/time representation
 
@@ -332,7 +315,7 @@ def day_of_year(time_string):
     return time_diff.jd + 1
 
 
-def break_time(t='now', time_format=''):
+def break_time(t='now', time_format=None):
     """Given a time returns a string. Useful for naming files."""
     # TODO: should be able to handle a time range
     return parse_time(t, time_format).strftime("%Y%m%d_%H%M%S")
