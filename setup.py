@@ -118,11 +118,10 @@ setup(name=PACKAGENAME,
       description=DESCRIPTION,
       scripts=scripts,
       install_requires=['numpy>=1.11',
-                        'astropy>=2.0.3',
+                        'astropy>=2.0.3>=3.0.2',  # astropy/astropy#7252
                         'scipy',
                         'pandas>=0.12.0',
-                        'matplotlib>=1.3',
-                        'pytest'],  # Upstream bug fix
+                        'matplotlib>=1.3'],
       extras_require=extras_require,
       provides=[PACKAGENAME],
       author=AUTHOR,

@@ -20,6 +20,7 @@ from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
 
 from astropy.coordinates import Attribute, ConvertError
+from astropy.tests.helper import quantity_allclose
 
 from sunpy import sun
 
@@ -121,11 +122,9 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     _default_wrap_angle = 180*u.deg
 
     def __init__(self, *args, **kwargs):
-        # TODO: Revert this.
-        from astropy.tests.helper import quantity_allclose
-
         _rep_kwarg = kwargs.get('representation', None)
         wrap = kwargs.pop('wrap_longitude', True)
+
         if ('radius' in kwargs and kwargs['radius'].unit is u.one and
                 quantity_allclose(kwargs['radius'], 1*u.one)):
             kwargs['radius'] = RSUN_METERS.to(u.km)
@@ -383,8 +382,6 @@ class Helioprojective(BaseCoordinateFrame):
             A new frame instance with all the attributes of the original but
             now with a third coordinate.
         """
-        # TODO: Revert this.
-        from astropy.tests.helper import quantity_allclose
         # Skip if we already are 3D
         if (isinstance(self._data, SphericalRepresentation) and
                 not (self.distance.unit is u.one and quantity_allclose(self.distance, 1*u.one))):
