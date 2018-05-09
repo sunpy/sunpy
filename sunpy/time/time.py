@@ -130,9 +130,12 @@ def _astropy_time(time):
 
 
 @singledispatch
-def convert_time(time_string, **kwargs):
+def convert_time(time_string, format=None, **kwargs):
     # default case when no type matches
-    raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
+    try:
+        return ap.Time(time_string, format=format, **kwargs)
+    except (ValueError, TypeError):
+        raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
 
 
 @convert_time.register(pandas.Series)
@@ -215,10 +218,10 @@ def convert_time_str(time_string, **kwargs):
             return ap.Time.strptime(time_string, time_string_parse_format,
                                     format='isot', **kwargs)
     # when no format matches, call default fucntion
-    convert_time.dispatch(object)(time_string, **kwargs)
+    return convert_time.dispatch(object)(time_string, **kwargs)
 
 
-def parse_time(time_string, time_format='', out_format='isot', **kwargs):
+def parse_time(time_string, format=None, **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
@@ -242,14 +245,12 @@ def parse_time(time_string, time_format='', out_format='isot', **kwargs):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
     datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
-    if time_format == 'utime':
-        rt = convert_time(float(time_string), **kwargs)
+    if format:
+        rt = convert_time.dispatch(object)(time_string, format, **kwargs)
     elif time_string is 'now':
         rt = ap.Time.now()
     else:
         rt = convert_time(time_string, **kwargs)
-
-    rt = rt.replicate(out_format)
 
     return rt
 
