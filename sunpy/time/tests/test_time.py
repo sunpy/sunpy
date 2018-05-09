@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
-from datetime import datetime
+from datetime import datetime, date
+import re
 
 from sunpy import time
 from sunpy.time import parse_time, is_time_in_given_format, get_day, find_time
@@ -77,6 +78,7 @@ def test_parse_time_numpy_date():
 
     assert isinstance(dts, np.ndarray)
     assert all([isinstance(dt, datetime) for dt in dts])
+    assert np.all(dts == inputs.astype('M8[s]'))
 
 
 def test_parse_time_numpy_datetime():
@@ -127,6 +129,16 @@ def test_parse_time_astropy():
     assert astropy_time == datetime(year=2016, month=1, day=2, hour=23, minute=0, second=1)
 
 
+def test_parse_time_datetime():
+    dt = datetime(2014, 2, 7, 16, 47, 51, 8288)
+    assert parse_time(dt) == dt
+
+
+def test_parse_time_date():
+    dt = date(1966, 2, 3)
+    assert parse_time(dt) == datetime(1966, 2, 3)
+
+
 def test_parse_time_now():
     """
     Ensure 'parse_time' can be called with 'now' argument to get utc
@@ -136,7 +148,7 @@ def test_parse_time_now():
     assert isinstance(parse_time('now'), datetime) is True
 
 
-def test_ISO():
+def test_parse_time_ISO():
     assert parse_time('1966-02-03') == LANDING
     assert (
         parse_time('1966-02-03T20:17:40') == datetime(1966, 2, 3, 20, 17, 40)
@@ -215,7 +227,9 @@ def test_time_string_parse_format():
     with pytest.raises(ValueError):
         parse_time('01/06/2012')
     with pytest.raises(ValueError):
-        parse_time('01/06/2012', time_string_parse_format='%d/%m/%m')
+        parse_time('01/06/2012', _time_string_parse_format='%d/%Y/%m')
+    with pytest.raises(re.error):
+        parse_time('01/06/2012', _time_string_parse_format='%d/%m/%m')
 
     with pytest.raises(ValueError):
         parse_time('2016', _time_string_parse_format='zz')
