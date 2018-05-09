@@ -140,45 +140,45 @@ def convert_time(time_string, format=None, **kwargs):
 
 @convert_time.register(pandas.Series)
 def convert_time_pandasSeries(time_string, **kwargs):
-    return ap.Time(time_string.tolist())
+    return ap.Time(time_string.tolist(), **kwargs)
 
 
 @convert_time.register(pandas.DatetimeIndex)
 def convert_time_pandasDatetimeIndex(time_string, **kwargs):
-    return ap.Time(time_string.tolist())
+    return ap.Time(time_string.tolist(), **kwargs)
 
 
 @convert_time.register(pandas.Timestamp)
 @convert_time.register(datetime)
 def convert_time_datetime(time_string, **kwargs):
-    return ap.Time(time_string)
+    return ap.Time(time_string, **kwargs)
 
 
 @convert_time.register(date)
 def convert_time_date(time_string, **kwargs):
-    return ap.Time(time_string.isoformat())
+    return ap.Time(time_string.isoformat(), **kwargs)
 
 
 @convert_time.register(tuple)
 def convert_time_tuple(time_string, **kwargs):
-    return ap.Time('{}-{}-{}'.format(*time_string))
+    return ap.Time('{}-{}-{}'.format(*time_string), **kwargs)
 
 
 @convert_time.register(float)
 @convert_time.register(int)
 def convert_time_float(time_string, **kwargs):
-    return ap.Time(time_string, format='utime')
+    return ap.Time(time_string, format='utime', **kwargs)
 
 
 @convert_time.register(np.datetime64)
 def convert_time_npdatetime64(time_string, **kwargs):
-    return ap.Time(str(time_string.astype('M8[ns]')))
+    return ap.Time(str(time_string.astype('M8[ns]')), **kwargs)
 
 
 @convert_time.register(np.ndarray)
 def convert_time_npndarray(time_string, **kwargs):
     if 'datetime64' in str(time_string.dtype):
-        return ap.Time([str(dt.astype('M8[ns]')) for dt in time_string])
+        return ap.Time([str(dt.astype('M8[ns]')) for dt in time_string], **kwargs)
     else:
         return convert_time.dispatch(object)(time_string, **kwargs)
 
