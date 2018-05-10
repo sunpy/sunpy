@@ -12,7 +12,6 @@ from pandas.util.testing import assert_frame_equal
 import astropy.units as u
 
 from sunpy.time import TimeRange
-from sunpy import lightcurve
 from sunpy.instr import goes
 
 # Define input variables to be used in test functions for
@@ -63,6 +62,7 @@ def test_goes_event_list():
     assert result[0]['noaa_active_region'] == 11226
 
 
+@pytest.mark.skip
 @pytest.mark.remote_data
 def test_calculate_temperature_em():
     # Create GOESLightcurve object, then create new one with
@@ -218,6 +218,7 @@ def test_goes_chianti_tem_case8():
     assert all(em8 < Quantity(9.39e+48, unit="1/cm**3")) and \
       all(em8 > Quantity(9.38e+48, unit="1/cm**3"))
 
+@pytest.mark.skip
 @pytest.mark.remote_data
 def test_calculate_radiative_loss_rate():
     # Define input variables.
@@ -325,12 +326,13 @@ def test_calc_rad_loss_obstime():
         }
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
     assert_quantity_allclose(rad_loss_test["rad_loss_rate"],
-                       rad_loss_expected["rad_loss_rate"], rtol=0.0001)
+                             rad_loss_expected["rad_loss_rate"], rtol=0.0001)
     assert_quantity_allclose(rad_loss_test["rad_loss_int"],
-                       rad_loss_expected["rad_loss_int"], rtol=0.0001)
+                             rad_loss_expected["rad_loss_int"], rtol=0.0001)
     assert_quantity_allclose(rad_loss_test["rad_loss_cumul"],
-                       rad_loss_expected["rad_loss_cumul"], rtol=0.0001)
+                             rad_loss_expected["rad_loss_cumul"], rtol=0.0001)
 
+@pytest.mark.skip
 @pytest.mark.remote_data
 def test_calculate_xray_luminosity():
     # Check correct exceptions are raised to incorrect inputs
