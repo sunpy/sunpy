@@ -3,4 +3,4 @@
 .. _maps-examples-index:
 
 Maps
-=========
+====

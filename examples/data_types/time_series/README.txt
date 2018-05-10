@@ -3,4 +3,4 @@
 .. _time_series-examples-index:
 
 Time Series
-=========
+===========

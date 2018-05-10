@@ -3,4 +3,4 @@
 .. _acquiring_data-examples-index:
 
 Acquiring Data
-===========
+==============

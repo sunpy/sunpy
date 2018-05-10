@@ -3,4 +3,4 @@
 .. _units_and_coordinates-examples-index:
 
 Units and Coordinates
-=========
+=====================
