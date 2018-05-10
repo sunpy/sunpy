@@ -3,4 +3,4 @@
 .. _computer_vision_techniques-examples-index:
 
 Computer Vision Techniques
-===========
+==========================

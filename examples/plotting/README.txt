@@ -3,4 +3,4 @@
 .. _plotting-examples-index:
 
 Plotting
-=========
+========

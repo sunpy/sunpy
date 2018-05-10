@@ -3,4 +3,4 @@
 .. _data_types-examples-index:
 
 Data Types
-===========
+==========

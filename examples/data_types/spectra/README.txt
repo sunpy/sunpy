@@ -3,4 +3,4 @@
 .. _spectra-examples-index:
 
 Spectra
-=========
+=======
