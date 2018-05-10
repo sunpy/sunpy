@@ -21,23 +21,11 @@ from sunpy.extern.six.moves import urllib
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
 
-__all__ = ['remove_lytaf_events_from_lightcurve',
-           'remove_lytaf_events_from_timeseries',
+__all__ = ['remove_lytaf_events_from_timeseries',
            'get_lytaf_events',
            'get_lytaf_event_types',
            'download_lytaf_database',
            'split_series_using_lytaf']
-
-
-@deprecated('v0.8',
-            message="""``remove_lytaf_events_from_lightcurve`` is deprecated as of SunPy v0.8 due to
-            the deprecation of ``LightCurve`` in favour of ``TimeSeries``. You should use
-            ``remove_lytaf_events_from_timeseries`` instead.""",
-            name="remove_lytaf_events_from_lightcurve",
-            alternative="remove_lytaf_events_from_timeseries"
-            )
-def remove_lytaf_events_from_lightcurve(lc, **kwargs):
-    return remove_lytaf_events_from_timeseries(lc, **kwargs)
 
 
 def remove_lytaf_events_from_timeseries(ts, artifacts=None,
@@ -91,11 +79,6 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
         | **artifact_status["not_found"]** : `list` of strings
         |     Artifacts listed to be removed by user when defining
         |     artifacts kwarg which were not found in time series time range.
-
-    Notes
-    -----
-    This function is intended to take TimeSeries objects as input, but the
-    deprecated LightCurve is still supported here.
 
     References
     ----------
