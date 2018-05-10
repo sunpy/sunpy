@@ -145,6 +145,11 @@ def convert_time_pandasDatetimeIndex(time_string, **kwargs):
     return ap.Time(time_string.tolist(), **kwargs)
 
 
+@convert_time.register(datetime)
+def convert_time_datetime(time_string, **kwargs):
+    return ap.Time(time_string, **kwargs)
+
+
 @convert_time.register(date)
 def convert_time_date(time_string, **kwargs):
     return ap.Time(time_string.isoformat(), **kwargs)
@@ -177,6 +182,8 @@ def convert_time_astropy(time_string, **kwargs):
 def convert_time_str(time_string, **kwargs):
     # remove trailing zeros and the final dot to allow any
     # number of zeros. This solves issue #289
+    if 'TAI' in time_string:
+        kwargs['scale'] = 'tai'
     if '.' in time_string:
         time_string = time_string.rstrip("0").rstrip(".")
     for time_format in TIME_FORMAT_LIST:

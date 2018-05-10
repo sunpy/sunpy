@@ -18,28 +18,44 @@ LANDING = ap.Time('1966-02-03', format='isot')
 
 
 def test_parse_time_24():
-    assert parse_time("2010-10-10T24:00:00") == ap.Time('2010-10-11')
+    dt = parse_time("2010-10-10T24:00:00")
+    assert dt == ap.Time('2010-10-11')
+    assert dt.format == 'isot'
+    assert dt.scale == 'utc'
 
 
 def test_parse_time_24_2():
-    assert parse_time("2010-10-10T24:00:00.000000") == ap.Time('2010-10-11')
+    dt = parse_time("2010-10-10T24:00:00.000000")
+    assert dt == ap.Time('2010-10-11')
+    assert dt.format == 'isot'
+    assert dt.scale == 'utc'
 
 
 def test_parse_time_trailing_zeros():
     # see issue #289 at https://github.com/sunpy/sunpy/issues/289
-    assert parse_time('2010-10-10T00:00:00.00000000') == ap.Time('2010-10-10')
+    dt = parse_time('2010-10-10T00:00:00.00000000')
+    assert dt == ap.Time('2010-10-10')
+    assert dt.format == 'isot'
+    assert dt.scale == 'utc'
 
 
 def test_parse_time_tuple():
-    assert parse_time((1966, 2, 3)) == LANDING
+    dt = parse_time((1966, 2, 3))
+    assert dt == LANDING
+    assert dt.format == 'iso'
+    assert dt.scale == 'utc'
 
 
 def test_parse_time_int():
     # Once https://github.com/astropy/astropy/issues/6970 is fixed,
     # remove .jd from equality check
-    assert parse_time(765548612.0, 'utime').jd == ap.Time('2003-4-5T12:23:32').jd
+    dt1 = parse_time(765548612.0, 'utime')
+    assert dt1.jd == ap.Time('2003-4-5T12:23:32').jd
+    assert dt1.format == 'utime'
 
-    assert parse_time(1009685652.0, 'utime').jd == ap.Time('2010-12-30T4:14:12').jd
+    dt2 = parse_time(1009685652.0, 'utime')
+    assert dt2.jd == ap.Time('2010-12-30T4:14:12').jd
+    assert dt2.format == 'utime'
 
 
 def test_parse_time_pandas_timestamp():
@@ -139,16 +155,19 @@ def test_parse_time_astropy():
     astropy_time = parse_time(ip)
 
     assert astropy_time == ip
+    assert astropy_time.format == 'isot'
 
 
 def test_parse_time_datetime():
     dt = datetime(2014, 2, 7, 16, 47, 51, 8288)
     assert parse_time(dt) == dt
+    assert parse_time(dt).format == 'datetime'
 
 
 def test_parse_time_date():
-    dt = date(1966, 2, 3)
-    assert parse_time(dt) == datetime(1966, 2, 3)
+    dt = parse_time(date(1966, 2, 3))
+    assert dt == datetime(1966, 2, 3)
+    assert dt.format == 'iso'
 
 
 def test_parse_time_now():
@@ -157,10 +176,13 @@ def test_parse_time_now():
     """
     # TODO: once mocking support is merged in, we can perform a like for like comparison,
     #       the following at least ensures that 'now' is a legal argument.
-    assert isinstance(parse_time('now'), astropy.time.Time) is True
+    now = parse_time('now')
+    assert isinstance(now, astropy.time.Time) is True
+    assert now.format == 'datetime'
+    assert now.scale == 'utc'
 
 
-def test_ISO():
+def test_parse_time_ISO():
     dt1 = ap.Time('1966-02-03T20:17:40')
     assert parse_time('1966-02-03').jd == LANDING.jd
     assert (
@@ -193,11 +215,43 @@ def test_ISO():
         ('04-May-2007', dt5),
         ('04-May-2007 21:08:12.999999', dt2),
         ('20070504_210812', dt3),
-        ('2007.05.04_21:08:12_TAI', dt3),
     ]
 
     for k, v in lst:
-        assert parse_time(k) == v
+        dt = parse_time(k)
+        assert dt == v
+        dt.format == 'isot'
+
+
+def test_parse_time_tai():
+    dt = ap.Time('2007-05-04T21:08:12', scale='tai')
+    dt2 = parse_time('2007.05.04_21:08:12_TAI')
+
+    assert dt == dt2
+    assert dt.scale == dt2.scale
+
+
+@pytest.mark.parametrize("ts,fmt", [
+    (1950.0, 'byear'),
+    ('B1950.0', 'byear_str'),
+    (63072064.184, 'cxcsec'),
+    (datetime(2000, 1, 2, 12, 0, 0), 'datetime'),
+    (2000.45, 'decimalyear'),
+    ('2000-01-01T00:00:00.000(TAI)', 'fits'),
+    (630720013.0, 'gps'),
+    ('2000-01-01 00:00:00.000', 'iso'),
+    ('2000-01-01T00:00:00.000', 'isot'),
+    (2451544.5, 'jd'),
+    (2000.0, 'jyear'),
+    ('J2000.0', 'jyear_str'),
+    (51544.0, 'mjd'),
+    (730120.0003703703, 'plot_date'),
+    (946684800.0, 'unix'),
+    ('2000:001:00:00:00.000', 'yday')
+])
+def test_parse_time_astropy_formats(ts, fmt):
+    dt = parse_time(ts, format=fmt)
+    assert dt.format == fmt
 
 
 def test_break_time():
