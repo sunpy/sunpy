@@ -42,7 +42,17 @@ def test_parse_time_trailing_zeros():
 def test_parse_time_tuple():
     dt = parse_time((1966, 2, 3))
     assert dt == LANDING
-    assert dt.format == 'iso'
+    assert dt.format == 'isot'
+    assert dt.scale == 'utc'
+
+    dt = parse_time((1966, 2, 3, 12, 2, 3))
+    assert dt == ap.Time('1966-2-3T12:2:3')
+    assert dt.format == 'isot'
+    assert dt.scale == 'utc'
+
+    dt = parse_time((1966, 2, 3, 12, 2, 3, 8266))
+    assert dt == ap.Time('1966-2-3T12:2:3.008266')
+    assert dt.format == 'isot'
     assert dt.scale == 'utc'
 
 

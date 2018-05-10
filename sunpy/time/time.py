@@ -157,7 +157,9 @@ def convert_time_date(time_string, **kwargs):
 
 @convert_time.register(tuple)
 def convert_time_tuple(time_string, **kwargs):
-    return ap.Time('{}-{}-{}'.format(*time_string), **kwargs)
+    # Make sure there are enough values to unpack
+    time_string = (time_string + (0,)*7)[:7]
+    return ap.Time('{}-{}-{}T{}:{}:{}.{:06}'.format(*time_string), **kwargs)
 
 
 @convert_time.register(np.datetime64)
