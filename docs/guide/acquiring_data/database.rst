@@ -719,7 +719,7 @@ with the value 'Angstrom':
     ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end ... wavemax  tags  starred
     --- ---------------------- -------------------- ... ------- ------ -------
-     22    2014-04-09 06:00:12                  N/A ...    17.1 spring      No
+     22    2014-04-09 06:00:12  2014-04-09 06:00:12 ...    17.1 spring      No
       4    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    21.1    N/A     Yes
       5    2011-06-07 06:33:03  2011-06-07 06:33:03 ...    33.5    N/A     Yes
      59    2011-05-08 00:00:00  2011-05-08 00:00:01 ...    17.1 spring      No
