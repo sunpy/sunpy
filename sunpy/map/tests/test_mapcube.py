@@ -147,3 +147,9 @@ def test_all_meta(mapcube_all_the_same):
     assert len(meta) == 2
     assert np.all(np.asarray([isinstance(h, MetaDict) for h in meta]))
     assert np.all(np.asarray([meta[i] == mapcube_all_the_same[i].meta for i in range(0, len(meta))]))
+
+def test_plot(mapcube_all_the_same, tmpdir):
+    # Regression test for #2626 - calling plot on MapCube caused error
+    file = tmpdir.join("movie.mp4")
+    ani = mapcube_all_the_same.plot()
+    ani.save(file)
