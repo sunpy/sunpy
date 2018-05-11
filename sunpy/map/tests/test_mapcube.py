@@ -5,6 +5,7 @@ Test mapcube functionality
 from __future__ import absolute_import
 
 import numpy as np
+import matplotlib.pyplot as plt
 import astropy.units as u
 import sunpy
 import sunpy.map
@@ -149,7 +150,10 @@ def test_all_meta(mapcube_all_the_same):
     assert np.all(np.asarray([meta[i] == mapcube_all_the_same[i].meta for i in range(0, len(meta))]))
 
 def test_plot(mapcube_all_the_same, tmpdir):
-    # Regression test for #2626 - calling plot on MapCube caused error
-    file = tmpdir.join("movie.mp4")
+    # Regression test for #2626 - trying to save animation after calling plot 
+    # on MapCube caused error
+    file = tmpdir.join("movie.gif")
     ani = mapcube_all_the_same.plot()
-    ani.save(file)
+    # The error was is actually caused when the updatefig method is called this is a hack
+    # to cause the error with out actually having to save an animation.
+    ani._step()
