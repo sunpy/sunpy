@@ -264,6 +264,34 @@ def test_parse_time_astropy_formats(ts, fmt):
     assert dt.format == fmt
 
 
+def test_parse_time_int_float():
+    # int and float values are not unique
+    # The format has to be mentioned
+
+    with pytest.raises(ValueError):
+        parse_time(100)
+
+    with pytest.raises(ValueError):
+        parse_time(100.0)
+
+
+@pytest.mark.parametrize("scale", [
+    'tai',
+    'tcb',
+    'tcg',
+    'tdb',
+    'tt',
+    'ut1',
+    'utc'
+])
+def test_parse_time_scale(scale):
+    dt = parse_time('2007-05-04T21:08:12', scale=scale)
+    dt2 = ap.Time('2007-05-04T21:08:12', scale=scale)
+
+    assert dt == dt2
+    assert dt.scale == scale
+
+
 def test_break_time():
     t = datetime(2007, 5, 4, 21, 8, 12)
     assert time.break_time(t) == '20070504_210812'
