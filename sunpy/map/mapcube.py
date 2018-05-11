@@ -205,7 +205,8 @@ class MapCube(object):
 
             if wcsaxes_compat.is_wcsaxes(axes):
                 im.axes.reset_wcs(ani_data[i].wcs)
-                wcsaxes_compat.default_wcs_grid(axes)
+                wcsaxes_compat.default_wcs_grid(axes, ani_data[i].spatial_units,
+                                                ani_data[i].coordinate_system)
             else:
                 im.set_extent(np.concatenate((ani_data[i].xrange.value,
                                               ani_data[i].yrange.value)))
