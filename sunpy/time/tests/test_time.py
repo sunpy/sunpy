@@ -170,13 +170,13 @@ def test_parse_time_astropy():
 
 def test_parse_time_datetime():
     dt = datetime(2014, 2, 7, 16, 47, 51, 8288)
-    assert parse_time(dt) == dt
+    assert parse_time(dt) == ap.Time('2014-02-07 16:47:51.008288')
     assert parse_time(dt).format == 'datetime'
 
 
 def test_parse_time_date():
     dt = parse_time(date(1966, 2, 3))
-    assert dt == datetime(1966, 2, 3)
+    assert dt == ap.Time('1966-2-3')
     assert dt.format == 'iso'
 
 
