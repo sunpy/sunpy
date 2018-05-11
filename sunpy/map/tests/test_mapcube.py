@@ -5,7 +5,6 @@ Test mapcube functionality
 from __future__ import absolute_import
 
 import numpy as np
-import matplotlib.pyplot as plt
 import astropy.units as u
 import sunpy
 import sunpy.map
