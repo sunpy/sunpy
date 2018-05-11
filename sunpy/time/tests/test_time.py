@@ -287,9 +287,39 @@ def test_parse_time_int_float():
 def test_parse_time_scale(scale):
     dt = parse_time('2007-05-04T21:08:12', scale=scale)
     dt2 = ap.Time('2007-05-04T21:08:12', scale=scale)
-
     assert dt == dt2
     assert dt.scale == scale
+
+    dt = parse_time(np.datetime64('2007-05-04T21:08:12'), scale=scale)
+    dt2 = ap.Time('2007-05-04T21:08:12', scale=scale)
+    assert dt == dt2
+    assert dt.scale == scale
+
+    dt = datetime(2014, 2, 7, 16, 47, 51)
+    dt = parse_time(dt, scale=scale)
+    dt2 = ap.Time('2014-02-07T16:47:51', scale=scale)
+    assert dt == dt2
+    assert dt.scale == scale
+
+    dt = date(2014, 2, 7)
+    dt = parse_time(dt, scale=scale)
+    dt2 = ap.Time('2014-02-07', scale=scale)
+    assert dt == dt2
+    assert dt.scale == scale
+
+
+def test_parse_time_list():
+    tstrings = ['2010-09-03 00:00:00', '2005-09-03 06:00:00',
+                '1995-12-31 23:59:60']
+
+    assert np.all(parse_time(tstrings) == ap.Time(tstrings))
+
+
+def test_parse_time_list_2():
+    tstrings = [['1998-01-01 00:00:01', '1998-01-01 00:00:02'],
+                ['1998-01-01 00:00:03', '1995-12-31 23:59:60']]
+
+    assert np.all(parse_time(tstrings) == ap.Time(tstrings))
 
 
 def test_break_time():
