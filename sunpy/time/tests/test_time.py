@@ -187,7 +187,7 @@ def test_parse_time_now():
     # TODO: once mocking support is merged in, we can perform a like for like comparison,
     #       the following at least ensures that 'now' is a legal argument.
     now = parse_time('now')
-    assert isinstance(now, astropy.time.Time) is True
+    assert isinstance(now, astropy.time.Time)
     assert now.format == 'datetime'
     assert now.scale == 'utc'
 
@@ -239,6 +239,13 @@ def test_parse_time_tai():
 
     assert dt == dt2
     assert dt.scale == dt2.scale
+
+
+def test_parse_time_leap_second():
+    dt1 = parse_time('1995-12-31 23:59:60')
+    dt2 = ap.Time('1995-12-31T23:59:60')
+
+    assert dt1.jd == dt2.jd
 
 
 @pytest.mark.parametrize("ts,fmt", [
