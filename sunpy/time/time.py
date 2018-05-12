@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function
 import re
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, date
 from functools import singledispatch
 
 import numpy as np
@@ -307,6 +307,7 @@ def is_time(time_string, time_format=None):
 
 def day_of_year(time_string):
     """Returns the (fractional) day of year.
+    Note: This function takes into account leap seconds.
 
     Parameters
     ----------
@@ -324,7 +325,7 @@ def day_of_year(time_string):
     >>> sunpy.time.day_of_year('2012/01/01')
     1.0
     >>> sunpy.time.day_of_year('2012/08/01')
-    214.0
+    214.00001157407408
     >>> sunpy.time.day_of_year('2005-08-04T00:18:02.000Z')
     216.01252314814815
 
