@@ -219,25 +219,35 @@ def parse_time(time_string, format=None, **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
+
     Parameters
     ----------
-    time_string : [ int, float, time_string, datetime ]
-        Date to parse which can be either time_string, int, datetime object.
-    time_format : [ basestring, utime, datetime ]
+    time_string : [ int, float, string, datetime, astropy.time.Time,
+                    numpy.datetime64, pandas.Timestamp ]
+        Time to parse.
+
+    format : [ 'jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps',
+               'plot_date', 'datetime', 'iso', 'isot', 'yday', 'fits',
+               'byear', 'jyear', 'byear_str', 'jyear_str', 'utime']
+
         Specifies the format user has provided the time_string in.
+        Same as format of `astropy.time.Time`
+
+    kwargs : dict
+        Additional keyword arguments that can be passed to `astropy.time.Time`
+
     Returns
     -------
-    out : datetime
-        DateTime corresponding to input date string
-    Note:
-    If time_string is an instance of float, then it is assumed to be in utime format.
+    out : Time
+        `astropy.time.Time` corresponding to input time string
+
     Examples
     --------
     >>> import sunpy.time
     >>> sunpy.time.parse_time('2012/08/01')
-    datetime.datetime(2012, 8, 1, 0, 0)
-    >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-    datetime.datetime(2005, 8, 4, 0, 1, 2)
+    <Time object: scale='utc' format='isot' value=2012-08-01T00:00:00.000>
+    >>> sunpy.time.parse_time('2016.05.04_21:08:12_TAI')
+    <Time object: scale='tai' format='isot' value=2016-05-04T21:08:12.000>
     """
     if time_string is 'now':
         rt = ap.Time.now()
