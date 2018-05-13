@@ -52,8 +52,8 @@ def test_main_exclude_remote_data(monkeypatch):
 def test_main_only_remote_data(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
     args = sunpy.self_test(package='map', online_only=True)
-    assert args in ([os.path.join('sunpy', 'map'), '--remote-data=any', '-k-remote_data', '-m', 'not figure'],
-                    [os.path.join(root_dir, 'map'), '--remote-data=any', '-k-remote_data', '-m', 'not figure'])
+    assert args in ([os.path.join('sunpy', 'map'), '-k remote_data', '--remote-data=any', '-m', 'not figure'],
+                    [os.path.join(root_dir, 'map'), '-k remote_data', '--remote-data=any', '-m', 'not figure'])
 
 
 def test_main_figures(monkeypatch):

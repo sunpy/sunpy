@@ -44,10 +44,9 @@ class SunPyTestRunner(TestRunner):
         """
         r = []
         if online_only:
+            r.append('-k remote_data')
             if not kwargs['online']:
                 r.append('--remote-data=any')
-
-            r.append('-k-remote_data')
 
         return r
 
@@ -71,4 +70,16 @@ class SunPyTestRunner(TestRunner):
         if figure:
             return ['-m', 'figure']
 
+        return []
+
+    # Define this to change the default value to None
+    @keyword()
+    def plugins(self, plugins, kwargs):
+        """
+        plugins : list, optional
+            Plugins to be passed to ``pytest.main`` in the ``plugins`` keyword
+            argument.
+        """
+        # Plugins are handled independently by `run_tests` so we define this
+        # keyword just for the docstring
         return []
