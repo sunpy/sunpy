@@ -710,7 +710,7 @@ class VSOClient(object):
         fileids and methods, """
         if info is None:
             info = {}
-        if maps.get('JSOC',0):
+        if 'JSOC' in maps:
             return self._separate_hmi(maps, methods, info)
         else:
             return self.make(
@@ -730,25 +730,24 @@ class VSOClient(object):
         as normal to construct the soap message.
         """
         jsoc_list=maps_dict.get('JSOC',0)
-        if jsoc_list:
-            listdict={}
-            s_match=re.compile('^.*?:')
-            for fidnum, fid in enumerate(jsoc_list):
-                if re.search('^hmi',fid):
-                    #hmi data match found, extract into new list
-                    series=s_match.findall(fid)[0]
-                    if listdict.get(series,0):
-                        listdict.get(series).append(fid)
-                    else:
-                        listdict[series]=[fid]
+        listdict={}
+        s_match=re.compile('^.*?:')
+        for fidnum, fid in enumerate(jsoc_list):
+            if re.search('^hmi',fid):
+                #hmi data match found, extract into new list
+                series=s_match.findall(fid)[0]
+                if series in listdict:
+                    listdict.get(series).append(fid)
+                else:
+                    listdict[series]=[fid]
                     #delete entry from jsoc_list
-                    del jsoc_list[fidnum]
-            new_dict=maps_dict.copy()
-            new_dict.update(listdict)
+                del jsoc_list[fidnum]
+        new_dict=maps_dict.copy()
+        new_dict.update(listdict)
         #new dict defined
+        drqs= [None] * len(new_dict)
         for keyn, key in enumerate(new_dict):
             k='JSOC' if re.search('^hmi',key) else key
-            drqs= [None] * len(new_dict)
             drqs[keyn]=self.make('DataRequestItem', provider=k, fileiditem__fileid=[new_dict.get(key)])
         return self.make(
             'VSOGetDataRequest',
