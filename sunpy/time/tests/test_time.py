@@ -184,8 +184,6 @@ def test_parse_time_now():
     """
     Ensure 'parse_time' can be called with 'now' argument to get utc
     """
-    # TODO: once mocking support is merged in, we can perform a like for like comparison,
-    #       the following at least ensures that 'now' is a legal argument.
     now = parse_time('now')
     assert isinstance(now, astropy.time.Time)
     assert now.format == 'datetime'
