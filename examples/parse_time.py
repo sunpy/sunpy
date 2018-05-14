@@ -23,13 +23,14 @@ t1 = parse_time('1995-12-31 23:59:60')
 
 ##############################################################################
 # Ofcourse you could do the same with astropy Time.
-# But SunPy parse_time can parse even more time formats
-t2 = parse_time('1995-Dec-31 23:59:60')
-# As you see from the above examples, thanks to astropy Time, parse_time
+# But SunPy parse_time can parse even more time formats.
+# As you see from the examples, thanks to astropy Time, parse_time
 # can handle leap seconds too.
+t2 = parse_time('1995-Dec-31 23:59:60')
+
 
 ##############################################################################
-# You can mention the scale of the time as keyword parameter if you need
+# You can mention the scale of the time as keyword parameter if you need.
 # Similar to scale you can pass in any astropy Time compatible keywords to
 # parse_time. See all arguments here: http://docs.astropy.org/en/stable/time/#creating-a-time-object
 t3 = parse_time('2012:124:21:08:12', scale='tai')
@@ -37,8 +38,7 @@ t3 = parse_time('2012:124:21:08:12', scale='tai')
 
 ##############################################################################
 # Now that you are done with strings, let's see other type parse_time handles,
-# tuples
-# astropy Time doesnot handle tuples but parse_time does
+# tuples. astropy Time doesnot handle tuples but parse_time does
 t4 = parse_time((1998, 11, 14))
 t5 = parse_time((2001, 1, 1, 12, 12, 12, 8899))
 
@@ -47,14 +47,14 @@ t5 = parse_time((2001, 1, 1, 12, 12, 12, 8899))
 t6 = parse_time(time.localtime())
 
 ##############################################################################
-# parse_time also parses datetime and date objects
+# parse_time also parses datetime and date objects.
 t7 = parse_time(datetime.now())
 t8 = parse_time(date.today())
 
 
 ##############################################################################
 # parse_time can return Time objects for pandas.Timestamp, pandas.Series
-# and pandas.DatetimeIndex
+# and pandas.DatetimeIndex.
 t9 = parse_time(pandas.Timestamp(datetime(1966, 2, 3)))
 
 t10 = parse_time(
@@ -82,8 +82,8 @@ t13 = parse_time(
 
 ##############################################################################
 # Parse time returns astropy.time.Time object for every parsable input that
-# you give to it
-# parse_time can handle all formats that astropy.time.Time can handle
+# you give to it.
+# parse_time can handle all formats that astropy.time.Time can handle.
 # That is,
 # ['jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps', 'plot_date', 'datetime',
 # 'iso', 'isot', 'yday', 'fits', 'byear', 'jyear', 'byear_str', 'jyear_str']
