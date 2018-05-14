@@ -34,6 +34,15 @@ jobs:
       - checkout
       - run: python setup.py egg_info
 
+  astropy-time:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run: *pip-install
+      # Copy and paste this line for every submodule for which the tests pass
+      - run: venv/bin/python setup.py test -P time -w 2> /dev/null
+
   html-docs:
     docker:
       - image: circleci/python:3.6
@@ -67,6 +76,7 @@ workflows:
       - egg-info-36
       - egg-info-35
       - egg-info-27
+      - astropy-time
 
   test-documentation:
     jobs:
