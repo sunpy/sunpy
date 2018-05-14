@@ -2,6 +2,7 @@
 import numpy as np
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 from asdf.yamlutil import custom_tree_to_tagged_tree
 
 import sunpy.map
@@ -34,3 +35,18 @@ class GenericMapType(SunPyType):
         # node['plot_settings'] = smap.plot_settings
 
         return custom_tree_to_tagged_tree(node, ctx)
+
+    @classmethod
+    def assert_equal(cls, old, new):
+        """
+        This method is used by asdf to test that to_tree > from_tree gives an
+        equivalent object.
+        """
+        np.testing.assert_allclose(old.data, new.data)
+
+        # Test the meta by force!
+        for ok, ov in old.meta.items():
+            assert ok in new.meta
+            assert new.meta[ok] == ov
+
+        assert_quantity_allclose(old.shifted_value, new.shifted_value)

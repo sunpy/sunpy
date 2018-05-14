@@ -24,8 +24,8 @@ allOf:
               - type:
                   string
           obstime:
-            $ref: "tag:stsci.edu:asdf/time/time-1.0.0"
+            $ref: "tag:stsci.edu:asdf/time/time-1.1.0"
 
-        required: [observer, rsun]
+        required: [observer]
         additionalProperties: False
 ...
