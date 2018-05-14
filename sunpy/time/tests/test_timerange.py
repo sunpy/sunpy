@@ -6,8 +6,10 @@ import datetime
 
 import pytest
 import astropy.units as u
+from astropy.time import TimeDelta
 
 import sunpy.time
+import sunpy.time.astropy_time as ap
 from sunpy.extern.six.moves import zip
 
 tbegin_str = '2012/1/1'
@@ -22,7 +24,7 @@ delta = end - start
 @pytest.mark.parametrize("inputs", [
     (tbegin_str, tfin_str),
     (tbegin_str, dt),
-    (tbegin_str, datetime.timedelta(days=1))
+    (tbegin_str, TimeDelta(1*u.day))
 ])
 def test_timerange_inputs(inputs):
     timerange = sunpy.time.TimeRange(*inputs)
@@ -66,8 +68,8 @@ def test_equals():
 
     assert tr == tr_diff_format
 
-    lower_dt = datetime.datetime(year=2016, month=1, day=4, hour=9, minute=30, second=0)
-    upper_dt = datetime.datetime(year=2016, month=6, day=4, hour=9, minute=30, second=0)
+    lower_dt = ap.Time('2016-01-04T09:30:00.000')
+    upper_dt = ap.Time('2016-06-04T09:30:00.000')
     tr_datetime = sunpy.time.TimeRange(lower_dt, upper_dt)
 
     assert tr == tr_datetime
@@ -112,11 +114,11 @@ def test_get_dates():
 
     single_day = sunpy.time.TimeRange((lower, lower))
 
-    assert single_day.get_dates() == [datetime.date(2016, 1, 4)]
+    assert single_day.get_dates() == [sunpy.time.Time('2016-1-4')]
 
     two_days = sunpy.time.TimeRange((lower, lower_plus_one_day))
 
-    assert two_days.get_dates() == [datetime.date(2016, 1, 4), datetime.date(2016, 1, 5)]
+    assert two_days.get_dates() == [sunpy.time.Time('2016-1-4'), sunpy.time.Time('2016-1-5')]
 
     one_year = sunpy.time.TimeRange('2017/01/01', '2017-12-31')
     assert len(one_year.get_dates()) == 365
@@ -128,7 +130,7 @@ def test_get_dates():
 @pytest.mark.parametrize("ainput", [
     (tbegin_str, tfin_str),
     (tbegin_str, dt),
-    (tbegin_str, datetime.timedelta(days=1)),
+    (tbegin_str, TimeDelta(1*u.day)),
     (sunpy.time.TimeRange(tbegin_str, tfin_str))
     ])
 def test_timerange_input(ainput):
@@ -190,19 +192,18 @@ def test_window(timerange_a):
               sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
     assert isinstance(window, list)
-    # Doing direct comparisons seem to not work
-    assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
+    assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
 def test_window_timedelta(timerange_a):
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    window = timerange.window(datetime.timedelta(hours=12), datetime.timedelta(seconds=10))
+    window = timerange.window(TimeDelta(12*u.hour), TimeDelta(10*u.second))
     expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'),
               sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
-    assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
+    assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
 def test_days(timerange_a):

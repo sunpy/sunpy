@@ -1,6 +1,9 @@
-from sunpy.time.astropy_time import Time
+from sunpy.time.astropy_time import Time, is_time_equal
 
+from astropy.time import TimeDelta
+import astropy.units as u
 import numpy as np
+from datetime import datetime
 
 import pytest
 
@@ -104,3 +107,27 @@ def test_strptime_leapsecond():
     time_obj2 = Time.strptime('1995-Dec-31 23:59:60', '%Y-%b-%d %H:%M:%S')
 
     assert time_obj1 == time_obj2
+
+
+def test_is_time_equal():
+    t1 = Time('1995-12-31T23:59:60', format='isot')
+    t2 = Time('1995-12-31T23:59:60', format='isot')
+
+    assert is_time_equal(t1, t2)
+
+    t1 = Time('1995-12-31T23:59:59', format='isot')
+    t2 = Time(datetime(1995, 12, 31, 23, 59, 59), format='datetime')
+
+    assert is_time_equal(t1, t2)
+
+    t1 = Time('1995-12-31T23:59:60', format='isot')
+    t2 = Time('1995-12-31T23:59:60', format='isot') + TimeDelta(0*u.day)
+
+    assert is_time_equal(t1, t2)
+
+
+def test_is_time_equal_not_equal():
+    t1 = Time('1995-12-31T23:59:59', format='isot')
+    t2 = Time('1995-12-31T23:59:60', format='isot')
+
+    assert not is_time_equal(t1, t2)

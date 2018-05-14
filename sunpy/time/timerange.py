@@ -4,8 +4,10 @@ from datetime import timedelta
 from datetime import datetime
 
 import astropy.units as u
+from astropy.time import TimeDelta
 
-from sunpy.time import parse_time
+from . import astropy_time as ap
+from sunpy.time import parse_time, is_time_equal
 from sunpy import config
 from sunpy.extern.six.moves import range
 
@@ -65,11 +67,13 @@ class TimeRange(object):
             y = b
 
         if isinstance(y, u.Quantity):
-            y = timedelta(seconds=y.to('s').value)
+            y = TimeDelta(y)
+
+        # TODO: Support datetime.timedelta?
 
         # Timedelta
-        if isinstance(y, timedelta):
-            if y.days >= 0:
+        if isinstance(y, TimeDelta):
+            if y.jd >= 0:
                 self._t1 = x
                 self._t2 = x + y
             else:
@@ -80,7 +84,7 @@ class TimeRange(object):
         # Otherwise, assume that the second argument is parse_time-compatible
         y = parse_time(y)
 
-        if isinstance(y, datetime):
+        if isinstance(y, ap.Time):
             if x < y:
                 self._t1 = x
                 self._t2 = y
@@ -117,7 +121,7 @@ class TimeRange(object):
 
         Returns
         -------
-        dt : `datetime.timedelta`
+        dt : `astropy.time.TimeDelta`
         """
         return self._t2 - self._t1
 
@@ -130,7 +134,7 @@ class TimeRange(object):
         -------
         value : `datetime.datetime`
         """
-        return self.start + self.dt // 2
+        return self.start + self.dt / 2
 
     @property
     def hours(self):
@@ -185,7 +189,8 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        return self.dt.total_seconds() * u.s
+        # TODO: Remove this?
+        return self.dt
 
     def __eq__(self, other):
         """
@@ -201,7 +206,8 @@ class TimeRange(object):
         result : `bool`
         """
         if isinstance(other, TimeRange):
-            return (self.start == other.start) and (self.end == other.end)
+            return is_time_equal(
+                self.start, other.start) and is_time_equal(self.end, other.end)
 
         return NotImplemented
 
@@ -219,7 +225,8 @@ class TimeRange(object):
         result : `bool`
         """
         if isinstance(other, TimeRange):
-            return (self.start != other.start) or (self.end != other.end)
+            return not (is_time_equal(
+                self.start, other.start) and is_time_equal(self.end, other.end))
 
         return NotImplemented
 
@@ -269,7 +276,7 @@ class TimeRange(object):
         previous_time = self.start
         next_time = None
         for _ in range(n):
-            next_time = previous_time + self.dt // n
+            next_time = previous_time + self.dt / 2
             next_range = TimeRange(previous_time, next_time)
             subsections.append(next_range)
             previous_time = next_time
@@ -282,9 +289,9 @@ class TimeRange(object):
 
         Parameters
         ----------
-        cadence : `astropy.units.Quantity`, `datetime.timedelta`
+        cadence : `astropy.units.Quantity`, `astropy.time.TimeDelta`
             Cadence in seconds or a timedelta instance
-        window : `astropy.units.quantity`, `datetime.timedelta`
+        window : `astropy.units.quantity`, `astropy.time.TimeDelta`
             The length of the Time's, assumed to be seconds if int.
 
         Returns
@@ -325,10 +332,10 @@ class TimeRange(object):
                     12.0 seconds]
 
         """
-        if not isinstance(window, timedelta):
-            window = timedelta(seconds=window.to('s').value)
-        if not isinstance(cadence, timedelta):
-            cadence = timedelta(seconds=cadence.to('s').value)
+        if not isinstance(window, TimeDelta):
+            window = TimeDelta(window)
+        if not isinstance(cadence, TimeDelta):
+            cadence = TimeDelta(cadence)
 
         n = 1
         times = [TimeRange(self.start, self.start + window)]
@@ -373,7 +380,10 @@ class TimeRange(object):
         Return all partial days contained within the timerange
         """
         dates = []
-        dates = [self.start.date() + timedelta(days=i) for i in range(int(self.days.value) + 1)]
+        dates = [
+            parse_time(self.start.datetime.date()) + TimeDelta(i*u.day)
+            for i in range(int(self.days.value) + 1)
+        ]
         return dates
 
     def __contains__(self, time):
