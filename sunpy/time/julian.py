@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 
-from astropy.time import Time
 from sunpy.time import parse_time
 
 __all__ = ['julian_day', 'julian_centuries']
@@ -10,7 +9,7 @@ def julian_day(t='now'):
     """
     Wrap a UTC -> JD conversion from astropy.
     """
-    return Time(parse_time(t)).jd
+    return parse_time(t).jd
 
 
 def julian_centuries(t='now'):
