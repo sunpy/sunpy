@@ -69,7 +69,7 @@ def test_parse_time_int():
 
 
 def test_parse_time_pandas_timestamp():
-    ts = pandas.Timestamp(datetime(1966, 2, 3))
+    ts = pandas.Timestamp(LANDING.datetime)
 
     dt = parse_time(ts)
 
@@ -118,6 +118,7 @@ def test_parse_time_numpy_date():
     dts = parse_time(inputs)
 
     assert isinstance(dts, astropy.time.Time)
+    assert np.all(dts == ap.Time([str(dt.astype('M8[ns]')) for dt in inputs]))
 
 
 def test_parse_time_numpy_datetime():
@@ -126,6 +127,7 @@ def test_parse_time_numpy_datetime():
     dts = parse_time(inputs)
 
     assert isinstance(dts, astropy.time.Time)
+    assert np.all(dts == ap.Time([str(dt.astype('M8[ns]')) for dt in inputs]))
 
 
 def test_parse_time_individual_numpy_datetime():
@@ -228,7 +230,7 @@ def test_parse_time_ISO():
     for k, v in lst:
         dt = parse_time(k)
         assert dt == v
-        dt.format == 'isot'
+        assert dt.format == 'isot'
 
 
 def test_parse_time_tai():
@@ -244,6 +246,10 @@ def test_parse_time_leap_second():
     dt2 = ap.Time('1995-12-31T23:59:60')
 
     assert dt1.jd == dt2.jd
+
+    dt3 = parse_time('1995-Dec-31 23:59:60')
+
+    assert dt2.jd == dt3.jd
 
 
 @pytest.mark.parametrize("ts,fmt", [
