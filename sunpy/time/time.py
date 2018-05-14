@@ -184,10 +184,14 @@ def convert_time_astropy(time_string, **kwargs):
 def convert_time_str(time_string, **kwargs):
     # remove trailing zeros and the final dot to allow any
     # number of zeros. This solves issue #289
-    if 'TAI' in time_string:
-        kwargs['scale'] = 'tai'
     if '.' in time_string:
         time_string = time_string.rstrip("0").rstrip(".")
+
+    if 'TAI' in time_string:
+        kwargs['scale'] = 'tai'
+
+    time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
+
     for time_format in TIME_FORMAT_LIST:
         try:
             try:
@@ -201,7 +205,7 @@ def convert_time_str(time_string, **kwargs):
                                     **kwargs) + time_delta
         except ValueError:
             pass
-    time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
+
     if time_string_parse_format is not None:
         ts, time_delta = _regex_parse_time(time_string,
                                            time_string_parse_format)
