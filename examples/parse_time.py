@@ -5,7 +5,7 @@ Parsing times with sunpy.time.parse_time
 
 Example to show some example usage of parse_time
 """
-
+##############################################################################
 # Import the required modules
 from datetime import datetime, date
 import time
@@ -30,10 +30,9 @@ t2 = parse_time('1995-Dec-31 23:59:60')
 
 ##############################################################################
 # You can mention the scale of the time as keyword parameter if you need
-# The default is utc
-t3 = parse_time('2012:124:21:08:12', scale='tai')
 # Similar to scale you can pass in any astropy Time compatible keywords to
 # parse_time. See all arguments here: http://docs.astropy.org/en/stable/time/#creating-a-time-object
+t3 = parse_time('2012:124:21:08:12', scale='tai')
 
 
 ##############################################################################
