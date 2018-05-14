@@ -41,7 +41,7 @@ jobs:
       - checkout
       - run: *pip-install
       # Copy and paste this line for every submodule for which the tests pass
-      - run: venv/bin/python setup.py test -P time -w 2> /dev/null
+      - run: venv/bin/python setup.py test -P time
 
   html-docs:
     docker:
