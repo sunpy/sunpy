@@ -372,26 +372,6 @@ def test_day_of_year_leapsecond():
     assert time.day_of_year('2015/09/30') == 273.00001157407405
 
 
-def test_time_string_parse_format():
-    assert parse_time('01/06/2012',
-                      _time_string_parse_format='%d/%m/%Y') == datetime(2012, 6, 1, 0, 0)
-    assert parse_time('06/01/2012',
-                      _time_string_parse_format='%d/%m/%Y') == datetime(2012, 1, 6, 0, 0)
-    assert parse_time('06/01/85',
-                      _time_string_parse_format='%d/%m/%y') == datetime(1985, 1, 6, 0, 0)
-    assert parse_time('6/1/85',
-                      _time_string_parse_format='%d/%m/%y') == datetime(1985, 1, 6, 0, 0)
-    with pytest.raises(ValueError):
-        parse_time('01/06/2012')
-    with pytest.raises(ValueError):
-        parse_time('01/06/2012', _time_string_parse_format='%d/%Y/%m')
-    with pytest.raises(re.error):
-        parse_time('01/06/2012', _time_string_parse_format='%d/%m/%m')
-
-    with pytest.raises(ValueError):
-        parse_time('2016', _time_string_parse_format='zz')
-
-
 def test__iter_empty():
 
     class CountDown(object):
