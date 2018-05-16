@@ -7,8 +7,8 @@ import numpy as np
 import pandas
 from sunpy.extern import six
 from sunpy.time.utime import TimeUTime
+from sunpy.time import astropy_time as ap
 
-from . import astropy_time as ap
 import astropy.units as u
 import astropy.time
 
