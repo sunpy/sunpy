@@ -59,11 +59,11 @@ def test_parse_time_tuple():
 def test_parse_time_int():
     # Once https://github.com/astropy/astropy/issues/6970 is fixed,
     # remove .jd from equality check
-    dt1 = parse_time(765548612.0, 'utime')
+    dt1 = parse_time(765548612.0, format='utime')
     assert dt1.jd == ap.Time('2003-4-5T12:23:32').jd
     assert dt1.format == 'utime'
 
-    dt2 = parse_time(1009685652.0, 'utime')
+    dt2 = parse_time(1009685652.0, format='utime')
     assert dt2.jd == ap.Time('2010-12-30T4:14:12').jd
     assert dt2.format == 'utime'
 
