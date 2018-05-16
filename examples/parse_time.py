@@ -1,19 +1,20 @@
 """
-================================================
+========================================
 Parsing times with sunpy.time.parse_time
-================================================
+========================================
 
-Example to show some example usage of parse_time
+This is an example to show some possible usage of ``parse_time``.
+``parse_time`` is a function that can be useful to create `~astropy.time.Time`
+objects from various other time objects and strings.
 """
 ##############################################################################
-# Import the required modules
+# Import the required modules.
 from datetime import datetime, date
 import time
 
 import numpy as np
 import pandas
 
-# Import parse_time
 from sunpy.time import parse_time
 
 
@@ -22,9 +23,9 @@ from sunpy.time import parse_time
 t1 = parse_time('1995-12-31 23:59:60')
 
 ##############################################################################
-# Of course you could do the same with astropy ``Time``.
+# Of course you could do the same with `~astropy.time.Time`.
 # But SunPy ``parse_time`` can parse even more formats of time strings.
-# And as you see from the examples, thanks to astropy ``Time``, ``parse_time``
+# And as you see from the examples, thanks to `~astropy.time.Time`, ``parse_time``
 # can handle leap seconds too.
 t2 = parse_time('1995-Dec-31 23:59:60')
 
@@ -39,12 +40,12 @@ t3 = parse_time('2012:124:21:08:12', scale='tai')
 
 ##############################################################################
 # Now that you are done with strings, let's see other type ``parse_time`` handles,
-# tuples. astropy ``Time`` doesnot handle tuples but ``parse_time`` does.
+# tuples. `~astropy.time.Time` doesnot handle tuples but ``parse_time`` does.
 t4 = parse_time((1998, 11, 14))
 t5 = parse_time((2001, 1, 1, 12, 12, 12, 8899))
 
 ##############################################################################
-# This also means that you can parse a time struct.
+# This also means that you can parse a ``time.struct_time``.
 t6 = parse_time(time.localtime())
 
 ##############################################################################
@@ -74,7 +75,7 @@ t11 = parse_time(
 
 
 ##############################################################################
-# ``parse_time`` can parse numpy.datetime64 objects.
+# ``parse_time`` can parse ``numpy.datetime64`` objects.
 t12 = parse_time(np.datetime64('2014-02-07T16:47:51.008288123-0500'))
 t13 = parse_time(
     np.array(
@@ -82,9 +83,9 @@ t13 = parse_time(
         dtype='datetime64'))
 
 ##############################################################################
-# Parse time returns ``astropy.time.Time`` object for every parsable input that
+# Parse time returns `~astropy.time.Time object for every parsable input that
 # you give to it.
-# ``parse_time`` can handle all formats that ``astropy.time.Time`` can handle.
+# ``parse_time`` can handle all formats that `~astropy.time.Time` can handle.
 # That is,
 # ['jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps', 'plot_date', 'datetime',
 # 'iso', 'isot', 'yday', 'fits', 'byear', 'jyear', 'byear_str', 'jyear_str']
