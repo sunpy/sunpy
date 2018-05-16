@@ -190,8 +190,6 @@ def convert_time_str(time_string, **kwargs):
     if 'TAI' in time_string:
         kwargs['scale'] = 'tai'
 
-    time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
-
     for time_format in TIME_FORMAT_LIST:
         try:
             try:
@@ -206,15 +204,6 @@ def convert_time_str(time_string, **kwargs):
         except ValueError:
             pass
 
-    if time_string_parse_format is not None:
-        ts, time_delta = _regex_parse_time(time_string,
-                                           time_string_parse_format)
-        if ts and time_delta:
-            return ap.Time.strptime(ts, time_string_parse_format,
-                                    **kwargs) + time_delta
-        else:
-            return ap.Time.strptime(time_string, time_string_parse_format,
-                                    **kwargs)
     # when no format matches, call default fucntion
     return convert_time.dispatch(object)(time_string, **kwargs)
 
