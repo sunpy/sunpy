@@ -20,10 +20,6 @@ addons:
             - texlive-latex-extra
             - dvipng
 
-cache:
-  directories:
-  - $HOME/sunpy/data
-
 # Configure the build environment. Global variables are defined for all configurations.
 env:
     global:

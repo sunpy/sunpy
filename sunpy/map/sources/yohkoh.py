@@ -6,12 +6,12 @@ __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
-from sunpy.cm import cm
 from sunpy.sun import constants
 from sunpy.map.sources.source_type import source_stretch
 
@@ -48,7 +48,7 @@ class SXTMap(GenericMap):
 
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
-        self.plot_settings['cmap'] = cm.get_cmap(name='yohkohsxt' + self.measurement[0:2].lower())
+        self.plot_settings['cmap'] = plt.get_cmap(name='yohkohsxt' + self.measurement[0:2].lower())
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
         # 2012/12/19 - the SXT headers do not have a value of the distance from
