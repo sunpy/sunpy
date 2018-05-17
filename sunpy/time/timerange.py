@@ -7,7 +7,8 @@ import astropy.units as u
 from astropy.time import TimeDelta
 
 from . import astropy_time as ap
-from sunpy.time import parse_time, is_time_equal
+from sunpy.time import parse_time
+from sunpy.time.astropy_time import _is_time_equal
 from sunpy import config
 from sunpy.extern.six.moves import range
 
@@ -145,7 +146,7 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        return self._duration.to('hour')
+        return self.dt.to('hour')
 
     @property
     def days(self):
@@ -156,7 +157,7 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        return self._duration.to('d')
+        return self.dt.to('d')
 
     @property
     def seconds(self):
@@ -167,7 +168,7 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        return self._duration.to('s')
+        return self.dt.to('s')
 
     @property
     def minutes(self):
@@ -178,19 +179,7 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        return self._duration.to('min')
-
-    @property
-    def _duration(self):
-        """
-        The duration of the time range.
-
-        Returns
-        -------
-        value : `astropy.units.Quantity`
-        """
-        # TODO: Remove this?
-        return self.dt
+        return self.dt.to('min')
 
     def __eq__(self, other):
         """
@@ -206,8 +195,8 @@ class TimeRange(object):
         result : `bool`
         """
         if isinstance(other, TimeRange):
-            return is_time_equal(
-                self.start, other.start) and is_time_equal(self.end, other.end)
+            return _is_time_equal(
+                self.start, other.start) and _is_time_equal(self.end, other.end)
 
         return NotImplemented
 
@@ -225,8 +214,8 @@ class TimeRange(object):
         result : `bool`
         """
         if isinstance(other, TimeRange):
-            return not (is_time_equal(
-                self.start, other.start) and is_time_equal(self.end, other.end))
+            return not (_is_time_equal(
+                self.start, other.start) and _is_time_equal(self.end, other.end))
 
         return NotImplemented
 

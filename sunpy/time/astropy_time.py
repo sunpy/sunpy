@@ -6,7 +6,7 @@ import numpy as np
 from time import strftime, strptime
 from datetime import date, datetime
 
-__all__ = ['Time', 'is_time_equal']
+__all__ = ['Time']
 
 if hasattr(astropy.time.Time, 'strptime'):
     from astropy.time import Time
@@ -96,7 +96,7 @@ else:
                 return np.array(formatted_strings).reshape(self.shape)
 
 
-def is_time_equal(t1, t2):
+def _is_time_equal(t1, t2):
     if abs(t1 - t2) < 1 * u.nanosecond:
         return True
 
