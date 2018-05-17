@@ -2,8 +2,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import datetime
-
 import pytest
 import astropy.units as u
 from astropy.time import TimeDelta
@@ -163,8 +161,7 @@ def timerange_a():
 
 
 def test_center(timerange_a):
-    assert timerange_a.center == datetime.datetime(year=2012, day=1, month=1,
-                                                   hour=12)
+    assert timerange_a.center == ap.Time('2012-1-1T12:00:00')
 
 
 def test_split(timerange_a):
@@ -258,9 +255,9 @@ def test_extend():
 
 
 def test_contains(timerange_a):
-    before = datetime.datetime(year=1990, month=1, day=1)
-    after = datetime.datetime(year=2022, month=1, day=1)
-    between = datetime.datetime(year=2014, month=5, day=4)
+    before = ap.Time('1990-1-1')
+    after = ap.Time('2022-1-1')
+    between = ap.Time('2014-5-4')
     timerange = sunpy.time.TimeRange('2014/05/03 12:00', '2014/05/05 21:00')
     assert between in timerange
     assert before not in timerange
