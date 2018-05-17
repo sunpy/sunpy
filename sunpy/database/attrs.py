@@ -113,8 +113,8 @@ class Path(Attr):
 # vso_attrs._Range.__xor__ is fixed / renamed
 class DownloadTime(Attr, vso_attrs._Range):
     def __init__(self, start, end):
-        self.start = parse_time(start)
-        self.end = parse_time(end)
+        self.start = parse_time(start).datetime
+        self.end = parse_time(end).datetime
         self.inverted = False
         vso_attrs._Range.__init__(self, start, end, self.__class__)
 
