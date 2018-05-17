@@ -37,9 +37,9 @@ for i, map_i in enumerate(aiamapcube[1:]):
     smap_base = sunpy.map.Map(diffdata, map_i.meta)
     diffdata = aiamapcube_rot.data - map_i.data
     smap_run = sunpy.map.Map(diffdata, map_i.meta)
-    smap_base.plot_settings['cmap'] = cm.get_cmap('Greys_r')
+    smap_base.plot_settings['cmap'] = plt.get_cmap('Greys_r')
     smap_base.plot_settings['norm'] = colors.LogNorm(100, smap_base.max())
-    smap_run.plot_settings['cmap'] = cm.get_cmap('Greys_r')
+    smap_run.plot_settings['cmap'] = plt.get_cmap('Greys_r')
     smap_run.plot_settings['norm'] = colors.LogNorm(100, smap_run.max())
     base_diffmap.append(smap_base)
     running_diffmap.append(smap_run)
