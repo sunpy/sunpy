@@ -17,7 +17,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import numpy as np
 
-from sunpy.time import parse_time, TimeRange
+from sunpy.time import parse_time, TimeRange, Time
 from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
 from sunpy.extern.six.moves import map
@@ -307,10 +307,10 @@ class DatabaseEntry(Base):
         (19.5, 19.5)
 
         """
-        time_start = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.start)
+        time_start = datetime.strptime('%Y%m%d%H%M%S', qr_block.time.start)
         if not qr_block.time.end:
             qr_block.time.end = qr_block.time.start
-        time_end = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.end)
+        time_end = datetime.strptime('%Y%m%d%H%M%S', qr_block.time.end)
         wave = qr_block.wave
         unit = None
         if wave.waveunit is None:
@@ -596,7 +596,7 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
 
 
 def entries_from_file(file, default_waveunit=None,
-                      time_string_parse_format=None):
+                      time_string_parse_format=''):
     """Use the headers of a FITS file to generate an iterator of
     :class:`sunpy.database.tables.DatabaseEntry` instances. Gathered
     information will be saved in the attribute `fits_header_entries`. If the
@@ -694,15 +694,17 @@ def entries_from_file(file, default_waveunit=None,
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
-                entry.observation_time_end = parse_time(
-                    value,
-                    _time_string_parse_format=time_string_parse_format
-                )
+                try:
+                    dt = parse_time(value).datetime
+                except ValueError:
+                    dt = Time.strptime(value, time_string_parse_format)
+                entry.observation_time_end = dt
             elif key in ('DATE-OBS', 'DATE_OBS'):
-                entry.observation_time_start = parse_time(
-                    value,
-                    _time_string_parse_format=time_string_parse_format
-                )
+                try:
+                    dt = parse_time(value).datetime
+                except ValueError:
+                    dt = Time.strptime(value, time_string_parse_format)
+                entry.observation_time_start = dt
         yield entry
 
 
