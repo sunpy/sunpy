@@ -28,10 +28,10 @@ class TimeRange(object):
 
     Parameters
     ----------
-    a : str, number, `datetime.datetime`
+    a : str, number, `datetime.datetime`, `astropy.time.Time`
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
-    b : str, number, `datetime.datetime`, `datetime.timedelta`, `astropy.units.Quantity` (time)
+    b : str, number, `datetime.datetime`, `datetime.timedelta`, `astropy.units.Quantity` (time),`astropy.time.Time`
         Another time (usually the end time) specified as a
         parse_time-compatible time string, number, or a datetime object.
         May also be the size of the time range specified as a timedelta object,
@@ -100,7 +100,7 @@ class TimeRange(object):
 
         Returns
         -------
-        start : `datetime.datetime`
+        start : `astropy.time.Time`
         """
         return self._t1
 
@@ -111,7 +111,7 @@ class TimeRange(object):
 
         Returns
         -------
-        end : `datetime.datetime`
+        end : `astropy.time.Time`
         """
         return self._t2
 
@@ -133,7 +133,7 @@ class TimeRange(object):
 
         Returns
         -------
-        value : `datetime.datetime`
+        value : `astropy.time.Time`
         """
         return self.start + self.dt / 2
 
@@ -355,12 +355,12 @@ class TimeRange(object):
 
         Parameters
         ----------
-        dt_start : `datetime.timedelta`
+        dt_start : `astropy.time.TimeDelta`
             The amount to shift the start time
-        dt_end : `datetime.timedelta`
+        dt_end : `astropy.time.TimeDelta`
             The amount to shift the end time
         """
-        # Only a timedelta object is acceptable here
+        # TODO: Support datetime.timedelta
         self._t1 = self._t1 + dt_start
         self._t2 = self._t2 + dt_end
 
@@ -383,7 +383,8 @@ class TimeRange(object):
 
         Parameters
         ----------
-        time : `datetime.datetime`, str
+        time : [ int, float, string, datetime, astropy.time.Time,
+                    numpy.datetime64, pandas.Timestamp ]
             A parse_time-compatible time to be checked.
 
         Returns
