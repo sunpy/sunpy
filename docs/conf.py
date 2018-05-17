@@ -224,6 +224,7 @@ if has_sphinx_gallery:
         'filename_pattern':
         '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
         'examples_dirs': os.path.join('..', 'examples'),  # path to the examples scripts
+        'subsection_order': ExplicitOrder([(os.path.join('..', 'examples/acquiring_data')),(os.path.join('..', 'examples/maps')),(os.path.join('..', 'examples/time_series')),(os.path.join('..', 'examples/units_and_coordinates')),(os.path.join('..', 'examples/plotting')),(os.path.join('..', 'examples/computer_vision_techniques'))]), 
         'gallery_dirs': os.path.join('generated',
                                     'gallery'),  # path to save gallery generated examples
         'default_thumb_file': os.path.join('.', 'logo', 'sunpy_icon_128x128.png'),
