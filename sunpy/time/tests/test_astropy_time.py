@@ -1,4 +1,4 @@
-from sunpy.time.astropy_time import Time, is_time_equal
+from sunpy.time.astropy_time import Time, _is_time_equal
 
 from astropy.time import TimeDelta
 import astropy.units as u
@@ -113,21 +113,21 @@ def test_is_time_equal():
     t1 = Time('1995-12-31T23:59:60', format='isot')
     t2 = Time('1995-12-31T23:59:60', format='isot')
 
-    assert is_time_equal(t1, t2)
+    assert _is_time_equal(t1, t2)
 
     t1 = Time('1995-12-31T23:59:59', format='isot')
     t2 = Time(datetime(1995, 12, 31, 23, 59, 59), format='datetime')
 
-    assert is_time_equal(t1, t2)
+    assert _is_time_equal(t1, t2)
 
     t1 = Time('1995-12-31T23:59:60', format='isot')
     t2 = Time('1995-12-31T23:59:60', format='isot') + TimeDelta(0*u.day)
 
-    assert is_time_equal(t1, t2)
+    assert _is_time_equal(t1, t2)
 
 
 def test_is_time_equal_not_equal():
     t1 = Time('1995-12-31T23:59:59', format='isot')
     t2 = Time('1995-12-31T23:59:60', format='isot')
 
-    assert not is_time_equal(t1, t2)
+    assert not _is_time_equal(t1, t2)
