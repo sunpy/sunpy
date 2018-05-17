@@ -273,24 +273,11 @@ def is_time(time_string, time_format=None):
     out : bool
         True if can be parsed by parse_time
 
-    Notes
-    -----
-        If time_string is an instance of float, then it is assumed to be in
-        unix time format.
-
     Examples
     --------
     >>> import sunpy.time
-    >>> sunpy.time.parse_time('2012/08/01')
-    datetime.datetime(2012, 8, 1, 0, 0)
-    >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-    datetime.datetime(2005, 8, 4, 0, 1, 2)
-
-    .. todo::
-
-        add ability to parse tai (International Atomic Time seconds
-        since Jan 1, 1958)
-
+    >>> sunpy.time.is_time('2012/08/01')
+    True
     """
     if time_string is None:
         return False
