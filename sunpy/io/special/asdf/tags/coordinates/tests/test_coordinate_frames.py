@@ -26,21 +26,18 @@ def coordframe_scalar(request):
     return frame(*data, obstime='2018-01-01T00:00:00')
 
 
-@pytest.fixture(params=(Heliocentric, HeliographicCarrington,
-                        HeliographicStonyhurst, Helioprojective))
+# Don't test HGS / HGC with arrays because of spacetelescope/asdf#506
+@pytest.fixture(params=(Heliocentric, #HeliographicCarrington, HeliographicStonyhurst,
+                        Helioprojective))
 def coordframe_array(request):
     frame = request.param
 
-    narg = 2
     if frame is Heliocentric:
-        data = np.random.random((narg, 1)) * u.km
-        data2 = np.random.random((narg, 1)) * u.km
-        data3 = np.random.random((narg, 1)) * u.km
-        return frame(data, data2, data3, obstime='2018-01-01T00:00:00')
+        data = np.random.random((3, 10)) * u.km
+    else:
+        data = np.random.random((2, 10)) * u.arcsec
 
-    data = np.random.random((narg, 1)) * u.arcsec
-    data2 = np.random.random((narg, 1)) * u.arcsec
-    return frame(data, data2, obstime='2018-01-01T00:00:00')
+    return frame(*data, obstime='2018-01-01T00:00:00')
 
 
 def test_saveframe(coordframe_scalar, tmpdir):
