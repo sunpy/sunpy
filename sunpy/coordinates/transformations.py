@@ -22,7 +22,11 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 UnitSphericalRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import frame_transform_graph
-from astropy.coordinates.builtin_frames import _make_transform_graph_docs
+try:
+    from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
+except ImportError:
+    from astropy.coordinates import make_transform_graph_docs as _make_transform_graph_docs
+    make_transform_graph_docs = lambda: _make_transform_graph_docs(frame_transform_graph)
 from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
 from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product, matrix_transpose
 from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
@@ -333,4 +337,4 @@ def hgs_to_hgs(from_coo, to_frame):
         return from_coo.transform_to(HCRS).transform_to(to_frame)
 
 
-__doc__ += _make_transform_graph_docs()
+__doc__ += make_transform_graph_docs()
