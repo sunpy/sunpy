@@ -307,10 +307,10 @@ class DatabaseEntry(Base):
         (19.5, 19.5)
 
         """
-        time_start = datetime.strptime('%Y%m%d%H%M%S', qr_block.time.start)
+        time_start = datetime.strptime(qr_block.time.start, '%Y%m%d%H%M%S')
         if not qr_block.time.end:
             qr_block.time.end = qr_block.time.start
-        time_end = datetime.strptime('%Y%m%d%H%M%S', qr_block.time.end)
+        time_end = datetime.strptime(qr_block.time.end, '%Y%m%d%H%M%S')
         wave = qr_block.wave
         unit = None
         if wave.waveunit is None:
