@@ -24,7 +24,7 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 # Now lets replace the colormap which sets the colors as well as the
 # normalization which sets how data values are translated to colors
 
-aiamap.plot_settings['cmap'] = cm.get_cmap('Greys_r')
+aiamap.plot_settings['cmap'] = plt.get_cmap('Greys_r')
 aiamap.plot_settings['norm'] = colors.LogNorm(100, aiamap.max())
 
 ###############################################################################
