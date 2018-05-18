@@ -57,7 +57,7 @@ jobs:
       # - run: python setup.py test -P net --online
       - run: python setup.py test -P physics
       - run: python setup.py test -P coordinates
-      - run: python setup.py test -P database
+      - run: python setup.py test -P database --online
 
   html-docs:
     docker:
