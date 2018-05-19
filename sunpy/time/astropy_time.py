@@ -97,6 +97,9 @@ else:
             else:
                 return np.array(formatted_strings).reshape(self.shape)
 
+        def __hash__(self):
+            return hash((self.jd1, self.jd2))
+
 
 class TimeDeltaDatetime(TimeDeltaFormat, TimeUnique):
     """Time delta in datetime.timedelta"""

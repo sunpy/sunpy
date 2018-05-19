@@ -276,4 +276,4 @@ class HelioviewerClient(object):
 
     def _format_date(self, date):
         """Formats a date for Helioviewer API requests"""
-        return parse_time(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
+        return parse_time(date).datetime.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
