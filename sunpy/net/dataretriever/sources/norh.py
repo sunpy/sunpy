@@ -3,6 +3,8 @@
 #  Google Summer of Code 2014
 
 import datetime
+
+from astropy.time import TimeDelta
 import astropy.units as u
 
 from sunpy.time import TimeRange
@@ -58,8 +60,8 @@ class NoRHClient(GenericClient):
         # If start of time range is before 00:00, converted to such, so
         # files of the requested time ranger are included.
         # This is done because the archive contains daily files.
-        if timerange.start.time() != datetime.time(0, 0):
-            timerange = TimeRange('{:%Y-%m-%d}'.format(timerange.start),
+        if timerange.start.datetime.time() != datetime.time(0, 0):
+            timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'),
                                   timerange.end)
 
         norh = Scraper(BASEURL, freq=freq)
@@ -76,7 +78,7 @@ class NoRHClient(GenericClient):
         for url in urls:
             t0 = crawler._extractDateURL(url)
             # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + datetime.timedelta(days=1)))
+            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
         return times
 
     def _makeimap(self):
