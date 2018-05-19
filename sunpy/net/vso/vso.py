@@ -38,6 +38,7 @@ from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename
 from sunpy.time import parse_time
+from sunpy.time import Time as apTime
 
 from sunpy.util import deprecated
 from sunpy.extern import six
@@ -186,7 +187,7 @@ class QueryResponse(list):
             if time is None:
                 return ['None']
             if record.time.start is not None:
-                return [datetime.strftime(parse_time(time), TIME_FORMAT)]
+                return [apTime.strftime(parse_time(time), TIME_FORMAT)]
             else:
                 return ['N/A']
 

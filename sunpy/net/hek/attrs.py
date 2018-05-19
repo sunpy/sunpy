@@ -120,7 +120,7 @@ class Time(attr.Attr):
 
     @classmethod
     def dt(cls, start, end):
-        return cls(datetime(*start), datetime(*end))
+        return cls(parse_time(*start), parse_time(*end))
 
 
 # pylint: disable=R0913
