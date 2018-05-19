@@ -1,12 +1,14 @@
 import astropy.time
+from astropy.time import TimeDeltaFormat, TimeUnique
+from astropy import _erfa as erfa
 import astropy.units as u
 
 import numpy as np
 
 from time import strftime, strptime
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
-__all__ = ['Time']
+__all__ = ['Time', 'TimeDeltaDatetime']
 
 if hasattr(astropy.time.Time, 'strptime'):
     from astropy.time import Time
@@ -45,8 +47,8 @@ else:
                     " of these. Got dtype '{}'".format(time_array.dtype.kind)
                 raise TypeError(err)
 
-            to_string = (str
-                        if time_array.dtype.kind == 'U' else lambda x: str(x.item(), encoding='ascii'))
+            to_string = (str if time_array.dtype.kind == 'U' else
+                         lambda x: str(x.item(), encoding='ascii'))
             iterator = np.nditer([time_array, None], op_dtypes=[time_array.dtype, 'U30'])
 
             for time, formatted in iterator:
@@ -86,14 +88,46 @@ else:
             formatted_strings = []
             for sk in self.replicate('iso')._time.str_kwargs():
                 date_tuple = date(sk['year'], sk['mon'], sk['day']).timetuple()
-                datetime_tuple = (sk['year'], sk['mon'], sk['day'], sk['hour'], sk['min'], sk['sec'],
-                                date_tuple[6], date_tuple[7], -1)
+                datetime_tuple = (sk['year'], sk['mon'], sk['day'], sk['hour'], sk['min'],
+                                  sk['sec'], date_tuple[6], date_tuple[7], -1)
                 formatted_strings.append(strftime(format_spec, datetime_tuple))
 
             if self.isscalar:
                 return formatted_strings[0]
             else:
                 return np.array(formatted_strings).reshape(self.shape)
+
+
+class TimeDeltaDatetime(TimeDeltaFormat, TimeUnique):
+    """Time delta in datetime.timedelta"""
+    name = 'datetime'
+
+    def _check_val_type(self, val1, val2):
+        # Note: don't care about val2 for this class
+        if not all(isinstance(val, timedelta) for val in val1.flat):
+            raise TypeError('Input values for {0} class must be '
+                            'datetime.timedelta objects'.format(self.name))
+        return val1, None
+
+    def set_jds(self, val1, val2):
+        self._check_scale(self._scale)  # Validate scale.
+        iterator = np.nditer([val1, None], flags=['refs_ok'], op_dtypes=[object] + [np.double])
+
+        for val, sec in iterator:
+            sec[...] = val.item().total_seconds()
+
+        self.jd1, self.jd2 = astropy.time.utils.day_frac(
+            iterator.operands[-1], 0.0, divisor=erfa.DAYSEC)
+
+    @property
+    def value(self):
+        iterator = np.nditer(
+            [self.jd1 + self.jd2, None], flags=['refs_ok'], op_dtypes=[self.jd1.dtype] + [object])
+
+        for jd, out in iterator:
+            out[...] = timedelta(days=jd.item())
+
+        return self.mask_if_needed(iterator.operands[-1])
 
 
 def _is_time_equal(t1, t2):

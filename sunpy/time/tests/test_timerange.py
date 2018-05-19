@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function
 import pytest
 import astropy.units as u
 from astropy.time import TimeDelta
+from datetime import timedelta
 
 import sunpy.time
 import sunpy.time.astropy_time as ap
@@ -22,7 +23,8 @@ delta = end - start
 @pytest.mark.parametrize("inputs", [
     (tbegin_str, tfin_str),
     (tbegin_str, dt),
-    (tbegin_str, TimeDelta(1*u.day))
+    (tbegin_str, TimeDelta(1*u.day)),
+    (tbegin_str, timedelta(days=1))
 ])
 def test_timerange_inputs(inputs):
     timerange = sunpy.time.TimeRange(*inputs)
@@ -129,6 +131,7 @@ def test_get_dates():
     (tbegin_str, tfin_str),
     (tbegin_str, dt),
     (tbegin_str, TimeDelta(1*u.day)),
+    (tbegin_str, timedelta(days=1)),
     (sunpy.time.TimeRange(tbegin_str, tfin_str))
     ])
 def test_timerange_input(ainput):
@@ -192,9 +195,13 @@ def test_window(timerange_a):
     assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
-def test_window_timedelta(timerange_a):
+@pytest.mark.parametrize("td1,td2", [
+    (TimeDelta(12*u.hour), TimeDelta(10*u.second)),
+    (timedelta(hours=12), timedelta(seconds=10))
+])
+def test_window_timedelta(timerange_a, td1, td2):
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    window = timerange.window(TimeDelta(12*u.hour), TimeDelta(10*u.second))
+    window = timerange.window(td1, td2)
     expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'),
               sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]

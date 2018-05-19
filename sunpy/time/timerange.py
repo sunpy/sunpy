@@ -4,10 +4,12 @@ import astropy.units as u
 from astropy.time import TimeDelta
 
 from . import astropy_time as ap
-from sunpy.time import parse_time
+from sunpy.time import parse_time, TimeDeltaDatetime
 from sunpy.time.astropy_time import _is_time_equal
 from sunpy import config
 from sunpy.extern.six.moves import range
+
+from datetime import timedelta
 
 TIME_FORMAT = config.get('general', 'time_format')
 
@@ -67,7 +69,8 @@ class TimeRange(object):
         if isinstance(y, u.Quantity):
             y = TimeDelta(y)
 
-        # TODO: Support datetime.timedelta?
+        if isinstance(y, timedelta):
+            y = TimeDelta(y, format='datetime')
 
         # Timedelta
         if isinstance(y, TimeDelta):
@@ -318,6 +321,12 @@ class TimeRange(object):
                     12.0 seconds]
 
         """
+        # After astropy 3.1 remove this check
+        if isinstance(window, timedelta):
+            window = TimeDelta(window, format="datetime")
+        if isinstance(cadence, timedelta):
+            cadence = TimeDelta(cadence, format="datetime")
+
         if not isinstance(window, TimeDelta):
             window = TimeDelta(window)
         if not isinstance(cadence, TimeDelta):
