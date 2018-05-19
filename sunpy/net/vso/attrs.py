@@ -178,12 +178,12 @@ class Time(Attr, _Range):
             self.start = start.start
             self.end = start.end
         else:
-            self.start = parse_time(start)
-            self.end = parse_time(end)
+            self.start = parse_time(start).datetime
+            self.end = parse_time(end).datetime
 
         if self.start > self.end:
             raise ValueError("End time must be after start time.")
-        self.near = None if near is None else parse_time(near)
+        self.near = None if near is None else parse_time(near).datetime
 
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)

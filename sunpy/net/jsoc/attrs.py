@@ -48,8 +48,8 @@ class Time(VSOTime):
             self.start = start.start
             self.end = start.end
         else:
-            self.start = start if isinstance(start, astropyTime) else astropyTime(parse_time(start))
-            self.end = end if isinstance(end, astropyTime) else astropyTime(parse_time(end))
+            self.start = parse_time(start)
+            self.end = parse_time(end)
 
         if self.start > self.end:
             raise ValueError("End time must be after start time.")
