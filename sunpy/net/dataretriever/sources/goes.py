@@ -99,7 +99,7 @@ class XRSClient(GenericClient):
         start_time = apTime(datetime.datetime.combine(timerange.start.datetime.date(),
                                                       datetime.datetime.min.time()))
         # make sure we are counting a day even if only a part of it is in the query range.
-        day_range = TimeRange(timerange.start.date(), timerange.end.date())
+        day_range = TimeRange(timerange.start.datetime.date(), timerange.end.datetime.date())
         total_days = int(day_range.days.value) + 1
         result = list()
 

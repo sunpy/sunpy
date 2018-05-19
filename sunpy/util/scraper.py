@@ -102,7 +102,7 @@ class Scraper(object):
             return [directorypattern]
         else:
             # Number of elements in the time range (including end)
-            n_steps = rangedelta.total_seconds()/timestep.total_seconds()
+            n_steps = rangedelta.sec/timestep.sec
             TotalTimeElements = int(round(n_steps)) + 1
             directories = [(timerange.start + n * timestep).strftime(directorypattern)
                            for n in range(TotalTimeElements)]  # TODO if date <= endate
