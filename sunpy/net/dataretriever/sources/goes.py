@@ -6,6 +6,10 @@ import os
 import datetime
 
 from sunpy.time import parse_time, TimeRange
+from sunpy.time import Time as apTime
+
+from astropy.time import TimeDelta
+import astropy.units as u
 
 from ..client import GenericClient
 
@@ -40,7 +44,7 @@ class XRSClient(GenericClient):
             12: TimeRange('2002-12-13', '2007-05-08'),
             13: TimeRange('2006-08-01', '2006-08-01'),
             14: TimeRange('2009-12-02', '2010-10-04'),
-            15: TimeRange('2010-09-01', datetime.datetime.utcnow())
+            15: TimeRange('2010-09-01', parse_time('now'))
         }
 
         results = []
@@ -67,11 +71,11 @@ class XRSClient(GenericClient):
 
             # 1999-01-15 as an integer.
             if int(datestamp) < 990115:
-                start = datetime.datetime.strptime(datestamp, "%y%m%d")
+                start = apTime.strptime(datestamp, "%y%m%d")
             else:
-                start = datetime.datetime.strptime(datestamp, "%Y%m%d")
+                start = apTime.strptime(datestamp, "%Y%m%d")
 
-            almost_day = datetime.timedelta(days=1, milliseconds=-1)
+            almost_day = TimeDelta(1*u.day - 1*u.millisecond)
             times.append(TimeRange(start, start + almost_day))
 
         return times
@@ -92,8 +96,8 @@ class XRSClient(GenericClient):
         """
         # find out which satellite and datatype to query from the query times
         base_url = 'https://umbra.nascom.nasa.gov/goes/fits/'
-        start_time = datetime.datetime.combine(timerange.start.date(),
-                                               datetime.datetime.min.time())
+        start_time = apTime(datetime.datetime.combine(timerange.start.datetime.date(),
+                                                      datetime.datetime.min.time()))
         # make sure we are counting a day even if only a part of it is in the query range.
         day_range = TimeRange(timerange.start.date(), timerange.end.date())
         total_days = int(day_range.days.value) + 1
@@ -102,7 +106,7 @@ class XRSClient(GenericClient):
         # Iterate over each day in the input timerange and generate a URL for
         # it.
         for day in range(total_days):
-            date = start_time + datetime.timedelta(days=day)
+            date = start_time + TimeDelta(day*u.day)
             regex = "{date:%Y}/go{sat:02d}"
             if (date < parse_time('1999/01/15')):
                 regex += "{date:%y%m%d}.fits"
