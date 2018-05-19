@@ -262,7 +262,7 @@ class TimeRange(object):
         previous_time = self.start
         next_time = None
         for _ in range(n):
-            next_time = previous_time + self.dt / 2
+            next_time = previous_time + self.dt / n
             next_range = TimeRange(previous_time, next_time)
             subsections.append(next_range)
             previous_time = next_time
