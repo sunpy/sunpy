@@ -26,6 +26,7 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
+from astropy.time import TimeDelta
 import astropy.units as u
 from astropy.table import QTable as Table
 
@@ -575,9 +576,9 @@ class VSOClient(object):
     def latest(self):
         """ Return newest record (limited to last week). """
         return self.query_legacy(
-            datetime.utcnow() - timedelta(7),
-            datetime.utcnow(),
-            time_near=datetime.utcnow()
+            apTime.now() - TimeDelta(7*u.day),
+            apTime.now(),
+            time_near=apTime.now()
         )
 
     def fetch(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
