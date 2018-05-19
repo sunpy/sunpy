@@ -107,14 +107,13 @@ class XRSClient(GenericClient):
         # it.
         for day in range(total_days):
             date = start_time + TimeDelta(day*u.day)
-            regex = "{date:%Y}/go{sat:02d}"
+            regex = date.strftime('%Y') + "/go{sat:02d}"
             if (date < parse_time('1999/01/15')):
-                regex += "{date:%y%m%d}.fits"
+                regex += "{date}.fits".format(date=date.strftime('%y%m%d'))
             else:
-                regex += "{date:%Y%m%d}.fits"
+                regex += "{date}.fits".format(date=date.strftime('%Y%m%d'))
             satellitenumber = kwargs.get('satellitenumber', self._get_goes_sat_num(date))
-            url = base_url + regex.format(
-                date=date, sat=satellitenumber)
+            url = base_url + regex.format(sat=satellitenumber)
             result.append(url)
         return result
 
