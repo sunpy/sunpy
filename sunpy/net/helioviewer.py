@@ -73,7 +73,7 @@ class HelioviewerClient(object):
         >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
-        2012-01-01 00:00:07
+        2012-01-01T00:00:07.000
         """
         params = {
             "action": "getClosestImage",
