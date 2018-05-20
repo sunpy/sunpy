@@ -30,5 +30,6 @@ def get_extensions():
         e = Extension('sunpy.io._pyana', **cfg)
         return [e]
 
+
 def requires_2to3():
     return False
