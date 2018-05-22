@@ -1,12 +1,15 @@
 from __future__ import absolute_import, division, print_function
 import re
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, date
 from functools import singledispatch
 
 import numpy as np
 import pandas
 from sunpy.extern import six
+from sunpy.time.utime import TimeUTime
+from sunpy.time import astropy_time as ap
 
+import astropy.units as u
 import astropy.time
 
 __all__ = ['find_time', 'parse_time', 'is_time',
@@ -79,7 +82,7 @@ def _regex_parse_time(inp, format):
     try:
         hour = match.group("hour")
     except IndexError:
-        return inp, timedelta(days=0)
+        return inp, astropy.time.TimeDelta(0*u.day)
     if match.group("hour") == "24":
         if not all(
                    _n_or_eq(_group_or_none(match, g, int), 00)
@@ -87,8 +90,8 @@ def _regex_parse_time(inp, format):
                   ):
             raise ValueError
         from_, to = match.span("hour")
-        return inp[:from_] + "00" + inp[to:], timedelta(days=1)
-    return inp, timedelta(days=0)
+        return inp[:from_] + "00" + inp[to:], astropy.time.TimeDelta(1*u.day)
+    return inp, astropy.time.TimeDelta(0*u.day)
 
 
 def find_time(string, format):
@@ -126,75 +129,55 @@ def _astropy_time(time):
     return time if isinstance(time, astropy.time.Time) else astropy.time.Time(parse_time(time))
 
 
-def _parse_dt64(dt):
-    """
-    Parse a single numpy datetime64 object
-    """
-    # Convert to microsecond precision because datetime cannot handle nanoseconds
-    return dt.astype('M8[us]').astype(datetime)
-
-
 @singledispatch
-def convert_time(time_string, **kwargs):
+def convert_time(time_string, format=None, **kwargs):
     # default case when no type matches
-    raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
-
-
-@convert_time.register(pandas.Timestamp)
-def convert_time_pandasTimestamp(time_string, **kwargs):
-    return time_string.to_pydatetime()
+    return ap.Time(time_string, format=format, **kwargs)
 
 
 @convert_time.register(pandas.Series)
 def convert_time_pandasSeries(time_string, **kwargs):
-    if 'datetime64' in str(time_string.dtype):
-        return np.array([dt.to_pydatetime() for dt in time_string])
-    else:
-        convert_time.dispatch(object)(time_string, **kwargs)
+    return ap.Time(time_string.tolist(), **kwargs)
 
 
 @convert_time.register(pandas.DatetimeIndex)
 def convert_time_pandasDatetimeIndex(time_string, **kwargs):
-    return time_string._mpl_repr()
+    return ap.Time(time_string.tolist(), **kwargs)
 
 
 @convert_time.register(datetime)
 def convert_time_datetime(time_string, **kwargs):
-    return time_string
+    return ap.Time(time_string, **kwargs)
 
 
 @convert_time.register(date)
 def convert_time_date(time_string, **kwargs):
-    return datetime.combine(time_string, time())
+    return ap.Time(time_string.isoformat(), **kwargs)
 
 
 @convert_time.register(tuple)
 def convert_time_tuple(time_string, **kwargs):
-    return datetime(*time_string)
-
-
-@convert_time.register(float)
-@convert_time.register(int)
-def convert_time_float(time_string, **kwargs):
-    return datetime(1979, 1, 1) + timedelta(0, time_string)
+    # Make sure there are enough values to unpack
+    time_string = (time_string + (0,)*7)[:7]
+    return ap.Time('{}-{}-{}T{}:{}:{}.{:06}'.format(*time_string), **kwargs)
 
 
 @convert_time.register(np.datetime64)
 def convert_time_npdatetime64(time_string, **kwargs):
-    return _parse_dt64(time_string)
+    return ap.Time(str(time_string.astype('M8[ns]')), **kwargs)
 
 
 @convert_time.register(np.ndarray)
 def convert_time_npndarray(time_string, **kwargs):
     if 'datetime64' in str(time_string.dtype):
-        return np.array([_parse_dt64(dt) for dt in time_string])
+        return ap.Time([str(dt.astype('M8[ns]')) for dt in time_string], **kwargs)
     else:
         return convert_time.dispatch(object)(time_string, **kwargs)
 
 
 @convert_time.register(astropy.time.Time)
 def convert_time_astropy(time_string, **kwargs):
-    return time_string.datetime
+    return time_string
 
 
 @convert_time.register(str)
@@ -202,7 +185,11 @@ def convert_time_str(time_string, **kwargs):
     # remove trailing zeros and the final dot to allow any
     # number of zeros. This solves issue #289
     if '.' in time_string:
-            time_string = time_string.rstrip("0").rstrip(".")
+        time_string = time_string.rstrip("0").rstrip(".")
+
+    if 'TAI' in time_string:
+        kwargs['scale'] = 'tai'
+
     for time_format in TIME_FORMAT_LIST:
         try:
             try:
@@ -212,54 +199,58 @@ def convert_time_str(time_string, **kwargs):
                 break
             if ts is None:
                 continue
-            return datetime.strptime(ts, time_format) + time_delta
+            return ap.Time.strptime(ts, time_format,
+                                    **kwargs) + time_delta
         except ValueError:
             pass
-    time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
-    if time_string_parse_format is not None:
-        ts, time_delta = _regex_parse_time(time_string,
-                                           time_string_parse_format)
-        if ts and time_delta:
-            return datetime.strptime(ts, time_string_parse_format) + time_delta
-        else:
-            return datetime.strptime(time_string, time_string_parse_format)
+
     # when no format matches, call default fucntion
-    convert_time.dispatch(object)(time_string, **kwargs)
+    return convert_time.dispatch(object)(time_string, **kwargs)
 
 
-def parse_time(time_string, time_format='', **kwargs):
+def parse_time(time_string, *, format=None, **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
+
     Parameters
     ----------
-    time_string : [ int, float, time_string, datetime ]
-        Date to parse which can be either time_string, int, datetime object.
-    time_format : [ basestring, utime, datetime ]
+    time_string : [ int, float, string, datetime, astropy.time.Time,
+                    numpy.datetime64, pandas.Timestamp ]
+        Time to parse.
+
+    format : [ 'jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps',
+               'plot_date', 'datetime', 'iso', 'isot', 'yday', 'fits',
+               'byear', 'jyear', 'byear_str', 'jyear_str', 'utime']
+
         Specifies the format user has provided the time_string in.
+        Same as format of `astropy.time.Time`
+
+    kwargs : dict
+        Additional keyword arguments that can be passed to `astropy.time.Time`
+
     Returns
     -------
-    out : datetime
-        DateTime corresponding to input date string
-    Note:
-    If time_string is an instance of float, then it is assumed to be in utime format.
+    out : Time
+        `astropy.time.Time` corresponding to input time string
+
     Examples
     --------
     >>> import sunpy.time
     >>> sunpy.time.parse_time('2012/08/01')
-    datetime.datetime(2012, 8, 1, 0, 0)
-    >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-    datetime.datetime(2005, 8, 4, 0, 1, 2)
+    <Time object: scale='utc' format='isot' value=2012-08-01T00:00:00.000>
+    >>> sunpy.time.parse_time('2016.05.04_21:08:12_TAI')
+    <Time object: scale='tai' format='isot' value=2016-05-04T21:08:12.000>
     """
-    if time_format == 'utime':
-        return convert_time(float(time_string), **kwargs)
-    elif time_string is 'now':
-        return datetime.utcnow()
+    if time_string is 'now':
+        rt = ap.Time.now()
     else:
-        return convert_time(time_string, **kwargs)
+        rt = convert_time(time_string, format=format, **kwargs)
+
+    return rt
 
 
-def is_time(time_string, time_format=''):
+def is_time(time_string, time_format=None):
     """
     Returns true if the input is a valid date/time representation
 
@@ -300,7 +291,7 @@ def is_time(time_string, time_format=''):
         return True
 
     try:
-        parse_time(time_string, time_format)
+        parse_time(time_string, format=time_format)
     except ValueError:
         return False
     else:
@@ -309,6 +300,7 @@ def is_time(time_string, time_format=''):
 
 def day_of_year(time_string):
     """Returns the (fractional) day of year.
+    Note: This function takes into account leap seconds.
 
     Parameters
     ----------
@@ -326,21 +318,20 @@ def day_of_year(time_string):
     >>> sunpy.time.day_of_year('2012/01/01')
     1.0
     >>> sunpy.time.day_of_year('2012/08/01')
-    214.0
+    214.00001157407408
     >>> sunpy.time.day_of_year('2005-08-04T00:18:02.000Z')
     216.01252314814815
 
     """
-    SECONDS_IN_DAY = 60 * 60 * 24.0
     time = parse_time(time_string)
-    time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
-    return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
+    time_diff = time - ap.Time.strptime(time.strftime('%Y'), '%Y')
+    return time_diff.jd + 1
 
 
-def break_time(t='now', time_format=''):
+def break_time(t='now', time_format=None):
     """Given a time returns a string. Useful for naming files."""
     # TODO: should be able to handle a time range
-    return parse_time(t, time_format).strftime("%Y%m%d_%H%M%S")
+    return parse_time(t, format=time_format).strftime("%Y%m%d_%H%M%S")
 
 
 def get_day(dt):
