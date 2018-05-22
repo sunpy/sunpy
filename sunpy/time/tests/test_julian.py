@@ -37,6 +37,7 @@ def test_julian_day():
 
 def test_julian_day1():
     """should return julian day for date 1"""
+
     expected_day = 2415021.0
     assert julian.julian_day(DATETIME_DATE_1) == expected_day
     assert julian.julian_day(STRING_DATE_1) == expected_day

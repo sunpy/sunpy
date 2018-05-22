@@ -131,7 +131,10 @@ class TimeDeltaDatetime(TimeDeltaFormat, TimeUnique):
 
 
 def _is_time_equal(t1, t2):
+    """
+    Work around for https://github.com/astropy/astropy/issues/6970.
+    Remove the usage of this function once the fix is in place.
+    """
     if abs(t1 - t2) < 1 * u.nanosecond:
         return True
-
     return False
