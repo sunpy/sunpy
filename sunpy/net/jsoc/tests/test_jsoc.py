@@ -5,7 +5,7 @@ import datetime
 import pandas as pd
 import astropy.table
 import astropy.time
-from astropy.time import Time as astropyTime
+from sunpy.time import Time as astropyTime
 import astropy.units as u
 import pytest
 
