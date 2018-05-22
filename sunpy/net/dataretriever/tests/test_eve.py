@@ -88,7 +88,7 @@ def test_fido(query):
 
 @pytest.mark.remote_data
 @given(time_attr(time=datetimes(
-    max_value=apTime(apTime.now().strftime("%Y-%m-%d 00:00:00"))),
+    max_value=apTime(apTime.now().strftime("%Y-%m-%d 00:00:00")),
     min_value=apTime('2010-01-01 00:00:00'),
 )))
 @settings(max_examples=2, timeout=240)
