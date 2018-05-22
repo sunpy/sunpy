@@ -131,3 +131,8 @@ def test_is_time_equal_not_equal():
     t2 = Time('1995-12-31T23:59:60', format='isot')
 
     assert not _is_time_equal(t1, t2)
+
+    t1 = Time('1995-12-31T23:59:59', format='isot')
+    t2 = Time('1995-12-31T23:59:59', format='isot') + TimeDelta(2*u.nanosecond)
+
+    assert not _is_time_equal(t1, t2)
