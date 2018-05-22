@@ -11,9 +11,10 @@ import datetime
 import pytest
 from six import iteritems
 
+from sunpy.time import Time as apTime
 from astropy import units as u
 
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
 from sunpy.net.vso import QueryResponse
@@ -85,8 +86,8 @@ def test_simpleattr_apply():
 def test_Time_timerange():
     t = va.Time(TimeRange('2012/1/1', '2012/1/2'))
     assert isinstance(t, va.Time)
-    assert t.min == datetime.datetime(2012, 1, 1)
-    assert t.max == datetime.datetime(2012, 1, 2)
+    assert t.min == parse_time(2012, 1, 1)
+    assert t.max == parse_time(2012, 1, 2)
 
 
 def test_input_error():
@@ -365,7 +366,7 @@ def test_QueryResponse_build_table_with_no_start_time():
     """
     Only the 'end' time set, no 'start' time
     """
-    a_st = datetime.datetime(2016, 2, 14, 8, 8, 12)
+    a_st = parse_time(2016, 2, 14, 8, 8, 12)
 
     records = (MockQRRecord(end_time=a_st.strftime(va.TIMEFORMAT)),)
 
@@ -387,7 +388,7 @@ def test_QueryResponse_build_table_with_no_end_time():
     """
     Only the 'start' time is set, no 'end' time
     """
-    a_st = datetime.datetime(2016, 2, 14, 8, 8, 12)
+    a_st = parse_time(2016, 2, 14, 8, 8, 12)
 
     records = (MockQRRecord(start_time=a_st.strftime(va.TIMEFORMAT)),)
 

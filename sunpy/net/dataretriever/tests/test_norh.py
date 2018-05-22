@@ -3,6 +3,7 @@ import pytest
 
 import astropy.units as u
 from astropy.time import TimeDelta
+from sunpy.time import Time
 
 from sunpy.time.timerange import TimeRange
 from sunpy.net.dataretriever.client import QueryResponse
@@ -51,7 +52,7 @@ def test_can_handle_query(time):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
-@given(time=range_time(datetime.datetime(1992, 6, 1)))
+@given(time=range_time(Time('1992-6-1')))
 def test_query(time, wave):
     qr1 = norh.NoRHClient().search(time, a.Instrument('norh'), wave)
     assert isinstance(qr1, QueryResponse)
