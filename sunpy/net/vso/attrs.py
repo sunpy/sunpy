@@ -613,11 +613,11 @@ def _(attr, results):
         if
         it.time.end is not None
         and
-        attr.min <= datetime.strptime(it.time.end, TIMEFORMAT)
+        attr.min <= Time.strptime(it.time.end, TIMEFORMAT)
         and
         it.time.start is not None
         and
-        attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
+        attr.max >= Time.strptime(it.time.start, TIMEFORMAT)
     )
 
 

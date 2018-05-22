@@ -112,7 +112,7 @@ class SRSClient(GenericClient):
 
     @staticmethod
     def _get_default_uri():
-        today = datetime.datetime.utcnow()
+        today = Time.now()
         return [('ftp://ftp.swpc.noaa.gov/pub/warehouse/',
                  '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt').format(date=today)]
 
@@ -124,7 +124,7 @@ class SRSClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
         total_days = (timerange.end - timerange.start).days + 1
         all_dates = timerange.split(total_days)
-        today_year = datetime.datetime.utcnow().year
+        today_year = Time.utcnow().year
         for day in all_dates:
             if today_year == day.end.year:
                 suffix = '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt'
@@ -158,7 +158,7 @@ class SRSClient(GenericClient):
             name = url.split('/')[-1]
 
             # temporary fix !!! coz All QRBs have same start_time values
-            day = qre.time.start.date() + datetime.timedelta(days=i)
+            day = qre.time.start.date() + TimeDelta(u.day*i)
 
             if name not in filenames:
                 filenames.append(name)

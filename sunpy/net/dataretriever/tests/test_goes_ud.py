@@ -125,7 +125,7 @@ def test_fido(time, instrument):
 @given(goes_time())
 def test_time_for_url(LCClient, time):
     time = time.start.strftime("%Y/%m/%d")
-    almost_day = datetime.timedelta(days=1, milliseconds=-1)
+    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
 
     tr = TimeRange(time, almost_day)
     url = LCClient._get_url_for_timerange(tr)

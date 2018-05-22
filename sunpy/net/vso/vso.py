@@ -162,10 +162,10 @@ class QueryResponse(list):
     def time_range(self):
         """ Return total time-range all records span across. """
         return (
-            datetime.strptime(
+            apTime.strptime(
                 min(record.time.start for record in self
                     if record.time.start is not None), TIMEFORMAT),
-            datetime.strptime(
+            apTime.strptime(
                 max(record.time.end for record in self
                     if record.time.end is not None), TIMEFORMAT)
         )
@@ -442,9 +442,9 @@ class VSOClient(object):
 
         Parameters
         ----------
-        tstart : datetime.datetime
+        tstart : astropy.time.Time
             Start of the time-range in which records are searched.
-        tend : datetime.datetime
+        tend : astropy.time.Time
             Start of the time-range in which records are searched.
         date : str
             (start date) - (end date)

@@ -29,7 +29,7 @@ class XRSClient(GenericClient):
         Parameters
         ----------
 
-        date : `datetime.datetime`
+        date : `astropy.time.Time`
             The date to determine which satellite is active.
         """
         goes_operational = {
