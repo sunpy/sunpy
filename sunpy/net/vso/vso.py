@@ -746,13 +746,6 @@ class VSOClient(object):
             request__datacontainer__datarequestitem=dris
         )
 
-    def _make_data_request_items(self, maps):
-        """
-        Construct a DataRequestItem per provider entry in maps.
-        """
-        return [self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in iteritems(maps)]
-
     # pylint: disable=R0913,R0912
     def download_all(self, response, methods, dw, path, qr, res, info=None):
         GET_VERSION = [
