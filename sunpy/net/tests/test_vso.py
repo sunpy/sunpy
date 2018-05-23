@@ -412,3 +412,15 @@ def test_vso_hmi(client, tmpdir):
     files = client.fetch(res, path=tmpdir).wait()
 
     assert len(files) == len(res)
+
+
+@pytest.mark.remote_data
+def test_vso_hmi2(client, tmpdir):
+    """
+    This is a regression test for https://github.com/sunpy/sunpy/issues/2284
+    """
+    res = client.search(va.Time('2017-09-02 23:52:00', '2017-09-02 23:52:30'),
+                        va.Instrument('HMI') | (va.Instrument('AIA') & va.Wavelength(304*u.AA, 304*u.AA)))
+    files = client.fetch(res, path=tmpdir).wait()
+
+    assert len(files) == len(res)
