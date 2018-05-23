@@ -401,3 +401,10 @@ def test_QueryResponse_build_table_with_no_end_time():
     end_time_ = table['End Time']
     assert len(end_time_) == 1
     assert end_time_[0] == 'None'
+
+
+def test_vso_hmi(client, tmpdir):
+    res = client.search(va.Time('2017-09-02 23:52:00', '2017-09-02 23:52:30'), va.Instrument('HMI'))
+    files = client.fetch(res, path=tmpdir)
+
+    assert len(files) == len(res)
