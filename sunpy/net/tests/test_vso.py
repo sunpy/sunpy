@@ -403,8 +403,12 @@ def test_QueryResponse_build_table_with_no_end_time():
     assert end_time_[0] == 'None'
 
 
+@pytest.mark.remote_data
 def test_vso_hmi(client, tmpdir):
+    """
+    This is a regression test for https://github.com/sunpy/sunpy/issues/2284
+    """
     res = client.search(va.Time('2017-09-02 23:52:00', '2017-09-02 23:52:30'), va.Instrument('HMI'))
-    files = client.fetch(res, path=tmpdir)
+    files = client.fetch(res, path=tmpdir).wait()
 
     assert len(files) == len(res)
