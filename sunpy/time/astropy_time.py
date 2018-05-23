@@ -127,7 +127,7 @@ class TimeDeltaDatetime(TimeDeltaFormat, TimeUnique):
         for jd, out in iterator:
             out[...] = timedelta(days=jd.item())
 
-        return self.mask_if_needed(iterator.operands[-1])
+        return iterator.operands[-1]
 
 
 def _is_time_equal(t1, t2):
