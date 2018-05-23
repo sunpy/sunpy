@@ -19,6 +19,7 @@ import logging
 import requests
 import warnings
 import socket
+import itertools
 
 from datetime import datetime, timedelta
 from functools import partial
@@ -711,10 +712,32 @@ class VSOClient(object):
         fileids and methods, """
         if info is None:
             info = {}
-        if 'JSOC' in maps:
-            dris = self._separate_hmi(maps)
-        else:
-            dris = self._make_data_request_items(maps)
+
+        # For the JSOC provider we need to make a DataRequestItem for each
+        # series, not just one for the whole provider.
+
+        # Remove JSOC provider items from the map
+        jsoc = maps.pop('JSOC', [])
+
+        # Make DRIs for everything that's not JSOC one per provider
+        dris = [self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
+                for k, v in iteritems(maps)]
+
+        def series_func(x):
+            """ Extract the series from the fileid. """
+            return x.split(':')[0]
+
+        # Sort the JSOC fileids by series
+        # This is a precursor to groupby as recommended by the groupby docs
+        series_sorted = sorted(jsoc, key=series_func)
+
+        # Iterate over the series and make a DRI for each.
+        # groupby creates an iterator based on a key function, in this case
+        # based on the series (the part before the first ':')
+        for series, fileids in itertools.groupby(series_sorted, key=series_func):
+            dris.append(self.make('DataRequestItem',
+                                  provider='JSOC',
+                                  fileiditem__fileid=[list(fileids)]))
 
         return self.make(
             'VSOGetDataRequest',
@@ -729,42 +752,6 @@ class VSOClient(object):
         """
         return [self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
                 for k, v in iteritems(maps)]
-
-    def _separate_hmi(self, maps_dict):
-        """
-        This method extracts the HMI JSOC provider series into seperate DataRequestItems.
-
-        It parses the JSOC provider section of ``maps_dict`` and removes any
-        HMI series from the JSOC provider list, and then constructs a dict of
-        HMI fileids by series. Finally, it creates a DataRequestItem per
-        series, rather than one for all JSOC records.
-        """
-        # The JSOC item in the dict is a list of JSOC fileids
-        jsoc_list = maps_dict.pop('JSOC', [])
-        fileid_by_series = defaultdict(lambda: [])
-        # Copy the list so we don't iterate over a list that's changing
-        new_jsoc_list = copy.copy(jsoc_list)
-        for fileid in jsoc_list:
-            if fileid.startswith('hmi'):
-                series = fileid.split(':')[0]
-                # Put the item into the new mapping of series to items, and
-                # remove it from the original
-                fileid_by_series[series].append(fileid)
-                new_jsoc_list.remove(fileid)
-
-        # Put back anything that's not HMI
-        maps_dict['JSOC'] = new_jsoc_list
-
-        # Make the DRIs as usual
-        dris = self._make_data_request_items(maps_dict)
-
-        # Add the dris for the HMI series one by one
-        for fileids in fileid_by_series.values():
-            dris.append(self.make('DataRequestItem',
-                                  provider='JSOC',
-                                  fileiditem__fileid=[fileids]))
-
-        return dris
 
     # pylint: disable=R0913,R0912
     def download_all(self, response, methods, dw, path, qr, res, info=None):
