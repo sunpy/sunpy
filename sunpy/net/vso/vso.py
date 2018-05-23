@@ -14,6 +14,7 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import copy
 import logging
 import requests
 import warnings
@@ -713,8 +714,7 @@ class VSOClient(object):
         if 'JSOC' in maps:
             dris = self._separate_hmi(maps)
         else:
-            dris = [self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                    for k, v in iteritems(maps)]
+            dris = self._make_data_request_items(maps)
 
         return self.make(
             'VSOGetDataRequest',
@@ -723,33 +723,47 @@ class VSOClient(object):
             request__datacontainer__datarequestitem=dris
         )
 
+    def _make_data_request_items(self, maps):
+        """
+        Construct a DataRequestItem per provider entry in maps.
+        """
+        return [self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
+                for k, v in iteritems(maps)]
+
     def _separate_hmi(self, maps_dict):
         """
-        This function parses the separate hmi data series from the
-        maps_dict(jsoc) list, pulls any hmi data it finds into separate lists
-        and deletes the hmi data from the original jsoc list.  It then continues
-        as normal to construct the soap message.
+        This method extracts the HMI JSOC provider series into seperate DataRequestItems.
+
+        It parses the JSOC provider section of ``maps_dict`` and removes any
+        HMI series from the JSOC provider list, and then constructs a dict of
+        HMI fileids by series. Finally, it creates a DataRequestItem per
+        series, rather than one for all JSOC records.
         """
-        jsoc_list = maps_dict.get('JSOC', [])
-        listdict = defaultdict(lambda: [])
-        s_match = re.compile('^.*?:')
-        for fidnum, fid in enumerate(jsoc_list):
-            if re.search('^hmi', fid):
-                # hmi data match found, extract into new list
-                series = s_match.findall(fid)[0]
+        # The JSOC item in the dict is a list of JSOC fileids
+        jsoc_list = maps_dict.pop('JSOC', [])
+        fileid_by_series = defaultdict(lambda: [])
+        # Copy the list so we don't iterate over a list that's changing
+        new_jsoc_list = copy.copy(jsoc_list)
+        for fileid in jsoc_list:
+            if fileid.startswith('hmi'):
+                series = fileid.split(':')[0]
                 # Put the item into the new mapping of series to items, and
                 # remove it from the original
-                listdict[series].append(jsoc_list.pop(fidnum))
+                fileid_by_series[series].append(fileid)
+                new_jsoc_list.remove(fileid)
 
-        new_dict = maps_dict.copy()
-        new_dict.update(listdict)
-        # new dict defined
-        dris = []
-        for keyn, key in enumerate(new_dict):
-            k = 'JSOC' if re.search('^hmi', key) else key
+        # Put back anything that's not HMI
+        maps_dict['JSOC'] = new_jsoc_list
+
+        # Make the DRIs as usual
+        dris = self._make_data_request_items(maps_dict)
+
+        # Add the dris for the HMI series one by one
+        for fileids in fileid_by_series.values():
             dris.append(self.make('DataRequestItem',
-                                  provider=k,
-                                  fileiditem__fileid=[new_dict.get(key)]))
+                                  provider='JSOC',
+                                  fileiditem__fileid=[fileids]))
+
         return dris
 
     # pylint: disable=R0913,R0912

@@ -408,19 +408,19 @@ def test_vso_hmi(client, tmpdir):
     """
     This is a regression test for https://github.com/sunpy/sunpy/issues/2284
     """
-    res = client.search(va.Time('2017-09-02 23:52:00', '2017-09-02 23:52:30'), va.Instrument('HMI'))
-    files = client.fetch(res, path=tmpdir).wait()
+    res = client.search(va.Time('2017-09-02 23:52:00', '2017-09-02 23:54:00'),
+                        va.Instrument('HMI') | va.Instrument('AIA'))
 
-    assert len(files) == len(res)
+    dr = client.make_getdatarequest(res)
 
+    # Extract the DRIs from the request
+    dris = dr.request.datacontainer.datarequestitem
 
-@pytest.mark.remote_data
-def test_vso_hmi2(client, tmpdir):
-    """
-    This is a regression test for https://github.com/sunpy/sunpy/issues/2284
-    """
-    res = client.search(va.Time('2017-09-02 23:52:00', '2017-09-02 23:52:30'),
-                        va.Instrument('HMI') | (va.Instrument('AIA') & va.Wavelength(304*u.AA, 304*u.AA)))
-    files = client.fetch(res, path=tmpdir).wait()
+    # 3 HMI series and one AIA
+    assert len(dris) == 4
 
-    assert len(files) == len(res)
+    # For each DataRequestItem assert that there is only one series in it.
+    for dri in dris:
+        fileids = dri.fileiditem.fileid[0]
+        series = list(map(lambda x: x.split(':')[0], fileids))
+        assert all([s == series[0] for s in series])
