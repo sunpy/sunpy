@@ -14,10 +14,12 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import copy
 import logging
 import requests
 import warnings
 import socket
+import itertools
 
 from datetime import datetime, timedelta
 from functools import partial
@@ -711,14 +713,37 @@ class VSOClient(object):
         if info is None:
             info = {}
 
+        # For the JSOC provider we need to make a DataRequestItem for each
+        # series, not just one for the whole provider.
+
+        # Remove JSOC provider items from the map
+        jsoc = maps.pop('JSOC', [])
+
+        # Make DRIs for everything that's not JSOC one per provider
+        dris = [self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
+                for k, v in iteritems(maps)]
+
+        def series_func(x):
+            """ Extract the series from the fileid. """
+            return x.split(':')[0]
+
+        # Sort the JSOC fileids by series
+        # This is a precursor to groupby as recommended by the groupby docs
+        series_sorted = sorted(jsoc, key=series_func)
+
+        # Iterate over the series and make a DRI for each.
+        # groupby creates an iterator based on a key function, in this case
+        # based on the series (the part before the first ':')
+        for series, fileids in itertools.groupby(series_sorted, key=series_func):
+            dris.append(self.make('DataRequestItem',
+                                  provider='JSOC',
+                                  fileiditem__fileid=[list(fileids)]))
+
         return self.make(
             'VSOGetDataRequest',
             request__method__methodtype=methods,
             request__info=info,
-            request__datacontainer__datarequestitem=[
-                self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in iteritems(maps)
-            ]
+            request__datacontainer__datarequestitem=dris
         )
 
     # pylint: disable=R0913,R0912
