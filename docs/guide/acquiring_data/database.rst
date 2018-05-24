@@ -480,13 +480,13 @@ year:
     >>> for database_entry in database:
     ...     if database_entry.observation_time_start.month in [3,4,5]:
     ...         database.tag(database_entry, 'spring')
-    >>> database.tags  # doctest: +SKIP
+    >>> database.tags  # doctest: +REMOTE_DATA
     [<Tag(name 'spring')>]
-    >>> spring = database.tags[0]  # doctest: +SKIP
+    >>> spring = database.tags[0]  # doctest: +REMOTE_DATA
     >>> print(display_entries(
     ...     filter(lambda entry: spring in entry.tags, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA +SKIP
+    ...      'instrument', 'wavemin', 'wavemax']))  # doctest: +REMOTE_DATA
      id observation_time_start observation_time_end instrument wavemin wavemax
     --- ---------------------- -------------------- ---------- ------- -------
      22    2014-04-09 06:00:12                  N/A      AIA_3    17.1    17.1
@@ -561,7 +561,7 @@ In the following snippet, the operations from the sections 5.3, 5.2, and
 anymore saved in the database, there is no entry which is starred and
 the entries with no end of observation time are back.
 
-    >>> database.undo(4)  # undo the edits from 5.3 (4 records have been affected)  # doctest: +SKIP
+    >>> database.undo(4)  # undo the edits from 5.3 (4 records have been affected)   # doctest:  +REMOTE_DATA
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
@@ -599,7 +599,7 @@ reverts the original state: the tags have appeared again and all entries with a
 wavelength >20nm are starred again, and there are no entries with no
 stored end of observation time.
 
-    >>> database.redo(1)  # redo all undone operations  # doctest: +SKIP
+    >>> database.redo(1)  # redo all undone operations   # doctest:  +REMOTE_DATA
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
@@ -719,7 +719,7 @@ with the value 'Angstrom':
     ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end ... wavemax  tags  starred
     --- ---------------------- -------------------- ... ------- ------ -------
-     22    2014-04-09 06:00:12  2014-04-09 06:00:12 ...    17.1 spring      No
+     22    2014-04-09 06:00:12                  N/A ...    17.1 spring      No
       4    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    21.1    N/A     Yes
       5    2011-06-07 06:33:03  2011-06-07 06:33:03 ...    33.5    N/A     Yes
      59    2011-05-08 00:00:00  2011-05-08 00:00:01 ...    17.1 spring      No
