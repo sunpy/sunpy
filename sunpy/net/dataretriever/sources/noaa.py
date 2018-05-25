@@ -10,6 +10,10 @@ import tarfile
 from functools import partial
 from collections import OrderedDict
 
+from sunpy.time import Time
+from astropy.time import TimeDelta
+import astropy.units as u
+
 import sunpy
 from sunpy.util import replacement_filename, deprecated
 from sunpy.net.dataretriever.client import simple_path
@@ -112,7 +116,7 @@ class SRSClient(GenericClient):
 
     @staticmethod
     def _get_default_uri():
-        today = Time.now()
+        today = datetime.datetime.now()
         return [('ftp://ftp.swpc.noaa.gov/pub/warehouse/',
                  '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt').format(date=today)]
 
@@ -122,15 +126,17 @@ class SRSClient(GenericClient):
             return SRSClient._get_default_uri()
         result = list()
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
-        total_days = (timerange.end - timerange.start).days + 1
+        total_days = int(timerange.days) + 1
         all_dates = timerange.split(total_days)
-        today_year = Time.utcnow().year
+        today_year = Time.now().strftime('%Y')
         for day in all_dates:
-            if today_year == day.end.year:
-                suffix = '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt'
+            if today_year == day.end.strftime('%Y'):
+                suffix = '{0}/SRS/{1}SRS.txt'.strftime(
+                    day.end.strftime('%Y'), day.end.strftime('%Y%m%d'))
             else:
-                suffix = '{date:%Y}/{date:%Y}_SRS.tar.gz'
-            url = base_url + suffix.format(date=day.end)
+                suffix = '{0}/{1}_SRS.tar.gz'.strftime(
+                    day.end.strftime('%Y'), day.end.strftime('%Y'))
+            url = base_url + suffix
             result.append(url)
 
         return result
