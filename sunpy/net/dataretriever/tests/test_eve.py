@@ -15,7 +15,7 @@ from sunpy.net import attrs as a
 
 from hypothesis import given, settings
 from hypothesis.strategies import datetimes
-from sunpy.net.tests.strategies import time_attr
+from sunpy.net.tests.strategies import time_attr, Times
 
 LCClient = eve.EVEClient()
 
@@ -87,7 +87,7 @@ def test_fido(query):
 
 
 @pytest.mark.remote_data
-@given(time_attr(time=datetimes(
+@given(time_attr(time=Times(
     max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
     min_value=datetime.datetime(2010, 1, 1, 0, 0),
 )))
