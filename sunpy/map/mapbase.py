@@ -290,7 +290,7 @@ Reference Coord:\t {refcoord}
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isoformat()
+        w2.wcs.dateobs = self.date.iso
         w2.heliographic_observer = self.observer_coordinate
         w2.rsun = self.rsun_meters
 
