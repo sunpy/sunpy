@@ -21,6 +21,8 @@ from datetime import datetime
 
 from astropy import units as u
 
+from sunpy.time import Time as apTime
+
 from sunpy.time import TimeRange as _TimeRange
 from sunpy.net.attr import (
     Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
@@ -613,11 +615,11 @@ def _(attr, results):
         if
         it.time.end is not None
         and
-        attr.min <= Time.strptime(it.time.end, TIMEFORMAT)
+        attr.min <= apTime.strptime(it.time.end, TIMEFORMAT)
         and
         it.time.start is not None
         and
-        attr.max >= Time.strptime(it.time.start, TIMEFORMAT)
+        attr.max >= apTime.strptime(it.time.start, TIMEFORMAT)
     )
 
 
