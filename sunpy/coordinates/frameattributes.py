@@ -5,7 +5,7 @@ import datetime
 import warnings
 
 import astropy.units as u
-from astropy.time import Time
+from sunpy.time import Time
 from astropy.coordinates import TimeAttribute, CoordinateAttribute, get_body_barycentric, ICRS
 
 from sunpy.extern import six
@@ -68,11 +68,11 @@ class TimeFrameAttributeSunPy(TimeAttribute):
 
         elif isinstance(value, six.string_types):
             try:
-                out = Time(parse_time(value))
+                out = parse_time(value)
             except Exception as err:
                 raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
             converted = True
-        else:
+        else:   # XXX: Remove this???
             try:
                 out = Time(value)
             except Exception as err:
