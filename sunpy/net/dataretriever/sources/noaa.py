@@ -116,9 +116,11 @@ class SRSClient(GenericClient):
 
     @staticmethod
     def _get_default_uri():
-        today = datetime.datetime.now()
+        today = Time.now()
+        year = today.strftime('%Y')
+        date = today.strftime('%Y%m%d')
         return [('ftp://ftp.swpc.noaa.gov/pub/warehouse/',
-                 '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt').format(date=today)]
+                 '{0}/SRS/{1}SRS.txt').format(year, date)]
 
     def _get_url_for_timerange(self, timerange, **kwargs):
 
@@ -131,10 +133,10 @@ class SRSClient(GenericClient):
         today_year = Time.now().strftime('%Y')
         for day in all_dates:
             if today_year == day.end.strftime('%Y'):
-                suffix = '{0}/SRS/{1}SRS.txt'.strftime(
+                suffix = '{0}/SRS/{1}SRS.txt'.format(
                     day.end.strftime('%Y'), day.end.strftime('%Y%m%d'))
             else:
-                suffix = '{0}/{1}_SRS.tar.gz'.strftime(
+                suffix = '{0}/{1}_SRS.tar.gz'.format(
                     day.end.strftime('%Y'), day.end.strftime('%Y'))
             url = base_url + suffix
             result.append(url)
@@ -164,13 +166,13 @@ class SRSClient(GenericClient):
             name = url.split('/')[-1]
 
             # temporary fix !!! coz All QRBs have same start_time values
-            day = qre.time.start.date() + TimeDelta(u.day*i)
+            day = Time(qre.time.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
 
             if name not in filenames:
                 filenames.append(name)
 
             if name.endswith('.gz'):
-                local_filenames.append('{date:%Y%m%d}SRS.txt'.format(date=day))
+                local_filenames.append('{}SRS.txt'.format(day.strftime('%Y%m%d')))
             else:
                 local_filenames.append(name)
 
