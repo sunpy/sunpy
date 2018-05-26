@@ -99,7 +99,8 @@ class XRSClient(GenericClient):
         start_time = apTime(datetime.datetime.combine(timerange.start.datetime.date(),
                                                       datetime.datetime.min.time()))
         # make sure we are counting a day even if only a part of it is in the query range.
-        day_range = TimeRange(timerange.start.datetime.date(), timerange.end.datetime.date())
+        day_range = TimeRange(timerange.start.strftime('%Y-%m-%d'),
+                              timerange.end.strftime('%Y-%m-%d'))
         total_days = int(day_range.days.value) + 1
         result = list()
 
@@ -109,9 +110,9 @@ class XRSClient(GenericClient):
             date = start_time + TimeDelta(day*u.day)
             regex = date.strftime('%Y') + "/go{sat:02d}"
             if (date < parse_time('1999/01/15')):
-                regex += "{date}.fits".format(date=date.strftime('%y%m%d'))
+                regex += date.strftime('%y%m%d') + '.fits'
             else:
-                regex += "{date}.fits".format(date=date.strftime('%Y%m%d'))
+                regex += date.strftime('%Y%m%d') + '.fits'
             satellitenumber = kwargs.get('satellitenumber', self._get_goes_sat_num(date))
             url = base_url + regex.format(sat=satellitenumber)
             result.append(url)
