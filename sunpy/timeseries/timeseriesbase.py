@@ -623,6 +623,9 @@ class GenericTimeSeries:
         """
         return not self == other
 
+    def __getitem__(self, colname):
+        return self.quantity(colname)
+
     @classmethod
     def _parse_file(cls, filepath):
         """Parses a file - to be implemented in any subclass that may use files"""
