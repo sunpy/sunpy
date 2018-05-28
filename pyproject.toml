@@ -2,7 +2,7 @@
     package = "sunpy"
     filename = "CHANGELOG.rst"
     directory = "changelog/"
-    issue_format = "`#{issue} <https://github.com/sunpy/sunpy/issues/{issue}>`_"
+    issue_format = "`#{issue} <https://github.com/sunpy/sunpy/pull/{issue}>`_"
 
     [[tool.towncrier.type]]
         directory = "breaking"
