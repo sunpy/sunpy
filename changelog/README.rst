@@ -18,7 +18,7 @@ Each file should be named like ``<PULL REQUEST>.<TYPE>.rst``, where
 * ``bugfix``: fixes a reported bug.
 * ``doc``: documentation improvement, like rewording an entire session or adding missing docs.
 * ``removal``: feature deprecation or removal.
-* ``trivial``: A change which has no user facing effect or is so tiny the description will not be included in the changelog, only the PR number.
+* ``trivial``: A change which has no user facing effect or is tiny.
 
 So for example: ``123.feature.rst``, ``456.bugfix.rst``.
 
