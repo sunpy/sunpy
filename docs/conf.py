@@ -202,6 +202,9 @@ napoleon_google_docstring = False
 
 extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
 
+# Remove the changelog links because towncrier now does this for us
+extensions.remove('sphinx_astropy.ext.changelog_links')
+
 # -- Options for the edit_on_github extension ---------------------------------
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
