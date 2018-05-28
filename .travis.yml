@@ -54,19 +54,12 @@ matrix:
          # Order of tests run in build stages
          - python: 3.6
            stage: Initial tests
-           env: SETUP_CMD='test --coverage'
 
         # Comprehensive tests below this line
+        # We run --online here because --online-only skips the doctests
          - python: 3.6
            stage: Comprehensive tests
-           env: SETUP_CMD="test --online-only --coverage"
-
-         - python: 3.6
-           stage: Comprehensive tests
-           # Run this with pytest because our `setup.py` runner does not
-           # currently pick up doctests in docs/
-           env: MAIN_CMD="py.test"
-                SETUP_CMD="--remote-data -k-figure --cov --cov-config sunpy/tests/coveragerc ./docs/"
+           env: SETUP_CMD="test --online --coverage"
 
          # Python 3.5 figure tests
          - python: 3.5
@@ -76,7 +69,7 @@ matrix:
          # Python 3.5 with Astropy 2
          - python: 3.5
            stage: Comprehensive tests
-           env: ASTROPY_VERSION='lts'
+           env: ASTROPY_VERSION='lts' SETUP_CMD="test --skip-docs"
 
         # Cron tests below this line
          - os: osx
@@ -114,7 +107,6 @@ install:
 before_script:
     # Download the sample data for the online builds only.
     - if [[ $SETUP_CMD == *online-only* ]] || [[ $SETUP_CMD == *remote-data* ]]; then python -m "sunpy.data.sample"; fi
-    - if [[ $MAIN_CMD == py.test* ]]; then pip install -e ./; fi
     - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; python -m "sunpy.data.sample"; fi
 
 script:
