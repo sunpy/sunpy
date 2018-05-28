@@ -37,4 +37,4 @@
     [[tool.towncrier.type]]
       directory = "trivial"
       name = "Trivial/Internal Changes"
-      showcontent = false
+      showcontent = true
