@@ -5,8 +5,9 @@ from __future__ import absolute_import, print_function, division
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
+import matplotlib.pyplot as plt
+
 from sunpy.map import GenericMap
-from sunpy.cm import cm
 
 
 __all__ = ['RHESSIMap']
@@ -54,7 +55,7 @@ class RHESSIMap(GenericMap):
 
         self.meta['waveunit'] = 'keV'
         self.meta['wavelnth'] = [self.meta['energy_l'], self.meta['energy_h']]
-        self.plot_settings['cmap'] = cm.get_cmap('rhessi')
+        self.plot_settings['cmap'] = plt.get_cmap('rhessi')
 
     @property
     def detector(self):
