@@ -29,6 +29,7 @@ import os
 import datetime
 import sys
 from distutils.version import LooseVersion
+from sphinx_gallery.sorting import ExplicitOrder
 
 from sphinx import __version__
 SPHINX_LT_17 = LooseVersion(__version__) < LooseVersion('1.7')
