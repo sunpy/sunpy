@@ -37,6 +37,8 @@ jobs:
   astropy-time:
     docker:
       - image: circleci/python:3.6
+        environment:
+          COLUMNS=180
     steps:
       - checkout
       - run: *pip-install
