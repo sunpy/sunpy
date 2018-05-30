@@ -187,9 +187,9 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     """
     Convert from Heliographic Stonyhurst to Heliocentric Cartesian.
     """
-    hglon = heliogcoord.lon
-    hglat = heliogcoord.lat
-    r = heliogcoord.radius
+    hglon = heliogcoord.spherical.lon
+    hglat = heliogcoord.spherical.lat
+    r = heliogcoord.spherical.distance
     if r.unit is u.one and quantity_allclose(r, 1*u.one):
         r = np.ones_like(r)
         r *= RSUN_METERS
