@@ -3,6 +3,8 @@ Helioviewer Client tests
 """
 from __future__ import absolute_import
 
+import os
+
 import sunpy
 import sunpy.map
 import pytest
@@ -60,3 +62,17 @@ class TestHelioviewerClient:
                                        measurement='continuum')
         map_ = sunpy.map.Map(filepath)
         assert isinstance(map_, sunpy.map.GenericMap)
+
+    @skip_glymur
+    def test_download_jp2_directory_not_exist(self, client, tmpdir):
+        """Tests getJP2Image API method"""
+
+        filepath = client.download_jp2(
+            '2020/01/01',
+            observatory='SOHO',
+            instrument='MDI',
+            detector='MDI',
+            measurement='continuum',
+            directory=os.path.join(str(tmpdir), 'directorynotexist'))
+
+        assert 'directorynotexist' in filepath
