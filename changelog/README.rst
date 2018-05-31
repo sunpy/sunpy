@@ -11,7 +11,7 @@ Make sure to use full sentences with correct case and punctuation, for example::
     Add support for Helioprojective coordinates in `sunpy.coordinates.frames`.
 
 Each file should be named like ``<PULL REQUEST>.<TYPE>.rst``, where
-``<PULL REQUEST>`` is an pull request number, and ``<TYPE>`` is one of:
+``<PULL REQUEST>`` is a pull request number, and ``<TYPE>`` is one of:
 
 * ``breaking``: A change which requires users to change code and is not backwards compatible. (Not to be used for removal of deprecated features.)
 * ``feature``: new user facing features and new behavior.
