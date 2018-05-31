@@ -96,8 +96,7 @@ class XRSClient(GenericClient):
         """
         # find out which satellite and datatype to query from the query times
         base_url = 'https://umbra.nascom.nasa.gov/goes/fits/'
-        start_time = apTime(datetime.datetime.combine(timerange.start.datetime.date(),
-                                                      datetime.datetime.min.time()))
+        start_time = apTime(timerange.start.strftime('%Y-%m-%d'))
         # make sure we are counting a day even if only a part of it is in the query range.
         day_range = TimeRange(timerange.start.strftime('%Y-%m-%d'),
                               timerange.end.strftime('%Y-%m-%d'))

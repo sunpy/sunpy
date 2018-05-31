@@ -66,7 +66,7 @@ class EVEClient(GenericClient):
         # If start of time range is before 00:00, converted to such, so
         # files of the requested time ranger are included.
         # This is done because the archive contains daily files.
-        if timerange.start.datetime.time() != datetime.time(0, 0):
+        if timerange.start.strftime('%M-%S') != '00-00':
             timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
         eve = Scraper(BASEURL)
         return eve.filelist(timerange)

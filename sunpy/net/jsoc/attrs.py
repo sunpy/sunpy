@@ -5,14 +5,12 @@ from astropy.time import Time as astropyTime
 
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr
 from sunpy.net.vso.attrs import _VSOSimpleAttr, _Range
-from sunpy.net.vso.attrs import Time as VSOTime
 from sunpy.net.vso.attrs import Wavelength
-
-from sunpy.time import parse_time
-from sunpy.time import TimeRange as _TimeRange
 
 
 __all__ = ['Series', 'Time', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
+
+from sunpy.net.vso.attrs import Time
 
 
 class Series(_VSOSimpleAttr):
@@ -22,43 +20,6 @@ class Series(_VSOSimpleAttr):
     This is the list of `Series <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`__.
     """
     pass
-
-
-class Time(VSOTime):
-    """
-    This is a specific JSOC Time attr that has support for TAI.
-    Passing in a VSO Time attr will cause the JSOC client to error.
-
-    Specify the time range of the query.
-
-    Parameters
-    ----------
-    start : SunPy time string or `~sunpy.time.TimeRange`.
-        The start time in a format parseable by `~sunpy.time.parse_time` or
-        a `sunpy.time.TimeRange` object.
-
-    end : SunPy Time String
-        The end time of the range.
-
-    """
-    def __init__(self, start, end=None):
-        if end is None and not isinstance(start, _TimeRange):
-            raise ValueError("Specify start and end or start has to be a TimeRange")
-        if isinstance(start, _TimeRange):
-            self.start = start.start
-            self.end = start.end
-        else:
-            self.start = parse_time(start)
-            self.end = parse_time(end)
-
-        if self.start > self.end:
-            raise ValueError("End time must be after start time.")
-
-        _Range.__init__(self, self.start, self.end, self.__class__)
-        Attr.__init__(self)
-
-    def __repr__(self):
-        return '<Time({s.start!r}, {s.end!r})>'.format(s=self)
 
 
 class Keys(_VSOSimpleAttr):
