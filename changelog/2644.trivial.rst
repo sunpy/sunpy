@@ -1,1 +1,2 @@
-Migrate our changelog to using `towncrier <https://github.com/hawkowl/towncrier>`__.
+We are now using `towncrier <https://github.com/hawkowl/towncrier>`__ to
+generate our changelogs.
