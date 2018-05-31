@@ -1,0 +1,2 @@
+Move the matplotlib animators from ``sunpy.visualisation.imageanimator`` and
+``sunpy.visualization.mapcubeanimator`` to `sunpy.visualization.animator`.
