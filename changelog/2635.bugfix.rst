@@ -1,0 +1,1 @@
+Replace all use of the deprecated ``sunpy.cm.get_cmap`` with ``plt.get_cmap`` to prevent deprecation warnings being raised.

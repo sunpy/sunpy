@@ -1,0 +1,1 @@
+Change arguments to `sunpy.test` from ``offline=`` and ``online=`` to ``online`` and ``online_only``. This matches the behavior of the figure keyword arguments and comes as a part of a move to using a modified version of the Astropy test runner.
