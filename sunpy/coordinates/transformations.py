@@ -72,8 +72,8 @@ def hgs_to_hgc(hgscoord, hgcframe):
                          "Heliographic Carrington, unless both frames have matching obstime.")
 
     c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.obstime).to(u.deg)
-    representation = SphericalRepresentation(c_lon, hgscoord.lat,
-                                             hgscoord.radius)
+    representation = SphericalRepresentation(c_lon, hgscoord.spherical.lat,
+                                             hgscoord.spherical.distance)
     hgcframe = hgcframe.__class__(obstime=hgscoord.obstime)
 
     return hgcframe.realize_frame(representation)
@@ -91,8 +91,8 @@ def hgc_to_hgs(hgccoord, hgsframe):
     obstime = hgsframe.obstime
     s_lon = hgccoord.spherical.lon - _carrington_offset(obstime).to(
         u.deg)
-    representation = SphericalRepresentation(s_lon, hgccoord.lat,
-                                             hgccoord.radius)
+    representation = SphericalRepresentation(s_lon, hgccoord.spherical.lat,
+                                             hgccoord.spherical.distance)
 
     return hgsframe.realize_frame(representation)
 
