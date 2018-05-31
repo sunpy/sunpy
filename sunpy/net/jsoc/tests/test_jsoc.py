@@ -172,8 +172,8 @@ def test_make_recordset_errors():
         client._make_recordset(**d1)
 
     d1.update({
-        'end_time': astropyTime('2014-01-01 01:00:35'),
-        'start_time': astropyTime('2014-01-01 00:00:35'),
+        'end_time': astropyTime('2014-01-01 01:00:35', scale='tai'),
+        'start_time': astropyTime('2014-01-01 00:00:35', scale='tai'),
         'primekey': {'T_REC': '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'}
         })
 
@@ -181,8 +181,8 @@ def test_make_recordset_errors():
         client._make_recordset(**d1)
 
     d1.update({
-        'end_time': astropyTime('2014-01-01 01:00:35'),
-        'start_time': astropyTime('2014-01-01 00:00:35'),
+        'end_time': astropyTime('2014-01-01 01:00:35', scale='tai'),
+        'start_time': astropyTime('2014-01-01 00:00:35', scale='tai'),
         'wavelength': 604*u.AA,
         'primekey': {'WAVELNTH': '604'}
         })
@@ -194,8 +194,8 @@ def test_make_recordset_errors():
 @pytest.mark.remote_data
 def test_make_recordset():
     d1 = {'series': 'aia.lev1_euv_12s',
-          'end_time': astropyTime('2014-01-01 01:00:35'),
-          'start_time': astropyTime('2014-01-01 00:00:35')
+          'end_time': astropyTime('2014-01-01 01:00:35', scale='tai'),
+          'start_time': astropyTime('2014-01-01 00:00:35', scale='tai')
           }
     exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'
     assert client._make_recordset(**d1) == exp
@@ -214,8 +214,8 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
     d1 = {'series': 'hmi.v_45s',
-          'end_time': astropyTime('2014-01-01 01:00:35'),
-          'start_time': astropyTime('2014-01-01 00:00:35'),
+          'end_time': astropyTime('2014-01-01 01:00:35', scale='tai'),
+          'start_time': astropyTime('2014-01-01 00:00:35', scale='tai'),
           'segment': 'foo,bar'
           }
     exp = 'hmi.v_45s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]{foo,bar}'
@@ -225,8 +225,8 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
     d1 = {'series': 'hmi.sharp_720s',
-          'end_time': astropyTime('2014-01-01 01:00:35'),
-          'start_time': astropyTime('2014-01-01 00:00:35'),
+          'end_time': astropyTime('2014-01-01 01:00:35', scale='tai'),
+          'start_time': astropyTime('2014-01-01 00:00:35', scale='tai'),
           'segment': ['continuum', 'magnetogram'],
           'primekey': {'HARPNUM': '4864'}
           }

@@ -755,8 +755,8 @@ class JSOCClient(object):
             # either through PrimeKey() attribute or Time() attribute.
             if not any(x in PKEY_LIST_TIME for x in primekey):
                 timestr = '{start}-{end}{sample}'.format(
-                        start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                        end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                        start=start_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                        end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                         sample=sample)
             else:
                 error_message = "Time attribute has been passed both as a Time()"\
@@ -903,8 +903,9 @@ class JSOCClient(object):
         # If Time has been passed as a PrimeKey, convert the Time object into TAI time scale,
         # and then, convert it to datetime object.
 
-        iargs['start_time'] = iargs['start_time'].tai.datetime
-        iargs['end_time'] = iargs['end_time'].tai.datetime
+        # XXX: THIS SHOULD BE REMOVED
+        # iargs['start_time'] = iargs['start_time'].tai.datetime
+        # iargs['end_time'] = iargs['end_time'].tai.datetime
 
         ds = self._make_recordset(**iargs)
 
