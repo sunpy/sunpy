@@ -23,8 +23,5 @@ dependencies:
   - pytest=3.4.0
   - pytest-mock=1.6.3
   - pytest-cov=2.5.1
-
-  - pip:
-    - pytest-astropy==0.2.1
-    - pytest-remotedata==0.2.0
-    - drms
+  - pytest-astropy=0.4.0
+  - drms
