@@ -14,6 +14,7 @@
 """
 
   [ tool.sunpy-bot.towncrier_changelog ]
+    verify_pr_number = true
     changelog_skip_label = "No Changelog Entry Needed"
     help_url = "https://github.com/Cadair/sunpy/blob/towncrier/changelog/README.rst"
 
