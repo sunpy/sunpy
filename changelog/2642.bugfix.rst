@@ -1,0 +1,2 @@
+Prevent helioviewer from erroring when downloading file to a directory that
+does not exist. It will now create the directory when required.

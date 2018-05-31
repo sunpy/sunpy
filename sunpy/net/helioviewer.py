@@ -3,12 +3,13 @@ This module provides a wrapper around the Helioviewer API.
 """
 from __future__ import absolute_import
 
-#pylint: disable=E1101,F0401,W0231
+# pylint: disable=E1101,F0401,W0231
 
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
+import errno
 import json
 import codecs
 import sunpy
@@ -241,6 +242,12 @@ class HelioviewerClient(object):
             directory = sunpy.config.get('downloads', 'download_dir')
         else:
             directory = os.path.abspath(os.path.expanduser(directory))
+
+        try:
+            os.makedirs(directory)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
 
         response = self._request(params)
         try:
