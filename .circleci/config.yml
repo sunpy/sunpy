@@ -2,12 +2,12 @@ apt-run: &apt-install
   name: Install apt packages
   command: |
     apt update
-    apt install -y graphviz
+    apt install -y graphviz build-essential
 
 docs-install: &docs-install
   name: Install Python dependencies
   command: |
-    pip install -q -r requirements/docs.txt
+    pip install -r requirements/docs.txt
 
 image-conda-run: &image-conda-install
   name: Install Python dependencies for figure tests
@@ -44,6 +44,7 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - run: *apt-install
       - run: *image-conda-install
       - run: *image-tests
 
