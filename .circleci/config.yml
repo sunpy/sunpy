@@ -39,15 +39,6 @@ jobs:
       - checkout
       - run: python setup.py egg_info
 
-  astropy-time:
-    docker:
-      - image: circleci/python:3.6
-    steps:
-      - checkout
-      - run: *pip-install
-      # Copy and paste this line for every submodule for which the tests pass
-      - run: venv/bin/python setup.py test -P time
-
   figure-tests-35:
     docker:
       - image: continuumio/miniconda3
@@ -56,6 +47,17 @@ jobs:
       - run: *apt-install
       - run: *image-conda-install
       - run: *image-tests
+
+  astropy-time:
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - checkout
+      - run: *apt-install
+      - run: *docs-install
+      # Copy and paste this line for every submodule for which the tests pass
+      - run: python setup.py test -P time
+      - run: python setup.py test -P physics
 
   html-docs:
     docker:
@@ -89,8 +91,11 @@ workflows:
     jobs:
       - egg-info-36
       - egg-info-35
+
+  time-tests:
+    jobs:
       - astropy-time
-  
+
   figure-tests:
     jobs:
       - figure-tests-35
