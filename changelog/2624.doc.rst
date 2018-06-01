@@ -1,0 +1,1 @@
+Organise the gallery into sections based on example type and tidy up a little.
