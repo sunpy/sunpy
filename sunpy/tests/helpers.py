@@ -54,7 +54,7 @@ def warnings_as_errors(request):
 
 hash_library = hash.hash_library
 new_hash_library = {}
-test_fig_dir = 'result_images_{:%H%M%S}'.format(datetime.datetime.now())
+test_fig_dir = 'result_images/{:%H%M%S}'.format(datetime.datetime.now())
 
 
 def figure_test(test_function):
