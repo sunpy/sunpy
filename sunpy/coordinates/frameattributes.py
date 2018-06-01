@@ -59,22 +59,13 @@ class TimeFrameAttributeSunPy(TimeAttribute):
         if value is None:
             return None, False
 
-        elif value == 'now':
-            return Time(datetime.datetime.now()), True
-
         elif isinstance(value, Time):
             out = value
             converted = False
 
-        elif isinstance(value, six.string_types):
+        else:
             try:
                 out = parse_time(value)
-            except Exception as err:
-                raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
-            converted = True
-        else:   # XXX: Remove this???
-            try:
-                out = Time(value)
             except Exception as err:
                 raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
             converted = True
