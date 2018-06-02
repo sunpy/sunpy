@@ -89,7 +89,7 @@ def figure_test(test_function):
 
         # Save the image that was generated
         if not os.path.exists(test_fig_dir):
-            os.mkdir(test_fig_dir)
+            os.makedirs(test_fig_dir)
         result_image_loc = os.path.join(test_fig_dir, '{}.png'.format(name))
         plt.savefig(result_image_loc)
         plt.close()
