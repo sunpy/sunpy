@@ -58,8 +58,8 @@ jobs:
       - run: *apt-install
       - run: *docs-install
       # Copy and paste this line for every submodule for which the tests pass
-      - run: venv/bin/python setup.py test -P time
-      - run: venv/bin/python setup.py test -P net --online
+      - run: python setup.py test -P time
+      - run: python setup.py test -P net --online
 
   html-docs:
     docker:
