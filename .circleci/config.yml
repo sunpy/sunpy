@@ -1,15 +1,27 @@
 apt-run: &apt-install
   name: Install apt packages
   command: |
-    sudo apt update
-    sudo apt install -y graphviz
+    apt update
+    apt install -y graphviz build-essential
 
-pip-run: &pip-install
+docs-install: &docs-install
   name: Install Python dependencies
   command: |
-    python3 -m venv venv
-    . venv/bin/activate
-    pip install -q -r requirements/docs.txt
+    pip install -r requirements/docs.txt
+
+image-conda-run: &image-conda-install
+  name: Install Python dependencies for figure tests
+  command: |
+    conda env create -f sunpy/tests/figure_tests_env_3.5.yml
+
+image-run: &image-tests
+  name: Run image tests
+  command: |
+    conda env list
+    source activate sunpy-figure-tests-3.5
+    python setup.py test --figure-only --coverage
+    pip install codecov
+    codecov
 
 version: 2
 jobs:
@@ -27,36 +39,39 @@ jobs:
       - checkout
       - run: python setup.py egg_info
 
-  egg-info-27:
+  figure-tests-35:
     docker:
-      - image: circleci/python:2.7
+      - image: continuumio/miniconda3
     steps:
       - checkout
-      - run: python setup.py egg_info
+      - run: *apt-install
+      - run: *image-conda-install
+      - run: *image-tests
 
   astropy-time:
     docker:
-      - image: circleci/python:3.6
+      - image: continuumio/miniconda3
         environment:
-          COLUMNS=180
+            COLUMNS=180
     steps:
       - checkout
-      - run: *pip-install
+      - run: *apt-install
+      - run: *docs-install
       # Copy and paste this line for every submodule for which the tests pass
       - run: venv/bin/python setup.py test -P time
       - run: venv/bin/python setup.py test -P net --online
 
   html-docs:
     docker:
-      - image: circleci/python:3.6
+      - image: continuumio/miniconda3
     steps:
       - restore_cache:
           keys: sample-data-v1
 
       - checkout
       - run: *apt-install
-      - run: *pip-install
-      - run: venv/bin/python setup.py build_docs -w 2> /dev/null
+      - run: *docs-install
+      - run: python setup.py build_docs -w 2> /dev/null
 
       - store_artifacts:
           path: docs/_build/html
@@ -78,8 +93,14 @@ workflows:
     jobs:
       - egg-info-36
       - egg-info-35
-      - egg-info-27
+
+  time-tests:
+    jobs:
       - astropy-time
+
+  figure-tests:
+    jobs:
+      - figure-tests-35
 
   test-documentation:
     jobs:
