@@ -3,7 +3,7 @@ Provide a set of Hypothesis Strategies for various Fido related tests.
 """
 import hypothesis.strategies as st
 from hypothesis import assume
-from hypothesis.strategies import datetimes
+from hypothesis.strategies import datetimes, one_of, sampled_from
 
 import datetime
 from sunpy.net import attrs as a
@@ -13,8 +13,10 @@ import astropy.time
 
 @st.composite
 def Times(draw, max_value, min_value):
-    time = datetimes(max_value=max_value, min_value=min_value)
-    time = Time(draw(time), format='datetime')
+    time = one_of(datetimes(max_value=max_value, min_value=min_value),
+                  sampled_from((Time('2008-12-31T23:59:60'),
+                                Time('2012-06-30T23:59:60'))))
+    time = Time(draw(time))
 
     return time
 
