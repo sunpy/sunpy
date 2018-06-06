@@ -480,13 +480,13 @@ year:
     >>> for database_entry in database:
     ...     if database_entry.observation_time_start.month in [3,4,5]:
     ...         database.tag(database_entry, 'spring')
-    >>> database.tags
+    >>> database.tags  # doctest: +REMOTE_DATA
     [<Tag(name 'spring')>]
-    >>> spring = database.tags[0]
+    >>> spring = database.tags[0]  # doctest: +REMOTE_DATA
     >>> print(display_entries(
     ...     filter(lambda entry: spring in entry.tags, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
+    ...      'instrument', 'wavemin', 'wavemax']))  # doctest: +REMOTE_DATA
      id observation_time_start observation_time_end instrument wavemin wavemax
     --- ---------------------- -------------------- ---------- ------- -------
      22    2014-04-09 06:00:12                  N/A      AIA_3    17.1    17.1
@@ -561,7 +561,7 @@ In the following snippet, the operations from the sections 5.3, 5.2, and
 anymore saved in the database, there is no entry which is starred and
 the entries with no end of observation time are back.
 
-    >>> database.undo(4)  # undo the edits from 5.3 (4 records have been affected)
+    >>> database.undo(4)  # undo the edits from 5.3 (4 records have been affected)   # doctest:  +REMOTE_DATA
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
@@ -599,7 +599,7 @@ reverts the original state: the tags have appeared again and all entries with a
 wavelength >20nm are starred again, and there are no entries with no
 stored end of observation time.
 
-    >>> database.redo(1)  # redo all undone operations
+    >>> database.redo(1)  # redo all undone operations   # doctest:  +REMOTE_DATA
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',

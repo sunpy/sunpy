@@ -21,6 +21,7 @@ from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
 import sunpy.io as io
 import sunpy.coordinates
+import sunpy.cm
 from sunpy.util.decorators import deprecated
 from sunpy import config
 from sunpy.extern import six
