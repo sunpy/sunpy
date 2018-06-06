@@ -22,7 +22,11 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 UnitSphericalRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import frame_transform_graph
-from astropy.coordinates.builtin_frames import _make_transform_graph_docs
+try:
+    from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
+except ImportError:
+    from astropy.coordinates import make_transform_graph_docs as _make_transform_graph_docs
+    make_transform_graph_docs = lambda: _make_transform_graph_docs(frame_transform_graph)
 from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
 from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product, matrix_transpose
 from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
@@ -68,8 +72,8 @@ def hgs_to_hgc(hgscoord, hgcframe):
                          "Heliographic Carrington, unless both frames have matching obstime.")
 
     c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.obstime).to(u.deg)
-    representation = SphericalRepresentation(c_lon, hgscoord.lat,
-                                             hgscoord.radius)
+    representation = SphericalRepresentation(c_lon, hgscoord.spherical.lat,
+                                             hgscoord.spherical.distance)
     hgcframe = hgcframe.__class__(obstime=hgscoord.obstime)
 
     return hgcframe.realize_frame(representation)
@@ -87,8 +91,8 @@ def hgc_to_hgs(hgccoord, hgsframe):
     obstime = hgsframe.obstime
     s_lon = hgccoord.spherical.lon - _carrington_offset(obstime).to(
         u.deg)
-    representation = SphericalRepresentation(s_lon, hgccoord.lat,
-                                             hgccoord.radius)
+    representation = SphericalRepresentation(s_lon, hgccoord.spherical.lat,
+                                             hgccoord.spherical.distance)
 
     return hgsframe.realize_frame(representation)
 
@@ -183,9 +187,9 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     """
     Convert from Heliographic Stonyhurst to Heliocentric Cartesian.
     """
-    hglon = heliogcoord.lon
-    hglat = heliogcoord.lat
-    r = heliogcoord.radius
+    hglon = heliogcoord.spherical.lon
+    hglat = heliogcoord.spherical.lat
+    r = heliogcoord.spherical.distance
     if r.unit is u.one and quantity_allclose(r, 1*u.one):
         r = np.ones_like(r)
         r *= RSUN_METERS
@@ -333,4 +337,4 @@ def hgs_to_hgs(from_coo, to_frame):
         return from_coo.transform_to(HCRS).transform_to(to_frame)
 
 
-__doc__ += _make_transform_graph_docs()
+__doc__ += make_transform_graph_docs()
