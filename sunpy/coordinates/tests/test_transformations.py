@@ -155,3 +155,59 @@ def test_hgs_hgc_roundtrip():
 
     assert_quantity_allclose(hgsout.lat, hgsin.lat)
     assert_quantity_allclose(hgsout.lon, hgsin.lon)
+
+
+def test_hgs_cartesian_rep_to_hpc():
+    # This test checks transformation HGS->HPC when the coordinate is in a Cartesian
+    # representation and that it is the same as a transformation from an HGS frame with a
+    # spherical representation
+
+    obstime = "2011-01-01"
+    hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                             frame=HeliographicStonyhurst(obstime=obstime),
+                             representation='cartesian')
+    hgscoord_sph = hgscoord_cart.copy()
+    hgscoord_sph.representation = 'spherical'
+    hpccoord_cart = hgscoord_cart.transform_to(Helioprojective(obstime=obstime))
+    hpccoord_sph = hgscoord_sph.transform_to(Helioprojective(obstime=obstime))
+    assert_quantity_allclose(hpccoord_cart.Tx, hpccoord_sph.Tx)
+    assert_quantity_allclose(hpccoord_cart.Ty, hpccoord_sph.Ty)
+    assert_quantity_allclose(hpccoord_cart.distance, hpccoord_sph.distance)
+
+
+def test_hgs_cartesian_rep_to_hcc():
+    # This test checks transformation HGS->HCC when the coordinate is in a Cartesian
+    # representation and that it is the same as a transformation from an HGS frame with a
+    # spherical representation
+
+    obstime = "2011-01-01"
+    hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                             frame=HeliographicStonyhurst(obstime=obstime),
+                             representation='cartesian')
+    hgscoord_sph = hgscoord_cart.copy()
+    hgscoord_sph.representation = 'spherical'
+    hcccoord_cart = hgscoord_cart.transform_to(Heliocentric(obstime=obstime))
+    hcccoord_sph = hgscoord_sph.transform_to(Heliocentric(obstime=obstime))
+    assert_quantity_allclose(hcccoord_cart.x, hcccoord_sph.x)
+    assert_quantity_allclose(hcccoord_cart.y, hcccoord_sph.y)
+    assert_quantity_allclose(hcccoord_cart.z, hcccoord_sph.z)
+
+
+def test_hgs_cartesian_rep_to_hgc():
+    # This test checks transformation HGS->HCC when the coordinate is in a Cartesian
+    # representation and that it is the same as a transformation from an HGS frame with a
+    # spherical representation
+
+    obstime = "2011-01-01"
+    hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                             frame=HeliographicStonyhurst(obstime=obstime),
+                             representation='cartesian')
+    hgscoord_sph = hgscoord_cart.copy()
+    hgscoord_sph.representation = 'spherical'
+    # HGC
+    hgccoord_cart = hgscoord_cart.transform_to(HeliographicCarrington(obstime=obstime))
+    hgccoord_sph = hgscoord_sph.transform_to(HeliographicCarrington(obstime=obstime))
+    assert_quantity_allclose(hgccoord_cart.lat, hgccoord_sph.lat)
+    assert_quantity_allclose(hgccoord_cart.lon, hgccoord_sph.lon)
+    assert_quantity_allclose(hgccoord_cart.radius, hgccoord_sph.radius)
+    
