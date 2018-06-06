@@ -27,7 +27,7 @@
     wrong_type_message = """
 
 
-* The changelog file you added is not one of the allowed types. Please use one of the types described in the changelog [README](https://github.com/Cadair/sunpy/blob/towncrier/changelog/README.rst)
+* The changelog file you added is not one of the allowed types. Please use one of the types described in the changelog [README](https://github.com/sunpy/sunpy/blob/master/changelog/README.rst)
 """
 
     wrong_number_message = """
