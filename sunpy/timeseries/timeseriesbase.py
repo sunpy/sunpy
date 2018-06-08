@@ -273,8 +273,8 @@ class GenericTimeSeries:
             a = TimeRange(a, b)
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
-            start = a.start
-            end   = a.end
+            start = a.start.datetime
+            end   = a.end.datetime
         else:
             # Otherwise we already have the values
             start = a

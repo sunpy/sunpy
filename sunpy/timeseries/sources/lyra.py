@@ -15,6 +15,7 @@ from sunpy.util.metadata import MetaDict
 from sunpy import config
 
 from astropy import units as u
+from astropy.time import Time
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -137,10 +138,10 @@ class LYRATimeSeries(GenericTimeSeries):
         # First column are times.  For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
         if hdulist[1].header['TUNIT1'] == 's':
-            times = [start + datetime.timedelta(seconds=n)
+            times = [start + TimeDelta(n*u.second)
                      for n in fits_record.field(0)]
         elif hdulist[1].header['TUNIT1'] == 'MIN':
-            times = [start + datetime.timedelta(minutes=int(n))
+            times = [start + TimeDelta(int(n)*u.minute)
                      for n in fits_record.field(0)]
         else:
             raise ValueError("Time unit in LYRA fits file not recognised.  "
