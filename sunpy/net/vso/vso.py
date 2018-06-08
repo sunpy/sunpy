@@ -442,9 +442,9 @@ class VSOClient(object):
 
         Parameters
         ----------
-        tstart : astropy.time.Time
+        tstart : `astropy.time.Time`
             Start of the time-range in which records are searched.
-        tend : astropy.time.Time
+        tend : `astropy.time.Time`
             Start of the time-range in which records are searched.
         date : str
             (start date) - (end date)

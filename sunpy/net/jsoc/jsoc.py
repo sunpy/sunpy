@@ -903,10 +903,6 @@ class JSOCClient(object):
         # If Time has been passed as a PrimeKey, convert the Time object into TAI time scale,
         # and then, convert it to datetime object.
 
-        # XXX: THIS SHOULD BE REMOVED
-        # iargs['start_time'] = iargs['start_time'].tai.datetime
-        # iargs['end_time'] = iargs['end_time'].tai.datetime
-
         ds = self._make_recordset(**iargs)
 
         # Convert the list of keywords into comma-separated string.
