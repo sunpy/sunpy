@@ -208,7 +208,7 @@ class TimeSeriesMetaData(object):
         # Find all results with suitable timerange.
         results_indices = []
         for i, meta in enumerate(self.metadata):
-            if dt in meta[0] or not(dt):
+            if not(dt) or dt in meta[0]:
                 results_indices.append(i)
 
         # Filter out only those with the correct column.
