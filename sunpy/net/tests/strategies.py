@@ -11,11 +11,14 @@ from sunpy.time import TimeRange, Time
 import astropy.time
 
 
+TimesLeapsecond = sampled_from((Time('2015-06-30T23:59:60'),
+                                Time('2012-06-30T23:59:60')))
+
 @st.composite
 def Times(draw, max_value, min_value):
     time = one_of(datetimes(max_value=max_value, min_value=min_value),
-                  sampled_from((Time('2008-12-31T23:59:60'),
-                                Time('2012-06-30T23:59:60'))))
+                  TimesLeapsecond)
+
     time = Time(draw(time))
 
     return time
