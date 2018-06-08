@@ -22,7 +22,7 @@ import pandas as pd
 from collections import OrderedDict
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.table import Table
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 
 import sunpy
 from sunpy.time import TimeRange, parse_time
@@ -275,9 +275,9 @@ def test_truncation_dates(eve_test_ts, truncation_dates_test_ts):
 def truncated_none_ts(concatenate_multi_files_ts):
     # This timerange covers the whole range of metadata, so no change is expected
     a = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - datetime.timedelta(days=1)
+        0].start - TimeDelta(1*u.day)
     b = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + datetime.timedelta(days=1)
+        0].end + TimeDelta(1*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -293,7 +293,7 @@ def truncated_start_ts(concatenate_multi_files_ts):
     # This time range starts after the original, so expect truncation
     a = concatenate_multi_files_ts.meta.metadata[1][0].center
     b = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + datetime.timedelta(days=1)
+        0].end + TimeDelta(1*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -319,7 +319,7 @@ def test_truncated_start_ts(concatenate_multi_files_ts, truncated_start_ts):
 def truncated_end_ts(concatenate_multi_files_ts):
     # This time range ends before the original, so expect truncation
     a = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - datetime.timedelta(days=1)
+        0].start - TimeDelta(1*u.day)
     b = concatenate_multi_files_ts.meta.metadata[-2][0].center
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
@@ -382,9 +382,9 @@ def test_truncated_both_ts(concatenate_multi_files_ts, truncated_both_ts):
 def truncated_new_tr_all_before_ts(concatenate_multi_files_ts):
     # Time range begins and ends before the data
     a = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - datetime.timedelta(days=2)
+        0].start - TimeDelta(2*u.day)
     b = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - datetime.timedelta(days=1)
+        0].start - TimeDelta(1*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -395,9 +395,9 @@ def truncated_new_tr_all_before_ts(concatenate_multi_files_ts):
 def truncated_new_tr_all_after_ts(concatenate_multi_files_ts):
     # Time range begins and ends after the data
     a = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + datetime.timedelta(days=1)
+        0].end + TimeDelta(1*u.day)
     b = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + datetime.timedelta(days=2)
+        0].end + TimeDelta(2*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -668,64 +668,64 @@ def test_generic_ts_peek(generic_ts):
 
 
 def test_eve_invalid_peek(eve_test_ts):
-    a = eve_test_ts.time_range.start - datetime.timedelta(days=2)
-    b = eve_test_ts.time_range.start - datetime.timedelta(days=1)
+    a = eve_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = eve_test_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = eve_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_fermi_gbm_invalid_peek(fermi_gbm_test_ts):
-    a = fermi_gbm_test_ts.time_range.start - datetime.timedelta(days=2)
-    b = fermi_gbm_test_ts.time_range.start - datetime.timedelta(days=1)
+    a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = fermi_gbm_test_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = fermi_gbm_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_norh_invalid_peek(norh_test_ts):
-    a = norh_test_ts.time_range.start - datetime.timedelta(days=2)
-    b = norh_test_ts.time_range.start - datetime.timedelta(days=1)
+    a = norh_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = norh_test_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = norh_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_lyra_invalid_peek(lyra_test_ts):
-    a = lyra_test_ts.time_range.start - datetime.timedelta(days=2)
-    b = lyra_test_ts.time_range.start - datetime.timedelta(days=1)
+    a = lyra_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = lyra_test_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = lyra_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_rhessi_invalid_peek(rhessi_test_ts):
-    a = rhessi_test_ts.time_range.start - datetime.timedelta(days=2)
-    b = rhessi_test_ts.time_range.start - datetime.timedelta(days=1)
+    a = rhessi_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = rhessi_test_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = rhessi_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_noaa_ind_invalid_peek(noaa_ind_test_ts):
-    a = noaa_ind_test_ts.time_range.start - datetime.timedelta(days=2)
-    b = noaa_ind_test_ts.time_range.start - datetime.timedelta(days=1)
+    a = noaa_ind_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = noaa_ind_test_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = noaa_ind_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_noaa_pre_invalid_peek(noaa_pre_test_ts):
-    a = noaa_pre_test_ts.time_range.start - datetime.timedelta(days=2)
-    b = noaa_pre_test_ts.time_range.start - datetime.timedelta(days=1)
+    a = noaa_pre_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = noaa_pre_test_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = noaa_pre_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_generic_ts_invalid_peek(generic_ts):
-    a = generic_ts.time_range.start - datetime.timedelta(days=2)
-    b = generic_ts.time_range.start - datetime.timedelta(days=1)
+    a = generic_ts.time_range.start - TimeDelta(2*u.day)
+    b = generic_ts.time_range.start - TimeDelta(1*u.day)
     empty_ts = generic_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
