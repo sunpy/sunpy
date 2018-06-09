@@ -58,6 +58,7 @@ jobs:
       - run: *apt-install
       - run: *docs-install
       # Copy and paste this line for every submodule for which the tests pass
+      - run: conda install openjpeg
       - run: python setup.py test -P time
       - run: python setup.py test -P net --online
 

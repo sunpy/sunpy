@@ -70,7 +70,7 @@ class XRSClient(GenericClient):
             datestamp = os.path.splitext(os.path.split(uripath)[1])[0][4:]
 
             # 1999-01-15 as an integer.
-            if int(datestamp) < 990115:
+            if int(datestamp) <= 990115:
                 start = apTime.strptime(datestamp, "%y%m%d")
             else:
                 start = apTime.strptime(datestamp, "%Y%m%d")
@@ -108,10 +108,13 @@ class XRSClient(GenericClient):
         for day in range(total_days):
             date = start_time + TimeDelta(day*u.day)
             regex = date.strftime('%Y') + "/go{sat:02d}"
+            # This is to ensure that next day is selected even when a leap
+            # second is present
+            nextday = date + TimeDelta(1*u.second)
             if (date < parse_time('1999/01/15')):
-                regex += date.strftime('%y%m%d') + '.fits'
+                regex += nextday.strftime('%y%m%d') + '.fits'
             else:
-                regex += date.strftime('%Y%m%d') + '.fits'
+                regex += nextday.strftime('%Y%m%d') + '.fits'
             satellitenumber = kwargs.get('satellitenumber', self._get_goes_sat_num(date))
             url = base_url + regex.format(sat=satellitenumber)
             result.append(url)
