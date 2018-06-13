@@ -23,6 +23,7 @@ from sunpy.util.xml import xml_to_dict
 from sunpy.extern.six import iteritems
 from sunpy.extern.six.moves import urllib
 from sunpy.util import deprecated
+from sunpy.time import Time as apTime
 
 __all__ = ['HEKClient']
 
@@ -118,8 +119,8 @@ class Response(dict):
     @property
     def vso_time(self):
         return v_attrs.Time(
-            datetime.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
-            datetime.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
+            apTime.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
+            apTime.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
         )
 
     @property

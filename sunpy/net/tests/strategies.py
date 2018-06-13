@@ -3,15 +3,29 @@ Provide a set of Hypothesis Strategies for various Fido related tests.
 """
 import hypothesis.strategies as st
 from hypothesis import assume
-from hypothesis.strategies import datetimes
+from hypothesis.strategies import datetimes, one_of, sampled_from
 
 import datetime
 from sunpy.net import attrs as a
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, Time
+import astropy.time
+
+
+TimesLeapsecond = sampled_from((Time('2015-06-30T23:59:60'),
+                                Time('2012-06-30T23:59:60')))
+
+@st.composite
+def Times(draw, max_value, min_value):
+    time = one_of(datetimes(max_value=max_value, min_value=min_value),
+                  TimesLeapsecond)
+
+    time = Time(draw(time))
+
+    return time
 
 
 @st.composite
-def timedelta(draw):
+def TimeDelta(draw):
     """
     Timedelta strategy that limits the maximum timedelta to being positive and
     abs max is about 100 weeks + 100 days + 100 hours + a bit
@@ -21,7 +35,8 @@ def timedelta(draw):
     values = st.floats(min_value=1, max_value=100)
     delta = datetime.timedelta(**draw(st.dictionaries(keys, values)))
     # We don't want a 0 timedelta
-    assume(delta.total_seconds() > 0)
+    delta = astropy.time.TimeDelta(delta, format='datetime')
+    assume(delta.sec > 0)
     return delta
 
 
@@ -48,11 +63,11 @@ def online_instruments():
 
 
 @st.composite
-def time_attr(draw, time=datetimes(
+def time_attr(draw, time=Times(
     max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
     min_value=datetime.datetime(1900, 1, 1, 0, 0)
     ),
-              delta=timedelta()):
+              delta=TimeDelta()):
     """
     Create an a.Time where it's always positive and doesn't have a massive time
     delta.
@@ -60,16 +75,16 @@ def time_attr(draw, time=datetimes(
     t1 = draw(time)
     t2 = t1 + draw(delta)
     # We can't download data from the future...
-    assume(t2 < datetime.datetime.utcnow())
+    assume(t2 < Time.now())
 
     return a.Time(t1, t2)
 
 
 @st.composite
-def goes_time(draw, time=datetimes(
+def goes_time(draw, time=Times(
     max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
     min_value=datetime.datetime(1981, 1, 1, 0, 0)),
-              delta=timedelta()):
+              delta=TimeDelta()):
     """
     Create an a.Time where it's always positive and doesn't have a massive time
     delta.
@@ -77,18 +92,18 @@ def goes_time(draw, time=datetimes(
     t1 = draw(time)
     t2 = t1 + draw(delta)
     # We can't download data from the future.
-    assume(t2 < datetime.datetime.utcnow())
+    assume(t2 < Time.now())
 
     tr = TimeRange(t1, t2)
     # There is no GOES data for this date.
-    assume(datetime.datetime(1983, 5, 1, 0, 0, 0) not in tr)
-    assume((datetime.datetime(1983, 5, 1) + draw(delta)) not in tr)
+    assume(Time('1983-5-1') not in tr)
+    assume(Time('1983-5-1') + draw(delta) not in tr)
 
     return a.Time(tr)
 
 
-def range_time(min_date, max_date=datetime.datetime.utcnow()):
-    time = datetimes(
+def range_time(min_date, max_date=Time.now()):
+    time = Times(
         min_value=datetime.datetime(1960, 1, 1, 0, 0),
         max_value=datetime.datetime(datetime.MAXYEAR, 1, 1, 0, 0),
     )
