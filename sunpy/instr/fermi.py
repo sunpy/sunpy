@@ -467,8 +467,8 @@ def met_to_utc(timeinsec):
     # The reference time for this is 2001-Jan-01 00:00.
     met_ref_time = parse_time('2001-01-01 00:00')
     offset_from_utc = (
-        met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
-    time_in_utc = parse_time(timeinsec + offset_from_utc)
+        met_ref_time - parse_time('1979-01-01 00:00')).sec
+    time_in_utc = parse_time(timeinsec + offset_from_utc, format='utime')
 
     return time_in_utc
 
@@ -489,9 +489,9 @@ def utc_to_met(time_ut):
 
     """
     met_ref_time = parse_time('2001-01-01 00:00')
-    ut_seconds = (time_ut - parse_time('1979-01-01')).total_seconds()
+    ut_seconds = (time_ut - parse_time('1979-01-01')).sec
     offset_from_utc = (
-        met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
+        met_ref_time - parse_time('1979-01-01 00:00')).sec
     fermi_met = ut_seconds - offset_from_utc
 
     return fermi_met

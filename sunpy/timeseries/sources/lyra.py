@@ -15,7 +15,7 @@ from sunpy.util.metadata import MetaDict
 from sunpy import config
 
 from astropy import units as u
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 
 TIME_FORMAT = config.get("general", "time_format")
 

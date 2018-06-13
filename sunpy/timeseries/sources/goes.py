@@ -174,9 +174,7 @@ class XRSTimeSeries(GenericTimeSeries):
         else:
             raise ValueError("Don't know how to parse this file")
 
-        times = [start_time + TimeDelta(int(np.floor(s))*u.second +
-                                        int((s - np.floor(s)) * 1e6))*u.microsecond
-                                        for s in seconds_from_start]
+        times = [start_time + TimeDelta(s*u.second) for s in seconds_from_start]
                                         # Why not just pass s???
 
         # remove bad values as defined in header comments
