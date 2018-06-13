@@ -141,7 +141,7 @@ def solar_rotate_coordinate(coordinate,
     >>> obstime = '2010-09-10 12:34:56'
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obstime, observer=get_earth(obstime), frame=frames.Helioprojective)
     >>> solar_rotate_coordinate(c, '2010-09-10 13:34:56')
-    <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-10 13:34:56): (lon, lat, radius) in (deg, deg, AU)
+    <SkyCoord (Helioprojective: obstime=2010-09-10T13:34:56.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-10T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
         (0., 7.24822784, 1.00695436)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (-562.37689548, 119.26840368, 1.50083152e+08)>
 
@@ -149,7 +149,7 @@ def solar_rotate_coordinate(coordinate,
 
     # Calculate the interval between the start and end time
     interval = (
-        parse_time(new_observer_time) - parse_time(coordinate.obstime)).total_seconds() * u.s
+        parse_time(new_observer_time) - parse_time(coordinate.obstime)).to(u.s)
 
     # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
     # latitude). Points off the limb are returned as nan.
@@ -193,7 +193,7 @@ def _warp_sun_coordinates(xy, smap, dt, **diffrot_kwargs):
     """
     # NOTE: The time is being subtracted - this is because this function
     # calculates the inverse of the transformation.
-    rotated_time = smap.date - datetime.timedelta(seconds=dt.to(u.s).value)
+    rotated_time = smap.date - dt
 
     # Calculate the hpc coords
     x = np.arange(0, smap.dimensions.x.value)
@@ -262,9 +262,9 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
         raise ValueError('Either a time or an interval (`dt=`) needs to be provided')
     elif time:
         new_time = parse_time(time)
-        dt = (new_time - smap.date).total_seconds() * u.s
+        dt = (new_time - smap.date).to(u.s)
     else:
-        new_time = smap.date + datetime.timedelta(seconds=dt.to(u.s).value)
+        new_time = smap.date + dt
 
     # Check for masked maps
     if smap.mask is not None:
@@ -314,7 +314,7 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
     out_meta = deepcopy(smap.meta)
     if out_meta.get('date_obs', False):
         del out_meta['date_obs']
-    out_meta['date-obs'] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
+    out_meta['date-obs'] = "{}".format(new_time.strftime('%Y-%m-%dT%H:%M:%S'))
 
     if submap:
         crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_time, **diffrot_kwargs)
