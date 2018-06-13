@@ -449,7 +449,7 @@ def separation_angle(radec1, radec2):
 
 def met_to_utc(timeinsec):
     """
-    Converts Fermi Mission Elapsed Time (MET) in seconds to a datetime object.
+    Converts Fermi Mission Elapsed Time (MET) in seconds to a Time object.
 
     Parameters
     ----------
@@ -459,39 +459,32 @@ def met_to_utc(timeinsec):
 
     Returns
     -------
-    `datetime.datetime`
-        The input Fermi Mission Elapsed Time converted to a datetime object.
+    `astropy.time.Time`
+        The input Fermi Mission Elapsed Time converted to a Time object.
 
     """
     # Times for GBM are in Mission Elapsed Time (MET).
     # The reference time for this is 2001-Jan-01 00:00.
     met_ref_time = parse_time('2001-01-01 00:00')
-    offset_from_utc = (
-        met_ref_time - parse_time('1979-01-01 00:00')).sec
-    time_in_utc = parse_time(timeinsec + offset_from_utc, format='utime')
 
-    return time_in_utc
+    return met_ref_time + timeinsec * u.second
 
 
 def utc_to_met(time_ut):
     """
-    Converts a UT (in datetime format) to a Fermi Mission Elapsed Time (MET) float.
+    Converts a UT to a Fermi Mission Elapsed Time (MET) float.
 
     Parameters
     ----------
-    time_ut : 'datetime.datetime'
-        A datetime object in UT
+    time_ut : `astropy.time.Time`
+        A Time object in UT
 
     Returns
     -------
-    'float'
+    `astropy.units.second`
         The Fermi Mission Elapsed Time corresponding to the input UT
 
     """
     met_ref_time = parse_time('2001-01-01 00:00')
-    ut_seconds = (time_ut - parse_time('1979-01-01')).sec
-    offset_from_utc = (
-        met_ref_time - parse_time('1979-01-01 00:00')).sec
-    fermi_met = ut_seconds - offset_from_utc
 
-    return fermi_met
+    return (time_ut - met_ref_time).to(u.second)
