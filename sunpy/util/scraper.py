@@ -10,6 +10,11 @@ from sunpy.extern import six
 from sunpy.extern.six.moves import range, zip
 from sunpy.extern.six.moves.urllib.request import urlopen
 
+from astropy.time import TimeDelta
+import astropy.units as u
+
+from sunpy.time import Time
+
 __all__ = ['Scraper']
 
 # regular expressions to convert datetime format
@@ -102,7 +107,7 @@ class Scraper(object):
             return [directorypattern]
         else:
             # Number of elements in the time range (including end)
-            n_steps = rangedelta.total_seconds()/timestep.total_seconds()
+            n_steps = rangedelta.sec/timestep.sec
             TotalTimeElements = int(round(n_steps)) + 1
             directories = [(timerange.start + n * timestep).strftime(directorypattern)
                            for n in range(TotalTimeElements)]  # TODO if date <= endate
@@ -172,8 +177,8 @@ class Scraper(object):
             if pattern not in final_pattern:
                 final_pattern.append('%{}'.format(p))
                 final_date.append(date_part.group())
-        return datetime.datetime.strptime(' '.join(final_date),
-                                          ' '.join(final_pattern))
+        return Time.strptime(' '.join(final_date),
+                             ' '.join(final_pattern))
 
     def filelist(self, timerange):
         """
@@ -265,17 +270,17 @@ class Scraper(object):
         """Obtain the smaller time step for the given pattern"""
         try:
             if "%S" in directoryPattern:
-                return datetime.timedelta(seconds=1)
+                return TimeDelta(1*u.second)
             elif "%M" in directoryPattern:
-                return datetime.timedelta(minutes=1)
+                return TimeDelta(1*u.minute)
             elif any(hour in directoryPattern for hour in ["%H", "%I"]):
-                return datetime.timedelta(hours=1)
+                return TimeDelta(1*u.hour)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
-                return datetime.timedelta(days=1)
+                return TimeDelta(1*u.day)
             elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
-                return datetime.timedelta(days=31)
+                return TimeDelta(31*u.day)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
-                return datetime.timedelta(days=365)
+                return TimeDelta(365*u.day)
             else:
                 return None
         except:

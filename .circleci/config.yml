@@ -51,12 +51,16 @@ jobs:
   astropy-time:
     docker:
       - image: continuumio/miniconda3
+        environment:
+            COLUMNS=180
     steps:
       - checkout
       - run: *apt-install
       - run: *docs-install
       # Copy and paste this line for every submodule for which the tests pass
+      - run: conda install openjpeg
       - run: python setup.py test -P time
+      - run: python setup.py test -P net --online
       - run: python setup.py test -P physics
       - run: python setup.py test -P coordinates
 

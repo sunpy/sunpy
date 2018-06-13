@@ -11,9 +11,10 @@ import datetime
 import pytest
 from six import iteritems
 
+from sunpy.time import Time as apTime
 from astropy import units as u
 
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
 from sunpy.net.vso import QueryResponse
@@ -85,8 +86,8 @@ def test_simpleattr_apply():
 def test_Time_timerange():
     t = va.Time(TimeRange('2012/1/1', '2012/1/2'))
     assert isinstance(t, va.Time)
-    assert t.min == datetime.datetime(2012, 1, 1)
-    assert t.max == datetime.datetime(2012, 1, 2)
+    assert t.min == parse_time((2012, 1, 1))
+    assert t.max == parse_time((2012, 1, 2))
 
 
 def test_input_error():
@@ -147,6 +148,13 @@ def test_complexattr_or_eq():
 
     assert attr | attr == attr
     assert attr | va.Time((2011, 1, 1), (2011, 1, 1, 1)) == attr
+
+
+def test_complexattr_or_eq_leap_second():
+    attr = va.Time((2012, 6, 30, 23, 59, 60), (2012, 7, 1, 1))
+
+    assert attr | attr == attr
+    assert attr | va.Time((2012, 6, 30, 23, 59, 60), (2012, 7, 1, 1)) == attr
 
 
 def test_attror_and():
@@ -216,6 +224,16 @@ def test_time_xor():
         va.Time((2010, 1, 1), (2010, 1, 1, 1)),
         va.Time((2010, 1, 1, 2), (2010, 1, 1, 4)),
         va.Time((2010, 1, 1, 5), (2010, 1, 2))
+    ])
+
+
+def test_leap_second_time_xor():
+    one = va.Time((2012, 6, 30, 23, 59, 60), (2012, 7, 2))
+    a = one ^ va.Time((2012, 7, 1, 1), (2012, 7, 1, 2))
+
+    assert a == attr.AttrOr([
+        va.Time((2012, 6, 30, 23, 59, 60), (2012, 7, 1, 1)),
+        va.Time((2012, 7, 1, 2), (2012, 7, 2))
     ])
 
 
@@ -365,7 +383,7 @@ def test_QueryResponse_build_table_with_no_start_time():
     """
     Only the 'end' time set, no 'start' time
     """
-    a_st = datetime.datetime(2016, 2, 14, 8, 8, 12)
+    a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
     records = (MockQRRecord(end_time=a_st.strftime(va.TIMEFORMAT)),)
 
@@ -387,7 +405,7 @@ def test_QueryResponse_build_table_with_no_end_time():
     """
     Only the 'start' time is set, no 'end' time
     """
-    a_st = datetime.datetime(2016, 2, 14, 8, 8, 12)
+    a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
     records = (MockQRRecord(start_time=a_st.strftime(va.TIMEFORMAT)),)
 
@@ -424,3 +442,16 @@ def test_vso_hmi(client, tmpdir):
         fileids = dri.fileiditem.fileid[0]
         series = list(map(lambda x: x.split(':')[0], fileids))
         assert all([s == series[0] for s in series])
+
+
+@pytest.mark.remote_data
+def test_fetch_leap_second(client):
+    qr = client.search(
+        va.Time('2012-06-30 23:59:60', '2012-07-01 00:00:08'),
+        va.Instrument('aia'), va.Wavelength(171 * u.AA))
+    tmp_dir = tempfile.mkdtemp()
+    files = client.fetch(qr, path=tmp_dir).wait(progress=False)
+
+    assert len(files) == 1
+
+    assert "aia_lev1_171a_2012_06_30t23_59_60_34z_image_lev1.fits" in files[0]
