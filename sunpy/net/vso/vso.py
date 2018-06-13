@@ -14,16 +14,19 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import copy
 import logging
 import requests
 import warnings
 import socket
+import itertools
 
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
+from astropy.time import TimeDelta
 import astropy.units as u
 from astropy.table import QTable as Table
 
@@ -36,6 +39,7 @@ from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename
 from sunpy.time import parse_time
+from sunpy.time import Time as apTime
 
 from sunpy.util import deprecated
 from sunpy.extern import six
@@ -158,10 +162,10 @@ class QueryResponse(list):
     def time_range(self):
         """ Return total time-range all records span across. """
         return (
-            datetime.strptime(
+            apTime.strptime(
                 min(record.time.start for record in self
                     if record.time.start is not None), TIMEFORMAT),
-            datetime.strptime(
+            apTime.strptime(
                 max(record.time.end for record in self
                     if record.time.end is not None), TIMEFORMAT)
         )
@@ -184,7 +188,7 @@ class QueryResponse(list):
             if time is None:
                 return ['None']
             if record.time.start is not None:
-                return [datetime.strftime(parse_time(time), TIME_FORMAT)]
+                return [apTime.strftime(parse_time(time), TIME_FORMAT)]
             else:
                 return ['N/A']
 
@@ -438,9 +442,9 @@ class VSOClient(object):
 
         Parameters
         ----------
-        tstart : datetime.datetime
+        tstart : `astropy.time.Time`
             Start of the time-range in which records are searched.
-        tend : datetime.datetime
+        tend : `astropy.time.Time`
             Start of the time-range in which records are searched.
         date : str
             (start date) - (end date)
@@ -572,9 +576,9 @@ class VSOClient(object):
     def latest(self):
         """ Return newest record (limited to last week). """
         return self.query_legacy(
-            datetime.utcnow() - timedelta(7),
-            datetime.utcnow(),
-            time_near=datetime.utcnow()
+            apTime.now() - TimeDelta(7*u.day),
+            apTime.now(),
+            time_near=apTime.now()
         )
 
     def fetch(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
@@ -711,14 +715,37 @@ class VSOClient(object):
         if info is None:
             info = {}
 
+        # For the JSOC provider we need to make a DataRequestItem for each
+        # series, not just one for the whole provider.
+
+        # Remove JSOC provider items from the map
+        jsoc = maps.pop('JSOC', [])
+
+        # Make DRIs for everything that's not JSOC one per provider
+        dris = [self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
+                for k, v in iteritems(maps)]
+
+        def series_func(x):
+            """ Extract the series from the fileid. """
+            return x.split(':')[0]
+
+        # Sort the JSOC fileids by series
+        # This is a precursor to groupby as recommended by the groupby docs
+        series_sorted = sorted(jsoc, key=series_func)
+
+        # Iterate over the series and make a DRI for each.
+        # groupby creates an iterator based on a key function, in this case
+        # based on the series (the part before the first ':')
+        for series, fileids in itertools.groupby(series_sorted, key=series_func):
+            dris.append(self.make('DataRequestItem',
+                                  provider='JSOC',
+                                  fileiditem__fileid=[list(fileids)]))
+
         return self.make(
             'VSOGetDataRequest',
             request__method__methodtype=methods,
             request__info=info,
-            request__datacontainer__datarequestitem=[
-                self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in iteritems(maps)
-            ]
+            request__datacontainer__datarequestitem=dris
         )
 
     # pylint: disable=R0913,R0912

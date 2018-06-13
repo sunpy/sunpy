@@ -10,10 +10,57 @@ from datetime import date, datetime, timedelta
 
 __all__ = ['Time', 'TimeDeltaDatetime']
 
+STANDARD_TIME_SCALES = ('tai', 'tcb', 'tcg', 'tdb', 'tt', 'ut1', 'utc')
+LOCAL_SCALES = ('local', )
+TIME_TYPES = dict(
+    (scale, scales) for scales in (STANDARD_TIME_SCALES, LOCAL_SCALES) for scale in scales)
+
 if hasattr(astropy.time.Time, 'strptime'):
     from astropy.time import Time
 else:
     class Time(astropy.time.Time):
+        def __init__(self, val, val2=None, format=None, scale=None,
+                     precision=None, in_subfmt=None, out_subfmt=None,
+                     location=None, copy=False):
+
+            if location is not None:
+                from ..coordinates import EarthLocation
+                if isinstance(location, EarthLocation):
+                    self.location = location
+                else:
+                    self.location = EarthLocation(*location)
+            else:
+                self.location = None
+
+            if isinstance(val, self.__class__):
+                # Update _time formatting parameters if explicitly specified
+                if precision is not None:
+                    self._time.precision = precision
+                if in_subfmt is not None:
+                    self._time.in_subfmt = in_subfmt
+                if out_subfmt is not None:
+                    self._time.out_subfmt = out_subfmt
+                self.SCALES = TIME_TYPES[self.scale]
+                if scale is not None:
+                    self._set_scale(scale)
+            else:
+                self._init_from_vals(val, val2, format, scale, copy,
+                                     precision, in_subfmt, out_subfmt)
+                self.SCALES = TIME_TYPES[self.scale]
+
+            if self.location is not None and (self.location.size > 1 and
+                                              self.location.shape != self.shape):
+                try:
+                    # check the location can be broadcast to self's shape.
+                    self.location = np.broadcast_to(self.location, self.shape,
+                                                    subok=True)
+                except Exception:
+                    raise ValueError('The location with shape {0} cannot be '
+                                     'broadcast against time with shape {1}. '
+                                     'Typically, either give a single location or '
+                                     'one for each time.'
+                                     .format(self.location.shape, self.shape))
+
         @classmethod
         def strptime(cls, time_string, format_string, **kwargs):
             """
@@ -99,7 +146,6 @@ else:
 
         def __hash__(self):
             return hash((self.jd1, self.jd2, self.scale))
-
 
 
 class TimeDeltaDatetime(TimeDeltaFormat, TimeUnique):

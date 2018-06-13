@@ -1,0 +1,1 @@
+Replace the subclasses of matplotlib Slider and Button in `sunpy.visualization` with partial functions.

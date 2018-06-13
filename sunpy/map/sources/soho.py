@@ -6,6 +6,7 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
+import matplotlib.pyplot as plt
 from matplotlib import colors
 
 from astropy.units import Quantity
@@ -15,7 +16,6 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.sun import constants
 from sunpy.sun import sun
-from sunpy.cm import cm
 from sunpy.map.sources.source_type import source_stretch
 from sunpy.coordinates import get_sunearth_distance
 
@@ -69,7 +69,7 @@ class EITMap(GenericMap):
         self.meta['waveunit'] = "Angstrom"
         self._fix_dsun()
         self._nickname = self.detector
-        self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
+        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
     @property
@@ -127,7 +127,7 @@ class LASCOMap(GenericMap):
         if 'date_obs' in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
         self._nickname = self.instrument + "-" + self.detector
-        self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
+        self.plot_settings['cmap'] = plt.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
     @property

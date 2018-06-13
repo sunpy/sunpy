@@ -59,17 +59,17 @@ def test_parse_time_tuple():
 def test_parse_time_int():
     # Once https://github.com/astropy/astropy/issues/6970 is fixed,
     # remove .jd from equality check
-    dt1 = parse_time(765548612.0, 'utime')
+    dt1 = parse_time(765548612.0, format='utime')
     assert dt1.jd == ap.Time('2003-4-5T12:23:32').jd
     assert dt1.format == 'utime'
 
-    dt2 = parse_time(1009685652.0, 'utime')
+    dt2 = parse_time(1009685652.0, format='utime')
     assert dt2.jd == ap.Time('2010-12-30T4:14:12').jd
     assert dt2.format == 'utime'
 
 
 def test_parse_time_pandas_timestamp():
-    ts = pandas.Timestamp(datetime(1966, 2, 3))
+    ts = pandas.Timestamp(LANDING.datetime)
 
     dt = parse_time(ts)
 
@@ -118,6 +118,7 @@ def test_parse_time_numpy_date():
     dts = parse_time(inputs)
 
     assert isinstance(dts, astropy.time.Time)
+    assert np.all(dts == ap.Time([str(dt.astype('M8[ns]')) for dt in inputs]))
 
 
 def test_parse_time_numpy_datetime():
@@ -126,6 +127,7 @@ def test_parse_time_numpy_datetime():
     dts = parse_time(inputs)
 
     assert isinstance(dts, astropy.time.Time)
+    assert np.all(dts == ap.Time([str(dt.astype('M8[ns]')) for dt in inputs]))
 
 
 def test_parse_time_individual_numpy_datetime():
@@ -228,7 +230,7 @@ def test_parse_time_ISO():
     for k, v in lst:
         dt = parse_time(k)
         assert dt == v
-        dt.format == 'isot'
+        assert dt.format == 'isot'
 
 
 def test_parse_time_tai():
@@ -244,6 +246,10 @@ def test_parse_time_leap_second():
     dt2 = ap.Time('1995-12-31T23:59:60')
 
     assert dt1.jd == dt2.jd
+
+    dt3 = parse_time('1995-Dec-31 23:59:60')
+
+    assert dt2.jd == dt3.jd
 
 
 @pytest.mark.parametrize("ts,fmt", [
@@ -364,26 +370,6 @@ def test_day_of_year_leapsecond():
     assert time.day_of_year('2015/06/30 23:59:60') == 182
     assert time.day_of_year('2015/08/01') == 213.00001157407408
     assert time.day_of_year('2015/09/30') == 273.00001157407405
-
-
-def test_time_string_parse_format():
-    assert parse_time('01/06/2012',
-                      _time_string_parse_format='%d/%m/%Y') == datetime(2012, 6, 1, 0, 0)
-    assert parse_time('06/01/2012',
-                      _time_string_parse_format='%d/%m/%Y') == datetime(2012, 1, 6, 0, 0)
-    assert parse_time('06/01/85',
-                      _time_string_parse_format='%d/%m/%y') == datetime(1985, 1, 6, 0, 0)
-    assert parse_time('6/1/85',
-                      _time_string_parse_format='%d/%m/%y') == datetime(1985, 1, 6, 0, 0)
-    with pytest.raises(ValueError):
-        parse_time('01/06/2012')
-    with pytest.raises(ValueError):
-        parse_time('01/06/2012', _time_string_parse_format='%d/%Y/%m')
-    with pytest.raises(re.error):
-        parse_time('01/06/2012', _time_string_parse_format='%d/%m/%m')
-
-    with pytest.raises(ValueError):
-        parse_time('2016', _time_string_parse_format='zz')
 
 
 def test__iter_empty():

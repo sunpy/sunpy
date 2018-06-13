@@ -3,12 +3,13 @@ This module provides a wrapper around the Helioviewer API.
 """
 from __future__ import absolute_import
 
-#pylint: disable=E1101,F0401,W0231
+# pylint: disable=E1101,F0401,W0231
 
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
+import errno
 import json
 import codecs
 import sunpy
@@ -48,7 +49,7 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : `datetime.datetime`, `str`
+        date : `astropy.time.Time`, `str`
             A string or datetime object for the desired date of the image
         observatory : string
             (Optional) Observatory name
@@ -72,7 +73,7 @@ class HelioviewerClient(object):
         >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
-        2012-01-01 00:00:07
+        2012-01-01T00:00:07.000
         """
         params = {
             "action": "getClosestImage",
@@ -98,7 +99,7 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : `datetime.datetime`, string
+        date : `astropy.time.Time`, string
             A string or datetime object for the desired date of the image
         directory : string
             (Optional) Directory to download JPEG 2000 image to.
@@ -160,7 +161,7 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : `datetime.datetime`, string
+        date : `astropy.time.Time`, string
             A string or datetime object for the desired date of the image
         image_scale : float
             The zoom scale of the image. Default scales that can be used are
@@ -242,6 +243,12 @@ class HelioviewerClient(object):
         else:
             directory = os.path.abspath(os.path.expanduser(directory))
 
+        try:
+            os.makedirs(directory)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
         response = self._request(params)
         try:
             filepath = download_fileobj(response, directory, overwrite=overwrite)
@@ -269,4 +276,4 @@ class HelioviewerClient(object):
 
     def _format_date(self, date):
         """Formats a date for Helioviewer API requests"""
-        return parse_time(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
+        return parse_time(date).isot + "Z"

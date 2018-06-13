@@ -204,7 +204,7 @@ def get_obssum_filename(time_range):
     """
     time_range = TimeRange(time_range)
 
-    delta = relativedelta(time_range.end, time_range.start)
+    delta = relativedelta(time_range.end.datetime, time_range.start.datetime)
     if delta.years > 0 or delta.months > 0:
         raise ValueError("Rhessi search results can not be found for a"
                          " time range crossing multiple months.")
@@ -216,9 +216,9 @@ def get_obssum_filename(time_range):
     dbase_file_name, _ = get_obssumm_dbase_file(time_range)
     dbase_dat = parse_obssumm_dbase_file(dbase_file_name)
 
-    index_number_start = time_range.start.day - 1
+    index_number_start = int(time_range.start.strftime('%d')) - 1  # This was `time_range.start.day``
     # If end is 0 set it to 1 so we always have at least one record.
-    index_number_end = time_range.end.day - 1 or index_number_start + 1
+    index_number_end = int(time_range.end.strftime('%d')) - 1 or index_number_start + 1
 
     filenames = dbase_dat.get('filename')[index_number_start:index_number_end]
     return [posixpath.join(get_base_url(), 'metadata', 'catalog', filename + 's')

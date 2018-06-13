@@ -7,8 +7,8 @@ import numpy as np
 import pandas
 from sunpy.extern import six
 from sunpy.time.utime import TimeUTime
+from sunpy.time import astropy_time as ap
 
-from . import astropy_time as ap
 import astropy.units as u
 import astropy.time
 
@@ -184,10 +184,12 @@ def convert_time_astropy(time_string, **kwargs):
 def convert_time_str(time_string, **kwargs):
     # remove trailing zeros and the final dot to allow any
     # number of zeros. This solves issue #289
-    if 'TAI' in time_string:
-        kwargs['scale'] = 'tai'
     if '.' in time_string:
         time_string = time_string.rstrip("0").rstrip(".")
+
+    if 'TAI' in time_string:
+        kwargs['scale'] = 'tai'
+
     for time_format in TIME_FORMAT_LIST:
         try:
             try:
@@ -201,21 +203,12 @@ def convert_time_str(time_string, **kwargs):
                                     **kwargs) + time_delta
         except ValueError:
             pass
-    time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
-    if time_string_parse_format is not None:
-        ts, time_delta = _regex_parse_time(time_string,
-                                           time_string_parse_format)
-        if ts and time_delta:
-            return ap.Time.strptime(ts, time_string_parse_format,
-                                    **kwargs) + time_delta
-        else:
-            return ap.Time.strptime(time_string, time_string_parse_format,
-                                    **kwargs)
+
     # when no format matches, call default fucntion
     return convert_time.dispatch(object)(time_string, **kwargs)
 
 
-def parse_time(time_string, format=None, **kwargs):
+def parse_time(time_string, *, format=None, **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
@@ -285,7 +278,7 @@ def is_time(time_string, time_format=None):
         return True
 
     try:
-        parse_time(time_string, time_format)
+        parse_time(time_string, format=time_format)
     except ValueError:
         return False
     else:
@@ -325,7 +318,7 @@ def day_of_year(time_string):
 def break_time(t='now', time_format=None):
     """Given a time returns a string. Useful for naming files."""
     # TODO: should be able to handle a time range
-    return parse_time(t, time_format).strftime("%Y%m%d_%H%M%S")
+    return parse_time(t, format=time_format).strftime("%Y%m%d_%H%M%S")
 
 
 def get_day(dt):
