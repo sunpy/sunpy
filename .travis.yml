@@ -61,11 +61,6 @@ matrix:
            stage: Comprehensive tests
            env: SETUP_CMD="test --online --coverage"
 
-         # Python 3.5 with Astropy 2
-         - python: 3.5
-           stage: Comprehensive tests
-           env: ASTROPY_VERSION='lts' SETUP_CMD="test --skip-docs"
-
         # Cron tests below this line
          - os: osx
            stage: Cron tests
@@ -84,11 +79,6 @@ matrix:
            stage: Cron tests
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
 
-         - python: 3.5
-           stage: Cron tests
-           env: SETUP_CMD='test --figure-only' ASTROPY_VERSION='dev'
-                CONDA_DEPENDENCIES='astropy'
-
          - python: 3.6
            stage: Cron tests
            # Pip Upstream checks
@@ -102,7 +92,6 @@ install:
 before_script:
     # Download the sample data for the online builds only.
     - if [[ $SETUP_CMD == *online-only* ]] || [[ $SETUP_CMD == *remote-data* ]]; then python -m "sunpy.data.sample"; fi
-    - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; python -m "sunpy.data.sample"; fi
 
 script:
     - $MAIN_CMD $SETUP_CMD
