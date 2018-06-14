@@ -21,9 +21,14 @@ try:
 except ImportError:
     __githash__ = ''
 
+import os
 from sunpy.util.config import load_config, print_config
 from sunpy.util import system_info
-from sunpy.tests import main as self_test
+from sunpy.tests.runner import SunPyTestRunner
+
+self_test = SunPyTestRunner.make_test_runner_in(os.path.dirname(__file__))
 
 # Load user configuration
 config = load_config()
+
+__all__ = ['config', 'self_test', 'system_info']
