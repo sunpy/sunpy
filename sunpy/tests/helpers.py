@@ -2,10 +2,10 @@
 # Lovingly borrowed from Astropy
 # Licensed under a 3-clause BSD style license - see licences/ASTROPY.rst
 
+import warnings
+import platform
 import os
 import datetime
-import platform
-import warnings
 
 import pytest
 import matplotlib.pyplot as plt
