@@ -565,5 +565,5 @@ class NoTimeSeriesFound(ValueError):
     pass
 
 
-TimeSeries = TimeSeriesFactory(registry= GenericTimeSeries._registry, default_widget_type=GenericTimeSeries,
+TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry, default_widget_type=GenericTimeSeries,
                                additional_validation_functions=['is_datasource_for'])

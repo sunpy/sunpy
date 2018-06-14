@@ -139,6 +139,13 @@ class GenericMap(NDData):
     _registry = dict()
 
     def __init_subclass__(cls, **kwargs):
+        """
+        An __init_subclass__ hook initializes all of the subclasses of a given class.
+        So for each subclass, it will call this block of code on import.
+        This replicates some metaclass magic without the need to be aware of metaclasses.
+        Here we use this to register each subclass in a dict that has the `is_datasource_for` attribute.
+        This is then passed into the Map Factory so we can register them.
+        """
         super().__init_subclass__(**kwargs)
         if hasattr(cls, 'is_datasource_for'):
             cls._registry[cls] = cls.is_datasource_for
