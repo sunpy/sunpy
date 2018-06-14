@@ -174,14 +174,14 @@ class EditEntry(DatabaseOperation):
         self.prev_values = {}
 
     def __call__(self):
-        for k, v in six.iteritems(self.kwargs):
+        for k, v in self.kwargs.items():
             # save those values in the dict prev_values that will be changed
             # so that they can be recovered
             self.prev_values[k] = getattr(self.database_entry, k)
             setattr(self.database_entry, k, v)
 
     def undo(self):
-        for k, v in six.iteritems(self.prev_values):
+        for k, v in self.prev_values.items():
             setattr(self.database_entry, k, v)
 
     def __repr__(self):
