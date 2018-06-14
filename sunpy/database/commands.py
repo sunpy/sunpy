@@ -1,19 +1,8 @@
-# Author: Simon Liedtke <liedtke.simon@googlemail.com>
-#
-# This module was developed with funding provided by
-# the Google Summer of Code (2013).
-
-from __future__ import absolute_import
-
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 import os
 
 from sqlalchemy.orm import make_transient
 from sqlalchemy.exc import InvalidRequestError
-
-from sunpy.extern import six
-
-from sunpy.extern.six.moves import range
 
 __all__ = [
     'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError',
@@ -56,8 +45,7 @@ class NonRemovableTagError(Exception):
         return errmsg.format(self.database_entry, self.tag)
 
 
-@six.add_metaclass(ABCMeta)
-class DatabaseOperation(object):
+class DatabaseOperation(ABC):
     """This is the abstract main class for all database operations. To
     implement a new operation, inherit from this class and override the methods
     __call__ and undo. Both these methods get no parameters (except for self of
