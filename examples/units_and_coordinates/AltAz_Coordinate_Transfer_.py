@@ -14,7 +14,7 @@ from sunpy.coordinates import frames, get_sunearth_distance
 import astropy.units as u
 
 ######################################################################################
-# We use ~astropy.coordinates.SkyCoord~ to define the center of the Sun
+# We use '~astropy.coordinates.SkyCoord' to define the center of the Sun
 obstime = "2013-09-21 16:00:00"
 c = SkyCoord(0 * u.arcsec, 0 * u.arcsec, observer="earth",obstime=obstime,frame=frames.Helioprojective)
 
