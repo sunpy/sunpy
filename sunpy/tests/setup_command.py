@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jun  7 19:36:08 2014
-
-@author: Stuart Mumford
-
 This file is designed to be imported and ran only via setup.py, hence it's
 dependency on astropy_helpers which will be available in that context.
 """
@@ -11,7 +7,6 @@ import os
 import copy
 
 from astropy_helpers.commands.test import AstropyTest
-from astropy_helpers.compat import _fix_user_options
 
 
 class SunPyTest(AstropyTest):
@@ -33,7 +28,6 @@ class SunPyTest(AstropyTest):
                      ('figure-only', None,
                       'Only run tests that compare figures against stored hashes.')]
 
-    user_options = _fix_user_options(user_options)
     package_name = ''
 
     def initialize_options(self):
