@@ -12,13 +12,13 @@ docs-install: &docs-install
 image-conda-run: &image-conda-install
   name: Install Python dependencies for figure tests
   command: |
-    conda env create -f sunpy/tests/figure_tests_env_3.5.yml
+    conda env create -f sunpy/tests/figure_tests_env_3.6.yml
 
 image-run: &image-tests
   name: Run image tests
   command: |
     conda env list
-    source activate sunpy-figure-tests-3.5
+    source activate sunpy-figure-tests-3.6
     python setup.py test --figure-only --coverage
     pip install codecov
     codecov
@@ -28,13 +28,6 @@ jobs:
   egg-info-36:
     docker:
       - image: circleci/python:3.6
-    steps:
-      - checkout
-      - run: python setup.py egg_info
-
-  egg-info-35:
-    docker:
-      - image: circleci/python:3.5
     steps:
       - checkout
       - run: python setup.py egg_info
@@ -58,8 +51,7 @@ jobs:
       - checkout
       - run: *apt-install
       - run: *docs-install
-      - run: python setup.py build_docs -w 2> /dev/null
-
+      - run: python setup.py build_docs
       - store_artifacts:
           path: docs/_build/html
 
@@ -79,11 +71,10 @@ workflows:
   egg-info:
     jobs:
       - egg-info-36
-      - egg-info-35
 
   figure-tests:
     jobs:
-      - figure-tests-35
+      - figure-tests-36
 
   test-documentation:
     jobs:
