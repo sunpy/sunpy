@@ -29,7 +29,7 @@ Fort_Sumner = EarthLocation(lat=34.4900*u.deg, lon=-104.221800*u.deg, height=40*
 
 frame_altaz = AltAz(obstime=Time(obstime), location=Fort_Sumner)
 sun_altaz = c.transform_to(frame_altaz)
-print ('Altitude is {0} and Azimuth is {1}'.format (sun_altaz.T.alt, sun_altaz.T.az))
+print('Altitude is {0} and Azimuth is {1}'.format(sun_altaz.T.alt, sun_altaz.T.az))
 
 ######################################################################################
 # Next let's check this calculation by converting it back to helioprojective.
