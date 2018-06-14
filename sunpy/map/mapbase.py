@@ -1,14 +1,10 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
-from __future__ import absolute_import, division, print_function
-from sunpy.extern.six.moves import range
-
 import copy
 import warnings
 import inspect
-from abc import ABCMeta
-from collections import OrderedDict, namedtuple
+from collections import namedtuple
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -43,41 +39,6 @@ SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 __all__ = ['GenericMap']
 
 
-"""
-Questions
----------
-* Should we use Helioviewer or VSO's data model? (e.g. map.meas, map.wavelength
-or something else?)
-* Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
-"""
-
-# GenericMap subclass registry.
-MAP_CLASSES = OrderedDict()
-
-
-class GenericMapMetaclass(ABCMeta):
-    """
-    Registration metaclass for `~sunpy.map.GenericMap`.
-
-    This class checks for the existance of a method named ``is_datasource_for``
-    when a subclass of `GenericMap` is defined. If it exists it will add that
-    class to the registry.
-    """
-
-    _registry = MAP_CLASSES
-
-    def __new__(mcls, name, bases, members):
-        cls = super(GenericMapMetaclass, mcls).__new__(mcls, name, bases, members)
-
-        # The registry contains the class as the key and the validation method
-        # as the item.
-        if 'is_datasource_for' in members:
-            mcls._registry[cls] = cls.is_datasource_for
-
-        return cls
-
-
-@six.add_metaclass(GenericMapMetaclass)
 class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
@@ -174,6 +135,13 @@ class GenericMap(NDData):
         only the first two dimensions (NAXIS1, NAXIS2) will be loaded and the
         rest will be discarded.
     """
+
+    _registry = dict()
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if hasattr(cls, 'is_datasource_for'):
+            cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
         # If the data has more than two dimensions, the first dimensions
@@ -391,6 +359,9 @@ Reference Coord:\t {refcoord}
         return self.data.max(*args, **kwargs)
 
 # #### Keyword attribute and other attribute definitions #### #
+
+    def is_datasource_for(self):
+        pass
 
     def _base_name(self):
         """Abstract the shared bit between name and latex_name"""
