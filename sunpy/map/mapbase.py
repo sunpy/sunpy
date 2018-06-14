@@ -360,9 +360,6 @@ Reference Coord:\t {refcoord}
 
 # #### Keyword attribute and other attribute definitions #### #
 
-    def is_datasource_for(self):
-        pass
-
     def _base_name(self):
         """Abstract the shared bit between name and latex_name"""
         return "{nickname} {{measurement}} {date:{tmf}}".format(nickname=self.nickname,
