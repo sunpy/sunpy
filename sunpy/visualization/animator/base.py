@@ -535,12 +535,12 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                 # Set extent.
                 extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
                 # Depending on length of axis_ranges[i], leave unchanged,
-                # convert to pixel centers of raise an error due to incompatible format.
+                # convert to pixel centers or raise an error due to incompatible format.
                 if len(axis_ranges[i]) == 2:
                     axis_ranges[i] = np.asarray(axis_ranges[i])
-                elif len(axis_ranges[i]) == d+1:
+                elif len(axis_ranges[i]) == data_shape[i]+1:
                     # If array of individual pixel edges supplied, first set extent
-                    # from first and list pixel edge, then convert axis_ranges to pixel centers.
+                    # from first and last pixel edge, then convert axis_ranges to pixel centers.
                     # The reason that pixel edges are required as input rather than centers
                     # is so that the plot extent can be derived from axis_ranges (above)
                     # and APIs using both [min, max] pair and manual definition of each pixel
