@@ -47,6 +47,9 @@ jobs:
         environment:
             COLUMNS=180
     steps:
+      - restore_cache:
+          keys: sample-data-v1
+
       - checkout
       - run: *apt-install
       - run: *docs-install
