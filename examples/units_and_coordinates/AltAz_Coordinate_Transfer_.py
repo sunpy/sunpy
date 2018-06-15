@@ -15,8 +15,8 @@ import astropy.units as u
 
 ######################################################################################
 # We use `~astropy.coordinates.SkyCoord` to define the center of the Sun
-time = "2013-09-21 16:00:00"
-c = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime=time, frame=frames.Helioprojective)
+obstime = "2013-09-21 16:00:00"
+c = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime=obstime, frame=frames.Helioprojective)
 
 ######################################################################################
 # Now we establish our location on the Earth, in this case Fort Sumner, NM.
