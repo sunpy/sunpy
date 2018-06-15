@@ -109,3 +109,7 @@ def test_fido(time, instrument, wave):
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
+
+
+def test_attr_reg():
+    a.Instrument.norh = a.Instrument('NORH')

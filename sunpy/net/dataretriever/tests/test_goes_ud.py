@@ -145,3 +145,9 @@ def test_time_for_url(LCClient, time):
     url = LCClient._get_url_for_timerange(tr)
     times = LCClient._get_time_for_url(url)
     assert all([tr == t2 for t2 in times])
+
+
+def test_attr_reg():
+    a.Instrument.goes = a.Instrument("GOES")
+    a.Instrument.xrs = a.Instrument("XRS")
+    a.goes.SatelliteNumber.A2 = a.goes.SatelliteNumber("2")

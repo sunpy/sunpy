@@ -76,6 +76,13 @@ class NOAAIndicesClient(GenericClient):
                 return all(chklist)
         return False
 
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [
+            ('NOAA-Indices', 'Recent Solar Indices of Observed Monthly Mean Values')]}
+        return {cls: adict}
+
 
 class NOAAPredictClient(GenericClient):
     """
@@ -143,6 +150,13 @@ class NOAAPredictClient(GenericClient):
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'noaa-predict':
                 return all(chklist)
         return False
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [
+            ('NOAA-Predict', 'Predicted Sunspot Number And Radio Flux Values With Expected Ranges.')]}
+        return {cls: adict}
 
 
 class SRSClient(GenericClient):
@@ -298,3 +312,10 @@ class SRSClient(GenericClient):
                     str(x.value).lower() in ["soon", "srs_table"]):
                 return True
         return False
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [("soon", "Solar Region Summary."),
+                                    ("srs_table", "Solar Region Summary.")]}
+        return {cls: adict}

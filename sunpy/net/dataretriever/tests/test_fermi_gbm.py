@@ -46,6 +46,10 @@ def test_can_handle_query(time):
     assert ans4 is False
 
 
+def test_attr_reg():
+    a.Instrument.gbm = a.Instrument('GBM')
+
+
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument", [
     (a.Time('2012/8/9', '2012/8/10'), a.Instrument('gbm')),

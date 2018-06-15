@@ -207,3 +207,10 @@ class RHESSIClient(GenericClient):
                 matches = False
 
         return matches
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [('RHESSI',
+                                     'Reuven Ramaty High Energy Solar Spectroscopic Imager.')]}
+        return {cls: adict}

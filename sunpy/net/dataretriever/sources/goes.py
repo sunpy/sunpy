@@ -194,6 +194,16 @@ class XRSClient(GenericClient):
     def _attrs_module(cls):
         return 'goes', 'sunpy.net.dataretriever.attrs.goes'
 
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        goes_number = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        adict = {attrs.Instrument: [
+            ("GOES", "The Geostationary Operational Environmental Satellite Program."),
+            ("XRS", "GOES X-ray Flux")],
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
+        return {cls: adict}
+
 
 class SUVIClient(GenericClient):
     """
@@ -396,3 +406,12 @@ class SUVIClient(GenericClient):
     @classmethod
     def _attrs_module(cls):
         return 'goes', 'sunpy.net.dataretriever.attrs.goes'
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        goes_number = [16, 17]
+        adict = {attrs.Instrument: [
+            ("SUVI",  "The Geostationary Operational Environmental Satellite Program.")],
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number for SUVI {x}") for x in goes_number]}
+        return {cls: adict}

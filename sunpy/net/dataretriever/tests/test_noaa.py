@@ -165,3 +165,10 @@ def test_srs_current_year():
     res = Fido.fetch(qr)
     assert len(res) == 1
     assert res.data[0].endswith(f"{year}0101SRS.txt")
+
+
+def test_attr_reg():
+    a.Instrument.noaa_indices = a.Instrument("NOAA-Indices")
+    a.Instrument.noaa_predict = a.Instrument("NOAA-Predict")
+    a.Instrument.srs_table = a.Instrument("SRS_Table")
+    a.Instrument.soon = a.Instrument("SOON")

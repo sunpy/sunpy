@@ -1,13 +1,14 @@
 from sunpy.util.scraper import Scraper
 from ..client import GenericClient
 
+
 __all__ = ['GBMClient']
 
 
 class GBMClient(GenericClient):
     """
     Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument
-    aboard the Fermi satellite. Although GBMs primary objective is to
+    on board the Fermi satellite. Although GBMs primary objective is to
     detect gamma-ray bursts, it provides high quality high energy solar
     flare observations.
 
@@ -110,6 +111,13 @@ class GBMClient(GenericClient):
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'gbm':
                 return all(chklist)
         return False
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [
+            ('GBM', 'Gamma-Ray Burst Monitor on board the Fermi satellite.')]}
+        return {cls: adict}
 
 
 def _check_detector(detector, **kwargs):

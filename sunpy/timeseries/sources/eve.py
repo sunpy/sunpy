@@ -28,7 +28,7 @@ class ESPTimeSeries(GenericTimeSeries):
     SDO EVE/ESP Level 1 data.
 
     The Extreme ultraviolet Spectro-Photometer (ESP) is an irradiance instrument
-    which is part of the Extreme ultraviolet Variability Experiment (EVE) onboard
+    which is part of the Extreme ultraviolet Variability Experiment (EVE) on board
     SDO. ESP provides high time cadence (0.25s) EUV irradiance measurements in five
     channels, one soft X-ray and 4 EUV. The first four orders of the diffraction grating
     gives measurements centered on 18nm, 26nm, 30nm and 36nm. The zeroth order (obtained

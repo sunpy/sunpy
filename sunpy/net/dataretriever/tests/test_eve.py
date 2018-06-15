@@ -110,3 +110,8 @@ def test_levels(time):
     #qr = Fido.search(time, eve_a, a.Level(0) | a.Level(1))
     #clients = {type(a.client) for a in qr.responses}
     #assert clients == {eve.EVEClient}
+
+
+def test_attr_reg():
+    a.Instrument.eve = a.Instrument('EVE')
+    a.Level.zero = a.Level('0')

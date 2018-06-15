@@ -521,3 +521,19 @@ def test_incorrect_content_disposition(client):
     ])
 def test_can_handle_query(query, handle):
     assert VSOClient._can_handle_query(*query) is handle
+
+@pytest.mark.remote_data
+def test_vso_attr():
+    """
+    Check that the dict is correctly filled.
+    """
+    adict = vso.VSOClient.get_vso_values()
+    assert isinstance(adict, dict)
+    assert len(adict.keys()) == 5
+    for key, value in adict.items():
+        assert isinstance(key, attr.AttrMeta)
+        assert isinstance(adict[key], list)
+        assert isinstance(value, list)
+        for val in value:
+            assert isinstance(val, tuple)
+            assert len(val) == 2

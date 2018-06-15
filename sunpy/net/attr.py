@@ -20,12 +20,14 @@ import re
 import keyword
 import warnings
 from collections import defaultdict, namedtuple
+from textwrap import dedent
 
 from astropy.utils.misc import isiterable
+from astropy.table import Table
 
 from sunpy.util.functools import seconddispatch
 
-_ATTR_TUPLE = namedtuple("attr", "name name_long desc")
+_ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
 _REGEX = re.compile(r"^[\d]([^\d].*)?$")
 
 __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
@@ -33,7 +35,7 @@ __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
 
 
 def make_tuple():
-    return _ATTR_TUPLE([], [], [])
+    return _ATTR_TUPLE([], [], [], [])
 
 
 def strtonum(value):
@@ -92,24 +94,37 @@ class AttrMeta(type):
         """
         return super().__dir__() + self._attr_registry[self].name
 
+    def __repr__(self):
+        """
+        Returns the normal repr plus the pretty attr __str__.
+        """
+        return object.__repr__(self) + "\n" + str(self)
+
     def __str__(self):
         """
         This enables the "pretty" printing of Attrs.
         """
-        name = ['Attribute Name'] + self._attr_registry[self].name
-        name_long = ['Full Name'] + self._attr_registry[self].name_long
-        desc = ['Description'] + self._attr_registry[self].desc
-        pad_name = max(len(elm) for elm in name)
-        pad_long = max(len(elm) for elm in name_long)
-        pad_desc = max(len(elm) for elm in desc)
-        fmt = f"%-{pad_name}s | %-{pad_long}s | %-{pad_desc}s"
-        lines = [fmt % elm for elm in zip(name, name_long, desc)]
-        lines.insert(1, '-' * (pad_name + 1) + '+' + '-' * (pad_long + 2) + '+' + '-' * (pad_desc + 1))
-        return "\n".join(lines)
+        class_name = self.__name__
+        attrs = self._attr_registry[self]
+        names = [x for _, x in sorted(zip(attrs.name, attrs.name), key=lambda pair: pair[0])]
+        clients = [x for _, x in sorted(zip(attrs.name, attrs.client), key=lambda pair: pair[0])]
+        names_long = [x for _, x in sorted(
+            zip(attrs.name, attrs.name_long), key=lambda pair: pair[0])]
+        descs = [x for _, x in sorted(zip(attrs.name, attrs.name_long), key=lambda pair: pair[0])]
+        lines = []
+        t = Table(names=["Attribute Name", "Client", "Full Name",
+                         "Description"], dtype=[str, str, str, str])
+        for name, client, name_long, desc in zip(names, clients, names_long, descs):
+            t.add_row((name, client, name_long, desc))
+        lines.insert(0, class_name)
+        lines.insert(1, dedent(self.__doc__.partition("\n\n")[0])+"\n")
+        lines.extend(t.pformat_all(show_dtype=False))
+        return '\n'.join(lines)
 
 
 class Attr(metaclass=AttrMeta):
     """This is the base for all attributes."""
+
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
@@ -177,32 +192,33 @@ class Attr(metaclass=AttrMeta):
         >>> attrs.Instrument.aia, attrs.Instrument.hmi # doctest: +SKIP
         (<Instrument('AIA')>, <Instrument('HMI')>)
         """
-
-        for key, value in adict.items():
-            if isiterable(value) and not isinstance(value, str):
-                for pair in value:
-                    if len(pair) != 2:
-                        raise ValueError(f'Invalid length (!=2) for values: {value}.')
-                    else:
-                        # Sanitize name, we remove all special characters and make it all lower case
-                        name = ''.join(char for char in pair[0] if char.isalnum()).lower()
-                        if keyword.iskeyword(name):
-                            # Attribute name has been appended with `_`
-                            # to make it a valid identifier since its a python keyword.
-                            name = name + '_'
-                        if not name.isidentifier():
-                            # This should account for names with one number first.
-                            # We match for single digits at the start only.
-                            if _REGEX.match(name):
-                                # This turns that digit into its name
-                                number = strtonum(name[0])
-                                name = number + ("_" + name[1:] if len(name) > 1 else "")
-                        cls._attr_registry[key][0].append(name)
-                        cls._attr_registry[key][1].append(pair[0])
-                        cls._attr_registry[key][2].append(pair[1])
-            else:
-                raise ValueError(f"Invalid input value: {value} for key: {repr(key)}. "
-                                  "The value is not iterable or just a string.")
+        for client in adict.keys():
+            for key, value in adict[client].items():
+                if isiterable(value) and not isinstance(value, str):
+                    for pair in value:
+                        if len(pair) != 2:
+                            raise ValueError(f'Invalid length (!=2) for values: {value}.')
+                        else:
+                            # Sanitize name, we remove all special characters and make it all lower case
+                            name = ''.join(char for char in pair[0] if char.isalnum()).lower()
+                            if keyword.iskeyword(name):
+                                # Attribute name has been appended with `_`
+                                # to make it a valid identifier since its a python keyword.
+                                name = name + '_'
+                            if not name.isidentifier():
+                                # This should account for names with one number first.
+                                # We match for single digits at the start only.
+                                if _REGEX.match(name):
+                                    # This turns that digit into its name
+                                    number = strtonum(name[0])
+                                    name = number + ("_" + name[1:] if len(name) > 1 else "")
+                            cls._attr_registry[key][0].append(name)
+                            cls._attr_registry[key][1].append(client.__name__.replace("Client", ""))
+                            cls._attr_registry[key][2].append(pair[0])
+                            cls._attr_registry[key][3].append(pair[1])
+                else:
+                    raise ValueError(f"Invalid input value: {value} for key: {repr(key)}. "
+                                     "The value is not iterable or just a string.")
 
 
 class DataAttr(Attr):
@@ -237,6 +253,7 @@ class DummyAttr(Attr):
        for from, to in times:
            attr |= Time(from, to)
     """
+
     def __and__(self, other):
         return other
 
@@ -265,6 +282,7 @@ class SimpleAttr(DataAttr):
     value : `object`
        The value for the attribute to hold.
     """
+
     def __init__(self, value):
         super().__init__()
         self.value = value
@@ -291,6 +309,7 @@ class Range(DataAttr):
     max_ : `object`
         The upper bound of the range.
     """
+
     def __init__(self, min_, max_):
         self.min = min_
         self.max = max_
@@ -317,6 +336,7 @@ class Range(DataAttr):
 
 class AttrAnd(Attr):
     """ Attribute representing attributes ANDed together. """
+
     def __init__(self, attrs):
         super().__init__()
         self.attrs = attrs
@@ -349,6 +369,7 @@ class AttrAnd(Attr):
 
 class AttrOr(Attr):
     """ Attribute representing attributes ORed together. """
+
     def __init__(self, attrs):
         super().__init__()
         self.attrs = attrs
@@ -453,7 +474,8 @@ Registered appliers: {appliers}"""
 
     @staticmethod
     def _unknown_type(*args, **kwargs):
-        raise TypeError(f"{args[1]} or any of its parents have not been registered with the AttrWalker")
+        raise TypeError(
+            f"{args[1]} or any of its parents have not been registered with the AttrWalker")
 
     def __init__(self):
         self.applymm = seconddispatch(self._unknown_type)
