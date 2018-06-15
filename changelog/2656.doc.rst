@@ -1,0 +1,1 @@
+Added gallery example showing the conversion of Helioprojective Coordinates to Altitude/Azimuth Coordinates to and back.  
