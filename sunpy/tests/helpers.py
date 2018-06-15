@@ -2,18 +2,14 @@
 # Lovingly borrowed from Astropy
 # Licensed under a 3-clause BSD style license - see licences/ASTROPY.rst
 
-from __future__ import absolute_import, division, print_function
-import warnings
-import tempfile
-import platform
 import os
 import datetime
+import platform
+import warnings
 
 import pytest
-import numpy as np
 import matplotlib.pyplot as plt
 
-import astropy.units as u
 from astropy.utils.decorators import wraps
 
 from sunpy.tests import hash
@@ -35,7 +31,7 @@ else:
 
 try:
     from sunpy.io import _pyana
-except ImportError as e:
+except ImportError:
     SKIP_ANA = True
 else:
     SKIP_ANA = False
@@ -52,9 +48,8 @@ def warnings_as_errors(request):
     request.addfinalizer(lambda *args: warnings.resetwarnings())
 
 
-hash_library = hash.hash_library
 new_hash_library = {}
-test_fig_dir = 'result_images/{:%H%M%S}'.format(datetime.datetime.now())
+figure_base_dir = None
 
 
 def figure_test(test_function):
@@ -78,6 +73,8 @@ def figure_test(test_function):
     def wrapper(*args, **kwargs):
         if not os.path.exists(hash.HASH_LIBRARY_FILE):
             pytest.xfail('Could not find a figure hash library at {}'.format(hash.HASH_LIBRARY_FILE))
+        if figure_base_dir is None:
+            pytest.xfail("No directory to save figures to found")
 
         name = "{0}.{1}".format(test_function.__module__,
                                 test_function.__name__)
@@ -88,9 +85,9 @@ def figure_test(test_function):
             fig = plt.gcf()
 
         # Save the image that was generated
-        if not os.path.exists(test_fig_dir):
-            os.makedirs(test_fig_dir)
-        result_image_loc = os.path.join(test_fig_dir, '{}.png'.format(name))
+        if not os.path.exists(figure_base_dir):
+            os.makedirs(figure_base_dir)
+        result_image_loc = os.path.join(figure_base_dir, '{}.png'.format(name))
         plt.savefig(result_image_loc)
         plt.close()
 
@@ -100,10 +97,10 @@ def figure_test(test_function):
         imgdata.close()
 
         new_hash_library[name] = figure_hash
-        if name not in hash_library:
+        if name not in hash.hash_library:
             pytest.fail("Hash not present: {0}".format(name))
 
-        if hash_library[name] != figure_hash:
+        if hash.hash_library[name] != figure_hash:
             raise RuntimeError('Figure hash does not match expected hash.\n'
                                'New image generated and placed at {}'.format(result_image_loc))
 

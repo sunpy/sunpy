@@ -7,8 +7,7 @@ Created on Sat Jun  7 19:36:08 2014
 This file is designed to be imported and ran only via setup.py, hence it's
 dependency on astropy_helpers which will be available in that context.
 """
-from __future__ import absolute_import, division, print_function
-
+import os
 import copy
 
 from astropy_helpers.commands.test import AstropyTest
@@ -69,6 +68,7 @@ class SunPyTest(AstropyTest):
                'online_only={1.online_only!r}, '
                'figure={1.figure!r}, '
                'figure_only={1.figure_only!r}, '
+               'figure_dir="{figure_dir}", '
                'pep8={1.pep8!r}, '
                'pdb={1.pdb!r}, '
                'open_files={1.open_files!r}, '
@@ -80,5 +80,6 @@ class SunPyTest(AstropyTest):
                'sys.exit(result)')
         return cmd.format('pass',
                           self,
+                          figure_dir=os.path.join(os.path.abspath('.'), "figure_test_images"),
                           cmd_pre=cmd_pre,
                           cmd_post=cmd_post)
