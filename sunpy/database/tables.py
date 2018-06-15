@@ -376,8 +376,8 @@ class DatabaseEntry(Base):
         if physobs is not None:
             physobs = str(physobs)
         instrument = getattr(sr_block, 'instrument', None)
-        time_start = sr_block.time.start
-        time_end = sr_block.time.end
+        time_start = sr_block.time.start.datetime
+        time_end = sr_block.time.end.datetime
 
         wavelengths = getattr(sr_block, 'wave', None)
         wavelength_temp = {}
