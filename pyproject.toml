@@ -21,8 +21,7 @@
     missing_file_message = """
 
 
-* I didn't detect a changelog file in this pull request, and it is not labelled 'No Changelog Entry Needed'.
-  Please add a changelog file to the `changelog/` directory following the instructions in the changelog [README](https://github.com/Cadair/sunpy/blob/towncrier/changelog/README.rst).
+* I didn't detect a changelog file in this pull request. Please add a changelog file to the `changelog/` directory following the instructions in the changelog [README](https://github.com/sunpy/sunpy/blob/master/changelog/README.rst).
 """
     wrong_type_message = """
 
