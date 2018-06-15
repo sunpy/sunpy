@@ -3,6 +3,7 @@
 # Licensed under a 3-clause BSD style license - see licences/ASTROPY.rst
 
 import os
+import pathlib
 import platform
 import warnings
 
@@ -48,7 +49,6 @@ def warnings_as_errors(request):
 
 
 new_hash_library = {}
-figure_base_dir = None
 
 
 def figure_test(test_function):
@@ -84,10 +84,9 @@ def figure_test(test_function):
             fig = plt.gcf()
 
         # Save the image that was generated
-        if not os.path.exists(figure_base_dir):
-            os.makedirs(figure_base_dir)
-        result_image_loc = os.path.join(figure_base_dir, '{}.png'.format(name))
-        plt.savefig(result_image_loc)
+        figure_base_dir.mkdir(exist_ok=True)
+        result_image_loc = figure_base_dir / '{}.png'.format(name)
+        plt.savefig(str(result_image_loc))
         plt.close()
 
         # Create hash
@@ -143,3 +142,41 @@ def _patch_coverage(testdir, sourcedir):  # pragma: no cover
         lines[new_path] = lines.pop(key)
 
     cov.save()
+
+
+html_intro = '''
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+</style>
+</head>
+<body>
+
+<h2>Image test comparison</h2>
+
+<table>
+  <tr>
+    <th>New image</th>
+    <th>Baseline image</th>
+    <th>Diff</th>
+  </tr>
+'''
+
+
+def generate_figure_webpage():
+    baseline_url = 'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/figures/'
+    html_file = figure_base_dir / 'fig_comparison.html'
+    with open(html_file, 'w') as f:
+        f.write(html_intro)
+        for fname in figure_base_dir.iterdir():
+            if fname.suffix == '.png':
+                html_block = ('<tr>'
+                              '<td>{}\n'.format(fname.stem) +
+                              '<img src="{}"></td>\n'.format(fname.name) +
+                              '<td><img src="{}"></td>\n'.format(baseline_url + fname.name) +
+                              '<td></td>'
+                              '</tr>\n\n')
+                f.write(html_block)
+        f.write('</table>')
