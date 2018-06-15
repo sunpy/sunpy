@@ -697,13 +697,13 @@ def entries_from_file(file, default_waveunit=None,
                 try:
                     dt = parse_time(value).datetime
                 except ValueError:
-                    dt = Time.strptime(value, time_string_parse_format)
+                    dt = Time.strptime(value, time_string_parse_format).datetime
                 entry.observation_time_end = dt
             elif key in ('DATE-OBS', 'DATE_OBS'):
                 try:
                     dt = parse_time(value).datetime
                 except ValueError:
-                    dt = Time.strptime(value, time_string_parse_format)
+                    dt = Time.strptime(value, time_string_parse_format).datetime
                 entry.observation_time_start = dt
         yield entry
 
