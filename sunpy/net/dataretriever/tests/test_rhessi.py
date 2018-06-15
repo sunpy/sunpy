@@ -185,3 +185,7 @@ def test_fido_mock(mock_get_observing_summary_dbase_file,
     qr = Fido.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument('rhessi'))
     assert isinstance(qr, UnifiedResponse)
     assert qr._numfile == 3
+
+
+def test_attr_reg():
+    a.Instrument.rhessi = a.Instrument('RHESSI')

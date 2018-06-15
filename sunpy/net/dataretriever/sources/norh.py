@@ -144,3 +144,11 @@ class NoRHClient(GenericClient):
                 return True
 
         return False
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [('NORH',
+                                     ('Nobeyama Radio Heliograph is an imaging radio telescope at 17 '
+                                      'or 34GHz located at the Nobeyama Solar Radio Observatory.'))]}
+        return {cls: adict}

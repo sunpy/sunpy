@@ -21,7 +21,7 @@ class SUVIMap(GenericMap):
     """SUVI Image Map.
 
     The Solar Ultraviolet Imager (SUVI) is a normal-incidence Cassegrain EUV
-    telescope onboard the latest of the Geostationary Operational Environmental
+    telescope on board the latest of the Geostationary Operational Environmental
     Satellite (GOES) missions (GOES-16, formerly known as GOES-R).
     It is similar to Atmospheric Imaging Assembly (AIA). It operates in
     geostationary orbit above the Americas at 75.2 degree W. It's primary
@@ -92,7 +92,7 @@ class SUVIMap(GenericMap):
                                                         'unit': u.m,
                                                         'representation_type': CartesianRepresentation,
                                                         'frame': "itrs"})
-        ] + super()._supported_observer_coordinates
+                ] + super()._supported_observer_coordinates
 
     @property
     def observatory(self):

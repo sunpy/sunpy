@@ -78,3 +78,10 @@ def test_fido(time, instrument):
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
+
+
+def test_attr_reg():
+    a.Instrument.lyra = a.Instrument('LYRA')
+    a.Level.A1 = a.Level('1')
+    a.Level.A2 = a.Level('2')
+    a.Level.A3 = a.Level('3')

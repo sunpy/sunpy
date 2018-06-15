@@ -9,10 +9,12 @@ from sunpy.net.attr import make_tuple
 
 # TODO: Refactor the Attr tests, its too cluttered.
 
+
 class Instrument(attr.SimpleAttr):
     """
     Dummy Instrument Class.
     """
+
     def __init__(self, value):
         super().__init__(value)
 
@@ -215,14 +217,11 @@ def test_attr_metamagic(AIA, HMI):
     attr.Attr.update_values({Instrument: [('HMI', 'This is HMI, it lives next to AIA')]})
     assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower(), HMI.value.lower()]
     assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value, HMI.value]
-    assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data', 'This is HMI, it lives next to AIA']
+    assert attr.Attr._attr_registry[Instrument].desc == [
+        'This is AIA, it takes data', 'This is HMI, it lives next to AIA']
 
     # Tests the print out for the first two inputs only
-    output = textwrap.dedent(
-    "Attribute Name | Full Name | Description                      \n"
-    "---------------+-----------+----------------------------------\n"
-    "aia            | AIA       | This is AIA, it takes data       \n"
-    "hmi            | HMI       | This is HMI, it lives next to AIA")
+    output = 'Instrument\n\nDummy Instrument Class.\n\n\nAttribute Name Full Name            Description           \n-------------- --------- ---------------------------------\n           aia       AIA        This is AIA, it takes data\n           hmi       HMI This is HMI, it lives next to AIA'  # NOQA
 
     assert str(Instrument) == output
 
@@ -251,7 +250,8 @@ def test_attr_dir(AIA, HMI):
 
 
 def test_attr_sanity(SPEC):
-    attr.Attr.update_values({Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]})
+    attr.Attr.update_values(
+        {Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]})
     # This checks for sanitization of names.
     assert attr.Attr._attr_registry[Instrument].name == ['thisnameisspecial']
     assert attr.Attr._attr_registry[Instrument].name_long == ['_!£!THIS_NAME!"!ISSPECIAL~~##']

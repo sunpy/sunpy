@@ -2,9 +2,8 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-from urllib.parse import urljoin
+from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
-from ..client import GenericClient
 
 __all__ = ['LYRAClient']
 
@@ -84,3 +83,13 @@ class LYRAClient(GenericClient):
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'lyra':
                 return all(chklist)
         return False
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [('LYRA',
+                                     'Lyman Alpha Radiometer is the solar UV radiometer on board Proba-2.')],
+                 attrs.Level: [('1', 'LYRA: Metadata and uncalibrated data daily fits.'),
+                               ('2', 'LYRA: Calibrated data, provided as daily fits.'),
+                               ('3', 'LYRA: Same as level 2 but the calibrated data is averaged over 1 min.')]}
+        return {cls: adict}

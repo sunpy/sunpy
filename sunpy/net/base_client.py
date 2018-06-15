@@ -1,6 +1,9 @@
 import importlib
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from textwrap import dedent
+
+from astropy.table import Table
 
 __all__ = ['BaseQueryResponse', 'BaseClient']
 
@@ -130,6 +133,35 @@ class BaseClient(ABC):
             if name not in attrs.__all__:
                 attrs.__all__.append(name)
 
+        # Register client attrs after it has regsitered its own attrs
+        from sunpy.net import attr
+        attr.Attr.update_values(cls.register_values())
+
+    def __repr__(self):
+        """
+        Returns the normal repr plus the pretty client __str__.
+        """
+        return object.__repr__(self) + "\n" + str(self)
+
+    def __str__(self):
+        """
+        This enables the "pretty" printing of clients.
+        """
+        class_name = self.__class__.__name__
+        attrs = self.register_values()
+        lines = []
+        t = Table(names=["Attr Type", "Name", "Description"], dtype=[str, str, str])
+        for client_key in attrs.keys():
+            for key in attrs[client_key].keys():
+                for i in range(len(attrs[client_key][key])):
+                    t.add_row((key.__name__, attrs[client_key][key][i][0],
+                               attrs[client_key][key][i][1]))
+
+        lines.insert(0, class_name)
+        lines.insert(1, dedent(self.__doc__.partition("\n\n")[0])+"\n")
+        lines.extend(t.pformat_all(show_dtype=False))
+        return '\n'.join(lines)
+
     @abstractmethod
     def search(self, *args, **kwargs):
         """
@@ -189,3 +221,10 @@ class BaseClient(ABC):
         all_attrs = required_attrs.union(optional_attrs)
 
         return required_attrs.issubset(query_attrs) and query_attrs.issubset(all_attrs)
+
+    @classmethod
+    @abstractmethod
+    def register_values(cls, *query):
+        """
+        This enables the client to register what kind of Attrs it can use directly.
+        """

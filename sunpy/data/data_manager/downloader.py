@@ -27,7 +27,6 @@ class DownloaderBase(metaclass=ABCMeta):
         `DownloaderError`
             DownloaderError is raised when download errors.
         """
-        raise NotImplementedError
 
 
 class DownloaderError(Exception):

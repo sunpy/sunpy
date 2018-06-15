@@ -82,6 +82,11 @@ def mock_querry_object(suvi_client, start, end, wave):
     return results
 
 
+def test_attr_reg():
+    a.Instrument.suvi = a.Instrument("SUVI")
+    a.goes.SatelliteNumber.A16 = a.goes.SatelliteNumber("16")
+
+
 @pytest.mark.remote_data
 def test_fetch_working(suvi_client):
     """
