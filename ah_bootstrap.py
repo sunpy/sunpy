@@ -38,7 +38,6 @@ latest version of this module.
 
 import contextlib
 import errno
-import imp
 import io
 import locale
 import os
@@ -46,55 +45,35 @@ import re
 import subprocess as sp
 import sys
 
+__minimum_python_version__ = (3, 5)
+
+if sys.version_info < __minimum_python_version__:
+    print("ERROR: Python {} or later is required by astropy-helpers".format(
+        __minimum_python_version__))
+    sys.exit(1)
+
 try:
     from ConfigParser import ConfigParser, RawConfigParser
 except ImportError:
     from configparser import ConfigParser, RawConfigParser
 
 
-if sys.version_info[0] < 3:
-    _str_types = (str, unicode)
-    _text_type = unicode
-    PY3 = False
-else:
-    _str_types = (str, bytes)
-    _text_type = str
-    PY3 = True
+_str_types = (str, bytes)
 
 
 # What follows are several import statements meant to deal with install-time
 # issues with either missing or misbehaving pacakges (including making sure
 # setuptools itself is installed):
 
+# Check that setuptools 1.0 or later is present
+from distutils.version import LooseVersion
 
-# Some pre-setuptools checks to ensure that either distribute or setuptools >=
-# 0.7 is used (over pre-distribute setuptools) if it is available on the path;
-# otherwise the latest setuptools will be downloaded and bootstrapped with
-# ``ez_setup.py``.  This used to be included in a separate file called
-# setuptools_bootstrap.py; but it was combined into ah_bootstrap.py
 try:
-    import pkg_resources
-    _setuptools_req = pkg_resources.Requirement.parse('setuptools>=0.7')
-    # This may raise a DistributionNotFound in which case no version of
-    # setuptools or distribute is properly installed
-    _setuptools = pkg_resources.get_distribution('setuptools')
-    if _setuptools not in _setuptools_req:
-        # Older version of setuptools; check if we have distribute; again if
-        # this results in DistributionNotFound we want to give up
-        _distribute = pkg_resources.get_distribution('distribute')
-        if _setuptools != _distribute:
-            # It's possible on some pathological systems to have an old version
-            # of setuptools and distribute on sys.path simultaneously; make
-            # sure distribute is the one that's used
-            sys.path.insert(1, _distribute.location)
-            _distribute.activate()
-            imp.reload(pkg_resources)
-except:
-    # There are several types of exceptions that can occur here; if all else
-    # fails bootstrap and use the bootstrapped version
-    from ez_setup import use_setuptools
-    use_setuptools()
-
+    import setuptools
+    assert LooseVersion(setuptools.__version__) >= LooseVersion('1.0')
+except (ImportError, AssertionError):
+    print("ERROR: setuptools 1.0 or later is required by astropy-helpers")
+    sys.exit(1)
 
 # typing as a dependency for 1.6.1+ Sphinx causes issues when imported after
 # initializing submodule with ah_boostrap.py
@@ -150,11 +129,7 @@ from distutils.debug import DEBUG
 # TODO: Maybe enable checking for a specific version of astropy_helpers?
 DIST_NAME = 'astropy-helpers'
 PACKAGE_NAME = 'astropy_helpers'
-
-if PY3:
-    UPPER_VERSION_EXCLUSIVE = None
-else:
-    UPPER_VERSION_EXCLUSIVE = '3'
+UPPER_VERSION_EXCLUSIVE = None
 
 # Defaults for other options
 DOWNLOAD_IF_NEEDED = True
@@ -186,7 +161,7 @@ class _Bootstrapper(object):
         if not (isinstance(path, _str_types) or path is False):
             raise TypeError('path must be a string or False')
 
-        if PY3 and not isinstance(path, _text_type):
+        if not isinstance(path, str):
             fs_encoding = sys.getfilesystemencoding()
             path = path.decode(fs_encoding)  # path to unicode
 
@@ -829,9 +804,9 @@ def run_cmd(cmd):
         stdio_encoding = 'latin1'
 
     # Unlikely to fail at this point but even then let's be flexible
-    if not isinstance(stdout, _text_type):
+    if not isinstance(stdout, str):
         stdout = stdout.decode(stdio_encoding, 'replace')
-    if not isinstance(stderr, _text_type):
+    if not isinstance(stderr, str):
         stderr = stderr.decode(stdio_encoding, 'replace')
 
     return (p.returncode, stdout, stderr)
