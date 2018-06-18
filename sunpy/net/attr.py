@@ -16,7 +16,9 @@ sunpy.util.multimethod.
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
-from collections import defaultdict
+from collections import defaultdict, namedtuple
+
+from astropy.utils.misc import isiterable
 
 from sunpy.util.multimethod import MultiMethod
 from sunpy.extern.six import iteritems
@@ -37,7 +39,6 @@ class AttrMeta(type):
     Which would allow `a.Instrument` to be able to tab complete to `a.Instrument.AIA` or `a.Instrument.HMI` which does not happen without this.
     """
     _value_registry = defaultdict(list)
-
     def __getattr__(self, item):
         """
         """
@@ -82,9 +83,16 @@ class Attr(metaclass=AttrMeta):
 
     @classmethod
     def update_values(cls, adict):
+        Pair = namedtuple(str(cls.__name__), 'Name Description')
         for k, v in adict.items():
-            cls._value_registry[k].append(v)
-
+            if isiterable(v) and not isinstance(v, str):
+                for pair in v:
+                    cls._value_registry[k].append(Pair(v[0], v[1]))
+            else:
+                if len(v) == 1:
+                    cls._value_registry[k].append(Pair(v))
+                else:
+                    raise NotImplementedError
 
 class DummyAttr(Attr):
     """ Empty attribute. Useful for building up queries. Returns other
@@ -129,7 +137,6 @@ class SimpleAttr(Attr):
     """
     def __init__(self, value):
         Attr.__init__(self)
-
         self.value = value
 
     def collides(self, other):

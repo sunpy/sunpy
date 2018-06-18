@@ -181,3 +181,12 @@ def test_attr_metamagic(AIA, HMI):
     assert Instrument.AIA.value == AIA.value
     assert Instrument.HMI == HMI
     assert Instrument.HMI.value == HMI.value
+
+
+def test_attr_pair(AIA):
+
+    # Test update with a pair, name, description
+    attr.Attr.update_values.update_values({AIA: ('AIA', 'This is AIA, it takes data')})
+    attr.Attr.update_values.update_values({AIA: 'AIA'})
+    # assert attr.Attr._value_registry == defaultdict(list,
+    #                                                 {<Instrument('AIA')>: [Instrument(Name='A', Description='This is A, the descripton'), Instrument(Name='A', Description='This is A, the descripton')]})
