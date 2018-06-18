@@ -4,10 +4,9 @@ import pytest
 from sunpy.net import attr
 
 
-class Instrument(attr.Attr):
+class Instrument(attr.SimpleAttr):
     """
     Dummy Instrument Class.
-    Probably could use the real one instead.
     """
     def __init__(self, value):
         super().__init__()

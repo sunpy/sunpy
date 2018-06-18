@@ -64,23 +64,6 @@ class _Range(object):
     def __contains__(self, other):
         return self.min <= other.min and self.max >= other.max
 
-
-class _VSOSimpleAttr(Attr):
-    """ A _SimpleAttr is an attribute that is not composite, i.e. that only
-    has a single value, such as, e.g., Instrument('eit'). """
-    def __init__(self, value):
-        super().__init__()
-
-        self.value = value
-
-    def collides(self, other):
-        return isinstance(other, self.__class__)
-
-    def __repr__(self):
-        return "<{cname!s}({val!r})>".format(
-            cname=self.__class__.__name__, val=self.value)
-
-
 class Wavelength(Attr, _Range):
     def __init__(self, wavemin, wavemax=None):
         """
@@ -212,7 +195,7 @@ class Extent(Attr):
         return isinstance(other, self.__class__)
 
 
-class Provider(_VSOSimpleAttr):
+class Provider(SimpleAttr):
     """
     Specifies the VSO data provider to search for data for.
 
@@ -229,7 +212,7 @@ class Provider(_VSOSimpleAttr):
     pass
 
 
-class Source(_VSOSimpleAttr):
+class Source(SimpleAttr):
     """
     Data sources that VSO can search on.
 
@@ -248,7 +231,7 @@ class Source(_VSOSimpleAttr):
     pass
 
 
-class Instrument(_VSOSimpleAttr):
+class Instrument(SimpleAttr):
     """
     Specifies the Instrument name for the search.
 
@@ -269,7 +252,7 @@ class Instrument(_VSOSimpleAttr):
         super(Instrument, self).__init__(value)
 
 
-class Detector(_VSOSimpleAttr):
+class Detector(SimpleAttr):
     """
     The detector from which the data comes from.
 
@@ -289,7 +272,7 @@ class Detector(_VSOSimpleAttr):
     pass
 
 
-class Physobs(_VSOSimpleAttr):
+class Physobs(SimpleAttr):
     """
     Specifies the physical observable the VSO can search for.
 
@@ -306,7 +289,7 @@ class Physobs(_VSOSimpleAttr):
     pass
 
 
-class Level(_VSOSimpleAttr):
+class Level(SimpleAttr):
     """
     Specifies the data processing level to search for.  The data processing
     level is specified by the instrument PI.  May not work with all archives.
@@ -326,7 +309,7 @@ class Level(_VSOSimpleAttr):
     pass
 
 
-class Pixels(_VSOSimpleAttr):
+class Pixels(SimpleAttr):
     """
     Pixels are (currently) limited to a single dimension (and only implemented
     for SDO data)  We hope to change this in the future to support TRACE,
@@ -339,7 +322,7 @@ class Pixels(_VSOSimpleAttr):
     pass
 
 
-class Resolution(_VSOSimpleAttr):
+class Resolution(SimpleAttr):
     """
     Resolution level of the data.
 
@@ -367,7 +350,7 @@ class Resolution(_VSOSimpleAttr):
     pass
 
 
-class PScale(_VSOSimpleAttr):
+class PScale(SimpleAttr):
     """
     Pixel Scale (PSCALE) is in arc seconds.
 
@@ -392,7 +375,7 @@ class PScale(_VSOSimpleAttr):
     pass
 
 
-class Sample(_VSOSimpleAttr):
+class Sample(SimpleAttr):
     """
     Time interval for data sampling.
 
@@ -407,7 +390,7 @@ class Sample(_VSOSimpleAttr):
         self.value = value.to(u.s).value
 
 
-class Quicklook(_VSOSimpleAttr):
+class Quicklook(SimpleAttr):
     """
     Retrieve 'quicklook' data if available.
 
@@ -434,7 +417,7 @@ class Quicklook(_VSOSimpleAttr):
             self.value = 0
 
 
-class Filter(_VSOSimpleAttr):
+class Filter(SimpleAttr):
     """
     This attribute is a placeholder for the future.
 
@@ -516,7 +499,7 @@ walker.add_converter(Time)(
     })
 )
 
-walker.add_converter(_VSOSimpleAttr)(
+walker.add_converter(SimpleAttr)(
     lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
 )
 
@@ -561,7 +544,7 @@ def _(attr, results):
 
 
 # Filter out items by comparing attributes.
-@filter_results.add_dec(_VSOSimpleAttr)
+@filter_results.add_dec(SimpleAttr)
 def _(attr, results):
     attrname = attr.__class__.__name__.lower()
     return set(

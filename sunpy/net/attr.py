@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-#
-# This module was developed with funding provided by
-# the ESA Summer of Code (2011).
-#
-# pylint: disable=C0103,R0903
-
 """
 Allow representation of queries as logic expressions. This module makes
 sure that attributes that are combined using the two logic operations AND (&)
@@ -23,13 +16,10 @@ sunpy.util.multimethod.
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
-
 from collections import defaultdict
 
 from sunpy.util.multimethod import MultiMethod
 from sunpy.extern.six import iteritems
-
-# XXX: Maybe allow other normal forms.
 
 
 class AttrMeta(type):
@@ -125,8 +115,6 @@ class DummyAttr(Attr):
         return isinstance(other, DummyAttr)
 
 
-# TODO: Remove _VSOSimpleAttr
-# This is a port of _VSOSimpleAttr.
 class SimpleAttr(Attr):
     """
     An attribute that only has a single value.
