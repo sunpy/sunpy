@@ -9,8 +9,7 @@ class Instrument(attr.SimpleAttr):
     Dummy Instrument Class.
     """
     def __init__(self, value):
-        super().__init__()
-        self.value = value
+        super().__init__(value)
 
 
 @pytest.fixture
