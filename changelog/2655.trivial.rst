@@ -1,0 +1,4 @@
+Removed old metaclass used for Map and TimeSeries as we have now moved to Python 3.6.
+Moved figure tests to Python 3.6.
+Updated the gitignore file.
+Updated astropy_helpers to v3.0.2.
