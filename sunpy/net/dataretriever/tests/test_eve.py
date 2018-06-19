@@ -63,8 +63,7 @@ def test_query():
 def test_get(time, instrument):
     qr1 = LCClient.search(time, instrument)
     res = LCClient.fetch(qr1)
-    download_list = res.wait(progress=False)
-    assert len(download_list) == len(qr1)
+    assert len(res) == len(qr1)
 
 
 @pytest.mark.remote_data

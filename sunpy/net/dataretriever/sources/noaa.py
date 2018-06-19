@@ -4,11 +4,10 @@
 import tarfile
 from collections import OrderedDict
 
-from astropy.time import Time
-from astropy.time import TimeDelta
-import astropy.units as u
+from parfive import Downloader
 
-from sunpy.net.download import Downloader, Results
+import astropy.units as u
+from astropy.time import Time, TimeDelta
 
 from ..client import GenericClient
 
@@ -172,34 +171,25 @@ class SRSClient(GenericClient):
         # Those files that will be present after get returns
         local_paths = self._get_full_filenames(qres, local_filenames, path)
 
-        res = Results(lambda x: None, 0, lambda map_: self._link(map_))
-
         # remove duplicate urls. This will make paths and urls to have same number of elements.
         # OrderedDict is required to maintain ordering because it will be zipped with paths later
-
         urls = list(OrderedDict.fromkeys(urls))
 
-        dobj = Downloader(max_conn=len(urls), max_total=len(urls))
+        dobj = Downloader(max_conn=5)
 
-        # We cast to list here in list(zip... to force execution of
-        # res.require([x]) at the start of the loop.
-        for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                                     urls), paths)):
-            dobj.download(aurl, fname, ncall, error_callback)
+        for aurl, fname in zip(urls, paths):
+            print(aurl, fname)
+            dobj.enqueue_file(aurl, filename=fname)
 
-        res.wait()
+        paths = dobj.download()
 
-        res2 = Results(lambda x: None, 0)
-
+        outfiles = []
         for fname, srs_filename in zip(local_paths, local_filenames):
 
-            fname = fname.args[0]
             name = fname.split('/')[-1]
 
             past_year = False
             for i, fname2 in enumerate(paths):
-
-                fname2 = fname2.args[0]
 
                 if fname2.endswith('.txt'):
                     continue
@@ -215,17 +205,16 @@ class SRSClient(GenericClient):
                     TarFile.extract(member, path=filepath)
                     TarFile.close()
 
-                    callback = res2.require([fname])
-                    callback({'path': fname})
+                    outfiles.append(fname)
 
                     past_year = True
                     break
 
             if past_year is False:
-                callback = res2.require([fname])
-                callback({'path': fname})
+                outfiles.append(fname)
 
-        return res2
+        paths.data = outfiles
+        return paths
 
     def _makeimap(self):
         self.map_['source'] = 'swpc'
@@ -247,10 +236,8 @@ class SRSClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr = ["Time", "Instrument"]
-        chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == "Instrument" and\
-               str(x.value).lower() in ["soon", "srs_table"]:
+            if (x.__class__.__name__ == "Instrument" and
+                str(x.value).lower() in ["soon", "srs_table"]):
                 return True
         return False

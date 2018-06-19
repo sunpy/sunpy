@@ -10,6 +10,8 @@ This module provides the `Fido
 """
 from collections import Sequence
 
+from parfive import Results
+
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
@@ -21,7 +23,7 @@ from sunpy.net.vso import VSOClient, QueryResponse as vsoQueryResponse
 from sunpy.net import attr
 from sunpy.net import attrs as a
 
-__all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory', 'DownloadResponse']
+__all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
 
 
 class UnifiedResponse(Sequence):
@@ -203,34 +205,6 @@ class UnifiedResponse(Sequence):
         return ret
 
 
-class DownloadResponse(list):
-    """
-    Object returned by clients servicing the query.
-    """
-
-    def __init__(self, lst):
-        super(DownloadResponse, self).__init__(lst)
-
-    def wait(self, progress=True):
-        """
-        Waits for all files to download completely and then return.
-
-        Parameters
-        ----------
-        progress : `bool`
-            if true, display a progress bar.
-
-        Returns
-        -------
-        List of file paths to which files have been downloaded.
-        """
-        filelist = []
-        for resobj in self:
-            filelist.extend(resobj.wait(progress=progress))
-
-        return filelist
-
-
 """
 Construct a simple AttrWalker to split up searches into blocks of attrs being
 'anded' with AttrAnd.
@@ -322,9 +296,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 
-    # Python 3: this line should be like this
-    # def fetch(self, *query_results, wait=True, progress=True, **kwargs):
-    def fetch(self, *query_results, **kwargs):
+    def fetch(self, *query_results, progress=True, **kwargs):
         """
         Download the records represented by
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
@@ -348,22 +320,21 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
-        >>> downresp = Fido.fetch(unifresp)  # doctest: +SKIP
-        >>> file_paths = downresp.wait()  # doctest: +SKIP
-        """  # noqa
-        wait = kwargs.pop("wait", True)
-        progress = kwargs.pop("progress", True)
+        >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
+        """
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                reslist.append(block.client.fetch(block, **kwargs))
+                reslist.append(block.client.fetch(block, progress=progress, **kwargs))
 
-        results = DownloadResponse(reslist)
+        # Combine the results objects from all the clients into one Results
+        # object.
+        results = Results()
+        for result in reslist:
+            results.data += result.data
+            results._errors += result.errors
 
-        if wait:
-            return results.wait(progress=progress)
-        else:
-            return results
+        return results
 
     def __call__(self, *args, **kwargs):
         raise TypeError("'{}' object is not callable".format(self.__class__.__name__))

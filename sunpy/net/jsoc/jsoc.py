@@ -13,6 +13,7 @@ import astropy.units as u
 import astropy.time
 import astropy.table
 from astropy.utils.misc import isiterable
+from parfive import Downloader
 
 from sunpy import config
 from sunpy.net.base_client import BaseClient
@@ -25,10 +26,6 @@ __all__ = ['JSOCClient', 'JSOCResponse']
 
 PKEY_LIST_TIME = {'T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
                   'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime'}
-
-
-def simple_path(path, sock, url):
-    return path
 
 
 class NotExportedError(Exception):
@@ -483,17 +480,15 @@ class JSOCClient(BaseClient):
         jsoc_response.requests = [r for r in responses]
         time.sleep(sleep/2.)
 
-        r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
-
         for response in responses:
             response.wait(verbose=progress)
             r = self.get_request(response, path=path, overwrite=overwrite,
-                                 progress=progress, results=r)
+                                 progress=progress)
 
         return r
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
-                    max_conn=5, downloader=None, results=None):
+                    max_conn=5):
         """
         Query JSOC to see if the request(s) is ready for download.
 
@@ -516,12 +511,6 @@ class JSOCClient(BaseClient):
 
         max_conns : `int`
             Maximum number of download connections.
-
-        downloader : `~sunpy.net.download.Downloader`
-            A Custom downloader to use
-
-        results: `~sunpy.net.download.Results`
-            A `~sunpy.net.download.Results` manager to use.
 
         Returns
         -------
@@ -567,21 +556,15 @@ class JSOCClient(BaseClient):
                 fname = partial(simple_path, fname)
                 paths.append(fname)
 
-        if downloader is None:
-            downloader = Downloader(max_conn=max_conn, max_total=max_conn)
-
-        # A Results object tracks the number of downloads requested and the
-        # number that have been completed.
-        if results is None:
-            results = Results(lambda _: downloader.stop(),
-                              done=lambda maps: [v['path'] for v in maps.values()])
+        downloader = Downloader(max_conn=max_conn, progress=progress)
 
         urls = []
+        already_files = []
         for request in requests:
 
             if request.status == 0:
                 for index, data in request.data.iterrows():
-                    is_file = os.path.isfile(paths[index].args[0])
+                    is_file = os.path.isfile(paths[index])
                     if overwrite or not is_file:
                         url_dir = request.request_url + '/'
                         urls.append(urllib.parse.urljoin(url_dir, data['filename']))
@@ -593,21 +576,16 @@ class JSOCClient(BaseClient):
                                         "please set overwrite to True"
                         print(print_message.format(data['filename']))
                         # Add the file on disk to the output
-                        results.map_.update({data['filename']:
-                                            {'path': paths[index].args[0]}})
+                        already_files = paths[index]
         if urls:
             if progress:
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"
                 print(print_message.format(len(urls), request._d['size']))
-            for i, url in enumerate(urls):
-                downloader.download(url, callback=results.require([url]),
-                                    errback=lambda x: print(x), path=paths[i])
+            for aurl, fname in zip(urls, paths):
+                downloader.enqueue_file(aurl, filename=fname)
 
-        else:
-            # Make Results think it has finished.
-            results.require([])
-            results.poke()
-
+        results = downloader.download()
+        results.data += already_files
         return results
 
     def _make_recordset(self, series, start_time='', end_time='', wavelength='',
