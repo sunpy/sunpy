@@ -73,11 +73,6 @@ class WaveunitNotConvertibleError(Exception):
             'astropy.units.Unit instance'.format(self.waveunit))
 
 
-# TODO: move this function outside this package (sunpy.util? sunpy.time?)
-def timestamp2datetime(format, string):
-    return datetime.fromtimestamp(mktime(strptime(string, format)))
-
-
 class JSONDump(Base):
     __tablename__ = 'jsondumps'
 
