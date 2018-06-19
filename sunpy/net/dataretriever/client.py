@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import copy
 import os
+import datetime
+from abc import ABCMeta
 from collections import OrderedDict, namedtuple
 from functools import partial
 import pathlib
@@ -9,13 +11,14 @@ import numpy as np
 import astropy.table
 import astropy.units as u
 
+import parfive
+
 import sunpy
 from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
 from sunpy import config
 
 from sunpy.net.base_client import BaseClient
-from sunpy.net.download import Downloader, Results
 from sunpy.net.vso.attrs import Time, Wavelength, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -324,15 +327,12 @@ class GenericClient(BaseClient):
 
         paths = self._get_full_filenames(qres, filenames, path)
 
-        res = Results(lambda x: None, 0, lambda map_: self._link(map_))
+        dobj = parfive.Downloader(max_conn=5)
 
-        dobj = Downloader(max_conn=len(urls), max_total=len(urls))
+        for url, filename in zip(urls, paths):
+            dobj.enqueue_file(url, filename=filename)
 
-        # We cast to list here in list(zip... to force execution of
-        # res.require([x]) at the start of the loop.
-        for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                                     urls), paths)):
-            dobj.download(aurl, fname, ncall, error_callback)
+        return dobj.download()
 
         return res
 
