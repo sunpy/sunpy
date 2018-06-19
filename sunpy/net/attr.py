@@ -16,6 +16,7 @@ sunpy.util.multimethod.
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
+import keyword
 from collections import defaultdict, namedtuple
 
 from astropy.utils.misc import isiterable
@@ -23,26 +24,26 @@ from astropy.utils.misc import isiterable
 from sunpy.util.multimethod import MultiMethod
 from sunpy.extern.six import iteritems
 
+_ATTR_TUPLE = namedtuple("attr", "name name_long des")
+
+
+def make_tuple():
+    return _ATTR_TUPLE([], [], [])
+
 
 class AttrMeta(type):
     """
     We want to enable automatic discovery via tab completion of subclasses of Attrs.
     To do this we have to create a metaclass that redefines the methods that Python uses to normally do this.
     But also to enable the registration of attributes on import.
-
-    For example, a SDO instrument dict would be
-
-    ..code :: python
-      {'AIA': 'This is the AIA',
-       'HMI': 'This is the HMI'}
-
     Which would allow `a.Instrument` to be able to tab complete to `a.Instrument.AIA` or `a.Instrument.HMI` which does not happen without this.
     """
-    _value_registry = defaultdict(list)
+    _attr_registry = defaultdict(make_tuple)
+
     def __getattr__(self, item):
         """
         """
-        if item in self._value_registry[self]:
+        if item in self._attr_registry[self].name:
             return self(item)
         else:
             return None
@@ -50,7 +51,10 @@ class AttrMeta(type):
     def __dir__(self):
         """
         """
-        return super().__dir__() + self._value_registry[self]
+        return super().__dir__() + self._attr_registry[self].name
+
+    def __repr__(self):
+        return str()
 
 
 class Attr(metaclass=AttrMeta):
@@ -83,16 +87,41 @@ class Attr(metaclass=AttrMeta):
 
     @classmethod
     def update_values(cls, adict):
-        Pair = namedtuple(str(cls.__name__), 'Name Description')
+        """
+        This is how clients will register their `Attrs` with the system.
+        The input should be a dictionary.
+        Each key should be a type of the attrs you want.
+        The value should be a list of pairs.
+        The pair should be a tuple of (Name, Description).
+        If you do not want to add a description, you can put `"N/A"`.
+        We sanitize the name and it becomes an attribute on the attrs class.
+        # Do we want to have them use type?
+
+        We have an example here for an Instrument Class.
+
+        Example
+        -------
+        >>> from sunpy.net import attr, attrs
+        >>> attr.Attr.update_values({type(attrs.Instrument()): [('AIA', 'AIA is in Space.'), ('HMI', 'HMI is next to AIA.')]})
+
+        """
         for k, v in adict.items():
             if isiterable(v) and not isinstance(v, str):
                 for pair in v:
-                    cls._value_registry[k].append(Pair(v[0], v[1]))
+                    if len(pair) != 2:
+                        raise Warning
+                    else:
+                        # Sanity name, we remove all special characters and make it all lower case
+                        name = ''.join(char for char in pair[0] if char.isalnum()).lower()
+                        if keyword.iskeyword(name) or not name.isidentifier():
+                            raise Warning
+                        else:
+                            cls._attr_registry[k][0].append(name)
+                            cls._attr_registry[k][1].append(pair[0])
+                            cls._attr_registry[k][2].append(pair[1])
             else:
-                if len(v) == 1:
-                    cls._value_registry[k].append(Pair(v))
-                else:
-                    raise NotImplementedError
+                raise NotImplementedError
+
 
 class DummyAttr(Attr):
     """ Empty attribute. Useful for building up queries. Returns other

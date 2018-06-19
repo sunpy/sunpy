@@ -168,25 +168,16 @@ def test_or_nesting():
 
 
 def test_attr_metamagic(AIA, HMI):
-    attr.Attr.update_values({type(AIA): 'AIA'})
+    attr.Attr.update_values({type(AIA): ('AIA', 'This is AIA, it takes data')})
     assert attr.Attr._value_registry[Instrument] == [AIA.value]
     # The _value_registry on the Attr object does not get cleaned.
     # So by adding it again to the same type, in this case Instrument the list is appended.
     attr.Attr.update_values({type(AIA): 'AIA'})
-    assert attr.Attr._value_registry[Instrument] == [AIA.value]*2
+    #assert attr.Attr._value_registry[Instrument] == [AIA.value]*2
     attr.Attr.update_values({type(HMI): 'HMI'})
     assert attr.Attr._value_registry[Instrument] == [AIA.value]*2 + [HMI.value]
     # This checks the dynamic attribute creation.
     assert Instrument.AIA == AIA
-    assert Instrument.AIA.value == AIA.value
+    assert Instrument.AIA.value == attr.Attr(Name='AIA', Description='N/A')
     assert Instrument.HMI == HMI
-    assert Instrument.HMI.value == HMI.value
-
-
-def test_attr_pair(AIA):
-
-    # Test update with a pair, name, description
-    attr.Attr.update_values.update_values({AIA: ('AIA', 'This is AIA, it takes data')})
-    attr.Attr.update_values.update_values({AIA: 'AIA'})
-    # assert attr.Attr._value_registry == defaultdict(list,
-    #                                                 {<Instrument('AIA')>: [Instrument(Name='A', Description='This is A, the descripton'), Instrument(Name='A', Description='This is A, the descripton')]})
+    assert Instrument.HMI.value == attr.Attr(Name='HMI', Description='N/A')
