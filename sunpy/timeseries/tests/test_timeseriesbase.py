@@ -22,10 +22,10 @@ import pandas as pd
 from collections import OrderedDict
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.table import Table
-from astropy.time import Time, TimeDelta
+from astropy.time import TimeDelta
 
 import sunpy
-from sunpy.time import TimeRange, parse_time
+from sunpy.time import TimeRange, parse_time, Time
 import sunpy.timeseries
 from sunpy.util.metadata import MetaDict
 from sunpy.timeseries import TimeSeriesMetaData
@@ -134,9 +134,9 @@ def concatenate_multi_files_ts():
 @pytest.fixture
 def table_ts():
     # Generate the data and the corresponding dates
-    base = datetime.datetime.today()
+    base = parse_time(datetime.datetime.today())
     times = Time(
-        [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)])
+        [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)])
     intensity = u.Quantity(
         np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60)))), u.W / u.m
         **2)
@@ -505,8 +505,8 @@ def test_concatenation_different_data_error(eve_test_ts, fermi_gbm_test_ts):
 
 def test_generic_construction_concatenation():
     # Generate the data and the corrisponding dates
-    base = datetime.datetime.today()
-    times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    base = parse_time(datetime.datetime.today())
+    times = [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)]
     intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
     intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
