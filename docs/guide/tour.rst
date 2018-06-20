@@ -72,27 +72,6 @@ For more information about TimeSeries, check out the
 :doc:`timeseries guide <data_types/timeseries>` and the
 and the :ref:`timeseries_code_ref`.
 
-Spectra
--------
-
-.. warning:: This module is under development! It is being moved into its own
-             `repository <http://docs.sunpy.org/projects/radiospectra/>`__.
-
-SunPy has spectral support for instruments which have such a capacity. CALLISTO,
-an international network of Solar Radio Spectrometers, is a specific example.
-
-.. plot::
-    :include-source:
-
-    import sunpy.data.sample
-    from sunpy.spectra.sources.callisto import CallistoSpectrogram
-
-    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
-    image.peek()
-
-For more information about spectra, check out the :doc:`spectra guide <data_types/spectra>`
-and the :ref:`spectra_code_ref`.
-
 Plotting
 --------
 

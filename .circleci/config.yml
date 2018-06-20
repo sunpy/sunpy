@@ -51,7 +51,7 @@ jobs:
       - checkout
       - run: *apt-install
       - run: *docs-install
-      - run: python setup.py build_docs
+      - run: python setup.py build_docs -w
       - store_artifacts:
           path: docs/_build/html
 
