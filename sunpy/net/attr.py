@@ -46,8 +46,7 @@ class AttrMeta(type):
         """
         """
         if item in self._attr_registry[self].name:
-            import pdb; pdb.set_trace()
-            return self(item)
+            return self(self._attr_registry[self].name_long[self._attr_registry[self].name.index(item)])
         else:
             return None
 

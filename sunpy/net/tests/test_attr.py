@@ -184,5 +184,3 @@ def test_attr_metamagic(AIA, HMI):
     # This checks the dynamic attribute creation.
     assert Instrument.aia == AIA
     assert Instrument.hmi == HMI
-    with pytest.raises():
-        pass
