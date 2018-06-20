@@ -228,10 +228,24 @@ def calculate_temperature_em(goests, abundances="coronal",
     >>> from sunpy.instr.goes import calculate_temperature_em
     >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
     >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
-    >>> goests.data  # doctest: +REMOTE_DATA +FLOAT_CMP
+    >>> goests.data  # doctest: +REMOTE_DATA
+                                        xrsa          xrsb
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07
+    ...
 
     >>> goests_new = calculate_temperature_em(goests)  # doctest: +REMOTE_DATA
     >>> goests_new.data  # doctest: +REMOTE_DATA
+                                        xrsa          xrsb  temperature            em
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07     3.503510  2.190626e+48
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07     3.534262  2.055847e+48
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07     3.550100  1.990333e+48
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48
+    ...
 
     """
     # Check that input argument is of correct type
@@ -790,9 +804,25 @@ def calculate_radiative_loss_rate(goests, force_download=False,
     >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
     >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
     >>> goests.data  # doctest: +REMOTE_DATA
+                                        xrsa          xrsb
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:10.201999  1.000000e-09  1.808400e-07
+    ...
 
-    >>> goests_new = calculate_radiative_loss_rate(goeslc)  # doctest: +REMOTE_DATA
+    >>> goests_new = calculate_radiative_loss_rate(goests)  # doctest: +REMOTE_DATA
     >>> goests_new.data   # doctest:  +REMOTE_DATA
+                                        xrsa          xrsb  temperature            em  rad_loss_rate
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07     3.503510  2.190626e+48   1.781001e+19
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07     3.534262  2.055847e+48   1.660031e+19
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48   1.719931e+19
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07     3.550100  1.990333e+48   1.601718e+19
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48   1.719931e+19
+    2011-06-07 00:00:10.201999  1.000000e-09  1.808400e-07     3.550100  1.990333e+48   1.601718e+19
+    ...
 
     """
     if not download_dir:
@@ -1031,10 +1061,25 @@ def calculate_xray_luminosity(goests):
     >>> from sunpy.instr.goes import calculate_temperature_em
     >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
     >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
-    >>> goests.data  # doctest: +REMOTE_DATA +FLOAT_CMP
+    >>> goests.data  # doctest: +REMOTE_DATA
+                                        xrsa          xrsb
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07
+    ...
+
 
     >>> goests_new = calculate_xray_luminosity(goests)  # doctest: +REMOTE_DATA
     >>> goests_new.data   # doctest:  +REMOTE_DATA
+                                        xrsa          xrsb  luminosity_xrsa  luminosity_xrsb
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07     2.896209e+14     5.465435e+16
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07     2.896209e+14     5.313384e+16
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07     2.896209e+14     5.389555e+16
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07     2.896209e+14     5.237503e+16
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07     2.896209e+14     5.389555e+16
+    ...
 
     """
     # Check that input argument is of correct type
@@ -1250,8 +1295,8 @@ def flareclass_to_flux(flareclass):
     Examples
     --------
     >>> from sunpy.instr.goes import flareclass_to_flux
-    >>> flareclass_to_flux('A1.0') #doctest: +FLOAT_CMP
-    <Quantity 1e-08 W / m2>
+    >>> flareclass_to_flux('A1.0')
+    <Quantity 1.e-08 W / m2>
     >>> flareclass_to_flux('c4.7')
     <Quantity 4.7e-06 W / m2>
     >>> flareclass_to_flux('X2.4')
