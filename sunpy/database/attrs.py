@@ -113,8 +113,8 @@ class Path(Attr):
 # vso_attrs._Range.__xor__ is fixed / renamed
 class DownloadTime(Attr, vso_attrs._Range):
     def __init__(self, start, end):
-        self.start = parse_time(start)
-        self.end = parse_time(end)
+        self.start = parse_time(start).datetime
+        self.end = parse_time(end).datetime
         self.inverted = False
         vso_attrs._Range.__init__(self, start, end, self.__class__)
 
@@ -266,4 +266,8 @@ def _convert(attr):
 
 @walker.add_converter(vso_attrs.Time)
 def _convert(attr):
-    return ValueAttr({('time', ): (attr.start, attr.end, attr.near)})
+    if attr.near:
+        near = attr.near.datetime
+    else:
+        near = None
+    return ValueAttr({('time', ): (attr.start.datetime, attr.end.datetime, near)})
