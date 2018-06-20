@@ -72,6 +72,17 @@ class SunPyTestRunner(TestRunner):
 
         return []
 
+    @keyword()
+    def figure_dir(self, figure_dir, kwargs):
+        """
+        figure_tests : str, optional
+            Set the output directory for figure test images and hashes.
+        """
+        if figure_dir:
+            return ['--figure_dir', figure_dir]
+
+        return []
+
     # Define this to change the default value to None
     @keyword()
     def plugins(self, plugins, kwargs):
