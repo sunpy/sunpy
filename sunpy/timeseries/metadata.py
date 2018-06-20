@@ -183,7 +183,7 @@ class TimeSeriesMetaData(object):
         Parameters
         ----------
         time : `str` or `astropy.time.Time` optional
-            The string (parsed using the `~sunpy.time.parse_time`) or `Time`
+            The string (parsed using the `~sunpy.time.parse_time`) or `~astropy.time.Time`
             that you need metadata for.
 
         colname : `str` optional
@@ -208,7 +208,7 @@ class TimeSeriesMetaData(object):
         # Find all results with suitable timerange.
         results_indices = []
         for i, meta in enumerate(self.metadata):
-            if not(dt) or dt in meta[0]:
+            if (not dt) or dt in meta[0]:
                 results_indices.append(i)
 
         # Filter out only those with the correct column.
