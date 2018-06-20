@@ -10,4 +10,3 @@ represent solar data.
 
     maps
     timeseries
-    spectra

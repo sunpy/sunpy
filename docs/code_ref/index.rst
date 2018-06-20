@@ -20,7 +20,6 @@ Code Reference
    net
    physics
    roi
-   spectra
    sun
    time
    timeseries
