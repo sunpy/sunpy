@@ -45,8 +45,10 @@ class AttrMeta(type):
     def __getattr__(self, item):
         """
         """
-        if item in self._attr_registry[self].name:
-            return self(self._attr_registry[self].name_long[self._attr_registry[self].name.index(item)])
+        registry = self._attr_registry[self]
+        names = reg.name
+        if item in names:
+            return self(registry.name_long[names.index(item)])
         else:
             raise AttributeError
 
