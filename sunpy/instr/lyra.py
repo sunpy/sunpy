@@ -11,7 +11,7 @@ import numpy as np
 from astropy.io import fits
 import pandas
 
-from sunpy.time import parse_time
+from sunpy.time import parse_time, Time
 from sunpy.util.net import check_download_file
 from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.decorators import deprecated
@@ -449,8 +449,8 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     combine_files.sort()
     # Convert input times to UNIX timestamp format since this is the
     # time format in the annotation files
-    start_time_uts = (start_time - datetime.datetime(1970, 1, 1)).total_seconds()
-    end_time_uts = (end_time - datetime.datetime(1970, 1, 1)).total_seconds()
+    start_time_uts = (start_time - Time('1970-1-1')).sec
+    end_time_uts = (end_time - Time('1970-1-1')).sec
 
     # Define numpy record array which will hold the information from
     # the annotation file.

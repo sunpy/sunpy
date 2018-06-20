@@ -11,6 +11,7 @@ import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import astropy.units as u
+from astropy.time import TimeDelta
 from astropy.coordinates import Longitude, Latitude
 
 from sunpy.time import parse_time, TimeRange
@@ -51,7 +52,7 @@ def download_weekly_pointing_file(date):
 
     # find out which mission week corresponds to date
     time_diff = date - weekly_file_start
-    weekdiff = time_diff.days // 7
+    weekdiff = time_diff.jd // 7
     week = weekdiff + base_week
     # weekstr = ('%03.0f' % week)
     weekstr = '{:03.0f}'.format(week)
@@ -135,7 +136,7 @@ def get_detector_sun_angles_for_date(date, file):
     """
 
     date = parse_time(date)
-    tran = TimeRange(date, date + datetime.timedelta(days=1))
+    tran = TimeRange(date, date + TimeDelta(1*u.day))
     scx, scz, times = get_scx_scz_in_timerange(tran, file)
 
     # retrieve the detector angle information in spacecraft coordinates
