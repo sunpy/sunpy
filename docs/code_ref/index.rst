@@ -25,4 +25,3 @@ Code Reference
    timeseries
    util
    visualization
-   wcs
