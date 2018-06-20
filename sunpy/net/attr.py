@@ -48,7 +48,7 @@ class AttrMeta(type):
         if item in self._attr_registry[self].name:
             return self(self._attr_registry[self].name_long[self._attr_registry[self].name.index(item)])
         else:
-            return None
+            raise AttributeError
 
     def __dir__(self):
         """
@@ -104,7 +104,7 @@ class Attr(metaclass=AttrMeta):
         Example
         -------
         >>> from sunpy.net import attr, attrs
-        >>> attr.Attr.update_values({type(attrs.Instrument()): [('AIA', 'AIA is in Space.'), ('HMI', 'HMI is next to AIA.')]})
+        >>> attr.Attr.update_values({type(attrs.Instrument): [('AIA', 'AIA is in Space.'), ('HMI', 'HMI is next to AIA.')]})
 
         """
         for k, v in adict.items():
