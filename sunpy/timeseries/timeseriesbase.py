@@ -2,13 +2,7 @@
 TimeSeries is a generic time series class from which all other TimeSeries
 classes inherit from.
 """
-
-from __future__ import absolute_import, division, print_function
-__authors__ = ["Alex Hamilton, Stuart Mumford"]
-__email__ = "stuart@mumford.me.uk"
-
 import warnings
-from abc import ABCMeta
 from collections import OrderedDict
 import copy
 
@@ -32,38 +26,6 @@ u.add_enabled_units([det])
 
 TIME_FORMAT = config.get("general", "time_format")
 
-
-# pylint: disable=E1101,E1121,W0404,W0612,W0613
-__authors__ = ["Alex Hamilton"]
-__email__ = "####"
-
-
-# GenericTimeSeries subclass registry.
-TIMESERIES_CLASSES = OrderedDict()
-
-
-class GenericTimeSeriesMeta(ABCMeta):
-    """
-    Registration metaclass for `~sunpy.timeseries.GenericTimeSeries`.
-    This class checks for the existance of a method named ``is_datasource_for``
-    when a subclass of `GenericTimeSeries` is defined. If it exists it will add
-    that class to the registry.
-    """
-
-    _registry = TIMESERIES_CLASSES
-
-    def __new__(mcls, name, bases, members):
-        cls = super(GenericTimeSeriesMeta, mcls).__new__(mcls, name, bases, members)
-
-        # The registry contains the class as the key and the validation method
-        # as the item.
-        if 'is_datasource_for' in members:
-            mcls._registry[cls] = cls.is_datasource_for
-
-        return cls
-
-
-@six.add_metaclass(GenericTimeSeriesMeta)
 class GenericTimeSeries:
     """
     A generic time series object.
@@ -111,6 +73,20 @@ class GenericTimeSeries:
 
     # Class attribute used to specify the source class of the TimeSeries.
     _source = None
+    _registry = dict()
+
+    def __init_subclass__(cls, **kwargs):
+        """
+        An __init_subclass__ hook initializes all of the subclasses of a given class.
+        So for each subclass, it will call this block of code on import.
+        This replicates some metaclass magic without the need to be aware of metaclasses.
+        Here we use this to register each subclass in a dict that has the `is_datasource_for` attribute.
+        This is then passed into the TimeSeries Factory so we can register them.
+        """
+        super().__init_subclass__(**kwargs)
+        if hasattr(cls, 'is_datasource_for'):
+            cls._registry[cls] = cls.is_datasource_for
+
 
     def __init__(self, data, meta=None, units=None, **kwargs):
         self.data = data

@@ -1,19 +1,8 @@
-# Author: Simon Liedtke <liedtke.simon@googlemail.com>
-#
-# This module was developed with funding provided by
-# the Google Summer of Code (2013).
-
-from __future__ import absolute_import
-
-from abc import ABCMeta, abstractmethod
 import os
+from abc import ABC, abstractmethod
 
 from sqlalchemy.orm import make_transient
 from sqlalchemy.exc import InvalidRequestError
-
-from sunpy.extern import six
-
-from sunpy.extern.six.moves import range
 
 __all__ = [
     'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError',
@@ -56,8 +45,7 @@ class NonRemovableTagError(Exception):
         return errmsg.format(self.database_entry, self.tag)
 
 
-@six.add_metaclass(ABCMeta)
-class DatabaseOperation(object):
+class DatabaseOperation(ABC):
     """This is the abstract main class for all database operations. To
     implement a new operation, inherit from this class and override the methods
     __call__ and undo. Both these methods get no parameters (except for self of
@@ -186,14 +174,14 @@ class EditEntry(DatabaseOperation):
         self.prev_values = {}
 
     def __call__(self):
-        for k, v in six.iteritems(self.kwargs):
+        for k, v in self.kwargs.items():
             # save those values in the dict prev_values that will be changed
             # so that they can be recovered
             self.prev_values[k] = getattr(self.database_entry, k)
             setattr(self.database_entry, k, v)
 
     def undo(self):
-        for k, v in six.iteritems(self.prev_values):
+        for k, v in self.prev_values.items():
             setattr(self.database_entry, k, v)
 
     def __repr__(self):

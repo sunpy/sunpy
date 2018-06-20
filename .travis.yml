@@ -61,11 +61,6 @@ matrix:
            stage: Comprehensive tests
            env: SETUP_CMD="test --online --coverage"
 
-         # Python 3.5 with Astropy 2
-         - python: 3.5
-           stage: Comprehensive tests
-           env: ASTROPY_VERSION='lts' SETUP_CMD="test --skip-docs"
-
         # Cron tests below this line
          - os: osx
            stage: Cron tests
@@ -84,7 +79,7 @@ matrix:
            stage: Cron tests
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
 
-         - python: 3.5
+         - python: 3.6
            stage: Cron tests
            env: SETUP_CMD='test --figure-only' ASTROPY_VERSION='dev'
                 CONDA_DEPENDENCIES='astropy'
