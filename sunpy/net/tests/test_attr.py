@@ -186,6 +186,10 @@ def test_attr_metamagic(AIA, HMI, SPEC):
     assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value, HMI.value]
     assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data', 'This is HMI, it lives next to AIA']
 
+    # # Tests the print out for the first two inputs only
+    assert str(Instrument) == 'Attribute Name | Full Name | Description                      \n---------------+-----------+----------------------------------\naia            | AIA       | This is AIA, it takes data       \nhmi            | HMI       | This is HMI, it lives next to AIA'
+
+    # This checks for sanitization of names.
     attr.Attr.update_values({Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]})
     assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower(), HMI.value.lower(), 'thisnameisspecial']
     assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value, HMI.value, '_!£!THIS_NAME!"!ISSPECIAL~~##']

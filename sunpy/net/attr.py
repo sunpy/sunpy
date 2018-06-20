@@ -60,7 +60,7 @@ class AttrMeta(type):
         if item in names:
             return self(registry.name_long[names.index(item)])  # We return Attr(name_long) to create the Attr requested.
         else:
-            raise AttributeError
+            raise AttributeError('This attribute is not defined, please register it.')
 
     def __dir__(self):
         """
@@ -69,11 +69,20 @@ class AttrMeta(type):
         """
         return super().__dir__() + self._attr_registry[self].name
 
-#    def __repr__(self):
-#       """
-#       This enables the pretty printing of Attrs.
-#       """
-#        return str()
+    def __str__(self):
+        """
+        This enables the pretty printing of Attrs.
+        """
+        name = ['Attribute Name'] + self._attr_registry[self].name
+        name_long = ['Full Name'] + self._attr_registry[self].name_long
+        desc = ['Description'] + self._attr_registry[self].desc
+        pad_name = max(len(elm) for elm in name)
+        pad_long = max(len(elm) for elm in name_long)
+        pad_desc = max(len(elm) for elm in desc)
+        fmt = "%-{}s | %-{}s | %-{}s".format(pad_name, pad_long, pad_desc)
+        lines = [fmt % elm for elm in zip(name, name_long, desc)]
+        lines.insert(1, '-'*(pad_name+1)+'+'+'-'*(pad_long+2)+'+'+'-'*(pad_desc+1))
+        return("\n".join(lines))
 
 
 class Attr(metaclass=AttrMeta):
