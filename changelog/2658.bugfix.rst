@@ -1,0 +1,1 @@
+Running the figure tests with ``setup.py test`` now saves the figures and the hashes to the same directory as setup.py.

@@ -13,8 +13,9 @@ except ImportError:
 else:
     matplotlib.use('Agg')
 
+import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
-from sunpy.tests.helpers import new_hash_library, figure_test_pngfiles
+from sunpy.tests.helpers import new_hash_library
 from sunpy.extern import six
 
 import pytest
@@ -35,6 +36,15 @@ else:
     HAVE_REMOTEDATA = remotedata_spec is not None
 
 
+def pytest_addoption(parser):
+    parser.addoption("--figure_dir", action="store", default="./figure_test_images")
+
+
+@pytest.fixture(scope='session', autouse=True)
+def figure_base_dir(request):
+    sunpy.tests.helpers.figure_base_dir = request.config.getoption("--figure_dir")
+
+
 def pytest_runtest_setup(item):
     """
     pytest hook to skip all tests that have the mark 'online' if the
@@ -47,17 +57,12 @@ def pytest_runtest_setup(item):
 
 
 def pytest_unconfigure(config):
-    if len(figure_test_pngfiles) > 0:
-        tempdir = tempfile.mkdtemp(suffix="_figures")
-
-        # Rename each PNG with the name of the corresponding test
-        for test_name in figure_test_pngfiles:
-            os.rename(figure_test_pngfiles[test_name], os.path.join(tempdir, test_name + '.png'))
-
+    if len(new_hash_library) > 0:
         # Write the new hash library in JSON
-        hashfile = os.path.join(tempdir, HASH_LIBRARY_NAME)
+        figure_base_dir = os.path.abspath(config.getoption("--figure_dir"))
+        hashfile = os.path.join(figure_base_dir, HASH_LIBRARY_NAME)
         with open(hashfile, 'w') as outfile:
             json.dump(new_hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
-        print('All test files for figure hashes can be found in {0}'.format(tempdir))
+        print('All images from image tests can be found in {0}'.format(figure_base_dir))
         print("The corresponding hash library is {0}".format(hashfile))
