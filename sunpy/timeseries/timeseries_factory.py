@@ -15,7 +15,7 @@ from astropy.time import Time
 import astropy.units as u
 
 import sunpy
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries, TIMESERIES_CLASSES
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 
 from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
@@ -565,6 +565,5 @@ class NoTimeSeriesFound(ValueError):
     pass
 
 
-TimeSeries = TimeSeriesFactory(default_widget_type=GenericTimeSeries,
+TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry, default_widget_type=GenericTimeSeries,
                                additional_validation_functions=['is_datasource_for'])
-TimeSeries.registry = TIMESERIES_CLASSES
