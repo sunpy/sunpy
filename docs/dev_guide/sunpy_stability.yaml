@@ -19,9 +19,6 @@ instr:
 io:
   status: stable
   comments: Should see no changes in 1.0 release.
-lightcurve:
-  status: deprecated
-  comments: Deprecated in 0.8, will be removed in 1.0.
 map:
   status: stable
   comments: Stable in 0.9, mature in 1.0.
@@ -34,9 +31,6 @@ physics:
 roi:
   status: planned
   comments: There is very little functionality.
-spectra:
-  status: deprecated
-  comments: Deprecated in 0.8, will be removed in 1.0.
 sun:
   status: pendingdep
   comments: Certainly in for a large refactor pre-1.0.
@@ -49,6 +43,3 @@ timeseries:
 visualization:
   status: stable
   comments: No plans to change what we currently have but only add to it.
-wcs:
-  status: deprecated
-  comments: Deprecated in 0.8, will be removed in 1.0.
