@@ -481,7 +481,7 @@ def utc_to_met(time_ut):
 
     Returns
     -------
-    `astropy.units.second`
+    `astropy.units.Quantity`
         The Fermi Mission Elapsed Time corresponding to the input UT
 
     """
