@@ -94,3 +94,21 @@ class SunPyTestRunner(TestRunner):
         # Plugins are handled independently by `run_tests` so we define this
         # keyword just for the docstring
         return []
+
+    @keyword()
+    def coverage(self, coverage, kwargs):
+        if coverage:
+            ret = []
+            for path in self.package_path:
+                ret += ["--cov", path]
+            return ret
+
+        return []
+
+    @keyword()
+    def cov_report(self, cov_report, kwargs):
+        if kwargs['coverage'] and cov_report:
+            a = [cov_report] if isinstance(cov_report, str) else []
+            return ['--cov-report'] + a
+
+        return []
