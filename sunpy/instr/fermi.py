@@ -449,7 +449,7 @@ def separation_angle(radec1, radec2):
 
 def met_to_utc(timeinsec):
     """
-    Converts Fermi Mission Elapsed Time (MET) in seconds to a Time object.
+    Converts Fermi Mission Elapsed Time (MET) in seconds to a `~astropy.time.Time` object.
 
     Parameters
     ----------
@@ -460,7 +460,7 @@ def met_to_utc(timeinsec):
     Returns
     -------
     `astropy.time.Time`
-        The input Fermi Mission Elapsed Time converted to a Time object.
+        The input Fermi Mission Elapsed Time converted to a `~astropy.time.Time` object.
 
     """
     # Times for GBM are in Mission Elapsed Time (MET).
@@ -477,7 +477,7 @@ def utc_to_met(time_ut):
     Parameters
     ----------
     time_ut : `astropy.time.Time`
-        A Time object in UT
+        A `~astropy.time.Time` object in UT
 
     Returns
     -------
