@@ -14,10 +14,6 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 
-# Import and register JSOC and VSO
-from sunpy.net.jsoc.jsoc import JSOCClient
-from sunpy.net.vso import VSOClient
-# Add the JSOC and VSO Clients explicitly as they do not inherit from Base/GenericClient
 from sunpy.net.base_client import BaseClient
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.vso import VSOClient, QueryResponse as vsoQueryResponse
