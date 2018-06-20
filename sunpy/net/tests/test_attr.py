@@ -168,16 +168,21 @@ def test_or_nesting():
 
 
 def test_attr_metamagic(AIA, HMI):
-    attr.Attr.update_values({type(AIA): ('AIA', 'This is AIA, it takes data')})
-    assert attr.Attr._value_registry[Instrument] == [AIA.value]
+    attr.Attr.update_values({type(AIA): [('AIA', 'This is AIA, it takes data')]})
+    # .name is the attribute name return
+    assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower()]
+    # .name_long is the original name
+    assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value]
+    # .des is the description of the item.
+    assert attr.Attr._attr_registry[Instrument].des == ['This is AIA, it takes data']
     # The _value_registry on the Attr object does not get cleaned.
     # So by adding it again to the same type, in this case Instrument the list is appended.
-    attr.Attr.update_values({type(AIA): 'AIA'})
-    #assert attr.Attr._value_registry[Instrument] == [AIA.value]*2
-    attr.Attr.update_values({type(HMI): 'HMI'})
-    assert attr.Attr._value_registry[Instrument] == [AIA.value]*2 + [HMI.value]
+    attr.Attr.update_values({type(HMI): [('HMI', 'This is HMI, it lives next to AIA')]})
+    assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower(), HMI.value.lower()]
+    assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value, HMI.value]
+    assert attr.Attr._attr_registry[Instrument].des == ['This is AIA, it takes data', 'This is HMI, it lives next to AIA']
     # This checks the dynamic attribute creation.
-    assert Instrument.AIA == AIA
-    assert Instrument.AIA.value == attr.Attr(Name='AIA', Description='N/A')
-    assert Instrument.HMI == HMI
-    assert Instrument.HMI.value == attr.Attr(Name='HMI', Description='N/A')
+    assert Instrument.aia == AIA
+    assert Instrument.hmi == HMI
+    with pytest.raises():
+        pass
