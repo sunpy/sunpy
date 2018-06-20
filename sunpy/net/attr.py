@@ -38,12 +38,15 @@ class AttrMeta(type):
     But also to enable the registration of attributes on import.
     Which would allow `a.Instrument` to be able to tab complete to `a.Instrument.AIA` or `a.Instrument.HMI` which does not happen without this.
     """
+
+    # The aim is to register Attrs as a namedtuple of lists
     _attr_registry = defaultdict(make_tuple)
 
     def __getattr__(self, item):
         """
         """
         if item in self._attr_registry[self].name:
+            import pdb; pdb.set_trace()
             return self(item)
         else:
             return None
@@ -53,8 +56,8 @@ class AttrMeta(type):
         """
         return super().__dir__() + self._attr_registry[self].name
 
-    def __repr__(self):
-        return str()
+#    def __repr__(self):
+#        return str()
 
 
 class Attr(metaclass=AttrMeta):
