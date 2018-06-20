@@ -1,0 +1,2 @@
+Using MetaClasses to enable at tab completion of Attrs defined dynamically.
+Further, they print a table with all aviable values and descriptions.
