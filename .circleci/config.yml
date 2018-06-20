@@ -55,12 +55,27 @@ jobs:
       - run: *docs-install
       # Copy and paste this line for every submodule for which the tests pass
       - run: conda install openjpeg
-      - run: python -m "sunpy.data.sample"
       - run: python setup.py test -P time
-      # - run: python setup.py test -P net --online
       - run: python setup.py test -P physics
       - run: python setup.py test -P coordinates
+
+  astropy-time-online:
+    docker:
+      - image: continuumio/miniconda3
+        environment:
+            COLUMNS=180
+    steps:
+      - restore_cache:
+          keys: sample-data-v1
+
+      - checkout
+      - run: *apt-install
+      - run: *docs-install
+      - run: conda install openjpeg
+      - run: python -m "sunpy.data.sample"
       - run: python setup.py test -P database --online
+      - run: python setup.py test -P net --online
+
 
   html-docs:
     docker:
@@ -96,6 +111,7 @@ workflows:
   time-tests:
     jobs:
       - astropy-time
+      - astropy-time-online
 
   figure-tests:
     jobs:
