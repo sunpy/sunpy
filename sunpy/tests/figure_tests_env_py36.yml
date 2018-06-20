@@ -1,9 +1,9 @@
-name: sunpy-figure-tests-3.5
+name: sunpy-figure-tests-3.6
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.5.5
+  - python=3.6.5
   - numpy=1.14.2
   - astropy=2.0.4
   - scipy=1.0.1
