@@ -61,6 +61,7 @@ jobs:
       - run: conda install openjpeg
       - run: python setup.py test -P time
       - run: python setup.py test -P net --online
+      - run: python setup.py test -P util
 
   html-docs:
     docker:
