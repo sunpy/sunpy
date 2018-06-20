@@ -1,0 +1,1 @@
+The images from image tests are now saved in a local folder for easy access.
