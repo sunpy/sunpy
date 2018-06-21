@@ -1,0 +1,1 @@
+Change to using pytest-cov for coverage report generation to enable support for parallel builds
