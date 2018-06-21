@@ -51,11 +51,11 @@ class SunPyTest(AstropyTest):
 
         if self.coverage:
             # Copy the raw .coverage file back so it can be used for CI reports
-            cwd_covfile = os.path.join(os.path.abspath("."), ".coverage")
-            cmd_post = ('import shutil, os; '
-                        'covfile = os.path.join(os.path.abspath("."), ".coverage"); '
-                        f'shutil.copyfile(covfile, "{cwd_covfile}")'
-                        ' if os.path.isfile(covfile) else None; ')
+            cwd = os.path.join(os.path.abspath("."))
+            cmd_post = ('from sunpy.tests.helpers import _patch_coverage; '
+                        'import os; '
+                        'test_dir = os.path.abspath("."); '
+                        f'_patch_coverage(test_dir, "{cwd}"); ')
 
             # Special case html as the default report
             if self.cov_report and (isinstance(self.cov_report, bool) or "html" in self.cov_report):

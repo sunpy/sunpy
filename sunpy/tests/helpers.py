@@ -104,3 +104,34 @@ def figure_test(test_function):
                                'New image generated and placed at {}'.format(result_image_loc))
 
     return wrapper
+
+
+def _patch_coverage(testdir, sourcedir):
+    import coverage
+
+    # Load the .coverage file output by pytest-cov
+    covfile = os.path.join(testdir, ".coverage")
+    cov = coverage.Coverage(covfile)
+    cov.load()
+    cov.get_data()
+
+    # Change the filename for the datafile to the new directory
+    if hasattr(cov, "_data_files"):
+        dfs = cov._data_files
+    else:
+        dfs = cov.data_files
+
+    dfs.filename = os.path.join(sourcedir, ".coverage")
+
+    # Replace the testdir with source dir
+    # Lovingly borrowed from astropy (see licences directory)
+    lines = cov.data._lines
+    for key in list(lines.keys()):
+        new_path = os.path.relpath(
+            os.path.realpath(key),
+            os.path.realpath(testdir))
+        new_path = os.path.abspath(
+            os.path.join(sourcedir, new_path))
+        lines[new_path] = lines.pop(key)
+
+    cov.save()
