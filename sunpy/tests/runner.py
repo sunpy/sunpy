@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
+import os
+
 from astropy.tests.runner import TestRunner, keyword
 
 
@@ -98,9 +100,10 @@ class SunPyTestRunner(TestRunner):
     @keyword()
     def coverage(self, coverage, kwargs):
         if coverage:
+            coveragerc = os.path.join(self.base_path, "tests", "coveragerc")
             ret = []
             for path in self.package_path:
-                ret += ["--cov", path]
+                ret += ["--cov", path, "--cov-config", coveragerc]
             return ret
 
         return []
