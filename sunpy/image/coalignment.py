@@ -27,8 +27,9 @@ from astropy import units as u
 from skimage.feature import match_template
 
 # SunPy imports
-from sunpy.map.mapbase import GenericMap
 import sunpy.map
+from sunpy.util import deprecated
+from sunpy.map.mapbase import GenericMap
 
 __author__ = 'J. Ireland'
 
@@ -504,7 +505,7 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
 
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
-
+@deprecated('v0.9.1', alternative='mapsequence_coalign_by_match_template')
 def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
                                       func=_default_fmap_function, clip=True,
                                       shift=None, **kwargs):
@@ -575,35 +576,14 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     >>> coaligned_mc = mc_coalign(mc, template=two_dimensional_ndarray)   # doctest: +SKIP
     >>> coaligned_mc = mc_coalign(mc, func=np.log)   # doctest: +SKIP
     """
-
-    # Number of maps
-    nt = len(mc.maps)
-
-    # Storage for the pixel shifts and the shifts in arcseconds
-    xshift_keep = np.zeros(nt) * u.pix
-    yshift_keep = np.zeros_like(xshift_keep)
-
-    if shift is None:
-        shifts = calculate_match_template_shift(mc, template=template, layer_index=layer_index, func=func)
-        xshift_arcseconds = shifts['x']
-        yshift_arcseconds = shifts['y']
-    else:
-        xshift_arcseconds = shift['x']
-        yshift_arcseconds = shift['y']
-
-    # Calculate the pixel shifts
-    for i, m in enumerate(mc):
-        xshift_keep[i] = (xshift_arcseconds[i] / m.scale[0])
-        yshift_keep[i] = (yshift_arcseconds[i] / m.scale[1])
-
-    # Apply the shifts and return the coaligned mapcube
-    return apply_shifts(mc, -yshift_keep, -xshift_keep, clip=clip, **kwargs)
+    return mapsequence_coalign_by_match_template(mc, template, layer_index,
+                                                 func, clip, shift, **kwargs)
 
 
 # Coalignment by matching a template
 def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
-                                      func=_default_fmap_function, clip=True,
-                                      shift=None, **kwargs):
+                                          func=_default_fmap_function, clip=True,
+                                          shift=None, **kwargs):
     """
     Co-register the layers in a `~sunpy.map.MapSequence` according to a template
     taken from that `~sunpy.map.MapSequence`.  This method REQUIRES that

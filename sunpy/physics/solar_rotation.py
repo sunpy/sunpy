@@ -122,28 +122,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)  # doctest: +REMOTE_DATA
     >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)  # doctest: +REMOTE_DATA
     """
-
-    # Size of the data
-    nt = len(mc.maps)
-
-    # Storage for the pixel shifts and the shifts in arcseconds
-    xshift_keep = np.zeros(nt) * u.pix
-    yshift_keep = np.zeros_like(xshift_keep)
-
-    # If no shifts are passed in, calculate them.  Otherwise,
-    # use the shifts passed in.
-    if shift is None:
-        shift = calculate_solar_rotate_shift(mc, layer_index=layer_index, **kwargs)
-    xshift_arcseconds = shift['x']
-    yshift_arcseconds = shift['y']
-
-    # Calculate the pixel shifts
-    for i, m in enumerate(mc):
-        xshift_keep[i] = xshift_arcseconds[i] / m.scale[0]
-        yshift_keep[i] = yshift_arcseconds[i] / m.scale[1]
-
-    # Apply the pixel shifts and return the mapcube
-    return apply_shifts(mc, yshift_keep, xshift_keep, clip=clip)
+    return mapsequence_solar_derotate(mc, layer_index, clip, shift, **kwargs)
 
 
 def mapsequence_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
