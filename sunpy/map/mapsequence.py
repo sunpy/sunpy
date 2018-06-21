@@ -28,19 +28,19 @@ class MapSequence(object):
 
     Parameters
     ----------
-    args : {List}
+    args : `List`
         A list of Map instances
-    sortby : {"date", None}
+    sortby : `datetime.datetime`
         Method by which the MapSequence should be sorted along the z-axis.
-    derotate : {None}
-        Apply a derotation to the data (Not Implemented)
+    derotate : `Boolean`
+        Apply a derotation to the data. Default to False.
 
     To coalign a mapsequence so that solar features remain on the same pixels,
     please see the "Coalignment of MapSequences" note below.
 
     Attributes
     ----------
-    maps : {List}
+    maps : `List`
         This attribute holds the list of Map instances obtained from parameter args.
 
     Examples

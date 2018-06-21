@@ -16,12 +16,13 @@ from sunpy.visualization.animator import MapCubeAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.visualization import axis_labels_from_ctype
 from sunpy.util import expand_list, deprecated
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.extern.six.moves import range
 
 __all__ = ['MapCube']
 
 
-@deprecated('v0.9.1', message='Deprecated in favor of MapSequence.',
+@deprecated('0.9.1', message='Deprecated in favor of MapSequence.',
             alternative='MapSequence')
 class MapCube(object):
     """
@@ -58,7 +59,7 @@ class MapCube(object):
 
         # Renaming mapcube functionality to mapsequence
         warnings.warn("Deprecated in favor of MapSequence. MapSequence has the same functionality as MapCube.",
-                      DeprecationWarning, stacklevel=2)
+                      SunpyDeprecationWarning, stacklevel=2)
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         sortby = kwargs.pop('sortby', 'date')
