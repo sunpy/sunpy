@@ -5,7 +5,7 @@ omit =
    sunpy/conftest*
    sunpy/cython_version*
    sunpy/*setup*
-   sunpy/*tests/*
+   sunpy/*/tests/*
    sunpy/version*
    sunpy/__init__*
 
@@ -15,7 +15,7 @@ omit =
    sunpy/conftest*
    sunpy/cython_version*
    sunpy/*setup*
-   sunpy/*tests/*
+   sunpy/*/tests/*
    sunpy/version*
    sunpy/__init__*
 
