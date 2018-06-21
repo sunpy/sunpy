@@ -109,9 +109,11 @@ def figure_test(test_function):
 def _patch_coverage(testdir, sourcedir):
     import coverage
 
+    coveragerc = os.path.join(os.path.dirname(__file__), "coveragerc")
+
     # Load the .coverage file output by pytest-cov
     covfile = os.path.join(testdir, ".coverage")
-    cov = coverage.Coverage(covfile)
+    cov = coverage.Coverage(covfile, config_file=coveragerc)
     cov.load()
     cov.get_data()
 
