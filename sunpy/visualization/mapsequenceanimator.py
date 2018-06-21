@@ -2,8 +2,9 @@
 
 from copy import deepcopy
 
-from sunpy.visualization import imageanimator, wcsaxes_compat, axis_labels_from_ctype
+from sunpy.visualization import animator as imageanimator
 from sunpy.visualization.wcsaxes_compat import _FORCE_NO_WCSAXES
+from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype
 
 __all__ = ['MapSequenceAnimator']
 

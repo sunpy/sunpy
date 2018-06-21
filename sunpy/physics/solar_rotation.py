@@ -9,6 +9,7 @@ import astropy.units as u
 
 from sunpy.physics.differential_rotation import solar_rotate_coordinate
 from sunpy.image.coalignment import apply_shifts
+from sunpy.util import deprecated
 
 __author__ = 'J. Ireland'
 
@@ -79,6 +80,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
 
+@deprecated('0.9.1', alternative='mapsequence_solar_derotate')
 def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     """
     Move the layers in a mapcube according to the input shifts.

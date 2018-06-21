@@ -505,7 +505,7 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
 
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
-@deprecated('v0.9.1', alternative='mapsequence_coalign_by_match_template')
+@deprecated('0.9.1', alternative='mapsequence_coalign_by_match_template')
 def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
                                       func=_default_fmap_function, clip=True,
                                       shift=None, **kwargs):
