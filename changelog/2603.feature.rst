@@ -1,0 +1,1 @@
+MapCube is now deprecated. Please use MapSequence.
