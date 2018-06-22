@@ -7,10 +7,17 @@ tag: "tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.0.0"
 title: |
   Represents an heliographic stonyhurst coordinate object from SunPy
 
-# examples:
-#   -
-#     - A Helioprojective frame without data
-#     - |
+examples:
+  -
+    - A HeliographicStonyhurst frame without data
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.0.0>
+          frame_attributes: {}
+  -
+    - A HeliographicStonyhurst frame with an obstime
+    - |
+        !<tag:sunpy.org:sunpy/coordinates/frames/heliographic_stonyhurst-1.0.0>
+          frame_attributes: {obstime: !time/time-1.1.0 '2011-01-01T01:01:01.000'}
 
 allOf:
   - $ref: "tag:astropy.org:astropy/coordinates/frames/baseframe-1.0.0"
