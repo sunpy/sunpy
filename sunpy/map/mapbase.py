@@ -217,7 +217,7 @@ Instrument:\t\t {inst}
 Detector:\t\t {det}
 Measurement:\t\t {meas}
 Wavelength:\t\t {wave}
-Observation Date:\t {date:{tmf}}
+Observation Date:\t {date}
 Exposure Time:\t\t {dt:f}
 Dimension:\t\t {dim}
 Coordinate System:\t {coord.name}
@@ -226,7 +226,8 @@ Reference Pixel:\t {refpix}
 Reference Coord:\t {refcoord}
 
 """.format(obs=self.observatory, inst=self.instrument, det=self.detector,
-           meas=self.measurement, wave=self.wavelength, date=self.date,
+           meas=self.measurement, wave=self.wavelength,
+           date=self.date.strftime(TIME_FORMAT),
            dt=self.exposure_time,
            dim=u.Quantity(self.dimensions),
            scale=u.Quantity(self.scale),
@@ -234,7 +235,7 @@ Reference Coord:\t {refcoord}
            refpix=u.Quantity(self.reference_pixel),
            refcoord=u.Quantity((self.reference_coordinate.data.lon,
                                 self.reference_coordinate.data.lat)),
-           tmf=TIME_FORMAT) + self.data.__repr__())
+           ) + self.data.__repr__())
 
     @classmethod
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
