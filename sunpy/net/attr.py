@@ -37,10 +37,10 @@ def make_tuple():
 
 class AttrMeta(type):
     """
-    We want to enable automatic discovery via tab completion of subclasses of Attrs.
+    We want to enable discovery by tab completion of values for all subclasses of Attr.
     To do this we have to create a metaclass that redefines the methods that Python uses to normally do this.
+    So that they work on the class objects themselves.
     This would allow for example that `attrs.Instrument` to be able to tab complete to `attrs.Instrument.aia`.
-    However, it must be done by a downloader client which know what Attrs they support.
     """
 
     # The aim is to register Attrs as a namedtuple of lists
@@ -49,8 +49,8 @@ class AttrMeta(type):
 
     def __getattr__(self, item):
         """
-        Our method for Attrs is to register using `type(Attr)` as keys into a dictionary.
-        _attr_registry is a dictionary with a key being `type(Attr)` and the value being the namedtuple of lists.
+        Our method for Attrs is to register using the attribute type (i.e. Instrument) as keys in a dictionary.
+        ``_attr_registry`` is a dictionary with the keys being subclasses of Attr and the value being the namedtuple of lists.
         As a result we index `_attr_registry` with `[self]` which will be the `type(Attr)` to access the dictionary.
         This will return the namedtuple that has three attributes: `name`, `name_long` and `desc`. Each of which are a list.
         `name` will be the attribute name, `name_long` is the original name passed in and `desc` the description of the object.
@@ -116,16 +116,16 @@ class Attr(metaclass=AttrMeta):
     @classmethod
     def update_values(cls, adict):
         """
-        This is the method that clients will use to register their `Attrs`.
+        This is the method that clients will use to register their values for subclasses of `Attr`.
         The input should be a dictionary.
-        Each key should be type(attrs.x) of any attrs require to exist for `_can_handle_query` to return successfully.
-        Please note that you can pass in type(attrs.x(Input)) or just the attrs.x object.
+        Each key should be a subclass of Attr.
         The value for each key should be a list of tuples.
         The tuple should be of the form (`Name`, `Description`).
         If you do not want to add a description, you can put None or "".
-        We sanitize the name you provide.
-        We remove all special characters and make it all lower case.
+        We sanitize the name you provide by removing all special characters and making it all lower case.
         If it still isn't valid we will append to the start of the name to make it a valid attribute name.
+
+        **It is recommended that clients register values for all attrs used by their `_can_handle_query` method.**
 
         We have an example here for an Instrument Class.
 
