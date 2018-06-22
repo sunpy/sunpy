@@ -12,7 +12,7 @@ import numpy.ma as ma
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.visualization.animator import MapCubeAnimator
+from sunpy.visualization.animator import MapSequenceAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.visualization import axis_labels_from_ctype
 from sunpy.util import expand_list, deprecated
@@ -310,7 +310,7 @@ class MapCube(object):
         else:
             plot_cube = self
 
-        return MapCubeAnimator(plot_cube, **kwargs)
+        return MapSequenceAnimator(plot_cube, **kwargs)
 
     def all_maps_same_shape(self):
         """
