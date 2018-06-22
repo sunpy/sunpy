@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
+
 import pytest
 
 from sunpy.net import attr
+from sunpy.net.attr import make_tuple
 
 
 class Instrument(attr.SimpleAttr):
@@ -12,6 +15,11 @@ class Instrument(attr.SimpleAttr):
         super().__init__(value)
 
 
+def EmptyAttr():
+    attr.Attr._attr_registry = defaultdict(make_tuple)
+    return attr.Attr
+
+
 @pytest.fixture
 def AIA():
     return Instrument('AIA')
@@ -20,6 +28,7 @@ def AIA():
 @pytest.fixture
 def HMI():
     return Instrument('HMI')
+
 
 @pytest.fixture
 def SPEC():
@@ -171,7 +180,7 @@ def test_or_nesting():
     assert len(a.attrs) == 3
 
 
-def test_attr_metamagic(AIA, HMI, SPEC):
+def test_attr_metamagic(AIA, HMI):
     attr.Attr.update_values({Instrument: [('AIA', 'This is AIA, it takes data')]})
     # .name is the attribute name return
     assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower()]
@@ -186,25 +195,38 @@ def test_attr_metamagic(AIA, HMI, SPEC):
     assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value, HMI.value]
     assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data', 'This is HMI, it lives next to AIA']
 
-    # # Tests the print out for the first two inputs only
+    # Tests the print out for the first two inputs only
     assert str(Instrument) == 'Attribute Name | Full Name | Description                      \n---------------+-----------+----------------------------------\naia            | AIA       | This is AIA, it takes data       \nhmi            | HMI       | This is HMI, it lives next to AIA'
 
-    # This checks for sanitization of names.
-    attr.Attr.update_values({Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]})
-    assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower(), HMI.value.lower(), 'thisnameisspecial']
-    assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value, HMI.value, '_!£!THIS_NAME!"!ISSPECIAL~~##']
-    assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data', 'This is HMI, it lives next to AIA', 'To test the attribute cleaning.']
+    # Clean Registry
+    EmptyAttr()
 
+
+def test_attr_dynamic(AIA, HMI):
     # This checks the dynamic attribute creation.
+    attr.Attr.update_values({Instrument: [('AIA', 'This is AIA, it takes data')]})
+    attr.Attr.update_values({Instrument: [('HMI', 'This is HMI, it lives next to AIA')]})
     assert Instrument.aia == AIA
     assert Instrument.hmi == HMI
-    assert Instrument.thisnameisspecial == SPEC
+    # Clean Registry
+    EmptyAttr()
 
+
+def test_attr_dir(AIA, HMI):
     # Test for __dir__
+    attr.Attr.update_values({Instrument: [('AIA', 'This is AIA, it takes data')]})
+    attr.Attr.update_values({Instrument: [('HMI', 'This is HMI, it lives next to AIA')]})
     assert 'aia' in dir(Instrument)
     assert 'hmi' in dir(Instrument)
-    assert 'thisnameisspecial' in dir(Instrument)
+    # Clean Registry
+    EmptyAttr()
 
-    # Checks that you can pass in None or "" for the description.
-    attr.Attr.update_values({Instrument: [('Test', '')]})
-    attr.Attr.update_values({Instrument: [('Test', None)]})
+
+def test_attr_sanity(SPEC):
+    attr.Attr.update_values({Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]})
+    # This checks for sanitization of names.
+    assert attr.Attr._attr_registry[Instrument].name == ['thisnameisspecial']
+    assert attr.Attr._attr_registry[Instrument].name_long == ['_!£!THIS_NAME!"!ISSPECIAL~~##']
+    assert attr.Attr._attr_registry[Instrument].desc == ['To test the attribute cleaning.']
+    # Clean Registry
+    EmptyAttr()

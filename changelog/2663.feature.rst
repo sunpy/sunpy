@@ -1,2 +1,1 @@
-Using MetaClasses to enable at tab completion of Attrs defined dynamically.
-Further, they print a table with all available values and descriptions.
+Net search attributes now support tab completion of values and display a table of possible values when printed, to allow easier discoverability of possible search values.
