@@ -266,7 +266,7 @@ class MapFactory(BasicRegistrationFactory):
         # MapCube Deprecation
         cube = kwargs.pop('cube', False)
         if cube:
-            warnings.warn('MapCube is now deprecated and renamed MapSequence. '
+            warnings.warn('MapCube is now deprecated and renamed MapSequence. ' +
                           'Please use the syntax Map(sequence=True) instead of Map(cube=True).',
                           SunpyDeprecationWarning, stacklevel=2)
 
@@ -297,7 +297,7 @@ class MapFactory(BasicRegistrationFactory):
 
         # If the list is meant to be a cube, instantiate a map cube
         if cube:
-            with warnings.catch_warnings(SunpyDeprecationWarning):
+            with warnings.catch_warnings():
                 amapcube = MapCube(new_maps, **kwargs)
             return amapcube
 
