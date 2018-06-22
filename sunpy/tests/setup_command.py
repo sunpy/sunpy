@@ -80,7 +80,7 @@ class SunPyTest(AstropyTest):
                'test_path={1.test_path!r}, '
                'args={1.args!r}, '
                'coverage={1.coverage!r}, '
-               'cov_report="{1.cov_report!r}", '
+               'cov_report={1.cov_report!r}, '
                'plugins={1.plugins!r}, '
                'verbose={1.verbose_results!r}, '
                'pastebin={1.pastebin!r}, '
