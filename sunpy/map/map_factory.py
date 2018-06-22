@@ -298,6 +298,7 @@ class MapFactory(BasicRegistrationFactory):
         # If the list is meant to be a cube, instantiate a map cube
         if cube:
             with warnings.catch_warnings():
+                warnings.filterwarnings("ignore")
                 amapcube = MapCube(new_maps, **kwargs)
             return amapcube
 
