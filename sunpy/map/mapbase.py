@@ -369,9 +369,10 @@ Reference Coord:\t {refcoord}
 
     def _base_name(self):
         """Abstract the shared bit between name and latex_name"""
-        return "{nickname} {{measurement}} {date:{tmf}}".format(nickname=self.nickname,
-                                                                date=parse_time(self.date),
-                                                                tmf=TIME_FORMAT)
+        return "{nickname} {{measurement}} {date}".format(
+            nickname=self.nickname,
+            date=parse_time(self.date).strftime(TIME_FORMAT)
+        )
 
     @property
     def name(self):
