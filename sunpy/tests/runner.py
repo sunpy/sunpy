@@ -14,7 +14,7 @@ class SunPyTestRunner(TestRunner):
     # Disable certain astropy flags
     @keyword()
     def remote_data(self, remote_data, kwargs):
-        return NotImplemented
+        return NotImplemented  # pragma: no cover
 
     # Change the docsting on package
     @keyword(priority=10)

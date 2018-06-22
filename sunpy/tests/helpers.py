@@ -106,7 +106,8 @@ def figure_test(test_function):
     return wrapper
 
 
-def _patch_coverage(testdir, sourcedir):
+# Skip coverage on this because we test it every time the CI runs --coverage!
+def _patch_coverage(testdir, sourcedir):  # pragma: no cover
     import coverage
 
     coveragerc = os.path.join(os.path.dirname(__file__), "coveragerc")
