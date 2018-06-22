@@ -40,6 +40,27 @@ class SunPyTest(AstropyTest):
         self.figure_only = False
         self.cov_report = True
 
+    def _generate_coverage_commands(self):
+        cmd_pre = ''  # Commands to run before the test function
+
+        # patch the .coverage file so the paths are correct to the directory
+        # setup.py was run in rather than the temporary directory.
+        cwd = os.path.abspath(".")
+        cmd_post = ('from sunpy.tests.helpers import _patch_coverage; '
+                    'import os; '
+                    'test_dir = os.path.abspath("."); '
+                    f'_patch_coverage(test_dir, "{cwd}"); ')
+
+        # Make html report the default and make pytest-cov save it to the
+        # source directory not the temporary directory.
+        if self.cov_report and (isinstance(self.cov_report, bool) or "html" in self.cov_report):
+            html_cov = os.path.join(os.path.abspath("."), "htmlcov")
+            self.cov_report = f'html:{html_cov}'
+        else:
+            self.cov_report = self.cov_report
+
+        return cmd_pre, cmd_post
+
     def generate_testing_command(self):
         """
         Build a Python script to run the tests.
@@ -47,22 +68,11 @@ class SunPyTest(AstropyTest):
 
         cmd_pre = ''  # Commands to run before the test function
         cmd_post = ''  # Commands to run after the test function
-        cov_report = False
 
         if self.coverage:
-            # Copy the raw .coverage file back so it can be used for CI reports
-            cwd = os.path.abspath(".")
-            cmd_post = ('from sunpy.tests.helpers import _patch_coverage; '
-                        'import os; '
-                        'test_dir = os.path.abspath("."); '
-                        f'_patch_coverage(test_dir, "{cwd}"); ')
-
-            # Special case html as the default report
-            if self.cov_report and (isinstance(self.cov_report, bool) or "html" in self.cov_report):
-                html_cov = os.path.join(cwd, "htmlcov")
-                cov_report = f'html:{html_cov}'
-            else:
-                cov_report = self.cov_report
+            pre, post = self._generate_coverage_commands()
+            cmd_pre += pre
+            cmd_post += post
 
         cmd = ('{cmd_pre}{0}; import {1.package_name}, sys; result = ('
                '{1.package_name}.self_test('
@@ -70,7 +80,7 @@ class SunPyTest(AstropyTest):
                'test_path={1.test_path!r}, '
                'args={1.args!r}, '
                'coverage={1.coverage!r}, '
-               'cov_report="{cov_report}", '
+               'cov_report="{1.cov_report!r}", '
                'plugins={1.plugins!r}, '
                'verbose={1.verbose_results!r}, '
                'pastebin={1.pastebin!r}, '
@@ -90,7 +100,6 @@ class SunPyTest(AstropyTest):
                'sys.exit(result)')
         return cmd.format('pass',
                           self,
-                          cov_report=cov_report,
                           figure_dir=os.path.join(os.path.abspath('.'), "figure_test_images"),
                           cmd_pre=cmd_pre,
                           cmd_post=cmd_post)
