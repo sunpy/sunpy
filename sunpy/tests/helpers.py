@@ -108,6 +108,11 @@ def figure_test(test_function):
 
 # Skip coverage on this because we test it every time the CI runs --coverage!
 def _patch_coverage(testdir, sourcedir):  # pragma: no cover
+    """
+    This function is used by the ``setup.py test`` command to change the
+    filepath of the source code from the temporary directory setup.py installs
+    the code into to the actual directory setup.py was executed in.
+    """
     import coverage
 
     coveragerc = os.path.join(os.path.dirname(__file__), "coveragerc")
