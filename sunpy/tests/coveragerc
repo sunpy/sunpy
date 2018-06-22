@@ -1,15 +1,16 @@
 [run]
 source = sunpy
 omit =
-   sunpy/_astropy_init*
    sunpy/conftest*
    sunpy/cython_version*
    sunpy/*setup*
-   sunpy/*tests/*
+   sunpy/extern/*
+   sunpy/*/tests/*
    sunpy/version*
    sunpy/__init__*
 
 [report]
+
 exclude_lines =
    # Have to re-enable the standard pragma
    pragma: no cover
