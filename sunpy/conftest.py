@@ -1,5 +1,7 @@
+import os
 import json
 import pathlib
+import tempfile
 import warnings
 import importlib
 
@@ -16,9 +18,16 @@ else:
 import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
 from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
+
+if importlib.util.find_spec('asdf') is not None:
+    from asdf import __version__ as asdf_version
+    if asdf_version >= '2.0.0':
+        pytest_plugins = ['asdf.tests.schema_tester']
+
+# Don't actually import pytest_remotedata because that can do things to the
+# entrypoints code in pytest.
 remotedata_spec = importlib.util.find_spec("pytest_remotedata")
 HAVE_REMOTEDATA = remotedata_spec is not None
 
