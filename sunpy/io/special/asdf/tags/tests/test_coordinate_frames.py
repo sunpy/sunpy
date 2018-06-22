@@ -28,7 +28,7 @@ def coordframe_scalar(request):
 
 
 # Don't test HGS / HGC with arrays because of spacetelescope/asdf#506
-@pytest.fixture(params=(Heliocentric,  #HeliographicCarrington, HeliographicStonyhurst,
+@pytest.fixture(params=(Heliocentric,  # HeliographicCarrington, HeliographicStonyhurst,
                         Helioprojective))
 def coordframe_array(request):
     frame = request.param
