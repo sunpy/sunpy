@@ -3,7 +3,7 @@
 import warnings
 
 from sunpy.util.exceptions import SunpyDeprecationWarning
-from sunpy.visualization.mapsequenceanimator import MapSequenceAnimator
+from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 
 __all__ = ['MapCubeAnimator']
 
