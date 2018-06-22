@@ -1,3 +1,7 @@
+skip-check: &skip-check
+  name: Check for [ci skip]
+  command: bash .circleci/early_exit.sh
+
 apt-run: &apt-install
   name: Install apt packages
   command: |
@@ -37,6 +41,7 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - run: *skip-check
       - run: *apt-install
       - run: *image-conda-install
       - run: *image-tests
@@ -49,6 +54,7 @@ jobs:
           keys: sample-data-v1
 
       - checkout
+      - run: *skip-check
       - run: *apt-install
       - run: *docs-install
       - run: python setup.py build_docs -w
