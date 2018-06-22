@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 
+pytest.importorskip('asdf', '2.0')
 # These only work with astropy 3.1 or newer, so skip them on everything but the
 # master version of 3.1 and up.
 pytest.importorskip('astropy', '3.1.0.dev0')
@@ -27,7 +28,7 @@ def coordframe_scalar(request):
 
 
 # Don't test HGS / HGC with arrays because of spacetelescope/asdf#506
-@pytest.fixture(params=(Heliocentric, #HeliographicCarrington, HeliographicStonyhurst,
+@pytest.fixture(params=(Heliocentric,  #HeliographicCarrington, HeliographicStonyhurst,
                         Helioprojective))
 def coordframe_array(request):
     frame = request.param

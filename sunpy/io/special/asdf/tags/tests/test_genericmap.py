@@ -3,11 +3,11 @@
 import pytest
 asdf = pytest.importorskip('asdf', '2.0')
 
+from asdf.tests.helpers import assert_roundtrip_tree
+
 import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.io.special.asdf.extension import SunpyExtension
-
-from asdf.tests.helpers import assert_roundtrip_tree
 
 
 aia_path = get_test_filepath("aia_171_level1.fits")
