@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 import os
 import pytest
-from datetime import timedelta
 
 import numpy as np
 from astropy import units as u

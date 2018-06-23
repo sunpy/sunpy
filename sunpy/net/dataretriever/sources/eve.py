@@ -3,7 +3,6 @@
 # Google Summer of Code 2014
 
 from __future__ import absolute_import, division, print_function
-import datetime
 
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
