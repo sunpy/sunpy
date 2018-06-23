@@ -59,6 +59,7 @@ jobs:
       - run: python setup.py test -P physics
       - run: python setup.py test -P coordinates
       - run: python setup.py test -P roi
+      - run: python setup.py test -P timeseries
 
   astropy-time-online:
     docker:
