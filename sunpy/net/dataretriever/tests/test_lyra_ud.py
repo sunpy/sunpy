@@ -1,7 +1,7 @@
-import datetime
 import pytest
 
 from sunpy.time.timerange import TimeRange
+from sunpy.time import parse_time
 from sunpy.net.vso.attrs import Time, Instrument, Source
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.lyra as lyra
@@ -37,7 +37,7 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
 
 
 def test_get_url_for_date():
-    url = LCClient._get_url_for_date(datetime.date(2013, 2, 13))
+    url = LCClient._get_url_for_date(parse_time((2013, 2, 13)))
     assert url == 'http://proba2.oma.be/lyra/data/bsd/2013/02/13/lyra_20130213-000000_lev2_std.fits'
 
 

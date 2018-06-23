@@ -1,5 +1,4 @@
 from __future__ import division
-import datetime
 from copy import deepcopy
 import warnings
 from itertools import product
@@ -245,7 +244,7 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
         Original map that we want to transform.
     time : sunpy-compatible time
         date/time at which the input co-ordinate will be rotated to.
-    dt : `~astropy.units.Quantity` or `datetime`
+    dt : `~astropy.units.Quantity` or `astropy.time.Time`
         Desired interval between the input map and returned map.
     pad : `bool`
         Whether to create a padded map for submaps to don't loose data
