@@ -120,7 +120,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         gbm_times = []
         # get the time information in datetime format with the correct MET adjustment
         for t in count_data['time']:
-            gbm_times.append(fermi.met_to_utc(t))
+            gbm_times.append(fermi.met_to_utc(t).datetime)
         column_labels = ['4-15 keV', '15-25 keV', '25-50 keV', '50-100 keV',
                          '100-300 keV', '300-800 keV', '800-2000 keV']
 

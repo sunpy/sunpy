@@ -12,10 +12,11 @@ from pandas import DataFrame
 
 import sunpy.io
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.time import parse_time, TimeRange, is_time_in_given_format
+from sunpy.time import parse_time, TimeRange, is_time_in_given_format, Time
 from sunpy.util.metadata import MetaDict
 
 from astropy import units as u
+from astropy.time import TimeDelta
 
 __author__ = ["Alex Hamilton"]
 __email__ = "####"
@@ -79,7 +80,7 @@ class XRSTimeSeries(GenericTimeSeries):
         figure = plt.figure()
         axes = plt.gca()
 
-        dates = matplotlib.dates.date2num(parse_time(self.data.index))
+        dates = matplotlib.dates.date2num(parse_time(self.data.index).datetime)
 
         axes.plot_date(dates, self.data['xrsa'], '-',
                      label='0.5--4.0 $\AA$', color='blue', lw=2)
@@ -127,7 +128,7 @@ class XRSTimeSeries(GenericTimeSeries):
         12: TimeRange('2002-12-13', '2007-05-09'),
         13: TimeRange('2006-08-01', '2006-08-01'),
         14: TimeRange('2009-12-02', '2010-11-05'),
-        15: TimeRange('2010-09-01', datetime.datetime.utcnow())}
+        15: TimeRange('2010-09-01', Time.now())}
 
         sat_list = []
         for sat_num in goes_operational:
@@ -157,9 +158,9 @@ class XRSTimeSeries(GenericTimeSeries):
         header = MetaDict(OrderedDict(hdulist[0].header))
         if len(hdulist) == 4:
             if is_time_in_given_format(hdulist[0].header['DATE-OBS'], '%d/%m/%Y'):
-                start_time = datetime.datetime.strptime(hdulist[0].header['DATE-OBS'], '%d/%m/%Y')
+                start_time = Time.strptime(hdulist[0].header['DATE-OBS'], '%d/%m/%Y')
             elif is_time_in_given_format(hdulist[0].header['DATE-OBS'], '%d/%m/%y'):
-                start_time = datetime.datetime.strptime(hdulist[0].header['DATE-OBS'], '%d/%m/%y')
+                start_time = Time.strptime(hdulist[0].header['DATE-OBS'], '%d/%m/%y')
             else:
                 raise ValueError("Date not recognized")
             xrsb = hdulist[2].data['FLUX'][0][:, 0]
@@ -173,8 +174,7 @@ class XRSTimeSeries(GenericTimeSeries):
         else:
             raise ValueError("Don't know how to parse this file")
 
-        times = [start_time + datetime.timedelta(seconds=int(np.floor(s)),
-                                                    microseconds=int((s - np.floor(s)) * 1e6)) for s in seconds_from_start]
+        times = start_time + TimeDelta(seconds_from_start*u.second)
 
         # remove bad values as defined in header comments
         xrsb[xrsb == -99999] = np.nan
@@ -184,7 +184,7 @@ class XRSTimeSeries(GenericTimeSeries):
         newxrsa = xrsa.byteswap().newbyteorder()
         newxrsb = xrsb.byteswap().newbyteorder()
 
-        data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
+        data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times.datetime)
         data.sort_index(inplace=True)
 
         # Add the units
