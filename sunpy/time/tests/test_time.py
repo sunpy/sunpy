@@ -397,10 +397,10 @@ def test__iter_empty():
     assert time.time._iter_empty(one_count) is True
 
 
-
 def test_is_time():
     assert time.is_time(datetime.utcnow()) is True
     assert time.is_time('2017-02-14 08:08:12.999') is True
+    assert time.is_time(ap.Time.now()) is True
 
     assert time.is_time(None) is False
     assert time.is_time('2016-14-14 19:08') is False
