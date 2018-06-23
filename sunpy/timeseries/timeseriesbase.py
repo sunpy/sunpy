@@ -90,7 +90,7 @@ class GenericTimeSeries:
 
     def __init__(self, data, meta=None, units=None, **kwargs):
         self.data = data
-        tr = TimeRange(self.data.index.min(), self.data.index.max())
+        tr = self.time_range
         # Check metadata input
         if meta is None:
             # No meta given, so default
@@ -139,7 +139,10 @@ class GenericTimeSeries:
         The start and end times of the TimeSeries as a `~sunpy.time.TimeRange`
         object
         """
-        return TimeRange(self.data.index.min(), self.data.index.max())
+        if len(self.data)>0:
+            return TimeRange(self.data.index.min(), self.data.index.max())
+        else:
+            return None
 
 # #### Data Access, Selection and Organisation Methods #### #
 
@@ -249,8 +252,8 @@ class GenericTimeSeries:
             a = TimeRange(a, b)
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
-            start = a.start
-            end   = a.end
+            start = a.start.datetime
+            end   = a.end.datetime
         else:
             # Otherwise we already have the values
             start = a

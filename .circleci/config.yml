@@ -59,7 +59,8 @@ jobs:
       - run: python setup.py test -P time
       - run: python setup.py test -P physics
       - run: python setup.py test -P coordinates
-      - run: python setup.py test -P map --online
+      - run: python setup.py test -P map
+      - run: python setup.py test -P timeseries
 
   astropy-time-online:
     docker:
