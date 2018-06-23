@@ -274,7 +274,7 @@ def is_time(time_string, time_format=None):
     """
     if time_string is None:
         return False
-    elif isinstance(time_string, datetime):
+    elif isinstance(time_string, ap.Time):
         return True
 
     try:
