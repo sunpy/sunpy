@@ -23,7 +23,10 @@ from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
 
 if importlib.util.find_spec('asdf') is not None:
     from asdf import __version__ as asdf_version
-    if asdf_version >= '2.0.0':
+    # Skip schema tests on astropy LT 3.1 because the coordinate schema only
+    # work for 3.1 The tags are already not registered on LT 3.1
+    from astropy import __version__ as astropy_version
+    if asdf_version >= '2.0.0' and astropy_version >= "3.1.dev0":
         pytest_plugins = ['asdf.tests.schema_tester']
 
 # Don't actually import pytest_remotedata because that can do things to the
