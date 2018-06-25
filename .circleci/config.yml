@@ -74,9 +74,12 @@ jobs:
       - run: *docs-install
       - run: conda install openjpeg
       - run: python -m "sunpy.data.sample"
-      - run: python setup.py test -P database --online
-      - run: python setup.py test -P net --online
       - run: python setup.py test -P util --online
+      - run: python setup.py test -P database --online
+      - run:
+          name: net tests
+          command: python setup.py test -P net --online
+          no_output_timeout: 30m
 
   html-docs:
     docker:
