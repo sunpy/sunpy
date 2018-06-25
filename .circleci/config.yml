@@ -58,7 +58,7 @@ jobs:
       - run: python setup.py test -P time
       - run: python setup.py test -P physics
       - run: python setup.py test -P coordinates
-      - run: python setup.py test -P util --online
+      - run: python setup.py test -P timeseries
 
   astropy-time-online:
     docker:
@@ -76,7 +76,7 @@ jobs:
       - run: python -m "sunpy.data.sample"
       - run: python setup.py test -P database --online
       - run: python setup.py test -P net --online
-
+      - run: python setup.py test -P util --online
 
   html-docs:
     docker:
