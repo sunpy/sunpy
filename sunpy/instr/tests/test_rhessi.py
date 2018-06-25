@@ -6,6 +6,7 @@ import os
 import socket
 import warnings
 from datetime import datetime
+import textwrap
 
 import sunpy.map
 import sunpy.data.test
@@ -182,13 +183,14 @@ def test_get_obssumm_dbase_file_build_correct_url(mock_get_base_url, mock_urlret
 # Test `rhessi.parse_obssumm_dbase_file(...)`
 
 def hessi_data():
-    return """HESSI Filedb File:
-Created: 1972-04-14T12:41:26.000
-Number of Files:           2
-                    Filename  Orb_st Orb_end         Start_time           End_time Status_flag    Npackets Drift_start   Drift_end Data source
-hsi_obssumm_19721101_139.fit       7       8 01-Nov-72 00:00:00 02-Nov-72 00:00:00           3           2       0.000       0.000
-hsi_obssumm_19721102_144.fit       9      10 02-Nov-72 00:00:00 03-Nov-72 00:00:00           4           1       0.000       0.000
-""".splitlines()
+    return textwrap.dedent("""\
+         HESSI Filedb File:
+         Created: 1972-04-14T12:41:26.000
+         Number of Files:           2
+                             Filename  Orb_st Orb_end         Start_time           End_time Status_flag    Npackets Drift_start   Drift_end Data source
+         hsi_obssumm_19721101_139.fit       7       8 01-Nov-72 00:00:00 02-Nov-72 00:00:00           3           2       0.000       0.000
+         hsi_obssumm_19721102_144.fit       9      10 02-Nov-72 00:00:00 03-Nov-72 00:00:00           4           1       0.000       0.000
+         """).splitlines()
 
 
 def test_parse_obssumm_dbase_file():
