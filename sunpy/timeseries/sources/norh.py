@@ -3,8 +3,6 @@
 
 from __future__ import absolute_import
 
-import datetime
-
 import pandas
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,6 +16,8 @@ from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 
+from astropy.time import TimeDelta
+import astropy.units as u
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -114,7 +114,7 @@ class NoRHTimeSeries(GenericTimeSeries):
 
         norh_time = []
         for s in sec_array:
-            norh_time.append(obs_start_time + datetime.timedelta(0, s))
+            norh_time.append(obs_start_time + TimeDelta(s*u.second))
 
         # Add the units data
         units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
