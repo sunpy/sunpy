@@ -18,6 +18,7 @@ import numpy as np
 from dateutil.relativedelta import relativedelta
 
 from astropy import units as u
+from astropy.time import TimeDelta
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
@@ -296,7 +297,9 @@ def parse_obssumm_file(filename):
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
 
-    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
+    time_array = [reference_time_ut +
+                  TimeDelta(time_interval_sec * a * u.second)
+                  for a in np.arange(dim)]
 
     labels = _build_energy_bands(label=afits[5].data.field('DIM1_UNIT')[0],
                                  bands=afits[5].data.field('DIM1_IDS')[0])
@@ -321,7 +324,8 @@ def parse_obssumm_hdulist(hdulist):
     """
     header = hdulist[0].header
 
-    reference_time_ut = parse_time(hdulist[5].data.field('UT_REF')[0])
+    reference_time_ut = parse_time(hdulist[5].data.field('UT_REF')[0],
+                                   format='utime')
     time_interval_sec = hdulist[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')
@@ -336,7 +340,9 @@ def parse_obssumm_hdulist(hdulist):
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
 
-    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
+    time_array = [reference_time_ut +
+                  TimeDelta(time_interval_sec * a * u.second)
+                  for a in np.arange(dim)]
 
     #  TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
