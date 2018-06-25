@@ -297,7 +297,8 @@ class MapFactory(BasicRegistrationFactory):
 
         # If the list is meant to be a cube, instantiate a map cube
         if cube:
-            with warnings.catch_warnings(SunpyDeprecationWarning):
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=SunpyDeprecationWarning)
                 amapcube = MapCube(new_maps, **kwargs)
             return amapcube
 
