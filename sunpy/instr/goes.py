@@ -884,7 +884,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         at the same times corresponding to the temperatures in temp.
         Must be same length as temp.  Units=[cm**-3]
 
-    obstime : (optional) array-like of `datetime.datetime` objects
+    obstime : (optional) array-like of `~sunpy.time.parse_time` parsable objects
         Array of measurement times to which temperature and
         emission measure values correspond.  Must be same length
         as temp and em.  If this keyword is set, the integrated
@@ -994,10 +994,6 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
                           "temp and em.")
 
         obstime = parse_time(obstime)
-
-        # if not isinstance(obstime, Time):
-        #     raise TypeError("obstime must be an array-like whose elements are"
-        #                     " convertible to datetime objects.")
 
         # Check elements in obstime in chronological order
         _assert_chrono_order(obstime)
@@ -1118,12 +1114,12 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         Array containing the observed GOES/XRS short channel flux.
         Units=[W/m**2]
 
-    obstime : (optional) array-like of `datetime.datetime` objects
+    obstime : (optional) array-like of `~sunpy.time.parse_time` parsable objects
         Measurement times corresponding to each flux measurement.
         Assumes each pair of 0.5-4 and 1-8 angstrom flux measurements
         were taken simultaneously.
 
-    date : (optional) `datetime.datetime` object or valid date string.
+    date : (optional) `astropy.time.Time` object or valid date string.
         Date at which measurements were taken.  This is used to
         calculate the Sun-Earth distance.
         Default=None implies Sun-Earth distance is set to 1AU.
@@ -1151,16 +1147,16 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     Examples
     --------
     >>> from sunpy.instr.goes import _goes_lx
-    >>> from datetime import datetime
+    >>> from astropy.time import Time
     >>> from astropy.units.quantity import Quantity
     >>> longflux = Quantity([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6], unit='W/m**2')
     >>> shortflux = Quantity([7e-7,7e-7,7e-7,7e-7,7e-7,7e-7], unit='W/m**2')
-    >>> obstime = np.array([datetime(2014,1,1,0,0,0),
-    ...                     datetime(2014,1,1,0,0,2),
-    ...                     datetime(2014,1,1,0,0,4),
-    ...                     datetime(2014,1,1,0,0,6),
-    ...                     datetime(2014,1,1,0,0,8),
-    ...                     datetime(2014,1,1,0,0,10),], dtype=object)
+    >>> obstime = Time(['2014-1-1T0:0:0',
+    ...                 '2014-1-1T0:0:2',
+    ...                 '2014-1-1T0:0:4',
+    ...                 '2014-1-1T0:0:6',
+    ...                 '2014-1-1T0:0:8',
+    ...                 '2014-1-1T0:0:10'])
     >>> lx_out = _goes_lx(longflux, shortflux, obstime)  # doctest: +REMOTE_DATA
     >>> lx_out["longlum"]  # doctest: +REMOTE_DATA
     <Quantity [1.96860565e+18, 1.96860565e+18, 1.96860565e+18, 1.96860565e+18,
@@ -1188,10 +1184,6 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
                              "same number of elements.")
 
         obstime = parse_time(obstime)
-
-        # if not all(type(obst) == datetime.datetime for obst in obstime):
-        #     raise TypeError("obstime must be an array-like whose elements are"
-        #                     " convertible to datetime objects.")
 
         # Check elements in obstime in chronological order
         _assert_chrono_order(obstime)
@@ -1238,7 +1230,7 @@ def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
     flux : `~astropy.units.Quantity`
        Containing the observed solar flux.  Units=[W/m**2]
 
-    date : (optional) `datetime.datetime` object or valid date string
+    date : (optional) `astropy.time.Time` object or valid date string
         Used to calculate a more accurate Sun-Earth distance based on
         Earth's orbit at that date.  If date is None, Sun-Earth
         distance is set to 1AU.

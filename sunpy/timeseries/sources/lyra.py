@@ -158,7 +158,8 @@ class LYRATimeSeries(GenericTimeSeries):
                 table[col.name] = fits_record.field(i + 1)
 
         # Return the header and the data
-        data = pandas.DataFrame(table, index=times)
+        times.precision = 9
+        data = pandas.DataFrame(table, index=times.isot)
         data.sort_index(inplace=True)
 
         # Add the units data
