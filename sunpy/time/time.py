@@ -6,7 +6,7 @@ from functools import singledispatch
 import numpy as np
 import pandas
 from sunpy.extern import six
-from sunpy.time.utime import TimeUTime
+from sunpy.time.utime import TimeUTime  # noqa: F401
 from sunpy.time import astropy_time as ap
 
 import astropy.units as u
@@ -17,15 +17,15 @@ __all__ = ['find_time', 'parse_time', 'is_time',
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
-    '%Y': '(?P<year>\d{4})',
-    '%j': '(?P<dayofyear>\d{3})',
-    '%m': '(?P<month>\d{1,2})',
-    '%d': '(?P<day>\d{1,2})',
-    '%H': '(?P<hour>\d{1,2})',
-    '%M': '(?P<minute>\d{1,2})',
-    '%S': '(?P<second>\d{1,2})',
-    '%f': '(?P<microsecond>\d+)',
-    '%b': '(?P<month_str>[a-zA-Z]+)',
+    '%Y': r'(?P<year>\d{4})',
+    '%j': r'(?P<dayofyear>\d{3})',
+    '%m': r'(?P<month>\d{1,2})',
+    '%d': r'(?P<day>\d{1,2})',
+    '%H': r'(?P<hour>\d{1,2})',
+    '%M': r'(?P<minute>\d{1,2})',
+    '%S': r'(?P<second>\d{1,2})',
+    '%f': r'(?P<microsecond>\d+)',
+    '%b': r'(?P<month_str>[a-zA-Z]+)',
 }
 
 TIME_FORMAT_LIST = [
@@ -83,7 +83,7 @@ def _regex_parse_time(inp, format):
         hour = match.group("hour")
     except IndexError:
         return inp, astropy.time.TimeDelta(0*u.day)
-    if match.group("hour") == "24":
+    if hour == "24":
         if not all(
                    _n_or_eq(_group_or_none(match, g, int), 00)
                    for g in ["minute", "second", "microsecond"]
