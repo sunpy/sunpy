@@ -205,10 +205,11 @@ class add_common_docstring(object):
 
     def __init__(self, append=None, prepend=None, **kwargs):
         if kwargs:
-            append = append.format(**kwargs)
-            prepend = prepend.format(**kwargs)
+            append = append
+            prepend = prepend
         self.append = append
         self.prepend = prepend
+        self.kwargs = kwargs
 
     def __call__(self, func):
         func.__doc__ = func.__doc__ if func.__doc__ else ''
@@ -218,4 +219,6 @@ class add_common_docstring(object):
             func.__doc__ += self.append
         if self.prepend and isinstance(func.__doc__, six.string_types):
             func.__doc__ = self.prepend + func.__doc__
+        if self.kwargs:
+            func.__doc__ = func.__doc__.format(self.kwargs)
         return func

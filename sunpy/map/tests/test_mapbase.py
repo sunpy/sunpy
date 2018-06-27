@@ -25,7 +25,7 @@ import sunpy.sun
 import sunpy.map
 import sunpy.coordinates
 import sunpy.data.test
-from sunpy.time import parse_time
+from sunpy.time import parse_time, Time
 
 from sunpy.extern import six
 
@@ -148,7 +148,7 @@ def test_nickname_set(generic_map):
 
 
 def test_date(generic_map):
-    assert isinstance(generic_map.date, datetime.datetime)
+    assert isinstance(generic_map.date, Time)
 
 
 def test_date_aia(aia171_test_map):
