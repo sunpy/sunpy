@@ -1,0 +1,2 @@
+The `sunpy.instr.goes` module now accepts and returns
+`sunpy.timeseries.XRSTimeSeries` objects only.

@@ -1,4 +1,3 @@
-import datetime
 import pytest
 
 import astropy.units as u
