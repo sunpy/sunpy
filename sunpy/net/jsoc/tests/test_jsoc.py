@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import tempfile
-import datetime
 import pandas as pd
 import astropy.table
 import astropy.time

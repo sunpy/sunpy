@@ -2,7 +2,6 @@
 #  This Module was developed under funding provided by
 #  Google Summer of Code 2014
 
-import datetime
 
 from astropy.time import TimeDelta
 import astropy.units as u

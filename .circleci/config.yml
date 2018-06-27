@@ -65,6 +65,7 @@ jobs:
       - run: python setup.py test -P time
       - run: python setup.py test -P physics
       - run: python setup.py test -P coordinates
+      - run: python setup.py test -P roi
       - run: python setup.py test -P map
       - run: python setup.py test -P timeseries
 
@@ -81,9 +82,11 @@ jobs:
       - run: *apt-install
       - run: *docs-install
       - run: conda install openjpeg
+      - run: pip install pytest-xdist
       - run: python -m "sunpy.data.sample"
       - run: python setup.py test -P util --online
       - run: python setup.py test -P database --online
+      - run: python setup.py test -P net --online --parallel 4
       - run:
           name: net tests
           command: python setup.py test -P net --online

@@ -4,7 +4,6 @@ Ephemeris calculations using SunPy coordinate frames
 
 """
 from __future__ import absolute_import, division
-import datetime
 import warnings
 
 import numpy as np

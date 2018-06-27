@@ -138,11 +138,10 @@ class LYRATimeSeries(GenericTimeSeries):
         # First column are times.  For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
         if hdulist[1].header['TUNIT1'] == 's':
-            times = [start + TimeDelta(n*u.second)
-                     for n in fits_record.field(0)]
+            times = start + TimeDelta(fits_record.field(0)*u.second)
         elif hdulist[1].header['TUNIT1'] == 'MIN':
-            times = [start + TimeDelta(int(n)*u.minute)
-                     for n in fits_record.field(0)]
+            td = [int(n) for n in fits_record.field(0)]
+            times = start + TimeDelta(td*u.minute)
         else:
             raise ValueError("Time unit in LYRA fits file not recognised.  "
                              "Value = {0}".format(hdulist[1].header['TUNIT1']))
