@@ -12,6 +12,8 @@ import sunpy.map
 import sunpy.data.test
 import sunpy.instr.rhessi as rhessi
 from sunpy.extern.six.moves.urllib.error import URLError
+from sunpy.time import parse_time
+from sunpy.time.astropy_time import _is_time_equal
 
 import numpy as np
 import pytest
@@ -23,7 +25,7 @@ testpath = sunpy.data.test.rootdir
 def test_backprojection():
     amap = rhessi.backprojection(os.path.join(testpath, 'hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits'))
     assert isinstance(amap, sunpy.map.GenericMap)
-    assert amap.date == datetime(2002, 2, 20, 11, 6, 21)
+    assert _is_time_equal(amap.date, parse_time((2002, 2, 20, 11, 6, 21)))
 
 
 def test_get_obssumm_dbase_file():
