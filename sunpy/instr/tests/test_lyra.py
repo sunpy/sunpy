@@ -13,6 +13,10 @@ from sunpy.time import parse_time
 from sunpy import timeseries
 from sunpy.instr import lyra
 
+from astropy.time import TimeDelta
+import astropy.units as u
+from sunpy.time.astropy_time import _is_time_equal
+
 from sunpy.extern.six.moves import range
 
 # Define location for test LYTAF database files
@@ -57,7 +61,7 @@ def test_split_series_using_lytaf():
     # construct a dummy signal for testing purposes
     basetime = parse_time('2010-06-13 02:00')
     seconds = 3600
-    dummy_time = [basetime + datetime.timedelta(0, s) for s in range(seconds)]
+    dummy_time = [basetime + TimeDelta(s*u.second) for s in range(seconds)]
     dummy_data = np.random.random(seconds)
 
     lytaf_tmp = lyra.get_lytaf_events('2010-06-13 02:00', '2010-06-13 06:00',
@@ -66,10 +70,10 @@ def test_split_series_using_lytaf():
     split = lyra.split_series_using_lytaf(dummy_time, dummy_data, lytaf_tmp)
     assert type(split) == list
     assert len(split) == 4
-    assert split[0]['subtimes'][0] == datetime.datetime(2010, 6, 13, 2, 0)
-    assert split[0]['subtimes'][-1] == datetime.datetime(2010, 6, 13, 2, 7, 2)
-    assert split[3]['subtimes'][0] == datetime.datetime(2010, 6, 13, 2, 59, 41)
-    assert split[3]['subtimes'][-1] == datetime.datetime(2010, 6, 13, 2, 59, 58)
+    assert _is_time_equal(split[0]['subtimes'][0], parse_time((2010, 6, 13, 2, 0)))
+    assert _is_time_equal(split[0]['subtimes'][-1], parse_time((2010, 6, 13, 2, 7, 2)))
+    assert _is_time_equal(split[3]['subtimes'][0], parse_time((2010, 6, 13, 2, 59, 42)))
+    assert _is_time_equal(split[3]['subtimes'][-1], parse_time((2010, 6, 13, 2, 59, 58)))
 
     # Test case when no LYTAF events found in time series.
     split_no_lytaf = lyra.split_series_using_lytaf(dummy_time,

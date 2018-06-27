@@ -631,9 +631,9 @@ def split_series_using_lytaf(timearray, data, lytaf):
     el = len(lytaf)
 
     # make the input time array a list of datetime objects
-    datetime_array = []
+    time_array = []
     for tim in timearray:
-        datetime_array.append(parse_time(tim))
+        time_array.append(parse_time(tim))
 
     # scan through each entry retrieved from the LYTAF database
     for j in range(0, el):
@@ -642,8 +642,8 @@ def split_series_using_lytaf(timearray, data, lytaf):
         end_dt = lytaf['end_time'][j]
 
         # find the start and end indices for each event
-        start_ind = np.searchsorted(datetime_array, start_dt)
-        end_ind = np.searchsorted(datetime_array, end_dt)
+        start_ind = np.searchsorted(time_array, start_dt)
+        end_ind = np.searchsorted(time_array, end_dt)
 
         # append the mask to mark event as 'bad'
         mask[start_ind:end_ind] = 0
@@ -656,7 +656,7 @@ def split_series_using_lytaf(timearray, data, lytaf):
     if len(disc) == 0:
         print('No events found within time series interval. '
               'Returning original series.')
-        return [{'subtimes': datetime_array, 'subdata': data}]
+        return [{'subtimes': time_array, 'subdata': data}]
 
     # -1 in diffmask means went from good data to bad
     # +1 means went from bad data to good
@@ -676,12 +676,12 @@ def split_series_using_lytaf(timearray, data, lytaf):
 
         if h == limit-1:
             # can't index h+1 here. Go to end of series
-            subtimes = datetime_array[disc[h]:-1]
+            subtimes = time_array[disc[h]:-1]
             subdata = data[disc[h]:-1]
             subseries = {'subtimes': subtimes, 'subdata': subdata}
             split_series.append(subseries)
         else:
-            subtimes = datetime_array[disc[h]:disc[h+1]]
+            subtimes = time_array[disc[h]:disc[h+1]]
             subdata = data[disc[h]:disc[h+1]]
             subseries = {'subtimes': subtimes, 'subdata': subdata}
             split_series.append(subseries)
