@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
+import os
+
 from astropy.tests.runner import TestRunner, keyword
 
 
@@ -12,7 +14,7 @@ class SunPyTestRunner(TestRunner):
     # Disable certain astropy flags
     @keyword()
     def remote_data(self, remote_data, kwargs):
-        return NotImplemented
+        return NotImplemented  # pragma: no cover
 
     # Change the docsting on package
     @keyword(priority=10)
@@ -93,4 +95,23 @@ class SunPyTestRunner(TestRunner):
         """
         # Plugins are handled independently by `run_tests` so we define this
         # keyword just for the docstring
+        return []
+
+    @keyword()
+    def coverage(self, coverage, kwargs):
+        if coverage:
+            coveragerc = os.path.join(self.base_path, "tests", "coveragerc")
+            ret = []
+            for path in self.package_path:
+                ret += ["--cov", path, "--cov-config", coveragerc]
+            return ret
+
+        return []
+
+    @keyword()
+    def cov_report(self, cov_report, kwargs):
+        if kwargs['coverage'] and cov_report:
+            a = [cov_report] if isinstance(cov_report, str) else []
+            return ['--cov-report'] + a
+
         return []

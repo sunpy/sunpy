@@ -15,15 +15,12 @@ Code Reference
    image
    instr
    io
-   lightcurve
    map
    net
    physics
    roi
-   spectra
    sun
    time
    timeseries
    util
    visualization
-   wcs

@@ -22,8 +22,8 @@ class roi(object):
 
     Attributes
     ----------
-    start_time : datetime object containing the start time of the ROI
-    end_time : datetime object containing the end time of the ROI
+    start_time : `astropy.time.Time` object containing the start time of the ROI
+    end_time : `astropy.time.Time` object containing the end time of the ROI
     description : A string descriptor of the ROI event type
         (e.g. 'attenuator change', 'LAR', 'SAA', 'flare')
     source : A string descriptor of the ROI source (e.g. 'LYRA', 'RHESSI')
@@ -85,12 +85,12 @@ class roi(object):
         if not self.start_time:
             startstring = 'None'
         else:
-            startstring = self.start_time.isoformat()
+            startstring = self.start_time.iso
 
         if not self.end_time:
             endstring = 'None'
         else:
-            endstring = self.end_time.isoformat()
+            endstring = self.end_time.iso
         return('SunPy Region-of-interest (ROI) object' +
         '\n-------------------------------------' +
         '\nSource: \t\t' + self.source +
