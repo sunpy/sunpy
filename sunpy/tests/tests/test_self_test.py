@@ -1,10 +1,23 @@
+import imp
 import os.path
 
 import pytest
 
 import sunpy
+import sunpy.tests.runner
+
 
 root_dir = os.path.dirname(os.path.abspath(sunpy.__file__))
+
+
+def test_import_runner():
+    """
+    When running the tests with setup.py, the test runner class is imported by
+    setup.py before coverage is watching. To ensure that the coverage for
+    sunpy/tests/runner.py is correctly measured we force the interpreter to
+    reload it here while coverage is watching.
+    """
+    imp.reload(sunpy.tests.runner)
 
 
 def test_main_nonexisting_module():
@@ -49,6 +62,13 @@ def test_main_exclude_remote_data(monkeypatch):
                     [os.path.join(root_dir, 'map'), '-m', 'not figure'])
 
 
+def test_main_include_remote_data(monkeypatch):
+    monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
+    args = sunpy.self_test(package='map', online=True)
+    assert args in ([os.path.join('sunpy', 'map'), '--remote-data=any', '-m', 'not figure'],
+                    [os.path.join(root_dir, 'map'),'--remote-data=any',  '-m', 'not figure'])
+
+
 def test_main_only_remote_data(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
     args = sunpy.self_test(package='map', online_only=True)
@@ -68,3 +88,42 @@ def test_main_figure_only(monkeypatch):
     args = sunpy.self_test(figure_only=True)
     assert args in (['sunpy', '-m', 'figure'],
                     [root_dir, '-m', 'figure'])
+
+
+def test_main_figure_dir(monkeypatch):
+    monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
+    args = sunpy.self_test(figure_only=True, figure_dir=".")
+    assert args in (['sunpy', '--figure_dir', '.', '-m', 'figure'],
+                    [root_dir, '--figure_dir', '.', '-m', 'figure'])
+
+
+def test_main_coverage(monkeypatch):
+    monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
+    args = sunpy.self_test(coverage=True)
+    for a in args:
+        assert a in [root_dir, 'sunpy', '--cov', '--cov-config', '-m',
+                     'not figure',
+                     os.path.join(root_dir, 'tests', 'coveragerc'),
+                     os.path.join('sunpy', 'tests', 'coveragerc')]
+
+
+def test_main_coverage_report(monkeypatch):
+    monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
+    args = sunpy.self_test(coverage=True, cov_report=True)
+    for a in args:
+        assert a in [root_dir, 'sunpy', '--cov', '--cov-config', '-m',
+                     'not figure',
+                     os.path.join(root_dir, 'tests', 'coveragerc'),
+                     os.path.join('sunpy', 'tests', 'coveragerc'),
+                     '--cov-report']
+
+
+def test_main_coverage_report_html(monkeypatch):
+    monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
+    args = sunpy.self_test(coverage=True, cov_report=True)
+    for a in args:
+        assert a in [root_dir, 'sunpy', '--cov', '--cov-config', '-m',
+                     'not figure',
+                     os.path.join(root_dir, 'tests', 'coveragerc'),
+                     os.path.join('sunpy', 'tests', 'coveragerc'),
+                     '--cov-report']
