@@ -4,7 +4,6 @@
 
 
 from ..client import GenericClient
-import datetime
 import os
 import tarfile
 from functools import partial

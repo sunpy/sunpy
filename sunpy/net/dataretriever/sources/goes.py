@@ -3,7 +3,6 @@
 # Google Summer of Code 2014
 
 import os
-import datetime
 
 from sunpy.time import parse_time, TimeRange
 from sunpy.time import Time as apTime
