@@ -45,7 +45,7 @@ class TimeRange(object):
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.s)
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.day)
     """
-    def __init__(self, a, b=None):
+    def __init__(self, a, b=None, format=None):
         """Creates a new TimeRange instance"""
         # If a is a TimeRange object, copy attributes to new instance.
         self._t1 = None
@@ -57,13 +57,13 @@ class TimeRange(object):
 
         # Normalize different input types
         if b is None:
-            x = parse_time(a[0])
+            x = parse_time(a[0], format=format)
             if len(a) != 2:
                 raise ValueError('If b is None a must have two elements')
             else:
                 y = a[1]
         else:
-            x = parse_time(a)
+            x = parse_time(a, format=format)
             y = b
 
         if isinstance(y, u.Quantity):
@@ -83,7 +83,7 @@ class TimeRange(object):
             return
 
         # Otherwise, assume that the second argument is parse_time-compatible
-        y = parse_time(y)
+        y = parse_time(y, format=format)
 
         if isinstance(y, ap.Time):
             if x < y:

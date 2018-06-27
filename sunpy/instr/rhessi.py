@@ -287,7 +287,7 @@ def parse_obssumm_file(filename):
     afits = sunpy.io.read_file(filename)
     fits_header = afits[0].header
 
-    reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
+    reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0], format='utime')
     time_interval_sec = afits[5].data.field('TIME_INTV')[0]
 
     # The data stored in the FITS file are "compressed" countrates stored as
@@ -497,7 +497,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     afits = sunpy.io.read_file(calibrated_event_list)
     info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
-    time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])
+    time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0], format='utime')
 
     image = np.zeros(image_dim)
 
