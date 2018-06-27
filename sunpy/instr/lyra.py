@@ -157,7 +157,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
 
     Parameters
     ----------
-    time : `numpy.ndarray` of `datetime.datetime`
+    time : `numpy.ndarray` of `astropy.time.Time`
         Gives the times of the timeseries.
 
     channels : `list` of `numpy.array` convertible to float64.
@@ -204,7 +204,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
 
     Returns
     -------
-    clean_time : `numpy.ndarray` of `datetime.datetime`
+    clean_time : `numpy.ndarray` of `astropy.time.Time`
         time array with artifact periods removed.
 
     clean_channels : `list` ndarrays/array-likes convertible to float64
