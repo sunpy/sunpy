@@ -133,7 +133,7 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 
     for r in result:
         goes_event = {
-            'event_date': parse_time(r['event_starttime']).date().strftime(
+            'event_date': parse_time(r['event_starttime']).strftime(
                 '%Y-%m-%d'),
             'start_time': parse_time(r['event_starttime']),
             'peak_time': parse_time(r['event_peaktime']),
@@ -294,7 +294,7 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
         correct calibration of data.
         Default=8
 
-    date : `datetime.datetime` or `str`
+    date : `astropy.time.Time` or `str`
         Date when observations made.  Important for correctcalibration.
         Default=today
 
@@ -388,7 +388,7 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     # PREPARE DATA
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
-    if date < datetime.datetime(1983, 6, 28) and satellite == 6:
+    if date < parse_time((1983, 6, 28)) and satellite == 6:
         longflux_corrected = longflux*(4.43/5.32)
     else:
         longflux_corrected = longflux
