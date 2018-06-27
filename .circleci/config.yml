@@ -1,3 +1,7 @@
+skip-check: &skip-check
+  name: Check for [ci skip]
+  command: bash .circleci/early_exit.sh
+
 apt-run: &apt-install
   name: Install apt packages
   command: |
@@ -37,6 +41,7 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - run: *skip-check
       - run: *apt-install
       - run: *image-conda-install
       - run: *image-tests
@@ -55,10 +60,12 @@ jobs:
       - run: *docs-install
       # Copy and paste this line for every submodule for which the tests pass
       - run: conda install openjpeg
+      - run: python -m "sunpy.data.sample"
       - run: python setup.py test -P time
       - run: python setup.py test -P physics
       - run: python setup.py test -P coordinates
       - run: python setup.py test -P roi
+      - run: python setup.py test -P map
       - run: python setup.py test -P timeseries
 
   astropy-time-online:
@@ -75,9 +82,12 @@ jobs:
       - run: *docs-install
       - run: conda install openjpeg
       - run: python -m "sunpy.data.sample"
+      - run: python setup.py test -P util --online
       - run: python setup.py test -P database --online
-      - run: python setup.py test -P net --online
-
+      - run:
+          name: net tests
+          command: python setup.py test -P net --online
+          no_output_timeout: 30m
 
   html-docs:
     docker:
@@ -87,9 +97,10 @@ jobs:
           keys: sample-data-v1
 
       - checkout
+      - run: *skip-check
       - run: *apt-install
       - run: *docs-install
-      - run: python setup.py build_docs
+      - run: python setup.py build_docs -w
       - store_artifacts:
           path: docs/_build/html
 

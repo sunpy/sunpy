@@ -30,7 +30,7 @@ env:
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test --coverage'
         - CONDA_CHANNELS='sunpy'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl pytest-astropy suds-jurko glymur'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl pytest-astropy suds-jurko glymur pytest-xdist'
         - PIP_DEPENDENCIES='git+https://github.com/sphinx-gallery/sphinx-gallery sphinx-astropy pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme hypothesis drms'
         - EVENT_TYPE='push pull_request cron'
         - MPLBACKEND='agg'
@@ -59,7 +59,7 @@ matrix:
         # We run --online here because --online-only skips the doctests
          - python: 3.6
            stage: Comprehensive tests
-           env: SETUP_CMD="test --online --coverage"
+           env: SETUP_CMD="test --online --coverage --parallel 8"
 
         # Cron tests below this line
          - os: osx

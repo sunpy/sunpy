@@ -22,6 +22,8 @@ class SunPyTest(AstropyTest):
                       'Also run tests that do require a internet connection.'),
                      ('online-only', None,
                       'Only run test that do require a internet connection.'),
+                     ('cov-report=', None,
+                      'How to display the coverage report, should be either "html" or "term"'),
                      ('figure', None,
                       'Run the figure tests.'),
                      # Run only tests that check figure generation
@@ -36,6 +38,28 @@ class SunPyTest(AstropyTest):
         self.online_only = False
         self.figure = False
         self.figure_only = False
+        self.cov_report = True
+
+    def _generate_coverage_commands(self):
+        cmd_pre = ''  # Commands to run before the test function
+
+        # patch the .coverage file so the paths are correct to the directory
+        # setup.py was run in rather than the temporary directory.
+        cwd = os.path.abspath(".")
+        cmd_post = ('from sunpy.tests.helpers import _patch_coverage; '
+                    'import os; '
+                    'test_dir = os.path.abspath("."); '
+                    f'_patch_coverage(test_dir, "{cwd}"); ')
+
+        # Make html report the default and make pytest-cov save it to the
+        # source directory not the temporary directory.
+        if self.cov_report and (isinstance(self.cov_report, bool) or "html" in self.cov_report):
+            html_cov = os.path.join(os.path.abspath("."), "htmlcov")
+            self.cov_report = f'html:{html_cov}'
+        else:
+            self.cov_report = self.cov_report
+
+        return cmd_pre, cmd_post
 
     def generate_testing_command(self):
         """
@@ -55,6 +79,8 @@ class SunPyTest(AstropyTest):
                'package={1.package!r}, '
                'test_path={1.test_path!r}, '
                'args={1.args!r}, '
+               'coverage={1.coverage!r}, '
+               'cov_report={1.cov_report!r}, '
                'plugins={1.plugins!r}, '
                'verbose={1.verbose_results!r}, '
                'pastebin={1.pastebin!r}, '
