@@ -17,8 +17,6 @@ Instrument('aia') & Instrument('eit').
 """
 from __future__ import absolute_import
 
-from datetime import datetime
-
 from astropy import units as u
 
 from sunpy.time import Time as apTime
