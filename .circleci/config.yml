@@ -64,6 +64,7 @@ jobs:
       - run: python setup.py test -P time
       - run: python setup.py test -P physics
       - run: python setup.py test -P coordinates
+      - run: python setup.py test -P roi
       - run: python setup.py test -P map
       - run: python setup.py test -P timeseries
 

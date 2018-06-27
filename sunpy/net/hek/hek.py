@@ -14,7 +14,6 @@ import json
 import codecs
 
 from itertools import chain
-from datetime import datetime
 from sunpy.net import attr
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs

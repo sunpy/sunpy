@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 from hypothesis import given, example
 
