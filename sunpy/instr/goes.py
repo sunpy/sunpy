@@ -55,13 +55,14 @@ from itertools import dropwhile
 import pandas
 import numpy as np
 import astropy.units as u
+from astropy.time import TimeDelta
 from scipy import interpolate
 from scipy.integrate import trapz, cumtrapz
 
 from sunpy import sun
 from sunpy.net import hek
 from sunpy import timeseries
-from sunpy.time import parse_time
+from sunpy.time import parse_time, Time
 from sunpy.util.net import check_download_file
 from sunpy.coordinates import get_sunearth_distance
 from sunpy.util.config import get_and_create_download_dir
@@ -991,23 +992,18 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         if len(obstime) != n:
             raise IOError("obstime must have same number of elements as "
                           "temp and em.")
-        if type(obstime) == pandas.DatetimeIndex:
-            obstime = obstime.to_pydatetime
-        if any(type(obst) == str for obst in obstime):
-            parse_time(obstime)
-        if not all(type(obst) == datetime.datetime for obst in obstime):
-            raise TypeError("obstime must be an array-like whose elements are"
-                            " convertible to datetime objects.")
+
+        obstime = parse_time(obstime)
+
+        # if not isinstance(obstime, Time):
+        #     raise TypeError("obstime must be an array-like whose elements are"
+        #                     " convertible to datetime objects.")
+
         # Check elements in obstime in chronological order
-        chrono_check = obstime-np.roll(obstime, 1)
-        chrono_check = chrono_check[1:]
-        if not all(chrono_check > datetime.timedelta(0)):
-            raise ValueError(
-                "Elements of obstime must be in chronological order.")
+        _assert_chrono_order(obstime)
         # Next, get measurement times in seconds from time of first
         # measurement.
-        obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
-                                    for ot in obstime], dtype="float64")
+        obstime_seconds = (obstime - obstime[0]).sec
         # Finally, integrate using trapezoid rule
         rad_loss_int = trapz(rad_loss.value, obstime_seconds)
         rad_loss_int = u.Quantity(rad_loss_int, unit=rad_loss.unit*u.s)
@@ -1190,23 +1186,20 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         if not len(longflux) == len(shortflux) == len(obstime):
             raise ValueError("longflux, shortflux, and obstime must all have "
                              "same number of elements.")
-        if type(obstime) == pandas.DatetimeIndex:
-            obstime = obstime.to_pydatetime
-        if any(type(obst) == str for obst in obstime):
-            parse_time(obstime)
-        if not all(type(obst) == datetime.datetime for obst in obstime):
-            raise TypeError("obstime must be an array-like whose elements are"
-                            " convertible to datetime objects.")
+
+        obstime = parse_time(obstime)
+
+        # if not all(type(obst) == datetime.datetime for obst in obstime):
+        #     raise TypeError("obstime must be an array-like whose elements are"
+        #                     " convertible to datetime objects.")
+
         # Check elements in obstime in chronological order
-        chrono_check = obstime-np.roll(obstime, 1)
-        chrono_check = chrono_check[1:]
-        if not all(chrono_check > datetime.timedelta(0)):
-            raise ValueError(
-                "Elements of obstime must be in chronological order.")
+        _assert_chrono_order(obstime)
+
         # Next, get measurement times in seconds from time of first
         # measurement.
-        obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
-                                    for ot in obstime], dtype="float64")
+        obstime_seconds = (obstime - obstime[0]).sec
+
         # Finally, integrate using trapezoid rule
         longlum_int = trapz(longlum.value, obstime_seconds)
         longlum_int = u.Quantity(longlum_int, unit=longlum.unit*u.s)
@@ -1369,3 +1362,11 @@ def flux_to_flareclass(goesflux: u.watt/u.m**2):
         str_class = conversion_dict.get(u.Quantity(10 ** decade, "W/m**2"))
     goes_subclass = 10 ** -decade * goesflux.to('W/m**2').value
     return "{0}{1:.3g}".format(str_class, goes_subclass)
+
+
+def _assert_chrono_order(obstime):
+    chrono_check = np.array(obstime) - np.roll(obstime, 1)
+    chrono_check = chrono_check[1:]
+    if not all(val > TimeDelta(0*u.day) for val in chrono_check):
+        raise ValueError(
+            "Elements of obstime must be in chronological order.")

@@ -9,10 +9,13 @@ from numpy.testing import assert_array_equal, assert_almost_equal
 from pandas.util.testing import assert_frame_equal
 import astropy.units as u
 
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
+from sunpy.time.astropy_time import _is_time_equal
 from sunpy import timeseries
 from sunpy.instr import goes
 from sunpy.data.test import get_test_filepath
+
+from astropy.time import Time
 
 # Define input variables to be used in test functions for
 # _goes_chianti_tem.
@@ -29,36 +32,37 @@ def test_goes_event_list():
     result = goes.get_goes_event_list(trange, goes_class_filter='M1')
     assert type(result) == list
     assert type(result[0]) == dict
-    assert type(result[0]['event_date'] == str)
-    assert type(result[0]['goes_location'] == tuple)
-    assert type(result[0]['peak_time'] == datetime.datetime)
-    assert type(result[0]['start_time'] == datetime.datetime)
-    assert type(result[0]['end_time'] == datetime.datetime)
-    assert type(result[0]['goes_class'] == str)
-    assert type(result[0]['noaa_active_region'] == int)
+    assert type(result[0]['event_date']) == str
+    assert type(result[0]['goes_location']) == tuple
+    assert isinstance(result[0]['peak_time'], Time)
+    assert isinstance(result[0]['start_time'], Time)
+    assert isinstance(result[0]['end_time'], Time)
+    assert type(result[0]['goes_class']) == str
+    assert type(result[0]['noaa_active_region']) == int
     assert result[0]['event_date'] == '2011-06-07'
     assert result[0]['goes_location'] == (54, -21)
-    assert result[0]['start_time'] == datetime.datetime(2011, 6, 7, 6, 16)
-    assert result[0]['peak_time'] == datetime.datetime(2011, 6, 7, 6, 41)
-    assert result[0]['end_time'] == datetime.datetime(2011, 6, 7, 6, 59)
+    # float errror
+    assert _is_time_equal(result[0]['start_time'], parse_time((2011, 6, 7, 6, 16)))
+    assert _is_time_equal(result[0]['peak_time'], parse_time((2011, 6, 7, 6, 41)))
+    assert _is_time_equal(result[0]['end_time'], parse_time((2011, 6, 7, 6, 59)))
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
     # Test case where GOES class filter not applied
     result = goes.get_goes_event_list(trange)
     assert type(result) == list
     assert type(result[0]) == dict
-    assert type(result[0]['event_date'] == str)
-    assert type(result[0]['goes_location'] == tuple)
-    assert type(result[0]['peak_time'] == datetime.datetime)
-    assert type(result[0]['start_time'] == datetime.datetime)
-    assert type(result[0]['end_time'] == datetime.datetime)
-    assert type(result[0]['goes_class'] == str)
-    assert type(result[0]['noaa_active_region'] == int)
+    assert type(result[0]['event_date']) == str
+    assert type(result[0]['goes_location']) == tuple
+    assert isinstance(result[0]['peak_time'], Time)
+    assert isinstance(result[0]['start_time'], Time)
+    assert isinstance(result[0]['end_time'], Time)
+    assert type(result[0]['goes_class']) == str
+    assert type(result[0]['noaa_active_region']) == int
     assert result[0]['event_date'] == '2011-06-07'
     assert result[0]['goes_location'] == (54, -21)
-    assert result[0]['start_time'] == datetime.datetime(2011, 6, 7, 6, 16)
-    assert result[0]['peak_time'] == datetime.datetime(2011, 6, 7, 6, 41)
-    assert result[0]['end_time'] == datetime.datetime(2011, 6, 7, 6, 59)
+    assert _is_time_equal(result[0]['start_time'], parse_time((2011, 6, 7, 6, 16)))
+    assert _is_time_equal(result[0]['peak_time'], parse_time((2011, 6, 7, 6, 41)))
+    assert _is_time_equal(result[0]['end_time'], parse_time((2011, 6, 7, 6, 59)))
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
 
@@ -253,20 +257,20 @@ def test_calc_rad_loss_errors():
     # Define input variables
     temp = 11.0 * Quantity(np.ones(6), unit="MK")
     em = 4.0e+48 * Quantity(np.ones(6), unit="1/cm**3")
-    obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
-                        datetime.datetime(2014, 1, 1, 0, 0, 2),
-                        datetime.datetime(2014, 1, 1, 0, 0, 4),
-                        datetime.datetime(2014, 1, 1, 0, 0, 6),
-                        datetime.datetime(2014, 1, 1, 0, 0, 8),
-                        datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    obstime = np.array([parse_time((2014, 1, 1, 0, 0, 0)),
+                        parse_time((2014, 1, 1, 0, 0, 2)),
+                        parse_time((2014, 1, 1, 0, 0, 4)),
+                        parse_time((2014, 1, 1, 0, 0, 6)),
+                        parse_time((2014, 1, 1, 0, 0, 8)),
+                        parse_time((2014, 1, 1, 0, 0, 10))], dtype=object)
     temp_toolong = Quantity(np.append(temp.value, 0), unit="MK")
-    obstime_toolong =  np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
-                                 datetime.datetime(2014, 1, 1, 0, 0, 2),
-                                 datetime.datetime(2014, 1, 1, 0, 0, 4),
-                                 datetime.datetime(2014, 1, 1, 0, 0, 6),
-                                 datetime.datetime(2014, 1, 1, 0, 0, 8),
-                                 datetime.datetime(2014, 1, 1, 0, 0, 10),
-                                 datetime.datetime(2014, 1, 1, 0, 0, 12)], dtype=object)
+    obstime_toolong = np.array([parse_time((2014, 1, 1, 0, 0, 0)),
+                                parse_time((2014, 1, 1, 0, 0, 2)),
+                                parse_time((2014, 1, 1, 0, 0, 4)),
+                                parse_time((2014, 1, 1, 0, 0, 6)),
+                                parse_time((2014, 1, 1, 0, 0, 8)),
+                                parse_time((2014, 1, 1, 0, 0, 10)),
+                                parse_time((2014, 1, 1, 0, 0, 12))], dtype=object)
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
     obstime_nonchrono[-1] = obstime[1]
@@ -280,7 +284,7 @@ def test_calc_rad_loss_errors():
         rad_loss_test = goes._calc_rad_loss(temp_outofrange, em, obstime)
     with pytest.raises(IOError):
         rad_loss_test = goes._calc_rad_loss(temp, em, obstime_toolong)
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         lx_test = goes._calc_rad_loss(temp, em, obstime_notdatetime)
     with pytest.raises(ValueError):
         rad_loss_test = goes._calc_rad_loss(temp, em, obstime_nonchrono)
@@ -292,12 +296,12 @@ def test_calc_rad_loss_nokwags():
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
                   unit="1/cm**3")
-    obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
-                        datetime.datetime(2014, 1, 1, 0, 0, 2),
-                        datetime.datetime(2014, 1, 1, 0, 0, 4),
-                        datetime.datetime(2014, 1, 1, 0, 0, 6),
-                        datetime.datetime(2014, 1, 1, 0, 0, 8),
-                        datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    obstime = np.array([parse_time((2014, 1, 1, 0, 0, 0)),
+                        parse_time((2014, 1, 1, 0, 0, 2)),
+                        parse_time((2014, 1, 1, 0, 0, 4)),
+                        parse_time((2014, 1, 1, 0, 0, 6)),
+                        parse_time((2014, 1, 1, 0, 0, 8)),
+                        parse_time((2014, 1, 1, 0, 0, 10))], dtype=object)
     # Test output is correct when no kwags are set.
     rad_loss_test = goes._calc_rad_loss(temp[:2], em[:2])
     rad_loss_expected = {"rad_loss_rate":
@@ -313,12 +317,12 @@ def test_calc_rad_loss_obstime():
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
                   unit="1/cm**3")
-    obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
-                        datetime.datetime(2014, 1, 1, 0, 0, 2),
-                        datetime.datetime(2014, 1, 1, 0, 0, 4),
-                        datetime.datetime(2014, 1, 1, 0, 0, 6),
-                        datetime.datetime(2014, 1, 1, 0, 0, 8),
-                        datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    obstime = np.array([parse_time((2014, 1, 1, 0, 0, 0)),
+                        parse_time((2014, 1, 1, 0, 0, 2)),
+                        parse_time((2014, 1, 1, 0, 0, 4)),
+                        parse_time((2014, 1, 1, 0, 0, 6)),
+                        parse_time((2014, 1, 1, 0, 0, 8)),
+                        parse_time((2014, 1, 1, 0, 0, 10))], dtype=object)
     # Test output is correct when obstime and cumulative kwargs are set.
     rad_loss_test = goes._calc_rad_loss(temp, em, obstime)
     rad_loss_expected = {
@@ -358,12 +362,12 @@ def test_goes_lx_errors():
     # Define input values of flux and time.
     longflux = 7e-6 * Quantity(np.ones(6), unit="W/m**2")
     shortflux = 7e-7 * Quantity(np.ones(6), unit="W/m**2")
-    obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
-                        datetime.datetime(2014, 1, 1, 0, 0, 2),
-                        datetime.datetime(2014, 1, 1, 0, 0, 4),
-                        datetime.datetime(2014, 1, 1, 0, 0, 6),
-                        datetime.datetime(2014, 1, 1, 0, 0, 8),
-                        datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    obstime = np.array([parse_time((2014, 1, 1, 0, 0, 0)),
+                        parse_time((2014, 1, 1, 0, 0, 2)),
+                        parse_time((2014, 1, 1, 0, 0, 4)),
+                        parse_time((2014, 1, 1, 0, 0, 6)),
+                        parse_time((2014, 1, 1, 0, 0, 8)),
+                        parse_time((2014, 1, 1, 0, 0, 10))], dtype=object)
     longflux_toolong = Quantity(np.append(longflux.value, 0), unit=longflux.unit)
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
@@ -372,7 +376,7 @@ def test_goes_lx_errors():
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
         lx_test = goes._goes_lx(longflux_toolong, shortflux, obstime)
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         lx_test = goes._goes_lx(longflux, shortflux, obstime_notdatetime)
     with pytest.raises(ValueError):
         lx_test = goes._goes_lx(longflux, shortflux, obstime_nonchrono)
@@ -412,12 +416,12 @@ def test_goes_lx_obstime():
     # Define input values of flux and time.
     longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
-    obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
-                        datetime.datetime(2014, 1, 1, 0, 0, 2),
-                        datetime.datetime(2014, 1, 1, 0, 0, 4),
-                        datetime.datetime(2014, 1, 1, 0, 0, 6),
-                        datetime.datetime(2014, 1, 1, 0, 0, 8),
-                        datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    obstime = np.array([parse_time((2014, 1, 1, 0, 0, 0)),
+                        parse_time((2014, 1, 1, 0, 0, 2)),
+                        parse_time((2014, 1, 1, 0, 0, 4)),
+                        parse_time((2014, 1, 1, 0, 0, 6)),
+                        parse_time((2014, 1, 1, 0, 0, 8)),
+                        parse_time((2014, 1, 1, 0, 0, 10))], dtype=object)
     # Test output when obstime and cumulative kwargs are set.
     lx_test = goes._goes_lx(longflux, shortflux, obstime)
     lx_expected = {
