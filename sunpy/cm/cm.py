@@ -1,11 +1,11 @@
 """
 This module provides a set of colormaps specific for solar data.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 
 from sunpy.cm import color_tables as ct
 from sunpy.util import deprecated
@@ -184,4 +184,3 @@ def show_colormaps(filter=None):
         fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
                  horizontalalignment='right')
     plt.show()
-

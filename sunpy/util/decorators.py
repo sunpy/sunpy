@@ -4,15 +4,14 @@
 
 from __future__ import print_function
 
-
-import functools
+import types
 import inspect
 import textwrap
-import types
 import warnings
+import functools
 
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.extern import six
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 __all__ = ['deprecated']
 

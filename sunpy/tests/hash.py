@@ -1,9 +1,10 @@
-from __future__ import absolute_import, division, print_function
-from sys import version_info
-import os
+from __future__ import division, print_function, absolute_import
+
 import io
-import hashlib
+import os
 import json
+import hashlib
+from sys import version_info
 
 import matplotlib.pyplot as plt
 

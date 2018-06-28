@@ -7,8 +7,8 @@ import numpy as np
 
 import astropy.units as u
 
-from sunpy.physics.differential_rotation import solar_rotate_coordinate
 from sunpy.image.coalignment import apply_shifts
+from sunpy.physics.differential_rotation import solar_rotate_coordinate
 
 __author__ = 'J. Ireland'
 

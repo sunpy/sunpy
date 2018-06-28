@@ -6,6 +6,7 @@ from __future__ import absolute_import
 from sunpy.net import attr
 from sunpy.net.vso import attrs
 
+
 def test_dummyattr():
     one = attr.DummyAttr()
     other = attr.ValueAttr({'a': 'b'})

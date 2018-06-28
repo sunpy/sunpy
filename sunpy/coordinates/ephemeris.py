@@ -3,18 +3,19 @@
 Ephemeris calculations using SunPy coordinate frames
 
 """
-from __future__ import absolute_import, division
+from __future__ import division, absolute_import
+
 import datetime
 import warnings
 
 import numpy as np
+
 import astropy.units as u
 from astropy.time import Time
-from astropy.coordinates import (SkyCoord, Angle, Longitude,
-                                 ICRS, PrecessedGeocentric, AltAz,
-                                 get_body_barycentric)
-from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 from astropy._erfa.core import ErfaWarning
+from astropy.coordinates import (ICRS, AltAz, Angle, SkyCoord, Longitude,
+                                 PrecessedGeocentric, get_body_barycentric)
+from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 
 from sunpy.time import parse_time
 from sunpy.time.time import _astropy_time

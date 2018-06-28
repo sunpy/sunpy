@@ -1,9 +1,16 @@
-from __future__ import absolute_import, print_function
-from functools import partial
+from __future__ import print_function, absolute_import
 
 import os
-import tempfile
 import json
+import tempfile
+from functools import partial
+
+import pytest
+
+import sunpy.tests.helpers
+from sunpy.extern import six
+from sunpy.tests.hash import HASH_LIBRARY_NAME
+from sunpy.tests.helpers import new_hash_library
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -13,12 +20,7 @@ except ImportError:
 else:
     matplotlib.use('Agg')
 
-import sunpy.tests.helpers
-from sunpy.tests.hash import HASH_LIBRARY_NAME
-from sunpy.tests.helpers import new_hash_library
-from sunpy.extern import six
 
-import pytest
 
 
 # Don't actually import pytest_remotedata because that can do things to the

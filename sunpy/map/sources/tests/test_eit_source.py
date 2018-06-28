@@ -5,14 +5,14 @@ This particular test file pertains to EITMap.
 
 import os
 import glob
+
 import numpy as np
+import pytest
 from matplotlib import colors
 
-import pytest
-
-from sunpy.map.sources.soho import EITMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.soho import EITMap
 
 path = sunpy.data.test.rootdir
 fitslist = glob.glob(os.path.join(path, "EIT", "*"))

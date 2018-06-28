@@ -3,16 +3,17 @@
 from __future__ import absolute_import
 
 import datetime
-import matplotlib.dates
-from matplotlib import pyplot as plt
-from astropy.io import fits as pyfits
-from numpy import nan
-from numpy import floor
-from pandas import DataFrame
 
-from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time, TimeRange, is_time_in_given_format
+import matplotlib.dates
+from numpy import nan, floor
+from pandas import DataFrame
+from matplotlib import pyplot as plt
+
+from astropy.io import fits as pyfits
+
+from sunpy.time import TimeRange, parse_time, is_time_in_given_format
 from sunpy.util import net
+from sunpy.lightcurve import LightCurve
 
 __all__ = ['GOESLightCurve']
 

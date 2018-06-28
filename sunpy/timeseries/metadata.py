@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
+
+import copy
+import inspect
+import warnings
+import itertools
+
+from sunpy.time import TimeRange, parse_time
+from sunpy.util.metadata import MetaDict
+
 __authors__ = ["Alex Hamilton, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
 
-from sunpy.util.metadata import MetaDict
-import itertools
-import copy
 
-import warnings
-import inspect
 
-from sunpy.time import TimeRange, parse_time
 
 
 class TimeSeriesMetaData(object):

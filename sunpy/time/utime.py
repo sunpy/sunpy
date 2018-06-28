@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from astropy.time.formats import erfa, TimeFromEpoch
+from astropy.time.formats import TimeFromEpoch, erfa
 
 __all__ = ['TimeUTime']
 

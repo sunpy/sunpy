@@ -1,21 +1,21 @@
-from __future__ import absolute_import
-from __future__ import division
+from __future__ import division, absolute_import
 
 import os
 import copy
-from sunpy.extern.six.moves import urllib
-from collections import OrderedDict
-import tempfile
-
 import datetime
-import matplotlib.pyplot as plt
-import numpy as np
-import astropy.units as u
-from astropy.coordinates import Longitude, Latitude
+import tempfile
+from collections import OrderedDict
 
-from sunpy.time import parse_time, TimeRange
+import numpy as np
+import matplotlib.pyplot as plt
+
+import astropy.units as u
+from astropy.coordinates import Latitude, Longitude
+
 from sunpy import sun
+from sunpy.time import TimeRange, parse_time
 from sunpy.io.fits import fits
+from sunpy.extern.six.moves import urllib
 
 __all__ = ['download_weekly_pointing_file', 'get_detector_sun_angles_for_time',
            'get_detector_sun_angles_for_date', 'plot_detector_sun_angles',

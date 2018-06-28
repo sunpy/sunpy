@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import functools
-import operator
 import sys
 import types
+import operator
+import functools
 
 __author__ = "Benjamin Peterson <benjamin@python.org>"
 __version__ = "1.7.3"

@@ -3,30 +3,30 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-from __future__ import absolute_import, print_function
+from __future__ import print_function, absolute_import
 
-import itertools
+import os.path
 import operator
+import itertools
 from datetime import datetime
 from contextlib import contextmanager
-import os.path
 
-from sqlalchemy import create_engine, exists
+from sqlalchemy import exists, create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from astropy import units
 
 import sunpy
-from sunpy.database import commands, tables
+from sunpy.util import deprecated
+from sunpy.net.vso import VSOClient
+from sunpy.database import tables, commands
+from sunpy.net.attr import and_
+from sunpy.net.hek2vso import H2VClient
+from sunpy.database.attrs import walker
 from sunpy.database.tables import _create_display_table
 from sunpy.database.caching import LRUCache
-from sunpy.database.commands import CompositeOperation
-from sunpy.database.attrs import walker
-from sunpy.net.hek2vso import H2VClient
-from sunpy.net.attr import and_
-from sunpy.net.vso import VSOClient
 from sunpy.extern.six.moves import range
-from sunpy.util import deprecated
+from sunpy.database.commands import CompositeOperation
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [

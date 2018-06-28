@@ -1,11 +1,10 @@
-import sunpy.io.fits
-from sunpy.io.fits import get_header, extract_waveunit
-
-import sunpy.data.test
 import os
 
-from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
+import sunpy.io.fits
+import sunpy.data.test
+from sunpy.io.fits import get_header, extract_waveunit
 from sunpy.extern.six.moves import range
+from sunpy.data.test.waveunit import MQ_IMAGE, NA_IMAGE, MEDN_IMAGE, SVSM_IMAGE
 
 testpath = sunpy.data.test.rootdir
 

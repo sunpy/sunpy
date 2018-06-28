@@ -4,12 +4,26 @@
 
 from __future__ import print_function, absolute_import
 
-import copy
 import os
+import copy
 import datetime
 from abc import ABCMeta
-from collections import OrderedDict, namedtuple
 from functools import partial
+from collections import OrderedDict, namedtuple
+
+import numpy as np
+
+import astropy.table
+import astropy.units as u
+
+import sunpy
+from sunpy import config
+from sunpy.time import TimeRange
+from sunpy.util import deprecated, replacement_filename
+from sunpy.extern import six
+from sunpy.util.config import get_and_create_download_dir
+from sunpy.net.download import Results, Downloader
+from sunpy.net.vso.attrs import Time, Wavelength, _Range
 
 # Python 3:
 # Remove in 1.0: Py2 does not have pathlib
@@ -19,20 +33,8 @@ try:
 except ImportError:
     HAS_PATHLIB = False
 
-import numpy as np
-import astropy.table
-import astropy.units as u
 
-import sunpy
-from sunpy.extern import six
-from sunpy.time import TimeRange
-from sunpy.util import replacement_filename
-from sunpy.util.config import get_and_create_download_dir
-from sunpy import config
-from sunpy.util import deprecated
 
-from sunpy.net.download import Downloader, Results
-from sunpy.net.vso.attrs import Time, Wavelength, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
 

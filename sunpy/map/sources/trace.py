@@ -1,16 +1,20 @@
 """TRACE Map subclass definitions"""
-from __future__ import absolute_import, division, absolute_import
-#pylint: disable=W0221,W0222,E1101,E1121
-
-__author__ = "Jack Ireland"
-__email__ = "jack.ireland@nasa.gov"
+from __future__ import division, absolute_import
 
 import matplotlib.pyplot as plt
 
 from astropy.visualization import LogStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
+
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
+
+#pylint: disable=W0221,W0222,E1101,E1121
+
+__author__ = "Jack Ireland"
+__email__ = "jack.ireland@nasa.gov"
+
+
 
 __all__ = ['TRACEMap']
 

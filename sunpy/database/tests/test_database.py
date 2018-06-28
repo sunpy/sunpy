@@ -5,10 +5,10 @@
 
 from __future__ import absolute_import
 
-import glob
 import os
-import os.path
+import glob
 import shutil
+import os.path
 
 import pytest
 import sqlalchemy
@@ -16,22 +16,18 @@ import sqlalchemy
 from astropy import units
 
 import sunpy
-from sunpy.database import Database, EntryAlreadyAddedError,\
-    EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
-    EntryNotFoundError, TagAlreadyAssignedError, disable_undo, split_database
-from sunpy.database.tables import DatabaseEntry, Tag, FitsHeaderEntry,\
-    FitsKeyComment, JSONDump
-from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
-from sunpy.database.caching import LRUCache, LFUCache
-from sunpy.database import attrs
-from sunpy.net import vso, hek
-from sunpy.data.test.waveunit import waveunitdir
-from sunpy.io import fits
-from sunpy.extern.six.moves import range
-from sunpy.extern.six.moves import configparser
-from sunpy.net import Fido, attrs as net_attrs
-
 import sunpy.data.test
+from sunpy.io import fits
+from sunpy.net import Fido, hek, vso
+from sunpy.net import attrs as net_attrs
+from sunpy.database import (Database, NoSuchTagError, EntryNotFoundError, EntryAlreadyAddedError,
+                            TagAlreadyAssignedError, EntryAlreadyStarredError,
+                            EntryAlreadyUnstarredError, attrs, disable_undo, split_database)
+from sunpy.database.tables import Tag, JSONDump, DatabaseEntry, FitsKeyComment, FitsHeaderEntry
+from sunpy.database.caching import LFUCache, LRUCache
+from sunpy.extern.six.moves import range, configparser
+from sunpy.database.commands import NoSuchEntryError, EmptyCommandStackError
+from sunpy.data.test.waveunit import waveunitdir
 
 testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')

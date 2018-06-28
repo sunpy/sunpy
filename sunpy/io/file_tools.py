@@ -1,6 +1,7 @@
-from __future__ import absolute_import, division, print_function
-import re
+from __future__ import division, print_function, absolute_import
+
 import os
+import re
 import collections
 
 try:

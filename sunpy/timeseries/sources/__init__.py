@@ -6,4 +6,4 @@ will be subclasses of the :mod`sunpy.TimeSeries` class.
 """
 __all__ = ['rhessi', 'eve', 'goes', 'lyra', 'noaa', 'norh', 'fermi_gbm']
 
-from . import eve, rhessi, goes, lyra, noaa, norh, fermi_gbm
+from . import eve, goes, lyra, noaa, norh, rhessi, fermi_gbm

@@ -3,19 +3,18 @@
 # Google Summer of Code 2014
 
 
-from ..client import GenericClient
-import datetime
 import os
 import tarfile
+import datetime
 from functools import partial
 from collections import OrderedDict
 
 import sunpy
-from sunpy.util import replacement_filename, deprecated
+from sunpy.util import deprecated, replacement_filename
+from sunpy.net.download import Results, Downloader
 from sunpy.net.dataretriever.client import simple_path
 
-from sunpy.net.download import Downloader, Results
-
+from ..client import GenericClient
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 

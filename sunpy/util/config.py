@@ -1,11 +1,11 @@
 """SunPy configuration file functionality"""
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 import os
 import tempfile
-from sunpy.extern.six.moves import configparser
 
 import sunpy
+from sunpy.extern.six.moves import configparser
 
 __all__ = ['load_config', 'print_config']
 

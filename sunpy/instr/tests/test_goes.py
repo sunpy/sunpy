@@ -2,17 +2,18 @@ from __future__ import absolute_import
 
 import copy
 import datetime
-import pytest
 
 import numpy as np
-from astropy.units.quantity import Quantity
-from astropy.tests.helper import assert_quantity_allclose
+import pytest
 from numpy.testing import assert_array_equal, assert_almost_equal
 from pandas.util.testing import assert_frame_equal
-import astropy.units as u
 
-from sunpy.time import TimeRange
+import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
+from astropy.units.quantity import Quantity
+
 from sunpy import lightcurve
+from sunpy.time import TimeRange
 from sunpy.instr import goes
 
 # Define input variables to be used in test functions for

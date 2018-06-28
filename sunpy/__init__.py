@@ -11,6 +11,12 @@ Documentation: http://docs.sunpy.org/en/stable/
 """
 from __future__ import absolute_import
 
+import os
+
+from sunpy.util import system_info
+from sunpy.util.config import load_config, print_config
+from sunpy.tests.runner import SunPyTestRunner
+
 try:
     from .version import version as __version__
 except ImportError:
@@ -21,10 +27,6 @@ try:
 except ImportError:
     __githash__ = ''
 
-import os
-from sunpy.util.config import load_config, print_config
-from sunpy.util import system_info
-from sunpy.tests.runner import SunPyTestRunner
 
 self_test = SunPyTestRunner.make_test_runner_in(os.path.dirname(__file__))
 

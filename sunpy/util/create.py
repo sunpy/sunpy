@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 import os
 import glob
 
 from sunpy import config
+from sunpy.extern import six
 from sunpy.util.net import download_file
 from sunpy.util.config import get_and_create_download_dir
-
-from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
-from sunpy.extern import six
 from sunpy.extern.six.moves import map
+from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
 __all__ = ['Parent']
 

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division
+from __future__ import division, absolute_import
 
 import datetime
 import warnings
 
 import astropy.units as u
 from astropy.time import Time
-from astropy.coordinates import TimeAttribute, CoordinateAttribute, get_body_barycentric, ICRS
+from astropy.coordinates import ICRS, TimeAttribute, CoordinateAttribute, get_body_barycentric
 
-from sunpy.extern import six
 from sunpy.time import parse_time
+from sunpy.extern import six
 from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']

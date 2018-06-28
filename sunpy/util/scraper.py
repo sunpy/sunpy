@@ -1,13 +1,14 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 import os
-import datetime
 import re
+import datetime
 from ftplib import FTP
 
 from bs4 import BeautifulSoup
+
 from sunpy.extern import six
-from sunpy.extern.six.moves import range, zip
+from sunpy.extern.six.moves import zip, range
 from sunpy.extern.six.moves.urllib.request import urlopen
 
 __all__ = ['Scraper']

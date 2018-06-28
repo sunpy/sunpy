@@ -12,17 +12,16 @@ from __future__ import absolute_import
 
 import json
 import codecs
-
-from itertools import chain
 from datetime import datetime
+from itertools import chain
+
 from sunpy.net import attr
+from sunpy.util import unique, deprecated
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
-from sunpy.util import unique
 from sunpy.util.xml import xml_to_dict
 from sunpy.extern.six import iteritems
 from sunpy.extern.six.moves import urllib
-from sunpy.util import deprecated
 
 __all__ = ['HEKClient']
 

@@ -1,20 +1,19 @@
 """A Python MapCube Object"""
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 from copy import deepcopy
 
 import numpy as np
-import matplotlib.animation
 import numpy.ma as ma
+import matplotlib.animation
 
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.visualization.animator import MapCubeAnimator
-from sunpy.visualization import wcsaxes_compat
-from sunpy.visualization import axis_labels_from_ctype
 from sunpy.util import expand_list
+from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype
 from sunpy.extern.six.moves import range
+from sunpy.visualization.animator import MapCubeAnimator
 
 __all__ = ['MapCube']
 

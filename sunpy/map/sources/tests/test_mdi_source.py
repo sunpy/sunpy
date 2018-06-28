@@ -6,9 +6,9 @@ This particular test file pertains to MDIMap.
 import os
 import glob
 
-from sunpy.map.sources.soho import MDIMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.soho import MDIMap
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "mdi_fd_Ic_6h_01d.5871.0000_s.fits"))

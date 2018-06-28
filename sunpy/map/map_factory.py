@@ -1,31 +1,26 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 import os
 import glob
 from collections import OrderedDict
 
 import numpy as np
+
 import astropy.io.fits
 
 import sunpy
-from sunpy.map.mapbase import GenericMap
-from sunpy.map.compositemap import CompositeMap
-from sunpy.map.mapcube import MapCube
-
-from sunpy.io.file_tools import read_file
-from sunpy.io.header import FileHeader
-
-from sunpy.util.net import download_file
 from sunpy.util import expand_list
-from sunpy.util.metadata import MetaDict
-from sunpy.util.config import get_and_create_download_dir
-
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory
-from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.datatype_factory_base import MultipleMatchError
-from sunpy.util.datatype_factory_base import ValidationFunctionError
 from sunpy.extern import six
-
+from sunpy.util.net import download_file
+from sunpy.io.header import FileHeader
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.mapcube import MapCube
+from sunpy.util.config import get_and_create_download_dir
+from sunpy.io.file_tools import read_file
+from sunpy.util.metadata import MetaDict
+from sunpy.map.compositemap import CompositeMap
+from sunpy.util.datatype_factory_base import (NoMatchError, MultipleMatchError,
+                                              ValidationFunctionError, BasicRegistrationFactory)
 from sunpy.extern.six.moves.urllib.request import urlopen
 
 __authors__ = ["Russell Hewett, Stuart Mumford"]

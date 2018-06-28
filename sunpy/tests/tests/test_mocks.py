@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from ..mocks import MockObject, MockOpenTextFile, MockHTTPResponse
+from ..mocks import MockObject, MockHTTPResponse, MockOpenTextFile
 
 
 @pytest.fixture

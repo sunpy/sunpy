@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from astropy.time import Time
+
 from sunpy.time import parse_time
 
 __all__ = ['julian_day', 'julian_centuries']

@@ -5,44 +5,47 @@
 # the ESA Summer of Code (2011).
 #
 # pylint: disable=W0401,C0103,R0904,W0141
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
-"""
-This module provides a wrapper around the VSO API.
-"""
-
-import re
 import os
+import re
 import sys
 import copy
-import logging
-import requests
-import warnings
 import socket
+import logging
+import warnings
 import itertools
-
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
-from suds import client, TypeNotFound
+
+import requests
+from suds import TypeNotFound, client
 
 import astropy.units as u
 from astropy.table import QTable as Table
 
 from sunpy import config
 from sunpy.net import download
-from sunpy.net.proxyfix import WellBehavedHttpTransport
-from sunpy.util.net import get_filename, slugify
-from sunpy.net.attr import and_, Attr
-from sunpy.net.vso import attrs
-from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import replacement_filename
 from sunpy.time import parse_time
-
-from sunpy.util import deprecated
+from sunpy.util import deprecated, replacement_filename
 from sunpy.extern import six
+from sunpy.net.vso import attrs
+from sunpy.net.attr import Attr, and_
+from sunpy.util.net import slugify, get_filename
 from sunpy.extern.six import iteritems, text_type
+from sunpy.net.proxyfix import WellBehavedHttpTransport
+from sunpy.net.vso.attrs import TIMEFORMAT, walker
 from sunpy.extern.six.moves import input
+
+"""
+This module provides a wrapper around the VSO API.
+"""
+
+
+
+
+
 
 TIME_FORMAT = config.get("general", "time_format")
 

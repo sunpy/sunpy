@@ -1,23 +1,22 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
+
 import os
 import re
 import sys
 import shutil
-
-# For Content-Disposition parsing
-from sunpy.extern.six.moves.urllib.parse import urlparse, urljoin
-from sunpy.extern.six.moves.urllib.request import urlopen
-from sunpy.extern.six.moves.urllib.error import HTTPError, URLError
-from sunpy.extern.six.moves import filter
-
-from email.parser import FeedParser
 from unicodedata import normalize
+from email.parser import FeedParser
 
 from sunpy.util import replacement_filename
 from sunpy.extern import six
+from sunpy.extern.six.moves import filter
+from sunpy.extern.six.moves.urllib.error import URLError, HTTPError
+# For Content-Disposition parsing
+from sunpy.extern.six.moves.urllib.parse import urljoin, urlparse
+from sunpy.extern.six.moves.urllib.request import urlopen
 
 __all__ = ['slugify', 'get_content_disposition', 'get_filename',
            'get_system_filename', 'get_system_filename_slugify',

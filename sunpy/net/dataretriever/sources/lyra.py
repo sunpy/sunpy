@@ -3,6 +3,7 @@
 # Google Summer of Code 2014
 
 import datetime
+
 from sunpy.extern.six.moves.urllib.parse import urljoin
 
 from ..client import GenericClient

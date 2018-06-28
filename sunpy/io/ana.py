@@ -15,17 +15,18 @@ anarw routines.
 Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
 Copyright (c) 2009--2011 Tim van Werkhoven.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 import os
 import collections
+
+from sunpy.io.header import FileHeader
 
 try:
     from sunpy.io import _pyana
 except ImportError:  # pragma: no cover
     _pyana = None  # pragma: no cover
 
-from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
 

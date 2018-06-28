@@ -2,9 +2,9 @@
 This module tests the functions implemented in sunpy.util.util.
 """
 
-from __future__ import absolute_import, division, print_function
-import numpy as np
+from __future__ import division, print_function, absolute_import
 
+import numpy as np
 import pytest
 from pytest_mock import mocker
 

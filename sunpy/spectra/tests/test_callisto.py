@@ -3,20 +3,18 @@
 
 from __future__ import absolute_import
 
-import shutil
-from tempfile import mkdtemp
-from datetime import datetime
-
-import pytest
 import os
 import glob
-import numpy as np
-from numpy.testing import assert_array_almost_equal, assert_allclose
-import sunpy.data.test
+import shutil
+from datetime import datetime
+from tempfile import mkdtemp
 
-from sunpy.spectra.sources.callisto import (
-    CallistoSpectrogram, query, download, minimal_pairs
-)
+import numpy as np
+import pytest
+from numpy.testing import assert_allclose, assert_array_almost_equal
+
+import sunpy.data.test
+from sunpy.spectra.sources.callisto import CallistoSpectrogram, query, download, minimal_pairs
 
 
 @pytest.fixture

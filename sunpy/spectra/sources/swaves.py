@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: David Perez-Suarez <dps.helio-?-gmail.com>
-from __future__ import absolute_import, print_function
+from __future__ import print_function, absolute_import
 
 import os
 import datetime
@@ -8,7 +8,7 @@ import datetime
 import numpy as np
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
-from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
+from sunpy.spectra.spectrogram import REFERENCE, LinearTimeSpectrogram, get_day
 
 __all__ = ['SWavesSpectrogram']
 

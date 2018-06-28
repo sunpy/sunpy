@@ -6,7 +6,6 @@ import pytest
 import sunpy
 import sunpy.tests.runner
 
-
 root_dir = os.path.dirname(os.path.abspath(sunpy.__file__))
 
 

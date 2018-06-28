@@ -1,13 +1,16 @@
 """RHESSI Map subclass definitions"""
-from __future__ import absolute_import, print_function, division
+from __future__ import division, print_function, absolute_import
+
+import matplotlib.pyplot as plt
+
+from sunpy.map import GenericMap
+
 #pylint: disable=W0221,W0222,E1121
 
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
-import matplotlib.pyplot as plt
 
-from sunpy.map import GenericMap
 
 
 __all__ = ['RHESSIMap']

@@ -1,5 +1,6 @@
 import astropy.units as u
-from astropy.coordinates import SkyOffsetFrame, SphericalRepresentation, UnitSphericalRepresentation
+from astropy.coordinates import (SkyOffsetFrame, SphericalRepresentation,
+                                 UnitSphericalRepresentation)
 
 __all__ = ['NorthOffsetFrame']
 

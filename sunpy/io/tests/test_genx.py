@@ -1,11 +1,11 @@
 import os
 import datetime
 
-import pytest
 import numpy as np
+import pytest
 
-from sunpy.io.special import genx
 from sunpy.data.test import rootdir
+from sunpy.io.special import genx
 
 TESTING = genx.read_genx(os.path.join(rootdir, 'generated_sample.genx'))
 

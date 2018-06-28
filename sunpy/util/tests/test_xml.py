@@ -1,8 +1,7 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
+from xml.dom.minidom import Document, parseString
 from xml.parsers.expat import ExpatError
-from xml.dom.minidom import Document
-from xml.dom.minidom import parseString
 
 import pytest
 

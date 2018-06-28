@@ -1,4 +1,4 @@
 from .base import *
-from .image import *
 from .line import *
+from .image import *
 from .mapcube import *

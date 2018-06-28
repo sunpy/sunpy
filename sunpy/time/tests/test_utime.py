@@ -1,5 +1,7 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
+
 import pytest
+
 from astropy.time import Time
 
 # Ignore PEP8 F401 warning here, this registers TimeUTime in astropy.time.Time

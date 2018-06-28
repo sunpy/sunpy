@@ -2,11 +2,10 @@ from __future__ import absolute_import
 
 import numpy as np
 
-from sunpy.util.decorators import deprecated
+import astropy.units as u
 
 import sunpy.sun as sun
-
-import astropy.units as u
+from sunpy.util.decorators import deprecated
 
 rsun_meters = sun.constants.radius.si.value
 

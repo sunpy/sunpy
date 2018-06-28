@@ -1,9 +1,9 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 from datetime import datetime
 
-from numpy.testing import assert_almost_equal
 import pytest
+from numpy.testing import assert_almost_equal
 
 from sunpy.time import julian
 

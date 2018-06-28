@@ -7,21 +7,22 @@ import warnings
 from functools import partial
 from collections import Sequence
 
+import drms
 import numpy as np
 import pandas as pd
-import astropy.units as u
+
 import astropy.time
 import astropy.table
+import astropy.units as u
 from astropy.utils.misc import isiterable
-import drms
 
 from sunpy import config
-from sunpy.net.download import Downloader, Results
+from sunpy.util import deprecated
+from sunpy.extern import six
 from sunpy.net.attr import and_
+from sunpy.net.download import Results, Downloader
 from sunpy.net.jsoc.attrs import walker
 from sunpy.extern.six.moves import urllib
-from sunpy.extern import six
-from sunpy.util import deprecated
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 

@@ -6,13 +6,14 @@ The idea is that sunpy.wcs will be deprecated and removed, so this should not
 be relied on for actual testing of the transformation framework.
 """
 
-from ..frames import Helioprojective, Heliocentric, HeliographicStonyhurst
-from sunpy import wcs
+import pytest
 
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
 
-import pytest
+from sunpy import wcs
+
+from ..frames import Heliocentric, Helioprojective, HeliographicStonyhurst
 
 
 @pytest.mark.parametrize('Tx, Ty', [(0*u.arcsec, 0*u.arcsec),

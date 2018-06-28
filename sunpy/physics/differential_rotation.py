@@ -1,18 +1,20 @@
 from __future__ import division
+
 import datetime
-from copy import deepcopy
 import warnings
+from copy import deepcopy
 from itertools import product
 
 import numpy as np
 from skimage import transform
+
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Longitude
 
 import sunpy.map
 from sunpy.time import parse_time
-from sunpy.coordinates import frames, HeliographicStonyhurst
 from sunpy.image.util import to_norm, un_norm
+from sunpy.coordinates import HeliographicStonyhurst, frames
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
 

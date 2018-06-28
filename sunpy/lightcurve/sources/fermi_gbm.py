@@ -1,18 +1,16 @@
 """Provides programs to process and analyse Fermi/GBM lightcurve data."""
 
-from __future__ import absolute_import, print_function
-
+from __future__ import print_function, absolute_import
 
 from collections import OrderedDict
 
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas
+import matplotlib.pyplot as plt
 
-from sunpy.io.fits import fits
 from sunpy.instr import fermi
+from sunpy.io.fits import fits
 from sunpy.lightcurve import LightCurve
-
 from sunpy.extern.six.moves import urllib
 
 __all__ = ['GBMSummaryLightCurve']

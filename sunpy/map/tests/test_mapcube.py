@@ -4,14 +4,17 @@ Test mapcube functionality
 """
 from __future__ import absolute_import
 
+import os
+
 import numpy as np
+import pytest
+
 import astropy.units as u
+
 import sunpy
 import sunpy.map
-from sunpy.util.metadata import MetaDict
-import pytest
-import os
 import sunpy.data.test
+from sunpy.util.metadata import MetaDict
 
 
 @pytest.fixture

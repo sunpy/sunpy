@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from functools import partial
-import pytest
 
 import numpy as np
+import pytest
 import matplotlib.pyplot as plt
 import matplotlib.animation as mplanim
 

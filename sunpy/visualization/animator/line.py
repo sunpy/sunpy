@@ -1,6 +1,6 @@
 import numpy as np
 
-from . base import ArrayAnimator
+from .base import ArrayAnimator
 
 __all__ = ['LineAnimator']
 

@@ -1,18 +1,17 @@
 import datetime
+
 import pytest
+from hypothesis import given
 
 import astropy.units as u
 
-from sunpy.time.timerange import TimeRange
-from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.norh as norh
-from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-
-from hypothesis import given
-
+from sunpy.time.timerange import TimeRange
+from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import time_attr, range_time
+from sunpy.net.dataretriever.client import QueryResponse
 
 
 @pytest.mark.remote_data

@@ -9,7 +9,7 @@ from collections import deque
 
 import pytest
 
-from sunpy.database.caching import BaseCache, LRUCache, LFUCache
+from sunpy.database.caching import LFUCache, LRUCache, BaseCache
 
 
 def test_custom_cache():

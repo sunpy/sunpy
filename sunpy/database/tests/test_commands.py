@@ -7,14 +7,14 @@ from __future__ import absolute_import
 
 import fnmatch
 
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import pytest
 
-from sunpy.database.commands import AddEntry, RemoveEntry, EditEntry,\
-    AddTag, RemoveTag, NoSuchEntryError, NonRemovableTagError,\
-    EmptyCommandStackError, CommandManager, CompositeOperation
-from sunpy.database.tables import DatabaseEntry, Tag
+from sunpy.database.tables import Tag, DatabaseEntry
+from sunpy.database.commands import (AddTag, AddEntry, EditEntry, RemoveTag, RemoveEntry,
+                                     CommandManager, NoSuchEntryError, CompositeOperation,
+                                     NonRemovableTagError, EmptyCommandStackError)
 
 
 @pytest.fixture

@@ -3,11 +3,12 @@
 This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.
 """
-from __future__ import absolute_import, print_function
+from __future__ import print_function, absolute_import
 
 import xml.etree.ElementTree as EL
-from bs4 import BeautifulSoup
 from contextlib import closing
+
+from bs4 import BeautifulSoup
 
 from sunpy.net.helio import registry_links as RL
 from sunpy.extern.six.moves import urllib

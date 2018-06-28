@@ -2,9 +2,9 @@
 from __future__ import absolute_import
 
 import os
+import re
 import glob
 import fnmatch
-import re
 
 from astropy.utils.data import get_pkg_data_filename
 

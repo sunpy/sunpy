@@ -4,10 +4,11 @@ RHESSI LightCurve Tests
 """
 from __future__ import absolute_import
 
+import numpy as np
 import pytest
+
 import sunpy.lightcurve
 from sunpy.time import TimeRange
-import numpy as np
 
 
 class TestRHESSISummaryLightCurve(object):

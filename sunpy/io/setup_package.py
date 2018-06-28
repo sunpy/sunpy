@@ -3,9 +3,8 @@ from __future__ import absolute_import
 import os
 import sys
 import platform
-
-from distutils.core import Extension
 from glob import glob
+from distutils.core import Extension
 
 from astropy_helpers import setup_helpers
 

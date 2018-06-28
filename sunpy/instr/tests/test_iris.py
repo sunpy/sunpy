@@ -4,10 +4,10 @@ import os
 
 import numpy as np
 
-import sunpy.data.test
 import sunpy.map
-
+import sunpy.data.test
 from sunpy.instr import iris
+
 
 def test_SJI_to_cube():
     test_data = os.path.join(sunpy.data.test.rootdir,'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits')

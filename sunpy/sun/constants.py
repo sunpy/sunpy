@@ -6,11 +6,12 @@ based on if not directly copied from the SciPy constants module but contains Sol
 Physical constants.
 """
 
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
+
 from astropy.table import Table
-from sunpy.extern.six import iteritems
 
 from sunpy.sun import _constants as _con  # pylint: disable=E0611
+from sunpy.extern.six import iteritems
 
 __all__ = [
     'get', 'find', 'print_all', 'spectral_classification', 'au', 'mass', 'equatorial_radius',

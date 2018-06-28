@@ -6,10 +6,10 @@ This particular test file pertains to SJIMap.
 import os
 import glob
 
-from sunpy.map import Map
-from sunpy.map.sources.iris import SJIMap
-from sunpy.map.mapbase import GenericMap
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.mapbase import GenericMap
+from sunpy.map.sources.iris import SJIMap
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits"))

@@ -2,19 +2,17 @@
 
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
-from __future__ import absolute_import, print_function, division
+from __future__ import division, print_function, absolute_import
 
 import numpy as np
-
 import matplotlib.pyplot as plt
 
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.visualization import axis_labels_from_ctype
-
 from sunpy.util import expand_list
 from sunpy.extern import six
+from sunpy.visualization import axis_labels_from_ctype
 from sunpy.extern.six.moves import range
 
 __all__ = ['CompositeMap']

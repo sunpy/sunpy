@@ -2,16 +2,17 @@
 """NOAA Solar Cycle TimeSeries subclass definitions."""
 from __future__ import absolute_import
 
-from collections import OrderedDict
 import datetime
+from collections import OrderedDict
+
+import numpy as np
 from matplotlib import pyplot as plt
 from pandas.io.parsers import read_csv
-import numpy as np
-
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.util.metadata import MetaDict
 
 from astropy import units as u
+
+from sunpy.util.metadata import MetaDict
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 
 __all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries']
 

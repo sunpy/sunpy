@@ -5,20 +5,18 @@
 
 from __future__ import absolute_import
 
-import tempfile
 import datetime
+import tempfile
 
 import pytest
 from six import iteritems
 
 from astropy import units as u
 
+from sunpy.net import vso, attr
 from sunpy.time import TimeRange
-from sunpy.net import vso
-from sunpy.net.vso import attrs as va
 from sunpy.net.vso import QueryResponse
-from sunpy.net import attr
-
+from sunpy.net.vso import attrs as va
 from sunpy.tests.mocks import MockObject
 
 

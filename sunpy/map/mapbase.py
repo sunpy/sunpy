@@ -2,36 +2,34 @@
 Map is a generic Map class from which all other Map classes inherit from.
 """
 import copy
-import warnings
 import inspect
-from collections import namedtuple
 import textwrap
+import warnings
+from collections import namedtuple
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import patches, cm, colors
+from matplotlib import cm, colors, patches
 
 import astropy.wcs
 import astropy.units as u
-from astropy.visualization.wcsaxes import WCSAxes
+from astropy.nddata import NDData
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
+from astropy.visualization.wcsaxes import WCSAxes
 
+import sunpy.cm
 import sunpy.io as io
 import sunpy.coordinates
-import sunpy.cm
-from sunpy.util.decorators import deprecated
 from sunpy import config
+from sunpy.sun import sun, constants
+from sunpy.time import is_time, parse_time
 from sunpy.extern import six
-from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
-from sunpy.sun import constants
-from sunpy.sun import sun
-from sunpy.time import parse_time, is_time
-from sunpy.image.transform import affine_transform
-from sunpy.image.rescale import reshape_image_to_4d_superpixel
-from sunpy.image.rescale import resample as sunpy_image_resample
 from sunpy.coordinates import get_sun_B0, get_sun_L0, get_sunearth_distance
-
-from astropy.nddata import NDData
+from sunpy.image.rescale import resample as sunpy_image_resample
+from sunpy.image.rescale import reshape_image_to_4d_superpixel
+from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
+from sunpy.image.transform import affine_transform
+from sunpy.util.decorators import deprecated
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')

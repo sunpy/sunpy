@@ -3,14 +3,14 @@ import datetime
 import pytest
 from hypothesis import given, example
 
-from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time, Instrument
-from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.goes as goes
-from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+from sunpy.net.vso.attrs import Time, Instrument
+from sunpy.time.timerange import TimeRange
+from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time
+from sunpy.net.dataretriever.client import QueryResponse
 
 
 @pytest.fixture

@@ -8,9 +8,9 @@ import glob
 
 import astropy.units as u
 
-from sunpy.map.sources.hinode import SOTMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.hinode import SOTMap
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "HinodeSOT.fits"))
