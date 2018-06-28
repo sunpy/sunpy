@@ -4,22 +4,22 @@ classes inherit from.
 """
 from __future__ import absolute_import
 
-import os.path
 import shutil
+import os.path
 import warnings
 from datetime import datetime
 from collections import OrderedDict
 
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas
+import matplotlib.pyplot as plt
 
 from sunpy import config
-from sunpy.time import is_time, TimeRange, parse_time
-from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.time import TimeRange, is_time, parse_time
+from sunpy.extern import six
 from sunpy.util.config import get_and_create_download_dir
 from sunpy.extern.six.moves import urllib
-from sunpy.extern import six
+from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
 # pylint: disable=E1101,E1121,W0404,W0612,W0613
 __authors__ = ["Keith Hughitt"]

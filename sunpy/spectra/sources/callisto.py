@@ -1,28 +1,24 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-from __future__ import absolute_import, print_function
+from __future__ import print_function, absolute_import
 
 import datetime
+from collections import defaultdict
 
 import numpy as np
+from bs4 import BeautifulSoup
+from scipy.ndimage import gaussian_filter1d
+from scipy.optimize import leastsq
 
 from astropy.io import fits
 
-from collections import defaultdict
-
-from bs4 import BeautifulSoup
-
-from scipy.optimize import leastsq
-from scipy.ndimage import gaussian_filter1d
-
 from sunpy.time import parse_time
-from sunpy.util import minimal_pairs, deprecated
-from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.util import deprecated, minimal_pairs
 from sunpy.util.net import download_file
-
-from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
-from sunpy.extern.six.moves import urllib
 from sunpy.extern.six import next, itervalues
+from sunpy.extern.six.moves import urllib
+from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.spectra.spectrogram import REFERENCE, LinearTimeSpectrogram
 
 __all__ = ['CallistoSpectrogram']
 

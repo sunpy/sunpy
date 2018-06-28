@@ -21,7 +21,9 @@ Object
 from __future__ import absolute_import
 
 import pandas
+
 from astropy.units import Quantity
+
 import sunpy.sun.constants as con
 
 # Solar radius measured outside earth's atmosphere in arcseconds

@@ -1,8 +1,7 @@
 """JPEG 2000 File Reader"""
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 import collections
-
 from xml.etree import cElementTree as ET
 
 from glymur import Jp2k

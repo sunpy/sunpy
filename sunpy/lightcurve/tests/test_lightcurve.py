@@ -3,19 +3,22 @@ Generic LightCurve Tests
 """
 from __future__ import absolute_import
 
-#
-# @TODO:
-#   time deltas instead of datetimes?
+import datetime
 
 #pylint: disable=C0103,R0904,W0201,W0232,E1101,E1103
 import numpy as np
 import pandas
 import pytest
-import datetime
 
 import sunpy
 import sunpy.lightcurve
 from sunpy.data.test import get_test_filepath
+
+#
+# @TODO:
+#   time deltas instead of datetimes?
+
+
 
 EVE_AVERAGES_CSV = get_test_filepath("EVE_He_II_304_averages.csv")
 

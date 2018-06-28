@@ -2,17 +2,19 @@
 """RHESSI TimeSeries subclass definitions."""
 from __future__ import absolute_import
 
-from collections import OrderedDict
 import datetime
+from collections import OrderedDict
+
 import matplotlib.dates
 import matplotlib.pyplot as plt
 from pandas import DataFrame
 
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.util.metadata import MetaDict
-from sunpy.instr import rhessi
-import sunpy.io
 from astropy import units as u
+
+import sunpy.io
+from sunpy.instr import rhessi
+from sunpy.util.metadata import MetaDict
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 
 __all__ = ['RHESSISummaryTimeSeries']
 

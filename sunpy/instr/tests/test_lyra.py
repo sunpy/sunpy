@@ -1,19 +1,17 @@
-from __future__ import absolute_import, division
+from __future__ import division, absolute_import
 
-import tempfile
 import os.path
-import pytest
 import datetime
+import tempfile
 
 import numpy as np
 import pandas
+import pytest
 
-from sunpy.data.test import rootdir
+from sunpy import lightcurve, timeseries
 from sunpy.time import parse_time
-from sunpy import lightcurve
-from sunpy import timeseries
 from sunpy.instr import lyra
-
+from sunpy.data.test import rootdir
 from sunpy.extern.six.moves import range
 
 # Define location for test LYTAF database files

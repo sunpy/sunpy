@@ -8,6 +8,7 @@ import warnings
 
 import numpy as np
 import scipy.ndimage.interpolation
+
 try:
     import skimage.transform
     scikit_image_not_found = False

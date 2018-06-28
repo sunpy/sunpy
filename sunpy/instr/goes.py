@@ -45,29 +45,28 @@ References
 
 """
 
-from __future__ import absolute_import, division
+from __future__ import division, absolute_import
 
-import os.path
-import datetime
 import csv
 import copy
 import socket
+import os.path
+import datetime
 from itertools import dropwhile
 
 import numpy as np
+import pandas
 from scipy import interpolate
 from scipy.integrate import trapz, cumtrapz
-import astropy.units as u
-import pandas
 
+import astropy.units as u
+
+from sunpy import sun, config, lightcurve
 from sunpy.net import hek
 from sunpy.time import parse_time
-from sunpy import config
-from sunpy import lightcurve
 from sunpy.util.net import check_download_file
-from sunpy.util.config import get_and_create_download_dir
-from sunpy import sun
 from sunpy.coordinates import get_sunearth_distance
+from sunpy.util.config import get_and_create_download_dir
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
                         'M': u.Quantity(1e-5, "W/m^2"),

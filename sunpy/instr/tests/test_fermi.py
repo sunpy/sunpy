@@ -1,7 +1,8 @@
 import pytest
 from numpy.testing import assert_almost_equal
-from sunpy.instr import fermi
+
 from sunpy.time import parse_time
+from sunpy.instr import fermi
 from sunpy.extern import six
 
 

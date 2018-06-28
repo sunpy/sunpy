@@ -4,6 +4,7 @@
 import sunpy.util.net
 from sunpy.extern import six
 
+
 def test_content_disposition_ascii():
     ret = sunpy.util.net.get_content_disposition("Content-Disposition: attachment; filename=foo.txt")
     assert ret == u"foo.txt"

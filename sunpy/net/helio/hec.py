@@ -5,11 +5,12 @@ import io
 
 import suds
 from suds.client import Client as C
+
 from astropy.io.votable.table import parse_single_table
 
-from sunpy.net.proxyfix import WellBehavedHttpTransport
-from sunpy.net.helio import parser
 from sunpy.time import parse_time
+from sunpy.net.helio import parser
+from sunpy.net.proxyfix import WellBehavedHttpTransport
 
 __all__ = ['HECClient']
 

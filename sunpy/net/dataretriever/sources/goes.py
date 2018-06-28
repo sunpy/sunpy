@@ -5,13 +5,12 @@
 import os
 import datetime
 
-from sunpy.time import parse_time, TimeRange
+from sunpy import config
+from sunpy.time import TimeRange, parse_time
+from sunpy.extern.six.moves.urllib.parse import urlsplit
 
 from ..client import GenericClient
 
-from sunpy.extern.six.moves.urllib.parse import urlsplit
-
-from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['XRSClient']

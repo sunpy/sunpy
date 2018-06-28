@@ -2,8 +2,11 @@
 
 # TODO: REMOVE UNITTEST
 import unittest
-from sunpy.roi.chaincode import Chaincode
+
 import numpy as np
+
+from sunpy.roi.chaincode import Chaincode
+
 
 class CCTests(unittest.TestCase):
 

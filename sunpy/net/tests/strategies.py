@@ -1,11 +1,12 @@
 """
 Provide a set of Hypothesis Strategies for various Fido related tests.
 """
+import datetime
+
 import hypothesis.strategies as st
 from hypothesis import assume
 from hypothesis.strategies import datetimes
 
-import datetime
 from sunpy.net import attrs as a
 from sunpy.time import TimeRange
 

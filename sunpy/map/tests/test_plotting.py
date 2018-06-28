@@ -5,19 +5,19 @@ Test Generic Map
 from __future__ import absolute_import
 
 import os
-import pytest
 
 import numpy as np
+import pytest
+import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-import matplotlib.pyplot as plt
 
 import sunpy
-import sunpy.sun
 import sunpy.map
-import sunpy.coordinates
+import sunpy.sun
 import sunpy.data.test
+import sunpy.coordinates
 from sunpy.tests.helpers import figure_test
 
 testpath = sunpy.data.test.rootdir

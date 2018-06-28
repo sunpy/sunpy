@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division
+from __future__ import division, absolute_import
 
 import astropy.wcs.utils
 from astropy.wcs import WCSSUB_CELESTIAL
 
-from .frames import Helioprojective, Heliocentric, HeliographicStonyhurst, HeliographicCarrington
+from .frames import Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst
 
 __all__ = ['solar_wcs_frame_mapping']
 

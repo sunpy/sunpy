@@ -1,7 +1,10 @@
 from __future__ import absolute_import
-from sunpy.sun import constants as con
-from astropy.constants import Constant
+
 import pytest
+
+from astropy.constants import Constant
+
+from sunpy.sun import constants as con
 from sunpy.extern.six import iteritems
 
 

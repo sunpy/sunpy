@@ -4,11 +4,11 @@
 from __future__ import absolute_import
 
 import datetime
-
-import pandas
-import numpy as np
-import matplotlib.pyplot as plt
 from collections import OrderedDict
+
+import numpy as np
+import pandas
+import matplotlib.pyplot as plt
 
 import astropy.units as u
 
@@ -17,7 +17,6 @@ from sunpy import config
 from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-
 
 TIME_FORMAT = config.get("general", "time_format")
 

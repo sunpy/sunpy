@@ -1,37 +1,32 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
-import warnings
 import os
-import glob
-from collections import OrderedDict
 import copy
+import glob
+import warnings
+from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
-import astropy.io.fits
-from astropy.table import Table
+
 import astropy
-from astropy.time import Time
 import astropy.units as u
+import astropy.io.fits
+from astropy.time import Time
+from astropy.table import Table
 
 import sunpy
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.util.metadata import MetaDict
-
-from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
-from sunpy.io.fits import HDPair
-from sunpy.io.header import FileHeader
-
-from sunpy.util.net import download_file
 from sunpy.util import expand_list
-from sunpy.util.config import get_and_create_download_dir
-
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory
-from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.datatype_factory_base import MultipleMatchError
-from sunpy.util.datatype_factory_base import ValidationFunctionError
 from sunpy.extern import six
-
+from sunpy.io.fits import HDPair
+from sunpy.util.net import download_file
+from sunpy.io.header import FileHeader
+from sunpy.util.config import get_and_create_download_dir
+from sunpy.io.file_tools import UnrecognizedFileTypeError, read_file
+from sunpy.util.metadata import MetaDict
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.util.datatype_factory_base import (NoMatchError, MultipleMatchError,
+                                              ValidationFunctionError, BasicRegistrationFactory)
 from sunpy.extern.six.moves.urllib.request import urlopen
 
 __authors__ = ["Alex Hamilton, Russell Hewett, Stuart Mumford"]

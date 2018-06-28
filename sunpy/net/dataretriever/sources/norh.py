@@ -3,12 +3,13 @@
 #  Google Summer of Code 2014
 
 import datetime
+
 import astropy.units as u
 
+from sunpy.net import attrs as a
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
 
-from sunpy.net import attrs as a
 from ..client import GenericClient
 
 __all__ = ['NoRHClient']

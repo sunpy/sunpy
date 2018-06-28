@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 """SunPy sample data files"""
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
-import os.path
 import socket
+import os.path
 import warnings
-from zipfile import ZipFile
 from shutil import move
+from zipfile import ZipFile
 
 from astropy.utils.data import download_file
 
+from sunpy import config
 from sunpy.extern import six
-
 from sunpy.util.net import url_exists
 from sunpy.util.config import get_and_create_sample_dir
-from sunpy import config
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"

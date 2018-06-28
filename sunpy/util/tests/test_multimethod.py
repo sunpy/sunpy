@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
-import pytest
 import sys
 
-from sunpy.util.multimethod import MultiMethod, FAIL, WARN, TypeWarning
+import pytest
+
+from sunpy.util.multimethod import FAIL, WARN, MultiMethod, TypeWarning
 
 
 def test_super():

@@ -22,12 +22,12 @@
 Multimethod implementation in pure Python.
 """
 
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 from warnings import warn
 
-from sunpy.extern.six.moves import zip, map
 from sunpy.extern import six
+from sunpy.extern.six.moves import map, zip
 
 __all__ = ['TypeWarning', 'MultiMethod']
 

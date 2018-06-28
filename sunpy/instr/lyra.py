@@ -1,21 +1,21 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
+import csv
+import copy
 import os.path
+import sqlite3
 import datetime
 from warnings import warn
-import copy
-import csv
-import sqlite3
 
 import numpy as np
-from astropy.io import fits
 import pandas
+
+from astropy.io import fits
 
 from sunpy.time import parse_time
 from sunpy.util.net import check_download_file
 from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.decorators import deprecated
-
 from sunpy.extern.six.moves import urllib
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"

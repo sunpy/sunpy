@@ -5,10 +5,10 @@ Useful for keeping track of when an event occurred, usually labeled as
 from __future__ import absolute_import
 
 import numpy as np
-
-from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
+
 from sunpy.time import TimeRange
+from sunpy.lightcurve import LightCurve
 from sunpy.extern.six.moves import range
 
 __all__ = ['LogicalLightCurve']

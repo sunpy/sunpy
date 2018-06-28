@@ -1,5 +1,7 @@
 import os
+
 import pytest
+
 import sunpy.data.test
 
 

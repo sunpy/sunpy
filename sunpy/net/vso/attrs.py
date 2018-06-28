@@ -22,14 +22,12 @@ from datetime import datetime
 from astropy import units as u
 
 from sunpy.time import TimeRange as _TimeRange
-from sunpy.net.attr import (
-    Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
-)
-from sunpy.util.multimethod import MultiMethod
-from sunpy.util.decorators import deprecated
 from sunpy.time import parse_time
-from sunpy.extern.six import iteritems
 from sunpy.extern import six
+from sunpy.net.attr import Attr, AttrOr, AttrAnd, DummyAttr, ValueAttr, AttrWalker
+from sunpy.extern.six import iteritems
+from sunpy.util.decorators import deprecated
+from sunpy.util.multimethod import MultiMethod
 
 __all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',

@@ -72,10 +72,9 @@ Traceback (most recent call last):
 TypeError: There are no functions matching your input parameter signature.
 """
 
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 import inspect
-
 from itertools import chain, repeat
 
 from sunpy.extern.six.moves import zip

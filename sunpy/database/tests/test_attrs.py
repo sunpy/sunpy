@@ -6,15 +6,15 @@
 from datetime import datetime
 
 import pytest
+
 from astropy import units as u
 
-from sunpy.database.database import Database
-from sunpy.database import tables
-from sunpy.database.attrs import walker, Starred, Tag, Path, DownloadTime,\
-    FitsHeaderEntry
-from sunpy.net.attr import DummyAttr, AttrAnd, AttrOr
 from sunpy.net import vso
+from sunpy.database import tables
+from sunpy.net.attr import AttrOr, AttrAnd, DummyAttr
+from sunpy.database.attrs import Tag, Path, Starred, DownloadTime, FitsHeaderEntry, walker
 from sunpy.extern.six.moves import range
+from sunpy.database.database import Database
 
 
 @pytest.fixture

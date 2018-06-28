@@ -1,7 +1,7 @@
-import xdrlib
-from collections import OrderedDict
-from functools import partial
 import copy
+import xdrlib
+from functools import partial
+from collections import OrderedDict
 
 import numpy as np
 

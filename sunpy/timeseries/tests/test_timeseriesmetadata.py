@@ -5,17 +5,16 @@ Created on Wed Jul 20 10:24:06 2016
 """
 
 
-from __future__ import print_function, division
+from __future__ import division, print_function
 
 import copy
-
-from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.time import TimeRange
-from sunpy.util.metadata import MetaDict
 from collections import OrderedDict
 
 import pytest
 
+from sunpy.time import TimeRange
+from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.util.metadata import MetaDict
 
 #==============================================================================
 # Creating TimeSeriesMetaData Objects

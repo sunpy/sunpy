@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod, abstractproperty
-from collections import MutableMapping, OrderedDict, Counter
+from collections import Counter, OrderedDict, MutableMapping
 
 from sunpy.extern import six
 

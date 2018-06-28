@@ -13,29 +13,30 @@ This module contains the functions for converting one
   `~astropy.coordinates.SkyCoord` instances.
 
 """
-from __future__ import absolute_import, division
+from __future__ import division, absolute_import
 
 import numpy as np
 
 from astropy import units as u
-from astropy.coordinates.representation import (CartesianRepresentation,
-                                                UnitSphericalRepresentation,
-                                                SphericalRepresentation)
+from astropy.coordinates import HCRS, ConvertError, BaseCoordinateFrame, get_body_barycentric
+from astropy.tests.helper import quantity_allclose
 from astropy.coordinates.baseframe import frame_transform_graph
+from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
+                                                UnitSphericalRepresentation)
+from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
+from astropy.coordinates.matrix_utilities import matrix_product, rotation_matrix, matrix_transpose
+
+from sunpy.sun import sun
+
+from .frames import Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst
+
 try:
     from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
 except ImportError:
     from astropy.coordinates import make_transform_graph_docs as _make_transform_graph_docs
     make_transform_graph_docs = lambda: _make_transform_graph_docs(frame_transform_graph)
-from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
-from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product, matrix_transpose
-from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
-from astropy.tests.helper import quantity_allclose
 
-from .frames import (HeliographicStonyhurst, HeliographicCarrington,
-                     Heliocentric, Helioprojective)
 
-from sunpy.sun import sun
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',

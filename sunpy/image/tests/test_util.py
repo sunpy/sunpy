@@ -1,7 +1,7 @@
-from __future__ import absolute_import, division, print_function
-import pytest
+from __future__ import division, print_function, absolute_import
 
 import numpy as np
+import pytest
 from numpy.testing import assert_allclose
 
 from sunpy.image.util import to_norm, un_norm

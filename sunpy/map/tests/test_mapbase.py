@@ -5,28 +5,27 @@ Test Generic Map
 from __future__ import absolute_import
 
 import os
-import pytest
 import datetime
-import warnings
 import tempfile
+import warnings
 
 import numpy as np
-
-import astropy.wcs
-from astropy.io import fits
-import astropy.units as u
-from astropy.tests.helper import assert_quantity_allclose
-from astropy.visualization import wcsaxes
-from astropy.coordinates import SkyCoord
+import pytest
 import matplotlib.pyplot as plt
 
-import sunpy
-import sunpy.sun
-import sunpy.map
-import sunpy.coordinates
-import sunpy.data.test
-from sunpy.time import parse_time
+import astropy.wcs
+import astropy.units as u
+from astropy.io import fits
+from astropy.coordinates import SkyCoord
+from astropy.tests.helper import assert_quantity_allclose
+from astropy.visualization import wcsaxes
 
+import sunpy
+import sunpy.map
+import sunpy.sun
+import sunpy.data.test
+import sunpy.coordinates
+from sunpy.time import parse_time
 from sunpy.extern import six
 
 testpath = sunpy.data.test.rootdir

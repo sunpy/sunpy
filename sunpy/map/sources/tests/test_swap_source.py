@@ -8,9 +8,9 @@ import glob
 
 import pytest
 
-from sunpy.map.sources.proba2 import SWAPMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.proba2 import SWAPMap
 
 path = sunpy.data.test.rootdir
 fitslist = glob.glob(os.path.join(path, "SWAP", "*"))

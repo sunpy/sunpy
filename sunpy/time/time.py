@@ -1,13 +1,15 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
+
 import re
-from datetime import datetime, date, time, timedelta
+from datetime import date, time, datetime, timedelta
 from functools import singledispatch
 
 import numpy as np
 import pandas
-from sunpy.extern import six
 
 import astropy.time
+
+from sunpy.extern import six
 
 __all__ = ['find_time', 'parse_time', 'is_time',
            'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']

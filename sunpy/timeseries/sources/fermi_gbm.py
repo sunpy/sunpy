@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 """FERMI GBM TimeSeries subclass definitions."""
-from __future__ import absolute_import, print_function
+from __future__ import print_function, absolute_import
 
 from collections import OrderedDict
+
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib.pyplot as plt
+
+from astropy import units as u
 
 import sunpy.io
 from sunpy.instr import fermi
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
-
-from astropy import units as u
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 
 __all__ = ['GBMSummaryTimeSeries']
 

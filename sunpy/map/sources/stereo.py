@@ -1,9 +1,5 @@
 """STEREO Map subclass definitions"""
-from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1121
-
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
+from __future__ import division, print_function, absolute_import
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,6 +9,14 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
+
+#pylint: disable=W0221,W0222,E1121
+
+__author__ = "Keith Hughitt"
+__email__ = "keith.hughitt@nasa.gov"
+
+
+
 
 __all__ = ['EUVIMap', 'CORMap', 'HIMap']
 

@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 """Proba-2 TimeSeries subclass definitions."""
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
-import datetime
 import sys
+import datetime
 from collections import OrderedDict
-from matplotlib import pyplot as plt
-import pandas
 
-import sunpy.io
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.time import parse_time
-from sunpy.util.metadata import MetaDict
-from sunpy import config
+import pandas
+from matplotlib import pyplot as plt
 
 from astropy import units as u
+
+import sunpy.io
+from sunpy import config
+from sunpy.time import parse_time
+from sunpy.util.metadata import MetaDict
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 
 TIME_FORMAT = config.get("general", "time_format")
 

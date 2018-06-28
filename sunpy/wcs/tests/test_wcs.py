@@ -2,11 +2,11 @@ from __future__ import absolute_import
 
 #pylint: disable=E1103
 import numpy as np
+import pytest
 from numpy.testing import assert_allclose
 
-import sunpy.wcs as wcs
 import sunpy.sun as sun
-import pytest
+import sunpy.wcs as wcs
 
 # the following values are taken from the test file 'aia_171_level1.fits'
 
@@ -168,4 +168,3 @@ def test_convert_back():
 # Travis testing, all further tests that use wcs also use the correct
 # value of the solar radius.
 wcs.wcs.rsun_meters = sun.constants.radius.si.value
-

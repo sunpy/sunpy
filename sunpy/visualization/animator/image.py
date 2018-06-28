@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib as mpl
+
 import astropy.wcs
 
-from . base import ArrayAnimator
+from .base import ArrayAnimator
 
 __all__ = ['ImageAnimator', 'ImageAnimatorWCS']
 

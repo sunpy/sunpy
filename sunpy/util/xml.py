@@ -1,8 +1,8 @@
 """XML helper functions"""
 
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
-from xml.dom.minidom import parseString #pylint: disable=E0611,F0401
+from xml.dom.minidom import parseString  # pylint: disable=E0611,F0401
 
 __all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text']
 

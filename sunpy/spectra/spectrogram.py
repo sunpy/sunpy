@@ -5,28 +5,25 @@
 from __future__ import division, print_function, absolute_import
 
 import datetime
-
-from random import randint
 from copy import copy
 from math import floor
+from random import randint
 
 import numpy as np
 from numpy import ma
-
 from scipy import ndimage
-
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
-from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
+from matplotlib.ticker import MaxNLocator, IndexLocator, FuncFormatter
 from matplotlib.colorbar import Colorbar
 
-from sunpy.time import parse_time, get_day
-from sunpy.util import to_signed, common_base, merge
-from sunpy.util.cond_dispatch import ConditionalDispatch
+from sunpy.time import get_day, parse_time
+from sunpy.util import merge, to_signed, common_base
 from sunpy.util.create import Parent
-from sunpy.spectra.spectrum import Spectrum
-from sunpy.extern.six.moves import zip, range
 from sunpy.util.decorators import deprecated
+from sunpy.extern.six.moves import zip, range
+from sunpy.spectra.spectrum import Spectrum
+from sunpy.util.cond_dispatch import ConditionalDispatch
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 

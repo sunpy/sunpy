@@ -4,9 +4,9 @@ from __future__ import absolute_import
 
 import datetime
 
+import numpy as np
 from matplotlib import pyplot as plt
 from pandas.io.parsers import read_csv
-import numpy as np
 
 from sunpy.lightcurve import LightCurve
 

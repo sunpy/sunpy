@@ -17,18 +17,20 @@ Template matching algorithm:
    Processing and Pattern Recognition Society, Quebec City, Canada, May 15-19,
    1995, p. 120-123 http://www.scribblethink.org/Work/nvisionInterface/vi95_lewis.pdf.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
+
+from copy import deepcopy
 
 import numpy as np
-from scipy.ndimage.interpolation import shift
-from copy import deepcopy
-from astropy import units as u
 # Image co-registration by matching templates
 from skimage.feature import match_template
+from scipy.ndimage.interpolation import shift
 
+from astropy import units as u
+
+import sunpy.map
 # SunPy imports
 from sunpy.map.mapbase import GenericMap
-import sunpy.map
 
 __author__ = 'J. Ireland'
 

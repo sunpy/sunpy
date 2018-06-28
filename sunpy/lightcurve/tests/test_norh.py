@@ -3,9 +3,11 @@ NoRH Tests
 """
 from __future__ import absolute_import
 
-import pytest
-import sunpy
 import pandas
+import pytest
+
+import sunpy
+
 
 @pytest.mark.remote_data
 def test_norh():

@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import, print_function
+from __future__ import print_function, absolute_import
 
 from datetime import datetime
-import pytest
 
 import numpy as np
-
+import pytest
 from numpy.testing import assert_array_almost_equal
 
-from sunpy.spectra.spectrogram import (Spectrogram, LinearTimeSpectrogram,
-                                       _LinearView)
 from sunpy.extern.six.moves import range
+from sunpy.spectra.spectrogram import Spectrogram, LinearTimeSpectrogram, _LinearView
 
 
 def is_linear(arr):

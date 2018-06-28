@@ -5,16 +5,14 @@
 
 from __future__ import absolute_import
 
-import pytest
-
 import os
 import tempfile
 import threading
-
 from functools import partial
 
-import sunpy
+import pytest
 
+import sunpy
 from sunpy.net.download import Downloader, default_name
 
 

@@ -4,10 +4,10 @@ import sunpy.net.dataretriever.sources.rhessi as rhessi
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
-from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.time.timerange import TimeRange
 from sunpy.net.fido_factory import UnifiedResponse
+from sunpy.net.dataretriever.client import QueryResponse
 
 LCClient = rhessi.RHESSIClient()
 

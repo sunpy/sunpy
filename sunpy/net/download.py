@@ -10,19 +10,16 @@ from __future__ import absolute_import
 import os
 import re
 import threading
-
 from functools import partial
 from contextlib import closing
-from collections import defaultdict, deque
-
-from sunpy.extern import six
-from sunpy.extern.six.moves import urllib
-from sunpy.extern.six import iteritems
+from collections import deque, defaultdict
 
 import sunpy
-from sunpy.util.progressbar import TTYProgressBar as ProgressBar
+from sunpy.extern import six
+from sunpy.extern.six import iteritems
 from sunpy.util.config import get_and_create_download_dir
-
+from sunpy.extern.six.moves import urllib
+from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 
 __all__  = ['Downloader', 'Results']
 

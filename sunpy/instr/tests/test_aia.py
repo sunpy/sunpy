@@ -2,8 +2,8 @@ from __future__ import absolute_import
 
 import tempfile
 
-import pytest
 import numpy as np
+import pytest
 
 import sunpy.map
 import sunpy.data.test as test

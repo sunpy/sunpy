@@ -5,7 +5,6 @@ Author: Michael Charlton <m.charlton@mac.com>
 """
 
 import io
-
 from collections import MutableMapping, defaultdict
 
 

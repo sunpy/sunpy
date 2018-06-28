@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 """Provides programs to process and analyze PROBA2/LYRA data."""
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
-import datetime
 import sys
+import datetime
 from collections import OrderedDict
 
-from matplotlib import pyplot as plt
-from astropy.io import fits
 import pandas
+from matplotlib import pyplot as plt
 
-from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time
+from astropy.io import fits
 
 from sunpy import config
-
+from sunpy.time import parse_time
+from sunpy.lightcurve import LightCurve
 from sunpy.extern.six.moves import urllib
 
 TIME_FORMAT = config.get("general", "time_format")

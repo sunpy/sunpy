@@ -20,9 +20,9 @@ result in multiple requests to the server which might make them less efficient.
 from __future__ import absolute_import
 
 from datetime import datetime
+
 from sunpy.net import attr
 from sunpy.time import parse_time
-
 from sunpy.extern import six
 
 

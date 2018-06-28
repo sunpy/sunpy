@@ -8,6 +8,5 @@ subclass. All these subclasses are then registered with the `Fido <sunpy.net.fid
 class, so do not need to be called individually.
 """
 
-from .client import QueryResponseBlock, QueryResponse, GenericClient
-
 from . import clients
+from .client import GenericClient, QueryResponse, QueryResponseBlock

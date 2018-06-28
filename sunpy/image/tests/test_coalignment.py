@@ -1,25 +1,30 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
+
+import os
+
+import numpy as np
+import pytest
+from numpy.testing import assert_allclose, assert_array_almost_equal
+from scipy.ndimage.interpolation import shift as sp_shift
+
+from astropy import units as u
+
+import sunpy.data.test
+from sunpy import map
+from sunpy.extern.six.moves import range
+from sunpy.image.coalignment import (clip_edges, _lower_clip, _upper_clip, apply_shifts,
+                                     calculate_clipping, _default_fmap_function,
+                                     get_correlation_shifts, repair_image_nonfinite,
+                                     match_template_to_layer, parabolic_turning_point,
+                                     find_best_match_location, calculate_match_template_shift,
+                                     mapcube_coalign_by_match_template)
+
 # Author: Jack Ireland, Steven Christe
 #
 # Testing functions for a mapcube coalignment functionality.  This
 # functionality relies on the scikit-image function "match_template".
 #
 
-import numpy as np
-from astropy import units as u
-from numpy.testing import assert_allclose, assert_array_almost_equal
-from scipy.ndimage.interpolation import shift as sp_shift
-from sunpy import map
-import pytest
-import os
-import sunpy.data.test
-from sunpy.image.coalignment import parabolic_turning_point, \
-    repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
-    calculate_clipping, get_correlation_shifts, find_best_match_location, \
-    match_template_to_layer, clip_edges, \
-    calculate_match_template_shift, mapcube_coalign_by_match_template,\
-    apply_shifts
-from sunpy.extern.six.moves import range
 
 @pytest.fixture
 def aia171_test_clipping():

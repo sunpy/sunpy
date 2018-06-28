@@ -14,10 +14,10 @@ and returns the results from the VSO query to the user.
 from __future__ import absolute_import
 
 import sys
+
 from astropy import units
 
-from sunpy.net import hek
-from sunpy.net import vso
+from sunpy.net import hek, vso
 from sunpy.util.progressbar import TTYProgressBar
 
 __author__ = 'Michael Malocha'

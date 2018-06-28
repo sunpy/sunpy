@@ -5,9 +5,10 @@ import datetime
 from collections import OrderedDict
 
 import numpy as np
-from astropy.table import QTable, MaskedColumn, Column, vstack
-import astropy.io.ascii
+
 import astropy.units as u
+import astropy.io.ascii
+from astropy.table import Column, QTable, MaskedColumn, vstack
 
 __all__ = ['read_srs']
 

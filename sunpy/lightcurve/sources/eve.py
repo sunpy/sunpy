@@ -4,14 +4,13 @@ from __future__ import absolute_import
 
 import os
 import codecs
-
-import numpy
+from os.path import basename
 from datetime import datetime
 from collections import OrderedDict
 
+import numpy
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
-from os.path import basename
 
 from sunpy.lightcurve import LightCurve
 

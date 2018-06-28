@@ -15,10 +15,7 @@ import pytest
 
 from astropy import units as u
 
-from sunpy.net import hek
-from sunpy.net import vso
-from sunpy.net import hek2vso
-
+from sunpy.net import hek, vso, hek2vso
 
 startTime = '2011/08/09 07:23:56'
 endTime = '2011/08/09 12:40:29'

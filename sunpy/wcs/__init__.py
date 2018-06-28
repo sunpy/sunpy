@@ -53,11 +53,11 @@ References
 from __future__ import absolute_import
 
 import warnings
+
+from sunpy.wcs.wcs import *
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 warnings.warn("As of v0.8.0, the `sunpy.wcs` module is deprecated and will be "
               "removed in a future version. Use `sunpy.coordinates` or "
               "`sunpy.map` for coordinate transformations.",
               SunpyDeprecationWarning)
-
-from sunpy.wcs.wcs import *

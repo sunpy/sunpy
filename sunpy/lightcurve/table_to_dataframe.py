@@ -9,6 +9,7 @@ from astropy.table import Table, Column
 from astropy.utils import OrderedDict
 from astropy.table.column import MaskedColumn
 
+
 def _to_pandas(astropyTable):
     """
     Return a :class:`pandas.DataFrame` instance
@@ -50,4 +51,3 @@ def _to_pandas(astropyTable):
             out[name] = out[name].byteswap().newbyteorder()
 
     return DataFrame(out)
-

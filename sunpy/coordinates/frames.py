@@ -4,23 +4,19 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
-from __future__ import absolute_import, division
+from __future__ import division, absolute_import
 
 import warnings
 
 import numpy as np
 
 from astropy import units as u
-from astropy.coordinates.representation import (CartesianRepresentation,
-                                                UnitSphericalRepresentation,
-                                                SphericalRepresentation,
-                                                CylindricalRepresentation)
-
-from astropy.coordinates.baseframe import (BaseCoordinateFrame,
-                                           RepresentationMapping)
-
 from astropy.coordinates import Attribute, ConvertError
 from astropy.tests.helper import quantity_allclose
+from astropy.coordinates.baseframe import BaseCoordinateFrame, RepresentationMapping
+from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
+                                                CylindricalRepresentation,
+                                                UnitSphericalRepresentation)
 
 from sunpy import sun
 

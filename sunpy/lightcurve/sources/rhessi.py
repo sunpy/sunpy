@@ -3,13 +3,14 @@
 from __future__ import absolute_import
 
 import datetime
+
 import matplotlib.dates
 import matplotlib.pyplot as plt
 from pandas import DataFrame
 
-from sunpy.lightcurve import LightCurve
 from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
+from sunpy.lightcurve import LightCurve
 
 __all__ = ['RHESSISummaryLightCurve']
 

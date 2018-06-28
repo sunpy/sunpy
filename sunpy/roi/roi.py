@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 
-from sunpy.time import TimeRange
-from sunpy.time import parse_time
+from sunpy.time import TimeRange, parse_time
 
 __all__ = ['roi']
 

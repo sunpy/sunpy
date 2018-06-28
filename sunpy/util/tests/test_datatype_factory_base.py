@@ -1,11 +1,9 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
 
 import pytest
 
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory
-from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.datatype_factory_base import MultipleMatchError
-from sunpy.util.datatype_factory_base import ValidationFunctionError
+from sunpy.util.datatype_factory_base import (NoMatchError, MultipleMatchError,
+                                              ValidationFunctionError, BasicRegistrationFactory)
 
 
 class BaseWidget(object):

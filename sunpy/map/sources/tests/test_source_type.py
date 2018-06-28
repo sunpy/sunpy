@@ -4,11 +4,13 @@ Test cases distinguishing the source types.
 
 import os
 import glob
+
 from astropy.visualization import LinearStretch
-from sunpy.map.sources.source_type import from_helioviewer_project, source_stretch
-from sunpy.map import Map
+
 import sunpy.data.test
+from sunpy.map import Map
 from sunpy.tests.helpers import skip_glymur
+from sunpy.map.sources.source_type import source_stretch, from_helioviewer_project
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "aia_171_level1.fits"))
@@ -34,4 +36,3 @@ def test_source_stretch():
     aia_fits_stretch = aia.plot_settings['norm'].stretch
     assert source_stretch(aia.meta, aia_fits_stretch) is aia_fits_stretch
     assert isinstance(source_stretch(hvjp2.meta, aia_fits_stretch), LinearStretch)
-

@@ -27,13 +27,14 @@ References
 ----------
 | https://stackoverflow.com/questions/456672/class-factory-in-python
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import division, print_function, absolute_import
+
 import os
 import re
 import sys
 import warnings
-import traceback
 import itertools
+import traceback
 import collections
 
 from astropy.io import fits

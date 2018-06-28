@@ -2,14 +2,13 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
-from astropy.coordinates import SkyCoord, get_body_barycentric, HeliocentricTrueEcliptic, Angle
 from astropy.time import Time
+from astropy.coordinates import Angle, SkyCoord, HeliocentricTrueEcliptic, get_body_barycentric
+from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
 
-from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
-                               HeliographicCarrington, Heliocentric,
-                               get_sun_L0, get_earth)
 from sunpy.time import parse_time
+from sunpy.coordinates import (Heliocentric, Helioprojective, HeliographicCarrington,
+                               HeliographicStonyhurst, get_earth, get_sun_L0)
 
 
 def test_hcc_to_hgs():
@@ -210,4 +209,3 @@ def test_hgs_cartesian_rep_to_hgc():
     assert_quantity_allclose(hgccoord_cart.lat, hgccoord_sph.lat)
     assert_quantity_allclose(hgccoord_cart.lon, hgccoord_sph.lon)
     assert_quantity_allclose(hgccoord_cart.radius, hgccoord_sph.radius)
-    

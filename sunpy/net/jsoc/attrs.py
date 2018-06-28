@@ -3,14 +3,11 @@ from __future__ import absolute_import
 
 from astropy.time import Time as astropyTime
 
-from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr
-from sunpy.net.vso.attrs import _VSOSimpleAttr, _Range
-from sunpy.net.vso.attrs import Time as VSOTime
-from sunpy.net.vso.attrs import Wavelength
-
-from sunpy.time import parse_time
 from sunpy.time import TimeRange as _TimeRange
-
+from sunpy.time import parse_time
+from sunpy.net.attr import Attr, AttrOr, AttrAnd, AttrWalker
+from sunpy.net.vso.attrs import Time as VSOTime
+from sunpy.net.vso.attrs import Wavelength, _Range, _VSOSimpleAttr
 
 __all__ = ['Series', 'Time', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 

@@ -6,16 +6,14 @@ import datetime
 from collections import OrderedDict
 
 import numpy as np
+import pandas
 import matplotlib.pyplot as plt
 
 from astropy.io import fits
-import pandas
-
-from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time
 
 from sunpy import config
-
+from sunpy.time import parse_time
+from sunpy.lightcurve import LightCurve
 from sunpy.extern.six.moves import urllib
 
 TIME_FORMAT = config.get("general", "time_format")

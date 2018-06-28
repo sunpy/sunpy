@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import astropy.units as u
-from astropy.tests.helper import assert_quantity_allclose
-from astropy.coordinates import EarthLocation
 from astropy.time import Time
+from astropy.coordinates import EarthLocation
+from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.coordinates.ephemeris import *
 

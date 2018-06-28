@@ -7,8 +7,7 @@ from __future__ import absolute_import
 
 import pytest
 
-from sunpy.net import hek
-from sunpy.net import attr
+from sunpy.net import hek, attr
 
 
 @pytest.fixture

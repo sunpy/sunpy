@@ -5,14 +5,15 @@ This particular test file pertains to XRTMap.
 
 import os
 import glob
+
 import numpy as np
 from matplotlib import colors
 
 import astropy.units as u
 
-from sunpy.map.sources.hinode import XRTMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.hinode import XRTMap
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "HinodeXRT.fits"))

@@ -4,23 +4,22 @@ import tempfile
 
 import pytest
 import hypothesis.strategies as st
+from drms import DrmsQueryError
 from hypothesis import given, assume, example
 
 import astropy.units as u
-from drms import DrmsQueryError
 
-from sunpy.net import attr
-from sunpy.net.vso import attrs as va
-from sunpy.net import Fido, attrs as a
+from sunpy import config
+from sunpy.net import Fido, attr
+from sunpy.net import attrs as a
+from sunpy.time import TimeRange, parse_time
 from sunpy.net.vso import QueryResponse as vsoQueryResponse
-from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
+from sunpy.net.vso import attrs as va
+from sunpy.net.fido_factory import UnifiedResponse, DownloadResponse
+from sunpy.net.tests.strategies import (goes_time, time_attr, range_time,
+                                        online_instruments, offline_instruments)
 from sunpy.net.dataretriever.client import CLIENTS, QueryResponse
 from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
-from sunpy.time import TimeRange, parse_time
-from sunpy import config
-
-from sunpy.net.tests.strategies import (online_instruments, offline_instruments,
-                                        time_attr, range_time, goes_time)
 
 TIMEFORMAT = config.get("general", "time_format")
 

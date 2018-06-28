@@ -1,9 +1,10 @@
 from __future__ import absolute_import
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.sun import sun
-from astropy.tests.helper import assert_quantity_allclose
+
 
 def test_sunearth_distance():
     # Source for these values
@@ -121,4 +122,3 @@ def test_solar_north():
     assert_quantity_allclose(sun.solar_north("2012/11/11"), 22.346 * u.deg, atol=1e-3 * u.deg)
     assert_quantity_allclose(sun.solar_north("2019/10/10"), 26.260 * u.deg, atol=1e-3 * u.deg)
     assert_quantity_allclose(sun.solar_north("2542/02/20"), -17.981 * u.deg, atol=1e-3 * u.deg)
-

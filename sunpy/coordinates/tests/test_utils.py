@@ -1,15 +1,14 @@
-from __future__ import absolute_import, division, print_function
-
-import pytest
+from __future__ import division, print_function, absolute_import
 
 import numpy as np
+import pytest
 
-from astropy.coordinates import SkyCoord
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
-from sunpy.sun import sun
 import sunpy.map
 import sunpy.data.test
+from sunpy.sun import sun
 from sunpy.coordinates import frames
 from sunpy.coordinates.utils import GreatArc
 
