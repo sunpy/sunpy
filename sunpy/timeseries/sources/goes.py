@@ -185,7 +185,8 @@ class XRSTimeSeries(GenericTimeSeries):
         newxrsa = xrsa.byteswap().newbyteorder()
         newxrsb = xrsb.byteswap().newbyteorder()
 
-        data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times.isot)
+        data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb},
+                         index=times.isot.astype('datetime64'))
         data.sort_index(inplace=True)
 
         # Add the units
