@@ -158,7 +158,7 @@ class LYRATimeSeries(GenericTimeSeries):
 
         # Return the header and the data
         times.precision = 9
-        data = pandas.DataFrame(table, index=times.isot)
+        data = pandas.DataFrame(table, index=times.isot.astype('datetime64'))
         data.sort_index(inplace=True)
 
         # Add the units data
