@@ -233,11 +233,11 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     Example
     -------
     Sample data for example
-        >>> from datetime import datetime, timedelta
+        >>> from sunpy.time import parse_time
         >>> from sunpy.instr.lyra import _remove_lytaf_events
 
-        >>> time = np.array([datetime(2013, 2, 1)+timedelta(minutes=i)
-        ...                 for i in range(120)])
+        >>> time = parse_time(np.arange('2005-02-01T00:00:00', '2005-02-01T02:00:00',
+        ...                   dtype='datetime64[m]')
         >>> channel_1 = np.zeros(len(time))+0.4
         >>> channel_2 = np.zeros(len(time))+0.1
 
@@ -298,8 +298,8 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         bad_indices = np.empty(0, dtype="int64")
         all_indices = np.arange(len(time))
         for index in artifact_indices:
-            bad_period = np.logical_and(time >= lytaf["begin_time"][index],
-                                        time <= lytaf["end_time"][index])
+            bad_period = np.logical_and(time >= lytaf["begin_time"][index].datetime,
+                                        time <= lytaf["end_time"][index].datetime)
             bad_indices = np.append(bad_indices, all_indices[bad_period])
         clean_time = np.delete(clean_time, bad_indices)
         if channels:
@@ -314,7 +314,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
                            "not_found": artifacts_not_found}
     # Output FITS file if fits kwarg is set
     if fitsfile:
-        # Create time array of time strings rather than datetime objects
+        # Create time array of time strings rather than Time objects
         # and verify filecolumns have been correctly input.  If None,
         # generate generic filecolumns (see docstring of function called
         # below.
@@ -334,7 +334,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         tbhdulist.writeto(fitsfile)
     # Output csv file if csv kwarg is set.
     if csvfile:
-        # Create time array of time strings rather than datetime objects
+        # Create time array of time strings rather than Time objects
         # and verify filecolumns have been correctly input.  If None,
         # generate generic filecolumns (see docstring of function called
         # below.
@@ -732,7 +732,7 @@ def _prep_columns(time, channels=None, filecolumns=None):
     Checks and prepares data to be written out to a file.
 
     Firstly, this function converts the elements of time, whose entries are
-    assumed to be datetime objects, to time strings.  Secondly, it checks
+    assumed to be `astropy.time.Time` or `np.ndarray` objects, to time strings.  Secondly, it checks
     whether the number of elements in an input list of column names,
     filecolumns, is equal to the number of arrays in the list, channels.
     If not, a ValueError is raised.  If however filecolumns equals None, a
