@@ -741,9 +741,11 @@ def _prep_columns(time, channels=None, filecolumns=None):
     (assuming 0-indexed counting).
 
     """
-    # Convert time which contains datetime objects to time strings.
+    # Convert np.array or Time objects to time strings.
+    time = parse_time(time)
     time.precision = 9
     string_time = np.array(time.isot)
+
     # If filenames is given...
     if filecolumns:
         # ...check all the elements are strings...
