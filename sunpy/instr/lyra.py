@@ -237,7 +237,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         >>> from sunpy.instr.lyra import _remove_lytaf_events
 
         >>> time = parse_time(np.arange('2005-02-01T00:00:00', '2005-02-01T02:00:00',
-        ...                   dtype='datetime64[m]')
+        ...                   dtype='datetime64[m]'))
         >>> channel_1 = np.zeros(len(time))+0.4
         >>> channel_2 = np.zeros(len(time))+0.1
 
@@ -266,7 +266,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
             print(all_lytaf_event_types)
             raise ValueError("{0} is not a valid artifact type. See above.".format(artifact))
     # Define outputs
-    clean_time = np.array([parse_time(t) for t in time])
+    clean_time = parse_time(time)
     clean_channels = copy.deepcopy(channels)
     artifacts_not_found = []
     # Get LYTAF file for given time range
