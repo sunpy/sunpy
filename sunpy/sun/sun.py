@@ -67,7 +67,7 @@ def solar_cycle_number(t='now'):
 
     """
     time = parse_time(t)
-    result = (time.year + 8) % 28 + 1
+    result = (int(time.strftime('%Y')) + 8) % 28 + 1
     return result
 
 
