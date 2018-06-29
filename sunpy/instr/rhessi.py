@@ -12,7 +12,6 @@ import posixpath
 import re
 import socket
 import warnings
-from datetime import datetime, timedelta
 
 import numpy as np
 from dateutil.relativedelta import relativedelta
@@ -20,7 +19,7 @@ from dateutil.relativedelta import relativedelta
 from astropy import units as u
 from astropy.time import TimeDelta
 
-from sunpy.time import TimeRange, parse_time
+from sunpy.time import TimeRange, parse_time, Time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.coordinates import get_sunearth_distance
 import sunpy.map
@@ -160,8 +159,8 @@ def parse_obssumm_dbase_file(filename):
             obssumm_filename.append(row[0])
             orbit_start.append(int(row[1]))
             orbit_end.append(int(row[2]))
-            start_time.append(datetime.strptime(row[3], '%d-%b-%y'))  # skip time
-            end_time.append(datetime.strptime(row[5], '%d-%b-%y'))  # skip time
+            start_time.append(Time.strptime(row[3], '%d-%b-%y'))  # skip time
+            end_time.append(Time.strptime(row[5], '%d-%b-%y'))  # skip time
             status_flag.append(int(row[7]))
             number_of_packets.append(int(row[8]))
 

@@ -378,10 +378,10 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
 
     Parameters
     ----------
-    start_time : `datetime.datetime` or `str`
+    start_time : `astropy.time.Time` or `str`
         Start time of period for which annotation file is required.
 
-    end_time : `datetime.datetime` or `str`
+    end_time : `astropy.time.Time` or `str`
         End time of period for which annotation file is required.
 
     lytaf_path : `str`
@@ -436,7 +436,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     # Check lytaf path
     if not lytaf_path:
         lytaf_path = get_and_create_download_dir()
-    # Check start_time and end_time is a date string or datetime object
+    # Parse start_time and end_time
     start_time = parse_time(start_time)
     end_time = parse_time(end_time)
     # Check combine_files contains correct inputs
@@ -738,7 +738,7 @@ def _prep_columns(time, channels=None, filecolumns=None):
 
     """
     # Convert time which contains datetime objects to time strings.
-    string_time = np.array([t.strftime("%Y-%m-%dT%H:%M:%S.%f") for t in time])
+    string_time = np.array([t.strftime("%Y-%m-%dT%H:%M:%S.%f") for t in time.datetime])
     # If filenames is given...
     if filecolumns:
         # ...check all the elements are strings...

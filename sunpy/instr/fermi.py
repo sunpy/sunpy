@@ -51,7 +51,7 @@ def download_weekly_pointing_file(date):
 
     # find out which mission week corresponds to date
     time_diff = date - weekly_file_start
-    weekdiff = time_diff.to(u.day) // 7
+    weekdiff = time_diff.to(u.day).value // 7
     week = weekdiff + base_week
     # weekstr = ('%03.0f' % week)
     weekstr = '{:03.0f}'.format(week)
