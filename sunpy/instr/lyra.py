@@ -515,10 +515,14 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
         for event_row in event_rows:
             id_index = eventType_id.index(event_row[4])
             lytaf = np.append(lytaf,
-                              np.array((datetime.datetime.utcfromtimestamp(event_row[0]),
-                                        datetime.datetime.utcfromtimestamp(event_row[1]),
-                                        datetime.datetime.utcfromtimestamp(event_row[2]),
-                                        datetime.datetime.utcfromtimestamp(event_row[3]),
+                              np.array((Time(datetime.datetime.utcfromtimestamp(event_row[0]),
+                                        format='datetime'),
+                                        Time(datetime.datetime.utcfromtimestamp(event_row[1]),
+                                        format='datetime'),
+                                        Time(datetime.datetime.utcfromtimestamp(event_row[2]),
+                                        format='datetime'),
+                                        Time(datetime.datetime.utcfromtimestamp(event_row[3]),
+                                        format='datetime'),
                                         eventType_type[id_index],
                                         eventType_definition[id_index]), dtype=lytaf.dtype))
         # Close file
@@ -630,7 +634,7 @@ def split_series_using_lytaf(timearray, data, lytaf):
     mask = np.ones(n)
     el = len(lytaf)
 
-    # make the input time array a list of datetime objects
+    # make the input time array a list of Time objects
     time_array = []
     for tim in timearray:
         time_array.append(parse_time(tim))
@@ -738,7 +742,8 @@ def _prep_columns(time, channels=None, filecolumns=None):
 
     """
     # Convert time which contains datetime objects to time strings.
-    string_time = np.array([t.strftime("%Y-%m-%dT%H:%M:%S.%f") for t in time.datetime])
+    time.precision = 9
+    string_time = np.array(time.isot)
     # If filenames is given...
     if filecolumns:
         # ...check all the elements are strings...
