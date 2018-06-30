@@ -118,7 +118,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     def _parse_hdus(cls, hdulist):
         """Parses a RHESSI FITS HDU list form a FITS file."""
         header, d = rhessi.parse_obssumm_hdulist(hdulist)
-        header['time'] = header['time'].datetime
+        d['time'] = d['time'].datetime
         header = MetaDict(OrderedDict(header))
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
         # Add the units data
