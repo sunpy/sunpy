@@ -120,7 +120,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
         # Todo: check units used.
         return pandas.DataFrame(
-            data, index=norh_time, columns=('Correlation Coefficient', )), header, units
+            data, index=norh_time.datetime, columns=('Correlation Coefficient', )), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
