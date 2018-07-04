@@ -2,6 +2,7 @@ from __future__ import absolute_import, print_function
 from functools import partial
 
 import os
+import pathlib
 import tempfile
 import json
 
@@ -15,7 +16,7 @@ else:
 
 import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
-from sunpy.tests.helpers import new_hash_library
+from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
 from sunpy.extern import six
 
 import pytest
@@ -42,7 +43,8 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope='session', autouse=True)
 def figure_base_dir(request):
-    sunpy.tests.helpers.figure_base_dir = request.config.getoption("--figure_dir")
+    sunpy.tests.helpers.figure_base_dir = pathlib.Path(
+        request.config.getoption("--figure_dir"))
 
 
 def pytest_runtest_setup(item):
@@ -57,12 +59,14 @@ def pytest_runtest_setup(item):
 
 
 def pytest_unconfigure(config):
+    # If at least one figure test has been run, print result image directory
     if len(new_hash_library) > 0:
         # Write the new hash library in JSON
-        figure_base_dir = os.path.abspath(config.getoption("--figure_dir"))
-        hashfile = os.path.join(figure_base_dir, HASH_LIBRARY_NAME)
+        figure_base_dir = pathlib.Path(config.getoption("--figure_dir"))
+        hashfile = figure_base_dir / HASH_LIBRARY_NAME
         with open(hashfile, 'w') as outfile:
             json.dump(new_hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
+        generate_figure_webpage()
         print('All images from image tests can be found in {0}'.format(figure_base_dir))
         print("The corresponding hash library is {0}".format(hashfile))

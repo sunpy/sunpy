@@ -1,0 +1,2 @@
+When running image tests, a comparison HTML page is now generated to show
+the generated images and expected images.
