@@ -113,12 +113,14 @@ class NoRHTimeSeries(GenericTimeSeries):
         sec_array = np.linspace(0, length - 1, int(length / cadence))
 
         norh_time = obs_start_time + TimeDelta(sec_array*u.second)
+        norh_time.precision = 9
+        norh_time = norh_time.isot.astype('datetime64')
 
         # Add the units data
         units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
         # Todo: check units used.
         return pandas.DataFrame(
-            data, index=norh_time.datetime, columns=('Correlation Coefficient', )), header, units
+            data, index=norh_time, columns=('Correlation Coefficient', )), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
