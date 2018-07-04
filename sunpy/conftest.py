@@ -67,6 +67,6 @@ def pytest_unconfigure(config):
         with open(hashfile, 'w') as outfile:
             json.dump(new_hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
-        generate_figure_webpage()
+        generate_figure_webpage(new_hash_library)
         print('All images from image tests can be found in {0}'.format(figure_base_dir))
         print("The corresponding hash library is {0}".format(hashfile))
