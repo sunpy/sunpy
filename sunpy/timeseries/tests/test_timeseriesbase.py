@@ -109,11 +109,11 @@ def noaa_pre_test_ts():
 def generic_ts():
     # Generate the data and the corrisponding dates
     base = parse_time("2016/10/01T05:00:00")
-    dates = [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)]
+    dates = parse_time([base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)])
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
     # Create the data DataFrame, header MetaDict and units OrderedDict
-    data = DataFrame(intensity, index=dates, columns=['intensity'])
+    data = DataFrame(intensity, index=dates.isot.astype('datetime64'), columns=['intensity'])
     units = OrderedDict([('intensity', u.W / u.m**2)])
     meta = MetaDict({'key': 'value'})
 
