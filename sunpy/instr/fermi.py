@@ -7,10 +7,10 @@ from sunpy.extern.six.moves import urllib
 from collections import OrderedDict
 import tempfile
 
-import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import astropy.units as u
+from astropy.time import TimeDelta
 from astropy.coordinates import Longitude, Latitude
 
 from sunpy.time import parse_time, TimeRange
@@ -31,8 +31,8 @@ def download_weekly_pointing_file(date):
     Parameters
     ----------
 
-    date : `datetime.datetime`
-        A datetime object or other date format understood by the parse_time
+    date : `astropy.time.Time`
+        A `~astropy.time.Time` object or other date format understood by the parse_time
         function.
     """
 
@@ -51,7 +51,7 @@ def download_weekly_pointing_file(date):
 
     # find out which mission week corresponds to date
     time_diff = date - weekly_file_start
-    weekdiff = time_diff.days // 7
+    weekdiff = time_diff.to(u.day).value // 7
     week = weekdiff + base_week
     # weekstr = ('%03.0f' % week)
     weekstr = '{:03.0f}'.format(week)
@@ -87,8 +87,8 @@ def get_detector_sun_angles_for_time(time, file):
     Parameters
     ----------
 
-    time : `datetime.datetime`
-        A datetime object or other time format understood by the parse_time
+    time : `astropy.time.Time`
+        A `~astropy.time.Time` object or other time format understood by the parse_time
         function.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
@@ -126,8 +126,8 @@ def get_detector_sun_angles_for_date(date, file):
     Parameters
     ----------
 
-    date : `datetime.datetime`
-        A datetime object or other date format understood by the parse_time
+    date : `astropy.time.Time`
+        A `~astropy.time.Time` object or other date format understood by the parse_time
         function.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
@@ -135,7 +135,7 @@ def get_detector_sun_angles_for_date(date, file):
     """
 
     date = parse_time(date)
-    tran = TimeRange(date, date + datetime.timedelta(days=1))
+    tran = TimeRange(date, date + TimeDelta(1*u.day))
     scx, scz, times = get_scx_scz_in_timerange(tran, file)
 
     # retrieve the detector angle information in spacecraft coordinates
@@ -213,8 +213,8 @@ def get_scx_scz_at_time(time, file):
     Parameters
     ----------
 
-    time : `datetime.datetime`
-        A datetime object or other time format understood by the parse_time function.
+    time : `astropy.time.Time`
+        A `~astropy.time.Time` object or other time format understood by the parse_time function.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
          download_weekly_pointing_file function).
@@ -313,7 +313,7 @@ def nai_detector_radecs(detectors, scx, scz, time):
     scz : array-like
         Two-element tuple containing the RA/DEC information of the Fermi
         spacecraft Z-axis
-    time : `datetime.datetime`
+    time : `astropy.time.Time`
         The time corresponding to the input scx and scz values, in a format
         understandable by parse_time.
 
