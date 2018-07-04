@@ -5,10 +5,12 @@
 import os
 import pathlib
 import platform
+import urllib
 import warnings
 
 import pytest
 import matplotlib.pyplot as plt
+from matplotlib.testing import compare
 
 from astropy.utils.decorators import wraps
 
@@ -67,6 +69,7 @@ def figure_test(test_function):
     def test_simple_plot():
         plt.plot([0,1])
     """
+    @pytest.mark.remote_data
     @pytest.mark.figure
     @wraps(test_function)
     def wrapper(*args, **kwargs):
@@ -165,18 +168,33 @@ table, th, td {
 '''
 
 
-def generate_figure_webpage():
+def _generate_fig_html(fname):
+    generated_image = figure_base_dir / (fname + '.png')
+
+    # Download baseline image
     baseline_url = 'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/figures/'
+    baseline_image_url = baseline_url + generated_image.name
+    baseline_image = figure_base_dir / (generated_image.stem + '_baseline' + generated_image.suffix)
+    if not baseline_image.exists():
+        urllib.request.urlretrieve(baseline_image_url, baseline_image)
+
+    # Create diff between baseline and generated image
+    diff_image = figure_base_dir / (generated_image.stem + '_diff' + generated_image.suffix)
+    compare.save_diff_image(str(baseline_image), str(generated_image), str(diff_image))
+
+    html_block = ('<tr>'
+                  '<td>{}\n'.format(generated_image.stem) +
+                  '<img src="{}"></td>\n'.format(generated_image.name) +
+                  '<td><img src="{}"></td>\n'.format(baseline_image.name) +
+                  '<td><img src="{}"></td>\n'.format(diff_image.name) +
+                  '</tr>\n\n')
+    return html_block
+
+
+def generate_figure_webpage(hash_library):
     html_file = figure_base_dir / 'fig_comparison.html'
     with open(html_file, 'w') as f:
         f.write(html_intro)
-        for fname in figure_base_dir.iterdir():
-            if fname.suffix == '.png':
-                html_block = ('<tr>'
-                              '<td>{}\n'.format(fname.stem) +
-                              '<img src="{}"></td>\n'.format(fname.name) +
-                              '<td><img src="{}"></td>\n'.format(baseline_url + fname.name) +
-                              '<td></td>'
-                              '</tr>\n\n')
-                f.write(html_block)
+        for fname in hash_library:
+            f.write(_generate_fig_html(fname))
         f.write('</table>')

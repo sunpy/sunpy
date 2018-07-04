@@ -25,7 +25,7 @@ image-run: &image-tests
   command: |
     conda env list
     source activate sunpy-figure-tests-3.6
-    python setup.py test --figure-only --coverage
+    python setup.py test --figure-only --coverage --remote-data
     pip install codecov
     codecov
 
