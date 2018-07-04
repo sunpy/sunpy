@@ -9,6 +9,7 @@ from pandas.io.parsers import read_csv
 import numpy as np
 
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.time import Time
 from sunpy.util.metadata import MetaDict
 
 from astropy import units as u
@@ -138,8 +139,9 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
             data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
-            data['time']=timeindex
+            timeindex = Time.strptime([x + y for x, y in zip(data['yyyy'], data['mm'])], '%Y%m')
+            timeindex.precision = 9
+            data['time'] = timeindex.isot.astype('datetime64')
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
