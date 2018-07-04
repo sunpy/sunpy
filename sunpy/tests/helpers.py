@@ -161,9 +161,9 @@ table, th, td {
 
 <table>
   <tr>
-    <th>New image</th>
     <th>Baseline image</th>
     <th>Diff</th>
+    <th>New image</th>
   </tr>
 '''
 
@@ -184,8 +184,8 @@ def _generate_fig_html(fname):
 
     html_block = ('<tr>'
                   '<td>{}\n'.format(generated_image.stem) +
-                  '<img src="{}"></td>\n'.format(generated_image.name) +
                   '<td><img src="{}"></td>\n'.format(baseline_image.name) +
+                  '<img src="{}"></td>\n'.format(generated_image.name) +
                   '<td><img src="{}"></td>\n'.format(diff_image.name) +
                   '</tr>\n\n')
     return html_block
