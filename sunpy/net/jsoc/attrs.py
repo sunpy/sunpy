@@ -8,7 +8,7 @@ from sunpy.net.vso.attrs import _VSOSimpleAttr, _Range
 from sunpy.net.vso.attrs import Wavelength
 
 
-__all__ = ['Series', 'Time', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
+__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 
 from sunpy.net.vso.attrs import Time
 
