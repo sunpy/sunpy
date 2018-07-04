@@ -4,6 +4,7 @@
 
 import os
 
+from datetime import timedelta, datetime
 from sunpy.time import parse_time, TimeRange
 from sunpy.time import Time as apTime
 
@@ -105,15 +106,16 @@ class XRSClient(GenericClient):
         # Iterate over each day in the input timerange and generate a URL for
         # it.
         for day in range(total_days):
-            date = start_time + TimeDelta(day*u.day)
+            # It is okay to convert to datetime here as the start_time is a date
+            # hence we don't necesserily gain anything.
+            # This is necessary because when adding a day to a Time, we may
+            # end up with the same day if the day is a leap second day
+            date = start_time.datetime + timedelta(days=day)
             regex = date.strftime('%Y') + "/go{sat:02d}"
-            # This is to ensure that next day is selected even when a leap
-            # second is present
-            nextday = date + TimeDelta(1*u.second)
             if (date < parse_time('1999/01/15')):
-                regex += nextday.strftime('%y%m%d') + '.fits'
+                regex += date.strftime('%y%m%d') + '.fits'
             else:
-                regex += nextday.strftime('%Y%m%d') + '.fits'
+                regex += date.strftime('%Y%m%d') + '.fits'
             satellitenumber = kwargs.get('satellitenumber', self._get_goes_sat_num(date))
             url = base_url + regex.format(sat=satellitenumber)
             result.append(url)

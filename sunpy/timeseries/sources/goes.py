@@ -175,6 +175,7 @@ class XRSTimeSeries(GenericTimeSeries):
             raise ValueError("Don't know how to parse this file")
 
         times = start_time + TimeDelta(seconds_from_start*u.second)
+        times.precision = 9
 
         # remove bad values as defined in header comments
         xrsb[xrsb == -99999] = np.nan
@@ -184,7 +185,8 @@ class XRSTimeSeries(GenericTimeSeries):
         newxrsa = xrsa.byteswap().newbyteorder()
         newxrsb = xrsb.byteswap().newbyteorder()
 
-        data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times.datetime)
+        data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb},
+                         index=times.isot.astype('datetime64'))
         data.sort_index(inplace=True)
 
         # Add the units
