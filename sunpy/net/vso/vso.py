@@ -19,6 +19,7 @@ from zeep.helpers import serialize_object
 
 import astropy.units as u
 from astropy.table import QTable as Table
+from parfive import Downloader, Results
 
 from sunpy import config
 from sunpy.net import download
@@ -109,7 +110,7 @@ class QueryResponse(list):
     """
 
     def __init__(self, lst, queryresult=None, table=None):
-        super(QueryResponse, self).__init__(lst)
+        super().__init__(lst)
         self.queryresult = queryresult
         self.errors = []
         self.table = None
@@ -351,13 +352,16 @@ class VSOClient(BaseClient):
                          provideritem=list(providers.values()))
 
     @staticmethod
-    def mk_filename(pattern, response, sock, url, overwrite=False):
-        name = get_filename(sock, url)
-        if not name:
-            if isinstance(response.fileid, bytes):
-                name = response.fileid.decode("ascii", "ignore")
+    def mk_filename(pattern, queryresponse, resp, url):
+        name = None
+        url_filename = url.split('/')[-1]
+        if resp:
+            name = resp.headers.get("Content-Disposition", url_filename)
+        else:
+            if isinstance(queryresponse.fileid, bytes):
+                name = queryresponse.fileid.decode("ascii", "ignore")
             else:
-                name = response.fileid
+                name = queryresponse.fileid
 
         fs_encoding = sys.getfilesystemencoding()
         if fs_encoding is None:
@@ -368,11 +372,9 @@ class VSOClient(BaseClient):
         if not name:
             name = "file"
 
-        fname = pattern.format(file=name, **serialize_object(response))
+        fname = pattern.format(file=name, **dict(queryresponse))
 
-        if not overwrite and os.path.exists(fname):
-            fname = replacement_filename(fname)
-
+        # TODO: Should be in parfive?
         dir_ = os.path.abspath(os.path.dirname(fname))
         if not os.path.exists(dir_):
             os.makedirs(dir_)
@@ -580,19 +582,8 @@ class VSOClient(BaseClient):
 
         Examples
         --------
-        >>> res = fetch(qr).wait() # doctest:+SKIP
+        >>> files = fetch(qr) # doctest:+SKIP
         """
-        if downloader is None:
-            downloader = download.Downloader()
-            downloader.init()
-            res = download.Results(
-                lambda _: downloader.stop(), 1,
-                lambda mp: self.link(query_response, mp)
-            )
-        else:
-            res = download.Results(
-                lambda _: None, 1, lambda mp: self.link(query_response, mp)
-            )
         if path is None:
             path = os.path.join(config.get('downloads', 'download_dir'),
                                 '{file}')
@@ -602,8 +593,7 @@ class VSOClient(BaseClient):
 
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
-            res.poke()
-            return res
+            return downloader.download()
         # Adding the site parameter to the info
         info = {}
         if site is not None:
@@ -614,10 +604,12 @@ class VSOClient(BaseClient):
         data_request = self.make_getdatarequest(query_response, methods, info)
         data_response = VSOGetDataResponse(self.api.service.GetData(data_request))
 
-        self.download_all(data_response, methods, downloader, path, fileids, res)
+        err_results = self.download_all(data_response, methods, downloader, path, fileids, res)
 
-        res.poke()
-        return res
+        results = downloader.download()
+        results += err_results
+        results._errors += err_results.errors
+        return results
 
     @staticmethod
     def link(query_response, maps):
@@ -689,7 +681,8 @@ class VSOClient(BaseClient):
         return self.make('VSOGetDataRequest', request=request)
 
     # pylint: disable=R0913,R0912
-    def download_all(self, response, methods, dw, path, qr, res, info=None):
+    def download_all(self, response, methods, downloader, path, qr, info=None):
+        results = Results()
         GET_VERSION = [
             ('0.8', (5, 8)),
             ('0.7', (1, 4)),
@@ -701,7 +694,7 @@ class VSOClient(BaseClient):
                 if getattr(dresponse, version, '0.6') >= version:
                     break
             else:
-                res.add_error(UnknownVersion(dresponse))
+                results.add_error('', UnknownVersion(dresponse))
                 continue
 
             # If from_ and to are uninitialized, the else block of the loop
@@ -718,19 +711,16 @@ class VSOClient(BaseClient):
                         self.download(
                             dresponse.method.methodtype[0],
                             dataitem.url,
-                            dw,
-                            res.require(
-                                list(map(str, dataitem.fileiditem.fileid))),
-                            res.add_error,
+                            downloader,
                             path,
                             qr[dataitem.fileiditem.fileid[0]]
                         )
                     except NoData:
-                        res.add_error(DownloadFailed(dresponse))
+                        results.add_error('', DownloadFailed(dresponse))
                         continue
-                    except Exception:
-                        # FIXME: Is this a good idea?
-                        res.add_error(DownloadFailed(dresponse))
+                    # except Exception:
+                    #     # FIXME: Is this a good idea?
+                    #     results.add_error('', DownloadFailed(dresponse))
             elif code == '300' or code == '412' or code == '405':
                 if code == '300':
                     try:
@@ -738,7 +728,7 @@ class VSOClient(BaseClient):
                             dresponse.method.methodtype, dresponse
                         )
                     except NoData:
-                        res.add_error(MultipleChoices(dresponse))
+                        results.add_error('', MultipleChoices(dresponse))
                         continue
                 elif code == '412':
                     try:
@@ -746,13 +736,13 @@ class VSOClient(BaseClient):
                             info, dresponse.info
                         )
                     except NoData:
-                        res.add_error(MissingInformation(dresponse))
+                        results.add_error('', MissingInformation(dresponse))
                         continue
                 elif code == '405':
                     try:
                         methods = self.unknown_method(dresponse)
                     except NoData:
-                        res.add_error(UnknownMethod(dresponse))
+                        results.add_error('', UnknownMethod(dresponse))
                         continue
 
                 files = []
@@ -764,18 +754,19 @@ class VSOClient(BaseClient):
                 )
 
                 self.download_all(
-                    self.api.service.GetData(request), methods, dw, path,
-                    qr, res, info
+                    self.api.service.GetData(request), methods, downloader, path,
+                    qr, info
                 )
             else:
-                res.add_error(UnknownStatus(dresponse))
+                results.add_error(UnknownStatus(dresponse))
 
-    def download(self, method, url, dw, callback, errback, *args):
-        """ Override to costumize download action. """
+        return results
+
+    def download(self, method, url, downloader, *args):
+        """ Enqueue a file to be downloaded, extra args are passed to ``mk_filename``"""
         if method.startswith('URL'):
-            return dw.download(url, partial(self.mk_filename, *args),
-                               callback, errback
-                               )
+            return downloader.enqueue_file(url, filename=partial(self.mk_filename, *args))
+
         raise NoData
 
     @staticmethod
