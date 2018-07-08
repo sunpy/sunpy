@@ -8,6 +8,7 @@ from hypothesis import given, assume, settings
 
 import astropy.units as u
 from drms import DrmsQueryError
+from parfive import Results
 
 from sunpy.net import attr
 from sunpy.net import Fido, attrs as a
@@ -190,8 +191,7 @@ def test_no_wait_fetch():
                          a.Time("2016/10/01", "2016/10/02"),
                          a.Level(0))
         res = Fido.fetch(qr, wait=False)
-        assert isinstance(res, DownloadResponse)
-        assert isinstance(res.wait(), list)
+        assert isinstance(res, Results)
 
 
 """
