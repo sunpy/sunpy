@@ -23,6 +23,12 @@ try:
 except ImportError:
     HAS_SQLALCHEMY = False
 
+try:
+    import dask.array
+    HAS_DASK = True
+except ImportError:
+    HAS_DASK = False
+
 filepath = sunpy.data.test.rootdir
 a_list_of_many = glob.glob(os.path.join(filepath, "EIT", "*"))
 a_fname = a_list_of_many[0]
@@ -83,6 +89,14 @@ class TestMap(object):
         data = np.arange(0,100).reshape(10,10)
         header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
         pair_map = sunpy.map.Map(data, header)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+
+    # requires dask array to run properly
+    @pytest.mark.skipif('not HAS_DASK')
+    def test_dask_array(self):
+        amap = sunpy.map.Map(AIA_171_IMAGE)
+        da = dask.array.from_array(amap.data, chunks=(1, 1))
+        pair_map = sunpy.map.Map(da, amap.meta)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
     # requires sqlalchemy to run properly
