@@ -49,9 +49,8 @@ def figure_base_dir(request):
 
 def pytest_runtest_setup(item):
     """
-    pytest hook to skip all tests that have the mark 'online' if the
-    client is online (simply detected by checking whether http://www.google.com
-    can be requested).
+    pytest hook to skip all tests that have the mark 'remotedata' if the
+    pytest_remotedata plugin is not installed.
     """
     if isinstance(item, item.Function):
         if 'remote_data' in item.keywords and not HAVE_REMOTEDATA:
@@ -59,6 +58,7 @@ def pytest_runtest_setup(item):
 
 
 def pytest_unconfigure(config):
+
     # If at least one figure test has been run, print result image directory
     if len(new_hash_library) > 0:
         # Write the new hash library in JSON
@@ -67,6 +67,18 @@ def pytest_unconfigure(config):
         with open(hashfile, 'w') as outfile:
             json.dump(new_hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
+        """
+        Turn on internet when generating the figure comparison webpage.
+        """
+        if HAVE_REMOTEDATA:
+            from pytest_remotedata.disable_internet import turn_on_internet, turn_off_internet
+        else:
+            def turn_on_internet(): pass
+            def turn_off_internet(): pass
+
+        turn_on_internet()
         generate_figure_webpage(new_hash_library)
+        turn_off_internet()
+
         print('All images from image tests can be found in {0}'.format(figure_base_dir))
         print("The corresponding hash library is {0}".format(hashfile))
