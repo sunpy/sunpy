@@ -69,7 +69,6 @@ def figure_test(test_function):
     def test_simple_plot():
         plt.plot([0,1])
     """
-    @pytest.mark.remote_data
     @pytest.mark.figure
     @wraps(test_function)
     def wrapper(*args, **kwargs):
@@ -148,6 +147,8 @@ def _patch_coverage(testdir, sourcedir):  # pragma: no cover
 
 
 html_intro = '''
+<!DOCTYPE html>
+<html>
 <head>
 <style>
 table, th, td {
@@ -161,6 +162,7 @@ table, th, td {
 
 <table>
   <tr>
+    <th>Test Name</th>
     <th>Baseline image</th>
     <th>Diff</th>
     <th>New image</th>
@@ -185,8 +187,8 @@ def _generate_fig_html(fname):
     html_block = ('<tr>'
                   '<td>{}\n'.format(generated_image.stem) +
                   '<td><img src="{}"></td>\n'.format(baseline_image.name) +
-                  '<img src="{}"></td>\n'.format(generated_image.name) +
                   '<td><img src="{}"></td>\n'.format(diff_image.name) +
+                  '<td><img src="{}"></td>\n'.format(generated_image.name) +
                   '</tr>\n\n')
     return html_block
 
@@ -198,3 +200,5 @@ def generate_figure_webpage(hash_library):
         for fname in hash_library:
             f.write(_generate_fig_html(fname))
         f.write('</table>')
+        f.write('</body>')
+        f.write('</html>')
