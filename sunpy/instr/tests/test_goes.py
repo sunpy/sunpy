@@ -65,11 +65,11 @@ def test_goes_event_list():
 
 @pytest.mark.remote_data
 def test_calculate_temperature_em():
-    # Create GOESLightcurve object, then create new one with
+    # Create XRSTimeSeries object, then create new one with
     # temperature & EM using with calculate_temperature_em().
     goeslc = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     goeslc_new = goes.calculate_temperature_em(goeslc)
-    # Test correct exception is raised if a GOESLightCurve object is
+    # Test correct exception is raised if a XRSTimeSeries object is
     # not inputted.
     with pytest.raises(TypeError):
         goes.calculate_temperature_em([])
@@ -79,10 +79,10 @@ def test_calculate_temperature_em():
         goeslc.quantity("xrsa"),
         satellite=int(goeslc.meta.metas[0]["TELESCOP"].split()[1]), date="2014-01-01")
     # Check that temperature and EM arrays from _goes_chianti_tem()
-    # are same as those in new GOESLightcurve object.
+    # are same as those in new XRSTimeSeries object.
     assert goeslc_new.data.temperature.all() == temp.value.all()
     assert goeslc_new.data.em.all() == em.value.all()
-    # Check rest of data frame of new GOESLightCurve object is same
+    # Check rest of data frame of new XRSTimeSeries object is same
     # as that in original object.
     goeslc_revert = copy.deepcopy(goeslc_new)
     del goeslc_revert.data["temperature"]
