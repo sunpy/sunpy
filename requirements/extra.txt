@@ -2,6 +2,7 @@
 
 -r base.txt
 
+drms
 sqlalchemy
 scikit-image
 glymur
