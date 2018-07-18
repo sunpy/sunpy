@@ -1,0 +1,2 @@
+Add support for Dask arrays in `sunpy.map.Map`. The map factory now checks a whitelist
+of array types rather than strictly checking if the array is of type `numpy.ndarray`.
