@@ -16,12 +16,6 @@ import sunpy
 import sunpy.map
 import sunpy.data.test
 
-try:
-    import sqlalchemy
-    import sunpy.database
-    HAS_SQLALCHEMY = True
-except ImportError:
-    HAS_SQLALCHEMY = False
 
 filepath = sunpy.data.test.rootdir
 a_list_of_many = glob.glob(os.path.join(filepath, "EIT", "*"))
@@ -85,12 +79,20 @@ class TestMap(object):
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
-    # requires sqlalchemy to run properly
-    @pytest.mark.skipif('not HAS_SQLALCHEMY')
-    def test_databaseentry(self):
-        db = sunpy.database.Database(url='sqlite://', default_waveunit='angstrom')
-        db.add_from_file(a_fname)
+    # requires dask array to run properly
+    def test_dask_array(self):
+        dask_array = pytest.importorskip('dask.array')
+        amap = sunpy.map.Map(AIA_171_IMAGE)
+        da = dask_array.from_array(amap.data, chunks=(1, 1))
+        pair_map = sunpy.map.Map(da, amap.meta)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
 
+    # requires sqlalchemy to run properly
+    def test_databaseentry(self):
+        sqlalchemy = pytest.importorskip('sqlalchemy')
+        sunpy_database = pytest.importorskip('sunpy.database')
+        db = sunpy_database.Database(url='sqlite://', default_waveunit='angstrom')
+        db.add_from_file(a_fname)
         res = db.get_entry_by_id(1)
         db_map = sunpy.map.Map(res)
         assert isinstance(db_map, sunpy.map.GenericMap)
