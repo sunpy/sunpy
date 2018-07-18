@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 
 from collections import OrderedDict
-import datetime
 from matplotlib import pyplot as plt
 from pandas.io.parsers import read_csv
 import numpy as np
@@ -253,9 +252,11 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             data = read_csv(filepath, delim_whitespace=True, names=fields,
                             comment='#', skiprows=2, dtype={'yyyy': np.str, 'mm': np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + y, '%Y%m')
-                         for x, y in zip(data['yyyy'], data['mm'])]
-            data['time'] = timeindex
+
+            timeindex = Time.strptime([x + y for x, y in zip(data['yyyy'], data['mm'])], '%Y%m')
+            timeindex.precision = 9
+            data['time'] = timeindex.isot.astype('datetime64')
+
             data = data.set_index('time')
             data = data.drop('mm', 1)
             data = data.drop('yyyy', 1)
