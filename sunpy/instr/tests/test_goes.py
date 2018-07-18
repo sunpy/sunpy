@@ -222,6 +222,7 @@ def test_goes_chianti_tem_case8():
       all(em8 > Quantity(9.38e+48, unit="1/cm**3"))
 
 @pytest.mark.remote_data
+@pytest.mark.array_compare(file_format='text',reference_dir='./')
 def test_calculate_radiative_loss_rate():
     # Define input variables.
     goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
@@ -246,6 +247,8 @@ def test_calculate_radiative_loss_rate():
     goes_test = goes.calculate_radiative_loss_rate(goeslc_no_em)
     # we test that the column has been added
     assert "rad_loss_rate" in goes_test.columns
+    # Compare every 50th value to save on filesize
+    return np.array(goes_test.data[::50])
 
 
 @pytest.mark.remote_data
