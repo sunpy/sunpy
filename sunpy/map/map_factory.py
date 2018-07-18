@@ -28,6 +28,13 @@ from sunpy.extern import six
 
 from sunpy.extern.six.moves.urllib.request import urlopen
 
+SUPPORTED_ARRAY_TYPES = (np.ndarray,)
+try:
+    import dask.array
+    SUPPORTED_ARRAY_TYPES += (dask.array.Array,)
+except ImportError:
+    pass
+
 __authors__ = ["Russell Hewett, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
 
@@ -173,7 +180,7 @@ class MapFactory(BasicRegistrationFactory):
                 data_header_pairs.append(arg)
 
             # Data-header pair not in a tuple
-            elif (isinstance(arg, np.ndarray) and
+            elif (isinstance(arg, SUPPORTED_ARRAY_TYPES) and
                   self._validate_meta(args[i+1])):
 
                 pair = (args[i], OrderedDict(args[i+1]))
