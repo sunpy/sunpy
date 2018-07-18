@@ -139,7 +139,7 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
     # artifact status
     ts_test = \
         lyra.remove_lytaf_events_from_timeseries(
-            ts, artifacts=["LAR", "Offpoint"],
+            lyra_ts, artifacts=["LAR", "Offpoint"],
             lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
     # Assert expected result is returned
     pandas.util.testing.assert_frame_equal(ts_test.data, dataframe_expected)
