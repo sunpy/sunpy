@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import copy
 import datetime
 import pytest
@@ -12,14 +10,16 @@ from pandas.util.testing import assert_frame_equal
 import astropy.units as u
 
 from sunpy.time import TimeRange
-from sunpy import lightcurve
+from sunpy import timeseries
 from sunpy.instr import goes
+from sunpy.data.test import get_test_filepath
 
 # Define input variables to be used in test functions for
 # _goes_chianti_tem.
 LONGFLUX = Quantity([7e-6], unit="W/m**2")
 SHORTFLUX = Quantity([7e-7], unit="W/m**2")
 DATE = "2014-04-16"
+
 
 @pytest.mark.remote_data
 def test_goes_event_list():
@@ -65,29 +65,30 @@ def test_goes_event_list():
 
 @pytest.mark.remote_data
 def test_calculate_temperature_em():
-    # Create GOESLightcurve object, then create new one with
+    # Create XRSTimeSeries object, then create new one with
     # temperature & EM using with calculate_temperature_em().
-    goeslc = lightcurve.GOESLightCurve.create("2014-01-01 00:00", "2014-01-01 01:00")
+    goeslc = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     goeslc_new = goes.calculate_temperature_em(goeslc)
-    # Test correct exception is raised if a GOESLightCurve object is
+    # Test correct exception is raised if a XRSTimeSeries object is
     # not inputted.
     with pytest.raises(TypeError):
         goes.calculate_temperature_em([])
     # Find temperature and EM manually with _goes_chianti_tem()
     temp, em = goes._goes_chianti_tem(
-        Quantity(goeslc.data.xrsb, unit='W/m**2'),
-        Quantity(goeslc.data.xrsa, unit='W/m**2'),
-        satellite=int(goeslc.meta["TELESCOP"].split()[1]), date="2014-01-01")
+        goeslc.quantity("xrsb"),
+        goeslc.quantity("xrsa"),
+        satellite=int(goeslc.meta.metas[0]["TELESCOP"].split()[1]), date="2014-01-01")
     # Check that temperature and EM arrays from _goes_chianti_tem()
-    # are same as those in new GOESLightcurve object.
+    # are same as those in new XRSTimeSeries object.
     assert goeslc_new.data.temperature.all() == temp.value.all()
     assert goeslc_new.data.em.all() == em.value.all()
-    # Check rest of data frame of new GOESLightCurve object is same
+    # Check rest of data frame of new XRSTimeSeries object is same
     # as that in original object.
     goeslc_revert = copy.deepcopy(goeslc_new)
     del goeslc_revert.data["temperature"]
     del goeslc_revert.data["em"]
     assert_frame_equal(goeslc_revert.data, goeslc.data)
+
 
 @pytest.mark.remote_data
 def test_goes_chianti_tem_errors():
@@ -115,7 +116,7 @@ def test_goes_chianti_tem_errors():
         temp = goes._goes_get_chianti_temp(ratio, satellite=-1)
     with pytest.raises(ValueError):
         temp, em = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX,
-                                         abundances="Neither")
+                                          abundances="Neither")
     with pytest.raises(ValueError):
         temp = goes._goes_get_chianti_temp(ratio, abundances="Neither")
     with pytest.raises(ValueError):
@@ -133,6 +134,7 @@ def test_goes_chianti_tem_errors():
     with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(LONGFLUX, temp_test_toobig)
 
+
 @pytest.mark.remote_data
 def test_goes_chianti_tem_case1():
     # test case 1: satellite > 7, abundances = coronal
@@ -141,6 +143,7 @@ def test_goes_chianti_tem_case1():
     np.testing.assert_allclose(temp1, Quantity([11.28], unit="MK"), rtol=0.01)
     assert all(em1 < Quantity([4.79e+48], unit="1/cm**3")) and \
       em1 > Quantity([4.78e+48], unit="1/cm**3")
+
 
 @pytest.mark.remote_data
 def test_goes_chianti_tem_case2():
@@ -219,10 +222,10 @@ def test_goes_chianti_tem_case8():
       all(em8 > Quantity(9.38e+48, unit="1/cm**3"))
 
 @pytest.mark.remote_data
+@pytest.mark.array_compare(file_format='text',reference_dir='./')
 def test_calculate_radiative_loss_rate():
     # Define input variables.
-    goeslc_input = lightcurve.GOESLightCurve.create("2014-01-01 00:00:00",
-                                            "2014-01-01 00:00:10")
+    goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     not_goeslc = []
     goeslc_no_em = goes.calculate_temperature_em(goeslc_input)
     del goeslc_no_em.data["em"]
@@ -234,16 +237,19 @@ def test_calculate_radiative_loss_rate():
     # Check function gives correct results.
     # Test case 1: GOESLightCurve object with only flux data
     goeslc_test = goes.calculate_radiative_loss_rate(goeslc_input)
-    goeslc_expected = goes.calculate_temperature_em(goeslc_input)
-    goeslc_expected.data["rad_loss_rate"] = \
-      np.array([5.44914366e+19, 5.44914366e+19, 5.43465905e+19,
-                5.38282295e+19, 5.42019309e+19])
-    assert_frame_equal(goeslc_test.data, goeslc_expected.data)
+    exp_data = np.array([1.78100055e+19, 1.66003113e+19, 1.71993065e+19,
+                         1.60171768e+19, 1.71993065e+19])
+    np.testing.assert_allclose(goeslc_test.data.rad_loss_rate[:5],
+                               exp_data)
 
     # Test case 2: GOESLightCurve object with flux and temperature
     # data, but no EM data.
     goes_test = goes.calculate_radiative_loss_rate(goeslc_no_em)
-    assert_frame_equal(goeslc_test.data, goeslc_expected.data)
+    # we test that the column has been added
+    assert "rad_loss_rate" in goes_test.columns
+    # Compare every 50th value to save on filesize
+    return np.array(goes_test.data[::50])
+
 
 @pytest.mark.remote_data
 def test_calc_rad_loss_errors():
@@ -258,12 +264,12 @@ def test_calc_rad_loss_errors():
                         datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     temp_toolong = Quantity(np.append(temp.value, 0), unit="MK")
     obstime_toolong =  np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
-                        datetime.datetime(2014, 1, 1, 0, 0, 2),
-                        datetime.datetime(2014, 1, 1, 0, 0, 4),
-                        datetime.datetime(2014, 1, 1, 0, 0, 6),
-                        datetime.datetime(2014, 1, 1, 0, 0, 8),
-                        datetime.datetime(2014, 1, 1, 0, 0, 10),
-                        datetime.datetime(2014, 1, 1, 0, 0, 12)], dtype=object)
+                                 datetime.datetime(2014, 1, 1, 0, 0, 2),
+                                 datetime.datetime(2014, 1, 1, 0, 0, 4),
+                                 datetime.datetime(2014, 1, 1, 0, 0, 6),
+                                 datetime.datetime(2014, 1, 1, 0, 0, 8),
+                                 datetime.datetime(2014, 1, 1, 0, 0, 10),
+                                 datetime.datetime(2014, 1, 1, 0, 0, 12)], dtype=object)
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
     obstime_nonchrono[-1] = obstime[1]
@@ -281,6 +287,7 @@ def test_calc_rad_loss_errors():
         lx_test = goes._calc_rad_loss(temp, em, obstime_notdatetime)
     with pytest.raises(ValueError):
         rad_loss_test = goes._calc_rad_loss(temp, em, obstime_nonchrono)
+
 
 @pytest.mark.remote_data
 def test_calc_rad_loss_nokwags():
@@ -300,7 +307,8 @@ def test_calc_rad_loss_nokwags():
                          3.01851392e+19 * Quantity(np.ones(2), unit="J/s")}
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
     assert_quantity_allclose(rad_loss_test["rad_loss_rate"],
-                       rad_loss_expected["rad_loss_rate"], rtol=0.01)
+                             rad_loss_expected["rad_loss_rate"], rtol=0.01)
+
 
 @pytest.mark.remote_data
 def test_calc_rad_loss_obstime():
@@ -325,11 +333,12 @@ def test_calc_rad_loss_obstime():
         }
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
     assert_quantity_allclose(rad_loss_test["rad_loss_rate"],
-                       rad_loss_expected["rad_loss_rate"], rtol=0.0001)
+                             rad_loss_expected["rad_loss_rate"], rtol=0.0001)
     assert_quantity_allclose(rad_loss_test["rad_loss_int"],
-                       rad_loss_expected["rad_loss_int"], rtol=0.0001)
+                             rad_loss_expected["rad_loss_int"], rtol=0.0001)
     assert_quantity_allclose(rad_loss_test["rad_loss_cumul"],
-                       rad_loss_expected["rad_loss_cumul"], rtol=0.0001)
+                             rad_loss_expected["rad_loss_cumul"], rtol=0.0001)
+
 
 @pytest.mark.remote_data
 def test_calculate_xray_luminosity():
@@ -338,20 +347,15 @@ def test_calculate_xray_luminosity():
     with pytest.raises(TypeError):
         goes_test = goes.calculate_xray_luminosity(not_goeslc)
     # Check function gives correct results.
-    goeslc_input = lightcurve.GOESLightCurve.create("2014-01-01 00:00:00",
-                                            "2014-01-01 00:00:10")
+    goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     goeslc_test = goes.calculate_xray_luminosity(goeslc_input)
-    goeslc_expected = copy.deepcopy(goeslc_input)
-    goeslc_expected.data["luminosity_xrsa"] = \
-      Quantity(np.array([2.49831950e+16, 2.49831950e+16, 2.49831950e+16,
-                         2.52864004e+16, 2.49831950e+16], dtype="float32"),
-                         unit="J/s")
-    goeslc_expected.data["luminosity_xrsb"] = \
-      Quantity(np.array([9.54399250e+17, 9.54399250e+17, 9.52985195e+17,
-                         9.52985195e+17, 9.51571139e+17], dtype="float32"),
-                         unit="J/s")
-    assert_frame_equal(goeslc_test.data, goeslc_expected.data,
-                       check_less_precise=True)
+    exp_xrsa = u.Quantity([2.8962085e+14, 2.8962085e+14, 2.8962085e+14, 2.8962085e+14,
+                           2.8962085e+14], "W")
+    exp_xrsb = u.Quantity([5.4654352e+16, 5.3133844e+16, 5.3895547e+16, 5.2375035e+16,
+                           5.3895547e+16], "W")
+    assert_quantity_allclose(exp_xrsa, goeslc_test.quantity("luminosity_xrsa")[:5])
+    assert_quantity_allclose(exp_xrsb, goeslc_test.quantity("luminosity_xrsb")[:5])
+
 
 def test_goes_lx_errors():
     # Define input values of flux and time.
@@ -375,6 +379,7 @@ def test_goes_lx_errors():
         lx_test = goes._goes_lx(longflux, shortflux, obstime_notdatetime)
     with pytest.raises(ValueError):
         lx_test = goes._goes_lx(longflux, shortflux, obstime_nonchrono)
+
 
 def test_goes_lx_nokwargs():
     # Define input values of flux and time.
