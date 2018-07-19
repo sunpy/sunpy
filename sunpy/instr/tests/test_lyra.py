@@ -86,7 +86,7 @@ def test_split_series_using_lytaf():
 
 
 @pytest.fixture
-def ts():
+def lyra_ts():
     # Create sample TimeSeries
     lyrats = timeseries.TimeSeries(
         os.path.join(rootdir, 'lyra_20150101-000000_lev3_std_truncated.fits.gz'),
@@ -100,9 +100,8 @@ def ts():
 
 
 @pytest.mark.remote_data
-def test_remove_lytaf_events_from_timeseries(ts):
-    """Test if artefacts are correctly removed from a TimeSeries.
-    Also test LYRALightCurve for backwards compatibility."""
+def test_remove_lytaf_events_from_timeseries(lyra_ts):
+    """Test if artefacts are correctly removed from a TimeSeries."""
     # Check correct errors are raised due to bad input
     with pytest.raises(AttributeError):
         ts_test = lyra.remove_lytaf_events_from_timeseries(
@@ -112,15 +111,15 @@ def test_remove_lytaf_events_from_timeseries(ts):
     # status
     ts_test, artifact_status_test = \
         lyra.remove_lytaf_events_from_timeseries(
-            ts, artifacts=["LAR", "Offpoint"], return_artifacts=True,
+            lyra_ts, artifacts=["LAR", "Offpoint"], return_artifacts=True,
             lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
     # Generate expected data by calling _remove_lytaf_events and
     # constructing expected dataframe manually.
     time, channels, artifact_status_expected = lyra._remove_lytaf_events(
-        ts.data.index, channels=[np.asanyarray(ts.data["CHANNEL1"]),
-                                 np.asanyarray(ts.data["CHANNEL2"]),
-                                 np.asanyarray(ts.data["CHANNEL3"]),
-                                 np.asanyarray(ts.data["CHANNEL4"])],
+        lyra_ts.data.index, channels=[np.asanyarray(lyra_ts.data["CHANNEL1"]),
+                                      np.asanyarray(lyra_ts.data["CHANNEL2"]),
+                                      np.asanyarray(lyra_ts.data["CHANNEL3"]),
+                                      np.asanyarray(lyra_ts.data["CHANNEL4"])],
         artifacts=["LAR", "Offpoint"], return_artifacts=True,
         lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
     dataframe_expected = pandas.DataFrame(index=time,
@@ -144,7 +143,7 @@ def test_remove_lytaf_events_from_timeseries(ts):
     # artifact status
     ts_test = \
         lyra.remove_lytaf_events_from_timeseries(
-            ts, artifacts=["LAR", "Offpoint"],
+            lyra_ts, artifacts=["LAR", "Offpoint"],
             lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
     # Assert expected result is returned
     pandas.util.testing.assert_frame_equal(ts_test.data, dataframe_expected)
