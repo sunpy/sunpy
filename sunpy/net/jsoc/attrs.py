@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-from astropy.time import Time as astropyTime
-
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr
 from sunpy.net.vso.attrs import _VSOSimpleAttr, _Range
 from sunpy.net.vso.attrs import Wavelength
+from sunpy.net.vso.attrs import Time as VSO_Time
 
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
-
-from sunpy.net.vso.attrs import Time
 
 
 class Series(_VSOSimpleAttr):
@@ -88,7 +85,7 @@ class Notify(_VSOSimpleAttr):
 walker = AttrWalker()
 
 
-@walker.add_creator(AttrAnd, _VSOSimpleAttr, Time)
+@walker.add_creator(AttrAnd, _VSOSimpleAttr, VSO_Time)
 def _create(wlk, query):
 
     map_ = {}
@@ -129,7 +126,7 @@ def _apply1(wlk, query, imap):
         imap[key] = [query.value]
 
 
-@walker.add_applier(Time)
+@walker.add_applier(VSO_Time)
 def _apply2(wlk, query, imap):
     imap['start_time'] = query.start
     imap['end_time'] = query.end
