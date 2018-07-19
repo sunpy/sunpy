@@ -1,0 +1,1 @@
+Added DRMS to setup.py so sunpy[all] installs it as a dependancy.
