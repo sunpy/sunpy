@@ -1,0 +1,1 @@
+`obstime` keyword param of ``sunpy.instr.goes._goes_lx`` takes a non-scalar ``astropy.time.Time`` object instead of ``np.array``. The precision of times contained in sunpy `timeseries` has been increased to 9 from 6.
