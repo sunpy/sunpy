@@ -147,7 +147,7 @@ def test_no_time_error():
 @pytest.mark.remote_data
 def test_no_match():
     with pytest.raises(DrmsQueryError):
-        Fido.search(a.jsoc.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
+        Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
                     a.vso.Sample(10*u.s))
 
 
