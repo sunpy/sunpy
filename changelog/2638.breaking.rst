@@ -1,0 +1,1 @@
+The properties and methods of ``sunpy.time.TimeRange`` returns ``astropy.time.Time`` and ``astropy.time.TimeDelta`` instead of ``datetime.datetime`` and ``datetime.timedelta`` respectively.

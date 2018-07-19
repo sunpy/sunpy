@@ -1,0 +1,1 @@
+Make ``sunpy.time.parse_time`` return ``astropy.time.Time`` instead of ``datetime.datetime``.
