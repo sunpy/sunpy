@@ -1,0 +1,1 @@
+Removed ``sunpy.net.jsoc.attrs.Time`` because it served the same purpose as ``sunpy.net.attrs.Time`` after the switch to ``astropy.time.Time``.
