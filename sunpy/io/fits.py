@@ -178,7 +178,7 @@ def write(fname, data, header, **kwargs):
     # Check Header
     key_comments = header.pop('KEYCOMMENTS', False)
 
-    for k,v in header.items():
+    for k, v in header.items():
         if isinstance(v, fits.header._HeaderCommentaryCards):
             if k == 'comments':
                 comments = str(v).split('\n')
@@ -195,15 +195,17 @@ def write(fname, data, header, **kwargs):
             fits_header.append(fits.Card(k, v))
 
     if isinstance(key_comments, dict):
-        for k,v in key_comments.items():
+        for k, v in key_comments.items():
             fits_header.comments[k] = v
     elif key_comments:
         raise TypeError("KEYCOMMENTS must be a dictionary")
 
-    fitskwargs = {'output_verify':'fix'}
+    if isinstance(fname, str):
+        fname = os.path.expanduser(fname)
+
+    fitskwargs = {'output_verify': 'fix'}
     fitskwargs.update(kwargs)
-    fits.writeto(os.path.expanduser(fname), data, header=fits_header,
-                   **fitskwargs)
+    fits.writeto(fname, data, header=fits_header, **fitskwargs)
 
 
 def extract_waveunit(header):

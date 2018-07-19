@@ -69,11 +69,11 @@ def test_goes_event_list():
 
 @pytest.mark.remote_data
 def test_calculate_temperature_em():
-    # Create GOESLightcurve object, then create new one with
+    # Create XRSTimeSeries object, then create new one with
     # temperature & EM using with calculate_temperature_em().
     goeslc = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     goeslc_new = goes.calculate_temperature_em(goeslc)
-    # Test correct exception is raised if a GOESLightCurve object is
+    # Test correct exception is raised if a XRSTimeSeries object is
     # not inputted.
     with pytest.raises(TypeError):
         goes.calculate_temperature_em([])
@@ -83,10 +83,10 @@ def test_calculate_temperature_em():
         goeslc.quantity("xrsa"),
         satellite=int(goeslc.meta.metas[0]["TELESCOP"].split()[1]), date="2014-01-01")
     # Check that temperature and EM arrays from _goes_chianti_tem()
-    # are same as those in new GOESLightcurve object.
+    # are same as those in new XRSTimeSeries object.
     assert goeslc_new.data.temperature.all() == temp.value.all()
     assert goeslc_new.data.em.all() == em.value.all()
-    # Check rest of data frame of new GOESLightCurve object is same
+    # Check rest of data frame of new XRSTimeSeries object is same
     # as that in original object.
     goeslc_revert = copy.deepcopy(goeslc_new)
     del goeslc_revert.data["temperature"]
@@ -233,6 +233,7 @@ def test_goes_chianti_tem_case8():
 
 
 @pytest.mark.remote_data
+@pytest.mark.array_compare(file_format='text',reference_dir='./')
 def test_calculate_radiative_loss_rate():
     # Define input variables.
     goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
@@ -257,6 +258,8 @@ def test_calculate_radiative_loss_rate():
     goes_test = goes.calculate_radiative_loss_rate(goeslc_no_em)
     # we test that the column has been added
     assert "rad_loss_rate" in goes_test.columns
+    # Compare every 50th value to save on filesize
+    return np.array(goes_test.data[::50])
 
 
 @pytest.mark.remote_data

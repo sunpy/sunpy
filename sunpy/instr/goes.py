@@ -186,7 +186,7 @@ def calculate_temperature_em(goests, abundances="coronal",
 
     Returns
     -------
-    lc_new : `~sunpy.timeseries.XRSTimeSeries`
+    ts_new : `~sunpy.timeseries.XRSTimeSeries`
         Contains same metadata and data as input timeseries with the
         following two additional data columns:
 
@@ -263,13 +263,13 @@ def calculate_temperature_em(goests, abundances="coronal",
         date=goests.data.index[0],
         abundances=abundances, download=download, download_dir=download_dir)
 
-    lc_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
+    ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
                                       data=copy.deepcopy(goests.data),
                                       units=copy.deepcopy(goests.units))
-    lc_new = lc_new.add_column("temperature", temp)
-    lc_new = lc_new.add_column("em", em)
+    ts_new = ts_new.add_column("temperature", temp)
+    ts_new = ts_new.add_column("em", em)
 
-    return lc_new
+    return ts_new
 
 
 @u.quantity_input
@@ -753,7 +753,7 @@ def calculate_radiative_loss_rate(goests, force_download=False,
 
     Parameters
     ----------
-    goeslc : `~sunpy.timeseries.XRSTimeSeries`
+    goests : `~sunpy.timeseries.XRSTimeSeries`
         TimeSeries object containing GOES data.  The units of these
         data MUST be W/m^2 (flux), MK (temperature) and cm^-3
         (emission measure).  If LightCurve object does not contain
@@ -773,7 +773,7 @@ def calculate_radiative_loss_rate(goests, force_download=False,
 
     Returns
     -------
-    lc_new : `~sunpy.timeseries.XRSTimeSeries`
+    ts_new : `~sunpy.timeseries.XRSTimeSeries`
         Contains same metadata and data as input LightCurve with the
         following additional data columns:
 
@@ -1050,7 +1050,7 @@ def calculate_xray_luminosity(goests):
     Examples
     --------
     >>> import sunpy.timeseries as ts
-    >>> from sunpy.instr.goes import calculate_temperature_em
+    >>> from sunpy.instr.goes import calculate_xray_luminosity
     >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
     >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
     >>> goests.data  # doctest: +REMOTE_DATA
@@ -1084,13 +1084,13 @@ def calculate_xray_luminosity(goests):
     # Enter results into new version of GOES LightCurve Object
     # Use copy.deepcopy for replicating meta and data so that input
     # lightcurve is not altered.
-    lc_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
+    ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
                                       data=copy.deepcopy(goests.data),
                                       units=copy.deepcopy(goests.units))
-    lc_new = lc_new.add_column("luminosity_xrsa", lx_out["shortlum"].to("W"))
-    lc_new = lc_new.add_column("luminosity_xrsb", lx_out["longlum"].to("W"))
+    ts_new = ts_new.add_column("luminosity_xrsa", lx_out["shortlum"].to("W"))
+    ts_new = ts_new.add_column("luminosity_xrsb", lx_out["longlum"].to("W"))
 
-    return lc_new
+    return ts_new
 
 
 def _goes_lx(longflux, shortflux, obstime=None, date=None):
