@@ -29,7 +29,6 @@ import os
 import datetime
 import sys
 from distutils.version import LooseVersion
-from sphinx_gallery.sorting import ExplicitOrder
 
 from sphinx import __version__
 SPHINX_LT_17 = LooseVersion(__version__) < LooseVersion('1.7')
@@ -53,6 +52,7 @@ except ImportError:
 
 try:
     import sphinx_gallery
+    from sphinx_gallery.sorting import ExplicitOrder
     if on_rtd and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
         # Gallery takes too long on RTD to build unless you have extra build time.
         has_sphinx_gallery = False
