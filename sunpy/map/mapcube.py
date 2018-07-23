@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from copy import deepcopy
 
+import os
 import numpy as np
 import matplotlib.animation
 import numpy.ma as ma
@@ -346,3 +347,21 @@ class MapCube(object):
         Return all the meta objects as a list.
         """
         return [m.meta for m in self.maps]
+
+    def save(self, prefix_path, filetype='auto', **kwargs):
+        """
+        Saves the Maps held by the MapCube object in a directory.
+
+        Parameters
+        ----------
+        prefix_path : str
+            /path/to/directory where file should be saved.
+        """
+
+        max_index = len(self.maps)
+        length = len(str(max_index))
+        for index, _map in enumerate(self.maps):
+            filename = str(index).zfill(length)
+            filename_with_ext = "{}.fits".format(filename)
+            filepath = os.path.join(prefix_path, filename_with_ext)
+            _map.save(filepath, filetype, **kwargs)
