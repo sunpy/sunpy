@@ -177,12 +177,18 @@ def _generate_fig_html(fname):
     baseline_url = 'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/figures/'
     baseline_image_url = baseline_url + generated_image.name
     baseline_image = figure_base_dir / (generated_image.stem + '_baseline' + generated_image.suffix)
-    if not baseline_image.exists():
-        urllib.request.urlretrieve(baseline_image_url, baseline_image)
+    baseline_image_exists = baseline_image.exists()
+    if not baseline_image_exists:
+        try:
+            urllib.request.urlretrieve(baseline_image_url, baseline_image)
+            baseline_image_exists = True
+        except urllib.error.HTTPError:
+            pass
 
     # Create diff between baseline and generated image
     diff_image = figure_base_dir / (generated_image.stem + '_diff' + generated_image.suffix)
-    compare.save_diff_image(str(baseline_image), str(generated_image), str(diff_image))
+    if baseline_image_exists:
+        compare.save_diff_image(str(baseline_image), str(generated_image), str(diff_image))
 
     html_block = ('<tr>'
                   '<td>{}\n'.format(generated_image.stem) +
