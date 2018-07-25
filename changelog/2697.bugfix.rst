@@ -1,0 +1,1 @@
+Fix eve 0cs timeseries seperator regex to support Python 3.7
