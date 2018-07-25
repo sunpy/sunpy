@@ -1,6 +1,6 @@
 """
 This module provides routines for applying solar rotation functions to
-mapcubes.
+map sequences.
 """
 
 import numpy as np
@@ -121,7 +121,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
     >>> mc = sunpy.map.Map([map1, map2], cube=True)  # doctest: +REMOTE_DATA
     >>> derotated_mc = mapcube_solar_derotate(mc)  # doctest: +REMOTE_DATA
-    >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)  # doctest: +REMOTE_DATA 
+    >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)  # doctest: +REMOTE_DATA
     >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)  # doctest: +REMOTE_DATA
     """
     return mapsequence_solar_derotate(mc, layer_index, clip, shift, **kwargs)
