@@ -171,7 +171,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         # function to parse date column (HHMM)
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
-        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header=None, engine='python')
+        data = read_csv(fp, sep="\s+", names=fields, index_col=0, date_parser=parser, header=None, engine='python')
         if is_missing_data:  # If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
 
