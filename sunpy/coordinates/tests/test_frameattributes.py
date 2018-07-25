@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import datetime
-
 import pytest
 
 import astropy.units as u
@@ -61,7 +59,7 @@ def test_on_frame(input):
 
 
 def test_non_string():
-    output = datetime.datetime.now()
+    output = parse_time('now')
 
     hpc1 = Helioprojective(obstime=output)
 
