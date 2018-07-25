@@ -35,6 +35,7 @@ env:
         - PIP_DEPENDENCIES='pytest-rerunfailures sunpy-sphinx-theme pytest-sugar'
         - EVENT_TYPE='push pull_request cron'
         - MPLBACKEND='agg'
+        - JOB='test'
 
 stages:
    # Do the install jobs and one offline test, it will not proceed if any fail
@@ -94,8 +95,7 @@ matrix:
          - python: 3.6
            stage: Cron tests
            # Pip Upstream checks
-           env: SETUP_CMD='test' CONDA_DEPENDENCIES=''
-                PIP_DEPENDENCIES='Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy drms'
+           env: SETUP_CMD='test' CONDA_DEPENDENCIES='' PIP_DEPENDENCIES='' JOB='pip'
 
 install:
     - git clone --depth 1 git://github.com/astropy/ci-helpers.git
@@ -105,6 +105,8 @@ before_script:
     # Download the sample data for the online builds only.
     - if [[ $SETUP_CMD == *online-only* ]] || [[ $SETUP_CMD == *remote-data* ]]; then python -m "sunpy.data.sample"; fi
     - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; python -m "sunpy.data.sample"; fi
+
+    - if [[ $JOB == *pip* ]]; then pip install .[all]; fi
 
 script:
     - $MAIN_CMD $SETUP_CMD
