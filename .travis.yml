@@ -1,4 +1,4 @@
-language: python
+language: generic
 
 os:
     - linux
@@ -24,14 +24,15 @@ addons:
 env:
     global:
         - COLUMNS=180
-        - PREVIOUS_NUMPY=1.13.3
+        - PYTHON_VERSION=3.6
+        - PREVIOUS_NUMPY=1.14.5
         - NUMPY_VERSION='stable'
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test --coverage'
         - CONDA_CHANNELS='sunpy'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl pytest-astropy suds-jurko glymur pytest-xdist dask'
-        - PIP_DEPENDENCIES='git+https://github.com/sphinx-gallery/sphinx-gallery sphinx-astropy pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme hypothesis drms'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl pytest-astropy suds-jurko glymur pytest-xdist dask drms sphinx-astropy pytest-cov hypothesis'
+        - PIP_DEPENDENCIES='pytest-rerunfailures sunpy-sphinx-theme pytest-sugar'
         - EVENT_TYPE='push pull_request cron'
         - MPLBACKEND='agg'
 
@@ -55,11 +56,17 @@ matrix:
          - python: 3.6
            stage: Initial tests
 
+         # We order the jobs, in terms of the maintainers mood
+         # Order of tests run in build stages
+         - python: 3.7
+           stage: Initial tests
+           env: PYTHON_VERSION=3.7
+
         # Comprehensive tests below this line
         # We run --online here because --online-only skips the doctests
-         - python: 3.6
+         - python: 3.7
            stage: Comprehensive tests
-           env: SETUP_CMD="test --online --coverage --parallel 8"
+           env: SETUP_CMD="test --online --coverage --parallel 8" PYTHON_VERSION=3.7
 
         # Cron tests below this line
          - os: osx
@@ -87,7 +94,7 @@ matrix:
          - python: 3.6
            stage: Cron tests
            # Pip Upstream checks
-           env: SETUP_COMD='test' CONDA_DEPENDENCIES=''
+           env: SETUP_CMD='test' CONDA_DEPENDENCIES=''
                 PIP_DEPENDENCIES='Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy drms'
 
 install:
@@ -109,7 +116,6 @@ after_success:
 notifications:
   webhooks:
     urls:
-      - https://webhooks.gitter.im/e/d1bf84e1bc1293e4dbc5
       - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MENhZGFpciUzQW1hdHJpeC5vcmcvJTIxTWVSZEZwRW9uTG9Dd2hvSGVUJTNBbWF0cml4Lm9yZw"
     on_success: change  # always|never|change
     on_failure: always
