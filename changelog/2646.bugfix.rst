@@ -1,2 +1,0 @@
-Fix transformations into/out of Heliographic Stonyhurst frame when 
-the coordinate representation is Cartesian. 

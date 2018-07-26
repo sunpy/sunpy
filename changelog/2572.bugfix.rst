@@ -1,1 +1,0 @@
-parse_time now parses numpy.datetime64 correctly

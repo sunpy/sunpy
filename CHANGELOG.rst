@@ -1,5 +1,51 @@
-0.9.0 (Unreleased)
-==================
+Sunpy 0.9.1 (2018-07-26)
+========================
+
+Features
+--------
+
+- MapCube has been renamed to MapSequence.
+  MapCube does not actually work on cubes but a sequence of maps.
+  Due to this change, MapCube is now deprecated but will not be removed until SunPy 1.0. (`#2603 <https://github.com/sunpy/sunpy/pull/2603>`__)
+
+
+Bug Fixes
+---------
+
+- parse_time now parses numpy.datetime64 correctly (`#2572 <https://github.com/sunpy/sunpy/pull/2572>`__)
+- Fix the bug that prevented VSO queries for HMI data from downloading file
+  without speicifying `a.Physobs`. (`#2621 <https://github.com/sunpy/sunpy/pull/2621>`__)
+- Fix `sunpy.map.mapcube.MapCube.plot`. The code had not been updated to support the changes to the wcsaxes helper functions. (`#2627 <https://github.com/sunpy/sunpy/pull/2627>`__)
+- Replace all use of the deprecated ``sunpy.cm.get_cmap`` with ``plt.get_cmap`` to prevent deprecation warnings being raised. (`#2635 <https://github.com/sunpy/sunpy/pull/2635>`__)
+- Fix generation of the coordinate transformation graph with Astropy 3.1.dev (`#2636 <https://github.com/sunpy/sunpy/pull/2636>`__)
+- Prevent helioviewer from erroring when downloading file to a directory that
+  does not exist. It will now create the directory when required. (`#2642 <https://github.com/sunpy/sunpy/pull/2642>`__)
+- Fix transformations into/out of Heliographic Stonyhurst frame when
+  the coordinate representation is Cartesian. (`#2646 <https://github.com/sunpy/sunpy/pull/2646>`__)
+- Support passing Python file objects to `sunpy.io.fits.write`. (`#2688 <https://github.com/sunpy/sunpy/pull/2688>`__)
+- Added DRMS to setup.py so sunpy[all] installs it as a dependancy. (`#2693 <https://github.com/sunpy/sunpy/pull/2693>`__)
+- Fix eve 0cs timeseries seperator regex to support Python 3.7 (`#2697 <https://github.com/sunpy/sunpy/pull/2697>`__)
+
+
+Improved Documentation
+----------------------
+
+- Organise the gallery into sections based on example type and tidy up a little. (`#2624 <https://github.com/sunpy/sunpy/pull/2624>`__)
+- Added gallery example showing the conversion of Helioprojective Coordinates to Altitude/Azimuth Coordinates to and back. (`#2656 <https://github.com/sunpy/sunpy/pull/2656>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Revert the handling of ``quantity_allclose`` now that `astropy/astropy#7252 <https://github.com/astropy/astropy/pull/7252>`__ is merged. This also bumps the minimum astropy 3 version to 3.0.2. (`#2598 <https://github.com/sunpy/sunpy/pull/2598>`__). We still support Astropy 2.
+- Sort the ana C source files before building to enable reproducible builds. (`#2637 <https://github.com/sunpy/sunpy/pull/2637>`__)
+- We are now using `towncrier <https://github.com/hawkowl/towncrier>`__ to
+  generate our changelogs. (`#2644 <https://github.com/sunpy/sunpy/pull/2644>`__)
+- Use of ``textwrap`` to keep source code indented when multiline texts is used (`#2671 <https://github.com/sunpy/sunpy/pull/2671>`__)
+
+
+0.9.0
+=====
 
 New Features
 ------------
