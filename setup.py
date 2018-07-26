@@ -50,6 +50,11 @@ if on_rtd:
     os.environ['HOME'] = '/home/docs/'
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
 
+# Store the package name in a built-in variable so it's easy
+# to get from other parts of the setup infrastructure
+# This is used by get_pkg_data in astropy amongst other things
+builtins._ASTROPY_PACKAGE_NAME_ = PACKAGENAME
+
 # VERSION should be PEP440 compatible (http://www.python.org/dev/peps/pep-0440)
 VERSION = metadata.get('version', '0.0.dev0')
 
