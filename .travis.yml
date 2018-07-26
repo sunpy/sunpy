@@ -8,6 +8,10 @@ stage: Initial tests
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
+branches:
+  except:
+    - /^auto-backport-of-pr-[0-9]+$/
+
 # The apt packages below are needed but can no longer be installed with
 # sudo apt-get.
 addons:
