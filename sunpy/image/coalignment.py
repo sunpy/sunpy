@@ -373,8 +373,8 @@ def apply_shifts(mc, yshift, xshift, clip=True, **kwargs):
         An array of pixel shifts in the x-direction for an image.
 
     clip : bool
-        If True, then clip off x, y edges in the datacube that are potentially
-        affected by edges effects.
+        If True, then clip off x, y edges of the maps in the sequence that are
+        potentially affected by edges effects.
 
     All other keywords are passed to `scipy.ndimage.interpolation.shift`.
 
@@ -417,12 +417,13 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     """
     Calculate the arcsecond shifts necessary to co-register the layers in a
     `~sunpy.map.MapSequence` according to a template taken from that
-    `~sunpy.map.MapSequence`.  This method REQUIRES that scikit-image be installed.
+    `~sunpy.map.MapSequence`.
+
     When using this functionality, it is a good idea to check that the shifts
-    that were applied to were reasonable and expected.  One way of checking this
+    that were applied to were reasonable and expected. One way of checking this
     is to animate the original `~sunpy.map.MapSequence`, animate the coaligned
-    `~sunpy.map.MapSequence`, and compare the differences you see to the calculated
-    shifts.
+    `~sunpy.map.MapSequence`, and compare the differences you see to the
+    calculated shifts.
 
     Parameters
     ----------
@@ -511,12 +512,13 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
                                       shift=None, **kwargs):
     """
     Co-register the layers in a `~sunpy.map.MapCube` according to a template
-    taken from that `~sunpy.map.MapCube`.  This method REQUIRES that
-    scikit-image be installed. When using this functionality, it is a good idea
-    to check that the shifts that were applied to were reasonable and expected.
-    One way of checking this is to animate the original `~sunpy.map.MapCube`,
-    animate the coaligned `~sunpy.map.MapCube`, and compare the differences you
-    see to the calculated shifts.
+    taken from that `~sunpy.map.MapCube`.
+
+    When using this functionality, it is a good idea to check that the shifts
+    that were applied to were reasonable and expected. One way of checking this
+    is to animate the original `~sunpy.map.MapCube`, animate the coaligned
+    `~sunpy.map.MapCube`, and compare the differences you see to the calculated
+    shifts.
 
 
     Parameters
@@ -618,8 +620,8 @@ def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
         func = F(data).  The default function ensures that the data are
         floats.
     clip : bool
-        If True, then clip off x, y edges in the datacube that are potentially
-        affected by edges effects.
+        If True, then clip off x, y edges of the maps in the sequence that are
+        potentially affected by edges effects.
     shift : dict
         A dictionary with two keys, 'x' and 'y'.  Key 'x' is an astropy
         quantities array of corresponding to the amount of shift in the
