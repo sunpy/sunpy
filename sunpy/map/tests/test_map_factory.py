@@ -38,6 +38,11 @@ class TestMap(object):
         #Test making a MapCube
         cube = sunpy.map.Map(a_list_of_many, cube=True)
         assert isinstance(cube, sunpy.map.MapCube)
+    
+    def test_mapsequence(self):
+        #Test making a MapSequence
+        sequence = sunpy.map.Map(a_list_of_many, sequence=True)
+        assert isinstance(sequence, sunpy.map.MapSequence)
 
     def test_composite(self):
         #Test making a CompositeMap

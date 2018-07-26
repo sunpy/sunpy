@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 # Author: Jack Ireland, Steven Christe
 #
-# Testing functions for a mapcube coalignment functionality.  This
+# Testing functions for a mapsequence coalignment functionality.  This
 # functionality relies on the scikit-image function "match_template".
 #
 
@@ -9,7 +9,7 @@ import numpy as np
 from astropy import units as u
 from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift as sp_shift
-from sunpy import map
+from sunpy.map import Map, MapCube, MapSequence
 import pytest
 import os
 import sunpy.data.test
@@ -18,7 +18,7 @@ from sunpy.image.coalignment import parabolic_turning_point, \
     calculate_clipping, get_correlation_shifts, find_best_match_location, \
     match_template_to_layer, clip_edges, \
     calculate_match_template_shift, mapcube_coalign_by_match_template,\
-    apply_shifts
+    mapsequence_coalign_by_match_template, apply_shifts
 from sunpy.extern.six.moves import range
 
 @pytest.fixture
@@ -160,9 +160,9 @@ def test__default_fmap_function():
     assert(_default_fmap_function([1,2,3]).dtype == np.float64(1).dtype)
 
 #
-# The following tests test functions that have mapcubes as inputs
+# The following tests test functions that have mapsequences as inputs
 #
-# Setup the test mapcubes that have displacements
+# Setup the test mapsequences that have displacements
 # Pixel displacements have the y-displacement as the first entry
 @pytest.fixture
 def aia171_test_mc_pixel_displacements():
@@ -180,9 +180,9 @@ def aia171_test_mc(aia171_test_map, aia171_test_map_layer,
                    aia171_test_mc_pixel_displacements):
     # Create a map that has been shifted a known amount.
     d1 = sp_shift(aia171_test_map_layer, aia171_test_mc_pixel_displacements)
-    m1 = map.Map((d1, aia171_test_map.meta))
-    # Create the mapcube
-    return map.Map([aia171_test_map, m1], cube=True)
+    m1 = Map((d1, aia171_test_map.meta))
+    # Create the mapsequence
+    return Map([aia171_test_map, m1], sequence=True)
 
 
 def test_calculate_match_template_shift(aia171_test_mc,
@@ -217,7 +217,7 @@ def test_calculate_match_template_shift(aia171_test_mc,
         dummy_return_value = calculate_match_template_shift(aia171_test_mc, template='broken')
 
 
-def test_mapcube_coalign_by_match_template(aia171_test_mc,
+def test_mapsequence_coalign_by_match_template(aia171_test_mc,
                                            aia171_test_map_layer_shape):
     # Define these local variables to make the code more readable
     ny = aia171_test_map_layer_shape[0]
@@ -227,21 +227,21 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     test_displacements = calculate_match_template_shift(aia171_test_mc)
 
     # Test passing in displacements
-    test_mc = mapcube_coalign_by_match_template(aia171_test_mc, shift=test_displacements)
+    test_mc = mapsequence_coalign_by_match_template(aia171_test_mc, shift=test_displacements)
 
-    # Make sure the output is a mapcube
-    assert(isinstance(test_mc, map.MapCube))
+    # Make sure the output is a mapsequence
+    assert(isinstance(test_mc, MapSequence))
 
     # Test returning with no clipping.  Output layers should have the same size
     # as the original input layer.
-    test_mc = mapcube_coalign_by_match_template(aia171_test_mc, clip=False)
+    test_mc = mapsequence_coalign_by_match_template(aia171_test_mc, clip=False)
     assert(test_mc[0].data.shape == aia171_test_map_layer_shape)
     assert(test_mc[1].data.shape == aia171_test_map_layer_shape)
 
-    # Test the returned mapcube using the default - clipping on.
+    # Test the returned mapsequence using the default - clipping on.
     # All output layers should have the same size
     # which is smaller than the input by a known amount
-    test_mc = mapcube_coalign_by_match_template(aia171_test_mc)
+    test_mc = mapsequence_coalign_by_match_template(aia171_test_mc)
     x_displacement_pixels = test_displacements['x'] / test_mc[0].scale[0]
     y_displacement_pixels = test_displacements['y'] / test_mc[0].scale[1]
     expected_clipping = calculate_clipping(y_displacement_pixels, x_displacement_pixels)
@@ -250,10 +250,10 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     assert(test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
     assert(test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
 
-    # Test the returned mapcube explicitly using clip=True.
+    # Test the returned mapsequence explicitly using clip=True.
     # All output layers should have the same size
     # which is smaller than the input by a known amount
-    test_mc = mapcube_coalign_by_match_template(aia171_test_mc, clip=True)
+    test_mc = mapsequence_coalign_by_match_template(aia171_test_mc, clip=True)
     x_displacement_pixels = test_displacements['x'] / test_mc[0].scale[0]
     y_displacement_pixels = test_displacements['y'] / test_mc[0].scale[1]
     expected_clipping = calculate_clipping(y_displacement_pixels, x_displacement_pixels)
@@ -262,7 +262,7 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     assert(test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
     assert(test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
 
-    # Test that the reference pixel of each map in the coaligned mapcube is
+    # Test that the reference pixel of each map in the coaligned mapsequence is
     # correct.
     for im, m in enumerate(aia171_test_mc):
         for i_s, s in enumerate(['x', 'y']):
@@ -271,8 +271,8 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
                             rtol=5e-2, atol=0)
 
 def test_apply_shifts(aia171_test_map):
-    # take two copies of the AIA image and create a test mapcube.
-    mc = map.Map([aia171_test_map, aia171_test_map], cube=True)
+    # take two copies of the AIA image and create a test mapsequence.
+    mc = Map([aia171_test_map, aia171_test_map], sequence=True)
 
     # Pixel displacements have the y-displacement as the first entry
     numerical_displacements = {"x": np.asarray([0.0, -2.7]), "y": np.asarray([0.0, -10.4])}
@@ -288,9 +288,9 @@ def test_apply_shifts(aia171_test_map):
     with pytest.raises(TypeError):
         tested = apply_shifts(mc, numerical_displacements["y"], numerical_displacements["x"])
 
-    # Test returning with no extra options - the code returns a mapcube only
+    # Test returning with no extra options - the code returns a mapsequence only
     test_output = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])
-    assert(isinstance(test_output, map.MapCube))
+    assert(isinstance(test_output, MapSequence))
 
     # Test returning with no clipping.  Output layers should have the same size
     # as the original input layer.
@@ -307,7 +307,7 @@ def test_apply_shifts(aia171_test_map):
         assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
 
     # Test returning with default clipping.  The default clipping is set to
-    # true, that is the mapcube is clipped.  Output layers should be smaller
+    # true, that is the mapsequence is clipped.  Output layers should be smaller
     # than the original layer by a known amount.
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])
     for i in range(0, len(test_mc.maps)):
