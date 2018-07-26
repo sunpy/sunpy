@@ -39,6 +39,13 @@ jobs:
       - checkout
       - run: python setup.py egg_info
 
+  egg-info-37:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
   figure-tests-36:
     docker:
       - image: continuumio/miniconda3
@@ -86,6 +93,7 @@ workflows:
   egg-info:
     jobs:
       - egg-info-36
+      - egg-info-37
 
   figure-tests:
     jobs:
