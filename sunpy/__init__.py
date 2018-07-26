@@ -9,8 +9,6 @@ Web Links
 Homepage: http://sunpy.org
 Documentation: http://docs.sunpy.org/en/stable/
 """
-from ._sunpy_init import *
-
 # Enforce Python version check during package import.
 # This is the same check as the one at the top of setup.py
 import os
