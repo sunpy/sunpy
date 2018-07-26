@@ -1,9 +1,8 @@
-"""A Python MapCube Object"""
+"""A Python MapSequence Object"""
 from __future__ import absolute_import, division, print_function
+#pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 from copy import deepcopy
-
-import warnings
 
 import numpy as np
 import matplotlib.animation
@@ -15,51 +14,45 @@ from sunpy.map import GenericMap
 from sunpy.visualization.mapsequenceanimator import MapSequenceAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.visualization import axis_labels_from_ctype
-from sunpy.util import expand_list, deprecated
-from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util import expand_list
 from sunpy.extern.six.moves import range
 
-__all__ = ['MapCube']
+__all__ = ['MapSequence']
 
 
-@deprecated('0.9.1', message='Deprecated in favor of MapSequence.',
-            alternative='MapSequence')
-class MapCube(object):
+class MapSequence(object):
     """
-    MapCube
+    MapSequence
 
-    A series of spatially aligned Maps.
+    A series of Maps in a single object.
 
     Parameters
     ----------
-    args : {List}
+    args : `list`
         A list of Map instances
-    sortby : {"date", None}
-        Method by which the MapCube should be sorted along the z-axis.
-    derotate : {None}
-        Apply a derotation to the data (Not Implemented)
+    sortby : `datetime.datetime`
+        Method by which the MapSequence should be sorted along the z-axis.
+    derotate : `bool`
+        Apply a derotation to the data. Default to False.
 
-    To coalign a mapcube so that solar features remain on the same pixels,
-    please see the "Coalignment of mapcubes" note below.
+    To coalign a mapsequence so that solar features remain on the same pixels,
+    please see the "Coalignment of MapSequences" note below.
 
     Attributes
     ----------
-    maps : {List}
+    maps : `list`
         This attribute holds the list of Map instances obtained from parameter args.
 
     Examples
     --------
     >>> import sunpy.map
-    >>> mapcube = sunpy.map.Map('images/*.fits', cube=True)   # doctest: +SKIP
+    >>> mapsequence = sunpy.map.Map('images/*.fits', sequence=True)   # doctest: +SKIP
 
-    Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
+    MapSequences can be co-aligned using the routines in sunpy.image.coalignment.
     """
+    #pylint: disable=W0613,E1101
     def __init__(self, *args, **kwargs):
         """Creates a new Map instance"""
-
-        # Renaming mapcube functionality to mapsequence
-        warnings.warn("Deprecated in favor of MapSequence. MapSequence has the same functionality as MapCube.",
-                      SunpyDeprecationWarning, stacklevel=2)
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         sortby = kwargs.pop('sortby', 'date')
@@ -70,7 +63,7 @@ class MapCube(object):
         for m in self.maps:
             if not isinstance(m, GenericMap):
                 raise ValueError(
-                           'MapCube expects pre-constructed map objects.')
+                           'MapSequence expects pre-constructed map objects.')
 
         # Optionally sort data
         if sortby is not None:
@@ -85,15 +78,15 @@ class MapCube(object):
     def __getitem__(self, key):
         """Overriding indexing operation.  If the key results in a single map,
         then a map object is returned.  This allows functions like enumerate to
-        work.  Otherwise, a mapcube is returned."""
+        work.  Otherwise, a mapsequence is returned."""
 
         if isinstance(self.maps[key], GenericMap):
             return self.maps[key]
         else:
-            return MapCube(self.maps[key])
+            return MapSequence(self.maps[key])
 
     def __len__(self):
-        """Return the number of maps in a mapcube."""
+        """Return the number of maps in a mapsequence."""
         return len(self.maps)
 
     # Sorting methods
@@ -102,14 +95,14 @@ class MapCube(object):
         return lambda m: m.date  # maps.sort(key=attrgetter('date'))
 
     def _derotate(self):
-        """Derotates the layers in the MapCube"""
+        """Derotates the layers in the MapSequence"""
         pass
 
     def plot(self, axes=None, resample=None, annotate=True,
              interval=200, plot_function=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
-        MapCube
+        MapSequence
 
         Parameters
         ----------
@@ -139,34 +132,34 @@ class MapCube(object):
         >>> import matplotlib.animation as animation
         >>> from sunpy.map import Map
 
-        >>> cube = Map(files, cube=True)   # doctest: +SKIP
-        >>> ani = cube.plot(colorbar=True)   # doctest: +SKIP
+        >>> sequence = Map(files, sequence=True)   # doctest: +SKIP
+        >>> ani = sequence.plot(colorbar=True)   # doctest: +SKIP
         >>> plt.show()   # doctest: +SKIP
 
         Plot the map at 1/2 original resolution
 
-        >>> cube = Map(files, cube=True)   # doctest: +SKIP
-        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
+        >>> sequence = Map(files, sequence=True)   # doctest: +SKIP
+        >>> ani = sequence.plot(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
         >>> plt.show()   # doctest: +SKIP
 
-        Save an animation of the MapCube
+        Save an animation of the MapSequence
 
-        >>> cube = Map(res, cube=True)   # doctest: +SKIP
+        >>> sequence = Map(res, sequence=True)   # doctest: +SKIP
 
-        >>> ani = cube.plot()   # doctest: +SKIP
+        >>> ani = sequence.plot()   # doctest: +SKIP
 
         >>> Writer = animation.writers['ffmpeg']   # doctest: +SKIP
         >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)   # doctest: +SKIP
 
-        >>> ani.save('mapcube_animation.mp4', writer=writer)   # doctest: +SKIP
+        >>> ani.save('mapsequence_animation.mp4', writer=writer)   # doctest: +SKIP
 
         Save an animation with the limb at each time step
 
         >>> def myplot(fig, ax, sunpy_map):
         ...    p = sunpy_map.draw_limb()
         ...    return p
-        >>> cube = Map(files, cube=True)   # doctest: +SKIP
-        >>> ani = cube.peek(plot_function=myplot)   # doctest: +SKIP
+        >>> sequence = Map(files, sequence=True)   # doctest: +SKIP
+        >>> ani = sequence.peek(plot_function=myplot)   # doctest: +SKIP
         >>> plt.show()   # doctest: +SKIP
 
         """
@@ -191,7 +184,7 @@ class MapCube(object):
                 resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
                 ani_data = [amap.resample(resample) for amap in self.maps]
             else:
-                raise ValueError('Maps in mapcube do not all have the same shape.')
+                raise ValueError('Maps in mapsequence do not all have the same shape.')
         else:
             ani_data = self.maps
 
@@ -212,8 +205,7 @@ class MapCube(object):
 
             if wcsaxes_compat.is_wcsaxes(axes):
                 im.axes.reset_wcs(ani_data[i].wcs)
-                wcsaxes_compat.default_wcs_grid(axes, ani_data[i].spatial_units,
-                                                ani_data[i].coordinate_system)
+                wcsaxes_compat.default_wcs_grid(axes)
             else:
                 im.set_extent(np.concatenate((ani_data[i].xrange.value,
                                               ani_data[i].yrange.value)))
@@ -233,7 +225,7 @@ class MapCube(object):
     def peek(self, resample=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
-        MapCube
+        MapSequence
 
         Parameters
         ----------
@@ -257,30 +249,30 @@ class MapCube(object):
 
         plot_function : function
             A function to call to overplot extra items on the map plot.
-            For more information see `sunpy.visualization.MapCubeAnimator`.
+            For more information see `sunpy.visualization.MapSequenceAnimator`.
 
         Returns
         -------
-        mapcubeanim : `sunpy.visualization.MapCubeAnimator`
-            A mapcube animator instance.
+        mapsequenceanim : `sunpy.visualization.MapSequenceAnimator`
+            A mapsequence animator instance.
 
         See Also
         --------
-        sunpy.visualization.mapcubeanimator.MapCubeAnimator
+        sunpy.visualization.mapsequenceanimator.MapSequenceAnimator
 
         Examples
         --------
         >>> import matplotlib.pyplot as plt
         >>> from sunpy.map import Map
 
-        >>> cube = Map(files, cube=True)   # doctest: +SKIP
-        >>> ani = cube.peek(colorbar=True)   # doctest: +SKIP
+        >>> sequence = Map(files, sequence=True)   # doctest: +SKIP
+        >>> ani = sequence.peek(colorbar=True)   # doctest: +SKIP
         >>> plt.show()   # doctest: +SKIP
 
         Plot the map at 1/2 original resolution
 
-        >>> cube = Map(files, cube=True)   # doctest: +SKIP
-        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
+        >>> sequence = Map(files, sequence=True)   # doctest: +SKIP
+        >>> ani = sequence.peek(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
         >>> plt.show()   # doctest: +SKIP
 
         Plot the map with the limb at each time step
@@ -288,29 +280,29 @@ class MapCube(object):
         >>> def myplot(fig, ax, sunpy_map):
         ...    p = sunpy_map.draw_limb()
         ...    return p
-        >>> cube = Map(files, cube=True)   # doctest: +SKIP
-        >>> ani = cube.peek(plot_function=myplot)   # doctest: +SKIP
+        >>> sequence = Map(files, sequence=True)   # doctest: +SKIP
+        >>> ani = sequence.peek(plot_function=myplot)   # doctest: +SKIP
         >>> plt.show()   # doctest: +SKIP
 
         Decide you want an animation:
 
-        >>> cube = Map(files, cube=True)   # doctest: +SKIP
-        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
+        >>> sequence = Map(files, sequence=True)   # doctest: +SKIP
+        >>> ani = sequence.peek(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
         >>> mplani = ani.get_animation()   # doctest: +SKIP
         """
 
         if resample:
             if self.all_maps_same_shape():
-                plot_cube = MapCube()
+                plot_sequence = MapSequence()
                 resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
                 for amap in self.maps:
-                    plot_cube.maps.append(amap.resample(resample))
+                    plot_sequence.maps.append(amap.resample(resample))
             else:
-                raise ValueError('Maps in mapcube do not all have the same shape.')
+                raise ValueError('Maps in mapsequence do not all have the same shape.')
         else:
-            plot_cube = self
+            plot_sequence = self
 
-        return MapSequenceAnimator(plot_cube, **kwargs)
+        return MapSequenceAnimator(plot_sequence, **kwargs)
 
     def all_maps_same_shape(self):
         """
@@ -340,11 +332,11 @@ class MapCube(object):
         if self.all_maps_same_shape():
             data = np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
             if self.at_least_one_map_has_mask():
-                mask_cube = np.zeros_like(data, dtype=bool)
+                mask_sequence = np.zeros_like(data, dtype=bool)
                 for im, m in enumerate(self.maps):
                     if m.mask is not None:
-                        mask_cube[:, :, im] = m.mask
-                return ma.masked_array(data, mask=mask_cube)
+                        mask_sequence[:, :, im] = m.mask
+                return ma.masked_array(data, mask=mask_sequence)
             else:
                 return data
         else:

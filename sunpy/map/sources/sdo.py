@@ -5,11 +5,12 @@ from __future__ import absolute_import, print_function, division
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+import matplotlib.pyplot as plt
+
 from astropy.visualization.mpl_normalize import ImageNormalize
 from astropy.visualization import AsinhStretch
 
 from sunpy.map import GenericMap
-from sunpy.cm import cm
 from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['AIAMap', 'HMIMap']
@@ -45,7 +46,7 @@ class AIAMap(GenericMap):
         # Fill in some missing info
         self.meta['detector'] = "AIA"
         self._nickname = self.detector
-        self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
+        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
 
     @property
@@ -85,7 +86,7 @@ class HMIMap(GenericMap):
 
         self.meta['detector'] = "HMI"
 #        self.meta['instrme'] = "HMI"
-#        self.meta['obsrvtry'] = "SDO"        
+#        self.meta['obsrvtry'] = "SDO"
         self._nickname = self.detector
 
     @property
