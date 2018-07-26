@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from sunpy.util.decorators import deprecated
-from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
+from sunpy.visualization.mapsequenceanimator import MapSequenceAnimator
 
 __all__ = ['MapCubeAnimator']
 
