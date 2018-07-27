@@ -1,0 +1,1 @@
+Correctly import `~astropy.units.allclose` based on astropy version. This means that `sunpy.coordinates` will import when pytest is not installed.
