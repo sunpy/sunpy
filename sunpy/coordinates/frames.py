@@ -6,25 +6,25 @@ the `astropy.coordinates` module.
 """
 from __future__ import absolute_import, division
 
-import warnings
-
 import numpy as np
-
 from astropy import units as u
-from astropy.coordinates.representation import (CartesianRepresentation,
-                                                UnitSphericalRepresentation,
-                                                SphericalRepresentation,
-                                                CylindricalRepresentation)
-
+from astropy.coordinates import Attribute, ConvertError
 from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
-
-from astropy.coordinates import Attribute, ConvertError
-from astropy.tests.helper import quantity_allclose
-
+from astropy.coordinates.representation import (CartesianRepresentation,
+                                                CylindricalRepresentation,
+                                                SphericalRepresentation,
+                                                UnitSphericalRepresentation)
 from sunpy import sun
 
-from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
+from .frameattributes import (ObserverCoordinateAttribute,
+                              TimeFrameAttributeSunPy)
+
+try:
+    from astropy.units import allclose as quantity_allclose
+except (ImportError, ModuleNotFoundError):
+    from astropy.tests.helper import quantity_allclose
+
 
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
