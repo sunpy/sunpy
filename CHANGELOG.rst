@@ -1,3 +1,13 @@
+Sunpy 0.9.2 (2018-07-27)
+========================
+
+Bug Fixes
+---------
+
+- Fix the bug which crashes LASCOMap for when 'date-obs' is reformatted agian from a self applied function. (`#2700 <https://github.com/sunpy/sunpy/pull/2700>`__)
+- Correctly import `~astropy.units.allclose` based on astropy version. This means that `sunpy.coordinates` will import when pytest is not installed. (`#2702 <https://github.com/sunpy/sunpy/pull/2702>`__)
+
+
 Sunpy 0.9.1 (2018-07-26)
 ========================
 
