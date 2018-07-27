@@ -118,7 +118,7 @@ setup(name=PACKAGENAME,
       description=DESCRIPTION,
       scripts=scripts,
       install_requires=['numpy>=1.11',
-                        'astropy>=2.0.3>=3.0.2',  # astropy/astropy#7252
+                        'astropy>=3.0.2',
                         'scipy',
                         'pandas>=0.12.0',
                         'matplotlib>=1.3'],
