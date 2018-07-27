@@ -125,7 +125,7 @@ package_info['package_data'][PACKAGENAME].extend(c_files)
 
 extra_tags = [m.strip() for m in metadata.get("extra_requires", "").split(',')]
 if extra_tags:
-    extras_require = {[m.strip() for m in metadata[f"{tag}_requires"].split(',')]
+    extras_require = {tag: [m.strip() for m in metadata[f"{tag}_requires"].split(',')]
                       for tag in extra_tags}
     extras_require['all'] = list(itertools.chain.from_iterable(extras_require.values()))
 else:
@@ -135,8 +135,10 @@ setup(name=PACKAGENAME,
       version=VERSION,
       description=DESCRIPTION,
       scripts=scripts,
+      setup_requires=[s.strip() for s in metadata.get("setup_requires", "").split(',')],
       install_requires=[s.strip() for s in metadata['install_requires'].split(',')],
       extras_require=extras_require,
+      tests_require=extras_require.get("all", ""),
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
       license=LICENSE,
