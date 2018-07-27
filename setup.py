@@ -3,9 +3,14 @@
 # https://github.com/astropy/package-template/blob/master/setup.py
 # Which is licensed under the astropy license.
 
-import glob
+################################################################################
+###### YOU SHOULD NOT HAVE TO EDIT THIS FILE, YOU SHOULD EDIT setup.cfg. #######
+################################################################################
+
 import os
 import sys
+import glob
+import itertools
 
 from configparser import ConfigParser
 
@@ -26,21 +31,20 @@ __minimum_python_version__ = metadata.get("minimum_python_version", "3.6")
 # Enforce Python version check - this is the same check as in __init__.py but
 # this one has to happen before importing ah_bootstrap.
 if sys.version_info < tuple((int(val) for val in __minimum_python_version__.split('.'))):
-    sys.stderr.write("ERROR: sunpy requires Python {} or later\n".format(__minimum_python_version__))
+    sys.stderr.write("ERROR: SunPy requires Python {} or later\n".format(__minimum_python_version__))
     sys.exit(1)
 
 # Import ah_bootstrap after the python version validation
+import ah_bootstrap  # noqa
+from setuptools import setup  # noqa
 
-import ah_bootstrap
-from setuptools import setup
-
-import builtins
+import builtins  # noqa
 builtins._SUNPY_SETUP_ = True
 
 from astropy_helpers.setup_helpers import (register_commands, get_debug_option,
-                                           get_package_info)
-from astropy_helpers.git_helpers import get_git_devstr
-from astropy_helpers.version_helpers import generate_version_py
+                                           get_package_info)  # noqa
+from astropy_helpers.git_helpers import get_git_devstr  # noqa
+from astropy_helpers.version_helpers import generate_version_py  # noqa
 
 # -- Read the Docs Setup  -----------------------------------------------------
 
@@ -66,14 +70,14 @@ if not RELEASE:
 
 # Populate the dict of setup command overrides; this should be done before
 # invoking any other functionality from distutils since it can potentially
-# modify distutils' behavior.
+# modify distutils' behaviour.
 cmdclassd = register_commands(PACKAGENAME, VERSION, RELEASE)
 
 try:
     from sunpy.tests.setup_command import SunPyTest
     # Overwrite the Astropy Testing framework
     cmdclassd['test'] = type('SunPyTest', (SunPyTest,),
-                            {'package_name': 'sunpy'})
+                             {'package_name': 'sunpy'})
 
 except Exception:
     # Catch everything, if it doesn't work, we still want SunPy to install.
@@ -118,13 +122,14 @@ for root, dirs, files in os.walk(PACKAGENAME):
                     os.path.relpath(root, PACKAGENAME), filename))
 package_info['package_data'][PACKAGENAME].extend(c_files)
 
-extras_require = {'database': ["sqlalchemy"],
-                  'image': ["scikit-image"],
-                  'jpeg2000': ["glymur"],
-                  'net': ["drms", "suds-jurko", "beautifulsoup4", "requests", "python-dateutil"],
-                  'tests': ["pytest", "pytest-cov", "pytest-mock", "pytest-rerunfailures", "mock", "hypothesis"]}
-extras_require['all'] = extras_require['database'] + extras_require['image'] + \
-                        extras_require['net'] + extras_require['tests']
+
+extra_tags = [m.strip() for m in metadata.get("extra_requires", "").split(',')]
+if extra_tags:
+    extras_require = {[m.strip() for m in metadata[f"{tag}_requires"].split(',')]
+                      for tag in extra_tags}
+    extras_require['all'] = list(itertools.chain.from_iterable(extras_require.values()))
+else:
+    extras_require = None
 
 setup(name=PACKAGENAME,
       version=VERSION,
