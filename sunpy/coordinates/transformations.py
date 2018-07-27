@@ -41,7 +41,7 @@ except ImportError:
 
 try:
     from astropy.units import allclose as quantity_allclose
-except (ImportError, ModuleNotFoundError):
+except ImportError:
     from astropy.tests.helper import quantity_allclose
 
 
