@@ -1,0 +1,1 @@
+Fix the bug which crashes LASCOMap for when 'date-obs' is reformatted agian from a self applied function.
