@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import glob
 from collections import OrderedDict
+import warnings
 
 import numpy as np
 import astropy.io.fits
@@ -11,6 +12,7 @@ import sunpy
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapcube import MapCube
+from sunpy.map.mapsequence import MapSequence
 
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
@@ -19,6 +21,7 @@ from sunpy.util.net import download_file
 from sunpy.util import expand_list
 from sunpy.util.metadata import MetaDict
 from sunpy.util.config import get_and_create_download_dir
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -104,6 +107,7 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')  # doctest: +SKIP
     """
+
 
     def _read_file(self, fname, **kwargs):
         """ Read in a file name and return the list of (data, meta) pairs in
@@ -251,6 +255,9 @@ class MapFactory(BasicRegistrationFactory):
         cube : boolean, optional
             Indicates if collection of maps should be returned as a MapCube
 
+        sequence : boolean, optional
+            Indicates if collection of maps should be returned as a MapSequence
+
         silence_errors : boolean, optional
             If set, ignore data-header pairs which cause an exception.
 
@@ -262,7 +269,15 @@ class MapFactory(BasicRegistrationFactory):
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
+
+        # MapCube Deprecation
         cube = kwargs.pop('cube', False)
+        if cube:
+            warnings.warn('MapCube is now deprecated and renamed MapSequence. ' +
+                          'Please use the syntax Map(sequence=True) instead of Map(cube=True).',
+                          SunpyDeprecationWarning, stacklevel=2)
+
+        sequence = kwargs.pop('sequence', False)
         silence_errors = kwargs.pop('silence_errors', False)
 
         data_header_pairs, already_maps = self._parse_args(*args, **kwargs)
@@ -289,7 +304,14 @@ class MapFactory(BasicRegistrationFactory):
 
         # If the list is meant to be a cube, instantiate a map cube
         if cube:
-            return MapCube(new_maps, **kwargs)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=SunpyDeprecationWarning)
+                amapcube = MapCube(new_maps, **kwargs)
+            return amapcube
+
+        # If the list is meant to be a sequence, instantiate a map sequence
+        if sequence:
+            return MapSequence(new_maps, **kwargs)
 
         # If the list is meant to be a composite map, instantiate one
         if composite:
