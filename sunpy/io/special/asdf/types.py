@@ -29,3 +29,4 @@ class SunPyType(CustomType):
     """
     organization = 'sunpy.org'
     standard = 'sunpy'
+    version = '1.0.0'
