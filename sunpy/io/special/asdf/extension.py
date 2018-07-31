@@ -3,7 +3,7 @@ import os
 from asdf import AsdfExtension
 from asdf.util import filepath_to_url
 
-from .types import _sunpy_tags
+from .types import SunPyType
 
 from .tags.map import *
 from .tags.coordinates import *
@@ -26,7 +26,7 @@ SUNPY_URL_MAPPING = [
 class SunpyExtension(AsdfExtension):
     @property
     def types(self):
-        return _sunpy_tags
+        return SunPyType._tags
 
     @property
     def tag_mapping(self):
