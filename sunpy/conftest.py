@@ -6,6 +6,7 @@ import warnings
 import importlib
 
 import pytest
+from pkg_resources import parse_version
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -26,7 +27,9 @@ if importlib.util.find_spec('asdf') is not None:
     # Skip schema tests on astropy LT 3.1 because the coordinate schema only
     # work for 3.1 The tags are already not registered on LT 3.1
     from astropy import __version__ as astropy_version
-    if asdf_version >= '2.0.0' and astropy_version >= "3.1.dev0":
+    if (parse_version(asdf_version) >= parse_version('2.0.0')
+        and parse_version(astropy_version) >= parse_version("3.1.dev0")):
+
         pytest_plugins = ['asdf.tests.schema_tester']
 
 # Don't actually import pytest_remotedata because that can do things to the
