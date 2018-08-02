@@ -7,6 +7,7 @@ from itertools import product
 import numpy as np
 from skimage import transform
 from astropy import units as u
+from astropy.time import Time
 from astropy.coordinates import SkyCoord, Longitude
 
 import sunpy.map
@@ -322,3 +323,46 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
         out_meta['crval2'] = crval_rotated.Ty.value
 
     return sunpy.map.Map((out, out_meta))
+
+
+@u.quantity_input(xy=u.arcsec, dt='time')
+def rot_xy(xy, dt=None, time_start=None, time_end=None):
+    """
+    Utility function to apply solar differential rotation to solar XY
+    coordinates (helioprojective) given a time interval, or a starting
+    and end time for an observer on Earth.
+    Makes use of solar_rotate_coordinate.
+
+    Parameters
+    ----------
+    xy : array_like
+        Pair(s) of xy coordinates in arcsec. If more than one pair,
+        input should be an array_like with shape (2, N), where N is
+        the number of coordinate pairs.
+    dt : `~astropy.units.Quantity` or `datetime`, optional
+        Desired interval between the input and rotated coordinates.
+        If dt is None (default), time_start and time_end need to be
+        given.
+    time_start : sunpy-compatible time, optional
+        Time of input coordinates. If None, will assume this is now.
+    time_end : sunpy-compatible time, optional
+        Time of rotated coordinates. Only used if dt is None.
+
+    Returns
+    -------
+    coordinates : tuple
+        A tuple with (x, y), where x and y are the rotated solar x/y
+        coordinates (longitude/latitude). If more than one coordinate
+        pair is input, x and y will be arrays.
+    """
+    if dt is not None:
+        if time_start is None:
+            time_start = Time.now()
+        time_end = Time(parse_time(time_start)) + dt
+    else:
+        if (time_start is None) or (time_end is None):
+            raise ValueError(("dt is not given, so time_start and time_end "
+                              "must be both not None."))
+    coord = solar_rotate_coordinate(SkyCoord(xy[0], xy[1], obstime=time_start,
+                                             frame='helioprojective'), time_end)
+    return (coord.Tx, coord.Ty)
