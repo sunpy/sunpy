@@ -125,9 +125,10 @@ def solar_rotate_coordinate(coordinate,
 
     **diff_rot_kwargs : keyword arguments
         Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
+
     Returns
     -------
-    coordinate : `~astropy.coordinates.SkyCoord``
+    coordinate : `~astropy.coordinates.SkyCoord`
         The locations of the input coordinates after the application of
         solar rotation in the input coordinate frame.
 
@@ -137,9 +138,11 @@ def solar_rotate_coordinate(coordinate,
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import frames
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
-    >>> obstime = '2010-09-10 12:34:56'
-    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obstime, observer="earth", frame=frames.Helioprojective)
-    >>> solar_rotate_coordinate(c, '2010-09-10 13:34:56')
+
+    >>> start_time = '2010-09-10 12:34:56'
+    >>> end_time = '2010-09-10 13:34:56'
+    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=frames.Helioprojective)
+    >>> solar_rotate_coordinate(c, end_time)
     <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (-562.37689548, 119.26840368, 1.50083152e+08)>
 
