@@ -217,7 +217,7 @@ def get_obssum_filename(time_range):
 
     index_number_start = time_range.start.day - 1
     # If end is 0 set it to 1 so we always have at least one record.
-    index_number_end = time_range.end.day - 1 or index_number_start + 1
+    index_number_end = time_range.end.day or index_number_start + 1
 
     filenames = dbase_dat.get('filename')[index_number_start:index_number_end]
     return [posixpath.join(get_base_url(), 'metadata', 'catalog', filename + 's')
