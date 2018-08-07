@@ -88,7 +88,7 @@ class GenericTimeSeries:
             cls._registry[cls] = cls.is_datasource_for
 
 
-    def __init__(self, data, meta=None, units=None, **kwargs):
+    def __init__(self, data, meta=None, units=None):
         self.data = data
         tr = TimeRange(self.data.index.min(), self.data.index.max())
         # Check metadata input
@@ -109,10 +109,6 @@ class GenericTimeSeries:
             self.units = {}
         else:
             self.units = units
-
-        # Validate input data
-        #self._validate_meta()
-        #self._validate_units()
 
 # #### Attribute definitions #### #
 
@@ -143,7 +139,7 @@ class GenericTimeSeries:
 
 # #### Data Access, Selection and Organisation Methods #### #
 
-    def quantity(self, colname, **kwargs):
+    def quantity(self, colname):
         """
         Return a `~astropy.units.quantity.Quantity` for the given column.
 
@@ -157,10 +153,10 @@ class GenericTimeSeries:
         quantity : `~astropy.units.quantity.Quantity`
         """
         values = self.data[colname].values
-        unit   = self.units[colname]
+        unit = self.units[colname]
         return u.Quantity(values, unit)
 
-    def add_column(self, colname, quantity, unit=False, overwrite=True, **kwargs):
+    def add_column(self, colname, quantity, unit=False, overwrite=True):
         """
         Return an new TimeSeries with the given column added or updated.
 
@@ -189,8 +185,8 @@ class GenericTimeSeries:
             unit = u.dimensionless_unscaled
 
         # Make a copy of all the TimeSeries components.
-        data  = copy.copy(self.data)
-        meta  = TimeSeriesMetaData(copy.copy(self.meta.metadata))
+        data = copy.copy(self.data)
+        meta = TimeSeriesMetaData(copy.copy(self.meta.metadata))
         units = copy.copy(self.units)
 
         # Add the unit to the units dictionary if already there.
@@ -210,9 +206,17 @@ class GenericTimeSeries:
         return self.__class__(data, meta, units)
 
     def sort_index(self, **kwargs):
-        """Returns a sorted version of the TimeSeries object.
-        Generally this shouldn't be necessary as most TimeSeries operations sort
-        the data anyway to ensure consistent behaviour when truncating.
+        """
+        Returns a sorted version of the TimeSeries object.
+
+        Generally this shouldn't be necessary as most TimeSeries operations
+        sort the data anyway to ensure consistent behaviour when truncating.
+
+        Parameters
+        ----------
+        **kwargs :
+            All keyword arguments are handed to the `sort_data` method of
+            ``self.data``.
 
         Returns
         -------
@@ -250,7 +254,7 @@ class GenericTimeSeries:
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
             start = a.start
-            end   = a.end
+            end = a.end
         else:
             # Otherwise we already have the values
             start = a
@@ -314,6 +318,9 @@ class GenericTimeSeries:
 
         same_source : `bool` Optional
             Set to true to check if the sources of the time series match.
+
+        **kwargs :
+            All keyword arguments are handed to `pandas.concat`.
 
         Returns
         -------
@@ -435,7 +442,7 @@ class GenericTimeSeries:
 
                 warnings.warn("Unknown value for "+meta_property.upper(), Warning)
 
-    def _validate_units(self, units, **kwargs):
+    def _validate_units(self, units):
         """
         Validates the astropy unit-information associated with a TimeSeries.
 
@@ -460,7 +467,7 @@ class GenericTimeSeries:
 
         return result
 
-    def _sanitize_units(self, **kwargs):
+    def _sanitize_units(self):
         """
         Sanitises the collections.OrderedDict used to store the units.
         Primarily this method will:
@@ -485,7 +492,7 @@ class GenericTimeSeries:
         # Now use the amended units Ordered Dictionary
         self.units = units
 
-    def _sanitize_metadata(self, **kwargs):
+    def _sanitize_metadata(self):
         """
         Sanitises the TimeSeriesMetaData object used to store the metadata.
         Primarily this method will:
@@ -507,7 +514,7 @@ class GenericTimeSeries:
 
 # #### Export/Output Methods #### #
 
-    def to_table(self, **kwargs):
+    def to_table(self):
         """
         Return an Astropy Table of the give TimeSeries object.
 
@@ -532,7 +539,7 @@ class GenericTimeSeries:
         # Output the table
         return table
 
-    def to_dataframe(self, **kwargs):
+    def to_dataframe(self):
         """
         Return a Pandas DataFrame of the give TimeSeries object.
 
