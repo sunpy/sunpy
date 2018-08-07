@@ -125,21 +125,22 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
         The locations of the input coordinates after the application of
         solar rotation as seen from the point-of-view of the new observer.
 
-    Examples
-    --------
+    Example
+    -------
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import frames
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
     >>> from sunpy.coordinates.ephemeris import get_earth
     >>> t1 = '2010-09-10 12:34:56'  # time of the input coordinate
+    >>> observer_t1 = get_earth(t1)  # assume the observer at time t1 is at Earth
+    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=t1, observer=observer_t1, frame=frames.Helioprojective)
     >>> t2 = '2010-09-10 13:34:56'  # time we want to rotate to
-    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=t1, observer=get_earth(t1), frame=frames.Helioprojective)
-    >>> new_observer = get_earth(t2)
+    >>> new_observer = get_earth(t2)  # assume the observer at time t2 is at Earth
     >>> solar_rotate_coordinate(c, new_observer)
-    <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-10 13:34:56): (lon, lat, radius) in (deg, deg, AU)
-        (0., 7.24822784, 1.00695436)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-        (-562.37689548, 119.26840368, 1.50083152e+08)>
+    <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-10 12:34:56): (lon, lat, radius) in (deg, deg, AU)
+    (0., 7.24839198, 1.0069653)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+    (-562.89877818, 119.3152842, 1.50085078e+08)>
 
     """
     # The keyword "frame_time" must be explicitly set to "sidereal"
