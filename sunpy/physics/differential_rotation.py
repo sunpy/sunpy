@@ -117,7 +117,8 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
 
     **diff_rot_kwargs : keyword arguments
         Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
-        Note that the keyword "frame_time" is always set to the value "sidereal".
+        Note that the keyword "frame_time" is automatically set to the value
+        "sidereal".
 
     Returns
     -------
@@ -147,8 +148,12 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
     # when using this function.
     diff_rot_kwargs.update({"frame_time": "sidereal"})
 
+    # Check that the new_observer is specified correctly.
+    if not(isinstance(new_observer, (BaseCoordinateFrame, SkyCoord))):
+        raise ValueError('The new observer must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord')
+
     # Calculate the interval between the start and end time
-    interval = (parse_time(new_observer.obstime) - parse_time(coordinate.obstime)).total_seconds() * u.s
+    interval = (parse_time(new_observer.obstime) - parse_time(coordinate.obstime)).to(u.s)
 
     # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
     # latitude). Points off the limb are returned as nan.
@@ -169,7 +174,7 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
 
 
 @u.quantity_input(dt=u.s)
-def _warp_sun_coordinates(xy, smap, dt, **diffrot_kwargs):
+def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
     """
     Function that returns a new list of coordinates for each input coord.
     This is an inverse function needed by the scikit-image `transform.warp`
@@ -189,9 +194,6 @@ def _warp_sun_coordinates(xy, smap, dt, **diffrot_kwargs):
     xy2 : `~numpy.ndarray`
         Array with the inverse transformation
     """
-    # NOTE: The time is being subtracted - this is because this function
-    # calculates the inverse of the transformation.
-    rotated_time = smap.date - datetime.timedelta(seconds=dt.to(u.s).value)
 
     # Calculate the hpc coords
     x = np.arange(0, smap.dimensions.x.value)
@@ -206,16 +208,16 @@ def _warp_sun_coordinates(xy, smap, dt, **diffrot_kwargs):
         hpc_coords = smap.pixel_to_world(xx * u.pix, yy * u.pix)
 
         # then diff-rotate the hpc coordinates to the desired time
-        rotated_coord = solar_rotate_coordinate(hpc_coords, rotated_time, **diffrot_kwargs)
+        rotated_coord = solar_rotate_coordinate(hpc_coords, new_observer, **diffrot_kwargs)
 
         # To find the values that are behind the sun we need to convert them
         # to HeliographicStonyhurst
-        findOccult = rotated_coord.transform_to(HeliographicStonyhurst)
+        find_occult = rotated_coord.transform_to(HeliographicStonyhurst)
 
         with np.errstate(invalid='ignore'):
             # and find which ones are outside the [-90, 90] range.
-            occult = np.logical_or(np.less(findOccult.lon, -90 * u.deg),
-                                   np.greater(findOccult.lon, 90 * u.deg))
+            occult = np.logical_or(np.less(find_occult.lon, -90 * u.deg),
+                                   np.greater(find_occult.lon, 90 * u.deg))
 
         # NaN-ing values that move to the other side of the sun
         rotated_coord.data.lon[occult] = np.nan * u.deg
@@ -233,7 +235,7 @@ def _warp_sun_coordinates(xy, smap, dt, **diffrot_kwargs):
 
 
 @u.quantity_input(dt='time')
-def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
+def diffrot_map(smap, new_observer, pad=False, **diffrot_kwargs):
     """
     Function to apply solar differential rotation to a sunpy map.
 
@@ -241,10 +243,12 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
     ----------
     smap : `~sunpy.map`
         Original map that we want to transform.
-    time : sunpy-compatible time
-        date/time at which the input co-ordinate will be rotated to.
-    dt : `~astropy.units.Quantity` or `datetime`
-        Desired interval between the input map and returned map.
+
+    new_observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
+        The location of the new observer.
+        Instruments in Earth orbit can be approximated by using the position
+        of the Earth at the observation time of the new observer.
+
     pad : `bool`
         Whether to create a padded map for submaps to don't loose data
 
@@ -254,15 +258,10 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
         A map with the result of applying solar differential rotation to the
         input map.
     """
-    if (time is not None) and (dt is not None):
-        raise ValueError('Only a time or an interval is accepted')
-    elif not (time or dt):
-        raise ValueError('Either a time or an interval (`dt=`) needs to be provided')
-    elif time:
-        new_time = parse_time(time)
-        dt = (new_time - smap.date).total_seconds() * u.s
-    else:
-        new_time = smap.date + datetime.timedelta(seconds=dt.to(u.s).value)
+
+    # Check that the new_observer is specified correctly.
+    if not(isinstance(new_observer, (BaseCoordinateFrame, SkyCoord))):
+        raise ValueError('The new observer must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord')
 
     # Check for masked maps
     if smap.mask is not None:
@@ -281,7 +280,7 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
             deltax = deltay = 0
             for corner in product(*product([0 * u.pix], smap.dimensions)):
                 corner_world = smap.pixel_to_world(*corner)
-                corner_world_rotated = solar_rotate_coordinate(corner_world, new_time, **diffrot_kwargs)
+                corner_world_rotated = solar_rotate_coordinate(corner_world, new_observer, **diffrot_kwargs)
                 corner_px_rotated = smap.world_to_pixel(corner_world_rotated)
                 dx = np.abs(corner_px_rotated.x - corner[0])
                 dy = np.abs(corner_px_rotated.y - corner[1])
@@ -299,7 +298,7 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
             smap_meta['crpix2'] += deltay
             smap = sunpy.map.Map(smap_data, smap_meta)
 
-    warp_args = {'smap': smap, 'dt': dt}
+    warp_args = {'smap': smap, 'new_observer': new_observer}
     warp_args.update(diffrot_kwargs)
     # Apply solar differential rotation as a scikit-image warp
     out = transform.warp(to_norm(smap_data), inverse_map=_warp_sun_coordinates,
@@ -312,10 +311,10 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
     out_meta = deepcopy(smap.meta)
     if out_meta.get('date_obs', False):
         del out_meta['date_obs']
-    out_meta['date-obs'] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
+    out_meta['date-obs'] = "{:%Y-%m-%dT%H:%M:%S}".format(new_observer.obstime)
 
     if submap:
-        crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_time, **diffrot_kwargs)
+        crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_observer, **diffrot_kwargs)
         out_meta['crval1'] = crval_rotated.Tx.value
         out_meta['crval2'] = crval_rotated.Ty.value
 
