@@ -234,6 +234,43 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
     return xy2
 
 
+def contains_full_disk(smap):
+    """
+    Checks if a map contains the full disk of the Sun.  The check is performed
+    by testing the distance of all the pixels at the edge of the data array to
+    see if they are less than 1 solar radii away from the center of the disk of
+    the Sun.  If any of the edge pixels fail this test, then the function
+    returns False.  Otherwise, the function returns True.  Note that the
+    function assumes that the input map is rectangular.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map`
+        The input map
+
+    Returns
+    -------
+    contains_full_disk : `~bool`
+        Returns False if any of the edge pixels are less than one solar radius
+        away from the center of the Sun.
+
+    """
+    # Calculate all the edge pixels
+    edge_pixels = ???
+
+    # Calculate the edge of the world
+    edge_of_world = smap.pixel_to_world(*edge_pixels).to(frames.Helioprojective)
+
+    # Calculate the distance of the edge of the world in solar radii
+    distance = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2) / smap.rsun_obs
+
+    # Test if any of edge pixels are less than one solar radius distant.
+    if np.any(distance <= 1*u.R_sun):
+        return False
+    else:
+        return True
+
+
 @u.quantity_input(dt='time')
 def diffrot_map(smap, new_observer, pad=False, **diffrot_kwargs):
     """
@@ -269,10 +306,9 @@ def diffrot_map(smap, new_observer, pad=False, **diffrot_kwargs):
     else:
         smap_data = smap.data
 
-    submap = False
-    # Check whether the input is a submap
-    if ((2 * smap.rsun_obs > smap.top_right_coord.Tx - smap.bottom_left_coord.Tx) or
-        (2 * smap.rsun_obs > smap.top_right_coord.Ty - smap.bottom_left_coord.Ty)):
+
+    # Check whether the input contains the full disk of the Sun
+    if not contains_full_disk(smap):
 
         submap = True
         if pad:
