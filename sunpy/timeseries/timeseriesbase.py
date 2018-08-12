@@ -26,6 +26,7 @@ u.add_enabled_units([det])
 
 TIME_FORMAT = config.get("general", "time_format")
 
+
 class GenericTimeSeries:
     """
     A generic time series object.
@@ -80,13 +81,12 @@ class GenericTimeSeries:
         An __init_subclass__ hook initializes all of the subclasses of a given class.
         So for each subclass, it will call this block of code on import.
         This replicates some metaclass magic without the need to be aware of metaclasses.
-        Here we use this to register each subclass in a dict that has the `is_datasource_for` attribute.
-        This is then passed into the TimeSeries Factory so we can register them.
+        Here we use this to register each subclass in a dict that has the `is_datasource_for`
+        attribute. This is then passed into the TimeSeries Factory so we can register them.
         """
         super().__init_subclass__(**kwargs)
         if hasattr(cls, 'is_datasource_for'):
             cls._registry[cls] = cls.is_datasource_for
-
 
     def __init__(self, data, meta=None, units=None, **kwargs):
         self.data = data
@@ -111,8 +111,8 @@ class GenericTimeSeries:
             self.units = units
 
         # Validate input data
-        #self._validate_meta()
-        #self._validate_units()
+        # self._validate_meta()
+        # self._validate_units()
 
 # #### Attribute definitions #### #
 
@@ -143,7 +143,7 @@ class GenericTimeSeries:
 
 # #### Data Access, Selection and Organisation Methods #### #
 
-    def quantity(self, colname, **kwargs):
+    def quantity(self, colname):
         """
         Return a `~astropy.units.quantity.Quantity` for the given column.
 
@@ -157,10 +157,10 @@ class GenericTimeSeries:
         quantity : `~astropy.units.quantity.Quantity`
         """
         values = self.data[colname].values
-        unit   = self.units[colname]
+        unit = self.units[colname]
         return u.Quantity(values, unit)
 
-    def add_column(self, colname, quantity, unit=False, overwrite=True, **kwargs):
+    def add_column(self, colname, quantity, unit=False, overwrite=True):
         """
         Return an new TimeSeries with the given column added or updated.
 
@@ -189,8 +189,8 @@ class GenericTimeSeries:
             unit = u.dimensionless_unscaled
 
         # Make a copy of all the TimeSeries components.
-        data  = copy.copy(self.data)
-        meta  = TimeSeriesMetaData(copy.copy(self.meta.metadata))
+        data = copy.copy(self.data)
+        meta = TimeSeriesMetaData(copy.copy(self.meta.metadata))
         units = copy.copy(self.units)
 
         # Add the unit to the units dictionary if already there.
@@ -219,7 +219,9 @@ class GenericTimeSeries:
         newts : `~sunpy.timeseries.TimeSeries`
             A new time series in ascending chronological order.
         """
-        return GenericTimeSeries(self.data.sort_index(**kwargs), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
+        return GenericTimeSeries(self.data.sort_index(**kwargs),
+                                 TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                 copy.copy(self.units))
 
     def truncate(self, a, b=None, int=None):
         """Returns a truncated version of the TimeSeries object.
@@ -250,11 +252,11 @@ class GenericTimeSeries:
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
             start = a.start
-            end   = a.end
+            end = a.end
         else:
             # Otherwise we already have the values
             start = a
-            end   = b
+            end = b
 
         # If an interval integer was given then use in truncation.
         truncated_data = self.data.sort_index()[start:end:int]
@@ -297,7 +299,9 @@ class GenericTimeSeries:
         data = self.data[[column_name]].dropna()
 
         # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeries(data.sort_index(), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
+        object = GenericTimeSeries(data.sort_index(),
+                                   TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                   copy.copy(self.units))
         object._sanitize_metadata()
         object._sanitize_units()
         return object
@@ -366,8 +370,7 @@ class GenericTimeSeries:
             the current axes will be used.
 
         **plot_args : `dict`
-            Any additional plot arguments that should be used
-            when plotting.
+            Any additional plot arguments are passed to the `plot` method of the pandas DataFrame.
 
         Returns
         -------
@@ -408,7 +411,8 @@ class GenericTimeSeries:
         """
         # Check we have a valid TS
         if len(self.data) == 0:
-            raise ValueError('The timeseries can\'t be plotted as it has no data present. (len(self.data) == 0)')
+            raise ValueError("The timeseries can't be plotted as it has no data present. "
+                             "(len(self.data) == 0)")
 
 # #### Miscellaneous #### #
 
@@ -435,7 +439,7 @@ class GenericTimeSeries:
 
                 warnings.warn("Unknown value for "+meta_property.upper(), Warning)
 
-    def _validate_units(self, units, **kwargs):
+    def _validate_units(self, units):
         """
         Validates the astropy unit-information associated with a TimeSeries.
 
@@ -460,7 +464,7 @@ class GenericTimeSeries:
 
         return result
 
-    def _sanitize_units(self, **kwargs):
+    def _sanitize_units(self):
         """
         Sanitises the collections.OrderedDict used to store the units.
         Primarily this method will:
@@ -485,7 +489,7 @@ class GenericTimeSeries:
         # Now use the amended units Ordered Dictionary
         self.units = units
 
-    def _sanitize_metadata(self, **kwargs):
+    def _sanitize_metadata(self):
         """
         Sanitises the TimeSeriesMetaData object used to store the metadata.
         Primarily this method will:
@@ -507,7 +511,7 @@ class GenericTimeSeries:
 
 # #### Export/Output Methods #### #
 
-    def to_table(self, **kwargs):
+    def to_table(self):
         """
         Return an Astropy Table of the give TimeSeries object.
 
@@ -532,7 +536,7 @@ class GenericTimeSeries:
         # Output the table
         return table
 
-    def to_dataframe(self, **kwargs):
+    def to_dataframe(self):
         """
         Return a Pandas DataFrame of the give TimeSeries object.
 
@@ -552,6 +556,9 @@ class GenericTimeSeries:
         columns: `list`, optional, default:None
             If None, return all columns minus the index, otherwise, returns
             specified columns.
+
+        kwargs :
+            All keyword arguments are handed to the `as_matix` method of the DataFrame.
 
         Returns
         -------
@@ -577,7 +584,9 @@ class GenericTimeSeries:
         """
         match = True
         if isinstance(other, type(self)):
-            if (not self.data.equals(other.data)) or (self.meta != other.meta) or (self.units != other.units):
+            if ((not self.data.equals(other.data)) or
+                    (self.meta != other.meta) or
+                    (self.units != other.units)):
                 match = False
         else:
             match = False
