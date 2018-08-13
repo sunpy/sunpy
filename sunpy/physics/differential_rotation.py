@@ -310,11 +310,9 @@ def diffrot_map(smap, new_observer, pad=False, **diffrot_kwargs):
     else:
         smap_data = smap.data
 
-
     # Check whether the input contains the full disk of the Sun
-    if not contains_full_disk(smap):
-
-        submap = True
+    submap = not contains_full_disk(smap)
+    if submap:
         if pad:
             # Calculating the largest distance between the corners and their rotation values
             deltax = deltay = 0
