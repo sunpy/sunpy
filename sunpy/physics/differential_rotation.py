@@ -1,8 +1,7 @@
 from __future__ import division
-import datetime
 from copy import deepcopy
 import warnings
-from itertools import product
+from itertools import product, chain
 
 import numpy as np
 from skimage import transform
@@ -256,13 +255,18 @@ def contains_full_disk(smap):
 
     """
     # Calculate all the edge pixels
-    edge_pixels = ???
+    ny, nx = smap.data.shape
+    edge_pixels1 = list(product([0], range(0, nx)))
+    edge_pixels2 = list(product([ny - 1], range(0, nx)))
+    edge_pixels3 = list(product(range(0, ny), [0]))
+    edge_pixels4 = list(product(range(0, ny), [nx - 1]))
+    edge_pixels = list(chain.from_iterable([edge_pixels1, edge_pixels2, edge_pixels3, edge_pixels4])) * u.pix
 
     # Calculate the edge of the world
     edge_of_world = smap.pixel_to_world(*edge_pixels).to(frames.Helioprojective)
 
     # Calculate the distance of the edge of the world in solar radii
-    distance = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2) / smap.rsun_obs
+    distance = u.R_sun * np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2) / smap.rsun_obs
 
     # Test if any of edge pixels are less than one solar radius distant.
     if np.any(distance <= 1*u.R_sun):
