@@ -1155,7 +1155,7 @@ class GenericMap(NDData):
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
-        pc_C = np.dot(self.rotation_matrix, rmatrix.I)
+        pc_C = np.dot(self.rotation_matrix, np.linalg.inv(rmatrix))
         new_meta['PC1_1'] = pc_C[0, 0]
         new_meta['PC1_2'] = pc_C[0, 1]
         new_meta['PC2_1'] = pc_C[1, 0]
