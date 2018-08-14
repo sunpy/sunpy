@@ -1086,8 +1086,8 @@ class GenericMap(NDData):
                                 [s, c]])
 
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((self.data.shape * rmatrix,
-                                          self.data.shape * rmatrix.T))), axis=0)
+        extent = np.max(np.abs(np.vstack((self.data.shape @ rmatrix,
+                                          self.data.shape @ rmatrix.T))), axis=0)
 
         # Calculate the needed padding or unpadding
         diff = np.asarray(np.ceil((extent - self.data.shape) / 2), dtype=int).ravel()
@@ -1111,7 +1111,7 @@ class GenericMap(NDData):
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
         pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate,
-                                                                  origin=0)).value
+                                                                   origin=0)).value
         del temp_map
 
         if recenter:
