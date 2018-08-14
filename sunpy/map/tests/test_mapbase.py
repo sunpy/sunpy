@@ -204,13 +204,13 @@ def test_coordinate_frame(aia171_test_map):
 # Test Rotation WCS conversion
 # ==============================================================================
 def test_rotation_matrix_pci_j(generic_map):
-    np.testing.assert_allclose(generic_map.rotation_matrix, np.matrix([[0., -1.], [1., 0.]]))
+    np.testing.assert_allclose(generic_map.rotation_matrix, np.array([[0., -1.], [1., 0.]]))
 
 
 def test_rotation_matrix_crota(aia171_test_map):
     np.testing.assert_allclose(aia171_test_map.rotation_matrix,
-                               np.matrix([[9.99999943e-01, -3.38820761e-04],
-                                          [3.38820761e-04, 9.99999943e-01]]))
+                               np.array([[9.99999943e-01, -3.38820761e-04],
+                                         [3.38820761e-04, 9.99999943e-01]]))
 
 
 def test_rotation_matrix_cd_cdelt():
@@ -230,7 +230,7 @@ def test_rotation_matrix_cd_cdelt():
         'NAXIS2': 6
     }
     cd_map = sunpy.map.Map((data, header))
-    np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[0., -1.], [1., 0]]))
+    np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1.], [1., 0]]))
 
 
 def test_rotation_matrix_cd_cdelt_square():
@@ -250,12 +250,12 @@ def test_rotation_matrix_cd_cdelt_square():
         'NAXIS2': 6
     }
     cd_map = sunpy.map.Map((data, header))
-    np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[0., -1], [1., 0]]))
+    np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1], [1., 0]]))
 
 
 def test_swap_cd():
     amap = sunpy.map.Map(os.path.join(testpath, 'swap_lv1_20140606_000113.fits'))
-    np.testing.assert_allclose(amap.rotation_matrix, np.matrix([[1., 0], [0, 1.]]))
+    np.testing.assert_allclose(amap.rotation_matrix, np.array([[1., 0], [0, 1.]]))
 
 
 def test_data_range(generic_map):
@@ -461,7 +461,7 @@ def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
 def calc_new_matrix(angle):
     c = np.cos(np.deg2rad(angle))
     s = np.sin(np.deg2rad(angle))
-    return np.matrix([[c, -s], [s, c]])
+    return np.array([[c, -s], [s, c]])
 
 
 def test_rotate(aia171_test_map):
@@ -541,13 +541,13 @@ def test_rotate_scale_cdelt(generic_map):
 
 def test_rotate_new_matrix(generic_map):
     # Rotate by CW90 to go from CCW 90 in generic map to CCW 180
-    rot_map = generic_map.rotate(rmatrix=np.matrix([[0, 1], [-1, 0]]))
-    np.testing.assert_allclose(rot_map.rotation_matrix, np.matrix([[-1, 0], [0, -1]]))
+    rot_map = generic_map.rotate(rmatrix=np.array([[0, 1], [-1, 0]]))
+    np.testing.assert_allclose(rot_map.rotation_matrix, np.array([[-1, 0], [0, -1]]))
 
 
 def test_rotate_rmatrix_angle(generic_map):
     with pytest.raises(ValueError):
-        generic_map.rotate(angle=5, rmatrix=np.matrix([[1, 0], [0, 1]]))
+        generic_map.rotate(angle=5, rmatrix=np.array([[1, 0], [0, 1]]))
 
 
 def test_rotate_invalid_order(generic_map):

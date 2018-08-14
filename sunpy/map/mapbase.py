@@ -702,12 +702,12 @@ class GenericMap(NDData):
         the top of the image.
         """
         if 'PC1_1' in self.meta:
-            return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
-                              [self.meta['PC2_1'], self.meta['PC2_2']]])
+            return np.array([[self.meta['PC1_1'], self.meta['PC1_2']],
+                             [self.meta['PC2_1'], self.meta['PC2_2']]])
 
         elif 'CD1_1' in self.meta:
-            cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
-                            [self.meta['CD2_1'], self.meta['CD2_2']]])
+            cd = np.array([[self.meta['CD1_1'], self.meta['CD1_2']],
+                           [self.meta['CD2_1'], self.meta['CD2_2']]])
 
             cdelt = u.Quantity(self.scale).value
 
@@ -726,8 +726,8 @@ class GenericMap(NDData):
         lam = self.scale[0] / self.scale[1]
         p = np.deg2rad(self.meta.get('CROTA2', 0))
 
-        return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
-                          [1/lam * np.sin(p), np.cos(p)]])
+        return np.array([[np.cos(p), -1 * lam * np.sin(p)],
+                         [1/lam * np.sin(p), np.cos(p)]])
 
 # #### Miscellaneous #### #
 
@@ -1084,11 +1084,12 @@ class GenericMap(NDData):
             # Calculate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
-            rmatrix = np.matrix([[c, -s], [s, c]])
+            rmatrix = np.array([[c, -s],
+                                [s, c]])
 
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((self.data.shape * rmatrix,
-                                          self.data.shape * rmatrix.T))), axis=0)
+        extent = np.max(np.abs(np.vstack((self.data.shape @ rmatrix,
+                                          self.data.shape @ rmatrix.T))), axis=0)
 
         # Calculate the needed padding or unpadding
         diff = np.asarray(np.ceil((extent - self.data.shape) / 2), dtype=int).ravel()
@@ -1112,7 +1113,7 @@ class GenericMap(NDData):
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
         pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate,
-                                                                  origin=0)).value
+                                                                   origin=0)).value
         del temp_map
 
         if recenter:
@@ -1156,7 +1157,7 @@ class GenericMap(NDData):
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
-        pc_C = np.dot(self.rotation_matrix, rmatrix.I)
+        pc_C = np.dot(self.rotation_matrix, np.linalg.inv(rmatrix))
         new_meta['PC1_1'] = pc_C[0, 0]
         new_meta['PC1_2'] = pc_C[0, 1]
         new_meta['PC2_1'] = pc_C[1, 0]
@@ -1708,7 +1709,7 @@ class GenericMap(NDData):
         if not _basic_plot:
             # Check that the image is properly oriented
             if (not wcsaxes_compat.is_wcsaxes(axes) and
-                not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
+                    not np.array_equal(self.rotation_matrix, np.identity(2))):
                 warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
                               Warning)
 
