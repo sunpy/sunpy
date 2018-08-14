@@ -232,69 +232,6 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
     return xy2
 
 
-def contains_full_disk(smap):
-    """
-    Checks if a map contains the full disk of the Sun.  The check is performed
-    by testing the distance of all the pixels at the edge of the data array to
-    see if they are less than 1 solar radii away from the center of the disk of
-    the Sun.  If any of the edge pixels fail this test, then the function
-    returns False.  Otherwise, the function returns True.  Note that the
-    function assumes that the input map is rectangular.
-
-    Parameters
-    ----------
-    smap : `~sunpy.map`
-        The input map
-
-    Returns
-    -------
-    contains_full_disk : `~bool`
-        Returns False if any of the edge pixels are less than one solar radius
-        away from the center of the Sun.
-
-    """
-    # Calculate all the edge pixels
-    edges = map_edges(smap)
-    edge_pixels = list(chain.from_iterable([edges["lhs"], edges["rhs"], edges["top"], edges["bottom"]]))
-    x = [p[0] for p in edge_pixels] * u.pix
-    y = [p[1] for p in edge_pixels] * u.pix
-
-    # Calculate the edge of the world
-    edge_of_world = smap.pixel_to_world(x, y).transform_to(frames.Helioprojective)
-
-    # Calculate the distance of the edge of the world in solar radii
-    distance = u.R_sun * np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2) / smap.rsun_obs
-
-    # Test if any of edge pixels are less than one solar radius distant.
-    if np.any(distance <= 1*u.R_sun):
-        return False
-    else:
-        return True
-
-
-def map_edges(smap):
-    """
-    Returns the edges of the map.
-
-    Parameters
-    ----------
-    smap : `~sunpy.map`
-        The input map
-
-    Returns
-    -------
-    maps_edges : `~dict`
-        Returns the pixels of edge of the map
-    """
-    # Calculate all the edge pixels
-    ny, nx = smap.data.shape
-    top = list(product([0], range(0, nx))) * u.pix
-    bottom = list(product([ny - 1], range(0, nx))) * u.pix
-    lhs = list(product(range(0, ny), [0])) * u.pix
-    rhs = list(product(range(0, ny), [nx - 1])) * u.pix
-    return {"top": top, "bottom": bottom, "lhs": lhs, "rhs": rhs}
-
-
 def diffrot_map(smap, new_observer, **diffrot_kwargs):
     """
     Function to apply solar differential rotation to a sunpy map.
@@ -326,6 +263,11 @@ def diffrot_map(smap, new_observer, **diffrot_kwargs):
     else:
         smap_data = smap.data
 
+    # If the entire map is off-disk, then there is nothing to do.
+    if is_all_off_disk(smap):
+        return smap
+
+    # At least part of the input map is on the disk.
     # Check whether the input contains the full disk of the Sun
     submap = not contains_full_disk(smap)
     if submap:
@@ -400,3 +342,210 @@ def diffrot_map(smap, new_observer, **diffrot_kwargs):
         out_meta['crval2'] = crval_rotated.Ty.value
 
     return sunpy.map.Map((out, out_meta))
+
+
+# Functions that calculate useful quantities from maps. The functions
+# all_pixel_indices_from_map, all_coordinates_from_map and find_pixel_radii
+# were originall written for sunkit-image
+def all_pixel_indices_from_map(smap):
+    """
+    Returns pixel pair indices of every pixel in a map.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.Map`
+        A SunPy map.
+
+    Returns
+    -------
+    out : `~numpy.array`
+        A numpy array with the all the pixel indices built from the
+        dimensions of the map.
+    """
+    return np.meshgrid(*[np.arange(v.value) for v in smap.dimensions]) * u.pix
+
+
+def all_coordinates_from_map(smap):
+    """
+    Returns the co-ordinates of every pixel in a map.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.Map`
+        A SunPy map.
+
+    Returns
+    -------
+    out : `~astropy.coordinates.SkyCoord`
+        An array of sky coordinates in the coordinate system "coordinate_system".
+    """
+    x, y = all_pixel_indices_from_map(smap)
+    return smap.pixel_to_world(x, y)
+
+
+def find_pixel_radii(smap, scale=None):
+    """
+    Find the distance of every pixel in a map from the center of the Sun.
+    The answer is returned in units of solar radii.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.Map`
+        A SunPy map.
+
+    scale : None | `~astropy.units.Quantity`
+        The radius of the Sun expressed in map units.  For example, in typical
+        helioprojective Cartesian maps the solar radius is expressed in units
+        of arcseconds.  If None then the map is queried for the scale.
+
+    Returns
+    -------
+    radii : `~astropy.units.Quantity`
+        An array the same shape as the input map.  Each entry in the array
+        gives the distance in solar radii of the pixel in the corresponding
+        entry in the input map data.
+    """
+
+    # Calculate the helioprojective Cartesian co-ordinates of every pixel.
+    coords = all_coordinates_from_map(smap).transform_to(frames.Helioprojective)
+
+    # Calculate the radii of every pixel in helioprojective Cartesian
+    # co-ordinate distance units.
+    radii = np.sqrt(coords.Tx ** 2 + coords.Ty ** 2)
+
+    # Re-scale the output to solar radii
+    if scale is None:
+        return u.R_sun * (radii / smap.rsun_obs)
+    else:
+        return u.R_sun * (radii / scale)
+
+
+def map_edges(smap):
+    """
+    Returns the pixel locations of the edges of a rectangular input map.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map`
+        The input map
+
+    Returns
+    -------
+    maps_edges : `~dict`
+        Returns the pixels of edge of the map
+    """
+    # Calculate all the edge pixels
+    nx, ny = smap.dimensions.x.value, smap.dimensions.y.value
+    top = list(product([0.0], np.arange(nx))) * u.pix
+    bottom = list(product([ny - 1], np.arange(nx))) * u.pix
+    lhs = list(product(np.arange(ny), [0])) * u.pix
+    rhs = list(product(np.arange(ny), [nx - 1])) * u.pix
+    return {"top": top, "bottom": bottom, "lhs": lhs, "rhs": rhs}
+
+
+def contains_full_disk(smap):
+    """
+    Checks if a map contains the full disk of the Sun.  The check is performed
+    by testing the distance of all the pixels at the edge of the data array to
+    see if they are less than 1 solar radii away from the center of the disk of
+    the Sun.  If any of the edge pixels fail this test, then the function
+    returns False.  Otherwise, the function returns True.  Note that the
+    function assumes that the input map is rectangular.  Note also that in the
+    case of coronagraph images the disk itself need not be observed.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map`
+        The input map
+
+    Returns
+    -------
+    contains_full_disk : `~bool`
+        Returns False if any of the edge pixels are less than one solar radius
+        away from the center of the Sun.
+    """
+    # Calculate all the edge pixels
+    edges = map_edges(smap)
+    edge_pixels = list(chain.from_iterable([edges["lhs"], edges["rhs"], edges["top"], edges["bottom"]]))
+    x = [p[0] for p in edge_pixels] * u.pix
+    y = [p[1] for p in edge_pixels] * u.pix
+
+    # Calculate the edge of the world
+    edge_of_world = smap.pixel_to_world(x, y).transform_to(frames.Helioprojective)
+
+    # Calculate the distance of the edge of the world in solar radii
+    distance = u.R_sun * np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2) / smap.rsun_obs
+
+    # Test if any of edge pixels are less than one solar radius distant.
+    if np.any(distance <= 1*u.R_sun):
+        return False
+    else:
+        return True
+
+
+def is_all_off_disk(smap):
+    """
+    Checks to see if the entire map is off the solar disk.  The check is
+    performed by calculating the distance of every pixel from the center of
+    the Sun.  If they are all off-disk, then the function returns True.
+    Otherwise, the function returns False.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map`
+        The input map.
+
+    Returns
+    -------
+    is_all_off_disk : `~bool`
+        Returns True if all map pixels are strictly more than one solar radius
+        away from the center of the Sun.
+    """
+    return np.all(find_pixel_radii(smap) > 1 * u.R_sun)
+
+
+def is_all_on_disk(smap):
+    """
+    Checks to see if the entire map is on the solar disk.  The check is
+    performed by calculating the distance of every pixel from the center of
+    the Sun.  If they are all on-disk, then the function returns True.
+    Otherwise, the function returns False.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map`
+        The input map.
+
+    Returns
+    -------
+    is_all_off_disk : `~bool`
+        Returns True if all map pixels are strictly less than one solar radius
+        away from the center of the Sun.
+    """
+    return np.all(find_pixel_radii(smap) < 1 * u.R_sun)
+
+
+def contains_limb(smap):
+    """
+    Checks to see if a map contains a portion of the solar limb.  The check is
+    performed by calculating the distance of every pixel from the center of
+    the Sun.  If at least one pixel is on disk and at least one pixel is off
+    disk, the function returns True.  Otherwise, the function returns False.
+    Note that this function will also true if the entire solar limb is within
+    the field of view of the map.  Note also that in the case of coronagraph
+    images the limb itself need not be observed.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map`
+        The input map.
+
+    Returns
+    -------
+    contains_limb : `~bool`
+        Returns True if all map pixels are strictly less than one solar radius
+        away from the center of the Sun.
+    """
+    pixel_radii = find_pixel_radii(smap)
+    return np.logical_and(np.any(pixel_radii < 1 * u.R_sun), np.any(pixel_radii > 1 * u.R_sun))
+
