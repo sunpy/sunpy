@@ -1,0 +1,3 @@
+Rotation matrices inside map objects were previously stored as numpy matrices, but are now
+stored as numpy arrays, as numpy will eventually remove their matrix datatype. See
+https://docs.scipy.org/doc/numpy/user/numpy-for-matlab-users.html for more information.
