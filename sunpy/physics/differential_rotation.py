@@ -172,7 +172,6 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
     return heliographic_rotated.transform_to(new_observer).transform_to(coordinate.frame.name)
 
 
-@u.quantity_input(dt=u.s)
 def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
     """
     Function that returns a new list of coordinates for each input coord.
@@ -296,7 +295,6 @@ def map_edges(smap):
     return {"top": top, "bottom": bottom, "lhs": lhs, "rhs": rhs}
 
 
-@u.quantity_input(dt='time')
 def diffrot_map(smap, new_observer, **diffrot_kwargs):
     """
     Function to apply solar differential rotation to a sunpy map.
