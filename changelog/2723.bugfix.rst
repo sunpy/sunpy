@@ -1,0 +1,1 @@
+Persist the string representation of an observer even though a concrete coordinate object has been calculated. Use this string representation to change the way the `~sunpy.frames.HeliographicStonyhurst` frame is printed so that when you print a `~astropy.coordinates.SkyCoord` object the string is shown and not the concrete coordinate object.
