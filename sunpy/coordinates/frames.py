@@ -153,7 +153,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
         if hasattr(self, "_observer_body"):
             return self._observer_body
         else:
-            return super().__repr__()
+            return super().__str__()
 
 
 class HeliographicCarrington(HeliographicStonyhurst):
