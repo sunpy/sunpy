@@ -145,6 +145,16 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
         if wrap and isinstance(self._data, (UnitSphericalRepresentation, SphericalRepresentation)):
             self._data.lon.wrap_angle = self._default_wrap_angle
 
+    def __str__(self):
+        """
+        We override this here so that when you print a SkyCoord it shows the
+        observer as the string and not the whole massive coordinate.
+        """
+        if hasattr(self, "_observer_body"):
+            return self._observer_body
+        else:
+            return super().__repr__()
+
 
 class HeliographicCarrington(HeliographicStonyhurst):
     """
