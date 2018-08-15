@@ -106,7 +106,8 @@ def hcc_to_hpc(helioccoord, heliopframe):
     if helioccoord.observer != heliopframe.observer:
         raise ConvertError("Cannot transform heliocentric coordinates to "
                            "helioprojective coordinates for different "
-                           "observers {} and {}".format(helioccoord.observer, heliopframe.observer))
+                           "observers {} and {}.".format(helioccoord.observer, heliopframe.observer)
+                           "Try converting to an intermediate heliographic stonyhurst frame.")
 
     x = helioccoord.x.to(u.m)
     y = helioccoord.y.to(u.m)
@@ -134,7 +135,8 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     if heliopcoord.observer != heliocframe.observer:
         raise ConvertError("Cannot transform helioprojective coordinates to "
                            "heliocentric coordinates for different "
-                           "observers {} and {}".format(heliopcoord.observer, heliocframe.observer))
+                           "observers {} and {}".format(heliopcoord.observer, heliocframe.observer)
+                           "Try converting to an intermediate heliographic stonyhurst frame.")
 
     if not isinstance(heliopcoord.observer, BaseCoordinateFrame):
         raise ConvertError("Cannot transform helioprojective coordinates to "
