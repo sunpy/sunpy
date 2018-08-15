@@ -104,10 +104,12 @@ def hcc_to_hpc(helioccoord, heliopframe):
     Convert from Heliocentic Cartesian to Helioprojective Cartesian.
     """
     if helioccoord.observer != heliopframe.observer:
-        raise ConvertError("Cannot transform heliocentric coordinates to "
+        raise ConvertError("Cannot directly transform heliocentric coordinates to "
                            "helioprojective coordinates for different "
-                           "observers {} and {}.".format(helioccoord.observer, heliopframe.observer)
-                           "Try converting to an intermediate heliographic stonyhurst frame.")
+                           "observers {} and {}. See discussion in this GH issue: "
+                           "https://github.com/sunpy/sunpy/issues/2712. Try converting to "
+                           "an intermediate heliographic Stonyhurst frame.".format(
+                               helioccoord.observer, heliopframe.observer))
 
     x = helioccoord.x.to(u.m)
     y = helioccoord.y.to(u.m)
@@ -133,10 +135,12 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     Convert from Helioprojective Cartesian to Heliocentric Cartesian.
     """
     if heliopcoord.observer != heliocframe.observer:
-        raise ConvertError("Cannot transform helioprojective coordinates to "
+        raise ConvertError("Cannot directly transform helioprojective coordinates to "
                            "heliocentric coordinates for different "
-                           "observers {} and {}".format(heliopcoord.observer, heliocframe.observer)
-                           "Try converting to an intermediate heliographic stonyhurst frame.")
+                           "observers {} and {}. See discussion in this GH issue: "
+                           "https://github.com/sunpy/sunpy/issues/2712. Try converting to "
+                           "an intermediate heliographic Stonyhurst frame.".format(
+                               heliopcoord.observer, heliocframe.observer))
 
     if not isinstance(heliopcoord.observer, BaseCoordinateFrame):
         raise ConvertError("Cannot transform helioprojective coordinates to "
