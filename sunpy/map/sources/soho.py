@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 
 from astropy.units import Quantity
-from astropy.visualization import PowerStretch
+from astropy.visualization import PowerStretch, LinearStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
@@ -130,7 +130,7 @@ class LASCOMap(GenericMap):
             self.meta['date_obs'] = self.meta['date-obs']
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = plt.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
+        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, LinearStretch()))
 
     @property
     def measurement(self):
