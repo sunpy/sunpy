@@ -109,7 +109,7 @@ extras_require = {'database': ["sqlalchemy"],
                   'image': ["scikit-image"],
                   'jpeg2000': ["glymur"],
                   'net': ["drms", "suds-jurko", "beautifulsoup4", "requests", "python-dateutil"],
-                  'tests': ["pytest", "pytest-cov", "pytest-mock", "pytest-rerunfailures", "mock", "hypothesis"]}
+                  'tests': ["pytest", "pytest-cov", "pytest-mock", "pytest-rerunfailures", "pytest-timeout", "mock", "hypothesis"]}
 extras_require['all'] = extras_require['database'] + extras_require['image'] + \
                         extras_require['net'] + extras_require['tests']
 

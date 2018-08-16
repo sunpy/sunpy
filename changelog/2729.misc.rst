@@ -1,0 +1,1 @@
+Added global pytest timeout due to slow CI tests.
