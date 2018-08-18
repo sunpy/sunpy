@@ -47,10 +47,11 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         We override this here so that when you print a SkyCoord it shows the
         observer as the string and not the whole massive coordinate.
         """
-        if self.object_name:
+        if getattr(self, "object_name", None):
             return f"<{self.__class__.__name__} Coordinate for '{self.object_name}'>"
         else:
             return super().__str__()
+
 
 class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     """
