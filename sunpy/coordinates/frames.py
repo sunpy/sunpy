@@ -29,11 +29,30 @@ from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribut
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
 
-__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington', 'Heliocentric',
-           'Helioprojective']
+__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
+           'Heliocentric', 'Helioprojective']
 
 
-class HeliographicStonyhurst(BaseCoordinateFrame):
+class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
+    """
+    Inject a nice way of representing the object which the coordinate represents.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.object_name = None
+        return super().__init__(*args, **kwargs)
+
+    def __str__(self):
+        """
+        We override this here so that when you print a SkyCoord it shows the
+        observer as the string and not the whole massive coordinate.
+        """
+        if self.object_name:
+            return f"<{self.__class__.__name__} Coordinate for '{self.object_name}'>"
+        else:
+            return super().__str__()
+
+class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     """
     A coordinate or frame in the Stonyhurst Heliographic system.
 
@@ -145,16 +164,6 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
         if wrap and isinstance(self._data, (UnitSphericalRepresentation, SphericalRepresentation)):
             self._data.lon.wrap_angle = self._default_wrap_angle
 
-    def __str__(self):
-        """
-        We override this here so that when you print a SkyCoord it shows the
-        observer as the string and not the whole massive coordinate.
-        """
-        if hasattr(self, "_observer_body"):
-            return self._observer_body
-        else:
-            return super().__str__()
-
 
 class HeliographicCarrington(HeliographicStonyhurst):
     """
@@ -233,7 +242,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
     obstime = TimeFrameAttributeSunPy()
 
 
-class Heliocentric(BaseCoordinateFrame):
+class Heliocentric(SunPyBaseCoordinateFrame):
     """
     A coordinate or frame in the Heliocentric system.
 
@@ -296,7 +305,7 @@ class Heliocentric(BaseCoordinateFrame):
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
 
 
-class Helioprojective(BaseCoordinateFrame):
+class Helioprojective(SunPyBaseCoordinateFrame):
     """
     A coordinate or frame in the Helioprojective (Cartesian) system.
 
