@@ -109,9 +109,9 @@ def test_coord_get():
     assert_quantity_allclose(obs.lat, earth.lat)
     assert_quantity_allclose(obs.radius, earth.radius)
 
-    assert hasattr(obs, "_observer_body")
-    assert obs._observer_body == "earth"
-    assert str(obs) == "earth"
+    assert hasattr(obs, "object_name")
+    assert obs.object_name == "earth"
+    assert str(obs) == "<HeliographicStonyhurst Coordinate for 'earth'>"
 
     # Test get
     obstime = "2013-04-01"
@@ -135,7 +135,7 @@ def test_coord_get():
 
     assert hasattr(obs, "_observer_body")
     assert obs._observer_body == "mars"
-    assert str(obs) == "mars"
+    assert str(obs) == "<HeliographicStonyhurst Coordinate for 'mars'>"
 
 
 def test_default_hcc_observer():
