@@ -216,7 +216,7 @@ def test_hgs_cartesian_rep_to_hgc():
 def test_hcc_to_hpc_different_observer():
     # This test checks transformation HCC->HPC in the case where the HCC and HPC frames are
     # defined by different observers.
-    # NOTE: This test is currently expected tovfail because the HCC<->HPC transformation does 
+    # NOTE: This test is currently expected to fail because the HCC<->HPC transformation does
     # not account for observer location. It will be updated once this is fixed.
     rsun = 1*u.m
     D0 = 1*u.km
@@ -233,7 +233,7 @@ def test_hcc_to_hpc_different_observer():
 def test_hpc_to_hcc_different_observer():
     # This test checks transformation HPC->HCC in the case where the HCC and HPC frames are
     # defined by different observers.
-    # NOTE: This test is currently expected to fail because the HCC<->HPC transformation does 
+    # NOTE: This test is currently expected to fail because the HCC<->HPC transformation does
     # not account for observer location. It will be updated once this is fixed.
     rsun = 1*u.m
     D0 = 1*u.km
