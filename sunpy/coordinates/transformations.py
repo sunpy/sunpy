@@ -58,12 +58,12 @@ def _carrington_offset(obstime):
 
 
 def _observers_are_equal(obs_1, obs_2):
-    if obs_1 == obs_2:
-        return True
-    else:
-        return (quantity_allclose(obs_1.lat, obs_2.lat) and
-                quantity_allclose(obs_1.lon, obs_2.lon) and
-                quantity_allclose(obs_1.radius, obs_2.radius))
+    if not (isinstance(obs_1, BaseCoordinateFrame) and isinstance(obs_2, BaseCoordinateFrame)):
+        raise ValueError("To compare two observers, both must be instances of BaseCoordinateFrame. "
+                         "Cannot compare two observers {} and {}.".format(obs_1, obs_2))
+    return (quantity_allclose(obs_1.lat, obs_2.lat) and
+            quantity_allclose(obs_1.lon, obs_2.lon) and
+            quantity_allclose(obs_1.radius, obs_2.radius))
 
 
 # =============================================================================
