@@ -74,9 +74,9 @@ def test_hpc_hpc_sc():
 
 
 def test_hpc_hpc_null():
-
-    hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec)
-    hpc_out = Helioprojective()
+    obstime = "2011-01-01"
+    hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec, obstime=obstime)
+    hpc_out = Helioprojective(obstime=obstime)
 
     hpc_new = hpc_in.transform_to(hpc_out)
 
