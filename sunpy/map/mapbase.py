@@ -181,7 +181,7 @@ class GenericMap(NDData):
         self._default_time = None
         self._default_dsun = None
         self._default_carrington_longitude = None
-        self._default_heliographic_lattitude = None
+        self._default_heliographic_latitude = None
         self._default_heliographic_longitude = None
 
         # Validate header
@@ -603,13 +603,13 @@ class GenericMap(NDData):
                                                             self.meta.get('solar_b0', None)))
 
         if heliographic_latitude is None:
-            if self._default_heliographic_lattitude is None:
+            if self._default_heliographic_latitude is None:
                 warnings.warn_explicit("Missing metadata for heliographic latitude:"
                                        " assuming Earth-based observer",
                                        Warning, __file__,
                                        inspect.currentframe().f_back.f_lineno)
-                self._default_heliographic_lattitude = get_sun_B0(self.date)
-            heliographic_latitude = self._default_heliographic_lattitude
+                self._default_heliographic_latitude = get_sun_B0(self.date)
+            heliographic_latitude = self._default_heliographic_latitude
 
         if isinstance(heliographic_latitude, six.string_types):
             heliographic_latitude = float(heliographic_latitude)
