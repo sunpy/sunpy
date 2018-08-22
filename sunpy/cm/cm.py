@@ -109,6 +109,7 @@ cmlist = {
 for name, cmap in cmlist.items():
     cm.register_cmap(name=name, cmap=cmap)
 
+
 @deprecated("0.9", "Use Matplotlib to load the colormaps", alternative='plt.get_cmap')
 def get_cmap(name):
     """
@@ -167,8 +168,8 @@ def show_colormaps(filter=None):
 
     """
 
-    if filter:
-        maps =  sorted({k:v for (k,v) in cmlist.items() if k.lower().count(filter.lower())})
+    if filter is not None:
+        maps = sorted({k: v for (k, v) in cmlist.items() if k.lower().count(filter.lower())})
         if len(maps) == 0:
             raise KeyError('No color maps found for key - ' + filter)
     else:
