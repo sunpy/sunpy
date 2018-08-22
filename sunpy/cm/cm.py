@@ -143,14 +143,14 @@ def get_cmap(name):
         raise ValueError("Colormap {name!s} is not recognized".format(name=name))
 
 
-def show_colormaps(filter=None):
+def show_colormaps(search=None):
     """Displays a plot of the custom color maps supported in SunPy.
 
     Parameters
     ----------
-    filter : str
-        A string to filter the color maps presented (e.g. aia, EIT, 171). Case
-        insensitive.
+    search : str
+        A string to search for in the names of the color maps (e.g. aia, EIT,
+        171). Case insensitive.
 
     Returns
     -------
@@ -160,18 +160,18 @@ def show_colormaps(filter=None):
     --------
     >>> import sunpy.cm as cm
     >>> cm.show_colormaps()
-    >>> cm.show_colormaps(filter='aia')
-    >>> cm.show_colormaps(filter='171')
+    >>> cm.show_colormaps(search='aia')
+    >>> cm.show_colormaps(search='171')
 
     References
     ----------
 
     """
 
-    if filter is not None:
-        maps = sorted({k: v for (k, v) in cmlist.items() if k.lower().count(filter.lower())})
+    if search is not None:
+        maps = sorted({k: v for (k, v) in cmlist.items() if k.lower().count(search.lower())})
         if len(maps) == 0:
-            raise KeyError('No color maps found for key - ' + filter)
+            raise KeyError('No color maps found for search term "{:s}"'.format(search))
     else:
         maps = sorted(cmlist)
 
