@@ -332,7 +332,7 @@ lasco_c3_b = np.concatenate((np.array(
         244.,  248.,  250.]), 255 * np.ones(181)))
 
 
-def historical_lasco_color_table(number):
+def sswidl_lasco_color_table(number):
     """Returns one of the previously used color tables for SOHO LASCO images.
     This function is included to allow users to access the previous LASCO color
     tables provided by SunPy. It is recommended to use the function
@@ -348,8 +348,7 @@ def historical_lasco_color_table(number):
         }[number]
     except KeyError:
         raise ValueError(
-            "Invalid LASCO number. Valid values are "
-            "2, 3."
+            "Invalid LASCO number. Valid values are 2, 3."
         )
 
     # Now create the color dictionary in the correct format
