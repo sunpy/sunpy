@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 
 from astropy.units import Quantity
-from astropy.visualization import PowerStretch, LinearStretch
+from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
