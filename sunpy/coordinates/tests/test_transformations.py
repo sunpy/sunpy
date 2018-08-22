@@ -235,7 +235,6 @@ def test_hpc_to_hcc_different_observer():
     # defined by different observers.
     # NOTE: This test is currently expected to fail because the HCC<->HPC transformation does
     # not account for observer location. It will be updated once this is fixed.
-    rsun = 1*u.m
     D0 = 1*u.km
     L0 = 1*u.deg
     observer_1 = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
