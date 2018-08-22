@@ -1,0 +1,1 @@
+Fix mispelling of private attribute `_default_heliographic_latitude` in map.
