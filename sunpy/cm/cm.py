@@ -31,6 +31,9 @@ sohoeit304 = ct.eit_color_table(304)
 soholasco2 = ct.lasco_color_table(2)
 soholasco3 = ct.lasco_color_table(3)
 
+sswidlsoholasco2 = ct.sswidl_lasco_color_table(2)
+sswidlsoholasco3 = ct.sswidl_lasco_color_table(3)
+
 stereocor1 = ct.cor_color_table(1)
 stereocor2 = ct.cor_color_table(2)
 
@@ -71,6 +74,8 @@ cmlist = {
           'sohoeit304': sohoeit304,
           'soholasco2': soholasco2,
           'soholasco3': soholasco3,
+          'sswidlsoholasco2': sswidlsoholasco2,
+          'sswidlsoholasco3': sswidlsoholasco3,
           'stereocor1': stereocor1,
           'stereocor2': stereocor2,
           'stereohi1': stereohi1,
