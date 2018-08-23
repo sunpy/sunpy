@@ -6,10 +6,9 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import matplotlib.colors as colors
-import matplotlib.cm as cm
 from sunpy.extern.six.moves import range, zip
 
-__all__ = ['aia_color_table', 'lasco_color_table', 'eit_color_table',
+__all__ = ['aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
            'sxt_color_table', 'xrt_color_table', 'trace_color_table',
            'sot_color_table', 'hmi_mag_color_table']
 
@@ -353,23 +352,6 @@ def sswidl_lasco_color_table(number):
 
     # Now create the color dictionary in the correct format
     cdict = create_cdict(r, g, b)
-    return colors.LinearSegmentedColormap('SOHO LASCO C{:s}'.format(str(number)), cdict)
-
-
-def lasco_color_table(number):
-    """Returns one of the fundamental color tables for SOHO LASCO images.
-    These are not the same as those used in SSWIDL.  This is because the
-    SSWIDL color scaling for LASCO level 0.5 and 1.0 is highly compressed
-    and does not display the data well."""
-    if number == 2:
-        rgb = cm.get_cmap('gist_heat')(np.linspace(0, 1, 256)) * 255
-    elif number == 3:
-        rgb = cm.get_cmap('bone')(np.linspace(0, 1, 256)) * 255
-    else:
-        raise ValueError("Invalid LASCO number. Valid values are 2, 3.")
-
-    # Now create the color dictionary in the correct format
-    cdict = create_cdict(rgb[:, 0], rgb[:, 1], rgb[:, 2])
     return colors.LinearSegmentedColormap('SOHO LASCO C{:s}'.format(str(number)), cdict)
 
 # Translated from the JP2Gen IDL SXT code lct_yla_gold.pro.  Might be better
