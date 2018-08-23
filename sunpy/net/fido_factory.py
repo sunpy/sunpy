@@ -77,6 +77,9 @@ class UnifiedResponse(Sequence):
     def __len__(self):
         return len(self._list)
 
+    def __add__(self, other):
+        return UnifiedResponse(self._list + other._list)
+
     def __iter__(self):
         return self.responses
 
