@@ -332,9 +332,9 @@ lasco_c3_b = np.concatenate((np.array(
 
 
 def sswidl_lasco_color_table(number):
-    """Returns one of the SSWIDL color tables for SOHO LASCO images.
-    This function is included to allow users to access the SSWIDL LASCO color
-    tables provided by SunPy. It is recommended to use the function
+    """Returns one of the SSWIDL-defined color tables for SOHO LASCO images.
+    This function is included to allow users to access the SSWIDL-defined
+    LASCO color tables provided by SunPy. It is recommended to use the function
     'lasco_color_table' to obtain color tables for use with LASCO data
     and Helioviewer JP2 images."""
     # SOHO LASCO Color tables
