@@ -332,8 +332,8 @@ lasco_c3_b = np.concatenate((np.array(
 
 
 def sswidl_lasco_color_table(number):
-    """Returns one of the previously used color tables for SOHO LASCO images.
-    This function is included to allow users to access the previous LASCO color
+    """Returns one of the SSWIDL color tables for SOHO LASCO images.
+    This function is included to allow users to access the SSWIDL LASCO color
     tables provided by SunPy. It is recommended to use the function
     'lasco_color_table' to obtain color tables for use with LASCO data
     and Helioviewer JP2 images."""
@@ -1010,6 +1010,7 @@ trace_1700_b = np.array(
        117, 117, 117, 118, 118, 118, 119, 119, 119, 119, 120, 120, 120,
        121, 121, 121, 121, 122, 122, 122, 123, 123])
 
+
 def trace_color_table(measurement):
     """Returns one of the standard color tables for TRACE JP2 files."""
     # TRACE color tables
@@ -1036,6 +1037,7 @@ def trace_color_table(measurement):
     # Return the color table
     return colors.LinearSegmentedColormap('TRACE {:s}'.format(measurement), cdict)
 
+
 def sot_color_table(measurement):
     """Returns one of the standard color tables for SOT files (following osdc convention).
     The relations between observation and color have been defined in hinode.py"""
@@ -1051,6 +1053,7 @@ def sot_color_table(measurement):
 
     cdict = create_cdict(r, g, b)
     return colors.LinearSegmentedColormap('Hinode SOT {:s}'.format(measurement), cdict)
+
 
 def iris_sji_color_table(measurement, aialike=False):
     """Return the standard color table for IRIS SJI files"""
@@ -1176,6 +1179,7 @@ hmi_mag_b = np.array(
        237, 232, 228, 226, 221, 219, 214, 211, 207, 204, 200, 195, 193,
        188, 186, 182, 179, 175, 172, 168, 165, 161, 158, 154, 149, 147,
        142, 140, 135, 133, 121, 109,  96,  84,  73])
+
 
 def hmi_mag_color_table():
     """
@@ -1356,6 +1360,7 @@ def stereo_hi_color_table(camera):
         return colors.LinearSegmentedColormap('STEREO HI2', cdict)
     else:
         raise ValueError("Valid HI cameras are 1 and 2")
+
 
 def create_cdict(r, g, b):
     """Create the color tuples in the correct format."""
