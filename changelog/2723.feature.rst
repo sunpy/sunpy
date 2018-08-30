@@ -1,0 +1,5 @@
+Persist the name of a coordinate, i.e. "earth" even though a concrete
+coordinate object has been calculated and use this string representation to change
+the way the sunpy frames are printed. This is primarily to facilitate displaying
+the name of the body rather than the concrete coordinate when printing a
+`SkyCoord`.

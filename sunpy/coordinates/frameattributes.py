@@ -142,8 +142,9 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
             # the position of the observer.
             if isinstance(observer, six.string_types):
                 if obstime is not None:
-                    observer = self._convert_string_to_coord(observer.lower(), obstime)
-                    setattr(instance, '_' + self.name, observer)
+                    new_observer = self._convert_string_to_coord(observer.lower(), obstime)
+                    new_observer.object_name = observer
+                    setattr(instance, '_' + self.name, new_observer)
                 else:
                     return observer
 
