@@ -3,7 +3,8 @@ import pytest
 
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
-from astropy.coordinates import SkyCoord, get_body_barycentric, HeliocentricTrueEcliptic, Angle
+from astropy.coordinates import (SkyCoord, get_body_barycentric, HeliocentricTrueEcliptic, Angle,
+                                 ConvertError)
 from astropy.time import Time
 
 from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
@@ -73,9 +74,9 @@ def test_hpc_hpc_sc():
 
 
 def test_hpc_hpc_null():
-
-    hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec)
-    hpc_out = Helioprojective()
+    obstime = "2011-01-01"
+    hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec, obstime=obstime)
+    hpc_out = Helioprojective(obstime=obstime)
 
     hpc_new = hpc_in.transform_to(hpc_out)
 
@@ -210,4 +211,36 @@ def test_hgs_cartesian_rep_to_hgc():
     assert_quantity_allclose(hgccoord_cart.lat, hgccoord_sph.lat)
     assert_quantity_allclose(hgccoord_cart.lon, hgccoord_sph.lon)
     assert_quantity_allclose(hgccoord_cart.radius, hgccoord_sph.radius)
-    
+
+
+def test_hcc_to_hpc_different_observer():
+    # This test checks transformation HCC->HPC in the case where the HCC and HPC frames are
+    # defined by different observers.
+    # NOTE: This test is currently expected to fail because the HCC<->HPC transformation does
+    # not account for observer location. It will be updated once this is fixed.
+    rsun = 1*u.m
+    D0 = 1*u.km
+    L0 = 1*u.deg
+    observer_1 = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
+    observer_2 = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=D0)
+    hcc_frame = Heliocentric(observer=observer_1)
+    hpc_frame = Helioprojective(observer=observer_2)
+    hcccoord = SkyCoord(x=rsun, y=rsun, z=rsun, frame=hcc_frame)
+    with pytest.raises(ConvertError):
+        hcccoord.transform_to(hpc_frame)
+
+
+def test_hpc_to_hcc_different_observer():
+    # This test checks transformation HPC->HCC in the case where the HCC and HPC frames are
+    # defined by different observers.
+    # NOTE: This test is currently expected to fail because the HCC<->HPC transformation does
+    # not account for observer location. It will be updated once this is fixed.
+    D0 = 1*u.km
+    L0 = 1*u.deg
+    observer_1 = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
+    observer_2 = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=D0)
+    hcc_frame = Heliocentric(observer=observer_1)
+    hpc_frame = Helioprojective(observer=observer_2)
+    hpccoord = SkyCoord(Tx=0*u.arcsec, Ty=0*u.arcsec, frame=hpc_frame)
+    with pytest.raises(ConvertError):
+        hpccoord.transform_to(hcc_frame)

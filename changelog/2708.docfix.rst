@@ -1,0 +1,1 @@
+Clean up the docstring for `sunpy.physics.differential_rotation.solar_rotate_coordinate` to make the example clearer.
