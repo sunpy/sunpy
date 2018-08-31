@@ -346,7 +346,7 @@ def diffrot_map(smap, new_observer, **diffrot_kwargs):
 
 # Functions that calculate useful quantities from maps. The functions
 # all_pixel_indices_from_map, all_coordinates_from_map and find_pixel_radii
-# were originall written for sunkit-image
+# were originally written for sunkit-image
 def all_pixel_indices_from_map(smap):
     """
     Returns pixel pair indices of every pixel in a map.
