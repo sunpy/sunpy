@@ -145,7 +145,6 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
     # Compute the differential rotation
     drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
-<<<<<<< HEAD
     # Rotate the input co-ordinate as seen by the input observer
     heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot, heliographic_coordinate.lat,
                                     obstime=coordinate.obstime, observer=coordinate.observer,
@@ -155,18 +154,6 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
     # and transform back in to the co-ordinate system of the input
     # co-ordinate
     return heliographic_rotated.transform_to(new_observer).transform_to(coordinate.frame.name)
-=======
-    # Rotate the input co-ordinate and update the observer
-    heliographic_rotated = SkyCoord(
-        heliographic_coordinate.lon + drot,
-        heliographic_coordinate.lat,
-        obstime=new_observer_time,
-        observer=new_observer_location,
-        frame=frames.HeliographicStonyhurst)
-
-    # Return the rotated coordinates to the input coordinate frame
-    return heliographic_rotated.transform_to(coordinate.frame.name)
->>>>>>> parent of cb30e6c... initial fix, but need to also recognize an input coordinate frame
 
 
 @u.quantity_input(dt=u.s)
