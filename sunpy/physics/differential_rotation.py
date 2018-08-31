@@ -7,7 +7,7 @@ from itertools import product
 import numpy as np
 from skimage import transform
 from astropy import units as u
-from astropy.coordinates import SkyCoord, Longitude, BaseCoordinateFrame
+from astropy.coordinates import SkyCoord, Longitude
 
 import sunpy.map
 from sunpy.time import parse_time
@@ -113,8 +113,6 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
 
     **diff_rot_kwargs : keyword arguments
         Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
-        Note that the keyword "frame_time" is always set to the value "sidereal".
-
     Returns
     -------
     coordinate : `~astropy.coordinates.SkyCoord`
@@ -136,9 +134,6 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
         (-562.37689548, 119.26840368, 1.50083152e+08)>
 
     """
-    # The keyword "frame_time" must be explicitly set to "sidereal"
-    # when using this function.
-    diff_rot_kwargs.update({"frame_time": "sidereal"})
 
     # Calculate the interval between the start and end time
     interval = (new_observer.obstime - coordinate.obstime).to(u.s)
@@ -150,6 +145,7 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
     # Compute the differential rotation
     drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
+<<<<<<< HEAD
     # Rotate the input co-ordinate as seen by the input observer
     heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot, heliographic_coordinate.lat,
                                     obstime=coordinate.obstime, observer=coordinate.observer,
@@ -159,6 +155,18 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
     # and transform back in to the co-ordinate system of the input
     # co-ordinate
     return heliographic_rotated.transform_to(new_observer).transform_to(coordinate.frame.name)
+=======
+    # Rotate the input co-ordinate and update the observer
+    heliographic_rotated = SkyCoord(
+        heliographic_coordinate.lon + drot,
+        heliographic_coordinate.lat,
+        obstime=new_observer_time,
+        observer=new_observer_location,
+        frame=frames.HeliographicStonyhurst)
+
+    # Return the rotated coordinates to the input coordinate frame
+    return heliographic_rotated.transform_to(coordinate.frame.name)
+>>>>>>> parent of cb30e6c... initial fix, but need to also recognize an input coordinate frame
 
 
 @u.quantity_input(dt=u.s)
