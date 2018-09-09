@@ -1,0 +1,37 @@
+STEREO SIT_Ahead Level 1 H intensity
+File created: Mon Jul 11 18:36:16 2011 at JHU/APL
+Mass, energy, tof file creation time:  4/18/2011 16:32:16
+Hex table file in use: sit_hex_tables_041811.dat
+Rate boxes file in use: sit_rate_box_ranges_041811_sav.dat
+Efficiency file in use: sit_efficiencies_2011_04_27.dat
+Intensities calculated using pulse-height-analysis data
+Averaging interval: 10 minutes
+Note:  timestamps mark beginning of averaging interval
+Column 1: Year
+Column 2: Day of year (fractional)
+Column 3: Hour of day
+Column 4: Minute of hour
+Column 5: Second of minute
+Column 6: number of minutes summed in rate
+Column 7:  0.320 - 0.452 MeV/n H intensity (1/(cm^2 s sr MeV/nuc))
+Column 8:  0.452 - 0.640 MeV/n H intensity (1/(cm^2 s sr MeV/nuc))
+Column 9:  0.640 - 0.905 MeV/n H intensity (1/(cm^2 s sr MeV/nuc))
+Column 10:  0.905 - 1.280 MeV/n H intensity (1/(cm^2 s sr MeV/nuc))
+Column 11:  1.280 - 1.810 MeV/n H intensity (1/(cm^2 s sr MeV/nuc))
+Column 12:  1.810 - 2.560 MeV/n H intensity (1/(cm^2 s sr MeV/nuc))
+Column 13:  2.560 - 3.620 MeV/n H intensity (1/(cm^2 s sr MeV/nuc))
+Columns 14 - 20:  H total counts for same energy ranges as above
+BEGIN DATA
+2007   1.000521  0  0 45   10   3.9529e+00   4.0833e+00   1.9404e+00   4.9520e-01   0.0000e+00   0.0000e+00   0.0000e+00       7       8       4       1       0       0       0 
+2007   1.007465  0 10 45   10   3.7602e+00   1.9421e+00   9.2291e-01   4.7106e-01   0.0000e+00   0.0000e+00   0.0000e+00       7       4       2       1       0       0       0 
+2007   1.014410  0 20 45   10   4.0288e+00   2.2759e+00   8.6523e-01   8.8323e-01   0.0000e+00   0.0000e+00   0.0000e+00       8       5       2       2       0       0       0 
+2007   1.021354  0 30 45   10   5.8731e+00   1.4478e+00   1.8347e+00   1.4046e+00   0.0000e+00   0.0000e+00   5.4535e-01      11       3       4       3       0       0       1 
+2007   1.028299  0 40 45   10   7.0966e+00   4.0090e-01   1.5241e+00   7.7790e-01   6.0963e-01   0.0000e+00   0.0000e+00      16       1       4       2       1       0       0 
+2007   1.035243  0 50 45   10   4.8681e+00   1.7601e+00   4.1819e-01   8.5379e-01   6.6911e-01   0.0000e+00   0.0000e+00      10       4       1       2       1       0       0 
+2007   1.042188  1  0 45   10   6.3285e+00   2.8601e+00   9.0608e-01   4.6247e-01   0.0000e+00   0.0000e+00   0.0000e+00      12       6       2       1       0       0       0 
+2007   1.049132  1 10 45   10   3.2860e+00   1.4850e+00   4.7047e-01   9.6051e-01   0.0000e+00   0.0000e+00   0.0000e+00       6       3       1       2       0       0       0 
+2007   1.056076  1 20 45   10   3.6348e+00   2.0534e+00   1.5613e+00   3.9843e-01   0.0000e+00   0.0000e+00   0.0000e+00       8       5       4       1       0       0       0 
+2007   1.063021  1 30 45   10   3.2338e+00   9.7432e-01   9.2600e-01   4.7263e-01   7.4080e-01   0.0000e+00   0.0000e+00       6       2       2       1       1       0       0 
+2007   1.069965  1 40 45   10   3.2283e+00   8.3371e-01   0.0000e+00   8.0885e-01   6.3389e-01   0.0000e+00   0.0000e+00       7       2       0       2       1       0       0 
+2007   1.076910  1 50 45   10   3.1156e+00   0.0000e+00   0.0000e+00   4.5535e-01   7.1371e-01   0.0000e+00   0.0000e+00       6       0       0       1       1       0       0 
+2007   1.083854  2  0 45   10   4.0003e+00   2.0088e+00   3.8183e-01   0.0000e+00   6.1092e-01   0.0000e+00   0.0000e+00       9       5       1       0       1       0       0 

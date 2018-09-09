@@ -1,0 +1,53 @@
+STEREO LET Level 1 Combined argon intensities for ahead spacecraft, for 2015
+Verified Data - OK to distribute
+File Created: Thu Jul 23 12:05:58 PDT 2015
+Created by: Caltech Space Radiation Lab
+Hourly-averaging Software Version: 04
+Level 1 software version: 11
+Time Resolution: 1 hour
+Note: Timestamps mark Beginning of averaging interval.
+These data are binned into wider energy ranges than the raw data.
+They should be useful for plotting trends or computing ratios.
+Column 1: Year
+Column 2: Day of year (fractional)
+Column 3: Hour of day
+Column 4: Minute of hour
+Column 5: Second of minute
+Column 6: LET Livetime (seconds)
+Column 7:   4.0 -  6.0 MeV/nuc argon intensity (1/(cm^2 s sr MeV/nuc))"
+Column 8:   6.0 - 10.0 MeV/nuc argon intensity (1/(cm^2 s sr MeV/nuc))"
+Column 9:  10.0 - 15.0 MeV/nuc argon intensity (1/(cm^2 s sr MeV/nuc))"
+Column 10: 15.0 - 27.0 MeV/nuc argon intensity (1/(cm^2 s sr MeV/nuc))"
+Column 11: 27.0 - 40.0 MeV/nuc argon intensity (1/(cm^2 s sr MeV/nuc))"
+Column 12 - 16: 5 argon counts, same energy ranges as above (counts/minute)"
+Column 17 - 21: 5 argon statistical uncertainties  (1/(cm^2 s sr MeV/nuc))
+Bad/missing data are filled as follows:
+     -9999.9 for floating-point data
+     -9999 for integer data
+1-hour Averages and Uncertainties are calculated as follows:
+     I = Sum(Ii)/M
+     U(I) = sqrt ( Sum( Ii^2/Ni ) ) / M
+     I is the hourly average intensity
+     U(I) is the uncertainty in the calculated average intensity
+     Ii is the intensity for minute i in one of the energy bins
+     Ii^2 = Ii * Ii  (in case the notation is confusing...)
+     Ni is the counts for minute i in one of the energy bins
+     M is the number of good 1-minute records in the averaging interval.
+BEGIN DATA
+2015 001.000000 00 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.041667 01 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.083333 02 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.125000 03 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.166667 04 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.208333 05 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.250000 06 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.291667 07 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.333333 08 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.375000 09 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.416667 10 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.458333 11 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.500000 12 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.541667 13 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.583333 14 00 00 -9999.90 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03   -9999   -9999   -9999   -9999   -9999 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03 -9.9999E+03
+2015 001.625000 15 00 00  1774.32  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00       0       0       0       0       0  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
+2015 001.666667 16 00 00  3489.50  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00       0       0       0       0       0  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00  0.0000E+00
