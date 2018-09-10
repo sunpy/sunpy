@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+from textwrap import dedent
+
 from sunpy.time import TimeRange
 from sunpy.time import parse_time
 
@@ -91,9 +93,11 @@ class roi(object):
             endstring = 'None'
         else:
             endstring = self.end_time.iso
-        return('SunPy Region-of-interest (ROI) object' +
-        '\n-------------------------------------' +
-        '\nSource: \t\t' + self.source +
-        '\nStart time:\t\t' + startstring +
-        '\nEnd time: \t\t' + endstring +
-        '\nEvent description:\t' + str(self.description))
+        return dedent(f"""\
+        SunPy Region-of-interest (ROI) object
+        -------------------------------------
+        Source:            {self.source}
+        Start time:        {startstring}
+        End time:          {endstring}
+        Event description: {self.description}
+        """)

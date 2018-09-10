@@ -17,6 +17,8 @@ Instrument('aia') & Instrument('eit').
 """
 from __future__ import absolute_import
 
+import collections
+
 from astropy import units as u
 
 from sunpy.time import Time as apTime
@@ -187,6 +189,15 @@ class Time(Attr, _Range):
 
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
+
+    def __hash__(self):
+        if not (isinstance(self.start, collections.Hashable) and
+                isinstance(self.end, collections.Hashable)):
+            # The hash is the hash of the start and end time
+            return hash((self.start.jd1, self.start.jd2, self.start.scale,
+                         self.end.jd1, self.end.jd2, self.end.scale))
+        else:
+            return super().__hash__()
 
     def collides(self, other):
         return isinstance(other, self.__class__)
