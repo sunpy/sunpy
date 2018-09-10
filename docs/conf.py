@@ -258,6 +258,7 @@ if has_sphinx_gallery:
                                            (os.path.join('..', 'examples/time_series')),
                                            (os.path.join('..', 'examples/units_and_coordinates')),
                                            (os.path.join('..', 'examples/plotting')),
+                                           (os.path.join('..', 'examples/saving_and_loading_data')),
                                            (os.path.join('..', 'examples/computer_vision_techniques'))]),
         'gallery_dirs': path.joinpath('generated', 'gallery'),  # path to save gallery generated examples
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
