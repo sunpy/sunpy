@@ -266,8 +266,5 @@ def _convert(attr):
 
 @walker.add_converter(vso_attrs.Time)
 def _convert(attr):
-    if attr.near:
-        near = attr.near.datetime
-    else:
-        near = None
+    near = None if not attr.near else attr.near.datetime
     return ValueAttr({('time', ): (attr.start.datetime, attr.end.datetime, near)})
