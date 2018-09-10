@@ -80,7 +80,7 @@ matrix:
            env: PYTHON_VERSION=3.6
 
          - python: 3.6
-           stage: Cron tests
+           stage: Comprehensive tests
            env: ASTROPY_VERSION='dev'
 
          - python: 3.6
