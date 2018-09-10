@@ -149,15 +149,14 @@ A SkyCoord object to represent a point on the Sun can then be created::
   >>> c = SkyCoord(70*u.deg, -30*u.deg, obstime="2017-08-01",
   ...              frame=frames.HeliographicStonyhurst)
   >>> c
-  <SkyCoord (HeliographicStonyhurst: obstime=2017-08-01 00:00:00): (lon, lat, radius) in (deg, deg, km)
+  <SkyCoord (HeliographicStonyhurst: obstime=2017-08-01T00:00:00.000): (lon, lat, radius) in (deg, deg, km)
       (70., -30., 695508.)>
 
 This `~astropy.coordinates.SkyCoord` object can then be transformed to any
 other coordinate frame defined either in Astropy or SunPy, for example::
 
   >>> c.transform_to(frames.Helioprojective)
-  <SkyCoord (Helioprojective: obstime=2017-08-01 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2017-08-01 00:00:00): (lon, lat, radius) in (deg, deg, AU)
-      (0., 5.78339799, 1.01496923)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+  <SkyCoord (Helioprojective: obstime=2017-08-01T00:00:00.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
       (769.74997696, -498.75932128, 1.51668819e+08)>
 
 
@@ -191,8 +190,7 @@ one observer to a coordinate seen by another::
 
   >>> hpc1.transform_to(frames.Helioprojective(observer="venus",
   ...                                          obstime="2017-07-26"))
-  <SkyCoord (Helioprojective: obstime=2017-07-26 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, AU)
-    (77.03547231, 3.17032536, 0.72510629)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+  <SkyCoord (Helioprojective: obstime=2017-07-26T00:00:00.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'venus'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
     (-1285.11970265, 106.17983302, 1.08317783e+08)>
 
 
@@ -208,15 +206,14 @@ constructed from the header information. This can be accessed using
   >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
   >>> m = sunpy.map.Map(AIA_171_IMAGE) # doctest: +REMOTE_DATA
   >>> m.coordinate_frame  # doctest: +REMOTE_DATA
-    <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+    <Helioprojective Frame (obstime=2011-06-07T06:33:02.000.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
         (0., 0.048591, 1.51846026e+11)>)>
 
 This can be used when creating a `~astropy.coordinates.SkyCoord` object to set
 the coordinate system to that image::
 
   >>> SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame) # doctest: +REMOTE_DATA
-  <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
-      (0., 0.048591, 1.51846026e+11)>): (Tx, Ty) in arcsec
+  <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
       (100., 10.)>
 
 This `~astropy.coordinates.SkyCoord` object could then be used to plot a point
