@@ -35,7 +35,7 @@ env:
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test --coverage'
         - CONDA_CHANNELS='sunpy'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib pytest==3.6 mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl pytest-astropy suds-jurko glymur pytest-xdist dask drms sphinx-astropy pytest-cov hypothesis'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib pytest==3.6 mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas pytest-astropy suds-jurko glymur pytest-xdist dask drms sphinx-astropy pytest-cov hypothesis'
         - PIP_DEPENDENCIES='pytest-rerunfailures sunpy-sphinx-theme pytest-sugar'
         - EVENT_TYPE='push pull_request cron'
         - MPLBACKEND='agg'
