@@ -66,7 +66,10 @@ def _carrington_offset(obstime):
     return get_sun_L0(obstime)
 
 
-def _observers_are_equal(obs_1, obs_2):
+def _observers_are_equal(obs_1, obs_2, string_ok=False):
+    if string_ok:
+        if obs_1 == obs_2:
+            return True
     if not (isinstance(obs_1, BaseCoordinateFrame) and isinstance(obs_2, BaseCoordinateFrame)):
         raise ValueError("To compare two observers, both must be instances of BaseCoordinateFrame. "
                          "Cannot compare two observers {} and {}.".format(obs_1, obs_2))
@@ -266,7 +269,7 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     This converts from HPC to HPC, with different observer location parameters.
     It does this by transforming through HGS.
     """
-    if _observers_are_equal(heliopcoord.observer, heliopframe.observer):
+    if _observers_are_equal(heliopcoord.observer, heliopframe.observer, string_ok=True):
         return heliopframe.realize_frame(heliopcoord._data)
 
     if not isinstance(heliopframe.observer, BaseCoordinateFrame):
