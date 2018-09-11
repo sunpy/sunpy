@@ -608,7 +608,7 @@ class JSOCClient(object):
 
         # We only download if all are finished
         if not all([r.has_succeeded() for r in requests]):
-            raise NotExportedError("Can not download as not all the requests"
+            raise NotExportedError("Can not download as not all the requests "
                                    "have been exported for download yet.")
 
         # Ensure path has a {file} in it
