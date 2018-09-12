@@ -21,3 +21,4 @@ We currently recommend the :ref:`newcomers` as the place to start.
    documentation
    tests
    stability
+   example_gallery
