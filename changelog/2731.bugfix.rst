@@ -1,0 +1,1 @@
+Replaces the existing LASCO C2 and C3 color maps with new ones that perform better with JP2 and Level 0.5, 1 data.
