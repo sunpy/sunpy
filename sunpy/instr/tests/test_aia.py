@@ -13,9 +13,11 @@ from sunpy.instr.aia import aiaprep
 # functions
 
 
-@pytest.fixture
-def original():
-    return sunpy.map.Map(test.get_test_filepath("aia_171_level1.fits"))
+@pytest.fixture(scope="module",
+                params=[test.get_test_filepath("aia_171_level1.fits"),
+                        test.get_test_filepath("resampled_hmi.fits")])
+def original(request):
+    return sunpy.map.Map(request.param)
 
 
 @pytest.fixture
