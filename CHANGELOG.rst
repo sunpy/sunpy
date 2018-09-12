@@ -1,3 +1,22 @@
+Sunpy 0.9.3 (2018-09-12)
+========================
+
+Bug Fixes
+---------
+
+- Correctly import `~astropy.units.allclose` based on astropy version. This means that `sunpy.coordinates` will import when pytest is not installed. (`#2702 <https://github.com/sunpy/sunpy/pull/2702>`__)
+- Raise an error when transforming between HPC and HCC frames if the observer is not the same. (`#2725 <https://github.com/sunpy/sunpy/pull/2725>`__)
+- Do not attempt to save a FITS header comment for a keyword which is not in the header. This prevents an error on saving some maps after the metadata had been modified but not the comments. (`#2748 <https://github.com/sunpy/sunpy/pull/2748>`__)
+- Add support for `HMIMap` objects as input to `sunpy.instr.aia.aiaprep()`. (`#2749 <https://github.com/sunpy/sunpy/pull/2749>`__)
+
+
+Improved Documentation
+----------------------
+
+- Add contribution guidelines for the sunpy example gallery. (`#2682 <https://github.com/sunpy/sunpy/pull/2682>`__)
+- Clean up the docstring for `sunpy.physics.differential_rotation.solar_rotate_coordinate` to make the example clearer. (`#2708 <https://github.com/sunpy/sunpy/pull/2708>`__)
+
+
 Sunpy 0.9.2 (2018-07-27)
 ========================
 
