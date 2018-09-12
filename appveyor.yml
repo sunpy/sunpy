@@ -32,6 +32,8 @@ install:
     - "powershell ci-helpers/appveyor/install-miniconda.ps1"
     - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
     - "activate test"
+    - "conda remove --force pillow"
+    - "pip install pillow"
 
 # Not a .NET project, we build SunPy in the install step instead
 build: false
