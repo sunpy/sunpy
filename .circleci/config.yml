@@ -1,21 +1,23 @@
+skip-check: &skip-check
+  name: Check for [ci skip]
+  command: bash .circleci/early_exit.sh
+
 apt-run: &apt-install
   name: Install apt packages
   command: |
-    sudo apt update
-    sudo apt install -y graphviz
+    apt update
+    apt install -y graphviz build-essential
 
-pip-run: &pip-install
+docs-install: &docs-install
   name: Install Python dependencies
   command: |
-    python3 -m venv venv
-    . venv/bin/activate
-    pip install -q -r requirements/docs.txt
+    pip install -r requirements/docs.txt
 
 version: 2
 jobs:
-  egg-info-36:
+  egg-info-27:
     docker:
-      - image: circleci/python:3.6
+      - image: circleci/python:2.7
     steps:
       - checkout
       - run: python setup.py egg_info
@@ -27,25 +29,25 @@ jobs:
       - checkout
       - run: python setup.py egg_info
 
-  egg-info-27:
+  egg-info-36:
     docker:
-      - image: circleci/python:2.7
+      - image: circleci/python:3.6
     steps:
       - checkout
       - run: python setup.py egg_info
 
   html-docs:
     docker:
-      - image: circleci/python:3.6
+      - image: continuumio/miniconda3
     steps:
       - restore_cache:
           keys: sample-data-v1
 
       - checkout
+      - run: *skip-check
       - run: *apt-install
-      - run: *pip-install
-      - run: venv/bin/python setup.py build_docs -w 2> /dev/null
-
+      - run: *docs-install
+      - run: python setup.py build_docs -w
       - store_artifacts:
           path: docs/_build/html
 
