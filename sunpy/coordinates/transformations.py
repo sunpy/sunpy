@@ -349,25 +349,25 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
 
 
 @frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, HeliographicStonyhurst)
-def hgs_to_hgs(from_coo, to_frame):
-    if np.all(from_coo.obstime == to_frame.obstime):
-        return to_frame.realize_frame(from_coo.data)
+def hgs_to_hgs(hgscoord, hgsframe):
+    if np.all(hgscoord.obstime == hgsframe.obstime):
+        return hgsframe.realize_frame(hgscoord.data)
     else:
-        return from_coo.transform_to(HCRS).transform_to(to_frame)
+        return hgscoord.transform_to(HCRS).transform_to(hgsframe)
 
 
 @frame_transform_graph.transform(FunctionTransform, Heliocentric, Heliocentric)
-def hcc_to_hcc(from_coo, to_frame):
+def hcc_to_hcc(hcccoord, hccframe):
     """
     Convert from  Heliocentric to Heliocentric
     """
-    if _observers_are_equal(from_coo.observer, to_frame.observer, string_ok=True):
-        return to_frame.realize_frame(from_coo._data)
+    if _observers_are_equal(hcccoord.observer, hccframe.observer, string_ok=True):
+        return hccframe.realize_frame(hcccoord._data)
 
-    hgs = from_coo.transform_to(HeliographicStonyhurst)
-    hgs.observer = to_frame.observer
-    hcc = hgs.transform_to(to_frame)
+    hgscoord = hcccoord.transform_to(HeliographicStonyhurst)
+    hgscoord.observer = hccframe.observer
+    hcccoord = hgscoord.transform_to(hccframe)
 
-    return hcc
+    return hcccoord
 
 __doc__ += make_transform_graph_docs()

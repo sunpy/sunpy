@@ -1,1 +1,1 @@
-User can convert between HPC and HCC Co-ordinates with different observers
+User can convert between HPC and HCC coordinates with different observers
