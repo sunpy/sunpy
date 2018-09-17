@@ -118,7 +118,7 @@ def hcc_to_hpc(helioccoord, heliopframe):
     """
     if not _observers_are_equal(helioccoord.observer, heliopframe.observer):
         heliocframe = Heliocentric(observer=heliopframe.observer)
-        new_helioccoord = hcc_to_hcc(helioccoord,heliocframe)
+        new_helioccoord = helioccoord.transform_to(heliocframe)
         helioccoord = new_helioccoord
 
     x = helioccoord.x.to(u.m)
@@ -147,7 +147,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     if not _observers_are_equal(heliopcoord.observer, heliocframe.observer):
         heliocframe_heliopobs = Heliocentric(observer=heliopcoord.observer)
         helioccoord_heliopobs = heliopcoord.transform_to(heliocframe_heliopobs)
-        helioccoord = hcc_to_hcc(helioccoord_heliopobs,heliocframe)
+        helioccoord = helioccoord_heliopobs.transform_to(heliocframe)
         return helioccoord
 
     if not isinstance(heliopcoord.observer, BaseCoordinateFrame):

@@ -247,8 +247,25 @@ def test_hpc_to_hcc_different_observer():
     assert_quantity_allclose(hcccoord_out.y, hcccoord_expected.y)
     assert_quantity_allclose(hcccoord_out.z, hcccoord_expected.z)
 
-def test_hcc_to_hcc_same_observer():
-    # This test checks transformation HCC->HCC in the case of same observer
+def test_hcc_to_hpc_same_observer():
+    # This test checks transformation HCC->HPC in the case of same observer
+
+    rsun = 1*u.m
+    D0 = 1*u.km
+    L0 = 1*u.deg
+    observer_1 = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
+    observer_2 = observer_1
+    hcc_frame = Heliocentric(observer=observer_1)
+    hpc_frame = Helioprojective(observer=observer_2)
+    hcccoord = SkyCoord(x=rsun, y=rsun, z=rsun, frame=hcc_frame)
+    hpccoord_out = hcccoord.transform_to(hpc_frame)
+    hpccoord_expected = hcccoord.transform_to(HeliographicStonyhurst).transform_to(hpc_frame)
+    assert_quantity_allclose(hpccoord_out.Tx, hpccoord_expected.Tx)
+    assert_quantity_allclose(hpccoord_out.Ty, hpccoord_expected.Ty)
+    assert_quantity_allclose(hpccoord_out.distance, hpccoord_expected.distance)
+
+def test_hpc_to_hcc_same_observer():
+    # This test checks transformation HPC->HCC in the case of same observer
 
     D0 = 1 * u.km
     observer_1 = HeliographicStonyhurst(lat=0 * u.deg, lon=0 * u.deg, radius=D0)
