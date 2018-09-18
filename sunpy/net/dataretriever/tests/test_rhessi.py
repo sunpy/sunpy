@@ -39,7 +39,7 @@ def test_can_handle_query():
 def test_query():
     qr1 = LCClient.search(Time('2011/4/9', '2011/4/10'), Instrument('rhessi'))
     assert isinstance(qr1, QueryResponse)
-    assert len(qr1) == 1
+    assert len(qr1) == 2
     assert qr1.time_range().start == parse_time('2011/04/09')
     assert qr1.time_range().end == parse_time('2011/04/10')
 
