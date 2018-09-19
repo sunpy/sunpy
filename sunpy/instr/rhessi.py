@@ -195,7 +195,8 @@ def get_obssum_filename(time_range):
     --------
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssum_filename(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
-    ['https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits']
+    ['https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits',
+     'https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110405_031.fits']
 
     .. note::
         This API is currently limited to providing data from whole days only.
