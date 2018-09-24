@@ -78,7 +78,7 @@ def get_filename(sock, url):
     return six.text_type(name)
 
 
-def get_system_filename(sock, url, default=u"file"):
+def get_system_filename(sock, url, default=b"file"):
     """ Get filename from given urllib2.urlopen object and URL.
     First, attempts to extract Content-Disposition, second, extract
     from URL, eventually fall back to default. Returns bytestring
@@ -89,7 +89,7 @@ def get_system_filename(sock, url, default=u"file"):
     return name.encode(sys.getfilesystemencoding(), 'ignore')
 
 
-def get_system_filename_slugify(sock, url, default=u"file"):
+def get_system_filename_slugify(sock, url, default=b"file"):
     """ Get filename from given urllib2.urlopen object and URL.
     First, attempts to extract Content-Disposition, second, extract
     from URL, eventually fall back to default. Returns bytestring
@@ -98,7 +98,7 @@ def get_system_filename_slugify(sock, url, default=u"file"):
     return slugify(get_system_filename(sock, url, default))
 
 
-def download_file(url, directory, default=u'file', overwrite=False):
+def download_file(url, directory, default=b"file", overwrite=False):
     """ Download file from url into directory. Try to get filename from
     Content-Disposition header, otherwise get from path of url. Fall
     back to default if both fail. Only overwrite existing files when
@@ -111,7 +111,7 @@ def download_file(url, directory, default=u'file', overwrite=False):
     return path
 
 
-def download_fileobj(opn, directory, url='', default=u"file", overwrite=False):
+def download_fileobj(opn, directory, url='', default=b"file", overwrite=False):
     """ Download file from url into directory. Try to get filename from
     Content-Disposition header, otherwise get from path of url if given.
     Fall back to default if both fail. Only overwrite existing files when
