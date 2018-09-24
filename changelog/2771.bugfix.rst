@@ -1,0 +1,1 @@
+Changed default file type for Helioviewer to prevent decode errors.
