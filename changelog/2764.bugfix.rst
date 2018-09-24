@@ -1,0 +1,1 @@
+Removed filename decode for Helioviewer.
