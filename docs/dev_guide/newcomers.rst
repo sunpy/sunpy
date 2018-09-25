@@ -37,8 +37,9 @@ Code
 If you would prefer to code Python instead, we have a SunPy issue list on Github `issues`_ where all the known issues with SunPy are kept.
 An issue might have a label and the `Package Novice label`_ is a good place to start.
 These are issues that have been deemed a good way to be eased into SunPy and are achievable with little understanding of the SunPy codebase.
-If you came here from the Mozilla Sprint, we have a `mozsprint label.`_
-These issues are similar in nature to the Package Novice label but with a slight difference that these issues are (we think) achievable within the timescale of a sprint, typically one day of hacking.
+We also tag issues for specific events such as the Mozilla Sprint
+(`mozsprint label.`_) or hacktoberfest. The scope of the issues should be appropriate for
+the specific event.
 
 .. _issues: https://github.com/sunpy/sunpy/issues
 .. _Package Novice label: https://github.com/sunpy/sunpy/issues?q=is%3Aissue+is%3Aopen+label%3Apackage-novice
@@ -109,6 +110,14 @@ If you see that astropy_helpers is different or missing please run ::
     git submodule update --init
 
 which should fix the issue for you.
+
+Every once in a while you may have to update this submodule. This can be
+done with ::
+
+    git submodule update
+
+This will solve what git will consider a difference in the astropy_helper
+signature.
 
 Send it back to us
 ------------------
