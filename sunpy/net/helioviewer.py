@@ -133,6 +133,7 @@ class HelioviewerClient(object):
 
         >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
         >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])   # doctest: +REMOTE_DATA
+        >>> file = hv.download_jp2(datetime.datetime.now(), observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')   # doctest: +REMOTE_DATA
         """
         params = {
             "action": "getJP2Image",
