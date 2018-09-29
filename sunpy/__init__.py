@@ -21,9 +21,19 @@ try:
 except ImportError:
     __githash__ = ''
 
-from sunpy.util.config import load_config, print_config
-from sunpy.util import system_info
-from sunpy.tests import main as self_test
+try:
+    _ASTROPY_SETUP_
+except NameError:
+    _ASTROPY_SETUP_ = False
 
-# Load user configuration
-config = load_config()
+
+if not _ASTROPY_SETUP_:
+    from sunpy.util.config import load_config, print_config
+    from sunpy.util import system_info
+    from sunpy.tests import main as self_test
+
+    
+    # Load user configuration
+    config = load_config()
+
+    __all__ = ['config', 'self_test', 'system_info']
