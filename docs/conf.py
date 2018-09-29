@@ -254,8 +254,8 @@ if has_sphinx_gallery:
                                            (os.path.join('..', 'examples/plotting')),
                                            (os.path.join('..', 'examples/computer_vision_techniques'))]),
         'gallery_dirs': os.path.join('generated',
-                                    'gallery'),  # path to save gallery generated examples
-        'default_thumb_file': os.path.join('.', 'logo', 'sunpy_icon_128x128.png'),
+                                     'gallery'),  # path to save gallery generated examples
+        'default_thumb_file': os.path.join('docs', 'logo', 'sunpy_icon_128x128.png'),
         'reference_url': {
             'sunpy': None,
             'astropy': 'http://docs.astropy.org/en/stable/',
