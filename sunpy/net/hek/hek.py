@@ -158,3 +158,9 @@ class HEKRow(Row):
             return xml_to_dict(response)
         else:
             return response
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
