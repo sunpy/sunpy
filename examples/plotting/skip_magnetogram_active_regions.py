@@ -8,8 +8,6 @@ This example shows how to overplot Active Region location on magnetogram plots.
 
 ##############################################################################
 # Start by importing the necessary modules.
-from __future__ import print_function, division
-
 import datetime
 
 import numpy as np
