@@ -271,7 +271,7 @@ def _create_or(walker, query, factory):
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
     """
-    sunpy.net.Fido(\*args, \*\*kwargs)
+    sunpy.net.Fido(*args, **kwargs)
 
     Search and Download data from a variety of supported sources.
     """

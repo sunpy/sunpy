@@ -54,7 +54,7 @@ __all__ = ['Map', 'MapFactory']
 
 class MapFactory(BasicRegistrationFactory):
     """
-    Map(\*args, \*\*kwargs)
+    Map(*args, **kwargs)
 
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
@@ -107,8 +107,6 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')  # doctest: +SKIP
     """
-
-
     def _read_file(self, fname, **kwargs):
         """ Read in a file name and return the list of (data, meta) pairs in
             that file. """
