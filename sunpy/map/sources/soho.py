@@ -24,7 +24,7 @@ __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
 
 def _dsunAtSoho(date, rad_d, rad_1au=None):
-    """Determines the distance to the Sun from SOhO following
+    r"""Determines the distance to the Sun from SOhO following
     d_{\sun,Object} =
             D_{\sun\earth} \frac{\tan(radius_{1au}[rad])}{\tan(radius_{d}[rad])}
     though tan x ~ x for x << 1
