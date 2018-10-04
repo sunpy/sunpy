@@ -5,8 +5,6 @@ GOES Flare and HEK Plot Example
 
 An example showing how to combine GOES and HEK data
 """
-from __future__ import print_function, division
-
 import matplotlib.pyplot as plt
 
 from sunpy.timeseries import TimeSeries

@@ -5,8 +5,6 @@ Editing Map Colormaps and Normalization
 
 A simple example to show how to edit the display of a map
 """
-from __future__ import print_function, division
-
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
