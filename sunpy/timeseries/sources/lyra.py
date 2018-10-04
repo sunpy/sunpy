@@ -128,7 +128,7 @@ class LYRATimeSeries(GenericTimeSeries):
         # end_str = hdulist[0].header['date-end']
         """
         metadata = MetaDict(OrderedDict(hdulist[0].header))
-        start_str = metadata.get('date-obs', metadata.get('date_obs', ''))
+        start_str = metadata.get('date-obs', metadata.get('date', ''))
 
         # start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
         start = parse_time(start_str)
