@@ -85,3 +85,18 @@ def test_err_dummyattr_create():
 def test_err_dummyattr_apply():
     with pytest.raises(TypeError):
         hek.attrs.walker.apply(attr.DummyAttr(), {})
+
+
+@pytest.mark.remote_data
+def test_hek_client():
+    startTime = '2011/08/09 07:23:56'
+    endTime = '2011/08/09 12:40:29'
+    eventType = 'FL'
+
+    hekTime = hek.attrs.Time(startTime, endTime)
+    hekEvent = hek.attrs.EventType(eventType)
+
+    h = hek.HEKClient()
+    hek_query = h.search(hekTime, hekEvent)
+    assert hek_query[0]['event_peaktime'] == hek_query[0].get('event_peaktime')
+    assert hek_query[0].get('') == None
