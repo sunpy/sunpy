@@ -7,8 +7,7 @@
 <!-- If not please go ahead and open an issue! -->
 
 ### Description
-<!-- Provide a general description of the bug or feature request. -->
-<!-- Remember, that issues can be bug reports, feature requests or even just to report something odd. -->
+<!-- Provide a general description of the bug. -->
 
 ### Expected behavior
 <!-- What did you expect to happen. -->
