@@ -5,8 +5,6 @@ Masking the solar disk
 
 This example shows how to mask off emission from the disk.
 """
-from __future__ import print_function, division
-
 import numpy as np
 import numpy.ma as ma
 import matplotlib.pyplot as plt

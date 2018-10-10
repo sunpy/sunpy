@@ -9,9 +9,6 @@ In this example we demonstrate how to get a submap of a map.
 
 ##############################################################################
 # Start by importing the necessary modules.
-
-from __future__ import print_function, division
-
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 

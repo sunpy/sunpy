@@ -9,9 +9,6 @@ In this example we rotate a map.
 
 ##############################################################################
 # Start by importing the necessary modules.
-
-from __future__ import print_function, division
-
 import astropy.units as u
 
 import matplotlib.pyplot as plt

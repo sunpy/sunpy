@@ -5,8 +5,6 @@ The Solar Cycle
 
 This example shows the current and possible next solar cycle.
 """
-from __future__ import print_function, division
-
 import datetime
 import matplotlib.pyplot as plt
 

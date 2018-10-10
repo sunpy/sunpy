@@ -10,9 +10,6 @@ This is intended primarily to demonstrate the current interface for discussion
 of the final implementation. Much of the code will be changes as the class is
 developed.
 """
-
-from __future__ import print_function, division
-
 import astropy.units as u
 
 import sunpy.data.sample
