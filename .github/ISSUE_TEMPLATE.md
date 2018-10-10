@@ -2,7 +2,7 @@
 <!-- Please be sure to check out our contributing guidelines, https://github.com/sunpy/sunpy/blob/master/CONTRIBUTING.rst. -->
 <!-- Please be sure to check out our code of conduct, https://github.com/sunpy/sunpy/blob/master/CODE_OF_CONDUCT.rst. -->
 
-<!-- Please just have a quick search on GitHub to see if a similar issue has already been posted. -->
+<!-- Please just have a quick search on our GitHub repository to see if a similar issue has already been posted. -->
 <!-- If a similar issue is closed, have a quick look to see if you are satisfied by the resolution. -->
 <!-- If not please go ahead and open an issue! -->
 
@@ -26,9 +26,9 @@
 3. [and so on...]
 
 ### System Details
-<!-- This is part optional but we do want to know at the SunPy version you are using. -->
-<!-- We do provide a short function in SunPy that will provide some of the below information. -->
-<!-- It is sunpy.util.system_info() -->
+<!-- We at least need to know the SunPy version you are using. -->
+<!-- We provide a short function in SunPy that will provide some of the below information. -->
+<!-- It is sunpy.util.system_info(), this is optional but strongly recommended. -->
 
   - SunPy Version:
   - Python Version:
