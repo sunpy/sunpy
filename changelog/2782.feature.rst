@@ -1,0 +1,1 @@
+Add a downscaled HMI image to the sample data.
