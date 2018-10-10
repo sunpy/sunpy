@@ -15,6 +15,6 @@
 ### Closes Issues
 <!-- If the pull request closes any open issues you can add this. -->
 <!-- If you replace <Issue Number> with a number GitHub will automatically link it. -->
-<!-- If it doesn't, please remove the following line and section title that starts with ###. -->
+<!-- If it doesn't, please remove the following line and this section title. -->
 
 Fixes #<Issue Number>
