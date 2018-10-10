@@ -19,7 +19,7 @@ from sunpy.data.sample import AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE, AI
 # We create the MapCube using the AIA_193_CUTOUT sample data.
 # To create a MapCube, we can call Map directly and add in a keyword to output a MapCube instead.
 aiamapcube = sunpy.map.Map(AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE,
-                           AIA_193_CUTOUT03_IMAGE, cube=True)
+                           AIA_193_CUTOUT03_IMAGE, sequence=True)
 
 ############################################################################
 # In case of running difference, we loop through all the maps in the
