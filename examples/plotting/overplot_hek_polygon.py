@@ -8,9 +8,6 @@ This example shows how to overplot HEK outlines on SunPy maps.
 
 ##############################################################################
 # Start by importing the necessary modules.
-
-from __future__ import print_function, division
-
 from datetime import timedelta
 import numpy as np
 
