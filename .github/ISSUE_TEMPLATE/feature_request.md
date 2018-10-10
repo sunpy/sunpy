@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for us to implement!
+about: Suggest an idea to improve SunPy!
 ---
 
 <!-- This comments are hidden when you submit the issue, so you do not need to remove them! -->
@@ -13,7 +13,7 @@ about: Suggest an idea for us to implement!
 
 ### Description
 <!-- Provide a general description of the feature you would like. -->
-<!-- If you want to, you can give us a draft design or API. -->
+<!-- "If you want to, you can suggest a draft design or API. -->
 <!-- This way we have a deeper discussion on the feature. -->
 
 

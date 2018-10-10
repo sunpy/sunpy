@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Want us to fix a problem, use this.
+about: Create a report describing unexpected or incorrect behavior in SunPy.
 ---
 
 <!-- This comments are hidden when you submit the issue, so you do not need to remove them! -->
@@ -16,7 +16,7 @@ about: Want us to fix a problem, use this.
 
 ### Expected behavior
 <!-- What did you expect to happen. -->
-<!-- If you think how the code behaves is off, tell us! -->
+<!-- If you think code or function is hard to leverage or understand, tell us! -->
 
 ### Actual behavior
 <!-- What actually happened. -->
