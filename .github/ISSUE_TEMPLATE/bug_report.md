@@ -16,7 +16,6 @@ about: Create a report describing unexpected or incorrect behavior in SunPy.
 
 ### Expected behavior
 <!-- What did you expect to happen. -->
-<!-- If you think code or function is hard to leverage or understand, tell us! -->
 
 ### Actual behavior
 <!-- What actually happened. -->
@@ -24,6 +23,7 @@ about: Create a report describing unexpected or incorrect behavior in SunPy.
 
 ### Steps to Reproduce
 <!-- Ideally a code example could be provided so we can run it ourselves. -->
+<!-- If you are pasting code, use tripe backticks around your code snippet. -->
 
 1. [First Step]
 2. [Second Step]
