@@ -119,7 +119,10 @@ for name, cmap in cmlist.items():
     mplcm.register_cmap(name=name, cmap=cmap)
 
 
-@deprecated("0.9", "Use Matplotlib to load the colormaps", alternative='plt.get_cmap')
+@deprecated("0.9",
+            "'sunpy.cm.get_cmap' is dprecated, use 'plt.get_cmap' from Matplotlib "
+            "to load the colormaps instead.",
+            alternative='plt.get_cmap')
 def get_cmap(name):
     """
     Get a colormap.
@@ -199,4 +202,3 @@ def show_colormaps(search=None):
         fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
                  horizontalalignment='right')
     plt.show()
-
