@@ -1,0 +1,2 @@
+Running the figure tests now creates a page showing the differences between
+the expected figures and the figures produced from running the tests.
