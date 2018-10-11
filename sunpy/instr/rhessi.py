@@ -338,9 +338,8 @@ def parse_obssumm_hdulist(hdulist):
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
 
-    time_array = parse_time([reference_time_ut +
-                             TimeDelta(time_interval_sec * a * u.second)
-                             for a in np.arange(dim)])
+    time_array = parse_time(reference_time_ut) + \
+        TimeDelta(time_interval_sec * np.arange(dim) * u.second)
 
     #  TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
