@@ -39,13 +39,14 @@ function also accepts this as input, e.g.::
     >>> parse_time(894316092.00000000, format='utime')
     <Time object: scale='utc' format='utime' value=894316092.0>
 
-`sunpy.time.parse_time` is a wrapper around `astropy.time.Time`. It supports a few more formats
-than `~astropy.time.Time`, but the API is mostly the same. You can specify the format, scale, precision, 
-location and other arguments just as you would do with `~astropy.time.Time`. An example::
+`sunpy.time.parse_time` is a wrapper around `astropy.time.Time`. The API is
+mostly the same as `~astropy.time.Time` but supports a few more time formats.
+You can specify the format, scale, precision, location and other arguments just
+as you would do with `~astropy.time.Time`. An example::
 
     >>> times = ['1999-01-01T00:00:00.123456789', '2010-01-01T00:00:00']
     >>> parse_time(times, format='isot', scale='tai')
-    <Time object: scale='tai' format='isot' value=['1999-01-01T00:00:00.123' '2010-01-01T00:00:00.000']> 
+    <Time object: scale='tai' format='isot' value=['1999-01-01T00:00:00.123' '2010-01-01T00:00:00.000']>
 
 All SunPy functions which require
 time as an input sanitize the input using parse_time.

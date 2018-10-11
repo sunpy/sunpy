@@ -9,9 +9,6 @@ A simple demonstration of creating a map from a numpy array of data.
 
 ##############################################################################
 # Start by importing the necessary modules.
-
-from __future__ import print_function, division
-
 import numpy as np
 import matplotlib.pyplot as plt
 

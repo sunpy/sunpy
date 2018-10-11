@@ -9,14 +9,7 @@ import os
 from abc import ABCMeta
 from collections import OrderedDict, namedtuple
 from functools import partial
-
-# Python 3:
-# Remove in 1.0: Py2 does not have pathlib
-try:
-    import pathlib
-    HAS_PATHLIB = True
-except ImportError:
-    HAS_PATHLIB = False
+import pathlib
 
 import numpy as np
 import astropy.table
@@ -353,7 +346,7 @@ class GenericClient(object):
         """
         # Check for type of path
         if path is not None:
-            if HAS_PATHLIB and isinstance(path, pathlib.Path):
+            if isinstance(path, pathlib.Path):
                 path = str(path.absolute())
             elif not isinstance(path, six.string_types):
                 err = "path should be either 'pathlib.Path' or 'str'. "\

@@ -20,6 +20,8 @@ image-conda-run: &image-conda-install
 
 image-run: &image-tests
   name: Run image tests
+  environment:
+    MPLBACKEND: Agg
   command: |
     conda env list
     source activate sunpy-figure-tests-3.6

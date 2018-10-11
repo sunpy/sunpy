@@ -5,8 +5,6 @@ AIA Plot Example
 
 This is a very simple way to plot a sample AIA image.
 """
-from __future__ import print_function, division
-
 import matplotlib.pyplot as plt
 
 import sunpy.map

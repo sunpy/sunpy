@@ -34,6 +34,7 @@ _base_urls = (
 
 # the files should include necessary extensions
 _sample_files = {
+    "HMI_LOS_IMAGE": "HMI20110607_063211_los_lowres.fits",
     "AIA_131_IMAGE": "AIA20110607_063301_0131_lowres.fits",
     "AIA_171_IMAGE": "AIA20110607_063302_0171_lowres.fits",
     "AIA_211_IMAGE": "AIA20110607_063302_0211_lowres.fits",

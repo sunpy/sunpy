@@ -196,7 +196,9 @@ def write(fname, data, header, **kwargs):
 
     if isinstance(key_comments, dict):
         for k, v in key_comments.items():
-            fits_header.comments[k] = v
+            # Check that the Card for the comment exists before trying to write to it.
+            if k in fits_header:
+                fits_header.comments[k] = v
     elif key_comments:
         raise TypeError("KEYCOMMENTS must be a dictionary")
 

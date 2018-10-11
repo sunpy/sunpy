@@ -209,7 +209,7 @@ def convert_time_str(time_string, **kwargs):
 
 
 def parse_time(time_string, *, format=None, **kwargs):
-    """Given a time string will parse and return a datetime object.
+    """Given a time string will parse and return a `astropy.time.Time` object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
 

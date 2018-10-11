@@ -47,7 +47,7 @@ if not SPHINX_LT_17:
 try:
     from sphinx_astropy.conf.v1 import *
 except ImportError:
-    print('ERROR: the documentation requires the sphinx-astropy package to be installed')
+    print('ERROR: the documentation requires the "sphinx-astropy" package to be installed')
     sys.exit(1)
 
 try:
@@ -70,7 +70,29 @@ if on_rtd:
 try:
     import suds
 except ImportError:
-    print('ERROR: suds could not be imported and the documentation requires the suds-jerko package to be installed')
+    print('ERROR: suds could not be imported. Building the documentation requires '
+          'the "suds-jerko" package to be installed')
+    sys.exit(1)
+
+try:
+    import skimage
+except ImportError:
+    print('ERROR: skimage could not be imported. Building the documentation requires '
+          'the "scikit-image" package to be installed')
+    sys.exit(1)
+
+try:
+    import drms
+except ImportError:
+    print('ERROR: drms could not be imported. Building the documentation requires '
+          'the "drms" package to be installed')
+    sys.exit(1)
+
+try:
+    import glymur
+except ImportError:
+    print('ERROR: glymur could not be imported. Building the documentation requires '
+          'the "glymur" package to be installed')
     sys.exit(1)
 
 from sunpy import version as versionmod
