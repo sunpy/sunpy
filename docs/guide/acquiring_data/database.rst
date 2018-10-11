@@ -187,9 +187,9 @@ In section 3, more advanced formats of the slicing syntax are introduced.
     NAXIS
         2
     NAXIS1
-        1024Value  = 1.495978707e+11
+        1024
     NAXIS2
-        1024Value  = 1.495978707e+11
+        1024
     BLD_VERS
         V5R12X
     LVL_NUM
