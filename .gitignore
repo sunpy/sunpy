@@ -209,3 +209,5 @@ docs/generated
 docs/api/
 # This is incase you run the figure tests
 figure_test_images*
+
+tags

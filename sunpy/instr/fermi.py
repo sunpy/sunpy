@@ -7,10 +7,10 @@ from sunpy.extern.six.moves import urllib
 from collections import OrderedDict
 import tempfile
 
-import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import astropy.units as u
+from astropy.time import TimeDelta
 from astropy.coordinates import Longitude, Latitude
 
 from sunpy.time import parse_time, TimeRange
@@ -31,8 +31,8 @@ def download_weekly_pointing_file(date):
     Parameters
     ----------
 
-    date : `datetime.datetime`
-        A datetime object or other date format understood by the parse_time
+    date : `astropy.time.Time`
+        A `~astropy.time.Time` object or other date format understood by the parse_time
         function.
     """
 
@@ -51,7 +51,7 @@ def download_weekly_pointing_file(date):
 
     # find out which mission week corresponds to date
     time_diff = date - weekly_file_start
-    weekdiff = time_diff.days // 7
+    weekdiff = time_diff.to(u.day).value // 7
     week = weekdiff + base_week
     # weekstr = ('%03.0f' % week)
     weekstr = '{:03.0f}'.format(week)
@@ -87,8 +87,8 @@ def get_detector_sun_angles_for_time(time, file):
     Parameters
     ----------
 
-    time : `datetime.datetime`
-        A datetime object or other time format understood by the parse_time
+    time : `astropy.time.Time`
+        A `~astropy.time.Time` object or other time format understood by the parse_time
         function.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
@@ -126,8 +126,8 @@ def get_detector_sun_angles_for_date(date, file):
     Parameters
     ----------
 
-    date : `datetime.datetime`
-        A datetime object or other date format understood by the parse_time
+    date : `astropy.time.Time`
+        A `~astropy.time.Time` object or other date format understood by the parse_time
         function.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
@@ -135,7 +135,7 @@ def get_detector_sun_angles_for_date(date, file):
     """
 
     date = parse_time(date)
-    tran = TimeRange(date, date + datetime.timedelta(days=1))
+    tran = TimeRange(date, date + TimeDelta(1*u.day))
     scx, scz, times = get_scx_scz_in_timerange(tran, file)
 
     # retrieve the detector angle information in spacecraft coordinates
@@ -213,8 +213,8 @@ def get_scx_scz_at_time(time, file):
     Parameters
     ----------
 
-    time : `datetime.datetime`
-        A datetime object or other time format understood by the parse_time function.
+    time : `astropy.time.Time`
+        A `~astropy.time.Time` object or other time format understood by the parse_time function.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
          download_weekly_pointing_file function).
@@ -313,7 +313,7 @@ def nai_detector_radecs(detectors, scx, scz, time):
     scz : array-like
         Two-element tuple containing the RA/DEC information of the Fermi
         spacecraft Z-axis
-    time : `datetime.datetime`
+    time : `astropy.time.Time`
         The time corresponding to the input scx and scz values, in a format
         understandable by parse_time.
 
@@ -449,7 +449,7 @@ def separation_angle(radec1, radec2):
 
 def met_to_utc(timeinsec):
     """
-    Converts Fermi Mission Elapsed Time (MET) in seconds to a datetime object.
+    Converts Fermi Mission Elapsed Time (MET) in seconds to a `~astropy.time.Time` object.
 
     Parameters
     ----------
@@ -459,39 +459,32 @@ def met_to_utc(timeinsec):
 
     Returns
     -------
-    `datetime.datetime`
-        The input Fermi Mission Elapsed Time converted to a datetime object.
+    `astropy.time.Time`
+        The input Fermi Mission Elapsed Time converted to a `~astropy.time.Time` object.
 
     """
     # Times for GBM are in Mission Elapsed Time (MET).
     # The reference time for this is 2001-Jan-01 00:00.
     met_ref_time = parse_time('2001-01-01 00:00')
-    offset_from_utc = (
-        met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
-    time_in_utc = parse_time(timeinsec + offset_from_utc)
 
-    return time_in_utc
+    return met_ref_time + timeinsec * u.second
 
 
 def utc_to_met(time_ut):
     """
-    Converts a UT (in datetime format) to a Fermi Mission Elapsed Time (MET) float.
+    Converts a UT to a Fermi Mission Elapsed Time (MET) float.
 
     Parameters
     ----------
-    time_ut : 'datetime.datetime'
-        A datetime object in UT
+    time_ut : `astropy.time.Time`
+        A `~astropy.time.Time` object in UT
 
     Returns
     -------
-    'float'
+    `astropy.units.Quantity`
         The Fermi Mission Elapsed Time corresponding to the input UT
 
     """
     met_ref_time = parse_time('2001-01-01 00:00')
-    ut_seconds = (time_ut - parse_time('1979-01-01')).total_seconds()
-    offset_from_utc = (
-        met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
-    fermi_met = ut_seconds - offset_from_utc
 
-    return fermi_met
+    return (time_ut - met_ref_time).to(u.second)

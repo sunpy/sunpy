@@ -12,14 +12,14 @@ import posixpath
 import re
 import socket
 import warnings
-from datetime import datetime, timedelta
 
 import numpy as np
 from dateutil.relativedelta import relativedelta
 
 from astropy import units as u
+from astropy.time import TimeDelta
 
-from sunpy.time import TimeRange, parse_time
+from sunpy.time import TimeRange, parse_time, Time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.coordinates import get_sunearth_distance
 import sunpy.map
@@ -159,8 +159,8 @@ def parse_obssumm_dbase_file(filename):
             obssumm_filename.append(row[0])
             orbit_start.append(int(row[1]))
             orbit_end.append(int(row[2]))
-            start_time.append(datetime.strptime(row[3], '%d-%b-%y'))  # skip time
-            end_time.append(datetime.strptime(row[5], '%d-%b-%y'))  # skip time
+            start_time.append(Time.strptime(row[3], '%d-%b-%y'))  # skip time
+            end_time.append(Time.strptime(row[5], '%d-%b-%y'))  # skip time
             status_flag.append(int(row[7]))
             number_of_packets.append(int(row[8]))
 
@@ -203,7 +203,7 @@ def get_obssum_filename(time_range):
     """
     time_range = TimeRange(time_range)
 
-    delta = relativedelta(time_range.end, time_range.start)
+    delta = relativedelta(time_range.end.datetime, time_range.start.datetime)
     if delta.years > 0 or delta.months > 0:
         raise ValueError("Rhessi search results can not be found for a"
                          " time range crossing multiple months.")
@@ -215,9 +215,9 @@ def get_obssum_filename(time_range):
     dbase_file_name, _ = get_obssumm_dbase_file(time_range)
     dbase_dat = parse_obssumm_dbase_file(dbase_file_name)
 
-    index_number_start = time_range.start.day - 1
+    index_number_start = int(time_range.start.strftime('%d')) - 1  # This was `time_range.start.day``
     # If end is 0 set it to 1 so we always have at least one record.
-    index_number_end = time_range.end.day - 1 or index_number_start + 1
+    index_number_end = int(time_range.end.strftime('%d')) - 1 or index_number_start + 1
 
     filenames = dbase_dat.get('filename')[index_number_start:index_number_end]
     return [posixpath.join(get_base_url(), 'metadata', 'catalog', filename + 's')
@@ -286,7 +286,7 @@ def parse_obssumm_file(filename):
     afits = sunpy.io.read_file(filename)
     fits_header = afits[0].header
 
-    reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
+    reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0], format='utime')
     time_interval_sec = afits[5].data.field('TIME_INTV')[0]
 
     # The data stored in the FITS file are "compressed" countrates stored as
@@ -296,7 +296,8 @@ def parse_obssumm_file(filename):
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
 
-    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
+    time_array = parse_time(reference_time_ut) + \
+        TimeDelta(time_interval_sec * np.arange(dim) * u.second)
 
     labels = _build_energy_bands(label=afits[5].data.field('DIM1_UNIT')[0],
                                  bands=afits[5].data.field('DIM1_IDS')[0])
@@ -321,7 +322,8 @@ def parse_obssumm_hdulist(hdulist):
     """
     header = hdulist[0].header
 
-    reference_time_ut = parse_time(hdulist[5].data.field('UT_REF')[0])
+    reference_time_ut = parse_time(hdulist[5].data.field('UT_REF')[0],
+                                   format='utime')
     time_interval_sec = hdulist[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')
@@ -336,7 +338,8 @@ def parse_obssumm_hdulist(hdulist):
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
 
-    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
+    time_array = parse_time(reference_time_ut) + \
+        TimeDelta(time_interval_sec * np.arange(dim) * u.second)
 
     #  TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
@@ -491,7 +494,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     afits = sunpy.io.read_file(calibrated_event_list)
     info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
-    time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])
+    time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0], format='utime')
 
     image = np.zeros(image_dim)
 

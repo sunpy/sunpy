@@ -118,6 +118,9 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     def _parse_hdus(cls, hdulist):
         """Parses a RHESSI FITS HDU list form a FITS file."""
         header, d = rhessi.parse_obssumm_hdulist(hdulist)
+
+        # The time of dict d is astropy Time. But dataframe can only take datetime
+        d['time'] = d['time'].datetime
         header = MetaDict(OrderedDict(header))
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
         # Add the units data

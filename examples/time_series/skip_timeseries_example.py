@@ -96,7 +96,7 @@ combined_goes_ts.meta.get('telescop').values()
 # You can access a specific value within the TimeSeries data DataFrame using
 # all the normal Pandas methods.
 # For example, the row with the index of 2015-01-01 00:02:00.008000:
-ts_lyra.data.loc[parse_time('2011-06-07 00:02:00.010')]
+ts_lyra.data.loc[parse_time('2011-06-07 00:02:00.010').datetime]
 # Pandas will actually parse a string to a datetime automatically if it can:
 ts_lyra.data.loc['2011-06-07 00:02:00.010']
 # Pandas includes methods to find the indexes of the max/min values in a dataframe:

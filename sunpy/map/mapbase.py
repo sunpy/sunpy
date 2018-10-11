@@ -218,7 +218,7 @@ class GenericMap(NDData):
                    Detector:\t\t {det}
                    Measurement:\t\t {meas}
                    Wavelength:\t\t {wave}
-                   Observation Date:\t {date:{tmf}}
+                   Observation Date:\t {date}
                    Exposure Time:\t\t {dt:f}
                    Dimension:\t\t {dim}
                    Coordinate System:\t {coord.name}
@@ -226,7 +226,8 @@ class GenericMap(NDData):
                    Reference Pixel:\t {refpix}
                    Reference Coord:\t {refcoord}
                    """).format(obs=self.observatory, inst=self.instrument, det=self.detector,
-                               meas=self.measurement, wave=self.wavelength, date=self.date,
+                               meas=self.measurement, wave=self.wavelength,
+                               date=self.date.strftime(TIME_FORMAT),
                                dt=self.exposure_time,
                                dim=u.Quantity(self.dimensions),
                                scale=u.Quantity(self.scale),
@@ -266,7 +267,7 @@ class GenericMap(NDData):
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isoformat()
+        w2.wcs.dateobs = self.date.iso
         w2.heliographic_observer = self.observer_coordinate
         w2.rsun = self.rsun_meters
 
@@ -369,9 +370,10 @@ class GenericMap(NDData):
 
     def _base_name(self):
         """Abstract the shared bit between name and latex_name"""
-        return "{nickname} {{measurement}} {date:{tmf}}".format(nickname=self.nickname,
-                                                                date=parse_time(self.date),
-                                                                tmf=TIME_FORMAT)
+        return "{nickname} {{measurement}} {date}".format(
+            nickname=self.nickname,
+            date=parse_time(self.date).strftime(TIME_FORMAT)
+        )
 
     @property
     def name(self):

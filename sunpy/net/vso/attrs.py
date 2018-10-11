@@ -17,9 +17,11 @@ Instrument('aia') & Instrument('eit').
 """
 from __future__ import absolute_import
 
-from datetime import datetime
+import collections
 
 from astropy import units as u
+
+from sunpy.time import Time as apTime
 
 from sunpy.time import TimeRange as _TimeRange
 from sunpy.net.attr import (
@@ -187,6 +189,15 @@ class Time(Attr, _Range):
 
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
+
+    def __hash__(self):
+        if not (isinstance(self.start, collections.Hashable) and
+                isinstance(self.end, collections.Hashable)):
+            # The hash is the hash of the start and end time
+            return hash((self.start.jd1, self.start.jd2, self.start.scale,
+                         self.end.jd1, self.end.jd2, self.end.scale))
+        else:
+            return super().__hash__()
 
     def collides(self, other):
         return isinstance(other, self.__class__)
@@ -613,11 +624,11 @@ def _(attr, results):
         if
         it.time.end is not None
         and
-        attr.min <= datetime.strptime(it.time.end, TIMEFORMAT)
+        attr.min <= apTime.strptime(it.time.end, TIMEFORMAT)
         and
         it.time.start is not None
         and
-        attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
+        attr.max >= apTime.strptime(it.time.start, TIMEFORMAT)
     )
 
 

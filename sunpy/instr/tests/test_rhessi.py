@@ -12,6 +12,8 @@ import sunpy.map
 import sunpy.data.test
 import sunpy.instr.rhessi as rhessi
 from sunpy.extern.six.moves.urllib.error import URLError
+from sunpy.time import parse_time
+from sunpy.time.astropy_time import _is_time_equal
 
 import numpy as np
 import pytest
@@ -23,7 +25,7 @@ testpath = sunpy.data.test.rootdir
 def test_backprojection():
     amap = rhessi.backprojection(os.path.join(testpath, 'hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits'))
     assert isinstance(amap, sunpy.map.GenericMap)
-    assert amap.date == datetime(2002, 2, 20, 11, 6, 21)
+    assert _is_time_equal(amap.date, parse_time((2002, 2, 20, 11, 6, 21)))
 
 
 def test_get_obssumm_dbase_file():
@@ -52,11 +54,11 @@ def test_parse_obssum_dbase_file():
     assert obssum['orb_end'][0] == 0
     assert obssum['orb_end'][-1] == 0
 
-    assert obssum['start_time'][0] == datetime(2011, 4, 1, 0, 0, 0)
-    assert obssum['start_time'][-1] == datetime(2011, 4, 30, 0, 0, 0)
+    assert obssum['start_time'][0] == parse_time((2011, 4, 1, 0, 0, 0))
+    assert obssum['start_time'][-1] == parse_time((2011, 4, 30, 0, 0, 0))
 
-    assert obssum['end_time'][0] == datetime(2011, 4, 2, 0, 0, 0)
-    assert obssum['end_time'][-1] == datetime(2011, 5, 1, 0, 0, 0)
+    assert obssum['end_time'][0] == parse_time((2011, 4, 2, 0, 0, 0))
+    assert obssum['end_time'][-1] == parse_time((2011, 5, 1, 0, 0, 0))
 
     assert obssum['status_flag'][0] == 0
     assert obssum['status_flag'][-1] == 0
@@ -212,8 +214,8 @@ def test_parse_obssumm_dbase_file():
                                       'hsi_obssumm_19721102_144.fit']
     assert dbase_data['orb_st'] == [7, 9]
     assert dbase_data['orb_end'] == [8, 10]
-    assert dbase_data['start_time'] == [datetime(1972, 11, 1, 0, 0), datetime(1972, 11, 2, 0, 0)]
-    assert dbase_data['end_time'] == [datetime(1972, 11, 2, 0, 0), datetime(1972, 11, 3, 0, 0)]
+    assert dbase_data['start_time'] == [parse_time((1972, 11, 1, 0, 0)), parse_time((1972, 11, 2, 0, 0))]
+    assert dbase_data['end_time'] == [parse_time((1972, 11, 2, 0, 0)), parse_time((1972, 11, 3, 0, 0))]
     assert dbase_data['status_flag'] == [3, 4]
     assert dbase_data['npackets'] == [2, 1]
 
@@ -229,8 +231,8 @@ def parsed_dbase():
     return {'filename': ['hsi_obssumm_20031101_139.fit', 'hsi_obssumm_20031102_144.fit'],
             'orb_st': [0, 0],
             'orb_end': [0, 0],
-            'start_time': [datetime(2003, 11, 1, 0, 0), datetime(2003, 11, 2, 0, 0)],
-            'end_time': [datetime(2003, 11, 2, 0, 0), datetime(2003, 11, 3, 0, 0)],
+            'start_time': [parse_time((2003, 11, 1, 0, 0)), parse_time((2003, 11, 2, 0, 0))],
+            'end_time': [parse_time((2003, 11, 2, 0, 0)), parse_time((2003, 11, 3, 0, 0))],
             'status_flag': [0, 0],
             'npackets': [0, 0]}
 

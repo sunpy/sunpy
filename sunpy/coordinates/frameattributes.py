@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division
 
-import datetime
 import warnings
 
 import astropy.units as u
-from astropy.time import Time
+from sunpy.time import Time
 from astropy.coordinates import TimeAttribute, CoordinateAttribute, get_body_barycentric, ICRS
 
 from sunpy.extern import six
@@ -59,22 +58,13 @@ class TimeFrameAttributeSunPy(TimeAttribute):
         if value is None:
             return None, False
 
-        elif value == 'now':
-            return Time(datetime.datetime.now()), True
-
         elif isinstance(value, Time):
             out = value
             converted = False
 
-        elif isinstance(value, six.string_types):
-            try:
-                out = Time(parse_time(value))
-            except Exception as err:
-                raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
-            converted = True
         else:
             try:
-                out = Time(value)
+                out = parse_time(value)
             except Exception as err:
                 raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
             converted = True

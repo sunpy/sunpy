@@ -67,7 +67,7 @@ def solar_cycle_number(t='now'):
 
     """
     time = parse_time(t)
-    result = (time.year + 8) % 28 + 1
+    result = (int(time.strftime('%Y')) + 8) % 28 + 1
     return result
 
 
@@ -154,7 +154,7 @@ def carrington_rotation_number(t='now'):
     Return the Carrington Rotation number
 
     """
-    jd = julian_day(t)
+    jd = parse_time(t).jd
     result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
     return result
 
@@ -350,7 +350,7 @@ def heliographic_solar_center(t='now'):
     Returns the position of the solar center in heliographic coordinates.
 
     """
-    jd = julian_day(t)
+    jd = parse_time(t).jd
     T = julian_centuries(t)
     # Heliographic coordinates in degrees
     theta = ((jd - 2398220) * 360 / 25.38) * u.deg

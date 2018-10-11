@@ -21,11 +21,11 @@ import warnings
 import socket
 import itertools
 
-from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
+from astropy.time import TimeDelta
 import astropy.units as u
 from astropy.table import QTable as Table
 
@@ -38,6 +38,7 @@ from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename
 from sunpy.time import parse_time
+from sunpy.time import Time as apTime
 
 from sunpy.util import deprecated
 from sunpy.extern import six
@@ -160,10 +161,10 @@ class QueryResponse(list):
     def time_range(self):
         """ Return total time-range all records span across. """
         return (
-            datetime.strptime(
+            apTime.strptime(
                 min(record.time.start for record in self
                     if record.time.start is not None), TIMEFORMAT),
-            datetime.strptime(
+            apTime.strptime(
                 max(record.time.end for record in self
                     if record.time.end is not None), TIMEFORMAT)
         )
@@ -186,7 +187,7 @@ class QueryResponse(list):
             if time is None:
                 return ['None']
             if record.time.start is not None:
-                return [datetime.strftime(parse_time(time), TIME_FORMAT)]
+                return [apTime.strftime(parse_time(time), TIME_FORMAT)]
             else:
                 return ['N/A']
 
@@ -440,9 +441,9 @@ class VSOClient(object):
 
         Parameters
         ----------
-        tstart : datetime.datetime
+        tstart : `astropy.time.Time`
             Start of the time-range in which records are searched.
-        tend : datetime.datetime
+        tend : `astropy.time.Time`
             Start of the time-range in which records are searched.
         date : str
             (start date) - (end date)
@@ -574,9 +575,9 @@ class VSOClient(object):
     def latest(self):
         """ Return newest record (limited to last week). """
         return self.query_legacy(
-            datetime.utcnow() - timedelta(7),
-            datetime.utcnow(),
-            time_near=datetime.utcnow()
+            apTime.now() - TimeDelta(7*u.day),
+            apTime.now(),
+            time_near=apTime.now()
         )
 
     def fetch(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),

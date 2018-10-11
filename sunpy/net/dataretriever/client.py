@@ -6,7 +6,6 @@ from __future__ import print_function, absolute_import
 
 import copy
 import os
-import datetime
 from abc import ABCMeta
 from collections import OrderedDict, namedtuple
 from functools import partial

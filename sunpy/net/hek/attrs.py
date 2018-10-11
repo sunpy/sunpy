@@ -19,7 +19,6 @@ result in multiple requests to the server which might make them less efficient.
 """
 from __future__ import absolute_import
 
-from datetime import datetime
 from sunpy.net import attr
 from sunpy.time import parse_time
 
@@ -120,7 +119,7 @@ class Time(attr.Attr):
 
     @classmethod
     def dt(cls, start, end):
-        return cls(datetime(*start), datetime(*end))
+        return cls(parse_time(start), parse_time(end))
 
 
 # pylint: disable=R0913
