@@ -11,8 +11,6 @@ Then count the approximate number of regions of interest.
 
 ##############################################################################
 # First, import the modules we will need:
-from __future__ import print_function, division
-
 from scipy import ndimage
 import matplotlib.pyplot as plt
 

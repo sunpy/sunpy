@@ -10,10 +10,7 @@ A simple example showing how to download data from the VSO with Fido.
 # Fido is the primary interface to search for and download data and
 # will search the VSO if appropriate. First import it and the search
 # attributes.
-from __future__ import print_function, division
-
 import astropy.units as u
-
 from sunpy.net import Fido, attrs as a
 
 ###############################################################################

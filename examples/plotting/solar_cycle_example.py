@@ -5,8 +5,6 @@ The Solar Cycle
 
 This example shows the current and possible next solar cycle.
 """
-from __future__ import print_function, division
-
 import datetime
 import matplotlib.pyplot as plt
 
@@ -14,25 +12,25 @@ import sunpy.timeseries as ts
 from sunpy.data.sample import NOAAINDICES_TIMESERIES, NOAAPREDICT_TIMESERIES
 
 ###############################################################################
-# For this example we will use the SunPy sample data, if you want the current
-# data, delete the argument to the ``create`` function. i.e.
-# ``noaa = lc.NOAAIndicesLightCurve.create()``
+# For this example we will use the SunPy sample data. This code snippet grabs
+# the most current NOAA solar cycle data as a ``TimeSeries``
+# (see :ref:`timeseries_code_ref`).
 
 noaa = ts.TimeSeries(NOAAINDICES_TIMESERIES, source='noaaindices')
 noaa_predict = ts.TimeSeries(NOAAPREDICT_TIMESERIES, source='noaapredictindices')
 
 ###############################################################################
-# Next lets grab the data again to create a new data structure that we will
-# shift by 12 years to simulate the next solar cycle. We will truncate the
-# data to only plot what is necessary.
+# Next, we grab a new copy of the data and shift it forward 12 years to
+# simulate the next solar cycle. We will also truncate the data to ensure
+# that we only plot what is necessary.
 
 noaa2 = ts.TimeSeries(NOAAINDICES_TIMESERIES, source='noaaindices')
 noaa2.data = noaa2.data.shift(2, freq=datetime.timedelta(days=365*12))
 noaa2 = noaa2.truncate('2021/04/01', '2030/01/01')
 
 ###############################################################################
-# Finally lets plot everything together with some arbitrary range for the
-# strength of the next solar cycle.
+# Finally, we plot both ``noaa`` and ``noaa2`` together, with an arbitrary
+# range for the strength of the next solar cycle.
 
 plt.plot(noaa.data.index, noaa.data['sunspot RI'], label='Sunspot Number')
 plt.plot(noaa_predict.data.index, noaa_predict.data['sunspot'],

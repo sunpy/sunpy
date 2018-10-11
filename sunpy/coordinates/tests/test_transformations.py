@@ -74,9 +74,8 @@ def test_hpc_hpc_sc():
 
 
 def test_hpc_hpc_null():
-    obstime = "2011-01-01"
-    hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec, obstime=obstime)
-    hpc_out = Helioprojective(obstime=obstime)
+    hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec)
+    hpc_out = Helioprojective()
 
     hpc_new = hpc_in.transform_to(hpc_out)
 
@@ -216,8 +215,7 @@ def test_hgs_cartesian_rep_to_hgc():
 def test_hcc_to_hpc_different_observer():
     # This test checks transformation HCC->HPC in the case where the HCC and HPC frames are
     # defined by different observers.
-    # NOTE: This test is currently expected to fail because the HCC<->HPC transformation does
-    # not account for observer location. It will be updated once this is fixed.
+
     rsun = 1*u.m
     D0 = 1*u.km
     L0 = 1*u.deg
@@ -226,15 +224,16 @@ def test_hcc_to_hpc_different_observer():
     hcc_frame = Heliocentric(observer=observer_1)
     hpc_frame = Helioprojective(observer=observer_2)
     hcccoord = SkyCoord(x=rsun, y=rsun, z=rsun, frame=hcc_frame)
-    with pytest.raises(ConvertError):
-        hcccoord.transform_to(hpc_frame)
-
+    hpccoord_out = hcccoord.transform_to(hpc_frame)
+    hpccoord_expected = hcccoord.transform_to(HeliographicStonyhurst).transform_to(hpc_frame)
+    assert_quantity_allclose(hpccoord_out.Tx, hpccoord_expected.Tx)
+    assert_quantity_allclose(hpccoord_out.Ty, hpccoord_expected.Ty)
+    assert_quantity_allclose(hpccoord_out.distance, hpccoord_expected.distance)
 
 def test_hpc_to_hcc_different_observer():
     # This test checks transformation HPC->HCC in the case where the HCC and HPC frames are
     # defined by different observers.
-    # NOTE: This test is currently expected to fail because the HCC<->HPC transformation does
-    # not account for observer location. It will be updated once this is fixed.
+
     D0 = 1*u.km
     L0 = 1*u.deg
     observer_1 = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
@@ -242,5 +241,37 @@ def test_hpc_to_hcc_different_observer():
     hcc_frame = Heliocentric(observer=observer_1)
     hpc_frame = Helioprojective(observer=observer_2)
     hpccoord = SkyCoord(Tx=0*u.arcsec, Ty=0*u.arcsec, frame=hpc_frame)
-    with pytest.raises(ConvertError):
-        hpccoord.transform_to(hcc_frame)
+    hcccoord_out = hpccoord.transform_to(hcc_frame)
+    hcccoord_expected = hpccoord.transform_to(HeliographicStonyhurst).transform_to(hcc_frame)
+    assert_quantity_allclose(hcccoord_out.x, hcccoord_expected.x)
+    assert_quantity_allclose(hcccoord_out.y, hcccoord_expected.y)
+    assert_quantity_allclose(hcccoord_out.z, hcccoord_expected.z)
+
+def test_hcc_to_hpc_same_observer():
+    # This test checks transformation HCC->HPC in the case of same observer
+
+    rsun = 1*u.m
+    D0 = 1*u.km
+    observer = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
+    hcc_frame = Heliocentric(observer=observer)
+    hpc_frame = Helioprojective(observer=observer)
+    hcccoord = SkyCoord(x=rsun, y=rsun, z=rsun, frame=hcc_frame)
+    hpccoord_out = hcccoord.transform_to(hpc_frame)
+    hpccoord_expected = hcccoord.transform_to(HeliographicStonyhurst).transform_to(hpc_frame)
+    assert_quantity_allclose(hpccoord_out.Tx, hpccoord_expected.Tx)
+    assert_quantity_allclose(hpccoord_out.Ty, hpccoord_expected.Ty)
+    assert_quantity_allclose(hpccoord_out.distance, hpccoord_expected.distance)
+
+def test_hpc_to_hcc_same_observer():
+    # This test checks transformation HPC->HCC in the case of same observer
+
+    D0 = 1 * u.km
+    observer = HeliographicStonyhurst(lat=0 * u.deg, lon=0 * u.deg, radius=D0)
+    hcc_frame = Heliocentric(observer=observer)
+    hpc_frame = Helioprojective(observer=observer)
+    hpccoord = SkyCoord(Tx=0 * u.arcsec, Ty=0 * u.arcsec, frame=hpc_frame)
+    hcccoord_out = hpccoord.transform_to(hcc_frame)
+    hcccoord_expected = hpccoord.transform_to(HeliographicStonyhurst).transform_to(hcc_frame)
+    assert_quantity_allclose(hcccoord_out.x, hcccoord_expected.x)
+    assert_quantity_allclose(hcccoord_out.y, hcccoord_expected.y)
+    assert_quantity_allclose(hcccoord_out.z, hcccoord_expected.z)
