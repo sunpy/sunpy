@@ -1,10 +1,14 @@
 from __future__ import absolute_import
 
 from sunpy.time import parse_time
+from sunpy.util import deprecated
 
 __all__ = ['julian_day', 'julian_centuries']
 
 
+@deprecated("1.0",
+            "'julian_day' is deprecated, use 'sunpy.time.parse_time(time).jd' instead",
+            alternative='sunpy.time.parse_time')
 def julian_day(t='now'):
     """
     Wrap a UTC -> JD conversion from astropy.
@@ -17,4 +21,4 @@ def julian_centuries(t='now'):
     DAYS_IN_JULIAN_CENTURY = 36525.0
 
     # J1900.0 is 2415021.0
-    return (julian_day(t) - 2415020.0) / DAYS_IN_JULIAN_CENTURY
+    return (parse_time(t).jd - 2415020.0) / DAYS_IN_JULIAN_CENTURY
