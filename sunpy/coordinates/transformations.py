@@ -64,9 +64,9 @@ def _observers_are_equal(obs_1, obs_2, string_ok=False):
     if not (isinstance(obs_1, BaseCoordinateFrame) and isinstance(obs_2, BaseCoordinateFrame)):
         raise ValueError("To compare two observers, both must be instances of BaseCoordinateFrame. "
                          "Cannot compare two observers {} and {}.".format(obs_1, obs_2))
-    return (quantity_allclose(obs_1.lat, obs_2.lat) and
-            quantity_allclose(obs_1.lon, obs_2.lon) and
-            quantity_allclose(obs_1.radius, obs_2.radius))
+    return (u.allclose(obs_1.lat, obs_2.lat) and
+            u.allclose(obs_1.lon, obs_2.lon) and
+            u.allclose(obs_1.radius, obs_2.radius))
 
 
 # =============================================================================
