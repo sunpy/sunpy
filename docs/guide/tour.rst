@@ -181,15 +181,7 @@ keys.::
 
     >>> solar_constants = con.constants
     >>> solar_constants.keys()
-    dict_keys(['mass', 'radius', 'luminosity', 'mean distance',
-               'perihelion distance', 'aphelion distance', 'age',
-               'solar flux unit', 'visual magnitude', 'average angular size',
-               'surface area', 'average density', 'surface gravity',
-               'moment of inertia', 'volume', 'escape velocity', 'oblateness',
-               'metallicity', 'sunspot cycle', 'average intensity',
-               'effective temperature', 'mass conversion rate', 'center density',
-               'center temperature', 'absolute magnitude', 'mean energy production',
-               'ellipticity', 'GM'])
+    dict_keys(['mass', 'radius', 'luminosity', 'mean distance', 'perihelion distance', 'aphelion distance', 'age', 'solar flux unit', 'visual magnitude', 'average angular size', 'surface area', 'average density', 'surface gravity', 'moment of inertia', 'volume', 'escape velocity', 'oblateness', 'metallicity', 'sunspot cycle', 'average intensity', 'effective temperature', 'mass conversion rate', 'center density', 'center temperature', 'absolute magnitude', 'mean energy production', 'ellipticity', 'GM'])
 
 You can also use the function `sunpy.constants.print_all()` to print out a table of all of the values
 available. These constants are provided as a convenience so that everyone is using the same

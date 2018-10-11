@@ -177,7 +177,7 @@ update method, with the explicit user-given values taking precedence.
 A time series holds both data as well as meta data and units data. The meta data
 for the time series is accessed by: ::
 
-    >>> header = my_timeseries.meta
+    >>> header = my_timeseries.meta  # doctest: +SKIP
 
 This references the `~sunpy.timeseries.metadata.TimeSeriesMetaData` object with
 the header information as read from the source files. A word of caution: many
@@ -195,7 +195,7 @@ data you have available use: ::
 
 You can also get a quick overview of that data using: ::
 
-    >>> my_timeseries.data.info()
+    >>> my_timeseries.data.info() # doctest: +REMOTE_DATA
     <class 'pandas.core.frame.DataFrame'>
     DatetimeIndex: 42177 entries, 2011-06-06 23:59:59.961999 to 2011-06-07 23:59:57.631999
     Data columns (total 2 columns):
@@ -208,24 +208,24 @@ Time series are columnar data so to get at a particular datum you need to
 first index the column, then the element you want. To get the names of the
 available columns: ::
 
-    >>> my_timeseries.data.columns
+    >>> my_timeseries.data.columns # doctest: +REMOTE_DATA
     Index(['xrsa', 'xrsb'], dtype='object')
 
 You can access the 0th element in the column `xrsa` with: ::
 
-    >>> my_timeseries.data['xrsa'][0]
+    >>> my_timeseries.data['xrsa'][0]  # doctest: +REMOTE_DATA
     1e-09
 
 You can also grab all of the data at a particular time: ::
 
-    >>> my_timeseries.data['xrsa']['2011-06-07 00:00:02.008999']
+    >>> my_timeseries.data['xrsa']['2011-06-07 00:00:02.008999']  # doctest: +REMOTE_DATA
     1e-09
 
 This will return a list of entries with times that match the accuracy of the time
 you provide. You can consider the data as x or y values: ::
 
-    >>> x = my_timeseries.data.index
-    >>> y = my_timeseries.data.values
+    >>> x = my_timeseries.data.index  # doctest: +REMOTE_DATA
+    >>> y = my_timeseries.data.values  # doctest: +REMOTE_DATA
 
 You can read more about indexing at the `pandas documentation website
 <http://pandas.pydata.org/pandas-docs/stable/>`_.
@@ -235,7 +235,7 @@ given column using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.quant
 method, this uses the values stored in the data and units stored in the units
 dictionary to determine the `~astropy.units.quantity.Quantity`: ::
 
-    >>> quantity = my_timeseries.quantity('xrsa')
+    >>> quantity = my_timeseries.quantity('xrsa')  # doctest: +REMOTE_DATA
 
 4. Plotting
 -----------
@@ -277,15 +277,15 @@ Since the timeseries data is stored as a Pandas `~pandas.core.frame.DataFrame`
 you can easily modify the data directly using all of the usual Pandas methods:
 for example, you can modify a single cells value using: ::
 
-    >>> my_timeseries.data['xrsa'][0] = 0.1
+    >>> my_timeseries.data['xrsa'][0] = 0.1  # doctest: +REMOTE_DATA
 
 Or similarly using a datetime values (as string or datetime object): ::
 
-    >>> my_timeseries.data['xrsa']['2012-06-01 23:59:45.061999'] = 1
+    >>> my_timeseries.data['xrsa']['2012-06-01 23:59:45.061999'] = 1  # doctest: +REMOTE_DATA
 
 You can even change all the values for a given time: ::
 
-    >>> my_timeseries.data['xrsa']['2012-06-01 00:00'] = 1
+    >>> my_timeseries.data['xrsa']['2012-06-01 00:00'] = 1 # doctest: +REMOTE_DATA
 
 Note, you will need to be careful to consider units when modifying the
 TimeSeries data directly. For further details about editing Pandas DataFames you
@@ -296,8 +296,8 @@ method which will either add a new column or update a current column if the
 colname is already present. This can take numpy array or preferably an Astropy
 `~astropy.units.quantity.Quantity` value.  For example: ::
 
-    >>> values = u.Quantity(my_timeseries.data['xrsa'].values[:-2], my_timeseries.units['xrsa']) * 20.5
-    >>> my_timeseries.add_column('new col', values)  # doctest: +ELLIPSIS
+    >>> values = u.Quantity(my_timeseries.data['xrsa'].values[:-2], my_timeseries.units['xrsa']) * 20.5 # doctest: +REMOTE_DATA
+    >>> my_timeseries.add_column('new col', values)  # doctest: +ELLIPSIS +REMOTE_DATA
     <sunpy.timeseries.sources.goes.XRSTimeSeries object at ...>
 
 Note that the values will be converted into the column units if an Astropy
@@ -315,7 +315,7 @@ method. For example, to trim our GOES data into a period of interest use: ::
 
     >>> from sunpy.time import TimeRange
     >>> tr = TimeRange('2012-06-01 05:00','2012-06-01 06:30')
-    >>> my_timeseries_trunc = my_timeseries.truncate(tr)
+    >>> my_timeseries_trunc = my_timeseries.truncate(tr) # doctest: +REMOTE_DATA
 
 This takes a number of different arguments, such as the start and end dates (as
 datetime or string objects) or a `~sunpy.time.TimeRange` as used above. Note
@@ -324,7 +324,7 @@ object, which may include dropping metadata entries for data totally cut out
 from the TimeSeries.  If you want to truncate using slice-like values you can,
 for example taking every 2nd value from 0 to 10000 can be done using: ::
 
-    >>> my_timeseries_trunc = my_timeseries.truncate(0,100000,2)
+    >>> my_timeseries_trunc = my_timeseries.truncate(0,100000,2) # doctest: +REMOTE_DATA
 
 Caution should be used when removing values from the data manually, the
 TimeSeries can't guarantee Astropy units are correctly preserved when you
@@ -337,13 +337,13 @@ Because the data is stored in a Pandas `~pandas.core.frame.DataFrame` object you
 can manipulate it using normal Pandas methods, such as the `~pandas.DataFrame.resample`
 method.  To downsample you can use: ::
 
-    >>> downsampled_dataframe = my_timeseries_trunc.data.resample('10T').mean()
+    >>> downsampled_dataframe = my_timeseries_trunc.data.resample('10T').mean() # doctest: +REMOTE_DATA
 
 Note, here ``10T`` means sample every 10 minutes and 'mean' is the method used
 to combine the data. Alternatively the sum method is often used.
 You can also upsample, such as: ::
 
-    >>> upsampled_data = my_timeseries_trunc.data.resample('30S').ffill()
+    >>> upsampled_data = my_timeseries_trunc.data.resample('30S').ffill() # doctest: +REMOTE_DATA
 
 Note, here we upsample to 30 second intervals using ``30S`` and use the pandas
 fill-forward method. Alternatively the back-fill method could be used.  Caution
@@ -396,7 +396,7 @@ If you want to take the data from your TimeSeries and use it as a `~astropy.tabl
 this can be done using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.to_table`
 method.  For example: ::
 
-    >>> table = my_timeseries_trunc.to_table()
+    >>> table = my_timeseries_trunc.to_table() # doctest: +REMOTE_DATA
 
 Note that this `~astropy.table.table.Table` will contain a mixin column for
 containing the Astropy `~astropy.time.core.Time` object representing the index,
@@ -405,7 +405,7 @@ reasons for doing this is that Astropy `~sunpy.timeseries.timeseriesbase.Generic
 objects have some very nice options for viewing the data, including the basic
 console view: ::
 
-    >>> table
+    >>> table # doctest: +REMOTE_DATA
     <Table length=21089>
                  date               xrsa     xrsb
                                    W / m2   W / m2
@@ -452,12 +452,12 @@ created by combining/concatenating multiple TimeSeries source files together
 into one and to keep a reliable track of all the metadata relevant to each cell,
 column or row.  The metadata can be accessed by: ::
 
-    >>> meta = my_timeseries.meta
+    >>> meta = my_timeseries.meta # doctest: +REMOTE_DATA
 
 You can easily get an overview of the metadata, this will show you a basic
 representation of the metadata entries that are relevant to this TimeSeries. ::
 
-    >>> meta
+    >>> meta # doctest: +REMOTE_DATA
     |-------------------------------------------------------------------------------------------------|
     |TimeRange                  | Columns         | Meta                                              |
     |-------------------------------------------------------------------------------------------------|
@@ -496,7 +496,7 @@ advantage of having optional keyword arguments that allows you to set the depth
 (number of rows for each entry) and width (total number of characters wide)
 to better fit your output.  For example: ::
 
-    >>> meta_str = meta.to_string(depth = 20, width=99)
+    >>> meta_str = meta.to_string(depth = 20, width=99) # doctest: +REMOTE_DATA
 
 Similar to the TimeSeries, the metadata has some properties for convenient
 access to the global metadata details, including
@@ -524,8 +524,8 @@ object returned which contains only the relevant entries. You can then use the
 `~sunpy.timeseries.metadata.TimeSeriesMetaData.metas` property to get a list of
 just the relevant `~sunpy.util.metadata.MetaDict` objects.  For example: ::
 
-    >>> tsmd_return = my_timeseries.meta.find(colname='xrsa', time='2012-06-01 00:00:33.904999')
-    >>> tsmd_return.metas
+    >>> tsmd_return = my_timeseries.meta.find(colname='xrsa', time='2012-06-01 00:00:33.904999') # doctest: +REMOTE_DATA
+    >>> tsmd_return.metas # doctest: +REMOTE_DATA
     []
 
 Note, the colname and time filters are optional, but omitting both filters just
@@ -539,8 +539,8 @@ object, but removes all unwanted key/value pairs.  The result can be converted
 into a simple list of strings using the `~sunpy.timeseries.metadata.TimeSeriesMetaData.values`
 method: ::
 
-    >>> tsmd_return = my_timeseries.meta.get('telescop', colname='xrsa')
-    >>> tsmd_return.values()
+    >>> tsmd_return = my_timeseries.meta.get('telescop', colname='xrsa') # doctest: +REMOTE_DATA
+    >>> tsmd_return.values() # doctest: +REMOTE_DATA
     ['GOES 15']
 
 Note `~sunpy.timeseries.metadata.TimeSeriesMetaData.values` removes duplicate
@@ -549,7 +549,7 @@ entries efficiently using the `~sunpy.timeseries.metadata.TimeSeriesMetaData.upd
 method which takes a dictionary argument and updates the values to each of the
 dictionaries that match the given colname and time filters, for example: ::
 
-    >>> my_timeseries.meta.update({'telescop': 'G15'}, colname='xrsa', overwrite=True)
+    >>> my_timeseries.meta.update({'telescop': 'G15'}, colname='xrsa', overwrite=True) # doctest: +REMOTE_DATA
 
 Here we have to specify the overwrite=False keyword parameter to allow us to
 overwrite values for keys already present in the `~sunpy.util.metadata.MetaDict`
