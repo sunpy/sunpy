@@ -104,7 +104,7 @@ Therefore, ::
 
 returns the expected answer but ::
 
-    >>> myfunction(20 * u.km)
+    >>> myfunction(20 * u.km) # doctest:+ELLIPSIS
     Traceback (most recent call last):
     ...
     astropy.units.core.UnitsError: Argument 'myangle' to function 'myfunction' must be in units convertible to 'arcsec'.

@@ -66,7 +66,7 @@ through arithmetic operations when appropriate::
 
 However, operations which do not make physical sense for the units specified will cause an error::
 
-  >>> length + time
+  >>> length + time # doctest: +ELLIPSIS
   Traceback (most recent call last):
   ...
   astropy.units.core.UnitConversionError: Can only apply 'add' function to quantities with compatible dimensions

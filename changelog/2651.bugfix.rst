@@ -1,1 +1,0 @@
-The incorrect DATE header value was being used as the reference time for Lyra.

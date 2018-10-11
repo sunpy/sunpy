@@ -19,6 +19,8 @@ addons:
         packages:
             - libatlas-dev
             - liblapack-dev
+            - libopenjpeg-dev
+            - libopenjpeg2
             - gfortran
             - graphviz
             - texlive-latex-extra
@@ -36,19 +38,18 @@ env:
         - SETUP_CMD='test --coverage'
         - CONDA_CHANNELS='sunpy'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas pytest-astropy suds-jurko glymur pytest-xdist dask drms sphinx-astropy pytest-cov hypothesis'
-        - PIP_DEPENDENCIES='pytest-rerunfailures sunpy-sphinx-theme pytest-sugar'
-        - EVENT_TYPE='push pull_request cron'
+        - PIP_DEPENDENCIES='pytest-rerunfailures pytest-sugar'
+        - EVENT_TYPE='push pull_request'
         - MPLBACKEND='agg'
         - JOB='test'
 
 stages:
    # Do the install jobs and one offline test, it will not proceed if any fail
    - name: Initial tests
-   # Cron only tests
-   - name: Cron tests
-     if: type = cron
    # Do the rest of the tests
    - name: Comprehensive tests
+   # Do more tests that were cron jobs
+   - name: more tests
 
 matrix:
 
@@ -96,44 +97,24 @@ matrix:
            stage: Comprehensive tests
            env: ASTROPY_VERSION='lts' PYTHON_VERSION=3.5
 
-         - python: 3.6
-           stage: Cron tests
-           # Pip Upstream checks
-           env: SETUP_CMD='test' CONDA_DEPENDENCIES='' PIP_DEPENDENCIES='' JOB='pip'
-
-        # Cron tests below this line
+        # MORE tests below this line
          - os: osx
-           stage: Cron tests
+           stage: more tests
            language: generic
            env: PYTHON_VERSION=3.6
 
          - python: 3.6
-           stage: Cron tests
+           stage: more tests
            env: ASTROPY_VERSION='dev'
 
          - python: 3.6
-           stage: Cron tests
+           stage: more tests
            env: NUMPY_VERSION='dev'
-
-         - python: 3.6
-           stage: Cron tests
-           env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
-
-         - python: 3.5
-           stage: Cron tests
-           env: SETUP_CMD='test --figure-only' ASTROPY_VERSION='dev'
-                CONDA_DEPENDENCIES='astropy' PYTHON_VERSION=3.5
 
          # Previous NumPy is tested on an older Python version
          - python: 3.5
-           stage: Cron tests
+           stage: more tests
            env: NUMPY_VERSION=$PREVIOUS_NUMPY PYTHON_VERSION=3.5
-
-         - python: 3.6
-           stage: Cron tests
-           # Pip Upstream checks
-           env: SETUP_COMD='test' CONDA_DEPENDENCIES=''
-                PIP_DEPENDENCIES='Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy drms'
 
 install:
     - git clone --depth 1 git://github.com/astropy/ci-helpers.git

@@ -157,7 +157,7 @@ instances, and FITS comments are stored in the attribute
 instances.
 
 Using the function `len` on a :class:`Database` object returns the
-number of saved database entries. To get the first entry of the database,
+number of saved database entries. To get the first entry of Value  = 1.495978707e+11the database,
 ``database[0]`` is used (the ID number of the entries does not matter,
 ``database[0]`` always returns the oldest saved entry of the database). If
 the database is empty, this expression raises an :exc:`IndexError`.
@@ -179,7 +179,7 @@ In section 3, more advanced formats of the slicing syntax are introduced.
     >>> len(entry.fits_header_entries)  # doctest: +REMOTE_DATA
     191
     >>> for fits_header_entry in entry.fits_header_entries[:10]:
-    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))  # doctest: +REMOTE_DATA
+    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))  # doctest: +SKIP
     SIMPLE
         True
     BITPIX
@@ -311,12 +311,12 @@ by specifying the parameters manually. To do so pass the
 values as keyword arguments to :class:`tables.DatabaseEntry` as follows:
 
     >>> from sunpy.database.tables import DatabaseEntry
-    >>> entry = DatabaseEntry(instrument='EIT', wavemin=25.0)
-    >>> database.add(entry)
-    >>> entry in database
+    >>> entry = DatabaseEntry(instrument='EIT', wavemin=25.0) # doctest: +REMOTE_DATA
+    >>> database.add(entry) # doctest: +REMOTE_DATA
+    >>> entry in database # doctest: +REMOTE_DATA
     False
-    >>> database.commit()
-    >>> entry in database
+    >>> database.commit() # doctest: +REMOTE_DATA
+    >>> entry in database # doctest: +REMOTE_DATA
     True
     >>> len(database) # doctest: +REMOTE_DATA
     71
@@ -404,7 +404,7 @@ method to remove those where there is no time set:
 
     >>> for database_entry in database:
     ...     if database_entry.observation_time_start is None and database_entry.observation_time_end is None:
-    ...         database.remove(database_entry)
+    ...         database.remove(database_entry) # doctest: +REMOTE_DATA
     ...
     >>> len(database) # doctest: +REMOTE_DATA
     38
@@ -479,10 +479,10 @@ year:
 
     >>> for database_entry in database:
     ...     if database_entry.observation_time_start.month in [3,4,5]:
-    ...         database.tag(database_entry, 'spring')
-    >>> database.tags
+    ...         database.tag(database_entry, 'spring') # doctest: +REMOTE_DATA
+    >>> database.tags # doctest: +REMOTE_DATA
     [<Tag(name 'spring')>]
-    >>> spring = database.tags[0]
+    >>> spring = database.tags[0] # doctest: +REMOTE_DATA
     >>> print(display_entries(
     ...     filter(lambda entry: spring in entry.tags, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
@@ -561,7 +561,7 @@ In the following snippet, the operations from the sections 5.3, 5.2, and
 anymore saved in the database, there is no entry which is starred and
 the entries with no end of observation time are back.
 
-    >>> database.undo(4)  # undo the edits from 5.3 (4 records have been affected)
+    >>> database.undo(4)  # undo the edits from 5.3 (4 records have been affected) # doctest: +REMOTE_DATA
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
@@ -599,7 +599,7 @@ reverts the original state: the tags have appeared again and all entries with a
 wavelength >20nm are starred again, and there are no entries with no
 stored end of observation time.
 
-    >>> database.redo(1)  # redo all undone operations
+    >>> database.redo(1)  # redo all undone operations # doctest: +REMOTE_DATA
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
