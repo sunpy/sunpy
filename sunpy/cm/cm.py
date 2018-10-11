@@ -3,9 +3,11 @@ This module provides a set of colormaps specific for solar data.
 """
 from __future__ import absolute_import, division, print_function
 
+from copy import deepcopy
+
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+import matplotlib.cm as mplcm
 
 from sunpy.cm import color_tables as ct
 from sunpy.util import deprecated
@@ -28,8 +30,18 @@ sohoeit195 = ct.eit_color_table(195)
 sohoeit284 = ct.eit_color_table(284)
 sohoeit304 = ct.eit_color_table(304)
 
-soholasco2 = ct.lasco_color_table(2)
-soholasco3 = ct.lasco_color_table(3)
+# The color tables below returns one of the fundamental color tables for SOHO
+# LASCO images. These are not the same as those used in SSWIDL.  This is
+# because the SSWIDL color scaling for LASCO level 0.5 and 1.0 is highly
+# compressed and does not display the data well.
+soholasco2 = deepcopy(mplcm.get_cmap("gist_heat"))
+soholasco2.name = 'SOHO LASCO C2'
+soholasco3 = deepcopy(mplcm.get_cmap("bone"))
+soholasco3.name = 'SOHO LASCO C3'
+
+# These are the SSWIDL color tables.
+sswidlsoholasco2 = ct.sswidl_lasco_color_table(2)
+sswidlsoholasco3 = ct.sswidl_lasco_color_table(3)
 
 stereocor1 = ct.cor_color_table(1)
 stereocor2 = ct.cor_color_table(2)
@@ -71,11 +83,13 @@ cmlist = {
           'sohoeit304': sohoeit304,
           'soholasco2': soholasco2,
           'soholasco3': soholasco3,
+          'sswidlsoholasco2': sswidlsoholasco2,
+          'sswidlsoholasco3': sswidlsoholasco3,
           'stereocor1': stereocor1,
           'stereocor2': stereocor2,
           'stereohi1': stereohi1,
           'stereohi2': stereohi2,
-          'rhessi': cm.jet,
+          'rhessi': mplcm.jet,
           'yohkohsxtal': yohkohsxtal,
           'yohkohsxtwh': yohkohsxtwh,
           'hinodexrt': hinodexrt,
@@ -102,9 +116,13 @@ cmlist = {
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
 for name, cmap in cmlist.items():
-    cm.register_cmap(name=name, cmap=cmap)
+    mplcm.register_cmap(name=name, cmap=cmap)
 
-@deprecated("0.9", "Use Matplotlib to load the colormaps", alternative='plt.get_cmap')
+
+@deprecated("0.9",
+            "'sunpy.cm.get_cmap' is dprecated, use 'plt.get_cmap' from Matplotlib "
+            "to load the colormaps instead.",
+            alternative='plt.get_cmap')
 def get_cmap(name):
     """
     Get a colormap.
@@ -137,14 +155,14 @@ def get_cmap(name):
         raise ValueError("Colormap {name!s} is not recognized".format(name=name))
 
 
-def show_colormaps(filter=None):
+def show_colormaps(search=None):
     """Displays a plot of the custom color maps supported in SunPy.
 
     Parameters
     ----------
-    filter : str
-        A string to filter the color maps presented (e.g. aia, EIT, 171). Case
-        insensitive.
+    search : str
+        A string to search for in the names of the color maps (e.g. aia, EIT,
+        171). Case insensitive.
 
     Returns
     -------
@@ -154,18 +172,18 @@ def show_colormaps(filter=None):
     --------
     >>> import sunpy.cm as cm
     >>> cm.show_colormaps()
-    >>> cm.show_colormaps(filter='aia')
-    >>> cm.show_colormaps(filter='171')
+    >>> cm.show_colormaps(search='aia')
+    >>> cm.show_colormaps(search='171')
 
     References
     ----------
 
     """
 
-    if filter:
-        maps =  sorted({k:v for (k,v) in cmlist.items() if k.lower().count(filter.lower())})
+    if search is not None:
+        maps = sorted({k: v for (k, v) in cmlist.items() if k.lower().count(search.lower())})
         if len(maps) == 0:
-            raise KeyError('No color maps found for key - ' + filter)
+            raise KeyError('No color maps found for search term "{:s}"'.format(search))
     else:
         maps = sorted(cmlist)
 
@@ -184,4 +202,3 @@ def show_colormaps(filter=None):
         fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
                  horizontalalignment='right')
     plt.show()
-

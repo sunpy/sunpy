@@ -21,14 +21,21 @@ try:
 except ImportError:
     __githash__ = ''
 
-import os
-from sunpy.util.config import load_config, print_config
-from sunpy.util import system_info
-from sunpy.tests.runner import SunPyTestRunner
+try:
+    _ASTROPY_SETUP_
+except NameError:
+    _ASTROPY_SETUP_ = False
 
-self_test = SunPyTestRunner.make_test_runner_in(os.path.dirname(__file__))
 
-# Load user configuration
-config = load_config()
+if not _ASTROPY_SETUP_:
+    import os
+    from sunpy.util.config import load_config, print_config
+    from sunpy.util import system_info
+    from sunpy.tests.runner import SunPyTestRunner
 
-__all__ = ['config', 'self_test', 'system_info']
+    self_test = SunPyTestRunner.make_test_runner_in(os.path.dirname(__file__))
+
+    # Load user configuration
+    config = load_config()
+
+    __all__ = ['config', 'self_test', 'system_info']
