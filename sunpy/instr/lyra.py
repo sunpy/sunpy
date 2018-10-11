@@ -635,9 +635,7 @@ def split_series_using_lytaf(timearray, data, lytaf):
     el = len(lytaf)
 
     # make the input time array a list of Time objects
-    time_array = []
-    for tim in timearray:
-        time_array.append(parse_time(tim))
+    time_array = [parse_time(tim) for tim in timearray]
 
     # scan through each entry retrieved from the LYTAF database
     for j in range(0, el):

@@ -10,9 +10,6 @@ In this example you will see how to resample a map using the resample method
 
 ##############################################################################
 # Start by importing the necessary modules.
-
-from __future__ import print_function, division
-
 import astropy.units as u
 
 import matplotlib.pyplot as plt

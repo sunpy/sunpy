@@ -41,7 +41,7 @@ RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
            'hpc_to_hpc',
-           'hcrs_to_hgs', 'hgs_to_hcrs']
+           'hcrs_to_hgs', 'hgs_to_hcrs', 'hcc_to_hcc']
 
 
 def _carrington_offset(obstime):
@@ -57,7 +57,10 @@ def _carrington_offset(obstime):
     return get_sun_L0(obstime)
 
 
-def _observers_are_equal(obs_1, obs_2):
+def _observers_are_equal(obs_1, obs_2, string_ok=False):
+    if string_ok:
+        if obs_1 == obs_2:
+            return True
     if not (isinstance(obs_1, BaseCoordinateFrame) and isinstance(obs_2, BaseCoordinateFrame)):
         raise ValueError("To compare two observers, both must be instances of BaseCoordinateFrame. "
                          "Cannot compare two observers {} and {}.".format(obs_1, obs_2))
@@ -114,12 +117,9 @@ def hcc_to_hpc(helioccoord, heliopframe):
     Convert from Heliocentic Cartesian to Helioprojective Cartesian.
     """
     if not _observers_are_equal(helioccoord.observer, heliopframe.observer):
-        raise ConvertError("Cannot directly transform heliocentric coordinates to "
-                           "helioprojective coordinates for different "
-                           "observers {} and {}. See discussion in this GH issue: "
-                           "https://github.com/sunpy/sunpy/issues/2712. Try converting to "
-                           "an intermediate heliographic Stonyhurst frame.".format(
-                               helioccoord.observer, heliopframe.observer))
+        heliocframe = Heliocentric(observer=heliopframe.observer)
+        new_helioccoord = helioccoord.transform_to(heliocframe)
+        helioccoord = new_helioccoord
 
     x = helioccoord.x.to(u.m)
     y = helioccoord.y.to(u.m)
@@ -145,12 +145,10 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     Convert from Helioprojective Cartesian to Heliocentric Cartesian.
     """
     if not _observers_are_equal(heliopcoord.observer, heliocframe.observer):
-        raise ConvertError("Cannot directly transform helioprojective coordinates to "
-                           "heliocentric coordinates for different "
-                           "observers {} and {}. See discussion in this GH issue: "
-                           "https://github.com/sunpy/sunpy/issues/2712. Try converting to "
-                           "an intermediate heliographic Stonyhurst frame.".format(
-                               heliopcoord.observer, heliocframe.observer))
+        heliocframe_heliopobs = Heliocentric(observer=heliopcoord.observer)
+        helioccoord_heliopobs = heliopcoord.transform_to(heliocframe_heliopobs)
+        helioccoord = helioccoord_heliopobs.transform_to(heliocframe)
+        return helioccoord
 
     if not isinstance(heliopcoord.observer, BaseCoordinateFrame):
         raise ConvertError("Cannot transform helioprojective coordinates to "
@@ -257,7 +255,7 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     This converts from HPC to HPC, with different observer location parameters.
     It does this by transforming through HGS.
     """
-    if _observers_are_equal(heliopcoord.observer, heliopframe.observer):
+    if _observers_are_equal(heliopcoord.observer, heliopframe.observer, string_ok=True):
         return heliopframe.realize_frame(heliopcoord._data)
 
     if not isinstance(heliopframe.observer, BaseCoordinateFrame):
@@ -351,11 +349,25 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
 
 
 @frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, HeliographicStonyhurst)
-def hgs_to_hgs(from_coo, to_frame):
-    if np.all(from_coo.obstime == to_frame.obstime):
-        return to_frame.realize_frame(from_coo.data)
+def hgs_to_hgs(hgscoord, hgsframe):
+    if np.all(hgscoord.obstime == hgsframe.obstime):
+        return hgsframe.realize_frame(hgscoord.data)
     else:
-        return from_coo.transform_to(HCRS).transform_to(to_frame)
+        return hgscoord.transform_to(HCRS).transform_to(hgsframe)
 
+
+@frame_transform_graph.transform(FunctionTransform, Heliocentric, Heliocentric)
+def hcc_to_hcc(hcccoord, hccframe):
+    """
+    Convert from  Heliocentric to Heliocentric
+    """
+    if _observers_are_equal(hcccoord.observer, hccframe.observer, string_ok=True):
+        return hccframe.realize_frame(hcccoord._data)
+
+    hgscoord = hcccoord.transform_to(HeliographicStonyhurst)
+    hgscoord.observer = hccframe.observer
+    hcccoord = hgscoord.transform_to(hccframe)
+
+    return hcccoord
 
 __doc__ += make_transform_graph_docs()

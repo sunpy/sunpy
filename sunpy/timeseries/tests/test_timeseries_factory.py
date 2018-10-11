@@ -171,7 +171,7 @@ class TestTimeSeries(object):
     def test_meta_from_fits_header(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)]
+        times = base - TimeDelta(np.arange(24*60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
         data = DataFrame(intensity, index=times, columns=['intensity'])
 
@@ -195,7 +195,7 @@ class TestTimeSeries(object):
     def test_generic_construction_basic(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)]
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
@@ -219,7 +219,7 @@ class TestTimeSeries(object):
     def test_generic_construction_basic_omitted_details(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)]
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
@@ -243,7 +243,7 @@ class TestTimeSeries(object):
     def test_generic_construction_basic_different_meta_types(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)]
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
@@ -264,7 +264,7 @@ class TestTimeSeries(object):
     def test_generic_construction_ts_list(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)]
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
         intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
@@ -294,7 +294,7 @@ class TestTimeSeries(object):
     def test_generic_construction_concatenation(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)]
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
         intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
@@ -323,7 +323,7 @@ class TestTimeSeries(object):
     def test_table_to_ts(self):
         # Generate the data and the corresponding dates
         base = parse_time(datetime.datetime.today())
-        times = Time([base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)])
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity = u.Quantity(np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60)))), u.W/u.m**2)
 
         # Create the units and meta objects

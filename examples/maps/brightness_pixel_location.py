@@ -5,8 +5,6 @@ The brightest pixel location
 
 How to find and overplot the location of the brightest pixel
 """
-from __future__ import print_function, division
-
 import numpy as np
 import astropy.units as u
 import matplotlib.pyplot as plt

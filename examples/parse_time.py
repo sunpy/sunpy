@@ -40,7 +40,7 @@ t3 = parse_time('2012:124:21:08:12', scale='tai')
 
 ##############################################################################
 # Now that you are done with strings, let's see other type ``parse_time`` handles,
-# tuples. `~astropy.time.Time` doesnot handle tuples but ``parse_time`` does.
+# tuples. `~astropy.time.Time` does not handle tuples but ``parse_time`` does.
 t4 = parse_time((1998, 11, 14))
 t5 = parse_time((2001, 1, 1, 12, 12, 12, 8899))
 
@@ -55,8 +55,8 @@ t8 = parse_time(date.today())
 
 
 ##############################################################################
-# ``parse_time`` can return ``Time`` objects for ``pandas.Timestamp``, ``pandas.Series``
-# and ``pandas.DatetimeIndex``.
+# ``parse_time`` can return ``astropy.time.Time`` objects for ``pandas.Timestamp``,
+# ``pandas.Series`` and ``pandas.DatetimeIndex``.
 t9 = parse_time(pandas.Timestamp(datetime(1966, 2, 3)))
 
 t10 = parse_time(
@@ -83,7 +83,7 @@ t13 = parse_time(
         dtype='datetime64'))
 
 ##############################################################################
-# Parse time returns `~astropy.time.Time object for every parsable input that
+# Parse time returns `~astropy.time.Time` object for every parsable input that
 # you give to it.
 # ``parse_time`` can handle all formats that `~astropy.time.Time` can handle.
 # That is,

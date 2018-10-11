@@ -296,9 +296,8 @@ def parse_obssumm_file(filename):
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
 
-    time_array = parse_time([reference_time_ut +
-                             TimeDelta(time_interval_sec * a * u.second)
-                             for a in np.arange(dim)])
+    time_array = parse_time(reference_time_ut) + \
+        TimeDelta(time_interval_sec * np.arange(dim) * u.second)
 
     labels = _build_energy_bands(label=afits[5].data.field('DIM1_UNIT')[0],
                                  bands=afits[5].data.field('DIM1_IDS')[0])

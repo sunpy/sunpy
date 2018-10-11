@@ -5,8 +5,6 @@ Edge Enhancing Filtering a Map
 
 This example shows how to edge enhance coronal loops in an SDO/AIA image.
 """
-from __future__ import print_function, division
-
 import numpy as np
 from scipy import ndimage
 import matplotlib.pyplot as plt
