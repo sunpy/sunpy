@@ -85,7 +85,7 @@ def get_system_filename(sock, url, default=u"file"):
     in file system encoding. """
     name = get_filename(sock, url)
     if not name:
-        name = default.decode("ascii", "ignore")
+        name = default
     return name.encode(sys.getfilesystemencoding(), 'ignore')
 
 
@@ -108,6 +108,66 @@ def download_file(url, directory, default=u'file', overwrite=False):
         path = download_fileobj(opn, directory, url, default, overwrite)
     finally:
         opn.close()
+    return path
+
+
+def download_file_with_cache(remote_url, directory, cache=True,
+                             show_progress=True, timeout=None, overwrite=False,
+                             default=u"file"):
+    """
+    Accepts a URL, downloads and optionally caches the result
+    returning the filename. If ``cache=True`` and the file is present
+    in the cache, just returns the filename.
+
+    Parameters
+    ----------
+    remote_url : str
+        The URL of the file to download
+
+    cache : bool, optional
+        Whether to use the cache
+
+    show_progress : bool, optional
+        Whether to display a progress bar during the download (default
+        is `True`)
+
+    timeout : float, optional
+        The timeout, in seconds.  Otherwise, use
+        `astropy.utils.data.Conf.remote_timeout`.
+
+    Returns
+    -------
+    local_path : str
+        Returns the local path that the file was download to.
+
+    Raises
+    ------
+    urllib2.URLError, urllib.error.URLError
+        Whenever there's a problem getting the remote file.
+    """
+    from astropy.utils.data import download_file, _get_download_cache_locs
+    import shelve
+
+    # Get name of the file and create a path with directory and that name
+    opn = urlopen(remote_url)
+    filename = get_system_filename(opn, remote_url, default)
+    path = os.path.join(directory, filename.decode('utf-8'))
+
+    if not overwrite and os.path.exists(path) and not cache:
+        path = replacement_filename(path)
+    # Get path in temporary location with hash as file name
+    temp_path = download_file(remote_url, cache, show_progress, timeout)
+
+    # If file is in cache, update cache location to new path
+    url_key = remote_url
+    if cache:
+        _, urlmapfn = _get_download_cache_locs()
+        with shelve.open(urlmapfn) as url2hash:
+            if url_key in url2hash:
+                if url2hash[url_key] != path:
+                    url2hash[url_key] = path
+    # Move file from temporary to given path directory
+    shutil.move(temp_path, path)
     return path
 
 
