@@ -7,6 +7,7 @@ import warnings
 
 import numpy as np
 import astropy.io.fits
+from astropy.wcs import WCS
 
 import sunpy
 from sunpy.map.mapbase import GenericMap
@@ -28,7 +29,6 @@ from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
 from sunpy.extern import six
-
 from sunpy.extern.six.moves.urllib.request import urlopen
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
@@ -42,7 +42,6 @@ __authors__ = ["Russell Hewett, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
 
 # Make a mock DatabaseEntry class if sqlalchemy is not installed
-
 try:
     from sunpy.database.tables import DatabaseEntry
 except ImportError:
@@ -50,7 +49,6 @@ except ImportError:
         pass
 
 __all__ = ['Map', 'MapFactory']
-
 
 class MapFactory(BasicRegistrationFactory):
     """
@@ -63,6 +61,7 @@ class MapFactory(BasicRegistrationFactory):
     Examples
     --------
     >>> import sunpy.map
+    >>> from astropy.io import fits
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
 
@@ -79,6 +78,20 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map(data, header)   # doctest: +SKIP
 
+    * data, wcs object, in tuple
+
+    >>> from astropy.wcs import WCS
+    >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
+    >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
+    >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA 
+    
+    * data, wcs object, not in tuple
+    
+    >>> from astropy.wcs import WCS
+    >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
+    >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
+    >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA 
+  
     * File names
 
     >>> mymap = sunpy.map.Map('file1.fits')   # doctest: +SKIP
@@ -145,6 +158,8 @@ class MapFactory(BasicRegistrationFactory):
         mixture of the following entries:
         * tuples of data,header
         * data, header not in a tuple
+        * data, wcs object in a tuple
+        * data, wcs object not in a tuple
         * filename, which will be read
         * directory, from which all files will be read
         * glob, from which all files will be read
@@ -190,6 +205,25 @@ class MapFactory(BasicRegistrationFactory):
                 pair = (args[i], OrderedDict(args[i+1]))
                 data_header_pairs.append(pair)
                 i += 1   # an extra increment to account for the data-header pairing
+
+            # Data-wcs object pair in a tuple
+            elif ((type(arg) in [tuple, list]) and
+                  len(arg) == 2 and
+                  isinstance(arg[0], np.ndarray) and
+                  isinstance(arg[1], WCS)):
+                arg_header = arg[1].to_header()
+                if(self._validate_meta(arg_header)):
+                    arg[1] = OrderedDict(arg_header)
+                    data_header_pairs.append(arg)
+
+            # Data-wcs object pair not in a tuple
+            elif (isinstance(arg, np.ndarray) and
+                  isinstance(args[i+1], WCS)):
+                arg_header = args[i+1].to_header()
+                if(self._validate_meta(arg_header)):
+                    pair = (args[i], OrderedDict(arg_header))
+                    data_header_pairs.append(pair)
+                    i += 1    # an extra increment to account for the data-header pairing
 
             # File name
             elif (isinstance(arg, six.string_types) and
