@@ -205,6 +205,7 @@ class HelioviewerClient(object):
         Examples
         --------
         >>> from sunpy.net.helioviewer import HelioviewerClient
+        >>> import datetime
         >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> file = hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)   # doctest: +REMOTE_DATA
         >>> file = hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800)   # doctest: +REMOTE_DATA
