@@ -1,0 +1,1 @@
+Now able to create a Map using an array and a WCS object.
