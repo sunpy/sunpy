@@ -40,10 +40,24 @@ class JSOCResponse(Sequence):
         """
         table : `astropy.table.Table`
         """
-
-        self.table = table
-        self.query_args = None
-        self.requests = None
+        if isinstance(table, list):
+            # fido_factory._handle_record_slice
+            # will return a list containing the
+            # response that has been indexed,
+            # so we have to remove that.
+            new_table = table[0]
+            if isinstance(new_table, type(self)):
+                self.table = new_table.table
+                self.query_args = new_table.query_args
+                self.requests = new_table.requests
+            else:
+                self.table = table
+                self.query_args = None
+                self.requests = None
+        else:
+            self.table = table
+            self.query_args = None
+            self.requests = None
 
     def __str__(self):
         return str(self.table)
@@ -61,7 +75,10 @@ class JSOCResponse(Sequence):
             return len(self.table)
 
     def __getitem__(self, item):
-        return type(self)(self.table[item])
+        resp = type(self)(self.table[item])
+        resp.query_args = self.query_args
+        resp.requests = self.requests
+        return resp
 
     def __iter__(self):
         return (t for t in [self])

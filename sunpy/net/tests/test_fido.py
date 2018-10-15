@@ -314,3 +314,15 @@ def test_repr(query):
         else:
             assert "Provider" not in rep_meth()
             assert "Providers" in rep_meth()
+
+
+@pytest.mark.remote_data
+def test_slicing_JSOC():
+    tstart = '2011/06/07 06:32:45'
+    tend = '2011/06/07 06:33:15'
+    res = Fido.search(a.Time(tstart, tend), a.jsoc.Series('hmi.M_45s'),
+                      a.jsoc.Notify('jsoc@cadair.com'))
+    result = Fido.fetch(res[0, 0])
+    assert isinstance(result, list)
+    assert result[0].endswith('hmi.m_45s.20110607_063300_TAI.2.magnetogram.fits')
+    assert result[1].endswith('hmi.m_45s.20110607_063345_TAI.2.magnetogram.fits')

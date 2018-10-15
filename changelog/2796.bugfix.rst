@@ -1,0 +1,1 @@
+Fix the slicing a JSOC UnifiedResponse object. This bug was that when slice a Unifiedresponse this not saved the query_args attribute.
