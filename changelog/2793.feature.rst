@@ -1,1 +1,2 @@
 Now able to create a `sunpy.map.Map` using an array and a `astropy.wcs.WCS` object.
+Added unit test for te same.
