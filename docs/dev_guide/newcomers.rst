@@ -37,13 +37,15 @@ Code
 If you would prefer to code Python instead, we have a SunPy issue list on Github `issues`_ where all the known issues with SunPy are kept.
 An issue might have a label and the `Package Novice label`_ is a good place to start.
 These are issues that have been deemed a good way to be eased into SunPy and are achievable with little understanding of the SunPy codebase.
-We also tag issues for specific events such as the Mozilla Sprint
-(`mozsprint label.`_) or hacktoberfest. The scope of the issues should be appropriate for
-the specific event.
+We also tag issues for specific events such as  `Hacktoberfest`_ under the `Hacktoberfest label`_.
+The scope of the issues should be appropriate for the specific event.
+We do particpate in several other events but right now we do not have decidated labels.
+So please use the above labels for starting issues!
 
 .. _issues: https://github.com/sunpy/sunpy/issues
 .. _Package Novice label: https://github.com/sunpy/sunpy/issues?q=is%3Aissue+is%3Aopen+label%3Apackage-novice
-.. _mozsprint label.: https://github.com/sunpy/sunpy/issues?q=is%3Aissue+is%3Aopen+label%3Amozsprint
+.. _Hacktoberfest: https://hacktoberfest.digitalocean.com/
+.. _Hacktoberfest label: https://github.com/sunpy/sunpy/issues?q=is%3Aissue+is%3Aopen+label%3Amozsprint
 
 How to setup a work environment
 -------------------------------
@@ -105,19 +107,11 @@ It can be common that this will be different to between branches or the main Sun
 As a result, it can sometimes be added by accident to a commit you make.
 Once this happens it can be difficult to remove it without using a `git rebase`.
 
-If you see that astropy_helpers is different or missing please run ::
+If you see that `astropy_helpers` is out of date or missing please run ::
 
     git submodule update --init
 
-which should fix the issue for you.
-
-Every once in a while you may have to update this submodule. This can be
-done with ::
-
-    git submodule update
-
-This will solve what git will consider a difference in the astropy_helper
-signature.
+This will resolve the difference in the `astropy_helper` folder between your local branch and master.
 
 Send it back to us
 ------------------
