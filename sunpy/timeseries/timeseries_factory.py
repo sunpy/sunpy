@@ -163,7 +163,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         else:
             return False
 
-    def _validate_units(self, units, **kwargs):
+    def _validate_units(self, units):
         """
         Validates the astropy unit-information associated with a TimeSeries.
         Should be a dictionary of some form (but not MetaDict) with only
@@ -185,7 +185,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Passed all the tests
         return result
 
-    def _from_table(self, t, **kwargs):
+    def _from_table(self, t):
         """
         Extract the data, metadata and units from an astropy table for use in
         constructing a TimeSeries.
@@ -413,7 +413,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
-            except:
+            except Exception:
                 raise
 
             new_timeseries.append(new_ts)
@@ -467,7 +467,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
-            except:
+            except Exception:
                 raise
 
             new_timeseries.append(new_ts)
@@ -542,7 +542,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 def _is_url(arg):
     try:
         urlopen(arg)
-    except:
+    except Exception:
         return False
     return True
 
@@ -565,5 +565,6 @@ class NoTimeSeriesFound(ValueError):
     pass
 
 
-TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry, default_widget_type=GenericTimeSeries,
+TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry,
+                               default_widget_type=GenericTimeSeries,
                                additional_validation_functions=['is_datasource_for'])
