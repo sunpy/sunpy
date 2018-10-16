@@ -530,7 +530,7 @@ class VSOClient(BaseClient):
         )
 
     def fetch(self, query_response, path=None, methods=None,
-              downloader=None, site=None):
+              downloader=None, site=None, progress=True):
         """
         Download data specified in the query_response.
 
@@ -590,6 +590,8 @@ class VSOClient(BaseClient):
         elif isinstance(path, str) and '{file}' not in path:
             path = os.path.join(path, '{file}')
         path = os.path.expanduser(path)
+
+        downloader = Downloader(progress=progress)
 
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
