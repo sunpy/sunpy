@@ -49,16 +49,21 @@ class AttrMeta(type):
     def __getattr__(self, item):
         """
         Our method for Attrs is to register using the attribute type (i.e. Instrument) as keys in a dictionary.
-        ``_attr_registry`` is a dictionary with the keys being subclasses of Attr and the value being the namedtuple of lists.
-        As a result we index `_attr_registry` with `[self]` which will be the `type` of the `Attr` class to access the dictionary.
+        ``_attr_registry`` is a dictionary with the keys being subclasses of Attr
+        and the value being the namedtuple of lists.
+        As a result we index `_attr_registry` with `[self]` which will be the `type`
+        of the `Attr` class to access the dictionary.
         This will return the namedtuple that has three attributes: `name`, `name_long` and `desc`.
         Each of which are a list.
         `name` will be the attribute name, `name_long` is the original name passed in and `desc` the description of the object.
         """
-        registry = self._attr_registry[self]  # Get the revelant entries.
-        names = registry.name  # All the attribute names under that type(Attr)
+        # Get the revelant entries.
+        registry = self._attr_registry[self]
+        # All the attribute names under that type(Attr)
+        names = registry.name
         if item in names:
-            return self(registry.name_long[names.index(item)])  # We return Attr(name_long) to create the Attr requested.
+            # We return Attr(name_long) to create the Attr requested.
+            return self(registry.name_long[names.index(item)])
         else:
             raise AttributeError(f'This attribute, {item} is not defined, please register it.')
 
@@ -81,8 +86,8 @@ class AttrMeta(type):
         pad_desc = max(len(elm) for elm in desc)
         fmt = "%-{}s | %-{}s | %-{}s".format(pad_name, pad_long, pad_desc)
         lines = [fmt % elm for elm in zip(name, name_long, desc)]
-        lines.insert(1, '-'*(pad_name+1)+'+'+'-'*(pad_long+2)+'+'+'-'*(pad_desc+1))
-        return("\n".join(lines))
+        lines.insert(1, '-' * (pad_name + 1) + '+' + '-' * (pad_long + 2) + '+' + '-' * (pad_desc + 1))
+        return "\n".join(lines)
 
 
 class Attr(metaclass=AttrMeta):
@@ -116,7 +121,7 @@ class Attr(metaclass=AttrMeta):
     @classmethod
     def update_values(cls, adict):
         """
-        This is the method that clients will use to register their values for subclasses of `~sunpy.net.attr.Attr`.
+        Clients will use this method to register their values for subclasses of `~sunpy.net.attr.Attr`.
 
         The input has be a dictionary, with each key being a subclass of Attr.
         The value for each key should be a list of tuples with each tuple of the form (`Name`, `Description`).
@@ -140,7 +145,8 @@ class Attr(metaclass=AttrMeta):
         Example
         -------
         >>> from sunpy.net import attr, attrs # doctest: +SKIP
-        >>> attr.Attr.update_values({attrs.Instrument: [('AIA', 'AIA is in Space.'), ('HMI', 'HMI is next to AIA.')]}) # doctest: +SKIP
+        >>> attr.Attr.update_values({attrs.Instrument: [('AIA', 'AIA is in Space.'),
+        ...                         ('HMI', 'HMI is next to AIA.')]}) # doctest: +SKIP
         >>> attr.Attr._attr_registry[attrs.Instrument] # doctest: +SKIP
         attr(name=['aia', 'hmi'], name_long=['AIA', 'HMI'], desc=['AIA is in Space.', 'HMI is next to AIA.']) # doctest: +SKIP
         >>> attr.Attr._attr_registry[attrs.Instrument].name # doctest: +SKIP
@@ -154,7 +160,7 @@ class Attr(metaclass=AttrMeta):
         """
         for k, v in adict.items():
             # Does this make sense?
-            if isiterable(v) and not isinstance(v, str):
+            if isiterable(v):
                 for pair in v:
                     if len(pair) != 2:
                         raise ValueError(f'Invalid length (!=2) for pair: {pair} for key: {k} ')
@@ -162,13 +168,13 @@ class Attr(metaclass=AttrMeta):
                         # Sanitize name, we remove all special characters and make it all lower case
                         name = ''.join(char for char in pair[0] if char.isalnum()).lower()
                         if keyword.iskeyword(name) or not name.isidentifier():
-                                name = 'A' + name
-                                warnings.warn("Attribute name has been prepend with 'A' to make it a valid identifier.")
+                                name = name + '_'
+                                warnings.warn("Attribute name has been appended with '_' to make it a valid identifier.")
                         cls._attr_registry[k][0].append(name)
                         cls._attr_registry[k][1].append(pair[0])
                         cls._attr_registry[k][2].append(pair[1])
             else:
-                raise ValueError(f'Invalid input value: {v} for key: {k}. The value is not iterable or a type string.')
+                raise ValueError(f'Invalid input value: {v} for key: {k}. The value is not iterable.')
 
 
 class DummyAttr(Attr):
