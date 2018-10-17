@@ -10,8 +10,10 @@ class BaseClient(ABC):
     The last one ensures that each download client can be registered with Fido.
 
     All download clients should subclass `~sunpy.net.dataretriever.GenericClient`.
-    If the structure of `~sunpy.net.dataretriever.GenericClient` is not useful you should use `~sunpy.net.BaseClient`.
-    `~sunpy.net.vso.VSOClient` and `~sunpy.net.jsoc.JSOCClient` are examples of download clients that subclass `BaseClient`.
+    If the structure of `~sunpy.net.dataretriever.GenericClient`
+    is not useful you should use `~sunpy.net.BaseClient`.
+    `~sunpy.net.vso.VSOClient` and `~sunpy.net.jsoc.JSOCClient`
+    are examples of download clients that subclass `BaseClient`.
     """
 
     _registry = dict()
