@@ -20,8 +20,8 @@ from datetime import datetime
 from astropy import units as u
 
 from sunpy.time import TimeRange as _TimeRange
-from sunpy.net.attr import Attr, AttrWalker, AttrAnd,\
-                           AttrOr, DummyAttr, ValueAttr, SimpleAttr
+from sunpy.net.attr import (Attr, AttrWalker, AttrAnd,
+                            AttrOr, DummyAttr, ValueAttr, SimpleAttr)
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
 
