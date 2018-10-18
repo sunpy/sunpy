@@ -28,17 +28,21 @@ instrument = 'eit'
 hekTime = hek.attrs.Time(startTime, endTime)
 hekEvent = hek.attrs.EventType(eventType)
 
+
 @pytest.fixture
 def h2v_client():
     return hek2vso.H2VClient()
+
 
 @pytest.fixture
 def hek_client():
     return hek.HEKClient()
 
+
 @pytest.fixture
 def vso_client():
     vso.VSOClient()
+
 
 @pytest.mark.remote_data
 def test_translate_results_to_query():
@@ -50,8 +54,9 @@ def test_translate_results_to_query():
     if isinstance(hek_query, list):
         # Comparing length of two lists
         assert len(hek_query) == len(vso_query)
-        #Comparing types of both queries
-        assert type(hek_query) == type(vso_query)
+        # Comparing types of both queries
+        assert isinstance(hek_query, vso_query)
+
 
 @pytest.mark.remote_data
 def test_vso_attribute_parse():
@@ -61,7 +66,8 @@ def test_vso_attribute_parse():
     vso_query = hek2vso.vso_attribute_parse(hek_query[0])
 
     # Checking Time
-    # TODO
+    assert vso_query[0].start == hek_query[0]['event_starttime']
+    assert vso_query[0].end == hek_query[0]['event_endtime']
 
     # Checking Observatory
     assert vso_query[1].value == hek_query[0]['obs_observatory']
@@ -71,8 +77,9 @@ def test_vso_attribute_parse():
 
     # Checking Wavelength
     assert vso_query[3].min == hek_query[0]['obs_meanwavel'] * u.Unit(hek_query[0]['obs_wavelunit'])
-    assert vso_query[3].max == hek_query[0]['obs_meanwavel'] * u.Unit( hek_query[0]['obs_wavelunit'])
+    assert vso_query[3].max == hek_query[0]['obs_meanwavel'] * u.Unit(hek_query[0]['obs_wavelunit'])
     assert vso_query[3].unit == u.Unit('Angstrom')
+
 
 class TestH2VClient(object):
     """Tests the H2V class"""
