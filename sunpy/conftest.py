@@ -35,6 +35,7 @@ else:
     import importlib
     remotedata_spec = importlib.util.find_spec("pytest_remotedata")
     HAVE_REMOTEDATA = remotedata_spec is not None
+    print("Woooah this is pretty awesome!")
 
 
 def pytest_addoption(parser):
