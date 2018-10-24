@@ -33,7 +33,7 @@ class TestMap(object):
         #Test making a MapCube
         cube = sunpy.map.Map(a_list_of_many, cube=True)
         assert isinstance(cube, sunpy.map.MapCube)
-    
+
     def test_mapsequence(self):
         #Test making a MapSequence
         sequence = sunpy.map.Map(a_list_of_many, sequence=True)
@@ -82,6 +82,8 @@ class TestMap(object):
             data = hdul[0].data
             header = hdul[0].header
         pair_map = sunpy.map.Map((data, header))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+        pair_map, pair_map = sunpy.map.Map(((data, header), (data, header)))
         assert isinstance(pair_map, sunpy.map.GenericMap)
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)

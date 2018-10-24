@@ -189,38 +189,13 @@ class MapFactory(BasicRegistrationFactory):
 
             arg = args[i]
 
-            # Data-header pair in a tuple
-            if ((type(arg) in [tuple, list]) and
-                len(arg) == 2 and
-                isinstance(arg[0], np.ndarray) and
-                self._validate_meta(arg[1])):
+            # Data-header or data-WCS pair
+            if isinstance(arg, SUPPORTED_ARRAY_TYPES):
+                arg_header = args[i+1]
+                if isinstance(arg_header, WCS):
+                    arg_header = args[i+1].to_header()
 
-                arg[1] = OrderedDict(arg[1])
-                data_header_pairs.append(arg)
-
-            # Data-header pair not in a tuple
-            elif (isinstance(arg, SUPPORTED_ARRAY_TYPES) and
-                  self._validate_meta(args[i+1])):
-
-                pair = (args[i], OrderedDict(args[i+1]))
-                data_header_pairs.append(pair)
-                i += 1   # an extra increment to account for the data-header pairing
-
-            # Data-wcs object pair in a tuple
-            elif ((type(arg) in [tuple, list]) and
-                  len(arg) == 2 and
-                  isinstance(arg[0], np.ndarray) and
-                  isinstance(arg[1], WCS)):
-                arg_header = arg[1].to_header()
-                if(self._validate_meta(arg_header)):
-                    arg[1] = OrderedDict(arg_header)
-                    data_header_pairs.append(arg)
-
-            # Data-wcs object pair not in a tuple
-            elif (isinstance(arg, np.ndarray) and
-                  isinstance(args[i+1], WCS)):
-                arg_header = args[i+1].to_header()
-                if(self._validate_meta(arg_header)):
+                if self._validate_meta(arg_header):
                     pair = (args[i], OrderedDict(arg_header))
                     data_header_pairs.append(pair)
                     i += 1    # an extra increment to account for the data-header pairing
@@ -266,6 +241,7 @@ class MapFactory(BasicRegistrationFactory):
                 raise ValueError("File not found or invalid input")
 
             i += 1
+
         # TODO:
         # In the end, if there are already maps it should be put in the same
         # order as the input, currently they are not.
