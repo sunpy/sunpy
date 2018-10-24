@@ -10,7 +10,7 @@ from sunpy.extern.six.moves import range, zip
 
 __all__ = ['aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
            'sxt_color_table', 'xrt_color_table', 'trace_color_table',
-           'sot_color_table', 'hmi_mag_color_table']
+           'sot_color_table', 'hmi_mag_color_table', 'suvi_color_table']
 
 
 # FIXME: Give me a proper name.
@@ -86,6 +86,29 @@ def aia_color_table(wavelength):
     cdict = create_cdict(r, g, b)
 
     return colors.LinearSegmentedColormap('SDO AIA {:s}'.format(str(wavelength)), cdict)
+
+
+def suvi_color_table(wavelength):
+    """Returns one of the fundamental color tables for SUVI images.
+       SUVI uses AIA color tables.
+    """
+    try:
+        if wavelength == 195:
+            r, g, b = aia_wave_dict[193]
+        elif wavelength == 284:
+            r,g, b = aia_wave_dict[335]
+        else:
+            r, g, b = aia_wave_dict[wavelength]
+    except KeyError:
+        raise ValueError(
+            "Invalid SUVI wavelength. Valid values are "
+            "94, 131, 171, 195, 284, 304."
+        )
+
+    # Now create the color dictionary in the correct format
+    cdict = create_cdict(r, g, b)
+
+    return colors.LinearSegmentedColormap('GOES-R SUVI {:s}'.format(str(wavelength)), cdict)
 
 eit_yellow_r = np.array(
       [  0,   1,   2,   3,   5,   6,   7,   8,  10,  11,  12,  14,  15,

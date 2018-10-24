@@ -30,6 +30,14 @@ sohoeit195 = ct.eit_color_table(195)
 sohoeit284 = ct.eit_color_table(284)
 sohoeit304 = ct.eit_color_table(304)
 
+goesrsuvi94 = ct.suvi_color_table(94)
+goesrsuvi131 = ct.suvi_color_table(131)
+goesrsuvi171 = ct.suvi_color_table(171)
+goesrsuvi195 = ct.suvi_color_table(195)
+goesrsuvi284 = ct.suvi_color_table(284)
+goesrsuvi304 = ct.suvi_color_table(304)
+
+
 # The color tables below returns one of the fundamental color tables for SOHO
 # LASCO images. These are not the same as those used in SSWIDL.  This is
 # because the SSWIDL color scaling for LASCO level 0.5 and 1.0 is highly
@@ -67,6 +75,12 @@ traceWL = ct.trace_color_table('WL')
 hmimag = ct.hmi_mag_color_table()
 
 cmlist = {
+          'goes-rsuvi94': goesrsuvi94,
+          'goes-rsuvi131': goesrsuvi131,
+          'goes-rsuvi171': goesrsuvi171,
+          'goes-rsuvi195': goesrsuvi195,
+          'goes-rsuvi284': goesrsuvi284,
+          'goes-rsuvi304': goesrsuvi304,
           'sdoaia94': sdoaia94,
           'sdoaia131': sdoaia131,
           'sdoaia171': sdoaia171,
