@@ -13,7 +13,6 @@ import re
 import os
 import sys
 import logging
-import requests
 import warnings
 import socket
 import itertools
@@ -22,6 +21,8 @@ from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
+from urllib.error import URLError, HTTPError
+from urllib.request import urlopen
 
 import astropy.units as u
 from astropy.table import QTable as Table
@@ -97,8 +98,8 @@ def iter_errors(response):
 
 def check_connection(url):
     try:
-        return requests.get(url).status_code == 200
-    except (socket.error, socket.timeout) as e:
+        return urlopen(url).getcode() == 200
+    except (socket.error, socket.timeout, HTTPError, URLError) as e:
         warnings.warn(
             "Connection failed with error {}. \n Retrying with different url and port.".format(e))
 
