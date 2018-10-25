@@ -87,7 +87,7 @@ except Exception:
 generate_version_py(PACKAGENAME, VERSION, RELEASE,
                     get_debug_option(PACKAGENAME))
 
-# Treat everything in scripts except README* as a script to be installed
+# Treat everything in scripts except README* as a script to be installed. README.md file is description.
 scripts = [fname for fname in glob.glob(os.path.join('scripts', '*'))
            if not os.path.basename(fname).startswith('README')]
 
