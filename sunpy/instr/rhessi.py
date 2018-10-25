@@ -5,33 +5,22 @@
     .. warning:: This module is in development.
 
 """
-from __future__ import absolute_import, print_function
 
-import csv
-import posixpath
 import re
-import socket
+import csv
 from datetime import datetime, timedelta
-from dateutil.rrule import rrule, MONTHLY
 
 import numpy as np
 from astropy import units as u
 
+import sunpy.io
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.coordinates import get_sunearth_distance
-import sunpy.map
-import sunpy.io
-from sunpy.util import deprecated
-
-from sunpy.extern.six.moves.urllib.request import urlopen, urlretrieve
-from sunpy.extern.six.moves.urllib.error import URLError
 
 
-__all__ = ['get_observing_summary_dbase_file',
-           'parse_observing_summary_dbase_file',
-           'get_observing_summary_filename', 'get_observing_summary_file',
-           'parse_observing_summary_file', 'backprojection']
+__all__ = ['parse_observing_summary_hdulist', 'backprojection', 'parse_observing_summary_dbase_file']
+
 
 # Measured fixed grid parameters
 grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164,
@@ -39,65 +28,8 @@ grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164,
 grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647,
                     0.786083, 0.00140674, 1.57147)
 
-data_servers = ('https://hesperia.gsfc.nasa.gov/hessidata/',
-                'http://hessi.ssl.berkeley.edu/hessidata/',
-                'http://soleil.i4ds.ch/hessidata/')
-
 lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                  'navy', 'orange', 'green')
-
-
-def get_base_url():
-    """
-    Find the first mirror which is online
-    """
-    for server in data_servers:
-        try:
-            urlopen(server, timeout=1)
-            return server
-        except (URLError, socket.timeout):
-            pass
-
-    raise IOError('Unable to find an online HESSI server from {0}'.format(data_servers))
-
-
-def get_observing_summary_dbase_file(time):
-    """
-    Download the RHESSI observing summary database file for the time given.
-    One file covers an entire month.  This file lists the name of observing
-    summary files for specific times.
-
-    Parameters
-    ----------
-    time : `str`, datetime
-
-    Returns
-    -------
-    value : `tuple`
-        Return a `tuple` (filename, headers) where filename is the local file
-        name under which the object can be found, and headers is
-        whatever the info() method of the object returned by urlopen.
-
-    Examples
-    --------
-    >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, hdrs = rhessi.get_observing_summary_dbase_file('2011/04/04')   # doctest: +REMOTE_DATA
-
-    References
-    ----------
-    | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
-
-    .. note::
-        This API is currently limited to providing data from whole days only.
-
-    """
-    _time = parse_time(time)
-
-    if _time < parse_time("2002/02/01"):
-        raise ValueError("RHESSI summary files are not available before 2002-02-01")
-
-    url = posixpath.join(get_base_url(), 'dbase', _time.strftime("hsi_obssumm_filedb_%Y%m.txt"))
-    return urlretrieve(url)
 
 
 def parse_observing_summary_dbase_file(filename):
@@ -167,149 +99,19 @@ def parse_observing_summary_dbase_file(filename):
         }
 
 
-def get_observing_summary_filename(time_range):
-    """
-    Download the RHESSI observing summary data from one of the RHESSI
-    servers, parses it, and returns the name of the observing summary files
-    relevant for the time range.
-
-    Parameters
-    ----------
-    time_range : str, TimeRange
-        A TimeRange or time range compatible string
-
-    Returns
-    -------
-    out : list
-        Returns the urls of the observation summary file
-
-    Examples
-    --------
-    >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.get_observing_summary_filename(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
-    ['https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits',
-     'https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110405_031.fits']
-    """
-    dt = TimeRange(time_range)
-    # remove time from dates
-    dt = TimeRange(dt.start.date(), dt.end.date())
-
-    filenames = []
-
-    diff_months = (dt.end.year - dt.start.year) * 12 +\
-                   dt.end.month - dt.start.month
-    first_month = datetime(dt.start.year, dt.start.month, 1)
-    month_list = rrule(MONTHLY, dtstart=first_month, count=diff_months+1)
-
-    # need to download and inspect the dbase file to determine the filename
-    # for the observing summary data
-    # the dbase files are monthly but contain the daily filenames
-    for this_month in month_list:
-        dbase_file_name, hdrs = get_observing_summary_dbase_file(this_month)
-        dbase_dat = parse_observing_summary_dbase_file(dbase_file_name)
-        this_month_obssumm_filenames = dbase_dat.get('filename')
-        daily_filenames_dates = [datetime.strptime(d[0:20], 'hsi_obssumm_%Y%m%d') for d in this_month_obssumm_filenames]
-        for i, this_date in enumerate(daily_filenames_dates):
-            if dt.start <= this_date <= dt.end:
-                filenames.append(posixpath.join(get_base_url(), 'metadata', 'catalog', this_month_obssumm_filenames[i] + 's'))
-
-    return filenames
-
-@deprecated
-def get_observing_summary_file(time_range):
-    """
-    Download the RHESSI observing summary data from one of the RHESSI
-    servers.
-
-    Parameters
-    ----------
-    time_range : `str`, `sunpy.time.TimeRange`
-        A TimeRange or time range compatible string
-
-    Returns
-    -------
-    out : list of tuples
-        Return a list of tuples (filename, headers) where filename is the
-        local file name under which the object can be found, and headers is
-        whatever the info() method of the object returned by urlopen.
-
-    Examples
-    --------
-    >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, hdrs = rhessi.get_observing_summary_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
-
-    .. note::
-        This API is currently limited to providing data from whole days only.
-
-    """
-
-    filenames = get_observing_summary_filename(time_range)
-
-    return [urlretrieve(filenames[x]) for x in range(len(filenames))]
-
-
-def parse_observing_summary_file(filename):
+def parse_observing_summary_hdulist(hdulist):
     """
     Parse a RHESSI observation summary file.
-    Note: this is for the Lightcurve datatype only, the TimSeries uses the
-    parse_obssumm_hdulist(hdulist) method to enable implicit source detection.
-
-    Parameters
-    ----------
-    filename : str
-        The filename of a RHESSI fits file.
-
-    Returns
-    -------
-    value : `tuple`
-        Return a `tuple` (fits_header, data). Where fits_header is of type
-        `~astropy.io.fits.header.Header` and data of type `dict`
-
-    Examples
-    --------
-    >>> import sunpy.instr.rhessi as rhessi
-    >>> data = rhessi.parse_observing_summary_file(fname)   # doctest: +SKIP
-
-    """
-
-    afits = sunpy.io.read_file(filename)
-    fits_header = afits[0].header
-
-    reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
-    time_interval_sec = afits[5].data.field('TIME_INTV')[0]
-
-    # The data stored in the FITS file are "compressed" countrates stored as
-    # one byte
-    compressed_countrate = np.array(afits[6].data.field('countrate'))
-
-    countrate = uncompress_countrate(compressed_countrate)
-    dim = np.array(countrate[:, 0]).size
-
-    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
-
-    labels = _build_energy_bands(label=afits[5].data.field('DIM1_UNIT')[0],
-                                 bands=afits[5].data.field('DIM1_IDS')[0])
-
-    return fits_header, dict(time=time_array, data=countrate, labels=labels)
-
-
-def parse_obssumm_hdulist(hdulist):
-    """
-    Parse a RHESSI observation summary file.
-
     Parameters
     ----------
     hdulist : list
         The HDU list from the fits file.
-
     Returns
     -------
     out : `dict`
         Returns a dictionary.
-
     """
     header = hdulist[0].header
-
     reference_time_ut = parse_time(hdulist[5].data.field('UT_REF')[0])
     time_interval_sec = hdulist[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
@@ -317,19 +119,14 @@ def parse_obssumm_hdulist(hdulist):
     labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV',
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV',
               '800 - 7000 keV', '7000 - 20000 keV']
-
     # The data stored in the fits file are "compressed" countrates stored as
     # one byte
     compressed_countrate = np.array(hdulist[6].data.field('countrate'))
-
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
-
     time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
-
     #  TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
-
     return header, data
 
 
@@ -475,6 +272,9 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     >>> map.peek()   # doctest: +SKIP
 
     """
+    # import sunpy.map in here so that net and timeseries don't end up importing map
+    import sunpy.map
+
     pixel_size = pixel_size.to(u.arcsec)
     image_dim = np.array(image_dim.to(u.pix).value, dtype=int)
 
