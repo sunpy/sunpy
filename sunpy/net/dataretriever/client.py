@@ -136,7 +136,7 @@ class GenericClient(BaseClient):
     def __init__(self):
         self.map_ = {}
 
-    def _makeargs(self, *args, **kwargs):
+    def _makeargs(self, *args):
         """
         Construct the `map\_` internal representation of the query.
 
@@ -148,8 +148,6 @@ class GenericClient(BaseClient):
         \*args: `tuple`
             The query attributes.
 
-        \*\*kwargs: `dict`
-            None.
         """
         for elem in args:
             if isinstance(elem, Time):
@@ -182,6 +180,7 @@ class GenericClient(BaseClient):
                         "to the Client.".format(elem.__class__.__name__))  # pragma: no cover
         self._makeimap()
 
+    @classmethod
     def _get_url_for_timerange(cls, timerange, **kwargs):
         """
         Method which generates URL results from a timerange and the `map\_`

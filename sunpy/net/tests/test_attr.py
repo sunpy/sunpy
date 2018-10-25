@@ -35,6 +35,11 @@ def SPEC():
     return Instrument('_!£!THIS_NAME!"!ISSPECIAL~~##')
 
 
+@pytest.fixture
+def KEYWORD():
+    return Instrument('class')
+
+
 class SA1(attr.SimpleAttr):
     pass
 
@@ -228,5 +233,29 @@ def test_attr_sanity(SPEC):
     assert attr.Attr._attr_registry[Instrument].name == ['thisnameisspecial']
     assert attr.Attr._attr_registry[Instrument].name_long == ['_!£!THIS_NAME!"!ISSPECIAL~~##']
     assert attr.Attr._attr_registry[Instrument].desc == ['To test the attribute cleaning.']
+
+    # Clean Registry
+    EmptyAttr()
+
+
+def test_attr_keyword(KEYWORD):
+    attr.Attr.update_values({Instrument: [('class', 'Keyword checking.')]})
+    # This checks for sanitization of names.
+    assert attr.Attr._attr_registry[Instrument].name == ['class_']
+    assert attr.Attr._attr_registry[Instrument].name_long == ['class']
+    assert attr.Attr._attr_registry[Instrument].desc == ['Keyword checking.']
+
+    # Clean Registry
+    EmptyAttr()
+
+
+def test_attr_iterable_length(AIA):
+    # not iterable
+    with pytest.raises(ValueError):
+        attr.Attr.update_values({Instrument: 'AIA'})
+    # too many items
+    with pytest.raises(ValueError):
+        attr.Attr.update_values({Instrument: [('AIA', 'AIA is Nice', 'Error now')]})
+
     # Clean Registry
     EmptyAttr()

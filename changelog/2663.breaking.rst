@@ -1,1 +1,1 @@
-Removal of `InteractiveVSOClient` and `Attr.Wave`
+Removal of `InteractiveVSOClient`, `Attr.Wave`, `GenericClient.get` and `GenericClient.query`.
