@@ -116,7 +116,7 @@ def test_tag_hashability():
 def test_entries_from_fido_search_result(fido_search_result):
     entries = list(entries_from_fido_search_result(fido_search_result))
     # 65 entries for 8 instruments in fido_search_result
-    assert len(entries) == 65
+    assert len(entries) == 66
     # First 2 entries are from lyra
     assert entries[0] == DatabaseEntry(
         source='Proba2', provider='esa', physobs='irradiance',
@@ -406,14 +406,14 @@ def test_entries_from_dir_recursively_true():
     entries = list(entries_from_dir(testdir, True,
                                     default_waveunit='angstrom',
                                     time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 102
+    assert len(entries) == 127
 
 
 def test_entries_from_dir_recursively_false():
     entries = list(entries_from_dir(testdir, False,
                                     default_waveunit='angstrom',
                                     time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 81
+    assert len(entries) == 106
 
 
 @pytest.mark.remote_data
