@@ -148,7 +148,8 @@ class Attr(metaclass=AttrMeta):
         >>> attr.Attr.update_values({attrs.Instrument: [('AIA', 'AIA is in Space.'),
         ...                         ('HMI', 'HMI is next to AIA.')]}) # doctest: +SKIP
         >>> attr.Attr._attr_registry[attrs.Instrument] # doctest: +SKIP
-        attr(name=['aia', 'hmi'], name_long=['AIA', 'HMI'], desc=['AIA is in Space.', 'HMI is next to AIA.']) # doctest: +SKIP
+        attr(name=['aia', 'hmi'], name_long=['AIA', 'HMI'],
+        ...  desc=['AIA is in Space.', 'HMI is next to AIA.']) # doctest: +SKIP
         >>> attr.Attr._attr_registry[attrs.Instrument].name # doctest: +SKIP
         ['aia', 'hmi']
         >>> attr.Attr._attr_registry[attrs.Instrument].name_long # doctest: +SKIP
@@ -158,23 +159,25 @@ class Attr(metaclass=AttrMeta):
         >>> attrs.Instrument.aia, attrs.Instrument.hmi # doctest: +SKIP
         (<Instrument('AIA')>, <Instrument('HMI')>)
         """
-        for k, v in adict.items():
-            # Does this make sense?
-            if isiterable(v):
-                for pair in v:
+
+        for key, value in adict.items():
+            if isiterable(value) and not isinstance(value, str):
+                for pair in value:
                     if len(pair) != 2:
-                        raise ValueError(f'Invalid length (!=2) for pair: {pair} for key: {k} ')
+                        raise ValueError(f'Invalid length (!=2) for values: {value}.')
                     else:
                         # Sanitize name, we remove all special characters and make it all lower case
                         name = ''.join(char for char in pair[0] if char.isalnum()).lower()
-                        if keyword.iskeyword(name) or not name.isidentifier():
-                                name = name + '_'
-                                warnings.warn("Attribute name has been appended with '_' to make it a valid identifier.")
-                        cls._attr_registry[k][0].append(name)
-                        cls._attr_registry[k][1].append(pair[0])
-                        cls._attr_registry[k][2].append(pair[1])
+                        if keyword.iskeyword(name):
+                            name = name + '_'
+                            warnings.warn("Attribute name has been appended with '_' \
+                                           to make it a valid identifier.")
+                        cls._attr_registry[key][0].append(name)
+                        cls._attr_registry[key][1].append(pair[0])
+                        cls._attr_registry[key][2].append(pair[1])
             else:
-                raise ValueError(f'Invalid input value: {v} for key: {k}. The value is not iterable.')
+                raise ValueError((f"Invalid input value: {value} for key: {repr(key)}. "
+                                  "The value is not iterable or just a string."))
 
 
 class DummyAttr(Attr):
