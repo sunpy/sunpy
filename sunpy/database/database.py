@@ -493,7 +493,7 @@ class Database(object):
         progress : `bool`, optional
             If True, displays the progress bar during file download.
         methods : `str` or iterable of `str`, optional
-            Set VSOClient download method, see`~sunpy.net.vso.VSOClient.get`
+            Set VSOClient download method, see`~sunpy.net.vso.VSOClient.fetch`
             for details.
 
         Examples

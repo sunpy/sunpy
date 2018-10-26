@@ -260,7 +260,7 @@ The method :meth:`Database.fetch` checks if the given query has already been
 used once to add entries to the database. Otherwise, the query is used to
 download and add new data. The :meth:`Database.fetch` method also accepts an
 optional keyword argument ``path`` which is passed as-is to
-:meth:`sunpy.net.vso.VSOClient.get` and determines the value of the ``path``
+:meth:`sunpy.net.vso.VSOClient.fetch` and determines the value of the ``path``
 attribute of each entry.
 
 Note that the number of entries that will be added depends on the total number

@@ -326,7 +326,7 @@ class VSOClient(BaseClient):
         -------
         out : :py:class:`QueryResult` (enhanced list)
             Matched items. Return value is of same type as the one of
-            :py:meth:`VSOClient.query`.
+            :py:meth:`VSOClient.search`.
         """
         query = and_(*query)
 
@@ -488,7 +488,7 @@ class VSOClient(BaseClient):
         -------
         out : :py:class:`QueryResult` (enhanced list)
             Matched items. Return value is of same type as the one of
-            :py:class:`VSOClient.query`.
+            :py:class:`VSOClient.search`.
         """
         sdk = lambda key: lambda value: {key: value}
         ALIASES = {
