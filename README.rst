@@ -104,3 +104,5 @@ follow our `Code of Conduct`_.
 .. _contributing guide: https://github.com/sunpy/sunpy/blob/master/CONTRIBUTING.rst
 .. _Newcomers guide: http://docs.sunpy.org/en/stable/dev_guide/newcomers.html
 .. _Code of Conduct: http://docs.sunpy.org/en/stable/coc.html
+
+hacktoberfest
