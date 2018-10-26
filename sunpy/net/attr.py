@@ -48,10 +48,10 @@ def strtonum(value):
         value = int(value)
     except (TypeError, ValueError):
         return value
-    if not 0 < value < 10:
+    if not 0 <= value < 10:
         return str(value)
     return ('one', 'two', 'three', 'four', 'five', 'six',
-            'seven', 'eight', 'nine')[value - 1]
+            'seven', 'eight', 'nine', 'zero')[value - 1]
 
 
 class AttrMeta(type):
@@ -197,7 +197,7 @@ class Attr(metaclass=AttrMeta):
                             if _REGEX.match(name):
                                 # This turns that digit into its name
                                 number = strtonum(name[0])
-                                name = number + "_" + name[1:]
+                                name = number + ("_" + name[1:] if len(name) > 1 else "")
                         cls._attr_registry[key][0].append(name)
                         cls._attr_registry[key][1].append(pair[0])
                         cls._attr_registry[key][2].append(pair[1])

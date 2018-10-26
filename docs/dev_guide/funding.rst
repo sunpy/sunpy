@@ -8,8 +8,14 @@ This is a rough work in progress.
 
 
 Net
-===
+---
 
-fido_factory.py : Google Summer of Code (2014).
-dataretriever/client.py: Google Summer of Code (2014).
-attr.py: ESA Summer of Code (2011).
+Google Summer of Code (2014)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+fido_factory.py, vso.py, the dataretriever Submodule
+
+ESA Summer of Code (2011)
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+attr.py
