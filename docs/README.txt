@@ -1,3 +1,6 @@
+Documentation
+=============
+
 All of the SunPy documentation is contained in the doc/source folder and code
 comments. To generate the documentation you must have Sphinx (as well as
 Numpydoc and astropy-helpers) installed on your computer. Enter
