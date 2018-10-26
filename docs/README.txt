@@ -1,3 +1,6 @@
+Documentation
+=============
+
 All of the SunPy documentation is contained in the `docs` folder and code
 docstrings/comments. To generate the documentation you must have the packages
 specified in `requirements/docs.txt` installed on your computer. Enter the root
