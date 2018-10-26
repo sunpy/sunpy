@@ -204,6 +204,9 @@ html_title = '{0} v{1}'.format(project, release)
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + 'doc'
 
+# A dictionary of values to pass into the template engine’s context for all pages.
+html_context['to_be_indexed'] = ['stable', 'latest']
+
 # -- Options for LaTeX output --------------------------------------------------
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
@@ -250,7 +253,7 @@ if has_sphinx_gallery:
         'filename_pattern': '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
         'examples_dirs': example_dir,  # path to the examples scripts
         'subsection_order': ExplicitOrder([(os.path.join('..', 'examples/acquiring_data')),
-                                           (os.path.join('..', 'examples/maps')),
+                                           (os.path.join('..', 'examples/map')),
                                            (os.path.join('..', 'examples/time_series')),
                                            (os.path.join('..', 'examples/units_and_coordinates')),
                                            (os.path.join('..', 'examples/plotting')),

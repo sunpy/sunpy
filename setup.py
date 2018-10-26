@@ -30,7 +30,8 @@ AUTHOR = metadata.get('author', 'The SunPy Community')
 AUTHOR_EMAIL = metadata.get('author_email', '')
 LICENSE = metadata.get('license', 'unknown')
 URL = metadata.get('url', 'https://sunpy.org')
-LONG_DESCRIPTION = metadata.get('long_description', DESCRIPTION)
+with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.rst'), encoding='utf-8') as f:
+    LONG_DESCRIPTION = f.read()
 __minimum_python_version__ = metadata.get("minimum_python_version", "3.6")
 
 # Enforce Python version check - this is the same check as in __init__.py but
@@ -153,6 +154,7 @@ setup(name=PACKAGENAME,
                      'Tracker': 'https://github.com/sunpy/sunpy/issues'
       },
       long_description=LONG_DESCRIPTION,
+      long_description_content_type='text/x-rst',
       cmdclass=cmdclassd,
       zip_safe=False,
       use_2to3=False,
