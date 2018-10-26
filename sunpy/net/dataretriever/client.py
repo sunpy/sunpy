@@ -121,12 +121,12 @@ class GenericClient(BaseClient):
     web service.
 
     This class has two user facing methods
-    `~sunpy.net.dataretriever.client.GenericClient.query` and
-    `~sunpy.net.dataretriever.client.GenericClient.get` the former generates a
+    `~sunpy.net.dataretriever.client.GenericClient.search` and
+    `~sunpy.net.dataretriever.client.GenericClient.fetch` the former generates a
     set of results for files available through the service the client is
     querying and the latter downloads that data.
 
-    The `~sunpy.net.dataretriever.client.GenericClient.query` method takes a
+    The `~sunpy.net.dataretriever.client.GenericClient.search` method takes a
     set of `sunpy.net.attrs` objects and then converts these into a call to
     `~sunpy.net.dataretriever.client.GenericClient._get_url_for_timerange`. It
     does this through the `map\_` dictionary which represents the
