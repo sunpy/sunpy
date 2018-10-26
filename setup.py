@@ -1,18 +1,23 @@
 #!/usr/bin/env python
 # This file is based havily on the astropy version here:
 # https://github.com/astropy/package-template/blob/master/setup.py
-# Which is licensed under the astropy license.
+# Which is licensed under the astropy license, see licenses/ASTROPY.rst.
 
 ################################################################################
 ###### YOU SHOULD NOT HAVE TO EDIT THIS FILE, YOU SHOULD EDIT setup.cfg. #######
 ################################################################################
+# Note: This file needs to be Python 2 / <3.6 compatible, so that the nice
+# "SunPy only supports Python 3.6+" error prints without syntax errors etc.
 
 import os
 import sys
 import glob
 import itertools
 
-from configparser import ConfigParser
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
 
 # Get some values from the setup.cfg
 conf = ConfigParser()
@@ -125,7 +130,7 @@ package_info['package_data'][PACKAGENAME].extend(c_files)
 
 extra_tags = [m.strip() for m in metadata.get("extra_requires", "").split(',')]
 if extra_tags:
-    extras_require = {tag: [m.strip() for m in metadata[f"{tag}_requires"].split(',')]
+    extras_require = {tag: [m.strip() for m in metadata["{tag}_requires".format(tag=tag)].split(',')]
                       for tag in extra_tags}
     extras_require['all'] = list(itertools.chain.from_iterable(extras_require.values()))
 else:
