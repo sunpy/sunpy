@@ -27,6 +27,11 @@ def AIA():
 
 
 @pytest.fixture
+def NUM():
+    return Instrument('1')
+
+
+@pytest.fixture
 def NUMBER():
     return Instrument('1AIA')
 
@@ -260,12 +265,25 @@ def test_attr_keyword(KEYWORD):
     EmptyAttr()
 
 
+def test_attr_num(NUM):
+    attr.Attr.update_values({Instrument: [('1', 'One')]})
+    # This checks for sanitization of names.
+    assert attr.Attr._attr_registry[Instrument].name == ['one']
+    assert attr.Attr._attr_registry[Instrument].name_long == ['1']
+    assert attr.Attr._attr_registry[Instrument].desc == ['One']
+    assert Instrument.one == NUM
+
+    # Clean Registry
+    EmptyAttr()
+
+
 def test_attr_number(NUMBER):
     attr.Attr.update_values({Instrument: [('1AIA', 'One Number first.')]})
     # This checks for sanitization of names.
     assert attr.Attr._attr_registry[Instrument].name == ['one_aia']
     assert attr.Attr._attr_registry[Instrument].name_long == ['1AIA']
     assert attr.Attr._attr_registry[Instrument].desc == ['One Number first.']
+    assert Instrument.one_aia == NUMBER
 
     # Clean Registry
     EmptyAttr()
@@ -277,6 +295,7 @@ def test_attr_numbes(NUMBERS):
     assert attr.Attr._attr_registry[Instrument].name == ['12aias']
     assert attr.Attr._attr_registry[Instrument].name_long == ['12AIAs']
     assert attr.Attr._attr_registry[Instrument].desc == ['That is too many AIAs']
+    assert '12aias' in dir(Instrument)
 
     # Clean Registry
     EmptyAttr()
