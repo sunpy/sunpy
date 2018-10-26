@@ -6,6 +6,7 @@ import pytest
 from sunpy.net import attr
 from sunpy.net.attr import make_tuple
 
+# TODO: Refactor the Attr tests, its too cluttered.
 
 class Instrument(attr.SimpleAttr):
     """
@@ -23,6 +24,16 @@ def EmptyAttr():
 @pytest.fixture
 def AIA():
     return Instrument('AIA')
+
+
+@pytest.fixture
+def NUMBER():
+    return Instrument('1AIA')
+
+
+@pytest.fixture
+def NUMBERS():
+    return Instrument('12AIAs')
 
 
 @pytest.fixture
@@ -244,6 +255,28 @@ def test_attr_keyword(KEYWORD):
     assert attr.Attr._attr_registry[Instrument].name == ['class_']
     assert attr.Attr._attr_registry[Instrument].name_long == ['class']
     assert attr.Attr._attr_registry[Instrument].desc == ['Keyword checking.']
+
+    # Clean Registry
+    EmptyAttr()
+
+
+def test_attr_number(NUMBER):
+    attr.Attr.update_values({Instrument: [('1AIA', 'One Number first.')]})
+    # This checks for sanitization of names.
+    assert attr.Attr._attr_registry[Instrument].name == ['one_aia']
+    assert attr.Attr._attr_registry[Instrument].name_long == ['1AIA']
+    assert attr.Attr._attr_registry[Instrument].desc == ['One Number first.']
+
+    # Clean Registry
+    EmptyAttr()
+
+
+def test_attr_numbes(NUMBERS):
+    attr.Attr.update_values({Instrument: [('12AIAs', 'That is too many AIAs')]})
+    # This checks for sanitization of names.
+    assert attr.Attr._attr_registry[Instrument].name == ['12aias']
+    assert attr.Attr._attr_registry[Instrument].name_long == ['12AIAs']
+    assert attr.Attr._attr_registry[Instrument].desc == ['That is too many AIAs']
 
     # Clean Registry
     EmptyAttr()

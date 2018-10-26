@@ -16,6 +16,7 @@ sunpy.util.multimethod.
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
+import re
 import keyword
 import warnings
 from collections import defaultdict, namedtuple
@@ -26,6 +27,7 @@ from sunpy.util.multimethod import MultiMethod
 from sunpy.extern.six import iteritems
 
 _ATTR_TUPLE = namedtuple("attr", "name name_long desc")
+_REGEX = re.compile(r"^[\d]([^\d].*)?$")
 
 __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'AttrAnd',
            'AttrOr', 'ValueAttr', 'and_', 'or_']
@@ -33,6 +35,23 @@ __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'AttrAnd',
 
 def make_tuple():
     return _ATTR_TUPLE([], [], [])
+
+
+def strtonum(value):
+    """
+    For numbers 1 to 9, return the number spelled out. Otherwise, return the
+    number. This follows Associated Press style.  This always returns a string
+    unless the value was not int-able, unlike the Django filter.
+    Taken from: https://github.com/jmoiron/humanize/blob/master/humanize/number.py#L81
+    """
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        return value
+    if not 0 < value < 10:
+        return str(value)
+    return ('one', 'two', 'three', 'four', 'five', 'six',
+            'seven', 'eight', 'nine')[value - 1]
 
 
 class AttrMeta(type):
@@ -169,9 +188,16 @@ class Attr(metaclass=AttrMeta):
                         # Sanitize name, we remove all special characters and make it all lower case
                         name = ''.join(char for char in pair[0] if char.isalnum()).lower()
                         if keyword.iskeyword(name):
+                            # Attribute name has been appended with `_`
+                            # to make it a valid identifier since its a python keyword.
                             name = name + '_'
-                            warnings.warn("Attribute name has been appended with '_' \
-                                           to make it a valid identifier.")
+                        if not name.isidentifier():
+                            # This should account for names with one number first.
+                            # We match for single digits at the start only.
+                            if _REGEX.match(name):
+                                # This turns that digit into its name
+                                number = strtonum(name[0])
+                                name = number + "_" + name[1:]
                         cls._attr_registry[key][0].append(name)
                         cls._attr_registry[key][1].append(pair[0])
                         cls._attr_registry[key][2].append(pair[1])
