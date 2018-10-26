@@ -119,8 +119,7 @@ def parse_observing_summary_dbase_file(filename):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, _ = rhessi.get_observing_summary_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
-    >>> rhessi.parse_observing_summary_dbase_file(fname)   # doctest: +REMOTE_DATA
+    >>> rhessi.parse_observing_summary_dbase_file(fname)   # doctest: +SKIP
 
     References
     ----------
@@ -269,8 +268,7 @@ def parse_observing_summary_file(filename):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, _ = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
-    >>> data = rhessi.parse_obssumm_file(fname)   # doctest: +REMOTE_DATA
+    >>> data = rhessi.parse_observing_summary_file(fname)   # doctest: +SKIP
 
     """
 
