@@ -266,6 +266,16 @@ if has_sphinx_gallery:
         'plot_gallery': True
     }
 
+if on_rtd:
+    try:
+        import towncrier
+        os.chdir('../')
+        towncrier.__main(False, "./", None, None, None, "answer_yes")
+        os.chdir('./docs')
+    except ImportError:
+        pass
+
+
 def setup(app):
     if not has_sphinx_gallery:
         app.warn('The sphinx_gallery extension is not installed, so the '
