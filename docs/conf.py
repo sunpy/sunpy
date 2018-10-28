@@ -267,12 +267,15 @@ if has_sphinx_gallery:
     }
 
 if on_rtd:
+    print('We on RTD')
     try:
         import towncrier
+        print('Changelog')
         os.chdir('../')
         towncrier.__main(False, "./", None, None, None, "answer_yes")
         os.chdir('./docs')
     except ImportError:
+        print('No changelog')
         pass
 
 
