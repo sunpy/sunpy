@@ -228,8 +228,8 @@ Using Coordinates with SunPy Map
 
    >>> import matplotlib.pyplot as plt
    >>> ax = plt.subplot(projection=m)  # doctest: +REMOTE_DATA
-   >>> m.plot()  # doctest: +REMOTE_DATA
-   >>> ax.plot_coord(c, 'o')  # doctest: +REMOTE_DATA
+   >>> m.plot()  # doctest: +SKIP
+   >>> ax.plot_coord(c, 'o')  # doctest: +SKIP
 
 For more information on coordinates see :ref:`sunpy-coordinates` section of
 the :ref:`reference`.
