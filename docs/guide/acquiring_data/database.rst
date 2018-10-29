@@ -228,7 +228,7 @@ in the directory ``sampledata_dir``
     >>> database.add_from_dir(sampledata_dir, ignore_already_added=True,
     ...                       time_string_parse_format="%d/%m/%Y")  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
-    58
+    59
 
 2.3 Adding entries using the VSO interface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
