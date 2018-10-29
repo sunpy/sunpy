@@ -266,17 +266,18 @@ if has_sphinx_gallery:
         'plot_gallery': True
     }
 
-if on_rtd:
-    print('We on RTD')
-    try:
-        import towncrier
-        print('Changelog')
-        os.chdir('../')
-        towncrier.__main(False, "./", None, None, None, "answer_yes")
-        os.chdir('./docs')
-    except ImportError:
-        print('No changelog')
-        pass
+
+"""
+Write the latest changelog into the documentation.
+"""
+target_file = os.path.abspath("./whatsnew/latest_changelog.txt")
+try:
+    from sunpy.util.towncrier import generate_changelog_for_docs
+    generate_changelog_for_docs("../", target_file)
+except Exception:
+    # If we can't generate it, we need to make sure it exists or else sphinx
+    # will complain.
+    open(target_file, 'a').close()
 
 
 def setup(app):
