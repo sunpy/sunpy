@@ -6,7 +6,7 @@
 SunPy is an open-source Python library for solar physics data analysis.
 See `sunpy.org`_ for more information about the project.
 
-For some examples of using SunPy see our `gallery`_.
+For some examples of using SunPy see our `gallery`_, to see the latest changes in SunPy see our `Changelog`_.
 
 Installation
 ------------
@@ -104,3 +104,4 @@ follow our `Code of Conduct`_.
 .. _contributing guide: https://github.com/sunpy/sunpy/blob/master/CONTRIBUTING.rst
 .. _Newcomers guide: http://docs.sunpy.org/en/stable/dev_guide/newcomers.html
 .. _Code of Conduct: http://docs.sunpy.org/en/stable/coc.html
+.. _Changelog: https://docs.sunpy.org/en/latest/whatsnew/changelog.html
