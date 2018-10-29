@@ -156,8 +156,7 @@ This `~astropy.coordinates.SkyCoord` object can then be transformed to any
 other coordinate frame defined either in Astropy or SunPy, for example::
 
   >>> c.transform_to(frames.Helioprojective)
-  <SkyCoord (Helioprojective: obstime=2017-08-01 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2017-08-01 00:00:00): (lon, lat, radius) in (deg, deg, AU)
-      (0., 5.78339799, 1.01496923)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+  <SkyCoord (Helioprojective: obstime=2017-08-01 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
       (769.74997696, -498.75932128, 1.51668819e+08)>
 
 
@@ -191,8 +190,7 @@ one observer to a coordinate seen by another::
 
   >>> hpc1.transform_to(frames.Helioprojective(observer="venus",
   ...                                          obstime="2017-07-26"))
-  <SkyCoord (Helioprojective: obstime=2017-07-26 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, AU)
-    (77.03547231, 3.17032536, 0.72510629)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+  <SkyCoord (Helioprojective: obstime=2017-07-26 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'venus'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
     (-1285.11970265, 106.17983302, 1.08317783e+08)>
 
 
