@@ -249,12 +249,12 @@ long as it recognizes the instrument. To see what colormaps are available::
     dict_keys(['sdoaia94', 'sdoaia131', 'sdoaia171', 'sdoaia193', 'sdoaia211',
     'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700', 'sdoaia4500',
     'sohoeit171', 'sohoeit195', 'sohoeit284', 'sohoeit304', 'soholasco2',
-    'soholasco3', 'stereocor1', 'stereocor2', 'stereohi1', 'stereohi2',
-    'rhessi', 'yohkohsxtal', 'yohkohsxtwh', 'hinodexrt', 'hinodesotintensity',
-    'trace171', 'trace195', 'trace284', 'trace1216', 'trace1550', 'trace1600',
-    'trace1700', 'traceWL', 'hmimag', 'irissji1330', 'irissji1400',
-    'irissji1600', 'irissji2796', 'irissji2832', 'irissji5000', 'irissjiFUV',
-    'irissjiNUV', 'irissjiSJI_NUV'])
+    'soholasco3', 'sswidlsoholasco2', 'sswidlsoholasco3', 'stereocor1',
+    'stereocor2', 'stereohi1', 'stereohi2', 'rhessi', 'yohkohsxtal',
+    'yohkohsxtwh', 'hinodexrt', 'hinodesotintensity', 'trace171', 'trace195',
+    'trace284', 'trace1216', 'trace1550', 'trace1600', 'trace1700', 'traceWL',
+    'hmimag', 'irissji1330', 'irissji1400', 'irissji1600', 'irissji2796',
+    'irissji2832', 'irissji5000', 'irissjiFUV', 'irissjiNUV', 'irissjiSJI_NUV'])
 
 The SunPy colormaps are registered with matplotlib so you can grab them like
 you would any other colormap::
