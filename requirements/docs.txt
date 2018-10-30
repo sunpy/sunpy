@@ -5,7 +5,7 @@
 -r extra.txt
 
 ruamel.yaml
-sphinx
+sphinx<1.8
 sunpy-sphinx-theme
 git+https://github.com/sphinx-gallery/sphinx-gallery
 sphinx-astropy

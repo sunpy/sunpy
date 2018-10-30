@@ -115,7 +115,7 @@ def test_tag_hashability():
 @pytest.mark.remote_data
 def test_entries_from_fido_search_result(fido_search_result):
     entries = list(entries_from_fido_search_result(fido_search_result))
-    # 65 entries for 8 instruments in fido_search_result
+    # 66 entries for 8 instruments in fido_search_result
     assert len(entries) == 66
     # First 2 entries are from lyra
     assert entries[0] == DatabaseEntry(
@@ -176,7 +176,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         wavemin=np.nan, wavemax=np.nan,
         instrument='rhessi')
     # 2 entries from eve, level 0
-    assert entries[63] == DatabaseEntry(
+    assert entries[64] == DatabaseEntry(
         source='SDO', provider='LASP', physobs='irradiance',
         fileid=("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook"
                 "/L0CS/SpWx/2012/20120101_EVE_L0CS_DIODES_1m.txt"),
