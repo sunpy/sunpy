@@ -124,7 +124,7 @@ for root, dirs, files in os.walk(PACKAGENAME):
         if filename.endswith('.c'):
             c_files.append(
                 os.path.join(
-                    os.path.relpath(root, PACKAGENAME), filename))
+                    os.path.relpath(root, PACKAGENAME), filename))//hi
 package_info['package_data'][PACKAGENAME].extend(c_files)
 
 
