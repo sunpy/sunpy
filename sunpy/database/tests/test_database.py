@@ -120,7 +120,7 @@ def filled_database():
 
 
 def test_config_url(monkeypatch):
-    monkeypatch.setattr("sunpy.config", configparser.SafeConfigParser())
+    monkeypatch.setattr("sunpy.config", configparser.ConfigParser())
     url = 'sqlite:///'
     sunpy.config.add_section('database')
     sunpy.config.set('database', 'url', url)
@@ -129,7 +129,7 @@ def test_config_url(monkeypatch):
 
 
 def test_config_url_none(monkeypatch):
-    monkeypatch.setattr("sunpy.config", configparser.SafeConfigParser())
+    monkeypatch.setattr("sunpy.config", configparser.ConfigParser())
     with pytest.raises(configparser.NoSectionError):
         Database()
 
@@ -575,11 +575,11 @@ def test_add_entries_from_qr_ignore_duplicates(database, query_result):
 def test_add_entry_fido_search_result(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
-    assert len(database) == 65
+    assert len(database) == 66
     database.undo()
     assert len(database) == 0
     database.redo()
-    assert len(database) == 65
+    assert len(database) == 66
 
 
 @pytest.mark.remote_data
@@ -598,7 +598,7 @@ def test_add_entries_from_fido_search_result_JSOC_client(database):
 def test_add_entries_from_fido_search_result_duplicates(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
-    assert len(database) == 65
+    assert len(database) == 66
     with pytest.raises(EntryAlreadyAddedError):
         database.add_from_fido_search_result(fido_search_result)
 
@@ -607,9 +607,9 @@ def test_add_entries_from_fido_search_result_duplicates(database, fido_search_re
 def test_add_entries_from_fido_search_result_ignore_duplicates(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
-    assert len(database) == 65
+    assert len(database) == 66
     database.add_from_fido_search_result(fido_search_result, True)
-    assert len(database) == 2*65
+    assert len(database) == 2*66
 
 
 def test_add_fom_path(database):

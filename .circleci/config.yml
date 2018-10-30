@@ -11,6 +11,8 @@ apt-run: &apt-install
 docs-install: &docs-install
   name: Install Python dependencies
   command: |
+    pip install --progress-bar=off -U numpy==1.15.2
+    pip install --progress-bar=off -U sphinx==1.7.9
     pip install -r requirements/docs.txt
 
 version: 2
