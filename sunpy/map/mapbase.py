@@ -715,6 +715,13 @@ class GenericMap(NDData):
         return np.array([[np.cos(p), -1 * lam * np.sin(p)],
                          [1/lam * np.sin(p), np.cos(p)]])
 
+    @property
+    def fits_header(self):
+        """
+        A `~astropy.io.fits.Header` representation of the ``meta`` attribute.
+        """
+        return sunpy.io.fits.header_to_fits(self.meta)
+
 # #### Miscellaneous #### #
 
     def _fix_date(self):

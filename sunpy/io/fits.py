@@ -38,7 +38,7 @@ from astropy.io import fits
 
 from sunpy.io.header import FileHeader
 
-__all__ = ['read', 'get_header', 'write', 'extract_waveunit']
+__all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit']
 
 __author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
@@ -150,7 +150,7 @@ def get_header(afile):
     return headers
 
 
-def write(fname, data, header, **kwargs):
+def write(fname, data, header, hdu_type=None, **kwargs):
     """
     Take a data header pair and write a FITS file.
 
@@ -168,6 +168,31 @@ def write(fname, data, header, **kwargs):
     # Copy header so the one in memory is left alone while changing it for
     # write.
     header = header.copy()
+
+    fits_header = header_to_fits(header)
+
+    if isinstance(fname, str):
+        fname = os.path.expanduser(fname)
+
+    fitskwargs = {'output_verify': 'fix'}
+    fitskwargs.update(kwargs)
+
+    if not hdu_type:
+        hdu_type = fits.PrimaryHDU
+
+    hdu = hdu_type(data=data, header=fits_header)
+
+    if not isinstance(hdu, fits.PrimaryHDU):
+        hdul = fits.HDUList([fits.PrimaryHDU(), hdu])
+    else:
+        hdul = fits.HDUList([hdu])
+
+    hdul.writeto(fname, **fitskwargs)
+
+def header_to_fits(header):
+    """
+    Convert a header dict to a `~astropy.fits.Header`.
+    """
 
     # The comments need to be added to the header separately from the normal
     # kwargs. Find and deal with them:
@@ -197,15 +222,11 @@ def write(fname, data, header, **kwargs):
             if k in fits_header:
                 fits_header.comments[k] = v
     elif key_comments:
+
         raise TypeError("KEYCOMMENTS must be a dictionary")
 
-    if isinstance(fname, str):
-        fname = os.path.expanduser(fname)
 
-    fitskwargs = {'output_verify': 'fix'}
-    fitskwargs.update(kwargs)
-    fits.writeto(fname, data, header=fits_header, **fitskwargs)
-
+    return fits_header
 
 def extract_waveunit(header):
     """Attempt to read the wavelength unit from a given FITS header.
