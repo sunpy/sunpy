@@ -1,10 +1,12 @@
 import imp
 import os.path
+import warnings
 
 import pytest
 
 import sunpy
 import sunpy.tests.runner
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 root_dir = os.path.dirname(os.path.abspath(sunpy.__file__))
@@ -127,3 +129,9 @@ def test_main_coverage_report_html(monkeypatch):
                      os.path.join(root_dir, 'tests', 'coveragerc'),
                      os.path.join('sunpy', 'tests', 'coveragerc'),
                      '--cov-report']
+
+
+def test_warnings():
+    # Ensure that our warning trickery dosen't stop pytest.warns working
+    with pytest.warns(SunpyDeprecationWarning):
+        warnings.warn("Hello", SunpyDeprecationWarning)
