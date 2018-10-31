@@ -88,6 +88,4 @@ def pytest_unconfigure(config):
 
 
 def pytest_sessionstart(session):
-    # from astropy.utils.exceptions import AstropyDeprecationWarning
-    # warnings.simplefilter("error", AstropyDeprecationWarning)
     warnings.simplefilter("error", SunpyDeprecationWarning)
