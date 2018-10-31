@@ -1,4 +1,6 @@
 from __future__ import absolute_import, print_function
+
+import warnings
 from functools import partial
 
 import os
@@ -16,6 +18,7 @@ else:
 
 import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
 from sunpy.extern import six
 
@@ -82,3 +85,9 @@ def pytest_unconfigure(config):
 
         print('All images from image tests can be found in {0}'.format(figure_base_dir))
         print("The corresponding hash library is {0}".format(hashfile))
+
+
+def pytest_sessionstart(session):
+    # from astropy.utils.exceptions import AstropyDeprecationWarning
+    # warnings.simplefilter("error", AstropyDeprecationWarning)
+    warnings.simplefilter("error", SunpyDeprecationWarning)
