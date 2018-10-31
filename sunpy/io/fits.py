@@ -1,6 +1,5 @@
 """
 FITS File Reader
-
 Notes
 -----
 FITS
@@ -8,7 +7,6 @@ FITS
     This is implemented in this module as a KEYCOMMENTS dictionary in the
     sunpy header. To add a comment to the file on write, add a comment to this
     dictionary with the same name as a key in the header (upcased).
-
     [2] Due to the way `~astropy.io.fits` works with images the header dictionary may
     differ depending on whether is accessed before or after the fits[0].data
     is requested. If the header is read before the data then the original
@@ -16,26 +14,23 @@ FITS
     accessed then the data will have been scaled and a modified header
     reflecting these changes will be returned: BITPIX may differ and
     BSCALE and B_ZERO may be dropped in the modified version.
-
     [3] The verify('fix') call attempts to handle violations of the FITS
     standard. For example, nan values will be converted to "nan" strings.
     Attempting to cast a pyfits header to a dictionary while it contains
     invalid header tags will result in an error so verifying it early on
     makes the header easier to work with later.
-
 References
 ----------
 | https://stackoverflow.com/questions/456672/class-factory-in-python
 """
 from __future__ import absolute_import, division, print_function
-import os
 import re
 import sys
 import warnings
 import traceback
 import itertools
 import collections
-
+import pathlib
 from astropy.io import fits
 
 from sunpy.io.header import FileHeader
@@ -52,19 +47,16 @@ HDPair = collections.namedtuple('HDPair', ['data', 'header'])
 def read(filepath, hdus=None, memmap=None, **kwargs):
     """
     Read a fits file
-
     Parameters
     ----------
     filepath : `str`
         The fits file to be read
     hdu: `int` or iterable
         The HDU indexes to read from the file
-
     Returns
     -------
     pairs : `list`
         A list of (data, header) tuples
-
     Notes
     -----
     This routine reads all the HDU's in a fits file and returns a list of the
@@ -72,7 +64,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
     Also all comments in the original file are concatenated into a single
     'comment' key in the returned FileHeader.
     """
-    with fits.open(filepath, ignore_blank=True, memmap=memmap) as hdulist:
+    with fits.open(str(filepath), ignore_blank=True, memmap=memmap) as hdulist:
         if hdus is not None:
             if isinstance(hdus, int):
                 hdulist = hdulist[hdus]
@@ -103,22 +95,20 @@ def get_header(afile):
     Read a fits file and return just the headers for all HDU's. In each header,
     the key WAVEUNIT denotes the wavelength unit which is used to describe the
     value of the key WAVELNTH.
-
     Parameters
     ----------
     afile : `str` or fits.HDUList
         The file to be read, or HDUList to process.
-
     Returns
     -------
     headers : `list`
         A list of FileHeader headers.
     """
-    if isinstance(afile, fits.HDUList):
+    if isinstance(str(afile), fits.HDUList):
         hdulist = afile
         close = False
     else:
-        hdulist = fits.open(afile, ignore_blank=True)
+        hdulist = fits.open(str(afile), ignore_blank=True)
         hdulist.verify('silentfix')
         close = True
 
@@ -156,15 +146,12 @@ def get_header(afile):
 def write(fname, data, header, **kwargs):
     """
     Take a data header pair and write a FITS file.
-
     Parameters
     ----------
     fname : `str`
         File name, with extension
-
     data : `numpy.ndarray`
         n-dimensional data array
-
     header : `dict`
         A header dictionary
     """
@@ -203,7 +190,7 @@ def write(fname, data, header, **kwargs):
         raise TypeError("KEYCOMMENTS must be a dictionary")
 
     if isinstance(fname, str):
-        fname = os.path.expanduser(fname)
+        fname = str(pathlib.Path(fname).expanduser())
 
     fitskwargs = {'output_verify': 'fix'}
     fitskwargs.update(kwargs)
@@ -212,31 +199,26 @@ def write(fname, data, header, **kwargs):
 
 def extract_waveunit(header):
     """Attempt to read the wavelength unit from a given FITS header.
-
     Parameters
     ----------
     header : FileHeader
         One :class:`sunpy.io.header.FileHeader` instance which was created by
         reading a FITS file. :func:`sunpy.io.fits.get_header` returns a list of
         such instances.
-
     Returns
     -------
     waveunit : `str`
         The wavelength unit that could be found or ``None`` otherwise.
-
     Examples
     --------
     The goal of this function is to return a string that can be used in
     conjunction with the astropy.units module so that the return value can be
     directly passed to ``astropy.units.Unit``::
-
         >>> import astropy.units
         >>> header = {'WAVEUNIT': 'Angstrom', 'KEYCOMMENTS': {}}
         >>> waveunit = extract_waveunit(header)
         >>> if waveunit is not None:
         ...     unit = astropy.units.Unit(waveunit)
-
     """
     # algorithm: try the following procedures in the following order and return
     # as soon as a waveunit could be detected

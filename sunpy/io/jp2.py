@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function
 import collections
 
 from xml.etree import cElementTree as ET
-
+import pathlib
 from glymur import Jp2k
 
 from sunpy.util.xml import xml_to_dict
@@ -21,12 +21,10 @@ HDPair = collections.namedtuple('HDPair', ['data', 'header'])
 def read(filepath, **kwargs):
     """
     Reads a JPEG2000 file
-
     Parameters
     ----------
     filepath : `str`
         The file to be read
-
     Returns
     -------
     pairs : `list`
@@ -34,7 +32,7 @@ def read(filepath, **kwargs):
     """
     header = get_header(filepath)
 
-    data = Jp2k(filepath).read()[::-1]
+    data = Jp2k(str(filepath)).read()[::-1]
 
     return [HDPair(data, header[0])]
 
@@ -42,18 +40,16 @@ def read(filepath, **kwargs):
 def get_header(filepath):
     """
     Reads the header from the file
-
     Parameters
     ----------
     filepath : `str`
         The file to be read
-
     Returns
     -------
     headers : list
         A list of headers read from the file
     """
-    jp2 = Jp2k(filepath)
+    jp2 = Jp2k(str(filepath))
     xml_box = [box for box in jp2.box if box.box_id == 'xml ']
     xmlstring = ET.tostring(xml_box[0].xml.find('fits'))
     pydict = xml_to_dict(xmlstring)["fits"]

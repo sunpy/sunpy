@@ -4,6 +4,7 @@ import os
 import glob
 from collections import OrderedDict
 import warnings
+from pathlib import *
 
 import numpy as np
 import astropy.io.fits
@@ -53,33 +54,22 @@ __all__ = ['Map', 'MapFactory']
 class MapFactory(BasicRegistrationFactory):
     """
     Map(\*args, \*\*kwargs)
-
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
-
-
     Examples
     --------
     >>> import sunpy.map
     >>> from astropy.io import fits
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-
     The SunPy Map factory accepts a wide variety of inputs for creating maps
-
     * Preloaded tuples of (data, header) pairs
-
     >>> mymap = sunpy.map.Map((data, header))   # doctest: +SKIP
-
     headers are some base of `dict` or `collections.OrderedDict`, including
     `sunpy.io.header.FileHeader` or `sunpy.util.metadata.MetaDict` classes.
-
     * data, header pairs, not in tuples
-
     >>> mymap = sunpy.map.Map(data, header)   # doctest: +SKIP
-
     * data, wcs object, in tuple
-
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
@@ -93,31 +83,18 @@ class MapFactory(BasicRegistrationFactory):
     >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA 
   
     * File names
-
     >>> mymap = sunpy.map.Map('file1.fits')   # doctest: +SKIP
-
     * All fits files in a directory by giving a directory
-
     >>> mymap = sunpy.map.Map('local_dir/sub_dir')   # doctest: +SKIP
-
     * Some regex globs
-
     >>> mymap = sunpy.map.Map('eit_*.fits')   # doctest: +SKIP
-
     * URLs
-
     >>> mymap = sunpy.map.Map(url_str)   # doctest: +SKIP
-
     * DatabaseEntry
-
     >>> mymap = sunpy.map.Map(db_result)   # doctest: +SKIP
-
     * Lists of any of the above
-
     >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])  # doctest: +SKIP
-
     * Any mixture of the above not in a list
-
     >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')  # doctest: +SKIP
     """
 
@@ -165,7 +142,6 @@ class MapFactory(BasicRegistrationFactory):
         * glob, from which all files will be read
         * url, which will be downloaded and read
         * lists containing any of the above.
-
         Example
         -------
         self._parse_args(data, header,
@@ -174,7 +150,6 @@ class MapFactory(BasicRegistrationFactory):
                          'file4',
                          'directory1',
                          '*.fits')
-
         """
 
         data_header_pairs = list()
@@ -202,22 +177,22 @@ class MapFactory(BasicRegistrationFactory):
 
             # File name
             elif (isinstance(arg, six.string_types) and
-                  os.path.isfile(os.path.expanduser(arg))):
-                path = os.path.expanduser(arg)
+                  pathlib.Path(arg).expanduser().is_file()):
+                path = pathlib.Path(arg).expanduser()
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
             elif (isinstance(arg, six.string_types) and
-                  os.path.isdir(os.path.expanduser(arg))):
-                path = os.path.expanduser(arg)
-                files = [os.path.join(path, elem) for elem in os.listdir(path)]
+                  pathlib.Path(arg).expanduser().is_dir()):
+                path  = pathlib.Path(arg).expanduser()
+                files = [path.joinpath(elem.name) for elem in path.iterdir()]
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
             elif (isinstance(arg, six.string_types) and '*' in arg):
-                files = glob.glob(os.path.expanduser(arg))
+                files = pathlib.Path(arg).expanduser().glob()
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 
@@ -229,13 +204,13 @@ class MapFactory(BasicRegistrationFactory):
             elif (isinstance(arg, six.string_types) and
                   _is_url(arg)):
                 url = arg
-                path = download_file(url, get_and_create_download_dir())
+                path = pathlib.Path(download_file(url, get_and_create_download_dir()))
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # A database Entry
             elif isinstance(arg, DatabaseEntry):
-                data_header_pairs += self._read_file(arg.path, **kwargs)
+                data_header_pairs += self._read_file(pathlib.Path(arg.path), **kwargs)
 
             else:
                 raise ValueError("File not found or invalid input")
@@ -251,26 +226,19 @@ class MapFactory(BasicRegistrationFactory):
         """ Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
         to determine which is the correct Map-type to build.
-
         Arguments args and kwargs are passed through to the validation
         function and to the constructor for the final type.  For Map types,
         validation function must take a data-header pair as an argument.
-
         Parameters
         ----------
-
         composite : boolean, optional
             Indicates if collection of maps should be returned as a CompositeMap
-
         cube : boolean, optional
             Indicates if collection of maps should be returned as a MapCube
-
         sequence : boolean, optional
             Indicates if collection of maps should be returned as a MapSequence
-
         silence_errors : boolean, optional
             If set, ignore data-header pairs which cause an exception.
-
         Notes
         -----
         Extra keyword arguments are passed through to `sunpy.io.read_file` such

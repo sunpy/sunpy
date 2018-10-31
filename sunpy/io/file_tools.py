@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 import re
 import os
 import collections
+import pathlib
 
 try:
     from . import fits
@@ -52,25 +53,20 @@ _readers = Readers({
 def read_file(filepath, filetype=None, **kwargs):
     """
     Automatically determine the filetype and read the file.
-
     Parameters
     ----------
-    filepath : `str`
+    filepath : `PurePath Object`
         The file to be read
-
     filetype : `str`
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits', 'ana')
-
     memmap : bool
         Should memory mapping be used, i.e. keep data on disk rather than in RAM.
         This is currently only supported by the FITS reader.
-
     Returns
     -------
     pairs : `list`
         A list of (data, header) tuples.
-
     Notes
     -----
     Other keyword arguments are passed to the reader used.
@@ -92,22 +88,16 @@ def read_file(filepath, filetype=None, **kwargs):
 def read_file_header(filepath, filetype=None, **kwargs):
     """
     Reads the header from a given file.
-
     This should always return a instance of io.header.FileHeader
-
     Parameters
     ----------
-
-    filepath : `str`
+    filepath : `PurePath object`
         The file from which the header is to be read.
-
     filetype : `str`
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits')
-
     Returns
     -------
-
     headers : `list`
         A list of headers
     """
@@ -128,22 +118,17 @@ def read_file_header(filepath, filetype=None, **kwargs):
 def write_file(fname, data, header, filetype='auto', **kwargs):
     """
     Write a file from a data & header pair using one of the defined file types.
-
     Parameters
     ----------
     fname : `str`
         Filename of file to save.
-
     data : `numpy.ndarray`
         Data to save to a fits file.
-
     header : `collections.OrderedDict`
         Meta data to save with the data.
-
     filetype : `str`
         {'auto', 'fits', 'jp2'} Filetype to save if auto fname extension will
         be detected, else specify a supported file extension.
-
     Notes
     -----
     * Other keyword arguments will be passes to the writer function used.
@@ -154,12 +139,12 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
             raise ValueError("Can not automatically detect filetype for non-string fname argument")
         for extension, readername in _known_extensions.items():
             if fname.endswith(extension):
-                return _readers[readername].write(fname, data, header, **kwargs)
+                return _readers[readername].write(str(fname), data, header, **kwargs)
 
     else:
         for extension, readername in _known_extensions.items():
             if filetype in extension:
-                return _readers[readername].write(fname, data, header, **kwargs)
+                return _readers[readername].write(str(fname), data, header, **kwargs)
 
     # Nothing has matched, report an error
     raise ValueError("This filetype is not supported")
@@ -169,12 +154,10 @@ def _detect_filetype(filepath):
     """
     Attempts to determine the type of data contained in a file.  This is only
     used for reading because it opens the file to check the data.
-
     Parameters
     ----------
-    filepath : `str`
+    filepath : `PurePosixPath/PosixPath`
         Where the file is.
-
     Returns
     -------
     filetype : `str`
@@ -182,7 +165,7 @@ def _detect_filetype(filepath):
     """
 
     # Open file and read in first two lines
-    with open(filepath, 'rb') as fp:
+    with open(str(filepath), 'rb') as fp:
         line1 = fp.readline()
         line2 = fp.readline()
         # Some FITS files do not have line breaks at the end of header cards.
@@ -192,8 +175,8 @@ def _detect_filetype(filepath):
     # FITS
     #
     # Check the extensions to see if it is a gzipped FITS file
-    filepath_rest_ext1, ext1 = os.path.splitext(filepath)
-    _, ext2 = os.path.splitext(filepath_rest_ext1)
+    filepath_rest_ext1, ext1 = filepath.stem,filepath.suffix
+    _, ext2 = filepath_rest_ext1.suffix
 
     gzip_extensions = [".gz"]
     fits_extensions = [".fts", ".fit", ".fits"]
