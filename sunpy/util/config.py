@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import tempfile
+from sunpy.extern import six
 from sunpy.extern.six.moves import configparser
 
 import sunpy
@@ -40,6 +41,9 @@ def load_config():
         ('downloads', 'sample_dir')
     ]
     _fix_filepaths(config, filepaths)
+
+    if six.PY2:
+        config.set('general', 'time_format', '%Y-%m-%d %H:%M:%S')
 
     return config
 
