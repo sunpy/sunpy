@@ -25,3 +25,5 @@ dependencies:
   - pytest-cov=2.5.1
   - pytest-astropy=0.4.0
   - drms
+  - pip:
+      - pytest_rerunfailures

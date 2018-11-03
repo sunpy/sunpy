@@ -12,6 +12,7 @@ docs-install: &docs-install
   name: Install Python dependencies
   command: |
     pip install -r requirements/docs.txt
+    pip install -U numpy==1.15.2
 
 image-conda-run: &image-conda-install
   name: Install Python dependencies for figure tests
@@ -34,6 +35,13 @@ jobs:
   egg-info-36:
     docker:
       - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
+  egg-info-37:
+    docker:
+      - image: circleci/python:3.7
     steps:
       - checkout
       - run: python setup.py egg_info
@@ -85,6 +93,7 @@ workflows:
   egg-info:
     jobs:
       - egg-info-36
+      - egg-info-37
 
   figure-tests:
     jobs:
