@@ -92,11 +92,13 @@ class HelioviewerClient(object):
         ----------
         date : `datetime.datetime`, string
             A string or datetime object for the desired date of the image
-        directory : string
-            (Optional) Directory to download JPEG 2000 image to.
         sourceId : int
             It is a unique number that can be used to refer a particular image
             datasource in the API reqeust.
+        jpip : bool
+            (Optional) Returns a JPIP URI if set to True
+        json : bool
+            (Optional) Returns a JSON object if set to True
 
         Returns
         -------
@@ -119,7 +121,7 @@ class HelioviewerClient(object):
             "date": self._format_date(date),
             "sourceId": sourceId
         }
-
+    
         params.update(kwargs)
 
         # JPIP URL response
@@ -127,7 +129,6 @@ class HelioviewerClient(object):
             return self._get_json(params)
 
         return self._get_file(params, directory, overwrite=overwrite)
-
 
     def download_png(self, date, image_scale, layers, eventLabels=False, directory=None,
                      overwrite=False, **kwargs):
@@ -201,6 +202,8 @@ class HelioviewerClient(object):
             Default is `false` (which outputs a JSON object).
         callback : string
             (Optional) Wrap the response object in a function call of your choosing.
+
+
 
         Returns
         -------

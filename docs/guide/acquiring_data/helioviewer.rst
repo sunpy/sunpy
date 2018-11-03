@@ -37,16 +37,16 @@ using the get_datasources method::
     >>> # print a list of datasources and their associated ids
     >>> for observatory, instruments in datasources.items():  # doctest: +REMOTE_DATA
     ...     for inst, detectors in instruments.items():  # doctest: +REMOTE_DATA
-    ...         for measurements in detectors:  # doctest: +REMOTE_DATA
-    ...            if(measurements == 'nickname'):
+    ...         for measurements in detectors():  # doctest: +REMOTE_DATA
+    ...             if(measurements == 'nickname'):  # doctest: +REMOTE_DATA
     ...                 print("%s %s: %d" % (observatory, detectors[measurements], detectors['sourceId']))  # doctest: +REMOTE_DATA
-    TRACE TRACE 1600: 80
     TRACE TRACE 195: 76
     TRACE TRACE 1550: 79
     TRACE TRACE white-light: 82
     TRACE TRACE 1216: 78
     TRACE TRACE 1700: 81
     TRACE TRACE 284: 77
+    TRACE TRACE 1600: 80
     TRACE TRACE 171: 75
 
 
@@ -92,7 +92,7 @@ filename.  This means that the image file names for request times in
 the future (like in this example) can look a little unusual compared to
 the times in the image.
 
-If we find that the source id for AIA 304 is 13, we could make the same
+If we find that the source id for AIA 304 is is 13, we could make the same
 request using: ::
 
     hv.download_png('2099/01/01', 4.8, "[13,1,100]", x0=0, y0=0, width=512, height=512)
@@ -120,9 +120,11 @@ Map object.
 
 The overall syntax is similar to the *download_png* request, expect instead of
 specifying a single string to indicate which layers to use, here we
-can specify the source ID of the image we want.::
+specify the sourceId of the image we want to download.::
 
    >>> from sunpy.net.helioviewer import HelioviewerClient
+   >>> import matplotlib.pyplot as plt
+   >>> from astropy.units import Quantity
    >>> from sunpy.map import Map
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
    >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
@@ -131,6 +133,7 @@ can specify the source ID of the image we want.::
    >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
    >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA
    >>> hmi.submap(xrange, yrange).peek()  # doctest: +SKIP
+
 
 .. image:: helioviewer-3.png
 
