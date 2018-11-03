@@ -64,5 +64,6 @@ def aiaprep(aiamap):
 
     newmap.meta['r_sun'] = newmap.meta['rsun_obs'] / newmap.meta['cdelt1']
     newmap.meta['lvl_num'] = 1.5
+    newmap.meta['bitpix'] = -64
 
     return newmap
