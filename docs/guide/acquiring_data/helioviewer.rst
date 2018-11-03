@@ -37,45 +37,18 @@ using the get_datasources method::
     >>> # print a list of datasources and their associated ids
     >>> for observatory, instruments in datasources.items():  # doctest: +REMOTE_DATA
     ...     for inst, detectors in instruments.items():  # doctest: +REMOTE_DATA
-    ...         for det, measurements in detectors.items():  # doctest: +REMOTE_DATA
-    ...             for meas, params in measurements.items():  # doctest: +REMOTE_DATA
-    ...                 print("%s %s: %d" % (observatory, params['nickname'], params['sourceId']))  # doctest: +REMOTE_DATA
-    SOHO EIT 171: 0
-    SOHO EIT 195: 1
-    SOHO EIT 284: 2
-    SOHO EIT 304: 3
-    SOHO LASCO C2: 4
-    SOHO LASCO C3: 5
-    SOHO MDI Mag: 6
-    SOHO MDI Int: 7
-    SDO AIA 94: 8
-    SDO AIA 131: 9
-    SDO AIA 171: 10
-    SDO AIA 193: 11
-    SDO AIA 211: 12
-    SDO AIA 304: 13
-    SDO AIA 335: 14
-    SDO AIA 1600: 15
-    SDO AIA 1700: 16
-    SDO AIA 4500: 17
-    SDO HMI Int: 18
-    SDO HMI Mag: 19
-    STEREO_A EUVI-A 171: 20
-    STEREO_A EUVI-A 195: 21
-    STEREO_A EUVI-A 284: 22
-    STEREO_A EUVI-A 304: 23
-    STEREO_A COR1-A: 28
-    STEREO_A COR2-A: 29
-    STEREO_B EUVI-B 171: 24
-    STEREO_B EUVI-B 195: 25
-    STEREO_B EUVI-B 284: 26
-    STEREO_B EUVI-B 304: 27
-    STEREO_B COR1-B: 30
-    STEREO_B COR2-B: 31
-    PROBA2 SWAP 174: 32
-    Yohkoh SXT AlMgMn: 33
-    Yohkoh SXT thin-Al: 34
-    Yohkoh SXT white-light: 35
+    ...         for measurements in detectors:  # doctest: +REMOTE_DATA
+    ...            if(measurements == 'nickname'):
+    ...                 print("%s %s: %d" % (observatory, detectors[measurements], detectors['sourceId']))  # doctest: +REMOTE_DATA
+    TRACE TRACE 1600: 80
+    TRACE TRACE 195: 76
+    TRACE TRACE 1550: 79
+    TRACE TRACE white-light: 82
+    TRACE TRACE 1216: 78
+    TRACE TRACE 1700: 81
+    TRACE TRACE 284: 77
+    TRACE TRACE 171: 75
+
 
 At time of writing (2014/01/06) Helioviewer provides JP2 images from AIA, HMI, LASCO C2/C3, EIT,
 MDI, STEREO A/B COR1/2 & EUVI, SWAP and SXT.  New sources of JP2 images are being added every few months;
@@ -119,7 +92,7 @@ filename.  This means that the image file names for request times in
 the future (like in this example) can look a little unusual compared to
 the times in the image.
 
-If we find that the source id for AIA 304 is is 13, we could make the same
+If we find that the source id for AIA 304 is 13, we could make the same
 request using: ::
 
     hv.download_png('2099/01/01', 4.8, "[13,1,100]", x0=0, y0=0, width=512, height=512)
@@ -147,19 +120,17 @@ Map object.
 
 The overall syntax is similar to the *download_png* request, expect instead of
 specifying a single string to indicate which layers to use, here we
-can specify the values as separate keyword arguments.::
+can specify the source ID of the image we want.::
 
    >>> from sunpy.net.helioviewer import HelioviewerClient
-   >>> import matplotlib.pyplot as plt
-   >>> from astropy.units import Quantity
    >>> from sunpy.map import Map
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')  # doctest: +REMOTE_DATA
+   >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
+   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', sourceId=data_sources['SDO']['HMI']['continuum']['sourceId'])  # doctest: +REMOTE_DATA
    >>> hmi = Map(filepath)  # doctest: +REMOTE_DATA
    >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
    >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA
    >>> hmi.submap(xrange, yrange).peek()  # doctest: +SKIP
-
 
 .. image:: helioviewer-3.png
 

@@ -1,0 +1,1 @@
+Helioviewer client now uses Helioviewer API version 2 exclusively.
