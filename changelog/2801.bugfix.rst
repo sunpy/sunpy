@@ -1,0 +1,1 @@
+Ensures that Helioviewer client uses version 2 of Helioviewer API exclusively.

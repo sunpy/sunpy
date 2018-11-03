@@ -23,44 +23,35 @@ __all__ = ['HelioviewerClient']
 
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
-    def __init__(self, url="https://legacy.helioviewer.org/api/"):
+    def __init__(self, url="https://api.helioviewer.org/"):
         """
         url : location of the Helioviewer API.  The default location points to
-            version 1 of the API.  Version 1 of the Helioviewer API is
-            currently planned to be supported until the end of April 2017.
+            version 2 of the API.
         """
         self._api = url
 
-    def get_data_sources(self, **kwargs):
+    def get_data_sources(self):
         """
         Returns a structured list of datasources available at helioviewer.org.
         """
         params = {"action": "getDataSources"}
-        params.update(kwargs)
 
         return self._get_json(params)
 
-    def get_closest_image(self, date, **kwargs):
+    def get_closest_image(self, date, sourceId):
         """Finds the closest image available for the specified source and date.
 
         For more information on what types of requests are available and the
         expected usage for the response, consult the Helioviewer API
-        documentation: http://legacy.helioviewer.org/api/docs/v1/ .
+        documentation: http://api.helioviewer.org/docs/v2/ .
 
         Parameters
         ----------
         date : `datetime.datetime`, `str`
             A string or datetime object for the desired date of the image
-        observatory : string
-            (Optional) Observatory name
-        instrument : string
-            (Optional) instrument name
-        detector : string
-            (Optional) detector name
-        measurement : string
-            (Optional) measurement name
         sourceId : int
-            (Optional) data source id
+            It is a unique number that can be used to refer a particular image
+            datasource in the API reqeust.
 
         Returns
         -------
@@ -77,9 +68,9 @@ class HelioviewerClient(object):
         """
         params = {
             "action": "getClosestImage",
-            "date": self._format_date(date)
+            "date": self._format_date(date),
+            "sourceId": sourceId
         }
-        params.update(kwargs)
 
         response = self._get_json(params)
 
@@ -88,7 +79,7 @@ class HelioviewerClient(object):
 
         return response
 
-    def download_jp2(self, date, directory=None, overwrite=False, **kwargs):
+    def download_jp2(self, date, sourceId, directory=None, overwrite=False, **kwargs):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
@@ -101,20 +92,13 @@ class HelioviewerClient(object):
         ----------
         date : `datetime.datetime`, string
             A string or datetime object for the desired date of the image
-        directory : string
-            (Optional) Directory to download JPEG 2000 image to.
-        observatory : string
-            (Optional) Observatory name
-        instrument : string
-            (Optional) instrument name
-        detector : string
-            (Optional) detector name
-        measurement : string
-            (Optional) measurement name
         sourceId : int
-            (Optional) data source id
+            It is a unique number that can be used to refer a particular image
+            datasource in the API reqeust.
         jpip : bool
             (Optional) Returns a JPIP URI if set to True
+        json : bool
+            (Optional) Returns a JSON object if set to True
 
         Returns
         -------
@@ -127,17 +111,17 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')   # doctest: +REMOTE_DATA
-        >>> aia = sunpy.map.Map(filepath)   # doctest: +REMOTE_DATA
-        >>> aia.peek()   # doctest: +SKIP
-
         >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
         >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])   # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(file)   # doctest: +REMOTE_DATA
+        >>> aia.peek()   # doctest: +SKIP
         """
         params = {
             "action": "getJP2Image",
-            "date": self._format_date(date)
+            "date": self._format_date(date),
+            "sourceId": sourceId
         }
+    
         params.update(kwargs)
 
         # JPIP URL response
@@ -146,9 +130,10 @@ class HelioviewerClient(object):
 
         return self._get_file(params, directory, overwrite=overwrite)
 
-    def download_png(self, date, image_scale, layers, directory=None,
+    def download_png(self, date, image_scale, layers, eventLabels=False, directory=None,
                      overwrite=False, **kwargs):
-        """Downloads a PNG image using data from Helioviewer.org.
+        """Downloads a PNG image using data from Helioviewer.org. It uses the
+        takeScreenshot function from the API to perform this task.
 
         Returns a single image containing all layers/image types requested.
         If an image is not available for the date requested the closest
@@ -168,11 +153,26 @@ class HelioviewerClient(object):
             0.6, 1.2, 2.4, and so on, increasing or decreasing by a factor
             of 2. The full-res scale of an AIA image is 0.6.
         layers : string
+            Image datasource layer/layers to include in the screeshot.
             Each layer string is comma-separated with these values, e.g.:
             "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
             Multiple layer string are by commas: "[layer1],[layer2],[layer3]"
-        directory : string
-            (Optional)  Directory to download JPEG 2000 image to.
+        eventLabels : bool
+            Optionally annotate each event marker with a text label.
+        events : string
+            (Optional)  List feature/event types and FRMs to use to annoate the 
+            movie. Use the empty string to indicate that no feature/event annotations 
+            should be shown e.g.: [AR,HMI_HARP;SPoCA,1],[CH,all,1]
+        scale : bool
+            (Optional) Optionally overlay an image scale indicator.
+        scaleType : string
+            (Optional) Image scale indicator.
+        scaleX : number
+            (Optional) Horizontal offset of the image scale indicator in arcseconds with respect 
+            to the center of the Sun.
+        scaleY : number
+            (Optional) Vertical offset of the image scale indicator in arcseconds with respect 
+            to the center of the Sun.
         x1 : float
             (Optional) The offset of the image's left boundary from the center
             of the sun, in arcseconds.
@@ -193,9 +193,17 @@ class HelioviewerClient(object):
             (Optional) Width of the image in pixels (Maximum: 1920).
         height : int
             (Optional) Height of the image in pixels (Maximum: 1200).
-        watermark
-            (Optional) Whether or not the include the timestamps and the
-            Helioviewer.org logo in the image (Default=True).
+        watermark : bool
+            (Optional) Optionally overlay a watermark consisting of a
+            Helioviewer logo and the datasource abbreviation(s) and
+            timestamp(s) displayed in the screenshot.
+        display : bool
+            (Optional) Set to `true` to directly output binary PNG image data.
+            Default is `false` (which outputs a JSON object).
+        callback : string
+            (Optional) Wrap the response object in a function call of your choosing.
+
+
 
         Returns
         -------
@@ -207,19 +215,19 @@ class HelioviewerClient(object):
         >>> from sunpy.net.helioviewer import HelioviewerClient
         >>> import datetime
         >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> file = hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)   # doctest: +REMOTE_DATA
-        >>> file = hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800)   # doctest: +REMOTE_DATA
-        >>> file = hv.download_jp2(datetime.datetime.now(), observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')   # doctest: +REMOTE_DATA
+        >>> file = hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", False, x0=0, y0=0, width=1024, height=1024)   # doctest: +REMOTE_DATA
+        >>> file = hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", True, x1=-2800, x2=2800, y1=-2800, y2=2800)   # doctest: +REMOTE_DATA
         """
         params = {
             "action": "takeScreenshot",
             "date": self._format_date(date),
             "imageScale": image_scale,
             "layers": layers,
+            "eventLabels": eventLabels,
             "display": True
         }
-        params.update(kwargs)
 
+        params.update(kwargs)
         return self._get_file(params, directory, overwrite=overwrite)
 
     def is_online(self):
