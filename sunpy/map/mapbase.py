@@ -1289,11 +1289,7 @@ class GenericMap(NDData):
             y_pixels[1] = np.floor(y_pixels[1] + 1)
 
         elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
-              isinstance(top_right, u.Quantity) and bottom_left.unit.is_equivalent(u.pix)):
-
-            warnings.warn("GenericMap.submap now takes pixel values as `bottom_left`"
-                          " and `top_right` not `range_a` and `range_b`", Warning)
-
+              isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
             x_pixels = u.Quantity([bottom_left[0], top_right[0]]).value
             y_pixels = u.Quantity([top_right[1], bottom_left[1]]).value
 
