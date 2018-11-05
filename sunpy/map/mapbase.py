@@ -19,7 +19,6 @@ from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 import sunpy.io as io
 import sunpy.coordinates
 import sunpy.cm
-from sunpy.util.decorators import deprecated
 from sunpy import config
 from sunpy.extern import six
 from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
@@ -468,22 +467,6 @@ class GenericMap(NDData):
         return self.meta.get('lvl_num', None)
 
     @property
-    @deprecated("0.8", "This property is only valid for non-rotated WCS")
-    def xrange(self):
-        """Return the X range of the image from edge to edge."""
-        xmin = self.center.data.lon - self.dimensions[0] / 2. * self.scale[0]
-        xmax = self.center.data.lon + self.dimensions[0] / 2. * self.scale[0]
-        return u.Quantity([xmin, xmax])
-
-    @property
-    @deprecated("0.8", "This property is only valid for non-rotated WCS")
-    def yrange(self):
-        """Return the Y range of the image from edge to edge."""
-        ymin = self.center.data.lat - self.dimensions[1] / 2. * self.scale[1]
-        ymax = self.center.data.lat + self.dimensions[1] / 2. * self.scale[1]
-        return u.Quantity([ymin, ymax])
-
-    @property
     def bottom_left_coord(self):
         """
         The physical coordinate for the bottom left [0,0] pixel.
@@ -829,14 +812,6 @@ class GenericMap(NDData):
 
         return PixelPair(x * u.pixel, y * u.pixel)
 
-    # Thought it would be easier to create a copy this way.
-    @deprecated("0.8.0", alternative="sunpy.map.GenericMap.world_to_pixel")
-    def data_to_pixel(self, coordinate, origin=0):
-        """
-        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`.
-        """
-        return self.world_to_pixel(coordinate, origin=origin)
-
     @u.quantity_input(x=u.pixel, y=u.pixel)
     def pixel_to_world(self, x, y, origin=0):
         """
@@ -878,14 +853,6 @@ class GenericMap(NDData):
         y = u.Quantity(y, out_units[1])
 
         return SkyCoord(x, y, frame=self.coordinate_frame)
-
-    # Thought it would be easier to create a copy this way.
-    @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_world")
-    def pixel_to_data(self, x, y, origin=0):
-        """
-        See `~sunpy.map.mapbase.GenericMap.pixel_to_world`.
-        """
-        return self.pixel_to_world(x, y, origin=origin)
 
 # #### I/O routines #### #
 

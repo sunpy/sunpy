@@ -39,7 +39,6 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename
 from sunpy.time import parse_time
 
-from sunpy.util import deprecated
 from sunpy.extern import six
 from sunpy.extern.six import iteritems, text_type
 from sunpy.extern.six.moves import input
@@ -139,13 +138,6 @@ class QueryResponse(list):
         return QueryResponse(
             attrs.filter_results(query, self), self.queryresult
         )
-
-    @deprecated('0.8', alternative='QueryResponse.search')
-    def query(self, *query):
-        """
-        See `~sunpy.net.vso.vso.QueryResponse.search`
-        """
-        return self.search(*query)
 
     @classmethod
     def create(cls, queryresult):
@@ -359,13 +351,6 @@ class VSOClient(object):
                 response.add_error(ex)
 
         return QueryResponse.create(self.merge(responses))
-
-    @deprecated('0.8', alternative='VSOClient.search')
-    def query(self, *query):
-        """
-        See `~sunpy.net.vso.VSOClient.search`
-        """
-        return self.search(*query)
 
     def merge(self, queryresponses):
         """ Merge responses into one. """
@@ -670,14 +655,6 @@ class VSOClient(object):
         res.poke()
         return res
 
-    @deprecated('0.8', alternative='VSOClient.fetch')
-    def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
-            downloader=None, site=None):
-        """
-        See `~sunpy.net.vso.VSOClient.fetch`
-        """
-        return self.fetch(query_response, path=path, methods=methods, downloader=downloader, site=site)
-
     @staticmethod
     def link(query_response, maps):
         """ Return list of paths with records associated with them in
@@ -878,115 +855,3 @@ class VSOClient(object):
     @classmethod
     def _can_handle_query(cls, *query):
         return all([x.__class__.__name__ in attrs.__all__ for x in query])
-
-
-@deprecated("0.8.0", alternative="Please use VSOClient")
-class InteractiveVSOClient(VSOClient):
-
-    """ Client for use in the REPL. Prompts user for data if required. """
-
-    def multiple_choices(self, choices, response):
-        """
-        not documented yet
-
-        Parameters
-        ----------
-
-            choices : not documented yet
-
-            response : not documented yet
-
-        """
-        while True:
-            for n, elem in enumerate(choices):
-                print("({num:d}) {choice!s}".format(num=n + 1, choice=elem))
-            try:
-                choice = input("Method number: ")
-            except KeyboardInterrupt:
-                raise NoData
-            if not choice:
-                raise NoData
-            try:
-                choice = int(choice) - 1
-            except ValueError:
-                continue
-            if choice == -1:
-                raise NoData
-            elif choice >= 0:
-                try:
-                    return [choices[choice]]
-                except IndexError:
-                    continue
-
-    def missing_information(self, info, field):
-        """
-        not documented yet
-
-        Parameters
-        ----------
-        info : not documented yet
-                not documented yet
-        field : not documented yet
-            not documented yet
-
-        Returns
-        -------
-        choice : not documented yet
-
-        .. todo::
-            improve documentation. what does this function do?
-
-        """
-        choice = input(field + ': ')
-        if not choice:
-            raise NoData
-        return choice
-
-    def search(self, *args, **kwargs):
-        """ When passed an Attr object, perform new-style query;
-        otherwise, perform legacy query.
-        """
-        if isinstance(args[0], Attr):
-            return self.query(*args)
-        else:
-            return self.query_legacy(*args, **kwargs)
-
-    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None):
-        """The path expands ``~`` to refer to the user's home directory.
-        If the given path is an already existing directory, ``{file}`` is
-        appended to this path. After that, all received parameters (including
-        the updated path) are passed to :meth:`VSOClient.get`.
-
-        """
-        if path is not None:
-            path = os.path.abspath(os.path.expanduser(path))
-            if os.path.exists(path) and os.path.isdir(path):
-                path = os.path.join(path, '{file}')
-        return VSOClient.fetch(self, query_response, path, methods, downloader)
-
-
-g_client = None
-
-
-@deprecated("0.8.0", alternative="Please use the VSO Clients directly")
-def search(*args, **kwargs):
-    # pylint: disable=W0603
-    global g_client
-    if g_client is None:
-        g_client = InteractiveVSOClient()
-    return g_client.search(*args, **kwargs)
-
-
-search.__doc__ = InteractiveVSOClient.search.__doc__
-
-
-@deprecated("0.8.0", alternative="Please use the VSO Clients directly")
-def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
-    # pylint: disable=W0603
-    global g_client
-    if g_client is None:
-        g_client = InteractiveVSOClient()
-    return g_client.get(query_response, path, methods, downloader)
-
-
-get.__doc__ = VSOClient.search.__doc__

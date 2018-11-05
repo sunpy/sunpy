@@ -29,11 +29,6 @@ RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
 # Map Factory Tests
 #==============================================================================
 class TestMap(object):
-    def test_mapcube(self):
-        #Test making a MapCube
-        cube = sunpy.map.Map(a_list_of_many, cube=True)
-        assert isinstance(cube, sunpy.map.MapCube)
-
     def test_mapsequence(self):
         #Test making a MapSequence
         sequence = sunpy.map.Map(a_list_of_many, sequence=True)
