@@ -9,9 +9,11 @@ import sunpy.map
 __all__ = ['SJI_to_cube']
 
 
+#  TODO: rename to SJI_to_sequence? Or delete this?
+
 def SJI_to_cube(filename, start=0, stop=None, hdu=0):
     """
-    Read a SJI file and return a MapCube
+    Read a SJI file and return a MapSequence
 
     .. warning::
         This function is a very early beta and is not stable. Further work is
@@ -23,17 +25,17 @@ def SJI_to_cube(filename, start=0, stop=None, hdu=0):
         File to read
 
     start: int
-        Temporal axis index to create MapCube from
+        Temporal axis index to create MapSequence from
 
     stop: int
-        Temporal index to stop MapCube at
+        Temporal index to stop MapSequence at
 
     hdu: int
         Choose hdu index
 
     Returns
     -------
-    iris_cube: sunpy.map.MapCube
+    iris_cube: sunpy.map.MapSequence
         A map cube of the SJI sequence
     """
 
@@ -50,7 +52,7 @@ def SJI_to_cube(filename, start=0, stop=None, hdu=0):
     datas = hdus[hdu][0][start:stop]
 
     # Make the cube:
-    iris_cube = sunpy.map.Map(list(zip(datas, headers)), cube=True)
+    iris_cube = sunpy.map.Map(list(zip(datas, headers)), sequence=True)
     # Set the date/time
 
     for i, m in enumerate(iris_cube):

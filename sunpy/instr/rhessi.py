@@ -20,7 +20,7 @@ from dateutil.relativedelta import relativedelta
 from astropy import units as u
 
 from sunpy.time import TimeRange, parse_time
-from sunpy.sun.sun import solar_semidiameter_angular_size
+from sunpy.sun import solar_semidiameter_angular_size
 from sunpy.coordinates import get_sunearth_distance
 import sunpy.map
 import sunpy.io

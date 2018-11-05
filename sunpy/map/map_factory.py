@@ -12,7 +12,6 @@ from astropy.wcs import WCS
 import sunpy
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.compositemap import CompositeMap
-from sunpy.map.mapcube import MapCube
 from sunpy.map.mapsequence import MapSequence
 
 from sunpy.io.file_tools import read_file
@@ -83,15 +82,15 @@ class MapFactory(BasicRegistrationFactory):
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
-    >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA 
-    
+    >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA
+
     * data, wcs object, not in tuple
-    
+
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
-    >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA 
-  
+    >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA
+
     * File names
 
     >>> mymap = sunpy.map.Map('file1.fits')   # doctest: +SKIP
@@ -262,9 +261,6 @@ class MapFactory(BasicRegistrationFactory):
         composite : boolean, optional
             Indicates if collection of maps should be returned as a CompositeMap
 
-        cube : boolean, optional
-            Indicates if collection of maps should be returned as a MapCube
-
         sequence : boolean, optional
             Indicates if collection of maps should be returned as a MapSequence
 
@@ -279,13 +275,6 @@ class MapFactory(BasicRegistrationFactory):
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
-
-        # MapCube Deprecation
-        cube = kwargs.pop('cube', False)
-        if cube:
-            warnings.warn('MapCube is now deprecated and renamed MapSequence. ' +
-                          'Please use the syntax Map(sequence=True) instead of Map(cube=True).',
-                          SunpyDeprecationWarning, stacklevel=2)
 
         sequence = kwargs.pop('sequence', False)
         silence_errors = kwargs.pop('silence_errors', False)
@@ -311,13 +300,6 @@ class MapFactory(BasicRegistrationFactory):
             new_maps.append(new_map)
 
         new_maps += already_maps
-
-        # If the list is meant to be a cube, instantiate a map cube
-        if cube:
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore", category=SunpyDeprecationWarning)
-                amapcube = MapCube(new_maps, **kwargs)
-            return amapcube
 
         # If the list is meant to be a sequence, instantiate a map sequence
         if sequence:

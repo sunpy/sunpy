@@ -45,13 +45,8 @@ print(manual_map.meta)
 manual_map.peek()
 
 ##############################################################################
-# SunPy Maps have a number of attributes that can be accessed easily, such as
-# the x and y ranges:
-
-print(manual_map.xrange)
-print(manual_map.yrange)
-
-# These return astropy Quantity objects.
+# SunPy Maps have a number of attributes that can be accessed easily.
+# Most return astropy Quantity objects.
 # In general the attributes are populated using details in the metadata and in
 # this case there is no centre pixel or pixel size information given so SunPy
 # is defaulting to assuming each pixel is 1 arcsec.

@@ -13,7 +13,7 @@ def test_SJI_to_cube():
     test_data = os.path.join(sunpy.data.test.rootdir,'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits')
     iris_cube = iris.SJI_to_cube(test_data, start=0, stop=None, hdu=0)
 
-    assert isinstance(iris_cube, sunpy.map.MapCube)
+    assert isinstance(iris_cube, sunpy.map.MapSequence)
     assert isinstance(iris_cube.maps[0], sunpy.map.sources.SJIMap)
     assert len(iris_cube.maps) == 2
     assert iris_cube.maps[0].meta['DATE-OBS'] != iris_cube.maps[1].meta['DATE-OBS']

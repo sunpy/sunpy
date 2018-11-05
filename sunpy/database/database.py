@@ -26,7 +26,6 @@ from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
 from sunpy.extern.six.moves import range
-from sunpy.util import deprecated
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [
@@ -446,13 +445,6 @@ class Database(object):
                 entry.download_time = datetime.utcnow()
                 yield entry
 
-    @deprecated('0.8', alternative='database.fetch()')
-    def download(self, *query, **kwargs):
-        """
-        See `~sunpy.database.Database.fetch`
-        """
-
-        return self.fetch(*query, **kwargs)
 
     def fetch(self, *query, **kwargs):
 
@@ -628,18 +620,11 @@ class Database(object):
 
         return sorted(db_entries, key=operator.attrgetter(sortby))
 
-    @deprecated('0.8', alternative='database.search')
-    def query(self, *query, **kwargs):
-        """
-        See `~sunpy.database.Database.search`
-        """
-        return self.search(*query, **kwargs)
-
     def get_entry_by_id(self, entry_id):
-        """Get a database entry by its unique ID number. If an entry with the
+        """
+        Get a database entry by its unique ID number. If an entry with the
         given ID does not exist, :exc:`sunpy.database.EntryNotFoundError` is
         raised.
-
         """
         try:
             return self._cache[entry_id]
