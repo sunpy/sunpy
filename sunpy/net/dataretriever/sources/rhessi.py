@@ -9,6 +9,8 @@ from urllib.request import urlopen, urlretrieve
 
 from dateutil.rrule import rrule, MONTHLY
 
+import astropy.units as u
+
 from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
 
@@ -137,6 +139,11 @@ class RHESSIClient(GenericClient):
             and end dates at datetime instances or date strings.
         """
         return self.get_observing_summary_filename(timerange)
+
+    def _get_time_for_url(self, urls):
+        ts = [datetime.strptime(url.split("hsi_obssumm_")[1].split("_")[0],
+                                "%Y%m%d") for url in urls]
+        return [TimeRange(t, (1*u.day-1*u.ms)) for t in ts]
 
     def _makeimap(self):
         """

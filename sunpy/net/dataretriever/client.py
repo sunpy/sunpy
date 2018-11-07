@@ -300,6 +300,15 @@ class GenericClient(object):
 
         return paths
 
+    def _get_time_for_url(self, urls):
+        """
+        This method allows clients to customise the timerange displayed for
+        each URL.
+
+        It should return a sunpy.time.TimeRange object per URL.
+        """
+        return NotImplemented
+
     def search(self, *args, **kwargs):
         """
         Query this client for a list of results.
@@ -315,8 +324,9 @@ class GenericClient(object):
         kwergs.update(kwargs)
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
-        if urls and getattr(self, "_get_time_for_url", None):
-            return QueryResponse.create(self.map_, urls, self._get_time_for_url(urls))
+        times = self._get_time_for_url(urls)
+        if times and times is not NotImplemented:
+            return QueryResponse.create(self.map_, urls, times)
         return QueryResponse.create(self.map_, urls)
 
     @deprecated('0.8', alternative='GenericClient.search')
