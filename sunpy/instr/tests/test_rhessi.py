@@ -11,10 +11,8 @@ import pytest
 
 import sunpy.io
 import sunpy.map
-import sunpy.data.test
+from sunpy.data.test import get_test_filepath
 import sunpy.instr.rhessi as rhessi
-
-testpath = sunpy.data.test.rootdir
 
 
 @pytest.fixture
@@ -31,13 +29,13 @@ def test_backprojection():
     Test that backprojection returns a map with the expected time.
     """
     test_filename = 'hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits'
-    amap = rhessi.backprojection(os.path.join(testpath, test_filename))
+    amap = rhessi.backprojection(get_test_filepath(test_filename))
     assert isinstance(amap, sunpy.map.GenericMap)
     assert amap.date == datetime(2002, 2, 20, 11, 6, 21)
 
 
 def test_parse_obssum_dbase_file():
-    fname = os.path.join(testpath, "hsi_obssumm_filedb_201104.txt")
+    fname = get_test_filepath("hsi_obssumm_filedb_201104.txt")
     obssum = rhessi.parse_observing_summary_dbase_file(fname)
     assert obssum['filename'][0] == 'hsi_obssumm_20110401_043.fit'
     assert obssum['filename'][-1] == 'hsi_obssumm_20110430_029.fit'
@@ -61,32 +59,27 @@ def test_parse_obssum_dbase_file():
     assert obssum['npackets'][-1] == 0
 
 
-@pytest.mark.remote_data
-def test_parse_observing_summary_dbase_file(one_day_timerange):
+def test_parse_observing_summary_dbase_file():
     """
     Test that we get the observing summary dbase file with the content
     we expect.
     """
-    file = rhessi.get_observing_summary_dbase_file(one_day_timerange.start)
-    obssum = rhessi.parse_observing_summary_dbase_file(file[0])
+    obssum = rhessi.parse_observing_summary_dbase_file(get_test_filepath("hsi_obssumm_filedb_201104.txt"))
 
-    predict_file_name = one_day_timerange.start.strftime('hsi_obssumm_%Y%m01')
-    predict_nextday_file_name = one_day_timerange.start.strftime('hsi_obssumm_%Y%m02')
-
-    assert obssum['filename'][0][0:20] == predict_file_name
-    assert obssum['filename'][1][0:20] == predict_nextday_file_name
+    assert obssum['filename'][0][0:20] == 'hsi_obssumm_20110401'
+    assert obssum['filename'][1][0:20] == 'hsi_obssumm_20110402'
 
     assert obssum['orb_st'][0] == 0
-    assert obssum['orb_st'][-1] == 65536
+    assert obssum['orb_st'][-1] == 0
 
     assert obssum['orb_end'][0] == 0
-    assert obssum['orb_end'][-1] == 65536
+    assert obssum['orb_end'][-1] == 0
 
-    assert obssum['start_time'][0] == datetime(2016, 1, 1, 0, 0, 0)
-    assert obssum['start_time'][-1] == datetime(2016, 1, 31, 0, 0, 0)
+    assert obssum['start_time'][0] == datetime(2011, 4, 1, 0, 0, 0)
+    assert obssum['start_time'][-1] == datetime(2011, 4, 30, 0, 0, 0)
 
-    assert obssum['end_time'][0] == datetime(2016, 1, 2, 0, 0, 0)
-    assert obssum['end_time'][-1] == datetime(2016, 2, 1, 0, 0, 0)
+    assert obssum['end_time'][0] == datetime(2011, 4, 2, 0, 0, 0)
+    assert obssum['end_time'][-1] == datetime(2011, 5, 1, 0, 0, 0)
 
     assert obssum['status_flag'][0] == 0
     assert obssum['status_flag'][-1] == 0
@@ -96,8 +89,7 @@ def test_parse_observing_summary_dbase_file(one_day_timerange):
 
 
 def test_get_parse_obssum_hdulist():
-    hdulist = sunpy.io.read_file(os.path.join(testpath,
-                                              'hsi_obssumm_20110404_042.fits.gz'))
+    hdulist = sunpy.io.read_file(get_test_filepath('hsi_obssumm_20110404_042.fits.gz'))
     header, _data = rhessi.parse_observing_summary_hdulist(hdulist)
     assert header.get('DATE_OBS') == '2011-04-04T00:00:00.000'
     assert header.get('DATE_END') == '2011-04-05T00:00:00.000'
