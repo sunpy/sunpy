@@ -172,7 +172,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid=("https://hesperia.gsfc.nasa.gov/"
                 "hessidata/metadata/catalog/hsi_obssumm_20120101_016.fits"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
         instrument='rhessi')
     # 2 entries from eve, level 0
