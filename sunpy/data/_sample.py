@@ -14,7 +14,6 @@ from sunpy.extern import six
 
 from sunpy.util.net import url_exists
 from sunpy.util.config import get_and_create_sample_dir
-from sunpy import config
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
@@ -66,9 +65,6 @@ _sample_files = {
     "NORH_TIMESERIES": "tca110607.fits"
 }
 
-# Creating the directory for sample files to be downloaded
-sampledata_dir = get_and_create_sample_dir()
-
 
 def download_sample_data(show_progress=True):
     """
@@ -114,6 +110,9 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
     result: `str`
         The local path of the file. None if it failed.
     """
+
+    # Creating the directory for sample files to be downloaded
+    sampledata_dir = get_and_create_sample_dir()
 
     if filename[-3:] == 'zip':
         uncompressed_filename = filename[:-4]
