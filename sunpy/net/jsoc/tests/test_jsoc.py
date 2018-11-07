@@ -252,7 +252,7 @@ def test_search_metadata():
 
 @pytest.mark.remote_data
 def test_request_data_error():
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
         attrs.Protocol('foo'))
@@ -262,7 +262,7 @@ def test_request_data_error():
 
 @pytest.mark.remote_data
 def test_request_data_protocol():
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
@@ -270,7 +270,7 @@ def test_request_data_protocol():
     assert req._d['method'] == 'url'
     assert req._d['protocol'] == 'fits'
 
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
         attrs.Protocol('fits'))
@@ -279,7 +279,7 @@ def test_request_data_protocol():
     assert req._d['method'] == 'url'
     assert req._d['protocol'] == 'fits'
 
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
         attrs.Protocol('as-is'))
@@ -291,12 +291,12 @@ def test_request_data_protocol():
 
 @pytest.mark.remote_data
 def test_check_request():
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
     req.wait()
-    assert client.check_request(req) == 0
+    assert req.status == 0
 
 
 @pytest.mark.remote_data

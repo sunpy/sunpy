@@ -207,14 +207,12 @@ class MapSequence(object):
                 im.axes.reset_wcs(ani_data[i].wcs)
                 wcsaxes_compat.default_wcs_grid(axes)
             else:
-                xmin = ani_data[i].center.data.lon - ani_data[i].dimensions[0] / 2. * ani_data[i].scale[0]
-                xmax = ani_data[i].center.data.lon + ani_data[i].dimensions[0] / 2. * ani_data[i].scale[0]
-                anidata_xrange = u.Quantity([xmin, xmax])
-                ymin = ani_data[i].center.data.lat - ani_data[i].dimensions[1] / 2. * ani_data[i].scale[1]
-                ymax = ani_data[i].center.data.lat + ani_data[i].dimensions[1] / 2. * ani_data[i].scale[1]
-                anidata_yrange = u.Quantity([ymin, ymax])
-                im.set_extent(np.concatenate((anidata_xrange.value,
-                                              anidata_yrange.value)))
+                bl = ani_data[i]._get_lon_lat(ani_data[i].bottom_left_coord)
+                tr = ani_data[i]._get_lon_lat(ani_data[i].top_right_coord)
+                x_range = list(u.Quantity([bl[0], tr[0]]).to(ani_data[i].spatial_units[0]).value)
+                y_range = list(u.Quantity([bl[1], tr[1]]).to(ani_data[i].spatial_units[1]).value)
+
+                im.set_extent(np.concatenate((x_range.value, y_range.value)))
 
             if annotate:
                 annotate_frame(i)
