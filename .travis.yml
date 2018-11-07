@@ -10,11 +10,11 @@ env:
     - TOX_ARG=''
 
 stages:
-  # Do the offline tests, it will not proceed if any fail
+  # Do the offline jobs, it will not proceed if any fail
   - name: "Initial jobs"
   # Do the rest of the jobs
   - name: "Comprehensive jobs"
-  # Cron only tests
+  # Cron only jobs
   - name: "Cron jobs"
     if: type = cron
 
@@ -56,15 +56,16 @@ matrix:
 
 before_install:
   - git clone --depth 1 git://github.com/astropy/ci-helpers.git
+  # We do not want to create the test env
   - echo "" > ci-helpers/travis/setup_dependencies_common.sh
   - source ci-helpers/travis/setup_conda.sh
   - pip install git+https://github.com/drdavella/tox-conda
 
 script:
-  - tox -e $TOX_ENV $TOX_ARG
+  - tox -vv -e $TOX_ENV $TOX_ARG
 
 after_success:
-    - if [[ $TOX_ARG = *"cov"* ]]; then codecov; fi
+  - codecov
 
 after_failure:
     # Send a nice matrix notification if the Astropy-dev job fails
