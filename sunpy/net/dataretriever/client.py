@@ -324,9 +324,10 @@ class GenericClient(object):
         kwergs.update(kwargs)
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
-        times = self._get_time_for_url(urls)
-        if times and times is not NotImplemented:
-            return QueryResponse.create(self.map_, urls, times)
+        if urls:
+            times = self._get_time_for_url(urls)
+            if times and times is not NotImplemented:
+                return QueryResponse.create(self.map_, urls, times)
         return QueryResponse.create(self.map_, urls)
 
     @deprecated('0.8', alternative='GenericClient.search')
