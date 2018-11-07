@@ -1,0 +1,2 @@
+The sample data directory will no longer be created until files are downloaded
+to it.
