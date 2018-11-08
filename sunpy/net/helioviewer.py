@@ -30,15 +30,32 @@ class HelioviewerClient(object):
         """
         self._api = url
 
-    def get_data_sources(self):
+    def get_data_sources(self, **kwargs):
         """
         Returns a structured list of datasources available at helioviewer.org.
+
+        Parameters
+        ----------
+        verbose: `bool`
+            (Optional) If set to True, it outputs the hierarchical list in an
+            alternative format and limits the list of available datasources
+            to a known set (SDO and SOHO).
+        enable: `str`
+            (Optional) Comma-separated list of observatories to enable.
+        callback: `str`
+            (Optional) Wrap the response object in a function call of your choosing.
+
+        Returns
+        -------
+        out : `dict`
+            A dictionary containing meta-information for each data source
+            that Helioviewer supports.
         """
         params = {"action": "getDataSources"}
-
+        params.update(**kwargs)
         return self._get_json(params)
 
-    def get_closest_image(self, date, sourceId):
+    def get_closest_image(self, date, sourceid):
         """Finds the closest image available for the specified source and date.
 
         For more information on what types of requests are available and the
@@ -49,7 +66,7 @@ class HelioviewerClient(object):
         ----------
         date : `datetime.datetime`, `str`
             A string or datetime object for the desired date of the image
-        sourceId : int
+        sourceid : int
             It is a unique number that can be used to refer a particular image
             datasource in the API reqeust.
 
@@ -62,14 +79,14 @@ class HelioviewerClient(object):
         --------
         >>> from sunpy.net import helioviewer
         >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)  # doctest: +REMOTE_DATA
+        >>> metadata = client.get_closest_image('2012/01/01', sourceid=11)  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
         2012-01-01 00:00:07
         """
         params = {
             "action": "getClosestImage",
             "date": self._format_date(date),
-            "sourceId": sourceId
+            "sourceId": sourceid
         }
 
         response = self._get_json(params)
@@ -79,7 +96,29 @@ class HelioviewerClient(object):
 
         return response
 
-    def download_jp2(self, date, sourceId, directory=None, overwrite=False, **kwargs):
+    def get_source_id(self, observatory, instrument, detector, measurement):
+        """
+        Fetches the source ID of a particular image based on the 
+        observatory, instrument, detector and measurement. If no
+        detector present then it's value is by default set to None.
+        If there is no detector then set its valuse to None.
+        """
+        import sunpy.map
+        from sunpy.net import helioviewer
+        hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
+        data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
+        d = dict()
+        if detector == None:
+            d[(observatory, instrument, detector, measurement)] = data_sources[observatory][instrument][measurement]['sourceId']  # doctest: +REMOTE_DATA
+        else:
+            d[(observatory, instrument, detector, measurement)] = data_sources[observatory][instrument][detector][measurement]['sourceId']  # doctest: +REMOTE_DATA
+        for s_id in d.values():
+            source_id = s_id
+        d.clear()
+
+        return source_id
+
+    def download_jp2(self, date, sourceid, directory=None, overwrite=False, **kwargs):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
@@ -92,19 +131,18 @@ class HelioviewerClient(object):
         ----------
         date : `datetime.datetime`, string
             A string or datetime object for the desired date of the image
-        sourceId : int
+        sourceid : int
             It is a unique number that can be used to refer a particular image
             datasource in the API reqeust.
-        jpip : bool
-            (Optional) Returns a JPIP URI if set to True
+        directory : string
+            (Optional) Directory to download JPEG 2000 image to.
         json : bool
             (Optional) Returns a JSON object if set to True
 
         Returns
         -------
         out : string
-            Returns a filepath to the downloaded JPEG 2000 image or a URL if
-            the "jpip" parameter is set to True.
+            Returns a filepath to the downloaded JPEG 2000 image.
 
         Examples
         --------
@@ -112,21 +150,18 @@ class HelioviewerClient(object):
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
-        >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])   # doctest: +REMOTE_DATA
+        >>> source_id = hv.get_source_id(observatory = 'SDO', instrument = 'HMI', detector = None, measurement = 'continuum')  # doctest: +REMOTE_DATA
+        >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceid=source_id)   # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(file)   # doctest: +REMOTE_DATA
         >>> aia.peek()   # doctest: +SKIP
         """
         params = {
             "action": "getJP2Image",
             "date": self._format_date(date),
-            "sourceId": sourceId
+            "sourceId": sourceid
         }
-    
-        params.update(kwargs)
 
-        # JPIP URL response
-        if 'jpip' in kwargs:
-            return self._get_json(params)
+        params.update(kwargs)
 
         return self._get_file(params, directory, overwrite=overwrite)
 
@@ -152,6 +187,8 @@ class HelioviewerClient(object):
             The zoom scale of the image. Default scales that can be used are
             0.6, 1.2, 2.4, and so on, increasing or decreasing by a factor
             of 2. The full-res scale of an AIA image is 0.6.
+        directory : string
+            (Optional) Directory to download PNG image to.
         layers : string
             Image datasource layer/layers to include in the screeshot.
             Each layer string is comma-separated with these values, e.g.:
@@ -160,18 +197,18 @@ class HelioviewerClient(object):
         eventLabels : bool
             Optionally annotate each event marker with a text label.
         events : string
-            (Optional)  List feature/event types and FRMs to use to annoate the 
-            movie. Use the empty string to indicate that no feature/event annotations 
+            (Optional)  List feature/event types and FRMs to use to annoate the
+            movie. Use the empty string to indicate that no feature/event annotations
             should be shown e.g.: [AR,HMI_HARP;SPoCA,1],[CH,all,1]
         scale : bool
             (Optional) Optionally overlay an image scale indicator.
         scaleType : string
             (Optional) Image scale indicator.
         scaleX : number
-            (Optional) Horizontal offset of the image scale indicator in arcseconds with respect 
+            (Optional) Horizontal offset of the image scale indicator in arcseconds with respect
             to the center of the Sun.
         scaleY : number
-            (Optional) Vertical offset of the image scale indicator in arcseconds with respect 
+            (Optional) Vertical offset of the image scale indicator in arcseconds with respect
             to the center of the Sun.
         x1 : float
             (Optional) The offset of the image's left boundary from the center
@@ -287,3 +324,4 @@ class HelioviewerClient(object):
     def _format_date(self, date):
         """Formats a date for Helioviewer API requests"""
         return parse_time(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
+
