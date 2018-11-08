@@ -2,8 +2,6 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-from __future__ import print_function, absolute_import
-
 import copy
 import os
 import datetime

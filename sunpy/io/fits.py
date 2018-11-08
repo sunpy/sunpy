@@ -27,7 +27,6 @@ References
 ----------
 | https://stackoverflow.com/questions/456672/class-factory-in-python
 """
-from __future__ import absolute_import, division, print_function
 import os
 import re
 import sys

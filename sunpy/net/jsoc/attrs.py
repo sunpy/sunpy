@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-
 from astropy.time import Time as astropyTime
 
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr

@@ -2,8 +2,6 @@
 Nothing here but dictionaries for generating LinearSegmentedColormaps,
 and a dictionary of these dictionaries.
 """
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 import matplotlib.colors as colors
 from sunpy.extern.six.moves import range, zip

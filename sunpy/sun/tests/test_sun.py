@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import astropy.units as u
 
 from sunpy.sun import sun

@@ -2,8 +2,6 @@
 #
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
-from __future__ import absolute_import, print_function
-
 from time import strptime, mktime
 from datetime import datetime
 import fnmatch

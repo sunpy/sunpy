@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 import re
 from datetime import datetime, date, time, timedelta
 from functools import singledispatch

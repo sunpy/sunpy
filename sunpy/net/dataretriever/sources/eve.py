@@ -2,7 +2,6 @@
 # This module was developed under funding by
 # Google Summer of Code 2014
 
-from __future__ import absolute_import, division, print_function
 import datetime
 
 from sunpy.time import TimeRange

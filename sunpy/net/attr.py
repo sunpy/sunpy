@@ -24,8 +24,6 @@ Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
 
-from __future__ import absolute_import
-
 from sunpy.util.multimethod import MultiMethod
 from sunpy.extern.six import iteritems
 

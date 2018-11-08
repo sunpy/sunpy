@@ -3,8 +3,6 @@
 This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.
 """
-from __future__ import absolute_import, print_function
-
 import xml.etree.ElementTree as EL
 from bs4 import BeautifulSoup
 from contextlib import closing

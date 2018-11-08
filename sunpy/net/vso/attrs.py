@@ -15,8 +15,6 @@ AND-expression, if you still attempt to do so it is called a collision.
 For a quick example think about how the system should handle
 Instrument('aia') & Instrument('eit').
 """
-from __future__ import absolute_import
-
 from datetime import datetime
 
 from astropy import units as u

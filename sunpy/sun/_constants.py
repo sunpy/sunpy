@@ -8,7 +8,6 @@ everyday use.
 
 """
 
-from __future__ import absolute_import
 from astropy.constants import Constant
 
 # This is to keep the old solar values until we make the choice to move to IAU2015 Values

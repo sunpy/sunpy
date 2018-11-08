@@ -6,8 +6,6 @@ is based on algorithms presented in the book Astronomical Formulae for
 Calculators, by Jean Meeus.
 Every function returning a quantity is of type astropy.units.Quantity
 """
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 
 import astropy.units as u

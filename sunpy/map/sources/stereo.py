@@ -1,5 +1,4 @@
 """STEREO Map subclass definitions"""
-from __future__ import absolute_import, print_function, division
 #pylint: disable=W0221,W0222,E1121
 
 __author__ = "Keith Hughitt"

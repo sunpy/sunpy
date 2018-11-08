@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from sunpy.sun import constants as con
 from astropy.constants import Constant
 import pytest
