@@ -10,16 +10,15 @@
 
 import json
 import codecs
-
-from itertools import chain
+import urllib
 from datetime import datetime
+from itertools import chain
+
 from sunpy.net import attr
+from sunpy.util import unique
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
-from sunpy.util import unique
 from sunpy.util.xml import xml_to_dict
-from sunpy.extern.six import iteritems
-from sunpy.extern.six.moves import urllib
 
 __all__ = ['HEKClient']
 
@@ -29,7 +28,7 @@ DEFAULT_URL = 'http://www.lmsal.com/hek/her'
 def _freeze(obj):
     """ Create hashable representation of result dict. """
     if isinstance(obj, dict):
-        return tuple((k, _freeze(v)) for k, v in iteritems(obj))
+        return tuple((k, _freeze(v)) for k, v in obj.items())
     if isinstance(obj, list):
         return tuple(_freeze(elem) for elem in obj)
     return obj

@@ -18,7 +18,6 @@ from sunpy.image.coalignment import parabolic_turning_point, \
     match_template_to_layer, clip_edges, \
     calculate_match_template_shift,\
     mapsequence_coalign_by_match_template, apply_shifts
-from sunpy.extern.six.moves import range
 
 @pytest.fixture
 def aia171_test_clipping():

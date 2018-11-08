@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 """SunPy sample data files"""
-import os.path
 import socket
+import os.path
 import warnings
-from zipfile import ZipFile
 from shutil import move
+from zipfile import ZipFile
+from urllib.parse import urljoin
 
 from astropy.utils.data import download_file
-
-from sunpy.extern import six
 
 from sunpy.util.net import url_exists
 from sunpy.util.config import get_and_create_sample_dir
@@ -77,7 +76,7 @@ def download_sample_data(show_progress=True):
     -------
     None
     """
-    for file_name in six.itervalues(_sample_files):
+    for file_name in _sample_files.value():
         get_sample_file(file_name, show_progress=show_progress,
                         url_list=_base_urls, overwrite=True)
 
@@ -127,7 +126,7 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
             if base_url.count('github'):
                 online_filename += '?raw=true'
             try:
-                url = six.moves.urllib_parse.urljoin(base_url, online_filename)
+                url = urljoin(base_url, online_filename)
                 exists = url_exists(url)
                 if exists:
                     f = download_file(os.path.join(base_url, online_filename),

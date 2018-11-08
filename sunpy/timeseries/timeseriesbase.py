@@ -2,23 +2,21 @@
 TimeSeries is a generic time series class from which all other TimeSeries
 classes inherit from.
 """
+import copy
 import warnings
 from collections import OrderedDict
-import copy
 
-import matplotlib.pyplot as plt
 import pandas as pd
-
-from sunpy import config
-from sunpy.time import TimeRange
-from sunpy.extern import six
-from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.util.metadata import MetaDict
+import matplotlib.pyplot as plt
 
 import astropy
 import astropy.units as u
-from astropy.table import Table
-from astropy.table import Column
+from astropy.table import Table, Column
+
+from sunpy import config
+from sunpy.time import TimeRange
+from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.util.metadata import MetaDict
 
 # define and register a new unit, needed for RHESSI
 det = u.def_unit('detector')

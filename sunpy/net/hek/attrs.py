@@ -21,8 +21,6 @@ from datetime import datetime
 from sunpy.net import attr
 from sunpy.time import parse_time
 
-from sunpy.extern import six
-
 
 # Ugly hack for the deprecated apply decorator, this needs to be cleaned up
 def apply(f):
@@ -79,7 +77,7 @@ class _ListAttr(attr.Attr):
         return vars(self) == vars(other)
 
     def __hash__(self):
-        return hash(tuple(six.itervalues(vars(self))))
+        return hash(tuple(vars(self).items()))
 
 
 class EventType(attr.Attr):
@@ -114,7 +112,7 @@ class Time(attr.Attr):
         return vars(self) == vars(other)
 
     def __hash__(self):
-        return hash(tuple(six.itervalues(vars(self))))
+        return hash(tuple(vars(self).items()))
 
     @classmethod
     def dt(cls, start, end):
@@ -142,7 +140,7 @@ class SpatialRegion(attr.Attr):
         return vars(self) == vars(other)
 
     def __hash__(self):
-        return hash(tuple(six.itervalues(vars(self))))
+        return hash(tuple(vars(self).items()))
 
 
 class Contains(attr.Attr):
@@ -159,7 +157,7 @@ class Contains(attr.Attr):
         return vars(self) == vars(other)
 
     def __hash__(self):
-        return hash(tuple(six.itervalues(vars(self))))
+        return hash(tuple(vars(self).items()))
 
 
 class _ComparisonParamAttrWrapper(object):

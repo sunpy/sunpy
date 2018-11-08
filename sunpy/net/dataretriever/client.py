@@ -2,26 +2,23 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-import copy
 import os
-import datetime
-from abc import ABCMeta
-from collections import OrderedDict, namedtuple
-from functools import partial
+import copy
 import pathlib
+from abc import ABCMeta
+from functools import partial
+from collections import OrderedDict, namedtuple
 
 import numpy as np
+
 import astropy.table
 import astropy.units as u
 
 import sunpy
-from sunpy.extern import six
+from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
-from sunpy.util.config import get_and_create_download_dir
-from sunpy import config
-
-from sunpy.net.download import Downloader, Results
+from sunpy.net.download import Results, Downloader
 from sunpy.net.vso.attrs import Time, Wavelength, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -149,8 +146,7 @@ class GenericClientMeta(ABCMeta):
         return cls
 
 
-@six.add_metaclass(GenericClientMeta)
-class GenericClient(object):
+class GenericClient(metaclass=GenericClientMeta):
     """
     Base class for simple web clients for the data retriever module. This class
     is mainly designed for downloading data from FTP and HTTP type data
@@ -280,7 +276,7 @@ class GenericClient(object):
         for i, filename in enumerate(filenames):
             if path is None:
                 fname = os.path.join(default_dir, '{file}')
-            elif isinstance(path, six.string_types) and '{file}' not in path:
+            elif isinstance(path, str) and '{file}' not in path:
                 fname = os.path.join(path, '{file}')
 
             temp_dict = qres[i]._map.copy()
@@ -339,7 +335,7 @@ class GenericClient(object):
         if path is not None:
             if isinstance(path, pathlib.Path):
                 path = str(path.absolute())
-            elif not isinstance(path, six.string_types):
+            elif not isinstance(path, str):
                 err = "path should be either 'pathlib.Path' or 'str'. "\
                     "Got '{}'.".format(type(path))
                 raise TypeError(err)

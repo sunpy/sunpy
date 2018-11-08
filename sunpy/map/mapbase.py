@@ -20,7 +20,6 @@ import sunpy.io as io
 import sunpy.coordinates
 import sunpy.cm
 from sunpy import config
-from sunpy.extern import six
 from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
 from sunpy.sun import constants
 from sunpy.sun import sun
@@ -573,7 +572,7 @@ class GenericMap(NDData):
                 self._default_carrington_longitude = get_sun_L0(self.date)
             carrington_longitude = self._default_carrington_longitude
 
-        if isinstance(carrington_longitude, six.string_types):
+        if isinstance(carrington_longitude, str):
             carrington_longitude = float(carrington_longitude)
 
         return u.Quantity(carrington_longitude, 'deg')
@@ -594,7 +593,7 @@ class GenericMap(NDData):
                 self._default_heliographic_latitude = get_sun_B0(self.date)
             heliographic_latitude = self._default_heliographic_latitude
 
-        if isinstance(heliographic_latitude, six.string_types):
+        if isinstance(heliographic_latitude, str):
             heliographic_latitude = float(heliographic_latitude)
 
         return u.Quantity(heliographic_latitude, 'deg')
@@ -614,7 +613,7 @@ class GenericMap(NDData):
                 self._default_heliographic_longitude = 0
             heliographic_longitude = self._default_heliographic_longitude
 
-        if isinstance(heliographic_longitude, six.string_types):
+        if isinstance(heliographic_longitude, str):
             heliographic_longitude = float(heliographic_longitude)
 
         return u.Quantity(heliographic_longitude, 'deg')

@@ -7,7 +7,6 @@ import tempfile
 import datetime
 
 import pytest
-from six import iteritems
 
 from astropy import units as u
 

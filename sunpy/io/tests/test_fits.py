@@ -5,7 +5,6 @@ import sunpy.data.test
 import os
 
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
-from sunpy.extern.six.moves import range
 
 testpath = sunpy.data.test.rootdir
 

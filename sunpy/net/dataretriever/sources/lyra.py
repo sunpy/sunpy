@@ -2,8 +2,7 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-import datetime
-from sunpy.extern.six.moves.urllib.parse import urljoin
+from urllib.parse import urljoin
 
 from ..client import GenericClient
 

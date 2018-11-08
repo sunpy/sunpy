@@ -4,7 +4,6 @@ from functools import singledispatch
 
 import numpy as np
 import pandas
-from sunpy.extern import six
 
 import astropy.time
 
@@ -70,7 +69,7 @@ def _regex_parse_time(inp, format):
     # Parser for finding out the minute value so we can adjust the string
     # from 24:00:00 to 00:00:00 the next day because strptime does not
     # understand the former.
-    for key, value in six.iteritems(REGEX):
+    for key, value in REGEX.items():
         format = format.replace(key, value)
     match = re.match(format, inp)
     if match is None:
@@ -94,7 +93,7 @@ def find_time(string, format):
     """ Return iterator of occurrences of date formatted with format
     in string. Currently supported format codes: """
     re_format = format
-    for key, value in six.iteritems(REGEX):
+    for key, value in REGEX.items():
         re_format = re_format.replace(key, value)
     matches = re.finditer(re_format, string)
     for match in matches:

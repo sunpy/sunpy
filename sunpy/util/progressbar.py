@@ -1,7 +1,7 @@
 import sys
-from sunpy.extern.six.moves import range
 
 __all__ = ['TTYProgressBar']
+
 
 class TTYProgressBar(object):
     """

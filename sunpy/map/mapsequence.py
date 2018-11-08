@@ -14,7 +14,6 @@ from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.visualization import axis_labels_from_ctype
 from sunpy.util import expand_list
-from sunpy.extern.six.moves import range
 
 __all__ = ['MapSequence']
 
