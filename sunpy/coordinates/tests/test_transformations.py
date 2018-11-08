@@ -70,7 +70,9 @@ def test_hpc_hpc_sc():
 
     hpc_new = sc_in.transform_to(hpc_out)
 
-    assert hpc_new.observer == hpc_out.observer
+    assert hpc_new.observer.lat == hpc_out.observer.lat
+    assert hpc_new.observer.lon == hpc_out.observer.lon
+    assert hpc_new.observer.radius == hpc_out.observer.radius
 
 
 def test_hpc_hpc_null():
@@ -165,7 +167,7 @@ def test_hgs_cartesian_rep_to_hpc():
     obstime = "2011-01-01"
     hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
                              frame=HeliographicStonyhurst(obstime=obstime),
-                             representation='cartesian')
+                             representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
     hgscoord_sph.representation = 'spherical'
     hpccoord_cart = hgscoord_cart.transform_to(Helioprojective(obstime=obstime))
@@ -183,7 +185,7 @@ def test_hgs_cartesian_rep_to_hcc():
     obstime = "2011-01-01"
     hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
                              frame=HeliographicStonyhurst(obstime=obstime),
-                             representation='cartesian')
+                             representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
     hgscoord_sph.representation = 'spherical'
     hcccoord_cart = hgscoord_cart.transform_to(Heliocentric(obstime=obstime))
@@ -201,7 +203,7 @@ def test_hgs_cartesian_rep_to_hgc():
     obstime = "2011-01-01"
     hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
                              frame=HeliographicStonyhurst(obstime=obstime),
-                             representation='cartesian')
+                             representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
     hgscoord_sph.representation = 'spherical'
     # HGC
