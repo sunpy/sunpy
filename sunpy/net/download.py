@@ -5,8 +5,6 @@
 # the ESA Summer of Code (2011).
 
 
-from __future__ import absolute_import
-
 import os
 import re
 import threading

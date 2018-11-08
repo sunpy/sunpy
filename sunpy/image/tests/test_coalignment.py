@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 # Author: Jack Ireland, Steven Christe
 #
 # Testing functions for a mapsequence coalignment functionality.  This

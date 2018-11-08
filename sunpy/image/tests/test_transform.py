@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 from sunpy.image.transform import affine_transform
 import numpy as np
 from skimage import transform as tf

@@ -1,8 +1,6 @@
 """
 This module provides a wrapper around the Helioviewer API.
 """
-from __future__ import absolute_import
-
 # pylint: disable=E1101,F0401,W0231
 
 __author__ = ["Keith Hughitt"]

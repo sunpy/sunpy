@@ -17,8 +17,6 @@ As with the VSO query, you can use the fundamental logic operators AND and OR
 to construct queries of almost arbitrary complexity. Note that complex queries
 result in multiple requests to the server which might make them less efficient.
 """
-from __future__ import absolute_import
-
 from datetime import datetime
 from sunpy.net import attr
 from sunpy.time import parse_time

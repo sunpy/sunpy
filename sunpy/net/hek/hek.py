@@ -8,8 +8,6 @@
 
 """ Facilities to interface with the HEK. """
 
-from __future__ import absolute_import
-
 import json
 import codecs
 

@@ -1,5 +1,4 @@
 """A Python MapSequence Object"""
-from __future__ import absolute_import, division, print_function
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 from copy import deepcopy

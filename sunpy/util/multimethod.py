@@ -22,8 +22,6 @@
 Multimethod implementation in pure Python.
 """
 
-from __future__ import absolute_import, division, print_function
-
 from warnings import warn
 
 from sunpy.extern.six.moves import zip, map

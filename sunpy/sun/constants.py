@@ -6,7 +6,6 @@ based on if not directly copied from the SciPy constants module but contains Sol
 Physical constants.
 """
 
-from __future__ import absolute_import, division, print_function
 from astropy.table import Table
 from sunpy.extern.six import iteritems
 

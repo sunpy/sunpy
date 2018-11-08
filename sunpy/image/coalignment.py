@@ -17,8 +17,6 @@ Template matching algorithm:
    Processing and Pattern Recognition Society, Quebec City, Canada, May 15-19,
    1995, p. 120-123 http://www.scribblethink.org/Work/nvisionInterface/vi95_lewis.pdf.
 """
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 from scipy.ndimage.interpolation import shift
 from copy import deepcopy

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """EVE TimeSeries subclass definitions."""
-from __future__ import absolute_import
-
 import os
 import codecs
 import numpy
