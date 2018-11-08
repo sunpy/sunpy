@@ -5,28 +5,25 @@
     .. warning:: This module is in development.
 
 """
-import csv
-import posixpath
 import re
+import csv
 import socket
 import warnings
+import posixpath
 from datetime import datetime, timedelta
+from urllib.error import URLError
+from urllib.request import urlopen, urlretrieve
 
 import numpy as np
 from dateutil.relativedelta import relativedelta
 
-from astropy import units as u
+import astropy.units as u
 
-from sunpy.time import TimeRange, parse_time
-from sunpy.sun import solar_semidiameter_angular_size
-from sunpy.coordinates import get_sunearth_distance
-import sunpy.map
 import sunpy.io
-
-from sunpy.extern.six.moves import urllib
-from sunpy.extern.six.moves.urllib.request import urlopen, urlretrieve
-from sunpy.extern.six.moves.urllib.error import URLError
-
+import sunpy.map
+from sunpy.sun import solar_semidiameter_angular_size
+from sunpy.time import TimeRange, parse_time
+from sunpy.coordinates import get_sunearth_distance
 
 __all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file',
            'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file',

@@ -1,7 +1,7 @@
 """SunPy configuration file functionality"""
 import os
 import tempfile
-from sunpy.extern.six.moves import configparser
+import configparser
 
 import sunpy
 

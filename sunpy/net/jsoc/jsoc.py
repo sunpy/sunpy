@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 import os
 import time
+import urllib
 import warnings
 from functools import partial
 from collections import Sequence
 
+import drms
 import numpy as np
 import pandas as pd
-import astropy.units as u
+
 import astropy.time
 import astropy.table
+import astropy.units as u
 from astropy.utils.misc import isiterable
-import drms
 
 from sunpy import config
-from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
+from sunpy.net.download import Results, Downloader
 from sunpy.net.jsoc.attrs import walker
-from sunpy.extern.six.moves import urllib
-from sunpy.extern import six
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
@@ -532,12 +532,12 @@ class JSOCClient(object):
         c = drms.Client()
 
         # Convert Responses to a list if not already
-        if isinstance(requests, six.string_types) or not isiterable(requests):
+        if isinstance(requests, str) or not isiterable(requests):
             requests = [requests]
 
         # Ensure all the requests are drms ExportRequest objects
         for i, request in enumerate(requests):
-            if isinstance(request, six.string_types):
+            if isinstance(request, str):
                 r = c.export_from_id(request)
                 requests[i] = r
 
@@ -550,7 +550,7 @@ class JSOCClient(object):
         if path is None:
             default_dir = config.get("downloads", "download_dir")
             path = os.path.join(default_dir, '{file}')
-        elif isinstance(path, six.string_types) and '{file}' not in path:
+        elif isinstance(path, str) and '{file}' not in path:
             path = os.path.join(path, '{file}')
 
         paths = []
@@ -788,7 +788,7 @@ class JSOCClient(object):
             error_message = "Series must be specified for a JSOC Query"
             raise ValueError(error_message)
 
-        if not isinstance(keywords, list) and not isinstance(keywords, six.string_types):
+        if not isinstance(keywords, list) and not isinstance(keywords, str):
             error_message = "Keywords can only be passed as a list or "\
                             "comma-separated strings."
             raise TypeError(error_message)
@@ -820,12 +820,12 @@ class JSOCClient(object):
         segs_passed = iargs.get('segment', None)
         if segs_passed is not None:
 
-            if not isinstance(segs_passed, list) and not isinstance(segs_passed, six.string_types):
+            if not isinstance(segs_passed, list) and not isinstance(segs_passed, str):
                 error_message = "Segments can only be passed as a comma-separated"\
                                 " string or a list of strings."
                 raise TypeError(error_message)
 
-            elif isinstance(segs_passed, six.string_types):
+            elif isinstance(segs_passed, str):
                 segs_passed = segs_passed.replace(' ', '').split(',')
 
             if not set(segs_passed) <= set(segs):

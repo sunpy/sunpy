@@ -1,10 +1,14 @@
-import warnings
-from functools import partial
-
-import os
-import pathlib
-import tempfile
 import json
+import pathlib
+import warnings
+import importlib
+
+import pytest
+
+import sunpy.tests.helpers
+from sunpy.tests.hash import HASH_LIBRARY_NAME
+from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -14,28 +18,9 @@ except ImportError:
 else:
     matplotlib.use('Agg')
 
-import sunpy.tests.helpers
-from sunpy.tests.hash import HASH_LIBRARY_NAME
-from sunpy.util.exceptions import SunpyDeprecationWarning
-from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
-from sunpy.extern import six
 
-import pytest
-
-
-# Don't actually import pytest_remotedata because that can do things to the
-# entrypoints code in pytest.
-if six.PY2:
-    import imp
-    try:
-        imp.find_module('pytest_remotedata')
-        HAVE_REMOTEDATA = True
-    except ImportError:
-        HAVE_REMOTEDATA = False
-else:
-    import importlib
-    remotedata_spec = importlib.util.find_spec("pytest_remotedata")
-    HAVE_REMOTEDATA = remotedata_spec is not None
+remotedata_spec = importlib.util.find_spec("pytest_remotedata")
+HAVE_REMOTEDATA = remotedata_spec is not None
 
 
 def pytest_addoption(parser):

@@ -11,7 +11,6 @@ from sunpy.time import parse_time
 from sunpy import timeseries
 from sunpy.instr import lyra
 
-from sunpy.extern.six.moves import range
 
 # Define location for test LYTAF database files
 TEST_DATA_PATH = rootdir

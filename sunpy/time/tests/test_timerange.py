@@ -6,7 +6,6 @@ import pytest
 import astropy.units as u
 
 import sunpy.time
-from sunpy.extern.six.moves import zip
 
 tbegin_str = '2012/1/1'
 tfin_str = '2012/1/2'

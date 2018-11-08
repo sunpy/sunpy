@@ -7,9 +7,6 @@ from itertools import count
 
 import numpy as np
 
-from sunpy.extern import six
-from sunpy.extern.six.moves import map, zip
-
 __all__ = ['to_signed', 'unique', 'print_table', 'replacement_filename',
            'merge', 'common_base', 'minimal_pairs', 'expand_list',
            'expand_list_generator']
@@ -155,9 +152,9 @@ def merge(items, key=(lambda x: x)):
             state[item] = (first, key(first))
 
     while state:
-        for item, (value, tk) in six.iteritems(state):
+        for item, (value, tk) in state.items():
             # Value is biggest.
-            if all(tk >= k for it, (v, k) in six.iteritems(state)
+            if all(tk >= k for it, (v, k) in state.items()
                    if it is not item):
                 yield value
                 break

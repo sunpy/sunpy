@@ -7,7 +7,6 @@ Physical constants.
 """
 
 from astropy.table import Table
-from sunpy.extern.six import iteritems
 
 from sunpy.sun import _constants as _con  # pylint: disable=E0611
 
@@ -91,7 +90,7 @@ def print_all(key=None):
     table : `astropy.table.Table`
     """
     data_rows = []
-    for key, this_constant in iteritems(constants):
+    for key, this_constant in constants.items():
         data_rows.append([
             key, this_constant.name, this_constant.value, this_constant.uncertainty,
             str(this_constant.unit), this_constant.reference

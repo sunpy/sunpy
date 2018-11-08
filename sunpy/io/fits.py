@@ -32,13 +32,11 @@ import re
 import sys
 import warnings
 import traceback
-import itertools
 import collections
 
 from astropy.io import fits
 
 from sunpy.io.header import FileHeader
-from sunpy.extern.six.moves import zip
 
 __all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 

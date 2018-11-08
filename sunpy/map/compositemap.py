@@ -12,8 +12,6 @@ from sunpy.map import GenericMap
 from sunpy.visualization import axis_labels_from_ctype
 
 from sunpy.util import expand_list
-from sunpy.extern import six
-from sunpy.extern.six.moves import range
 
 __all__ = ['CompositeMap']
 
@@ -506,7 +504,7 @@ class CompositeMap(object):
             if draw_grid:
                 self.draw_grid(axes=axes)
 
-        elif isinstance(draw_grid, six.integer_types + (float,)):
+        elif isinstance(draw_grid, (int, float)):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")

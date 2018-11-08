@@ -1,36 +1,30 @@
-import warnings
 import os
-import glob
-from collections import OrderedDict
 import copy
+import glob
+import warnings
+from collections import OrderedDict
+from urllib.request import urlopen
 
 import numpy as np
 import pandas as pd
-import astropy.io.fits
-from astropy.table import Table
+
 import astropy
-from astropy.time import Time
 import astropy.units as u
+import astropy.io.fits
+from astropy.time import Time
+from astropy.table import Table
 
 import sunpy
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.util.metadata import MetaDict
-
-from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
-from sunpy.io.fits import HDPair
-from sunpy.io.header import FileHeader
-
-from sunpy.util.net import download_file
 from sunpy.util import expand_list
+from sunpy.io.fits import HDPair
+from sunpy.util.net import download_file
+from sunpy.io.header import FileHeader
 from sunpy.util.config import get_and_create_download_dir
-
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory
-from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.datatype_factory_base import MultipleMatchError
-from sunpy.util.datatype_factory_base import ValidationFunctionError
-from sunpy.extern import six
-
-from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.io.file_tools import UnrecognizedFileTypeError, read_file
+from sunpy.util.metadata import MetaDict
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.util.datatype_factory_base import (NoMatchError, MultipleMatchError,
+                                              ValidationFunctionError, BasicRegistrationFactory)
 
 __authors__ = ["Alex Hamilton, Russell Hewett, Stuart Mumford"]
 
@@ -310,7 +304,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 data_header_unit_tuples.append((data, meta, units))
 
             # Filepath
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   os.path.isfile(os.path.expanduser(arg))):
 
                 path = os.path.expanduser(arg)
@@ -323,7 +317,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     filepaths.append(result)
 
             # Directory
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   os.path.isdir(os.path.expanduser(arg))):
 
                 path = os.path.expanduser(arg)
@@ -338,7 +332,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                         filepaths.append(result)
 
             # Glob
-            elif (isinstance(arg, six.string_types) and '*' in arg):
+            elif (isinstance(arg, str) and '*' in arg):
 
                 files = glob.glob(os.path.expanduser(arg))
 
@@ -357,7 +351,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 already_timeseries.append(arg)
 
             # A URL
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   _is_url(arg)):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
