@@ -1,0 +1,16 @@
+Removed `MapCube` in favour of `MapSequence`
+Removed `Map.xrange` and `Map.yrange`
+Removed `sunpy.cm.get_cmap` in favour of `plt.get_cmap`
+Removed `database.download` in favour of `database.fetch`
+Removed `database.query` in favour of `database.search`
+Removed `remove_lytaf_events_from_lightcurve in favour of `remove_lytaf_events_from_timeseries`
+Removed `pixel_to_data` in favour of `pixel_to_world`
+Removed `GenericClient.query` in favour of `GenericClient.search`
+Removed `GenericClient.get` in favour of `GenericClient.fetch`
+This changes applies to the other clients as well
+Removed `JSOCClient.check_request` in favour of `request.status`
+Removed `InteractiveVSOClient`
+Removed `attr.Wave` in favour of `attr.Wavelength`
+Removed `sunearth_distance` in favour of `get_sunearth_distance`
+Removed `solar_north` in favour of `get_sun_P`
+Removed `heliographic_solar_center` in favour of `get_sun_L0()` and `get_sun_B0()`
