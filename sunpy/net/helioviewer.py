@@ -96,27 +96,30 @@ class HelioviewerClient(object):
 
         return response
 
-    def get_source_id(self, observatory, instrument, detector, measurement):
+    def display_source_id(self):
         """
-        Fetches the source ID of a particular image based on the 
-        observatory, instrument, detector and measurement. If no
-        detector present then it's value is by default set to None.
-        If there is no detector then set its valuse to None.
+        Returns a dictionary containing the source ID of all the 
+        images in the data source
         """
-        import sunpy.map
-        from sunpy.net import helioviewer
-        hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
+        from sunpy.net.helioviewer import HelioviewerClient
+        hv = HelioviewerClient()  # doctest: +REMOTE_DATA
+        datasources = hv.get_data_sources() # doctest: +REMOTE_DATA
         d = dict()
-        if detector == None:
-            d[(observatory, instrument, detector, measurement)] = data_sources[observatory][instrument][measurement]['sourceId']  # doctest: +REMOTE_DATA
-        else:
-            d[(observatory, instrument, detector, measurement)] = data_sources[observatory][instrument][detector][measurement]['sourceId']  # doctest: +REMOTE_DATA
-        for s_id in d.values():
-            source_id = s_id
-        d.clear()
+        for name, observatory in datasources.items():  # doctest: +REMOTE_DATA
+	    if name == "TRACE":  # doctest: +REMOTE_DATA
+                for instrument, params in observatory.items():  # doctest: +REMOTE_DATA
+                    d[(name, instrument)] = params['sourceId']  # doctest: +REMOTE_DATA
+            else:  # doctest: +REMOTE_DATA
+                for inst, detectors in observatory.items():  # doctest: +REMOTE_DATA
+                    for wavelength, params in detectors.items():  # doctest: +REMOTE_DATA
+                        if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:  # doctest: +REMOTE_DATA
+                            for wave, adict in params.items():  # doctest: +REMOTE_DATA
+                                d[(name, inst, wavelength, wave)] = adict['sourceId']  # doctest: +REMOTE_DATA
+                        else:  # doctest: +REMOTE_DATA
+                            d[(name, inst, wavelength)] = params['sourceId']  # doctest: +REMOTE_DATA
 
-        return source_id
+        return ("{" + "\n".join("{}: {}".format(k, v) for k, v in d.items()) + "}")
+
 
     def download_jp2(self, date, sourceid, directory=None, overwrite=False, **kwargs):
         """
@@ -149,9 +152,9 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
-        >>> source_id = hv.get_source_id(observatory = 'SDO', instrument = 'HMI', detector = None, measurement = 'continuum')  # doctest: +REMOTE_DATA
-        >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceid=source_id)   # doctest: +REMOTE_DATA
+        >>> source_id = hv.display_source_id()  # doctest: +REMOTE_DATA
+        >>> print(source_id)  # doctest: +REMOTE_DATA
+        >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceid = source_id('SDO', 'HMI', 'continuum'))   # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(file)   # doctest: +REMOTE_DATA
         >>> aia.peek()   # doctest: +SKIP
         """
