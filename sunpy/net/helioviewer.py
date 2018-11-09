@@ -98,7 +98,7 @@ class HelioviewerClient(object):
 
     def display_source_id(self):
         """
-        Returns a dictionary containing the source ID of all the 
+        Returns a dictionary containing the source ID of all the
         images in the data source
         """
         from sunpy.net.helioviewer import HelioviewerClient
@@ -106,7 +106,7 @@ class HelioviewerClient(object):
         datasources = hv.get_data_sources() # doctest: +REMOTE_DATA
         d = dict()
         for name, observatory in datasources.items():  # doctest: +REMOTE_DATA
-	    if name == "TRACE":  # doctest: +REMOTE_DATA
+            if name == "TRACE":  # doctest: +REMOTE_DATA
                 for instrument, params in observatory.items():  # doctest: +REMOTE_DATA
                     d[(name, instrument)] = params['sourceId']  # doctest: +REMOTE_DATA
             else:  # doctest: +REMOTE_DATA
