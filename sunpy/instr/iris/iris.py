@@ -6,12 +6,10 @@ import sunpy.io
 import sunpy.time
 import sunpy.map
 
-__all__ = ['SJI_to_cube']
+__all__ = ['SJI_to_sequence']
 
 
-#  TODO: rename to SJI_to_sequence? Or delete this?
-
-def SJI_to_cube(filename, start=0, stop=None, hdu=0):
+def SJI_to_sequence(filename, start=0, stop=None, hdu=0):
     """
     Read a SJI file and return a MapSequence
 
@@ -48,7 +46,7 @@ def SJI_to_cube(filename, start=0, stop=None, hdu=0):
     if not stop:
         stop = len(splits)
 
-    headers = [hdus[hdu][1]]*(stop-start)
+    headers = [hdus[hdu][1]] * (stop - start)
     datas = hdus[hdu][0][start:stop]
 
     # Make the cube:
