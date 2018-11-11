@@ -54,6 +54,40 @@ class HelioviewerClient(object):
         params = {"action": "getDataSources"}
         params.update(**kwargs)
         return self._get_json(params)
+    
+    def get_source_id(self):
+        """
+        Returns a dictionary containing the source ID of all the
+        images in the data source
+        """
+        d = dict()
+        from sunpy.net.helioviewer import HelioviewerClient
+        hv = HelioviewerClient()  # doctest: +REMOTE_DATA
+        datasources = hv.get_data_sources() # doctest: +REMOTE_DATA
+        for name, observatory in datasources.items():  # doctest: +REMOTE_DATA
+            if name == "TRACE":  # doctest: +REMOTE_DATA
+                for instrument, params in observatory.items():  # doctest: +REMOTE_DATA
+                    d[(name, instrument)] = params['sourceId']  # doctest: +REMOTE_DATA
+            else:  # doctest: +REMOTE_DATA
+                for inst, detectors in observatory.items():  # doctest: +REMOTE_DATA
+                    for wavelength, params in detectors.items():  # doctest: +REMOTE_DATA
+                        if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:  # doctest: +REMOTE_DATA
+                            for wave, adict in params.items():  # doctest: +REMOTE_DATA
+                                d[(name, inst, wavelength, wave)] = adict['sourceId']  # doctest: +REMOTE_DATA
+                        else:  # doctest: +REMOTE_DATA
+                            d[(name, inst, wavelength)] = params['sourceId']  # doctest: +REMOTE_DATA
+
+        return(d)
+
+    def display_source_id(self):
+        """
+        Function to display the source ID of all the images
+        in the data source.
+        """ 
+        from sunpy.net.helioviewer import HelioviewerClient
+        hv = HelioviewerClient()  # doctest: +REMOTE_DATA
+        d_source_id = hv.get_source_id() # doctest: +REMOTE_DATA
+        print("{" + "\n".join("{}: {}".format(k, v) for k, v in d_source_id.items()) + "}")
 
     def get_closest_image(self, date, sourceid):
         """Finds the closest image available for the specified source and date.
@@ -79,7 +113,9 @@ class HelioviewerClient(object):
         --------
         >>> from sunpy.net import helioviewer
         >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> metadata = client.get_closest_image('2012/01/01', sourceid=11)  # doctest: +REMOTE_DATA
+        >>> source_id = hv.get_source_id()  # doctest: +REMOTE_DATA
+        >>> hv.display_source_id()  # doctest: +REMOTE_DATA
+        >>> metadata = client.get_closest_image('2012/01/01', sourceid = source_id[('SDO', 'HMI', 'continuum')])  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
         2012-01-01 00:00:07
         """
@@ -95,31 +131,6 @@ class HelioviewerClient(object):
         response['date'] = parse_time(response['date'])
 
         return response
-
-    def display_source_id(self):
-        """
-        Returns a dictionary containing the source ID of all the 
-        images in the data source
-        """
-        from sunpy.net.helioviewer import HelioviewerClient
-        hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-        datasources = hv.get_data_sources() # doctest: +REMOTE_DATA
-        d = dict()
-        for name, observatory in datasources.items():  # doctest: +REMOTE_DATA
-	    if name == "TRACE":  # doctest: +REMOTE_DATA
-                for instrument, params in observatory.items():  # doctest: +REMOTE_DATA
-                    d[(name, instrument)] = params['sourceId']  # doctest: +REMOTE_DATA
-            else:  # doctest: +REMOTE_DATA
-                for inst, detectors in observatory.items():  # doctest: +REMOTE_DATA
-                    for wavelength, params in detectors.items():  # doctest: +REMOTE_DATA
-                        if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:  # doctest: +REMOTE_DATA
-                            for wave, adict in params.items():  # doctest: +REMOTE_DATA
-                                d[(name, inst, wavelength, wave)] = adict['sourceId']  # doctest: +REMOTE_DATA
-                        else:  # doctest: +REMOTE_DATA
-                            d[(name, inst, wavelength)] = params['sourceId']  # doctest: +REMOTE_DATA
-
-        return ("{" + "\n".join("{}: {}".format(k, v) for k, v in d.items()) + "}")
-
 
     def download_jp2(self, date, sourceid, directory=None, overwrite=False, **kwargs):
         """
@@ -152,9 +163,9 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> source_id = hv.display_source_id()  # doctest: +REMOTE_DATA
-        >>> print(source_id)  # doctest: +REMOTE_DATA
-        >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceid = source_id('SDO', 'HMI', 'continuum'))   # doctest: +REMOTE_DATA
+        >>> source_id = hv.get_source_id()  # doctest: +REMOTE_DATA
+        >>> hv.display_source_id()  # doctest: +REMOTE_DATA
+        >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceid = source_id[('SDO', 'HMI', 'continuum')])   # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(file)   # doctest: +REMOTE_DATA
         >>> aia.peek()   # doctest: +SKIP
         """
@@ -327,4 +338,5 @@ class HelioviewerClient(object):
     def _format_date(self, date):
         """Formats a date for Helioviewer API requests"""
         return parse_time(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
+
 

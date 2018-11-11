@@ -23,107 +23,94 @@ the API using the same parameters one would use when making a web request.
 Nearly all requests require the user to specify the data they are interested in
 and this can be done using one of two methods:
 
-1. Call "get_data_sources()" to get a list of the data that is available, and use the source id numbers referenced in the result to refer to a particular dataset, or,
+1. Call "get_data_sources()" to get a list of the data that is available and using "get_source_id()" to get the source id numbers which
+can be used to refer to a particular dataset, or,
 2. Specify the four components of a Helioviewer.org data source or layer: *observatory*, *instrument*, *detector* and *measurement*.
 
-Let's begin by getting a list of data sources available on the server
-using the get_datasources method::
+Let's begin by getting a list of data sources and their respective 
+source ID available on the server using the display_source_id method::
 
     >>> from sunpy.net.helioviewer import HelioviewerClient
+    >>> import sunpy.net.helioviewer 
     >>> hv = HelioviewerClient()
-    >>> datasources = hv.get_data_sources()  # doctest: +REMOTE_DATA
+    >>> datasource = hv.display_source_id()  # doctest: +REMOTE_DATA
     >>> # Print a list of datasources and their associated ids
-    >>> ids = {}
-    >>> for name, observatory in datasources.items():  # doctest: +REMOTE_DATA
-    ...          if name == "TRACE":  # doctest: +REMOTE_DATA
-    ...              for wavelength, params in observatory.items():  # doctest: +REMOTE_DATA
-    ...                  ids[params['nickname']] = params['sourceId']  # doctest: +REMOTE_DATA
-    ...          else:  # doctest: +REMOTE_DATA
-    ...              for inst, detectors in observatory.items():  # doctest: +REMOTE_DATA
-    ...                      for wavelength, params in detectors.items():  # doctest: +REMOTE_DATA
-    ...                          if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:  # doctest: +REMOTE_DATA
-    ...                              for wave, adict in params.items():  # doctest: +REMOTE_DATA
-    ...                                  ids[name + ' ' + adict['nickname']] = adict['sourceId']  # doctest: +REMOTE_DATA
-    ...                          else:  # doctest: +REMOTE_DATA
-    ...                             ids[name + ' ' + params['nickname']] = params['sourceId']  # doctest: +REMOTE_DATA
-    >>> sorted_ids = sorted(ids.items(), key=lambda x: x[1])  # doctest: +REMOTE_DATA
-    >>> sorted_ids  # doctest: +REMOTE_DATA
-    [('SOHO EIT 171', 0),
-    ('SOHO EIT 195', 1),
-    ('SOHO EIT 284', 2),
-    ('SOHO EIT 304', 3),
-    ('SOHO LASCO C2', 4),
-    ('SOHO LASCO C3', 5),
-    ('SOHO MDI Mag', 6),
-    ('SOHO MDI Int', 7),
-    ('SDO AIA 94', 8),
-    ('SDO AIA 131', 9),
-    ('SDO AIA 171', 10),
-    ('SDO AIA 193', 11),
-    ('SDO AIA 211', 12),
-    ('SDO AIA 304', 13),
-    ('SDO AIA 335', 14),
-    ('SDO AIA 1600', 15),
-    ('SDO AIA 1700', 16),
-    ('SDO AIA 4500', 17),
-    ('SDO HMI Int', 18),
-    ('SDO HMI Mag', 19),
-    ('STEREO_A EUVI-A 171', 20),
-    ('STEREO_A EUVI-A 195', 21),
-    ('STEREO_A EUVI-A 284', 22),
-    ('STEREO_A EUVI-A 304', 23),
-    ('STEREO_B EUVI-B 171', 24),
-    ('STEREO_B EUVI-B 195', 25),
-    ('STEREO_B EUVI-B 284', 26),
-    ('STEREO_B EUVI-B 304', 27),
-    ('STEREO_A COR1-A', 28),
-    ('STEREO_A COR2-A', 29),
-    ('STEREO_B COR1-B', 30),
-    ('STEREO_B COR2-B', 31),
-    ('PROBA2 SWAP 174', 32),
-    ('Yohkoh SXT AlMgMn', 33),
-    ('Yohkoh SXT thin-Al', 34),
-    ('Yohkoh SXT white-light', 35),
-    ('Hinode XRT Al_med/Al_thick', 39),
-    ('Hinode XRT Al_med/Be_thick', 40),
-    ('Hinode XRT Al_med/Open', 42),
-    ('Hinode XRT Al_med/Ti_poly', 43),
-    ('Hinode XRT Al_poly/Al_mesh', 44),
-    ('Hinode XRT Al_poly/Al_thick', 45),
-    ('Hinode XRT Al_poly/Be_thick', 46),
-    ('Hinode XRT Al_poly/Open', 48),
-    ('Hinode XRT Al_poly/Ti_poly', 49),
-    ('Hinode XRT Be_med/Open', 54),
-    ('Hinode XRT Be_thin/Open', 60),
-    ('Hinode XRT C_poly/Al_mesh', 62),
-    ('Hinode XRT C_poly/Al_thick', 63),
-    ('Hinode XRT C_poly/Open', 66),
-    ('Hinode XRT C_poly/Ti_poly', 67),
-    ('Hinode XRT Open/Al_mesh', 69),
-    ('Hinode XRT Open/Al_thick', 70),
-    ('Hinode XRT Open/Be_thick', 71),
-    ('Hinode XRT Open/Ti_poly', 74),
-    ('TRACE 171', 75),
-    ('TRACE 195', 76),
-    ('TRACE 284', 77),
-    ('TRACE 1216', 78),
-    ('TRACE 1550', 79),
-    ('TRACE 1600', 80),
-    ('TRACE 1700', 81),
-    ('TRACE white-light', 82),
-    ('Hinode XRT Any/Any', 10001),
-    ('Hinode XRT Any/Al_mesh', 10002),
-    ('Hinode XRT Any/Al_thick', 10003),
-    ('Hinode XRT Any/Be_thick', 10004),
-    ('Hinode XRT Any/Gband', 10005),
-    ('Hinode XRT Any/Open', 10006),
-    ('Hinode XRT Any/Ti_poly', 10007),
-    ('Hinode XRT Al_med/Any', 10008),
-    ('Hinode XRT Al_poly/Any', 10009),
-    ('Hinode XRT Be_med/Any', 10010),
-    ('Hinode XRT Be_thin/Any', 10011),
-    ('Hinode XRT C_poly/Any', 10012),
-    ('Hinode XRT Open/Any', 10013)]
+    {('SDO', 'AIA', '1700'): 16
+     ('SDO', 'AIA', '131'): 9
+     ('SDO', 'AIA', '211'): 12
+     ('SDO', 'AIA', '1600'): 15
+     ('SDO', 'AIA', '94'): 8
+     ('SDO', 'AIA', '193'): 11
+     ('SDO', 'AIA', '335'): 14
+     ('SDO', 'AIA', '4500'): 17
+     ('SDO', 'AIA', '171'): 10
+     ('SDO', 'AIA', '304'): 13
+     ('SDO', 'HMI', 'continuum'): 18
+     ('SDO', 'HMI', 'magnetogram'): 19
+     ('SOHO', 'EIT', '304'): 3
+     ('SOHO', 'EIT', '284'): 2
+     ('SOHO', 'EIT', '195'): 1
+     ('SOHO', 'EIT', '171'): 0
+     ('SOHO', 'LASCO', 'C2', 'white-light'): 4
+     ('SOHO', 'LASCO', 'C3', 'white-light'): 5
+     ('SOHO', 'MDI', 'continuum'): 7
+     ('SOHO', 'MDI', 'magnetogram'): 6
+     ('STEREO_A', 'SECCHI', 'COR2', 'white-light'): 29
+     ('STEREO_A', 'SECCHI', 'EUVI', '284'): 22
+     ('STEREO_A', 'SECCHI', 'EUVI', '195'): 21
+     ('STEREO_A', 'SECCHI', 'EUVI', '304'): 23
+     ('STEREO_A', 'SECCHI', 'EUVI', '171'): 20
+     ('STEREO_A', 'SECCHI', 'COR1', 'white-light'): 28
+     ('STEREO_B', 'SECCHI', 'EUVI', '284'): 26
+     ('STEREO_B', 'SECCHI', 'EUVI', '195'): 25
+     ('STEREO_B', 'SECCHI', 'EUVI', '304'): 27
+     ('STEREO_B', 'SECCHI', 'EUVI', '171'): 24
+     ('STEREO_B', 'SECCHI', 'COR2', 'white-light'): 31
+     ('STEREO_B', 'SECCHI', 'COR1', 'white-light'): 30
+     ('TRACE', '1700'): 81
+     ('TRACE', '284'): 77
+     ('TRACE', '1600'): 80
+     ('TRACE', '195'): 76
+     ('TRACE', '1550'): 79
+     ('TRACE', 'white-light'): 82
+     ('TRACE', '1216'): 78
+     ('TRACE', '171'): 75
+     ('Yohkoh', 'SXT', 'white-light'): 35
+     ('Yohkoh', 'SXT', 'thin-Al'): 34
+     ('Yohkoh', 'SXT', 'AlMgMn'): 33
+     ('Hinode', 'XRT', 'Any', 'Any'): 10001
+     ('Hinode', 'XRT', 'Any', 'Al_mesh'): 10002
+     ('Hinode', 'XRT', 'Any', 'Al_thick'): 10003
+     ('Hinode', 'XRT', 'Any', 'Be_thick'): 10004
+     ('Hinode', 'XRT', 'Any', 'Gband'): 10005
+     ('Hinode', 'XRT', 'Any', 'Open'): 10006
+     ('Hinode', 'XRT', 'Any', 'Ti_poly'): 10007
+     ('Hinode', 'XRT', 'Al_med', 'Any'): 10008
+     ('Hinode', 'XRT', 'Al_med', 'Be_thick'): 40
+     ('Hinode', 'XRT', 'Al_med', 'Ti_poly'): 43
+     ('Hinode', 'XRT', 'Al_med', 'Al_thick'): 39
+     ('Hinode', 'XRT', 'Al_med', 'Open'): 42
+     ('Hinode', 'XRT', 'Al_poly', 'Any'): 10009
+     ('Hinode', 'XRT', 'Al_poly', 'Al_mesh'): 44
+     ('Hinode', 'XRT', 'Al_poly', 'Be_thick'): 46
+     ('Hinode', 'XRT', 'Al_poly', 'Ti_poly'): 49
+     ('Hinode', 'XRT', 'Al_poly', 'Al_thick'): 45
+     ('Hinode', 'XRT', 'Al_poly', 'Open'): 48
+     ('Hinode', 'XRT', 'Be_med', 'Any'): 10010
+     ('Hinode', 'XRT', 'Be_med', 'Open'): 54
+     ('Hinode', 'XRT', 'Be_thin', 'Any'): 10011
+     ('Hinode', 'XRT', 'Be_thin', 'Open'): 60
+     ('Hinode', 'XRT', 'C_poly', 'Any'): 10012
+     ('Hinode', 'XRT', 'C_poly', 'Ti_poly'): 67
+     ('Hinode', 'XRT', 'C_poly', 'Al_thick'): 63
+     ('Hinode', 'XRT', 'C_poly', 'Open'): 66
+     ('Hinode', 'XRT', 'C_poly', 'Al_mesh'): 62
+     ('Hinode', 'XRT', 'Open', 'Any'): 10013
+     ('Hinode', 'XRT', 'Open', 'Be_thick'): 71
+     ('Hinode', 'XRT', 'Open', 'Ti_poly'): 74
+     ('Hinode', 'XRT', 'Open', 'Al_thick'): 70
+     ('Hinode', 'XRT', 'Open', 'Al_mesh'): 69
+     ('PROBA2', 'SWAP', '174'): 32}
 
 At time of writing (2014/01/06) Helioviewer provides JP2 images from AIA, HMI, LASCO C2/C3, EIT,
 MDI, STEREO A/B COR1/2 & EUVI, SWAP and SXT.  New sources of JP2 images are being added every few months;
@@ -200,10 +187,12 @@ specify the sourceId of the image we want to download.::
    >>> from sunpy.net.helioviewer import HelioviewerClient
    >>> import matplotlib.pyplot as plt
    >>> from astropy.units import Quantity
+   >>> import sunpy.net.helioviewer
    >>> from sunpy.map import Map
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
    >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
-   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', sourceid=data_sources['SDO']['HMI']['continuum']['sourceId'])  # doctest: +REMOTE_DATA
+   >>> source_id = hv.get_source_id()  # doctest: +REMOTE_DATA
+   >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceid = source_id[('SDO', 'HMI', 'continuum')])   # doctest: +REMOTE_DATA
    >>> hmi = Map(filepath)  # doctest: +REMOTE_DATA
    >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
    >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA
