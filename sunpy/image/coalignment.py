@@ -17,8 +17,6 @@ Template matching algorithm:
    Processing and Pattern Recognition Society, Quebec City, Canada, May 15-19,
    1995, p. 120-123 http://www.scribblethink.org/Work/nvisionInterface/vi95_lewis.pdf.
 """
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 from scipy.ndimage.interpolation import shift
 from copy import deepcopy
@@ -28,7 +26,6 @@ from skimage.feature import match_template
 
 # SunPy imports
 import sunpy.map
-from sunpy.util import deprecated
 from sunpy.map.mapbase import GenericMap
 
 __author__ = 'J. Ireland'
@@ -37,7 +34,6 @@ __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
            'repair_image_nonfinite', 'apply_shifts',
-           'mapcube_coalign_by_match_template',
            'mapsequence_coalign_by_match_template',
            'calculate_match_template_shift']
 
@@ -505,81 +501,6 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
         yshift_arcseconds[i] = yshift_keep[i] * m.scale[1]
 
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
-
-@deprecated('0.9.1', alternative='mapsequence_coalign_by_match_template')
-def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
-                                      func=_default_fmap_function, clip=True,
-                                      shift=None, **kwargs):
-    """
-    Co-register the layers in a `~sunpy.map.MapCube` according to a template
-    taken from that `~sunpy.map.MapCube`.
-
-    When using this functionality, it is a good idea to check that the shifts
-    that were applied to were reasonable and expected. One way of checking this
-    is to animate the original `~sunpy.map.MapCube`, animate the coaligned
-    `~sunpy.map.MapCube`, and compare the differences you see to the calculated
-    shifts.
-
-
-    Parameters
-    ----------
-    mc : `sunpy.map.MapCube`
-        A `~sunpy.map.MapCube` of shape (ny, nx, nt), where nt is the number of
-        layers in the `~sunpy.map.MapCube`.
-    template : {None | sunpy.map.Map | `~numpy.ndarray`}
-        The template used in the matching.  If an `~numpy.ndarray` is passed,
-        the `~numpy.ndarray` has to have two dimensions.
-    layer_index : int
-        The template is assumed to refer to the map in the `~sunpy.map.MapCube`
-        indexed by the value of "layer_index".  Displacements of all maps in the
-        `~sunpy.map.MapCube` are assumed to be relative to this layer.  The
-        displacements of the template relative to this layer are therefore
-        (0, 0).
-    func : function
-        A function which is applied to the data values before the coalignment
-        method is applied.  This can be useful in coalignment, because it is
-        sometimes better to co-align on a function of the data rather than the
-        data itself.  The calculated shifts are applied to the original data.
-        Examples of useful functions to consider for EUV images are the
-        logarithm or the square root.  The function is of the form
-        func = F(data).  The default function ensures that the data are
-        floats.
-    clip : bool
-        If True, then clip off x, y edges in the datacube that are potentially
-        affected by edges effects.
-    shift : dict
-        A dictionary with two keys, 'x' and 'y'.  Key 'x' is an astropy
-        quantities array of corresponding to the amount of shift in the
-        x-direction (in arcseconds, assuming the helio-projective
-        Cartesian co-ordinate system) that is applied to the input
-        `~sunpy.map.MapCube`.  Key 'y' is an `~astropy.units.Quantity` array
-        corresponding to the amount of shift in the y-direction (in arcseconds,
-        assuming the helio-projective Cartesian co-ordinate system) that is
-        applied to the input `~sunpy.map.MapCube`. The number of elements in
-        each array must be the same as the number of maps in the
-        `~sunpy.map.MapCube`.  If a shift is passed in to the function, that
-        shift is applied to the input `~sunpy.map.MapCube` and the template
-        matching algorithm is not used.
-
-    The remaining keyword arguments are sent to `sunpy.image.coalignment.apply_shifts`.
-
-    Returns
-    -------
-    output : `sunpy.map.MapCube`
-        A `~sunpy.map.MapCube` that has co-aligned by matching the template.
-    Examples
-    --------
-    >>> from sunpy.image.coalignment import mapcube_coalign_by_match_template as mc_coalign
-
-    >>> coaligned_mc = mc_coalign(mc)   # doctest: +SKIP
-    >>> coaligned_mc = mc_coalign(mc, layer_index=-1)   # doctest: +SKIP
-    >>> coaligned_mc = mc_coalign(mc, clip=False)   # doctest: +SKIP
-    >>> coaligned_mc = mc_coalign(mc, template=sunpy_map)   # doctest: +SKIP
-    >>> coaligned_mc = mc_coalign(mc, template=two_dimensional_ndarray)   # doctest: +SKIP
-    >>> coaligned_mc = mc_coalign(mc, func=np.log)   # doctest: +SKIP
-    """
-    return mapsequence_coalign_by_match_template(mc, template, layer_index,
-                                                 func, clip, shift, **kwargs)
 
 
 # Coalignment by matching a template

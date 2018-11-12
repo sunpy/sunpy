@@ -10,7 +10,6 @@ This module provides the `Fido
 """
 # This module was initially developed under funding provided by Google Summer
 # of Code 2014
-from __future__ import print_function, absolute_import
 from collections import Sequence
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory

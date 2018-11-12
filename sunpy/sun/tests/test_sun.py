@@ -1,20 +1,7 @@
-from __future__ import absolute_import
-
 import astropy.units as u
 
 from sunpy.sun import sun
 from astropy.tests.helper import assert_quantity_allclose
-
-def test_sunearth_distance():
-    # Source for these values
-    # wolframalpha.com
-    # http://www.wolframalpha.com/input/?i=earth-sun+distance+on+2010%2F02%2F04
-    assert_quantity_allclose(sun.sunearth_distance("2010/02/04"), 0.9858 * u.AU, atol=1e-3 * u.AU)
-    assert_quantity_allclose(sun.sunearth_distance("2009/04/13"), 1.003 * u.AU, atol=1e-3 * u.AU)
-    assert_quantity_allclose(sun.sunearth_distance("2008/06/20"), 1.016 * u.AU, atol=1e-3 * u.AU)
-    assert_quantity_allclose(sun.sunearth_distance("2007/08/15"), 1.013 * u.AU, atol=1e-3 * u.AU)
-    assert_quantity_allclose(sun.sunearth_distance("2007/10/02"), 1.001 * u.AU, atol=1e-3 * u.AU)
-    assert_quantity_allclose(sun.sunearth_distance("2006/12/27"), 0.9834 * u.AU, atol=1e-3 * u.AU)
 
 
 def test_true_longitude():
@@ -115,10 +102,3 @@ def test_apparent_rightascension():
     assert_quantity_allclose(sun.apparent_rightascension("2012/11/11"), 15.103 * u.hourangle, atol=1e-3 * u.hourangle)
     assert_quantity_allclose(sun.apparent_rightascension("2013/12/13"), 17.356 * u.hourangle, atol=1e-3 * u.hourangle)
     assert_quantity_allclose(sun.apparent_rightascension("2512/04/09"), 1.196 * u.hourangle, atol=1e-3 * u.hourangle)
-
-
-def test_solar_north():
-    assert_quantity_allclose(sun.solar_north("2012/11/11"), 22.346 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.solar_north("2019/10/10"), 26.260 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.solar_north("2542/02/20"), -17.981 * u.deg, atol=1e-3 * u.deg)
-

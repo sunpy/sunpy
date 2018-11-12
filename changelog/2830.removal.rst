@@ -1,0 +1,2 @@
+Removed `MapCube` in favour of `MapSequence`
+

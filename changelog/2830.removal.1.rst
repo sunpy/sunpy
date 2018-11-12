@@ -1,0 +1,2 @@
+Removed `Map.xrange` and `Map.yrange`
+

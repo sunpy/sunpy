@@ -3,8 +3,6 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-from __future__ import absolute_import
-
 from sqlalchemy import or_, and_, not_
 
 from sunpy.time import parse_time
@@ -12,7 +10,6 @@ from sunpy.net.vso import attrs as vso_attrs
 from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
 from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
     FitsHeaderEntry as TableFitsHeaderEntry
-from sunpy.extern import six
 
 __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
@@ -171,7 +168,7 @@ def _create(wlk, root, session):
 @walker.add_creator(ValueAttr)
 def _create(wlk, root, session):
     query = session.query(DatabaseEntry)
-    for key, value in six.iteritems(root.attrs):
+    for key, value in root.attrs.items():
         typ = key[0]
         if typ == 'tag':
             criterion = TableTag.name.in_([value])

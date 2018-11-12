@@ -1,0 +1,1 @@
+Added full Tox support for SunPy tests, documentation build and figure tests.

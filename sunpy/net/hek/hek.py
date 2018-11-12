@@ -8,21 +8,17 @@
 
 """ Facilities to interface with the HEK. """
 
-from __future__ import absolute_import
-
 import json
 import codecs
-
-from itertools import chain
+import urllib
 from datetime import datetime
+from itertools import chain
+
 from sunpy.net import attr
+from sunpy.util import unique
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
-from sunpy.util import unique
 from sunpy.util.xml import xml_to_dict
-from sunpy.extern.six import iteritems
-from sunpy.extern.six.moves import urllib
-from sunpy.util import deprecated
 
 __all__ = ['HEKClient']
 
@@ -32,7 +28,7 @@ DEFAULT_URL = 'http://www.lmsal.com/hek/her'
 def _freeze(obj):
     """ Create hashable representation of result dict. """
     if isinstance(obj, dict):
-        return tuple((k, _freeze(v)) for k, v in iteritems(obj))
+        return tuple((k, _freeze(v)) for k, v in obj.items())
     if isinstance(obj, list):
         return tuple(_freeze(elem) for elem in obj)
     return obj
@@ -95,14 +91,6 @@ class HEKClient(object):
             return self._download(ndata[0])
         else:
             return self._merge(self._download(data) for data in ndata)
-
-    @deprecated('0.8', alternative='HEKClient.search')
-    def query(self, *query):
-        """
-        See `~sunpy.net.hek.hek.HEKClient.fetch`
-        """
-        return self.search(*query)
-
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """

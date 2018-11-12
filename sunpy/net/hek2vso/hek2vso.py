@@ -11,8 +11,6 @@ This module translates the results of a HEK query into a VSO query
 and returns the results from the VSO query to the user.
 """
 
-from __future__ import absolute_import
-
 import sys
 from astropy import units
 

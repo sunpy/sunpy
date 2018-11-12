@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """RHESSI TimeSeries subclass definitions."""
-from __future__ import absolute_import
-
 from collections import OrderedDict
 import datetime
 import matplotlib.dates
