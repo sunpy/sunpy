@@ -15,7 +15,7 @@ Google Summer of Code (2014)
 
 fido_factory.py, vso.py, the dataretriever Submodule
 
-ESA Summer of Code (2011)
-^^^^^^^^^^^^^^^^^^^^^^^^^
+ESA Summer of Code in Space (2011)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 attr.py
