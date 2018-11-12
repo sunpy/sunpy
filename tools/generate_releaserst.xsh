@@ -24,7 +24,6 @@ import json
 import datetime
 
 import requests
-from six import moves
 
 GH_API_BASE_URL = 'https://api.github.com'
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
