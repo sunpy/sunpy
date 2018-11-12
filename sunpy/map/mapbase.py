@@ -19,9 +19,7 @@ from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 import sunpy.io as io
 import sunpy.coordinates
 import sunpy.cm
-from sunpy.util.decorators import deprecated
 from sunpy import config
-from sunpy.extern import six
 from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
 from sunpy.sun import constants
 from sunpy.sun import sun
@@ -468,22 +466,6 @@ class GenericMap(NDData):
         return self.meta.get('lvl_num', None)
 
     @property
-    @deprecated("0.8", "This property is only valid for non-rotated WCS")
-    def xrange(self):
-        """Return the X range of the image from edge to edge."""
-        xmin = self.center.data.lon - self.dimensions[0] / 2. * self.scale[0]
-        xmax = self.center.data.lon + self.dimensions[0] / 2. * self.scale[0]
-        return u.Quantity([xmin, xmax])
-
-    @property
-    @deprecated("0.8", "This property is only valid for non-rotated WCS")
-    def yrange(self):
-        """Return the Y range of the image from edge to edge."""
-        ymin = self.center.data.lat - self.dimensions[1] / 2. * self.scale[1]
-        ymax = self.center.data.lat + self.dimensions[1] / 2. * self.scale[1]
-        return u.Quantity([ymin, ymax])
-
-    @property
     def bottom_left_coord(self):
         """
         The physical coordinate for the bottom left [0,0] pixel.
@@ -590,7 +572,7 @@ class GenericMap(NDData):
                 self._default_carrington_longitude = get_sun_L0(self.date)
             carrington_longitude = self._default_carrington_longitude
 
-        if isinstance(carrington_longitude, six.string_types):
+        if isinstance(carrington_longitude, str):
             carrington_longitude = float(carrington_longitude)
 
         return u.Quantity(carrington_longitude, 'deg')
@@ -611,7 +593,7 @@ class GenericMap(NDData):
                 self._default_heliographic_latitude = get_sun_B0(self.date)
             heliographic_latitude = self._default_heliographic_latitude
 
-        if isinstance(heliographic_latitude, six.string_types):
+        if isinstance(heliographic_latitude, str):
             heliographic_latitude = float(heliographic_latitude)
 
         return u.Quantity(heliographic_latitude, 'deg')
@@ -631,7 +613,7 @@ class GenericMap(NDData):
                 self._default_heliographic_longitude = 0
             heliographic_longitude = self._default_heliographic_longitude
 
-        if isinstance(heliographic_longitude, six.string_types):
+        if isinstance(heliographic_longitude, str):
             heliographic_longitude = float(heliographic_longitude)
 
         return u.Quantity(heliographic_longitude, 'deg')
@@ -829,14 +811,6 @@ class GenericMap(NDData):
 
         return PixelPair(x * u.pixel, y * u.pixel)
 
-    # Thought it would be easier to create a copy this way.
-    @deprecated("0.8.0", alternative="sunpy.map.GenericMap.world_to_pixel")
-    def data_to_pixel(self, coordinate, origin=0):
-        """
-        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`.
-        """
-        return self.world_to_pixel(coordinate, origin=origin)
-
     @u.quantity_input(x=u.pixel, y=u.pixel)
     def pixel_to_world(self, x, y, origin=0):
         """
@@ -878,14 +852,6 @@ class GenericMap(NDData):
         y = u.Quantity(y, out_units[1])
 
         return SkyCoord(x, y, frame=self.coordinate_frame)
-
-    # Thought it would be easier to create a copy this way.
-    @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_world")
-    def pixel_to_data(self, x, y, origin=0):
-        """
-        See `~sunpy.map.mapbase.GenericMap.pixel_to_world`.
-        """
-        return self.pixel_to_world(x, y, origin=origin)
 
 # #### I/O routines #### #
 
@@ -1289,11 +1255,7 @@ class GenericMap(NDData):
             y_pixels[1] = np.floor(y_pixels[1] + 1)
 
         elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
-              isinstance(top_right, u.Quantity) and bottom_left.unit.is_equivalent(u.pix)):
-
-            warnings.warn("GenericMap.submap now takes pixel values as `bottom_left`"
-                          " and `top_right` not `range_a` and `range_b`", Warning)
-
+              isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
             x_pixels = u.Quantity([bottom_left[0], top_right[0]]).value
             y_pixels = u.Quantity([top_right[1], bottom_left[1]]).value
 

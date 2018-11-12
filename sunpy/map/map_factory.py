@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 import os
 import glob
 from collections import OrderedDict
@@ -12,7 +10,6 @@ from astropy.wcs import WCS
 import sunpy
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.compositemap import CompositeMap
-from sunpy.map.mapcube import MapCube
 from sunpy.map.mapsequence import MapSequence
 
 from sunpy.io.file_tools import read_file
@@ -28,8 +25,7 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
-from sunpy.extern import six
-from sunpy.extern.six.moves.urllib.request import urlopen
+from urllib.request import urlopen
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
@@ -83,15 +79,15 @@ class MapFactory(BasicRegistrationFactory):
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
-    >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA 
-    
+    >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA
+
     * data, wcs object, not in tuple
-    
+
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
-    >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA 
-  
+    >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA
+
     * File names
 
     >>> mymap = sunpy.map.Map('file1.fits')   # doctest: +SKIP
@@ -201,14 +197,14 @@ class MapFactory(BasicRegistrationFactory):
                     i += 1    # an extra increment to account for the data-header pairing
 
             # File name
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
@@ -216,7 +212,7 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
-            elif (isinstance(arg, six.string_types) and '*' in arg):
+            elif (isinstance(arg, str) and '*' in arg):
                 files = glob.glob(os.path.expanduser(arg))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
@@ -226,7 +222,7 @@ class MapFactory(BasicRegistrationFactory):
                 already_maps.append(arg)
 
             # A URL
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   _is_url(arg)):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
@@ -262,9 +258,6 @@ class MapFactory(BasicRegistrationFactory):
         composite : boolean, optional
             Indicates if collection of maps should be returned as a CompositeMap
 
-        cube : boolean, optional
-            Indicates if collection of maps should be returned as a MapCube
-
         sequence : boolean, optional
             Indicates if collection of maps should be returned as a MapSequence
 
@@ -279,13 +272,6 @@ class MapFactory(BasicRegistrationFactory):
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
-
-        # MapCube Deprecation
-        cube = kwargs.pop('cube', False)
-        if cube:
-            warnings.warn('MapCube is now deprecated and renamed MapSequence. ' +
-                          'Please use the syntax Map(sequence=True) instead of Map(cube=True).',
-                          SunpyDeprecationWarning, stacklevel=2)
 
         sequence = kwargs.pop('sequence', False)
         silence_errors = kwargs.pop('silence_errors', False)
@@ -311,13 +297,6 @@ class MapFactory(BasicRegistrationFactory):
             new_maps.append(new_map)
 
         new_maps += already_maps
-
-        # If the list is meant to be a cube, instantiate a map cube
-        if cube:
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore", category=SunpyDeprecationWarning)
-                amapcube = MapCube(new_maps, **kwargs)
-            return amapcube
 
         # If the list is meant to be a sequence, instantiate a map sequence
         if sequence:

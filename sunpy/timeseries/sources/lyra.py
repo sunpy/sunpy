@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """Proba-2 TimeSeries subclass definitions."""
-from __future__ import absolute_import, division, print_function
-
 import datetime
 import sys
 from collections import OrderedDict

@@ -15,8 +15,6 @@ AND-expression, if you still attempt to do so it is called a collision.
 For a quick example think about how the system should handle
 Instrument('aia') & Instrument('eit').
 """
-from __future__ import absolute_import
-
 from datetime import datetime
 
 from astropy import units as u
@@ -26,10 +24,7 @@ from sunpy.net.attr import (
     Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
 from sunpy.util.multimethod import MultiMethod
-from sunpy.util.decorators import deprecated
 from sunpy.time import parse_time
-from sunpy.extern.six import iteritems
-from sunpy.extern import six
 
 __all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
@@ -142,14 +137,6 @@ class Wavelength(Attr, _Range):
         return "<Wavelength({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
                                                             self.max.value,
                                                             self.unit)
-
-
-@deprecated("0.8", message="Wave has been renamed Wavelength",
-            alternative="sunpy.net.vso.attrs.wavelength")
-class Wave(Wavelength):
-    """
-    Wavelength search attribute. See `sunpy.net.vso.attrs.Wavelength`.
-    """
 
 
 class Time(Attr, _Range):
@@ -276,7 +263,7 @@ class Instrument(_VSOSimpleAttr):
     http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
     def __init__(self, value):
-        if not isinstance(value, six.string_types):
+        if not isinstance(value, str):
             raise ValueError("Instrument names must be strings")
 
         super(Instrument, self).__init__(value)
@@ -482,7 +469,7 @@ def _create(wlk, root, api):
 # pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
-    for k, v in iteritems(root.attrs):
+    for k, v in root.attrs.items():
         lst = k[-1]
         rest = k[:-1]
 
@@ -516,7 +503,7 @@ def _create(wlk, root, api):
 # attrs member.
 walker.add_converter(Extent)(
     lambda x: ValueAttr(
-        dict((('extent', k), v) for k, v in iteritems(vars(x)))
+        dict((('extent', k), v) for k, v in vars(x).items())
     )
 )
 

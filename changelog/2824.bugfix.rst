@@ -1,0 +1,1 @@
+Increase figure size to avoid cutting off longer colormap names in `sunpy.cm.show_colormaps`.

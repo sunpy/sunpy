@@ -61,7 +61,7 @@ Contributing
 |Open Source Helpers|
 
 If you would like to get involved, start by joining the `SunPy mailing list`_ and check out the `Developer’s Guide`_ section of the SunPy docs.
-Stop by our chat room `#sunpy:matrix.org`_ if you have any questions.
+Stop by our chat room `#sunpy:openastronomy.org`_ if you have any questions.
 Help is always welcome so let us know what you like to work on, or check out the `issues page`_ for the list of known outstanding items.
 
 For more information on contributing to SunPy, please read our `contributing guide`_ or the `Newcomers guide`_.
@@ -96,10 +96,10 @@ follow our `Code of Conduct`_.
 .. _installation guide: http://docs.sunpy.org/en/latest/guide/installation/index.html
 .. _SunPy Documentation: http://docs.sunpy.org/
 .. _SunPy Mailing List: https://groups.google.com/forum/#!forum/sunpy
-.. _SunPy Matrix Channel: https://riot.im/app/#/room/#sunpy:matrix.org
+.. _SunPy Matrix Channel: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
 .. _SunPy mailing list: https://groups.google.com/forum/#!forum/sunpy
 .. _Developer’s Guide: http://docs.sunpy.org/en/latest/dev_guide/index.html
-.. _`#sunpy:matrix.org`: https://riot.im/app/#/room/#sunpy:matrix.org
+.. _`#sunpy:openastronomy.org`: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
 .. _issues page: https://github.com/sunpy/sunpy/issues
 .. _contributing guide: https://github.com/sunpy/sunpy/blob/master/CONTRIBUTING.rst
 .. _Newcomers guide: http://docs.sunpy.org/en/stable/dev_guide/newcomers.html

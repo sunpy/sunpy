@@ -21,7 +21,6 @@ from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
 from sunpy.net import vso, Fido, attrs as net_attrs
 from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
-from sunpy.extern.six import next
 
 
 RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')

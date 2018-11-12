@@ -1,6 +1,4 @@
 """JPEG 2000 File Reader"""
-from __future__ import absolute_import, division, print_function
-
 import collections
 
 from xml.etree import cElementTree as ET

@@ -5,8 +5,6 @@
 # the ESA Summer of Code (2011).
 #
 # pylint: disable=W0401,C0103,R0904,W0141
-from __future__ import absolute_import, division, print_function
-
 """
 This module provides a wrapper around the VSO API.
 """
@@ -14,7 +12,6 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
-import copy
 import logging
 import requests
 import warnings
@@ -33,16 +30,11 @@ from sunpy import config
 from sunpy.net import download
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.util.net import get_filename, slugify
-from sunpy.net.attr import and_, Attr
+from sunpy.net.attr import and_
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename
 from sunpy.time import parse_time
-
-from sunpy.util import deprecated
-from sunpy.extern import six
-from sunpy.extern.six import iteritems, text_type
-from sunpy.extern.six.moves import input
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -139,13 +131,6 @@ class QueryResponse(list):
         return QueryResponse(
             attrs.filter_results(query, self), self.queryresult
         )
-
-    @deprecated('0.8', alternative='QueryResponse.search')
-    def query(self, *query):
-        """
-        See `~sunpy.net.vso.vso.QueryResponse.search`
-        """
-        return self.search(*query)
 
     @classmethod
     def create(cls, queryresult):
@@ -291,7 +276,7 @@ class VSOClient(object):
         To assign subattributes, use foo__bar=1 to assign
         ['foo']['bar'] = 1. """
         obj = self.api.factory.create(atype)
-        for k, v in iteritems(kwargs):
+        for k, v in kwargs.items():
             split = k.split('__')
             tip = split[-1]
             rest = split[:-1]
@@ -302,7 +287,7 @@ class VSOClient(object):
 
             if isinstance(v, dict):
                 # Do not throw away type information for dicts.
-                for k, v in iteritems(v):
+                for k, v in v.items():
                     item[tip][k] = v
             else:
                 item[tip] = v
@@ -360,13 +345,6 @@ class VSOClient(object):
 
         return QueryResponse.create(self.merge(responses))
 
-    @deprecated('0.8', alternative='VSOClient.search')
-    def query(self, *query):
-        """
-        See `~sunpy.net.vso.VSOClient.search`
-        """
-        return self.search(*query)
-
     def merge(self, queryresponses):
         """ Merge responses into one. """
         if len(queryresponses) == 1:
@@ -404,8 +382,8 @@ class VSOClient(object):
     def mk_filename(pattern, response, sock, url, overwrite=False):
         name = get_filename(sock, url)
         if not name:
-            if not isinstance(response.fileid, text_type):
-                name = six.u(response.fileid, "ascii", "ignore")
+            if isinstance(response.fileid, bytes):
+                name = response.fileid.decode("ascii", "ignore")
             else:
                 name = response.fileid
 
@@ -414,9 +392,6 @@ class VSOClient(object):
             fs_encoding = "ascii"
 
         name = slugify(name)
-
-        if six.PY2:
-            name = name.encode(fs_encoding, "ignore")
 
         if not name:
             name = "file"
@@ -543,8 +518,8 @@ class VSOClient(object):
             kwargs.update({'time_end': tend})
 
         queryreq = self.api.factory.create('QueryRequest')
-        for key, value in iteritems(kwargs):
-            for k, v in iteritems(ALIASES.get(key, sdk(key))(value)):
+        for key, value in kwargs.items():
+            for k, v in ALIASES.get(key, sdk(key))(value).items():
                 if k.startswith('time'):
                     v = parse_time(v).strftime(TIMEFORMAT)
                 attr = k.split('_')
@@ -648,7 +623,7 @@ class VSOClient(object):
         if path is None:
             path = os.path.join(config.get('downloads', 'download_dir'),
                                 '{file}')
-        elif isinstance(path, six.string_types) and '{file}' not in path:
+        elif isinstance(path, str) and '{file}' not in path:
             path = os.path.join(path, '{file}')
         path = os.path.expanduser(path)
 
@@ -669,14 +644,6 @@ class VSOClient(object):
         )
         res.poke()
         return res
-
-    @deprecated('0.8', alternative='VSOClient.fetch')
-    def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
-            downloader=None, site=None):
-        """
-        See `~sunpy.net.vso.VSOClient.fetch`
-        """
-        return self.fetch(query_response, path=path, methods=methods, downloader=downloader, site=site)
 
     @staticmethod
     def link(query_response, maps):
@@ -703,7 +670,7 @@ class VSOClient(object):
 
         return self.create_getdatarequest(
             dict((k, [x.fileid for x in v])
-                 for k, v in iteritems(self.by_provider(response))),
+                 for k, v in self.by_provider(response).items()),
             methods, info
         )
 
@@ -721,7 +688,7 @@ class VSOClient(object):
 
         # Make DRIs for everything that's not JSOC one per provider
         dris = [self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in iteritems(maps)]
+                for k, v in maps.items()]
 
         def series_func(x):
             """ Extract the series from the fileid. """
@@ -878,115 +845,3 @@ class VSOClient(object):
     @classmethod
     def _can_handle_query(cls, *query):
         return all([x.__class__.__name__ in attrs.__all__ for x in query])
-
-
-@deprecated("0.8.0", alternative="Please use VSOClient")
-class InteractiveVSOClient(VSOClient):
-
-    """ Client for use in the REPL. Prompts user for data if required. """
-
-    def multiple_choices(self, choices, response):
-        """
-        not documented yet
-
-        Parameters
-        ----------
-
-            choices : not documented yet
-
-            response : not documented yet
-
-        """
-        while True:
-            for n, elem in enumerate(choices):
-                print("({num:d}) {choice!s}".format(num=n + 1, choice=elem))
-            try:
-                choice = input("Method number: ")
-            except KeyboardInterrupt:
-                raise NoData
-            if not choice:
-                raise NoData
-            try:
-                choice = int(choice) - 1
-            except ValueError:
-                continue
-            if choice == -1:
-                raise NoData
-            elif choice >= 0:
-                try:
-                    return [choices[choice]]
-                except IndexError:
-                    continue
-
-    def missing_information(self, info, field):
-        """
-        not documented yet
-
-        Parameters
-        ----------
-        info : not documented yet
-                not documented yet
-        field : not documented yet
-            not documented yet
-
-        Returns
-        -------
-        choice : not documented yet
-
-        .. todo::
-            improve documentation. what does this function do?
-
-        """
-        choice = input(field + ': ')
-        if not choice:
-            raise NoData
-        return choice
-
-    def search(self, *args, **kwargs):
-        """ When passed an Attr object, perform new-style query;
-        otherwise, perform legacy query.
-        """
-        if isinstance(args[0], Attr):
-            return self.query(*args)
-        else:
-            return self.query_legacy(*args, **kwargs)
-
-    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None):
-        """The path expands ``~`` to refer to the user's home directory.
-        If the given path is an already existing directory, ``{file}`` is
-        appended to this path. After that, all received parameters (including
-        the updated path) are passed to :meth:`VSOClient.get`.
-
-        """
-        if path is not None:
-            path = os.path.abspath(os.path.expanduser(path))
-            if os.path.exists(path) and os.path.isdir(path):
-                path = os.path.join(path, '{file}')
-        return VSOClient.fetch(self, query_response, path, methods, downloader)
-
-
-g_client = None
-
-
-@deprecated("0.8.0", alternative="Please use the VSO Clients directly")
-def search(*args, **kwargs):
-    # pylint: disable=W0603
-    global g_client
-    if g_client is None:
-        g_client = InteractiveVSOClient()
-    return g_client.search(*args, **kwargs)
-
-
-search.__doc__ = InteractiveVSOClient.search.__doc__
-
-
-@deprecated("0.8.0", alternative="Please use the VSO Clients directly")
-def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
-    # pylint: disable=W0603
-    global g_client
-    if g_client is None:
-        g_client = InteractiveVSOClient()
-    return g_client.get(query_response, path, methods, downloader)
-
-
-get.__doc__ = VSOClient.search.__doc__

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Nobeyama Radioheliograph TimeSeries subclass definitions."""
 
-from __future__ import absolute_import
-
 import datetime
 
 import pandas
