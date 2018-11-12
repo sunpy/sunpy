@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division
-
 import datetime
-import warnings
 
 import astropy.units as u
 from astropy.time import Time
-from astropy.coordinates import TimeAttribute, CoordinateAttribute, get_body_barycentric, ICRS
+from astropy.coordinates import TimeAttribute, CoordinateAttribute
 
-from sunpy.extern import six
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']
 
@@ -66,7 +61,7 @@ class TimeFrameAttributeSunPy(TimeAttribute):
             out = value
             converted = False
 
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             try:
                 out = Time(parse_time(value))
             except Exception as err:
@@ -105,7 +100,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
 
     def convert_input(self, value):
         # Keep string here.
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             return value, False
         else:
             return super(ObserverCoordinateAttribute, self).convert_input(value)
@@ -140,7 +135,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
 
             # If the observer is a string and we have obstime then calculate
             # the position of the observer.
-            if isinstance(observer, six.string_types):
+            if isinstance(observer, str):
                 if obstime is not None:
                     new_observer = self._convert_string_to_coord(observer.lower(), obstime)
                     new_observer.object_name = observer

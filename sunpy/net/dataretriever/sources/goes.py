@@ -9,7 +9,7 @@ from sunpy.time import parse_time, TimeRange
 
 from ..client import GenericClient
 
-from sunpy.extern.six.moves.urllib.parse import urlsplit
+from urllib.parse import urlsplit
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")

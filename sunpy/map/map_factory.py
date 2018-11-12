@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 import os
 import glob
 from collections import OrderedDict
@@ -27,8 +25,7 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
-from sunpy.extern import six
-from sunpy.extern.six.moves.urllib.request import urlopen
+from urllib.request import urlopen
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
@@ -200,14 +197,14 @@ class MapFactory(BasicRegistrationFactory):
                     i += 1    # an extra increment to account for the data-header pairing
 
             # File name
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
@@ -215,7 +212,7 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
-            elif (isinstance(arg, six.string_types) and '*' in arg):
+            elif (isinstance(arg, str) and '*' in arg):
                 files = glob.glob(os.path.expanduser(arg))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
@@ -225,7 +222,7 @@ class MapFactory(BasicRegistrationFactory):
                 already_maps.append(arg)
 
             # A URL
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   _is_url(arg)):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())

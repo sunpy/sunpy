@@ -2,11 +2,8 @@
 Nothing here but dictionaries for generating LinearSegmentedColormaps,
 and a dictionary of these dictionaries.
 """
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 import matplotlib.colors as colors
-from sunpy.extern.six.moves import range, zip
 
 __all__ = ['aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
            'sxt_color_table', 'xrt_color_table', 'trace_color_table',

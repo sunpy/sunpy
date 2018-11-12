@@ -4,8 +4,6 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
-from __future__ import division, absolute_import
-
 import numpy as np
 
 import astropy.units as u

@@ -3,8 +3,6 @@
 
 #pylint: disable=W0613
 
-from __future__ import absolute_import
-
 import pytest
 
 import os

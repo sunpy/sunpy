@@ -6,18 +6,14 @@ is based on algorithms presented in the book Astronomical Formulae for
 Calculators, by Jean Meeus.
 Every function returning a quantity is of type astropy.units.Quantity
 """
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import Angle, Longitude, Latitude
+from astropy.coordinates import Angle, Latitude, Longitude
 
-from sunpy.time import parse_time, julian_day, julian_centuries
 from sunpy.sun import constants
-from sunpy.extern import six
+from sunpy.time import julian_day, parse_time, julian_centuries
 from sunpy.util.decorators import add_common_docstring
-
 
 __all__ = [
     "print_params", "apparent_declination",

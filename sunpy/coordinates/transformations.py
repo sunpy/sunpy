@@ -13,8 +13,6 @@ This module contains the functions for converting one
   `~astropy.coordinates.SkyCoord` instances.
 
 """
-from __future__ import division, absolute_import
-
 import numpy as np
 
 import astropy.units as u

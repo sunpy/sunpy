@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 from datetime import timedelta
 from datetime import datetime
 
@@ -7,7 +5,6 @@ import astropy.units as u
 
 from sunpy.time import parse_time
 from sunpy import config
-from sunpy.extern.six.moves import range
 
 TIME_FORMAT = config.get('general', 'time_format')
 

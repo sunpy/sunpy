@@ -2,15 +2,12 @@
 # This module was developed under funding by
 # Google Summer of Code 2014
 
-from __future__ import absolute_import, division, print_function
 import datetime
 
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
-from sunpy.extern.six.moves.urllib.parse import urljoin
 
 from ..client import GenericClient
-
 
 __all__ = ['EVEClient']
 

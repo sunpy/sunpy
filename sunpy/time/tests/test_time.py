@@ -1,17 +1,14 @@
-from __future__ import absolute_import, division, print_function
-
-from datetime import datetime, date
 import re
+from datetime import date, datetime
 
-from sunpy import time
-from sunpy.time import parse_time, is_time_in_given_format, get_day, find_time
-
-import astropy.time
 import numpy as np
 import pandas
-from sunpy.extern.six.moves import range
-
 import pytest
+
+import astropy.time
+
+from sunpy import time
+from sunpy.time import get_day, parse_time, is_time_in_given_format
 
 LANDING = datetime(1966, 2, 3)
 
