@@ -163,7 +163,7 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> source_id = hv.get_source_id()  # doctest: +REMOTE_DATA
+        >>> source_id = hv.get_source_id()  # doctest: +SKIP
         >>> hv.display_source_id()  # doctest: +REMOTE_DATA
         >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceid = source_id[('SDO', 'HMI', 'continuum')])   # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(file)   # doctest: +REMOTE_DATA
