@@ -32,7 +32,7 @@ source ID available on the server using the display_source_id method::
 
     >>> from sunpy.net.helioviewer import HelioviewerClient
     >>> import sunpy.net.helioviewer 
-    >>> hv = HelioviewerClient()
+    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
     >>> datasource = hv.display_source_id()  # doctest: +SKIP
     >>> # Print a list of datasources and their associated ids
     {('SDO', 'AIA', '1700'): 16
@@ -192,7 +192,7 @@ specify the sourceId of the image we want to download.::
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
    >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
    >>> source_id = hv.get_source_id()  # doctest: +REMOTE_DATA
-   >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceid = source_id[('SDO', 'HMI', 'continuum')])   # doctest: +REMOTE_DATA
+   >>> filepath = hv.download_jp2('2012/07/03 14:30:00', sourceid = source_id[('SDO', 'HMI', 'continuum')])   # doctest: +REMOTE_DATA
    >>> hmi = Map(filepath)  # doctest: +REMOTE_DATA
    >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
    >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA

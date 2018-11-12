@@ -117,7 +117,7 @@ class HelioviewerClient(object):
         >>> client.display_source_id()  # doctest: +SKIP
         >>> metadata = client.get_closest_image('2012/01/01', sourceid = source_id[('SDO', 'HMI', 'continuum')])  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
-        2012-01-01 00:00:07
+        2011-12-31 23:59:40
         """
         params = {
             "action": "getClosestImage",
@@ -179,8 +179,8 @@ class HelioviewerClient(object):
 
         return self._get_file(params, directory, overwrite=overwrite)
 
-    def download_png(self, date, image_scale, layers, eventLabels=False, directory=None,
-                     overwrite=False, **kwargs):
+    def download_png(self, date, image_scale, layers, eventLabels=False, events=None, 
+                     scale=False, watermark=False, directory=None, overwrite=False, **kwargs):
         """Downloads a PNG image using data from Helioviewer.org. It uses the
         takeScreenshot function from the API to perform this task.
 
@@ -275,7 +275,10 @@ class HelioviewerClient(object):
             "imageScale": image_scale,
             "layers": layers,
             "eventLabels": eventLabels,
-            "display": True
+            "display": True,
+            "events": None,
+            "scale": False,
+            "watermark": False
         }
 
         params.update(kwargs)
