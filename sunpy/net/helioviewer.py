@@ -113,8 +113,8 @@ class HelioviewerClient(object):
         --------
         >>> from sunpy.net import helioviewer
         >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> source_id = hv.get_source_id()  # doctest: +REMOTE_DATA
-        >>> hv.display_source_id()  # doctest: +REMOTE_DATA
+        >>> source_id = client.get_source_id()  # doctest: +REMOTE_DATA
+        >>> client.display_source_id()  # doctest: +SKIP
         >>> metadata = client.get_closest_image('2012/01/01', sourceid = source_id[('SDO', 'HMI', 'continuum')])  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
         2012-01-01 00:00:07
@@ -163,8 +163,8 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> source_id = hv.get_source_id()  # doctest: +SKIP
-        >>> hv.display_source_id()  # doctest: +REMOTE_DATA
+        >>> source_id = hv.get_source_id()  # doctest: +REMOTE_DATA
+        >>> hv.display_source_id()  # doctest: +SKIP
         >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceid = source_id[('SDO', 'HMI', 'continuum')])   # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(file)   # doctest: +REMOTE_DATA
         >>> aia.peek()   # doctest: +SKIP

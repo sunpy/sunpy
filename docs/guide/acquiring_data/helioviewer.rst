@@ -33,7 +33,7 @@ source ID available on the server using the display_source_id method::
     >>> from sunpy.net.helioviewer import HelioviewerClient
     >>> import sunpy.net.helioviewer 
     >>> hv = HelioviewerClient()
-    >>> datasource = hv.display_source_id()  # doctest: +REMOTE_DATA
+    >>> datasource = hv.display_source_id()  # doctest: +SKIP
     >>> # Print a list of datasources and their associated ids
     {('SDO', 'AIA', '1700'): 16
      ('SDO', 'AIA', '131'): 9
