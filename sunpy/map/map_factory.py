@@ -9,7 +9,6 @@ import numpy as np
 import astropy.io.fits
 from astropy.wcs import WCS
 
-import sunpy
 from sunpy.map.mapbase import GenericMap, MAP_CLASSES
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapcube import MapCube
@@ -86,15 +85,15 @@ class MapFactory(BasicRegistrationFactory):
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
-    >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA 
-    
+    >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA
+
     * data, wcs object, not in tuple
-    
+
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
-    >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA 
-  
+    >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA
+
     * File names
 
     >>> mymap = sunpy.map.Map('file1.fits')   # doctest: +SKIP
@@ -391,3 +390,4 @@ class NoMapsFound(ValueError):
 
 Map = MapFactory(default_widget_type=GenericMap,
                  additional_validation_functions=['is_datasource_for'])
+Map.registry = MAP_CLASSES

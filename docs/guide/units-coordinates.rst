@@ -231,6 +231,7 @@ Using Coordinates with SunPy Map
    >>> import matplotlib.pyplot as plt
    >>> ax = plt.subplot(projection=m)
    >>> m.plot()
+   <matplotlib.image.AxesImage object at ...>
    >>> ax.plot_coord(c, 'o')
 
 For more information on coordinates see :ref:`sunpy-coordinates` section of
