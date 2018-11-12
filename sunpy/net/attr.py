@@ -39,7 +39,7 @@ def make_tuple():
 
 def strtonum(value):
     """
-    For numbers 1 to 9, return the number spelled out. Otherwise, return the
+    For numbers 0 to 9, return the number spelled out. Otherwise, return the
     number. This follows Associated Press style.  This always returns a string
     unless the value was not int-able, unlike the Django filter.
     Taken from: https://github.com/jmoiron/humanize/blob/master/humanize/number.py#L81
@@ -50,8 +50,8 @@ def strtonum(value):
         return value
     if not 0 <= value < 10:
         return str(value)
-    return ('one', 'two', 'three', 'four', 'five', 'six',
-            'seven', 'eight', 'nine', 'zero')[value - 1]
+    return ('zero', 'one', 'two', 'three', 'four', 'five', 'six',
+            'seven', 'eight', 'nine')[value]
 
 
 class AttrMeta(type):
@@ -168,7 +168,7 @@ class Attr(metaclass=AttrMeta):
         ...                         ('HMI', 'HMI is next to AIA.')]}) # doctest: +SKIP
         >>> attr.Attr._attr_registry[attrs.Instrument] # doctest: +SKIP
         attr(name=['aia', 'hmi'], name_long=['AIA', 'HMI'],
-        ...  desc=['AIA is in Space.', 'HMI is next to AIA.']) # doctest: +SKIP
+            desc=['AIA is in Space.', 'HMI is next to AIA.'])
         >>> attr.Attr._attr_registry[attrs.Instrument].name # doctest: +SKIP
         ['aia', 'hmi']
         >>> attr.Attr._attr_registry[attrs.Instrument].name_long # doctest: +SKIP

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
+import textwrap
 
 import pytest
 
@@ -217,7 +218,13 @@ def test_attr_metamagic(AIA, HMI):
     assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data', 'This is HMI, it lives next to AIA']
 
     # Tests the print out for the first two inputs only
-    assert str(Instrument) == 'Attribute Name | Full Name | Description                      \n---------------+-----------+----------------------------------\naia            | AIA       | This is AIA, it takes data       \nhmi            | HMI       | This is HMI, it lives next to AIA'
+    output = textwrap.dedent(
+    "Attribute Name | Full Name | Description                      \n"
+    "---------------+-----------+----------------------------------\n"
+    "aia            | AIA       | This is AIA, it takes data       \n"
+    "hmi            | HMI       | This is HMI, it lives next to AIA")
+
+    assert str(Instrument) == output
 
     # Clean Registry
     EmptyAttr()
