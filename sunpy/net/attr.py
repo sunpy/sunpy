@@ -24,7 +24,6 @@ from collections import defaultdict, namedtuple
 from astropy.utils.misc import isiterable
 
 from sunpy.util.multimethod import MultiMethod
-from sunpy.extern.six import iteritems
 
 _ATTR_TUPLE = namedtuple("attr", "name name_long desc")
 _REGEX = re.compile(r"^[\d]([^\d].*)?$")
@@ -121,7 +120,7 @@ class Attr(metaclass=AttrMeta):
         return AttrAnd([self, other])
 
     def __hash__(self):
-        return hash(frozenset(iteritems(vars(self))))
+        return hash(frozenset(vars(self).items()))
 
     def __or__(self, other):
         # Optimization.
@@ -151,7 +150,7 @@ class Attr(metaclass=AttrMeta):
 
         **It is recommended that clients register values for all attrs used by their `_can_handle_query` method.**
 
-        Paramaters
+        Parameters
         ----------
 
         adcit : `dict`
@@ -207,7 +206,8 @@ class Attr(metaclass=AttrMeta):
 
 
 class DummyAttr(Attr):
-    """ Empty attribute. Useful for building up queries. Returns other
+    """
+    Empty attribute. Useful for building up queries. Returns other
     attribute when ORed or ANDed. It can be considered an empty query
     that you can use as an initial value if you want to build up your
     query in a loop.
@@ -215,9 +215,11 @@ class DummyAttr(Attr):
     So, if we wanted an attr matching all the time intervals between the times
     stored as (from, to) tuples in a list, we could do.
 
-    attr = DummyAttr()
-    for from\_, to in times:
-        attr |= Time(from\_, to)
+    .. code-block:: python
+
+       attr = DummyAttr()
+       for from, to in times:
+           attr |= Time(from, to)
     """
     def __and__(self, other):
         return other
@@ -351,7 +353,7 @@ class ValueAttr(Attr):
         return "<ValueAttr({att!r})>".format(att=self.attrs)
 
     def __hash__(self):
-        return hash(frozenset(self.attrs.iteritems.items()))
+        return hash(frozenset(self.attrs.items()))
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

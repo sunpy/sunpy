@@ -1,3 +1,0 @@
-Removal of `InteractiveVSOClient`, `Attr.Wave`, `GenericClient.get`,
-`GenericClient.query`, 'JSOCClient.get' 'JSOCClient.query'
-and 'JSOCClient.check_request'.
