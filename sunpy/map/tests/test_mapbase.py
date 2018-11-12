@@ -2,8 +2,6 @@
 """
 Test Generic Map
 """
-from __future__ import absolute_import
-
 import os
 import pytest
 import datetime
@@ -26,8 +24,6 @@ import sunpy.map
 import sunpy.coordinates
 import sunpy.data.test
 from sunpy.time import parse_time
-
-from sunpy.extern import six
 
 testpath = sunpy.data.test.rootdir
 
@@ -134,7 +130,7 @@ def test_std(generic_map):
 # TODO: Test the header keyword extraction
 # ==============================================================================
 def test_name(generic_map):
-    assert isinstance(generic_map.name, six.string_types)
+    assert isinstance(generic_map.name, str)
 
 
 def test_nickname(generic_map):

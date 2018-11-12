@@ -1,22 +1,20 @@
 """
 This module provides a wrapper around the Helioviewer API.
 """
-from __future__ import absolute_import
-
 # pylint: disable=E1101,F0401,W0231
 
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import errno
 import json
+import errno
 import codecs
+import urllib
+
 import sunpy
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
-
-from sunpy.extern.six.moves import urllib
 
 __all__ = ['HelioviewerClient']
 

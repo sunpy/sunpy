@@ -1,5 +1,4 @@
 """A Python MapSequence Object"""
-from __future__ import absolute_import, division, print_function
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 from copy import deepcopy
@@ -15,7 +14,6 @@ from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.visualization import axis_labels_from_ctype
 from sunpy.util import expand_list
-from sunpy.extern.six.moves import range
 
 __all__ = ['MapSequence']
 

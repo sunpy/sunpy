@@ -1,8 +1,6 @@
 """
 Helper functions for image manipulation
 """
-from __future__ import absolute_import, division
-
 import numpy as np
 from skimage.util import img_as_float
 

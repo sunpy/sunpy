@@ -5,8 +5,6 @@
 # the ESA Summer of Code (2011).
 #
 # pylint: disable=W0401,C0103,R0904,W0141
-from __future__ import absolute_import, division, print_function
-
 """
 This module provides a wrapper around the VSO API.
 """
@@ -14,7 +12,6 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
-import copy
 import logging
 import requests
 import warnings
@@ -33,15 +30,11 @@ from sunpy import config
 from sunpy.net import download
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.util.net import get_filename, slugify
-from sunpy.net.attr import and_, Attr
+from sunpy.net.attr import and_
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename
 from sunpy.time import parse_time
-
-from sunpy.extern import six
-from sunpy.extern.six import iteritems, text_type
-from sunpy.extern.six.moves import input
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -283,7 +276,7 @@ class VSOClient(object):
         To assign subattributes, use foo__bar=1 to assign
         ['foo']['bar'] = 1. """
         obj = self.api.factory.create(atype)
-        for k, v in iteritems(kwargs):
+        for k, v in kwargs.items():
             split = k.split('__')
             tip = split[-1]
             rest = split[:-1]
@@ -294,7 +287,7 @@ class VSOClient(object):
 
             if isinstance(v, dict):
                 # Do not throw away type information for dicts.
-                for k, v in iteritems(v):
+                for k, v in v.items():
                     item[tip][k] = v
             else:
                 item[tip] = v
@@ -389,8 +382,8 @@ class VSOClient(object):
     def mk_filename(pattern, response, sock, url, overwrite=False):
         name = get_filename(sock, url)
         if not name:
-            if not isinstance(response.fileid, text_type):
-                name = six.u(response.fileid, "ascii", "ignore")
+            if isinstance(response.fileid, bytes):
+                name = response.fileid.decode("ascii", "ignore")
             else:
                 name = response.fileid
 
@@ -399,9 +392,6 @@ class VSOClient(object):
             fs_encoding = "ascii"
 
         name = slugify(name)
-
-        if six.PY2:
-            name = name.encode(fs_encoding, "ignore")
 
         if not name:
             name = "file"
@@ -528,8 +518,8 @@ class VSOClient(object):
             kwargs.update({'time_end': tend})
 
         queryreq = self.api.factory.create('QueryRequest')
-        for key, value in iteritems(kwargs):
-            for k, v in iteritems(ALIASES.get(key, sdk(key))(value)):
+        for key, value in kwargs.items():
+            for k, v in ALIASES.get(key, sdk(key))(value).items():
                 if k.startswith('time'):
                     v = parse_time(v).strftime(TIMEFORMAT)
                 attr = k.split('_')
@@ -633,7 +623,7 @@ class VSOClient(object):
         if path is None:
             path = os.path.join(config.get('downloads', 'download_dir'),
                                 '{file}')
-        elif isinstance(path, six.string_types) and '{file}' not in path:
+        elif isinstance(path, str) and '{file}' not in path:
             path = os.path.join(path, '{file}')
         path = os.path.expanduser(path)
 
@@ -680,7 +670,7 @@ class VSOClient(object):
 
         return self.create_getdatarequest(
             dict((k, [x.fileid for x in v])
-                 for k, v in iteritems(self.by_provider(response))),
+                 for k, v in self.by_provider(response).items()),
             methods, info
         )
 
@@ -698,7 +688,7 @@ class VSOClient(object):
 
         # Make DRIs for everything that's not JSOC one per provider
         dris = [self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in iteritems(maps)]
+                for k, v in maps.items()]
 
         def series_func(x):
             """ Extract the series from the fileid. """

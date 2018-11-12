@@ -1,8 +1,6 @@
 """
 This module provides a set of colormaps specific for solar data.
 """
-from __future__ import absolute_import, division, print_function
-
 from copy import deepcopy
 
 import numpy as np

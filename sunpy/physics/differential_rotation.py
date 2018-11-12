@@ -1,4 +1,3 @@
-from __future__ import division
 import datetime
 from copy import deepcopy
 import warnings

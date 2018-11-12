@@ -4,18 +4,18 @@ Unit tests for `sunpy.instr.rhessi`
 """
 import os
 import socket
+import textwrap
 import warnings
 from datetime import datetime
-import textwrap
+from urllib.error import URLError
+
+import mock
+import numpy as np
+import pytest
 
 import sunpy.map
 import sunpy.data.test
 import sunpy.instr.rhessi as rhessi
-from sunpy.extern.six.moves.urllib.error import URLError
-
-import numpy as np
-import pytest
-import mock
 
 testpath = sunpy.data.test.rootdir
 
