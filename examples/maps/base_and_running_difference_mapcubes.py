@@ -19,7 +19,7 @@ from sunpy.data.sample import AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE, AI
 # We create the MapSequence using the AIA_193_CUTOUT sample data.
 # To create a MapSequence, we can call Map directly and add in a keyword to output a MapSequence instead.
 aiamapseq = sunpy.map.Map(AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE,
-                           AIA_193_CUTOUT03_IMAGE, sequence=True)
+                          AIA_193_CUTOUT03_IMAGE, sequence=True)
 
 ############################################################################
 # In case of running difference, we loop through all the maps in the
@@ -32,7 +32,7 @@ base_diffmap = []
 running_diffmap = []
 for i, map_i in enumerate(aiamapseq[1:]):
     aiamap_rot = diffrot.diffrot_map(map_i, time=aiamapseq[0].date)
-    aiamapseq_rot = diffrot.diffrot_map(aiamapseq[i+1], time=aiamapseq[i].date)
+    aiamapseq_rot = diffrot.diffrot_map(map_i, time=aiamapseq[i].date)
     diffdata = map_i.data - aiamap_rot.data
     smap_base = sunpy.map.Map(diffdata, map_i.meta)
     diffdata = aiamapseq_rot.data - map_i.data
