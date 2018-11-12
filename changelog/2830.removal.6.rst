@@ -1,0 +1,2 @@
+Removed `pixel_to_data` in favour of `pixel_to_world`
+

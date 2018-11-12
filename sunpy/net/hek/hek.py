@@ -22,7 +22,6 @@ from sunpy.util import unique
 from sunpy.util.xml import xml_to_dict
 from sunpy.extern.six import iteritems
 from sunpy.extern.six.moves import urllib
-from sunpy.util import deprecated
 
 __all__ = ['HEKClient']
 
@@ -95,14 +94,6 @@ class HEKClient(object):
             return self._download(ndata[0])
         else:
             return self._merge(self._download(data) for data in ndata)
-
-    @deprecated('0.8', alternative='HEKClient.search')
-    def query(self, *query):
-        """
-        See `~sunpy.net.hek.hek.HEKClient.fetch`
-        """
-        return self.search(*query)
-
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """

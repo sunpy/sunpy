@@ -22,7 +22,6 @@ from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
 from sunpy.util.config import get_and_create_download_dir
 from sunpy import config
-from sunpy.util import deprecated
 
 from sunpy.net.download import Downloader, Results
 from sunpy.net.vso.attrs import Time, Wavelength, _Range
@@ -319,13 +318,6 @@ class GenericClient(object):
             return QueryResponse.create(self.map_, urls, self._get_time_for_url(urls))
         return QueryResponse.create(self.map_, urls)
 
-    @deprecated('0.8', alternative='GenericClient.search')
-    def query(self, *query, **kwargs):
-        """
-        See `~sunpy.net.dataretriever.client.GenericClient.search`
-        """
-        return self.search(*query, **kwargs)
-
     def fetch(self, qres, path=None, error_callback=None, **kwargs):
         """
         Download a set of results.
@@ -371,13 +363,6 @@ class GenericClient(object):
             dobj.download(aurl, fname, ncall, error_callback)
 
         return res
-
-    @deprecated('0.8', alternative='GenericClient.fetch')
-    def get(self, qres, path=None, error_callback=None, **kwargs):
-        """
-        See `~sunpy.net.dataretriever.client.GenericClient.fetch`
-        """
-        return self.fetch(qres, path=path, error_callback=error_callback, **kwargs)
 
     def _link(self, map_):
         """Helper Function"""
