@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import tempfile
+from sunpy.extern import six
 from sunpy.extern.six.moves import configparser
 
 import sunpy
@@ -15,7 +16,7 @@ def load_config():
     Read the sunpyrc configuration file. If one does not exists in the user's
     home directory then read in the defaults from module
     """
-    config = configparser.SafeConfigParser()
+    config = configparser.ConfigParser()
 
     # Get locations of SunPy configuration files to be loaded
     config_files = _find_config_files()
@@ -40,6 +41,9 @@ def load_config():
         ('downloads', 'sample_dir')
     ]
     _fix_filepaths(config, filepaths)
+
+    if six.PY2:
+        config.set('general', 'time_format', '%Y-%m-%d %H:%M:%S')
 
     return config
 

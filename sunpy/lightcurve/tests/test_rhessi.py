@@ -32,6 +32,8 @@ class TestRHESSISummaryLightCurve(object):
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a)
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
 
+
+    @pytest.mark.skip(reason="No data for the last month to satisfy time now")
     @pytest.mark.remote_data
     def test_hsi_default(self):
         """Test creation with no input"""

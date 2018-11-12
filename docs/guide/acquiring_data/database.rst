@@ -344,7 +344,7 @@ cannot be found or is not set.
     >>> from sunpy.database.tables import display_entries
     >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA +SKIP
      id observation_time_start ...      wavemin            wavemax
     --- ---------------------- ... ------------------ ------------------
       1    2011-06-07 06:33:02 ...               17.1               17.1
@@ -436,7 +436,6 @@ method to remove those where there is no time set:
      69    2013-08-05 00:00:02 ...               33.5               33.5
      70    2013-08-05 00:00:02 ...               33.5               33.5
     Length = 38 rows
-
 
 5. Editing entries
 ------------------
@@ -732,7 +731,6 @@ with the value 'Angstrom':
       7    2011-06-07 06:33:05  2011-06-07 06:33:05 ...   160.0    N/A     Yes
      70    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    33.5    N/A     Yes
 
-
 8. Caching
 ----------
 All entries that are saved in the database are also saved in a cache
@@ -754,7 +752,7 @@ to 10 and therefore removes the 5 entries that been used least recently.
     ...     ['id', 'observation_time_start', 'observation_time_end',
     ...      'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
      id observation_time_start ...      wavemin            wavemax
-     --- ---------------------- ... ------------------ ------------------
+    --- ---------------------- ... ------------------ ------------------
       8    2011-06-07 06:33:07 ...               19.3               19.3
       9    2011-06-07 06:33:07 ...               19.3               19.3
      10    2011-06-07 06:39:31 ...               19.3               19.3

@@ -244,7 +244,7 @@ def test_get_obssum_filename_one_day(mock_get_obssumm_dbase_file,
     """
     Given a time range of one day, make sure we get one days data back, i.e. one file.
     """
-    filename = rhessi.get_obssum_filename(('2003-11-01', '2003-11-02'))
+    filename = rhessi.get_obssum_filename(('2003-11-01 00:00', '2003-11-01 23:59'))
 
     assert len(filename) == 1
     assert filename[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_139.fits'
@@ -260,7 +260,7 @@ def test_get_obssum_filename_two_days(mock_get_obssumm_dbase_file,
     Given a time range of two days, make sure we get two files back, one
     for each day.
     """
-    filenames = rhessi.get_obssum_filename(('2003-11-01', '2003-11-03'))
+    filenames = rhessi.get_obssum_filename(('2003-11-01 00:00', '2003-11-02 23:59'))
 
     assert len(filenames) == 2
     assert filenames[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_139.fits'

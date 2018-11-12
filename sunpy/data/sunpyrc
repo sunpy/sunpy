@@ -51,6 +51,6 @@ sample_dir = data/sample_data
 ; Location to specify sunpy database parameters.
 ; The default url of the database location can specified here. The url of
 ; the database comprises the database driver, its location and name, as well
-; as optional authentication parameters 
+; as optional authentication parameters
 ; Default value: sqlite:////<user's home directory>/sunpy/sunpydb.sqlite
 ; url = sqlite:////home/$USER/sunpy/sunpydb.sqlite
