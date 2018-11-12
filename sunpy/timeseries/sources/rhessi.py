@@ -84,7 +84,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
         lc_linecolors = rhessi.hsi_linecolors()
 
-        for lc_color, (item, frame) in zip(lc_linecolors, self.data.iteritems()):
+        for lc_color, (item, frame) in zip(lc_linecolors, self.data.items()):
             axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2, color=lc_color)
 
         axes.set_yscale("log")

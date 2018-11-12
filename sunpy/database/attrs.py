@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from sqlalchemy import or_, and_, not_
 
 from sunpy.time import parse_time

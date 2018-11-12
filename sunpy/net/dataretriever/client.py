@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import copy
 import os
 from collections import OrderedDict, namedtuple
