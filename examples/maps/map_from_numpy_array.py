@@ -26,8 +26,6 @@ manual_map = sunpy.map.Map((data, header))
 # In general the attributes are populated using details in the metadata and in
 # this case there is no centre pixel or pixel size information given so SunPy
 # is defaulting to assuming each pixel is 1 arcsec.
-print(manual_map.xrange)
-print(manual_map.yrange)
 # This is in Helioprojective tangent projection in both longitude and latitude:
 print(manual_map.coordinate_system)
 

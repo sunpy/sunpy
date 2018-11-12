@@ -70,11 +70,6 @@ def client(request):
     return vso.VSOClient()
 
 
-@pytest.fixture
-def iclient(request):
-    return vso.InteractiveVSOClient()
-
-
 def test_simpleattr_apply():
     a = attr.ValueAttr({('test', ): 1})
     dct = {}
