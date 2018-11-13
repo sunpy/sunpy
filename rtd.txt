@@ -1,0 +1,3 @@
+# This file is for special versions of packages we need
+# that can not be put into setup.cfg to build on RTD
+-e git+https://github.com/hawkowl/towncrier#egg=towncrier
