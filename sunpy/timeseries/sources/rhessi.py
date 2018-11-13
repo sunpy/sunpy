@@ -108,14 +108,13 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     @classmethod
     def _parse_file(cls, filepath):
         """Parses rhessi FITS data files to create TimeSeries."""
-        #header, d, hdus = rhessi.parse_obssumm_file(filepath)
         hdus = sunpy.io.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod
     def _parse_hdus(cls, hdulist):
         """Parses a RHESSI FITS HDU list form a FITS file."""
-        header, d = rhessi.parse_obssumm_hdulist(hdulist)
+        header, d = rhessi.parse_observing_summary_hdulist(hdulist)
         header = MetaDict(OrderedDict(header))
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
         # Add the units data

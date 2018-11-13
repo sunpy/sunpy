@@ -134,14 +134,16 @@ operator would::
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     <BLANKLINE>
-    2 Results from the RHESSIClient:
+    3 Results from the RHESSIClient:
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str6       str3
     ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan
+    2012-03-04 00:00:00 2012-03-04 23:59:59 rhessi     rhessi        nan
+    2012-03-05 00:00:00 2012-03-05 23:59:59 rhessi     rhessi        nan
+    2012-03-06 00:00:00 2012-03-06 23:59:59 rhessi     rhessi        nan
     <BLANKLINE>
     <BLANKLINE>
+
 
 Indexing search results
 -----------------------
