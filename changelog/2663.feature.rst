@@ -1,0 +1,1 @@
+Net search attributes now support tab completion of values and display a table of possible values when printed, to allow easier discoverability of possible search values.

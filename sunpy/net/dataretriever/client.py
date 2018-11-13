@@ -1,24 +1,21 @@
-# Author :Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-# This module was developed under funding provided by
-# Google Summer of Code 2014
-
-import os
+# -*- coding: utf-8 -*-
 import copy
-import pathlib
-from abc import ABCMeta
-from functools import partial
+import os
 from collections import OrderedDict, namedtuple
+from functools import partial
+import pathlib
 
 import numpy as np
-
 import astropy.table
 import astropy.units as u
 
 import sunpy
-from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
-from sunpy.net.download import Results, Downloader
+from sunpy import config
+
+from sunpy.net.base_client import BaseClient
+from sunpy.net.download import Downloader, Results
 from sunpy.net.vso.attrs import Time, Wavelength, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -117,36 +114,7 @@ class QueryResponse(list):
         return astropy.table.Table(columns)
 
 
-# GenericMap subclass registry.
-CLIENTS = OrderedDict()
-
-
-class GenericClientMeta(ABCMeta):
-    """
-    Registration metaclass for `~sunpy.map.GenericMap`.
-
-    This class checks for the existance of a method named ``is_datasource_for``
-    when a subclass of `GenericMap` is defined. If it exists it will add that
-    class to the registry.
-    """
-
-    _registry = CLIENTS
-
-    def __new__(mcls, name, bases, members):
-        cls = super(GenericClientMeta, mcls).__new__(
-            mcls, name, bases, members)
-
-        if cls.__name__ is 'GenericClient':
-            return cls
-        # The registry contains the class as the key and the validation method
-        # as the item.
-        if '_can_handle_query' in members:
-            mcls._registry[cls] = cls._can_handle_query
-
-        return cls
-
-
-class GenericClient(metaclass=GenericClientMeta):
+class GenericClient(BaseClient):
     """
     Base class for simple web clients for the data retriever module. This class
     is mainly designed for downloading data from FTP and HTTP type data
@@ -154,12 +122,12 @@ class GenericClient(metaclass=GenericClientMeta):
     web service.
 
     This class has two user facing methods
-    `~sunpy.net.dataretriever.client.GenericClient.query` and
-    `~sunpy.net.dataretriever.client.GenericClient.get` the former generates a
+    `~sunpy.net.dataretriever.client.GenericClient.search` and
+    `~sunpy.net.dataretriever.client.GenericClient.fetch` the former generates a
     set of results for files available through the service the client is
     querying and the latter downloads that data.
 
-    The `~sunpy.net.dataretriever.client.GenericClient.query` method takes a
+    The `~sunpy.net.dataretriever.client.GenericClient.search` method takes a
     set of `sunpy.net.attrs` objects and then converts these into a call to
     `~sunpy.net.dataretriever.client.GenericClient._get_url_for_timerange`. It
     does this through the `map\_` dictionary which represents the
@@ -169,7 +137,7 @@ class GenericClient(metaclass=GenericClientMeta):
     def __init__(self):
         self.map_ = {}
 
-    def _makeargs(self, *args, **kwargs):
+    def _makeargs(self, *args):
         """
         Construct the `map\_` internal representation of the query.
 
@@ -181,8 +149,6 @@ class GenericClient(metaclass=GenericClientMeta):
         \*args: `tuple`
             The query attributes.
 
-        \*\*kwargs: `dict`
-            None.
         """
         for elem in args:
             if isinstance(elem, Time):
@@ -215,6 +181,7 @@ class GenericClient(metaclass=GenericClientMeta):
                         "to the Client.".format(elem.__class__.__name__))  # pragma: no cover
         self._makeimap()
 
+    @classmethod
     def _get_url_for_timerange(cls, timerange, **kwargs):
         """
         Method which generates URL results from a timerange and the `map\_`

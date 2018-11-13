@@ -1,15 +1,13 @@
-# Author: Simon Liedtke <liedtke.simon@googlemail.com>
-#
-# This module was developed with funding provided by
-# the Google Summer of Code (2013).
-
+# -*- coding: utf-8 -*-
 from sqlalchemy import or_, and_, not_
 
 from sunpy.time import parse_time
 from sunpy.net.vso import attrs as vso_attrs
-from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
-from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
-    FitsHeaderEntry as TableFitsHeaderEntry
+from sunpy.net.attr import (AttrWalker, Attr, ValueAttr,
+                            AttrAnd, AttrOr, SimpleAttr)
+from sunpy.database.tables import (DatabaseEntry,
+                                   Tag as TableTag,
+                                   FitsHeaderEntry as TableFitsHeaderEntry)
 
 __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
@@ -251,7 +249,7 @@ def _convert(attr):
         {('fitsheaderentry', ): (attr.key, attr.value, attr.inverted)})
 
 
-@walker.add_converter(vso_attrs._VSOSimpleAttr)
+@walker.add_converter(SimpleAttr)
 def _convert(attr):
     return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})
 

@@ -8,15 +8,13 @@ This module provides the `Fido
 `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
 
 """
-# This module was initially developed under funding provided by Google Summer
-# of Code 2014
 from collections import Sequence
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 
-from sunpy.net.dataretriever.clients import CLIENTS
+from sunpy.net.base_client import BaseClient
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.vso import VSOClient, QueryResponse as vsoQueryResponse
 
@@ -418,4 +416,4 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
 
 Fido = UnifiedDownloaderFactory(
-    registry=CLIENTS, additional_validation_functions=['_can_handle_query'])
+    registry=BaseClient._registry, additional_validation_functions=['_can_handle_query'])
