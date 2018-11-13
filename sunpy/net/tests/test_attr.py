@@ -4,6 +4,26 @@ import pytest
 from sunpy.net import attr
 
 
+class Instrument(attr.Attr):
+    """
+    Dummy Instrument Class.
+    Probably could use the real one instead.
+    """
+    def __init__(self, value):
+        super().__init__()
+        self.value = value
+
+
+@pytest.fixture
+def AIA():
+    return Instrument('AIA')
+
+
+@pytest.fixture
+def HMI():
+    return Instrument('HMI')
+
+
 class SA1(attr.SimpleAttr):
     pass
 
@@ -147,3 +167,19 @@ def test_or_nesting():
     a = attr.or_(a1, attr.AttrOr((a2, a3)))
     # Test that the nesting has been removed.
     assert len(a.attrs) == 3
+
+
+def test_attr_metamagic(AIA, HMI):
+    attr.Attr.update_values({type(AIA): 'AIA'})
+    assert attr.Attr._value_registry[Instrument] == [AIA.value]
+    # The _value_registry on the Attr object does not get cleaned.
+    # So by adding it again to the same type, in this case Instrument the list is appended.
+    attr.Attr.update_values({type(AIA): 'AIA'})
+    assert attr.Attr._value_registry[Instrument] == [AIA.value]*2
+    attr.Attr.update_values({type(HMI): 'HMI'})
+    assert attr.Attr._value_registry[Instrument] == [AIA.value]*2 + [HMI.value]
+    # This checks the dynamic attribute creation.
+    assert Instrument.AIA == AIA
+    assert Instrument.AIA.value == AIA.value
+    assert Instrument.HMI == HMI
+    assert Instrument.HMI.value == HMI.value
