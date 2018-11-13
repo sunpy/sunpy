@@ -3,14 +3,15 @@ from abc import ABC, abstractmethod
 
 class BaseClient(ABC):
     """
-    This defines the BaseClient Abstract Base Class.
+    This defines the Abstract Base Class for each download client.
 
-    The BaseClient has several abstract methods that ensure that any subclass enforces the bear minimium API.
+    The BaseClient has several abstract methods that ensure that any subclass enforces the bare minimum API.
     These are `search`, `fetch` and `_can_handle_query`.
-    The last one ensures that each download client registers with Fido.
+    The last one ensures that each download client can be registered with Fido.
 
-    All download clients ideally should subclass `~sunpy.net.dataretriever.GenericClient` expect if the struture of that not useful.
-    You can check for `~sunpy.net.vso.VSOClient` and `~sunpy.net.jsoc.JSOCClient` for examples that subclass `BaseClient`.
+    All download clients should subclass `~sunpy.net.dataretriever.GenericClient`.
+    If the structure of `~sunpy.net.dataretriever.GenericClient` is not useful you should use `~sunpy.net.BaseClient`.
+    `~sunpy.net.vso.VSOClient` and `~sunpy.net.jsoc.JSOCClient` are examples of download clients that subclass `BaseClient`.
     """
 
     _registry = dict()
@@ -34,19 +35,16 @@ class BaseClient(ABC):
         """
         This enables the user to search for data using the client.
         """
-        raise NotImplementedError
 
     @abstractmethod
     def fetch(self, *args, **kwargs):
         """
         This enables the user to fetch the data using the client, after a search.
         """
-        raise NotImplementedError
 
     @classmethod
     @abstractmethod
     def _can_handle_query(cls, *query):
         """
-        This enables the client to register what kind of searchs it can handle, to prevent Fido using the incorrect client.
+        This enables the client to register what kind of searches it can handle, to prevent Fido using the incorrect client.
         """
-        raise NotImplementedError
