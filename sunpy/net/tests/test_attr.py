@@ -21,6 +21,10 @@ def AIA():
 def HMI():
     return Instrument('HMI')
 
+@pytest.fixture
+def SPEC():
+    return Instrument('_!£!THIS_NAME!"!ISSPECIAL~~##')
+
 
 class SA1(attr.SimpleAttr):
     pass
@@ -167,20 +171,36 @@ def test_or_nesting():
     assert len(a.attrs) == 3
 
 
-def test_attr_metamagic(AIA, HMI):
-    attr.Attr.update_values({type(AIA): [('AIA', 'This is AIA, it takes data')]})
+def test_attr_metamagic(AIA, HMI, SPEC):
+    attr.Attr.update_values({Instrument: [('AIA', 'This is AIA, it takes data')]})
     # .name is the attribute name return
     assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower()]
     # .name_long is the original name
     assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value]
     # .des is the description of the item.
-    assert attr.Attr._attr_registry[Instrument].des == ['This is AIA, it takes data']
+    assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data']
     # The _value_registry on the Attr object does not get cleaned.
     # So by adding it again to the same type, in this case Instrument the list is appended.
-    attr.Attr.update_values({type(HMI): [('HMI', 'This is HMI, it lives next to AIA')]})
+    attr.Attr.update_values({Instrument: [('HMI', 'This is HMI, it lives next to AIA')]})
     assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower(), HMI.value.lower()]
     assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value, HMI.value]
-    assert attr.Attr._attr_registry[Instrument].des == ['This is AIA, it takes data', 'This is HMI, it lives next to AIA']
+    assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data', 'This is HMI, it lives next to AIA']
+
+    attr.Attr.update_values({Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]})
+    assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower(), HMI.value.lower(), 'thisnameisspecial']
+    assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value, HMI.value, '_!£!THIS_NAME!"!ISSPECIAL~~##']
+    assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data', 'This is HMI, it lives next to AIA', 'To test the attribute cleaning.']
+
     # This checks the dynamic attribute creation.
     assert Instrument.aia == AIA
     assert Instrument.hmi == HMI
+    assert Instrument.thisnameisspecial == SPEC
+
+    # Test for __dir__
+    assert 'aia' in dir(Instrument)
+    assert 'hmi' in dir(Instrument)
+    assert 'thisnameisspecial' in dir(Instrument)
+
+    # Checks that you can pass in None or "" for the description.
+    attr.Attr.update_values({Instrument: [('Test', '')]})
+    attr.Attr.update_values({Instrument: [('Test', None)]})

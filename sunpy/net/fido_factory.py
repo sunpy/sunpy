@@ -415,8 +415,5 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return tmpclient.search(*query), tmpclient
 
 
-BaseClient._registry[VSOClient] = VSOClient._can_handle_query
-BaseClient._registry[JSOCClient] = JSOCClient._can_handle_query
-
 Fido = UnifiedDownloaderFactory(
     registry=BaseClient._registry, additional_validation_functions=['_can_handle_query'])

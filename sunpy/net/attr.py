@@ -17,6 +17,7 @@ Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
 import keyword
+import warnings
 from collections import defaultdict, namedtuple
 
 from astropy.utils.misc import isiterable
@@ -24,7 +25,10 @@ from astropy.utils.misc import isiterable
 from sunpy.util.multimethod import MultiMethod
 from sunpy.extern.six import iteritems
 
-_ATTR_TUPLE = namedtuple("attr", "name name_long des")
+_ATTR_TUPLE = namedtuple("attr", "name name_long desc")
+
+__all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'AttrAnd',
+           'AttrOr', 'ValueAttr', 'and_', 'or_']
 
 
 def make_tuple():
@@ -35,29 +39,40 @@ class AttrMeta(type):
     """
     We want to enable automatic discovery via tab completion of subclasses of Attrs.
     To do this we have to create a metaclass that redefines the methods that Python uses to normally do this.
-    But also to enable the registration of attributes on import.
-    Which would allow `a.Instrument` to be able to tab complete to `a.Instrument.AIA` or `a.Instrument.HMI` which does not happen without this.
+    This would allow for example that `attrs.Instrument` to be able to tab complete to `attrs.Instrument.aia`.
+    However, it must be done by a downloader client which know what Attrs they support.
     """
 
     # The aim is to register Attrs as a namedtuple of lists
+    # So we define the namedtuple outside of AttrMeta, see above.
     _attr_registry = defaultdict(make_tuple)
 
     def __getattr__(self, item):
         """
+        Our method for Attrs is to register using `type(Attr)` as keys into a dictionary.
+        _attr_registry is a dictionary with a key being `type(Attr)` and the value being the namedtuple of lists.
+        As a result we index `_attr_registry` with `[self]` which will be the `type(Attr)` to access the dictionary.
+        This will return the namedtuple that has three attributes: `name`, `name_long` and `desc`. Each of which are a list.
+        `name` will be the attribute name, `name_long` is the original name passed in and `desc` the description of the object.
         """
-        registry = self._attr_registry[self]
-        names = reg.name
+        registry = self._attr_registry[self]  # Get the revelant entries.
+        names = registry.name  # All the attribute names under that type(Attr)
         if item in names:
-            return self(registry.name_long[names.index(item)])
+            return self(registry.name_long[names.index(item)])  # We return Attr(name_long) to create the Attr requested.
         else:
             raise AttributeError
 
     def __dir__(self):
         """
+        To tab complete in Python we need to add to the `__dir__()` return.
+        So we add the attribute name of any Attrs which have been added to the _attr_registry here.
         """
         return super().__dir__() + self._attr_registry[self].name
 
 #    def __repr__(self):
+#       """
+#       This enables the pretty printing of Attrs.
+#       """
 #        return str()
 
 
@@ -92,39 +107,51 @@ class Attr(metaclass=AttrMeta):
     @classmethod
     def update_values(cls, adict):
         """
-        This is how clients will register their `Attrs` with the system.
+        This is the method that clients will use to register their `Attrs`.
         The input should be a dictionary.
-        Each key should be a type of the attrs you want.
-        The value should be a list of pairs.
-        The pair should be a tuple of (Name, Description).
-        If you do not want to add a description, you can put `"N/A"`.
-        We sanitize the name and it becomes an attribute on the attrs class.
-        # Do we want to have them use type?
+        Each key should be type(attrs.x) of any attrs require to exist for `_can_handle_query` to return successfully.
+        Please note that you can pass in type(attrs.x(Input)) or just the attrs.x object.
+        The value for each key should be a list of tuples.
+        The tuple should be of the form (`Name`, `Description`).
+        If you do not want to add a description, you can put None or "".
+        We sanitize the name you provide.
+        We remove all special characters and make it all lower case.
+        If it still isn't valid we will append to the start of the name to make it a valid attribute name.
 
         We have an example here for an Instrument Class.
 
         Example
         -------
         >>> from sunpy.net import attr, attrs
-        >>> attr.Attr.update_values({type(attrs.Instrument): [('AIA', 'AIA is in Space.'), ('HMI', 'HMI is next to AIA.')]})
-
+        >>> attr.Attr.update_values({attrs.Instrument: [('AIA', 'AIA is in Space.'), ('HMI', 'HMI is next to AIA.')]})
+        >>> attr.Attr._attr_registry[attrs.Instrument]
+        attr(name=['aia', 'hmi'], name_long=['AIA', 'HMI'], desc=['AIA is in Space.', 'HMI is next to AIA.'])
+        >>> attr.Attr._attr_registry[attrs.Instrument].name
+        ['aia', 'hmi']
+        >>> attr.Attr._attr_registry[attrs.Instrument].name_long
+        ['AIA', 'HMI']
+        >>> attr.Attr._attr_registry[attrs.Instrument].desc
+        ['AIA is in Space.', 'HMI is next to AIA.']
+        >>> attrs.Instrument.aia, attrs.Instrument.hmi
+        (<Instrument('AIA')>, <Instrument('HMI')>)
         """
         for k, v in adict.items():
             if isiterable(v) and not isinstance(v, str):
                 for pair in v:
                     if len(pair) != 2:
-                        raise Warning
+                        raise ValueError('Please check your input dictionary, \
+                                          it appears the value for a key value is not length 2 (`Name`, `Description`)')
                     else:
-                        # Sanity name, we remove all special characters and make it all lower case
+                        # Sanitize name, we remove all special characters and make it all lower case
                         name = ''.join(char for char in pair[0] if char.isalnum()).lower()
                         if keyword.iskeyword(name) or not name.isidentifier():
-                            raise Warning
-                        else:
-                            cls._attr_registry[k][0].append(name)
-                            cls._attr_registry[k][1].append(pair[0])
-                            cls._attr_registry[k][2].append(pair[1])
+                                name = 'A' + name
+                                warnings.warn("Attribute name has been appended to make it a valid identifier.")
+                        cls._attr_registry[k][0].append(name)
+                        cls._attr_registry[k][1].append(pair[0])
+                        cls._attr_registry[k][2].append(pair[1])
             else:
-                raise NotImplementedError
+                raise ValueError('Please check your input dictionary, it appears the value for a key is not iterable or a string')
 
 
 class DummyAttr(Attr):
