@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function, absolute_import
+
 import os
 import time
 import urllib
@@ -9,15 +11,15 @@ from collections import Sequence
 import drms
 import numpy as np
 import pandas as pd
-
+import astropy.units as u
 import astropy.time
 import astropy.table
-import astropy.units as u
 from astropy.utils.misc import isiterable
 
 from sunpy import config
+from sunpy.net.base_client import BaseClient
+from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
-from sunpy.net.download import Results, Downloader
 from sunpy.net.jsoc.attrs import walker
 
 __all__ = ['JSOCClient', 'JSOCResponse']
@@ -80,7 +82,7 @@ class JSOCResponse(Sequence):
         return set()
 
 
-class JSOCClient(object):
+class JSOCClient(BaseClient):
     """
     This is a Client to the JSOC Data Export service.
 
