@@ -1,24 +1,20 @@
-# Author :Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-# This module was developed under funding provided by
-# Google Summer of Code 2014
-
-import os
 import copy
-import pathlib
-from abc import ABCMeta
-from functools import partial
+import os
 from collections import OrderedDict, namedtuple
+from functools import partial
+import pathlib
 
 import numpy as np
-
 import astropy.table
 import astropy.units as u
 
 import sunpy
-from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
-from sunpy.net.download import Results, Downloader
+from sunpy import config
+
+from sunpy.net.base_client import BaseClient
+from sunpy.net.download import Downloader, Results
 from sunpy.net.vso.attrs import Time, Wavelength, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -117,36 +113,7 @@ class QueryResponse(list):
         return astropy.table.Table(columns)
 
 
-# GenericMap subclass registry.
-CLIENTS = OrderedDict()
-
-
-class GenericClientMeta(ABCMeta):
-    """
-    Registration metaclass for `~sunpy.map.GenericMap`.
-
-    This class checks for the existance of a method named ``is_datasource_for``
-    when a subclass of `GenericMap` is defined. If it exists it will add that
-    class to the registry.
-    """
-
-    _registry = CLIENTS
-
-    def __new__(mcls, name, bases, members):
-        cls = super(GenericClientMeta, mcls).__new__(
-            mcls, name, bases, members)
-
-        if cls.__name__ is 'GenericClient':
-            return cls
-        # The registry contains the class as the key and the validation method
-        # as the item.
-        if '_can_handle_query' in members:
-            mcls._registry[cls] = cls._can_handle_query
-
-        return cls
-
-
-class GenericClient(metaclass=GenericClientMeta):
+class GenericClient(BaseClient):
     """
     Base class for simple web clients for the data retriever module. This class
     is mainly designed for downloading data from FTP and HTTP type data
