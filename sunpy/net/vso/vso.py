@@ -28,6 +28,7 @@ from astropy.table import QTable as Table
 
 from sunpy import config
 from sunpy.net import download
+from sunpy.net.base_client import BaseClient
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_
@@ -260,7 +261,7 @@ class UnknownStatus(Exception):
     pass
 
 
-class VSOClient(object):
+class VSOClient(BaseClient):
 
     """ Main VSO Client. """
     method_order = [
@@ -325,7 +326,7 @@ class VSOClient(object):
         -------
         out : :py:class:`QueryResult` (enhanced list)
             Matched items. Return value is of same type as the one of
-            :py:meth:`VSOClient.query`.
+            :py:meth:`VSOClient.search`.
         """
         query = and_(*query)
 
@@ -487,7 +488,7 @@ class VSOClient(object):
         -------
         out : :py:class:`QueryResult` (enhanced list)
             Matched items. Return value is of same type as the one of
-            :py:class:`VSOClient.query`.
+            :py:class:`VSOClient.search`.
         """
         sdk = lambda key: lambda value: {key: value}
         ALIASES = {

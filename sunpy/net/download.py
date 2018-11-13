@@ -181,7 +181,7 @@ class Downloader(object):
 
 
 class Results(object):
-    """ Returned by VSOClient.get. Use .wait to wait
+    """ Returned by VSOClient.fetch. Use .wait to wait
     for completion of download.
     """
     def __init__(self, callback, n=0, done=None):

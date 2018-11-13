@@ -1,4 +1,4 @@
-SunPy io
+SunPy IO
 ========
 
 This submodule contains two types of routines, the first reads (data, header)
@@ -23,7 +23,6 @@ Unified File Readers
 .. _ioana:
 .. automodapi:: sunpy.io.ana
     :headings: ^#
-
 
 Special File Readers
 --------------------
