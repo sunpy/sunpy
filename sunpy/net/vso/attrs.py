@@ -69,7 +69,7 @@ class _VSOSimpleAttr(Attr):
     """ A _SimpleAttr is an attribute that is not composite, i.e. that only
     has a single value, such as, e.g., Instrument('eit'). """
     def __init__(self, value):
-        Attr.__init__(self)
+        super().__init__()
 
         self.value = value
 
@@ -200,7 +200,7 @@ class Extent(Attr):
     """
     # pylint: disable=R0913
     def __init__(self, x, y, width, length, atype):
-        Attr.__init__(self)
+        super().__init__()
 
         self.x = x
         self.y = y

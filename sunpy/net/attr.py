@@ -24,12 +24,45 @@ Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
 
+from collections import defaultdict
+
 from sunpy.util.multimethod import MultiMethod
+from sunpy.extern.six import iteritems
 
 # XXX: Maybe allow other normal forms.
 
 
-class Attr(object):
+class AttrMeta(type):
+    """
+    We want to enable automatic discovery via tab completion of subclasses of Attrs.
+    To do this we have to create a metaclass that redefines the methods that Python uses to normally do this.
+    But also to enable the registration of attributes on import.
+
+    For example, a SDO instrument dict would be
+
+    ..code :: python
+      {'AIA': 'This is the AIA',
+       'HMI': 'This is the HMI'}
+
+    Which would allow `a.Instrument` to be able to tab complete to `a.Instrument.AIA` or `a.Instrument.HMI` which does not happen without this.
+    """
+    _value_registry = defaultdict(list)
+
+    def __getattr__(self, item):
+        """
+        """
+        if item in self._value_registry[self]:
+            return self(item)
+        else:
+            return None
+
+    def __dir__(self):
+        """
+        """
+        return super().__dir__() + self._value_registry[self]
+
+
+class Attr(metaclass=AttrMeta):
     """ This is the base for all attributes. """
     def __and__(self, other):
         if isinstance(other, AttrOr):
@@ -41,7 +74,7 @@ class Attr(object):
         return AttrAnd([self, other])
 
     def __hash__(self):
-        return hash(frozenset(vars(self).items()))
+        return hash(frozenset(iteritems(vars(self))))
 
     def __or__(self, other):
         # Optimization.
@@ -56,6 +89,11 @@ class Attr(object):
 
     def __eq__(self, other):
         return dict(vars(self)) == dict(vars(other))
+
+    @classmethod
+    def update_values(cls, adict):
+        for k, v in adict.items():
+            cls._value_registry[k].append(v)
 
 
 class DummyAttr(Attr):
