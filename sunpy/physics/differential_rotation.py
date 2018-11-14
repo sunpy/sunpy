@@ -1,17 +1,15 @@
 import datetime
-from copy import deepcopy
 import warnings
+from copy import deepcopy
 from itertools import product
 
 import numpy as np
-from skimage import transform
+
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Longitude
 
-import sunpy.map
 from sunpy.time import parse_time
-from sunpy.coordinates import frames, HeliographicStonyhurst
-from sunpy.image.util import to_norm, un_norm
+from sunpy.coordinates import HeliographicStonyhurst, frames
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
 
@@ -256,6 +254,12 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
         A map with the result of applying solar differential rotation to the
         input map.
     """
+    # Only this function needs scikit image
+    from skimage import transform
+    from sunpy.image.util import to_norm, un_norm
+    # Import map here for performance reasons.
+    import sunpy.map
+
     if (time is not None) and (dt is not None):
         raise ValueError('Only a time or an interval is accepted')
     elif not (time or dt):
