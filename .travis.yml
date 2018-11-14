@@ -61,7 +61,7 @@ matrix:
          # Order of tests run in build stages
          # Python 2.7 (implicit Astropy 2)
          - python: 2.7
-           stage: Comprehensive tests
+           stage: Initial tests
            env: SETUP_CMD='test' PYTHON_VERSION=2.7
 
          - python: 3.6

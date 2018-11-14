@@ -1,3 +1,41 @@
+Sunpy 0.9.4 (2018-11-14)
+========================
+
+Features
+--------
+
+- Now able to create a `sunpy.map.Map` using an array and a `astropy.wcs.WCS` object. (`#2793 <https://github.com/sunpy/sunpy/pull/2793>`__)
+
+
+Bug Fixes
+---------
+
+- Fix RHESSI obssum file downloading to include the final day in the time range. (`#2714 <https://github.com/sunpy/sunpy/pull/2714>`__)
+- User can convert between HPC and HCC coordinates with different observers. This is implemented by automatically transforming the coordinate into HGS and then changing observer, and then transforming back to HCC. (`#2754 <https://github.com/sunpy/sunpy/pull/2754>`__)
+- Changed default file type for Helioviewer to prevent decode errors. (`#2771 <https://github.com/sunpy/sunpy/pull/2771>`__)
+- Fixed loading in LASCO C3 data. (`#2775 <https://github.com/sunpy/sunpy/pull/2775>`__)
+- Increase figure size to avoid cutting off longer colormap names in `sunpy.cm.show_colormaps`. (`#2824 <https://github.com/sunpy/sunpy/pull/2824>`__)
+- The sample data directory will no longer be created until files are downloaded
+  to it. (`#2836 <https://github.com/sunpy/sunpy/pull/2836>`__)
+
+
+Improved Documentation
+----------------------
+
+- Minor changes to the developer guide regarding sprint labels. (`#2765 <https://github.com/sunpy/sunpy/pull/2765>`__)
+- Copyedited and corrected the solar cycles example. (`#2770 <https://github.com/sunpy/sunpy/pull/2770>`__)
+- Changed "online" mark to "remote_data" and made formatting of marks consistent. (`#2799 <https://github.com/sunpy/sunpy/pull/2799>`__)
+- Add a missing plot to the end of the units and coordinates guide. (`#2813 <https://github.com/sunpy/sunpy/pull/2813>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Miscellaneous fixes to developer docs about building sunpy's documentation. (`#2825 <https://github.com/sunpy/sunpy/pull/2825>`__)
+- Changed sunpy.instr.aia.aiaprep to update BITPIX keyword to reflect the float64 dtype. (`#2831 <https://github.com/sunpy/sunpy/pull/2831>`__)
+- Fix SunPy Coordinate tests with Astropy 3.1 (`#2838 <https://github.com/sunpy/sunpy/pull/2838>`__)
+
+
 Sunpy 0.9.3 (2018-09-12)
 ========================
 
