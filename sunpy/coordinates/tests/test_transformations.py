@@ -1,5 +1,9 @@
+from distutils.version import LooseVersion
+
 import numpy as np
-import pytest
+
+from  astropy import __version__
+ASTROPY_LT_3 = LooseVersion(__version__) < LooseVersion('3')
 
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
@@ -165,9 +169,14 @@ def test_hgs_cartesian_rep_to_hpc():
     # spherical representation
 
     obstime = "2011-01-01"
-    hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
-                             frame=HeliographicStonyhurst(obstime=obstime),
-                             representation_type='cartesian')
+    if ASTROPY_LT_3:
+        hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                                 frame=HeliographicStonyhurst(obstime=obstime),
+                                 representation='cartesian')
+    else:
+        hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                                 frame=HeliographicStonyhurst(obstime=obstime),
+                                 representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
     hgscoord_sph.representation = 'spherical'
     hpccoord_cart = hgscoord_cart.transform_to(Helioprojective(obstime=obstime))
@@ -183,9 +192,14 @@ def test_hgs_cartesian_rep_to_hcc():
     # spherical representation
 
     obstime = "2011-01-01"
-    hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
-                             frame=HeliographicStonyhurst(obstime=obstime),
-                             representation_type='cartesian')
+    if ASTROPY_LT_3:
+        hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                                 frame=HeliographicStonyhurst(obstime=obstime),
+                                 representation='cartesian')
+    else:
+        hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                                 frame=HeliographicStonyhurst(obstime=obstime),
+                                 representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
     hgscoord_sph.representation = 'spherical'
     hcccoord_cart = hgscoord_cart.transform_to(Heliocentric(obstime=obstime))
@@ -201,9 +215,14 @@ def test_hgs_cartesian_rep_to_hgc():
     # spherical representation
 
     obstime = "2011-01-01"
-    hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
-                             frame=HeliographicStonyhurst(obstime=obstime),
-                             representation_type='cartesian')
+    if ASTROPY_LT_3:
+        hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                                 frame=HeliographicStonyhurst(obstime=obstime),
+                                 representation='cartesian')
+    else:
+        hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                                 frame=HeliographicStonyhurst(obstime=obstime),
+                                 representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
     hgscoord_sph.representation = 'spherical'
     # HGC
