@@ -138,22 +138,27 @@ def convert_time(time_string, **kwargs):
     raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
 
 
-@convert_time.register(pandas.Timestamp)
-def convert_time_pandasTimestamp(time_string, **kwargs):
-    return time_string.to_pydatetime()
+# Only register pandas if we can import pandas
+try:
+    import pandas
 
+    @convert_time.register(pandas.Timestamp)
+    def convert_time_pandasTimestamp(time_string, **kwargs):
+        return time_string.to_pydatetime()
 
-@convert_time.register(pandas.Series)
-def convert_time_pandasSeries(time_string, **kwargs):
-    if 'datetime64' in str(time_string.dtype):
-        return np.array([dt.to_pydatetime() for dt in time_string])
-    else:
-        convert_time.dispatch(object)(time_string, **kwargs)
+    @convert_time.register(pandas.Series)
+    def convert_time_pandasSeries(time_string, **kwargs):
+        if 'datetime64' in str(time_string.dtype):
+            return np.array([dt.to_pydatetime() for dt in time_string])
+        else:
+            convert_time.dispatch(object)(time_string, **kwargs)
 
+    @convert_time.register(pandas.DatetimeIndex)
+    def convert_time_pandasDatetimeIndex(time_string, **kwargs):
+        return time_string._mpl_repr()
 
-@convert_time.register(pandas.DatetimeIndex)
-def convert_time_pandasDatetimeIndex(time_string, **kwargs):
-    return time_string._mpl_repr()
+except ImportError:
+    pass
 
 
 @convert_time.register(datetime)
