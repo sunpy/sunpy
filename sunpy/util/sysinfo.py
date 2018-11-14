@@ -69,7 +69,7 @@ def get_sys_dict():
     except ImportError:
         sqlalchemy_version = "NOT INSTALLED"
 
-        sys_prop = {
+    sys_prop = {
             'Time': datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
             'System': platform.system(),
             'Processor': platform.processor(),
