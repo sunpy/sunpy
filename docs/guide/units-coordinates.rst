@@ -199,34 +199,40 @@ one observer to a coordinate seen by another::
 Using Coordinates with SunPy Map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-SunPy Map uses coordinates to specify locations on the image, and to plot
-overlays on plots of maps. When a Map is created, a coordinate frame is
-constructed from the header information. This can be accessed using
-``.coordinate_frame``::
+.. plot::
+   :include-source:
 
-  >>> import sunpy.map
-  >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
-  >>> m = sunpy.map.Map(AIA_171_IMAGE) # doctest: +REMOTE_DATA
-  >>> m.coordinate_frame  # doctest: +REMOTE_DATA
-    <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
-        (0., 0.048591, 1.51846026e+11)>)>
+   SunPy Map uses coordinates to specify locations on the image, and to plot
+   overlays on plots of maps. When a Map is created, a coordinate frame is
+   constructed from the header information. This can be accessed using
+   ``.coordinate_frame``:
 
-This can be used when creating a `~astropy.coordinates.SkyCoord` object to set
-the coordinate system to that image::
+   >>> import sunpy.map
+   >>> from sunpy.data.sample import AIA_171_IMAGE
+   >>> m = sunpy.map.Map(AIA_171_IMAGE)
+   >>> m.coordinate_frame
+     <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+         (0., 0.048591, 1.51846026e+11)>)>
 
-  >>> SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame) # doctest: +REMOTE_DATA
-  <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
-      (0., 0.048591, 1.51846026e+11)>): (Tx, Ty) in arcsec
-      (100., 10.)>
+   This can be used when creating a `~astropy.coordinates.SkyCoord` object to set
+   the coordinate system to that image:
 
-This `~astropy.coordinates.SkyCoord` object could then be used to plot a point
-on top of the map::
+   >>> from astropy.coordinates import SkyCoord
+   >>> import astropy.units as u
+   >>> c = SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame)
+   >>> c
+   <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+       (0., 0.048591, 1.51846026e+11)>): (Tx, Ty) in arcsec
+       (100., 10.)>
 
-  >>> import matplotlib.pyplot as plt
+   This `~astropy.coordinates.SkyCoord` object could then be used to plot a point
+   on top of the map:
 
-  >>> ax = plt.subplot(projection=m)  # doctest: +REMOTE_DATA
-  >>> m.plot()  # doctest: +SKIP
-  >>> ax.plot_coord(c, 'o')  # doctest: +SKIP
+   >>> import matplotlib.pyplot as plt
+   >>> ax = plt.subplot(projection=m)
+   >>> m.plot()
+   <matplotlib.image.AxesImage object at ...>
+   >>> ax.plot_coord(c, 'o')
 
 For more information on coordinates see :ref:`sunpy-coordinates` section of
 the :ref:`reference`.

@@ -110,8 +110,8 @@ class LASCOMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self.meta['CUNIT1'] = self.meta['CUNIT1'].lower()
-        self.meta['CUNIT2'] = self.meta['CUNIT2'].lower()
+        self.meta['CUNIT1'] = self.meta.get('CUNIT1', 'arcsec').lower()
+        self.meta['CUNIT2'] = self.meta.get('CUNIT2', 'arcsec').lower()
 
         # Fill in some missing or broken info
         # Test if change has already been applied

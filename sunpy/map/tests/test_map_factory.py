@@ -11,6 +11,7 @@ import tempfile
 import pytest
 import numpy as np
 from astropy.io import fits
+from astropy.wcs import WCS
 
 import sunpy
 import sunpy.map
@@ -38,7 +39,7 @@ class TestMap(object):
         #Test making a MapCube
         cube = sunpy.map.Map(a_list_of_many, cube=True)
         assert isinstance(cube, sunpy.map.MapCube)
-    
+
     def test_mapsequence(self):
         #Test making a MapSequence
         sequence = sunpy.map.Map(a_list_of_many, sequence=True)
@@ -76,11 +77,19 @@ class TestMap(object):
         # Data-header pair not in a tuple
         pair_map = sunpy.map.Map(amap.data, amap.meta)
         assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Data-wcs object pair in tuple
+        pair_map = sunpy.map.Map((amap.data, WCS(AIA_171_IMAGE)))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Data-wcs object pair not in a tuple
+        pair_map = sunpy.map.Map(amap.data, WCS(AIA_171_IMAGE))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
         # Data-header from FITS
         with fits.open(a_fname) as hdul:
             data = hdul[0].data
             header = hdul[0].header
         pair_map = sunpy.map.Map((data, header))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+        pair_map, pair_map = sunpy.map.Map(((data, header), (data, header)))
         assert isinstance(pair_map, sunpy.map.GenericMap)
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)

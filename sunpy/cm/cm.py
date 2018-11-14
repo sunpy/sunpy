@@ -104,7 +104,10 @@ cmlist = {
 for name, cmap in cmlist.items():
     cm.register_cmap(name=name, cmap=cmap)
 
-@deprecated("0.9", "Use Matplotlib to load the colormaps", alternative='plt.get_cmap')
+@deprecated("0.9",
+            "'sunpy.cm.get_cmap' is dprecated, use 'plt.get_cmap' from Matplotlib "
+            "to load the colormaps instead.",
+            alternative='plt.get_cmap')
 def get_cmap(name):
     """
     Get a colormap.
@@ -174,7 +177,7 @@ def show_colormaps(filter=None):
     a = np.linspace(0, 1, 256).reshape(1, -1)  # pylint: disable=E1103
     a = np.vstack((a, a))
 
-    fig = plt.figure(figsize=(5, 10),dpi=64)
+    fig = plt.figure(figsize=(7, 10),dpi=128)
     fig.subplots_adjust(top=0.99, bottom=0.01, left=0.2, right=0.99)
     for i, name in enumerate(maps):
         ax = plt.subplot(nmaps, 1, i + 1)
@@ -184,4 +187,3 @@ def show_colormaps(filter=None):
         fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
                  horizontalalignment='right')
     plt.show()
-
