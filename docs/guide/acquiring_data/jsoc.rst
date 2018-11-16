@@ -64,7 +64,7 @@ between January 1st from 00:00 to 01:00, 2014.
 We can add email address to the search query with the :mod:`jsoc.Notify` attribute.
 Please note you can search without this but right now, you can not add the email address after the search.
 
-    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'),
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'),
     ...                   a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
@@ -108,7 +108,7 @@ variable set to the Fido search, in this case, res::
 
 
 Now, let's break down the arguments of ``Fido.search`` to understand
-better what we've done.  The first argument ``a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00')``
+better what we've done.  The first argument ``a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00')``
 sets the start and end times for the query (any date/time
 format understood by SunPy's :ref:`parse_time function <parse-time>`
 can be used to specify dates and time). The Time attribute takes UTC time,
@@ -119,7 +119,7 @@ pass an Astropy Time object, like::
 
 Then, the Time attribute can be passed as::
 
-    >>> a.jsoc.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'), astropy.time.Time('2014-01-01T01:00:00', scale='tai'))  # doctest: +SKIP
+    >>> a.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'), astropy.time.Time('2014-01-01T01:00:00', scale='tai'))  # doctest: +SKIP
 
 The second argument::
 
@@ -132,7 +132,7 @@ The notion is that a JSOC query has a set of attribute objects, imported as ``a.
 that are specified to construct the query.
 
 ``a.jsoc.Series()`` is compulsory to be provided in each of the jsoc queries. Apart from this,
-at least one PrimeKey must be passed (generally ``a.jsoc.Time()``).
+at least one PrimeKey must be passed (generally ``a.Time()``).
 
 The third argument::
 
@@ -147,7 +147,7 @@ Other than Time, one other PrimeKey is supported with in-built attribute.
 In case of AIA series, ``a.jsoc.Wavelength()`` can be passed as a PrimeKey::
 
     >>> import astropy.units as u
-    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                               a.jsoc.Notify('sunpy@sunpy.org'),
     ...                               a.jsoc.Series('aia.lev1_euv_12s'),
     ...                               a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
@@ -164,7 +164,7 @@ If 2 or more PrimeKeys need to be passed together::
 Also, note that the pre-defined primekeys, Time and Wavelength can also be passed as above, but you need to
 specify the exact keyword for it. For e.g. by::
 
-    >>> a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')  # doctest: +SKIP
+    >>> a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')  # doctest: +SKIP
 
 If the correct keyword is not specified, or the passed PrimeKey is not supported by the given series, a
 meaningful error will be thrown, which will give you the PrimeKeys supported by that series. Hence, by looking
@@ -186,7 +186,7 @@ object. These default keywords are ``'DATE'``, ``'TELESCOP'``, ``'INSTRUME'``, `
 If you want to get a manual set of keywords in the response object, you can pass the set of keywords using
 `~sunpy.net.jsoc.attrs.Keys` attribute.
 
-    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> res = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...                   a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS']))  # doctest: +REMOTE_DATA
 
@@ -226,7 +226,7 @@ A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained
 Also, if you provide an incorrect segment name, it will throw a meaningful error, specifying which segment values are supported
 by the given series::
 
-    >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.sharp_720s'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...             a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
     Traceback (most recent call last):
@@ -236,7 +236,7 @@ by the given series::
 
 To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`` using ``AND`` operator::
 
-    >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.sharp_720s'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...             a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
@@ -278,7 +278,7 @@ using `~sunpy.net.attrs.Sample`. In other words, if you need to query for ``hmi.
 between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
 
     >>> import astropy.units as u
-    >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...             a.jsoc.Series('hmi.v_45s'), a.Sample(10*u.min))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -307,7 +307,7 @@ Complex queries can be built using ``OR`` operators.
 
 Let's look for 2 different series data at the same time::
 
-    >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
     ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
@@ -371,8 +371,8 @@ This is the ``OR`` operator.  Think of the above query as setting a set
 of conditions which get passed to the JSOC.  Let's say you want all the
 ``hmi.v_45s`` data from two separate days::
 
-    >>> Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
-    ...             a.jsoc.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
+    >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
+    ...             a.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
     ...             a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
@@ -476,7 +476,7 @@ We can add an email address to the search query with the :mod:`jsoc.Notify` attr
 Please note you can search without this but right now, you can not add the email address after the search::
 
     >>> from sunpy.net import attrs as a
-    >>> res = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> res = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                     a.jsoc.Series('hmi.v_45s'),
     ...                     a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
 

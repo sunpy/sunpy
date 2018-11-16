@@ -297,7 +297,7 @@ def is_time(time_string, time_format=None):
 def day_of_year(time_string):
     """
     Returns the (fractional) day of year.
-    
+
     Note: This function takes into account leap seconds.
 
     Parameters

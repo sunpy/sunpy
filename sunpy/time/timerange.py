@@ -5,6 +5,7 @@ from astropy.time import TimeDelta
 
 from sunpy.time import parse_time
 from sunpy.time.astropy_time import _is_time_equal
+from sunpy.time import astropy_time as ap
 from sunpy import config
 
 TIME_FORMAT = config.get('general', 'time_format')

@@ -209,8 +209,8 @@ Using Coordinates with SunPy Map
    >>> from sunpy.data.sample import AIA_171_IMAGE   # doctest: +REMOTE_DATA
    >>> m = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
    >>> m.coordinate_frame  # doctest: +REMOTE_DATA
-     <Helioprojective Frame (obstime=2011-06-07T06:33:02.000.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
-         (0., 0.048591, 1.51846026e+11)>)>
+   <Helioprojective Frame (obstime=2011-06-07T06:33:02.770, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770): (lon, lat, radius) in (deg, deg, m)
+        (0., 0.048591, 1.51846026e+11)>)>
 
    This can be used when creating a `~astropy.coordinates.SkyCoord` object to set
    the coordinate system to that image:
@@ -219,7 +219,7 @@ Using Coordinates with SunPy Map
    >>> import astropy.units as u
    >>> c = SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame)  # doctest: +REMOTE_DATA
    >>> c  # doctest: +REMOTE_DATA
-   <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+   <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770): (lon, lat, radius) in (deg, deg, m)
        (0., 0.048591, 1.51846026e+11)>): (Tx, Ty) in arcsec
        (100., 10.)>
 
@@ -229,6 +229,7 @@ Using Coordinates with SunPy Map
    >>> import matplotlib.pyplot as plt
    >>> ax = plt.subplot(projection=m)  # doctest: +REMOTE_DATA
    >>> m.plot()  # doctest: +REMOTE_DATA
+   <matplotlib.image.AxesImage object at ...>
    >>> ax.plot_coord(c, 'o')  # doctest: +REMOTE_DATA
 
 For more information on coordinates see :ref:`sunpy-coordinates` section of
