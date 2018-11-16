@@ -14,7 +14,8 @@ __version__ = 'June 11th, 2013'
 import pytest
 
 from astropy import units as u
-
+from astropy import table
+from sunpy.time import parse_time
 from sunpy.net import hek
 from sunpy.net import vso
 from sunpy.net import hek2vso
@@ -51,11 +52,12 @@ def test_translate_results_to_query():
     hek_query = h.search(hekTime, hekEvent)
     vso_query = hek2vso.translate_results_to_query(hek_query)
 
-    if isinstance(hek_query, list):
-        # Comparing length of two lists
-        assert len(hek_query) == len(vso_query)
-        # Comparing types of both queries
-        assert isinstance(hek_query, vso_query)
+    # Comparing length of two lists
+    assert len(hek_query) == len(vso_query)
+    # Comparing types of both queries
+    # Not sure this test makes any sense now
+    assert isinstance(hek_query, table.Table)
+    assert isinstance(vso_query, list)
 
 
 @pytest.mark.remote_data
@@ -66,8 +68,8 @@ def test_vso_attribute_parse():
     vso_query = hek2vso.vso_attribute_parse(hek_query[0])
 
     # Checking Time
-    assert vso_query[0].start == hek_query[0]['event_starttime']
-    assert vso_query[0].end == hek_query[0]['event_endtime']
+    assert vso_query[0].start == parse_time(hek_query[0]['event_starttime'])
+    assert vso_query[0].end == parse_time(hek_query[0]['event_endtime'])
 
     # Checking Observatory
     assert vso_query[1].value == hek_query[0]['obs_observatory']
