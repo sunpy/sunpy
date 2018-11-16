@@ -9,11 +9,10 @@ import astropy.units as u
 
 from sunpy.physics.differential_rotation import solar_rotate_coordinate
 from sunpy.image.coalignment import apply_shifts
-from sunpy.util import deprecated
 
 __author__ = 'J. Ireland'
 
-__all__ = ['calculate_solar_rotate_shift', 'mapcube_solar_derotate', 'mapsequence_solar_derotate']
+__all__ = ['calculate_solar_rotate_shift', 'mapsequence_solar_derotate']
 
 
 def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
@@ -78,53 +77,6 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
         yshift_arcseconds[i] = new_coordinate.Ty - rotate_to_this_layer.center.Ty
 
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
-
-
-@deprecated('0.9.1', alternative='mapsequence_solar_derotate')
-def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
-    """
-    Move the layers in a mapcube according to the input shifts.
-    If an input shift is not given, the shifts due to
-    solar rotation relative to an index layer is calculated and
-    applied.  When using this functionality, it is a good idea to check
-    that the shifts that were applied to were reasonable and expected.
-    One way of checking this is to animate the original mapcube, animate
-    the derotated mapcube, and compare the differences you see to the
-    calculated shifts.
-
-    Parameters
-    ----------
-    mc : `sunpy.map.MapCube`
-        A mapcube of shape (ny, nx, nt), where nt is the number of layers in
-        the mapcube.
-    layer_index : int
-        Solar derotation shifts of all maps in the mapcube are assumed
-        to be relative to the layer in the mapcube indexed by layer_index.
-    clip : bool
-        If True, then clip off x, y edges in the datacube that are potentially
-        affected by edges effects.
-    ``**kwargs``
-        These keywords are passed to the function
-        `sunpy.physics.solar_rotation.calculate_solar_rotate_shift`.
-
-    Returns
-    -------
-    output : `sunpy.map.MapCube`
-        The results of the shifts applied to the input mapcube.
-
-    Examples
-    --------
-
-    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> from sunpy.physics.solar_rotation import mapcube_solar_derotate
-    >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-    >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
-    >>> mc = sunpy.map.Map([map1, map2], cube=True)  # doctest: +REMOTE_DATA
-    >>> derotated_mc = mapcube_solar_derotate(mc)  # doctest: +REMOTE_DATA
-    >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)  # doctest: +REMOTE_DATA
-    >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)  # doctest: +REMOTE_DATA
-    """
-    return mapsequence_solar_derotate(mc, layer_index, clip, shift, **kwargs)
 
 
 def mapsequence_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):

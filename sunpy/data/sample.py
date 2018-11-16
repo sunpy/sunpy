@@ -5,8 +5,6 @@ SunPy sample data files
 The following files are available in this submodule:
 
 """
-from __future__ import absolute_import
-
 import sys
 from ._sample import _base_urls, _sample_files, get_sample_file
 

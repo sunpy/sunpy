@@ -26,8 +26,9 @@
 # be accessible, and the documentation will not build correctly.
 
 import os
-import datetime
 import sys
+import pathlib
+import datetime
 from distutils.version import LooseVersion
 
 from sphinx import __version__
@@ -203,6 +204,9 @@ html_title = '{0} v{1}'.format(project, release)
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + 'doc'
 
+# A dictionary of values to pass into the template engine’s context for all pages.
+html_context['to_be_indexed'] = ['stable', 'latest']
+
 # -- Options for LaTeX output --------------------------------------------------
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
@@ -241,21 +245,21 @@ github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 # -- Options for the Sphinx gallery -------------------------------------------
 if has_sphinx_gallery:
     extensions += ["sphinx_gallery.gen_gallery"]
+    path = pathlib.Path.cwd()
+    example_dir = path.parent.joinpath('examples')
     sphinx_gallery_conf = {
         'backreferences_dir':
-        'generated{}modules'.format(os.sep),  # path to store the module using example template
-        'filename_pattern':
-        '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
-        'examples_dirs': os.path.join('..', 'examples'),  # path to the examples scripts
+        path.joinpath('generated', 'modules'),  # path to store the module using example template
+        'filename_pattern': '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
+        'examples_dirs': example_dir,  # path to the examples scripts
         'subsection_order': ExplicitOrder([(os.path.join('..', 'examples/acquiring_data')),
-                                           (os.path.join('..', 'examples/maps')),
+                                           (os.path.join('..', 'examples/map')),
                                            (os.path.join('..', 'examples/time_series')),
                                            (os.path.join('..', 'examples/units_and_coordinates')),
                                            (os.path.join('..', 'examples/plotting')),
                                            (os.path.join('..', 'examples/computer_vision_techniques'))]),
-        'gallery_dirs': os.path.join('generated',
-                                    'gallery'),  # path to save gallery generated examples
-        'default_thumb_file': os.path.join('.', 'logo', 'sunpy_icon_128x128.png'),
+        'gallery_dirs': path.joinpath('generated', 'gallery'),  # path to save gallery generated examples
+        'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
         'reference_url': {
             'sunpy': None,
             'astropy': 'http://docs.astropy.org/en/stable/',
@@ -265,6 +269,20 @@ if has_sphinx_gallery:
         'abort_on_example_error': True,
         'plot_gallery': True
     }
+
+
+"""
+Write the latest changelog into the documentation.
+"""
+target_file = os.path.abspath("./whatsnew/latest_changelog.txt")
+try:
+    from sunpy.util.towncrier import generate_changelog_for_docs
+    generate_changelog_for_docs("../", target_file)
+except Exception:
+    # If we can't generate it, we need to make sure it exists or else sphinx
+    # will complain.
+    open(target_file, 'a').close()
+
 
 def setup(app):
     if not has_sphinx_gallery:

@@ -21,7 +21,6 @@ from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
 from sunpy.net import vso, Fido, attrs as net_attrs
 from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
-from sunpy.extern.six import next
 
 
 RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
@@ -115,8 +114,8 @@ def test_tag_hashability():
 @pytest.mark.remote_data
 def test_entries_from_fido_search_result(fido_search_result):
     entries = list(entries_from_fido_search_result(fido_search_result))
-    # 65 entries for 8 instruments in fido_search_result
-    assert len(entries) == 65
+    # 66 entries for 8 instruments in fido_search_result
+    assert len(entries) == 66
     # First 2 entries are from lyra
     assert entries[0] == DatabaseEntry(
         source='Proba2', provider='esa', physobs='irradiance',
@@ -172,11 +171,11 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid=("https://hesperia.gsfc.nasa.gov/"
                 "hessidata/metadata/catalog/hsi_obssumm_20120101_016.fits"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
         instrument='rhessi')
     # 2 entries from eve, level 0
-    assert entries[63] == DatabaseEntry(
+    assert entries[64] == DatabaseEntry(
         source='SDO', provider='LASP', physobs='irradiance',
         fileid=("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook"
                 "/L0CS/SpWx/2012/20120101_EVE_L0CS_DIODES_1m.txt"),
@@ -406,14 +405,14 @@ def test_entries_from_dir_recursively_true():
     entries = list(entries_from_dir(testdir, True,
                                     default_waveunit='angstrom',
                                     time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 102
+    assert len(entries) == 127
 
 
 def test_entries_from_dir_recursively_false():
     entries = list(entries_from_dir(testdir, False,
                                     default_waveunit='angstrom',
                                     time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 81
+    assert len(entries) == 106
 
 
 @pytest.mark.remote_data

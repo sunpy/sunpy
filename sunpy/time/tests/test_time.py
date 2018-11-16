@@ -1,17 +1,8 @@
-from __future__ import absolute_import, division, print_function
-
-from datetime import datetime, date
 import re
+from datetime import date, datetime
 
-from sunpy import time
-from sunpy.time import parse_time, is_time_in_given_format, get_day, find_time
-import sunpy.time.astropy_time as ap
-
-import astropy.time
 import numpy as np
 import pandas
-from sunpy.extern.six.moves import range
-
 import pytest
 
 LANDING = ap.Time('1966-02-03', format='isot')

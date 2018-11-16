@@ -2,13 +2,10 @@
 # This module was developed under funding by
 # Google Summer of Code 2014
 
-from __future__ import absolute_import, division, print_function
+from astropy.time import TimeDelta
 
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
-from sunpy.extern.six.moves.urllib.parse import urljoin
-from astropy.time import TimeDelta
-import astropy.units as u
 
 from ..client import GenericClient
 

@@ -233,42 +233,10 @@ arcseconds OR have a peak flux over 1000.0:
 and as a check
 
     >>> [elem["fl_peakflux"] for elem in result] # doctest: +REMOTE_DATA
-    [None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    2326.86,
-    1698.83,
-    None,
-    None,
-    2360.49,
-    3242.64,
-    1375.93,
-    6275.98,
-    923.984,
-    1019.83]
+    [None, None, None, None, None, None, None, 2326.86, 1698.83, None, None, 2360.49, 3242.64, 1375.93, 6275.98, 923.984, 1019.83]
 
     >>> [elem["event_coord1"] for elem in result] # doctest: +REMOTE_DATA
-    [51,
-    51,
-    51,
-    924,
-    924,
-    924,
-    69,
-    883.2,
-    883.2,
-    69,
-    69,
-    883.2,
-    883.2,
-    883.2,
-    883.2,
-    883.2,
-    883.2]
+    [51.0, 51.0, 51.0, 924.0, 924.0, 924.0, 69.0, 883.2, 883.2, 69.0, 69.0, 883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
 
 Note that some of the fluxes are returned as "None".  This is because
 some feature recognition methods for flares do not report the peak

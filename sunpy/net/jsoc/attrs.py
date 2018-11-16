@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from astropy.time import Time as astropyTime
 
-from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr
-from sunpy.net.vso.attrs import _VSOSimpleAttr, _Range
+from sunpy.net.vso.attrs import _Range
 from sunpy.net.vso.attrs import Wavelength
 from sunpy.net.vso.attrs import Time as VSO_Time
+from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr, SimpleAttr
 
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 
 
-class Series(_VSOSimpleAttr):
+
+class Series(SimpleAttr):
     """
     The JSOC Series to Download.
 
@@ -19,7 +20,7 @@ class Series(_VSOSimpleAttr):
     pass
 
 
-class Keys(_VSOSimpleAttr):
+class Keys(SimpleAttr):
     """
     Keys choose which keywords to fetch while making a query request.
     """
@@ -60,7 +61,7 @@ class Segment(Attr):
         return False
 
 
-class Protocol(_VSOSimpleAttr):
+class Protocol(SimpleAttr):
     """
     The type of download to request one of
     ("FITS", "JPEG", "MPG", "MP4", or "as-is").
@@ -69,7 +70,7 @@ class Protocol(_VSOSimpleAttr):
     pass
 
 
-class Notify(_VSOSimpleAttr):
+class Notify(SimpleAttr):
     """
     An email address to get a notification to when JSOC has staged your request.
     """
@@ -85,7 +86,7 @@ class Notify(_VSOSimpleAttr):
 walker = AttrWalker()
 
 
-@walker.add_creator(AttrAnd, _VSOSimpleAttr, VSO_Time)
+@walker.add_creator(AttrAnd, SimpleAttr, VSO_Time)
 def _create(wlk, query):
 
     map_ = {}
@@ -100,7 +101,7 @@ def _apply(wlk, query, imap):
         wlk.apply(iattr, imap)
 
 
-@walker.add_applier(_VSOSimpleAttr)
+@walker.add_applier(SimpleAttr)
 def _apply1(wlk, query, imap):
 
     imap[query.__class__.__name__.lower()] = query.value

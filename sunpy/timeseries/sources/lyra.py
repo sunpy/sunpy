@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """Proba-2 TimeSeries subclass definitions."""
-from __future__ import absolute_import, division, print_function
-
 import sys
 from collections import OrderedDict
+
 from matplotlib import pyplot as plt
 import pandas
+
+from astropy import units as u
+from astropy.time import Time, TimeDelta
 
 import sunpy.io
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
@@ -13,8 +15,6 @@ from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
 from sunpy import config
 
-from astropy import units as u
-from astropy.time import Time, TimeDelta
 
 TIME_FORMAT = config.get("general", "time_format")
 

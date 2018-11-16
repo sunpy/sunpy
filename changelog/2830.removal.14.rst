@@ -1,0 +1,2 @@
+Removed `heliographic_solar_center` in favour of `get_sun_L0()` and `get_sun_B0()`
+

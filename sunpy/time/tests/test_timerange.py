@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, division, print_function
-
 import pytest
 import astropy.units as u
 from astropy.time import TimeDelta
@@ -9,7 +6,6 @@ from datetime import timedelta
 
 import sunpy.time
 import sunpy.time.astropy_time as ap
-from sunpy.extern.six.moves import zip
 
 tbegin_str = '2012/1/1'
 tfin_str = '2012/1/2'
@@ -192,6 +188,8 @@ def test_window(timerange_a):
               sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
     assert isinstance(window, list)
+    # Doing direct comparisons seem to not work
+    assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
     assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
@@ -207,6 +205,7 @@ def test_window_timedelta(timerange_a, td1, td2):
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
+    assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
     assert all([wi == ex for wi, ex in zip(window, expect)])
 
 

@@ -1,20 +1,23 @@
 import os
 import copy
 import tempfile
+import pathlib
 
 import pytest
 import hypothesis.strategies as st
-from hypothesis import given, assume
+from hypothesis import given, assume, example
 
 import astropy.units as u
 from drms import DrmsQueryError
 
 from sunpy.net import attr
+from sunpy.net.vso import attrs as va
 from sunpy.net import Fido, attrs as a
+from sunpy.net.base_client import BaseClient
 from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
-from sunpy.net.dataretriever.client import CLIENTS, QueryResponse
-from sunpy.util.datatype_factory_base import MultipleMatchError
+from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
 from sunpy.time import TimeRange, parse_time
 from sunpy import config
 
@@ -175,7 +178,7 @@ def test_multiple_match():
     with pytest.raises(MultipleMatchError):
         Fido.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('lyra'))
 
-    Fido.registry = CLIENTS
+    Fido.registry = BaseClient._registry
 
 
 @pytest.mark.remote_data

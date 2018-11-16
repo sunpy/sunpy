@@ -1,0 +1,1 @@
+Changed sunpy.instr.aia.aiaprep to update BITPIX keyword to reflect the float64 dtype.

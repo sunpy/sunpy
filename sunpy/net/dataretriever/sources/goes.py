@@ -13,7 +13,7 @@ import astropy.units as u
 
 from ..client import GenericClient
 
-from sunpy.extern.six.moves.urllib.parse import urlsplit
+from urllib.parse import urlsplit
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")

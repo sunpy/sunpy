@@ -5,26 +5,19 @@
 # the ESA Summer of Code (2011).
 
 
-from __future__ import absolute_import
-
 import os
 import re
+import urllib
 import threading
-
 from functools import partial
 from contextlib import closing
-from collections import defaultdict, deque
+from collections import deque, defaultdict
 
-from sunpy.extern import six
-from sunpy.extern.six.moves import urllib
-from sunpy.extern.six import iteritems
-
-import sunpy
-from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 from sunpy.util.config import get_and_create_download_dir
+from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 
+__all__ = ['Downloader', 'Results']
 
-__all__  = ['Downloader', 'Results']
 
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
@@ -150,7 +143,7 @@ class Downloader(object):
 
         if path is None:
             path = partial(default_name, get_and_create_download_dir())
-        elif isinstance(path, six.string_types):
+        elif isinstance(path, str):
             path = partial(default_name, path)
         elif not callable(path):
             raise ValueError("path must be: None, string or callable")
@@ -177,7 +170,7 @@ class Downloader(object):
         if self.q[server]:
             self._attempt_download(*self.q[server].pop())
         else:
-            for k, v in iteritems(self.q):  # pylint: disable=W0612
+            for k, v in self.q.items():  # pylint: disable=W0612
                 while v:
                     if self._attempt_download(*v[0]):
                         v.popleft()
@@ -188,7 +181,7 @@ class Downloader(object):
 
 
 class Results(object):
-    """ Returned by VSOClient.get. Use .wait to wait
+    """ Returned by VSOClient.fetch. Use .wait to wait
     for completion of download.
     """
     def __init__(self, callback, n=0, done=None):

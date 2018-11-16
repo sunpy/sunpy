@@ -1,12 +1,6 @@
-# Author :Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-# This module was developed under funding provided by
-# Google Summer of Code 2014
-
-from __future__ import print_function, absolute_import
-
+# -*- coding: utf-8 -*-
 import copy
 import os
-from abc import ABCMeta
 from collections import OrderedDict, namedtuple
 from functools import partial
 import pathlib
@@ -16,13 +10,11 @@ import astropy.table
 import astropy.units as u
 
 import sunpy
-from sunpy.extern import six
 from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
-from sunpy.util.config import get_and_create_download_dir
 from sunpy import config
-from sunpy.util import deprecated
 
+from sunpy.net.base_client import BaseClient
 from sunpy.net.download import Downloader, Results
 from sunpy.net.vso.attrs import Time, Wavelength, _Range
 
@@ -122,37 +114,7 @@ class QueryResponse(list):
         return astropy.table.Table(columns)
 
 
-# GenericMap subclass registry.
-CLIENTS = OrderedDict()
-
-
-class GenericClientMeta(ABCMeta):
-    """
-    Registration metaclass for `~sunpy.map.GenericMap`.
-
-    This class checks for the existance of a method named ``is_datasource_for``
-    when a subclass of `GenericMap` is defined. If it exists it will add that
-    class to the registry.
-    """
-
-    _registry = CLIENTS
-
-    def __new__(mcls, name, bases, members):
-        cls = super(GenericClientMeta, mcls).__new__(
-            mcls, name, bases, members)
-
-        if cls.__name__ is 'GenericClient':
-            return cls
-        # The registry contains the class as the key and the validation method
-        # as the item.
-        if '_can_handle_query' in members:
-            mcls._registry[cls] = cls._can_handle_query
-
-        return cls
-
-
-@six.add_metaclass(GenericClientMeta)
-class GenericClient(object):
+class GenericClient(BaseClient):
     """
     Base class for simple web clients for the data retriever module. This class
     is mainly designed for downloading data from FTP and HTTP type data
@@ -160,12 +122,12 @@ class GenericClient(object):
     web service.
 
     This class has two user facing methods
-    `~sunpy.net.dataretriever.client.GenericClient.query` and
-    `~sunpy.net.dataretriever.client.GenericClient.get` the former generates a
+    `~sunpy.net.dataretriever.client.GenericClient.search` and
+    `~sunpy.net.dataretriever.client.GenericClient.fetch` the former generates a
     set of results for files available through the service the client is
     querying and the latter downloads that data.
 
-    The `~sunpy.net.dataretriever.client.GenericClient.query` method takes a
+    The `~sunpy.net.dataretriever.client.GenericClient.search` method takes a
     set of `sunpy.net.attrs` objects and then converts these into a call to
     `~sunpy.net.dataretriever.client.GenericClient._get_url_for_timerange`. It
     does this through the `map\_` dictionary which represents the
@@ -175,7 +137,7 @@ class GenericClient(object):
     def __init__(self):
         self.map_ = {}
 
-    def _makeargs(self, *args, **kwargs):
+    def _makeargs(self, *args):
         """
         Construct the `map\_` internal representation of the query.
 
@@ -187,8 +149,6 @@ class GenericClient(object):
         \*args: `tuple`
             The query attributes.
 
-        \*\*kwargs: `dict`
-            None.
         """
         for elem in args:
             if isinstance(elem, Time):
@@ -221,6 +181,7 @@ class GenericClient(object):
                         "to the Client.".format(elem.__class__.__name__))  # pragma: no cover
         self._makeimap()
 
+    @classmethod
     def _get_url_for_timerange(cls, timerange, **kwargs):
         """
         Method which generates URL results from a timerange and the `map\_`
@@ -282,7 +243,7 @@ class GenericClient(object):
         for i, filename in enumerate(filenames):
             if path is None:
                 fname = os.path.join(default_dir, '{file}')
-            elif isinstance(path, six.string_types) and '{file}' not in path:
+            elif isinstance(path, str) and '{file}' not in path:
                 fname = os.path.join(path, '{file}')
 
             temp_dict = qres[i]._map.copy()
@@ -299,6 +260,15 @@ class GenericClient(object):
 
         return paths
 
+    def _get_time_for_url(self, urls):
+        """
+        This method allows clients to customise the timerange displayed for
+        each URL.
+
+        It should return a sunpy.time.TimeRange object per URL.
+        """
+        return NotImplemented
+
     def search(self, *args, **kwargs):
         """
         Query this client for a list of results.
@@ -314,16 +284,11 @@ class GenericClient(object):
         kwergs.update(kwargs)
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
-        if urls and getattr(self, "_get_time_for_url", None):
-            return QueryResponse.create(self.map_, urls, self._get_time_for_url(urls))
+        if urls:
+            times = self._get_time_for_url(urls)
+            if times and times is not NotImplemented:
+                return QueryResponse.create(self.map_, urls, times)
         return QueryResponse.create(self.map_, urls)
-
-    @deprecated('0.8', alternative='GenericClient.search')
-    def query(self, *query, **kwargs):
-        """
-        See `~sunpy.net.dataretriever.client.GenericClient.search`
-        """
-        return self.search(*query, **kwargs)
 
     def fetch(self, qres, path=None, error_callback=None, **kwargs):
         """
@@ -348,7 +313,7 @@ class GenericClient(object):
         if path is not None:
             if isinstance(path, pathlib.Path):
                 path = str(path.absolute())
-            elif not isinstance(path, six.string_types):
+            elif not isinstance(path, str):
                 err = "path should be either 'pathlib.Path' or 'str'. "\
                     "Got '{}'.".format(type(path))
                 raise TypeError(err)
@@ -370,13 +335,6 @@ class GenericClient(object):
             dobj.download(aurl, fname, ncall, error_callback)
 
         return res
-
-    @deprecated('0.8', alternative='GenericClient.fetch')
-    def get(self, qres, path=None, error_callback=None, **kwargs):
-        """
-        See `~sunpy.net.dataretriever.client.GenericClient.fetch`
-        """
-        return self.fetch(qres, path=path, error_callback=error_callback, **kwargs)
 
     def _link(self, map_):
         """Helper Function"""

@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 import os
 import glob
 from collections import OrderedDict
@@ -7,11 +5,11 @@ import warnings
 
 import numpy as np
 import astropy.io.fits
+from astropy.wcs import WCS
 
 import sunpy
 from sunpy.map.mapbase import GenericMap
 from sunpy.map.compositemap import CompositeMap
-from sunpy.map.mapcube import MapCube
 from sunpy.map.mapsequence import MapSequence
 
 from sunpy.io.file_tools import read_file
@@ -27,9 +25,7 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
-from sunpy.extern import six
-
-from sunpy.extern.six.moves.urllib.request import urlopen
+from urllib.request import urlopen
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
@@ -42,7 +38,6 @@ __authors__ = ["Russell Hewett, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
 
 # Make a mock DatabaseEntry class if sqlalchemy is not installed
-
 try:
     from sunpy.database.tables import DatabaseEntry
 except ImportError:
@@ -50,7 +45,6 @@ except ImportError:
         pass
 
 __all__ = ['Map', 'MapFactory']
-
 
 class MapFactory(BasicRegistrationFactory):
     """
@@ -63,6 +57,7 @@ class MapFactory(BasicRegistrationFactory):
     Examples
     --------
     >>> import sunpy.map
+    >>> from astropy.io import fits
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
 
@@ -78,6 +73,20 @@ class MapFactory(BasicRegistrationFactory):
     * data, header pairs, not in tuples
 
     >>> mymap = sunpy.map.Map(data, header)   # doctest: +SKIP
+
+    * data, wcs object, in tuple
+
+    >>> from astropy.wcs import WCS
+    >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
+    >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
+    >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA
+
+    * data, wcs object, not in tuple
+
+    >>> from astropy.wcs import WCS
+    >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
+    >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
+    >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA
 
     * File names
 
@@ -145,6 +154,8 @@ class MapFactory(BasicRegistrationFactory):
         mixture of the following entries:
         * tuples of data,header
         * data, header not in a tuple
+        * data, wcs object in a tuple
+        * data, wcs object not in a tuple
         * filename, which will be read
         * directory, from which all files will be read
         * glob, from which all files will be read
@@ -174,32 +185,26 @@ class MapFactory(BasicRegistrationFactory):
 
             arg = args[i]
 
-            # Data-header pair in a tuple
-            if ((type(arg) in [tuple, list]) and
-                len(arg) == 2 and
-                isinstance(arg[0], np.ndarray) and
-                self._validate_meta(arg[1])):
+            # Data-header or data-WCS pair
+            if isinstance(arg, SUPPORTED_ARRAY_TYPES):
+                arg_header = args[i+1]
+                if isinstance(arg_header, WCS):
+                    arg_header = args[i+1].to_header()
 
-                arg[1] = OrderedDict(arg[1])
-                data_header_pairs.append(arg)
-
-            # Data-header pair not in a tuple
-            elif (isinstance(arg, SUPPORTED_ARRAY_TYPES) and
-                  self._validate_meta(args[i+1])):
-
-                pair = (args[i], OrderedDict(args[i+1]))
-                data_header_pairs.append(pair)
-                i += 1   # an extra increment to account for the data-header pairing
+                if self._validate_meta(arg_header):
+                    pair = (args[i], OrderedDict(arg_header))
+                    data_header_pairs.append(pair)
+                    i += 1    # an extra increment to account for the data-header pairing
 
             # File name
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
@@ -207,7 +212,7 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
-            elif (isinstance(arg, six.string_types) and '*' in arg):
+            elif (isinstance(arg, str) and '*' in arg):
                 files = glob.glob(os.path.expanduser(arg))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
@@ -217,7 +222,7 @@ class MapFactory(BasicRegistrationFactory):
                 already_maps.append(arg)
 
             # A URL
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   _is_url(arg)):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
@@ -232,6 +237,7 @@ class MapFactory(BasicRegistrationFactory):
                 raise ValueError("File not found or invalid input")
 
             i += 1
+
         # TODO:
         # In the end, if there are already maps it should be put in the same
         # order as the input, currently they are not.
@@ -252,9 +258,6 @@ class MapFactory(BasicRegistrationFactory):
         composite : boolean, optional
             Indicates if collection of maps should be returned as a CompositeMap
 
-        cube : boolean, optional
-            Indicates if collection of maps should be returned as a MapCube
-
         sequence : boolean, optional
             Indicates if collection of maps should be returned as a MapSequence
 
@@ -269,13 +272,6 @@ class MapFactory(BasicRegistrationFactory):
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
-
-        # MapCube Deprecation
-        cube = kwargs.pop('cube', False)
-        if cube:
-            warnings.warn('MapCube is now deprecated and renamed MapSequence. ' +
-                          'Please use the syntax Map(sequence=True) instead of Map(cube=True).',
-                          SunpyDeprecationWarning, stacklevel=2)
 
         sequence = kwargs.pop('sequence', False)
         silence_errors = kwargs.pop('silence_errors', False)
@@ -301,13 +297,6 @@ class MapFactory(BasicRegistrationFactory):
             new_maps.append(new_map)
 
         new_maps += already_maps
-
-        # If the list is meant to be a cube, instantiate a map cube
-        if cube:
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore", category=SunpyDeprecationWarning)
-                amapcube = MapCube(new_maps, **kwargs)
-            return amapcube
 
         # If the list is meant to be a sequence, instantiate a map sequence
         if sequence:

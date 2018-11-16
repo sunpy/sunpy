@@ -1,20 +1,19 @@
-from __future__ import absolute_import
-from __future__ import division
-
 import os
 import copy
-from sunpy.extern.six.moves import urllib
-from collections import OrderedDict
+import urllib
+import datetime
 import tempfile
+from collections import OrderedDict
 
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+
 import astropy.units as u
 from astropy.time import TimeDelta
-from astropy.coordinates import Longitude, Latitude
+from astropy.coordinates import Latitude, Longitude
 
-from sunpy.time import parse_time, TimeRange
 from sunpy import sun
+from sunpy.time import TimeRange, parse_time
 from sunpy.io.fits import fits
 
 __all__ = ['download_weekly_pointing_file', 'get_detector_sun_angles_for_time',
@@ -64,8 +63,7 @@ def download_weekly_pointing_file(date):
     try:
         resp = urllib.request.urlopen(pointing_file_url)
         exists = True
-    except:
-        urllib.error.HTTPError
+    except urllib.error.HTTPError:
         exists = False
 
     # if no matches at all were found, then the pointing file doesn't exist
@@ -466,6 +464,9 @@ def met_to_utc(timeinsec):
     # Times for GBM are in Mission Elapsed Time (MET).
     # The reference time for this is 2001-Jan-01 00:00.
     met_ref_time = parse_time('2001-01-01 00:00')
+    offset_from_utc = (
+        met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
+    time_in_utc = parse_time(timeinsec + offset_from_utc)
 
     return met_ref_time + timeinsec * u.second
 
@@ -486,5 +487,9 @@ def utc_to_met(time_ut):
 
     """
     met_ref_time = parse_time('2001-01-01 00:00')
+    ut_seconds = (time_ut - parse_time('1979-01-01')).total_seconds()
+    offset_from_utc = (
+        met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
+    fermi_met = ut_seconds - offset_from_utc
 
     return (time_ut - met_ref_time).to(u.second)

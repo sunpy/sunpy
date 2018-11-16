@@ -4,23 +4,14 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
-from __future__ import absolute_import, division
-
-import warnings
-
 import numpy as np
 
-from astropy import units as u
-from astropy.coordinates.representation import (CartesianRepresentation,
-                                                UnitSphericalRepresentation,
-                                                SphericalRepresentation,
-                                                CylindricalRepresentation)
-
-from astropy.coordinates.baseframe import (BaseCoordinateFrame,
-                                           RepresentationMapping)
-
+import astropy.units as u
 from astropy.coordinates import Attribute, ConvertError
-from astropy.tests.helper import quantity_allclose
+from astropy.coordinates.baseframe import BaseCoordinateFrame, RepresentationMapping
+from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
+                                                CylindricalRepresentation,
+                                                UnitSphericalRepresentation)
 
 from sunpy import sun
 
@@ -146,7 +137,7 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
         wrap = kwargs.pop('wrap_longitude', True)
 
         if ('radius' in kwargs and kwargs['radius'].unit is u.one and
-                quantity_allclose(kwargs['radius'], 1*u.one)):
+                u.allclose(kwargs['radius'], 1*u.one)):
             kwargs['radius'] = RSUN_METERS.to(u.km)
 
         super(HeliographicStonyhurst, self).__init__(*args, **kwargs)
@@ -400,7 +391,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         """
         # Skip if we already are 3D
         if (isinstance(self._data, SphericalRepresentation) and
-                not (self.distance.unit is u.one and quantity_allclose(self.distance, 1*u.one))):
+                not (self.distance.unit is u.one and u.allclose(self.distance, 1*u.one))):
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):

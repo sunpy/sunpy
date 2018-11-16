@@ -3,10 +3,10 @@
 
 |Latest Version| |Build Status| |Build status| |codecov| |Research software impact| |DOI| |Powered by NumFOCUS|
 
-SunPy is an open-source Python library for solar physics data analysis.
+SunPy is an open-source Python library for Solar Physics data analysis and visualization.
 See `sunpy.org`_ for more information about the project.
 
-For some examples of using SunPy see our `gallery`_.
+For some examples of using SunPy see our `gallery`_, to see the latest changes in SunPy see our `Changelog`_.
 
 Installation
 ------------
@@ -61,7 +61,7 @@ Contributing
 |Open Source Helpers|
 
 If you would like to get involved, start by joining the `SunPy mailing list`_ and check out the `Developer’s Guide`_ section of the SunPy docs.
-Stop by our chat room `#sunpy:matrix.org`_ if you have any questions.
+Stop by our chat room `#sunpy:openastronomy.org`_ if you have any questions.
 Help is always welcome so let us know what you like to work on, or check out the `issues page`_ for the list of known outstanding items.
 
 For more information on contributing to SunPy, please read our `contributing guide`_ or the `Newcomers guide`_.
@@ -96,11 +96,12 @@ follow our `Code of Conduct`_.
 .. _installation guide: http://docs.sunpy.org/en/latest/guide/installation/index.html
 .. _SunPy Documentation: http://docs.sunpy.org/
 .. _SunPy Mailing List: https://groups.google.com/forum/#!forum/sunpy
-.. _SunPy Matrix Channel: https://riot.im/app/#/room/#sunpy:matrix.org
+.. _SunPy Matrix Channel: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
 .. _SunPy mailing list: https://groups.google.com/forum/#!forum/sunpy
 .. _Developer’s Guide: http://docs.sunpy.org/en/latest/dev_guide/index.html
-.. _`#sunpy:matrix.org`: https://riot.im/app/#/room/#sunpy:matrix.org
+.. _`#sunpy:openastronomy.org`: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
 .. _issues page: https://github.com/sunpy/sunpy/issues
 .. _contributing guide: https://github.com/sunpy/sunpy/blob/master/CONTRIBUTING.rst
 .. _Newcomers guide: http://docs.sunpy.org/en/stable/dev_guide/newcomers.html
 .. _Code of Conduct: http://docs.sunpy.org/en/stable/coc.html
+.. _Changelog: https://docs.sunpy.org/en/latest/whatsnew/changelog.html

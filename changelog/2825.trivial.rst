@@ -1,0 +1,1 @@
+Miscellaneous fixes to developer docs about building sunpy's documentation.
