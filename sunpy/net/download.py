@@ -119,9 +119,9 @@ class Downloader(object):
 
         Parameters
         ----------
-        url : string
+        url : str
             URL of file to download
-        path : function, string
+        path : function, str
             Location to save file to. Can specify either a directory as a string
             or a function with signature: (path, url).
             Defaults to directory specified in sunpy configuration

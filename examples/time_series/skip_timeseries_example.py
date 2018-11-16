@@ -18,7 +18,7 @@ import numpy as np
 from pandas import DataFrame
 
 import astropy.units as u
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 from astropy.table import Table
 
 import sunpy.data.sample
@@ -171,7 +171,7 @@ ts_goes.to_array()
 # Table or a Numpy Array.
 # To generate some data and the corresponding dates
 base = datetime.datetime.today()
-dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+dates = base - TimeDelta(np.arange(24 * 60)*u.minute)
 intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 # Create the data DataFrame, header MetaDict and units OrderedDict
 data = DataFrame(intensity, index=dates, columns=['intensity'])

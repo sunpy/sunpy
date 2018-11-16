@@ -186,14 +186,14 @@ class DatabaseEntry(Base):
     id : int
         A unique ID number. By default it is None, but automatically set to the
         maximum number plus one when this entry is added to the database.
-    source : string
+    source : str
         The source is the name of an observatory or the name of a network of
         observatories.
-    provider : string
+    provider : str
         The name of the server which provides the retrieved data.
-    physobs : string
+    physobs : str
         A physical observable identifier used by VSO.
-    fileid : string
+    fileid : str
         The file ID is a string defined by the data provider that should point
         to a specific data product. The association of fileid to the specific
         data may change sometime, if the fileid always points to the latest
@@ -202,7 +202,7 @@ class DatabaseEntry(Base):
         The date and time when the observation of the data started.
     observation_time_end : datetime
         The date and time when the observation of the data ended.
-    instrument : string
+    instrument : str
         The instrument which was used to observe the data.
     size : float
         The size of the data in kilobytes.
@@ -215,7 +215,7 @@ class DatabaseEntry(Base):
     hdu_index : int
         This value provides a list of all available HDUs and in what
         files they are located.
-    path : string
+    path : str
         A local file path where the according FITS file is saved.
     download_time : datetime
         The date and time when the files connected to a query have been
@@ -708,7 +708,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
     Parameters
     ----------
-    fitsdir : string
+    fitsdir : str
         The directory where to look for FITS files.
 
     recursive : bool, optional

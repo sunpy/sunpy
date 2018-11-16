@@ -89,7 +89,7 @@ class XRSClient(GenericClient):
             time range for which data is to be downloaded.
         satellitenumber : int
             GOES satellite number (default = 15)
-        data_type : string
+        data_type : str
             Data type to return for the particular GOES satellite. Supported
             types depend on the satellite number specified. (default = xrs_2s)
         """

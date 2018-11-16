@@ -47,15 +47,15 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : `astropy.time.Time`, `str`
-            A string or `~astropy.time.Time` object for the desired date of the image
-        observatory : string
+        date : `astropy.time.Time`, str
+            A `~sunpy.time.parse_time` parsable string or `~astropy.time.Time` object for the desired date of the image
+        observatory : str
             (Optional) Observatory name
-        instrument : string
+        instrument : str
             (Optional) instrument name
-        detector : string
+        detector : str
             (Optional) detector name
-        measurement : string
+        measurement : str
             (Optional) measurement name
         sourceId : int
             (Optional) data source id
@@ -97,17 +97,17 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : `astropy.time.Time`, string
+        date : `astropy.time.Time`, str
             A string or `~astropy.time.Time` object for the desired date of the image
-        directory : string
+        directory : str
             (Optional) Directory to download JPEG 2000 image to.
-        observatory : string
+        observatory : str
             (Optional) Observatory name
-        instrument : string
+        instrument : str
             (Optional) instrument name
-        detector : string
+        detector : str
             (Optional) detector name
-        measurement : string
+        measurement : str
             (Optional) measurement name
         sourceId : int
             (Optional) data source id
@@ -116,7 +116,7 @@ class HelioviewerClient(object):
 
         Returns
         -------
-        out : string
+        out : str
             Returns a filepath to the downloaded JPEG 2000 image or a URL if
             the "jpip" parameter is set to True.
 
@@ -166,11 +166,11 @@ class HelioviewerClient(object):
             The zoom scale of the image. Default scales that can be used are
             0.6, 1.2, 2.4, and so on, increasing or decreasing by a factor
             of 2. The full-res scale of an AIA image is 0.6.
-        layers : string
+        layers : str
             Each layer string is comma-separated with these values, e.g.:
             "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
             Multiple layer string are by commas: "[layer1],[layer2],[layer3]"
-        directory : string
+        directory : str
             (Optional)  Directory to download JPEG 2000 image to.
         x1 : float
             (Optional) The offset of the image's left boundary from the center
@@ -198,7 +198,7 @@ class HelioviewerClient(object):
 
         Returns
         -------
-        out : string
+        out : str
             filepath to the PNG image
 
         Examples

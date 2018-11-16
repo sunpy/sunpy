@@ -40,7 +40,7 @@ class LYRAClient(GenericClient):
 
         Returns
         -------
-        string
+        str
             The URL for the corresponding date.
         """
 

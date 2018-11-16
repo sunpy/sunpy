@@ -203,7 +203,7 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
 
     Parameters
     ----------
-    calibrated_event_list : string
+    calibrated_event_list : str
         filename of a RHESSI calibrated event list
     detector : int
         the detector number
@@ -264,7 +264,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
 
     Parameters
     ----------
-    calibrated_event_list : string
+    calibrated_event_list : str
         filename of a RHESSI calibrated event list
     pixel_size : `~astropy.units.Quantity` instance
         the size of the pixels in arcseconds. Default is (1,1).

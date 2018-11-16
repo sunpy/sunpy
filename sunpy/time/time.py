@@ -3,7 +3,6 @@ from datetime import datetime, date
 from functools import singledispatch
 
 import numpy as np
-import pandas
 
 import astropy.time
 from sunpy.time import Time
@@ -153,9 +152,9 @@ def convert_time(time_string, format=None, **kwargs):
 try:
     import pandas
 
-    @convert_time.register(pandas.Series)
-    def convert_time_pandasSeries(time_string, **kwargs):
-        return Time(time_string.tolist(), **kwargs)
+    @convert_time.register(pandas.Timestamp)
+    def convert_time_pandasTimestamp(time_string, **kwargs):
+        return Time(time_string.to_pydatetime())
 
     @convert_time.register(pandas.Series)
     def convert_time_pandasSeries(time_string, **kwargs):
@@ -223,8 +222,7 @@ def convert_time_str(time_string, **kwargs):
                 break
             if ts is None:
                 continue
-            return Time.strptime(ts, time_format,
-                                    **kwargs) + time_delta
+            return Time.strptime(ts, time_format, **kwargs) + time_delta
         except ValueError:
             pass
 
@@ -317,7 +315,7 @@ def day_of_year(time_string):
 
     Parameters
     ----------
-    time_string : string
+    time_string : str
         A parse_time compatible string
 
     Returns

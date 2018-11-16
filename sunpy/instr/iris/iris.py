@@ -19,7 +19,7 @@ def SJI_to_sequence(filename, start=0, stop=None, hdu=0):
 
     Parameters
     ----------
-    filename: string
+    filename: str
         File to read
 
     start: int

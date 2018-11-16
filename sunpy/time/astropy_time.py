@@ -73,7 +73,7 @@ else:
             ----------
             time_string : string, sequence, ndarray
                 Objects containing time data of type string
-            format_string : string
+            format_string : str
                 String specifying format of time_string.
             kwargs : dict
                 Any keyword arguments for ``Time``.  If the ``format`` keyword
@@ -121,7 +121,7 @@ else:
 
             Parameters
             ----------
-            format_spec : string
+            format_spec : str
                 Format definition of return string.
 
             Returns

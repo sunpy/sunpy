@@ -211,7 +211,7 @@ class Provider(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -228,7 +228,7 @@ class Source(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -247,7 +247,7 @@ class Instrument(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -268,7 +268,7 @@ class Detector(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -288,7 +288,7 @@ class Physobs(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -306,7 +306,7 @@ class Level(SimpleAttr):
 
     Parameters
     ----------
-    value : float or string
+    value : float or str
 
         The value can be entered in of three ways:
 
@@ -338,7 +338,7 @@ class Resolution(SimpleAttr):
 
     Parameters
     ----------
-    value : float or string
+    value : float or str
 
         The value can be entered in of three ways:
 
@@ -366,7 +366,7 @@ class PScale(SimpleAttr):
 
     Parameters
     ----------
-    value : float or string
+    value : float or str
 
         The value can be entered in of three ways:
 
@@ -433,7 +433,7 @@ class Filter(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     """
     pass

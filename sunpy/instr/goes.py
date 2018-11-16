@@ -102,7 +102,7 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     timerange : `sunpy.time.TimeRange`
         The time range to download the event list for.
 
-    goes_class_filter: (optional) string
+    goes_class_filter: (optional) str
         A string specifying a minimum GOES class for inclusion in the list,
         e.g. 'M1', 'X2'.
 
@@ -311,7 +311,7 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
         launch of new GOES satellites since these files were last downloaded.
         Default=False
 
-    download_dir : (optional) string
+    download_dir : (optional) str
         The directory to download the GOES temperature and emission measure
         data files to.
         Default=SunPy default download directory
@@ -457,7 +457,7 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
         of new GOES satellites since these files were last downloaded.
         Default=False
 
-    download_dir : (optional) string
+    download_dir : (optional) str
         The directory to download the GOES temperature data file to.
         Default=SunPy default download directory
 
@@ -897,7 +897,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         launch of new GOES satellites.
         Default=False
 
-    download_dir : (optional) string
+    download_dir : (optional) str
         The directory to download the GOES radiative loss data file to.
         Default=SunPy default download directory
 
@@ -1230,7 +1230,7 @@ def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
     flux : `~astropy.units.Quantity`
        Containing the observed solar flux.  Units=[W/m**2]
 
-    date : (optional) `astropy.time.Time` object or valid date string
+    date : (optional) `astropy.time.Time` object or valid date str
         Used to calculate a more accurate Sun-Earth distance based on
         Earth's orbit at that date.  If date is None, Sun-Earth
         distance is set to 1AU.

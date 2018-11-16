@@ -29,14 +29,14 @@ class Scraper(object):
 
     Parameters
     ----------
-    pattern : string
+    pattern : str
         A string containing the url with the date encoded as
         datetime formats, and any other parameter as kwargs
         as string format.
 
     Attributes
     ----------
-    pattern : string
+    pattern : str
         A converted string with the kwargs.
     now : datetime.datetime
         The pattern with the actual date.

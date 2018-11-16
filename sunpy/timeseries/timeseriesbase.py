@@ -54,11 +54,13 @@ class GenericTimeSeries:
     Examples
     --------
     >>> from sunpy.timeseries import TimeSeries
+    >>> from sunpy.time import parse_time
     >>> import datetime
+    >>> from astropy.time import TimeDelta
     >>> import numpy as np
     >>> import pandas as pd
-    >>> base = datetime.datetime.today()
-    >>> times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    >>> base = parse_time(datetime.datetime.today())
+    >>> times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
     >>> df = pd.DataFrame(intensity, index=times, columns=['intensity'])
     >>> ts = TimeSeries(df)
