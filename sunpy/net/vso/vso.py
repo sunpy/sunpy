@@ -24,6 +24,7 @@ from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
 from astropy.time import TimeDelta
+from sunpy.time import Time
 import astropy.units as u
 from astropy.table import QTable as Table
 
@@ -37,7 +38,6 @@ from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename
 from sunpy.time import parse_time
-from sunpy.time import Time as apTime
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -148,10 +148,10 @@ class QueryResponse(list):
     def time_range(self):
         """ Return total time-range all records span across. """
         return (
-            apTime.strptime(
+            Time.strptime(
                 min(record.time.start for record in self
                     if record.time.start is not None), TIMEFORMAT),
-            apTime.strptime(
+            Time.strptime(
                 max(record.time.end for record in self
                     if record.time.end is not None), TIMEFORMAT)
         )
@@ -174,7 +174,7 @@ class QueryResponse(list):
             if time is None:
                 return ['None']
             if record.time.start is not None:
-                return [apTime.strftime(parse_time(time), TIME_FORMAT)]
+                return [Time.strftime(parse_time(time), TIME_FORMAT)]
             else:
                 return ['N/A']
 
@@ -552,9 +552,9 @@ class VSOClient(BaseClient):
     def latest(self):
         """ Return newest record (limited to last week). """
         return self.query_legacy(
-            apTime.now() - TimeDelta(7*u.day),
-            apTime.now(),
-            time_near=apTime.now()
+            Time.now() - TimeDelta(7*u.day),
+            Time.now(),
+            time_near=Time.now()
         )
 
     def fetch(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),

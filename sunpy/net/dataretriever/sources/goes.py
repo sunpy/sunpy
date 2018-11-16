@@ -3,19 +3,18 @@
 # Google Summer of Code 2014
 
 import os
-
-from datetime import timedelta, datetime
-from sunpy.time import parse_time, TimeRange
-from sunpy.time import Time as apTime
-
-from astropy.time import TimeDelta
-import astropy.units as u
-
-from ..client import GenericClient
-
 from urllib.parse import urlsplit
 
+from astropy.time import TimeDelta
+from sunpy.time import Time
+import astropy.units as u
+
+
+from datetime import timedelta
+from sunpy.time import parse_time, TimeRange
+from ..client import GenericClient
 from sunpy import config
+
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['XRSClient']
@@ -71,9 +70,9 @@ class XRSClient(GenericClient):
 
             # 1999-01-15 as an integer.
             if int(datestamp) <= 990115:
-                start = apTime.strptime(datestamp, "%y%m%d")
+                start = Time.strptime(datestamp, "%y%m%d")
             else:
-                start = apTime.strptime(datestamp, "%Y%m%d")
+                start = Time.strptime(datestamp, "%Y%m%d")
 
             almost_day = TimeDelta(1*u.day - 1*u.millisecond)
             times.append(TimeRange(start, start + almost_day))
@@ -96,7 +95,7 @@ class XRSClient(GenericClient):
         """
         # find out which satellite and datatype to query from the query times
         base_url = 'https://umbra.nascom.nasa.gov/goes/fits/'
-        start_time = apTime(timerange.start.strftime('%Y-%m-%d'))
+        start_time = Time(timerange.start.strftime('%Y-%m-%d'))
         # make sure we are counting a day even if only a part of it is in the query range.
         day_range = TimeRange(timerange.start.strftime('%Y-%m-%d'),
                               timerange.end.strftime('%Y-%m-%d'))

@@ -6,13 +6,14 @@ import numpy as np
 import pandas
 
 import astropy.time
+from sunpy.time import Time
 import astropy.units as u
 
 from sunpy.time.utime import TimeUTime  # noqa: F401
-from sunpy.time import astropy_time as ap
 
 __all__ = ['find_time', 'parse_time', 'is_time',
-           'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
+           'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format',
+           'is_time_equal']
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
@@ -56,6 +57,16 @@ TIME_FORMAT_LIST = [
 ]
 
 
+def is_time_equal(t1, t2):
+    """
+    Work around for https://github.com/astropy/astropy/issues/6970.
+    Remove the usage of this function once the fix is in place.
+    """
+    if abs(t1 - t2) < 1 * u.nanosecond:
+        return True
+    return False
+
+
 def _group_or_none(match, group, fun):
     try:
         ret = match.group(group)
@@ -82,7 +93,7 @@ def _regex_parse_time(inp, format):
         hour = match.group("hour")
     except IndexError:
         return inp, astropy.time.TimeDelta(0*u.day)
-    if match.group("hour") == "24":
+    if hour == "24":
         if not all(
                    _n_or_eq(_group_or_none(match, g, int), 00)
                    for g in ["minute", "second", "microsecond"]
@@ -94,8 +105,12 @@ def _regex_parse_time(inp, format):
 
 
 def find_time(string, format):
-    """ Return iterator of occurrences of date formatted with format
-    in string. Currently supported format codes: """
+    """
+    Return iterator of occurrences of date formatted with format
+    in string.
+
+    Currently supported format codes: TODO: ADD THIS
+    """
     re_format = format
     for key, value in REGEX.items():
         re_format = re_format.replace(key, value)
@@ -131,7 +146,7 @@ def _astropy_time(time):
 @singledispatch
 def convert_time(time_string, format=None, **kwargs):
     # default case when no type matches
-    return ap.Time(time_string, format=format, **kwargs)
+    return Time(time_string, format=format, **kwargs)
 
 
 # Only register pandas if we can import pandas
@@ -140,15 +155,15 @@ try:
 
     @convert_time.register(pandas.Series)
     def convert_time_pandasSeries(time_string, **kwargs):
-        return ap.Time(time_string.tolist(), **kwargs)
+        return Time(time_string.tolist(), **kwargs)
 
     @convert_time.register(pandas.Series)
     def convert_time_pandasSeries(time_string, **kwargs):
-        return ap.Time(time_string.tolist(), **kwargs)
+        return Time(time_string.tolist(), **kwargs)
 
     @convert_time.register(pandas.DatetimeIndex)
     def convert_time_pandasDatetimeIndex(time_string, **kwargs):
-        return ap.Time(time_string.tolist(), **kwargs)
+        return Time(time_string.tolist(), **kwargs)
 
 except ImportError:
     pass
@@ -156,30 +171,30 @@ except ImportError:
 
 @convert_time.register(datetime)
 def convert_time_datetime(time_string, **kwargs):
-    return ap.Time(time_string, **kwargs)
+    return Time(time_string, **kwargs)
 
 
 @convert_time.register(date)
 def convert_time_date(time_string, **kwargs):
-    return ap.Time(time_string.isoformat(), **kwargs)
+    return Time(time_string.isoformat(), **kwargs)
 
 
 @convert_time.register(tuple)
 def convert_time_tuple(time_string, **kwargs):
     # Make sure there are enough values to unpack
     time_string = (time_string + (0,)*7)[:7]
-    return ap.Time('{}-{}-{}T{}:{}:{}.{:06}'.format(*time_string), **kwargs)
+    return Time('{}-{}-{}T{}:{}:{}.{:06}'.format(*time_string), **kwargs)
 
 
 @convert_time.register(np.datetime64)
 def convert_time_npdatetime64(time_string, **kwargs):
-    return ap.Time(str(time_string.astype('M8[ns]')), **kwargs)
+    return Time(str(time_string.astype('M8[ns]')), **kwargs)
 
 
 @convert_time.register(np.ndarray)
 def convert_time_npndarray(time_string, **kwargs):
     if 'datetime64' in str(time_string.dtype):
-        return ap.Time([str(dt.astype('M8[ns]')) for dt in time_string], **kwargs)
+        return Time([str(dt.astype('M8[ns]')) for dt in time_string], **kwargs)
     else:
         return convert_time.dispatch(object)(time_string, **kwargs)
 
@@ -208,7 +223,7 @@ def convert_time_str(time_string, **kwargs):
                 break
             if ts is None:
                 continue
-            return ap.Time.strptime(ts, time_format,
+            return Time.strptime(ts, time_format,
                                     **kwargs) + time_delta
         except ValueError:
             pass
@@ -252,7 +267,7 @@ def parse_time(time_string, *, format=None, **kwargs):
     <Time object: scale='tai' format='isot' value=2016-05-04T21:08:12.000>
     """
     if time_string is 'now':
-        rt = ap.Time.now()
+        rt = Time.now()
     else:
         rt = convert_time(time_string, format=format, **kwargs)
 
@@ -283,7 +298,7 @@ def is_time(time_string, time_format=None):
     """
     if time_string is None:
         return False
-    elif isinstance(time_string, ap.Time):
+    elif isinstance(time_string, Time):
         return True
 
     try:
@@ -323,7 +338,7 @@ def day_of_year(time_string):
     """
     SECONDS_IN_DAY = 60 * 60 * 24.0
     time = parse_time(time_string)
-    time_diff = time - ap.Time.strptime(time.strftime('%Y'), '%Y')
+    time_diff = time - Time.strptime(time.strftime('%Y'), '%Y')
     return time_diff.jd + 1
 
 

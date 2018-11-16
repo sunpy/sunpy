@@ -15,10 +15,12 @@ AND-expression, if you still attempt to do so it is called a collision.
 For a quick example think about how the system should handle
 Instrument('aia') & Instrument('eit').
 """
+import collections
+
 from astropy import units as u
+from sunpy.time import Time
 
 from sunpy.time import TimeRange as _TimeRange
-from sunpy.time import Time as apTime
 from sunpy.net.attr import (Attr, AttrWalker, AttrAnd,
                             AttrOr, DummyAttr, ValueAttr, SimpleAttr)
 from sunpy.util.multimethod import MultiMethod
@@ -61,6 +63,7 @@ class _Range(object):
 
     def __contains__(self, other):
         return self.min <= other.min and self.max >= other.max
+
 
 class Wavelength(Attr, _Range):
     def __init__(self, wavemin, wavemax=None):
@@ -590,11 +593,11 @@ def _(attr, results):
         if
         it.time.end is not None
         and
-        attr.min <= apTime.strptime(it.time.end, TIMEFORMAT)
+        attr.min <= Time.strptime(it.time.end, TIMEFORMAT)
         and
         it.time.start is not None
         and
-        attr.max >= apTime.strptime(it.time.start, TIMEFORMAT)
+        attr.max >= Time.strptime(it.time.start, TIMEFORMAT)
     )
 
 

@@ -4,7 +4,6 @@
 # the Google Summer of Code (2013).
 import os
 import fnmatch
-from time import mktime, strptime
 from datetime import datetime
 
 import numpy as np
@@ -16,8 +15,9 @@ import astropy.table
 from astropy.units import Unit, nm, quantity, equivalencies
 
 
+import sunpy
 from sunpy import config
-from sunpy.time import parse_time, TimeRange, Time
+from sunpy.time import parse_time, Time
 from sunpy.io import fits, file_tools as sunpy_filetools
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -585,6 +585,8 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
 
 def entries_from_file(file, default_waveunit=None,
                       time_string_parse_format=''):
+    # Note: time_string_parse_format='' so that None won't be passed to Time.strptime
+    # (which would make strptime freak out, if I remember correctly).
     """Use the headers of a FITS file to generate an iterator of
     :class:`sunpy.database.tables.DatabaseEntry` instances. Gathered
     information will be saved in the attribute `fits_header_entries`. If the

@@ -464,9 +464,6 @@ def met_to_utc(timeinsec):
     # Times for GBM are in Mission Elapsed Time (MET).
     # The reference time for this is 2001-Jan-01 00:00.
     met_ref_time = parse_time('2001-01-01 00:00')
-    offset_from_utc = (
-        met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
-    time_in_utc = parse_time(timeinsec + offset_from_utc)
 
     return met_ref_time + timeinsec * u.second
 
@@ -487,9 +484,5 @@ def utc_to_met(time_ut):
 
     """
     met_ref_time = parse_time('2001-01-01 00:00')
-    ut_seconds = (time_ut - parse_time('1979-01-01')).total_seconds()
-    offset_from_utc = (
-        met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
-    fermi_met = ut_seconds - offset_from_utc
 
     return (time_ut - met_ref_time).to(u.second)

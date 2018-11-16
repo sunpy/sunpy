@@ -3,6 +3,7 @@
 # Google Summer of Code 2014
 
 from astropy.time import TimeDelta
+import astropy.units as u
 
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper

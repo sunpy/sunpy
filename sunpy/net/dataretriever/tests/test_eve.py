@@ -1,7 +1,8 @@
 import datetime
-import pytest
 
-from sunpy.time import Time as apTime
+import pytest
+from hypothesis import given, settings
+from sunpy.net.tests.strategies import time_attr, Times
 
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
@@ -13,9 +14,6 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-from hypothesis import given, settings
-from hypothesis.strategies import datetimes
-from sunpy.net.tests.strategies import time_attr, Times
 
 LCClient = eve.EVEClient()
 

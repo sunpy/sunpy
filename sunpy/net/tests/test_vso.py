@@ -7,7 +7,6 @@ import tempfile
 
 import pytest
 
-from sunpy.time import Time as apTime
 from astropy import units as u
 
 from sunpy.time import TimeRange, parse_time
