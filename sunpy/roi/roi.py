@@ -1,3 +1,5 @@
+import textwrap
+
 from sunpy.time import TimeRange
 from sunpy.time import parse_time
 
@@ -89,7 +91,7 @@ class roi(object):
             endstring = 'None'
         else:
             endstring = self.end_time.iso
-        return dedent(f"""\
+        return textwrap.dedent(f"""\
         SunPy Region-of-interest (ROI) object
         -------------------------------------
         Source:            {self.source}

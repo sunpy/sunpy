@@ -17,6 +17,7 @@ from astropy.time import TimeDelta
 
 import sunpy.io
 from sunpy.time import TimeRange, parse_time
+from sunpy.time import astropy_time as ap
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.coordinates import get_sunearth_distance
 
@@ -88,8 +89,8 @@ def parse_observing_summary_dbase_file(filename):
             obssumm_filename.append(row[0])
             orbit_start.append(int(row[1]))
             orbit_end.append(int(row[2]))
-            start_time.append(Time.strptime(row[3], '%d-%b-%y'))  # skip time
-            end_time.append(Time.strptime(row[5], '%d-%b-%y'))  # skip time
+            start_time.append(ap.Time.strptime(row[3], '%d-%b-%y'))  # skip time
+            end_time.append(ap.Time.strptime(row[5], '%d-%b-%y'))  # skip time
             status_flag.append(int(row[7]))
             number_of_packets.append(int(row[8]))
 
