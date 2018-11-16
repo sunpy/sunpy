@@ -31,7 +31,7 @@ def hash_figure(figure=None, out_stream=None):
 
     Returns
     -------
-    out : string
+    out : str
         The SHA256 hash in hexadecimal representation
     """
 
@@ -69,7 +69,7 @@ def verify_figure_hash(name, figure=None):
 
     Parameters
     ----------
-    name : string
+    name : str
         The identifier for the hash in the hash library
     figure : matplotlib.figure.Figure
         If None is specified, the current figure is used (as determined by matplotlib.pyplot.gcf())

@@ -109,7 +109,7 @@ def noaa_pre_test_ts():
 def generic_ts():
     # Generate the data and the corrisponding dates
     base = parse_time("2016/10/01T05:00:00")
-    dates = parse_time([base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)])
+    dates = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
     # Create the data DataFrame, header MetaDict and units OrderedDict
@@ -135,8 +135,7 @@ def concatenate_multi_files_ts():
 def table_ts():
     # Generate the data and the corresponding dates
     base = parse_time(datetime.datetime.today())
-    times = Time(
-        [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)])
+    times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity = u.Quantity(
         np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60)))), u.W / u.m
         **2)
@@ -506,7 +505,7 @@ def test_concatenation_different_data_error(eve_test_ts, fermi_gbm_test_ts):
 def test_generic_construction_concatenation():
     # Generate the data and the corrisponding dates
     base = parse_time(datetime.datetime.today())
-    times = [base - TimeDelta(x*u.minute) for x in range(0, 24 * 60)]
+    times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
     intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 

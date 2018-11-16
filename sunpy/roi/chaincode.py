@@ -15,7 +15,7 @@ class Chaincode(np.ndarray):
     ----------
     origin : `numpy.ndarray`, `list`
         The 2 points of the origin of the chaincode
-    chaincode : string
+    chaincode : str
         A list of the numbers (0-7) that indicate the path of the
         chaincode.  0 moves horizontally to the left and the rest
         follows anticlockwise.

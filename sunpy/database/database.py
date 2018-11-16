@@ -882,7 +882,7 @@ class Database(object):
 
         Parameters
         ----------
-        path : string
+        path : str
             The directory where to look for FITS files.
 
         recursive : bool, optional
