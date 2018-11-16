@@ -2,10 +2,9 @@ from datetime import timedelta
 
 import astropy.units as u
 from astropy.time import TimeDelta
+from sunpy.time import Time
 
-from sunpy.time import parse_time
-from sunpy.time.astropy_time import _is_time_equal
-from sunpy.time import astropy_time as ap
+from sunpy.time import parse_time, is_time_equal
 from sunpy import config
 
 TIME_FORMAT = config.get('general', 'time_format')
@@ -91,7 +90,7 @@ class TimeRange(object):
         # Otherwise, assume that the second argument is parse_time-compatible
         y = parse_time(y, format=format)
 
-        if isinstance(y, ap.Time):
+        if isinstance(y, Time):
             if x < y:
                 self._t1 = x
                 self._t2 = y
@@ -201,8 +200,8 @@ class TimeRange(object):
         result : `bool`
         """
         if isinstance(other, TimeRange):
-            return _is_time_equal(
-                self.start, other.start) and _is_time_equal(self.end, other.end)
+            return is_time_equal(
+                self.start, other.start) and is_time_equal(self.end, other.end)
 
         return NotImplemented
 
@@ -220,8 +219,8 @@ class TimeRange(object):
         result : `bool`
         """
         if isinstance(other, TimeRange):
-            return not (_is_time_equal(
-                self.start, other.start) and _is_time_equal(self.end, other.end))
+            return not (is_time_equal(
+                self.start, other.start) and is_time_equal(self.end, other.end))
 
         return NotImplemented
 

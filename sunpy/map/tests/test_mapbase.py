@@ -4,7 +4,6 @@ Test Generic Map
 """
 import os
 import pytest
-import datetime
 import warnings
 import tempfile
 

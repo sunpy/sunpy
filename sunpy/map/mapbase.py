@@ -17,6 +17,7 @@ from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
 import sunpy.io as io
+# The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
 import sunpy.cm
 from sunpy import config

@@ -12,7 +12,16 @@
 import os
 import sys
 import glob
+import builtins  # noqa
 import itertools
+
+# Import ah_bootstrap after the python version validation
+import ah_bootstrap  # noqa
+from setuptools import setup  # noqa
+from astropy_helpers.git_helpers import get_git_devstr  # noqa
+from astropy_helpers.setup_helpers import get_package_info  # noqa
+from astropy_helpers.setup_helpers import get_debug_option, register_commands
+from astropy_helpers.version_helpers import generate_version_py  # noqa
 
 try:
     from configparser import ConfigParser
@@ -40,17 +49,9 @@ if sys.version_info < tuple((int(val) for val in __minimum_python_version__.spli
     sys.stderr.write("ERROR: SunPy requires Python {} or later\n".format(__minimum_python_version__))
     sys.exit(1)
 
-# Import ah_bootstrap after the python version validation
-import ah_bootstrap  # noqa
-from setuptools import setup  # noqa
 
-import builtins  # noqa
 builtins._SUNPY_SETUP_ = True
 
-from astropy_helpers.setup_helpers import (register_commands, get_debug_option,
-                                           get_package_info)  # noqa
-from astropy_helpers.git_helpers import get_git_devstr  # noqa
-from astropy_helpers.version_helpers import generate_version_py  # noqa
 
 # -- Read the Docs Setup  -----------------------------------------------------
 

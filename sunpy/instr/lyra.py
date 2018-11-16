@@ -10,9 +10,9 @@ import numpy as np
 import pandas
 
 from astropy.io import fits
+from sunpy.time import Time
 
 from sunpy.time import parse_time
-from sunpy.time import Time
 from sunpy.util.net import check_download_file
 from sunpy.util.config import get_and_create_download_dir
 
@@ -284,8 +284,8 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         bad_indices = np.empty(0, dtype="int64")
         all_indices = np.arange(len(time))
         for index in artifact_indices:
-            bad_period = np.logical_and(time >= lytaf["begin_time"][index].datetime,
-                                        time <= lytaf["end_time"][index].datetime)
+            bad_period = np.logical_and(time >= lytaf["begin_time"][index],
+                                        time <= lytaf["end_time"][index])
             bad_indices = np.append(bad_indices, all_indices[bad_period])
         clean_time = np.delete(clean_time, bad_indices)
         if channels:

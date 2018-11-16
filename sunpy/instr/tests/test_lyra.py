@@ -10,8 +10,7 @@ from astropy.time import TimeDelta
 import astropy.units as u
 
 from sunpy.data.test import rootdir
-from sunpy.time import parse_time
-from sunpy.time.astropy_time import _is_time_equal
+from sunpy.time import parse_time, is_time_equal
 from sunpy import timeseries
 from sunpy.instr import lyra
 
@@ -67,10 +66,10 @@ def test_split_series_using_lytaf():
     split = lyra.split_series_using_lytaf(dummy_time, dummy_data, lytaf_tmp)
     assert type(split) == list
     assert len(split) == 4
-    assert _is_time_equal(split[0]['subtimes'][0], parse_time((2010, 6, 13, 2, 0)))
-    assert _is_time_equal(split[0]['subtimes'][-1], parse_time((2010, 6, 13, 2, 7, 2)))
-    assert _is_time_equal(split[3]['subtimes'][0], parse_time((2010, 6, 13, 2, 59, 42)))
-    assert _is_time_equal(split[3]['subtimes'][-1], parse_time((2010, 6, 13, 2, 59, 58)))
+    assert is_time_equal(split[0]['subtimes'][0], parse_time((2010, 6, 13, 2, 0)))
+    assert is_time_equal(split[0]['subtimes'][-1], parse_time((2010, 6, 13, 2, 7, 2)))
+    assert is_time_equal(split[3]['subtimes'][0], parse_time((2010, 6, 13, 2, 59, 42)))
+    assert is_time_equal(split[3]['subtimes'][-1], parse_time((2010, 6, 13, 2, 59, 58)))
 
     # Test case when no LYTAF events found in time series.
     split_no_lytaf = lyra.split_series_using_lytaf(dummy_time,

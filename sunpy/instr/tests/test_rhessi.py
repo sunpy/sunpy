@@ -2,7 +2,7 @@
 """
 Unit tests for `sunpy.instr.rhessi`
 """
-import os
+import textwrap
 
 import mock
 import numpy as np
@@ -12,8 +12,8 @@ import sunpy.io
 import sunpy.map
 from sunpy.data.test import get_test_filepath
 import sunpy.instr.rhessi as rhessi
-from sunpy.time import parse_time
-from sunpy.time.astropy_time import _is_time_equal
+from sunpy.time import parse_time, is_time_equal
+
 
 @pytest.fixture
 def cross_month_timerange():
@@ -31,7 +31,7 @@ def test_backprojection():
     test_filename = 'hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits'
     amap = rhessi.backprojection(get_test_filepath(test_filename))
     assert isinstance(amap, sunpy.map.GenericMap)
-    assert _is_time_equal(amap.date, parse_time((2002, 2, 20, 11, 6, 21)))
+    assert is_time_equal(amap.date, parse_time((2002, 2, 20, 11, 6, 21)))
 
 
 def test_parse_obssum_dbase_file():

@@ -10,14 +10,14 @@ import re
 import csv
 
 import numpy as np
-from dateutil.relativedelta import relativedelta
 
 from astropy import units as u
 from astropy.time import TimeDelta
+from sunpy.time import Time
+
 
 import sunpy.io
 from sunpy.time import TimeRange, parse_time
-from sunpy.time import astropy_time as ap
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.coordinates import get_sunearth_distance
 
@@ -54,10 +54,7 @@ def parse_observing_summary_dbase_file(filename):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, _ = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
-    >>> file_names = rhessi.parse_obssumm_dbase_file(fname)   # doctest: +REMOTE_DATA
-    >>> file_names['filename'][::5]   # doctest: +REMOTE_DATA
-    ['hsi_obssumm_20110401_043.fit', 'hsi_obssumm_20110406_041.fit', 'hsi_obssumm_20110411_024.fit', 'hsi_obssumm_20110416_016.fit', 'hsi_obssumm_20110421_025.fit', 'hsi_obssumm_20110426_022.fit']
+    >>> rhessi.parse_observing_summary_dbase_file(fname)   # doctest: +SKIP
 
     References
     ----------
@@ -89,8 +86,8 @@ def parse_observing_summary_dbase_file(filename):
             obssumm_filename.append(row[0])
             orbit_start.append(int(row[1]))
             orbit_end.append(int(row[2]))
-            start_time.append(ap.Time.strptime(row[3], '%d-%b-%y'))  # skip time
-            end_time.append(ap.Time.strptime(row[5], '%d-%b-%y'))  # skip time
+            start_time.append(Time.strptime(row[3], '%d-%b-%y'))  # skip time
+            end_time.append(Time.strptime(row[5], '%d-%b-%y'))  # skip time
             status_flag.append(int(row[7]))
             number_of_packets.append(int(row[8]))
 

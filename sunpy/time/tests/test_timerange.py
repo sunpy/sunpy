@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-import pytest
-import astropy.units as u
-from astropy.time import TimeDelta
 from datetime import timedelta
 
+import pytest
+
+import astropy.units as u
+from astropy.time import TimeDelta
+from sunpy.time import Time
+
 import sunpy.time
-import sunpy.time.astropy_time as ap
 
 tbegin_str = '2012/1/1'
 tfin_str = '2012/1/2'
@@ -64,8 +66,8 @@ def test_equals():
 
     assert tr == tr_diff_format
 
-    lower_dt = ap.Time('2016-01-04T09:30:00.000')
-    upper_dt = ap.Time('2016-06-04T09:30:00.000')
+    lower_dt = Time('2016-01-04T09:30:00.000')
+    upper_dt = Time('2016-06-04T09:30:00.000')
     tr_datetime = sunpy.time.TimeRange(lower_dt, upper_dt)
 
     assert tr == tr_datetime
@@ -160,7 +162,7 @@ def timerange_a():
 
 
 def test_center(timerange_a):
-    assert timerange_a.center == ap.Time('2012-1-1T12:00:00')
+    assert timerange_a.center == Time('2012-1-1T12:00:00')
 
 
 def test_split(timerange_a):
@@ -189,7 +191,6 @@ def test_window(timerange_a):
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
-    assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
     assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
@@ -205,7 +206,6 @@ def test_window_timedelta(timerange_a, td1, td2):
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
-    assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
     assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
@@ -261,9 +261,9 @@ def test_extend():
 
 
 def test_contains(timerange_a):
-    before = ap.Time('1990-1-1')
-    after = ap.Time('2022-1-1')
-    between = ap.Time('2014-5-4')
+    before = Time('1990-1-1')
+    after = Time('2022-1-1')
+    between = Time('2014-5-4')
     timerange = sunpy.time.TimeRange('2014/05/03 12:00', '2014/05/05 21:00')
     assert between in timerange
     assert before not in timerange

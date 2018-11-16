@@ -1,6 +1,9 @@
 import pytest
 from hypothesis import given, example
 
+from astropy.time import TimeDelta
+import astropy.units as u
+
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
@@ -9,11 +12,7 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.net.tests.strategies import goes_time
-
-from sunpy.time import parse_time
-from sunpy.time.astropy_time import _is_time_equal
-from astropy.time import TimeDelta
-import astropy.units as u
+from sunpy.time import parse_time, is_time_equal
 
 
 @pytest.fixture
@@ -79,7 +78,7 @@ def test_query(LCClient, time):
 
     almost_day = TimeDelta(1*u.day - 1*u.millisecond)
     end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
-    assert _is_time_equal(qr1.time_range().end, end)
+    assert is_time_equal(qr1.time_range().end, end)
 
 
 def test_query_error(LCClient):

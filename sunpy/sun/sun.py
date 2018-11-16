@@ -12,7 +12,7 @@ import astropy.units as u
 from astropy.coordinates import Angle, Latitude, Longitude
 
 from sunpy.sun import constants
-from sunpy.time import julian_day, parse_time, julian_centuries
+from sunpy.time import parse_time, julian_centuries
 from sunpy.util.decorators import add_common_docstring
 
 __all__ = [

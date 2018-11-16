@@ -5,7 +5,6 @@ import astropy.units as u
 
 from sunpy.instr import fermi
 from sunpy.time import parse_time
-from sunpy.time.astropy_time import _is_time_equal
 
 
 @pytest.mark.remote_data

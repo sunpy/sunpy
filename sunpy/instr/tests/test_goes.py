@@ -6,10 +6,10 @@ from astropy.units.quantity import Quantity
 from astropy.tests.helper import assert_quantity_allclose
 from numpy.testing import assert_array_equal, assert_almost_equal
 from pandas.util.testing import assert_frame_equal
+
 import astropy.units as u
 
-from sunpy.time import TimeRange, parse_time
-from sunpy.time.astropy_time import _is_time_equal
+from sunpy.time import TimeRange, parse_time, is_time_equal
 from sunpy import timeseries
 from sunpy.instr import goes
 from sunpy.data.test import get_test_filepath
@@ -37,13 +37,13 @@ def test_goes_event_list():
     assert isinstance(result[0]['start_time'], Time)
     assert isinstance(result[0]['end_time'], Time)
     assert type(result[0]['goes_class']) == str
-    assert type(result[0]['noaa_active_region']) == int
+    assert type(result[0]['noaa_active_region']) == np.int64
     assert result[0]['event_date'] == '2011-06-07'
     assert result[0]['goes_location'] == (54, -21)
     # float errror
-    assert _is_time_equal(result[0]['start_time'], parse_time((2011, 6, 7, 6, 16)))
-    assert _is_time_equal(result[0]['peak_time'], parse_time((2011, 6, 7, 6, 41)))
-    assert _is_time_equal(result[0]['end_time'], parse_time((2011, 6, 7, 6, 59)))
+    assert is_time_equal(result[0]['start_time'], parse_time((2011, 6, 7, 6, 16)))
+    assert is_time_equal(result[0]['peak_time'], parse_time((2011, 6, 7, 6, 41)))
+    assert is_time_equal(result[0]['end_time'], parse_time((2011, 6, 7, 6, 59)))
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
     # Test case where GOES class filter not applied
@@ -56,12 +56,12 @@ def test_goes_event_list():
     assert isinstance(result[0]['start_time'], Time)
     assert isinstance(result[0]['end_time'], Time)
     assert type(result[0]['goes_class']) == str
-    assert type(result[0]['noaa_active_region']) == int
+    assert type(result[0]['noaa_active_region']) == np.int64
     assert result[0]['event_date'] == '2011-06-07'
     assert result[0]['goes_location'] == (54, -21)
-    assert _is_time_equal(result[0]['start_time'], parse_time((2011, 6, 7, 6, 16)))
-    assert _is_time_equal(result[0]['peak_time'], parse_time((2011, 6, 7, 6, 41)))
-    assert _is_time_equal(result[0]['end_time'], parse_time((2011, 6, 7, 6, 59)))
+    assert is_time_equal(result[0]['start_time'], parse_time((2011, 6, 7, 6, 16)))
+    assert is_time_equal(result[0]['peak_time'], parse_time((2011, 6, 7, 6, 41)))
+    assert is_time_equal(result[0]['end_time'], parse_time((2011, 6, 7, 6, 59)))
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
 
