@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division
-
 import tempfile
 import os.path
 import pytest
@@ -8,16 +6,15 @@ import datetime
 import numpy as np
 import pandas
 
+from astropy.time import TimeDelta
+import astropy.units as u
+
 from sunpy.data.test import rootdir
 from sunpy.time import parse_time
+from sunpy.time.astropy_time import _is_time_equal
 from sunpy import timeseries
 from sunpy.instr import lyra
 
-from astropy.time import TimeDelta
-import astropy.units as u
-from sunpy.time.astropy_time import _is_time_equal
-
-from sunpy.extern.six.moves import range
 
 # Define location for test LYTAF database files
 TEST_DATA_PATH = rootdir

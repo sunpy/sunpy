@@ -1,10 +1,7 @@
 """Image resampling methods"""
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 import scipy.interpolate
 import scipy.ndimage
-from sunpy.extern.six.moves import range
 
 __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 

@@ -1,15 +1,11 @@
-from __future__ import absolute_import, division, print_function
+from datetime import timedelta
 
 import astropy.units as u
 from astropy.time import TimeDelta
 
-from . import astropy_time as ap
-from sunpy.time import parse_time, TimeDeltaDatetime
+from sunpy.time import parse_time
 from sunpy.time.astropy_time import _is_time_equal
 from sunpy import config
-from sunpy.extern.six.moves import range
-
-from datetime import timedelta
 
 TIME_FORMAT = config.get('general', 'time_format')
 
@@ -43,7 +39,16 @@ class TimeRange(object):
     >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
     >>> import astropy.units as u
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.s)
-    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.day)
+    >>> TimeRange('2010/03/04 00:10', 400 * u.day)
+       <sunpy.time.timerange.TimeRange object at ...>
+        Start: 2010-03-04 00:10:00
+        End:   2011-04-08 00:10:00
+        Center:2010-09-20 00:10:00
+        Duration:400.0 days or
+               9600.0 hours or
+               576000.0 minutes or
+               34560000.0 seconds
+    <BLANKLINE>
     """
     def __init__(self, a, b=None, format=None):
         """Creates a new TimeRange instance"""

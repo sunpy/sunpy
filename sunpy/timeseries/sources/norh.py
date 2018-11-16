@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 """Nobeyama Radioheliograph TimeSeries subclass definitions."""
-
-from __future__ import absolute_import
+from collections import OrderedDict
 
 import pandas
 import numpy as np
 import matplotlib.pyplot as plt
-from collections import OrderedDict
 
 import astropy.units as u
+from astropy.time import TimeDelta
 
 import sunpy.io
 from sunpy import config
@@ -16,8 +15,10 @@ from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 
-from astropy.time import TimeDelta
+
 import astropy.units as u
+from astropy.time import TimeDelta
+
 
 TIME_FORMAT = config.get("general", "time_format")
 

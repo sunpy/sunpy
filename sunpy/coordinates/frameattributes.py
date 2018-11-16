@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division
-
-import warnings
+import datetime
 
 import astropy.units as u
 from sunpy.time import Time
-from astropy.coordinates import TimeAttribute, CoordinateAttribute, get_body_barycentric, ICRS
+from astropy.coordinates import TimeAttribute, CoordinateAttribute
 
-from sunpy.extern import six
 from sunpy.time import parse_time
-from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']
 
@@ -58,13 +54,22 @@ class TimeFrameAttributeSunPy(TimeAttribute):
         if value is None:
             return None, False
 
+        elif value == 'now':
+            return Time(datetime.datetime.now()), True
+
         elif isinstance(value, Time):
             out = value
             converted = False
 
+        elif isinstance(value, str):
+            try:
+                out = Time(parse_time(value))
+            except Exception as err:
+                raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
+            converted = True
         else:
             try:
-                out = parse_time(value)
+                out = Time(value)
             except Exception as err:
                 raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
             converted = True
@@ -95,7 +100,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
 
     def convert_input(self, value):
         # Keep string here.
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             return value, False
         else:
             return super(ObserverCoordinateAttribute, self).convert_input(value)
@@ -130,7 +135,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
 
             # If the observer is a string and we have obstime then calculate
             # the position of the observer.
-            if isinstance(observer, six.string_types):
+            if isinstance(observer, str):
                 if obstime is not None:
                     new_observer = self._convert_string_to_coord(observer.lower(), obstime)
                     new_observer.object_name = observer

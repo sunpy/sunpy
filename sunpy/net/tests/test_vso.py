@@ -3,12 +3,9 @@
 
 #pylint: disable=W0613
 
-from __future__ import absolute_import
-
 import tempfile
 
 import pytest
-from six import iteritems
 
 from sunpy.time import Time as apTime
 from astropy import units as u
@@ -68,11 +65,6 @@ def eit(request):
 @pytest.fixture
 def client(request):
     return vso.VSOClient()
-
-
-@pytest.fixture
-def iclient(request):
-    return vso.InteractiveVSOClient()
 
 
 def test_simpleattr_apply():

@@ -1,22 +1,20 @@
 """
 This module provides a wrapper around the Helioviewer API.
 """
-from __future__ import absolute_import
-
 # pylint: disable=E1101,F0401,W0231
 
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import errno
 import json
+import errno
 import codecs
+import urllib
+
 import sunpy
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
-
-from sunpy.extern.six.moves import urllib
 
 __all__ = ['HelioviewerClient']
 
@@ -206,9 +204,11 @@ class HelioviewerClient(object):
         Examples
         --------
         >>> from sunpy.net.helioviewer import HelioviewerClient
+        >>> import datetime
         >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> file = hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)   # doctest: +REMOTE_DATA
         >>> file = hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800)   # doctest: +REMOTE_DATA
+        >>> file = hv.download_jp2(datetime.datetime.now(), observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')   # doctest: +REMOTE_DATA
         """
         params = {
             "action": "takeScreenshot",

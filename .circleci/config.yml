@@ -8,24 +8,18 @@ apt-run: &apt-install
     apt update
     apt install -y graphviz build-essential
 
-docs-install: &docs-install
-  name: Install Python dependencies
+tox-install: &tox-install
+  name: Install Tox
   command: |
-    pip install -r requirements/docs.txt
-
-image-conda-run: &image-conda-install
-  name: Install Python dependencies for figure tests
-  command: |
-    conda env create -f sunpy/tests/figure_tests_env_py36.yml
+    pip install git+https://github.com/drdavella/tox-conda.git
+    pip install tox
 
 image-run: &image-tests
   name: Run image tests
   environment:
     MPLBACKEND: Agg
   command: |
-    conda env list
-    source activate sunpy-figure-tests-3.6
-    python setup.py test --figure-only --coverage
+    tox -e figure
     pip install codecov
     codecov
 
@@ -38,6 +32,13 @@ jobs:
       - checkout
       - run: python setup.py egg_info
 
+  egg-info-37:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
   figure-tests-36:
     docker:
       - image: continuumio/miniconda3
@@ -45,14 +46,13 @@ jobs:
       - checkout
       - run: *skip-check
       - run: *apt-install
-      - run: *image-conda-install
+      - run: *tox-install
       - run: *image-tests
       - store_artifacts:
           path: figure_test_images
       - run:
           name: "Image comparison page is available at:"
           command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/figure_test_images/fig_comparison.html"; echo $FIGS_URL
-
 
   html-docs:
     docker:
@@ -64,8 +64,8 @@ jobs:
       - checkout
       - run: *skip-check
       - run: *apt-install
-      - run: *docs-install
-      - run: python setup.py build_docs -w
+      - run: *tox-install
+      - run: tox -e py37-build_docs
       - store_artifacts:
           path: docs/_build/html
 
@@ -78,13 +78,13 @@ jobs:
           paths:
             - ~/sunpy/data/sample_data
 
-
 workflows:
   version: 2
 
   egg-info:
     jobs:
       - egg-info-36
+      - egg-info-37
 
   figure-tests:
     jobs:
@@ -93,7 +93,6 @@ workflows:
   test-documentation:
     jobs:
       - html-docs
-
 
 notify:
   webhooks:

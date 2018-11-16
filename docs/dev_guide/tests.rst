@@ -40,7 +40,7 @@ have corresponding test modules `test_xml.py` and `test_multimethod.py` in
 
 There are some tests for functions and methods in SunPy that require a
 working connection to the internet. pytest is configured in a way that it
-iterates over all tests that have been marked as *online* and checks if
+iterates over all tests that have been marked as `pytest.mark.remote_data` and checks if
 there is an established connection to the internet. If there is none, the
 test is skipped, otherwise it is run. Marking tests is pretty
 straightforward in pytest: use the decorator ``@pytest.mark.remote_data`` to
@@ -92,7 +92,7 @@ the module on the command line, e.g.::
 for the tests for `sunpy.util.xml`.
 
 To run only tests that been marked with a specific pytest mark using the
-decorator ``@pytest.mark`` (see the section *Writing a unit test*), use the
+decorator ``@pytest.mark.MARK`` (see the section *Writing a unit test*), use the
 following command (where ``MARK`` is the name of the mark)::
 
   py.test -k MARK
@@ -102,9 +102,9 @@ code (where ``MARK`` is the name of the mark)::
 
   py.test -k-MARK
 
-Note that pytest is configured to skip all tests with the mark *online* if
+Note that pytest is configured to skip all tests with the mark `pytest.mark.remote_data` if
 there is no connection to the internet. This cannot be circumvented, i.e.
-it cannot be forced to run a test with the mark *online* if there is no
+pytest cannot be forced to run a test with the mark `pytest.mark.remote_data` if there is no
 working internet connection (rename the mark to something else to call the test
 function anyway).
 

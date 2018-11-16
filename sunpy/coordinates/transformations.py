@@ -13,29 +13,27 @@ This module contains the functions for converting one
   `~astropy.coordinates.SkyCoord` instances.
 
 """
-from __future__ import absolute_import, division
-
 import numpy as np
 
-from astropy import units as u
-from astropy.coordinates.representation import (CartesianRepresentation,
-                                                UnitSphericalRepresentation,
-                                                SphericalRepresentation)
+import astropy.units as u
+from astropy.coordinates import HCRS, ConvertError, BaseCoordinateFrame, get_body_barycentric
 from astropy.coordinates.baseframe import frame_transform_graph
+from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
+                                                UnitSphericalRepresentation)
+from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
+from astropy.coordinates.matrix_utilities import matrix_product, rotation_matrix, matrix_transpose
+
+from sunpy.sun import sun
+
+from .frames import Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst
+
 try:
     from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
 except ImportError:
     from astropy.coordinates import make_transform_graph_docs as _make_transform_graph_docs
     make_transform_graph_docs = lambda: _make_transform_graph_docs(frame_transform_graph)
-from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
-from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product, matrix_transpose
-from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
-from astropy.tests.helper import quantity_allclose
 
-from .frames import (HeliographicStonyhurst, HeliographicCarrington,
-                     Heliocentric, Helioprojective)
 
-from sunpy.sun import sun
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
@@ -64,9 +62,9 @@ def _observers_are_equal(obs_1, obs_2, string_ok=False):
     if not (isinstance(obs_1, BaseCoordinateFrame) and isinstance(obs_2, BaseCoordinateFrame)):
         raise ValueError("To compare two observers, both must be instances of BaseCoordinateFrame. "
                          "Cannot compare two observers {} and {}.".format(obs_1, obs_2))
-    return (quantity_allclose(obs_1.lat, obs_2.lat) and
-            quantity_allclose(obs_1.lon, obs_2.lon) and
-            quantity_allclose(obs_1.radius, obs_2.radius))
+    return (u.allclose(obs_1.lat, obs_2.lat) and
+            u.allclose(obs_1.lon, obs_2.lon) and
+            u.allclose(obs_1.radius, obs_2.radius))
 
 
 # =============================================================================
@@ -213,7 +211,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     hglon = heliogcoord.spherical.lon
     hglat = heliogcoord.spherical.lat
     r = heliogcoord.spherical.distance
-    if r.unit is u.one and quantity_allclose(r, 1*u.one):
+    if r.unit is u.one and u.allclose(r, 1*u.one):
         r = np.ones_like(r)
         r *= RSUN_METERS
 
@@ -255,7 +253,10 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     This converts from HPC to HPC, with different observer location parameters.
     It does this by transforming through HGS.
     """
-    if _observers_are_equal(heliopcoord.observer, heliopframe.observer, string_ok=True):
+    if (heliopcoord.observer == heliopframe.observer or
+        (u.allclose(heliopcoord.observer.lat, heliopframe.observer.lat) and
+         u.allclose(heliopcoord.observer.lon, heliopframe.observer.lon) and
+         u.allclose(heliopcoord.observer.radius, heliopframe.observer.radius))):
         return heliopframe.realize_frame(heliopcoord._data)
 
     if not isinstance(heliopframe.observer, BaseCoordinateFrame):
@@ -349,11 +350,11 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
 
 
 @frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, HeliographicStonyhurst)
-def hgs_to_hgs(hgscoord, hgsframe):
-    if np.all(hgscoord.obstime == hgsframe.obstime):
-        return hgsframe.realize_frame(hgscoord.data)
+def hgs_to_hgs(from_coo, to_frame):
+    if np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
     else:
-        return hgscoord.transform_to(HCRS).transform_to(hgsframe)
+        return from_coo.transform_to(HCRS).transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransform, Heliocentric, Heliocentric)

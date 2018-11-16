@@ -5,7 +5,7 @@ channels:
 dependencies:
   - python=3.6.5
   - numpy=1.14.2
-  - astropy=2.0.4
+  - astropy=3.0.3
   - scipy=1.0.1
   - pandas=0.22.0
   - freetype=2.8.1
@@ -25,3 +25,5 @@ dependencies:
   - pytest-cov=2.5.1
   - pytest-astropy=0.4.0
   - drms
+  - pip:
+      - pytest_rerunfailures

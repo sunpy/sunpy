@@ -1,21 +1,56 @@
 #!/usr/bin/env python
 # This file is based havily on the astropy version here:
 # https://github.com/astropy/package-template/blob/master/setup.py
-# Which is licensed under the astropy license.
+# Which is licensed under the astropy license, see licenses/ASTROPY.rst.
 
-import glob
+################################################################################
+###### YOU SHOULD NOT HAVE TO EDIT THIS FILE, YOU SHOULD EDIT setup.cfg. #######
+################################################################################
+# Note: This file needs to be Python 2 / <3.6 compatible, so that the nice
+# "SunPy only supports Python 3.6+" error prints without syntax errors etc.
+
 import os
 import sys
+import glob
+import itertools
 
-import ah_bootstrap
-from setuptools import setup
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
 
-# A dirty hack to get around some early import/configurations ambiguities
-if sys.version_info[0] >= 3:
-    import builtins
-else:
-    import __builtin__ as builtins
-builtins._ASTROPY_SETUP_ = True
+# Get some values from the setup.cfg
+conf = ConfigParser()
+conf.read(['setup.cfg'])
+metadata = dict(conf.items('metadata'))
+
+PACKAGENAME = metadata.get('package_name', 'sunpy')
+DESCRIPTION = metadata.get('description', 'SunPy: Python for Solar Physics')
+AUTHOR = metadata.get('author', 'The SunPy Community')
+AUTHOR_EMAIL = metadata.get('author_email', '')
+LICENSE = metadata.get('license', 'unknown')
+URL = metadata.get('url', 'https://sunpy.org')
+with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.rst'), encoding='utf-8') as f:
+    LONG_DESCRIPTION = f.read()
+__minimum_python_version__ = metadata.get("minimum_python_version", "3.6")
+
+# Enforce Python version check - this is the same check as in __init__.py but
+# this one has to happen before importing ah_bootstrap.
+if sys.version_info < tuple((int(val) for val in __minimum_python_version__.split('.'))):
+    sys.stderr.write("ERROR: SunPy requires Python {} or later\n".format(__minimum_python_version__))
+    sys.exit(1)
+
+# Import ah_bootstrap after the python version validation
+import ah_bootstrap  # noqa
+from setuptools import setup  # noqa
+
+import builtins  # noqa
+builtins._SUNPY_SETUP_ = True
+
+from astropy_helpers.setup_helpers import (register_commands, get_debug_option,
+                                           get_package_info)  # noqa
+from astropy_helpers.git_helpers import get_git_devstr  # noqa
+from astropy_helpers.version_helpers import generate_version_py  # noqa
 
 # -- Read the Docs Setup  -----------------------------------------------------
 
@@ -25,35 +60,13 @@ if on_rtd:
     os.environ['HOME'] = '/home/docs/'
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
 
-from astropy_helpers.setup_helpers import (
-    register_commands, get_debug_option, get_package_info)
-from astropy_helpers.git_helpers import get_git_devstr
-from astropy_helpers.version_helpers import generate_version_py
-
-# Get some values from the setup.cfg
-try:
-    from ConfigParser import ConfigParser
-except ImportError:
-    from configparser import ConfigParser
-conf = ConfigParser()
-conf.read(['setup.cfg'])
-metadata = dict(conf.items('metadata'))
-
-PACKAGENAME = metadata.get('package_name', 'packagename')
-DESCRIPTION = metadata.get('description', 'SunPy: Python for Solar Physics')
-AUTHOR = metadata.get('author', 'The SunPy Community')
-AUTHOR_EMAIL = metadata.get('author_email', 'sunpy@googlegroups.com')
-LICENSE = metadata.get('license', 'BSD 2-Clause')
-URL = metadata.get('url', 'http://sunpy.org')
-
-LONG_DESCRIPTION = "SunPy is a Python library for solar physics data analysis."
-
 # Store the package name in a built-in variable so it's easy
 # to get from other parts of the setup infrastructure
+# This is used by get_pkg_data in astropy amongst other things
 builtins._ASTROPY_PACKAGE_NAME_ = PACKAGENAME
 
-# VERSION should be PEP386 compatible (https://www.python.org/dev/peps/pep-0386)
-VERSION = '1.0.dev'
+# VERSION should be PEP440 compatible (http://www.python.org/dev/peps/pep-0440)
+VERSION = metadata.get('version', '0.0.dev0')
 
 # Indicates if this version is a release version
 RELEASE = 'dev' not in VERSION
@@ -63,14 +76,14 @@ if not RELEASE:
 
 # Populate the dict of setup command overrides; this should be done before
 # invoking any other functionality from distutils since it can potentially
-# modify distutils' behavior.
+# modify distutils' behaviour.
 cmdclassd = register_commands(PACKAGENAME, VERSION, RELEASE)
 
 try:
     from sunpy.tests.setup_command import SunPyTest
     # Overwrite the Astropy Testing framework
     cmdclassd['test'] = type('SunPyTest', (SunPyTest,),
-                            {'package_name': 'sunpy'})
+                             {'package_name': 'sunpy'})
 
 except Exception:
     # Catch everything, if it doesn't work, we still want SunPy to install.
@@ -80,9 +93,9 @@ except Exception:
 generate_version_py(PACKAGENAME, VERSION, RELEASE,
                     get_debug_option(PACKAGENAME))
 
-# Treat everything in scripts except README.rst as a script to be installed
+# Treat everything in scripts except README* as a script to be installed
 scripts = [fname for fname in glob.glob(os.path.join('scripts', '*'))
-           if os.path.basename(fname) != 'README.rst']
+           if not os.path.basename(fname).startswith('README')]
 
 
 # Get configuration information from all of the various subpackages.
@@ -92,6 +105,16 @@ package_info = get_package_info()
 
 # Add the project-global data
 package_info['package_data'].setdefault(PACKAGENAME, [])
+package_info['package_data'][PACKAGENAME].append('data/*')
+
+# Define entry points for command-line scripts
+entry_points = {'console_scripts': []}
+
+if conf.has_section('entry_points'):
+    entry_point_list = conf.items('entry_points')
+    for entry_point in entry_point_list:
+        entry_points['console_scripts'].append('{0} = {1}'.format(
+            entry_point[0], entry_point[1]))
 
 # Include all .c files, recursively, including those generated by
 # Cython, since we can not do this in MANIFEST.in with a "dynamic"
@@ -105,37 +128,38 @@ for root, dirs, files in os.walk(PACKAGENAME):
                     os.path.relpath(root, PACKAGENAME), filename))
 package_info['package_data'][PACKAGENAME].extend(c_files)
 
-extras_require = {'database': ["sqlalchemy"],
-                  'image': ["scikit-image"],
-                  'jpeg2000': ["glymur"],
-                  'net': ["drms", "suds-jurko", "beautifulsoup4", "requests", "python-dateutil"],
-                  'tests': ["pytest", "pytest-cov", "pytest-mock", "pytest-rerunfailures", "mock", "hypothesis"]}
-extras_require['all'] = extras_require['database'] + extras_require['image'] + \
-                        extras_require['net'] + extras_require['tests']
+
+extra_tags = [m.strip() for m in metadata.get("extra_requires", "").split(',')]
+if extra_tags:
+    extras_require = {tag: [m.strip() for m in metadata["{tag}_requires".format(tag=tag)].split(',')]
+                      for tag in extra_tags}
+    extras_require['all'] = list(itertools.chain.from_iterable(extras_require.values()))
+else:
+    extras_require = None
 
 setup(name=PACKAGENAME,
       version=VERSION,
       description=DESCRIPTION,
       scripts=scripts,
-      install_requires=['numpy>=1.11',
-                        'astropy>=2.0.3>=3.0.2',  # astropy/astropy#7252
-                        'scipy',
-                        'pandas>=0.12.0',
-                        'matplotlib>=1.3'],
+      setup_requires=[s.strip() for s in metadata.get("setup_requires", "").split(',')],
+      install_requires=[s.strip() for s in metadata['install_requires'].split(',')],
       extras_require=extras_require,
-      provides=[PACKAGENAME],
+      tests_require=extras_require.get("all", ""),
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
       license=LICENSE,
       url=URL,
-      projects_urls={'Funding': 'https://www.flipcause.com/widget/widget_home/MTgxMTU=',
-                     'Source': 'https://github.com/sunpy/sunpy/',
-                     'Tracker': 'https://github.com/sunpy/sunpy/issues'
-      },
+      project_urls={'Funding': 'https://www.flipcause.com/widget/widget_home/MTgxMTU=',
+                    'Source': 'https://github.com/sunpy/sunpy/',
+                    'Tracker': 'https://github.com/sunpy/sunpy/issues'
+                    },
       long_description=LONG_DESCRIPTION,
+      long_description_content_type='text/x-rst',
       cmdclass=cmdclassd,
       zip_safe=False,
       use_2to3=False,
+      entry_points=entry_points,
+      python_requires='>={}'.format(__minimum_python_version__),
       include_package_data=True,
       **package_info
       )

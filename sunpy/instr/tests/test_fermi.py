@@ -1,11 +1,11 @@
 import pytest
 from numpy.testing import assert_almost_equal
+
+import astropy.units as u
+
 from sunpy.instr import fermi
 from sunpy.time import parse_time
 from sunpy.time.astropy_time import _is_time_equal
-from sunpy.extern import six
-
-import astropy.units as u
 
 
 @pytest.mark.remote_data
@@ -13,7 +13,7 @@ def test_download_weekly_pointing_file():
     # set a test date
     date = parse_time('2011-10-01')
     afile = fermi.download_weekly_pointing_file(date)
-    assert isinstance(afile, six.string_types)
+    assert isinstance(afile, str)
     assert afile.endswith('.fits')
 
 

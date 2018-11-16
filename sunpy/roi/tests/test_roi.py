@@ -1,11 +1,6 @@
-from __future__ import absolute_import
-
-import sunpy
 from sunpy.roi import roi
-
 from sunpy.time import parse_time
 from sunpy.time.astropy_time import _is_time_equal
-
 
 def test_roi_instance():
     region = roi(times=['2012-06-20 05:00', '2012-06-20 07:00'],

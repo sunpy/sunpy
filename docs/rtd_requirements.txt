@@ -1,0 +1,21 @@
+# This file is used on ReadTheDocs to build the
+# documentation and is separate of tox.ini and setup.cfg
+numpy
+astropy
+scipy
+pandas
+matplotlib
+sqlalchemy
+scikit-image
+glymur
+drms
+suds-jurko
+beautifulsoup4
+requests
+python-dateutil
+ruamel.yaml
+sphinx
+sunpy-sphinx-theme
+sphinx-gallery
+sphinx-astropy
+git+https://github.com/hawkowl/towncrier

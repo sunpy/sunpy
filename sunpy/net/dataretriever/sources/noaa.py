@@ -14,7 +14,7 @@ from astropy.time import TimeDelta
 import astropy.units as u
 
 import sunpy
-from sunpy.util import replacement_filename, deprecated
+from sunpy.util import replacement_filename
 from sunpy.net.dataretriever.client import simple_path
 
 from sunpy.net.download import Downloader, Results
@@ -235,13 +235,6 @@ class SRSClient(GenericClient):
                 callback({'path': fname})
 
         return res2
-
-    @deprecated('0.8', alternative='NOAAPredictClient.fetch')
-    def get(self, qres, path=None, error_callback=None, **kwargs):
-        """
-        See `~sunpy.net.dataretriever.sources.noaa.NOAAPredictClient.fetch`
-        """
-        return self.fetch(qres, path=path, error_callback=error_callback, **kwargs)
 
     def _makeimap(self):
         self.map_['source'] = 'swpc'

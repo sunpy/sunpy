@@ -1,16 +1,15 @@
-from __future__ import absolute_import, division, print_function
 import re
 from datetime import datetime, date
 from functools import singledispatch
 
 import numpy as np
 import pandas
-from sunpy.extern import six
+
+import astropy.time
+import astropy.units as u
+
 from sunpy.time.utime import TimeUTime  # noqa: F401
 from sunpy.time import astropy_time as ap
-
-import astropy.units as u
-import astropy.time
 
 __all__ = ['find_time', 'parse_time', 'is_time',
            'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
@@ -74,7 +73,7 @@ def _regex_parse_time(inp, format):
     # Parser for finding out the minute value so we can adjust the string
     # from 24:00:00 to 00:00:00 the next day because strptime does not
     # understand the former.
-    for key, value in six.iteritems(REGEX):
+    for key, value in REGEX.items():
         format = format.replace(key, value)
     match = re.match(format, inp)
     if match is None:
@@ -83,7 +82,7 @@ def _regex_parse_time(inp, format):
         hour = match.group("hour")
     except IndexError:
         return inp, astropy.time.TimeDelta(0*u.day)
-    if hour == "24":
+    if match.group("hour") == "24":
         if not all(
                    _n_or_eq(_group_or_none(match, g, int), 00)
                    for g in ["minute", "second", "microsecond"]
@@ -98,7 +97,7 @@ def find_time(string, format):
     """ Return iterator of occurrences of date formatted with format
     in string. Currently supported format codes: """
     re_format = format
-    for key, value in six.iteritems(REGEX):
+    for key, value in REGEX.items():
         re_format = re_format.replace(key, value)
     matches = re.finditer(re_format, string)
     for match in matches:
@@ -135,14 +134,24 @@ def convert_time(time_string, format=None, **kwargs):
     return ap.Time(time_string, format=format, **kwargs)
 
 
-@convert_time.register(pandas.Series)
-def convert_time_pandasSeries(time_string, **kwargs):
-    return ap.Time(time_string.tolist(), **kwargs)
+# Only register pandas if we can import pandas
+try:
+    import pandas
 
+    @convert_time.register(pandas.Series)
+    def convert_time_pandasSeries(time_string, **kwargs):
+        return ap.Time(time_string.tolist(), **kwargs)
 
-@convert_time.register(pandas.DatetimeIndex)
-def convert_time_pandasDatetimeIndex(time_string, **kwargs):
-    return ap.Time(time_string.tolist(), **kwargs)
+    @convert_time.register(pandas.Series)
+    def convert_time_pandasSeries(time_string, **kwargs):
+        return ap.Time(time_string.tolist(), **kwargs)
+
+    @convert_time.register(pandas.DatetimeIndex)
+    def convert_time_pandasDatetimeIndex(time_string, **kwargs):
+        return ap.Time(time_string.tolist(), **kwargs)
+
+except ImportError:
+    pass
 
 
 @convert_time.register(datetime)
@@ -286,7 +295,9 @@ def is_time(time_string, time_format=None):
 
 
 def day_of_year(time_string):
-    """Returns the (fractional) day of year.
+    """
+    Returns the (fractional) day of year.
+    
     Note: This function takes into account leap seconds.
 
     Parameters
@@ -310,6 +321,7 @@ def day_of_year(time_string):
     216.01252314814815
 
     """
+    SECONDS_IN_DAY = 60 * 60 * 24.0
     time = parse_time(time_string)
     time_diff = time - ap.Time.strptime(time.strftime('%Y'), '%Y')
     return time_diff.jd + 1
