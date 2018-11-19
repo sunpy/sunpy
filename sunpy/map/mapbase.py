@@ -40,6 +40,10 @@ SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 __all__ = ['GenericMap']
 
 
+class MapMetaValidationError(AttributeError):
+    pass
+
+
 class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
@@ -681,8 +685,8 @@ class GenericMap(NDData):
         """
         Image coordinate units along the x and y axes (i.e. cunit1, cunit2).
         """
-        return SpatialPair(u.Unit(self.meta.get('cunit1', 'arcsec')),
-                           u.Unit(self.meta.get('cunit2', 'arcsec')))
+        return SpatialPair(u.Unit(self.meta.get('cunit1')),
+                           u.Unit(self.meta.get('cunit2')))
 
     @property
     def rotation_matrix(self):
@@ -775,8 +779,19 @@ class GenericMap(NDData):
             CUNIT1, CUNIT2, WAVEUNIT
 
         """
+        msg = ('Image coordinate units for axis {} not present in metadata.')
+        err_message = []
+        for i in [1, 2]:
+            if self.meta.get(f'cunit{i}') is None:
+                err_message.append(msg.format(i, i))
 
-        for meta_property in ('cunit1', 'cunit2', 'waveunit'):
+        if err_message:
+            err_message.append(
+                'See http://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
+                'instructions on how to add missing metadata.')
+            raise MapMetaValidationError('\n'.join(err_message))
+
+        for meta_property in ('waveunit', ):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
