@@ -1,0 +1,2 @@
+Maps no longer assume that the pixel units are arcseconds if the units aren't
+explicitly set.

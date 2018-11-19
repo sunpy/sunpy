@@ -38,6 +38,9 @@ class RHESSIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        # Assume pixel units are arcesc if not given
+        header['cunit1'] = header.get('cunit1', 'arcsec')
+        header['cunit2'] = header.get('cunit2', 'arcsec')
 
         GenericMap.__init__(self, data, header, **kwargs)
 
