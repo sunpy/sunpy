@@ -231,22 +231,33 @@ def convert_time_str(time_string, **kwargs):
 
 
 def parse_time(time_string, *, format=None, **kwargs):
-    """Given a time string will parse and return a `astropy.time.Time` object.
-    Similar to the anytim function in IDL.
-    utime -- Time since epoch 1 Jan 1979
+    """
+    Takes a time input (string, pandas or numpy time, datetime and others) will parse
+    and return a `astropy.time.Time` object.
+    This is similar to the anytim function in IDL.
 
     Parameters
     ----------
-    time_string : [ int, float, string, datetime, astropy.time.Time,
-                    numpy.datetime64, pandas.Timestamp ]
+    time_string : `int`, `float`, `str`, `datetime.datetime`, `astropy.time.Time`,
+                  `pandas.DatetimeIndex`, `numpy.datetime64`, `pandas.Timestamp`,
+                  `pandas.Series`, `numpy.array`
+
         Time to parse.
 
-    format : [ 'jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps',
-               'plot_date', 'datetime', 'iso', 'isot', 'yday', 'fits',
-               'byear', 'jyear', 'byear_str', 'jyear_str', 'utime']
+    format : `str`
 
         Specifies the format user has provided the time_string in.
-        Same as format of `astropy.time.Time`
+        We support the same formats of `astropy.time.Time`.
+
+        The allowed values for ``format`` can be listed with::
+
+          >>> list(astropy.time.Time.FORMATS)
+          ['jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps', 'plot_date',
+          'datetime', 'iso', 'isot', 'yday', 'fits', 'byear', 'jyear', 'byear_str',
+          'jyear_str', 'utime']
+
+        Notice that `utime` is now in the list as we register it
+        with `astropy.time.Time` as a format.
 
     kwargs : dict
         Additional keyword arguments that can be passed to `astropy.time.Time`
