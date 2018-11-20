@@ -4,10 +4,12 @@
 Time in SunPy
 =============
 
-Working with times and time ranges is a standard task in solar data analysis as such
+Working with times and time ranges is a standard task in solar data analysis and as such
 SunPy strives to provide convenient and easy methods to do the simple stuff. Python
 already provides an object for a time or date through `datetime.datetime`.
-SunPy builds upon its functionality.
+However, `datetime.datetime` does not provide support for common time formats used in
+solar physics nor leap seconds. To alleviate this, we use `astropy.time.Time` internally
+which allows us to provide a superior user experience.
 
 .. _parse-time:
 
@@ -16,9 +18,41 @@ SunPy builds upon its functionality.
 
 Solar data is associated with a number of different time formats. SunPy provides a simple
 parsing function which can deal with most every format that a user may encounter. Called
-`sunpy.time.parse_time()`, this function takes a string as input and returns a `~astropy.time.Time` object.
+`sunpy.time.parse_time()`, this function can take a variety of inputs.
 
-Here are few examples of formats which `sunpy.time.parse_time()` accepts::
+Strings
+^^^^^^^
+
+The most commonly used are strings and we support a selection of formats
+which are matched using regrex. We currently support the following style of string formats::
+
+    "2007-05-04T21:08:12.999999"
+    "2007/05/04T21:08:12.999999"
+    "2007-05-04T21:08:12.999Z"
+    "2007-05-04T21:08:12"
+    "2007/05/04T21:08:12"
+    "20070504T210812.999999"
+    "20070504T210812"
+    "2007/05/04 21:08:12"
+    "2007/05/04 21:08"
+    "2007/05/04 21:08:12.999999"
+    "2007-05-04 21:08:12.999999"
+    "2007-05-04 21:08:12"
+    "2007-05-04 21:08"
+    "2007-May-04 21:08:12"
+    "2007-May-04 21:08"
+    "2007-May-04"
+    "2007-05-04"
+    "2007/05/04"
+    "04-May-2007"
+    "04-May-2007 21:08:12.999999"
+    "20070504_210812"
+    "2012:124:21:08:12"
+    "2012:124:21:08:12.999999"
+    "20140101000001"
+    "2016.05.04_21:08:12_TAI"
+
+If we pass some of these strings into `sunpy.time.parse_time()`::
 
     >>> from sunpy.time import parse_time
     >>> parse_time('2007-05-04T21:08:12')
@@ -32,15 +66,51 @@ Here are few examples of formats which `sunpy.time.parse_time()` accepts::
     >>> parse_time('20070504_210812')
     <Time object: scale='utc' format='isot' value=2007-05-04T21:08:12.000>
 
-Each of the above returns the same `~astropy.time.Time` object ``<Time object: scale='utc' format='isot' value=2007-05-04T21:08:12.000>``. One of the most standard time formats used in solar
-physics is the number of seconds since 1979 January 01 called ``utime``. The parse_time
-function also accepts this as input, e.g.::
+Each of the above returns the same `~astropy.time.Time` object ``<Time object: scale='utc' format='isot' value=2007-05-04T21:08:12.000>``.
+
+We also support ``utime``, which is the amount of seconds from `1979-01-01 00:00:00 UTC`.
+Same as Unix time but this starts 9 years later. The parse_time function also accepts this as input, e.g.::
 
     >>> parse_time(894316092.00000000, format='utime')
     <Time object: scale='utc' format='utime' value=894316092.0>
 
+Other formats
+^^^^^^^^^^^^^
+
+`sunpy.time.parse_time()` understands more than just a string.
+For example::
+
+    >>> import datetime
+    >>> parse_time(datetime.datetime(2007, 5, 4, 21, 8, 12))  # datetime.datetime
+    <Time object: scale='utc' format='datetime' value=2007-05-04 21:08:12>
+    >>> parse_time(datetime.date(2007, 5, 4))  # datetime.date
+    <Time object: scale='utc' format='iso' value=2007-05-04 00:00:00.000>
+
+    >>> parse_time((2007, 5, 4, 21, 8, 12))  # tuple of numbers
+    <Time object: scale='utc' format='isot' value=2007-05-04T21:08:12.000>
+
+    >>> import pandas
+    >>> parse_time(pandas.Timestamp('2007-05-04T21:08:12'))  # pandas.Timestamp
+    <Time object: scale='utc' format='datetime' value=2007-05-04 21:08:12>
+
+    >>> time_ranges = [datetime.datetime(2007, 5, i) for i in range(1, 3)]
+    >>> parse_time(pandas.Series(time_ranges))  # pandas.Series
+    <Time object: scale='utc' format='datetime' value=[datetime.datetime(2007, 5, 1, 0, 0) datetime.datetime(2007, 5, 2, 0, 0)]>
+
+    >>> parse_time(pandas.DatetimeIndex(time_ranges))  # pandas.DatetimeIndex
+    <Time object: scale='utc' format='datetime' value=[datetime.datetime(2007, 5, 1, 0, 0) datetime.datetime(2007, 5, 2, 0, 0)]>
+
+    >>> import numpy as np
+    >>> parse_time(np.datetime64('2007-05-04T00'))  # np.datetime64
+    <Time object: scale='utc' format='isot' value=2007-05-04T00:00:00.000>
+    >>> parse_time(np.arange('2007-05-03', '2007-05-04', dtype='datetime64[D]'))  # np.ndarray
+    <Time object: scale='utc' format='isot' value=['2007-05-03T00:00:00.000']>
+
+`astropy.time.Time` API comparision
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 `sunpy.time.parse_time` is a wrapper around `astropy.time.Time`. The API is
-mostly the same as `~astropy.time.Time` but supports a few more time formats.
+nearly identical as `~astropy.time.Time` but supports more time input formats.
 You can specify the format, scale, precision, location and other arguments just
 as you would do with `~astropy.time.Time`. An example::
 
@@ -48,8 +118,7 @@ as you would do with `~astropy.time.Time`. An example::
     >>> parse_time(times, format='isot', scale='tai')
     <Time object: scale='tai' format='isot' value=['1999-01-01T00:00:00.123' '2010-01-01T00:00:00.000']>
 
-All SunPy functions which require
-time as an input sanitize the input using parse_time.
+Please be aware that all SunPy functions which require time as an input sanitize the input using `~sunpy.time.parse_time`.
 
 2. Time Ranges
 --------------
