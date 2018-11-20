@@ -30,8 +30,6 @@ AUTHOR = metadata.get('author', 'The SunPy Community')
 AUTHOR_EMAIL = metadata.get('author_email', '')
 LICENSE = metadata.get('license', 'unknown')
 URL = metadata.get('url', 'https://sunpy.org')
-with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.rst'), encoding='utf-8') as f:
-    LONG_DESCRIPTION = f.read()
 __minimum_python_version__ = metadata.get("minimum_python_version", "3.6")
 
 # Enforce Python version check - this is the same check as in __init__.py but
@@ -39,6 +37,9 @@ __minimum_python_version__ = metadata.get("minimum_python_version", "3.6")
 if sys.version_info < tuple((int(val) for val in __minimum_python_version__.split('.'))):
     sys.stderr.write("ERROR: SunPy requires Python {} or later\n".format(__minimum_python_version__))
     sys.exit(1)
+
+with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.rst'), encoding='utf-8') as f:
+    LONG_DESCRIPTION = f.read()
 
 # Import ah_bootstrap after the python version validation
 import ah_bootstrap  # noqa
