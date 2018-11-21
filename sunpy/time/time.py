@@ -1,4 +1,5 @@
 import re
+import textwrap
 from datetime import datetime, date
 from functools import singledispatch
 
@@ -9,10 +10,12 @@ from sunpy.time import Time
 import astropy.units as u
 
 from sunpy.time.utime import TimeUTime  # noqa: F401
+from sunpy.util.decorators import add_common_docstring
 
-__all__ = ['find_time', 'parse_time', 'is_time',
-           'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format',
-           'is_time_equal']
+__all__ = [
+    'find_time', 'parse_time', 'is_time', 'day_of_year', 'break_time',
+    'get_day', 'is_time_in_given_format', 'is_time_equal'
+]
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
@@ -28,31 +31,31 @@ REGEX = {
 }
 
 TIME_FORMAT_LIST = [
-    "%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
-    "%Y/%m/%dT%H:%M:%S.%f",    # Example 2007/05/04T21:08:12.999999
-    "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
-    "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
-    "%Y/%m/%dT%H:%M:%S",       # Example 2007/05/04T21:08:12
-    "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
-    "%Y%m%dT%H%M%S",           # Example 20070504T210812
-    "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
-    "%Y/%m/%d %H:%M",          # Example 2007/05/04 21:08
-    "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
-    "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
-    "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
-    "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
-    "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
-    "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
-    "%Y-%b-%d",                # Example 2007-May-04
-    "%Y-%m-%d",                # Example 2007-05-04
-    "%Y/%m/%d",                # Example 2007/05/04
-    "%d-%b-%Y",                # Example 04-May-2007
-    "%d-%b-%Y %H:%M:%S.%f",    # Example 04-May-2007 21:08:12.999999
-    "%Y%m%d_%H%M%S",           # Example 20070504_210812
-    "%Y:%j:%H:%M:%S",          # Example 2012:124:21:08:12
-    "%Y:%j:%H:%M:%S.%f",       # Example 2012:124:21:08:12.999999
-    "%Y%m%d%H%M%S",            # Example 20140101000001 (JSOC / VSO)
-    "%Y.%m.%d_%H:%M:%S_TAI",   # Example 2016.05.04_21:08:12_TAI
+    "%Y-%m-%dT%H:%M:%S.%f",  # Example 2007-05-04T21:08:12.999999
+    "%Y/%m/%dT%H:%M:%S.%f",  # Example 2007/05/04T21:08:12.999999
+    "%Y-%m-%dT%H:%M:%S.%fZ",  # Example 2007-05-04T21:08:12.999Z
+    "%Y-%m-%dT%H:%M:%S",  # Example 2007-05-04T21:08:12
+    "%Y/%m/%dT%H:%M:%S",  # Example 2007/05/04T21:08:12
+    "%Y%m%dT%H%M%S.%f",  # Example 20070504T210812.999999
+    "%Y%m%dT%H%M%S",  # Example 20070504T210812
+    "%Y/%m/%d %H:%M:%S",  # Example 2007/05/04 21:08:12
+    "%Y/%m/%d %H:%M",  # Example 2007/05/04 21:08
+    "%Y/%m/%d %H:%M:%S.%f",  # Example 2007/05/04 21:08:12.999999
+    "%Y-%m-%d %H:%M:%S.%f",  # Example 2007-05-04 21:08:12.999999
+    "%Y-%m-%d %H:%M:%S",  # Example 2007-05-04 21:08:12
+    "%Y-%m-%d %H:%M",  # Example 2007-05-04 21:08
+    "%Y-%b-%d %H:%M:%S",  # Example 2007-May-04 21:08:12
+    "%Y-%b-%d %H:%M",  # Example 2007-May-04 21:08
+    "%Y-%b-%d",  # Example 2007-May-04
+    "%Y-%m-%d",  # Example 2007-05-04
+    "%Y/%m/%d",  # Example 2007/05/04
+    "%d-%b-%Y",  # Example 04-May-2007
+    "%d-%b-%Y %H:%M:%S.%f",  # Example 04-May-2007 21:08:12.999999
+    "%Y%m%d_%H%M%S",  # Example 20070504_210812
+    "%Y:%j:%H:%M:%S",  # Example 2012:124:21:08:12
+    "%Y:%j:%H:%M:%S.%f",  # Example 2012:124:21:08:12.999999
+    "%Y%m%d%H%M%S",  # Example 20140101000001 (JSOC / VSO)
+    "%Y.%m.%d_%H:%M:%S_TAI",  # Example 2016.05.04_21:08:12_TAI
 ]
 
 
@@ -91,16 +94,15 @@ def _regex_parse_time(inp, format):
     try:
         hour = match.group("hour")
     except IndexError:
-        return inp, astropy.time.TimeDelta(0*u.day)
+        return inp, astropy.time.TimeDelta(0 * u.day)
     if hour == "24":
         if not all(
-                   _n_or_eq(_group_or_none(match, g, int), 00)
-                   for g in ["minute", "second", "microsecond"]
-                  ):
+                _n_or_eq(_group_or_none(match, g, int), 00)
+                for g in ["minute", "second", "microsecond"]):
             raise ValueError
         from_, to = match.span("hour")
-        return inp[:from_] + "00" + inp[to:], astropy.time.TimeDelta(1*u.day)
-    return inp, astropy.time.TimeDelta(0*u.day)
+        return inp[:from_] + "00" + inp[to:], astropy.time.TimeDelta(1 * u.day)
+    return inp, astropy.time.TimeDelta(0 * u.day)
 
 
 def find_time(string, format):
@@ -139,7 +141,8 @@ def _astropy_time(time):
     """
     Return an `~astropy.time.Time` instance, running it through `~sunpy.time.parse_time` if needed
     """
-    return time if isinstance(time, astropy.time.Time) else astropy.time.Time(parse_time(time))
+    return time if isinstance(time, astropy.time.Time) else astropy.time.Time(
+        parse_time(time))
 
 
 @singledispatch
@@ -181,7 +184,7 @@ def convert_time_date(time_string, **kwargs):
 @convert_time.register(tuple)
 def convert_time_tuple(time_string, **kwargs):
     # Make sure there are enough values to unpack
-    time_string = (time_string + (0,)*7)[:7]
+    time_string = (time_string + (0, ) * 7)[:7]
     return Time('{}-{}-{}T{}:{}:{}.{:06}'.format(*time_string), **kwargs)
 
 
@@ -216,8 +219,7 @@ def convert_time_str(time_string, **kwargs):
     for time_format in TIME_FORMAT_LIST:
         try:
             try:
-                ts, time_delta = _regex_parse_time(time_string,
-                                                   time_format)
+                ts, time_delta = _regex_parse_time(time_string, time_format)
             except TypeError:
                 break
             if ts is None:
@@ -230,6 +232,33 @@ def convert_time_str(time_string, **kwargs):
     return convert_time.dispatch(object)(time_string, **kwargs)
 
 
+def _variables_for_parse_time_docstring():
+    ret = {}
+
+    example_time = datetime(2017, 1, 1, 11, 10, 9)
+    example_parse_time = [example_time.strftime(f) for f in TIME_FORMAT_LIST]
+    example_parse_time = "\n      ".join(example_parse_time)
+    ret['parse_time_formats'] = example_parse_time
+
+    types = list(convert_time.registry.keys())
+    types.remove(object)
+    # Do Builtins
+    types2 = [t.__qualname__ for t in types if t.__module__ == "builtins"]
+    # Do all the non-special ones
+    types2 += [t.__module__ + '.' + t.__qualname__ for t in types if not t.__module__.startswith(("builtins", "pandas", "astropy.time"))]
+    # Special case pandas and astropy.time
+    types2 += ["pandas." + t.__qualname__ for t in types if t.__module__.startswith("pandas")]
+    types2 += ["astropy.time." + t.__qualname__ for t in types if t.__module__.startswith("astropy.time")]
+    parse_time_types = str(types2)[1:-1].replace("'", "`")
+    ret['parse_time_types'] = parse_time_types
+
+    ret['astropy_time_formats'] = textwrap.fill(str(list(astropy.time.Time.FORMATS.keys())),
+                                                subsequent_indent=' '*10)
+
+    return ret
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def parse_time(time_string, *, format=None, **kwargs):
     """
     Takes a time input (string, pandas or numpy time, datetime and others) will parse
@@ -238,13 +267,11 @@ def parse_time(time_string, *, format=None, **kwargs):
 
     Parameters
     ----------
-    time_string : `int`, `float`, `str`, `datetime.datetime`, `astropy.time.Time`,
-                  `pandas.DatetimeIndex`, `numpy.datetime64`, `pandas.Timestamp`,
-                  `pandas.Series`, `numpy.array`
+    time_string : {parse_time_types}
 
         Time to parse.
 
-    format : `str`
+    format : `str`, optional
 
         Specifies the format user has provided the time_string in.
         We support the same formats of `astropy.time.Time`.
@@ -252,20 +279,15 @@ def parse_time(time_string, *, format=None, **kwargs):
         The allowed values for ``format`` can be listed with::
 
           >>> list(astropy.time.Time.FORMATS)
-          ['jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps', 'plot_date',
-          'datetime', 'iso', 'isot', 'yday', 'fits', 'byear', 'jyear', 'byear_str',
-          'jyear_str', 'utime']
-
-        Notice that `utime` is now in the list as we register it
-        with `astropy.time.Time` as a format.
+          {astropy_time_formats}
 
     kwargs : dict
         Additional keyword arguments that can be passed to `astropy.time.Time`
 
     Returns
     -------
-    out : Time
-        `astropy.time.Time` corresponding to input time string
+    `astropy.time.Time`
+        `~astropy.time.Time` object corresponding to input time string
 
     Examples
     --------
@@ -274,6 +296,14 @@ def parse_time(time_string, *, format=None, **kwargs):
     <Time object: scale='utc' format='isot' value=2012-08-01T00:00:00.000>
     >>> sunpy.time.parse_time('2016.05.04_21:08:12_TAI')
     <Time object: scale='tai' format='isot' value=2016-05-04T21:08:12.000>
+
+    Notes
+    -----
+
+    The list of time formats are show by the following examples::
+
+      {parse_time_formats}
+
     """
     if time_string is 'now':
         rt = Time.now()
