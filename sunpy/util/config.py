@@ -46,22 +46,20 @@ def get_and_create_download_dir():
     '''
     Get the config of download directory and create one if not present.
     '''
-    config = load_config()
-    if not os.path.isdir(config.get('downloads', 'download_dir')):
-        os.makedirs(config.get('downloads', 'download_dir'))
+    if not os.path.isdir(sunpy.config.get('downloads', 'download_dir')):
+        os.makedirs(sunpy.config.get('downloads', 'download_dir'))
 
-    return config.get('downloads', 'download_dir')
+    return sunpy.config.get('downloads', 'download_dir')
 
 
 def get_and_create_sample_dir():
     '''
     Get the config of download directory and create one if not present.
     '''
-    config = load_config()
-    if not os.path.isdir(config.get('downloads', 'sample_dir')):
-        os.makedirs(config.get('downloads', 'sample_dir'))
+    if not os.path.isdir(sunpy.config.get('downloads', 'sample_dir')):
+        os.makedirs(sunpy.config.get('downloads', 'sample_dir'))
 
-    return config.get('downloads', 'sample_dir')
+    return sunpy.config.get('downloads', 'sample_dir')
 
 
 def print_config():
