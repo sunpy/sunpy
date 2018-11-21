@@ -184,7 +184,7 @@ def _expand_filepath(filepath, working_dir=""):
         return tempfile.gettempdir()
     # Relative filepaths
     elif not filepath.startswith("/"):
-        return os.path.join(working_dir, filepath)
+        return  os.path.abspath(os.path.join(working_dir, filepath))
     # Absolute filepath
     else:
-        return filepath
+        return os.path.abspath(filepath)
