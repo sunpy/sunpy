@@ -3,7 +3,7 @@ import os
 from sunpy import config
 from sunpy.util.config import get_and_create_sample_dir, get_and_create_download_dir
 
-USER = os.path.expanduser('~/')
+USER = os.path.expanduser('~')
 
 
 def test_get_and_create_download_dir():
