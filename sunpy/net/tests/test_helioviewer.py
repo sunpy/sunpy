@@ -37,11 +37,29 @@ class TestHelioviewerClient:
         is casted to an integer"""
         assert type(client.sources['SDO']['AIA']['4500']['sourceId']) is int
 
+    def test_get_closest_image(self, client):
+        """Tests getClosestImage API method"""
+        # check basic query
+        im1 = client.get_closest_image('1994/01/01',
+                                       observatory='SOHO',
+                                       instrument='EIT',
+                                       detector='None',
+                                       measurement='304')
+        assert im1['width'] == im1['height'] == 1024
+
+        # result should be same when using source id to query
+        source_id = client.sources['SOHO']['EIT']['304']['sourceId']
+
+        im2 = client.get_closest_image('1994/01/01', sourceId=source_id)
+
+        assert im1 == im2
+
     @skip_glymur
     def test_download_jp2(self, client):
         """Tests getJP2Image API method"""
-        source_id = client.sources['SOHO']['EIT']['304']['sourceId']
-        filepath = client.download_jp2('2020/01/01', source_id)
+        filepath = client.download_jp2('2020/01/01', observatory='SOHO',
+                                       instrument='MDI', detector='None',
+                                       measurement='continuum')
         map_ = sunpy.map.Map(filepath)
         assert isinstance(map_, sunpy.map.GenericMap)
 
@@ -49,10 +67,12 @@ class TestHelioviewerClient:
     def test_download_jp2_directory_not_exist(self, client, tmpdir):
         """Tests getJP2Image API method"""
 
-        source_id = client.sources['SOHO']['EIT']['304']['sourceId']
         filepath = client.download_jp2(
             '2020/01/01',
-            source_id,
+            observatory='SOHO',
+            instrument='MDI',
+            detector='None',
+            measurement='continuum',
             directory=os.path.join(str(tmpdir), 'directorynotexist'))
 
         assert 'directorynotexist' in filepath
