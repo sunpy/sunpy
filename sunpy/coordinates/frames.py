@@ -359,6 +359,7 @@ class Helioprojective(BaseCoordinateFrame):
     obstime = TimeFrameAttributeSunPy()
     rsun = Attribute(default=RSUN_METERS.to(u.km))
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
+    _default_wrap_angle = 180*u.deg
 
     def __init__(self, *args, **kwargs):
         wrap = kwargs.pop('wrap_longitude', True)
@@ -366,7 +367,7 @@ class Helioprojective(BaseCoordinateFrame):
         BaseCoordinateFrame.__init__(self, *args, **kwargs)
 
         if wrap and isinstance(self._data, (UnitSphericalRepresentation, SphericalRepresentation)):
-            self._data.lon.wrap_angle = 180*u.deg
+            self._data.lon.wrap_angle = self._default_wrap_angle
 
     def calculate_distance(self):
         """
