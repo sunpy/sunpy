@@ -114,7 +114,7 @@ class HelioviewerClient(object):
             sourceid = self._source_dict[key]
 
         elif('sourceId' in kwargs):
-            sourceid = sourceId
+            sourceid = kwargs['sourceId']
 
         params = {
             "action": "getClosestImage",
@@ -270,10 +270,12 @@ class HelioviewerClient(object):
             Default is `false` (which outputs a JSON object).
         callback : string
             (Optional) Wrap the response object in a function call of your choosing.
+
         Returns
         -------
         out : string
             filepath to the PNG image
+
         Examples
         --------
         >>> from sunpy.net.helioviewer import HelioviewerClient
@@ -282,6 +284,7 @@ class HelioviewerClient(object):
         >>> file = hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", False, x0=0, y0=0, width=1024, height=1024)   # doctest: +REMOTE_DATA
         >>> file = hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", True, x1=-2800, x2=2800, y1=-2800, y2=2800)   # doctest: +REMOTE_DATA
         """
+        
         params = {
             "action": "takeScreenshot",
             "date": self._format_date(date),
