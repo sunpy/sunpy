@@ -16,7 +16,8 @@ def test_get_body_barycentric():
     assert_quantity_allclose(e1.radius, 0.9832947*u.AU, atol=5e-7*u.AU)
 
     e2 = get_body_heliographic_stonyhurst('earth', '2013-Sep-01')
-    assert_quantity_allclose(e2.lon, 0*u.deg, atol=1e-12*u.deg)
+    # https://github.com/sunpy/sunpy/issues/2727
+    assert_quantity_allclose((e2.lon+1*u.deg)%(360*u.deg), 1*u.deg, atol=1e-12*u.deg)
     assert_quantity_allclose(e2.lat, 7.19*u.deg, atol=5e-3*u.deg)
     assert_quantity_allclose(e2.radius, 1.0092561*u.AU, atol=5e-7*u.AU)
 
