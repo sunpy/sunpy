@@ -1,0 +1,35 @@
+jobs:
+- job: ${{ format(parameters.name) }}
+  pool:
+    ${{ if eq(parameters.os, 'windows') }}:
+      vmImage: vs2017-win2016
+    ${{ if eq(parameters.os, 'macos') }}:
+      vmImage: macOS 10.13
+    ${{ if eq(parameters.os, 'linux') }}:
+      vmImage: Ubuntu 16.04
+
+  steps:
+  - task: CondaEnvironment@1
+    displayName: setup conda
+
+  - task: UsePythonVersion@0
+    displayName: setup python
+    inputs:
+      versionSpec: 3.7
+
+  - script: python -m pip install --upgrade pip setuptools
+    displayName: upgrade pip and setuptools
+
+  - script: pip install --upgrade tox
+    displayName: install tox
+
+  - script: pip install --upgrade git+https://github.com/drdavella/tox-conda
+    displayName: install tox-conda
+
+  - script: tox -vv -e ${{ parameters.tox }}
+    displayName: run tox-conda
+
+  - script: |
+      pip install --upgrade codecov
+      codecov
+    displayName: run codecov

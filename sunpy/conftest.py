@@ -41,7 +41,7 @@ def pytest_runtest_setup(item):
     client is online (simply detected by checking whether http://www.google.com
     can be requested).
     """
-    if isinstance(item, item.Function):
+    if isinstance(item, pytest.Function):
         if 'remote_data' in item.keywords and not HAVE_REMOTEDATA:
             pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
 
