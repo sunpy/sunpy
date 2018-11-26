@@ -776,7 +776,7 @@ class ImageAnimator(ArrayAnimator):
         """Updates plot based on slider/array dimension being iterated."""
         val = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
-        ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
+        ind = int(np.argmin(np.abs(self.axis_ranges[ax_ind] - val)))
         self.frame_slice[ax_ind] = ind
         if val != slider.cval:
             if self._non_regular_plot_axis:
@@ -1058,7 +1058,7 @@ class ImageAnimatorWCS(ImageAnimator):
         """Updates plot based on slider/array dimension being iterated."""
         val = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
-        ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
+        ind = int(np.argmin(np.abs(self.axis_ranges[ax_ind] - val)))
         self.frame_slice[ax_ind] = ind
         list_slices_wcsaxes = list(self.slices_wcsaxes)
         list_slices_wcsaxes[self.wcs.naxis-ax_ind-1] = val

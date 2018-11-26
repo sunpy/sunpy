@@ -1,0 +1,1 @@
+Ensure imageanimators only slice arrays with integers
