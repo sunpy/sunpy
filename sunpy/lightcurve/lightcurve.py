@@ -268,7 +268,7 @@ class LightCurve(object):
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
         else:
-            download_dir = get_and_create_download_dir()
+            download_dir = os.path.expanduser(get_and_create_download_dir())
 
         # overwrite the existing file if the keyword is present
         if "overwrite" in kwargs:

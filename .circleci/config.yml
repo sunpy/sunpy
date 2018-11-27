@@ -62,7 +62,7 @@ jobs:
           command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off sqlalchemy scikit-image==0.13.1 glymur drms suds-jurko beautifulsoup4 requests python-dateutil pytest pytest-cov pytest-mock pytest-xdist mock hypothesis pytest-astropy pytest-rerunfailures
       - run:
           name: Run tests
-          command: PYTHONHASHSEED=42 /opt/python/cp36-cp36m/bin/python setup.py test --parallel=4
+          command: PYTHONHASHSEED=42 /opt/python/cp36-cp36m/bin/pytest -n=4
     environment:
           MPLBACKEND: agg
           COLUMNS: 180
