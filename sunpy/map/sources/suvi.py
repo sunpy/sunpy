@@ -19,7 +19,6 @@ __all__ = ['SUVIMap']
 class SUVIMap(GenericMap):
     """SUVI Image Map.
 
-
     The GOES-R Series Solar Ultraviolet Imager (SUVI)....(description of the
     instrument).
 
