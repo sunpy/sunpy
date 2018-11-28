@@ -190,6 +190,7 @@ try:
             source[0] = rendered
 except ImportError:
     has_yaml = False
+    html_context = {}
     print('Warning: Stability of SunPy API page of the documentation requires the ruamel.yaml package to be installed')
 
 # The name of an image file (within the static path) to use as favicon of the
