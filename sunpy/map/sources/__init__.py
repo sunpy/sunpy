@@ -28,6 +28,6 @@ from .iris import SJIMap
 
 from .trace import TRACEMap
 
-from .kcor import KCorMap
+from .mlso import KCorMap
 
 from .source_type import source_stretch, from_helioviewer_project
