@@ -45,9 +45,15 @@ class KCorMap(GenericMap):
         self.meta['waveunit'] = 'nanometer'
         self.meta['dsun_obs'] = (get_sunearth_distance(self.date)).to(u.m).value
         self._nickname = self.detector
-        # self.plot_settings['cmap'] = plt.get_cmap('gist_gray')
+        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
+    def _get_cmap_name(self):
+        """Build the default color map name."""
+        cmap_string = self.meta['detector']
+        return cmap_string.lower()
+
+        
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to a COSMO image"""
