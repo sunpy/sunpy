@@ -36,7 +36,7 @@ Let us begin by retrieving the available list of sources that Helioviewer suppor
 
     >>> from sunpy.net import helioviewer 
     >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-    >>> datasource = helioviewer.datasource_info  # doctest: +REMOTE_DATA
+    >>> datasource = hv.datasource_info  # doctest: +REMOTE_DATA
     >>> for sorted_ids in sorted(datasource.items(), key=lambda x: x[1]):  # doctest: +REMOTE_DATA
     ...     print(sorted_ids)  # doctest: +REMOTE_DATA
     (('SOHO', 'EIT', 'None', '171'), 0)
@@ -196,7 +196,7 @@ can specify the values as separate keyword arguments.::
    >>> from sunpy.map import Map
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
    >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
-   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='None', measurement='continuum')  # doctest: +REMOTE_DATA
+   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
    >>> hmi = Map(filepath)  # doctest: +REMOTE_DATA
    >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
    >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA

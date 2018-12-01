@@ -171,7 +171,7 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='HMI', detector='None', measurement='continuum')   # doctest: +REMOTE_DATA
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='HMI', detector=None, measurement='continuum')   # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(filepath)   # doctest: +REMOTE_DATA
         >>> aia.peek()   # doctest: +SKIP
         """

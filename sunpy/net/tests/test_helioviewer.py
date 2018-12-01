@@ -43,7 +43,7 @@ class TestHelioviewerClient:
         im1 = client.get_closest_image('1994/01/01',
                                        observatory='SOHO',
                                        instrument='EIT',
-                                       detector='None',
+                                       detector=None,
                                        measurement='304')
         assert im1['width'] == im1['height'] == 1024
 
@@ -58,7 +58,7 @@ class TestHelioviewerClient:
     def test_download_jp2(self, client):
         """Tests getJP2Image API method"""
         filepath = client.download_jp2('2020/01/01', observatory='SOHO',
-                                       instrument='MDI', detector='None',
+                                       instrument='MDI', detector=None,
                                        measurement='continuum')
         map_ = sunpy.map.Map(filepath)
         assert isinstance(map_, sunpy.map.GenericMap)
@@ -71,7 +71,7 @@ class TestHelioviewerClient:
             '2020/01/01',
             observatory='SOHO',
             instrument='MDI',
-            detector='None',
+            detector=None,
             measurement='continuum',
             directory=os.path.join(str(tmpdir), 'directorynotexist'))
 
