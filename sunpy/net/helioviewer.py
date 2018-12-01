@@ -107,11 +107,11 @@ class HelioviewerClient(object):
         """
         global datasource_info
         
-        key = (observatory, instrument, detector, measurement)
-        sourceid = datasource_info[key]
-
         if('sourceId' in kwargs):
             sourceid = kwargs['sourceId']
+        else:
+            key = (observatory, instrument, detector, measurement)
+            sourceid = datasource_info[key]
 
         params = {
             "action": "getClosestImage",
@@ -264,7 +264,7 @@ class HelioviewerClient(object):
         display : bool
             (Optional) Set to `true` to directly output binary PNG image data.
             Default is `false` (which outputs a JSON object).
-            
+
         Returns
         -------
         out : string
