@@ -20,15 +20,15 @@ To interact with the Helioviewer API, users first create a "HelioviewerClient"
 instance. The client instance can then be used to make various queries against
 the API using the same parameters one would use when making a web request. Note that
 HelioviewerClient is not meant to offer full access to the HelioViewer API and 
-as such it do not support all the inputs that the official API allows. But you can pass
-pass in extra keywords to communicate with the API. Make sure that it is not guaranteed that 
-using the keywords which are not documented will work or not.
+as such it does not support all the inputs that the official API allows. But you can pass
+pass in extra keywords to communicate with the API. We cannot guarantee that the undocumented 
+keywords will work, nor will we provide support for those.
 
 Nearly all requests require the user to specify the data they are interested in
 and this can be done using the following methods:
 
 1. Use the datasource_info dictionary to get the list of data source and their corresponding source id
-numbers which can be used to refer to a particular dataset, or,
+numbers which can be used to refer to a particular dataset or,
 2. Specify the four components of a Helioviewer.org data source or layer: *observatory*, *instrument*, 
 *detector* and *measurement*. If the *detector* is left blank then it is replaced by *None* keyword.
 

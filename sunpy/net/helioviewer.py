@@ -20,33 +20,34 @@ from sunpy.extern.six.moves import urllib
 
 __all__ = ['HelioviewerClient']
 
-datasource_info = dict()
 
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
+
+    datasource_info = dict()
+        
     def __init__(self, url="https://api.helioviewer.org/"):
         """
-        url : location of the Helioviewer API. This url points to 
-        the Helioviewer API.
+        url : URL that points to the Helioviewer API.
         """
         self._api = url
         self.init_src_dict()
+
     
     def init_src_dict(self):
-        datasources = self.get_data_sources() # doctest: +REMOTE_DATA
-        global datasource_info
-        for name, observ in datasources.items():  # doctest: +REMOTE_DATA
-            if name == "TRACE":  # doctest: +REMOTE_DATA
-                for instr, params in observ.items():  # doctest: +REMOTE_DATA
-                    datasource_info[(name, instr, 'None', 'None')] = params['sourceId']  # doctest: +REMOTE_DATA
-            else:  # doctest: +REMOTE_DATA
-                for inst, detect in observ.items():  # doctest: +REMOTE_DATA
-                    for wavelength, params in detect.items():  # doctest: +REMOTE_DATA
-                        if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:  # doctest: +REMOTE_DATA
-                            for wave, adict in params.items():  # doctest: +REMOTE_DATA
-                                datasource_info[(name, inst, wavelength, wave)] = adict['sourceId']  # doctest: +REMOTE_DATA
-                        else:  # doctest: +REMOTE_DATA
-                            datasource_info[(name, inst, 'None', wavelength)] = params['sourceId']  # doctest: +REMOTE_DATA
+        datasources = self.get_data_sources()
+        for name, observ in datasources.items():
+            if name == "TRACE":
+                for instr, params in observ.items():
+                    self.datasource_info[(name, instr, None, None)] = params['sourceId']
+            else:
+                for inst, detect in observ.items():
+                    for wavelength, params in detect.items():
+                        if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:
+                            for wave, adict in params.items():
+                                self.datasource_info[(name, inst, wavelength, wave)] = adict['sourceId']
+                        else:
+                            self.datasource_info[(name, inst, None, wavelength)] = params['sourceId']
         
     def get_data_sources(self, **kwargs):
         """
@@ -73,8 +74,8 @@ class HelioviewerClient(object):
         params.update(**kwargs)
         return self._get_json(params)
 
-    def get_closest_image(self, date, observatory='None', instrument='None', detector='None',
-                            measurement='None', **kwargs):
+    def get_closest_image(self, date, observatory=None, instrument=None, detector=None,
+                            measurement=None, **kwargs):
         """Finds the closest image available for the specified source and date.
         For more information on what types of requests are available and the
         expected usage for the response, consult the Helioviewer API
@@ -93,10 +94,12 @@ class HelioviewerClient(object):
             measurement name
         sourceId : int
             (Optional) data source id
+
         Returns
         -------
         out : `dict`
             A dictionary containing meta-information for the closest image matched
+
         Examples
         --------
         >>> from sunpy.net import helioviewer
@@ -105,13 +108,12 @@ class HelioviewerClient(object):
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
         2012-01-01 00:00:07
         """
-        global datasource_info
-        
+
         if('sourceId' in kwargs):
             sourceid = kwargs['sourceId']
         else:
             key = (observatory, instrument, detector, measurement)
-            sourceid = datasource_info[key]
+            sourceid = self.datasource_info[key]
 
         params = {
             "action": "getClosestImage",
@@ -134,6 +136,7 @@ class HelioviewerClient(object):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
+
         The data source may be specified either using it's sourceId from the
         get_data_sources query, or a combination of observatory, instrument,
         detector and measurement.
@@ -172,15 +175,14 @@ class HelioviewerClient(object):
         >>> aia = sunpy.map.Map(filepath)   # doctest: +REMOTE_DATA
         >>> aia.peek()   # doctest: +SKIP
         """
-        global datasource_info
 
         if('observatory' in kwargs):
-            observatory = kwargs['observatory'] if(kwargs['observatory']) else 'None' 
-            instrument = kwargs['instrument'] if(kwargs['instrument']) else 'None'
-            detector = kwargs['detector'] if(kwargs['detector']) else 'None'
-            measurement = kwargs['measurement'] if(kwargs['measurement']) else 'None'
+            observatory = kwargs['observatory'] if(kwargs['observatory']) else None 
+            instrument = kwargs['instrument'] if(kwargs['instrument']) else None
+            detector = kwargs['detector'] if(kwargs['detector']) else None
+            measurement = kwargs['measurement'] if(kwargs['measurement']) else None
             key = (observatory, instrument, detector, measurement)
-            sourceid = datasource_info[key]
+            sourceid = self.datasource_info[key]
 
         params = {
             "action": "getJP2Image",
@@ -196,7 +198,8 @@ class HelioviewerClient(object):
 
     def download_png(self, date, image_scale, layers, eventLabels=False, events=None, 
                      scale=False, watermark=False, directory=None, overwrite=False, **kwargs):
-        """Downloads a PNG image using data from Helioviewer.org. It uses the
+        """
+        Downloads a PNG image using data from Helioviewer.org. It uses the
         takeScreenshot function from the API to perform this task.
         Returns a single image containing all layers/image types requested.
         If an image is not available for the date requested the closest
@@ -206,6 +209,7 @@ class HelioviewerClient(object):
         width and height in pixels. See the Helioviewer.org API Coordinates
         Appendix for more information about working with coordinates in
         Helioviewer.org.
+
         Parameters
         ----------
         date : `datetime.datetime`, string
