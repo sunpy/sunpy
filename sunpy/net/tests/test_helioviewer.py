@@ -76,3 +76,4 @@ class TestHelioviewerClient:
             directory=os.path.join(str(tmpdir), 'directorynotexist'))
 
         assert 'directorynotexist' in filepath
+        

@@ -20,33 +20,33 @@ from sunpy.extern.six.moves import urllib
 
 __all__ = ['HelioviewerClient']
 
+datasource_info = dict()
 
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
     def __init__(self, url="https://api.helioviewer.org/"):
         """
-        url : location of the Helioviewer API.  The default location points to
-            version 2 of the API.
+        url : location of the Helioviewer API. This url points to 
+        the Helioviewer API.
         """
         self._api = url
-        self._source_dict = dict()
         self.init_src_dict()
     
     def init_src_dict(self):
         datasources = self.get_data_sources() # doctest: +REMOTE_DATA
-
+        global datasource_info
         for name, observ in datasources.items():  # doctest: +REMOTE_DATA
             if name == "TRACE":  # doctest: +REMOTE_DATA
                 for instr, params in observ.items():  # doctest: +REMOTE_DATA
-                    self._source_dict[(name, instr, 'None', 'None')] = params['sourceId']  # doctest: +REMOTE_DATA
+                    datasource_info[(name, instr, 'None', 'None')] = params['sourceId']  # doctest: +REMOTE_DATA
             else:  # doctest: +REMOTE_DATA
                 for inst, detect in observ.items():  # doctest: +REMOTE_DATA
                     for wavelength, params in detect.items():  # doctest: +REMOTE_DATA
                         if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:  # doctest: +REMOTE_DATA
                             for wave, adict in params.items():  # doctest: +REMOTE_DATA
-                                self._source_dict[(name, inst, wavelength, wave)] = adict['sourceId']  # doctest: +REMOTE_DATA
+                                datasource_info[(name, inst, wavelength, wave)] = adict['sourceId']  # doctest: +REMOTE_DATA
                         else:  # doctest: +REMOTE_DATA
-                            self._source_dict[(name, inst, 'None', wavelength)] = params['sourceId']  # doctest: +REMOTE_DATA
+                            datasource_info[(name, inst, 'None', wavelength)] = params['sourceId']  # doctest: +REMOTE_DATA
         
     def get_data_sources(self, **kwargs):
         """
@@ -73,23 +73,24 @@ class HelioviewerClient(object):
         params.update(**kwargs)
         return self._get_json(params)
 
-    def get_closest_image(self, date, **kwargs):
+    def get_closest_image(self, date, observatory='None', instrument='None', detector='None',
+                            measurement='None', **kwargs):
         """Finds the closest image available for the specified source and date.
         For more information on what types of requests are available and the
         expected usage for the response, consult the Helioviewer API
-        documentation: http://legacy.helioviewer.org/api/docs/v1/ .
+        documentation: https://api.helioviewer.org/docs/v2/ .
         Parameters
         ----------
         date : `datetime.datetime`, `str`
             A string or datetime object for the desired date of the image
         observatory : string
-            (Optional) Observatory name
+            Observatory name
         instrument : string
-            (Optional) instrument name
+            instrument name
         detector : string
-            (Optional) detector name
+            detector name
         measurement : string
-            (Optional) measurement name
+            measurement name
         sourceId : int
             (Optional) data source id
         Returns
@@ -104,22 +105,22 @@ class HelioviewerClient(object):
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
         2012-01-01 00:00:07
         """
+        global datasource_info
+        
+        key = (observatory, instrument, detector, measurement)
+        sourceid = datasource_info[key]
 
-        if('observatory' in kwargs):
-            observatory = kwargs['observatory'] if(kwargs['observatory']) else 'None' 
-            instrument = kwargs['instrument'] if(kwargs['instrument']) else 'None'
-            detector = kwargs['detector'] if(kwargs['detector']) else 'None'
-            measurement = kwargs['measurement'] if(kwargs['measurement']) else 'None'
-            key = (observatory, instrument, detector, measurement)
-            sourceid = self._source_dict[key]
-
-        elif('sourceId' in kwargs):
+        if('sourceId' in kwargs):
             sourceid = kwargs['sourceId']
 
         params = {
             "action": "getClosestImage",
             "date": self._format_date(date),
-            "sourceId": sourceid
+            "sourceId": sourceid,
+            "observatory": observatory,
+            "instrument": instrument,
+            "detector": detector,
+            "measurement": measurement
         }
 
         response = self._get_json(params)
@@ -128,13 +129,6 @@ class HelioviewerClient(object):
         response['date'] = parse_time(response['date'])
 
         return response
-
-    def display_source_id(self):
-        """
-        Returns a dictionary containing the source ID of all the 
-        images in the data source
-        """
-        return self._source_dict
 
     def download_jp2(self, date, directory=None, overwrite=False, **kwargs):
         """
@@ -178,14 +172,16 @@ class HelioviewerClient(object):
         >>> aia = sunpy.map.Map(filepath)   # doctest: +REMOTE_DATA
         >>> aia.peek()   # doctest: +SKIP
         """
+        global datasource_info
+
         if('observatory' in kwargs):
             observatory = kwargs['observatory'] if(kwargs['observatory']) else 'None' 
             instrument = kwargs['instrument'] if(kwargs['instrument']) else 'None'
             detector = kwargs['detector'] if(kwargs['detector']) else 'None'
             measurement = kwargs['measurement'] if(kwargs['measurement']) else 'None'
             key = (observatory, instrument, detector, measurement)
-            sourceid = self._source_dict[key]
-        
+            sourceid = datasource_info[key]
+
         params = {
             "action": "getJP2Image",
             "date": self._format_date(date),
@@ -268,9 +264,7 @@ class HelioviewerClient(object):
         display : bool
             (Optional) Set to `true` to directly output binary PNG image data.
             Default is `false` (which outputs a JSON object).
-        callback : string
-            (Optional) Wrap the response object in a function call of your choosing.
-
+            
         Returns
         -------
         out : string
@@ -357,5 +351,3 @@ class HelioviewerClient(object):
     def _format_date(self, date):
         """Formats a date for Helioviewer API requests"""
         return parse_time(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
-
-

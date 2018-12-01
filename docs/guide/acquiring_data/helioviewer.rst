@@ -18,25 +18,27 @@ install Glymur on your system.
 
 To interact with the Helioviewer API, users first create a "HelioviewerClient"
 instance. The client instance can then be used to make various queries against
-the API using the same parameters one would use when making a web request.
+the API using the same parameters one would use when making a web request. Note that
+HelioviewerClient is not meant to offer full access to the HelioViewer API and 
+as such it do not support all the inputs that the official API allows. But you can pass
+pass in extra keywords to communicate with the API. Make sure that it is not guaranteed that 
+using the keywords which are not documented will work or not.
 
 Nearly all requests require the user to specify the data they are interested in
-and this can be done using one of two methods:
+and this can be done using the following methods:
 
-1. Call "get_data_sources()" to get a list of the data that is available and using "get_source_id()" to get the source id numbers which
-can be used to refer to a particular dataset, or,
-2. Specify the four components of a Helioviewer.org data source or layer: *observatory*, *instrument*, *detector* and *measurement*.
+1. Use the datasource_info dictionary to get the list of data source and their corresponding source id
+numbers which can be used to refer to a particular dataset, or,
+2. Specify the four components of a Helioviewer.org data source or layer: *observatory*, *instrument*, 
+*detector* and *measurement*. If the *detector* is left blank then it is replaced by *None* keyword.
 
-Let's begin by getting a list of data sources and their respective 
-source ID available on the server using the display_source_id method::
+Let us begin by retrieving the available list of sources that Helioviewer supports by using `~sunpy.net.helioviewer.HelioviewerClient.display_source_id`:: 
 
     >>> from sunpy.net import helioviewer 
     >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-    >>> datasource = hv.display_source_id()  # doctest: +REMOTE_DATA
-    >>> sorted_ids = sorted(datasource.items(), key=lambda x: x[1])  # doctest: +REMOTE_DATA
-    >>> for i in sorted_ids  # doctest: +REMOTE_DATA
+    >>> datasource = helioviewer.datasource_info  # doctest: +REMOTE_DATA
+    >>> for sorted_ids in sorted(datasource.items(), key=lambda x: x[1]):  # doctest: +REMOTE_DATA
     ...     print(sorted_ids)  # doctest: +REMOTE_DATA
-    >>> # Print a list of datasources and their associated ids
     (('SOHO', 'EIT', 'None', '171'), 0)
     (('SOHO', 'EIT', 'None', '195'), 1)
     (('SOHO', 'EIT', 'None', '284'), 2)
@@ -185,7 +187,7 @@ Map object.
 
 The overall syntax is similar to the *download_png* request, expect instead of
 specifying a single string to indicate which layers to use, here we
-specify the sourceId of the image we want to download.::
+can specify the values as separate keyword arguments.::
 
    >>> from sunpy.net.helioviewer import HelioviewerClient
    >>> import matplotlib.pyplot as plt
@@ -213,4 +215,3 @@ display JP2 images in their browse clients.
 
 For more information about using querying Helioviewer.org, see the Helioviewer.org
 API documentation at: `https://api.helioviewer.org/docs/v2/ <https://api.helioviewer.org/docs/v2/>`__.
-
