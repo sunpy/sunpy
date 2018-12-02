@@ -30,7 +30,8 @@ and this can be done using the following methods:
 1. Use the datasource_info dictionary to get the list of data source and their corresponding source id
 numbers which can be used to refer to a particular dataset or,
 2. Specify the four components of a Helioviewer.org data source or layer: *observatory*, *instrument*, 
-*detector* and *measurement*. If the *detector* is left blank then it is replaced by *None* keyword.
+*detector* and *measurement*. The default value is *None* for all the components and should be changed
+to the correct value for the source you are interested in.
 
 Let us begin by retrieving the available list of sources that Helioviewer supports by using `~sunpy.net.helioviewer.HelioviewerClient.datasource_info`:: 
 
@@ -94,14 +95,14 @@ Let us begin by retrieving the available list of sources that Helioviewer suppor
     (('Hinode', 'XRT', 'Open', 'Al_thick'), 70)
     (('Hinode', 'XRT', 'Open', 'Be_thick'), 71)
     (('Hinode', 'XRT', 'Open', 'Ti_poly'), 74)
-    (('TRACE', '171', None, None), 75)
-    (('TRACE', '195', None, None), 76)
-    (('TRACE', '284', None, None), 77)
-    (('TRACE', '1216', None, None), 78)
-    (('TRACE', '1550', None, None), 79)
-    (('TRACE', '1600', None, None), 80)
-    (('TRACE', '1700', None, None), 81)
-    (('TRACE', 'white-light', None, None), 82)
+    (('TRACE', None, None, '171'), 75)
+    (('TRACE', None, None, '195'), 76)
+    (('TRACE', None, None, '284'), 77)
+    (('TRACE', None, None, '1216'), 78)
+    (('TRACE', None, None, '1550'), 79)
+    (('TRACE', None, None, '1600'), 80)
+    (('TRACE', None, None, '1700'), 81)
+    (('TRACE', None, None, 'white-light'), 82)
     (('Hinode', 'XRT', 'Any', 'Any'), 10001)
     (('Hinode', 'XRT', 'Any', 'Al_mesh'), 10002)
     (('Hinode', 'XRT', 'Any', 'Al_thick'), 10003)

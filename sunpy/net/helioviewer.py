@@ -24,13 +24,14 @@ __all__ = ['HelioviewerClient']
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
 
-    datasource_info = dict()
         
     def __init__(self, url="https://api.helioviewer.org/"):
         """
         url : str
             URL that points to the Helioviewer API.
         """
+        self.datasource_info = dict()
+
         self._api = url
         self.init_src_dict()
 
@@ -40,7 +41,7 @@ class HelioviewerClient(object):
         for name, observ in datasources.items():
             if name == "TRACE":
                 for instr, params in observ.items():
-                    self.datasource_info[(name, instr, None, None)] = params['sourceId']
+                    self.datasource_info[(name, None, None, instr)] = params['sourceId']
             else:
                 for inst, detect in observ.items():
                     for wavelength, params in detect.items():
@@ -147,7 +148,7 @@ class HelioviewerClient(object):
         date : `datetime.datetime`, string
             A string or datetime object for the desired date of the image
         directory : string
-            (Optional) Directory to download JPEG 2000 image to.
+            Directory to download JPEG 2000 image to.
         observatory : string
             (Optional) Observatory name
         instrument : string
@@ -188,7 +189,8 @@ class HelioviewerClient(object):
         params = {
             "action": "getJP2Image",
             "date": self._format_date(date),
-            "sourceId" : sourceid
+            "sourceId" : sourceid,
+            "directory": directory
         }
         params.update(kwargs)
         # JPIP URL response
@@ -220,7 +222,7 @@ class HelioviewerClient(object):
             0.6, 1.2, 2.4, and so on, increasing or decreasing by a factor
             of 2. The full-res scale of an AIA image is 0.6.
         directory : string
-            (Optional) Directory to download PNG image to.
+            Directory to download PNG image to.
         layers : string
             Image datasource layer/layers to include in the screeshot.
             Each layer string is comma-separated with these values, e.g.:
@@ -293,7 +295,8 @@ class HelioviewerClient(object):
             "display": True,
             "events": events,
             "scale": scale,
-            "watermark": watermark
+            "watermark": watermark,
+            "directory": directory
         }
 
         params.update(kwargs)
