@@ -28,7 +28,8 @@ class HelioviewerClient(object):
         
     def __init__(self, url="https://api.helioviewer.org/"):
         """
-        url : URL that points to the Helioviewer API.
+        url : str
+            URL that points to the Helioviewer API.
         """
         self._api = url
         self.init_src_dict()
