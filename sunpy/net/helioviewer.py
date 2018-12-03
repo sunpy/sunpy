@@ -31,10 +31,8 @@ class HelioviewerClient(object):
             URL that points to the Helioviewer API.
         """
         self.datasource_info = dict()
-
         self._api = url
         self.init_src_dict()
-
     
     def init_src_dict(self):
         datasources = self.get_data_sources()
@@ -94,7 +92,7 @@ class HelioviewerClient(object):
             detector name
         measurement : string
             measurement name
-        sourceId : int
+        sourceid : int
             (Optional) data source id
 
         Returns
@@ -106,21 +104,21 @@ class HelioviewerClient(object):
         --------
         >>> from sunpy.net import helioviewer
         >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)  # doctest: +REMOTE_DATA
+        >>> metadata = client.get_closest_image('2012/01/01', sourceid=11)  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
         2012-01-01 00:00:07
         """
 
-        if('sourceId' in kwargs):
-            sourceid = kwargs['sourceId']
+        if('sourceid' in kwargs):
+            source_id = kwargs['sourceid']
         else:
             key = (observatory, instrument, detector, measurement)
-            sourceid = self.datasource_info[key]
+            source_id = self.datasource_info[key]
 
         params = {
             "action": "getClosestImage",
             "date": self._format_date(date),
-            "sourceId": sourceid,
+            "sourceId": source_id,
             "observatory": observatory,
             "instrument": instrument,
             "detector": detector,
@@ -134,12 +132,13 @@ class HelioviewerClient(object):
 
         return response
 
-    def download_jp2(self, date, directory=None, overwrite=False, **kwargs):
+    def download_jp2(self, date, observatory=None, instrument=None, detector=None,
+                            measurement=None, directory=None, overwrite=False, **kwargs):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
 
-        The data source may be specified either using it's sourceId from the
+        The data source may be specified either using it's sourceid from the
         get_data_sources query, or a combination of observatory, instrument,
         detector and measurement.
 
@@ -150,14 +149,14 @@ class HelioviewerClient(object):
         directory : string
             Directory to download JPEG 2000 image to.
         observatory : string
-            (Optional) Observatory name
+            Observatory name
         instrument : string
-            (Optional) instrument name
+            instrument name
         detector : string
-            (Optional) detector name
+            detector name
         measurement : string
-            (Optional) measurement name
-        sourceId : int
+            measurement name
+        sourceid : int
             (Optional) data source id
         jpip : bool
             (Optional) Returns a JPIP URI if set to True
@@ -178,19 +177,21 @@ class HelioviewerClient(object):
         >>> aia.peek()   # doctest: +SKIP
         """
 
-        if('observatory' in kwargs):
-            observatory = kwargs['observatory'] if(kwargs['observatory']) else None 
-            instrument = kwargs['instrument'] if(kwargs['instrument']) else None
-            detector = kwargs['detector'] if(kwargs['detector']) else None
-            measurement = kwargs['measurement'] if(kwargs['measurement']) else None
+        if('sourceid' in kwargs):
+            source_id = kwargs['sourceid']
+        else:
             key = (observatory, instrument, detector, measurement)
-            sourceid = self.datasource_info[key]
-
+            source_id = self.datasource_info[key]
+            
         params = {
             "action": "getJP2Image",
             "date": self._format_date(date),
-            "sourceId" : sourceid,
-            "directory": directory
+            "sourceId" : source_id,
+            "directory": directory,
+            "observatory": observatory,
+            "instrument": instrument,
+            "detector": detector,
+            "measurement": measurement
         }
         params.update(kwargs)
         # JPIP URL response
@@ -226,7 +227,7 @@ class HelioviewerClient(object):
         layers : string
             Image datasource layer/layers to include in the screeshot.
             Each layer string is comma-separated with these values, e.g.:
-            "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
+            "[sourceid,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
             Multiple layer string are by commas: "[layer1],[layer2],[layer3]"
         eventLabels : bool
             Optionally annotate each event marker with a text label.

@@ -118,8 +118,8 @@ Let us begin by retrieving the available list of sources that Helioviewer suppor
     (('Hinode', 'XRT', 'Open', 'Any'), 10013)
 
 
-At time of writing (2014/01/06) Helioviewer provides JP2 images from AIA, HMI, LASCO C2/C3, EIT,
-MDI, STEREO A/B COR1/2 & EUVI, SWAP and SXT.  New sources of JP2 images are being added every few months;
+Helioviewer provides JP2 images from a range of sources.
+New sources of JP2 images are being added every few months;
 please use the code snippet above to get an up-to-date list of available data sources.
 
 

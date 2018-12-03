@@ -50,7 +50,7 @@ class TestHelioviewerClient:
         # result should be same when using source id to query
         source_id = client.sources['SOHO']['EIT']['304']['sourceId']
 
-        im2 = client.get_closest_image('1994/01/01', sourceId=source_id)
+        im2 = client.get_closest_image('1994/01/01', sourceid=source_id)
 
         assert im1 == im2
 
