@@ -49,6 +49,9 @@ jobs:
     docker:
       - image: quay.io/pypa/manylinux1_i686
     steps:
+      - restore_cache:
+          keys: sample-data-v1
+
       - checkout
       - run: *skip-check
       - run:
