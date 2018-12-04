@@ -1,29 +1,31 @@
 #!/usr/bin/env xonsh
-# Re-write release.rst for SunPy
-#
-#
-# ./generate_releasemd.xsh prev_version [prev_tag] [--commit-count]
-#
-# i.e.
-#
-# ./generate_releasemd.xsh 0.8.0
-#
-# or
-#
-# ./generate_releasemd.xsh 0.8.0 v0.8.0 --commit-count
-
-
 """
-The GitHub stuff is lovingly stolen from astropy-procedures
+Re-write release.rst for SunPy
 
+
+Usage:
+    generate_releasemd.xsh <prev_version> [<prev_tag>] [--commit-count] [--project-name=sunpy] [--repo=<repo>] [--auth=<auth>] [--verbose]
+
+Options:
+    prev_version            The PyPI release name of the previous release
+    prev_tag                The tag name for the previous release, if not specified will be v<prev_version>
+    --commit-count          Generate commit count stats
+    --project-name=sunpy    The project name on PyPI
+    --repo=<repo>           The GitHub repository name, will default to <project-name>/<project-name>
+    --auth=<auth>           GitHub API authentication information
 """
+# The GitHub stuff is lovingly stolen from astropy-procedures
 
 import argparse
 import os
 import json
 import datetime
 
+import docopt
 import requests
+
+args = docopt.docopt(__doc__, argv=$ARGS[1:], version="sunpy")
+print(args)
 
 GH_API_BASE_URL = 'https://api.github.com'
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -121,6 +123,7 @@ def get_datetime_of_pypi_version(pkg, version):
     resp = requests.get(f"https://pypi.org/pypi/{pkg}/json")
     j = resp.json()
 
+    print(j['releases'])
     datestr = j['releases'][version][0]['upload_time']
 
     return datetime.datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S")
@@ -129,10 +132,10 @@ def get_datetime_of_pypi_version(pkg, version):
 
 # Handle input
 
-prev_version = $ARGS[1]
-prev_tag = $ARGS[2] if len($ARGS) > 2 else "v" + prev_version
+prev_version = args['<prev_version>']
+prev_tag = args['<prev_tag>'] if args['<prev_tag>'] else "v"+args['<prev_version>']
 
-commit_count = True if "--commit-count" in $ARGS else False
+commit_count = args['--commit-count']
 
 
 # Parse Git trickery.
@@ -140,13 +143,12 @@ commit_count = True if "--commit-count" in $ARGS else False
 current_log = $(git shortlog -ns --no-merges @(prev_tag+"..HEAD"))
 
 # Get all the authors for all releases up to the previous release
-prev = {a.split('\t')[1] for a in $(git shortlog -ns --no-merges @("37edfa6.."+prev_tag)).split('\n')[:-1]}
+prev = {a.split('\t')[1] for a in $(git shortlog -ns --no-merges @($(git rev-list --max-parents=0 HEAD).split("\n")[0]+".."+prev_tag)).split('\n')[:-1]}
 
 # Get all authors from the previous release to this one
 current = {a.split('\t')[1] for a in current_log.split('\n')[:-1]}
 
 new = current.difference(prev)
-
 
 ncommits = int($(git rev-list HEAD @("^"+prev_tag) --count).strip())
 npeople = len(current)
@@ -171,14 +173,15 @@ for i, line in enumerate(lines):
 
 # Get PR info
 
-pkgdt = get_datetime_of_pypi_version("sunpy", prev_version)
+pkgdt = get_datetime_of_pypi_version(args['--project-name'], prev_version)
 
 icache = 'issues.json'
 prcache = 'prs.json'
 
 verbose = False
-auth = None
-repo = 'sunpy/sunpy'
+auth = args['--auth']
+repo = f"{args['--project-name']}/{args['--project-name']}" if not args['--repo'] else args['--repo']
+import sys; sys.exit(0)
 icnt = count_issues_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=icache)
 prcnt = count_prs_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=prcache)
 
