@@ -118,10 +118,7 @@ Let us begin by retrieving the available list of sources that Helioviewer suppor
     (('Hinode', 'XRT', 'Open', 'Any'), 10013)
 
 
-Helioviewer provides JP2 images from a range of sources.
-New sources of JP2 images are being added every few months;
-please use the code snippet above to get an up-to-date list of available data sources.
-
+Helioviewer provides JP2 images from a range of sources. New sources of JP2 images are being added every few months.
 
 Suppose we next want to download a PNG image of the latest
 AIA 304 image available on Helioviewer.org. We could use the explicit
@@ -139,7 +136,6 @@ approach as shown in the following example.::
 
 
 .. image:: helioviewer-1.png
-
 
 
 Where 4.8 refers to the image resolution in arcseconds per pixel (larger values

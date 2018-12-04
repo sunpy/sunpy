@@ -22,9 +22,7 @@ __all__ = ['HelioviewerClient']
 
 
 class HelioviewerClient(object):
-    """Helioviewer.org Client"""
-
-        
+    """Helioviewer.org Client"""      
     def __init__(self, url="https://api.helioviewer.org/"):
         """
         url : str
@@ -75,7 +73,7 @@ class HelioviewerClient(object):
         return self._get_json(params)
 
     def get_closest_image(self, date, observatory=None, instrument=None, detector=None,
-                            measurement=None, **kwargs):
+                          measurement=None, **kwargs):
         """Finds the closest image available for the specified source and date.
         For more information on what types of requests are available and the
         expected usage for the response, consult the Helioviewer API
@@ -133,7 +131,7 @@ class HelioviewerClient(object):
         return response
 
     def download_jp2(self, date, observatory=None, instrument=None, detector=None,
-                            measurement=None, directory=None, overwrite=False, **kwargs):
+                     measurement=None, directory=None, overwrite=False, **kwargs):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
@@ -182,7 +180,7 @@ class HelioviewerClient(object):
         else:
             key = (observatory, instrument, detector, measurement)
             source_id = self.datasource_info[key]
-            
+
         params = {
             "action": "getJP2Image",
             "date": self._format_date(date),
