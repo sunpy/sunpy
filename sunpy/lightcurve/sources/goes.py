@@ -142,7 +142,7 @@ class GOESLightCurve(LightCurve):
             return sat_list
 
     @staticmethod
-    def _get_url_for_date_range(*args):
+    def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL to the GOES data for the specified date.
 
         Parameters

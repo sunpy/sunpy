@@ -1,3 +1,15 @@
+Sunpy 0.9.5 (2018-11-27)
+========================
+
+Bug Fixes
+---------
+
+- Timeseries and lightcurve will now respect updated config values for download directory. (`#2844 <https://github.com/sunpy/sunpy/pull/2844>`__)
+- Always use _default_wrap_angle rather than hard coding a wrap angle in the init
+  of a frame (`#2853 <https://github.com/sunpy/sunpy/pull/2853>`__)
+- Ensure imageanimators only slice arrays with integers (`#2856 <https://github.com/sunpy/sunpy/pull/2856>`__)
+
+
 Sunpy 0.9.4 (2018-11-14)
 ========================
 
