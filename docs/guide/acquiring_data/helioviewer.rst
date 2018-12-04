@@ -189,7 +189,6 @@ can specify the values as separate keyword arguments.::
    >>> from sunpy.net.helioviewer import HelioviewerClient
    >>> import matplotlib.pyplot as plt
    >>> from astropy.units import Quantity
-   >>> import sunpy.net.helioviewer
    >>> from sunpy.map import Map
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
    >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA

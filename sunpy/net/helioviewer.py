@@ -22,7 +22,7 @@ __all__ = ['HelioviewerClient']
 
 
 class HelioviewerClient(object):
-    """Helioviewer.org Client"""      
+    """Helioviewer.org Client"""
     def __init__(self, url="https://api.helioviewer.org/"):
         """
         url : str
@@ -51,17 +51,6 @@ class HelioviewerClient(object):
         """
         Returns a structured list of datasources available at helioviewer.org.
 
-        Parameters
-        ----------
-        verbose: `bool`
-            (Optional) If set to True, it outputs the hierarchical list in an
-            alternative format and limits the list of available datasources
-            to a known set (SDO and SOHO).
-        enable: `str`
-            (Optional) Comma-separated list of observatories to enable.
-        callback: `str`
-            (Optional) Wrap the response object in a function call of your choosing.
-
         Returns
         -------
         out : `dict`
@@ -69,7 +58,7 @@ class HelioviewerClient(object):
             that Helioviewer supports.
         """
         params = {"action": "getDataSources"}
-        params.update(**kwargs)
+        params.update(kwargs)
         return self._get_json(params)
 
     def get_closest_image(self, date, observatory=None, instrument=None, detector=None,
@@ -156,8 +145,6 @@ class HelioviewerClient(object):
             measurement name
         sourceid : int
             (Optional) data source id
-        jpip : bool
-            (Optional) Returns a JPIP URI if set to True
 
         Returns
         -------
