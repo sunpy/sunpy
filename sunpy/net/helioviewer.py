@@ -111,7 +111,8 @@ class HelioviewerClient(object):
             "detector": detector,
             "measurement": measurement
         }
-
+        params.update(kwargs)
+        
         response = self._get_json(params)
 
         # Cast date string to DateTime
