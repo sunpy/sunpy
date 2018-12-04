@@ -20,7 +20,6 @@ from sunpy.extern.six.moves import urllib
 
 __all__ = ['HelioviewerClient']
 
-
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
     def __init__(self, url="https://api.helioviewer.org/"):
@@ -67,6 +66,7 @@ class HelioviewerClient(object):
         For more information on what types of requests are available and the
         expected usage for the response, consult the Helioviewer API
         documentation: https://api.helioviewer.org/docs/v2/ .
+        
         Parameters
         ----------
         date : `datetime.datetime`, `str`
@@ -112,7 +112,7 @@ class HelioviewerClient(object):
             "measurement": measurement
         }
         params.update(kwargs)
-        
+
         response = self._get_json(params)
 
         # Cast date string to DateTime
