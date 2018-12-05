@@ -15,14 +15,6 @@ import glob
 import builtins  # noqa
 import itertools
 
-# Import ah_bootstrap after the python version validation
-import ah_bootstrap  # noqa
-from setuptools import setup  # noqa
-from astropy_helpers.git_helpers import get_git_devstr  # noqa
-from astropy_helpers.setup_helpers import get_package_info  # noqa
-from astropy_helpers.setup_helpers import get_debug_option, register_commands
-from astropy_helpers.version_helpers import generate_version_py  # noqa
-
 try:
     from configparser import ConfigParser
 except ImportError:
@@ -39,8 +31,6 @@ AUTHOR = metadata.get('author', 'The SunPy Community')
 AUTHOR_EMAIL = metadata.get('author_email', '')
 LICENSE = metadata.get('license', 'unknown')
 URL = metadata.get('url', 'https://sunpy.org')
-with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.rst'), encoding='utf-8') as f:
-    LONG_DESCRIPTION = f.read()
 __minimum_python_version__ = metadata.get("minimum_python_version", "3.6")
 
 # Enforce Python version check - this is the same check as in __init__.py but
@@ -49,6 +39,16 @@ if sys.version_info < tuple((int(val) for val in __minimum_python_version__.spli
     sys.stderr.write("ERROR: SunPy requires Python {} or later\n".format(__minimum_python_version__))
     sys.exit(1)
 
+with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.rst'), encoding='utf-8') as f:
+    LONG_DESCRIPTION = f.read()
+
+# Import ah_bootstrap after the python version validation
+import ah_bootstrap  # noqa
+from setuptools import setup  # noqa
+from astropy_helpers.git_helpers import get_git_devstr  # noqa
+from astropy_helpers.setup_helpers import get_package_info  # noqa
+from astropy_helpers.setup_helpers import get_debug_option, register_commands
+from astropy_helpers.version_helpers import generate_version_py  # noqa
 
 builtins._SUNPY_SETUP_ = True
 
