@@ -1,0 +1,1 @@
+Timeseries and lightcurve will now respect updated config values for download directory.

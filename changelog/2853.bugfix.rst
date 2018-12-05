@@ -1,0 +1,2 @@
+Always use _default_wrap_angle rather than hard coding a wrap angle in the init
+of a frame
