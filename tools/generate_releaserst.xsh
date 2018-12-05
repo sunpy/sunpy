@@ -4,15 +4,15 @@ Re-write release.rst for SunPy
 
 
 Usage:
-    generate_releasemd.xsh <prev_version> [<prev_tag>] [--commit-count] [--project-name=sunpy] [--repo=<repo>] [--auth=<auth>] [--verbose]
+    generate_releasemd.xsh <prev_version> [<prev_tag>] [--commit-count] [--project-name=<project-name>] [--repo=<repo>] [--auth=<auth>] [--verbose]
 
 Options:
-    prev_version            The PyPI release name of the previous release
-    prev_tag                The tag name for the previous release, if not specified will be v<prev_version>
-    --commit-count          Generate commit count stats
-    --project-name=sunpy    The project name on PyPI
-    --repo=<repo>           The GitHub repository name, will default to <project-name>/<project-name>
-    --auth=<auth>           GitHub API authentication information
+    prev_version                      The PyPI release name of the previous release
+    prev_tag                          The tag name for the previous release, if not specified will be v<prev_version>
+    --commit-count                    Generate commit count stats
+    --project-name=<project-name>     The project name on PyPI [default: sunpy]
+    --repo=<repo>                     The GitHub repository name, will default to <project-name>/<project-name>
+    --auth=<auth>                     GitHub API authentication information
 """
 # The GitHub stuff is lovingly stolen from astropy-procedures
 
@@ -25,7 +25,6 @@ import docopt
 import requests
 
 args = docopt.docopt(__doc__, argv=$ARGS[1:], version="sunpy")
-print(args)
 
 GH_API_BASE_URL = 'https://api.github.com'
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -99,6 +98,8 @@ def count_prs_since(dt, repo, auth=None, verbose=True, cacheto=None):
     usersclosed = []
 
     for entry in prlst:
+        if not isinstance(entry, dict):
+            continue
         createddt = datetime.datetime.strptime(entry['created_at'],  ISO_FORMAT)
         if createddt > dt:
             nopened += 1
@@ -123,7 +124,6 @@ def get_datetime_of_pypi_version(pkg, version):
     resp = requests.get(f"https://pypi.org/pypi/{pkg}/json")
     j = resp.json()
 
-    print(j['releases'])
     datestr = j['releases'][version][0]['upload_time']
 
     return datetime.datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S")
@@ -169,8 +169,6 @@ for i, line in enumerate(lines):
     shortlog.append(outl)
 
 
-
-
 # Get PR info
 
 pkgdt = get_datetime_of_pypi_version(args['--project-name'], prev_version)
@@ -181,15 +179,10 @@ prcache = 'prs.json'
 verbose = False
 auth = args['--auth']
 repo = f"{args['--project-name']}/{args['--project-name']}" if not args['--repo'] else args['--repo']
-import sys; sys.exit(0)
 icnt = count_issues_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=icache)
 prcnt = count_prs_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=prcache)
 
-
-
 # Build output
-
-
 output = '\n'.join(shortlog)
 
 
