@@ -4,18 +4,19 @@ Re-write release.rst for SunPy
 
 
 Usage:
-    generate_releasemd.xsh <prev_version> [<prev_tag>] [--commit-count] [--project-name=<project-name>] [--repo=<repo>] [--auth=<auth>] [--verbose]
+    generate_releasemd.xsh <prev_version> [<prev_tag>] [--commit-count] [--project-name=<project-name>] [--pretty-project-name=<pretty-project-name>] [--repo=<repo>]
 
 Options:
-    prev_version                      The PyPI release name of the previous release
-    prev_tag                          The tag name for the previous release, if not specified will be v<prev_version>
-    --commit-count                    Generate commit count stats
-    --project-name=<project-name>     The project name on PyPI [default: sunpy]
-    --repo=<repo>                     The GitHub repository name, will default to <project-name>/<project-name>
-    --auth=<auth>                     GitHub API authentication information
+    prev_version                                   The PyPI release name of the previous release
+    prev_tag                                       The tag name for the previous release, if not specified will be v<prev_version>
+    --commit-count                                 Generate commit count stats
+    --project-name=<project-name>                  The project name on PyPI [default: sunpy]
+    --pretty-project-name=<pretty-project-name>    The project name to use in the printed output [default: SunPy]
+    --repo=<repo>                                  The GitHub repository name, will default to <project-name>/<project-name>
 """
 # The GitHub stuff is lovingly stolen from astropy-procedures
 
+import netrc
 import argparse
 import os
 import json
@@ -41,7 +42,7 @@ def paginate_list_request(req, verbose=False, auth=None):
         i += 1
         if verbose:
             print('Doing request', i, 'of', currreq.links['last']['url'].split('page=')[-1])
-        currreq = requests.get(currreq.links['next']['url'], auth=auth)
+        currreq = requests.get(currreq.links['next']['url'], params={'access_token': auth})
 
     elems.extend(currreq.json())
     return elems
@@ -54,7 +55,7 @@ def count_issues_since(dt, repo, auth=None, verbose=True, cacheto=None):
     else:
         url = GH_API_BASE_URL + '/repos/' + repo + '/issues?per_page=100&state=all'
 
-        req = requests.get(url, auth=auth)
+        req = requests.get(url, params={'access_token': auth})
         if not req.ok:
             msg = 'Failed to access github API for repo using url {}. {}: {}: {}'
             raise requests.HTTPError(msg.format(url, req.status_code, req.reason, req.text))
@@ -66,6 +67,8 @@ def count_issues_since(dt, repo, auth=None, verbose=True, cacheto=None):
     nopened = nclosed = 0
 
     for entry in isslst:
+        if not isinstance(entry, dict):
+            continue
         createddt = datetime.datetime.strptime(entry['created_at'],  ISO_FORMAT)
         if createddt > dt:
             nopened += 1
@@ -177,7 +180,7 @@ icache = 'issues.json'
 prcache = 'prs.json'
 
 verbose = False
-auth = args['--auth']
+auth = None  # args['--auth']
 repo = f"{args['--project-name']}/{args['--project-name']}" if not args['--repo'] else args['--repo']
 icnt = count_issues_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=icache)
 prcnt = count_prs_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=prcache)
@@ -186,10 +189,11 @@ prcnt = count_prs_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=prcache
 output = '\n'.join(shortlog)
 
 
-print(f"This release of SunPy contains {ncommits} commits in {prcnt['merged']} merged pull requests closing {icnt['closed']} issues from {npeople} people, {nnew} of which are first time contributors to SunPy.")
+pretty_project_name = args["--pretty-project-name"] if args["--pretty-project-name"] else args["--project-name"]
+print(f"This release of {pretty_project_name} contains {ncommits} commits in {prcnt['merged']} merged pull requests closing {icnt['closed']} issues from {npeople} people, {nnew} of which are first time contributors to {pretty_project_name}.")
 print()
 print("The people who have contributed to the code for this release are:")
 print()
 print(output)
 print()
-print("Where a * indicates their first contribution to SunPy.")
+print(f"Where a * indicates their first contribution to {pretty_project_name}.")
