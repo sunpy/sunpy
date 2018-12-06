@@ -11,8 +11,8 @@ apt-run: &apt-install
 tox-install: &tox-install
   name: Install Tox
   command: |
-    pip install git+https://github.com/drdavella/tox-conda.git
     pip install tox
+    pip install tox-conda
 
 image-run: &image-tests
   name: Run image tests
