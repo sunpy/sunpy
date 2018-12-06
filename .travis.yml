@@ -59,7 +59,7 @@ before_install:
   # We do not want to create the test env
   - echo "" > ci-helpers/travis/setup_dependencies_common.sh
   - source ci-helpers/travis/setup_conda.sh
-  - pip install git+https://github.com/drdavella/tox-conda
+  - pip install tox tox-conda
 
 script:
   - tox -vv -e $TOX_ENV $TOX_ARG
