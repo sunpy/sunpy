@@ -9,7 +9,7 @@ environment:
       CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers\\appveyor\\windows_sdk.cmd"
       PYTHON_ARCH: "64"
       CONDA_CHANNELS: "sunpy"
-      PIP_DEPENDENCIES: "tox git+git://github.com/drdavella/tox-conda"
+      PIP_DEPENDENCIES: "tox tox-conda"
       PYTHON_VERSION: "3.6"
 
   matrix:
