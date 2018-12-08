@@ -4,7 +4,7 @@ Re-write release.rst for SunPy
 
 
 Usage:
-    generate_releasemd.xsh <prev_version> [<prev_tag>] [--commit-count] [--project-name=<project-name>] [--pretty-project-name=<pretty-project-name>] [--repo=<repo>]
+    generate_releasemd.xsh <prev_version> [<prev_tag>] [--commit-count] [--project-name=<project-name>] [--pretty-project-name=<pretty-project-name>] [--repo=<repo>] [--auth]
 
 Options:
     prev_version                                   The PyPI release name of the previous release
@@ -13,10 +13,13 @@ Options:
     --project-name=<project-name>                  The project name on PyPI [default: sunpy]
     --pretty-project-name=<pretty-project-name>    The project name to use in the printed output [default: SunPy]
     --repo=<repo>                                  The GitHub repository name, will default to <project-name>/<project-name>
+    --auth                                         Prompt for GH auth
 """
 # The GitHub stuff is lovingly stolen from astropy-procedures
 
 import netrc
+import getpass
+import warnings
 import argparse
 import os
 import json
@@ -30,6 +33,40 @@ args = docopt.docopt(__doc__, argv=$ARGS[1:], version="sunpy")
 GH_API_BASE_URL = 'https://api.github.com'
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
+def get_credentials(username=None, password=None):
+
+    try:
+        my_netrc = netrc.netrc()
+    except Exception as e:
+        print(e)
+    else:
+        auth = my_netrc.authenticators("api.github.com")
+        if auth:
+            response = 'NONE'  # to allow enter to be default Y
+            while response.lower() not in ('y', 'n', ''):
+                warnings.warn('Using the following GitHub credentials from '
+                              '~/.netrc: {0}/{1}'.format(auth[0], '*' * 8))
+                response = input(
+                    'Use these credentials (if not you will be prompted '
+                    'for new credentials)? [Y/n] ')
+            if response.lower() == 'y' or response == '':
+                username = auth[0]
+                password = auth[2]
+
+    if not (username or password):
+        warnings.warn("Enter your GitHub username and password so that API "
+                      "requests aren't as severely rate-limited...")
+        username = input('Username: ')
+        password = getpass.getpass('Password: ')
+    elif not password:
+        warnings.warn("Enter your GitHub password so that API "
+                      "requests aren't as severely rate-limited...")
+        password = getpass.getpass('Password: ')
+
+    return username, password
+
+auth = get_credentials() if args['--auth'] else None
+
 
 def paginate_list_request(req, verbose=False, auth=None):
     elems = []
@@ -42,7 +79,7 @@ def paginate_list_request(req, verbose=False, auth=None):
         i += 1
         if verbose:
             print('Doing request', i, 'of', currreq.links['last']['url'].split('page=')[-1])
-        currreq = requests.get(currreq.links['next']['url'], params={'access_token': auth})
+        currreq = requests.get(currreq.links['next']['url'], auth=auth)
 
     elems.extend(currreq.json())
     return elems
@@ -55,7 +92,7 @@ def count_issues_since(dt, repo, auth=None, verbose=True, cacheto=None):
     else:
         url = GH_API_BASE_URL + '/repos/' + repo + '/issues?per_page=100&state=all'
 
-        req = requests.get(url, params={'access_token': auth})
+        req = requests.get(url, auth=auth)
         if not req.ok:
             msg = 'Failed to access github API for repo using url {}. {}: {}: {}'
             raise requests.HTTPError(msg.format(url, req.status_code, req.reason, req.text))
@@ -180,7 +217,6 @@ icache = 'issues.json'
 prcache = 'prs.json'
 
 verbose = False
-auth = None  # args['--auth']
 repo = f"{args['--project-name']}/{args['--project-name']}" if not args['--repo'] else args['--repo']
 icnt = count_issues_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=icache)
 prcnt = count_prs_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=prcache)
