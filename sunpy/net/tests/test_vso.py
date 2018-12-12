@@ -438,6 +438,7 @@ def test_rhessi():
 def test_progress_bar():
     vc = vso.VSOClient()
     qr = vc.search(vso.attrs.Time((2013, 5, 19, 2, 0), (2013, 5, 19, 2, 0), (2013, 5, 19, 2, 0)),
-                   vso.attrs.Instrument('VIRGO') | vso.attrs.Instrument('SECCHI'))
-    files = vc.fetch(qr).wait(progress=False)
+                   vso.attrs.Instrument('VIRGO') | vso.attrs.Instrument("SECCHI"))
+    files = vc.fetch(qr, methods=None).wait(progress=False)
     assert len(files) == len(qr)
+    assert len(files) == 2

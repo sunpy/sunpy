@@ -20,7 +20,7 @@ from collections import defaultdict
 from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
-from zeep import client
+import zeep
 from zeep.helpers import serialize_object
 
 import astropy.units as u
@@ -101,7 +101,8 @@ def get_online_vso_url(api, url, port):
     if api is None and (url is None or port is None):
         for mirror in DEFAULT_URL_PORT:
             if check_connection(mirror['url']):
-                api = client.Client(mirror['url'], port_name=mirror['port'])
+                settings = zeep.Settings(strict=True)
+                api = zeep.Client(mirror['url'], settings=settings, port_name=mirror['port'])
                 api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
                 return api
 
@@ -538,7 +539,7 @@ class VSOClient(BaseClient):
             time_near=datetime.utcnow()
         )
 
-    def fetch(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
+    def fetch(self, query_response, path=None, methods=None,
               downloader=None, site=None):
         """
         Download data specified in the query_response.
@@ -672,7 +673,7 @@ class VSOClient(BaseClient):
                        self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
                        for k, v in maps.items()]
 
-        request = {'method': [{'methodtype': m} for m in methods],
+        request = {'method': methods,
                    'info': info,
                    'datacontainer': {'datarequestitem': datarequestitem}
                    }
