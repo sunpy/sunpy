@@ -8,6 +8,7 @@ from astropy.time import TimeDelta
 from astropy.time import Time
 
 import sunpy.time
+from sunpy.time import is_time_equal
 
 tbegin_str = '2012/1/1'
 tfin_str = '2012/1/2'
@@ -162,7 +163,7 @@ def timerange_a():
 
 
 def test_center(timerange_a):
-    assert timerange_a.center == Time('2012-1-1T12:00:00')
+    assert is_time_equal(timerange_a.center, Time('2012-1-1T12:00:00'))
 
 
 def test_split(timerange_a):
@@ -170,7 +171,7 @@ def test_split(timerange_a):
               sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/2T00:00:00')]
     split = timerange_a.split(n=2)
     # Doing direct comparisons seem to not work
-    assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(split, expect)])
+    assert all([is_time_equal(wi.start, ex.start) and is_time_equal(wi.end, ex.end) for wi, ex in zip(split, expect)])
 
 
 def test_split_n_0_error(timerange_a):
