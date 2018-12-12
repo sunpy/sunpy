@@ -10,7 +10,6 @@ from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr, SimpleAttr
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 
 
-
 class Series(SimpleAttr):
     """
     The JSOC Series to Download.

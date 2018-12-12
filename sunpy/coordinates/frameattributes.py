@@ -2,7 +2,7 @@
 import datetime
 
 import astropy.units as u
-from sunpy.time import Time
+from astropy.time import Time
 from astropy.coordinates import TimeAttribute, CoordinateAttribute
 
 from sunpy.time import parse_time

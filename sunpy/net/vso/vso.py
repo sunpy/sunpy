@@ -24,7 +24,7 @@ from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
 from astropy.time import TimeDelta
-from sunpy.time import Time
+from astropy.time import Time
 import astropy.units as u
 from astropy.table import QTable as Table
 

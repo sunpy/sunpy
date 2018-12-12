@@ -1,21 +1,22 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """GOES XRS TimeSeries subclass definitions."""
 # pylint: disable=W0221,W0222,E1101,E1121
 
-from collections import OrderedDict
 import datetime
-import matplotlib.dates
-from matplotlib import pyplot as plt
-import numpy as np
-from pandas import DataFrame
+from collections import OrderedDict
 
-import sunpy.io
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.time import parse_time, TimeRange, is_time_in_given_format, Time
-from sunpy.util.metadata import MetaDict
+import numpy as np
+import matplotlib.dates
+from pandas import DataFrame
+from matplotlib import pyplot as plt
 
 from astropy import units as u
-from astropy.time import TimeDelta
+from astropy.time import TimeDelta, Time
+
+import sunpy.io
+from sunpy.time import TimeRange, parse_time, is_time_in_given_format
+from sunpy.util.metadata import MetaDict
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 
 __author__ = ["Alex Hamilton"]
 __email__ = "####"

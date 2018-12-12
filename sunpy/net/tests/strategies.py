@@ -1,18 +1,21 @@
 """
 Provide a set of Hypothesis Strategies for various Fido related tests.
 """
+import datetime
+
 import hypothesis.strategies as st
 from hypothesis import assume
-from hypothesis.strategies import datetimes, one_of, sampled_from
+from hypothesis.strategies import one_of, datetimes, sampled_from
 
-import datetime
-from sunpy.net import attrs as a
-from sunpy.time import TimeRange, Time
 import astropy.time
+from astropy.time import Time
 
+from sunpy.net import attrs as a
+from sunpy.time import TimeRange
 
 TimesLeapsecond = sampled_from((Time('2015-06-30T23:59:60'),
                                 Time('2012-06-30T23:59:60')))
+
 
 @st.composite
 def Times(draw, max_value, min_value):

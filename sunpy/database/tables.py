@@ -12,12 +12,13 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 import astropy.table
+from astropy.time import Time
 from astropy.units import Unit, nm, quantity, equivalencies
 
 
 import sunpy
 from sunpy import config
-from sunpy.time import parse_time, Time
+from sunpy.time import parse_time
 from sunpy.io import fits, file_tools as sunpy_filetools
 
 TIME_FORMAT = config.get("general", "time_format")

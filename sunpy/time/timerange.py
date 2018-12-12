@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import astropy.units as u
 from astropy.time import TimeDelta
-from sunpy.time import Time
+from astropy.time import Time
 
 from sunpy.time import parse_time, is_time_equal
 from sunpy import config

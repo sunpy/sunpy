@@ -14,7 +14,7 @@ import urllib
 from itertools import chain
 
 from astropy.table import Table, Row, Column
-from sunpy.time import Time
+from astropy.time import Time
 
 from sunpy.net import attr
 from sunpy.util import unique

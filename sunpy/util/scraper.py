@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from astropy.time import TimeDelta
 import astropy.units as u
 
-from sunpy.time import Time
+from astropy.time import Time
 
 __all__ = ['Scraper']
 

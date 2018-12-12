@@ -6,7 +6,7 @@ from pandas.io.parsers import read_csv
 import numpy as np
 
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.time import Time
+from astropy.time import Time
 from sunpy.util.metadata import MetaDict
 
 from astropy import units as u

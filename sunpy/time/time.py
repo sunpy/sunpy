@@ -6,7 +6,7 @@ from functools import singledispatch
 import numpy as np
 
 import astropy.time
-from sunpy.time import Time
+from astropy.time import Time
 import astropy.units as u
 
 from sunpy.time.utime import TimeUTime  # noqa: F401

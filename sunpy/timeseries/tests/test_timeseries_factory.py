@@ -21,7 +21,7 @@ from sunpy.util.datatype_factory_base import NoMatchError
 
 import astropy.units as u
 from astropy.table import Table
-from sunpy.time import Time, parse_time
+from sunpy.time import parse_time
 from astropy.time import TimeDelta
 from astropy.io import fits
 

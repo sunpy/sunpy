@@ -9,7 +9,7 @@ import tarfile
 from functools import partial
 from collections import OrderedDict
 
-from sunpy.time import Time
+from astropy.time import Time
 from astropy.time import TimeDelta
 import astropy.units as u
 

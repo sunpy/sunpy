@@ -10,7 +10,7 @@ import numpy as np
 import pandas
 
 from astropy.io import fits
-from sunpy.time import Time
+from astropy.time import Time
 
 from sunpy.time import parse_time
 from sunpy.util.net import check_download_file
