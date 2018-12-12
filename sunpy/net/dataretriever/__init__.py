@@ -9,5 +9,14 @@ class, so do not need to be called individually.
 """
 
 from .client import QueryResponseBlock, QueryResponse, GenericClient
+from .sources.eve import EVEClient
+from .sources.lyra import LYRAClient
+from .sources.goes import XRSClient
+from .sources.norh import NoRHClient
+from .sources.rhessi import RHESSIClient
+from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 
-from . import clients
+
+__all__ = ['QueryResponseBlock', 'QueryResponse', 'GenericClient',
+           'EVEClient', 'XRSClient', 'LYRAClient', 'NOAAIndicesClient',
+           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient']

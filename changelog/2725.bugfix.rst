@@ -1,0 +1,1 @@
+Raise an error when transforming between HPC and HCC frames if the observer is not the same.

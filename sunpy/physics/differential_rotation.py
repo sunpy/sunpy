@@ -1,18 +1,15 @@
-from __future__ import division
 import datetime
-from copy import deepcopy
 import warnings
+from copy import deepcopy
 from itertools import product
 
 import numpy as np
-from skimage import transform
+
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Longitude
 
-import sunpy.map
 from sunpy.time import parse_time
-from sunpy.coordinates import frames, HeliographicStonyhurst
-from sunpy.image.util import to_norm, un_norm
+from sunpy.coordinates import HeliographicStonyhurst, frames
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
 
@@ -125,9 +122,10 @@ def solar_rotate_coordinate(coordinate,
 
     **diff_rot_kwargs : keyword arguments
         Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
+
     Returns
     -------
-    coordinate : `~astropy.coordinates.SkyCoord``
+    coordinate : `~astropy.coordinates.SkyCoord`
         The locations of the input coordinates after the application of
         solar rotation in the input coordinate frame.
 
@@ -137,12 +135,12 @@ def solar_rotate_coordinate(coordinate,
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import frames
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
-    >>> from sunpy.coordinates.ephemeris import get_earth
-    >>> obstime = '2010-09-10 12:34:56'
-    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obstime, observer=get_earth(obstime), frame=frames.Helioprojective)
-    >>> solar_rotate_coordinate(c, '2010-09-10 13:34:56')
-    <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-10 13:34:56): (lon, lat, radius) in (deg, deg, AU)
-        (0., 7.24822784, 1.00695436)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+
+    >>> start_time = '2010-09-10 12:34:56'
+    >>> end_time = '2010-09-10 13:34:56'
+    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=frames.Helioprojective)
+    >>> solar_rotate_coordinate(c, end_time)
+    <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (-562.37689548, 119.26840368, 1.50083152e+08)>
 
     """
@@ -256,6 +254,12 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
         A map with the result of applying solar differential rotation to the
         input map.
     """
+    # Only this function needs scikit image
+    from skimage import transform
+    from sunpy.image.util import to_norm, un_norm
+    # Import map here for performance reasons.
+    import sunpy.map
+
     if (time is not None) and (dt is not None):
         raise ValueError('Only a time or an interval is accepted')
     elif not (time or dt):

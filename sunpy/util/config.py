@@ -1,9 +1,7 @@
 """SunPy configuration file functionality"""
-from __future__ import absolute_import, division, print_function
-
 import os
 import tempfile
-from sunpy.extern.six.moves import configparser
+import configparser
 
 import sunpy
 
@@ -15,7 +13,7 @@ def load_config():
     Read the sunpyrc configuration file. If one does not exists in the user's
     home directory then read in the defaults from module
     """
-    config = configparser.SafeConfigParser()
+    config = configparser.ConfigParser()
 
     # Get locations of SunPy configuration files to be loaded
     config_files = _find_config_files()
@@ -48,22 +46,20 @@ def get_and_create_download_dir():
     '''
     Get the config of download directory and create one if not present.
     '''
-    config = load_config()
-    if not os.path.isdir(config.get('downloads', 'download_dir')):
-        os.makedirs(config.get('downloads', 'download_dir'))
+    if not os.path.isdir(sunpy.config.get('downloads', 'download_dir')):
+        os.makedirs(sunpy.config.get('downloads', 'download_dir'))
 
-    return config.get('downloads', 'download_dir')
+    return sunpy.config.get('downloads', 'download_dir')
 
 
 def get_and_create_sample_dir():
     '''
     Get the config of download directory and create one if not present.
     '''
-    config = load_config()
-    if not os.path.isdir(config.get('downloads', 'sample_dir')):
-        os.makedirs(config.get('downloads', 'sample_dir'))
+    if not os.path.isdir(sunpy.config.get('downloads', 'sample_dir')):
+        os.makedirs(sunpy.config.get('downloads', 'sample_dir'))
 
-    return config.get('downloads', 'sample_dir')
+    return sunpy.config.get('downloads', 'sample_dir')
 
 
 def print_config():
@@ -188,7 +184,7 @@ def _expand_filepath(filepath, working_dir=""):
         return tempfile.gettempdir()
     # Relative filepaths
     elif not filepath.startswith("/"):
-        return os.path.join(working_dir, filepath)
+        return  os.path.abspath(os.path.join(working_dir, filepath))
     # Absolute filepath
     else:
-        return filepath
+        return os.path.abspath(filepath)

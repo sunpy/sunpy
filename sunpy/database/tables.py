@@ -2,30 +2,24 @@
 #
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
-from __future__ import absolute_import, print_function
-
-from time import strptime, mktime
-from datetime import datetime
-import fnmatch
 import os
+import fnmatch
+from time import mktime, strptime
+from datetime import datetime
 
-from astropy.units import Unit, nm, equivalencies, quantity
-import astropy.table
-from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
-    Table, ForeignKey
+import numpy as np
+from sqlalchemy import Float, Table, Column, String, Boolean, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-import numpy as np
 
-from sunpy.time import parse_time, TimeRange
-from sunpy.io import fits, file_tools as sunpy_filetools
-from sunpy.util import print_table
-from sunpy.extern.six.moves import map
-from sunpy.extern import six
+import astropy.table
+from astropy.units import Unit, nm, quantity, equivalencies
+
 import sunpy.net
-
 from sunpy import config
-
+from sunpy.io import fits
+from sunpy.io import file_tools as sunpy_filetools
+from sunpy.time import parse_time
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -654,20 +648,20 @@ def entries_from_file(file, default_waveunit=None,
 
     """
     headers = fits.get_header(file)
-    if isinstance(file, (str, six.text_type)):
+    if isinstance(file, str):
         filename = file
     else:
         filename = getattr(file, 'name', None)
     for header in headers:
         entry = DatabaseEntry(path=filename)
-        for key, value in six.iteritems(header):
+        for key, value in header.items():
             # Yes, it is possible to have an empty key in a FITS file.
             # Example: sunpy.data.sample.EIT_195_IMAGE
             # Don't ask me why this could be a good idea.
             if key == '':
                 value = str(value)
             elif key == 'KEYCOMMENTS':
-                for k, v in six.iteritems(value):
+                for k, v in value.items():
                     entry.fits_key_comments.append(FitsKeyComment(k, v))
                 continue
             entry.fits_header_entries.append(FitsHeaderEntry(key, value))

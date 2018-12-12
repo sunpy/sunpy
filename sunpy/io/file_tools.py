@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 import re
 import os
 import collections
@@ -150,6 +149,8 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     * This routine currently only supports saving a single HDU.
     """
     if filetype == 'auto':
+        if not isinstance(fname, str):
+            raise ValueError("Can not automatically detect filetype for non-string fname argument")
         for extension, readername in _known_extensions.items():
             if fname.endswith(extension):
                 return _readers[readername].write(fname, data, header, **kwargs)

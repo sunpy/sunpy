@@ -109,6 +109,10 @@ def test_coord_get():
     assert_quantity_allclose(obs.lat, earth.lat)
     assert_quantity_allclose(obs.radius, earth.radius)
 
+    assert hasattr(obs, "object_name")
+    assert obs.object_name == "earth"
+    assert str(obs) == "<HeliographicStonyhurst Coordinate for 'earth'>"
+
     # Test get
     obstime = "2013-04-01"
     obs = Helioprojective(obstime=obstime).observer
@@ -128,6 +132,10 @@ def test_coord_get():
     assert_quantity_allclose(obs.lon, mars.lon)
     assert_quantity_allclose(obs.lat, mars.lat)
     assert_quantity_allclose(obs.radius, mars.radius)
+
+    assert hasattr(obs, "object_name")
+    assert obs.object_name == "mars"
+    assert str(obs) == "<HeliographicStonyhurst Coordinate for 'mars'>"
 
 
 def test_default_hcc_observer():

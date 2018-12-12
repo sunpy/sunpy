@@ -1,16 +1,15 @@
 """
 This module provides a set of colormaps specific for solar data.
 """
-from __future__ import absolute_import, division, print_function
+from copy import deepcopy
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+import matplotlib.cm as mplcm
 
 from sunpy.cm import color_tables as ct
-from sunpy.util import deprecated
 
-__all__ = ['get_cmap', 'show_colormaps', 'cmlist']
+__all__ = [ 'show_colormaps', 'cmlist']
 
 sdoaia94 = ct.aia_color_table(94)
 sdoaia131 = ct.aia_color_table(131)
@@ -28,8 +27,18 @@ sohoeit195 = ct.eit_color_table(195)
 sohoeit284 = ct.eit_color_table(284)
 sohoeit304 = ct.eit_color_table(304)
 
-soholasco2 = ct.lasco_color_table(2)
-soholasco3 = ct.lasco_color_table(3)
+# The color tables below returns one of the fundamental color tables for SOHO
+# LASCO images. These are not the same as those used in SSWIDL.  This is
+# because the SSWIDL color scaling for LASCO level 0.5 and 1.0 is highly
+# compressed and does not display the data well.
+soholasco2 = deepcopy(mplcm.get_cmap("gist_heat"))
+soholasco2.name = 'SOHO LASCO C2'
+soholasco3 = deepcopy(mplcm.get_cmap("bone"))
+soholasco3.name = 'SOHO LASCO C3'
+
+# These are the SSWIDL color tables.
+sswidlsoholasco2 = ct.sswidl_lasco_color_table(2)
+sswidlsoholasco3 = ct.sswidl_lasco_color_table(3)
 
 stereocor1 = ct.cor_color_table(1)
 stereocor2 = ct.cor_color_table(2)
@@ -71,11 +80,13 @@ cmlist = {
           'sohoeit304': sohoeit304,
           'soholasco2': soholasco2,
           'soholasco3': soholasco3,
+          'sswidlsoholasco2': sswidlsoholasco2,
+          'sswidlsoholasco3': sswidlsoholasco3,
           'stereocor1': stereocor1,
           'stereocor2': stereocor2,
           'stereohi1': stereohi1,
           'stereohi2': stereohi2,
-          'rhessi': cm.jet,
+          'rhessi': mplcm.jet,
           'yohkohsxtal': yohkohsxtal,
           'yohkohsxtwh': yohkohsxtwh,
           'hinodexrt': hinodexrt,
@@ -102,49 +113,17 @@ cmlist = {
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
 for name, cmap in cmlist.items():
-    cm.register_cmap(name=name, cmap=cmap)
-
-@deprecated("0.9", "Use Matplotlib to load the colormaps", alternative='plt.get_cmap')
-def get_cmap(name):
-    """
-    Get a colormap.
-
-    Parameters
-    ----------
-    name : string
-        The name of a color map.
-
-    Returns
-    -------
-    value : matplotlib colormap
-
-    See Also
-    --------
-
-    Examples
-    --------
-    >>> import sunpy.cm as cm
-    >>> colormap = cm.get_cmap(name = 'sdoaia94')
-
-    References
-    ----------
-    | https://matplotlib.org/api/cm_api.html
-
-    """
-    if name in cmlist:
-        return cmlist.get(name)
-    else:
-        raise ValueError("Colormap {name!s} is not recognized".format(name=name))
+    mplcm.register_cmap(name=name, cmap=cmap)
 
 
-def show_colormaps(filter=None):
+def show_colormaps(search=None):
     """Displays a plot of the custom color maps supported in SunPy.
 
     Parameters
     ----------
-    filter : str
-        A string to filter the color maps presented (e.g. aia, EIT, 171). Case
-        insensitive.
+    search : str
+        A string to search for in the names of the color maps (e.g. aia, EIT,
+        171). Case insensitive.
 
     Returns
     -------
@@ -154,18 +133,18 @@ def show_colormaps(filter=None):
     --------
     >>> import sunpy.cm as cm
     >>> cm.show_colormaps()
-    >>> cm.show_colormaps(filter='aia')
-    >>> cm.show_colormaps(filter='171')
+    >>> cm.show_colormaps(search='aia')
+    >>> cm.show_colormaps(search='171')
 
     References
     ----------
 
     """
 
-    if filter:
-        maps =  sorted({k:v for (k,v) in cmlist.items() if k.lower().count(filter.lower())})
+    if search is not None:
+        maps = sorted({k: v for (k, v) in cmlist.items() if k.lower().count(search.lower())})
         if len(maps) == 0:
-            raise KeyError('No color maps found for key - ' + filter)
+            raise KeyError('No color maps found for search term "{:s}"'.format(search))
     else:
         maps = sorted(cmlist)
 
@@ -174,14 +153,13 @@ def show_colormaps(filter=None):
     a = np.linspace(0, 1, 256).reshape(1, -1)  # pylint: disable=E1103
     a = np.vstack((a, a))
 
-    fig = plt.figure(figsize=(5, 10),dpi=64)
+    fig = plt.figure(figsize=(7, 10), dpi=128)
     fig.subplots_adjust(top=0.99, bottom=0.01, left=0.2, right=0.99)
     for i, name in enumerate(maps):
         ax = plt.subplot(nmaps, 1, i + 1)
         plt.axis("off")
-        plt.imshow(a, aspect='auto', cmap=get_cmap(name), origin='lower')
+        plt.imshow(a, aspect='auto', cmap=name, origin='lower')
         pos = list(ax.get_position().bounds)
         fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
                  horizontalalignment='right')
     plt.show()
-

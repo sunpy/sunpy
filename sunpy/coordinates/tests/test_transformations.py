@@ -3,7 +3,8 @@ import pytest
 
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
-from astropy.coordinates import SkyCoord, get_body_barycentric, HeliocentricTrueEcliptic, Angle
+from astropy.coordinates import (SkyCoord, get_body_barycentric, HeliocentricTrueEcliptic, Angle,
+                                 ConvertError)
 from astropy.time import Time
 
 from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
@@ -69,11 +70,12 @@ def test_hpc_hpc_sc():
 
     hpc_new = sc_in.transform_to(hpc_out)
 
-    assert hpc_new.observer == hpc_out.observer
+    assert hpc_new.observer.lat == hpc_out.observer.lat
+    assert hpc_new.observer.lon == hpc_out.observer.lon
+    assert hpc_new.observer.radius == hpc_out.observer.radius
 
 
 def test_hpc_hpc_null():
-
     hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec)
     hpc_out = Helioprojective()
 
@@ -155,3 +157,128 @@ def test_hgs_hgc_roundtrip():
 
     assert_quantity_allclose(hgsout.lat, hgsin.lat)
     assert_quantity_allclose(hgsout.lon, hgsin.lon)
+
+
+def test_hgs_cartesian_rep_to_hpc():
+    # This test checks transformation HGS->HPC when the coordinate is in a Cartesian
+    # representation and that it is the same as a transformation from an HGS frame with a
+    # spherical representation
+
+    obstime = "2011-01-01"
+    hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                             frame=HeliographicStonyhurst(obstime=obstime),
+                             representation_type='cartesian')
+    hgscoord_sph = hgscoord_cart.copy()
+    hgscoord_sph.representation = 'spherical'
+    hpccoord_cart = hgscoord_cart.transform_to(Helioprojective(obstime=obstime))
+    hpccoord_sph = hgscoord_sph.transform_to(Helioprojective(obstime=obstime))
+    assert_quantity_allclose(hpccoord_cart.Tx, hpccoord_sph.Tx)
+    assert_quantity_allclose(hpccoord_cart.Ty, hpccoord_sph.Ty)
+    assert_quantity_allclose(hpccoord_cart.distance, hpccoord_sph.distance)
+
+
+def test_hgs_cartesian_rep_to_hcc():
+    # This test checks transformation HGS->HCC when the coordinate is in a Cartesian
+    # representation and that it is the same as a transformation from an HGS frame with a
+    # spherical representation
+
+    obstime = "2011-01-01"
+    hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                             frame=HeliographicStonyhurst(obstime=obstime),
+                             representation_type='cartesian')
+    hgscoord_sph = hgscoord_cart.copy()
+    hgscoord_sph.representation = 'spherical'
+    hcccoord_cart = hgscoord_cart.transform_to(Heliocentric(obstime=obstime))
+    hcccoord_sph = hgscoord_sph.transform_to(Heliocentric(obstime=obstime))
+    assert_quantity_allclose(hcccoord_cart.x, hcccoord_sph.x)
+    assert_quantity_allclose(hcccoord_cart.y, hcccoord_sph.y)
+    assert_quantity_allclose(hcccoord_cart.z, hcccoord_sph.z)
+
+
+def test_hgs_cartesian_rep_to_hgc():
+    # This test checks transformation HGS->HCC when the coordinate is in a Cartesian
+    # representation and that it is the same as a transformation from an HGS frame with a
+    # spherical representation
+
+    obstime = "2011-01-01"
+    hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
+                             frame=HeliographicStonyhurst(obstime=obstime),
+                             representation_type='cartesian')
+    hgscoord_sph = hgscoord_cart.copy()
+    hgscoord_sph.representation = 'spherical'
+    # HGC
+    hgccoord_cart = hgscoord_cart.transform_to(HeliographicCarrington(obstime=obstime))
+    hgccoord_sph = hgscoord_sph.transform_to(HeliographicCarrington(obstime=obstime))
+    assert_quantity_allclose(hgccoord_cart.lat, hgccoord_sph.lat)
+    assert_quantity_allclose(hgccoord_cart.lon, hgccoord_sph.lon)
+    assert_quantity_allclose(hgccoord_cart.radius, hgccoord_sph.radius)
+
+
+def test_hcc_to_hpc_different_observer():
+    # This test checks transformation HCC->HPC in the case where the HCC and HPC frames are
+    # defined by different observers.
+
+    rsun = 1*u.m
+    D0 = 1*u.km
+    L0 = 1*u.deg
+    observer_1 = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
+    observer_2 = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=D0)
+    hcc_frame = Heliocentric(observer=observer_1)
+    hpc_frame = Helioprojective(observer=observer_2)
+    hcccoord = SkyCoord(x=rsun, y=rsun, z=rsun, frame=hcc_frame)
+    hpccoord_out = hcccoord.transform_to(hpc_frame)
+    hpccoord_expected = hcccoord.transform_to(HeliographicStonyhurst).transform_to(hpc_frame)
+    assert_quantity_allclose(hpccoord_out.Tx, hpccoord_expected.Tx)
+    assert_quantity_allclose(hpccoord_out.Ty, hpccoord_expected.Ty)
+    assert_quantity_allclose(hpccoord_out.distance, hpccoord_expected.distance)
+
+
+def test_hpc_to_hcc_different_observer():
+    # This test checks transformation HPC->HCC in the case where the HCC and HPC frames are
+    # defined by different observers.
+
+    rsun = 1*u.m
+    D0 = 1*u.km
+    L0 = 1*u.deg
+    observer_1 = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
+    observer_2 = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=D0)
+    hcc_frame = Heliocentric(observer=observer_1)
+    hpc_frame = Helioprojective(observer=observer_2, rsun=rsun)
+    hpccoord = SkyCoord(Tx=0*u.arcsec, Ty=0*u.arcsec, frame=hpc_frame)
+    hcccoord_out = hpccoord.transform_to(hcc_frame)
+    hcccoord_expected = hpccoord.transform_to(HeliographicStonyhurst).transform_to(hcc_frame)
+    assert_quantity_allclose(hcccoord_out.x, hcccoord_expected.x)
+    assert_quantity_allclose(hcccoord_out.y, hcccoord_expected.y)
+    assert_quantity_allclose(hcccoord_out.z, hcccoord_expected.z)
+
+
+def test_hcc_to_hpc_same_observer():
+    # This test checks transformation HCC->HPC in the case of same observer
+
+    rsun = 1*u.m
+    D0 = 1*u.km
+    observer = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
+    hcc_frame = Heliocentric(observer=observer)
+    hpc_frame = Helioprojective(observer=observer, rsun=rsun)
+    hcccoord = SkyCoord(x=rsun, y=rsun, z=rsun, frame=hcc_frame)
+    hpccoord_out = hcccoord.transform_to(hpc_frame)
+    hpccoord_expected = hcccoord.transform_to(HeliographicStonyhurst).transform_to(hpc_frame)
+    assert_quantity_allclose(hpccoord_out.Tx, hpccoord_expected.Tx)
+    assert_quantity_allclose(hpccoord_out.Ty, hpccoord_expected.Ty)
+    assert_quantity_allclose(hpccoord_out.distance, hpccoord_expected.distance)
+
+
+def test_hpc_to_hcc_same_observer():
+    # This test checks transformation HPC->HCC in the case of same observer
+
+    rsun = 1*u.m
+    D0 = 1 * u.km
+    observer = HeliographicStonyhurst(lat=0 * u.deg, lon=0 * u.deg, radius=D0)
+    hcc_frame = Heliocentric(observer=observer)
+    hpc_frame = Helioprojective(observer=observer, rsun=rsun)
+    hpccoord = SkyCoord(Tx=0 * u.arcsec, Ty=0 * u.arcsec, frame=hpc_frame)
+    hcccoord_out = hpccoord.transform_to(hcc_frame)
+    hcccoord_expected = hpccoord.transform_to(HeliographicStonyhurst).transform_to(hcc_frame)
+    assert_quantity_allclose(hcccoord_out.x, hcccoord_expected.x)
+    assert_quantity_allclose(hcccoord_out.y, hcccoord_expected.y)
+    assert_quantity_allclose(hcccoord_out.z, hcccoord_expected.z)

@@ -1,12 +1,11 @@
-from __future__ import absolute_import
+import urllib
 
-import pytest
 import mock
+import pytest
 
 from sunpy.net.helio import hec
-from sunpy.net.helio.parser import (endpoint_parser, link_test, taverna_parser, webservice_parser,
-                                    wsdl_retriever)
-from sunpy.extern.six.moves import urllib
+from sunpy.net.helio.parser import (link_test, taverna_parser, wsdl_retriever,
+                                    endpoint_parser, webservice_parser)
 
 
 def wsdl_endpoints():

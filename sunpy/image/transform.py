@@ -2,8 +2,6 @@
 Functions for geometrical image transformation and warping.
 """
 
-from __future__ import absolute_import
-
 import warnings
 
 import numpy as np

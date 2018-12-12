@@ -1,6 +1,5 @@
 """SOHO Map subclass definitions"""
-from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -61,7 +60,6 @@ class EITMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing info
@@ -110,18 +108,20 @@ class LASCOMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self.meta['CUNIT1'] = self.meta['CUNIT1'].lower()
-        self.meta['CUNIT2'] = self.meta['CUNIT2'].lower()
+        self.meta['CUNIT1'] = self.meta.get('CUNIT1', 'arcsec').lower()
+        self.meta['CUNIT2'] = self.meta.get('CUNIT2', 'arcsec').lower()
 
         # Fill in some missing or broken info
-        datestr = "{date}T{time}".format(date=self.meta.get('date-obs',
-                                                            self.meta.get('date_obs')
-                                                            ),
-                                         time=self.meta.get('time-obs',
-                                                            self.meta.get('time_obs')
-                                                            )
-                                         )
-        self.meta['date-obs'] = datestr
+        # Test if change has already been applied
+        if 'T' not in self.meta['date-obs']:
+            datestr = "{date}T{time}".format(date=self.meta.get('date-obs',
+                                                                self.meta.get('date_obs')
+                                                                ),
+                                             time=self.meta.get('time-obs',
+                                                                self.meta.get('time_obs')
+                                                                )
+                                             )
+            self.meta['date-obs'] = datestr
 
         # If non-standard Keyword is present, correct it too, for compatibility.
         if 'date_obs' in self.meta:

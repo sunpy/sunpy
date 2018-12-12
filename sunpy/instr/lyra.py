@@ -1,43 +1,28 @@
-from __future__ import absolute_import, division, print_function
-
+import csv
+import copy
+import urllib
 import os.path
+import sqlite3
 import datetime
 from warnings import warn
-import copy
-import csv
-import sqlite3
 
 import numpy as np
-from astropy.io import fits
 import pandas
+
+from astropy.io import fits
 
 from sunpy.time import parse_time
 from sunpy.util.net import check_download_file
 from sunpy.util.config import get_and_create_download_dir
-from sunpy.util.decorators import deprecated
-
-from sunpy.extern.six.moves import urllib
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
 
-__all__ = ['remove_lytaf_events_from_lightcurve',
-           'remove_lytaf_events_from_timeseries',
+__all__ = ['remove_lytaf_events_from_timeseries',
            'get_lytaf_events',
            'get_lytaf_event_types',
            'download_lytaf_database',
            'split_series_using_lytaf']
-
-
-@deprecated('v0.8',
-            message="""``remove_lytaf_events_from_lightcurve`` is deprecated as of SunPy v0.8 due to
-            the deprecation of ``LightCurve`` in favour of ``TimeSeries``. You should use
-            ``remove_lytaf_events_from_timeseries`` instead.""",
-            name="remove_lytaf_events_from_lightcurve",
-            alternative="remove_lytaf_events_from_timeseries"
-            )
-def remove_lytaf_events_from_lightcurve(lc, **kwargs):
-    return remove_lytaf_events_from_timeseries(lc, **kwargs)
 
 
 def remove_lytaf_events_from_timeseries(ts, artifacts=None,

@@ -1,6 +1,4 @@
 """SunPy test data files"""
-from __future__ import absolute_import
-
 import os
 import glob
 import fnmatch
@@ -14,6 +12,7 @@ __all__ = ['rootdir', 'file_list', 'get_test_filepath', 'test_data_filenames']
 
 rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "test")
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
+
 
 
 def get_test_filepath(filename, **kwargs):

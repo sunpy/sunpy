@@ -45,29 +45,26 @@ References
 
 """
 
-from __future__ import absolute_import, division
-
-import os.path
-import datetime
 import csv
 import copy
 import socket
+import os.path
+import datetime
 from itertools import dropwhile
 
+import pandas
 import numpy as np
+import astropy.units as u
 from scipy import interpolate
 from scipy.integrate import trapz, cumtrapz
-import astropy.units as u
-import pandas
 
-from sunpy.net import hek
-from sunpy.time import parse_time
-from sunpy import config
-from sunpy import lightcurve
-from sunpy.util.net import check_download_file
-from sunpy.util.config import get_and_create_download_dir
 from sunpy import sun
+from sunpy.net import hek
+from sunpy import timeseries
+from sunpy.time import parse_time
+from sunpy.util.net import check_download_file
 from sunpy.coordinates import get_sunearth_distance
+from sunpy.util.config import get_and_create_download_dir
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
                         'M': u.Quantity(1e-5, "W/m^2"),
@@ -119,13 +116,13 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     # between tstart and tend (using a GOES-class filter)
     if goes_class_filter:
         result = client.search(hek.attrs.Time(tstart, tend),
-                              hek.attrs.EventType(event_type),
-                              hek.attrs.FL.GOESCls > goes_class_filter,
-                              hek.attrs.OBS.Observatory == 'GOES')
+                               hek.attrs.EventType(event_type),
+                               hek.attrs.FL.GOESCls > goes_class_filter,
+                               hek.attrs.OBS.Observatory == 'GOES')
     else:
         result = client.search(hek.attrs.Time(tstart, tend),
-                              hek.attrs.EventType(event_type),
-                              hek.attrs.OBS.Observatory == 'GOES')
+                               hek.attrs.EventType(event_type),
+                               hek.attrs.OBS.Observatory == 'GOES')
 
     # want to condense the results of the query into a more manageable
     # dictionary
@@ -150,10 +147,10 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     return goes_event_list
 
 
-def calculate_temperature_em(goeslc, abundances="coronal",
+def calculate_temperature_em(goests, abundances="coronal",
                              download=False, download_dir=None):
     """
-    Calculates temperature and emission measure from a GOESLightCurve.
+    Calculates temperature and emission measure from a `~sunpy.timeseries.XRSTimeSeries`.
 
     This function calculates the isothermal temperature and
     corresponding volume emission measure of the solar soft X-ray
@@ -165,7 +162,7 @@ def calculate_temperature_em(goeslc, abundances="coronal",
 
     Parameters
     ----------
-    goeslc : `~sunpy.lightcurve.LightCurve`
+    goeslc : `~sunpy.timeseries.XRSTimeSeries`
         LightCurve object containing GOES flux data which MUST
         be in units of W/m^2.
 
@@ -188,12 +185,12 @@ def calculate_temperature_em(goeslc, abundances="coronal",
 
     Returns
     -------
-    lc_new : `~sunpy.lightcurve.LightCurve`
-        Contains same metadata and data as input GOESLightCurve with the
+    ts_new : `~sunpy.timeseries.XRSTimeSeries`
+        Contains same metadata and data as input timeseries with the
         following two additional data columns:
 
-        | lc_new.data.temperature - Array of temperatures [MK]
-        | lc_new.data.em - Array of volume emission measures [cm**-3]
+        | ts_new.data.temperature - Array of temperatures [MK]
+        | ts_new.data.em - Array of volume emission measures [cm**-3]
 
     Notes
     -----
@@ -227,55 +224,55 @@ def calculate_temperature_em(goeslc, abundances="coronal",
 
     Examples
     --------
+    >>> import sunpy.timeseries as ts
     >>> from sunpy.instr.goes import calculate_temperature_em
-    >>> import sunpy.lightcurve as lc
-    >>> time1 = "2014-01-01 00:00:00"
-    >>> time2 = "2014-01-01 00:00:08"
-    >>> goeslc = lc.GOESLightCurve.create(time1, time2)  # doctest: +REMOTE_DATA
-    >>> goeslc.data  # doctest: +REMOTE_DATA +FLOAT_CMP
-                                        xrsa      xrsb
-    2014-01-01 00:00:00.421999  9.187300e-08  0.000004
-    2014-01-01 00:00:02.468999  9.187300e-08  0.000004
-    2014-01-01 00:00:04.518999  9.187300e-08  0.000004
-    2014-01-01 00:00:06.564999  9.298800e-08  0.000004
+    >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
+    >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
+    >>> goests.data  # doctest: +REMOTE_DATA
+                                        xrsa          xrsb
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07
+    ...
 
-    >>> goeslc_new = calculate_temperature_em(goeslc)  # doctest: +REMOTE_DATA
-    >>> goeslc_new.data  # doctest: +REMOTE_DATA +FLOAT_CMP
-                                        xrsa      xrsb  temperature            em
-    2014-01-01 00:00:00.421999  9.187300e-08  0.000004     6.270239  6.440648e+48
-    2014-01-01 00:00:02.468999  9.187300e-08  0.000004     6.270239  6.440648e+48
-    2014-01-01 00:00:04.518999  9.187300e-08  0.000004     6.273917  6.422208e+48
-    2014-01-01 00:00:06.564999  9.298800e-08  0.000004     6.304001  6.350370e+48
-
+    >>> goests_new = calculate_temperature_em(goests)  # doctest: +REMOTE_DATA
+    >>> goests_new.data  # doctest: +REMOTE_DATA
+                                        xrsa          xrsb  temperature            em
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07     3.503510  2.190626e+48
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07     3.534262  2.055847e+48
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07     3.550100  1.990333e+48
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48
+    ...
 
     """
     # Check that input argument is of correct type
-    if not isinstance(goeslc, lightcurve.LightCurve):
-        raise TypeError("goeslc must be a LightCurve object.")
+    if not isinstance(goests, timeseries.XRSTimeSeries):
+        raise TypeError("goests must be a XRSTimeSeries object")
     if not download_dir:
         download_dir = get_and_create_download_dir()
 
     # Find temperature and emission measure with _goes_chianti_tem
     temp, em = _goes_chianti_tem(
-        u.Quantity(goeslc.data.xrsb, unit=u.W/(u.m)**2),
-        u.Quantity(goeslc.data.xrsa, unit=u.W/(u.m)**2),
-        satellite=goeslc.meta["TELESCOP"].split()[1],
-        date=goeslc.data.index[0],
+        goests.quantity("xrsb"),
+        goests.quantity("xrsa"),
+        satellite=goests.meta.metas[0]["TELESCOP"].split()[1],
+        date=goests.data.index[0],
         abundances=abundances, download=download, download_dir=download_dir)
 
-    # Enter results into new version of GOES LightCurve Object
-    # Use copy.deepcopy for replicating meta and data so that input
-    # lightcurve is not altered.
-    lc_new = lightcurve.LightCurve(meta=copy.deepcopy(goeslc.meta),
-                                   data=copy.deepcopy(goeslc.data))
-    lc_new.data["temperature"] = temp.value
-    lc_new.data["em"] = em.value
+    ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
+                                      data=copy.deepcopy(goests.data),
+                                      units=copy.deepcopy(goests.units))
+    ts_new = ts_new.add_column("temperature", temp)
+    ts_new = ts_new.add_column("em", em)
 
-    return lc_new
+    return ts_new
 
 
-@u.quantity_input(longflux=u.W/u.m/u.m, shortflux=u.W/u.m/u.m)
-def _goes_chianti_tem(longflux, shortflux, satellite=8,
+@u.quantity_input
+def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8,
                       date=datetime.datetime.today(), abundances="coronal",
                       download=False, download_dir=None):
     """
@@ -421,8 +418,8 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     return temp, em
 
 
-@u.quantity_input(fluxratio=u.dimensionless_unscaled)
-def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
+@u.quantity_input
+def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
                            download=False, download_dir=None):
     """
     Calculates temperature from GOES flux ratio.
@@ -569,9 +566,10 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     return temp
 
 
-@u.quantity_input(longflux=u.W/u.m/u.m, temp=u.MK)
-def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
-                         download=False, download_dir=None):
+@u.quantity_input
+def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
+                         abundances="coronal", download=False,
+                         download_dir=None):
     """
     Calculates emission measure from GOES 1-8A flux and temperature.
 
@@ -732,7 +730,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     return em
 
 
-def calculate_radiative_loss_rate(goeslc, force_download=False,
+def calculate_radiative_loss_rate(goests, force_download=False,
                                   download_dir=None):
     """
     Calculates radiative loss rate from GOES observations.
@@ -754,8 +752,8 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
     Parameters
     ----------
-    goeslc : `~sunpy.lightcurve.LightCurve`
-        LightCurve object containing GOES data.  The units of these
+    goests : `~sunpy.timeseries.XRSTimeSeries`
+        TimeSeries object containing GOES data.  The units of these
         data MUST be W/m^2 (flux), MK (temperature) and cm^-3
         (emission measure).  If LightCurve object does not contain
         temperature and emission measure values, they are calculated from
@@ -774,13 +772,13 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
     Returns
     -------
-    lc_new : `~sunpy.lightcurve.LightCurve`
+    ts_new : `~sunpy.timeseries.XRSTimeSeries`
         Contains same metadata and data as input LightCurve with the
         following additional data columns:
 
-        | lc_new.data.temperature - Array of temperature values [MK]
-        | lc_new.data.em - Array of volume emission measure values [cm**-3]
-        | lc_new.data.rad_loss_rate - radiative loss rate of the coronal soft
+        | ts_new.data.temperature - Array of temperature values [MK]
+        | ts_new.data.em - Array of volume emission measure values [cm**-3]
+        | ts_new.data.rad_loss_rate - radiative loss rate of the coronal soft
           X-ray-emitting plasma across all wavelengths [W]
 
     Notes
@@ -801,54 +799,53 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
     Examples
     --------
+    >>> import sunpy.timeseries as ts
     >>> from sunpy.instr.goes import calculate_radiative_loss_rate
-    >>> import sunpy.lightcurve as lc
-    >>> time1 = "2014-01-01 00:00:00"
-    >>> time2 = "2014-01-01 00:00:08"
-    >>> goeslc = lc.GOESLightCurve.create(time1, time2)  # doctest: +REMOTE_DATA
-    >>> goeslc.data  # doctest: +REMOTE_DATA
-                                        xrsa      xrsb
-    2014-01-01 00:00:00.421999  9.187300e-08  0.000004
-    2014-01-01 00:00:02.468999  9.187300e-08  0.000004
-    2014-01-01 00:00:04.518999  9.187300e-08  0.000004
-    2014-01-01 00:00:06.564999  9.298800e-08  0.000004
+    >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
+    >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
+    >>> goests.data  # doctest: +REMOTE_DATA
+                                        xrsa          xrsb
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:10.201999  1.000000e-09  1.808400e-07
+    ...
 
-    >>> goeslc_new = calculate_radiative_loss_rate(goeslc)  # doctest: +REMOTE_DATA
-    >>> goeslc_new.data   # doctest:  +REMOTE_DATA
-                                        xrsa      xrsb  temperature            em  \\
-    2014-01-01 00:00:00.421999  9.187300e-08  0.000004     6.270239  6.440648e+48
-    2014-01-01 00:00:02.468999  9.187300e-08  0.000004     6.270239  6.440648e+48
-    2014-01-01 00:00:04.518999  9.187300e-08  0.000004     6.273917  6.422208e+48
-    2014-01-01 00:00:06.564999  9.298800e-08  0.000004     6.304001  6.350370e+48
-    <BLANKLINE>
-                                rad_loss_rate
-    2014-01-01 00:00:00.421999   5.449144e+19
-    2014-01-01 00:00:02.468999   5.449144e+19
-    2014-01-01 00:00:04.518999   5.434659e+19
-    2014-01-01 00:00:06.564999   5.382823e+19
-
+    >>> goests_new = calculate_radiative_loss_rate(goests)  # doctest: +REMOTE_DATA
+    >>> goests_new.data   # doctest:  +REMOTE_DATA
+                                        xrsa          xrsb  temperature            em  rad_loss_rate
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07     3.503510  2.190626e+48   1.781001e+19
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07     3.534262  2.055847e+48   1.660031e+19
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48   1.719931e+19
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07     3.550100  1.990333e+48   1.601718e+19
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48   1.719931e+19
+    2011-06-07 00:00:10.201999  1.000000e-09  1.808400e-07     3.550100  1.990333e+48   1.601718e+19
+    ...
 
     """
     if not download_dir:
         download_dir = get_and_create_download_dir()
     # Check that input argument is of correct type
-    if not isinstance(goeslc, lightcurve.LightCurve):
-        raise TypeError("goeslc must be a LightCurve object.")
+    if not isinstance(goests, timeseries.XRSTimeSeries):
+        raise TypeError("goests must be a XRSTimeSeries object.")
 
     # extract temperature and emission measure from GOESLightCurve
     # object and change type to that required by _calc_rad_loss().
     # If LightCurve object does not contain temperature and
     # emission measure, calculate using calculate_temperature_em()
-    if 'temperature' in goeslc.data and 'em' in goeslc.data:
+    if 'temperature' in goests.columns and 'em' in goests.columns:
         # Use copy.deepcopy for replicating meta and data so that input
         # lightcurve is not altered.
-        lc_new = lightcurve.LightCurve(meta=copy.deepcopy(goeslc.meta),
-                                       data=copy.deepcopy(goeslc.data))
+        ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
+                                          data=copy.deepcopy(goests.data),
+                                          units=copy.deepcopy(goests.units))
     else:
-        lc_new = calculate_temperature_em(goeslc)
-    temp = u.Quantity(np.asarray(lc_new.data.temperature, dtype=np.float64),
+        ts_new = calculate_temperature_em(goests)
+    temp = u.Quantity(np.asarray(ts_new.data.temperature, dtype=np.float64),
                       unit=u.MK)
-    em = u.Quantity(np.asarray(lc_new.data.em, dtype=np.float64),
+    em = u.Quantity(np.asarray(ts_new.data.em, dtype=np.float64),
                     unit=u.cm**(-3))
 
     # Find radiative loss rate with _calc_rad_loss()
@@ -856,13 +853,13 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
                                   download_dir=download_dir)
 
     # Enter results into new version of GOES LightCurve Object
-    lc_new.data["rad_loss_rate"] = rad_loss_out["rad_loss_rate"].to("W").value
+    ts_new = ts_new.add_column("rad_loss_rate", rad_loss_out['rad_loss_rate'].to("W"))
 
-    return lc_new
+    return ts_new
 
 
-@u.quantity_input(temp=u.MK, em=u.cm**(-3))
-def _calc_rad_loss(temp, em, obstime=None, force_download=False,
+@u.quantity_input
+def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
                    download_dir=None):
     """
     Finds radiative loss rate of coronal plasma over all wavelengths.
@@ -1028,7 +1025,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
     return rad_loss_out
 
 
-def calculate_xray_luminosity(goeslc):
+def calculate_xray_luminosity(goests):
     """
     Calculates GOES solar X-ray luminosity.
 
@@ -1043,66 +1040,65 @@ def calculate_xray_luminosity(goeslc):
 
     Parameters
     ----------
-    goeslc : `~sunpy.lightcurve.LightCurve`
+    goests : `~sunpy.timeseries.XRSTimeSeries`
         LightCurve object containing GOES flux data which MUST
         be in units of W/m^2.
 
     Returns
     -------
-    lc_new : `~sunpy.lightcurve.LightCurve`
+    ts_new : `~sunpy.timeseries.XRSTimeSeries`
         Contains same metadata and data as input LightCurve with the
         following additional data columns;
 
-        | goeslc_new.data.luminosity_xrsa - Xray luminosity in 0.5-4A channel
+        | goests_new.data.luminosity_xrsa - Xray luminosity in 0.5-4A channel
           unit=[W]
-        | goeslc_new.data.luminosity_xrsb - Xray luminosity in 1-8A channel
+        | goests_new.data.luminosity_xrsb - Xray luminosity in 1-8A channel
           unit=[W]
 
     Examples
     --------
+    >>> import sunpy.timeseries as ts
     >>> from sunpy.instr.goes import calculate_xray_luminosity
-    >>> import sunpy.lightcurve as lc
-    >>> time1 = "2014-01-01 00:00:00"
-    >>> time2 = "2014-01-01 00:00:08"
-    >>> goeslc = lc.GOESLightCurve.create(time1, time2)  # doctest: +REMOTE_DATA
-    >>> goeslc.data  # doctest: +REMOTE_DATA
-                                        xrsa      xrsb
-    2014-01-01 00:00:00.421999  9.187300e-08  0.000004
-    2014-01-01 00:00:02.468999  9.187300e-08  0.000004
-    2014-01-01 00:00:04.518999  9.187300e-08  0.000004
-    2014-01-01 00:00:06.564999  9.298800e-08  0.000004
+    >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
+    >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
+    >>> goests.data  # doctest: +REMOTE_DATA
+                                        xrsa          xrsb
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07
+    ...
 
-    >>> goeslc_new = calculate_xray_luminosity(goeslc)  # doctest: +REMOTE_DATA
-    >>> goeslc_new.data   # doctest:  +REMOTE_DATA
-                                        xrsa      xrsb  luminosity_xrsa  \\
-    2014-01-01 00:00:00.421999  9.187300e-08  0.000004     2.498454e+16
-    2014-01-01 00:00:02.468999  9.187300e-08  0.000004     2.498454e+16
-    2014-01-01 00:00:04.518999  9.187300e-08  0.000004     2.498454e+16
-    2014-01-01 00:00:06.564999  9.298800e-08  0.000004     2.528776e+16
-    <BLANKLINE>
-                                luminosity_xrsb
-    2014-01-01 00:00:00.421999     9.544507e+17
-    2014-01-01 00:00:02.468999     9.544507e+17
-    2014-01-01 00:00:04.518999     9.530365e+17
-    2014-01-01 00:00:06.564999     9.530365e+17
+
+    >>> goests_new = calculate_xray_luminosity(goests)  # doctest: +REMOTE_DATA
+    >>> goests_new.data   # doctest:  +REMOTE_DATA
+                                        xrsa          xrsb  luminosity_xrsa  luminosity_xrsb
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07     2.896209e+14     5.465435e+16
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07     2.896209e+14     5.313384e+16
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07     2.896209e+14     5.389555e+16
+    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07     2.896209e+14     5.237503e+16
+    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07     2.896209e+14     5.389555e+16
+    ...
 
     """
     # Check that input argument is of correct type
-    if not isinstance(goeslc, lightcurve.GOESLightCurve):
-        raise TypeError("goeslc must be a GOESLightCurve object.")
+    if not isinstance(goests, timeseries.XRSTimeSeries):
+        raise TypeError("goeslc must be a XRSTimeSeries object.")
     # Find temperature and emission measure with _goes_chianti_tem
-    lx_out = _goes_lx(u.Quantity(goeslc.data.xrsb, unit="W/m**2"),
-                      u.Quantity(goeslc.data.xrsa, unit="W/m**2"),
-                      date=str(goeslc.data.index[0]))
+    lx_out = _goes_lx(goests.quantity("xrsb"),
+                      goests.quantity("xrsa"),
+                      date=str(goests.data.index[0]))
     # Enter results into new version of GOES LightCurve Object
     # Use copy.deepcopy for replicating meta and data so that input
     # lightcurve is not altered.
-    lc_new = lightcurve.LightCurve(meta=copy.deepcopy(goeslc.meta),
-                                   data=copy.deepcopy(goeslc.data))
-    lc_new.data["luminosity_xrsa"] = lx_out["shortlum"].to("W").value
-    lc_new.data["luminosity_xrsb"] = lx_out["longlum"].to("W").value
+    ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
+                                      data=copy.deepcopy(goests.data),
+                                      units=copy.deepcopy(goests.units))
+    ts_new = ts_new.add_column("luminosity_xrsa", lx_out["shortlum"].to("W"))
+    ts_new = ts_new.add_column("luminosity_xrsb", lx_out["longlum"].to("W"))
 
-    return lc_new
+    return ts_new
 
 
 def _goes_lx(longflux, shortflux, obstime=None, date=None):
@@ -1233,8 +1229,8 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     return lx_out
 
 
-@u.quantity_input(flux=u.W/u.m/u.m)
-def _calc_xraylum(flux, date=None):
+@u.quantity_input
+def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
     """
     Calculates solar luminosity based on observed flux observed at 1AU.
 
@@ -1299,8 +1295,8 @@ def flareclass_to_flux(flareclass):
     Examples
     --------
     >>> from sunpy.instr.goes import flareclass_to_flux
-    >>> flareclass_to_flux('A1.0') #doctest: +FLOAT_CMP
-    <Quantity 1e-08 W / m2>
+    >>> flareclass_to_flux('A1.0')
+    <Quantity 1.e-08 W / m2>
     >>> flareclass_to_flux('c4.7')
     <Quantity 4.7e-06 W / m2>
     >>> flareclass_to_flux('X2.4')
@@ -1316,8 +1312,8 @@ def flareclass_to_flux(flareclass):
     return float(flareclass[1:]) * GOES_CONVERSION_DICT[flareclass[0]]
 
 
-@u.quantity_input(goesflux=u.watt/u.m**2)
-def flux_to_flareclass(goesflux):
+@u.quantity_input
+def flux_to_flareclass(goesflux: u.watt/u.m**2):
     """
     Converts X-ray flux into the corresponding GOES flare class.
 

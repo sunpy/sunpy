@@ -27,19 +27,16 @@ References
 ----------
 | https://stackoverflow.com/questions/456672/class-factory-in-python
 """
-from __future__ import absolute_import, division, print_function
 import os
 import re
 import sys
 import warnings
 import traceback
-import itertools
 import collections
 
 from astropy.io import fits
 
 from sunpy.io.header import FileHeader
-from sunpy.extern.six.moves import zip
 
 __all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 
@@ -178,7 +175,7 @@ def write(fname, data, header, **kwargs):
     # Check Header
     key_comments = header.pop('KEYCOMMENTS', False)
 
-    for k,v in header.items():
+    for k, v in header.items():
         if isinstance(v, fits.header._HeaderCommentaryCards):
             if k == 'comments':
                 comments = str(v).split('\n')
@@ -195,15 +192,19 @@ def write(fname, data, header, **kwargs):
             fits_header.append(fits.Card(k, v))
 
     if isinstance(key_comments, dict):
-        for k,v in key_comments.items():
-            fits_header.comments[k] = v
+        for k, v in key_comments.items():
+            # Check that the Card for the comment exists before trying to write to it.
+            if k in fits_header:
+                fits_header.comments[k] = v
     elif key_comments:
         raise TypeError("KEYCOMMENTS must be a dictionary")
 
-    fitskwargs = {'output_verify':'fix'}
+    if isinstance(fname, str):
+        fname = os.path.expanduser(fname)
+
+    fitskwargs = {'output_verify': 'fix'}
     fitskwargs.update(kwargs)
-    fits.writeto(os.path.expanduser(fname), data, header=fits_header,
-                   **fitskwargs)
+    fits.writeto(fname, data, header=fits_header, **fitskwargs)
 
 
 def extract_waveunit(header):

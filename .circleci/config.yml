@@ -1,15 +1,27 @@
+skip-check: &skip-check
+  name: Check for [ci skip]
+  command: bash .circleci/early_exit.sh
+
 apt-run: &apt-install
   name: Install apt packages
   command: |
-    sudo apt update
-    sudo apt install -y graphviz
+    apt update
+    apt install -y graphviz build-essential
 
-pip-run: &pip-install
-  name: Install Python dependencies
+tox-install: &tox-install
+  name: Install Tox
   command: |
-    python3 -m venv venv
-    . venv/bin/activate
-    pip install -q -r requirements/docs.txt
+    pip install tox
+    pip install tox-conda
+
+image-run: &image-tests
+  name: Run image tests
+  environment:
+    MPLBACKEND: Agg
+  command: |
+    tox -e figure
+    pip install codecov
+    codecov
 
 version: 2
 jobs:
@@ -20,32 +32,62 @@ jobs:
       - checkout
       - run: python setup.py egg_info
 
-  egg-info-35:
+  egg-info-37:
     docker:
-      - image: circleci/python:3.5
+      - image: circleci/python:3.7
     steps:
       - checkout
       - run: python setup.py egg_info
 
-  egg-info-27:
+  32bit:
     docker:
-      - image: circleci/python:2.7
+      - image: quay.io/pypa/manylinux1_i686
     steps:
       - checkout
-      - run: python setup.py egg_info
+      - run: *skip-check
+      - run:
+          name: yum dependencies
+          command: yum install -y freetype freetype-devel libpng-devel tk
+      - run:
+          name: Install dependencies one
+          command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off numpy scipy astropy matplotlib==1.5.3
+      - run:
+          name: Install dependencies two
+          command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off sqlalchemy scikit-image==0.13.1 glymur drms suds-jurko beautifulsoup4 requests python-dateutil pytest pytest-cov pytest-mock pytest-xdist mock hypothesis pytest-astropy pytest-rerunfailures
+      - run:
+          name: Run tests
+          command: PYTHONHASHSEED=42 /opt/python/cp36-cp36m/bin/python setup.py test --parallel=4
+    environment:
+          MPLBACKEND: agg
+          COLUMNS: 180
+
+  figure-tests-36:
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - checkout
+      - run: *skip-check
+      - run: *apt-install
+      - run: *tox-install
+      - run: *image-tests
+      - store_artifacts:
+          path: figure_test_images
+      - run:
+          name: "Image comparison page is available at:"
+          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/figure_test_images/fig_comparison.html"; echo $FIGS_URL
 
   html-docs:
     docker:
-      - image: circleci/python:3.6
+      - image: continuumio/miniconda3
     steps:
       - restore_cache:
           keys: sample-data-v1
 
       - checkout
+      - run: *skip-check
       - run: *apt-install
-      - run: *pip-install
-      - run: venv/bin/python setup.py build_docs -w 2> /dev/null
-
+      - run: *tox-install
+      - run: tox -e py37-build_docs
       - store_artifacts:
           path: docs/_build/html
 
@@ -58,20 +100,25 @@ jobs:
           paths:
             - ~/sunpy/data/sample_data
 
-
 workflows:
   version: 2
 
   egg-info:
     jobs:
       - egg-info-36
-      - egg-info-35
-      - egg-info-27
+      - egg-info-37
+
+  build-32:
+    jobs:
+      - 32bit
+
+  figure-tests:
+    jobs:
+      - figure-tests-36
 
   test-documentation:
     jobs:
       - html-docs
-
 
 notify:
   webhooks:

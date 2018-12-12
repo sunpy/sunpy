@@ -1,0 +1,85 @@
+[ tool.sunpy-bot ]
+  # disable astropy checks
+  changelog_check = false
+  autoclose_stale_pull_request = false
+
+  # SunPy Checks
+  check_towncrier_changelog = true
+  check_milestone = true
+  post_pr_comment = true
+
+  all_passed_message = """
+
+  Thanks for the pull request @{pr_handler.user}! Everything looks great!
+"""
+
+  [ tool.sunpy-bot.towncrier_changelog ]
+    verify_pr_number = true
+    changelog_skip_label = "No Changelog Entry Needed"
+    help_url = "https://github.com/Cadair/sunpy/blob/towncrier/changelog/README.rst"
+
+    missing_file_message = """
+
+
+* I didn't detect a changelog file in this pull request. Please add a changelog file to the `changelog/` directory following the instructions in the changelog [README](https://github.com/sunpy/sunpy/blob/master/changelog/README.rst).
+"""
+    wrong_type_message = """
+
+
+* The changelog file you added is not one of the allowed types. Please use one of the types described in the changelog [README](https://github.com/sunpy/sunpy/blob/master/changelog/README.rst)
+"""
+
+    wrong_number_message = """
+
+
+* The number in the changelog file you added does not match the number of this pull request. Please rename the file.
+"""
+
+  [ tool.sunpy-bot.milestone_checker ]
+
+    missing_message = """
+
+
+* This pull request does not have a milestone assigned to it. Only maintainers can change this, so you don't need to worry about it. :smile:
+"""
+
+[tool.towncrier]
+    package = "sunpy"
+    filename = "CHANGELOG.rst"
+    directory = "changelog/"
+    issue_format = "`#{issue} <https://github.com/sunpy/sunpy/pull/{issue}>`__"
+
+    [[tool.towncrier.type]]
+        directory = "breaking"
+        name = "Backwards Incompatible Changes"
+        showcontent = true
+
+    [[tool.towncrier.type]]
+        directory = "api"
+        name = "API Changes"
+        showcontent = true
+
+    [[tool.towncrier.type]]
+      directory = "removal"
+      name = "Deprecations and Removals"
+      showcontent = true
+
+    [[tool.towncrier.type]]
+      directory = "feature"
+      name = "Features"
+      showcontent = true
+
+    [[tool.towncrier.type]]
+      directory = "bugfix"
+      name = "Bug Fixes"
+      showcontent = true
+
+    [[tool.towncrier.type]]
+      directory = "doc"
+      name = "Improved Documentation"
+      showcontent = true
+
+    [[tool.towncrier.type]]
+      directory = "trivial"
+      name = "Trivial/Internal Changes"
+      showcontent = true

@@ -2,8 +2,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 """Sundry function and class decorators."""
 
-from __future__ import print_function
-
 
 import functools
 import inspect
@@ -12,7 +10,6 @@ import types
 import warnings
 
 from sunpy.util.exceptions import SunpyDeprecationWarning
-from sunpy.extern import six
 
 __all__ = ['deprecated']
 
@@ -205,17 +202,20 @@ class add_common_docstring(object):
 
     def __init__(self, append=None, prepend=None, **kwargs):
         if kwargs:
-            append = append.format(**kwargs)
-            prepend = prepend.format(**kwargs)
+            append = append
+            prepend = prepend
         self.append = append
         self.prepend = prepend
+        self.kwargs = kwargs
 
     def __call__(self, func):
         func.__doc__ = func.__doc__ if func.__doc__ else ''
         self.append = self.append if self.append else ''
         self.prepend = self.prepend if self.prepend else ''
-        if self.append and isinstance(func.__doc__, six.string_types):
+        if self.append and isinstance(func.__doc__, str):
             func.__doc__ += self.append
-        if self.prepend and isinstance(func.__doc__, six.string_types):
+        if self.prepend and isinstance(func.__doc__, str):
             func.__doc__ = self.prepend + func.__doc__
+        if self.kwargs:
+            func.__doc__ = func.__doc__.format(self.kwargs)
         return func

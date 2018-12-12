@@ -11,17 +11,12 @@ import tempfile
 import pytest
 import numpy as np
 from astropy.io import fits
+from astropy.wcs import WCS
 
 import sunpy
 import sunpy.map
 import sunpy.data.test
 
-try:
-    import sqlalchemy
-    import sunpy.database
-    HAS_SQLALCHEMY = True
-except ImportError:
-    HAS_SQLALCHEMY = False
 
 filepath = sunpy.data.test.rootdir
 a_list_of_many = glob.glob(os.path.join(filepath, "EIT", "*"))
@@ -34,10 +29,10 @@ RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
 # Map Factory Tests
 #==============================================================================
 class TestMap(object):
-    def test_mapcube(self):
-        #Test making a MapCube
-        cube = sunpy.map.Map(a_list_of_many, cube=True)
-        assert isinstance(cube, sunpy.map.MapCube)
+    def test_mapsequence(self):
+        #Test making a MapSequence
+        sequence = sunpy.map.Map(a_list_of_many, sequence=True)
+        assert isinstance(sequence, sunpy.map.MapSequence)
 
     def test_composite(self):
         #Test making a CompositeMap
@@ -71,11 +66,19 @@ class TestMap(object):
         # Data-header pair not in a tuple
         pair_map = sunpy.map.Map(amap.data, amap.meta)
         assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Data-wcs object pair in tuple
+        pair_map = sunpy.map.Map((amap.data, WCS(AIA_171_IMAGE)))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Data-wcs object pair not in a tuple
+        pair_map = sunpy.map.Map(amap.data, WCS(AIA_171_IMAGE))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
         # Data-header from FITS
         with fits.open(a_fname) as hdul:
             data = hdul[0].data
             header = hdul[0].header
         pair_map = sunpy.map.Map((data, header))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+        pair_map, pair_map = sunpy.map.Map(((data, header), (data, header)))
         assert isinstance(pair_map, sunpy.map.GenericMap)
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
@@ -85,12 +88,20 @@ class TestMap(object):
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
-    # requires sqlalchemy to run properly
-    @pytest.mark.skipif('not HAS_SQLALCHEMY')
-    def test_databaseentry(self):
-        db = sunpy.database.Database(url='sqlite://', default_waveunit='angstrom')
-        db.add_from_file(a_fname)
+    # requires dask array to run properly
+    def test_dask_array(self):
+        dask_array = pytest.importorskip('dask.array')
+        amap = sunpy.map.Map(AIA_171_IMAGE)
+        da = dask_array.from_array(amap.data, chunks=(1, 1))
+        pair_map = sunpy.map.Map(da, amap.meta)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
 
+    # requires sqlalchemy to run properly
+    def test_databaseentry(self):
+        sqlalchemy = pytest.importorskip('sqlalchemy')
+        sunpy_database = pytest.importorskip('sunpy.database')
+        db = sunpy_database.Database(url='sqlite://', default_waveunit='angstrom')
+        db.add_from_file(a_fname)
         res = db.get_entry_by_id(1)
         db_map = sunpy.map.Map(res)
         assert isinstance(db_map, sunpy.map.GenericMap)

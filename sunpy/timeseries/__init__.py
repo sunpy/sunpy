@@ -6,7 +6,6 @@ Currently the objects can be instansiated from files (such as CSV and FITS) and
 urls to these files, but don't include data downloaders for their specific
 instruments as this will become part of the universal downloader.
 """
-from __future__ import absolute_import
 from sunpy.timeseries.metadata import TimeSeriesMetaData
 from sunpy.timeseries.timeseries_factory import TimeSeries
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries

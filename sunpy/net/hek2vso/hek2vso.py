@@ -11,10 +11,9 @@ This module translates the results of a HEK query into a VSO query
 and returns the results from the VSO query to the user.
 """
 
-from __future__ import absolute_import
-
 import sys
 from astropy import units
+from astropy.table import Table
 
 from sunpy.net import hek
 from sunpy.net import vso
@@ -36,7 +35,7 @@ def translate_results_to_query(results):
 
     Parameters
     ----------
-    results : `sunpy.net.hek.hek.Response` or list of `sunpy.net.hek.hek.Response`
+    results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKTable`
         The HEK results from a HEK query to be translated.
 
     Examples
@@ -57,7 +56,7 @@ def translate_results_to_query(results):
     [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>], ..., [<Time(datetime.datetime(2011, 8, 9, 8, 1, 21), datetime.datetime(2011, 8, 9, 8, 16, 45), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
     """
     queries = []
-    if type(results) is list:
+    if isinstance(results, Table):
         for result in results:
             query = vso_attribute_parse(result)
             queries.append(query)
@@ -76,7 +75,7 @@ def vso_attribute_parse(phrase):
 
     Parameters
     ----------
-    phrase : `dict` containing a `sunpy.net.hek.hek.Response`.
+    phrase : `sunpy.net.hek.hek.HEKRow`.
         The single HEK result to be parsed for VSO attribute data.
 
     Examples
@@ -168,7 +167,7 @@ class H2VClient(object):
 
         Parameters
         ----------
-        hek_results : `sunpy.net.hek.hek.Response` or list of such Responses
+        hek_results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKTable`
             The results from a HEK query in the form of a list.
         limit : int
             An approximate limit to the desired number of VSO results.

@@ -1,14 +1,10 @@
-from __future__ import absolute_import, division, print_function
-
 import os
-import datetime
 import re
+import datetime
 from ftplib import FTP
+from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
-from sunpy.extern import six
-from sunpy.extern.six.moves import range, zip
-from sunpy.extern.six.moves.urllib.request import urlopen
 
 __all__ = ['Scraper']
 
@@ -111,7 +107,7 @@ class Scraper(object):
     def _URL_followsPattern(self, url):
         """Check whether the url provided follows the pattern"""
         pattern = self.pattern
-        for k, v in six.iteritems(TIME_CONVERSIONS):
+        for k, v in TIME_CONVERSIONS.items():
             pattern = pattern.replace(k, v)
         matches = re.match(pattern, url)
         if matches:
@@ -154,7 +150,7 @@ class Scraper(object):
         date_together = ''.join(final_date)
         pattern_together = ''.join(final_pattern)
         re_together = pattern_together
-        for k, v in six.iteritems(TIME_CONVERSIONS):
+        for k, v in TIME_CONVERSIONS.items():
             re_together = re_together.replace(k, v)
 
         #   Lists to contain the unique elements of the date and the pattern
