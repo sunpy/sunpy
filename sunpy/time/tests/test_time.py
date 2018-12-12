@@ -8,7 +8,7 @@ import astropy.time
 from astropy.time import Time
 
 import sunpy.time as time
-from sunpy.time import parse_time
+from sunpy.time import parse_time, is_time_equal
 
 LANDING = Time('1966-02-03', format='isot')
 
@@ -225,7 +225,7 @@ def test_parse_time_ISO():
 
     for k, v in lst:
         dt = parse_time(k)
-        assert dt == v
+        assert is_time_equal(dt, v)
         assert dt.format == 'isot'
 
 
@@ -294,7 +294,7 @@ def test_parse_time_int_float():
 def test_parse_time_scale(scale):
     dt = parse_time('2007-05-04T21:08:12', scale=scale)
     dt2 = Time('2007-05-04T21:08:12', scale=scale)
-    assert dt == dt2
+    assert is_time_equal(dt, dt2)
     assert dt.scale == scale
 
     dt = parse_time(np.datetime64('2007-05-04T21:08:12'), scale=scale)
