@@ -29,7 +29,7 @@ slider_axis0 = 0
 # xdata to be the same shape as the data where each row/column
 # (depending on axis to be animated) represents the x-axis values for
 # a single frame of the animations.
-xdata = np.tile(np.linspace(0, 100, data_shape0[plot_axis0]), (data_shape0[slider_axis0], 1))
+xdata = np.tile(np.linspace(0, 100, data_shape0[plot_axis0]+1), (data_shape0[slider_axis0], 1))
 
 ###############################################################################
 # Generate animation object with variable x-axis data.

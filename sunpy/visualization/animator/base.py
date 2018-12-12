@@ -458,7 +458,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             self.frame_slice[i] = 0
 
         base_kwargs = {'slider_functions': [self.update_plot] * self.num_sliders,
-                       'slider_ranges': self.axis_ranges[self.slider_axes]}
+                       'slider_ranges': [self.axis_ranges[axis] for axis in self.slider_axes]}
         base_kwargs.update(kwargs)
         BaseFuncAnimator.__init__(self, data, **base_kwargs)
 
@@ -521,7 +521,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
           "i.e. length must be length of axis + 1.".format(j, axis_ranges[j])
 
         # Define function for converting pixel edges to pixel centers
-        edges_to_centers = lambda axis_range: \
+        edges_to_centers_1d = lambda axis_range: \
           (axis_range[1:] - axis_range[:-1])/2 + axis_range[:-1]
 
         # If axis range not given, define a function such that the range goes
@@ -538,21 +538,24 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                 extent = extent + none_image_axis_range(i)
                 axis_ranges[i] = np.array(none_image_axis_range(i))
             else:
-                # Set extent.
-                extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
                 # Depending on length of axis_ranges[i], leave unchanged,
-                # convert to pixel centers of raise an error due to incompatible format.
+                # convert to pixel centers or raise an error due to incompatible format.
+                axis_ranges[i] = np.asarray(axis_ranges[i])
                 if len(axis_ranges[i]) == 2:
-                    axis_ranges[i] = np.asarray(axis_ranges[i])
-                elif len(axis_ranges[i]) == d+1:
+                    # Set extent.
+                    extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
+                elif axis_ranges[i].ndim == 1 and len(axis_ranges[i]) == data_shape[i]+1:
                     # If array of individual pixel edges supplied, first set extent
-                    # from first and list pixel edge, then convert axis_ranges to pixel centers.
+                    # from first and last pixel edge, then convert axis_ranges to pixel centers.
                     # The reason that pixel edges are required as input rather than centers
                     # is so that the plot extent can be derived from axis_ranges (above)
                     # and APIs using both [min, max] pair and manual definition of each pixel
                     # values can be unambiguously and simultanously supported.
                     extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
-                    axis_ranges[i] = edges_to_centers(np.asarray(axis_ranges[i]))
+                    axis_ranges[i] = edges_to_centers_1d(axis_ranges[i])
+                elif axis_ranges[i].ndim == ndim and axis_ranges[i].shape[i] == data_shape[i]+1:
+                    extent = extent + [axis_ranges[i].min(), axis_ranges[i].max()]
+                    axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
                 else:
                     raise ValueError(incompatible_axis_ranges_error_message(i))
         # For each axis validate and translate the axis_ranges.
@@ -562,21 +565,21 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             elif len(axis_ranges[i]) == 2:
                 axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
                                              data_shape[i]+1)
-                axis_ranges[i] = edges_to_centers(axis_ranges[i])
+                axis_ranges[i] = edges_to_centers_1d(axis_ranges[i])
             elif len(axis_ranges[i]) == data_shape[i]+1:
                 # If array of individual pixel edges supplied, convert to pixel centers.
-                axis_ranges[i] = edges_to_centers(np.asarray(axis_ranges[i]))
+                axis_ranges[i] = edges_to_centers_1d(np.asarray(axis_ranges[i]))
             else:
                 raise ValueError(incompatible_axis_ranges_error_message(i))
 
-        return np.asarray(axis_ranges), extent
+        return axis_ranges, extent
 
     @abc.abstractmethod
     def plot_start_image(self):  # pragma: no cover
         """
         Abstract method for plotting first slice of array.
 
-        Must exists here but be defined in subclass.
+        Must exist here but be defined in subclass.
 
         """
 
@@ -585,6 +588,26 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         """
         Abstract method for updating plot.
 
-        Must exists here but be defined in subclass.
+        Must exist here but be defined in subclass.
 
         """
+
+
+def edges_to_centers_nd(axis_range, edges_axis):
+    """
+    Converts ND array of pixel edges to pixel centers along one axis.
+
+    Parameters
+    ----------
+    axis_range: `numpy.ndarray`
+        Array of pixel edges.
+
+    edges_axis: `int`
+        Index of axis along which centers are to be calculated.
+
+    """
+    a = [slice(None)] * axis_range.ndim
+    a[edges_axis] = slice(1, axis_range.shape[edges_axis])
+    b = [slice(None)] * axis_range.ndim
+    b[edges_axis] = slice(0, -1)
+    return (axis_range[tuple(a)] - axis_range[tuple(b)]) / 2 + axis_range[tuple(b)]
