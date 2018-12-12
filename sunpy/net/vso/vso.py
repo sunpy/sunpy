@@ -263,7 +263,7 @@ class VSOClient(BaseClient):
 
     """ Main VSO Client. """
     method_order = [
-        'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
+        'URL-FILE_Rice', 'URL-FILE', 'URL-packaged', 'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR',
     ]
 
     def __init__(self, url=None, port=None, api=None):
@@ -673,7 +673,7 @@ class VSOClient(BaseClient):
                        self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
                        for k, v in maps.items()]
 
-        request = {'method': methods,
+        request = {'method': {'methodtype': methods},
                    'info': info,
                    'datacontainer': {'datarequestitem': datarequestitem}
                    }
