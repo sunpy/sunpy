@@ -410,7 +410,7 @@ def test_vso_hmi(client, tmpdir):
 
     # For each DataRequestItem assert that there is only one series in it.
     for dri in dris:
-        fileids = dri.fileiditem.fileid[0]
+        fileids = dri.fileiditem.fileid
         series = list(map(lambda x: x.split(':')[0], fileids))
         assert all([s == series[0] for s in series])
 
