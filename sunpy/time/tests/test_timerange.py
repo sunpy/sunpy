@@ -5,7 +5,7 @@ import pytest
 
 import astropy.units as u
 from astropy.time import TimeDelta
-from sunpy.time import Time
+from astropy.time import Time
 
 import sunpy.time
 
@@ -112,11 +112,11 @@ def test_get_dates():
 
     single_day = sunpy.time.TimeRange((lower, lower))
 
-    assert single_day.get_dates() == [sunpy.time.Time('2016-1-4')]
+    assert single_day.get_dates() == [Time('2016-1-4')]
 
     two_days = sunpy.time.TimeRange((lower, lower_plus_one_day))
 
-    assert two_days.get_dates() == [sunpy.time.Time('2016-1-4'), sunpy.time.Time('2016-1-5')]
+    assert two_days.get_dates() == [Time('2016-1-4'), Time('2016-1-5')]
 
     one_year = sunpy.time.TimeRange('2017/01/01', '2017-12-31')
     assert len(one_year.get_dates()) == 365

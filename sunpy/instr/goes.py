@@ -52,7 +52,6 @@ import os.path
 import datetime
 from itertools import dropwhile
 
-import pandas
 import numpy as np
 import astropy.units as u
 from astropy.time import TimeDelta
@@ -62,7 +61,7 @@ from scipy.integrate import trapz, cumtrapz
 from sunpy import sun
 from sunpy.net import hek
 from sunpy import timeseries
-from sunpy.time import parse_time, Time
+from sunpy.time import parse_time
 from sunpy.util.net import check_download_file
 from sunpy.coordinates import get_sunearth_distance
 from sunpy.util.config import get_and_create_download_dir

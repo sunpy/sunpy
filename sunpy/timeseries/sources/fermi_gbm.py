@@ -10,7 +10,7 @@ from sunpy.instr import fermi
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 
-from sunpy.time import Time
+from astropy.time import Time
 from astropy import units as u
 
 __all__ = ['GBMSummaryTimeSeries']

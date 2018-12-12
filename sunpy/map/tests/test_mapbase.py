@@ -3,26 +3,27 @@
 Test Generic Map
 """
 import os
-import pytest
-import warnings
 import tempfile
+import warnings
 
 import numpy as np
-
-import astropy.wcs
-from astropy.io import fits
-import astropy.units as u
-from astropy.tests.helper import assert_quantity_allclose
-from astropy.visualization import wcsaxes
-from astropy.coordinates import SkyCoord
+import pytest
 import matplotlib.pyplot as plt
 
+import astropy.wcs
+import astropy.units as u
+from astropy.io import fits
+from astropy.time import Time
+from astropy.coordinates import SkyCoord
+from astropy.tests.helper import assert_quantity_allclose
+from astropy.visualization import wcsaxes
+
 import sunpy
-import sunpy.sun
 import sunpy.map
-import sunpy.coordinates
+import sunpy.sun
 import sunpy.data.test
-from sunpy.time import parse_time, Time
+import sunpy.coordinates
+from sunpy.time import parse_time
 
 testpath = sunpy.data.test.rootdir
 

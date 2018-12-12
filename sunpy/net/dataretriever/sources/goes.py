@@ -6,7 +6,7 @@ import os
 from urllib.parse import urlsplit
 
 from astropy.time import TimeDelta
-from sunpy.time import Time
+from astropy.time import Time
 import astropy.units as u
 
 

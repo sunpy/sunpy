@@ -1,7 +1,6 @@
 import pytest
-import datetime
 
-from sunpy.time import TimeRange, Time, parse_time
+from sunpy.time import TimeRange, parse_time
 from sunpy.util.scraper import Scraper
 
 from astropy.time import TimeDelta

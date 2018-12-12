@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from astropy.time import TimeDelta
-from sunpy.time import Time
+from astropy.time import Time
 import astropy.units as u
 
 from sunpy.time import is_time_equal

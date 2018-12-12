@@ -2,7 +2,7 @@ import pytest
 
 import astropy.units as u
 from astropy.time import TimeDelta
-from sunpy.time import Time
+from astropy.time import Time
 
 from sunpy.time.timerange import TimeRange
 from sunpy.net.dataretriever.client import QueryResponse

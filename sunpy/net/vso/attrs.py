@@ -18,7 +18,7 @@ Instrument('aia') & Instrument('eit').
 import collections
 
 from astropy import units as u
-from sunpy.time import Time
+from astropy.time import Time
 
 from sunpy.time import TimeRange as _TimeRange
 from sunpy.net.attr import (Attr, AttrWalker, AttrAnd,

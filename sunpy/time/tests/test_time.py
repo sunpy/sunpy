@@ -5,7 +5,7 @@ import pandas
 import pytest
 
 import astropy.time
-from sunpy.time import Time
+from astropy.time import Time
 
 import sunpy.time as time
 from sunpy.time import parse_time

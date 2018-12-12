@@ -13,7 +13,7 @@ import numpy as np
 
 from astropy import units as u
 from astropy.time import TimeDelta
-from sunpy.time import Time
+from astropy.time import Time
 
 
 import sunpy.io
