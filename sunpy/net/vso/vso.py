@@ -14,6 +14,7 @@ import re
 import sys
 import socket
 import warnings
+import itertools
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
@@ -669,13 +670,33 @@ class VSOClient(BaseClient):
         if 'email' not in info:
             info['email'] = 'sunpy'
 
-        datarequestitem = [
-                       self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
-                       for k, v in maps.items()]
+        # For the JSOC provider we need to make a DataRequestItem for each
+        # series, not just one for the whole provider.
+
+        # Remove JSOC provider items from the map
+        jsoc = maps.pop('JSOC', [])
+        # Make DRIs for everything that's not JSOC one per provider
+        dris = [self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
+                for k, v in maps.items()]
+
+        def series_func(x):
+            """ Extract the series from the fileid. """
+            return x.split(':')[0]
+
+        # Sort the JSOC fileids by series
+        # This is a precursor to groupby as recommended by the groupby docs
+        series_sorted = sorted(jsoc, key=series_func)
+        # Iterate over the series and make a DRI for each.
+        # groupby creates an iterator based on a key function, in this case
+        # based on the series (the part before the first ':')
+        for series, fileids in itertools.groupby(series_sorted, key=series_func):
+            dris.append(self.make('DataRequestItem',
+                                  provider='JSOC',
+                                  fileiditem={'fileid': list(fileids)}))
 
         request = {'method': {'methodtype': methods},
                    'info': info,
-                   'datacontainer': {'datarequestitem': datarequestitem}
+                   'datacontainer': {'datarequestitem': dris}
                    }
 
         return self.make('VSOGetDataRequest', request=request)
