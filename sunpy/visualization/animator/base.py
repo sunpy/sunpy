@@ -517,7 +517,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
           "i.e. length must be length of axis + 1.".format(j, axis_ranges[j])
 
         # Define function for converting pixel edges to pixel centers
-        edges_to_centers = lambda axis_range: \
+        edges_to_centers_nd = lambda axis_range: \
           (axis_range[1:] - axis_range[:-1])/2 + axis_range[:-1]
 
         # If axis range not given, define a function such that the range goes
@@ -534,13 +534,13 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                 extent = extent + none_image_axis_range(i)
                 axis_ranges[i] = np.array(none_image_axis_range(i))
             else:
-                # Set extent.
-                extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
                 # Depending on length of axis_ranges[i], leave unchanged,
                 # convert to pixel centers or raise an error due to incompatible format.
+                axis_ranges[i] = np.asarray(axis_ranges[i])
                 if len(axis_ranges[i]) == 2:
-                    axis_ranges[i] = np.asarray(axis_ranges[i])
-                elif len(axis_ranges[i]) == data_shape[i]+1:
+                    # Set extent.
+                    extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
+                elif axis_ranges[i].ndim == 1 and len(axis_ranges[i]) == data_shape[i]+1:
                     # If array of individual pixel edges supplied, first set extent
                     # from first and last pixel edge, then convert axis_ranges to pixel centers.
                     # The reason that pixel edges are required as input rather than centers
@@ -548,7 +548,10 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                     # and APIs using both [min, max] pair and manual definition of each pixel
                     # values can be unambiguously and simultanously supported.
                     extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
-                    axis_ranges[i] = edges_to_centers(np.asarray(axis_ranges[i]))
+                    axis_ranges[i] = edges_to_centers_nd(axis_ranges[i])
+                elif axis_ranges[i].ndim == ndim and axis_ranges[i].shape[i] == data_shape[i]+1:
+                    extent = extent + [axis_ranges[i].min(), axis_ranges[i].max()]
+                    axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
                 else:
                     raise ValueError(incompatible_axis_ranges_error_message(i))
         # For each axis validate and translate the axis_ranges.
@@ -558,21 +561,21 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             elif len(axis_ranges[i]) == 2:
                 axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
                                              data_shape[i]+1)
-                axis_ranges[i] = edges_to_centers(axis_ranges[i])
+                axis_ranges[i] = edges_to_centers_nd(axis_ranges[i])
             elif len(axis_ranges[i]) == data_shape[i]+1:
                 # If array of individual pixel edges supplied, convert to pixel centers.
-                axis_ranges[i] = edges_to_centers(np.asarray(axis_ranges[i]))
+                axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]))
             else:
                 raise ValueError(incompatible_axis_ranges_error_message(i))
 
-        return np.asarray(axis_ranges), extent
+        return axis_ranges, extent
 
     @abc.abstractmethod
     def plot_start_image(self):  # pragma: no cover
         """
         Abstract method for plotting first slice of array.
 
-        Must exists here but be defined in subclass.
+        Must exist here but be defined in subclass.
 
         """
 
@@ -581,7 +584,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         """
         Abstract method for updating plot.
 
-        Must exists here but be defined in subclass.
+        Must exist here but be defined in subclass.
 
         """
         ind = int(val)
@@ -589,3 +592,24 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         # Update slider label to reflect real world values in axis_ranges.
         label = self.axis_ranges[ax_ind][ind]
         slider.valtext.set_text("{0}".format(label))
+
+
+def edges_to_centers_nd(axis_range, edges_axis):
+    """
+    Converts ND array of pixel edges to pixel centers along one axis.
+    Parameters
+    ----------
+    axis_range: `numpy.ndarray`
+        Array of pixel edges.
+    edges_axis: `int`
+        Index of axis along which centers are to be calculated.
+    """
+    upper_edge_indices = [slice(None)] * axis_range.ndim
+    upper_edge_indices[edges_axis] = slice(1, axis_range.shape[edges_axis])
+    upper_edges = axis_range[tuple(upper_edge_indices)]
+    
+    lower_edge_indices = [slice(None)] * axis_range.ndim
+    lower_edge_indices[edges_axis] = slice(0, -1)
+    lower_edges = axis_range[tuple(lower_edge_indices)]
+    
+    return (upper_edges - lower_edges) / 2 + lower_edges
