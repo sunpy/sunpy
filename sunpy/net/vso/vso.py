@@ -102,8 +102,7 @@ def get_online_vso_url(api, url, port):
     if api is None and (url is None or port is None):
         for mirror in DEFAULT_URL_PORT:
             if check_connection(mirror['url']):
-                settings = zeep.Settings(strict=True)
-                api = zeep.Client(mirror['url'], settings=settings, port_name=mirror['port'])
+                api = zeep.Client(mirror['url'], port_name=mirror['port'])
                 api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
                 return api
 

@@ -3,12 +3,13 @@ Access the Helio Event Catalogue
 """
 import io
 
-from sunpy.net.helio import parser
-from sunpy.time import parse_time
-from zeep.client import Client as C
+import zeep
 from lxml import etree
+
 from astropy.io.votable.table import parse_single_table
 
+from sunpy.time import parse_time
+from sunpy.net.helio import parser
 
 __all__ = ['HECClient']
 
@@ -25,7 +26,7 @@ def votable_handler(xml_table):
 
     Parameters
     ----------
-    xml_table : str
+    xml_table : `bytes`
         Contains the VOtable style xml data
 
     Returns
@@ -35,7 +36,7 @@ def votable_handler(xml_table):
 
     """
     fake_file = io.BytesIO()
-    fake_file.write(bytes(xml_table, "utf-8"))
+    fake_file.write(xml_table)
     votable = parse_single_table(fake_file)
     fake_file.close()
     return votable
@@ -67,7 +68,7 @@ class HECClient(object):
             # The default wsdl file
             link = parser.wsdl_retriever()
 
-        self.hec_client = C(link)
+        self.hec_client = zeep.Client(link)
 
     def time_query(self, start_time, end_time, table=None, max_records=None):
         """

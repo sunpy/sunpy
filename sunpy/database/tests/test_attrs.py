@@ -53,7 +53,6 @@ def vso_session():
     entries = tables.entries_from_query_result(qr)
     database = Database('sqlite:///:memory:')
     for entry in entries:
-        print(entry)
         database.add(entry)
     database.commit()
     return database.session
