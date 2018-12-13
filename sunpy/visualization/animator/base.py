@@ -580,7 +580,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def update_plot(self, val, im, slider):  # pragma: no cover
+    def update_plot(self, val, slider):  # pragma: no cover
         """
         Abstract method for updating plot.
 

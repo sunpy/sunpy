@@ -165,3 +165,5 @@ class LineAnimator(ArrayAnimator):
                 item.insert(i, slice(None))
                 line.set_xdata(self.xdata[tuple(item)])
             slider.cval = val
+        # Update slider label to reflect real world values in axis_ranges.
+        super(LineAnimator, self).update_plot(val, slider)
