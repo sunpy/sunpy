@@ -125,8 +125,8 @@ class LineAnimator(ArrayAnimator):
         self.xlabel = xlabel
         self.ylabel = ylabel
         # Run init for base class
-        super(LineAnimator, self).__init__(data, image_axes=[self.plot_axis_index],
-                                           axis_ranges=axis_ranges, **kwargs)
+        super().__init__(data, image_axes=[self.plot_axis_index], axis_ranges=axis_ranges,
+                         **kwargs)
 
     def plot_start_image(self, ax):
         """Sets up plot of initial image."""
@@ -166,4 +166,4 @@ class LineAnimator(ArrayAnimator):
                 line.set_xdata(self.xdata[tuple(item)])
             slider.cval = val
         # Update slider label to reflect real world values in axis_ranges.
-        super(LineAnimator, self).update_plot(val, slider)
+        super().update_plot(val, slider)

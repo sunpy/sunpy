@@ -435,7 +435,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             slider_axes.remove(x)
 
         if len(slider_axes) != self.num_sliders:
-            raise ValueError("Number of slider axes mismatch!")
+            raise ValueError("Number of sliders doesn't match number of slider axes.")
         self.slider_axes = slider_axes
 
         # Verify that combined slider_axes and image_axes make all axes
@@ -510,20 +510,16 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             raise ValueError("Length of axis_ranges must equal number of axes")
 
         # Define error message for incompatible axis_range input.
-        incompatible_axis_ranges_error_message = lambda j: \
-          "Unrecognized format for {0}th entry in axis_ranges: {1}\n" + \
-          "axis_ranges must be None, a [min, max] pair, or " + \
-          "an array-like giving the edge values of each pixel, " + \
-          "i.e. length must be length of axis + 1.".format(j, axis_ranges[j])
-
-        # Define function for converting pixel edges to pixel centers
-        edges_to_centers_nd = lambda axis_range: \
-          (axis_range[1:] - axis_range[:-1])/2 + axis_range[:-1]
+        def incompatible_axis_ranges_error_message(j):
+            return ("Unrecognized format for {0}th entry in axis_ranges: {1}\n"
+                    "axis_ranges must be None, a [min, max] pair, or "
+                    "an array-like giving the edge values of each pixel, "
+                    "i.e. length must be length of axis + 1.".format(j, axis_ranges[j]))
 
         # If axis range not given, define a function such that the range goes
         # from -0.5 to number of pixels-0.5.  Thus, the center of the pixels
         # along the axis will correspond to integer values.
-        none_image_axis_range = lambda j: [-0.5, data_shape[j]-0.5]
+        def none_image_axis_range(j): return [-0.5, data_shape[j]-0.5]
         # For each axis validate and translate the axis_ranges. For image axes,
         # also determine the plot extent.  To do this, iterate through image and slider
         # axes separately.  Iterate through image axes in reverse order
