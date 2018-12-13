@@ -71,8 +71,7 @@ class ImageAnimator(ArrayAnimator):
         # and hence how to plot and update it.
         self._non_regular_plot_axis = False
         # Run init for parent class
-        super(ImageAnimator, self).__init__(data, image_axes=image_axes,
-                                            axis_ranges=axis_ranges, **kwargs)
+        super().__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def plot_start_image(self, ax):
         """Sets up plot of initial image."""
@@ -132,7 +131,7 @@ class ImageAnimator(ArrayAnimator):
                 im.set_array(self.data[self.frame_index])
             slider.cval = val
         # Update slider label to reflect real world values in axis_ranges.
-        super(ImageAnimator, self).update_plot(val, im, slider)
+        super().update_plot(val, im, slider)
 
 
 class ImageAnimatorWCS(ImageAnimator):
@@ -208,8 +207,7 @@ class ImageAnimatorWCS(ImageAnimator):
         self.slices_wcsaxes = list_slices_wcsaxes[::-1]
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
-        super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes,
-                                               axis_ranges=axis_ranges, **kwargs)
+        super().__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def _get_main_axes(self):
         axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
@@ -252,4 +250,4 @@ class ImageAnimatorWCS(ImageAnimator):
             im.set_array(self.data[self.frame_index])
             slider.cval = val
         # Update slider label to reflect real world values in axis_ranges.
-        super(ImageAnimatorWCS, self).update_plot(val, im, slider)
+        super().update_plot(val, im, slider)
