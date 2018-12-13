@@ -117,9 +117,8 @@ class ImageAnimator(ArrayAnimator):
 
     def update_plot(self, val, im, slider):
         """Updates plot based on slider/array dimension being iterated."""
-        val = int(val)
+        ind = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
-        ind = int(np.argmin(np.abs(self.axis_ranges[ax_ind] - val)))
         self.frame_slice[ax_ind] = ind
         if val != slider.cval:
             if self._non_regular_plot_axis:
@@ -132,6 +131,8 @@ class ImageAnimator(ArrayAnimator):
             else:
                 im.set_array(self.data[self.frame_index])
             slider.cval = val
+        # Update slider label to reflect real world values in axis_ranges.
+        super(ImageAnimator, self).update_plot(val, im, slider)
 
 
 class ImageAnimatorWCS(ImageAnimator):
@@ -239,9 +240,8 @@ class ImageAnimatorWCS(ImageAnimator):
 
     def update_plot(self, val, im, slider):
         """Updates plot based on slider/array dimension being iterated."""
-        val = int(val)
+        ind = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
-        ind = int(np.argmin(np.abs(self.axis_ranges[ax_ind] - val)))
         self.frame_slice[ax_ind] = ind
         list_slices_wcsaxes = list(self.slices_wcsaxes)
         list_slices_wcsaxes[self.wcs.naxis-ax_ind-1] = val
@@ -251,3 +251,5 @@ class ImageAnimatorWCS(ImageAnimator):
             self._set_unit_in_axis(self.axes)
             im.set_array(self.data[self.frame_index])
             slider.cval = val
+        # Update slider label to reflect real world values in axis_ranges.
+        super(ImageAnimatorWCS, self).update_plot(val, im, slider)

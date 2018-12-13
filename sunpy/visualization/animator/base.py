@@ -451,8 +451,10 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         for i in self.slider_axes:
             self.frame_slice[i] = 0
 
-        base_kwargs = {'slider_functions': [self.update_plot] * self.num_sliders,
-                       'slider_ranges': self.axis_ranges[self.slider_axes]}
+        base_kwargs = {
+            'slider_functions': [self.update_plot] * self.num_sliders,
+            'slider_ranges': [[0, dim] for dim in np.array(data.shape)[self.slider_axes]]
+            }
         base_kwargs.update(kwargs)
         BaseFuncAnimator.__init__(self, data, **base_kwargs)
 
@@ -575,10 +577,15 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def update_plot(self):  # pragma: no cover
+    def update_plot(self, val, im, slider):  # pragma: no cover
         """
         Abstract method for updating plot.
 
         Must exists here but be defined in subclass.
 
         """
+        ind = int(val)
+        ax_ind = self.slider_axes[slider.slider_ind]
+        # Update slider label to reflect real world values in axis_ranges.
+        label = self.axis_ranges[ax_ind][ind]
+        slider.valtext.set_text("{0}".format(label))
