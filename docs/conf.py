@@ -69,6 +69,13 @@ if on_rtd:
     os.environ['LC_ALL'] = 'C'
 
 try:
+    import zeep
+except ImportError:
+    print('ERROR: zeep could not be imported. Building the documentation requires '
+          'the "zeep" package to be installed')
+    sys.exit(1)
+
+try:
     import skimage
 except ImportError:
     print('ERROR: skimage could not be imported. Building the documentation requires '

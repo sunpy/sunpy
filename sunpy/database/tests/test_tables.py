@@ -130,7 +130,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid='EVE_L1_esp_2012001_00',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
-        instrument='EVE', size=-1.0,
+        instrument='EVE',
         wavemin=0.1, wavemax=30.4)
     # 2 entries from goes
     assert entries[56] == DatabaseEntry(
@@ -249,7 +249,6 @@ def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     assert entry.observation_time_start == datetime(2011, 9, 20, 1, 9, 20)
     assert entry.observation_time_end == datetime(2011, 9, 20, 2, 27, 40)
     assert entry.instrument == 'RHESSI'
-    assert entry.size == -1
     assert round(entry.wavemin, 3) == 0.413
     assert round(entry.wavemax, 7) == 0.0000729
 
