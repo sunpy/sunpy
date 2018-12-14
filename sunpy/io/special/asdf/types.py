@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from asdf.asdftypes import CustomType
+from asdf.types import CustomType
 
 
 __all__ = ['SunPyType']

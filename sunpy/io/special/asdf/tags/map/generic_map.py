@@ -22,6 +22,11 @@ class GenericMapType(SunPyType):
         # Use the factory here to get the correct subclass back
         out_map = sunpy.map.Map(np.asarray(node['data']), node['meta'])
         out_map.shift(*node['shift'])
+
+        out_map.mask = node.get('mask')
+        out_map.uncertainty = node.get('uncertainty')
+        out_map._unit = node.get('unit')
+
         return out_map
 
     @classmethod
@@ -30,6 +35,9 @@ class GenericMapType(SunPyType):
         node['data'] = np.asarray(smap.data)
         node['meta'] = custom_tree_to_tagged_tree(dict(smap.meta), ctx)
         node['shift'] = u.Quantity(smap.shifted_value)
+        node['mask'] = smap.mask
+        node['uncertainty'] = smap.uncertainty
+        node['unit'] = smap.unit
 
         # TODO: Save some or all of plot_settings
         # node['plot_settings'] = smap.plot_settings
@@ -50,3 +58,6 @@ class GenericMapType(SunPyType):
             assert new.meta[ok] == ov
 
         assert_quantity_allclose(old.shifted_value, new.shifted_value)
+        if old.mask is not None and new.mask is not None:
+            np.testing.assert_allclose(old.mask, new.mask)
+        assert old.unit == new.unit

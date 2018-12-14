@@ -20,6 +20,14 @@ properties:
     type: object
   shift:
     $ref: "tag:stsci.edu:asdf/unit/quantity-1.1.0"
+  mask:
+    $ref: "tag:stsci.edu:asdf/core/ndarray-1.0.0"
+  unit:
+    $ref: "tag:stsci.edu:asdf/unit/unit-1.0.0"
+  uncertainty:
+    type: object
+
 
 required: [meta, data]
+allowAdditionalProperties: False
 ...

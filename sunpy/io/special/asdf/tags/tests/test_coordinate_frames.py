@@ -1,17 +1,12 @@
-import pytest
 import numpy as np
-
-pytest.importorskip('asdf', '2.0')
-# These only work with astropy 3.1 or newer, so skip them on everything but the
-# master version of 3.1 and up.
-pytest.importorskip('astropy', '3.1.0.dev0')
+import pytest
 
 import astropy.units as u
-
-from sunpy.coordinates.frames import (Heliocentric, HeliographicCarrington,
-                                      HeliographicStonyhurst, Helioprojective)
-
+pytest.importorskip('asdf', '2.0.2')
 from asdf.tests.helpers import assert_roundtrip_tree
+
+from sunpy.coordinates.frames import (Heliocentric, Helioprojective,
+                                      HeliographicCarrington, HeliographicStonyhurst)
 
 
 @pytest.fixture(params=(Heliocentric, HeliographicCarrington,
@@ -27,8 +22,7 @@ def coordframe_scalar(request):
     return frame(*data, obstime='2018-01-01T00:00:00')
 
 
-# Don't test HGS / HGC with arrays because of spacetelescope/asdf#506
-@pytest.fixture(params=(Heliocentric,  # HeliographicCarrington, HeliographicStonyhurst,
+@pytest.fixture(params=(Heliocentric, HeliographicCarrington, HeliographicStonyhurst,
                         Helioprojective))
 def coordframe_array(request):
     frame = request.param
