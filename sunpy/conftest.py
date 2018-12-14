@@ -1,7 +1,5 @@
-import os
 import json
 import pathlib
-import tempfile
 import warnings
 import importlib
 
@@ -16,10 +14,11 @@ except ImportError:
 else:
     matplotlib.use('Agg')
 
+# isort:imports-firstparty
 import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
 from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
-
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 if importlib.util.find_spec('asdf') is not None:

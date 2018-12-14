@@ -2,10 +2,12 @@
 import os
 import glob
 
+from astropy.io.misc.asdf.tags.coordinates.frames import BaseCoordType
+
 from ...types import SunPyType
 
 
-__all__ = []
+__all__ = ['SunPyCoordType']
 
 
 SCHEMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
@@ -34,26 +36,18 @@ def _get_frames():
     return names
 
 
-try:
-    from astropy.io.misc.asdf.tags.coordinates.frames import BaseCoordType
+class SunPyCoordType(BaseCoordType, SunPyType):
+    _tag_prefix = "coordinates/frames/"
+    name = ["coordinates/frames/" + f for f in _get_frames()]
+    types = [
+        'sunpy.coordinates.HeliographicCarrington',
+        'sunpy.coordinates.HeliographicStonyhurst',
+        'sunpy.coordinates.Heliocentric',
+        'sunpy.coordinates.Helioprojective',
+    ]
+    requires = ['sunpy', 'astropy>=3.1']
+    version = "1.0.0"
 
-    __all__ = ['SunPyCoordType']
-
-    class SunPyCoordType(BaseCoordType, SunPyType):
-        _tag_prefix = "coordinates/frames/"
-        name = ["coordinates/frames/" + f for f in _get_frames()]
-        types = [
-            'sunpy.coordinates.HeliographicCarrington',
-            'sunpy.coordinates.HeliographicStonyhurst',
-            'sunpy.coordinates.Heliocentric',
-            'sunpy.coordinates.Helioprojective',
-        ]
-        requires = ['sunpy', 'astropy>=3.1']
-        version = "1.0.0"
-
-        @classmethod
-        def assert_equal(cls, old, new):
-            assert isinstance(new, type(old))
-
-except ImportError:
-    pass
+    @classmethod
+    def assert_equal(cls, old, new):
+        assert isinstance(new, type(old))
