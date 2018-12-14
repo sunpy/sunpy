@@ -19,7 +19,7 @@ def SJI_to_sequence(filename, start=0, stop=None, hdu=0):
 
     Parameters
     ----------
-    filename: string
+    filename: str
         File to read
 
     start: int
@@ -54,6 +54,6 @@ def SJI_to_sequence(filename, start=0, stop=None, hdu=0):
     # Set the date/time
 
     for i, m in enumerate(iris_cube):
-        m.meta['DATE-OBS'] = splits[i].center.isoformat()
+        m.meta['DATE-OBS'] = splits[i].center.isot
 
     return iris_cube

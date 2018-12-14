@@ -229,7 +229,7 @@ class GenericClient(BaseClient):
         filenames : list
             List of base filenames (ex - "xyz.txt")
 
-        path : string
+        path : str
             Path to download files to
 
         Returns

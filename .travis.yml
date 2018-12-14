@@ -42,7 +42,7 @@ matrix:
         apt:
           packages:
             - httpie
-      stage: "Cron jobs"
+      stage: "Comprehensive jobs"
 
     - name: "NumPy dev (py37-numpydev)"
       addons:

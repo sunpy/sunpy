@@ -225,7 +225,7 @@ Example (:class:`sunpy.map.Map`) ::
     ----------
     header : dict
         A dictionary representation of the image header
-    date : datetime
+    date : `astropy.time.Time`
         Image observation time
     det : str
         Detector name

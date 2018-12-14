@@ -188,7 +188,7 @@ def test_entries_from_fido_search_result(fido_search_result):
 @pytest.mark.remote_data
 def test_entries_from_fido_search_result_JSOC():
     search_result = Fido.search(
-        net_attrs.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        net_attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
         net_attrs.jsoc.Series('hmi.m_45s'),
         net_attrs.jsoc.Notify("sunpy@sunpy.org")
     )
