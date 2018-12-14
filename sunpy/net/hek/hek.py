@@ -11,16 +11,17 @@
 import json
 import codecs
 import urllib
-from datetime import datetime
 from itertools import chain
 
 from astropy.table import Table, Row, Column
+from astropy.time import Time
 
 from sunpy.net import attr
 from sunpy.util import unique
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
 from sunpy.util.xml import xml_to_dict
+
 
 __all__ = ['HEKClient']
 
@@ -123,8 +124,8 @@ class HEKRow(Row):
     @property
     def vso_time(self):
         return v_attrs.Time(
-            datetime.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
-            datetime.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
+            Time.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
+            Time.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
         )
 
     @property

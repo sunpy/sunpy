@@ -15,7 +15,6 @@ import sys
 import socket
 import warnings
 import itertools
-from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
 from urllib.error import URLError, HTTPError

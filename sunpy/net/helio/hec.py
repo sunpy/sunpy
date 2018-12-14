@@ -79,11 +79,11 @@ class HECClient(object):
 
         Parameters
         ----------
-        start_time : str
-            The datetime where the query window opens
+        start_time : str, `~sunpy.time.parse_time` parsable objects
+            The time where the query window opens
 
-        end_time : str
-            The datetime where the query window closes
+        end_time : str, `~sunpy.time.parse_time` parsable objects
+            The time where the query window closes
 
         table : str
             The table to query from. If the table is unknown, the user will be
