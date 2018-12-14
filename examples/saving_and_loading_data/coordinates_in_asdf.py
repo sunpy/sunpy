@@ -14,7 +14,7 @@ storing complex Astropy and SunPy objects in a way that can be loaded back into
 the same form as they were saved.
 
 .. note::
-    This example requires the as yet unreleased version of Astropy 3.1
+    This example requires Astropy 3.1 and asdf
 
 """
 
