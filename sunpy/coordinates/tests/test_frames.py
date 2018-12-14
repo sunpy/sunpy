@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
 import numpy as np
 
 import pytest
+
+from sunpy.time import parse_time
 
 import astropy.units as u
 
@@ -209,11 +210,11 @@ def test_wrapping_off():
 def test_HEE_creation():
     # Smoke test to make sure HEE constructors work fine
     _ = HeliographicStonyhurst(lon=0*u.deg, lat=90*u.deg,
-                               obstime=datetime(2018, 12, 21))
+                               obstime=parse_time('2018-12-21'))
     _ = HeliographicStonyhurst(lon=0*u.deg, lat=90*u.deg, radius=1*u.km,
-                               obstime=datetime(2018, 12, 21))
+                               obstime=parse_time('2018-12-21'))
     _ = HeliographicStonyhurst(x=1*u.km, y=1*u.km, z=1*u.km,
-                               obstime=datetime(2018, 12, 21),
+                               obstime=parse_time('2018-12-21'),
                                representation='cartesian')
 
 @pytest.mark.parametrize('frame',
