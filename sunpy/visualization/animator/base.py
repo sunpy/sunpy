@@ -560,7 +560,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                 axis_ranges[i] = edges_to_centers_nd(axis_ranges[i])
             elif len(axis_ranges[i]) == data_shape[i]+1:
                 # If array of individual pixel edges supplied, convert to pixel centers.
-                axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]))
+                axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]), i)
             else:
                 raise ValueError(incompatible_axis_ranges_error_message(i))
 
