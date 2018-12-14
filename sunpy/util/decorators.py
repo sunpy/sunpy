@@ -182,7 +182,7 @@ def deprecated(since, message='', name='', alternative=''):
     return deprecate
 
 
-class add_common_docstring(object):
+class add_common_docstring:
     """
     A function decorator that will append and/or prepend an addendum
     to the docstring of the target function.
@@ -217,5 +217,5 @@ class add_common_docstring(object):
         if self.prepend and isinstance(func.__doc__, str):
             func.__doc__ = self.prepend + func.__doc__
         if self.kwargs:
-            func.__doc__ = func.__doc__.format(self.kwargs)
+            func.__doc__ = func.__doc__.format(**self.kwargs)
         return func

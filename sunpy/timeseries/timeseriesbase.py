@@ -54,11 +54,13 @@ class GenericTimeSeries:
     Examples
     --------
     >>> from sunpy.timeseries import TimeSeries
+    >>> from sunpy.time import parse_time
     >>> import datetime
+    >>> from astropy.time import TimeDelta
     >>> import numpy as np
     >>> import pandas as pd
-    >>> base = datetime.datetime.today()
-    >>> times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    >>> base = parse_time(datetime.datetime.today())
+    >>> times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
     >>> df = pd.DataFrame(intensity, index=times, columns=['intensity'])
     >>> ts = TimeSeries(df)
@@ -88,7 +90,7 @@ class GenericTimeSeries:
 
     def __init__(self, data, meta=None, units=None, **kwargs):
         self.data = data
-        tr = TimeRange(self.data.index.min(), self.data.index.max())
+        tr = self.time_range
         # Check metadata input
         if meta is None:
             # No meta given, so default
@@ -137,11 +139,14 @@ class GenericTimeSeries:
         The start and end times of the TimeSeries as a `~sunpy.time.TimeRange`
         object
         """
-        return TimeRange(self.data.index.min(), self.data.index.max())
+        if len(self.data)>0:
+            return TimeRange(self.data.index.min(), self.data.index.max())
+        else:
+            return None
 
 # #### Data Access, Selection and Organisation Methods #### #
 
-    def quantity(self, colname):
+    def quantity(self, colname, **kwargs):
         """
         Return a `~astropy.units.quantity.Quantity` for the given column.
 
@@ -158,7 +163,7 @@ class GenericTimeSeries:
         unit = self.units[colname]
         return u.Quantity(values, unit)
 
-    def add_column(self, colname, quantity, unit=False, overwrite=True):
+    def add_column(self, colname, quantity, unit=False, overwrite=True, **kwargs):
         """
         Return an new TimeSeries with the given column added or updated.
 
@@ -249,8 +254,8 @@ class GenericTimeSeries:
             a = TimeRange(a, b)
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
-            start = a.start
-            end = a.end
+            start = a.start.datetime
+            end   = a.end.datetime
         else:
             # Otherwise we already have the values
             start = a
@@ -368,7 +373,8 @@ class GenericTimeSeries:
             the current axes will be used.
 
         **plot_args : `dict`
-            Any additional plot arguments are passed to the `plot` method of the pandas DataFrame.
+            Any additional plot arguments that should be used
+            when plotting.
 
         Returns
         -------
@@ -437,7 +443,7 @@ class GenericTimeSeries:
 
                 warnings.warn("Unknown value for "+meta_property.upper(), Warning)
 
-    def _validate_units(self, units):
+    def _validate_units(self, units, **kwargs):
         """
         Validates the astropy unit-information associated with a TimeSeries.
 
@@ -462,7 +468,7 @@ class GenericTimeSeries:
 
         return result
 
-    def _sanitize_units(self):
+    def _sanitize_units(self, **kwargs):
         """
         Sanitises the collections.OrderedDict used to store the units.
         Primarily this method will:
@@ -487,7 +493,7 @@ class GenericTimeSeries:
         # Now use the amended units Ordered Dictionary
         self.units = units
 
-    def _sanitize_metadata(self):
+    def _sanitize_metadata(self, **kwargs):
         """
         Sanitises the TimeSeriesMetaData object used to store the metadata.
         Primarily this method will:
@@ -509,7 +515,7 @@ class GenericTimeSeries:
 
 # #### Export/Output Methods #### #
 
-    def to_table(self):
+    def to_table(self, **kwargs):
         """
         Return an Astropy Table of the give TimeSeries object.
 
@@ -534,7 +540,7 @@ class GenericTimeSeries:
         # Output the table
         return table
 
-    def to_dataframe(self):
+    def to_dataframe(self, **kwargs):
         """
         Return a Pandas DataFrame of the give TimeSeries object.
 
