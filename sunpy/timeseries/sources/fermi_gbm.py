@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """FERMI GBM TimeSeries subclass definitions."""
-from __future__ import absolute_import, print_function
-
 from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,6 +10,7 @@ from sunpy.instr import fermi
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 
+from astropy.time import Time
 from astropy import units as u
 
 __all__ = ['GBMSummaryTimeSeries']
@@ -117,10 +116,11 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         # put the data in the units of counts/s/keV
         summary_counts = _bin_data_for_summary(energy_bins, count_data)
 
-        gbm_times = []
         # get the time information in datetime format with the correct MET adjustment
-        for t in count_data['time']:
-            gbm_times.append(fermi.met_to_utc(t))
+        gbm_times = Time([fermi.met_to_utc(t) for t in count_data['time']])
+        gbm_times.precision = 9
+        gbm_times = gbm_times.isot.astype('datetime64')
+
         column_labels = ['4-15 keV', '15-25 keV', '25-50 keV', '50-100 keV',
                          '100-300 keV', '300-800 keV', '800-2000 keV']
 

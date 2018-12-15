@@ -1,7 +1,8 @@
-import datetime
-
 import pytest
 from hypothesis import given, example
+
+from astropy.time import TimeDelta
+import astropy.units as u
 
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
@@ -11,6 +12,7 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.net.tests.strategies import goes_time
+from sunpy.time import parse_time, is_time_equal
 
 
 @pytest.fixture
@@ -72,11 +74,11 @@ def test_query(LCClient, time):
     assert isinstance(qr1, QueryResponse)
     # We only compare dates here as the start time of the qr will always be the
     # start of the day.
-    assert qr1.time_range().start.date() == time.start.date()
+    assert qr1.time_range().start.strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
 
-    almost_day = datetime.timedelta(days=1, milliseconds=-1)
-    end = datetime.datetime.combine(time.end.date(), datetime.time()) + almost_day
-    assert qr1.time_range().end == end
+    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
+    end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
+    assert is_time_equal(qr1.time_range().end, end)
 
 
 def test_query_error(LCClient):
@@ -120,8 +122,8 @@ def test_fido(time, instrument):
 
 @given(goes_time())
 def test_time_for_url(LCClient, time):
-    time = time.start.date().strftime("%Y/%m/%d")
-    almost_day = datetime.timedelta(days=1, milliseconds=-1)
+    time = time.start.strftime("%Y/%m/%d")
+    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
 
     tr = TimeRange(time, almost_day)
     url = LCClient._get_url_for_timerange(tr)

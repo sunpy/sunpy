@@ -22,12 +22,7 @@
 Multimethod implementation in pure Python.
 """
 
-from __future__ import absolute_import, division, print_function
-
 from warnings import warn
-
-from sunpy.extern.six.moves import zip, map
-from sunpy.extern import six
 
 __all__ = ['TypeWarning', 'MultiMethod']
 
@@ -143,7 +138,7 @@ class MultiMethod(object):
             for x in args
         ]
 
-        for k, elem in six.iteritems(kwargs):
+        for k, elem in kwargs.items():
             if isinstance(elem, super):
                 kwargs[k] = elem.__self__
 

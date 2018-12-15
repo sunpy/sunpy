@@ -17,11 +17,10 @@ from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
 import sunpy.io as io
+# The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
 import sunpy.cm
-from sunpy.util.decorators import deprecated
 from sunpy import config
-from sunpy.extern import six
 from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
 from sunpy.sun import constants
 from sunpy.sun import sun
@@ -181,7 +180,7 @@ class GenericMap(NDData):
         self._default_time = None
         self._default_dsun = None
         self._default_carrington_longitude = None
-        self._default_heliographic_lattitude = None
+        self._default_heliographic_latitude = None
         self._default_heliographic_longitude = None
 
         # Validate header
@@ -218,7 +217,7 @@ class GenericMap(NDData):
                    Detector:\t\t {det}
                    Measurement:\t\t {meas}
                    Wavelength:\t\t {wave}
-                   Observation Date:\t {date:{tmf}}
+                   Observation Date:\t {date}
                    Exposure Time:\t\t {dt:f}
                    Dimension:\t\t {dim}
                    Coordinate System:\t {coord.name}
@@ -226,7 +225,8 @@ class GenericMap(NDData):
                    Reference Pixel:\t {refpix}
                    Reference Coord:\t {refcoord}
                    """).format(obs=self.observatory, inst=self.instrument, det=self.detector,
-                               meas=self.measurement, wave=self.wavelength, date=self.date,
+                               meas=self.measurement, wave=self.wavelength,
+                               date=self.date.strftime(TIME_FORMAT),
                                dt=self.exposure_time,
                                dim=u.Quantity(self.dimensions),
                                scale=u.Quantity(self.scale),
@@ -266,7 +266,7 @@ class GenericMap(NDData):
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isoformat()
+        w2.wcs.dateobs = self.date.iso
         w2.heliographic_observer = self.observer_coordinate
         w2.rsun = self.rsun_meters
 
@@ -369,9 +369,10 @@ class GenericMap(NDData):
 
     def _base_name(self):
         """Abstract the shared bit between name and latex_name"""
-        return "{nickname} {{measurement}} {date:{tmf}}".format(nickname=self.nickname,
-                                                                date=parse_time(self.date),
-                                                                tmf=TIME_FORMAT)
+        return "{nickname} {{measurement}} {date}".format(
+            nickname=self.nickname,
+            date=parse_time(self.date).strftime(TIME_FORMAT)
+        )
 
     @property
     def name(self):
@@ -466,22 +467,6 @@ class GenericMap(NDData):
         Returns the FITS processing level if present.
         """
         return self.meta.get('lvl_num', None)
-
-    @property
-    @deprecated("0.8", "This property is only valid for non-rotated WCS")
-    def xrange(self):
-        """Return the X range of the image from edge to edge."""
-        xmin = self.center.data.lon - self.dimensions[0] / 2. * self.scale[0]
-        xmax = self.center.data.lon + self.dimensions[0] / 2. * self.scale[0]
-        return u.Quantity([xmin, xmax])
-
-    @property
-    @deprecated("0.8", "This property is only valid for non-rotated WCS")
-    def yrange(self):
-        """Return the Y range of the image from edge to edge."""
-        ymin = self.center.data.lat - self.dimensions[1] / 2. * self.scale[1]
-        ymax = self.center.data.lat + self.dimensions[1] / 2. * self.scale[1]
-        return u.Quantity([ymin, ymax])
 
     @property
     def bottom_left_coord(self):
@@ -590,7 +575,7 @@ class GenericMap(NDData):
                 self._default_carrington_longitude = get_sun_L0(self.date)
             carrington_longitude = self._default_carrington_longitude
 
-        if isinstance(carrington_longitude, six.string_types):
+        if isinstance(carrington_longitude, str):
             carrington_longitude = float(carrington_longitude)
 
         return u.Quantity(carrington_longitude, 'deg')
@@ -603,15 +588,15 @@ class GenericMap(NDData):
                                                             self.meta.get('solar_b0', None)))
 
         if heliographic_latitude is None:
-            if self._default_heliographic_lattitude is None:
+            if self._default_heliographic_latitude is None:
                 warnings.warn_explicit("Missing metadata for heliographic latitude:"
                                        " assuming Earth-based observer",
                                        Warning, __file__,
                                        inspect.currentframe().f_back.f_lineno)
-                self._default_heliographic_lattitude = get_sun_B0(self.date)
-            heliographic_latitude = self._default_heliographic_lattitude
+                self._default_heliographic_latitude = get_sun_B0(self.date)
+            heliographic_latitude = self._default_heliographic_latitude
 
-        if isinstance(heliographic_latitude, six.string_types):
+        if isinstance(heliographic_latitude, str):
             heliographic_latitude = float(heliographic_latitude)
 
         return u.Quantity(heliographic_latitude, 'deg')
@@ -631,7 +616,7 @@ class GenericMap(NDData):
                 self._default_heliographic_longitude = 0
             heliographic_longitude = self._default_heliographic_longitude
 
-        if isinstance(heliographic_longitude, six.string_types):
+        if isinstance(heliographic_longitude, str):
             heliographic_longitude = float(heliographic_longitude)
 
         return u.Quantity(heliographic_longitude, 'deg')
@@ -700,12 +685,12 @@ class GenericMap(NDData):
         the top of the image.
         """
         if 'PC1_1' in self.meta:
-            return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
-                              [self.meta['PC2_1'], self.meta['PC2_2']]])
+            return np.array([[self.meta['PC1_1'], self.meta['PC1_2']],
+                             [self.meta['PC2_1'], self.meta['PC2_2']]])
 
         elif 'CD1_1' in self.meta:
-            cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
-                            [self.meta['CD2_1'], self.meta['CD2_2']]])
+            cd = np.array([[self.meta['CD1_1'], self.meta['CD1_2']],
+                           [self.meta['CD2_1'], self.meta['CD2_2']]])
 
             cdelt = u.Quantity(self.scale).value
 
@@ -724,8 +709,8 @@ class GenericMap(NDData):
         lam = self.scale[0] / self.scale[1]
         p = np.deg2rad(self.meta.get('CROTA2', 0))
 
-        return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
-                          [1/lam * np.sin(p), np.cos(p)]])
+        return np.array([[np.cos(p), -1 * lam * np.sin(p)],
+                         [1/lam * np.sin(p), np.cos(p)]])
 
 # #### Miscellaneous #### #
 
@@ -829,14 +814,6 @@ class GenericMap(NDData):
 
         return PixelPair(x * u.pixel, y * u.pixel)
 
-    # Thought it would be easier to create a copy this way.
-    @deprecated("0.8.0", alternative="sunpy.map.GenericMap.world_to_pixel")
-    def data_to_pixel(self, coordinate, origin=0):
-        """
-        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`.
-        """
-        return self.world_to_pixel(coordinate, origin=origin)
-
     @u.quantity_input(x=u.pixel, y=u.pixel)
     def pixel_to_world(self, x, y, origin=0):
         """
@@ -878,14 +855,6 @@ class GenericMap(NDData):
         y = u.Quantity(y, out_units[1])
 
         return SkyCoord(x, y, frame=self.coordinate_frame)
-
-    # Thought it would be easier to create a copy this way.
-    @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_world")
-    def pixel_to_data(self, x, y, origin=0):
-        """
-        See `~sunpy.map.mapbase.GenericMap.pixel_to_world`.
-        """
-        return self.pixel_to_world(x, y, origin=origin)
 
 # #### I/O routines #### #
 
@@ -1082,11 +1051,12 @@ class GenericMap(NDData):
             # Calculate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
-            rmatrix = np.matrix([[c, -s], [s, c]])
+            rmatrix = np.array([[c, -s],
+                                [s, c]])
 
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((self.data.shape * rmatrix,
-                                          self.data.shape * rmatrix.T))), axis=0)
+        extent = np.max(np.abs(np.vstack((self.data.shape @ rmatrix,
+                                          self.data.shape @ rmatrix.T))), axis=0)
 
         # Calculate the needed padding or unpadding
         diff = np.asarray(np.ceil((extent - self.data.shape) / 2), dtype=int).ravel()
@@ -1110,7 +1080,7 @@ class GenericMap(NDData):
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
         pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate,
-                                                                  origin=0)).value
+                                                                   origin=0)).value
         del temp_map
 
         if recenter:
@@ -1154,7 +1124,7 @@ class GenericMap(NDData):
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
-        pc_C = np.dot(self.rotation_matrix, rmatrix.I)
+        pc_C = np.dot(self.rotation_matrix, np.linalg.inv(rmatrix))
         new_meta['PC1_1'] = pc_C[0, 0]
         new_meta['PC1_2'] = pc_C[0, 1]
         new_meta['PC2_1'] = pc_C[1, 0]
@@ -1288,11 +1258,7 @@ class GenericMap(NDData):
             y_pixels[1] = np.floor(y_pixels[1] + 1)
 
         elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
-              isinstance(top_right, u.Quantity) and bottom_left.unit.is_equivalent(u.pix)):
-
-            warnings.warn("GenericMap.submap now takes pixel values as `bottom_left`"
-                          " and `top_right` not `range_a` and `range_b`", Warning)
-
+              isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
             x_pixels = u.Quantity([bottom_left[0], top_right[0]]).value
             y_pixels = u.Quantity([top_right[1], bottom_left[1]]).value
 
@@ -1706,7 +1672,7 @@ class GenericMap(NDData):
         if not _basic_plot:
             # Check that the image is properly oriented
             if (not wcsaxes_compat.is_wcsaxes(axes) and
-                not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
+                    not np.array_equal(self.rotation_matrix, np.identity(2))):
                 warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
                               Warning)
 

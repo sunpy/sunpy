@@ -264,9 +264,9 @@ and times. Here is a short example: ::
 
     # parsing a standard time strings
     >>> sunpy.time.parse_time('2004/02/05 12:00')
-    datetime.datetime(2004, 2, 5, 12, 0)
+    <Time object: scale='utc' format='isot' value=2004-02-05T12:00:00.000>
 
-    # This returns a datetime object. All SunPy functions which require
+    # This returns a astropy.time.Time object. All SunPy functions which require
     # time as an input sanitize the input using parse_time.
     >>> sunpy.time.day_of_year('2004-Jul-05 12:00:02')
     187.50002314814816
@@ -278,7 +278,7 @@ and times. Here is a short example: ::
     # TimeRange objects are useful for representing ranges of time
     >>> time_range = sunpy.time.TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     >>> time_range.center
-    datetime.datetime(2010, 3, 4, 0, 15)
+    <Time object: scale='utc' format='isot' value=2010-03-04T00:15:00.000>
 
 For more information about working with time in SunPy checkout the :doc:`time guide <time>`.
 

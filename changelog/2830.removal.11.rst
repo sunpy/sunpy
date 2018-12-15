@@ -1,0 +1,2 @@
+Removed `attr.Wave` in favour of `attr.Wavelength`
+

@@ -1,5 +1,4 @@
 """A Python MapSequence Object"""
-from __future__ import absolute_import, division, print_function
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 from copy import deepcopy
@@ -15,7 +14,6 @@ from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.visualization import axis_labels_from_ctype
 from sunpy.util import expand_list
-from sunpy.extern.six.moves import range
 
 __all__ = ['MapSequence']
 
@@ -207,8 +205,12 @@ class MapSequence(object):
                 im.axes.reset_wcs(ani_data[i].wcs)
                 wcsaxes_compat.default_wcs_grid(axes)
             else:
-                im.set_extent(np.concatenate((ani_data[i].xrange.value,
-                                              ani_data[i].yrange.value)))
+                bl = ani_data[i]._get_lon_lat(ani_data[i].bottom_left_coord)
+                tr = ani_data[i]._get_lon_lat(ani_data[i].top_right_coord)
+                x_range = list(u.Quantity([bl[0], tr[0]]).to(ani_data[i].spatial_units[0]).value)
+                y_range = list(u.Quantity([bl[1], tr[1]]).to(ani_data[i].spatial_units[1]).value)
+
+                im.set_extent(np.concatenate((x_range.value, y_range.value)))
 
             if annotate:
                 annotate_frame(i)

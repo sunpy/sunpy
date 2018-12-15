@@ -8,3 +8,4 @@ pycodestyle:
     - docs/conf.py
     - sunpy/cm/color_tables.py
   descending_issues_order: True
+  only_mention_files_with_errors: True

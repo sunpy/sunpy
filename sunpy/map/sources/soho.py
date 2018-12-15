@@ -1,6 +1,4 @@
 """SOHO Map subclass definitions"""
-from __future__ import absolute_import, print_function, division
-
 # pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
@@ -110,8 +108,8 @@ class LASCOMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self.meta['CUNIT1'] = self.meta['CUNIT1'].lower()
-        self.meta['CUNIT2'] = self.meta['CUNIT2'].lower()
+        self.meta['CUNIT1'] = self.meta.get('CUNIT1', 'arcsec').lower()
+        self.meta['CUNIT2'] = self.meta.get('CUNIT2', 'arcsec').lower()
 
         # Fill in some missing or broken info
         # Test if change has already been applied
