@@ -238,7 +238,7 @@ class Scraper(object):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
-            except:
+            except Exception:
                 raise
         return filesurls
 
@@ -279,5 +279,5 @@ class Scraper(object):
                 return TimeDelta(365*u.day)
             else:
                 return None
-        except:
+        except Exception:
             raise
