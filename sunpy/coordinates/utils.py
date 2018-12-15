@@ -2,8 +2,6 @@
 # Calculates the co-ordinates along great arcs between two specified points
 # which are assumed to be on disk.
 #
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 
 import astropy.units as u

@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division
-
 import tempfile
 import os.path
 import pytest
@@ -8,19 +6,21 @@ import datetime
 import numpy as np
 import pandas
 
+from astropy.time import TimeDelta
+import astropy.units as u
+
 from sunpy.data.test import rootdir
-from sunpy.time import parse_time
+from sunpy.time import parse_time, is_time_equal
 from sunpy import timeseries
 from sunpy.instr import lyra
 
-from sunpy.extern.six.moves import range
 
 # Define location for test LYTAF database files
 TEST_DATA_PATH = rootdir
 
 # Define some test data for test_remove_lytaf_events()
-TIME = np.array([datetime.datetime(2013, 2, 1) + datetime.timedelta(minutes=i)
-                 for i in range(120)])
+TIME = parse_time(np.array([datetime.datetime(2013, 2, 1) + datetime.timedelta(minutes=i)
+                  for i in range(120)]))
 CHANNELS = [np.zeros(len(TIME)) + 0.4, np.zeros(len(TIME)) + 0.1]
 EMPTY_LYTAF = np.empty((0,), dtype=[("insertion_time", object),
                                     ("begin_time", object),
@@ -30,18 +30,18 @@ EMPTY_LYTAF = np.empty((0,), dtype=[("insertion_time", object),
                                     ("event_definition", object)])
 LYTAF_TEST = np.append(
     EMPTY_LYTAF,
-    np.array([(datetime.datetime.utcfromtimestamp(1371459961),
-               datetime.datetime.utcfromtimestamp(1359677220),
-               datetime.datetime.utcfromtimestamp(1359677250),
-               datetime.datetime.utcfromtimestamp(1359677400),
+    np.array([(parse_time(datetime.datetime.utcfromtimestamp(1371459961)),
+               parse_time(datetime.datetime.utcfromtimestamp(1359677220)),
+               parse_time(datetime.datetime.utcfromtimestamp(1359677250)),
+               parse_time(datetime.datetime.utcfromtimestamp(1359677400)),
                "LAR", "Large Angle Rotation.")],
              dtype=EMPTY_LYTAF.dtype))
 LYTAF_TEST = np.append(
     LYTAF_TEST,
-    np.array([(datetime.datetime.utcfromtimestamp(1371460063),
-               datetime.datetime.utcfromtimestamp(1359681764),
-               datetime.datetime.utcfromtimestamp(1359682450),
-               datetime.datetime.utcfromtimestamp(1359683136),
+    np.array([(parse_time(datetime.datetime.utcfromtimestamp(1371460063)),
+               parse_time(datetime.datetime.utcfromtimestamp(1359681764)),
+               parse_time(datetime.datetime.utcfromtimestamp(1359682450)),
+               parse_time(datetime.datetime.utcfromtimestamp(1359683136)),
                "UV occ.", "Occultation in the UV spectrum.")],
              dtype=LYTAF_TEST.dtype))
 
@@ -57,7 +57,7 @@ def test_split_series_using_lytaf():
     # construct a dummy signal for testing purposes
     basetime = parse_time('2010-06-13 02:00')
     seconds = 3600
-    dummy_time = [basetime + datetime.timedelta(0, s) for s in range(seconds)]
+    dummy_time = [basetime + TimeDelta(s*u.second) for s in range(seconds)]
     dummy_data = np.random.random(seconds)
 
     lytaf_tmp = lyra.get_lytaf_events('2010-06-13 02:00', '2010-06-13 06:00',
@@ -66,10 +66,10 @@ def test_split_series_using_lytaf():
     split = lyra.split_series_using_lytaf(dummy_time, dummy_data, lytaf_tmp)
     assert type(split) == list
     assert len(split) == 4
-    assert split[0]['subtimes'][0] == datetime.datetime(2010, 6, 13, 2, 0)
-    assert split[0]['subtimes'][-1] == datetime.datetime(2010, 6, 13, 2, 7, 2)
-    assert split[3]['subtimes'][0] == datetime.datetime(2010, 6, 13, 2, 59, 41)
-    assert split[3]['subtimes'][-1] == datetime.datetime(2010, 6, 13, 2, 59, 58)
+    assert is_time_equal(split[0]['subtimes'][0], parse_time((2010, 6, 13, 2, 0)))
+    assert is_time_equal(split[0]['subtimes'][-1], parse_time((2010, 6, 13, 2, 7, 2)))
+    assert is_time_equal(split[3]['subtimes'][0], parse_time((2010, 6, 13, 2, 59, 42)))
+    assert is_time_equal(split[3]['subtimes'][-1], parse_time((2010, 6, 13, 2, 59, 58)))
 
     # Test case when no LYTAF events found in time series.
     split_no_lytaf = lyra.split_series_using_lytaf(dummy_time,
@@ -213,7 +213,7 @@ def test_remove_lytaf_events_2():
                                  "not_removed": LYTAF_TEST,
                                  "not_found": ["Offpoint"]}
     # Assert test values are same as expected
-    assert time_test.all() == time_expected.all()
+    assert np.all(time_test == time_expected)
     assert (channels_test[0]).all() == (channels_expected[0]).all()
     assert (channels_test[1]).all() == (channels_expected[1]).all()
     assert artifacts_status_test.keys() == artifacts_status_expected.keys()
@@ -233,7 +233,7 @@ def test_remove_lytaf_events_2():
     time_test, channels_test = lyra._remove_lytaf_events(
         TIME, channels=CHANNELS, artifacts=["Offpoint"],
         lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
-    assert time_test.all() == time_expected.all()
+    assert np.all(time_test == time_expected)
     assert (channels_test[0]).all() == (channels_expected[0]).all()
     assert (channels_test[1]).all() == (channels_expected[1]).all()
     # Case 2: channels kwarg is False
@@ -241,7 +241,7 @@ def test_remove_lytaf_events_2():
     time_test = lyra._remove_lytaf_events(
         TIME, artifacts=["Offpoint"],
         lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
-    assert time_test.all() == time_expected.all()
+    assert np.all(time_test == time_expected)
 
 
 def test_remove_lytaf_events_3():
@@ -357,6 +357,7 @@ def test_prep_columns():
     """Test whether _prep_columns correctly prepares data."""
     # Generate simple input data
     time_input = TIME[0:2]
+    time_input.precision = 9
     channels_input = [CHANNELS[0][0:2], CHANNELS[1][0:2]]
     filecolumns_input = ["time", "channel0", "channel1"]
 
@@ -364,8 +365,7 @@ def test_prep_columns():
     string_time_test, filecolumns_test = lyra._prep_columns(
         time_input, channels_input, filecolumns_input)
     # Generate expected output and verify _prep_columns() works
-    string_time_expected = np.array([t.strftime("%Y-%m-%dT%H:%M:%S.%f")
-                                     for t in time_input])
+    string_time_expected = np.array(time_input.isot)
     filecolumns_expected = ["time", "channel0", "channel1"]
     np.testing.assert_array_equal(string_time_test, string_time_expected)
     assert filecolumns_test == filecolumns_expected

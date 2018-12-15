@@ -11,10 +11,9 @@ This module translates the results of a HEK query into a VSO query
 and returns the results from the VSO query to the user.
 """
 
-from __future__ import absolute_import
-
 import sys
 from astropy import units
+from astropy.table import Table
 
 from sunpy.net import hek
 from sunpy.net import vso
@@ -36,7 +35,7 @@ def translate_results_to_query(results):
 
     Parameters
     ----------
-    results : `sunpy.net.hek.hek.Response` or list of `sunpy.net.hek.hek.Response`
+    results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKTable`
         The HEK results from a HEK query to be translated.
 
     Examples
@@ -51,13 +50,13 @@ def translate_results_to_query(results):
     19
 
     >>> hek2vso.translate_results_to_query(q[0])  # doctest: +REMOTE_DATA
-    [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source('SDO')>, <Instrument('HEK')>, <Wavelength(0.0, 0.0, 'Angstrom')>]]
+    [[<Time(<Time object: scale='utc' format='isot' value=2011-08-08T01:30:04.000>, <Time object: scale='utc' format='isot' value=2011-08-10T00:00:04.000>, None)>, <Source('SDO')>, <Instrument('HEK')>, <Wavelength(0.0, 0.0, 'Angstrom')>]]
 
     >>> hek2vso.translate_results_to_query(q)   # doctest: +SKIP
-    [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>], ..., [<Time(datetime.datetime(2011, 8, 9, 8, 1, 21), datetime.datetime(2011, 8, 9, 8, 16, 45), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
+    [[<Time(<Time object: scale='utc' format='isot' value=2011-08-08T01:30:04.000>, <Time object: scale='utc' format='isot' value=2011-08-10T00:00:04.000>, None)>, <Source('SDO')>, <Instrument('HEK')>, <Wavelength(0.0, 0.0, 'Angstrom')>], ..., [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T08:01:21.000>, <Time object: scale='utc' format='isot' value=2011-08-09T08:16:45.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
     """
     queries = []
-    if type(results) is list:
+    if isinstance(results, Table):
         for result in results:
             query = vso_attribute_parse(result)
             queries.append(query)
@@ -76,7 +75,7 @@ def vso_attribute_parse(phrase):
 
     Parameters
     ----------
-    phrase : `dict` containing a `sunpy.net.hek.hek.Response`.
+    phrase : `sunpy.net.hek.hek.HEKRow`.
         The single HEK result to be parsed for VSO attribute data.
 
     Examples
@@ -90,7 +89,7 @@ def vso_attribute_parse(phrase):
     19
 
     >>> hek2vso.vso_attribute_parse(q[9])  # doctest: +REMOTE_DATA
-    [<Time(datetime.datetime(2011, 8, 9, 7, 22, 38), datetime.datetime(2011, 8, 9, 8, 32, 2), None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
+    [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T07:22:38.000>, <Time object: scale='utc' format='isot' value=2011-08-09T08:32:02.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
         query = [vso.attrs.Time(phrase['event_starttime'],
@@ -168,7 +167,7 @@ class H2VClient(object):
 
         Parameters
         ----------
-        hek_results : `sunpy.net.hek.hek.Response` or list of such Responses
+        hek_results : `sunpy.net.hek.hek.HEKRow` or `sunpy.net.hek.hek.HEKTable`
             The results from a HEK query in the form of a list.
         limit : int
             An approximate limit to the desired number of VSO results.

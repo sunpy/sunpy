@@ -2,13 +2,10 @@
 Nothing here but dictionaries for generating LinearSegmentedColormaps,
 and a dictionary of these dictionaries.
 """
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 import matplotlib.colors as colors
-from sunpy.extern.six.moves import range, zip
 
-__all__ = ['aia_color_table', 'lasco_color_table', 'eit_color_table',
+__all__ = ['aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
            'sxt_color_table', 'xrt_color_table', 'trace_color_table',
            'sot_color_table', 'hmi_mag_color_table']
 
@@ -67,6 +64,7 @@ aia_wave_dict = {1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0 / 2.0
                  193: (c1, c0, c2), 211: (c1, c0, c3), 304: (r0, g0, b0),
                  335: (c2, c0, c1)
                  }
+
 
 def aia_color_table(wavelength):
     """Returns one of the fundamental color tables for SDO AIA images.
@@ -277,6 +275,7 @@ def eit_color_table(wavelength):
 
     return colors.LinearSegmentedColormap('SOHO EIT {:s}'.format(str(wavelength)), cdict)
 
+
 lasco_c2_r = np.concatenate((np.array(
       [   0.,    1.,    2.,    5.,    8.,   11.,   14.,   17.,   20.,
          23.,   26.,   28.,   31.,   34.,   37.,   42.,   44.,   47.,
@@ -329,8 +328,12 @@ lasco_c3_b = np.concatenate((np.array(
         244.,  248.,  250.]), 255 * np.ones(181)))
 
 
-def lasco_color_table(number):
-    """Returns one of the fundamental color tables for SOHO LASCO images."""
+def sswidl_lasco_color_table(number):
+    """Returns one of the SSWIDL-defined color tables for SOHO LASCO images.
+    This function is included to allow users to access the SSWIDL-defined
+    LASCO color tables provided by SunPy. It is recommended to use the function
+    'lasco_color_table' to obtain color tables for use with LASCO data
+    and Helioviewer JP2 images."""
     # SOHO LASCO Color tables
     # LASCO C2 white light IDL Name
     # LASCO C3 white light IDL Name
@@ -341,8 +344,7 @@ def lasco_color_table(number):
         }[number]
     except KeyError:
         raise ValueError(
-            "Invalid LASCO number. Valid values are "
-            "2, 3."
+            "Invalid LASCO number. Valid values are 2, 3."
         )
 
     # Now create the color dictionary in the correct format
@@ -1005,6 +1007,7 @@ trace_1700_b = np.array(
        117, 117, 117, 118, 118, 118, 119, 119, 119, 119, 120, 120, 120,
        121, 121, 121, 121, 122, 122, 122, 123, 123])
 
+
 def trace_color_table(measurement):
     """Returns one of the standard color tables for TRACE JP2 files."""
     # TRACE color tables
@@ -1031,6 +1034,7 @@ def trace_color_table(measurement):
     # Return the color table
     return colors.LinearSegmentedColormap('TRACE {:s}'.format(measurement), cdict)
 
+
 def sot_color_table(measurement):
     """Returns one of the standard color tables for SOT files (following osdc convention).
     The relations between observation and color have been defined in hinode.py"""
@@ -1046,6 +1050,7 @@ def sot_color_table(measurement):
 
     cdict = create_cdict(r, g, b)
     return colors.LinearSegmentedColormap('Hinode SOT {:s}'.format(measurement), cdict)
+
 
 def iris_sji_color_table(measurement, aialike=False):
     """Return the standard color table for IRIS SJI files"""
@@ -1171,6 +1176,7 @@ hmi_mag_b = np.array(
        237, 232, 228, 226, 221, 219, 214, 211, 207, 204, 200, 195, 193,
        188, 186, 182, 179, 175, 172, 168, 165, 161, 158, 154, 149, 147,
        142, 140, 135, 133, 121, 109,  96,  84,  73])
+
 
 def hmi_mag_color_table():
     """
@@ -1351,6 +1357,7 @@ def stereo_hi_color_table(camera):
         return colors.LinearSegmentedColormap('STEREO HI2', cdict)
     else:
         raise ValueError("Valid HI cameras are 1 and 2")
+
 
 def create_cdict(r, g, b):
     """Create the color tuples in the correct format."""

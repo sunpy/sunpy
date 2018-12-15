@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import, division, print_function
-
 import os
 import glob
 
-from sunpy import config
 from sunpy.util.net import download_file
 from sunpy.util.config import get_and_create_download_dir
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
-from sunpy.extern import six
-from sunpy.extern.six.moves import map
 
 __all__ = ['Parent']
 
@@ -82,7 +77,7 @@ class Parent(object):
 Parent._create.add(
     run_cls('from_file'),
     lambda cls, filename: os.path.isfile(os.path.expanduser(filename)),
-    [type, six.string_types], check=False
+    [type, str], check=False
 )
 Parent._create.add(
     # pylint: disable=W0108
@@ -90,7 +85,7 @@ Parent._create.add(
     # argspec of the function.
     run_cls('from_dir'),
     lambda cls, directory: os.path.isdir(os.path.expanduser(directory)),
-    [type, six.string_types], check=False
+    [type, str], check=False
 )
 # If it is not a kwarg and only one matches, do not return a list.
 Parent._create.add(
@@ -98,7 +93,7 @@ Parent._create.add(
     lambda cls, singlepattern: ('*' in singlepattern and
                                 len(glob.glob(
                                 os.path.expanduser(singlepattern))) == 1),
-    [type, six.string_types], check=False
+    [type, str], check=False
 )
 # This case only gets executed under the condition that the previous one wasn't.
 # This is either because more than one file matched, or because the user
@@ -108,7 +103,7 @@ Parent._create.add(
     lambda cls, pattern: '*' in pattern and glob.glob(
         os.path.expanduser(pattern)
         ),
-    [type, six.string_types], check=False
+    [type, str], check=False
 )
 Parent._create.add(
     run_cls('from_files'),
@@ -118,5 +113,5 @@ Parent._create.add(
 Parent._create.add(
     run_cls('from_url'),
     lambda cls, url: True,
-    types=[type, six.string_types], check=False
+    types=[type, str], check=False
 )

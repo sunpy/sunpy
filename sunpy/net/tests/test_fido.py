@@ -1,6 +1,7 @@
 import os
 import copy
 import tempfile
+import pathlib
 
 import pytest
 import hypothesis.strategies as st
@@ -12,15 +13,16 @@ from drms import DrmsQueryError
 from sunpy.net import attr
 from sunpy.net.vso import attrs as va
 from sunpy.net import Fido, attrs as a
+from sunpy.net.base_client import BaseClient
 from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
-from sunpy.net.dataretriever.client import CLIENTS, QueryResponse
+from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
 from sunpy.time import TimeRange, parse_time
 from sunpy import config
 
 from sunpy.net.tests.strategies import (online_instruments, offline_instruments,
-                                        time_attr, range_time, goes_time)
+                                        time_attr, goes_time)
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -147,7 +149,7 @@ def test_no_time_error():
 @pytest.mark.remote_data
 def test_no_match():
     with pytest.raises(DrmsQueryError):
-        Fido.search(a.jsoc.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
+        Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
                     a.vso.Sample(10*u.s))
 
 
@@ -176,7 +178,7 @@ def test_multiple_match():
     with pytest.raises(MultipleMatchError):
         Fido.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('lyra'))
 
-    Fido.registry = CLIENTS
+    Fido.registry = BaseClient._registry
 
 
 @pytest.mark.remote_data

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """Proba-2 TimeSeries subclass definitions."""
-from __future__ import absolute_import, division, print_function
-
-import datetime
 import sys
 from collections import OrderedDict
+
 from matplotlib import pyplot as plt
 import pandas
+
+from astropy import units as u
+from astropy.time import Time, TimeDelta
 
 import sunpy.io
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
@@ -14,7 +15,6 @@ from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
 from sunpy import config
 
-from astropy import units as u
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -137,11 +137,10 @@ class LYRATimeSeries(GenericTimeSeries):
         # First column are times.  For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
         if hdulist[1].header['TUNIT1'] == 's':
-            times = [start + datetime.timedelta(seconds=n)
-                     for n in fits_record.field(0)]
+            times = start + TimeDelta(fits_record.field(0)*u.second)
         elif hdulist[1].header['TUNIT1'] == 'MIN':
-            times = [start + datetime.timedelta(minutes=int(n))
-                     for n in fits_record.field(0)]
+            td = [int(n) for n in fits_record.field(0)]
+            times = start + TimeDelta(td*u.minute)
         else:
             raise ValueError("Time unit in LYRA fits file not recognised.  "
                              "Value = {0}".format(hdulist[1].header['TUNIT1']))
@@ -157,7 +156,8 @@ class LYRATimeSeries(GenericTimeSeries):
                 table[col.name] = fits_record.field(i + 1)
 
         # Return the header and the data
-        data = pandas.DataFrame(table, index=times)
+        times.precision = 9
+        data = pandas.DataFrame(table, index=times.isot.astype('datetime64'))
         data.sort_index(inplace=True)
 
         # Add the units data

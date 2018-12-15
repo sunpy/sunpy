@@ -84,14 +84,11 @@ your map simply type::
 This will show a representation of the data as well as some of its associated
 attributes. A number of other attributes are also available, for example the
 `~sunpy.map.GenericMap.date`, `~sunpy.map.GenericMap.exposure_time`,
-`~sunpy.map.GenericMap.center`, `~sunpy.map.GenericMap.xrange`,
-`~sunpy.map.GenericMap.yrange` and others (see `~sunpy.map.GenericMap`)::
+`~sunpy.map.GenericMap.center` and others (see `~sunpy.map.GenericMap`)::
 
     >>> map_date = my_map.date
     >>> map_exptime = my_map.exposure_time
     >>> map_center = my_map.center
-    >>> map_xrange = my_map.xrange
-    >>> map_yrange = my_map.yrange
 
 To get a list of all of the attributes check the documentation by typing::
 
@@ -249,12 +246,12 @@ long as it recognizes the instrument. To see what colormaps are available::
     dict_keys(['sdoaia94', 'sdoaia131', 'sdoaia171', 'sdoaia193', 'sdoaia211',
     'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700', 'sdoaia4500',
     'sohoeit171', 'sohoeit195', 'sohoeit284', 'sohoeit304', 'soholasco2',
-    'soholasco3', 'stereocor1', 'stereocor2', 'stereohi1', 'stereohi2',
-    'rhessi', 'yohkohsxtal', 'yohkohsxtwh', 'hinodexrt', 'hinodesotintensity',
-    'trace171', 'trace195', 'trace284', 'trace1216', 'trace1550', 'trace1600',
-    'trace1700', 'traceWL', 'hmimag', 'irissji1330', 'irissji1400',
-    'irissji1600', 'irissji2796', 'irissji2832', 'irissji5000', 'irissjiFUV',
-    'irissjiNUV', 'irissjiSJI_NUV'])
+    'soholasco3', 'sswidlsoholasco2', 'sswidlsoholasco3', 'stereocor1',
+    'stereocor2', 'stereohi1', 'stereohi2', 'rhessi', 'yohkohsxtal',
+    'yohkohsxtwh', 'hinodexrt', 'hinodesotintensity', 'trace171', 'trace195',
+    'trace284', 'trace1216', 'trace1550', 'trace1600', 'trace1700', 'traceWL',
+    'hmimag', 'irissji1330', 'irissji1400', 'irissji1600', 'irissji2796',
+    'irissji2832', 'irissji5000', 'irissjiFUV', 'irissjiNUV', 'irissjiSJI_NUV'])
 
 The SunPy colormaps are registered with matplotlib so you can grab them like
 you would any other colormap::
@@ -544,32 +541,32 @@ a list of the methods available for a map type::
 
 and check out the methods section!
 
-Mapcubes
---------
-A `~sunpy.map.MapCube` is an ordered list of maps.  By default, the maps are ordered by
-their observation date, from earlier maps to later maps. A `~sunpy.map.MapCube` can be
+MapSequences
+------------
+A `~sunpy.map.MapSequence` is an ordered list of maps.  By default, the maps are ordered by
+their observation date, from earlier maps to later maps. A `~sunpy.map.MapSequence` can be
 created by supplying multiple existing maps::
 
     >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
-    >>> mc = sunpy.map.Map([map1, map2], cube=True)  # doctest: +REMOTE_DATA
+    >>> mc = sunpy.map.Map([map1, map2], sequence=True)  # doctest: +REMOTE_DATA
 
 or by providing a directory full of image files::
 
-    >>> mc = sunpy.map.Map('path/to/my/files/*.fits', cube=True)   #  doctest: +SKIP
+    >>> mc = sunpy.map.Map('path/to/my/files/*.fits', sequence=True)   #  doctest: +SKIP
 
-The earliest map in the mapcube can be accessed by simply indexing the maps
+The earliest map in the MapSequence can be accessed by simply indexing the maps
 list::
 
     >>> mc.maps[0]   # doctest: +SKIP
 
-Mapcubes can hold maps that have different shapes.  To test if all the
-maps in a `~sunpy.map.MapCube` have the same shape::
+MapSequences can hold maps that have different shapes.  To test if all the
+maps in a `~sunpy.map.MapSequence` have the same shape::
 
     >>> mc.all_maps_same_shape()  # doctest: +REMOTE_DATA
     True
 
-It is often useful to return the image data in a `~sunpy.map.MapCube` as a single
+It is often useful to return the image data in a `~sunpy.map.MapSequence` as a single
 three dimensional Numpy `~numpy.ndarray`::
 
     >>> mc.as_array()   # doctest: +SKIP
@@ -577,10 +574,10 @@ three dimensional Numpy `~numpy.ndarray`::
 Note that an array is returned only if all the maps have the same
 shape.  If this is not true, an error (ValueError) is returned.  If all the
 maps have nx pixels in the x-direction, and ny pixels in the y-direction,
-and there are n maps in the mapcube, the `~numpy.ndarray` array that is
-returned has shape (ny, nx, n).  The data of the first map in the `~sunpy.map.MapCube`
+and there are n maps in the MapSequence, the `~numpy.ndarray` array that is
+returned has shape (ny, nx, n).  The data of the first map in the `~sunpy.map.MapSequence`
 appears in the `~numpy.ndarray` in position ``[:, :, 0]``, the data of second map in
-position ``[:, :, 1]``, and so on.  The order of maps in the `~sunpy.map.MapCube` is
+position ``[:, :, 1]``, and so on.  The order of maps in the `~sunpy.map.MapSequence` is
 reproduced in the returned `~numpy.ndarray`.
 
 The meta data from each map can be obtained using::
@@ -588,10 +585,10 @@ The meta data from each map can be obtained using::
     >>> mc.all_meta()   # doctest: +SKIP
 
 This returns a list of map meta objects that have the same order as
-the maps in the `~sunpy.map.MapCube`.
+the maps in the `~sunpy.map.MapSequence`.
 
-Coalignment of Mapcubes
------------------------
+Coalignment of MapSequences
+---------------------------
 A typical data preparation step when dealing with time series of images is to
 coalign images taken at different times so that features in different images
 remain in the same place.  A common approach to this problem is
@@ -601,38 +598,38 @@ where the template is in your image.  The images are then shifted to the
 location of the best match.  This aligns your images to the position of the
 features in your representative template.
 
-SunPy provides a function to coalign the maps inside the `~sunpy.map.MapCube`.
+SunPy provides a function to coalign the maps inside the `~sunpy.map.MapSequence`.
 The implementation of this functionality requires the installation of the
 scikit-image library, a commonly used image processing library.
-To coalign a `~sunpy.map.MapCube`, simply import
-the function and apply it to your `~sunpy.map.MapCube`::
+To coalign a `~sunpy.map.MapSequence`, simply import
+the function and apply it to your `~sunpy.map.MapSequence`::
 
-    >>> from sunpy.image.coalignment import mapcube_coalign_by_match_template
-    >>> coaligned = mapcube_coalign_by_match_template(mc)  # doctest: +REMOTE_DATA
+    >>> from sunpy.image.coalignment import mapsequence_coalign_by_match_template
+    >>> coaligned = mapsequence_coalign_by_match_template(mc)  # doctest: +REMOTE_DATA
 
-This will return a new `~sunpy.map.MapCube`, coaligned to a template extracted from the
-center of the first map in the `~sunpy.map.MapCube`, with the map dimensions clipped as
+This will return a new `~sunpy.map.MapSequence`, coaligned to a template extracted from the
+center of the first map in the `~sunpy.map.MapSequence`, with the map dimensions clipped as
 required.  The coalignment algorithm provides many more options for handling
-the coalignment of `~sunpy.map.MapCube` type::
+the coalignment of `~sunpy.map.MapSequence` type::
 
-    >>> help(mapcube_coalign_by_match_template)   # doctest: +SKIP
+    >>> help(mapsequence_coalign_by_match_template)   # doctest: +SKIP
 
 for a full list of options and functionality.
 
 If you just want to calculate the shifts required to compensate for solar
-rotation relative to the first map in the `~sunpy.map.MapCube` without applying them, use::
+rotation relative to the first map in the `~sunpy.map.MapSequence` without applying them, use::
 
     >>> from sunpy.image.coalignment import calculate_match_template_shift
     >>> shifts = calculate_match_template_shift(mc)  # doctest: +REMOTE_DATA
 
-This is the function used to calculate the shifts in `~sunpy.map.MapCube` coalignment
+This is the function used to calculate the shifts in `~sunpy.map.MapSequence` coalignment
 function above.  Please see `~sunpy.image.coalignment.calculate_match_template_shift` to learn more about its features.
 Shifts calculated using calculate_match_template_shift can be passed directly
 to the coalignment function.
 
 
-Compensating for solar rotation in Mapcubes
--------------------------------------------
+Compensating for solar rotation in MapSequences
+-----------------------------------------------
 Often a set of solar image data consists of fixing the pointing of a
 field of view for some time and observing.  Features on the Sun will
 rotate according to the Sun's rotation.
@@ -644,29 +641,29 @@ the rotation of the Sun.  The Sun rotates differentially, depending on
 latitude, with features at the equator moving faster than features at
 the poles.
 
-SunPy provides a function to shift images in `~sunpy.map.MapCube` following solar
+SunPy provides a function to shift images in `~sunpy.map.MapSequence` following solar
 rotation.  This function shifts an image according to the solar
 differential rotation calculated at the latitude of the center of the
 field of view.  The image is not *differentially* rotated.  This
 function is useful for de-rotating images when the effects of
-differential rotation in the `~sunpy.map.MapCube` can be ignored (for example, if
+differential rotation in the `~sunpy.map.MapSequence` can be ignored (for example, if
 the spatial extent of the image is small, or when the duration of the
-`~sunpy.map.MapCube` is small; deciding on what 'small' means depends on your
+`~sunpy.map.MapSequence` is small; deciding on what 'small' means depends on your
 application).
 
-To apply this form of solar derotation to a `~sunpy.map.MapCube`, simply import the
-function and apply it to your `~sunpy.map.MapCube`::
+To apply this form of solar derotation to a `~sunpy.map.MapSequence`, simply import the
+function and apply it to your `~sunpy.map.MapSequence`::
 
-    >>> from sunpy.physics.transforms.solar_rotation import mapcube_solar_derotate
-    >>> derotated = mapcube_solar_derotate(mc)  # doctest: +REMOTE_DATA
+    >>> from sunpy.physics.transforms.solar_rotation import mapsequence_solar_derotate
+    >>> derotated = mapsequence_solar_derotate(mc)  # doctest: +REMOTE_DATA
 
-For more info see `~sunpy.physics.transforms.solar_rotation.mapcube_solar_derotate`.
+For more info see `~sunpy.physics.transforms.solar_rotation.mapsequence`.
 
 If you just want to calculate the shifts required to compensate for solar
-rotation relative to the first map in the `~sunpy.map.MapCube` without applying them, use::
+rotation relative to the first map in the `~sunpy.map.MapSequence` without applying them, use::
 
     >>> from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift
     >>> shifts = calculate_solar_rotate_shift(mc)  # doctest: +REMOTE_DATA
 
-Please consult the docstring of the `~sunpy.image.coalignment.mapcube_coalign_by_match_template` function in order to learn about
+Please consult the docstring of the `~sunpy.image.coalignment.mapsequence_coalign_by_match_template` function in order to learn about
 the features of this function.

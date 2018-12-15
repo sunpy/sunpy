@@ -5,8 +5,6 @@ Sample Data Set Overview
 
 An overview of the coordinated sample data set for the SOL-2011-06-07 event.
 """
-from __future__ import print_function, division
-
 import matplotlib.pyplot as plt
 
 import sunpy.map

@@ -8,16 +8,13 @@ This example shows how to overplot HEK outlines on SunPy maps.
 
 ##############################################################################
 # Start by importing the necessary modules.
-
-from __future__ import print_function, division
-
-from datetime import timedelta
 import numpy as np
 
 import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.time import TimeDelta
 
 import sunpy.map
 import sunpy.data.sample
@@ -40,8 +37,8 @@ hek_client = hek.HEKClient()
 ##############################################################################
 # Look for coronal holes detected using the SPoCA feature recognition method:
 
-start_time = aia_map.date - timedelta(hours=2)
-end_time = aia_map.date + timedelta(hours=2)
+start_time = aia_map.date - TimeDelta(2*u.hour)
+end_time = aia_map.date + TimeDelta(2*u.hour)
 responses = hek_client.search(hek.attrs.Time(start_time, end_time),
                               hek.attrs.CH, hek.attrs.FRM.Name == 'SPoCA')
 

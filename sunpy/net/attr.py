@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-#
-# This module was developed with funding provided by
-# the ESA Summer of Code (2011).
-#
-# pylint: disable=C0103,R0903
-
 """
 Allow representation of queries as logic expressions. This module makes
 sure that attributes that are combined using the two logic operations AND (&)
@@ -23,17 +16,100 @@ sunpy.util.multimethod.
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
+import re
+import keyword
+import warnings
+from collections import defaultdict, namedtuple
 
-from __future__ import absolute_import
+from astropy.utils.misc import isiterable
 
 from sunpy.util.multimethod import MultiMethod
-from sunpy.extern.six import iteritems
 
-# XXX: Maybe allow other normal forms.
+_ATTR_TUPLE = namedtuple("attr", "name name_long desc")
+_REGEX = re.compile(r"^[\d]([^\d].*)?$")
+
+__all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'AttrAnd',
+           'AttrOr', 'ValueAttr', 'and_', 'or_']
 
 
-class Attr(object):
-    """ This is the base for all attributes. """
+def make_tuple():
+    return _ATTR_TUPLE([], [], [])
+
+
+def strtonum(value):
+    """
+    For numbers 0 to 9, return the number spelled out. Otherwise, return the
+    number. This follows Associated Press style.  This always returns a string
+    unless the value was not int-able, unlike the Django filter.
+    Taken from: https://github.com/jmoiron/humanize/blob/master/humanize/number.py#L81
+    """
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        return value
+    if not 0 <= value < 10:
+        return str(value)
+    return ('zero', 'one', 'two', 'three', 'four', 'five', 'six',
+            'seven', 'eight', 'nine')[value]
+
+
+class AttrMeta(type):
+    """
+    We want to enable discovery, by tab completion, of values for all subclasses of Attr.
+    So have to create a metaclass that overloads the methods that Python uses, so that they work on the classes.
+    This would allow that `attrs.Instrument` to be able to tab complete to `attrs.Instrument.aia`.
+    """
+
+    # The aim is to register Attrs as a namedtuple of lists
+    # So we define the namedtuple outside of AttrMeta, see above.
+    _attr_registry = defaultdict(make_tuple)
+
+    def __getattr__(self, item):
+        """
+        Our method for Attrs is to register using the attribute type (i.e. Instrument) as keys in a dictionary.
+        ``_attr_registry`` is a dictionary with the keys being subclasses of Attr
+        and the value being the namedtuple of lists.
+        As a result we index `_attr_registry` with `[self]` which will be the `type`
+        of the `Attr` class to access the dictionary.
+        This will return the namedtuple that has three attributes: `name`, `name_long` and `desc`.
+        Each of which are a list.
+        `name` will be the attribute name, `name_long` is the original name passed in and `desc` the description of the object.
+        """
+        # Get the revelant entries.
+        registry = self._attr_registry[self]
+        # All the attribute names under that type(Attr)
+        names = registry.name
+        if item in names:
+            # We return Attr(name_long) to create the Attr requested.
+            return self(registry.name_long[names.index(item)])
+        else:
+            raise AttributeError(f'This attribute, {item} is not defined, please register it.')
+
+    def __dir__(self):
+        """
+        To tab complete in Python we need to add to the `__dir__()` return.
+        So we add all the registered values for this subclass of Attr to the output.
+        """
+        return super().__dir__() + self._attr_registry[self].name
+
+    def __str__(self):
+        """
+        This enables the "pretty" printing of Attrs.
+        """
+        name = ['Attribute Name'] + self._attr_registry[self].name
+        name_long = ['Full Name'] + self._attr_registry[self].name_long
+        desc = ['Description'] + self._attr_registry[self].desc
+        pad_name = max(len(elm) for elm in name)
+        pad_long = max(len(elm) for elm in name_long)
+        pad_desc = max(len(elm) for elm in desc)
+        fmt = "%-{}s | %-{}s | %-{}s".format(pad_name, pad_long, pad_desc)
+        lines = [fmt % elm for elm in zip(name, name_long, desc)]
+        lines.insert(1, '-' * (pad_name + 1) + '+' + '-' * (pad_long + 2) + '+' + '-' * (pad_desc + 1))
+        return "\n".join(lines)
+
+
+class Attr(metaclass=AttrMeta):
+    """This is the base for all attributes."""
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
@@ -44,7 +120,7 @@ class Attr(object):
         return AttrAnd([self, other])
 
     def __hash__(self):
-        return hash(frozenset(iteritems(vars(self))))
+        return hash(frozenset(vars(self).items()))
 
     def __or__(self, other):
         # Optimization.
@@ -60,9 +136,78 @@ class Attr(object):
     def __eq__(self, other):
         return dict(vars(self)) == dict(vars(other))
 
+    @classmethod
+    def update_values(cls, adict):
+        """
+        Clients will use this method to register their values for subclasses of `~sunpy.net.attr.Attr`.
+
+        The input has be a dictionary, with each key being a subclass of Attr.
+        The value for each key should be a list of tuples with each tuple of the form (`Name`, `Description`).
+        If you do not want to add a description, you can put `None` or an empty string.
+        We sanitize the name you provide by removing all special characters and making it all lower case.
+        If it still invalid we will append to the start of the name to make it a valid attribute name.
+        This is an ugly workaround, so please try to pick a valid attribute name.
+
+        **It is recommended that clients register values for all attrs used by their `_can_handle_query` method.**
+
+        Parameters
+        ----------
+
+        adcit : `dict`
+            A dictionary that has keys of `~sunpy.net.attr.Attr`.
+            Each key should have a list of tuples as it value.
+            Each tuple should be a pair of strings.
+            First string is the attribute name you want to register
+            Second string is the description of the attribute.
+
+        Example
+        -------
+        >>> from sunpy.net import attr, attrs # doctest: +SKIP
+        >>> attr.Attr.update_values({attrs.Instrument: [('AIA', 'AIA is in Space.'),
+        ...                         ('HMI', 'HMI is next to AIA.')]}) # doctest: +SKIP
+        >>> attr.Attr._attr_registry[attrs.Instrument] # doctest: +SKIP
+        attr(name=['aia', 'hmi'], name_long=['AIA', 'HMI'],
+            desc=['AIA is in Space.', 'HMI is next to AIA.'])
+        >>> attr.Attr._attr_registry[attrs.Instrument].name # doctest: +SKIP
+        ['aia', 'hmi']
+        >>> attr.Attr._attr_registry[attrs.Instrument].name_long # doctest: +SKIP
+        ['AIA', 'HMI']
+        >>> attr.Attr._attr_registry[attrs.Instrument].desc # doctest: +SKIP
+        ['AIA is in Space.', 'HMI is next to AIA.']
+        >>> attrs.Instrument.aia, attrs.Instrument.hmi # doctest: +SKIP
+        (<Instrument('AIA')>, <Instrument('HMI')>)
+        """
+
+        for key, value in adict.items():
+            if isiterable(value) and not isinstance(value, str):
+                for pair in value:
+                    if len(pair) != 2:
+                        raise ValueError(f'Invalid length (!=2) for values: {value}.')
+                    else:
+                        # Sanitize name, we remove all special characters and make it all lower case
+                        name = ''.join(char for char in pair[0] if char.isalnum()).lower()
+                        if keyword.iskeyword(name):
+                            # Attribute name has been appended with `_`
+                            # to make it a valid identifier since its a python keyword.
+                            name = name + '_'
+                        if not name.isidentifier():
+                            # This should account for names with one number first.
+                            # We match for single digits at the start only.
+                            if _REGEX.match(name):
+                                # This turns that digit into its name
+                                number = strtonum(name[0])
+                                name = number + ("_" + name[1:] if len(name) > 1 else "")
+                        cls._attr_registry[key][0].append(name)
+                        cls._attr_registry[key][1].append(pair[0])
+                        cls._attr_registry[key][2].append(pair[1])
+            else:
+                raise ValueError((f"Invalid input value: {value} for key: {repr(key)}. "
+                                  "The value is not iterable or just a string."))
+
 
 class DummyAttr(Attr):
-    """ Empty attribute. Useful for building up queries. Returns other
+    """
+    Empty attribute. Useful for building up queries. Returns other
     attribute when ORed or ANDed. It can be considered an empty query
     that you can use as an initial value if you want to build up your
     query in a loop.
@@ -70,9 +215,11 @@ class DummyAttr(Attr):
     So, if we wanted an attr matching all the time intervals between the times
     stored as (from, to) tuples in a list, we could do.
 
-    attr = DummyAttr()
-    for from\_, to in times:
-        attr |= Time(from\_, to)
+    .. code-block:: python
+
+       attr = DummyAttr()
+       for from, to in times:
+           attr |= Time(from, to)
     """
     def __and__(self, other):
         return other
@@ -88,6 +235,30 @@ class DummyAttr(Attr):
 
     def __eq__(self, other):
         return isinstance(other, DummyAttr)
+
+
+class SimpleAttr(Attr):
+    """
+    An attribute that only has a single value.
+
+    This type of attribute is not a composite and has a single value such as
+    ``Instrument('EIT')``.
+
+    Parameters
+    ----------
+    value : `object`
+       The value for the attribute to hold.
+    """
+    def __init__(self, value):
+        Attr.__init__(self)
+        self.value = value
+
+    def collides(self, other):
+        return isinstance(other, self.__class__)
+
+    def __repr__(self):
+        return "<{cname!s}({val!r})>".format(
+            cname=self.__class__.__name__, val=self.value)
 
 
 class AttrAnd(Attr):
@@ -182,7 +353,7 @@ class ValueAttr(Attr):
         return "<ValueAttr({att!r})>".format(att=self.attrs)
 
     def __hash__(self):
-        return hash(frozenset(iteritems(self.attrs.iteritems)))
+        return hash(frozenset(self.attrs.items()))
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

@@ -1,0 +1,1 @@
+Fix SunPy Coordinate tests with Astropy 3.1

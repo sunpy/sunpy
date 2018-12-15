@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function
 __authors__ = ["Alex Hamilton, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
 
@@ -38,13 +37,13 @@ class TimeSeriesMetaData(object):
     |-------------------------------------------------------------------------------------------------|
     |TimeRange                  | Columns         | Meta                                              |
     |-------------------------------------------------------------------------------------------------|
-    |2012-06-01 00:00:00        | GOES            | goes_key: goes_val                                |
+    |2012-06-01T00:00:00.000    | GOES            | goes_key: goes_val                                |
     |            to             |                 |                                                   |
-    |2012-06-02 00:00:00        |                 |                                                   |
+    |2012-06-02T00:00:00.000    |                 |                                                   |
     |-------------------------------------------------------------------------------------------------|
-    |2012-06-01 12:00:00        | EVE             | eve_key: eve_val                                  |
+    |2012-06-01T12:00:00.000    | EVE             | eve_key: eve_val                                  |
     |            to             |                 |                                                   |
-    |2012-06-02 12:00:00        |                 |                                                   |
+    |2012-06-02T12:00:00.000    |                 |                                                   |
     |-------------------------------------------------------------------------------------------------|
     <BLANKLINE>
     >>> md.find(parse_time('2012-06-01T21:08:12')).columns
@@ -57,9 +56,9 @@ class TimeSeriesMetaData(object):
     |-------------------------------------------------------------------------------------------------|
     |TimeRange                  | Columns         | Meta                                              |
     |-------------------------------------------------------------------------------------------------|
-    |2012-06-01 00:00:00        | GOES            | goes_key: goes_val                                |
+    |2012-06-01T00:00:00.000    | GOES            | goes_key: goes_val                                |
     |            to             |                 |                                                   |
-    |2012-06-02 00:00:00        |                 |                                                   |
+    |2012-06-02T00:00:00.000    |                 |                                                   |
     |-------------------------------------------------------------------------------------------------|
 
     """
@@ -132,7 +131,7 @@ class TimeSeriesMetaData(object):
         Add the given metadata MetaDict into the metadata list as a tuple with
         it's TimeRange and colnames (list).
         Will add the new entry so the list is in chronological order for the
-        TimeRange.start datetime values.
+        TimeRange.start `~astropy.time.Time` values.
 
         Parameters
         ----------
@@ -177,13 +176,13 @@ class TimeSeriesMetaData(object):
     def find_indices(self, time=None, colname=None, **kwargs):
         """
         Find the indices for all the metadata entries matching the given filters
-        for datetime and/or column name.
+        for `~astropy.time.Time` and/or column name.
         Will return all metadata entry indices if no filters are given.
 
         Parameters
         ----------
-        time : `str` or `~datetime.datetime` optional
-            The string (parsed using the `~sunpy.time.parse_time`) or datetime
+        time : `str` or `astropy.time.Time` optional
+            The string (parsed using the `~sunpy.time.parse_time`) or `~astropy.time.Time`
             that you need metadata for.
 
         colname : `str` optional
@@ -208,7 +207,7 @@ class TimeSeriesMetaData(object):
         # Find all results with suitable timerange.
         results_indices = []
         for i, meta in enumerate(self.metadata):
-            if dt in meta[0] or not(dt):
+            if (not dt) or dt in meta[0]:
                 results_indices.append(i)
 
         # Filter out only those with the correct column.
@@ -221,13 +220,13 @@ class TimeSeriesMetaData(object):
 
     def find(self, time=None, colname=None, **kwargs):
         """
-        Find all metadata matching the given filters for datetime and/or column name.
+        Find all metadata matching the given filters for `~astropy.time.Time` and/or column name.
         Will return all metadata entries if no filters are given.
 
         Parameters
         ----------
-        time : `str` or `~datetime.datetime` optional
-            The string (parsed using the `~sunpy.time.parse_time`) or datetime
+        time : `str` or `astropy.time.Time` optional
+            The string (parsed using the `~sunpy.time.parse_time`) or `~astropy.time.Time`
             that you need metadata for.
 
         colname : `str` optional
@@ -276,8 +275,8 @@ class TimeSeriesMetaData(object):
         keys : `str`
             The Key/s to be searched in the dictionary.
 
-        time : `str` or `~datetime.datetime` optional
-            The string (parsed using the `~sunpy.time.parse_time`) or datetime
+        time : `str` or `astropy.time.Time` optional
+            The string (parsed using the `~sunpy.time.parse_time`) or `~astropy.time.Time`
             that you need metadata for.
 
         colname : `str` optional
@@ -342,8 +341,8 @@ class TimeSeriesMetaData(object):
         dictionary : `dict` or `OrderedDict` or `~sunpy.util.metadata.MetaDict`
             The second TimeSeriesMetaData object.
 
-        time : `str` or `~datetime.datetime` optional
-            The string (parsed using the `~sunpy.time.parse_time`) or datetime
+        time : `str` or `~astropy.time.Time` optional
+            The string (parsed using the `~sunpy.time.parse_time`) or `~astropy.time.Time`
             to filter the metadata entries updated.
 
         colname : `str` optional

@@ -1,27 +1,24 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function, absolute_import
-
 import os
 import time
+import urllib
 import warnings
 from functools import partial
 from collections import Sequence
 
+import drms
 import numpy as np
 import pandas as pd
 import astropy.units as u
 import astropy.time
 import astropy.table
 from astropy.utils.misc import isiterable
-import drms
 
 from sunpy import config
+from sunpy.net.base_client import BaseClient
 from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
-from sunpy.extern.six.moves import urllib
-from sunpy.extern import six
-from sunpy.util import deprecated
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
@@ -83,7 +80,7 @@ class JSOCResponse(Sequence):
         return set()
 
 
-class JSOCClient(object):
+class JSOCClient(BaseClient):
     """
     This is a Client to the JSOC Data Export service.
 
@@ -123,7 +120,7 @@ class JSOCClient(object):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
+        >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
         ...                          a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
         The response object holds the records that your query will return:
@@ -159,7 +156,7 @@ class JSOCClient(object):
     it is used only if you need to make an export request. For example,::
 
         >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
+        >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
         ...                          a.jsoc.Series('hmi.m_45s'))  # doctest: +REMOTE_DATA
 
     The above is a successful query operation, and will return query responses as before.
@@ -181,7 +178,7 @@ class JSOCClient(object):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-        >>> response = client.search(a.jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
+        >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
         ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
         ...                          a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
@@ -259,7 +256,7 @@ class JSOCClient(object):
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-            >>> response = client.search(a.jsoc.Time('2017-09-06T12:00:00', '2017-09-06T12:02:00'),
+            >>> response = client.search(a.Time('2017-09-06T12:00:00', '2017-09-06T12:02:00'),
             ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
             ...                          a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
@@ -285,7 +282,7 @@ class JSOCClient(object):
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-            >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
+            >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
             ...                          a.jsoc.Series('hmi.v_45s'),
             ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
@@ -314,7 +311,7 @@ class JSOCClient(object):
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-            >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
+            >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
             ...                          a.jsoc.Series('aia.lev1_euv_12s'),
             ...                          a.jsoc.PrimeKey('WAVELNTH','171'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
@@ -340,13 +337,6 @@ class JSOCClient(object):
 
         return_results.query_args = blocks
         return return_results
-
-    @deprecated('0.8', alternative='JSOCClient.search')
-    def query(self, *query, **kwargs):
-        """
-        See `~sunpy.net.jsoc.jsoc.JSOCClient.search`
-        """
-        return self.search(*query, **kwargs)
 
     def search_metadata(self, *query, **kwargs):
         """
@@ -381,7 +371,7 @@ class JSOCClient(object):
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> metadata = client.search_metadata(
-            ...                         a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
+            ...                         a.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
             ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
             >>> print(metadata[['T_OBS', 'WAVELNTH']])  # doctest: +REMOTE_DATA
                                                                         T_OBS  WAVELNTH
@@ -447,52 +437,6 @@ class JSOCClient(object):
             return requests[0]
         return requests
 
-    @deprecated('0.9', alternative='drms.ExportRequest.status')
-    def check_request(self, requests):
-        """
-        Check the status of a request and print out a message about it.
-
-        Parameters
-        ----------
-        requests :  `~drms.ExportRequest` object or
-                   a list of  `~drms.ExportRequest` objects,
-                   returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`
-
-        Returns
-        -------
-        status : `int` or `list`
-            A status or list of status' that were returned by JSOC.
-
-        """
-        # Convert IDs to a list if not already
-        if not isiterable(requests) or isinstance(requests, drms.ExportRequest):
-            requests = [requests]
-
-        allstatus = []
-        for request in requests:
-            status = request.status
-
-            if status == request._status_code_ok:  # Data ready to download
-                print("Request {0} was exported at {1} and is ready to "
-                      "download.".format(request.id,
-                                         request._d['exptime']))
-            elif status in request._status_codes_pending:
-                print_message = "Request {0} was submitted {1} seconds ago, "\
-                                "it is not ready to download."
-                print(print_message.format(request.id,
-                                           request._d['wait']))
-            else:
-                print_message = "Request returned status: {0} with error: {1}"
-                json_status = request.status
-                json_error = request._d.get('error', '')
-                print(print_message.format(json_status, json_error))
-
-            allstatus.append(status)
-
-        if len(allstatus) == 1:
-            return allstatus[0]
-        return allstatus
-
     def fetch(self, jsoc_response, path=None, overwrite=False, progress=True,
               max_conn=5, downloader=None, sleep=10):
         """
@@ -548,15 +492,6 @@ class JSOCClient(object):
 
         return r
 
-    @deprecated('0.8', alternative='JSOCClient.fetch')
-    def get(self, jsoc_response, path=None, overwrite=False, progress=True,
-            max_conn=5, downloader=None, sleep=10):
-        """
-        See `~sunpy.net.jsoc.jsoc.JSOCClient.fetch`
-        """
-        return self.fetch(jsoc_response, path=path, overwrite=overwrite, progress=progress,
-                          max_conn=max_conn, downloader=downloader, sleep=sleep)
-
     def get_request(self, requests, path=None, overwrite=False, progress=True,
                     max_conn=5, downloader=None, results=None):
         """
@@ -597,25 +532,25 @@ class JSOCClient(object):
         c = drms.Client()
 
         # Convert Responses to a list if not already
-        if isinstance(requests, six.string_types) or not isiterable(requests):
+        if isinstance(requests, str) or not isiterable(requests):
             requests = [requests]
 
         # Ensure all the requests are drms ExportRequest objects
         for i, request in enumerate(requests):
-            if isinstance(request, six.string_types):
+            if isinstance(request, str):
                 r = c.export_from_id(request)
                 requests[i] = r
 
         # We only download if all are finished
         if not all([r.has_succeeded() for r in requests]):
-            raise NotExportedError("Can not download as not all the requests"
+            raise NotExportedError("Can not download as not all the requests "
                                    "have been exported for download yet.")
 
         # Ensure path has a {file} in it
         if path is None:
             default_dir = config.get("downloads", "download_dir")
             path = os.path.join(default_dir, '{file}')
-        elif isinstance(path, six.string_types) and '{file}' not in path:
+        elif isinstance(path, str) and '{file}' not in path:
             path = os.path.join(path, '{file}')
 
         paths = []
@@ -755,8 +690,8 @@ class JSOCClient(object):
             # either through PrimeKey() attribute or Time() attribute.
             if not any(x in PKEY_LIST_TIME for x in primekey):
                 timestr = '{start}-{end}{sample}'.format(
-                        start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                        end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                        start=start_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                        end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                         sample=sample)
             else:
                 error_message = "Time attribute has been passed both as a Time()"\
@@ -853,7 +788,7 @@ class JSOCClient(object):
             error_message = "Series must be specified for a JSOC Query"
             raise ValueError(error_message)
 
-        if not isinstance(keywords, list) and not isinstance(keywords, six.string_types):
+        if not isinstance(keywords, list) and not isinstance(keywords, str):
             error_message = "Keywords can only be passed as a list or "\
                             "comma-separated strings."
             raise TypeError(error_message)
@@ -885,12 +820,12 @@ class JSOCClient(object):
         segs_passed = iargs.get('segment', None)
         if segs_passed is not None:
 
-            if not isinstance(segs_passed, list) and not isinstance(segs_passed, six.string_types):
+            if not isinstance(segs_passed, list) and not isinstance(segs_passed, str):
                 error_message = "Segments can only be passed as a comma-separated"\
                                 " string or a list of strings."
                 raise TypeError(error_message)
 
-            elif isinstance(segs_passed, six.string_types):
+            elif isinstance(segs_passed, str):
                 segs_passed = segs_passed.replace(' ', '').split(',')
 
             if not set(segs_passed) <= set(segs):
@@ -902,9 +837,6 @@ class JSOCClient(object):
 
         # If Time has been passed as a PrimeKey, convert the Time object into TAI time scale,
         # and then, convert it to datetime object.
-
-        iargs['start_time'] = iargs['start_time'].tai.datetime
-        iargs['end_time'] = iargs['end_time'].tai.datetime
 
         ds = self._make_recordset(**iargs)
 

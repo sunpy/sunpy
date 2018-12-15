@@ -1,0 +1,28 @@
+import os
+
+from sunpy import config
+from sunpy.util.config import get_and_create_sample_dir, get_and_create_download_dir
+
+USER = os.path.expanduser('~')
+
+
+def test_get_and_create_download_dir():
+    # test default config
+    path = get_and_create_download_dir()
+    assert path == os.path.join(USER, 'sunpy', 'data')
+    # test updated config
+    new_path = os.path.join(USER, 'data_here_please')
+    config.set('downloads', 'download_dir', new_path)
+    path = get_and_create_download_dir()
+    assert path == os.path.join(USER, new_path)
+
+
+def test_get_and_create_sample_dir():
+    # test default config
+    path = get_and_create_sample_dir()
+    assert path == os.path.join(USER, 'sunpy', 'data', 'sample_data')
+    # test updated config
+    new_path = os.path.join(USER, 'data_here_please')
+    config.set('downloads', 'sample_dir', new_path)
+    path = get_and_create_sample_dir()
+    assert path == new_path

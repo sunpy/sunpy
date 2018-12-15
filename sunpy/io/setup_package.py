@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import os
 import sys
 import platform
@@ -29,7 +27,3 @@ def get_extensions():
 
         e = Extension('sunpy.io._pyana', **cfg)
         return [e]
-
-
-def requires_2to3():
-    return False

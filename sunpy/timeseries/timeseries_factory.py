@@ -1,38 +1,30 @@
-from __future__ import absolute_import, division, print_function
-
-import warnings
 import os
-import glob
-from collections import OrderedDict
 import copy
+import glob
+import warnings
+from collections import OrderedDict
+from urllib.request import urlopen
 
 import numpy as np
 import pandas as pd
-import astropy.io.fits
-from astropy.table import Table
+
 import astropy
-from astropy.time import Time
 import astropy.units as u
+import astropy.io.fits
+from astropy.time import Time
+from astropy.table import Table
 
 import sunpy
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.util.metadata import MetaDict
-
-from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
-from sunpy.io.fits import HDPair
-from sunpy.io.header import FileHeader
-
-from sunpy.util.net import download_file
 from sunpy.util import expand_list
+from sunpy.io.fits import HDPair
+from sunpy.util.net import download_file
+from sunpy.io.header import FileHeader
 from sunpy.util.config import get_and_create_download_dir
-
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory
-from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.datatype_factory_base import MultipleMatchError
-from sunpy.util.datatype_factory_base import ValidationFunctionError
-from sunpy.extern import six
-
-from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.io.file_tools import UnrecognizedFileTypeError, read_file
+from sunpy.util.metadata import MetaDict
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.util.datatype_factory_base import (NoMatchError, MultipleMatchError,
+                                              ValidationFunctionError, BasicRegistrationFactory)
 
 __authors__ = ["Alex Hamilton, Russell Hewett, Stuart Mumford"]
 
@@ -128,7 +120,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         parsed :  bool
             True if file has been reading
 
-        pairs : list or string
+        pairs : list or str
             List of (data, header) pairs if ``parsed`` is ``True`` or ``fname``
             if ``False``
         """
@@ -163,7 +155,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         else:
             return False
 
-    def _validate_units(self, units, **kwargs):
+    def _validate_units(self, units):
         """
         Validates the astropy unit-information associated with a TimeSeries.
         Should be a dictionary of some form (but not MetaDict) with only
@@ -185,7 +177,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Passed all the tests
         return result
 
-    def _from_table(self, t, **kwargs):
+    def _from_table(self, t):
         """
         Extract the data, metadata and units from an astropy table for use in
         constructing a TimeSeries.
@@ -312,7 +304,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 data_header_unit_tuples.append((data, meta, units))
 
             # Filepath
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   os.path.isfile(os.path.expanduser(arg))):
 
                 path = os.path.expanduser(arg)
@@ -325,7 +317,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     filepaths.append(result)
 
             # Directory
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   os.path.isdir(os.path.expanduser(arg))):
 
                 path = os.path.expanduser(arg)
@@ -340,7 +332,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                         filepaths.append(result)
 
             # Glob
-            elif (isinstance(arg, six.string_types) and '*' in arg):
+            elif (isinstance(arg, str) and '*' in arg):
 
                 files = glob.glob(os.path.expanduser(arg))
 
@@ -359,7 +351,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 already_timeseries.append(arg)
 
             # A URL
-            elif (isinstance(arg, six.string_types) and
+            elif (isinstance(arg, str) and
                   _is_url(arg)):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
@@ -413,7 +405,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
-            except:
+            except Exception:
                 raise
 
             new_timeseries.append(new_ts)
@@ -467,7 +459,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
-            except:
+            except Exception:
                 raise
 
             new_timeseries.append(new_ts)
@@ -542,7 +534,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 def _is_url(arg):
     try:
         urlopen(arg)
-    except:
+    except Exception:
         return False
     return True
 
@@ -565,5 +557,6 @@ class NoTimeSeriesFound(ValueError):
     pass
 
 
-TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry, default_widget_type=GenericTimeSeries,
+TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry,
+                               default_widget_type=GenericTimeSeries,
                                additional_validation_functions=['is_datasource_for'])
