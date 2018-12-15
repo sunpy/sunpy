@@ -394,8 +394,8 @@ class Sample(SimpleAttr):
     value : `astropy.units.Quantity`
         A sampling rate convertible to seconds.
     """
-    @u.quantity_input(value=u.s)
-    def __init__(self, value):
+    @u.quantity_input
+    def __init__(self, value: u.s):
         super(Sample, self).__init__(value)
         self.value = value.to(u.s).value
 

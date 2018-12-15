@@ -496,8 +496,8 @@ class GenericMap(NDData):
         `~sunpy.map.GenericMap.shift`."""
         return self._shift
 
-    @u.quantity_input(axis1=u.deg, axis2=u.deg)
-    def shift(self, axis1, axis2):
+    @u.quantity_input
+    def shift(self, axis1: u.deg, axis2: u.deg):
         """
         Returns a map shifted by a specified amount to, for example, correct
         for a bad map location. These values are applied directly to the
@@ -814,8 +814,8 @@ class GenericMap(NDData):
 
         return PixelPair(x * u.pixel, y * u.pixel)
 
-    @u.quantity_input(x=u.pixel, y=u.pixel)
-    def pixel_to_world(self, x, y, origin=0):
+    @u.quantity_input
+    def pixel_to_world(self, x: u.pixel, y: u.pixel, origin=0):
         """
         Convert a pixel coordinate to a data (world) coordinate by using
         `~astropy.wcs.WCS.wcs_pix2world`.
@@ -877,8 +877,8 @@ class GenericMap(NDData):
 
 # #### Image processing routines #### #
 
-    @u.quantity_input(dimensions=u.pixel)
-    def resample(self, dimensions, method='linear'):
+    @u.quantity_input
+    def resample(self, dimensions: u.pixel, method='linear'):
         """Returns a new Map that has been resampled up or down
 
         Arbitrary resampling of the Map to new dimension sizes.
@@ -1302,8 +1302,8 @@ class GenericMap(NDData):
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
-    @u.quantity_input(dimensions=u.pixel, offset=u.pixel)
-    def superpixel(self, dimensions, offset=(0, 0)*u.pixel, func=np.sum):
+    @u.quantity_input
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel=(0, 0)*u.pixel, func=np.sum):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
@@ -1392,8 +1392,8 @@ class GenericMap(NDData):
 
 # #### Visualization #### #
 
-    @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, axes=None, grid_spacing=15*u.deg, **kwargs):
+    @u.quantity_input
+    def draw_grid(self, axes=None, grid_spacing: u.deg=15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1469,8 +1469,8 @@ class GenericMap(NDData):
 
         return [circ]
 
-    @u.quantity_input(width=u.deg, height=u.deg)
-    def draw_rectangle(self, bottom_left, width, height, axes=None, **kwargs):
+    @u.quantity_input
+    def draw_rectangle(self, bottom_left, width: u.deg, height: u.deg, axes=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
 
@@ -1531,8 +1531,8 @@ class GenericMap(NDData):
 
         return [rect]
 
-    @u.quantity_input(levels=u.percent)
-    def draw_contours(self, levels, axes=None, **contour_args):
+    @u.quantity_input
+    def draw_contours(self, levels: u.percent, axes=None, **contour_args):
         """
         Draw contours of the data.
 
