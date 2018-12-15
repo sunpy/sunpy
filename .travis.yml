@@ -54,6 +54,11 @@ matrix:
       env: TOX_ENV='py37-numpydev'
       stage: "Cron jobs"
 
+  allow_faliures:
+    - env:
+       - TOX_ENV='py37-online'
+       - TOX_ARG='-- -n=8'
+
 before_install:
   - git clone --depth 1 git://github.com/astropy/ci-helpers.git
   # We do not want to create the test env
