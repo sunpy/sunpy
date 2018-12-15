@@ -64,6 +64,7 @@ traceWL = ct.trace_color_table('WL')
 hmimag = ct.hmi_mag_color_table()
 
 kcor = deepcopy(mplcm.get_cmap("gist_gray"))
+kcor.name = 'MLSO KCor'
 
 cmlist = {
           'sdoaia94': sdoaia94,
