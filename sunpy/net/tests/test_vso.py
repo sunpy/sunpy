@@ -116,7 +116,7 @@ def test_complexattr_apply():
 @pytest.mark.remote_data
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
-    assert va.walker.create(a, client.api)[0].time.start == 'test'
+    assert va.walker.create(a, client.api)[0].time['start'] == 'test'
 
 
 def test_complexattr_and_duplicate():
@@ -249,7 +249,7 @@ def test_repr():
 
 
 @pytest.mark.remote_data
-def test_path(client):
+def test_path(client, tmpdir):
     """
     Test that '{file}' is automatically appended to the end of a custom path if
     it is not specified.
@@ -257,7 +257,7 @@ def test_path(client):
     qr = client.search(
         va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
         va.Instrument('aia'), va.Wavelength(171 * u.AA))
-    tmp_dir = tempfile.mkdtemp()
+    tmp_dir = tmpdir / "{file}"
     files = client.fetch(qr, path=tmp_dir).wait(progress=False)
 
     assert len(files) == 1
@@ -407,6 +407,6 @@ def test_vso_hmi(client, tmpdir):
 
     # For each DataRequestItem assert that there is only one series in it.
     for dri in dris:
-        fileids = dri.fileiditem.fileid[0]
+        fileids = dri.fileiditem.fileid
         series = list(map(lambda x: x.split(':')[0], fileids))
         assert all([s == series[0] for s in series])
