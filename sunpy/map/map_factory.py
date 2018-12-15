@@ -291,7 +291,7 @@ class MapFactory(BasicRegistrationFactory):
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
-            except:
+            except Exception:
                 raise
 
             new_maps.append(new_map)
@@ -342,7 +342,7 @@ class MapFactory(BasicRegistrationFactory):
 def _is_url(arg):
     try:
         urlopen(arg)
-    except:
+    except Exception:
         return False
     return True
 
