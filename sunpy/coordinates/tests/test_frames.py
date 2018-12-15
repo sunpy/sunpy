@@ -380,12 +380,7 @@ def test_skycoord_hpc(args, kwargs):
     still works.
     """
 
-    # Python 3: These should just be keywords in the `SkyCoord` constructor
-    kwargs.update({
-        "frame": "helioprojective",
-        "obstime": "2011-01-01T00:00:00"
-        })
-    sc = SkyCoord(*args, **kwargs)
+    sc = SkyCoord(*args, **kwargs, frame="helioprojective", obstime="2011-01-01T00:00:00")
     # Test the transform to HGS because it will force a `calculate_distance` call.
     hgs = sc.transform_to("heliographic_stonyhurst")
 
@@ -403,12 +398,6 @@ def test_skycoord_hgs(args, kwargs):
     """
 
     RSUN_METERS = sun.constants.get('radius').si
-
-    # Python 3: These should just be keywords in the `SkyCoord` constructor
-    kwargs.update({
-        "frame": "heliographic_stonyhurst",
-        "obstime": "2011-01-01T00:00:00"
-        })
-    sc = SkyCoord(*args, **kwargs)
+    sc = SkyCoord(*args, **kwargs, frame="heliographic_stonyhurst", obstime="2011-01-01T00:00:00")
 
     assert_quantity_allclose(sc.radius, RSUN_METERS)
