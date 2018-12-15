@@ -76,8 +76,8 @@ def calculate_shift(this_layer, template):
 #
 # Remove the edges of a datacube
 #
-@u.quantity_input(yclips=u.pix, xclips=u.pix)
-def clip_edges(data, yclips, xclips):
+@u.quantity_input
+def clip_edges(data, yclips: u.pix, xclips: u.pix):
     """
     Clips off the y and x edges of a 2d array according to a list of pixel
     values.  This function is useful for removing data at the edge of
@@ -113,8 +113,8 @@ def clip_edges(data, yclips, xclips):
 # Return the upper and lower clipping values for the y and x directions an
 # input set of pixel shifts y and x
 #
-@u.quantity_input(y=u.pix, x=u.pix)
-def calculate_clipping(y, x):
+@u.quantity_input
+def calculate_clipping(y: u.pix, x: u.pix):
     """
     Return the upper and lower clipping values for the y and x directions.
 
@@ -347,8 +347,8 @@ def repair_image_nonfinite(image):
     return repaired_image
 
 
-@u.quantity_input(yshift=u.pix, xshift=u.pix)
-def apply_shifts(mc, yshift, xshift, clip=True, **kwargs):
+@u.quantity_input
+def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
     """
     Apply a set of pixel shifts to a `~sunpy.map.MapSequence`, and return a new
     `~sunpy.map.MapSequence`.

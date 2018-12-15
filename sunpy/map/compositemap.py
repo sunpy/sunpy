@@ -331,8 +331,8 @@ class CompositeMap(object):
 
         return self._maps[index].draw_limb(axes=axes, **kwargs)
 
-    @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg, **kwargs):
+    @u.quantity_input
+    def draw_grid(self, index=None, axes=None, grid_spacing: u.deg=20*u.deg, **kwargs):
         """Draws a grid over the surface of the Sun.
 
         Parameters
