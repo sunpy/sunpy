@@ -28,7 +28,7 @@ from astropy.table import QTable as Table
 
 from sunpy import config
 from sunpy.net import download
-from sunpy.time import parse_time
+from sunpy.time import parse_time, TimeRange
 from sunpy.util import replacement_filename
 from sunpy.net.vso import attrs
 from sunpy.net.attr import and_
@@ -106,7 +106,6 @@ def get_online_vso_url(api, url, port):
                 return api
 
 
-# TODO: Python 3 this should subclass from UserList
 class QueryResponse(list):
     """
     A container for VSO Records returned from VSO Searches.
@@ -138,14 +137,8 @@ class QueryResponse(list):
 
     def time_range(self):
         """ Return total time-range all records span across. """
-        return (
-            datetime.strptime(
-                min(record.time.start for record in self
-                    if record.time.start is not None), TIMEFORMAT),
-            datetime.strptime(
-                max(record.time.end for record in self
-                    if record.time.end is not None), TIMEFORMAT)
-        )
+        return TimeRange(min(record.time.start for record in self if record.time.start is not None),
+                         max(record.time.end for record in self if record.time.end is not None))
 
     def build_table(self):
         """
@@ -165,7 +158,7 @@ class QueryResponse(list):
             if time is None:
                 return ['None']
             if record.time.start is not None:
-                return [datetime.strftime(parse_time(time), TIME_FORMAT)]
+                return [parse_time(time).strftime(TIME_FORMAT)]
             else:
                 return ['N/A']
 
