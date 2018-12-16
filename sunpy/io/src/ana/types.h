@@ -10,11 +10,11 @@ typedef double float64_t;
 
 typedef float64_t fp_t;  //!< The default floating point type
 
-struct complex{
+struct my_complex{
   fp_t re;
   fp_t im;
 };
-typedef struct complex complex_t;
+typedef struct my_complex complex_t;
 
 struct fzhead {                    // first block for fz files
   int synch_pattern;
