@@ -57,7 +57,7 @@ def fido_search_result():
 @pytest.fixture
 def query_result():
     client = vso.VSOClient()
-    return client.query_legacy('2001/1/1', '2001/1/2', instrument='EIT')
+    return client.search(net_attrs.Time('2001/1/1', '2001/1/2'), net_attrs.Instrument('EIT'))
 
 
 @pytest.fixture

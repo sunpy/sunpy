@@ -18,7 +18,6 @@ stages:
   - name: "Cron jobs"
     if: type = cron
 
-env:
 matrix:
   include:
     - os: osx
@@ -60,6 +59,7 @@ matrix:
       env:
         - TOX_ENV='py37-online'
         - TOX_ARG='-- -n=8'
+      stage: "Comprehensive jobs"
 
 before_install:
   - git clone --depth 1 git://github.com/astropy/ci-helpers.git
