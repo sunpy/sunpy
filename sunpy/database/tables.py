@@ -753,7 +753,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):
-        filename_paths = (os.path.join(dirpath, name) for name in filenames)
+        filename_paths = (os.path.join(dirpath, name) for name in sorted(filenames))
         for path in fnmatch.filter(filename_paths, pattern):
             try:
                 filetype = sunpy_filetools._detect_filetype(path)
