@@ -1,8 +1,6 @@
 .. The tests in the module are very fragile to change in ordering of VSO
    results. In their current form they are very hard to maintain.
 
-.. doctest-skip-all
-
 .. _database_guide:
 
 --------------------------
@@ -249,6 +247,22 @@ sections.
 
     >>> from sunpy.net import vso
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
+
+.. testsetup:: *
+   >>> from unittest.mock import Mock
+   >>> from sunpy.tests.mocks import MockObject
+   >>> class MockQR:
+   ...    def __init__(self, start_time, instrument, wavelength):
+   ...        end_time = '{}{}'.format(start_time[:-1], int(start_time[-1]) + 1)
+   ...        self.time = MockObject(start=start_time, end=end_time)
+   ...        self.instrument = instrument
+   ...        self.wave = MockObject(wavemin=wavelength, wavemax=wavelength, waveunit='nm')
+   >>> client.search = Mock(return_value=[MockQR(f"2011050800000{t}",
+   ...                                          'AIA', w) for
+   ...                                   t,w in zip([0,0,2,3], [17.1, 21.1, 9.4, 33.5])])
+
+After initialising the VSO client:
+
     >>> qr = client.search(
     ...     vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
@@ -270,6 +284,13 @@ attribute of each entry.
 
 Note that the number of entries that will be added depends on the total number
 of FITS headers, **not** the number of records in the query.
+
+.. testsetup:: *
+   >>> qr1 = [MockQR(f"2012080500000{t}", 'AIA', w) for t,w in zip([1, 1, 2, 2], [9.4, 9.4, 33.5, 33.5])]
+   >>> qr2 = [MockQR(f"2013080500000{t}", 'AIA', w) for t,w in zip([1, 1, 2, 2], [9.4, 9.4, 33.5, 33.5])]
+   >>> produce_results = [qr1, None, qr2, None]
+   >>> add_data = lambda x: database.add_from_vso_query_result(x) if x else None
+   >>> database.fetch = Mock(side_effect=map(add_data, produce_results))
 
 In the next code snippet new data is downloaded as this query
 has not been downloaded before.
