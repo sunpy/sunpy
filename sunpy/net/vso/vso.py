@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-#
-# This module was developed with funding provided by
-# the ESA Summer of Code (2011).
-#
-# pylint: disable=W0401,C0103,R0904,W0141
 """
 This module provides a wrapper around the VSO API.
 """
@@ -28,13 +22,14 @@ from astropy.table import QTable as Table
 
 from sunpy import config
 from sunpy.net import download
-from sunpy.time import parse_time, TimeRange
+from sunpy.time import TimeRange, parse_time
 from sunpy.util import replacement_filename
 from sunpy.net.vso import attrs
 from sunpy.net.attr import and_
 from sunpy.util.net import slugify, get_filename
 from sunpy.net.vso.attrs import TIMEFORMAT, walker
 from sunpy.net.base_client import BaseClient
+from sunpy.util.decorators import deprecated
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -371,7 +366,6 @@ class VSOClient(BaseClient):
         if not name:
             name = "file"
 
-
         fname = pattern.format(file=name, **serialize_object(response))
 
         if not overwrite and os.path.exists(fname):
@@ -382,7 +376,7 @@ class VSOClient(BaseClient):
             os.makedirs(dir_)
         return fname
 
-    # pylint: disable=R0914
+    @deprecated("1.0", alternative="sunpy.net.Fido")
     def query_legacy(self, tstart=None, tend=None, **kwargs):
         """
         Query data from the VSO mocking the IDL API as close as possible.
@@ -454,10 +448,10 @@ class VSOClient(BaseClient):
 
         >>> from datetime import datetime
         >>> from sunpy.net import vso
-        >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
+        >>> client = vso.VSOClient()  # doctest: +SKIP
         >>> qr = client.query_legacy(datetime(2010, 1, 1),
         ...                          datetime(2010, 1, 1, 1),
-        ...                          instrument='eit')  # doctest: +REMOTE_DATA
+        ...                          instrument='eit')  # doctest: +SKIP
 
         Returns
         -------
@@ -465,7 +459,7 @@ class VSOClient(BaseClient):
             Matched items. Return value is of same type as the one of
             :py:class:`VSOClient.search`.
         """
-        sdk = lambda key: partial(lambda key, value: {key: value}, key)
+        def sdk(key): return partial(lambda key, value: {key: value}, key)
         ALIASES = {
             'wave_min': sdk('wave_wavemin'),
             'wave_max': sdk('wave_wavemax'),
@@ -505,26 +499,26 @@ class VSOClient(BaseClient):
                 lst = attr[-1]
                 rest = attr[:-1]
 
-                # pylint: disable=E1103
-                item = block
                 for elem in rest:
                     try:
-                        if item[elem] is None:
-                            item[elem] = {}
-                        item = item[elem]
+                        if block[elem] is None:
+                            block[elem] = {}
+                        block = block[elem]
                     except KeyError:
                         raise ValueError(
                             "Unexpected argument {key!s}.".format(key=key))
-                if lst in item and item[lst]:
+                if lst in block and block[lst]:
                     raise ValueError(
                         "Got multiple values for {k!s}.".format(k=k))
-                item[lst] = v
+                block[lst] = v
 
         return QueryResponse.create(VSOQueryResponse(
             self.api.service.Query(QueryRequest(block=block))))
 
+    @deprecated("1.0")
     def latest(self):
         """ Return newest record (limited to last week). """
+        from datetime import datetime, timedelta
         return self.query_legacy(
             datetime.utcnow() - timedelta(7),
             datetime.utcnow(),
