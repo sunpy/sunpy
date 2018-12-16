@@ -23,17 +23,17 @@ int anacrunchrun8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,in
  /* begin execution */
  if (limit<25) { printf("limit (%d) too small in crunchrun8\n", limit); return -1;}
  limit = limit - 24;	/* need 14 for header and some margin since
- 			we don't check all times */
+       we don't check all times */
  mask=1; for (i=0;i<slice;i++) mask=2*mask;
  fac=mask;       mask=mask-1; /* no inline expon. in C */
  /* determine the # of bytes to transfer to 32 bit int for fixed portion */
  if (slice == 0) nb=0; else { if (slice < 2 ) nb=1;
-	 else { if (slice < 10) nb=2; else nb=3;    }};
+   else { if (slice < 10) nb=2; else nb=3;    }};
  y.i=0;
  /* do the compression header */
  ch = (struct compresshead *) x;
  /* important note - can't use the sizeof(struct compresshead) because it
-	 is 14 on some machines and rounded up to 16 on others */
+   is 14 on some machines and rounded up to 16 on others */
  x = x + 14;
  ch->bsize = nx;  ch->nblocks = ny;  ch->slice_size = slice;  ch->type = 3;
  i=0;    r1=0;
@@ -118,11 +118,11 @@ int anacrunchrun8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,in
  /*low order byte of y.i is first in stream */
   if(t_endian){ // big endian
     if (j == 0) {y.i=(y.i & mask); x[i]=y.b[3];}
-	 else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[3];}
+   else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[3];}
     if (nb>1) { x[i+1]=y.b[2]; if (nb>2) x[i+2]=y.b[1]; }
   }else{
     if (j == 0) {y.i=(y.i & mask); x[i]=y.b[0];}
-	 else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[0];}
+   else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[0];}
     if (nb>1) { x[i+1]=y.b[1]; if (nb>2) x[i+2]=y.b[2]; }
   }
 
@@ -158,10 +158,10 @@ int anacrunchrun8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,in
     x[i]=x[i] | y.b[0]; x[i+1]=y.b[1];
   }
  r1=r1+9;       } /* end of big one exception */
-		 }       /* end of (r3==0) conditional */
+     }       /* end of (r3==0) conditional */
  /* printf("end of literal, i,r1 = %d %d\n", i,r1);*/
  /* printf(" x[r1/8] = %d\n",  x[r1/8]);*/
-		 }       /* end of ix loop */
+     }       /* end of ix loop */
  /* some checks here */
  /* bump to next byte boundary */
  /* a final literal ? */
@@ -170,10 +170,10 @@ int anacrunchrun8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,in
  i=(r1+7)/8;
  ended_on_run:
  r1=8*i;
-		  }       /* end of iy loop */
+      }       /* end of iy loop */
  ch->tsize = i = i + 14;
  /* we have to put these in a form readable by the Vax (these may be used
-	 by fcwrite) */
+   by fcwrite) */
   if(t_endian){ // big endian
    bswapi32(&(ch->tsize),1); bswapi32(&(ch->bsize),1); bswapi32(&(ch->nblocks),1);
   }
@@ -198,18 +198,18 @@ int anacrunch8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,int t
  /* begin execution */
  if (limit<25) { printf("limit (%d) too small in crunch8\n", limit); return -1;}
  limit = limit - 24;	/* need 14 for header and some margin since
- 			we don't check all times */
+       we don't check all times */
  mask=1; for (i=0;i<slice;i++) mask=2*mask;
  fac=mask;       mask=mask-1; /* no inline expon. in C */
  /* determine the # of bytes to transfer to 32 bit int for fixed portion */
  if (slice > 8) slice = 8;
  if (slice == 0) nb=0; else { if (slice < 2 ) nb=1;
-	 else { if (slice < 10) nb=2; else nb=3;    }};
+   else { if (slice < 10) nb=2; else nb=3;    }};
  y.i=0;
  /* do the compression header */
  ch = (struct compresshead *) x;
  /* important note - can't use the sizeof(struct compresshead) because it
-	 is 14 on some machines and rounded up to 16 on others */
+   is 14 on some machines and rounded up to 16 on others */
  /*x = x + sizeof(struct compresshead);*/
  x = x + 14;
  ch->bsize = nx;  ch->nblocks = ny;  ch->slice_size = slice;  ch->type = 1;
@@ -231,11 +231,11 @@ int anacrunch8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,int t
  /*low order byte of y.i is first in stream */
   if(t_endian){ // big endian
     if (j == 0) {y.i=(y.i & mask); x[i]=y.b[3];}
-	 else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[3];}
+   else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[3];}
     if (nb>1) { x[i+1]=y.b[2]; }
   }else{
     if (j == 0) {y.i=(y.i & mask); x[i]=y.b[0];}
-	 else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[0];}
+   else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[0];}
     if (nb>1) { x[i+1]=y.b[1]; }
   }
  r1=r1+slice;       /* bump r1 pass the fixed part */
@@ -270,14 +270,14 @@ int anacrunch8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,int t
     x[i]=x[i] | y.b[0]; x[i+1]=y.b[1];
   }
  r1=r1+9;       } /* end of big one exception */
-		 }       /* end of (r3==0) conditional */
-		 }       /* end of ix loop */
+     }       /* end of (r3==0) conditional */
+     }       /* end of ix loop */
  /* some checks here */
  /* bump to next byte boundary */
  i=(r1+7)/8;     r1=8*i;                 }       /* end of iy loop */
  ch->tsize = i = i + 14;
  /* we have to put these in a form readable by the Vax (these may be used
-	 by fcwrite) */
+   by fcwrite) */
   if(t_endian){ // big endian
     bswapi32(&(ch->tsize),1); bswapi32(&(ch->bsize),1); bswapi32(&(ch->nblocks),1);
   }
@@ -303,17 +303,17 @@ int anacrunchrun(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int
  /* begin execution */
  if (limit<25) { printf("limit (%d) too small in crunchrun\n", limit); return -1;}
  limit = limit - 24;	/* need 14 for header and some margin since
- 			we don't check all times */
+       we don't check all times */
  mask=1; for (i=0;i<slice;i++) mask=2*mask;
  fac=mask;       mask=mask-1; /* no inline expon. in C */
  /* determine the # of bytes to transfer to 32 bit int for fixed portion */
  if (slice == 0) nb=0; else { if (slice < 2 ) nb=1;
-	 else { if (slice < 10) nb=2; else nb=3;    }};
+   else { if (slice < 10) nb=2; else nb=3;    }};
  y.i=0;
  /* do the compression header */
  ch = (struct compresshead *) x;
  /* important note - can't use the sizeof(struct compresshead) because it
-	 is 14 on some machines and rounded up to 16 on others */
+   is 14 on some machines and rounded up to 16 on others */
  x = x + 14;
  ch->bsize = nx;  ch->nblocks = ny;  ch->slice_size = slice;  ch->type = 2;
  i=0;    r1=0;
@@ -400,11 +400,11 @@ int anacrunchrun(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int
  /*low order byte of y.i is first in stream */
   if(t_endian){ // big endian
     if (j == 0) {y.i=(y.i & mask); x[i]=y.b[3];}
-	 else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[3];}
+   else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[3];}
     if (nb>1) { x[i+1]=y.b[2]; if (nb>2) x[i+2]=y.b[1]; }
   }else{
     if (j == 0) {y.i=(y.i & mask); x[i]=y.b[0];}
-	 else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[0];}
+   else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[0];}
     if (nb>1) { x[i+1]=y.b[1]; if (nb>2) x[i+2]=y.b[2]; }
   }
  r1=r1+slice;       			/* bump r1 pass the fixed part */
@@ -440,10 +440,10 @@ int anacrunchrun(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int
     x[i]=x[i] | y.b[0]; x[i+1]=y.b[1];      x[i+2]=y.b[2];
   }
  r1=r1+17;       } /* end of big one exception */
-		 }       /* end of (r3==0) conditional */
+     }       /* end of (r3==0) conditional */
  /* printf("end of literal, i,r1 = %d %d\n", i,r1);*/
  /* printf(" x[r1/8] = %d\n",  x[r1/8]);*/
-		 }       /* end of ix loop */
+     }       /* end of ix loop */
  /* some checks here */
  /* bump to next byte boundary */
  /* a final literal ? */
@@ -452,10 +452,10 @@ int anacrunchrun(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int
  i=(r1+7)/8;
  ended_on_run:
  r1=8*i;
-		  }       /* end of iy loop */
+      }       /* end of iy loop */
  ch->tsize = i = i + 14;
  /* we have to put these in a form readable by the Vax (these may be used
-	 by fcwrite) */
+   by fcwrite) */
  if(t_endian){ // big endian
    bswapi32(&(ch->tsize),1); bswapi32(&(ch->bsize),1); bswapi32(&(ch->nblocks),1);
  }
@@ -537,9 +537,9 @@ int anacrunch(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int t_
       }else{
         y.i=(y.i&mask)<<j;
         x[i]=x[i]|(uint8_t)y.i;
-	if(nb>1){                          // spillover more likely here
+  if(nb>1){                          // spillover more likely here
           x[i+1]=(uint8_t)(y.i>>8);
-	  if(nb>2) x[i+2]=(uint8_t)(y.i>>16);
+    if(nb>2) x[i+2]=(uint8_t)(y.i>>16);
         }
       }
       r1+=slice;                           // bump r1 pass the fixed part
@@ -629,7 +629,7 @@ int anacrunch32(uint8_t *x,int32_t *array,int slice,int nx,int ny,int limit,int 
  /* begin execution */
  if (limit<25) { printf("limit (%d) too small in crunch32\n", limit); return -1;}
  limit = limit - 24;	/* need 14 for header and some margin since
- 			we don't check all times */
+       we don't check all times */
  mask=1; for (i=0;i<slice;i++) mask=2*mask;
  fac=mask;       mask=mask-1; /* no inline expon. in C */
  /* determine the # of bytes to transfer to 32 bit int for fixed portion */
@@ -640,7 +640,7 @@ int anacrunch32(uint8_t *x,int32_t *array,int slice,int nx,int ny,int limit,int 
  /* do the compression header */
  ch = (struct compresshead *) x;
  /* important note - can't use the sizeof(struct compresshead) because it
-	 is 14 on some machines and rounded up to 16 on others */
+   is 14 on some machines and rounded up to 16 on others */
  /*x = x + sizeof(struct compresshead);*/
  x = x + 14;
  ch->bsize = nx;  ch->nblocks = ny;  ch->slice_size = slice;  ch->type = 4;
@@ -665,19 +665,19 @@ int anacrunch32(uint8_t *x,int32_t *array,int slice,int nx,int ny,int limit,int 
  /* now load nb bytes into x */
  /*low order byte of y.i is first in stream */
  if (j == 0) {
-	y64=(y64 & mask);	x[i]= (uint8_t) y64;
-	/* since we started at bit 0, spillover to the next byte is
-	determined as follows (and is unlikely since slice gt 8 is unusual */
-	if (slice > 8) { x[i+1]= (uint8_t) (y64 >> 8);
-	 if (slice > 16) { x[i+2]= (uint8_t) (y64 >> 16);
-	  if (slice > 24) { x[i+3]= (uint8_t) (y64 >> 24);}}}
+  y64=(y64 & mask);	x[i]= (uint8_t) y64;
+  /* since we started at bit 0, spillover to the next byte is
+  determined as follows (and is unlikely since slice gt 8 is unusual */
+  if (slice > 8) { x[i+1]= (uint8_t) (y64 >> 8);
+   if (slice > 16) { x[i+2]= (uint8_t) (y64 >> 16);
+    if (slice > 24) { x[i+3]= (uint8_t) (y64 >> 24);}}}
 } else {
-	y64=(y64 & mask)<<j;	x[i]=x[i] | (uint8_t) y64;
-	/* spillover more likely here */
-	if (nb>1) { x[i+1] = (uint8_t) (y64 >> 8);
-	 if (nb>2) { x[i+2] = (uint8_t) (y64 >> 16);
-	  if (nb>3) { x[i+3] = (uint8_t) (y64 >> 24);
-	   if (nb>4) { x[i+4] = (uint8_t) (y64 >> 32);}}}}
+  y64=(y64 & mask)<<j;	x[i]=x[i] | (uint8_t) y64;
+  /* spillover more likely here */
+  if (nb>1) { x[i+1] = (uint8_t) (y64 >> 8);
+   if (nb>2) { x[i+2] = (uint8_t) (y64 >> 16);
+    if (nb>3) { x[i+3] = (uint8_t) (y64 >> 24);
+     if (nb>4) { x[i+4] = (uint8_t) (y64 >> 32);}}}}
 }
 
  r1=r1+slice;       /* bump r1 pass the fixed part */
@@ -693,9 +693,9 @@ int anacrunch32(uint8_t *x,int32_t *array,int slice,int nx,int ny,int limit,int 
     if (j == 0) x[i]=0;
      j=r0%8;
      if (r0 < 16) x[i+1]=bits[j]; else {
- 	i2=i+r0/8;
-	for (k=i+1;k<i2;k++) x[k]=0;
-	x[i2]=bits[j]; }
+   i2=i+r0/8;
+  for (k=i+1;k<i2;k++) x[k]=0;
+  x[i2]=bits[j]; }
    }
    r1+=1+r3;
  } else {        /* big one exception, should be rare */
@@ -720,14 +720,14 @@ int anacrunch32(uint8_t *x,int32_t *array,int slice,int nx,int ny,int limit,int 
    x[i+3]=yy.b[3]; x[i+4]=yy.b[4];
   }
  r1=r1+33;       } /* end of big one exception */
-		 }       /* end of (r3==0) conditional */
+     }       /* end of (r3==0) conditional */
  /*in=in+1; */                   }       /* end of ix loop */
  /* some checks here */
  /* bump to next byte boundary */
  i=(r1+7)/8;     r1=8*i;                 }       /* end of iy loop */
  ch->tsize = i = i + 14;
  /* we have to put these in a form readable by the Vax (these may be used
-	 by fcwrite) */
+   by fcwrite) */
  if(t_endian){ // big endian
    bswapi32(&(ch->tsize),1); bswapi32(&(ch->bsize),1); bswapi32(&(ch->nblocks),1);
  }
