@@ -31,5 +31,7 @@ jobs:
 
   - script: |
       pip install --upgrade codecov
-      codecov
+      codecov --name=$JOB_NAME
     displayName: run codecov
+    env:
+        JOB_NAME: $(Agent.JobName)
