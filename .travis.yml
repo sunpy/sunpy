@@ -1,9 +1,7 @@
 language: generic
 os: linux
-# Run jobs on container-based infrastructure, can be overridden per job
 sudo: false
 
-# Configure the build environment. Global variables are defined for all configurations.
 env:
   global:
     - TOX_ARG=''

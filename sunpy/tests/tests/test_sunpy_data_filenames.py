@@ -1,3 +1,6 @@
+"""
+Note: This test lives here because we have to exclude sunpy/data from pytest.
+"""
 import os
 import pytest
 import sunpy.data.test
