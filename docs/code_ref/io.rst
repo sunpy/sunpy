@@ -47,7 +47,9 @@ SunPy currently implements support for saving `Map <sunpy.map.GenericMap>` and
 tightly integrates into Python, saving a map to an asdf file will save the
 metadata, data, mask and the shift. The mask and shift are not currently saved
 to FITS. The following code shows to to save and load a SunPy Map to an asdf
-file ::
+file
+
+.. doctest-requires:: asdf
 
   >>> import asdf
   >>> import sunpy.map
@@ -59,9 +61,8 @@ file ::
   >>> with asdf.AsdfFile(tree) as asdf_file:  # doctest: +REMOTE_DATA
   ...     asdf_file.write_to("sunpy_map.asdf")  # doctest: +REMOTE_DATA
 
-  >>> with asdf.open("sunpy_map.asdf") as input_asdf:  # doctest: +REMOTE_DATA
-  ...     mymap = input_asdf['amap']  # doctest: +REMOTE_DATA
-  ...     print(repr(mymap))
+  >>> input_asdf = asdf.open("sunpy_map.asdf")  # doctest: +REMOTE_DATA
+  >>> input_asdf['amap']  # doctest: +REMOTE_DATA
   SunPy Map
   ---------
   Observatory:                 SDO
@@ -83,3 +84,4 @@ file ::
          [-128., -128., -128., ..., -128., -128., -128.],
          [-128., -128., -128., ..., -128., -128., -128.],
          [-128., -128., -128., ..., -128., -128., -128.]], dtype=float32)
+  >>> input_asdf.close()  # doctest: +REMOTE_DATA
