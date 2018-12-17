@@ -33,7 +33,7 @@ class GenericMapType(SunPyType):
     def to_tree(cls, smap, ctx):
         node = {}
         node['data'] = np.asarray(smap.data)
-        node['meta'] = custom_tree_to_tagged_tree(dict(smap.meta), ctx)
+        node['meta'] = dict(smap.meta)
         node['shift'] = u.Quantity(smap.shifted_value)
         node['mask'] = smap.mask
         node['uncertainty'] = smap.uncertainty
