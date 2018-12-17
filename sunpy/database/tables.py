@@ -279,17 +279,17 @@ class DatabaseEntry(Base):
         ...     vso.attrs.Instrument('eit'))  # doctest: +REMOTE_DATA
         >>> entry = DatabaseEntry._from_query_result_block(qr[0])  # doctest: +REMOTE_DATA
         >>> entry.source  # doctest: +REMOTE_DATA
-        SOHO
+        'SOHO'
         >>> entry.provider  # doctest: +REMOTE_DATA
-        SDAC
+        'SDAC'
         >>> entry.physobs  # doctest: +REMOTE_DATA
         'intensity'
         >>> entry.fileid  # doctest: +REMOTE_DATA
-        /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042
+        '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042'
         >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
         (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
         >>> entry.instrument  # doctest: +REMOTE_DATA
-        EIT
+        'EIT'
         >>> entry.size  # doctest: +REMOTE_DATA
         2059.0
         >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
@@ -507,17 +507,17 @@ def entries_from_query_result(qr, default_waveunit=None):
     >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
     >>> entry = next(entries)  # doctest: +REMOTE_DATA
     >>> entry.source  # doctest: +REMOTE_DATA
-    SOHO
+    'SOHO'
     >>> entry.provider  # doctest: +REMOTE_DATA
-    SDAC
+    'SDAC'
     >>> entry.physobs  # doctest: +REMOTE_DATA
     'intensity'
     >>> entry.fileid  # doctest: +REMOTE_DATA
-    /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042
+    '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042'
     >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
     (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
     >>> entry.instrument  # doctest: +REMOTE_DATA
-    EIT
+    'EIT'
     >>> entry.size  # doctest: +REMOTE_DATA
     2059.0
     >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA

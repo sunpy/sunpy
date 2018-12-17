@@ -6,34 +6,24 @@ sudo: false
 # Configure the build environment. Global variables are defined for all configurations.
 env:
   global:
-    - EVENT_TYPE='push pull_request cron'
     - TOX_ARG=''
 
-stages:
-  # Do the offline jobs, it will not proceed if any fail
-  - name: "Initial jobs"
-  # Do the rest of the jobs
-  - name: "Comprehensive jobs"
-  # Cron only jobs
-  - name: "Cron jobs"
-    if: type = cron
+name: "Cron jobs"
+if: type = cron
 
 matrix:
   include:
     - os: osx
       name: "macOS 3.7 (py37-offline)"
       env: TOX_ENV='py37-offline'
-      stage: "Initial jobs"
 
     - name: "3.6 offline (py36-offline)"
       env: TOX_ENV='py36-offline'
-      stage: "Initial jobs"
 
     - name: "3.7 online (py37-online)"
       env:
         - TOX_ENV='py37-online'
         - TOX_ARG='-- -n=8'
-      stage: "Comprehensive jobs"
 
     - name: "AstroPy dev (py37-astropydev)"
       env:
@@ -42,7 +32,6 @@ matrix:
         apt:
           packages:
             - httpie
-      stage: "Comprehensive jobs"
 
     - name: "NumPy dev (py37-numpydev)"
       addons:
@@ -52,7 +41,12 @@ matrix:
             - libatlas-dev
             - libatlas-base-dev
       env: TOX_ENV='py37-numpydev'
-      stage: "Cron jobs"
+
+  allow_failures:
+    - name: "3.7 online (py37-online)"
+      env:
+        - TOX_ENV='py37-online'
+        - TOX_ARG='-- -n=8'
 
 before_install:
   - git clone --depth 1 git://github.com/astropy/ci-helpers.git
