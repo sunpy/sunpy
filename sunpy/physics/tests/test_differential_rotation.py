@@ -109,6 +109,8 @@ def test_fail(seconds_per_day):
     with pytest.raises(ValueError):
         rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='garbage')
 
+def test_interpret_observer_input(coordinate_time, observer, time):
+
 
 def test_solar_rotate_coordinate():
     # Testing along the Sun-Earth line, observer is on the Earth
@@ -117,7 +119,7 @@ def test_solar_rotate_coordinate():
     c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obstime, observer=observer, frame=frames.Helioprojective)
     newtime = '2010-09-10 13:34:56'
     new_observer = get_earth(newtime)
-    d = solar_rotate_coordinate(c, new_observer)
+    d = solar_rotate_coordinate(c, new_observer=new_observer)
 
     # Test that a SkyCoordinate is created
     assert isinstance(d, SkyCoord)
