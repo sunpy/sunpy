@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from asdf import AsdfExtension
 from asdf.util import filepath_to_url
@@ -12,13 +12,9 @@ __all__ = ['SunpyExtension']
 
 
 SUNPY_SCHEMA_URI_BASE = 'http://sunpy.org/schemas/'
-SCHEMA_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), 'schemas'))
-SUNPY_URL_MAPPING = [
-    (SUNPY_SCHEMA_URI_BASE,
-     filepath_to_url(
-         os.path.join(SCHEMA_PATH, 'sunpy.org')) +
-     '/{url_suffix}.yaml')]
+SCHEMA_PATH = Path(__file__).parent / "schemas"
+SUNPY_URL_MAPPING = [(SUNPY_SCHEMA_URI_BASE,
+                      filepath_to_url(str(SCHEMA_PATH / "sunpy.org" / "{url_suffix}.yaml")))]
 
 
 # This extension is used to register custom types that have both tags and
