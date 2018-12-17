@@ -3,10 +3,10 @@
 Saving and Loading Coordinates with asdf
 ========================================
 
-In this example we are going to look at saving a loading collections of
+In this example we are going to look at saving and loading collections of
 coordinates with `asdf <https://asdf.readthedocs.io/en/latest/>`__.
 
-asdf if a modern file format designed to meet the needs of the astronomy
+asdf is a modern file format designed to meet the needs of the astronomy
 community. It has deep integration with Python and SunPy and Astropy as well as
 implementations in other languages. It can be used to store known Python
 objects in a portable, well defined file format. It is primarily useful for
@@ -14,7 +14,7 @@ storing complex Astropy and SunPy objects in a way that can be loaded back into
 the same form as they were saved.
 
 .. note::
-    This example requires Astropy 3.1 and asdf
+    This example requires Astropy 3.1 and asdf 2.3.0
 
 """
 
@@ -119,7 +119,7 @@ with asdf.AsdfFile(tree) as asdf_file:
 # Astropy and SunPy installed. We can reload the file like so:
 
 with asdf.open("loop_coords.asdf") as input_asdf:
-    coords = input_asdf.tree['loop_points']
+    coords = input_asdf['loop_points']
     new_coords = SkyCoord(coords)
 
 print(new_coords.shape)

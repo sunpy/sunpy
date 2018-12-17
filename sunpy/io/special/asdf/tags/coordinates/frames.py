@@ -4,6 +4,7 @@ import glob
 
 from astropy.io.misc.asdf.tags.coordinates.frames import BaseCoordType
 
+import sunpy.coordinates
 from ...types import SunPyType
 
 
@@ -40,10 +41,10 @@ class SunPyCoordType(BaseCoordType, SunPyType):
     _tag_prefix = "coordinates/frames/"
     name = ["coordinates/frames/" + f for f in _get_frames()]
     types = [
-        'sunpy.coordinates.HeliographicCarrington',
-        'sunpy.coordinates.HeliographicStonyhurst',
-        'sunpy.coordinates.Heliocentric',
-        'sunpy.coordinates.Helioprojective',
+        sunpy.coordinates.HeliographicCarrington,
+        sunpy.coordinates.HeliographicStonyhurst,
+        sunpy.coordinates.Heliocentric,
+        sunpy.coordinates.Helioprojective,
     ]
     requires = ['sunpy', 'astropy>=3.1']
     version = "1.0.0"
