@@ -43,28 +43,28 @@ def semi_circular_loop(length: u.m, theta0: u.deg=0*u.deg):
     """
     Return a Heliographic Stonyhurst coordinate object with points of a semi circular loop in it.
     """
-    r_1 = const.R_sun
+    r_sun = const.R_sun
 
     def r_2_func(x):
-        return np.arccos(0.5 * x / r_1.to(u.cm).value) - np.pi + length.to(u.cm).value / 2. / x
+        return np.arccos(0.5 * x / r_sun.to(u.cm).value) - np.pi + length.to(u.cm).value / 2. / x
 
     r_2 = scipy.optimize.bisect(r_2_func,
                                 length.to(u.cm).value / (2 * np.pi),
                                 length.to(u.cm).value / np.pi) * u.cm
-    alpha = np.arccos(0.5 * (r_2 / r_1).decompose())
+    alpha = np.arccos(0.5 * (r_2 / r_sun).decompose())
     phi = np.linspace(-np.pi * u.rad + alpha, np.pi * u.rad - alpha, 2000)
 
     # Quadratic formula to find r
     a = 1.
-    b = -2 * (r_1.to(u.cm) * np.cos(phi.to(u.radian)))
-    c = r_1.to(u.cm)**2 - r_2.to(u.cm)**2
+    b = -2 * (r_sun.to(u.cm) * np.cos(phi.to(u.radian)))
+    c = r_sun.to(u.cm)**2 - r_2.to(u.cm)**2
     r = (-b + np.sqrt(b**2 - 4 * a * c)) / 2 / a
     # Choose only points above the surface
-    i_r = np.where(r > r_1)
+    i_r = np.where(r > r_sun)
     r = r[i_r]
     phi = phi[i_r]
     hcc_frame = frames.Heliocentric(
-        observer=SkyCoord(lon=0 * u.deg, lat=theta0, radius=r_1, frame='heliographic_stonyhurst'))
+        observer=SkyCoord(lon=0 * u.deg, lat=theta0, radius=r_sun, frame='heliographic_stonyhurst'))
 
     return SkyCoord(
         x=r.to(u.cm) * np.sin(phi.to(u.radian)),
