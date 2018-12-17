@@ -14,7 +14,7 @@ __all__ = ['SunpyExtension']
 SUNPY_SCHEMA_URI_BASE = 'http://sunpy.org/schemas/'
 SCHEMA_PATH = Path(__file__).parent / "schemas"
 SUNPY_URL_MAPPING = [(SUNPY_SCHEMA_URI_BASE,
-                      filepath_to_url(str(SCHEMA_PATH / "sunpy.org" / "{url_suffix}.yaml")))]
+                      filepath_to_url(str(SCHEMA_PATH / "sunpy.org")) + "/{url_suffix}.yaml")]
 
 
 # This extension is used to register custom types that have both tags and
