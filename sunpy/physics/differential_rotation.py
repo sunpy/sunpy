@@ -97,46 +97,6 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     return Longitude(rotation.to(u.deg))
 
 
-def _interpret_observer_input(coordinate_time, observer, time):
-    """
-    Helper function that interprets input for solar rotation applications and outputs an observer that is used in
-    those applications
-
-    Parameters
-    ----------
-    coordinate_time
-    observer
-    time
-
-    Returns
-    -------
-
-    """
-    if (observer is not None) and (time is not None):
-        raise ValueError("Either the 'observer' or the 'time' keyword must be specified, but not both simultaneously.")
-
-    if observer is not None:
-        # Check that the new_observer is specified correctly.
-        if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
-            raise ValueError(
-                "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
-
-        # Check that only one time has been specified
-        if not hasattr(observer, "obstime"):
-            raise ValueError("The 'observer' must have an obstime attribute.")
-
-        return observer
-
-    if time is not None:
-        warnings.warn("Using 'time' assumes an Earth-based observer.")
-        if isinstance(time, TimeDelta) or isinstance(time, u.Quantity):
-            new_observer_time = coordinate_time + time
-        else:
-            new_observer_time = time
-
-        return get_body("earth", new_observer_time)
-
-
 def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwargs):
     """
     Given a coordinate on the Sun, calculate where that coordinate maps to
@@ -174,10 +134,31 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     Example
     -------
 
-
     """
     # Check the input and create the new observer
-    new_observer = _interpret_observer_input(coordinate.obstime, observer, parse_time(time))
+    if (observer is not None) and (time is not None):
+        raise ValueError("Either the 'observer' or the 'time' keyword must be specified, but not both simultaneously.")
+
+    if observer is not None:
+        # Check that the new_observer is specified correctly.
+        if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
+            raise ValueError(
+                "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
+
+        # Check that only one time has been specified
+        if not hasattr(observer, "obstime"):
+            raise ValueError("The 'observer' must have an obstime attribute.")
+
+        new_observer = observer
+
+    if time is not None:
+        warnings.warn("Using 'time' assumes an Earth-based observer.")
+        if isinstance(time, TimeDelta) or isinstance(time, u.Quantity):
+            new_observer_time = coordinate.obstime + time
+        else:
+            new_observer_time = time
+
+        return get_body("earth", new_observer_time)
 
     # The keyword "frame_time" must be explicitly set to "sidereal"
     # when using this function.
