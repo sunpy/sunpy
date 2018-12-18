@@ -882,7 +882,7 @@ class Database(object):
 
         Parameters
         ----------
-        path : string
+        path : str
             The directory where to look for FITS files.
 
         recursive : bool, optional
@@ -902,7 +902,7 @@ class Database(object):
 
         time_string_parse_format : str, optional
             Fallback timestamp format which will be passed to
-            `~datetime.datetime.strftime` if `sunpy.time.parse_time` is unable to
+            `~astropy.time.Time.strptime` if `sunpy.time.parse_time` is unable to
             automatically read the `date-obs` metadata.
 
         """

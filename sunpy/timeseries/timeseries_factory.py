@@ -120,7 +120,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         parsed :  bool
             True if file has been reading
 
-        pairs : list or string
+        pairs : list or str
             List of (data, header) pairs if ``parsed`` is ``True`` or ``fname``
             if ``False``
         """

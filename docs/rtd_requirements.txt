@@ -9,7 +9,7 @@ sqlalchemy
 scikit-image
 glymur
 drms
-suds-jurko
+zeep
 beautifulsoup4
 requests
 python-dateutil

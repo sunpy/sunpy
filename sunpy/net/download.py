@@ -48,6 +48,7 @@ class Downloader(object):
 
             with closing(urllib.request.urlopen(url)) as sock:
                 fullname = path(sock, url)
+
                 dir_ = os.path.abspath(os.path.dirname(fullname))
                 if not os.path.exists(dir_):
                     os.makedirs(dir_)
@@ -119,9 +120,9 @@ class Downloader(object):
 
         Parameters
         ----------
-        url : string
+        url : str
             URL of file to download
-        path : function, string
+        path : function, str
             Location to save file to. Can specify either a directory as a string
             or a function with signature: (path, url).
             Defaults to directory specified in sunpy configuration

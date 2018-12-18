@@ -15,9 +15,10 @@ AND-expression, if you still attempt to do so it is called a collision.
 For a quick example think about how the system should handle
 Instrument('aia') & Instrument('eit').
 """
-from datetime import datetime
+import collections
 
 from astropy import units as u
+from astropy.time import Time
 
 from sunpy.time import TimeRange as _TimeRange
 from sunpy.net.attr import (Attr, AttrWalker, AttrAnd,
@@ -62,6 +63,7 @@ class _Range(object):
 
     def __contains__(self, other):
         return self.min <= other.min and self.max >= other.max
+
 
 class Wavelength(Attr, _Range):
     def __init__(self, wavemin, wavemax=None):
@@ -157,6 +159,15 @@ class Time(Attr, _Range):
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
 
+    def __hash__(self):
+        if not (isinstance(self.start, collections.Hashable) and
+                isinstance(self.end, collections.Hashable)):
+            # The hash is the hash of the start and end time
+            return hash((self.start.jd1, self.start.jd2, self.start.scale,
+                         self.end.jd1, self.end.jd2, self.end.scale))
+        else:
+            return super().__hash__()
+
     def collides(self, other):
         return isinstance(other, self.__class__)
 
@@ -200,7 +211,7 @@ class Provider(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -217,7 +228,7 @@ class Source(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -236,7 +247,7 @@ class Instrument(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -257,7 +268,7 @@ class Detector(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -277,7 +288,7 @@ class Physobs(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -295,7 +306,7 @@ class Level(SimpleAttr):
 
     Parameters
     ----------
-    value : float or string
+    value : float or str
 
         The value can be entered in of three ways:
 
@@ -327,7 +338,7 @@ class Resolution(SimpleAttr):
 
     Parameters
     ----------
-    value : float or string
+    value : float or str
 
         The value can be entered in of three ways:
 
@@ -355,7 +366,7 @@ class PScale(SimpleAttr):
 
     Parameters
     ----------
-    value : float or string
+    value : float or str
 
         The value can be entered in of three ways:
 
@@ -422,7 +433,7 @@ class Filter(SimpleAttr):
 
     Parameters
     ----------
-    value : string
+    value : str
 
     """
     pass
@@ -442,23 +453,31 @@ walker = AttrWalker()
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """ Implementation detail. """
-    value = api.factory.create('QueryRequestBlock')
+    api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
+    value = api.get_type('VSO:QueryRequestBlock')()
     wlk.apply(root, api, value)
     return [value]
 
 
 @walker.add_applier(ValueAttr)
 # pylint: disable=E0102,C0103,W0613
-def _apply(wlk, root, api, queryblock):
+def _apply(wlk, root, api, block):
     """ Implementation detail. """
     for k, v in root.attrs.items():
-        lst = k[-1]
-        rest = k[:-1]
+        name = k[0]
+        subkey = k[1:]
 
-        block = queryblock
-        for elem in rest:
-            block = block[elem]
-        block[lst] = v
+        if subkey:
+            if len(subkey) != 1:
+                raise ValueError("Can't parse double nested ValueAttr")
+            subkey = subkey[0]
+
+            if block[name]:
+                block[name].update({subkey: v})
+            else:
+                block[name] = {subkey: v}
+        else:
+            block[name] = v
 
 
 @walker.add_applier(AttrAnd)
@@ -506,7 +525,7 @@ walker.add_converter(Wavelength)(
     lambda x: ValueAttr({
             ('wave', 'wavemin'): x.min.value,
             ('wave', 'wavemax'): x.max.value,
-            ('wave', 'waveunit'): x.unit,
+            ('wave', 'waveunit'): x.unit.name,
     })
 )
 
@@ -582,11 +601,11 @@ def _(attr, results):
         if
         it.time.end is not None
         and
-        attr.min <= datetime.strptime(it.time.end, TIMEFORMAT)
+        attr.min <= Time.strptime(it.time.end, TIMEFORMAT)
         and
         it.time.start is not None
         and
-        attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
+        attr.max >= Time.strptime(it.time.start, TIMEFORMAT)
     )
 
 

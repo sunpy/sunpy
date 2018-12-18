@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Ephemeris calculations using SunPy coordinate frames
-
 """
 import datetime
 import warnings
@@ -16,7 +15,6 @@ from astropy.coordinates.representation import CartesianRepresentation, Spherica
 from astropy._erfa.core import ErfaWarning
 
 from sunpy.time import parse_time
-from sunpy.time.time import _astropy_time
 
 from .frames import HeliographicStonyhurst as HGS
 from .transformations import _SUN_DETILT_MATRIX
@@ -43,7 +41,7 @@ def get_body_heliographic_stonyhurst(body, time='now'):
     out : `~sunpy.coordinates.frames.HeliographicStonyhurst`
         Location of the solar-system body in the `~sunpy.coordinates.HeliographicStonyhurst` frame
     """
-    obstime = _astropy_time(time)
+    obstime = parse_time(time)
 
     body_icrs = ICRS(get_body_barycentric(body, obstime))
     body_hgs = body_icrs.transform_to(HGS(obstime=obstime))
@@ -128,7 +126,7 @@ def get_sun_L0(time='now'):
     out : `~astropy.coordinates.Longitude`
         The Carrington longitude
     """
-    obstime = _astropy_time(time)
+    obstime = parse_time(time)
 
     # Calculate the longitude due to the Sun's rotation relative to the stars
     # A sidereal rotation is defined to be exactly 25.38 days
@@ -157,7 +155,7 @@ def get_sun_P(time='now'):
     out : `~astropy.coordinates.Angle`
         The position angle
     """
-    obstime = _astropy_time(time)
+    obstime = parse_time(time)
 
     # Define the frame where its Z axis is aligned with geocentric north
     geocentric = PrecessedGeocentric(equinox=obstime, obstime=obstime)
@@ -200,7 +198,7 @@ def get_sun_orientation(location, time='now'):
     out : `~astropy.coordinates.Angle`
         The orientation of the Sun
     """
-    obstime = _astropy_time(time)
+    obstime = parse_time(time)
 
     # Define the frame where its Z axis is aligned with local zenith
     local_frame = AltAz(obstime=obstime, location=location)

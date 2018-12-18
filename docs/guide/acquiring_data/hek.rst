@@ -304,7 +304,7 @@ HEK results and create the corresponding VSO query attributes.
 
     >>> vso_query = hek2vso.translate_results_to_query(result[10:11])  # doctest: +REMOTE_DATA
     >>> vso_query[0]  # doctest: +REMOTE_DATA
-    [<Time(datetime.datetime(2011, 8, 9, 7, 22, 44), datetime.datetime(2011, 8, 9, 7, 28, 56), None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(193.0, 193.0, 'Angstrom')>]
+    [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T07:22:44.000>, <Time object: scale='utc' format='isot' value=2011-08-09T07:28:56.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(193.0, 193.0, 'Angstrom')>]
 
 This function allows users finer-grained control of VSO queries
 generated from HEK results.
