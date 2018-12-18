@@ -156,7 +156,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
         if isinstance(time, TimeDelta) or isinstance(time, u.Quantity):
             new_observer_time = coordinate.obstime + time
         else:
-            new_observer_time = time
+            new_observer_time = parse_time(time)
 
         return get_body("earth", new_observer_time)
 
