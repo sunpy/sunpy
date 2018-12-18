@@ -54,13 +54,10 @@ file
   >>> import asdf
   >>> import sunpy.map
   >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
-
   >>> aiamap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-
   >>> tree = {'amap': aiamap}  # doctest: +REMOTE_DATA
   >>> with asdf.AsdfFile(tree) as asdf_file:  # doctest: +REMOTE_DATA
   ...     asdf_file.write_to("sunpy_map.asdf")  # doctest: +REMOTE_DATA
-
   >>> input_asdf = asdf.open("sunpy_map.asdf")  # doctest: +REMOTE_DATA
   >>> input_asdf['amap']  # doctest: +REMOTE_DATA
   SunPy Map
