@@ -1,3 +1,8 @@
+.. The tests in the module are very fragile to change in ordering of VSO
+   results. In their current form they are very hard to maintain.
+
+.. doctest-skip-all
+
 .. _database_guide:
 
 --------------------------

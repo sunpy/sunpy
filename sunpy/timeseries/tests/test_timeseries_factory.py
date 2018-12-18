@@ -21,7 +21,8 @@ from sunpy.util.datatype_factory_base import NoMatchError
 
 import astropy.units as u
 from astropy.table import Table
-from astropy.time import Time
+from sunpy.time import parse_time
+from astropy.time import TimeDelta
 from astropy.io import fits
 
 # ==============================================================================
@@ -103,7 +104,7 @@ class TestTimeSeries(object):
         # Test a GOES TimeSeries
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
-        
+
     def test_implicit_lyra(self):
         # Test a LYRA TimeSeries
         ts_lyra = sunpy.timeseries.TimeSeries(lyra_filepath)
@@ -142,7 +143,7 @@ class TestTimeSeries(object):
         #Test a GOES TimeSeries
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
-        
+
     def test_lyra(self):
         #Test a LYRA TimeSeries
         ts_lyra = sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')
@@ -169,8 +170,8 @@ class TestTimeSeries(object):
 
     def test_meta_from_fits_header(self):
         # Generate the data and the corrisponding dates
-        base = datetime.datetime.today()
-        times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+        base = parse_time(datetime.datetime.today())
+        times = base - TimeDelta(np.arange(24*60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
         data = DataFrame(intensity, index=times, columns=['intensity'])
 
@@ -193,8 +194,8 @@ class TestTimeSeries(object):
 
     def test_generic_construction_basic(self):
         # Generate the data and the corrisponding dates
-        base = datetime.datetime.today()
-        times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+        base = parse_time(datetime.datetime.today())
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
@@ -217,8 +218,8 @@ class TestTimeSeries(object):
 
     def test_generic_construction_basic_omitted_details(self):
         # Generate the data and the corrisponding dates
-        base = datetime.datetime.today()
-        times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+        base = parse_time(datetime.datetime.today())
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
@@ -241,8 +242,8 @@ class TestTimeSeries(object):
 
     def test_generic_construction_basic_different_meta_types(self):
         # Generate the data and the corrisponding dates
-        base = datetime.datetime.today()
-        times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+        base = parse_time(datetime.datetime.today())
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
@@ -262,8 +263,8 @@ class TestTimeSeries(object):
 
     def test_generic_construction_ts_list(self):
         # Generate the data and the corrisponding dates
-        base = datetime.datetime.today()
-        times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+        base = parse_time(datetime.datetime.today())
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
         intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
@@ -292,8 +293,8 @@ class TestTimeSeries(object):
 
     def test_generic_construction_concatenation(self):
         # Generate the data and the corrisponding dates
-        base = datetime.datetime.today()
-        times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+        base = parse_time(datetime.datetime.today())
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
         intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
@@ -321,8 +322,8 @@ class TestTimeSeries(object):
 
     def test_table_to_ts(self):
         # Generate the data and the corresponding dates
-        base = datetime.datetime.today()
-        times = Time([base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)])
+        base = parse_time(datetime.datetime.today())
+        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity = u.Quantity(np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60)))), u.W/u.m**2)
 
         # Create the units and meta objects
@@ -415,4 +416,3 @@ class TestTimeSeries(object):
         header = hdulist[0].header
         hdulist.close()
         assert sunpy.timeseries.TimeSeries._validate_meta(header)
-

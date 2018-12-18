@@ -8,10 +8,13 @@
 
 import re
 import csv
-from datetime import datetime, timedelta
 
 import numpy as np
+
 from astropy import units as u
+from astropy.time import TimeDelta
+from astropy.time import Time
+
 
 import sunpy.io
 from sunpy.time import TimeRange, parse_time
@@ -83,8 +86,8 @@ def parse_observing_summary_dbase_file(filename):
             obssumm_filename.append(row[0])
             orbit_start.append(int(row[1]))
             orbit_end.append(int(row[2]))
-            start_time.append(datetime.strptime(row[3], '%d-%b-%y'))  # skip time
-            end_time.append(datetime.strptime(row[5], '%d-%b-%y'))  # skip time
+            start_time.append(Time.strptime(row[3], '%d-%b-%y'))  # skip time
+            end_time.append(Time.strptime(row[5], '%d-%b-%y'))  # skip time
             status_flag.append(int(row[7]))
             number_of_packets.append(int(row[8]))
 
@@ -102,31 +105,42 @@ def parse_observing_summary_dbase_file(filename):
 def parse_observing_summary_hdulist(hdulist):
     """
     Parse a RHESSI observation summary file.
+
     Parameters
     ----------
     hdulist : list
         The HDU list from the fits file.
+
     Returns
     -------
     out : `dict`
         Returns a dictionary.
+
     """
     header = hdulist[0].header
-    reference_time_ut = parse_time(hdulist[5].data.field('UT_REF')[0])
+
+    reference_time_ut = parse_time(hdulist[5].data.field('UT_REF')[0],
+                                   format='utime')
     time_interval_sec = hdulist[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')
     labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV',
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV',
               '800 - 7000 keV', '7000 - 20000 keV']
+
     # The data stored in the fits file are "compressed" countrates stored as
     # one byte
     compressed_countrate = np.array(hdulist[6].data.field('countrate'))
+
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
-    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
+
+    time_array = parse_time(reference_time_ut) + \
+        TimeDelta(time_interval_sec * np.arange(dim) * u.second)
+
     #  TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
+
     return header, data
 
 
@@ -189,7 +203,7 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
 
     Parameters
     ----------
-    calibrated_event_list : string
+    calibrated_event_list : str
         filename of a RHESSI calibrated event list
     detector : int
         the detector number
@@ -250,7 +264,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
 
     Parameters
     ----------
-    calibrated_event_list : string
+    calibrated_event_list : str
         filename of a RHESSI calibrated event list
     pixel_size : `~astropy.units.Quantity` instance
         the size of the pixels in arcseconds. Default is (1,1).
@@ -264,10 +278,10 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
 
     Examples
     --------
+    This example is broken.
     >>> import sunpy.data
-    >>> import sunpy.data.sample
+    >>> import sunpy.data.sample # doctest: +REMOTE_DATA
     >>> import sunpy.instr.rhessi as rhessi
-    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> map = rhessi.backprojection(sunpy.data.sample.RHESSI_EVENT_LIST)   # doctest: +SKIP
     >>> map.peek()   # doctest: +SKIP
 
@@ -281,7 +295,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     afits = sunpy.io.read_file(calibrated_event_list)
     info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
-    time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])
+    time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0], format='utime')
 
     image = np.zeros(image_dim)
 

@@ -69,10 +69,10 @@ if on_rtd:
     os.environ['LC_ALL'] = 'C'
 
 try:
-    import suds
+    import zeep
 except ImportError:
-    print('ERROR: suds could not be imported. Building the documentation requires '
-          'the "suds-jerko" package to be installed')
+    print('ERROR: zeep could not be imported. Building the documentation requires '
+          'the "zeep" package to be installed')
     sys.exit(1)
 
 try:

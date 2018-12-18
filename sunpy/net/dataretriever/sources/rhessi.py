@@ -67,12 +67,12 @@ class RHESSIClient(GenericClient):
         """
         dt = TimeRange(time_range)
         # remove time from dates
-        dt = TimeRange(dt.start.date(), dt.end.date())
+        dt = TimeRange(dt.start.datetime.date(), dt.end.datetime.date())
 
         filenames = []
 
-        diff_months = (dt.end.year - dt.start.year) * 12 + dt.end.month - dt.start.month
-        first_month = datetime(dt.start.year, dt.start.month, 1)
+        diff_months = (dt.end.datetime.year - dt.start.datetime.year) * 12 + dt.end.datetime.month - dt.start.datetime.month
+        first_month = datetime(dt.start.datetime.year, dt.start.datetime.month, 1)
         month_list = rrule(MONTHLY, dtstart=first_month, count=diff_months+1)
 
         # need to download and inspect the dbase file to determine the filename
@@ -134,9 +134,8 @@ class RHESSIClient(GenericClient):
 
         Parameters
         ----------
-        args : TimeRange, datetimes, date strings
-            Date range should be specified using a TimeRange, or start
-            and end dates at datetime instances or date strings.
+        timerange : `~sunpy.time.TimeRange`
+            Date range should be specified using a TimeRange.
         """
         return self.get_observing_summary_filename(timerange)
 
