@@ -5,6 +5,7 @@ import astropy.units as u
 pytest.importorskip('asdf', '2.0.2')
 from asdf.tests.helpers import assert_roundtrip_tree
 
+from sunpy.tests.helpers import skip_windows
 from sunpy.coordinates.frames import (Heliocentric, Helioprojective,
                                       HeliographicCarrington, HeliographicStonyhurst)
 
@@ -35,11 +36,17 @@ def coordframe_array(request):
     return frame(*data, obstime='2018-01-01T00:00:00')
 
 
+# Skip these two tests on windows due to a weird interaction with atomicfile
+# and tmpdir
+
+
+@skip_windows
 def test_saveframe(coordframe_scalar, tmpdir):
     tree = {'frame': coordframe_scalar}
     assert_roundtrip_tree(tree, tmpdir)
 
 
+@skip_windows
 def test_saveframe_arr(coordframe_array, tmpdir):
     tree = {'frame': coordframe_array}
     assert_roundtrip_tree(tree, tmpdir)
