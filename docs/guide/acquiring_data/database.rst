@@ -257,8 +257,7 @@ sections.
    ...        self.time = MockObject(start=start_time, end=end_time)
    ...        self.instrument = instrument
    ...        self.wave = MockObject(wavemin=wavelength, wavemax=wavelength, waveunit='nm')
-   >>> client.search = Mock(return_value=[MockQR(f"2011050800000{t}",
-   ...                                          'AIA', w) for
+   >>> vso.VSOClient().search = Mock(return_value=[MockQR(f"2011050800000{t}", 'AIA', w) for
    ...                                   t,w in zip([0,0,2,3], [17.1, 21.1, 9.4, 33.5])])
 
 After initialising the VSO client:
