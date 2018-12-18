@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-
-#pylint: disable=W0613
-
-import tempfile
 
 import pytest
 
-from astropy import units as u
+import astropy.units as u
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.net import vso
@@ -121,7 +116,7 @@ def test_complexattr_apply():
 @pytest.mark.remote_data
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
-    assert va.walker.create(a, client.api)[0].time.start == 'test'
+    assert va.walker.create(a, client.api)[0].time['start'] == 'test'
 
 
 def test_complexattr_and_duplicate():
@@ -138,13 +133,6 @@ def test_complexattr_or_eq():
 
     assert attr | attr == attr
     assert attr | va.Time((2011, 1, 1), (2011, 1, 1, 1)) == attr
-
-
-def test_complexattr_or_eq_leap_second():
-    attr = va.Time((2012, 6, 30, 23, 59, 60), (2012, 7, 1, 1))
-
-    assert attr | attr == attr
-    assert attr | va.Time((2012, 6, 30, 23, 59, 60), (2012, 7, 1, 1)) == attr
 
 
 def test_attror_and():
@@ -217,16 +205,6 @@ def test_time_xor():
     ])
 
 
-def test_leap_second_time_xor():
-    one = va.Time((2012, 6, 30, 23, 59, 60), (2012, 7, 2))
-    a = one ^ va.Time((2012, 7, 1, 1), (2012, 7, 1, 2))
-
-    assert a == attr.AttrOr([
-        va.Time((2012, 6, 30, 23, 59, 60), (2012, 7, 1, 1)),
-        va.Time((2012, 7, 1, 2), (2012, 7, 2))
-    ])
-
-
 def test_wave_xor():
     one = va.Wavelength(0 * u.AA, 1000 * u.AA)
     a = one ^ va.Wavelength(200 * u.AA, 400 * u.AA)
@@ -271,7 +249,7 @@ def test_repr():
 
 
 @pytest.mark.remote_data
-def test_path(client):
+def test_path(client, tmpdir):
     """
     Test that '{file}' is automatically appended to the end of a custom path if
     it is not specified.
@@ -279,7 +257,7 @@ def test_path(client):
     qr = client.search(
         va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
         va.Instrument('aia'), va.Wavelength(171 * u.AA))
-    tmp_dir = tempfile.mkdtemp()
+    tmp_dir = tmpdir / "{file}"
     files = client.fetch(qr, path=tmp_dir).wait(progress=False)
 
     assert len(files) == 1
@@ -429,19 +407,6 @@ def test_vso_hmi(client, tmpdir):
 
     # For each DataRequestItem assert that there is only one series in it.
     for dri in dris:
-        fileids = dri.fileiditem.fileid[0]
+        fileids = dri.fileiditem.fileid
         series = list(map(lambda x: x.split(':')[0], fileids))
         assert all([s == series[0] for s in series])
-
-
-@pytest.mark.remote_data
-def test_fetch_leap_second(client):
-    qr = client.search(
-        va.Time('2012-06-30 23:59:60', '2012-07-01 00:00:08'),
-        va.Instrument('aia'), va.Wavelength(171 * u.AA))
-    tmp_dir = tempfile.mkdtemp()
-    files = client.fetch(qr, path=tmp_dir).wait(progress=False)
-
-    assert len(files) == 1
-
-    assert "aia_lev1_171a_2012_06_30t23_59_60_34z_image_lev1.fits" in files[0]
