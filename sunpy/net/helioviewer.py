@@ -133,17 +133,17 @@ class HelioviewerClient(object):
         Parameters
         ----------
         date : `datetime.datetime`, string
-            A string or datetime object for the desired date of the image
+            A string or `~astropy.time.Time` object for the desired date of the image
         directory : string
             Directory to download JPEG 2000 image to.
         observatory : string
             Observatory name
         instrument : string
             instrument name
-        detector : string
-            detector name
         measurement : string
             measurement name
+        detector : string
+            detector name
         sourceid : int
             (Optional) data source id
 
@@ -203,7 +203,8 @@ class HelioviewerClient(object):
         Parameters
         ----------
         date : `datetime.datetime`, string
-            A string or datetime object for the desired date of the image
+            A `parse_time` parsable string or `~astropy.time.Time` object
+            for the desired date of the image
         image_scale : float
             The zoom scale of the image. Default scales that can be used are
             0.6, 1.2, 2.4, and so on, increasing or decreasing by a factor
