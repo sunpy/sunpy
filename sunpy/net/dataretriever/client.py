@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import copy
 import os
-import datetime
-from abc import ABCMeta
 from collections import OrderedDict, namedtuple
 from functools import partial
 import pathlib
@@ -10,6 +8,7 @@ import pathlib
 import numpy as np
 import astropy.table
 import astropy.units as u
+from parfive import Downloader
 
 import parfive
 
@@ -333,8 +332,6 @@ class GenericClient(BaseClient):
             dobj.enqueue_file(url, filename=filename)
 
         return dobj.download()
-
-        return res
 
     def _link(self, map_):
         """Helper Function"""

@@ -14,7 +14,7 @@ from sunpy.net import attr
 from sunpy.net import Fido, attrs as a
 from sunpy.net.base_client import BaseClient
 from sunpy.net.vso import QueryResponse as vsoQueryResponse
-from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
+from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.time import TimeRange, parse_time

@@ -84,7 +84,7 @@ def test_query_wrong_wave():
     c = norh.NoRHClient()
     with pytest.raises(ValueError):
         c.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'),
-                a.Wavelength(50*u.GHz))
+                 a.Wavelength(50*u.GHz))
 
 
 @pytest.mark.remote_data
@@ -94,8 +94,7 @@ def test_query_wrong_wave():
 def test_get(time, instrument, wave):
     LCClient = norh.NoRHClient()
     qr1 = LCClient.search(time, instrument, wave)
-    res = LCClient.fetch(qr1)
-    download_list = res.wait(progress=False)
+    download_list = LCClient.fetch(qr1)
     assert len(download_list) == len(qr1)
 
 
