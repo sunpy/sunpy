@@ -4,6 +4,7 @@ General utility functions.
 
 import os
 from itertools import count
+from collections import UserList
 
 import numpy as np
 
@@ -207,7 +208,7 @@ def expand_list(inp):
 
 def expand_list_generator(inp):
     for item in inp:
-        if type(item) in [list, tuple]:
+        if isinstance(item, (tuple, list, UserList)):
             for nested_item in expand_list_generator(item):
                 yield nested_item
         else:
