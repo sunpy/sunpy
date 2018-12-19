@@ -99,11 +99,9 @@ def test_save_path(tmpdir):
     qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
 
     # Test when path is str
-    target_dir = tmpdir.mkdir("down")
-    path = os.path.join(target_dir, "{instrument}", "{level}")
-    files = Fido.fetch(qr, path=path)
+    files = Fido.fetch(qr, path=str(tmpdir / "{instrument}" / "{level}"))
     for f in files:
-        assert target_dir.strpath in f
+        assert str(tmpdir) in f
         assert "eve{}0".format(os.path.sep) in f
 
 

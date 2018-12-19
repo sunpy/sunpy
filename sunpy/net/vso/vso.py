@@ -22,12 +22,10 @@ from astropy.table import QTable as Table
 from parfive import Downloader, Results
 
 from sunpy import config
-from sunpy.net import download
 from sunpy.time import TimeRange, parse_time
-from sunpy.util import replacement_filename
 from sunpy.net.vso import attrs
 from sunpy.net.attr import and_
-from sunpy.util.net import slugify, get_filename
+from sunpy.util.net import slugify, get_content_disposition
 from sunpy.net.vso.attrs import TIMEFORMAT, walker
 from sunpy.net.base_client import BaseClient
 from sunpy.util.decorators import deprecated
@@ -357,7 +355,9 @@ class VSOClient(BaseClient):
         url_filename = url.split('/')[-1]
         if resp:
             name = resp.headers.get("Content-Disposition", url_filename)
-        else:
+            if name:
+                name = get_content_disposition(name)
+        if not name:
             if isinstance(queryresponse.fileid, bytes):
                 name = queryresponse.fileid.decode("ascii", "ignore")
             else:
@@ -372,12 +372,8 @@ class VSOClient(BaseClient):
         if not name:
             name = "file"
 
-        fname = pattern.format(file=name, **dict(queryresponse.__values__))
+        fname = pattern.format(file=name, **serialize_object(queryresponse))
 
-        # TODO: Should be in parfive?
-        dir_ = os.path.abspath(os.path.dirname(fname))
-        if not os.path.exists(dir_):
-            os.makedirs(dir_)
         return fname
 
     @deprecated("1.0", alternative="sunpy.net.Fido")
