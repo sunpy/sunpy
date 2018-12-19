@@ -47,7 +47,7 @@ def get_content_disposition(content_disposition):
     parser = FeedParser()
     parser.feed('Content-Disposition: ' + content_disposition)
     name = parser.close().get_filename()
-    if not isinstance(name, str):
+    if name and not isinstance(name, str):
         name = name.decode('latin1', 'ignore')
     return name
 
