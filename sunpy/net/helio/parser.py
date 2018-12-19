@@ -230,4 +230,6 @@ def wsdl_retriever(service='HEC'):
         if end_point is not None and link_test(end_point) is not None:
             wsdl = end_point
             break
+    if wsdl is None:
+        raise ValueError("No online HELIO servers can be found.")
     return wsdl
