@@ -372,7 +372,7 @@ class VSOClient(BaseClient):
         if not name:
             name = "file"
 
-        fname = pattern.format(file=name, **dict(queryresponse))
+        fname = pattern.format(file=name, **dict(queryresponse.__values__))
 
         # TODO: Should be in parfive?
         dir_ = os.path.abspath(os.path.dirname(fname))
@@ -606,7 +606,7 @@ class VSOClient(BaseClient):
         data_request = self.make_getdatarequest(query_response, methods, info)
         data_response = VSOGetDataResponse(self.api.service.GetData(data_request))
 
-        err_results = self.download_all(data_response, methods, downloader, path, fileids, res)
+        err_results = self.download_all(data_response, methods, downloader, path, fileids)
 
         results = downloader.download()
         results += err_results

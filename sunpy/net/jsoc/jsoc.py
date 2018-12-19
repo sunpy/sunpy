@@ -3,7 +3,6 @@ import os
 import time
 import urllib
 import warnings
-from functools import partial
 from collections import Sequence
 
 import drms
@@ -17,7 +16,6 @@ from parfive import Downloader
 
 from sunpy import config
 from sunpy.net.base_client import BaseClient
-from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
 
@@ -553,7 +551,6 @@ class JSOCClient(BaseClient):
                     fname = path
                 fname = fname.format(file=filename)
                 fname = os.path.expanduser(fname)
-                fname = partial(simple_path, fname)
                 paths.append(fname)
 
         downloader = Downloader(max_conn=max_conn, progress=progress)
