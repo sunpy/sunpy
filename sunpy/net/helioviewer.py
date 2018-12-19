@@ -29,9 +29,9 @@ class HelioviewerClient(object):
         """
         self.datasource_info = dict()
         self._api = url
-        self.init_src_dict()
+        self._init_src_dict()
     
-    def init_src_dict(self):
+    def _init_src_dict(self):
         datasources = self.get_data_sources()
         for name, observ in datasources.items():
             if name == "TRACE":
