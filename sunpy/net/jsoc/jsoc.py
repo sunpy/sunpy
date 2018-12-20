@@ -595,7 +595,7 @@ class JSOCClient(BaseClient):
                 downloader.enqueue_file(aurl, filename=fname)
 
         if downloader and not wait:
-            return downloader, Results(already_files)
+            return Results(already_files)
 
         results = downloader.download()
         results.data += already_files

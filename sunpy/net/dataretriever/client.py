@@ -292,7 +292,8 @@ class GenericClient(BaseClient):
                 return QueryResponse.create(self.map_, urls, times)
         return QueryResponse.create(self.map_, urls)
 
-    def fetch(self, qres, path=None, downloader=None, wait=False, **kwargs):
+    def fetch(self, *qres, path=None, overwrite=False, progress=True,
+              max_conn=5, downloader=None, wait=True, **kwargs):
         """
         Download a set of results.
 
@@ -304,6 +305,15 @@ class GenericClient(BaseClient):
         path : `str` or `pathlib.Path`, optional
             Path to the download directory
 
+        overwrite : `bool`, optional
+            Replace files with the same name if True
+
+        progress : `bool`, optional
+            Print progress info to terminal
+
+        max_conns : `int`, optional
+            Maximum number of download connections.
+
         downloader : `parfive.Downloader`, optional
             The download manager to use.
 
@@ -313,7 +323,9 @@ class GenericClient(BaseClient):
 
         Returns
         -------
-        Results Object
+
+        results: `parfive.Results`
+
         """
         # Check for type of path
         if path is not None:
@@ -330,13 +342,15 @@ class GenericClient(BaseClient):
 
         paths = self._get_full_filenames(qres, filenames, path)
 
-        dobj = parfive.Downloader(max_conn=5)
+        if not downloader:
+            downloader = Downloader(max_conn=max_conn, progress=progress)
 
         for url, filename in zip(urls, paths):
             downloader.enqueue_file(url, filename=filename)
 
         if downloader and not wait:
-            return downloader, None
+            return
+
         return downloader.download()
 
     def _link(self, map_):
