@@ -591,7 +591,9 @@ class VSOClient(BaseClient):
             path = os.path.join(path, '{file}')
         path = os.path.expanduser(path)
 
+        dl_set = True
         if not downloader:
+            dl_set = False
             downloader = Downloader(progress=progress)
 
         fileids = VSOClient.by_fileid(query_response)
@@ -609,7 +611,7 @@ class VSOClient(BaseClient):
 
         err_results = self.download_all(data_response, methods, downloader, path, fileids)
 
-        if downloader and not wait:
+        if dl_set and not wait:
             return err_results
 
         results = downloader.download()

@@ -184,11 +184,11 @@ def test_multiple_match():
 
 
 @pytest.mark.remote_data
-def test_no_wait_fetch():
+def test_fetch():
         qr = Fido.search(a.Instrument('EVE'),
                          a.Time("2016/10/01", "2016/10/02"),
                          a.Level(0))
-        res = Fido.fetch(qr, wait=False)
+        res = Fido.fetch(qr)
         assert isinstance(res, Results)
 
 
