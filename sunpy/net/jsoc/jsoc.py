@@ -12,7 +12,7 @@ import astropy.units as u
 import astropy.time
 import astropy.table
 from astropy.utils.misc import isiterable
-from parfive import Downloader
+from parfive import Downloader, Results
 
 from sunpy import config
 from sunpy.net.base_client import BaseClient
@@ -433,7 +433,7 @@ class JSOCClient(BaseClient):
         return requests
 
     def fetch(self, jsoc_response, path=None, overwrite=False, progress=True,
-              max_conn=5, downloader=None, sleep=10):
+              max_conn=5, downloader=None, wait=False, sleep=10):
         """
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
@@ -455,8 +455,12 @@ class JSOCClient(BaseClient):
         max_conns : `int`
             Maximum number of download connections.
 
-        downloader: `~sunpy.net.download.Downloader` instance
-            A Custom downloader to use
+        downloader : `parfive.Downloader`, optional
+            The download manager to use.
+
+        wait : `bool`, optional
+           If `False` ``downloader.download()`` will not be called. Only has
+           any effect if `downloader` is not `None`.
 
         sleep : `int`
             The number of seconds to wait between calls to JSOC to check the status
@@ -481,12 +485,13 @@ class JSOCClient(BaseClient):
         for response in responses:
             response.wait(verbose=progress)
             r = self.get_request(response, path=path, overwrite=overwrite,
-                                 progress=progress)
+                                 progress=progress, max_conn=max_conn,
+                                 downloader=downloader, wait=wait)
 
         return r
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
-                    max_conn=5):
+                    max_conn=5, downloader=None, wait=False):
         """
         Query JSOC to see if the request(s) is ready for download.
 
@@ -509,6 +514,13 @@ class JSOCClient(BaseClient):
 
         max_conns : `int`
             Maximum number of download connections.
+
+        downloader : `parfive.Downloader`, optional
+            The download manager to use.
+
+        wait : `bool`, optional
+           If `False` ``downloader.download()`` will not be called. Only has
+           any effect if `downloader` is not `None`.
 
         Returns
         -------
@@ -553,7 +565,8 @@ class JSOCClient(BaseClient):
                 fname = os.path.expanduser(fname)
                 paths.append(fname)
 
-        downloader = Downloader(max_conn=max_conn, progress=progress)
+        if not downloader:
+            downloader = Downloader(max_conn=max_conn, progress=progress)
 
         urls = []
         already_files = []
@@ -580,6 +593,9 @@ class JSOCClient(BaseClient):
                 print(print_message.format(len(urls), request._d['size']))
             for aurl, fname in zip(urls, paths):
                 downloader.enqueue_file(aurl, filename=fname)
+
+        if downloader and not wait:
+            return downloader, Results(already_files)
 
         results = downloader.download()
         results.data += already_files

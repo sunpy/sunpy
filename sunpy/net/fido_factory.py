@@ -10,7 +10,7 @@ This module provides the `Fido
 """
 from collections import Sequence
 
-from parfive import Results
+from parfive import Downloader, Results
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -296,7 +296,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 
-    def fetch(self, *query_results, progress=True, **kwargs):
+    def fetch(self, *query_results, max_conn=5, progress=True, **kwargs):
         """
         Download the records represented by
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
@@ -306,8 +306,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query_results : `sunpy.net.fido_factory.UnifiedResponse`
             Container returned by query method, or multiple.
 
-        wait : `bool`
-            fetch will wait until the download is complete before returning.
+        max_conn : `int`, optional
+            The number of parallel download slots.
 
         progress : `bool`
             Show a progress bar while the download is running.
@@ -322,15 +322,24 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
         >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
         """
+
+        downloader = Downloader(max_conn=max_conn, progress=progress)
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                reslist.append(block.client.fetch(block, progress=progress, **kwargs))
+                reslist.append(block.client.fetch(block, progress=progress, downloader=downloader,
+                                                  wait=False, **kwargs)[1])
 
+        results = downloader.download()
         # Combine the results objects from all the clients into one Results
         # object.
-        results = Results()
         for result in reslist:
+            if result is None:
+                continue
+            if not isinstance(result, Results):
+                raise ValueError(
+                    "If wait is False a client must return a parfive.Downloader and either None"
+                    " or a parfive.Results object.")
             results.data += result.data
             results._errors += result.errors
 

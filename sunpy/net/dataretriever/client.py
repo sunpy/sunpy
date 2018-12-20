@@ -292,7 +292,7 @@ class GenericClient(BaseClient):
                 return QueryResponse.create(self.map_, urls, times)
         return QueryResponse.create(self.map_, urls)
 
-    def fetch(self, qres, path=None, error_callback=None, **kwargs):
+    def fetch(self, qres, path=None, downloader=None, wait=False, **kwargs):
         """
         Download a set of results.
 
@@ -301,11 +301,15 @@ class GenericClient(BaseClient):
         qres : `~sunpy.net.dataretriever.QueryResponse`
             Results to download.
 
-        path : string or pathlib.Path
+        path : `str` or `pathlib.Path`, optional
             Path to the download directory
 
-        error_callback : Function
-            Callback function for error during downloads
+        downloader : `parfive.Downloader`, optional
+            The download manager to use.
+
+        wait : `bool`, optional
+           If `False` ``downloader.download()`` will not be called. Only has
+           any effect if `downloader` is not `None`.
 
         Returns
         -------
@@ -329,9 +333,11 @@ class GenericClient(BaseClient):
         dobj = parfive.Downloader(max_conn=5)
 
         for url, filename in zip(urls, paths):
-            dobj.enqueue_file(url, filename=filename)
+            downloader.enqueue_file(url, filename=filename)
 
-        return dobj.download()
+        if downloader and not wait:
+            return downloader, None
+        return downloader.download()
 
     def _link(self, map_):
         """Helper Function"""
