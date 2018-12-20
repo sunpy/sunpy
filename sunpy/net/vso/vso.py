@@ -526,7 +526,7 @@ class VSOClient(BaseClient):
         )
 
     def fetch(self, query_response, path=None, methods=None,
-              downloader=None, site=None, progress=True):
+              downloader=None, wait=True, site=None, progress=True):
         """
         Download data specified in the query_response.
 
@@ -551,8 +551,12 @@ class VSOClient(BaseClient):
             and `SUFFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
             are listed on the VSO site.
 
-        downloader : sunpy.net.downloader.Downloader
-            Downloader used to download the data.
+        downloader : `parfive.Downloader`, optional
+            The download manager to use.
+
+        wait : `bool`, optional
+           If `False` ``downloader.download()`` will not be called. Only has
+           any effect if `downloader` is not `None`.
 
         site : str
             There are a number of caching mirrors for SDO and other
@@ -587,7 +591,8 @@ class VSOClient(BaseClient):
             path = os.path.join(path, '{file}')
         path = os.path.expanduser(path)
 
-        downloader = Downloader(progress=progress)
+        if not downloader:
+            downloader = Downloader(progress=progress)
 
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
@@ -603,6 +608,9 @@ class VSOClient(BaseClient):
         data_response = VSOGetDataResponse(self.api.service.GetData(data_request))
 
         err_results = self.download_all(data_response, methods, downloader, path, fileids)
+
+        if downloader and not wait:
+            return downloader, err_results
 
         results = downloader.download()
         results += err_results
