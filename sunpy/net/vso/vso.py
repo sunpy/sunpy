@@ -610,7 +610,7 @@ class VSOClient(BaseClient):
         err_results = self.download_all(data_response, methods, downloader, path, fileids)
 
         if downloader and not wait:
-            return downloader, err_results
+            return err_results
 
         results = downloader.download()
         results += err_results
