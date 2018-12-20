@@ -292,7 +292,7 @@ class GenericClient(BaseClient):
                 return QueryResponse.create(self.map_, urls, times)
         return QueryResponse.create(self.map_, urls)
 
-    def fetch(self, *qres, path=None, overwrite=False, progress=True,
+    def fetch(self, qres, path=None, overwrite=False, progress=True,
               max_conn=5, downloader=None, wait=True, **kwargs):
         """
         Download a set of results.
@@ -342,13 +342,15 @@ class GenericClient(BaseClient):
 
         paths = self._get_full_filenames(qres, filenames, path)
 
+        dl_set = True
         if not downloader:
+            dl_set = False
             downloader = Downloader(max_conn=max_conn, progress=progress)
 
         for url, filename in zip(urls, paths):
             downloader.enqueue_file(url, filename=filename)
 
-        if downloader and not wait:
+        if dl_set and not wait:
             return
 
         return downloader.download()

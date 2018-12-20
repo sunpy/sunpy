@@ -323,6 +323,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
         """
 
+        if "wait" in kwargs or "downloader" in kwargs:
+            raise ValueError("wait and downloader are not valid keyword arguments to Fido.fetch")
+
         downloader = Downloader(max_conn=max_conn, progress=progress)
         reslist = []
         for query_result in query_results:

@@ -491,7 +491,7 @@ class JSOCClient(BaseClient):
         return r
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
-                    max_conn=5, downloader=None, wait=False):
+                    max_conn=5, downloader=None, wait=True):
         """
         Query JSOC to see if the request(s) is ready for download.
 
@@ -565,7 +565,9 @@ class JSOCClient(BaseClient):
                 fname = os.path.expanduser(fname)
                 paths.append(fname)
 
+        dl_set = True
         if not downloader:
+            dl_set = False
             downloader = Downloader(max_conn=max_conn, progress=progress)
 
         urls = []
@@ -594,7 +596,7 @@ class JSOCClient(BaseClient):
             for aurl, fname in zip(urls, paths):
                 downloader.enqueue_file(aurl, filename=fname)
 
-        if downloader and not wait:
+        if dl_set and not wait:
             return Results(already_files)
 
         results = downloader.download()
