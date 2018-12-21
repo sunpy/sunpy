@@ -1,4 +1,4 @@
-import sys
+import platform
 from distutils.version import LooseVersion
 
 import numpy as np
@@ -45,7 +45,7 @@ def coordframe_array(request):
 # and tmpdir
 skip_windows_asdf = pytest.mark.skipif(
     (LooseVersion(asdf.__version__) < LooseVersion("2.3.1")
-     and sys.platform.startswith("win")),
+     and platform.system() == 'Windows'),
     reason="See https://github.com/spacetelescope/asdf/pull/632")
 
 
