@@ -69,8 +69,8 @@ class HelioviewerClient(object):
         
         Parameters
         ----------
-        date : `datetime.datetime`, `str`
-            A string or datetime object for the desired date of the image
+        date : `astropy.time.Time`, str
+            A `~sunpy.time.parse_time` parsable string or `~astropy.time.Time` object for the desired date of the image
         observatory : string
             Observatory name
         instrument : string
@@ -132,7 +132,7 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : `datetime.datetime`, string
+        date : `astropy.time.Time`, str
             A string or `~astropy.time.Time` object for the desired date of the image
         directory : string
             Directory to download JPEG 2000 image to.
@@ -149,7 +149,7 @@ class HelioviewerClient(object):
 
         Returns
         -------
-        out : string
+        out : str
             Returns a filepath to the downloaded JPEG 2000 image or a URL if
             the "jpip" parameter is set to True.
 
@@ -202,16 +202,16 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : `datetime.datetime`, string
+        date : `astropy.time.Time`, `str`
             A `parse_time` parsable string or `~astropy.time.Time` object
             for the desired date of the image
         image_scale : float
             The zoom scale of the image. Default scales that can be used are
             0.6, 1.2, 2.4, and so on, increasing or decreasing by a factor
             of 2. The full-res scale of an AIA image is 0.6.
-        directory : string
+        directory : str
             Directory to download PNG image to.
-        layers : string
+        layers : str
             Image datasource layer/layers to include in the screeshot.
             Each layer string is comma-separated with these values, e.g.:
             "[sourceid,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
@@ -262,7 +262,7 @@ class HelioviewerClient(object):
 
         Returns
         -------
-        out : string
+        out : str
             filepath to the PNG image
 
         Examples
