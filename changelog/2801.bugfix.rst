@@ -1,5 +1,0 @@
-Ensures that Helioviewer client uses version 2 of Helioviewer API exclusively.
-The version 2 of the API made source id as a necessary parameter so we had to pass it
-to the API. We have not changed the function definition but now we pass the source id
-internally to the API. We have also added a new function that organizes the datasource
-dictionary in a better way.

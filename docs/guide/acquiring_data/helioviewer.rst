@@ -24,7 +24,7 @@ HelioviewerClient is not meant to offer full access to the HelioViewer API. We p
 1. That download a JP2 image for the specified datasource that is the closest match in time to the `date` requested.
 2. That returns a hierarchial list of the available datasources.
 3. To find the image data that is closest to the requested date/time. This function returns the associated 
-metadata from the helioviewer database and the XML header of the JPEG2000 image file 
+metadata from the helioviewer database and the XML header of the JPEG2000 image file and,
 4. To generate custom screenshots.
 
 Nearly all requests require the user to specify the data they are interested in
