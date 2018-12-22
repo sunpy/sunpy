@@ -1,1 +1,5 @@
 Helioviewer client now uses Helioviewer API version 2 exclusively.
+The version 2 of the API requires source id as a necessary argument.
+We have kept the function definition same but now we pass the source id
+implicitly to the API. We have also added a new function that organize the 
+datasource in a better way.

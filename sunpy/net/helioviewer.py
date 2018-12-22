@@ -34,13 +34,13 @@ class HelioviewerClient(object):
     def _init_src_dict(self):
         datasources = self.get_data_sources()
         for name, observ in datasources.items():
-            if name == "TRACE":
+            if name == "TRACE":  #TRACE only has measurement parameter
                 for instr, params in observ.items():
                     self.datasource_info[(name, None, None, instr)] = params['sourceId']
             else:
                 for inst, detect in observ.items():
                     for wavelength, params in detect.items():
-                        if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:
+                        if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:  #These three observatories have instrument, detector and measurement as their parameters
                             for wave, adict in params.items():
                                 self.datasource_info[(name, inst, wavelength, wave)] = adict['sourceId']
                         else:
