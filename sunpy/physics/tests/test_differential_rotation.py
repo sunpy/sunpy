@@ -1,7 +1,5 @@
-from __future__ import absolute_import
 import os
 import pytest
-from datetime import timedelta
 
 import numpy as np
 from astropy import units as u
@@ -9,6 +7,7 @@ from astropy.time import Time
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import Longitude
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import TimeDelta
 
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
@@ -146,20 +145,20 @@ def test_diffrot_map(aia171_test_map):
     # Test a submap without padding
     aia_srot = diffrot_map(aia171_test_map, dt=-5 * u.day)
     assert aia_srot.dimensions == aia171_test_map.dimensions
-    assert (aia171_test_map.date - timedelta(days=5)) - aia_srot.date < timedelta(seconds=1)
+    assert (aia171_test_map.date - TimeDelta(5*u.day)) - aia_srot.date < TimeDelta(1*u.second)
 
 
 def test_diffrot_submap(aia171_test_submap):
     # Test a submap without padding
     aia_srot = diffrot_map(aia171_test_submap, '2011-02-14T12:00:00')
     assert aia_srot.dimensions == aia171_test_submap.dimensions
-    assert (aia171_test_submap.date - timedelta(days=0.5)) - aia_srot.date < timedelta(seconds=1)
+    assert (aia171_test_submap.date - TimeDelta(0.5*u.day)) - aia_srot.date < TimeDelta(1*u.second)
 
 
 def test_diffrot_submap_pad(aia171_test_submap):
     aia_srot = diffrot_map(aia171_test_submap, dt=-0.5 * u.day, pad=True)
     assert aia_srot.dimensions >= aia171_test_submap.dimensions
-    assert (aia171_test_submap.date - timedelta(days=0.5)) - aia_srot.date < timedelta(seconds=1)
+    assert (aia171_test_submap.date - TimeDelta(0.5*u.day)) - aia_srot.date < TimeDelta(1*u.second)
     assert aia_srot.meta['naxis1'] == 35
     assert aia_srot.meta['naxis2'] == 18
 
@@ -167,7 +166,7 @@ def test_diffrot_submap_pad(aia171_test_submap):
 def test_diffrot_allen_submap_pad(aia171_test_submap):
     aia_srot = diffrot_map(aia171_test_submap, dt=-0.5 * u.day, pad=True, rot_type='allen')
     assert aia_srot.dimensions >= aia171_test_submap.dimensions
-    assert (aia171_test_submap.date - timedelta(days=0.5)) - aia_srot.date < timedelta(seconds=1)
+    assert (aia171_test_submap.date - TimeDelta(0.5*u.day)) - aia_srot.date < TimeDelta(1*u.second)
     assert aia_srot.meta['naxis1'] == 35
     assert aia_srot.meta['naxis2'] == 18
 

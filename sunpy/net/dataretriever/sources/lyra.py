@@ -2,8 +2,7 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-import datetime
-from sunpy.extern.six.moves.urllib.parse import urljoin
+from urllib.parse import urljoin
 
 from ..client import GenericClient
 
@@ -37,15 +36,16 @@ class LYRAClient(GenericClient):
 
         Parameters
         ----------
-        date : Python datetime object
+        date : `astropy.time.Time`, `~datetime.datetime`, `~datetime.date`
 
         Returns
         -------
-        string
+        str
             The URL for the corresponding date.
         """
 
-        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(date, kwargs.get('level', 2))
+        filename = "lyra_{0}-000000_lev{1:d}_std.fits".format(
+            date.strftime('%Y%m%d'), kwargs.get('level', 2))
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urljoin(date.strftime('%Y/%m/%d/'), filename)
 

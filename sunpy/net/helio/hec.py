@@ -3,46 +3,15 @@ Access the Helio Event Catalogue
 """
 import io
 
-import suds
-from suds.client import Client as C
+import zeep
+from lxml import etree
+
 from astropy.io.votable.table import parse_single_table
 
-from sunpy.net.proxyfix import WellBehavedHttpTransport
-from sunpy.net.helio import parser
 from sunpy.time import parse_time
+from sunpy.net.helio import parser
 
 __all__ = ['HECClient']
-
-
-def suds_unwrapper(wrapped_data):
-    """
-    Removes suds wrapping from returned xml data
-
-    When grabbing data via votable_interceptor.last_payload from the
-    suds.client.Client module, it returns the xml data in an un-helpful
-    "<s:Envelope>" that needs to be removed. This function politely cleans
-    it up.
-
-    Parameters
-    ----------
-    wrapped_data : `str`
-        Contains the wrapped xml results from a WSDL query
-
-    Returns
-    -------
-    unwrapped : `str`
-        The xml results with the wrapper removed
-    """
-    if not isinstance(wrapped_data, str):
-        wrapped_data = wrapped_data.decode("utf-8")
-    HEADER = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    CATCH_1 = '<VOTABLE'
-    CATCH_2 = '</VOTABLE>\n'
-    # Now going to find the locations of the CATCHes in the wrapped_data
-    pos_1 = wrapped_data.find(CATCH_1)
-    pos_2 = wrapped_data.find(CATCH_2)
-    unwrapped = HEADER + wrapped_data[pos_1:pos_2] + CATCH_2
-    return unwrapped
 
 
 def votable_handler(xml_table):
@@ -57,7 +26,7 @@ def votable_handler(xml_table):
 
     Parameters
     ----------
-    xml_table : str
+    xml_table : `bytes`
         Contains the VOtable style xml data
 
     Returns
@@ -65,36 +34,12 @@ def votable_handler(xml_table):
     votable : `astropy.io.votable.tree.Table`
         A properly formatted VOtable object
 
-    Examples
-    --------
-    >>> from sunpy.net.helio import hec
-    >>> temp = hec.suds_unwrapper(xml_string)  # doctest: +SKIP
-    >>> type(temp)  # doctest: +SKIP
-    unicode
-    >>> temp = hec.votable_handler(temp)  # doctest: +SKIP
-    >>> type(temp)  # doctest: +SKIP
-    astropy.io.votable.tree.Table
     """
     fake_file = io.BytesIO()
-    fake_file.write(bytes(xml_table, "utf-8"))
+    fake_file.write(xml_table)
     votable = parse_single_table(fake_file)
     fake_file.close()
     return votable
-
-
-class VotableInterceptor(suds.plugin.MessagePlugin):
-    '''
-    Adapted example from https://stackoverflow.com/questions/15259929/configure-suds-to-use-custom-response-xml-parser-for-big-response-payloads
-    '''
-    def __init__(self, *args, **kwargs):
-        self.last_payload = None
-
-    def received(self, context):
-        # received xml as a string
-        self.last_payload = suds_unwrapper(context.reply)
-        # clean up reply to prevent parsing
-        context.reply = ""
-        return context
 
 
 class HECClient(object):
@@ -123,8 +68,7 @@ class HECClient(object):
             # The default wsdl file
             link = parser.wsdl_retriever()
 
-        self.votable_interceptor = VotableInterceptor()
-        self.hec_client = C(link, plugins=[self.votable_interceptor], transport=WellBehavedHttpTransport())
+        self.hec_client = zeep.Client(link)
 
     def time_query(self, start_time, end_time, table=None, max_records=None):
         """
@@ -135,11 +79,11 @@ class HECClient(object):
 
         Parameters
         ----------
-        start_time : str
-            The datetime where the query window opens
+        start_time : str, `~sunpy.time.parse_time` parsable objects
+            The time where the query window opens
 
-        end_time : str
-            The datetime where the query window closes
+        end_time : str, `~sunpy.time.parse_time` parsable objects
+            The time where the query window closes
 
         table : str
             The table to query from. If the table is unknown, the user will be
@@ -166,11 +110,11 @@ class HECClient(object):
             table = self.make_table_list()
         start_time = parse_time(start_time)
         end_time = parse_time(end_time)
-        self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
-                                          ENDTIME=end_time.isoformat(),
-                                          FROM=table,
-                                          MAXRECORDS=max_records)
-        results = votable_handler(self.votable_interceptor.last_payload)
+        results = self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
+                                                    ENDTIME=end_time.isoformat(),
+                                                    FROM=table,
+                                                    MAXRECORDS=max_records)
+        results = votable_handler(etree.tostring(results))
         return results
 
     def get_table_names(self):
@@ -197,8 +141,8 @@ class HECClient(object):
          (b'stereob_het_sep',)]
 
         """
-        self.hec_client.service.getTableNames()
-        tables = votable_handler(self.votable_interceptor.last_payload)
+        results = self.hec_client.service.getTableNames()
+        tables = votable_handler(etree.tostring(results))
         return tables.array
 
     def make_table_list(self):

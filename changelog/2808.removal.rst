@@ -1,0 +1,1 @@
+`sunpy.instr.rhessi.get_obssumm_dbase_file` `sunpy.instr.rhessi.get_obssum_filename`, `sunpy.instr.rhessi.get_obssumm_file` have been removed. Fido should be used to download these files.

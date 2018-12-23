@@ -1,22 +1,20 @@
 """
 This module provides a wrapper around the Helioviewer API.
 """
-from __future__ import absolute_import
-
 # pylint: disable=E1101,F0401,W0231
 
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import errno
 import json
+import errno
 import codecs
+import urllib
+
 import sunpy
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
-
-from sunpy.extern.six.moves import urllib
 
 __all__ = ['HelioviewerClient']
 
@@ -71,13 +69,13 @@ class HelioviewerClient(object):
         ----------
         date : `astropy.time.Time`, str
             A `~sunpy.time.parse_time` parsable string or `~astropy.time.Time` object for the desired date of the image
-        observatory : string
+        observatory : str
             Observatory name
-        instrument : string
+        instrument : str
             instrument name
-        detector : string
+        detector : str
             detector name
-        measurement : string
+        measurement : str
             measurement name
         sourceid : int
             (Optional) data source id
@@ -93,7 +91,7 @@ class HelioviewerClient(object):
         >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> metadata = client.get_closest_image('2012/01/01', sourceid=11)  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
-        2012-01-01 00:00:07
+        2012-01-01T00:00:07.000
         """
 
         if('sourceid' in kwargs):
@@ -115,7 +113,7 @@ class HelioviewerClient(object):
 
         response = self._get_json(params)
 
-        # Cast date string to DateTime
+        # Cast date string to Time
         response['date'] = parse_time(response['date'])
 
         return response
@@ -134,15 +132,16 @@ class HelioviewerClient(object):
         ----------
         date : `astropy.time.Time`, str
             A string or `~astropy.time.Time` object for the desired date of the image
-        directory : string
+
+        directory : str
             Directory to download JPEG 2000 image to.
-        observatory : string
+        observatory : str
             Observatory name
-        instrument : string
+        instrument : str
             instrument name
-        measurement : string
+        measurement : str
             measurement name
-        detector : string
+        detector : str
             detector name
         sourceid : int
             (Optional) data source id
@@ -218,13 +217,13 @@ class HelioviewerClient(object):
             Multiple layer string are by commas: "[layer1],[layer2],[layer3]"
         eventLabels : bool
             Optionally annotate each event marker with a text label.
-        events : string
+        events : str
             (Optional)  List feature/event types and FRMs to use to annoate the
             movie. Use the empty string to indicate that no feature/event annotations
             should be shown e.g.: [AR,HMI_HARP;SPoCA,1],[CH,all,1]
         scale : bool
             (Optional) Optionally overlay an image scale indicator.
-        scaleType : string
+        scaleType : str
             (Optional) Image scale indicator.
         scaleX : number
             (Optional) Horizontal offset of the image scale indicator in arcseconds with respect
@@ -346,4 +345,4 @@ class HelioviewerClient(object):
 
     def _format_date(self, date):
         """Formats a date for Helioviewer API requests"""
-        return parse_time(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
+        return parse_time(date).isot + "Z"

@@ -6,25 +6,20 @@ is based on algorithms presented in the book Astronomical Formulae for
 Calculators, by Jean Meeus.
 Every function returning a quantity is of type astropy.units.Quantity
 """
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import Angle, Longitude, Latitude
+from astropy.coordinates import Angle, Latitude, Longitude
 
-from sunpy.time import parse_time, julian_day, julian_centuries
 from sunpy.sun import constants
-from sunpy.util.decorators import deprecated
-from sunpy.extern import six
+from sunpy.time import parse_time, julian_centuries
 from sunpy.util.decorators import add_common_docstring
 
-
 __all__ = [
-    "print_params", "heliographic_solar_center", "solar_north", "apparent_declination",
+    "print_params", "apparent_declination",
     "apparent_rightascension", "apparent_obliquity_of_ecliptic", "true_declination",
     "true_rightascension", "true_obliquity_of_ecliptic", "apparent_latitude", "true_latitude",
-    "apparent_longitude", "sunearth_distance", "true_anomaly", "true_longitude",
+    "apparent_longitude", "true_anomaly", "true_longitude",
     "equation_of_center", "geometric_mean_longitude", "carrington_rotation_number", "mean_anomaly",
     "longitude_Sun_perigee", "mean_ecliptic_longitude", "eccentricity_SunEarth_orbit", "position",
     "solar_semidiameter_angular_size", "solar_cycle_number"
@@ -67,7 +62,7 @@ def solar_cycle_number(t='now'):
 
     """
     time = parse_time(t)
-    result = (time.year + 8) % 28 + 1
+    result = (int(time.strftime('%Y')) + 8) % 28 + 1
     return result
 
 
@@ -154,7 +149,7 @@ def carrington_rotation_number(t='now'):
     Return the Carrington Rotation number
 
     """
-    jd = julian_day(t)
+    jd = parse_time(t).jd
     result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
     return result
 
@@ -205,20 +200,6 @@ def true_anomaly(t='now'):
     """
     result = mean_anomaly(t) + equation_of_center(t)
     return Longitude(result)
-
-
-@deprecated('0.8', 'Use sunpy.coordinates.get_sunearth_distance() for higher accuracy')
-@add_common_docstring(append=PARAMETER_DOCS)
-def sunearth_distance(t='now'):
-    """
-    Returns the Sun Earth distance (AU). There are a set of higher
-    accuracy terms not included here.
-
-    """
-    ta = true_anomaly(t)
-    e = eccentricity_SunEarth_orbit(t)
-    result = 1.00000020 * (1.0 - e**2) / (1.0 + e * np.cos(ta))
-    return result * u.AU
 
 
 @add_common_docstring(append=PARAMETER_DOCS)
@@ -319,53 +300,6 @@ def apparent_declination(t='now'):
     app_long = apparent_longitude(t)
     result = np.arcsin(np.sin(ob)) * np.sin(app_long)
     return Latitude(result.to(u.deg))
-
-
-@deprecated('0.8', 'Use sunpy.coordinates.get_sun_P() for higher accuracy')
-@add_common_docstring(append=PARAMETER_DOCS)
-def solar_north(t='now'):
-    """
-    Returns the position of the Solar north pole in degrees.
-
-    """
-    T = julian_centuries(t)
-    ob1 = true_obliquity_of_ecliptic(t)
-    # in degrees
-    i = 7.25 * u.deg
-    k = (74.3646 + 1.395833 * T) * u.deg
-    lamda = true_longitude(t) - (0.00569 * u.deg)
-    omega = (259.18 - 1934.142 * T) * u.deg
-    lamda2 = lamda - (0.00479 * np.sin(omega)) * u.deg
-    diff = lamda - k
-    x = np.arctan(-np.cos(lamda2) * np.tan(ob1))
-    y = np.arctan(-np.cos(diff) * np.tan(i))
-    result = x + y
-    return Angle(result.to(u.deg))
-
-
-@deprecated('0.8', 'Use sunpy.coordinates.get_sun_L0() and .get_sun_B0() for higher accuracy')
-@add_common_docstring(append=PARAMETER_DOCS)
-def heliographic_solar_center(t='now'):
-    """
-    Returns the position of the solar center in heliographic coordinates.
-
-    """
-    jd = julian_day(t)
-    T = julian_centuries(t)
-    # Heliographic coordinates in degrees
-    theta = ((jd - 2398220) * 360 / 25.38) * u.deg
-    i = 7.25 * u.deg
-    k = (74.3646 + 1.395833 * T) * u.deg
-    lamda = true_longitude(t) - 0.00569 * u.deg
-    diff = lamda - k
-    # Latitude at center of disk (deg):
-    he_lat = np.arcsin(np.sin(diff) * np.sin(i))
-    # Longitude at center of disk (deg):
-    y = -np.sin(diff) * np.cos(i)
-    x = -np.cos(diff)
-    rpol = (np.arctan2(y, x))
-    he_lon = rpol - theta
-    return Longitude(he_lon.to(u.deg)), Latitude(he_lat.to(u.deg))
 
 
 @add_common_docstring(append=PARAMETER_DOCS)

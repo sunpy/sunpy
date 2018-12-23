@@ -1,8 +1,6 @@
 """
 JPEG2000 reading tests
 """
-from __future__ import absolute_import
-
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 import numpy as np
 

@@ -3,8 +3,6 @@
 
 #pylint: disable=W0613
 
-from __future__ import absolute_import
-
 import pytest
 
 import os
@@ -102,8 +100,7 @@ def test_download_http():
     on_finish = wait_for(3, lambda _: dw.stop())
     dw.download('http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js', path_fun, on_finish)
     dw.download('http://ajax.googleapis.com/ajax/libs/webfont/1.4.2/webfont.js', path_fun, on_finish)
-    dw.download('https://raw.github.com/sunpy/sunpy/master/INSTALL.txt', path_fun, on_finish)
-    # dw.download('ftp://speedtest.inode.at/speedtest-100mb', path_fun, on_finish)
+    dw.download('https://raw.githubusercontent.com/sunpy/sunpy/master/README.rst', path_fun, on_finish)
 
     dw.wait()
     timer.cancel()

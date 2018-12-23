@@ -1,10 +1,9 @@
-from __future__ import absolute_import, print_function
-from functools import partial
-
-import os
-import pathlib
-import tempfile
 import json
+import pathlib
+import warnings
+import importlib
+
+import pytest
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -17,24 +16,11 @@ else:
 import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
 from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
-from sunpy.extern import six
-
-import pytest
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
-# Don't actually import pytest_remotedata because that can do things to the
-# entrypoints code in pytest.
-if six.PY2:
-    import imp
-    try:
-        imp.find_module('pytest_remotedata')
-        HAVE_REMOTEDATA = True
-    except ImportError:
-        HAVE_REMOTEDATA = False
-else:
-    import importlib
-    remotedata_spec = importlib.util.find_spec("pytest_remotedata")
-    HAVE_REMOTEDATA = remotedata_spec is not None
+remotedata_spec = importlib.util.find_spec("pytest_remotedata")
+HAVE_REMOTEDATA = remotedata_spec is not None
 
 
 def pytest_addoption(parser):
@@ -52,7 +38,7 @@ def pytest_runtest_setup(item):
     pytest hook to skip all tests that have the mark 'remotedata' if the
     pytest_remotedata plugin is not installed.
     """
-    if isinstance(item, item.Function):
+    if isinstance(item, pytest.Function):
         if 'remote_data' in item.keywords and not HAVE_REMOTEDATA:
             pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
 
@@ -82,3 +68,7 @@ def pytest_unconfigure(config):
 
         print('All images from image tests can be found in {0}'.format(figure_base_dir))
         print("The corresponding hash library is {0}".format(hashfile))
+
+
+def pytest_sessionstart(session):
+    warnings.simplefilter("error", SunpyDeprecationWarning)

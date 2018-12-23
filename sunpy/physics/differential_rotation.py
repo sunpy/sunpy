@@ -1,18 +1,15 @@
-from __future__ import division
 import datetime
-from copy import deepcopy
 import warnings
+from copy import deepcopy
 from itertools import product
 
 import numpy as np
-from skimage import transform
+
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Longitude
 
-import sunpy.map
 from sunpy.time import parse_time
-from sunpy.coordinates import frames, HeliographicStonyhurst
-from sunpy.image.util import to_norm, un_norm
+from sunpy.coordinates import HeliographicStonyhurst, frames
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
 
@@ -143,14 +140,14 @@ def solar_rotate_coordinate(coordinate,
     >>> end_time = '2010-09-10 13:34:56'
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=frames.Helioprojective)
     >>> solar_rotate_coordinate(c, end_time)
-    <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+    <SkyCoord (Helioprojective: obstime=2010-09-10T13:34:56.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (-562.37689548, 119.26840368, 1.50083152e+08)>
 
     """
 
     # Calculate the interval between the start and end time
     interval = (
-        parse_time(new_observer_time) - parse_time(coordinate.obstime)).total_seconds() * u.s
+        parse_time(new_observer_time) - parse_time(coordinate.obstime)).to(u.s)
 
     # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
     # latitude). Points off the limb are returned as nan.
@@ -194,7 +191,7 @@ def _warp_sun_coordinates(xy, smap, dt, **diffrot_kwargs):
     """
     # NOTE: The time is being subtracted - this is because this function
     # calculates the inverse of the transformation.
-    rotated_time = smap.date - datetime.timedelta(seconds=dt.to(u.s).value)
+    rotated_time = smap.date - dt
 
     # Calculate the hpc coords
     x = np.arange(0, smap.dimensions.x.value)
@@ -246,7 +243,7 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
         Original map that we want to transform.
     time : sunpy-compatible time
         date/time at which the input co-ordinate will be rotated to.
-    dt : `~astropy.units.Quantity` or `datetime`
+    dt : `~astropy.units.Quantity` or `astropy.time.Time`
         Desired interval between the input map and returned map.
     pad : `bool`
         Whether to create a padded map for submaps to don't loose data
@@ -257,15 +254,21 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
         A map with the result of applying solar differential rotation to the
         input map.
     """
+    # Only this function needs scikit image
+    from skimage import transform
+    from sunpy.image.util import to_norm, un_norm
+    # Import map here for performance reasons.
+    import sunpy.map
+
     if (time is not None) and (dt is not None):
         raise ValueError('Only a time or an interval is accepted')
     elif not (time or dt):
         raise ValueError('Either a time or an interval (`dt=`) needs to be provided')
     elif time:
         new_time = parse_time(time)
-        dt = (new_time - smap.date).total_seconds() * u.s
+        dt = (new_time - smap.date).to(u.s)
     else:
-        new_time = smap.date + datetime.timedelta(seconds=dt.to(u.s).value)
+        new_time = smap.date + dt
 
     # Check for masked maps
     if smap.mask is not None:
@@ -315,7 +318,7 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
     out_meta = deepcopy(smap.meta)
     if out_meta.get('date_obs', False):
         del out_meta['date_obs']
-    out_meta['date-obs'] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
+    out_meta['date-obs'] = "{}".format(new_time.strftime('%Y-%m-%dT%H:%M:%S'))
 
     if submap:
         crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_time, **diffrot_kwargs)
