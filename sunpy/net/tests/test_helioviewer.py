@@ -75,4 +75,5 @@ class TestHelioviewerClient:
             measurement='continuum',
             directory=os.path.join(str(tmpdir), 'directorynotexist'))
 
-        assert 'directorynotexist' in filepath        
+        assert 'directorynotexist' in filepath
+  

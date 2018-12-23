@@ -19,12 +19,11 @@ install Glymur on your system.
 To interact with the Helioviewer API, users first create a "HelioviewerClient"
 instance. The client instance can then be used to make various queries against
 the API using the same parameters one would use when making a web request. Note that
-HelioviewerClient is not meant to offer full access to the HelioViewer API. We provide functions:
+the HelioviewerClient does not currently offer full access to the HelioViewer API. We provide functions:
 
 1. That download a JP2 image for the specified datasource that is the closest match in time to the `date` requested.
 2. That returns a hierarchial list of the available datasources.
-3. To find the image data that is closest to the requested date/time. This function returns the associated 
-metadata from the helioviewer database and the XML header of the JPEG2000 image file and,
+3. To find the image data that is closest to the requested date/time. This function returns the associated metadata from the helioviewer database and the XML header of the JPEG2000 image file and,
 4. To generate custom screenshots.
 
 Nearly all requests require the user to specify the data they are interested in

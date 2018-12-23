@@ -30,17 +30,17 @@ class HelioviewerClient(object):
         self.datasource_info = dict()
         self._api = url
         self._init_src_dict()
-    
+
     def _init_src_dict(self):
         datasources = self.get_data_sources()
         for name, observ in datasources.items():
-            if name == "TRACE":  #TRACE only has measurement parameter
+            if name == "TRACE":  # TRACE only has measurement parameter
                 for instr, params in observ.items():
                     self.datasource_info[(name, None, None, instr)] = params['sourceId']
             else:
                 for inst, detect in observ.items():
                     for wavelength, params in detect.items():
-                        if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:  #These three observatories have instrument, detector and measurement as their parameters
+                        if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:  # These three observatories have instrument, detector and measurement as their parameters
                             for wave, adict in params.items():
                                 self.datasource_info[(name, inst, wavelength, wave)] = adict['sourceId']
                         else:
@@ -66,7 +66,7 @@ class HelioviewerClient(object):
         For more information on what types of requests are available and the
         expected usage for the response, consult the Helioviewer API
         documentation: https://api.helioviewer.org/docs/v2/ .
-        
+
         Parameters
         ----------
         date : `astropy.time.Time`, str
