@@ -8,6 +8,7 @@ Code Reference
    :maxdepth: 2
 
    sunpy
+   stability
    cm
    coordinates
    data

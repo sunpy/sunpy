@@ -145,7 +145,7 @@ try:
     import ruamel.yaml as yaml
     has_yaml = True
     # Load data about stability
-    with open('./dev_guide/sunpy_stability.yaml', 'r') as estability:
+    with open('./code_ref/sunpy_stability.yaml', 'r') as estability:
         sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
 
     html_context = {
