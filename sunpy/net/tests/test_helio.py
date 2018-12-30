@@ -169,10 +169,10 @@ def test_taverna_parser_get_taverna_links(mock_endpoint_parser):
 @mock.patch('sunpy.net.helio.parser.webservice_parser', return_value=None)
 def test_wsdl_retriever_no_content(mock_endpoint_parser):
     """
-    No links found? Return None
+    No links found? Raise ValueError
     """
     with pytest.raises(ValueError):
-        assert wsdl_retriever() is None
+        wsdl_retriever()
 
 
 @mock.patch('sunpy.net.helio.parser.webservice_parser', return_value=wsdl_urls())
@@ -189,10 +189,10 @@ def test_wsdl_retriever_get_link(mock_link_test, mock_taverna_parser, mock_webse
 @mock.patch('sunpy.net.helio.parser.taverna_parser', return_value=None)
 def test_wsdl_retriever_no_taverna_urls(mock_taverna_parser, mock_webservice_parser):
     """
-    Unable to find any valid Taverna URLs? Return None
+    Unable to find any valid Taverna URLs? Raise ValueError
     """
     with pytest.raises(ValueError):
-        assert wsdl_retriever() is None
+        wsdl_retriever()
 
 
 @mock.patch('sunpy.net.helio.parser.link_test', return_value=None)
@@ -200,10 +200,10 @@ def test_wsdl_retriever_no_taverna_urls(mock_taverna_parser, mock_webservice_par
 @mock.patch('sunpy.net.helio.parser.taverna_parser', return_value=some_taverna_urls())
 def test_wsdl_retriever_wsdl(mock_taverna_parser, mock_webservice_parser, mock_link_test):
     """
-    Unable to find any valid Taverna URLs? Return None
+    Unable to find any valid Taverna URLs? Raise ValueError
     """
     with pytest.raises(ValueError):
-        assert wsdl_retriever() is None
+        wsdl_retriever()
 
 
 @mock.patch('sunpy.net.helio.parser.urllib.request.urlopen')
