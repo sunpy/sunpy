@@ -33,7 +33,7 @@ class TestHelioviewerClient:
     def test_get_datasources(self, client):
         """Makes sure datasource query returns a valid result and source id
         is casted to an integer"""
-        assert type(client.sources['SDO']['AIA']['AIA']['171']['sourceId']) is int
+        assert type(client.sources['SDO']['AIA']['4500']['sourceId']) is int
 
     def test_get_closest_image(self, client):
         """Tests getClosestImage API method"""
@@ -41,14 +41,14 @@ class TestHelioviewerClient:
         im1 = client.get_closest_image('1994/01/01',
                                        observatory='SOHO',
                                        instrument='EIT',
-                                       detector='EIT',
-                                       measurement='195')
+                                       detector=None,
+                                       measurement='304')
         assert im1['width'] == im1['height'] == 1024
 
         # result should be same when using source id to query
-        source_id = client.sources['SOHO']['EIT']['EIT']['195']['sourceId']
+        source_id = client.sources['SOHO']['EIT']['304']['sourceId']
 
-        im2 = client.get_closest_image('1994/01/01', sourceId=source_id)
+        im2 = client.get_closest_image('1994/01/01', sourceid=source_id)
 
         assert im1 == im2
 
@@ -56,7 +56,7 @@ class TestHelioviewerClient:
     def test_download_jp2(self, client):
         """Tests getJP2Image API method"""
         filepath = client.download_jp2('2020/01/01', observatory='SOHO',
-                                       instrument='MDI', detector='MDI',
+                                       instrument='MDI', detector=None,
                                        measurement='continuum')
         map_ = sunpy.map.Map(filepath)
         assert isinstance(map_, sunpy.map.GenericMap)
@@ -69,8 +69,9 @@ class TestHelioviewerClient:
             '2020/01/01',
             observatory='SOHO',
             instrument='MDI',
-            detector='MDI',
+            detector=None,
             measurement='continuum',
             directory=os.path.join(str(tmpdir), 'directorynotexist'))
 
         assert 'directorynotexist' in filepath
+  
