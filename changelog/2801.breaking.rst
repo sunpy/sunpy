@@ -1,0 +1,3 @@
+The Helioviewer client has been switched to using the newer Helioviewer API.
+This has meant that we have changed some of the keywords that were passed into client's methods.
+We have enforced that several keywords (observatory,instrument,detector,measurement) need to be defined otherwise the functions cannot return any data.
