@@ -1,0 +1,2 @@
+More changes to the Helioviewer Client API.
+This should, in theory, not break any existing code.
