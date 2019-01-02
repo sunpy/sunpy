@@ -1,4 +1,5 @@
 import os
+import pathlib
 import datetime
 
 import pytest
@@ -7,7 +8,7 @@ import numpy as np
 from sunpy.io.special import genx
 from sunpy.data.test import rootdir
 
-TESTING = genx.read_genx(os.path.join(rootdir, 'generated_sample.genx'))
+TESTING = genx.read_genx(str(pathlib.Path.home().joinpath(rootdir, 'generated_sample.genx')))
 
 def test_skeleton():
     # top level

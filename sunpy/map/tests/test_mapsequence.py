@@ -9,6 +9,7 @@ import sunpy.map
 from sunpy.util.metadata import MetaDict
 import pytest
 import os
+import pathlib
 import sunpy.data.test
 
 
@@ -18,7 +19,7 @@ def aia_map():
     Load SunPy's test AIA image.
     """
     testpath = sunpy.data.test.rootdir
-    aia_file = os.path.join(testpath, "aia_171_level1.fits")
+    aia_file = str(pathlib.Path.home().joinpath(testpath, "aia_171_level1.fits"))
     return sunpy.map.Map(aia_file)
 
 
