@@ -8,11 +8,14 @@ from astropy import units as u
 from astropy.time import TimeDelta
 from astropy.coordinates import SkyCoord, Longitude, BaseCoordinateFrame, get_body
 
-from sunpy.time import parse_time
+from sunpy.time import parse_time, is_time
 from sunpy.coordinates import HeliographicStonyhurst, frames
 
 
-__all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
+__all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map',
+           'all_pixel_indices_from_map', 'all_coordinates_from_map',
+           'find_pixel_radii', 'map_edges', 'contains_full_disk',
+           'is_all_off_disk']
 
 
 @u.quantity_input(duration=u.s, latitude=u.degree)
@@ -154,10 +157,6 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
             raise ValueError(
                 "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
 
-        # Check that only one time has been specified
-        if not hasattr(observer, "obstime"):
-            raise ValueError("The 'observer' must have an obstime attribute.")
-
         new_observer = observer
 
     if time is not None:
@@ -167,14 +166,14 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
         else:
             new_observer_time = parse_time(time)
 
-        return get_body("earth", new_observer_time)
+        new_observer = get_body("earth", new_observer_time)
 
     # The keyword "frame_time" must be explicitly set to "sidereal"
     # when using this function.
     diff_rot_kwargs.update({"frame_time": "sidereal"})
 
     # Calculate the interval between the start and end time
-    interval = new_observer.obstime - coordinate.obstime
+    interval = (new_observer.obstime - coordinate.obstime).to(u.s)
 
     # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
     # latitude). Points off the limb are returned as nan.
@@ -541,7 +540,7 @@ def is_all_on_disk(smap):
 
     Returns
     -------
-    is_all_off_disk : `~bool`
+    is_all_on_disk : `~bool`
         Returns True if all map pixels are strictly less than one solar radius
         away from the center of the Sun.
     """
