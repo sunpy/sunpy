@@ -4,15 +4,15 @@ import pytest
 import numpy as np
 from astropy import units as u
 from astropy.time import Time
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import SkyCoord, BaseCoordinateFrame
 from astropy.coordinates import Longitude
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
 
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
-from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate, diffrot_map
-from sunpy.time import parse_time
+from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate, diffrot_map, all_pixel_indices_from_map, all_coordinates_from_map, find_pixel_radii, map_edges, contains_full_disk, is_all_off_disk
+from sunpy.time import parse_time, is_time
 import sunpy.data.test
 import sunpy.map
 
@@ -109,37 +109,54 @@ def test_fail(seconds_per_day):
     with pytest.raises(ValueError):
         rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='garbage')
 
-def test_interpret_observer_input(coordinate_time, observer, time):
-
 
 def test_solar_rotate_coordinate():
     # Testing along the Sun-Earth line, observer is on the Earth
-    obstime = '2010-09-10 12:34:56'
-    observer = get_earth(obstime)
-    c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obstime, observer=observer, frame=frames.Helioprojective)
-    newtime = '2010-09-10 13:34:56'
-    new_observer = get_earth(newtime)
-    d = solar_rotate_coordinate(c, new_observer=new_observer)
+    obs_time = '2010-09-10 12:34:56'
+    observer = get_earth(obs_time)
+    c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obs_time, observer=observer, frame=frames.Helioprojective)
+    new_time = '2010-09-10 13:34:56'
+    new_observer = get_earth(new_time)
 
-    # Test that a SkyCoordinate is created
-    assert isinstance(d, SkyCoord)
+    # Test that when both the observer and the time are specified, an error is raised.
+    with pytest.raises(ValueError):
+        d = solar_rotate_coordinate(c, observer=observer, time=new_time)
 
-    # Test the coordinate
-    np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -562.89877818, decimal=1)
-    np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 119.3152842, decimal=1)
-    np.testing.assert_almost_equal(d.distance.to(u.km).value, 1.50085078e+08, decimal=1)
+    # Test that the code properly filters the observer keyword
+    with pytest.raises(ValueError):
+        d = solar_rotate_coordinate(c, observer='earth')
+    with pytest.raises(TypeError):
+        no_obstime = SkyCoord(-570*u.arcsec, 120*u.arcsec, frame=frames.Helioprojective)
+        d = solar_rotate_coordinate(c, observer=no_obstime)
 
-    # Test that the SkyCoordinate is Helioprojective
-    assert isinstance(d.frame, frames.Helioprojective)
+    # Test that the code properly filters the time keyword
+    with pytest.raises(ValueError):
+        d = solar_rotate_coordinate(c, time='noon')
 
-    # Test the observer
-    assert d.observer.obstime == Time(parse_time(newtime), scale='utc')
-    np.testing.assert_almost_equal(d.observer.lon.to(u.deg).value, 0.0, decimal=5)
-    np.testing.assert_almost_equal(d.observer.lat.to(u.deg).value, 7.248, decimal=3)
-    np.testing.assert_almost_equal(d.observer.radius.to(u.AU).value, 1.006954, decimal=6)
-    assert isinstance(d.observer, frames.HeliographicStonyhurst)
+    # Test that the code gives the same output for multiple different inputs
+    # that define the same observer location and time.
+    for i, definition in enumerate((1 * u.hour, TimeDelta(1*u.hour), new_time, new_observer)):
+        if i in (0, 1, 2):
+            d = solar_rotate_coordinate(c, time=definition)
+        else:
+            d = solar_rotate_coordinate(c, observer=definition)
+
+        # Test that a SkyCoordinate is created
+        assert isinstance(d, SkyCoord)
+
+        # Test the coordinate
+        np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -562.89877818, decimal=1)
+        np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 119.3152842, decimal=1)
+        np.testing.assert_almost_equal(d.distance.to(u.km).value, 1.500850782e+08, decimal=1)
+
+        # Test that the SkyCoordinate is Helioprojective
+        assert isinstance(d.frame, frames.Helioprojective)
 
 
+
+
+
+"""
 def test_warp_sun():
     pass
 
@@ -184,3 +201,53 @@ def test_diffrot_noinputs(aia171_test_map):
     with pytest.raises(ValueError) as exc_info:
         diffrot_map(aia171_test_map)
     assert 'Either a time or an interval (`dt=`) needs to be provided' in str(exc_info.value)
+"""
+
+
+@pytest.fixture
+def sub_smap(aia171_test_map):
+    return aia171_test_map.submap((0, 0)*u.pix, (50, 60)*u.pix)
+
+
+def test_all_pixel_indices_from_map(sub_smap):
+    pixel_indices = all_pixel_indices_from_map(sub_smap)
+    shape = sub_smap.data.shape
+    ny = shape[0]
+    nx = shape[1]
+    assert np.all(pixel_indices.shape == (2, ny, nx))
+    assert np.all(pixel_indices.unit == u.pix)
+    assert np.all(pixel_indices[:, 0, 0] == [0., 0.] * u.pix)
+    assert np.all(pixel_indices[:, 0, nx-1] == [nx-1, 0.] * u.pix)
+    assert np.all(pixel_indices[:, ny-1, 0] == [0., ny-1] * u.pix)
+    assert np.all(pixel_indices[:, ny-1, nx-1] == [nx-1, ny-1] * u.pix)
+
+
+def test_all_coordinates_from_map(sub_smap):
+    coordinates = all_coordinates_from_map(sub_smap)
+    shape = sub_smap.data.shape
+    assert coordinates.shape == (shape[0], shape[1])
+    assert isinstance(coordinates, SkyCoord)
+    assert isinstance(coordinates.frame, BaseCoordinateFrame)
+    assert coordinates.frame.name == sub_smap.coordinate_frame.name
+
+
+def test_find_pixel_radii(aia171_test_map):
+    # The known maximum radius
+    known_maximum_pixel_radius = 1.77805631 * u.R_sun
+
+    # Calculate the pixel radii
+    pixel_radii = find_pixel_radii(aia171_test_map)
+
+    # The shape of the pixel radii is the same as the input map
+    assert pixel_radii.shape[0] == int(aia171_test_map.dimensions[0].value)
+    assert pixel_radii.shape[1] == int(aia171_test_map.dimensions[1].value)
+
+    # Make sure the unit is solar radii
+    assert pixel_radii.unit == u.R_sun
+
+    # Make sure the maximum
+    assert np.allclose(np.max(pixel_radii).value, known_maximum_pixel_radius.value)
+
+    # Test that the new scale is used
+    pixel_radii = find_pixel_radii(aia171_test_map, scale=2*aia171_test_map.rsun_obs)
+    assert np.allclose(np.max(pixel_radii).value, known_maximum_pixel_radius.value / 2)
