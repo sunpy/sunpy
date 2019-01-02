@@ -6,7 +6,7 @@
 import os
 import glob
 import shutil
-import os.path
+import pathlib
 import configparser
 
 import pytest
@@ -28,7 +28,7 @@ from sunpy.database.commands import NoSuchEntryError, EmptyCommandStackError
 from sunpy.data.test.waveunit import waveunitdir
 
 testpath = sunpy.data.test.rootdir
-RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
+RHESSI_IMAGE = str(pathlib.Path.home().joinpath(testpath, 'hsi_image_20101016_191218.fits'))
 
 
 """
@@ -529,7 +529,7 @@ def test_download_from_qr(database, download_qr, tmpdir):
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers > 0
     for entry in database:
-        assert os.path.dirname(entry.path) == str(tmpdir)
+        assert pathlib.Path(entry.path).parent == str(tmpdir)
     database.undo()
     assert len(database) == 0
     database.redo()
@@ -892,7 +892,7 @@ def test_fetch(database, download_query, tmpdir):
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers
     for entry in database:
-        assert os.path.dirname(entry.path) == str(tmpdir)
+        assert pathlib.Path(entry.path).parent == str(tmpdir)
     database.undo()
     assert len(database) == 0
     database.redo()
@@ -949,12 +949,12 @@ def test_fetch_separate_filenames():
         vso.attrs.Instrument('AIA')
     ]
 
-    tmp_test_dir = os.path.join(
+    tmp_test_dir = str(pathlib.Path.home().joinpath(
         sunpy.config.get('downloads', 'download_dir'),
         'tmp_test_dir/'
-    )
+    ))
 
-    if not os.path.isdir(tmp_test_dir):
+    if not pathlib.Path.is_dir(tmp_test_dir):
         os.makedirs(tmp_test_dir)
 
     path = tmp_test_dir + '{file}'
@@ -967,9 +967,9 @@ def test_fetch_separate_filenames():
     dir_contents = os.listdir(tmp_test_dir)
     assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
     assert 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits' in dir_contents
-    assert os.path.isfile(os.path.join(
+    assert pathlib.Path.is_file(pathlib.Path.joinpath(
         tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))
-    assert os.path.isfile(os.path.join(
+    assert pathlib.Path.is_file(pathlib.Path.joinpath(
         tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))
 
     # Teardown

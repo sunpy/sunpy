@@ -4,6 +4,7 @@ This particular test file pertains to HMIMap.
 """
 
 import os
+import pathlib
 import glob
 
 from sunpy.map.sources.sdo import HMIMap
@@ -12,7 +13,7 @@ import sunpy.data.test
 #from sunpy.net import HelioviewerClient
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "resampled_hmi.fits"))
+fitspath = glob.glob(str(pathlib.Path.home().joinpath(path, "resampled_hmi.fits")))
 hmi = Map(fitspath)
 
 # HMI Tests

@@ -4,6 +4,7 @@ This particular test file pertains to SOTMap.
 """
 
 import os
+import pathlib
 import glob
 
 import astropy.units as u
@@ -13,7 +14,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "HinodeSOT.fits"))
+fitspath = glob.glob(str(pathlib.Path.home().joinpath(path, "HinodeSOT.fits")))
 sot = Map(fitspath)
 
 # SOT Tests
