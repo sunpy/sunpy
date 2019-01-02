@@ -2,8 +2,6 @@
 MapHeader is a generalized header class that deals with header parsing and
 normalization.
 """
-from __future__ import absolute_import, division, print_function
-
 from collections import OrderedDict
 
 __all__ = ['MetaDict']

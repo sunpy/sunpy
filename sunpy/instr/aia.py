@@ -5,7 +5,7 @@ Provides processing routines for data captured with the AIA instrument on SDO.
 import numpy as np
 import astropy.units as u
 
-from sunpy.map.sources.sdo import AIAMap
+from sunpy.map.sources.sdo import AIAMap, HMIMap
 
 __all__ = ['aiaprep']
 
@@ -42,7 +42,7 @@ def aiaprep(aiamap):
     therefore differ from the original file.
     """
 
-    if not isinstance(aiamap, AIAMap):
+    if not isinstance(aiamap, (AIAMap, HMIMap)):
         raise ValueError("Input must be an AIAMap")
 
     # Target scale is 0.6 arcsec/pixel, but this needs to be adjusted if the map
@@ -64,5 +64,6 @@ def aiaprep(aiamap):
 
     newmap.meta['r_sun'] = newmap.meta['rsun_obs'] / newmap.meta['cdelt1']
     newmap.meta['lvl_num'] = 1.5
+    newmap.meta['bitpix'] = -64
 
     return newmap

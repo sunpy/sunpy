@@ -1,0 +1,2 @@
+Removed `GenericClient.get` in favour of `GenericClient.fetch`. This changes applies to the other clients as well.
+

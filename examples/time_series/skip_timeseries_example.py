@@ -10,9 +10,6 @@ This is intended primarily to demonstrate the current interface for discussion
 of the final implementation. Much of the code will be changes as the class is
 developed.
 """
-
-from __future__ import print_function, division
-
 import datetime
 import copy
 from collections import OrderedDict
@@ -21,7 +18,7 @@ import numpy as np
 from pandas import DataFrame
 
 import astropy.units as u
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 from astropy.table import Table
 
 import sunpy.data.sample
@@ -99,7 +96,7 @@ combined_goes_ts.meta.get('telescop').values()
 # You can access a specific value within the TimeSeries data DataFrame using
 # all the normal Pandas methods.
 # For example, the row with the index of 2015-01-01 00:02:00.008000:
-ts_lyra.data.loc[parse_time('2011-06-07 00:02:00.010')]
+ts_lyra.data.loc[parse_time('2011-06-07 00:02:00.010').datetime]
 # Pandas will actually parse a string to a datetime automatically if it can:
 ts_lyra.data.loc['2011-06-07 00:02:00.010']
 # Pandas includes methods to find the indexes of the max/min values in a dataframe:
@@ -174,7 +171,7 @@ ts_goes.to_array()
 # Table or a Numpy Array.
 # To generate some data and the corresponding dates
 base = datetime.datetime.today()
-dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+dates = base - TimeDelta(np.arange(24 * 60)*u.minute)
 intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 # Create the data DataFrame, header MetaDict and units OrderedDict
 data = DataFrame(intensity, index=dates, columns=['intensity'])

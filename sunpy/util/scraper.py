@@ -1,14 +1,15 @@
-from __future__ import absolute_import, division, print_function
-
 import os
-import datetime
 import re
+import datetime
 from ftplib import FTP
+from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
-from sunpy.extern import six
-from sunpy.extern.six.moves import range, zip
-from sunpy.extern.six.moves.urllib.request import urlopen
+
+from astropy.time import TimeDelta
+import astropy.units as u
+
+from astropy.time import Time
 
 __all__ = ['Scraper']
 
@@ -28,14 +29,14 @@ class Scraper(object):
 
     Parameters
     ----------
-    pattern : string
+    pattern : str
         A string containing the url with the date encoded as
         datetime formats, and any other parameter as kwargs
         as string format.
 
     Attributes
     ----------
-    pattern : string
+    pattern : str
         A converted string with the kwargs.
     now : datetime.datetime
         The pattern with the actual date.
@@ -102,7 +103,7 @@ class Scraper(object):
             return [directorypattern]
         else:
             # Number of elements in the time range (including end)
-            n_steps = rangedelta.total_seconds()/timestep.total_seconds()
+            n_steps = rangedelta.sec/timestep.sec
             TotalTimeElements = int(round(n_steps)) + 1
             directories = [(timerange.start + n * timestep).strftime(directorypattern)
                            for n in range(TotalTimeElements)]  # TODO if date <= endate
@@ -111,7 +112,7 @@ class Scraper(object):
     def _URL_followsPattern(self, url):
         """Check whether the url provided follows the pattern"""
         pattern = self.pattern
-        for k, v in six.iteritems(TIME_CONVERSIONS):
+        for k, v in TIME_CONVERSIONS.items():
             pattern = pattern.replace(k, v)
         matches = re.match(pattern, url)
         if matches:
@@ -154,7 +155,7 @@ class Scraper(object):
         date_together = ''.join(final_date)
         pattern_together = ''.join(final_pattern)
         re_together = pattern_together
-        for k, v in six.iteritems(TIME_CONVERSIONS):
+        for k, v in TIME_CONVERSIONS.items():
             re_together = re_together.replace(k, v)
 
         #   Lists to contain the unique elements of the date and the pattern
@@ -172,8 +173,8 @@ class Scraper(object):
             if pattern not in final_pattern:
                 final_pattern.append('%{}'.format(p))
                 final_date.append(date_part.group())
-        return datetime.datetime.strptime(' '.join(final_date),
-                                          ' '.join(final_pattern))
+        return Time.strptime(' '.join(final_date),
+                             ' '.join(final_pattern))
 
     def filelist(self, timerange):
         """
@@ -265,17 +266,17 @@ class Scraper(object):
         """Obtain the smaller time step for the given pattern"""
         try:
             if "%S" in directoryPattern:
-                return datetime.timedelta(seconds=1)
+                return TimeDelta(1*u.second)
             elif "%M" in directoryPattern:
-                return datetime.timedelta(minutes=1)
+                return TimeDelta(1*u.minute)
             elif any(hour in directoryPattern for hour in ["%H", "%I"]):
-                return datetime.timedelta(hours=1)
+                return TimeDelta(1*u.hour)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
-                return datetime.timedelta(days=1)
+                return TimeDelta(1*u.day)
             elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
-                return datetime.timedelta(days=31)
+                return TimeDelta(31*u.day)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
-                return datetime.timedelta(days=365)
+                return TimeDelta(365*u.day)
             else:
                 return None
         except:

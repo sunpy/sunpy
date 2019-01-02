@@ -5,8 +5,6 @@ Masking the solar disk
 
 This example shows how to mask off emission from the disk.
 """
-from __future__ import print_function, division
-
 import numpy as np
 import numpy.ma as ma
 import matplotlib.pyplot as plt
@@ -32,7 +30,7 @@ x, y = np.meshgrid(*[np.arange(v.value) for v in aia.dimensions]) * u.pixel
 # Now we can convert this to helioprojective coordinates and create a new
 # array which contains the normalized radial position for each pixel
 
-hpc_coords = aia.pixel_to_data(x, y)
+hpc_coords = aia.pixel_to_world(x, y)
 r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 
 ###############################################################################

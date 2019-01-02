@@ -1,8 +1,9 @@
 build:
   image: latest
 
+requirements_file: docs/rtd_requirements.txt
+
 python:
   version: 3.6
+  pip_install: false
   setup_py_install: true
-
-requirements_file: requirements/docs.txt

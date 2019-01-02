@@ -1,5 +1,4 @@
 """Yohkoh SXT Map subclass definitions"""
-from __future__ import absolute_import, division, absolute_import
 #pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Jack Ireland"

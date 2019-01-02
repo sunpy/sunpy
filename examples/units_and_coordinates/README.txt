@@ -1,6 +1,4 @@
-.. _units_and_coordinates_examples:
-
-.. _units_and_coordinates-examples-index:
-
 Units and Coordinates
-=====================
+---------------------
+
+This section contains any examples which showcase how SunPy handles coordinate information and scientific units.

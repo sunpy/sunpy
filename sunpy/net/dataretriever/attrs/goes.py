@@ -1,9 +1,9 @@
-from ...vso.attrs import _VSOSimpleAttr
+from sunpy.net.attr import SimpleAttr
 
 __all__ = ['SatelliteNumber']
 
 
-class SatelliteNumber(_VSOSimpleAttr):
+class SatelliteNumber(SimpleAttr):
     """
     The GOES Satellite Number
     """

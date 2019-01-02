@@ -14,7 +14,8 @@ __version__ = 'June 11th, 2013'
 import pytest
 
 from astropy import units as u
-
+from astropy import table
+from sunpy.time import parse_time
 from sunpy.net import hek
 from sunpy.net import vso
 from sunpy.net import hek2vso
@@ -28,17 +29,21 @@ instrument = 'eit'
 hekTime = hek.attrs.Time(startTime, endTime)
 hekEvent = hek.attrs.EventType(eventType)
 
+
 @pytest.fixture
 def h2v_client():
     return hek2vso.H2VClient()
+
 
 @pytest.fixture
 def hek_client():
     return hek.HEKClient()
 
+
 @pytest.fixture
 def vso_client():
     vso.VSOClient()
+
 
 @pytest.mark.remote_data
 def test_translate_results_to_query():
@@ -47,11 +52,13 @@ def test_translate_results_to_query():
     hek_query = h.search(hekTime, hekEvent)
     vso_query = hek2vso.translate_results_to_query(hek_query)
 
-    if isinstance(hek_query, list):
-        # Comparing length of two lists
-        assert len(hek_query) == len(vso_query)
-        #Comparing types of both queries
-        assert type(hek_query) == type(vso_query)
+    # Comparing length of two lists
+    assert len(hek_query) == len(vso_query)
+    # Comparing types of both queries
+    # Not sure this test makes any sense now
+    assert isinstance(hek_query, table.Table)
+    assert isinstance(vso_query, list)
+
 
 @pytest.mark.remote_data
 def test_vso_attribute_parse():
@@ -61,7 +68,8 @@ def test_vso_attribute_parse():
     vso_query = hek2vso.vso_attribute_parse(hek_query[0])
 
     # Checking Time
-    # TODO
+    assert vso_query[0].start == parse_time(hek_query[0]['event_starttime'])
+    assert vso_query[0].end == parse_time(hek_query[0]['event_endtime'])
 
     # Checking Observatory
     assert vso_query[1].value == hek_query[0]['obs_observatory']
@@ -71,8 +79,9 @@ def test_vso_attribute_parse():
 
     # Checking Wavelength
     assert vso_query[3].min == hek_query[0]['obs_meanwavel'] * u.Unit(hek_query[0]['obs_wavelunit'])
-    assert vso_query[3].max == hek_query[0]['obs_meanwavel'] * u.Unit( hek_query[0]['obs_wavelunit'])
+    assert vso_query[3].max == hek_query[0]['obs_meanwavel'] * u.Unit(hek_query[0]['obs_wavelunit'])
     assert vso_query[3].unit == u.Unit('Angstrom')
+
 
 class TestH2VClient(object):
     """Tests the H2V class"""

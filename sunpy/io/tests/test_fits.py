@@ -5,7 +5,6 @@ import sunpy.data.test
 import os
 
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
-from sunpy.extern.six.moves import range
 
 testpath = sunpy.data.test.rootdir
 
@@ -81,3 +80,18 @@ def test_extract_waveunit_wavelnthcomment_parentheses():
     # WAVELNTH comment is: "Observed wavelength (nm)"
     waveunit = extract_waveunit(get_header(SVSM_IMAGE)[0])
     assert waveunit == 'nm'
+
+
+def test_simple_write(tmpdir):
+    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    outfile = tmpdir / "test.fits"
+    sunpy.io.fits.write(str(outfile), data, header)
+    assert outfile.exists()
+
+
+def test_extra_comment_write(tmpdir):
+    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    header["KEYCOMMENTS"]["TEST"] = "Hello world"
+    outfile = tmpdir / "test.fits"
+    sunpy.io.fits.write(str(outfile), data, header)
+    assert outfile.exists()

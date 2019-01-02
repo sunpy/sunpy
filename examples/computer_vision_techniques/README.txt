@@ -1,6 +1,4 @@
-.. _computer_vision_techniques_examples:
-
-.. _computer_vision_techniques-examples-index:
-
 Computer Vision Techniques
-==========================
+--------------------------
+
+This section contains any examples which showcase how SunPy can be used with computer vision techniques to analyze solar data.

@@ -3,12 +3,11 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-from __future__ import absolute_import
-
-import glob
 import os
-import os.path
+import glob
 import shutil
+import os.path
+import configparser
 
 import pytest
 import sqlalchemy
@@ -16,22 +15,17 @@ import sqlalchemy
 from astropy import units
 
 import sunpy
-from sunpy.database import Database, EntryAlreadyAddedError,\
-    EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
-    EntryNotFoundError, TagAlreadyAssignedError, disable_undo, split_database
-from sunpy.database.tables import DatabaseEntry, Tag, FitsHeaderEntry,\
-    FitsKeyComment, JSONDump
-from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
-from sunpy.database.caching import LRUCache, LFUCache
-from sunpy.database import attrs
-from sunpy.net import vso, hek
-from sunpy.data.test.waveunit import waveunitdir
-from sunpy.io import fits
-from sunpy.extern.six.moves import range
-from sunpy.extern.six.moves import configparser
-from sunpy.net import Fido, attrs as net_attrs
-
 import sunpy.data.test
+from sunpy.io import fits
+from sunpy.net import Fido, hek, vso
+from sunpy.net import attrs as net_attrs
+from sunpy.database import (Database, NoSuchTagError, EntryNotFoundError, EntryAlreadyAddedError,
+                            TagAlreadyAssignedError, EntryAlreadyStarredError,
+                            EntryAlreadyUnstarredError, attrs, disable_undo, split_database)
+from sunpy.database.tables import Tag, JSONDump, DatabaseEntry, FitsKeyComment, FitsHeaderEntry
+from sunpy.database.caching import LFUCache, LRUCache
+from sunpy.database.commands import NoSuchEntryError, EmptyCommandStackError
+from sunpy.data.test.waveunit import waveunitdir
 
 testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
@@ -575,18 +569,18 @@ def test_add_entries_from_qr_ignore_duplicates(database, query_result):
 def test_add_entry_fido_search_result(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
-    assert len(database) == 65
+    assert len(database) == 66
     database.undo()
     assert len(database) == 0
     database.redo()
-    assert len(database) == 65
+    assert len(database) == 66
 
 
 @pytest.mark.remote_data
 def test_add_entries_from_fido_search_result_JSOC_client(database):
     assert len(database) == 0
     search_result = Fido.search(
-        net_attrs.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        net_attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
         net_attrs.jsoc.Series('hmi.m_45s'),
         net_attrs.jsoc.Notify("sunpy@sunpy.org")
         )
@@ -598,7 +592,7 @@ def test_add_entries_from_fido_search_result_JSOC_client(database):
 def test_add_entries_from_fido_search_result_duplicates(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
-    assert len(database) == 65
+    assert len(database) == 66
     with pytest.raises(EntryAlreadyAddedError):
         database.add_from_fido_search_result(fido_search_result)
 
@@ -607,9 +601,9 @@ def test_add_entries_from_fido_search_result_duplicates(database, fido_search_re
 def test_add_entries_from_fido_search_result_ignore_duplicates(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
-    assert len(database) == 65
+    assert len(database) == 66
     database.add_from_fido_search_result(fido_search_result, True)
-    assert len(database) == 2*65
+    assert len(database) == 2*66
 
 
 def test_add_fom_path(database):

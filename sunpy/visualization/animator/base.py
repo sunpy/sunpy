@@ -558,7 +558,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         return axis_ranges
 
     @abc.abstractmethod
-    def plot_start_image(self):
+    def plot_start_image(self):  # pragma: no cover
         """
         Abstract method for plotting first slice of array.
 
@@ -567,7 +567,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def update_plot(self):
+    def update_plot(self):  # pragma: no cover
         """
         Abstract method for updating plot.
 

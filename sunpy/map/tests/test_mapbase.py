@@ -2,32 +2,28 @@
 """
 Test Generic Map
 """
-from __future__ import absolute_import
-
 import os
-import pytest
-import datetime
-import warnings
 import tempfile
+import warnings
 
 import numpy as np
-
-import astropy.wcs
-from astropy.io import fits
-import astropy.units as u
-from astropy.tests.helper import assert_quantity_allclose
-from astropy.visualization import wcsaxes
-from astropy.coordinates import SkyCoord
+import pytest
 import matplotlib.pyplot as plt
 
-import sunpy
-import sunpy.sun
-import sunpy.map
-import sunpy.coordinates
-import sunpy.data.test
-from sunpy.time import parse_time
+import astropy.wcs
+import astropy.units as u
+from astropy.io import fits
+from astropy.time import Time
+from astropy.coordinates import SkyCoord
+from astropy.tests.helper import assert_quantity_allclose
+from astropy.visualization import wcsaxes
 
-from sunpy.extern import six
+import sunpy
+import sunpy.map
+import sunpy.sun
+import sunpy.data.test
+import sunpy.coordinates
+from sunpy.time import parse_time
 
 testpath = sunpy.data.test.rootdir
 
@@ -134,7 +130,7 @@ def test_std(generic_map):
 # TODO: Test the header keyword extraction
 # ==============================================================================
 def test_name(generic_map):
-    assert isinstance(generic_map.name, six.string_types)
+    assert isinstance(generic_map.name, str)
 
 
 def test_nickname(generic_map):
@@ -148,7 +144,7 @@ def test_nickname_set(generic_map):
 
 
 def test_date(generic_map):
-    assert isinstance(generic_map.date, datetime.datetime)
+    assert isinstance(generic_map.date, Time)
 
 
 def test_date_aia(aia171_test_map):
@@ -256,25 +252,6 @@ def test_rotation_matrix_cd_cdelt_square():
 def test_swap_cd():
     amap = sunpy.map.Map(os.path.join(testpath, 'swap_lv1_20140606_000113.fits'))
     np.testing.assert_allclose(amap.rotation_matrix, np.array([[1., 0], [0, 1.]]))
-
-
-def test_data_range(generic_map):
-    """Make sure xrange and yrange work"""
-    assert_quantity_allclose(
-        (generic_map.xrange[1] - generic_map.xrange[0]).to(u.arcsec).value,
-        generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
-    )
-    assert_quantity_allclose(
-        (generic_map.yrange[1] - generic_map.yrange[0]).to(u.arcsec).value,
-        generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
-    )
-
-    # the weird unit-de-unit thing here is to work around and inconsistency in
-    # the way np.average works with astropy 1.3 and 2.0dev
-    assert_quantity_allclose(np.average(u.Quantity(generic_map.xrange).value) * u.arcsec,
-                             generic_map.center.Tx)
-    assert_quantity_allclose(np.average(u.Quantity(generic_map.yrange).value) * u.arcsec,
-                             generic_map.center.Ty)
 
 
 def test_world_to_pixel(generic_map):

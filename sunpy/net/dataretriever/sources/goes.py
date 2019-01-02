@@ -3,15 +3,18 @@
 # Google Summer of Code 2014
 
 import os
-import datetime
+from urllib.parse import urlsplit
 
+from astropy.time import TimeDelta
+from astropy.time import Time
+import astropy.units as u
+
+
+from datetime import timedelta
 from sunpy.time import parse_time, TimeRange
-
 from ..client import GenericClient
-
-from sunpy.extern.six.moves.urllib.parse import urlsplit
-
 from sunpy import config
+
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['XRSClient']
@@ -25,7 +28,7 @@ class XRSClient(GenericClient):
         Parameters
         ----------
 
-        date : `datetime.datetime`
+        date : `astropy.time.Time`
             The date to determine which satellite is active.
         """
         goes_operational = {
@@ -40,7 +43,7 @@ class XRSClient(GenericClient):
             12: TimeRange('2002-12-13', '2007-05-08'),
             13: TimeRange('2006-08-01', '2006-08-01'),
             14: TimeRange('2009-12-02', '2010-10-04'),
-            15: TimeRange('2010-09-01', datetime.datetime.utcnow())
+            15: TimeRange('2010-09-01', parse_time('now'))
         }
 
         results = []
@@ -66,12 +69,12 @@ class XRSClient(GenericClient):
             datestamp = os.path.splitext(os.path.split(uripath)[1])[0][4:]
 
             # 1999-01-15 as an integer.
-            if int(datestamp) < 990115:
-                start = datetime.datetime.strptime(datestamp, "%y%m%d")
+            if int(datestamp) <= 990115:
+                start = Time.strptime(datestamp, "%y%m%d")
             else:
-                start = datetime.datetime.strptime(datestamp, "%Y%m%d")
+                start = Time.strptime(datestamp, "%Y%m%d")
 
-            almost_day = datetime.timedelta(days=1, milliseconds=-1)
+            almost_day = TimeDelta(1*u.day - 1*u.millisecond)
             times.append(TimeRange(start, start + almost_day))
 
         return times
@@ -86,31 +89,34 @@ class XRSClient(GenericClient):
             time range for which data is to be downloaded.
         satellitenumber : int
             GOES satellite number (default = 15)
-        data_type : string
+        data_type : str
             Data type to return for the particular GOES satellite. Supported
             types depend on the satellite number specified. (default = xrs_2s)
         """
         # find out which satellite and datatype to query from the query times
         base_url = 'https://umbra.nascom.nasa.gov/goes/fits/'
-        start_time = datetime.datetime.combine(timerange.start.date(),
-                                               datetime.datetime.min.time())
+        start_time = Time(timerange.start.strftime('%Y-%m-%d'))
         # make sure we are counting a day even if only a part of it is in the query range.
-        day_range = TimeRange(timerange.start.date(), timerange.end.date())
+        day_range = TimeRange(timerange.start.strftime('%Y-%m-%d'),
+                              timerange.end.strftime('%Y-%m-%d'))
         total_days = int(day_range.days.value) + 1
         result = list()
 
         # Iterate over each day in the input timerange and generate a URL for
         # it.
         for day in range(total_days):
-            date = start_time + datetime.timedelta(days=day)
-            regex = "{date:%Y}/go{sat:02d}"
+            # It is okay to convert to datetime here as the start_time is a date
+            # hence we don't necesserily gain anything.
+            # This is necessary because when adding a day to a Time, we may
+            # end up with the same day if the day is a leap second day
+            date = start_time.datetime + timedelta(days=day)
+            regex = date.strftime('%Y') + "/go{sat:02d}"
             if (date < parse_time('1999/01/15')):
-                regex += "{date:%y%m%d}.fits"
+                regex += date.strftime('%y%m%d') + '.fits'
             else:
-                regex += "{date:%Y%m%d}.fits"
+                regex += date.strftime('%Y%m%d') + '.fits'
             satellitenumber = kwargs.get('satellitenumber', self._get_goes_sat_num(date))
-            url = base_url + regex.format(
-                date=date, sat=satellitenumber)
+            url = base_url + regex.format(sat=satellitenumber)
             result.append(url)
         return result
 

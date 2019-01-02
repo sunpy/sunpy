@@ -1,19 +1,10 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-
-#pylint: disable=W0613
-
-from __future__ import absolute_import
-
-import tempfile
-import datetime
 
 import pytest
-from six import iteritems
 
-from astropy import units as u
+import astropy.units as u
 
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
 from sunpy.net.vso import QueryResponse
@@ -70,11 +61,6 @@ def client(request):
     return vso.VSOClient()
 
 
-@pytest.fixture
-def iclient(request):
-    return vso.InteractiveVSOClient()
-
-
 def test_simpleattr_apply():
     a = attr.ValueAttr({('test', ): 1})
     dct = {}
@@ -85,8 +71,8 @@ def test_simpleattr_apply():
 def test_Time_timerange():
     t = va.Time(TimeRange('2012/1/1', '2012/1/2'))
     assert isinstance(t, va.Time)
-    assert t.min == datetime.datetime(2012, 1, 1)
-    assert t.max == datetime.datetime(2012, 1, 2)
+    assert t.min == parse_time((2012, 1, 1))
+    assert t.max == parse_time((2012, 1, 2))
 
 
 def test_input_error():
@@ -130,7 +116,7 @@ def test_complexattr_apply():
 @pytest.mark.remote_data
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
-    assert va.walker.create(a, client.api)[0].time.start == 'test'
+    assert va.walker.create(a, client.api)[0].time['start'] == 'test'
 
 
 def test_complexattr_and_duplicate():
@@ -263,7 +249,7 @@ def test_repr():
 
 
 @pytest.mark.remote_data
-def test_path(client):
+def test_path(client, tmpdir):
     """
     Test that '{file}' is automatically appended to the end of a custom path if
     it is not specified.
@@ -271,7 +257,7 @@ def test_path(client):
     qr = client.search(
         va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
         va.Instrument('aia'), va.Wavelength(171 * u.AA))
-    tmp_dir = tempfile.mkdtemp()
+    tmp_dir = tmpdir / "{file}"
     files = client.fetch(qr, path=tmp_dir).wait(progress=False)
 
     assert len(files) == 1
@@ -365,7 +351,7 @@ def test_QueryResponse_build_table_with_no_start_time():
     """
     Only the 'end' time set, no 'start' time
     """
-    a_st = datetime.datetime(2016, 2, 14, 8, 8, 12)
+    a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
     records = (MockQRRecord(end_time=a_st.strftime(va.TIMEFORMAT)),)
 
@@ -387,7 +373,7 @@ def test_QueryResponse_build_table_with_no_end_time():
     """
     Only the 'start' time is set, no 'end' time
     """
-    a_st = datetime.datetime(2016, 2, 14, 8, 8, 12)
+    a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
     records = (MockQRRecord(start_time=a_st.strftime(va.TIMEFORMAT)),)
 
@@ -421,6 +407,6 @@ def test_vso_hmi(client, tmpdir):
 
     # For each DataRequestItem assert that there is only one series in it.
     for dri in dris:
-        fileids = dri.fileiditem.fileid[0]
+        fileids = dri.fileiditem.fileid
         series = list(map(lambda x: x.split(':')[0], fileids))
         assert all([s == series[0] for s in series])

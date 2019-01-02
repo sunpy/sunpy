@@ -233,42 +233,10 @@ arcseconds OR have a peak flux over 1000.0:
 and as a check
 
     >>> [elem["fl_peakflux"] for elem in result] # doctest: +REMOTE_DATA
-    [None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    2326.86,
-    1698.83,
-    None,
-    None,
-    2360.49,
-    3242.64,
-    1375.93,
-    6275.98,
-    923.984,
-    1019.83]
+    [None, None, None, None, None, None, None, 2326.86, 1698.83, None, None, 2360.49, 3242.64, 1375.93, 6275.98, 923.984, 1019.83]
 
     >>> [elem["event_coord1"] for elem in result] # doctest: +REMOTE_DATA
-    [51,
-    51,
-    51,
-    924,
-    924,
-    924,
-    69,
-    883.2,
-    883.2,
-    69,
-    69,
-    883.2,
-    883.2,
-    883.2,
-    883.2,
-    883.2,
-    883.2]
+    [51.0, 51.0, 51.0, 924.0, 924.0, 924.0, 69.0, 883.2, 883.2, 69.0, 69.0, 883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
 
 Note that some of the fluxes are returned as "None".  This is because
 some feature recognition methods for flares do not report the peak
@@ -336,7 +304,7 @@ HEK results and create the corresponding VSO query attributes.
 
     >>> vso_query = hek2vso.translate_results_to_query(result[10:11])  # doctest: +REMOTE_DATA
     >>> vso_query[0]  # doctest: +REMOTE_DATA
-    [<Time(datetime.datetime(2011, 8, 9, 7, 22, 44), datetime.datetime(2011, 8, 9, 7, 28, 56), None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(193.0, 193.0, 'Angstrom')>]
+    [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T07:22:44.000>, <Time object: scale='utc' format='isot' value=2011-08-09T07:28:56.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(193.0, 193.0, 'Angstrom')>]
 
 This function allows users finer-grained control of VSO queries
 generated from HEK results.
