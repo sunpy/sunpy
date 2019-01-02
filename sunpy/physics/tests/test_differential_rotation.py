@@ -52,6 +52,11 @@ def aia171_test_map():
 
 
 @pytest.fixture
+def all_off_disk_map(aia171_test_map):
+    return aia171_test_map.submap((1, 1)*u.pix, (11, 12)*u.pix)
+
+
+@pytest.fixture
 def aia171_test_map_with_mask(aia171_test_map):
     shape = aia171_test_map.data.shape
     mask = np.zeros_like(aia171_test_map.data, dtype=bool)
@@ -251,3 +256,38 @@ def test_find_pixel_radii(aia171_test_map):
     # Test that the new scale is used
     pixel_radii = find_pixel_radii(aia171_test_map, scale=2*aia171_test_map.rsun_obs)
     assert np.allclose(np.max(pixel_radii).value, known_maximum_pixel_radius.value / 2)
+
+
+def test_map_edges(all_off_disk_map):
+    edges = map_edges(all_off_disk_map)
+    assert type(edges) is dict
+    keys = edges.keys()
+    assert 'lhs' in keys
+    assert 'rhs' in keys
+    assert 'top' in keys
+    assert 'bottom' in keys
+    assert len(edges['lhs']) == 11
+    assert np.all(edges['lhs'][0] == [0, 0] * u.pix)
+    assert np.all(edges['lhs'][10] == [10, 0] * u.pix)
+
+    assert len(edges['rhs']) == 11
+    assert np.all(edges['rhs'][0] == [0, 9] * u.pix)
+    assert np.all(edges['rhs'][10] == [10, 9] * u.pix)
+
+    assert len(edges['top']) == 10
+    assert np.all(edges['top'][0] == [0, 0] * u.pix)
+    assert np.all(edges['top'][9] == [0, 9] * u.pix)
+
+    assert len(edges['bottom']) == 10
+    assert np.all(edges['bottom'][0] == [10, 0] * u.pix)
+    assert np.all(edges['bottom'][9] == [10, 9] * u.pix)
+
+
+def test_contains_full_disk(aia171_test_map, all_off_disk_map):
+    assert contains_full_disk(aia171_test_map)
+    assert ~contains_full_disk(all_off_disk_map)
+
+
+def test_is_all_off_disk(aia171_test_map, all_off_disk_map):
+    assert is_all_off_disk(all_off_disk_map)
+    assert ~is_all_off_disk(aia171_test_map)
