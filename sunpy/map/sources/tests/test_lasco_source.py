@@ -4,6 +4,7 @@ This particular test file pertains to LASCOMap.
 """
 
 import os
+import pathlib
 import glob
 
 from sunpy.map.sources.soho import LASCOMap
@@ -11,7 +12,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "lasco_c2_25299383_s.fts"))
+fitspath = glob.glob(str(pathlib.Path.home().joinpath(path, "lasco_c2_25299383_s.fts")))
 lasco = Map(fitspath)
 
 # LASCO Tests

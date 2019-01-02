@@ -4,6 +4,7 @@ This particular test file pertains to EITMap.
 """
 
 import os
+import pathlib
 import glob
 import numpy as np
 from matplotlib import colors
@@ -15,7 +16,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitslist = glob.glob(os.path.join(path, "EIT", "*"))
+fitslist = glob.glob(str(pathlib.Path.home().joinpath(path, "EIT", "*")))
 
 @pytest.fixture(scope="module", params=fitslist)
 def createEIT(request):
