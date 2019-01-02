@@ -18,69 +18,109 @@ install Glymur on your system.
 
 To interact with the Helioviewer API, users first create a "HelioviewerClient"
 instance. The client instance can then be used to make various queries against
-the API using the same parameters one would use when making a web request.
+the API using the same parameters one would use when making a web request. Note that
+the HelioviewerClient does not currently offer full access to the HelioViewer API. We provide functions:
+
+1. That download a JP2 image for the specified datasource that is the closest match in time to the `date` requested.
+2. That returns a hierarchial list of the available datasources.
+3. To find the image data that is closest to the requested date/time. This function returns the associated metadata from the helioviewer database and the XML header of the JPEG2000 image file and,
+4. To generate custom screenshots.
 
 Nearly all requests require the user to specify the data they are interested in
-and this can be done using one of two methods:
+and this can be done using the following methods:
 
-1. Call "get_data_sources()" to get a list of the data that is available, and use the source id numbers referenced in the result to refer to a particular dataset, or,
-2. Specify the four components of a Helioviewer.org data source or layer: *observatory*, *instrument*, *detector* and *measurement*.
+1. Use the datasource_info dictionary to get the list of data source and their corresponding source id
+numbers which can be used to refer to a particular dataset or,
+2. Specify the four components of a Helioviewer.org data source or layer: *observatory*, *instrument*, 
+*detector* and *measurement*. The default value is *None* for all the components and should be changed
+to the correct value for the source you are interested in.
 
-Let's begin by getting a list of data sources available on the server
-using the get_datasources method::
+Let us begin by retrieving the available list of sources that Helioviewer supports by using `~sunpy.net.helioviewer.HelioviewerClient.datasource_info`:: 
 
-    >>> from sunpy.net.helioviewer import HelioviewerClient
+    >>> from sunpy.net import helioviewer 
+    >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
+    >>> datasource = hv.datasource_info  # doctest: +REMOTE_DATA
+    >>> for sorted_ids in sorted(datasource.items(), key=lambda x: x[1]):  # doctest: +REMOTE_DATA
+    ...     print(sorted_ids)  # doctest: +REMOTE_DATA
+    (('SOHO', 'EIT', None, '171'), 0)
+    (('SOHO', 'EIT', None, '195'), 1)
+    (('SOHO', 'EIT', None, '284'), 2)
+    (('SOHO', 'EIT', None, '304'), 3)
+    (('SOHO', 'LASCO', 'C2', 'white-light'), 4)
+    (('SOHO', 'LASCO', 'C3', 'white-light'), 5)
+    (('SOHO', 'MDI', None, 'magnetogram'), 6)
+    (('SOHO', 'MDI', None, 'continuum'), 7)
+    (('SDO', 'AIA', None, '94'), 8)
+    (('SDO', 'AIA', None, '131'), 9)
+    (('SDO', 'AIA', None, '171'), 10)
+    (('SDO', 'AIA', None, '193'), 11)
+    (('SDO', 'AIA', None, '211'), 12)
+    (('SDO', 'AIA', None, '304'), 13)
+    (('SDO', 'AIA', None, '335'), 14)
+    (('SDO', 'AIA', None, '1600'), 15)
+    (('SDO', 'AIA', None, '1700'), 16)
+    (('SDO', 'AIA', None, '4500'), 17)
+    (('SDO', 'HMI', None, 'continuum'), 18)
+    (('SDO', 'HMI', None, 'magnetogram'), 19)
+    (('STEREO_A', 'SECCHI', 'EUVI', '171'), 20)
+    (('STEREO_A', 'SECCHI', 'EUVI', '195'), 21)
+    (('STEREO_A', 'SECCHI', 'EUVI', '284'), 22)
+    (('STEREO_A', 'SECCHI', 'EUVI', '304'), 23)
+    (('STEREO_B', 'SECCHI', 'EUVI', '171'), 24)
+    (('STEREO_B', 'SECCHI', 'EUVI', '195'), 25)
+    (('STEREO_B', 'SECCHI', 'EUVI', '284'), 26)
+    (('STEREO_B', 'SECCHI', 'EUVI', '304'), 27)
+    (('STEREO_A', 'SECCHI', 'COR1', 'white-light'), 28)
+    (('STEREO_A', 'SECCHI', 'COR2', 'white-light'), 29)
+    (('STEREO_B', 'SECCHI', 'COR1', 'white-light'), 30)
+    (('STEREO_B', 'SECCHI', 'COR2', 'white-light'), 31)
+    (('PROBA2', 'SWAP', None, '174'), 32)
+    (('Yohkoh', 'SXT', None, 'AlMgMn'), 33)
+    (('Yohkoh', 'SXT', None, 'thin-Al'), 34)
+    (('Yohkoh', 'SXT', None, 'white-light'), 35)
+    (('Hinode', 'XRT', 'Al_med', 'Al_thick'), 39)
+    (('Hinode', 'XRT', 'Al_med', 'Be_thick'), 40)
+    (('Hinode', 'XRT', 'Al_med', 'Open'), 42)
+    (('Hinode', 'XRT', 'Al_med', 'Ti_poly'), 43)
+    (('Hinode', 'XRT', 'Al_poly', 'Al_mesh'), 44)
+    (('Hinode', 'XRT', 'Al_poly', 'Al_thick'), 45)
+    (('Hinode', 'XRT', 'Al_poly', 'Be_thick'), 46)
+    (('Hinode', 'XRT', 'Al_poly', 'Open'), 48)
+    (('Hinode', 'XRT', 'Al_poly', 'Ti_poly'), 49)
+    (('Hinode', 'XRT', 'Be_med', 'Open'), 54)
+    (('Hinode', 'XRT', 'Be_thin', 'Open'), 60)
+    (('Hinode', 'XRT', 'C_poly', 'Al_mesh'), 62)
+    (('Hinode', 'XRT', 'C_poly', 'Al_thick'), 63)
+    (('Hinode', 'XRT', 'C_poly', 'Open'), 66)
+    (('Hinode', 'XRT', 'C_poly', 'Ti_poly'), 67)
+    (('Hinode', 'XRT', 'Open', 'Al_mesh'), 69)
+    (('Hinode', 'XRT', 'Open', 'Al_thick'), 70)
+    (('Hinode', 'XRT', 'Open', 'Be_thick'), 71)
+    (('Hinode', 'XRT', 'Open', 'Ti_poly'), 74)
+    (('TRACE', None, None, '171'), 75)
+    (('TRACE', None, None, '195'), 76)
+    (('TRACE', None, None, '284'), 77)
+    (('TRACE', None, None, '1216'), 78)
+    (('TRACE', None, None, '1550'), 79)
+    (('TRACE', None, None, '1600'), 80)
+    (('TRACE', None, None, '1700'), 81)
+    (('TRACE', None, None, 'white-light'), 82)
+    (('Hinode', 'XRT', 'Any', 'Any'), 10001)
+    (('Hinode', 'XRT', 'Any', 'Al_mesh'), 10002)
+    (('Hinode', 'XRT', 'Any', 'Al_thick'), 10003)
+    (('Hinode', 'XRT', 'Any', 'Be_thick'), 10004)
+    (('Hinode', 'XRT', 'Any', 'Gband'), 10005)
+    (('Hinode', 'XRT', 'Any', 'Open'), 10006)
+    (('Hinode', 'XRT', 'Any', 'Ti_poly'), 10007)
+    (('Hinode', 'XRT', 'Al_med', 'Any'), 10008)
+    (('Hinode', 'XRT', 'Al_poly', 'Any'), 10009)
+    (('Hinode', 'XRT', 'Be_med', 'Any'), 10010)
+    (('Hinode', 'XRT', 'Be_thin', 'Any'), 10011)
+    (('Hinode', 'XRT', 'C_poly', 'Any'), 10012)
+    (('Hinode', 'XRT', 'Open', 'Any'), 10013)
 
-    >>> hv = HelioviewerClient()
-    >>> datasources = hv.get_data_sources()  # doctest: +REMOTE_DATA
 
-    >>> # print a list of datasources and their associated ids
-    >>> for observatory, instruments in datasources.items():  # doctest: +REMOTE_DATA
-    ...     for inst, detectors in instruments.items():  # doctest: +REMOTE_DATA
-    ...         for det, measurements in detectors.items():  # doctest: +REMOTE_DATA
-    ...             for meas, params in measurements.items():  # doctest: +REMOTE_DATA
-    ...                 print("%s %s: %d" % (observatory, params['nickname'], params['sourceId']))  # doctest: +REMOTE_DATA
-    SOHO EIT 171: 0
-    SOHO EIT 195: 1
-    SOHO EIT 284: 2
-    SOHO EIT 304: 3
-    SOHO LASCO C2: 4
-    SOHO LASCO C3: 5
-    SOHO MDI Mag: 6
-    SOHO MDI Int: 7
-    SDO AIA 94: 8
-    SDO AIA 131: 9
-    SDO AIA 171: 10
-    SDO AIA 193: 11
-    SDO AIA 211: 12
-    SDO AIA 304: 13
-    SDO AIA 335: 14
-    SDO AIA 1600: 15
-    SDO AIA 1700: 16
-    SDO AIA 4500: 17
-    SDO HMI Int: 18
-    SDO HMI Mag: 19
-    STEREO_A EUVI-A 171: 20
-    STEREO_A EUVI-A 195: 21
-    STEREO_A EUVI-A 284: 22
-    STEREO_A EUVI-A 304: 23
-    STEREO_A COR1-A: 28
-    STEREO_A COR2-A: 29
-    STEREO_B EUVI-B 171: 24
-    STEREO_B EUVI-B 195: 25
-    STEREO_B EUVI-B 284: 26
-    STEREO_B EUVI-B 304: 27
-    STEREO_B COR1-B: 30
-    STEREO_B COR2-B: 31
-    PROBA2 SWAP 174: 32
-    Yohkoh SXT AlMgMn: 33
-    Yohkoh SXT thin-Al: 34
-    Yohkoh SXT white-light: 35
-
-At time of writing (2014/01/06) Helioviewer provides JP2 images from AIA, HMI, LASCO C2/C3, EIT,
-MDI, STEREO A/B COR1/2 & EUVI, SWAP and SXT.  New sources of JP2 images are being added every few months;
-please use the code snippet above to get an up-to-date list of available data sources.
-
+Helioviewer provides JP2 images from a range of sources. New sources of JP2 images are being added every few months.
 
 Suppose we next want to download a PNG image of the latest
 AIA 304 image available on Helioviewer.org. We could use the explicit
@@ -98,7 +138,6 @@ approach as shown in the following example.::
 
 
 .. image:: helioviewer-1.png
-
 
 
 Where 4.8 refers to the image resolution in arcseconds per pixel (larger values
@@ -154,12 +193,12 @@ can specify the values as separate keyword arguments.::
    >>> from astropy.units import Quantity
    >>> from sunpy.map import Map
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')  # doctest: +REMOTE_DATA
+   >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
+   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
    >>> hmi = Map(filepath)  # doctest: +REMOTE_DATA
    >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
    >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA
    >>> hmi.submap(xrange, yrange).peek()  # doctest: +SKIP
-
 
 .. image:: helioviewer-3.png
 
