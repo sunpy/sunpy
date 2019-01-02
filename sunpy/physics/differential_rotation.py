@@ -1,17 +1,16 @@
-from __future__ import division
-from copy import deepcopy
+from itertools import chain, product
 import warnings
-from itertools import product, chain
+from copy import deepcopy
 
 import numpy as np
-from skimage import transform
-from astropy import units as u
-from astropy.coordinates import SkyCoord, Longitude
 
-import sunpy.map
+from astropy import units as u
+from astropy.time import TimeDelta
+from astropy.coordinates import SkyCoord, Longitude, BaseCoordinateFrame, get_body
+
 from sunpy.time import parse_time
-from sunpy.coordinates import frames, HeliographicStonyhurst
-from sunpy.image.util import to_norm, un_norm
+from sunpy.coordinates import HeliographicStonyhurst, frames
+
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
 
@@ -86,15 +85,19 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
     A, B, C = rot_params[rot_type]
 
+    # This calculation of the rotation assumes a sidereal frame time.
     rotation = (A + B * sin2l + C * sin4l) * duration
 
+    # Applying this correction assumes that the observer is on the Earth,
+    # and that the Earth is at the same distance from the Sun at all times
+    # during the year.
     if frame_time == 'synodic':
         rotation -= 0.9856 * u.deg / u.day * duration
 
     return Longitude(rotation.to(u.deg))
 
 
-def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
+def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwargs):
     """
     Given a coordinate on the Sun, calculate where that coordinate maps to
     at as seen by a new observer at some later or earlier time, given that
@@ -109,10 +112,13 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
     coordinate : `~astropy.coordinates.SkyCoord`
         Any valid coordinate which is transformable to Heliographic Stonyhurst.
 
-    new_observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
+    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
         The location of the new observer.
         Instruments in Earth orbit can be approximated by using the position
         of the Earth at the observation time of the new observer.
+
+    time : `~astropy.time.Time`
+
 
     **diff_rot_kwargs : keyword arguments
         Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
@@ -127,29 +133,39 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
 
     Example
     -------
-    >>> import astropy.units as u
-    >>> from astropy.time import Time
-    >>> from astropy.coordinates import SkyCoord
-    >>> from sunpy.coordinates import frames
-    >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
-    >>> from sunpy.coordinates.ephemeris import get_earth
-    >>> t1 = '2010-09-10 12:34:56'  # time of the input coordinate
-    >>> observer_t1 = get_earth(t1)  # assume the observer at time t1 is at Earth
-    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=t1, observer=observer_t1, frame=frames.Helioprojective)
-    >>> t2 = '2010-09-10 13:34:56'  # time we want to rotate to
-    >>> new_observer = get_earth(t2)  # assume the observer at time t2 is at Earth
-    >>> solar_rotate_coordinate(c, new_observer)
-    <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-10 12:34:56): (lon, lat, radius) in (deg, deg, AU)
-    (0., 7.24839198, 1.0069653)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-    (-562.89877818, 119.3152842, 1.50085078e+08)>
-    """
 
-    # Check that the new_observer is specified correctly.
-    if not(isinstance(new_observer, (BaseCoordinateFrame, SkyCoord))):
-        raise ValueError('The new observer must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord')
+    """
+    # Check the input and create the new observer
+    if (observer is not None) and (time is not None):
+        raise ValueError("Either the 'observer' or the 'time' keyword must be specified, but not both simultaneously.")
+
+    if observer is not None:
+        # Check that the new_observer is specified correctly.
+        if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
+            raise ValueError(
+                "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
+
+        # Check that only one time has been specified
+        if not hasattr(observer, "obstime"):
+            raise ValueError("The 'observer' must have an obstime attribute.")
+
+        new_observer = observer
+
+    if time is not None:
+        warnings.warn("Using 'time' assumes an Earth-based observer.")
+        if isinstance(time, TimeDelta) or isinstance(time, u.Quantity):
+            new_observer_time = coordinate.obstime + time
+        else:
+            new_observer_time = parse_time(time)
+
+        return get_body("earth", new_observer_time)
+
+    # The keyword "frame_time" must be explicitly set to "sidereal"
+    # when using this function.
+    diff_rot_kwargs.update({"frame_time": "sidereal"})
 
     # Calculate the interval between the start and end time
-    interval = (new_observer.obstime - coordinate.obstime).to(u.s)
+    interval = new_observer.obstime - coordinate.obstime
 
     # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
     # latitude). Points off the limb are returned as nan.
@@ -169,7 +185,7 @@ def solar_rotate_coordinate(coordinate, new_observer, **diff_rot_kwargs):
     return heliographic_rotated.transform_to(new_observer).transform_to(coordinate.frame.name)
 
 
-def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
+def _warp_sun_coordinates(xy, smap, observer, **diffrot_kwargs):
     """
     Function that returns a new list of coordinates for each input coord.
     This is an inverse function needed by the scikit-image `transform.warp`
@@ -190,20 +206,17 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
         Array with the inverse transformation
     """
 
-    # Calculate the hpc coords
-    x = np.arange(0, smap.dimensions.x.value)
-    y = np.arange(0, smap.dimensions.y.value)
-    xx, yy = np.meshgrid(x, y)
-    # the xy input array would have the following shape
-    # xy = np.dstack([xx.T.flat, yy.T.flat])[0]
+    # NOTE: The time is being subtracted - this is because this function
+    # calculates the inverse of the transformation.
+    rotated_time = observer.obstime - smap.obstime
 
     # We start by converting the pixel to world
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
-        hpc_coords = smap.pixel_to_world(xx * u.pix, yy * u.pix)
+        hpc_coords = all_coordinates_from_map(smap)
 
         # then diff-rotate the hpc coordinates to the desired time
-        rotated_coord = solar_rotate_coordinate(hpc_coords, new_observer, **diffrot_kwargs)
+        rotated_coord = solar_rotate_coordinate(hpc_coords, observer=observer, **diffrot_kwargs)
 
         # To find the values that are behind the sun we need to convert them
         # to HeliographicStonyhurst
@@ -229,7 +242,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
     return xy2
 
 
-def diffrot_map(smap, new_observer, **diffrot_kwargs):
+def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
     """
     Function to apply solar differential rotation to a sunpy map.
 
@@ -238,10 +251,13 @@ def diffrot_map(smap, new_observer, **diffrot_kwargs):
     smap : `~sunpy.map`
         Original map that we want to transform.
 
-    new_observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
+    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
         The location of the new observer.
         Instruments in Earth orbit can be approximated by using the position
         of the Earth at the observation time of the new observer.
+
+    time : sunpy-compatible time
+        date/time at which the input co-ordinate will be rotated to.
 
     Returns
     -------
@@ -250,19 +266,21 @@ def diffrot_map(smap, new_observer, **diffrot_kwargs):
         input map.
     """
 
-    # Check that the new_observer is specified correctly.
-    if not(isinstance(new_observer, (BaseCoordinateFrame, SkyCoord))):
-        raise ValueError('The new observer must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord')
+    # If the entire map is off-disk, then there is nothing to do.
+    if is_all_off_disk(smap):
+        raise ValueError("The entire map is off disk. No data to differentially rotate.")
+
+    # Only this function needs scikit image
+    from skimage import transform
+    from sunpy.image.util import to_norm, un_norm
+    # Import map here for performance reasons.
+    import sunpy.map
 
     # Check for masked maps
     if smap.mask is not None:
         smap_data = np.ma.array(smap.data, mask=smap.mask)
     else:
         smap_data = smap.data
-
-    # If the entire map is off-disk, then there is nothing to do.
-    if is_all_off_disk(smap):
-        return smap
 
     # At least part of the input map is on the disk.
     # Check whether the input contains the full disk of the Sun
@@ -274,8 +292,8 @@ def diffrot_map(smap, new_observer, **diffrot_kwargs):
         # Calculate the size of the output array.
         # Calculate the difference between the top and the bottom.
         # Rotate the top and bottom edges
-        rotated_top = solar_rotate_coordinate(smap.pixel_to_world(*edges["top"]), new_observer, **diffrot_kwargs)
-        rotated_bottom = solar_rotate_coordinate(smap.pixel_to_world(*edges["bottom"]), new_observer, **diffrot_kwargs)
+        rotated_top = solar_rotate_coordinate(smap.pixel_to_world(*edges["top"]), observer=observer, time=time, **diffrot_kwargs)
+        rotated_bottom = solar_rotate_coordinate(smap.pixel_to_world(*edges["bottom"]), observer=observer, time=time, **diffrot_kwargs)
 
         # Calculate the difference between the rotated top and bottom
         difference_top_bottom_x = np.abs(rotated_top.Tx - rotated_bottom.Tx)
@@ -283,8 +301,8 @@ def diffrot_map(smap, new_observer, **diffrot_kwargs):
 
         # Calculate the difference between the left and right hand side.
         # Rotate the left and right hand edges
-        rotated_lhs = solar_rotate_coordinate(smap.pixel_to_world(*edges["lhs"]), new_observer, **diffrot_kwargs)
-        rotated_rhs = solar_rotate_coordinate(smap.pixel_to_world(*edges["rhs"]), new_observer, **diffrot_kwargs)
+        rotated_lhs = solar_rotate_coordinate(smap.pixel_to_world(*edges["lhs"]), observer=observer, time=time, **diffrot_kwargs)
+        rotated_rhs = solar_rotate_coordinate(smap.pixel_to_world(*edges["rhs"]), observer=observer, time=time, **diffrot_kwargs)
 
         # Calculate the difference between the rotated left and right hand sides.
         difference_lhs_rhs_x = np.abs(rotated_lhs.Tx - rotated_rhs.Tx)
@@ -327,14 +345,14 @@ def diffrot_map(smap, new_observer, **diffrot_kwargs):
 
     if submap:
         # Put the reference pixel at (0, 0)
-        out_meta['crpix1'] = 0
+        out_meta['crpix1'] = 0  # a proper calculation of crpix1 and crpix2 is required
         out_meta['crpix2'] = 0
 
         # Calculate where the center of the field of view is
-        crval_rotated = solar_rotate_coordinate(smap.pixel_to_world(0 * u.pix, 0 * u.pix), new_observer)
+        crval_rotated = solar_rotate_coordinate(smap.pixel_to_world(0 * u.pix, 0 * u.pix), observer=observer, time=time, **diffrot_kwargs)
 
         # Calculate where the center of the field of view is
-        crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_observer, **diffrot_kwargs)
+        crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, observer=observer, time=time, **diffrot_kwargs)
         out_meta['crval1'] = crval_rotated.Tx.value
         out_meta['crval2'] = crval_rotated.Ty.value
 
@@ -544,4 +562,3 @@ def contains_limb(smap):
     """
     pixel_radii = find_pixel_radii(smap)
     return np.logical_and(np.any(pixel_radii < 1 * u.R_sun), np.any(pixel_radii > 1 * u.R_sun))
-

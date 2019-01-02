@@ -2,11 +2,8 @@
 This module tests the functions implemented in sunpy.util.util.
 """
 
-from __future__ import absolute_import, division, print_function
 import numpy as np
-
 import pytest
-from pytest_mock import mocker
 
 from sunpy.util import util
 
@@ -140,8 +137,8 @@ def test_expand_list():
     """
     This should return an expanded version of list lst.
     """
-    lst = [1, 2, 3, [4, 5, 6], 7, (8, 9)]
-    assert util.expand_list(lst) == [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    lst = [1, 2, 3, [4, 5, 6], 7, (8, 9), ((10, 11), ((12, 13),))]
+    assert util.expand_list(lst) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 
 def test_expand_list_generator():

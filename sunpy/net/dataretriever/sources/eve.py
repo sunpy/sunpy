@@ -2,12 +2,11 @@
 # This module was developed under funding by
 # Google Summer of Code 2014
 
-from __future__ import absolute_import, division, print_function
-import datetime
+from astropy.time import TimeDelta
+import astropy.units as u
 
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
-from sunpy.extern.six.moves.urllib.parse import urljoin
 
 from ..client import GenericClient
 
@@ -64,8 +63,8 @@ class EVEClient(GenericClient):
         # If start of time range is before 00:00, converted to such, so
         # files of the requested time ranger are included.
         # This is done because the archive contains daily files.
-        if timerange.start.time() != datetime.time(0, 0):
-            timerange = TimeRange('{:%Y-%m-%d}'.format(timerange.start), timerange.end)
+        if timerange.start.strftime('%M-%S') != '00-00':
+            timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
         eve = Scraper(BASEURL)
         return eve.filelist(timerange)
 
@@ -75,7 +74,7 @@ class EVEClient(GenericClient):
         for url in urls:
             t0 = eve._extractDateURL(url)
             # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + datetime.timedelta(days=1)))
+            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
         return times
 
     def _makeimap(self):

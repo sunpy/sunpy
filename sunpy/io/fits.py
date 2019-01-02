@@ -27,19 +27,16 @@ References
 ----------
 | https://stackoverflow.com/questions/456672/class-factory-in-python
 """
-from __future__ import absolute_import, division, print_function
 import os
 import re
 import sys
 import warnings
 import traceback
-import itertools
 import collections
 
 from astropy.io import fits
 
 from sunpy.io.header import FileHeader
-from sunpy.extern.six.moves import zip
 
 __all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 
@@ -196,7 +193,9 @@ def write(fname, data, header, **kwargs):
 
     if isinstance(key_comments, dict):
         for k, v in key_comments.items():
-            fits_header.comments[k] = v
+            # Check that the Card for the comment exists before trying to write to it.
+            if k in fits_header:
+                fits_header.comments[k] = v
     elif key_comments:
         raise TypeError("KEYCOMMENTS must be a dictionary")
 

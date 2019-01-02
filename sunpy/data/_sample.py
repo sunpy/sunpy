@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 """SunPy sample data files"""
-from __future__ import absolute_import, division, print_function
-
-import os.path
 import socket
+import os.path
 import warnings
-from zipfile import ZipFile
 from shutil import move
+from zipfile import ZipFile
+from urllib.parse import urljoin
 
 from astropy.utils.data import download_file
 
-from sunpy.extern import six
-
 from sunpy.util.net import url_exists
 from sunpy.util.config import get_and_create_sample_dir
-from sunpy import config
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
@@ -34,6 +30,7 @@ _base_urls = (
 
 # the files should include necessary extensions
 _sample_files = {
+    "HMI_LOS_IMAGE": "HMI20110607_063211_los_lowres.fits",
     "AIA_131_IMAGE": "AIA20110607_063301_0131_lowres.fits",
     "AIA_171_IMAGE": "AIA20110607_063302_0171_lowres.fits",
     "AIA_211_IMAGE": "AIA20110607_063302_0211_lowres.fits",
@@ -65,9 +62,6 @@ _sample_files = {
     "NORH_TIMESERIES": "tca110607.fits"
 }
 
-# Creating the directory for sample files to be downloaded
-sampledata_dir = get_and_create_sample_dir()
-
 
 def download_sample_data(show_progress=True):
     """
@@ -82,7 +76,7 @@ def download_sample_data(show_progress=True):
     -------
     None
     """
-    for file_name in six.itervalues(_sample_files):
+    for file_name in _sample_files.value():
         get_sample_file(file_name, show_progress=show_progress,
                         url_list=_base_urls, overwrite=True)
 
@@ -114,6 +108,9 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
         The local path of the file. None if it failed.
     """
 
+    # Creating the directory for sample files to be downloaded
+    sampledata_dir = get_and_create_sample_dir()
+
     if filename[-3:] == 'zip':
         uncompressed_filename = filename[:-4]
     else:
@@ -129,7 +126,7 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
             if base_url.count('github'):
                 online_filename += '?raw=true'
             try:
-                url = six.moves.urllib_parse.urljoin(base_url, online_filename)
+                url = urljoin(base_url, online_filename)
                 exists = url_exists(url)
                 if exists:
                     f = download_file(os.path.join(base_url, online_filename),

@@ -1,22 +1,20 @@
 """
 This module provides a wrapper around the Helioviewer API.
 """
-from __future__ import absolute_import
-
 # pylint: disable=E1101,F0401,W0231
 
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import errno
 import json
+import errno
 import codecs
+import urllib
+
 import sunpy
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
-
-from sunpy.extern.six.moves import urllib
 
 __all__ = ['HelioviewerClient']
 
@@ -49,15 +47,15 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : `datetime.datetime`, `str`
-            A string or datetime object for the desired date of the image
-        observatory : string
+        date : `astropy.time.Time`, str
+            A `~sunpy.time.parse_time` parsable string or `~astropy.time.Time` object for the desired date of the image
+        observatory : str
             (Optional) Observatory name
-        instrument : string
+        instrument : str
             (Optional) instrument name
-        detector : string
+        detector : str
             (Optional) detector name
-        measurement : string
+        measurement : str
             (Optional) measurement name
         sourceId : int
             (Optional) data source id
@@ -73,7 +71,7 @@ class HelioviewerClient(object):
         >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
-        2012-01-01 00:00:07
+        2012-01-01T00:00:07.000
         """
         params = {
             "action": "getClosestImage",
@@ -83,7 +81,7 @@ class HelioviewerClient(object):
 
         response = self._get_json(params)
 
-        # Cast date string to DateTime
+        # Cast date string to Time
         response['date'] = parse_time(response['date'])
 
         return response
@@ -99,17 +97,17 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : `datetime.datetime`, string
-            A string or datetime object for the desired date of the image
-        directory : string
+        date : `astropy.time.Time`, str
+            A string or `~astropy.time.Time` object for the desired date of the image
+        directory : str
             (Optional) Directory to download JPEG 2000 image to.
-        observatory : string
+        observatory : str
             (Optional) Observatory name
-        instrument : string
+        instrument : str
             (Optional) instrument name
-        detector : string
+        detector : str
             (Optional) detector name
-        measurement : string
+        measurement : str
             (Optional) measurement name
         sourceId : int
             (Optional) data source id
@@ -118,7 +116,7 @@ class HelioviewerClient(object):
 
         Returns
         -------
-        out : string
+        out : str
             Returns a filepath to the downloaded JPEG 2000 image or a URL if
             the "jpip" parameter is set to True.
 
@@ -161,17 +159,18 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : `datetime.datetime`, string
-            A string or datetime object for the desired date of the image
+        date : `astropy.time.Time`, `str`
+            A `parse_time` parsable string or `~astropy.time.Time` object
+            for the desired date of the image
         image_scale : float
             The zoom scale of the image. Default scales that can be used are
             0.6, 1.2, 2.4, and so on, increasing or decreasing by a factor
             of 2. The full-res scale of an AIA image is 0.6.
-        layers : string
+        layers : str
             Each layer string is comma-separated with these values, e.g.:
             "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
             Multiple layer string are by commas: "[layer1],[layer2],[layer3]"
-        directory : string
+        directory : str
             (Optional)  Directory to download JPEG 2000 image to.
         x1 : float
             (Optional) The offset of the image's left boundary from the center
@@ -199,15 +198,17 @@ class HelioviewerClient(object):
 
         Returns
         -------
-        out : string
+        out : str
             filepath to the PNG image
 
         Examples
         --------
         >>> from sunpy.net.helioviewer import HelioviewerClient
+        >>> import datetime
         >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> file = hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)   # doctest: +REMOTE_DATA
         >>> file = hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800)   # doctest: +REMOTE_DATA
+        >>> file = hv.download_jp2(datetime.datetime.now(), observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')   # doctest: +REMOTE_DATA
         """
         params = {
             "action": "takeScreenshot",
@@ -276,4 +277,4 @@ class HelioviewerClient(object):
 
     def _format_date(self, date):
         """Formats a date for Helioviewer API requests"""
-        return parse_time(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
+        return parse_time(date).isot + "Z"

@@ -8,21 +8,20 @@
 
 """ Facilities to interface with the HEK. """
 
-from __future__ import absolute_import
-
 import json
 import codecs
-
+import urllib
 from itertools import chain
-from datetime import datetime
+
+from astropy.table import Table, Row, Column
+from astropy.time import Time
+
 from sunpy.net import attr
+from sunpy.util import unique
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
-from sunpy.util import unique
 from sunpy.util.xml import xml_to_dict
-from sunpy.extern.six import iteritems
-from sunpy.extern.six.moves import urllib
-from sunpy.util import deprecated
+
 
 __all__ = ['HEKClient']
 
@@ -32,7 +31,7 @@ DEFAULT_URL = 'http://www.lmsal.com/hek/her'
 def _freeze(obj):
     """ Create hashable representation of result dict. """
     if isinstance(obj, dict):
-        return tuple((k, _freeze(v)) for k, v in iteritems(obj))
+        return tuple((k, _freeze(v)) for k, v in obj.items())
     if isinstance(obj, list):
         return tuple(_freeze(elem) for elem in obj)
     return obj
@@ -74,7 +73,7 @@ class HEKClient(object):
             results.extend(result['result'])
 
             if not result['overmax']:
-                return list(map(Response, results))
+                return HEKTable(results)
             page += 1
 
     def search(self, *query):
@@ -96,30 +95,37 @@ class HEKClient(object):
         else:
             return self._merge(self._download(data) for data in ndata)
 
-    @deprecated('0.8', alternative='HEKClient.search')
-    def query(self, *query):
-        """
-        See `~sunpy.net.hek.hek.HEKClient.fetch`
-        """
-        return self.search(*query)
-
-
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """
         return list(unique(chain.from_iterable(responses), _freeze))
 
+class HEKTable(Table):
+    def __getitem__(self, item):
+        table_item = super().__getitem__(item)
 
-class Response(dict):
-    """Handles the response from the HEK.  Each Response object is a subclass
-    of the dictionary object.  The dictionary key-value pairs correspond to the
+        if table_item.__class__ == Column:
+            table_item.__class__ = HEKColumn
+        elif table_item.__class__ == Row:
+            table_item.__class__ = HEKRow
+
+        return table_item
+
+class HEKColumn(Column):
+    pass
+
+class HEKRow(Row):
+    """
+    Handles the response from the HEK.  Each HEKRow object is a subclass
+    of `astropy.Table.row`.  The column-row key-value pairs correspond to the
     HEK feature/event properties and their values, for that record from the
-    HEK.  Each Response object also has extra properties that relate HEK
-    concepts to VSO concepts."""
+    HEK.  Each HEKRow object also has extra properties that relate HEK
+    concepts to VSO concepts.
+    """
     @property
     def vso_time(self):
         return v_attrs.Time(
-            datetime.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
-            datetime.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
+            Time.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
+            Time.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
         )
 
     @property
@@ -153,3 +159,9 @@ class Response(dict):
             return xml_to_dict(response)
         else:
             return response
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default

@@ -3,11 +3,11 @@ Finding and Downloading Data using Fido
 ---------------------------------------
 
 This guide outlines how to search for and download data using SunPy's
-Federated Internet Data Obtainer...or more usually (and
-sanely) referred to as Fido.  `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` is a unified interface for searching
+Federated Internet Data Obtainer...or more usually (and sanely) referred to as Fido.
+`Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` is a unified interface for searching
 and fetching solar physics data irrespective of the underlying
-client or webservice through which the data is obtained, e.g. VSO,
-JSOC, etc.  It therefore supplies a single, easy and consistent way to
+client or webservice through which the data is obtained, e.g. VSO_,
+JSOC_, etc.  It therefore supplies a single, easy and consistent way to
 obtain most forms of solar physics data.
 
 Import
@@ -134,14 +134,16 @@ operator would::
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     <BLANKLINE>
-    2 Results from the RHESSIClient:
+    3 Results from the RHESSIClient:
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str6       str3
     ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan
+    2012-03-04 00:00:00 2012-03-04 23:59:59 rhessi     rhessi        nan
+    2012-03-05 00:00:00 2012-03-05 23:59:59 rhessi     rhessi        nan
+    2012-03-06 00:00:00 2012-03-06 23:59:59 rhessi     rhessi        nan
     <BLANKLINE>
     <BLANKLINE>
+
 
 Indexing search results
 -----------------------
@@ -232,3 +234,6 @@ data to a subdirectory named after the instrument, use
 
 You can see the list of options that can be specified in path for all the files
 to be downloaded with ``results.response_block_properties``.
+
+.. _VSO: https://sdac.virtualsolar.org/cgi/search
+.. _JSOC: http://jsoc.stanford.edu/

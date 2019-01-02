@@ -4,14 +4,17 @@
 
 
 from ..client import GenericClient
-import datetime
 import os
 import tarfile
 from functools import partial
 from collections import OrderedDict
 
+from astropy.time import Time
+from astropy.time import TimeDelta
+import astropy.units as u
+
 import sunpy
-from sunpy.util import replacement_filename, deprecated
+from sunpy.util import replacement_filename
 from sunpy.net.dataretriever.client import simple_path
 
 from sunpy.net.download import Downloader, Results
@@ -112,9 +115,11 @@ class SRSClient(GenericClient):
 
     @staticmethod
     def _get_default_uri():
-        today = datetime.datetime.utcnow()
+        today = Time.now()
+        year = today.strftime('%Y')
+        date = today.strftime('%Y%m%d')
         return [('ftp://ftp.swpc.noaa.gov/pub/warehouse/',
-                 '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt').format(date=today)]
+                 '{0}/SRS/{1}SRS.txt').format(year, date)]
 
     def _get_url_for_timerange(self, timerange, **kwargs):
 
@@ -122,15 +127,17 @@ class SRSClient(GenericClient):
             return SRSClient._get_default_uri()
         result = list()
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
-        total_days = (timerange.end - timerange.start).days + 1
+        total_days = int(timerange.days) + 1
         all_dates = timerange.split(total_days)
-        today_year = datetime.datetime.utcnow().year
+        today_year = Time.now().strftime('%Y')
         for day in all_dates:
-            if today_year == day.end.year:
-                suffix = '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt'
+            if today_year == day.end.strftime('%Y'):
+                suffix = '{0}/SRS/{1}SRS.txt'.format(
+                    day.end.strftime('%Y'), day.end.strftime('%Y%m%d'))
             else:
-                suffix = '{date:%Y}/{date:%Y}_SRS.tar.gz'
-            url = base_url + suffix.format(date=day.end)
+                suffix = '{0}/{1}_SRS.tar.gz'.format(
+                    day.end.strftime('%Y'), day.end.strftime('%Y'))
+            url = base_url + suffix
             result.append(url)
 
         return result
@@ -158,13 +165,13 @@ class SRSClient(GenericClient):
             name = url.split('/')[-1]
 
             # temporary fix !!! coz All QRBs have same start_time values
-            day = qre.time.start.date() + datetime.timedelta(days=i)
+            day = Time(qre.time.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
 
             if name not in filenames:
                 filenames.append(name)
 
             if name.endswith('.gz'):
-                local_filenames.append('{date:%Y%m%d}SRS.txt'.format(date=day))
+                local_filenames.append('{}SRS.txt'.format(day.strftime('%Y%m%d')))
             else:
                 local_filenames.append(name)
 
@@ -228,13 +235,6 @@ class SRSClient(GenericClient):
                 callback({'path': fname})
 
         return res2
-
-    @deprecated('0.8', alternative='NOAAPredictClient.fetch')
-    def get(self, qres, path=None, error_callback=None, **kwargs):
-        """
-        See `~sunpy.net.dataretriever.sources.noaa.NOAAPredictClient.fetch`
-        """
-        return self.fetch(qres, path=path, error_callback=error_callback, **kwargs)
 
     def _makeimap(self):
         self.map_['source'] = 'swpc'

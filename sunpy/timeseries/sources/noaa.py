@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 """NOAA Solar Cycle TimeSeries subclass definitions."""
-from __future__ import absolute_import
-
 from collections import OrderedDict
-import datetime
 from matplotlib import pyplot as plt
 from pandas.io.parsers import read_csv
 import numpy as np
 
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from astropy.time import Time
 from sunpy.util.metadata import MetaDict
 
 from astropy import units as u
@@ -135,14 +133,17 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             while line.startswith((":", "#")):
                 header += line
                 line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
-            data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
+            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth',
+                      'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
+            data = read_csv(fp, delim_whitespace=True, names=fields,
+                            comment='#', dtype={'yyyy': np.str, 'mm': np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
-            data['time']=timeindex
+            timeindex = Time.strptime([x + y for x, y in zip(data['yyyy'], data['mm'])], '%Y%m')
+            timeindex.precision = 9
+            data['time'] = timeindex.isot.astype('datetime64')
             data = data.set_index('time')
-            data = data.drop('mm',1)
-            data = data.drop('yyyy',1)
+            data = data.drop('mm', 1)
+            data = data.drop('yyyy', 1)
 
             # Add the units data
             units = OrderedDict([('sunspot SWO', u.dimensionless_unscaled),
@@ -157,8 +158,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             # Todo: check units
             # Todo: fix header/meta, it's returning rubbish.
             return data, MetaDict({'comments': header}), units
-
-
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
@@ -246,14 +245,19 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             while line.startswith((":", "#")):
                 header += line
                 line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high', 'radio flux', 'radio flux low', 'radio flux high')
-            data = read_csv(filepath, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
+            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high',
+                      'radio flux', 'radio flux low', 'radio flux high')
+            data = read_csv(filepath, delim_whitespace=True, names=fields,
+                            comment='#', skiprows=2, dtype={'yyyy': np.str, 'mm': np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
-            data['time']=timeindex
+
+            timeindex = Time.strptime([x + y for x, y in zip(data['yyyy'], data['mm'])], '%Y%m')
+            timeindex.precision = 9
+            data['time'] = timeindex.isot.astype('datetime64')
+
             data = data.set_index('time')
-            data = data.drop('mm',1)
-            data = data.drop('yyyy',1)
+            data = data.drop('mm', 1)
+            data = data.drop('yyyy', 1)
 
             # Add the units data
             units = OrderedDict([('sunspot', u.dimensionless_unscaled),

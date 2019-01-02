@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 # Author: Tomas Meszaros <exo@tty.sk>
 
 import astropy.units as u

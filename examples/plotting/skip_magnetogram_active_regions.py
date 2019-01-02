@@ -8,15 +8,12 @@ This example shows how to overplot Active Region location on magnetogram plots.
 
 ##############################################################################
 # Start by importing the necessary modules.
-from __future__ import print_function, division
-
-import datetime
-
 import numpy as np
 import matplotlib.pyplot as plt
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from astropy.time import TimeDelta
 
 import sunpy.map
 import sunpy.coordinates
@@ -33,7 +30,7 @@ day = parse_time("2017-01-25")
 # We will select the entire day as our timerange.
 
 start_time = day
-end_time = day + datetime.timedelta(hours=23, minutes=59, seconds=59)
+end_time = day + TimeDelta(23*u.hour + 59*u.minute + 59*u.second)
 
 ##############################################################################
 # Send the search query.

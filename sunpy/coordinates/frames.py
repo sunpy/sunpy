@@ -4,23 +4,14 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
-from __future__ import absolute_import, division
-
-import warnings
-
 import numpy as np
 
-from astropy import units as u
-from astropy.coordinates.representation import (CartesianRepresentation,
-                                                UnitSphericalRepresentation,
-                                                SphericalRepresentation,
-                                                CylindricalRepresentation)
-
-from astropy.coordinates.baseframe import (BaseCoordinateFrame,
-                                           RepresentationMapping)
-
+import astropy.units as u
 from astropy.coordinates import Attribute, ConvertError
-from astropy.tests.helper import quantity_allclose
+from astropy.coordinates.baseframe import BaseCoordinateFrame, RepresentationMapping
+from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
+                                                CylindricalRepresentation,
+                                                UnitSphericalRepresentation)
 
 from sunpy import sun
 
@@ -101,10 +92,10 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     ...               frame="heliographic_stonyhurst",
     ...               obstime="2010/01/01T00:00:45")
     >>> sc
-    <SkyCoord (HeliographicStonyhurst: obstime=2010-01-01 00:00:45): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicStonyhurst: obstime=2010-01-01T00:00:45.000): (lon, lat, radius) in (deg, deg, km)
         (1., 1., 2.)>
     >>> sc.frame
-    <HeliographicStonyhurst Coordinate (obstime=2010-01-01 00:00:45): (lon, lat, radius) in (deg, deg, km)
+    <HeliographicStonyhurst Coordinate (obstime=2010-01-01T00:00:45.000): (lon, lat, radius) in (deg, deg, km)
         (1., 1., 2.)>
     >>> sc = SkyCoord(HeliographicStonyhurst(-10*u.deg, 2*u.deg))
     >>> sc
@@ -146,7 +137,7 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
         wrap = kwargs.pop('wrap_longitude', True)
 
         if ('radius' in kwargs and kwargs['radius'].unit is u.one and
-                quantity_allclose(kwargs['radius'], 1*u.one)):
+                u.allclose(kwargs['radius'], 1*u.one)):
             kwargs['radius'] = RSUN_METERS.to(u.km)
 
         super(HeliographicStonyhurst, self).__init__(*args, **kwargs)
@@ -206,13 +197,13 @@ class HeliographicCarrington(HeliographicStonyhurst):
     ...               frame="heliographic_carrington",
     ...               obstime="2010/01/01T00:00:30")
     >>> sc
-    <SkyCoord (HeliographicCarrington: obstime=2010-01-01 00:00:30): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:30.000): (lon, lat, radius) in (deg, deg, km)
         (1., 2., 3.)>
 
     >>> sc = SkyCoord([1,2,3]*u.deg, [4,5,6]*u.deg, [5,6,7]*u.km,
     ...               obstime="2010/01/01T00:00:45", frame="heliographic_carrington")
     >>> sc
-    <SkyCoord (HeliographicCarrington: obstime=2010-01-01 00:00:45): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:45.000): (lon, lat, radius) in (deg, deg, km)
         [(1., 4., 5.), (2., 5., 6.), (3., 6., 7.)]>
     """
 
@@ -243,7 +234,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
     obstime = TimeFrameAttributeSunPy()
 
 
-class Heliocentric(SunPyBaseCoordinateFrame):
+class Heliocentric(BaseCoordinateFrame):
     """
     A coordinate or frame in the Heliocentric system.
 
@@ -286,13 +277,13 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     >>> sc = SkyCoord(CartesianRepresentation(10*u.km, 1*u.km, 2*u.km),
     ...               obstime="2011/01/05T00:00:50", frame="heliocentric")
     >>> sc
-    <SkyCoord (Heliocentric: obstime=2011-01-05 00:00:50, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in km
+    <SkyCoord (Heliocentric: obstime=2011-01-05T00:00:50.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in km
         (10., 1., 2.)>
 
     >>> sc = SkyCoord([1,2]*u.km, [3,4]*u.m, [5,6]*u.cm, frame="heliocentric", obstime="2011/01/01T00:00:54")
 
     >>> sc
-    <SkyCoord (Heliocentric: obstime=2011-01-01 00:00:54, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in (km, m, cm)
+    <SkyCoord (Heliocentric: obstime=2011-01-01T00:00:54.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in (km, m, cm)
         [(1., 3., 5.), (2., 4., 6.)]>
     """
 
@@ -343,11 +334,11 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km, obstime="2010/01/01T00:00:00",
     ...               frame="helioprojective")
     >>> sc
-    <SkyCoord (Helioprojective: obstime=2010-01-01 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (0., 0., 5.)>
     >>> sc = SkyCoord(0*u.deg, 0*u.deg, obstime="2010/01/01T00:00:00", frame="helioprojective")
     >>> sc
-    <SkyCoord (Helioprojective: obstime=2010-01-01 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
         (0., 0.)>
     """
 
@@ -375,6 +366,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     obstime = TimeFrameAttributeSunPy()
     rsun = Attribute(default=RSUN_METERS.to(u.km))
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
+    _default_wrap_angle = 180*u.deg
 
     def __init__(self, *args, **kwargs):
         wrap = kwargs.pop('wrap_longitude', True)
@@ -382,7 +374,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         BaseCoordinateFrame.__init__(self, *args, **kwargs)
 
         if wrap and isinstance(self._data, (UnitSphericalRepresentation, SphericalRepresentation)):
-            self._data.lon.wrap_angle = 180*u.deg
+            self._data.lon.wrap_angle = self._default_wrap_angle
 
     def calculate_distance(self):
         """
@@ -400,7 +392,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         """
         # Skip if we already are 3D
         if (isinstance(self._data, SphericalRepresentation) and
-                not (self.distance.unit is u.one and quantity_allclose(self.distance, 1*u.one))):
+                not (self.distance.unit is u.one and u.allclose(self.distance, 1*u.one))):
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):

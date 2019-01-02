@@ -1,0 +1,1 @@
+Remove warning from ``GenericMap.submap`` when using pixel ``Quantities`` as input.

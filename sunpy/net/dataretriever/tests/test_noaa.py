@@ -53,9 +53,9 @@ def test_query():
     (Time('2012/11/27', '2012/11/27'), Instrument('noaa-indices')),
     (Time('2012/10/4', '2012/10/6'), Instrument('noaa-indices')),
 ])
-def test_get(time, instrument):
+def test_fetch(time, instrument):
     qr1 = LCClient.search(time, instrument)
-    res = LCClient.get(qr1)
+    res = LCClient.fetch(qr1)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
 

@@ -6,8 +6,6 @@ Drawing and using a Great Arc
 This example shows you how to define and draw a great arc on an image of the
 Sun, and to extract intensity values along that arc from the image data.
 """
-from __future__ import print_function, division
-
 import numpy as np
 import matplotlib.pyplot as plt
 

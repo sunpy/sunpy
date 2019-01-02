@@ -2,29 +2,28 @@
 TimeSeries is a generic time series class from which all other TimeSeries
 classes inherit from.
 """
+import copy
 import warnings
 from collections import OrderedDict
-import copy
 
-import matplotlib.pyplot as plt
 import pandas as pd
-
-from sunpy import config
-from sunpy.time import TimeRange
-from sunpy.extern import six
-from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.util.metadata import MetaDict
+import matplotlib.pyplot as plt
 
 import astropy
 import astropy.units as u
-from astropy.table import Table
-from astropy.table import Column
+from astropy.table import Table, Column
+
+from sunpy import config
+from sunpy.time import TimeRange
+from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.util.metadata import MetaDict
 
 # define and register a new unit, needed for RHESSI
 det = u.def_unit('detector')
 u.add_enabled_units([det])
 
 TIME_FORMAT = config.get("general", "time_format")
+
 
 class GenericTimeSeries:
     """
@@ -55,11 +54,13 @@ class GenericTimeSeries:
     Examples
     --------
     >>> from sunpy.timeseries import TimeSeries
+    >>> from sunpy.time import parse_time
     >>> import datetime
+    >>> from astropy.time import TimeDelta
     >>> import numpy as np
     >>> import pandas as pd
-    >>> base = datetime.datetime.today()
-    >>> times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    >>> base = parse_time(datetime.datetime.today())
+    >>> times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
     >>> df = pd.DataFrame(intensity, index=times, columns=['intensity'])
     >>> ts = TimeSeries(df)
@@ -80,17 +81,16 @@ class GenericTimeSeries:
         An __init_subclass__ hook initializes all of the subclasses of a given class.
         So for each subclass, it will call this block of code on import.
         This replicates some metaclass magic without the need to be aware of metaclasses.
-        Here we use this to register each subclass in a dict that has the `is_datasource_for` attribute.
-        This is then passed into the TimeSeries Factory so we can register them.
+        Here we use this to register each subclass in a dict that has the `is_datasource_for`
+        attribute. This is then passed into the TimeSeries Factory so we can register them.
         """
         super().__init_subclass__(**kwargs)
         if hasattr(cls, 'is_datasource_for'):
             cls._registry[cls] = cls.is_datasource_for
 
-
     def __init__(self, data, meta=None, units=None, **kwargs):
         self.data = data
-        tr = TimeRange(self.data.index.min(), self.data.index.max())
+        tr = self.time_range
         # Check metadata input
         if meta is None:
             # No meta given, so default
@@ -111,8 +111,8 @@ class GenericTimeSeries:
             self.units = units
 
         # Validate input data
-        #self._validate_meta()
-        #self._validate_units()
+        # self._validate_meta()
+        # self._validate_units()
 
 # #### Attribute definitions #### #
 
@@ -139,7 +139,10 @@ class GenericTimeSeries:
         The start and end times of the TimeSeries as a `~sunpy.time.TimeRange`
         object
         """
-        return TimeRange(self.data.index.min(), self.data.index.max())
+        if len(self.data)>0:
+            return TimeRange(self.data.index.min(), self.data.index.max())
+        else:
+            return None
 
 # #### Data Access, Selection and Organisation Methods #### #
 
@@ -157,7 +160,7 @@ class GenericTimeSeries:
         quantity : `~astropy.units.quantity.Quantity`
         """
         values = self.data[colname].values
-        unit   = self.units[colname]
+        unit = self.units[colname]
         return u.Quantity(values, unit)
 
     def add_column(self, colname, quantity, unit=False, overwrite=True, **kwargs):
@@ -189,8 +192,8 @@ class GenericTimeSeries:
             unit = u.dimensionless_unscaled
 
         # Make a copy of all the TimeSeries components.
-        data  = copy.copy(self.data)
-        meta  = TimeSeriesMetaData(copy.copy(self.meta.metadata))
+        data = copy.copy(self.data)
+        meta = TimeSeriesMetaData(copy.copy(self.meta.metadata))
         units = copy.copy(self.units)
 
         # Add the unit to the units dictionary if already there.
@@ -219,7 +222,9 @@ class GenericTimeSeries:
         newts : `~sunpy.timeseries.TimeSeries`
             A new time series in ascending chronological order.
         """
-        return GenericTimeSeries(self.data.sort_index(**kwargs), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
+        return GenericTimeSeries(self.data.sort_index(**kwargs),
+                                 TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                 copy.copy(self.units))
 
     def truncate(self, a, b=None, int=None):
         """Returns a truncated version of the TimeSeries object.
@@ -249,12 +254,12 @@ class GenericTimeSeries:
             a = TimeRange(a, b)
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
-            start = a.start
-            end   = a.end
+            start = a.start.datetime
+            end   = a.end.datetime
         else:
             # Otherwise we already have the values
             start = a
-            end   = b
+            end = b
 
         # If an interval integer was given then use in truncation.
         truncated_data = self.data.sort_index()[start:end:int]
@@ -297,7 +302,9 @@ class GenericTimeSeries:
         data = self.data[[column_name]].dropna()
 
         # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeries(data.sort_index(), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
+        object = GenericTimeSeries(data.sort_index(),
+                                   TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+                                   copy.copy(self.units))
         object._sanitize_metadata()
         object._sanitize_units()
         return object
@@ -408,7 +415,8 @@ class GenericTimeSeries:
         """
         # Check we have a valid TS
         if len(self.data) == 0:
-            raise ValueError('The timeseries can\'t be plotted as it has no data present. (len(self.data) == 0)')
+            raise ValueError("The timeseries can't be plotted as it has no data present. "
+                             "(len(self.data) == 0)")
 
 # #### Miscellaneous #### #
 
@@ -553,6 +561,9 @@ class GenericTimeSeries:
             If None, return all columns minus the index, otherwise, returns
             specified columns.
 
+        kwargs :
+            All keyword arguments are handed to the `as_matix` method of the DataFrame.
+
         Returns
         -------
         values : `~numpy.ndarray`
@@ -577,7 +588,9 @@ class GenericTimeSeries:
         """
         match = True
         if isinstance(other, type(self)):
-            if (not self.data.equals(other.data)) or (self.meta != other.meta) or (self.units != other.units):
+            if ((not self.data.equals(other.data)) or
+                    (self.meta != other.meta) or
+                    (self.units != other.units)):
                 match = False
         else:
             match = False

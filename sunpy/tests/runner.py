@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 import os
 
 from astropy.tests.runner import TestRunner, keyword
@@ -80,6 +78,12 @@ class SunPyTestRunner(TestRunner):
         figure_tests : str, optional
             Set the output directory for figure test images and hashes.
         """
+        # If our test path is outside of our base dir (docs) then we have to
+        # skip sending --figure_dir as we will not have hit the conftest.py
+        # file.
+        if kwargs['test_path'] and self.base_path not in kwargs['test_path']:
+            return []
+
         if figure_dir:
             return ['--figure_dir', figure_dir]
 
@@ -115,3 +119,13 @@ class SunPyTestRunner(TestRunner):
             return ['--cov-report'] + a
 
         return []
+
+    @keyword()
+    def docs_path(self, docs_path, kwargs):
+        """
+        Ignore the docs directory if we have set test_path.
+        """
+        if kwargs['test_path']:
+            return []
+        else:
+            return super().docs_path(docs_path, kwargs)
