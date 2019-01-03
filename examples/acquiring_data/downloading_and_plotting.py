@@ -18,13 +18,13 @@ instrument = attrs.Instrument('C3')
 # Search for data that is from the requested instrument and in the requested
 # timerange.
 result = Fido.search(timerange, instrument)
-result
+print(result)
 
 ###############################################################################
 # Download the files. "downloaded_files" contains a list of the location of
 # each of the locally downloaded files.
 downloaded_files = Fido.fetch(result)
-downloaded_files
+print(downloaded_files)
 
 ###############################################################################
 # Create a SunPy Map object from the first downloaded file.
