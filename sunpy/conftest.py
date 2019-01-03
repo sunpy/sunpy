@@ -4,6 +4,7 @@ import warnings
 import importlib
 
 import pytest
+from pkg_resources import parse_version
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -13,12 +14,20 @@ except ImportError:
 else:
     matplotlib.use('Agg')
 
+# isort:imports-firstparty
 import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
 from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
+if importlib.util.find_spec('asdf') is not None:
+    from asdf import __version__ as asdf_version
+    if parse_version(asdf_version) >= parse_version('2.3.0'):
+        pytest_plugins = ['asdf.tests.schema_tester']
+
+# Don't actually import pytest_remotedata because that can do things to the
+# entrypoints code in pytest.
 remotedata_spec = importlib.util.find_spec("pytest_remotedata")
 HAVE_REMOTEDATA = remotedata_spec is not None
 

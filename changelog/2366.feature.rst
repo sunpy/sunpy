@@ -1,0 +1,1 @@
+asdf schemas and tags were added for the SunPy coordinate frames and `~sunpy.map.GenericMap` allowing these objects to be saved to and restored from `asdf <http://asdf.readthedocs.io/>`__ files.
