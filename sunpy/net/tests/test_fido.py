@@ -1,7 +1,7 @@
 import os
 import copy
 import tempfile
-import pathlib
+from pathlib import Path
 
 import pytest
 import hypothesis.strategies as st
@@ -97,7 +97,7 @@ def test_save_path():
 
     # Test when path is str
     with tempfile.TemporaryDirectory() as target_dir:
-        files = Fido.fetch(qr, path=os.path.join(target_dir, "{instrument}", "{level}"))
+        files = Fido.fetch(qr, path=Path(target_dir, "{instrument}", "{level}"))
         for f in files:
             assert target_dir in f
             assert "eve{}0".format(os.path.sep) in f
@@ -110,7 +110,7 @@ def test_save_path_pathlib():
 
     # Test when path is pathlib.Path
     with tempfile.TemporaryDirectory() as target_dir:
-        path = pathlib.Path(target_dir, "{instrument}", "{level}")
+        path = Path(target_dir, "{instrument}", "{level}")
         files = Fido.fetch(qr, path=path)
         for f in files:
             assert target_dir in f

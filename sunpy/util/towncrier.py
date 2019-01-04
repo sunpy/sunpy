@@ -3,7 +3,7 @@
 """
 Utility functions for working with the towncrier changelog
 """
-import os
+from pathlib import Path
 import pkg_resources
 from functools import partial
 
@@ -16,8 +16,8 @@ def generate_changelog_for_docs(directory, output_filename=None):
     This is a modified version of the `towncrier._main` function with a few things disabled.
     """
     print("Updating Changelog...")
-    directory = os.path.abspath(directory)
-    _join_dir = partial(os.path.join, directory)
+    directory = str(Path(directory).resolve())
+    _join_dir = partial(Path.home().joinpath, directory)
     config = load_config(directory)
 
     print("Loading template...")
@@ -55,7 +55,7 @@ def generate_changelog_for_docs(directory, output_filename=None):
     package = config.get("package")
     if package:
         project_name = get_project_name(
-            os.path.abspath(_join_dir(config["package_dir"])), package)
+            Path(_join_dir(config["package_dir"])), package).resolve()
     else:
         # Can't determine a project_name, but maybe it is not needed.
         project_name = ""
@@ -70,7 +70,7 @@ def generate_changelog_for_docs(directory, output_filename=None):
     start_line = config["start_line"]
     if not output_filename:
         output_filename = _join_dir(config["filename"])
-    output_filename = os.path.abspath(output_filename)
+    output_filename = str(Path(output_filename).resolve)
     append_to_newsfile(directory, output_filename, start_line, top_line, rendered)
 
     print("Done!")

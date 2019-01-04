@@ -1,7 +1,7 @@
 #
 # Testing functions for a mapsequence solar derotation functionality.
 #
-import os
+from pathlib import Path
 from copy import deepcopy
 
 import pytest
@@ -20,7 +20,7 @@ from sunpy.physics.solar_rotation import calculate_solar_rotate_shift, mapsequen
 @pytest.fixture
 def aia171_test_map():
     testpath = sunpy.data.test.rootdir
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+    return sunpy.map.Map(str(Path.home().joinpath(testpath, 'aia_171_level1.fits')))
 
 
 @pytest.fixture

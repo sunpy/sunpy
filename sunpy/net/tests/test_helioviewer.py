@@ -1,7 +1,7 @@
 """
 Helioviewer Client tests
 """
-import os
+from pathlib import Path
 import urllib
 
 import pytest
@@ -71,7 +71,7 @@ class TestHelioviewerClient:
             instrument='MDI',
             detector=None,
             measurement='continuum',
-            directory=os.path.join(str(tmpdir), 'directorynotexist'))
+            directory=str(Path.home().joinpath(str(tmpdir), 'directorynotexist')))
 
         assert 'directorynotexist' in filepath
   

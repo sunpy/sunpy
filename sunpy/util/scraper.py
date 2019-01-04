@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import re
 import datetime
 from ftplib import FTP
@@ -95,7 +95,7 @@ class Scraper(object):
             in the archive.
         """
         # find directory structure - without file names
-        directorypattern = os.path.dirname(self.pattern) + '/'
+        directorypattern = str(Path(self.pattern).parent) + '/'
         # TODO what if there's not slashes?
         rangedelta = timerange.dt
         timestep = self._smallerPattern(directorypattern)
