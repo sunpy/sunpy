@@ -48,7 +48,7 @@ References
 import csv
 import copy
 import socket
-import os.path
+from pathlib import Path 
 import datetime
 from itertools import dropwhile
 
@@ -540,7 +540,7 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     label = "ratioGOES{0}".format(satellite)
     # Read data representing appropriate temperature--flux ratio
     # relationship depending on satellite number and assumed abundances.
-    with open(os.path.join(get_and_create_download_dir(), data_file), "r") as csvfile:
+    with open(str(Path.home().joinpath(get_and_create_download_dir(), data_file)), "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -704,7 +704,7 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
 
     # Read data representing appropriate temperature--long flux
     # relationship depending on satellite number and assumed abundances.
-    with open(os.path.join(get_and_create_download_dir(), data_file), "r") as csvfile:
+    with open(str(Path.home().joinpath(get_and_create_download_dir(), data_file)), "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -960,7 +960,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
 
     # Read data from csv file into lists, being sure to skip commented
     # lines beginning with "#"
-    with open(os.path.join(get_and_create_download_dir(), FILE_RAD_COR),
+    with open(str(Path.home().joinpath(get_and_create_download_dir(), FILE_RAD_COR)),
               "r") as csvfile:
         startline = csvfile.readlines()[7:]
         csvreader = csv.reader(startline, delimiter=" ")

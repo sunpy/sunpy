@@ -1,8 +1,8 @@
 """
 General utility functions.
 """
-
 import os
+from pathlib import Path
 from itertools import count
 
 import numpy as np
@@ -172,15 +172,16 @@ def replacement_filename(path):
     becomes "/home/florian/foo.0.fits", if that is used
     "/home/florian/foo.1.fits", etc.
     """
+    # refactoring is throwing AssertionError: assert '/tmp.0' == '/tmp'
     if not os.path.exists(path):
         return path
     else:
-        dir_, filename = os.path.split(path)
-        base, ext = os.path.splitext(filename)
+        dir_, filename = Path(path).parent, Path(path).name
+        base, ext = Path(filename).stem, Path(filename).suffix
         for c in count():
             name = base + '.' + str(c) + ext
-            newpath = os.path.join(dir_, name)
-            if not os.path.exists(newpath):
+            newpath = str(Path.home().joinpath(dir_, name))
+            if not Path(newpath).exists():
                 return newpath
 
 

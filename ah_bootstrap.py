@@ -185,7 +185,7 @@ class _Bootstrapper(object):
 
         # If this is a release then the .git directory will not exist so we
         # should not use git.
-        git_dir_exists = pathlib.Path.exists(pathlib.Path.joinpath(pathlib.Path(__file__).parents[0], '.git'))
+        git_dir_exists = pathlib.Path(pathlib.Path.joinpath(pathlib.Path(__file__).parents[0], '.git')).exists
         if use_git is None and not git_dir_exists:
             use_git = False
 
@@ -216,7 +216,7 @@ class _Bootstrapper(object):
 
     @classmethod
     def parse_config(cls):
-        if not pathlib.Path.exists('setup.cfg'):
+        if not pathlib.Path('setup.cfg').exists:
             return {}
 
         cfg = ConfigParser()
@@ -359,7 +359,7 @@ class _Bootstrapper(object):
         distribution.
         """
 
-        if not pathlib.Path.is_dir(self.path):
+        if not pathlib.Path(self.path).is_dir:
             return
 
         log.info('Attempting to import astropy_helpers from {0} {1!r}'.format(
@@ -388,7 +388,7 @@ class _Bootstrapper(object):
         but points easy_install directly to the source archive.
         """
 
-        if not pathlib.Path.is_file(self.path):
+        if not pathlib.Path(self.path).is_file:
             return
 
         log.info('Attempting to unpack and import astropy_helpers from '
@@ -460,7 +460,7 @@ class _Bootstrapper(object):
             # We didn't find an egg-info/dist-info in the given path, but if a
             # setup.py exists we can generate it
             setup_py = pathlib.Path.joinpath(path, 'setup.py')
-            if pathlib.Path.is_file(setup_py):
+            if pathlib.Path(setup_py).is_file:
                 # We use subprocess instead of run_setup from setuptools to
                 # avoid segmentation faults - see the following for more details:
                 # https://github.com/cython/cython/issues/2104
@@ -567,7 +567,7 @@ class _Bootstrapper(object):
         """
 
         if (self.path is None or
-                (pathlib.Path.exists(self.path) and not pathlib.Path.is_dir(self.path))):
+                (pathlib.Path(self.path).exists and not pathlib.Path(self.path).is_dir)):
             return False
 
         if self.use_git:

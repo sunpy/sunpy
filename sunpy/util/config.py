@@ -1,5 +1,6 @@
 """SunPy configuration file functionality"""
 import os
+from pathlib import Path
 import tempfile
 import configparser
 
@@ -24,13 +25,13 @@ def load_config():
     # Specify the working directory as a default so that the user's home
     # directory can be located in an OS-independent manner
     if not config.has_option('general', 'working_dir'):
-        config.set('general', 'working_dir', os.path.join(_get_home(), "sunpy"))
+        config.set('general', 'working_dir', str(Path.home().joinpath(_get_home(), "sunpy")))
 
     # Specify the database url as a default so that the user's home
     # directory can be located in an OS-independent manner
     if not config.has_option('database', 'url'):
-        config.set('database', 'url', "sqlite:///" + os.path.join(
-            _get_home(), "sunpy/sunpydb.sqlite"))
+        config.set('database', 'url', "sqlite:///" + str(Path.home().joinpath(
+            _get_home(), "sunpy/sunpydb.sqlite")))
 
     # Use absolute filepaths and adjust OS-dependent paths as needed
     filepaths = [
@@ -46,8 +47,8 @@ def get_and_create_download_dir():
     '''
     Get the config of download directory and create one if not present.
     '''
-    if not os.path.isdir(sunpy.config.get('downloads', 'download_dir')):
-        os.makedirs(sunpy.config.get('downloads', 'download_dir'))
+    if not Path(sunpy.config.get('downloads', 'download_dir')).is_dir():
+        Path(sunpy.config.get('downloads', 'download_dir')).mkdir()
 
     return sunpy.config.get('downloads', 'download_dir')
 
@@ -56,8 +57,8 @@ def get_and_create_sample_dir():
     '''
     Get the config of download directory and create one if not present.
     '''
-    if not os.path.isdir(sunpy.config.get('downloads', 'sample_dir')):
-        os.makedirs(sunpy.config.get('downloads', 'sample_dir'))
+    if not Path(sunpy.config.get('downloads', 'sample_dir')).is_dir():
+        Path(sunpy.config.get('downloads', 'sample_dir')).mkdir()
 
     return sunpy.config.get('downloads', 'sample_dir')
 
@@ -78,7 +79,7 @@ def print_config():
 
 def _is_writable_dir(p):
     """Checks to see if a directory is writable"""
-    return os.path.isdir(p) and os.access(p, os.W_OK)
+    return Path(p).is_dir and os.access(p, os.W_OK)
 
 
 def _get_home():
@@ -86,13 +87,13 @@ def _get_home():
     Otherwise raise error.
 
     """
-    path = os.path.expanduser("~")
+    path = Path.home()
 
-    if not os.path.isdir(path):
+    if not Path(path).is_dir():
         for evar in ('HOME', 'USERPROFILE', 'TMP'):
             try:
                 path = os.environ[evar]
-                if os.path.isdir(path):
+                if Path(path).is_dir():
                     break
             except KeyError:
                 pass
@@ -108,16 +109,16 @@ def _find_config_files():
     config_filename = 'sunpyrc'
 
     # find default configuration file
-    module_dir = os.path.dirname(sunpy.__file__)
-    config_files.append(os.path.join(module_dir, 'data', 'sunpyrc'))
+    module_dir = Path(sunpy.__file__).parent
+    config_files.append(str(Path.home().joinpath(module_dir, 'data', 'sunpyrc')))
 
     # if a user configuration file exists, add that to list of files to read
     # so that any values set there will override ones specified in the default
     # config file
     config_path = _get_user_configdir()
 
-    if os.path.exists(os.path.join(config_path, config_filename)):
-        config_files.append(os.path.join(config_path, config_filename))
+    if Path(str(Path.home().joinpath(config_path, config_filename))).exists():
+        config_files.append(str(Path.home().joinpath(config_path, config_filename)))
 
     return config_files
 
@@ -138,9 +139,9 @@ def _get_user_configdir():
         return configdir
 
     h = _get_home()
-    p = os.path.join(_get_home(), '.sunpy')
+    p = str(Path.home().joinpath(_get_home(), '.sunpy'))
 
-    if os.path.exists(p):
+    if Path(p).exists():
         if not _is_writable_dir(p):
             raise RuntimeError("'{0}' is not a writable dir; you must set {1}/."
                                "sunpy to be a writable dir.  You can also set "
@@ -153,7 +154,7 @@ def _get_user_configdir():
                                "SUNPY_CONFIGDIR to a writable directory for "
                                "sunpy configuration data".format(h))
 
-        os.mkdir(p)
+        Path(p).mkdir()
 
     return p
 
@@ -178,13 +179,13 @@ def _expand_filepath(filepath, working_dir=""):
     """Checks a filepath and expands it if necessary"""
     # Expand home directory
     if filepath[0] == "~":
-        return os.path.abspath(os.path.expanduser(filepath))
+        return str(Path(Path.home()).resolve())
     # Check for /tmp
     elif filepath == "/tmp":
         return tempfile.gettempdir()
     # Relative filepaths
     elif not filepath.startswith("/"):
-        return  os.path.abspath(os.path.join(working_dir, filepath))
+        return  str(Path(str(Path.home().joinpath(working_dir, filepath))).resolve())
     # Absolute filepath
     else:
-        return os.path.abspath(filepath)
+        return str(Path(filepath).resolve())

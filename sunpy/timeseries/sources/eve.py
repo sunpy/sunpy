@@ -7,7 +7,7 @@ from datetime import datetime
 from collections import OrderedDict
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
-from os.path import basename
+from pathlib import Path
 
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
@@ -89,7 +89,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             else:
                 if self._filename is not None:
                     base = self._filename.replace('_', ' ')
-                    kwargs['title'] = os.path.splitext(base)[0]
+                    kwargs['title'] = Path(base).stem
                 else:
                     kwargs['title'] = 'EVE Averages'
 
@@ -105,7 +105,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     @classmethod
     def _parse_file(cls, filepath):
         """Parses an EVE CSV file."""
-        cls._filename = basename(filepath)
+        cls._filename = Path(filepath).name
         with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
             # Determine type of EVE CSV file and parse
             line1 = fp.readline()
