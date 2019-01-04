@@ -1,5 +1,5 @@
 import imp
-import os.path
+from pathlib import Path
 import warnings
 
 import pytest
@@ -9,7 +9,7 @@ import sunpy.tests.runner
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
-root_dir = os.path.dirname(os.path.abspath(sunpy.__file__))
+root_dir = str(Path(Path(sunpy.__file__).resolve()).parent)
 
 
 def test_import_runner():
@@ -46,36 +46,36 @@ def test_main_noargs(monkeypatch):
 def test_main_submodule_map(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
     args = sunpy.self_test(package='map')
-    assert args in ([os.path.join('sunpy', 'map'), '-m', 'not figure'],
-                    [os.path.join(root_dir, 'map'), '-m', 'not figure'])
+    assert args in ([str(Path.home().joinpath('sunpy', 'map')), '-m', 'not figure'],
+                    [str(Path.home().joinpath(root_dir, 'map')), '-m', 'not figure'])
 
 
 def test_main_submodule_jsoc(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
     args = sunpy.self_test(package='net.jsoc')
-    assert args in ([os.path.join('sunpy', 'net', 'jsoc'), '-m', 'not figure'],
-                    [os.path.join(root_dir, 'net', 'jsoc'), '-m', 'not figure'])
+    assert args in ([str(Path.home().joinpath('sunpy', 'net', 'jsoc')), '-m', 'not figure'],
+                    [str(Path.home().joinpath(root_dir, 'net', 'jsoc')), '-m', 'not figure'])
 
 
 def test_main_exclude_remote_data(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
     args = sunpy.self_test(package='map', online=False)
-    assert args in ([os.path.join('sunpy', 'map'), '-m', 'not figure'],
-                    [os.path.join(root_dir, 'map'), '-m', 'not figure'])
+    assert args in ([str(Path.home().joinpath('sunpy', 'map')), '-m', 'not figure'],
+                    [str(Path.home().joinpath(root_dir, 'map')), '-m', 'not figure'])
 
 
 def test_main_include_remote_data(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
     args = sunpy.self_test(package='map', online=True)
-    assert args in ([os.path.join('sunpy', 'map'), '--remote-data=any', '-m', 'not figure'],
-                    [os.path.join(root_dir, 'map'),'--remote-data=any',  '-m', 'not figure'])
+    assert args in ([str(Path.home().joinpath('sunpy', 'map')), '--remote-data=any', '-m', 'not figure'],
+                    [str(Path.home().joinpath(root_dir, 'map')),'--remote-data=any',  '-m', 'not figure'])
 
 
 def test_main_only_remote_data(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda args, **kwargs: args)
     args = sunpy.self_test(package='map', online_only=True)
-    assert args in ([os.path.join('sunpy', 'map'), '-k remote_data', '--remote-data=any', '-m', 'not figure'],
-                    [os.path.join(root_dir, 'map'), '-k remote_data', '--remote-data=any', '-m', 'not figure'])
+    assert args in ([str(Path.home().joinpath('sunpy', 'map')), '-k remote_data', '--remote-data=any', '-m', 'not figure'],
+                    [str(Path.home().joinpath(root_dir, 'map')), '-k remote_data', '--remote-data=any', '-m', 'not figure'])
 
 
 def test_main_figures(monkeypatch):
@@ -105,8 +105,8 @@ def test_main_coverage(monkeypatch):
     for a in args:
         assert a in [root_dir, 'sunpy', '--cov', '--cov-config', '-m',
                      'not figure',
-                     os.path.join(root_dir, 'tests', 'coveragerc'),
-                     os.path.join('sunpy', 'tests', 'coveragerc')]
+                     str(Path.home().joinpath(root_dir, 'tests', 'coveragerc')),
+                     str(Path.home().joinpath('sunpy', 'tests', 'coveragerc'))]
 
 
 def test_main_coverage_report(monkeypatch):
@@ -115,8 +115,8 @@ def test_main_coverage_report(monkeypatch):
     for a in args:
         assert a in [root_dir, 'sunpy', '--cov', '--cov-config', '-m',
                      'not figure',
-                     os.path.join(root_dir, 'tests', 'coveragerc'),
-                     os.path.join('sunpy', 'tests', 'coveragerc'),
+                     str(Path.home().joinpath(root_dir, 'tests', 'coveragerc')),
+                     str(Path.home().joinpath('sunpy', 'tests', 'coveragerc')),
                      '--cov-report']
 
 
@@ -126,8 +126,8 @@ def test_main_coverage_report_html(monkeypatch):
     for a in args:
         assert a in [root_dir, 'sunpy', '--cov', '--cov-config', '-m',
                      'not figure',
-                     os.path.join(root_dir, 'tests', 'coveragerc'),
-                     os.path.join('sunpy', 'tests', 'coveragerc'),
+                     str(Path.home().joinpath(root_dir, 'tests', 'coveragerc')),
+                     str(Path.home().joinpath('sunpy', 'tests', 'coveragerc')),
                      '--cov-report']
 
 

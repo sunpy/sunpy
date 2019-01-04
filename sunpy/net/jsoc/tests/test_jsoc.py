@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+from pathlib import Path
 import tempfile
 import pandas as pd
 import astropy.table
@@ -308,4 +308,4 @@ def test_results_filenames():
     files = aa.wait(progress=False)
     assert len(files) == len(responses)
     for hmiurl in aa.map_:
-        assert os.path.isfile(hmiurl)
+        assert Path(hmiurl).is_file()

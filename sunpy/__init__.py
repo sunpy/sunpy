@@ -11,7 +11,7 @@ Documentation: http://docs.sunpy.org/en/stable/
 """
 # Enforce Python version check during package import.
 # This is the same check as the one at the top of setup.py
-import os
+from pathlib import Path
 import sys
 
 __minimum_python_version__ = "3.6"
@@ -45,7 +45,7 @@ if not _SUNPY_SETUP_:
     from sunpy.util import system_info
     from sunpy.tests.runner import SunPyTestRunner
 
-    self_test = SunPyTestRunner.make_test_runner_in(os.path.dirname(__file__))
+    self_test = SunPyTestRunner.make_test_runner_in(Path(__file__).parent)
 
     # Load user configuration
     config = load_config()

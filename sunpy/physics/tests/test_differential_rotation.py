@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import pytest
 
 import numpy as np
@@ -48,7 +48,7 @@ testpath = sunpy.data.test.rootdir
 
 @pytest.fixture
 def aia171_test_map():
-    return sunpy.map.Map((os.path.join(testpath, 'aia_171_level1.fits')))
+    return sunpy.map.Map((str(Path.home().joinpath(testpath, 'aia_171_level1.fits'))))
 
 
 @pytest.fixture
