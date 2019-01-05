@@ -111,14 +111,12 @@ class MapFactory(BasicRegistrationFactory):
 
     * Lists of any of the above
 
-    >>> paths = ['file1.fits', 'file2.fits', 'file3.fits', 'directory1/']
-    >>> mymap = sunpy.map.Map(paths)  # doctest: +SKIP
+    >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])  # doctest: +SKIP
 
     * Any mixture of the above not in a list
 
-    >>> everythnig = ((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')
-    >>> mymap = sunpy.map.Map(*everythnig)  # doctest: +SKIP
-    """
+    >>> mymap = sunpy.map.Map(((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits'))  # doctest: +SKIP
+    """  # noqa
 
     def _read_file(self, fname, **kwargs):
         """ Read in a file name and return the list of (data, meta) pairs in
