@@ -128,7 +128,7 @@ class Scraper(object):
         # url_to_list substitutes '.' and '_' for '/' to then create
         # a list of all the blocks in times - assuming they are all
         # separated with either '.', '_' or '/'
-        url_to_list = lambda txt: re.sub(r'\.|_', '/', txt).split('/')
+        url_to_list = lambda txt: re.sub(r'\.|_', '/', txt).split('/')  # noqa
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
         time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
@@ -168,8 +168,8 @@ class Scraper(object):
             regexp = r'\{}'.format(r) if not r.startswith('[') else r
             pattern = '%{}'.format(p)
             date_part = re.search(regexp, date_together)
-            date_together = date_together[:date_part.start()] + \
-                            date_together[date_part.end():]
+            date_together = date_together[:date_part.start()] \
+                + date_together[date_part.end():]
             if pattern not in final_pattern:
                 final_pattern.append('%{}'.format(p))
                 final_date.append(date_part.group())
@@ -234,11 +234,11 @@ class Scraper(object):
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
                                 if (datehref >= timerange.start and
-                                    datehref <= timerange.end):
+                                        datehref <= timerange.end):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
-            except:
+            except Exception:
                 raise
         return filesurls
 
@@ -256,11 +256,10 @@ class Scraper(object):
                     if self._URL_followsPattern(fullpath):
                         datehref = self._extractDateURL(fullpath)
                         if (datehref >= timerange.start and
-                            datehref <= timerange.end):
+                                datehref <= timerange.end):
                             filesurls.append(fullpath)
         filesurls = ['ftp://anonymous:data@sunpy.org@' + url[domain + 2:] for url in filesurls]
         return filesurls
-
 
     def _smallerPattern(self, directoryPattern):
         """Obtain the smaller time step for the given pattern"""
@@ -279,5 +278,5 @@ class Scraper(object):
                 return TimeDelta(365*u.day)
             else:
                 return None
-        except:
+        except Exception:
             raise
