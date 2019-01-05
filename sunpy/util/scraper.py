@@ -126,11 +126,11 @@ class Scraper(object):
         url = url.replace("anonymous:data@sunpy.org@", "")
 
         def url_to_list(txt):
-            # Substitutes '.' and '_' for '/' to then create
-            # a list of all the blocks in times - assuming they are all
-            # separated with either '.', '_' or '/'.
+            # Substitutes '.' and '_' for '/'.
             return re.sub(r'\.|_', '/', txt).split('/')
 
+        # create a list of all the blocks in times - assuming they are all
+        # separated with either '.', '_' or '/'.
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
         time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
