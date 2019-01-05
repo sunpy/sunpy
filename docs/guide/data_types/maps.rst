@@ -366,10 +366,10 @@ normalization.
     import matplotlib.pyplot as plt
     import sunpy.data.sample
     smap = sunpy.map.Map(sunpy.data.sample.AIA_193_CUTOUT01_IMAGE)
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-1100, 0, txt, color='white')
     smap.plot()
     plt.colorbar()
@@ -424,10 +424,10 @@ addition of an associated boolean array which holds the mask.
     smap = sunpy.map.Map('/Users/schriste/Desktop/sunpy_test_img/XRT20141211_184221.9.fits')
     fig = plt.figure()
     smap.plot()
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     plt.colorbar()
     plt.show()
@@ -460,10 +460,10 @@ addition of an associated boolean array which holds the mask.
     cmap = smap.plot_settings['cmap']
     cmap.set_bad('blue', 1.0)
     smap.data = numpy.ma.masked_greater(smap.data, smap.mean() + 3 *smap.std())
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     norm = colors.Normalize()
     smap.plot(norm = norm)
@@ -484,10 +484,10 @@ addition of an associated boolean array which holds the mask.
     cmap.set_bad('blue', 1.0)
     smap.data = numpy.ma.masked_greater(smap.data, smap.mean() + 3 *smap.std())
     smap.data.mask[0:250,:] = False
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     norm = colors.Normalize()
     smap.plot(norm = norm)
