@@ -129,7 +129,7 @@ class Scraper(object):
             # Substitutes '.' and '_' for '/' to then create
             # a list of all the blocks in times - assuming they are all
             # separated with either '.', '_' or '/'.
-            returnre.sub(r'\.|_', '/', txt).split('/')
+            return re.sub(r'\.|_', '/', txt).split('/')
 
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
