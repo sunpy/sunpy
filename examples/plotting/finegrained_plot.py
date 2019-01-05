@@ -68,7 +68,7 @@ tx, ty = ax.coords
 # Use integer coordinates for either axis.
 tx.set_major_formatter('s')
 ty.set_major_formatter('s')
-ax.set_title('AIA 171 $\AA$ {}'.format(title_obsdate))
+ax.set_title(r'AIA 171 $\AA$ {}'.format(title_obsdate))
 ax.set_ylabel('Helioprojective Latitude [arcsec]')
 ax.set_xlabel('Helioprojective Longitude [arcsec]')
 plt.colorbar(fraction=0.045, pad=0.03, label='DN', ax=ax)

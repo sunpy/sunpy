@@ -15,12 +15,12 @@ __all__ = ['Scraper']
 
 # regular expressions to convert datetime format
 # added `%e` as for milliseconds `%f/1000`
-TIME_CONVERSIONS = {'%Y': '\d{4}', '%y': '\d{2}',
-                    '%b': '[A-Z][a-z]{2}', '%B': '\W', '%m': '\d{2}',
-                    '%d': '\d{2}', '%j': '\d{3}',
-                    '%H': '\d{2}', '%I': '\d{2}',
-                    '%M': '\d{2}',
-                    '%S': '\d{2}', '%e': '\d{3}', '%f': '\d{6}'}
+TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
+                    '%b': '[A-Z][a-z]{2}', '%B': r'\W', '%m': r'\d{2}',
+                    '%d': r'\d{2}', '%j': r'\d{3}',
+                    '%H': r'\d{2}', '%I': r'\d{2}',
+                    '%M': r'\d{2}',
+                    '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'}
 
 
 class Scraper(object):
@@ -61,7 +61,7 @@ class Scraper(object):
     """
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
-        milliseconds = re.search('\%e', self.pattern)
+        milliseconds = re.search(r'\%e', self.pattern)
         if not milliseconds:
             self.now = datetime.datetime.now().strftime(self.pattern)
         else:

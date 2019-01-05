@@ -130,7 +130,7 @@ class GenericClient(BaseClient):
     The `~sunpy.net.dataretriever.client.GenericClient.search` method takes a
     set of `sunpy.net.attrs` objects and then converts these into a call to
     `~sunpy.net.dataretriever.client.GenericClient._get_url_for_timerange`. It
-    does this through the `map\_` dictionary which represents the
+    does this through the `map\\_` dictionary which represents the
     `~sunpy.net.attrs` objects as a dictionary.
     """
 
@@ -139,14 +139,14 @@ class GenericClient(BaseClient):
 
     def _makeargs(self, *args):
         """
-        Construct the `map\_` internal representation of the query.
+        Construct the `map\\_` internal representation of the query.
 
-        This `map\_` dictionary is passed through to the
+        This `map\\_` dictionary is passed through to the
         `_get_url_for_timerange` method to get the URL results.
 
         Parameters
         ----------
-        \*args: `tuple`
+        \\*args: `tuple`
             The query attributes.
 
         """
@@ -184,7 +184,7 @@ class GenericClient(BaseClient):
     @classmethod
     def _get_url_for_timerange(cls, timerange, **kwargs):
         """
-        Method which generates URL results from a timerange and the `map\_`
+        Method which generates URL results from a timerange and the `map\\_`
         dictionary.
 
         Parameters
@@ -192,7 +192,7 @@ class GenericClient(BaseClient):
         timerange: `sunpy.time.TimeRange`
              The timerange to extract the URLs for.
 
-        \*\*kwargs: `dict`
+        \\*\\*kwargs: `dict`
              Any extra keywords to refine the search. Generated from the
              attributes passed to
              `~sunpy.net.dataretriever.client.GenericClient.search`.
@@ -275,7 +275,7 @@ class GenericClient(BaseClient):
 
         Parameters
         ----------
-        \*args: `tuple`
+        \\*args: `tuple`
             `sunpy.net.attrs` objects representing the query.
         """
         GenericClient._makeargs(self, *args, **kwargs)
