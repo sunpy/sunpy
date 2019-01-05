@@ -166,8 +166,9 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         month = int(date_parts[2])
         day = int(date_parts[3])
 
-        # function to parse date column (HHMM)
-        parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))  # noqa
+        def parser(x):
+            # Parse date column (HHMM)
+            return datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
         data = read_csv(fp, sep=r"\s+", names=fields,
                         index_col=0, date_parser=parser, header=None, engine='python')

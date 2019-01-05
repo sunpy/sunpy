@@ -125,10 +125,12 @@ class Scraper(object):
         # remove the user and passwd from files if there:
         url = url.replace("anonymous:data@sunpy.org@", "")
 
-        # url_to_list substitutes '.' and '_' for '/' to then create
-        # a list of all the blocks in times - assuming they are all
-        # separated with either '.', '_' or '/'
-        url_to_list = lambda txt: re.sub(r'\.|_', '/', txt).split('/')  # noqa
+        def url_to_list(txt):
+            # Substitutes '.' and '_' for '/' to then create
+            # a list of all the blocks in times - assuming they are all
+            # separated with either '.', '_' or '/'.
+            returnre.sub(r'\.|_', '/', txt).split('/')
+
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
         time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
