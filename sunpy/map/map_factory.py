@@ -46,6 +46,7 @@ except ImportError:
 
 __all__ = ['Map', 'MapFactory']
 
+
 class MapFactory(BasicRegistrationFactory):
     """
     Map(\\*args, \\*\\*kwargs)
@@ -110,13 +111,14 @@ class MapFactory(BasicRegistrationFactory):
 
     * Lists of any of the above
 
-    >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])  # doctest: +SKIP
+    >>> paths = ['file1.fits', 'file2.fits', 'file3.fits', 'directory1/']
+    >>> mymap = sunpy.map.Map(paths)  # doctest: +SKIP
 
     * Any mixture of the above not in a list
 
-    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')  # doctest: +SKIP
+    >>> everythnig = ((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')
+    >>> mymap = sunpy.map.Map(*everythnig)  # doctest: +SKIP
     """
-
 
     def _read_file(self, fname, **kwargs):
         """ Read in a file name and return the list of (data, meta) pairs in
@@ -291,7 +293,7 @@ class MapFactory(BasicRegistrationFactory):
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
-            except:
+            except Exception:
                 raise
 
             new_maps.append(new_map)
@@ -342,7 +344,7 @@ class MapFactory(BasicRegistrationFactory):
 def _is_url(arg):
     try:
         urlopen(arg)
-    except:
+    except Exception:
         return False
     return True
 
