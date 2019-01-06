@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
-from pathlib import Path
+import os
 
 
 def get_package_data():
-    paths = [str(Path.home().joinpath('js', '*.js'))]
+    paths = [os.path.join('js', '*.js')]
     return {'sunpy.extern': paths}
