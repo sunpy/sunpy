@@ -3,7 +3,7 @@
 This file is designed to be imported and ran only via setup.py, hence it's
 dependency on astropy_helpers which will be available in that context.
 """
-from pathlib import Path
+import os
 import copy
 
 from astropy_helpers.commands.test import AstropyTest
@@ -45,7 +45,7 @@ class SunPyTest(AstropyTest):
 
         # patch the .coverage file so the paths are correct to the directory
         # setup.py was run in rather than the temporary directory.
-        cwd = str(Path(".").resolve())
+        cwd = os.path.abspath(".")
         cmd_post = ('from sunpy.tests.helpers import _patch_coverage; '
                     'import os; '
                     'test_dir = os.path.abspath("."); '
@@ -54,7 +54,7 @@ class SunPyTest(AstropyTest):
         # Make html report the default and make pytest-cov save it to the
         # source directory not the temporary directory.
         if self.cov_report and (isinstance(self.cov_report, bool) or "html" in self.cov_report):
-            html_cov = str(Path.home().joinpath(Path(".").resolve(), "htmlcov"))
+            html_cov = os.path.join(os.path.abspath("."), "htmlcov")
             self.cov_report = f'html:{html_cov}'
         else:
             self.cov_report = self.cov_report
@@ -100,6 +100,6 @@ class SunPyTest(AstropyTest):
                'sys.exit(result)')
         return cmd.format('pass',
                           self,
-                          figure_dir=str(Path.home().joinpath(Path('.').resolve(), "figure_test_images")),
+                          figure_dir=os.path.join(os.path.abspath('.'), "figure_test_images"),
                           cmd_pre=cmd_pre,
                           cmd_post=cmd_post)
