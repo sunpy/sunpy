@@ -27,7 +27,6 @@ References
 ----------
 | https://stackoverflow.com/questions/456672/class-factory-in-python
 """
-import os
 from pathlib import Path
 import re
 import sys
