@@ -185,7 +185,7 @@ class _Bootstrapper(object):
 
         # If this is a release then the .git directory will not exist so we
         # should not use git.
-        git_dir_exists = pathlib.Path(pathlib.Path.joinpath(pathlib.Path(__file__).parents[0], '.git')).exists
+        git_dir_exists = Path(Path.joinpath(Path(__file__).parent, '.git')).exists()
         if use_git is None and not git_dir_exists:
             use_git = False
 
@@ -447,7 +447,7 @@ class _Bootstrapper(object):
 
         # Return True on success, False on failure but download is allowed, and
         # otherwise raise SystemExit
-        path = pathlib.Path.resolve(self.path)
+        path = Path(self.path).resolve()
 
         # Use an empty WorkingSet rather than the man
         # pkg_resources.working_set, since on older versions of setuptools this
@@ -662,9 +662,9 @@ class _Bootstrapper(object):
         .gitmodules file is changed between git versions.
         """
 
-        gitmodules_path = pathlib.Path.resolve('.gitmodules')
+        gitmodules_path = Path('.gitmodules').resolve()
 
-        if not pathlib.Path.is_file(gitmodules_path):
+        if not Path(gitmodules_path).is_file():
             return False
 
         # This is a minimal reader for gitconfig-style files.  It handles a few of

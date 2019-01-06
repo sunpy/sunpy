@@ -3,8 +3,7 @@ This particular test file pertains to LASCOMap.
 @Author: Pritish C. (VaticanCameos)
 """
 
-import os
-import pathlib
+from pathlib import Path
 import glob
 
 from sunpy.map.sources.soho import LASCOMap
@@ -12,7 +11,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(str(pathlib.Path.home().joinpath(path, "lasco_c2_25299383_s.fts")))
+fitspath = glob.glob(str(Path.home().joinpath(path, "lasco_c2_25299383_s.fts")))
 lasco = Map(fitspath)
 
 # LASCO Tests

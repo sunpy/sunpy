@@ -1,8 +1,7 @@
 """
 This module implements tests for SRS Reader.
 """
-import os
-import pathlib
+from pathlib import Path
 
 import pytest
 import numpy as np
@@ -33,7 +32,7 @@ LONGLAT.add_column(MaskedColumn(data=[x['latitude'] for x in COORDINATES], name=
 
 
 @pytest.mark.parametrize("path, number_of_rows",
-                         [(str(pathlib.Path.home().joinpath(testpath, elem['file'])), elem['rows'])
+                         [(str(Path.home().joinpath(testpath, elem['file'])), elem['rows'])
                           for elem in filenames])
 def test_number_of_rows(path, number_of_rows):
     table = srs.read_srs(path)

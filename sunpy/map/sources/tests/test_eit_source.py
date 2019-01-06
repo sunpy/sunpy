@@ -3,8 +3,7 @@ This particular test file pertains to EITMap.
 @Author: Pritish C. (VaticanCameos)
 """
 
-import os
-import pathlib
+from pathlib import Path
 import glob
 import numpy as np
 from matplotlib import colors
@@ -16,7 +15,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitslist = glob.glob(str(pathlib.Path.home().joinpath(path, "EIT", "*")))
+fitslist = glob.glob(str(Path.home().joinpath(path, "EIT", "*")))
 
 @pytest.fixture(scope="module", params=fitslist)
 def createEIT(request):

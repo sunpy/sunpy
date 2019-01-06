@@ -2,8 +2,7 @@
 """
 Test Generic Map
 """
-import os
-import pathlib
+from pathlib import Path
 import pytest
 
 import numpy as np
@@ -24,12 +23,12 @@ testpath = sunpy.data.test.rootdir
 
 @pytest.fixture
 def aia171_test_map():
-    return sunpy.map.Map(str(pathlib.Path.home().joinpath(testpath, 'aia_171_level1.fits')))
+    return sunpy.map.Map(str(Path.home().joinpath(testpath, 'aia_171_level1.fits')))
 
 
 @pytest.fixture
 def heliographic_test_map():
-    return sunpy.map.Map(str(pathlib.Path.home().joinpath(testpath, 'heliographic_phase_map.fits.gz')))
+    return sunpy.map.Map(str(Path.home().joinpath(testpath, 'heliographic_phase_map.fits.gz')))
 
 
 @pytest.fixture
