@@ -86,7 +86,7 @@ class TestFiletools(object):
         outpair = sunpy.io.read_file(AIA_171_IMAGE)[0]
         assert np.all(np.equal(outpair[0], aiapair[0]))
         assert outpair[1] == aiapair[1]
-        os.remove("aia_171_image.fits")
+        Path("aia_171_image.fits").unlink()
 
     def test_write_file_fits_bytes(self):
         # Test write FITS
@@ -97,7 +97,7 @@ class TestFiletools(object):
         outpair = sunpy.io.read_file(AIA_171_IMAGE)[0]
         assert np.all(np.equal(outpair[0], aiapair[0]))
         assert outpair[1] == aiapair[1]
-        os.remove("aia_171_image_bytes.fits")
+        Path("aia_171_image_bytes.fits").unlink()
 
     @skip_ana
     def test_read_file_ana(self):
@@ -123,6 +123,6 @@ class TestFiletools(object):
         outpair = sunpy.io.read_file(str(Path.home().joinpath(sunpy.data.test.rootdir,"test_ana.fz")))
         assert np.all(np.equal(outpair[0][1], ana[1]))
         assert outpair[0][1] == ana[1]
-        os.remove("ana_test_write.fz")
+        Path("ana_test_write.fz").unlink()
 
     #TODO: Test write jp2
