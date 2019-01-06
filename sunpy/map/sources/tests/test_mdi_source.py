@@ -3,8 +3,7 @@ This particular test file pertains to MDIMap.
 @Author: Pritish C. (VaticanCameos)
 """
 
-import os
-import pathlib
+from pathlib import Path
 import glob
 
 from sunpy.map.sources.soho import MDIMap
@@ -12,7 +11,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(str(pathlib.Path.home().joinpath(path, "mdi_fd_Ic_6h_01d.5871.0000_s.fits")))
+fitspath = glob.glob(str(Path.home().joinpath(path, "mdi_fd_Ic_6h_01d.5871.0000_s.fits")))
 mdi = Map(fitspath)
 
 # MDI Tests
