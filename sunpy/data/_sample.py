@@ -140,7 +140,7 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
                         with ZipFile(f, 'r') as zip_file:
                             unzipped_f = zip_file.extract(real_name,
                                                           sampledata_dir)
-                        os.remove(f)
+                        Path(f).unlink()
                         move(unzipped_f, str(Path.home().joinpath(sampledata_dir,
                                                       uncompressed_filename)))
                         return str(Path.home().joinpath(sampledata_dir, 
