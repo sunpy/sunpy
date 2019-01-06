@@ -3,5 +3,5 @@ from pathlib import Path
 
 
 def get_package_data():
-    paths = [str(Pathlib.home().joinpath('js', '*.js'))]
+    paths = [str(Path.home().joinpath('js', '*.js'))]
     return {'sunpy.extern': paths}
