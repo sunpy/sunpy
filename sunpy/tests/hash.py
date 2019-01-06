@@ -1,5 +1,5 @@
 from sys import version_info
-import os
+from pathlib import Path
 import io
 import hashlib
 import json
@@ -7,7 +7,7 @@ import json
 import matplotlib.pyplot as plt
 
 HASH_LIBRARY_NAME = 'figure_hashes_py{0}{1}.json'.format(version_info.major, version_info.minor)
-HASH_LIBRARY_FILE = os.path.join(os.path.dirname(__file__), HASH_LIBRARY_NAME)
+HASH_LIBRARY_FILE = str(Path.home().joinpath(Path(__file__).parent, HASH_LIBRARY_NAME))
 
 # Load the hash library if it exists
 try:

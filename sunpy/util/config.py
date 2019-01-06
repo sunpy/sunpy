@@ -88,7 +88,6 @@ def _get_home():
 
     """
     path = Path.home()
-
     if not Path(path).is_dir():
         for evar in ('HOME', 'USERPROFILE', 'TMP'):
             try:

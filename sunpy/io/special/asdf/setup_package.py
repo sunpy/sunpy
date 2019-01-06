@@ -1,17 +1,18 @@
 import os
+from pathlib import Path
 
 
 def get_package_data():
     # Installs the schema files
     schemas = []
-    root = os.path.join(os.path.dirname(__file__), 'schemas')
+    root = str(Path.home().joinpath(Path(__file__).parent, 'schemas'))
     for node, dirs, files in os.walk(root):
         for fname in files:
             if fname.endswith('.yaml'):
                 schemas.append(
-                    os.path.relpath(os.path.join(node, fname), root))
+                    os.path.relpath(str(Path.home().joinpath(node, fname)), root))
 
     # In the package directory, install to the subdirectory 'schemas'
-    schemas = [os.path.join('schemas', s) for s in schemas]
+    schemas = [str(Path.home().joinpath('schemas', s)) for s in schemas]
 
     return {'sunpy.io.special.asdf': schemas}

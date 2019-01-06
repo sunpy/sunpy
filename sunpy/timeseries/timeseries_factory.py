@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import copy
 import glob
 import warnings
@@ -305,9 +305,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             # Filepath
             elif (isinstance(arg, str) and
-                  os.path.isfile(os.path.expanduser(arg))):
+                  Path(Path(arg).resolve()).is_file()):
 
-                path = os.path.expanduser(arg)
+                path = str(Path(arg).resolve())
 
                 read, result = self._read_file(path, **kwargs)
 
@@ -318,10 +318,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             # Directory
             elif (isinstance(arg, str) and
-                  os.path.isdir(os.path.expanduser(arg))):
+                  Path(Path(arg).resolve()).is_dir()):
 
-                path = os.path.expanduser(arg)
-                files = [os.path.join(path, elem) for elem in os.listdir(path)]
+                path = str(Path(arg).resolve())
+                files = [str(Path.home().joinpath(path, elem)) for elem in Path(path).iterdir()]
                 for afile in files:
                     # returns a boolean telling us if it were read and either a
                     # tuple or the original filepath for reading by a source
@@ -334,7 +334,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             # Glob
             elif (isinstance(arg, str) and '*' in arg):
 
-                files = glob.glob(os.path.expanduser(arg))
+                files = glob.glob(str(Path(arg).resolve()))
 
                 for afile in files:
                     # data_header_unit_tuples += self._read_file(afile, **kwargs)

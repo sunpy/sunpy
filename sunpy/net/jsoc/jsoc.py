@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+from pathlib import Path
 import time
 import urllib
 import warnings
@@ -549,21 +549,21 @@ class JSOCClient(BaseClient):
         # Ensure path has a {file} in it
         if path is None:
             default_dir = config.get("downloads", "download_dir")
-            path = os.path.join(default_dir, '{file}')
+            path = str(Path.home().joinpath(default_dir, '{file}'))
         elif isinstance(path, str) and '{file}' not in path:
-            path = os.path.join(path, '{file}')
+            path = str(Path.home().joinpath(path, '{file}'))
 
         paths = []
         for request in requests:
             for filename in request.data['filename']:
                 # Ensure we don't duplicate the file extension
-                ext = os.path.splitext(filename)[1]
+                ext = Path(filename).suffix
                 if path.endswith(ext):
                     fname = path.strip(ext)
                 else:
                     fname = path
                 fname = fname.format(file=filename)
-                fname = os.path.expanduser(fname)
+                fname = str(Path(fname).resolve())
                 fname = partial(simple_path, fname)
                 paths.append(fname)
 
@@ -581,7 +581,7 @@ class JSOCClient(BaseClient):
 
             if request.status == 0:
                 for index, data in request.data.iterrows():
-                    is_file = os.path.isfile(paths[index].args[0])
+                    is_file = Path(paths[index].args[0]).is_file()
                     if overwrite or not is_file:
                         url_dir = request.request_url + '/'
                         urls.append(urllib.parse.urljoin(url_dir, data['filename']))

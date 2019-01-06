@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import glob
 from collections import OrderedDict
 import warnings
@@ -198,22 +198,22 @@ class MapFactory(BasicRegistrationFactory):
 
             # File name
             elif (isinstance(arg, str) and
-                  os.path.isfile(os.path.expanduser(arg))):
-                path = os.path.expanduser(arg)
+                  Path(Path(arg).resolve()).is_file()):
+                path = str(Path(arg).resolve())
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
             elif (isinstance(arg, str) and
-                  os.path.isdir(os.path.expanduser(arg))):
-                path = os.path.expanduser(arg)
-                files = [os.path.join(path, elem) for elem in os.listdir(path)]
+                  Path(Path(arg).resolve()).is_dir()):
+                path = str(Path(arg).resolve())
+                files = [str(Path.home().joinpath(path, elem)) for elem in Path(path).iterdir()]
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
             elif (isinstance(arg, str) and '*' in arg):
-                files = glob.glob(os.path.expanduser(arg))
+                files = glob.glob(str(Path(arg).resolve()))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 

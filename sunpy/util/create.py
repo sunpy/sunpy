@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-import os
+from pathlib import Path
 import glob
 
 from sunpy.util.net import download_file
@@ -35,7 +35,7 @@ class Parent(object):
         """ Read out a single file using glob (e.g., ~/BIR_2011*) pattern.
         If more than one file matches the pattern, raise ValueError.
         """
-        matches = glob.glob(os.path.expanduser(singlepattern))
+        matches = glob.glob(str(Path(singlepattern).resolve()))
         if len(matches) != 1:
             raise ValueError("Invalid number of matches: {0:d}".format(len(matches)))
         return cls.read(matches[0])
@@ -44,21 +44,21 @@ class Parent(object):
     def from_files(cls, filenames):
         """ Return list of object read from given list of
         filenames. """
-        filenames = list(map(os.path.expanduser, filenames))
+        filenames = list(map(Path.home(), filenames))
         return cls.read_many(filenames)
 
     @classmethod
     def from_file(cls, filename):
         """ Return object from file. """
-        filename = os.path.expanduser(filename)
+        filename = Path(filename).resolve()
         return cls.read(filename)
 
     @classmethod
     def from_dir(cls, directory):
         """ Return list that contains all files in the directory read in. """
-        directory = os.path.expanduser(directory)
+        directory = Path(directory).resolve()
         return cls.read_many(
-            (os.path.join(directory, elem) for elem in os.listdir(directory))
+            (Path.home().joinpath(directory, elem) for elem in Path(directory).iterdir())
         )
 
     @classmethod
@@ -76,7 +76,7 @@ class Parent(object):
 
 Parent._create.add(
     run_cls('from_file'),
-    lambda cls, filename: os.path.isfile(os.path.expanduser(filename)),
+    lambda cls, filename: Path(Path(filename).resolve()).is_file(),
     [type, str], check=False
 )
 Parent._create.add(
@@ -84,7 +84,7 @@ Parent._create.add(
     # The lambda is necessary because introspection is performed on the
     # argspec of the function.
     run_cls('from_dir'),
-    lambda cls, directory: os.path.isdir(os.path.expanduser(directory)),
+    lambda cls, directory: Path(Path(directory).resolve()).is_dir(),
     [type, str], check=False
 )
 # If it is not a kwarg and only one matches, do not return a list.
@@ -92,7 +92,7 @@ Parent._create.add(
     run_cls('from_single_glob'),
     lambda cls, singlepattern: ('*' in singlepattern and
                                 len(glob.glob(
-                                os.path.expanduser(singlepattern))) == 1),
+                                str(Path(singlepattern).resolve()))) == 1),
     [type, str], check=False
 )
 # This case only gets executed under the condition that the previous one wasn't.
@@ -101,7 +101,7 @@ Parent._create.add(
 Parent._create.add(
     run_cls('from_glob'),
     lambda cls, pattern: '*' in pattern and glob.glob(
-        os.path.expanduser(pattern)
+        str(Path(pattern).resolve())
         ),
     [type, str], check=False
 )

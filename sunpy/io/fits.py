@@ -27,6 +27,7 @@ References
 ----------
 | https://stackoverflow.com/questions/456672/class-factory-in-python
 """
+import os
 from pathlib import Path
 import re
 import sys
@@ -200,7 +201,7 @@ def write(fname, data, header, **kwargs):
         raise TypeError("KEYCOMMENTS must be a dictionary")
 
     if isinstance(fname, str):
-        fname = Path.home()
+        fname = (Path(fname).resolve())
 
     fitskwargs = {'output_verify': 'fix'}
     fitskwargs.update(kwargs)

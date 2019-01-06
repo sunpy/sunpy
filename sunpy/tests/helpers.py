@@ -2,8 +2,7 @@
 # Lovingly borrowed from Astropy
 # Licensed under a 3-clause BSD style license - see licences/ASTROPY.rst
 
-import os
-import pathlib
+from pathlib import Path
 import platform
 import urllib
 import warnings
@@ -72,7 +71,7 @@ def figure_test(test_function):
     @pytest.mark.figure
     @wraps(test_function)
     def wrapper(*args, **kwargs):
-        if not os.path.exists(hash.HASH_LIBRARY_FILE):
+        if not Path(hash.HASH_LIBRARY_FILE).exists():
             pytest.xfail('Could not find a figure hash library at {}'.format(hash.HASH_LIBRARY_FILE))
         if figure_base_dir is None:
             pytest.xfail("No directory to save figures to found")
@@ -116,10 +115,10 @@ def _patch_coverage(testdir, sourcedir):  # pragma: no cover
     """
     import coverage
 
-    coveragerc = os.path.join(os.path.dirname(__file__), "coveragerc")
+    coveragerc = str(Path.home().joinpath(Path(__file__).parent, "coveragerc"))
 
     # Load the .coverage file output by pytest-cov
-    covfile = os.path.join(testdir, ".coverage")
+    covfile = str(Path.home().joinpath(testdir, ".coverage"))
     cov = coverage.Coverage(covfile, config_file=coveragerc)
     cov.load()
     cov.get_data()
@@ -130,17 +129,17 @@ def _patch_coverage(testdir, sourcedir):  # pragma: no cover
     else:
         dfs = cov.data_files
 
-    dfs.filename = os.path.join(sourcedir, ".coverage")
+    dfs.filename = str(Path.home().joinpath(sourcedir, ".coverage"))
 
     # Replace the testdir with source dir
     # Lovingly borrowed from astropy (see licences directory)
     lines = cov.data._lines
     for key in list(lines.keys()):
-        new_path = os.path.relpath(
-            os.path.realpath(key),
-            os.path.realpath(testdir))
-        new_path = os.path.abspath(
-            os.path.join(sourcedir, new_path))
+        new_path = Path(
+            Path(key).resolve(),
+            Path(testdir).resolve()).relative_to(".")
+        new_path = Path(
+            str(Path.home().joinpath(sourcedir, new_path))).resolve()
         lines[new_path] = lines.pop(key)
 
     cov.save()
