@@ -4,11 +4,7 @@ import astropy.units as u
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 import pytest
 import os
-<<<<<<< HEAD
 from pathlib import Path
-=======
-import pathlib
->>>>>>> pathlib added astropy files not touched yet
 import numpy as np
 import sunpy.data.test
 import sunpy.map
@@ -16,11 +12,7 @@ import sunpy.map
 @pytest.fixture
 def aia171_test_map():
     testpath = sunpy.data.test.rootdir
-<<<<<<< HEAD
     return sunpy.map.Map(str(Path.home().joinpath(testpath, 'aia_171_level1.fits')))
-=======
-    return sunpy.map.Map(str(pathlib.Path.home().joinpath(testpath, 'aia_171_level1.fits')))
->>>>>>> pathlib added astropy files not touched yet
 
 @pytest.fixture
 def shape(aia171_test_map):

@@ -4,11 +4,7 @@ This particular test file pertains to EUVIMap.
 """
 
 import os
-<<<<<<< HEAD
 from pathlib import Path
-=======
-import pathlib
->>>>>>> pathlib added astropy files not touched yet
 import glob
 
 from sunpy.map.sources.stereo import EUVIMap
@@ -16,11 +12,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-<<<<<<< HEAD
 fitspath = glob.glob(str(Path.home().joinpath(path, "euvi_20090615_000900_n4euA_s.fts")))
-=======
-fitspath = glob.glob(str(pathlib.Path.home().joinpath(path, "euvi_20090615_000900_n4euA_s.fts")))
->>>>>>> pathlib added astropy files not touched yet
 euvi = Map(fitspath)
 
 # EUVI Tests

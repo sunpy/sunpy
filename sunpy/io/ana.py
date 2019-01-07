@@ -16,11 +16,7 @@ Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
 Copyright (c) 2009--2011 Tim van Werkhoven.
 """
 import os
-<<<<<<< HEAD
 from pathlib import Path
-=======
-import pathlib
->>>>>>> pathlib added astropy files not touched yet
 import collections
 
 try:
@@ -57,11 +53,7 @@ def read(filename, debug=False, **kwargs):
     >>> data = sunpy.io.ana.read(filename)   # doctest: +SKIP
 
     """
-<<<<<<< HEAD
     if not Path(filename).is_file():
-=======
-    if not pathlib.Path(filename).is_file:
->>>>>>> pathlib added astropy files not touched yet
         raise IOError("File does not exist!")
 
     if _pyana is None:

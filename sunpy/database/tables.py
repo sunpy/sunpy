@@ -3,11 +3,7 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 import os
-<<<<<<< HEAD
 from pathlib import Path
-=======
-import pathlib
->>>>>>> pathlib added astropy files not touched yet
 import fnmatch
 from datetime import datetime
 
@@ -751,22 +747,14 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     >>> from sunpy.data.test import rootdir as fitsdir
     >>> from sunpy.database.tables import entries_from_dir
 
-<<<<<<< HEAD
     >>> eitdir = str(Path.home().joinpath(fitsdir, 'EIT'))
-=======
-    >>> eitdir = str(pathlib.Path.home().joinpath(fitsdir, 'EIT'))
->>>>>>> pathlib added astropy files not touched yet
     >>> entries = list(entries_from_dir(eitdir, default_waveunit='angstrom'))
     >>> len(entries)
     13
 
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):
-<<<<<<< HEAD
         filename_paths = (str(Path.home().joinpath(dirpath, name)) for name in filenames)
-=======
-        filename_paths = (str(pathlib.Path.home().joinpath(dirpath, name)) for name in filenames)
->>>>>>> pathlib added astropy files not touched yet
         for path in fnmatch.filter(filename_paths, pattern):
             try:
                 filetype = sunpy_filetools._detect_filetype(path)

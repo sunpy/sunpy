@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 from pathlib import Path
-=======
-import os
-import pathlib
->>>>>>> pathlib added astropy files not touched yet
 import datetime
 
 import pytest
@@ -12,11 +7,7 @@ import numpy as np
 from sunpy.io.special import genx
 from sunpy.data.test import rootdir
 
-<<<<<<< HEAD
 TESTING = genx.read_genx(str(Path.home().joinpath(rootdir, 'generated_sample.genx')))
-=======
-TESTING = genx.read_genx(str(pathlib.Path.home().joinpath(rootdir, 'generated_sample.genx')))
->>>>>>> pathlib added astropy files not touched yet
 
 def test_skeleton():
     # top level

@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 
-<<<<<<< HEAD
 from pathlib import Path
-=======
-import os
-import pathlib
->>>>>>> pathlib added astropy files not touched yet
 
 import numpy as np
 
@@ -16,11 +11,7 @@ from sunpy.instr import iris
 
 
 def test_SJI_to_sequence():
-<<<<<<< HEAD
     test_data = str(Path.home().joinpath(sunpy.data.test.rootdir,'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits'))
-=======
-    test_data = str(pathlib.Path.home().joinpath(sunpy.data.test.rootdir,'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits'))
->>>>>>> pathlib added astropy files not touched yet
     iris_cube = iris.SJI_to_sequence(test_data, start=0, stop=None, hdu=0)
 
     assert isinstance(iris_cube, sunpy.map.MapSequence)
@@ -30,11 +21,7 @@ def test_SJI_to_sequence():
 
 
 def test_iris_rot():
-<<<<<<< HEAD
     test_data = str(Path.home().joinpath(sunpy.data.test.rootdir,'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits'))
-=======
-    test_data = str(pathlib.Path.home().joinpath(sunpy.data.test.rootdir,'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits'))
->>>>>>> pathlib added astropy files not touched yet
     iris_cube = iris.SJI_to_sequence(test_data, start=0, stop=None, hdu=0)
     irismap = iris_cube.maps[0]
     irismap_rot = irismap.rotate()

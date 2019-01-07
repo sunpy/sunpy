@@ -1,13 +1,5 @@
 import tempfile
-<<<<<<< HEAD
-<<<<<<< HEAD
 from pathlib import Path
-=======
-import pathlib
->>>>>>> pathlib added astropy files not touched yet
-=======
-from pathlib import Path
->>>>>>> more files refactored today, some tests failing
 import pytest
 import datetime
 
@@ -59,15 +51,7 @@ def test_split_series_using_lytaf():
     '''test the downloading of the LYTAF file and subsequent queries'''
     tmp_dir = tempfile.mkdtemp()
     lyra.download_lytaf_database(lytaf_dir=tmp_dir)
-<<<<<<< HEAD
-<<<<<<< HEAD
     assert Path(str(Path.home().joinpath(tmp_dir, 'annotation_ppt.db'))).exists()
-=======
-    assert pathlib.Path.exists(str(pathlib.Path.home().joinpath(tmp_dir, 'annotation_ppt.db')))
->>>>>>> pathlib added astropy files not touched yet
-=======
-    assert Path(str(Path.home().joinpath(tmp_dir, 'annotation_ppt.db'))).exists()
->>>>>>> more files refactored today, some tests failing
 
     # test split_series_using_lytaf
     # construct a dummy signal for testing purposes
@@ -101,15 +85,7 @@ def test_split_series_using_lytaf():
 def lyra_ts():
     # Create sample TimeSeries
     lyrats = timeseries.TimeSeries(
-<<<<<<< HEAD
-<<<<<<< HEAD
         str(Path.home().joinpath(rootdir, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')),
-=======
-        str(pathlib.Path.home().joinpath(rootdir, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')),
->>>>>>> pathlib added astropy files not touched yet
-=======
-        str(Path.home().joinpath(rootdir, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')),
->>>>>>> more files refactored today, some tests failing
         source='LYRA')
     lyrats.data = pandas.DataFrame(index=TIME,
                                    data={"CHANNEL1": CHANNELS[0],

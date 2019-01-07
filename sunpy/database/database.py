@@ -7,11 +7,7 @@ import itertools
 import operator
 from datetime import datetime
 from contextlib import contextmanager
-<<<<<<< HEAD
 from pathlib import Path
-=======
-import pathlib
->>>>>>> pathlib added astropy files not touched yet
 
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -424,15 +420,9 @@ class Database(object):
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)
 
-<<<<<<< HEAD
             if Path(path).is_file():
                 entries = tables.entries_from_file(path, self.default_waveunit)
             elif Path(path).is_dir():
-=======
-            if pathlib.Path.is_file(path):
-                entries = tables.entries_from_file(path, self.default_waveunit)
-            elif pathlib.Path.is_dir(path):
->>>>>>> pathlib added astropy files not touched yet
                 entries = tables.entries_from_dir(path, self.default_waveunit)
             else:
                 raise ValueError('The path is neither a file nor directory')

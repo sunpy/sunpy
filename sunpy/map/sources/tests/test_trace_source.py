@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 from pathlib import Path
-=======
-import os
-import pathlib
->>>>>>> pathlib added astropy files not touched yet
 
 import pytest
 
@@ -12,11 +7,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-<<<<<<< HEAD
 fitspath = str(Path.home().joinpath(path, "tsi20010130_025823_a2.fits"))
-=======
-fitspath = str(pathlib.Path.home().joinpath(path, "tsi20010130_025823_a2.fits"))
->>>>>>> pathlib added astropy files not touched yet
 
 @pytest.fixture(scope="module")
 def createTRACE():
