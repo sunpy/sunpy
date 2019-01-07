@@ -152,8 +152,6 @@ class TestMap(object):
         assert isinstance(cor,sunpy.map.sources.CORMap)
 
         hi = sunpy.map.Map(str(Path.home().joinpath(filepath,"hi_20110910_114721_s7h2A.fts")))
-        assert isinstance(euvi,sunpy.map.sources.EUVIMap)
-
         assert isinstance(hi,sunpy.map.sources.HIMap)
 
     def test_rhessi(self):
