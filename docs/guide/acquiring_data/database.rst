@@ -180,9 +180,9 @@ In section 3, more advanced formats of the slicing syntax are introduced.
     >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
     (datetime.datetime(2011, 6, 7, 6, 33, 2, 770000), None)
     >>> len(entry.fits_header_entries)  # doctest: +REMOTE_DATA
-    191
+    194
     >>> for fits_header_entry in entry.fits_header_entries[:10]:
-    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))  # doctest: +REMOTE_DATA
+    ...     print('{entry.key}\n    {entry.value}'.format(entry=fits_header_entry))  # doctest: +REMOTE_DATA
     SIMPLE
         True
     BITPIX
@@ -193,26 +193,35 @@ In section 3, more advanced formats of the slicing syntax are introduced.
         1024
     NAXIS2
         1024
+    PCOUNT
+        0
+    GCOUNT
+        1
+    XTENSION
+        BINTABLE
     BLD_VERS
         V5R12X
     LVL_NUM
         1.5
-    T_REC
-        2011-06-07T06:33:03Z
-    TRECSTEP
-        1.0
-    TRECEPOC
-        1977.01.01_00:00:00_TAI
 
     >>> for fits_key_comment in entry.fits_key_comments:
-    ...     print('{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment))  # doctest: +REMOTE_DATA
+    ...     print('{comment.key}\n    {comment.value}'.format(comment=fits_key_comment))  # doctest: +REMOTE_DATA
     SIMPLE
         conforms to FITS standard
     BITPIX
         array data type
     NAXIS
         number of array dimensions
-
+    NAXIS1
+        width of table in bytes
+    NAXIS2
+        number of rows in table
+    PCOUNT
+        number of group parameters
+    GCOUNT
+        number of groups
+    XTENSION
+        binary table extension
 
 2.2 Adding entries from a directory of FITS files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
