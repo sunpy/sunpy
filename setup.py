@@ -10,7 +10,6 @@
 # "SunPy only supports Python 3.6+" error prints without syntax errors etc.
 
 import os
-from pathlib import Path
 import sys
 import glob
 import builtins  # noqa
@@ -40,7 +39,7 @@ if sys.version_info < tuple((int(val) for val in __minimum_python_version__.spli
     sys.stderr.write("ERROR: SunPy requires Python {} or later\n".format(__minimum_python_version__))
     sys.exit(1)
 
-with open(str(Path.home().joinpath(Path(Path(__file__).parent).resolve(), 'README.rst')), encoding='utf-8') as f:
+with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.rst'), encoding='utf-8') as f:
     LONG_DESCRIPTION = f.read()
 
 # Import ah_bootstrap after the python version validation
@@ -96,7 +95,7 @@ generate_version_py(PACKAGENAME, VERSION, RELEASE,
                     get_debug_option(PACKAGENAME))
 
 # Treat everything in scripts except README* as a script to be installed
-scripts = [fname for fname in glob.glob(str(Path.home().joinpath('scripts', '*')))
+scripts = [fname for fname in glob.glob(os.path.join('scripts', '*'))
            if not os.path.basename(fname).startswith('README')]
 
 
@@ -126,8 +125,8 @@ for root, dirs, files in os.walk(PACKAGENAME):
     for filename in files:
         if filename.endswith('.c'):
             c_files.append(
-                str(Path.home().joinpath(
-                    Path(PACKAGENAME).relative_to(root), filename)))
+                 os.path.join(
+                    os.path.relpath(root, PACKAGENAME), filename))
 package_info['package_data'][PACKAGENAME].extend(c_files)
 
 
