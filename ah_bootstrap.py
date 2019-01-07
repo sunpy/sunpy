@@ -43,7 +43,6 @@ import locale
 import os
 import re
 import subprocess as sp
-import pathlib
 import sys
 
 __minimum_python_version__ = (3, 5)
@@ -185,7 +184,7 @@ class _Bootstrapper(object):
 
         # If this is a release then the .git directory will not exist so we
         # should not use git.
-        git_dir_exists = pathlib.Path(pathlib.Path.joinpath(pathlib.Path(__file__).parents[0], '.git')).exists
+        git_dir_exists = os.path.exists(os.path.join(os.path.dirname(__file__), '.git'))
         if use_git is None and not git_dir_exists:
             use_git = False
 
@@ -216,7 +215,7 @@ class _Bootstrapper(object):
 
     @classmethod
     def parse_config(cls):
-        if not pathlib.Path('setup.cfg').exists:
+         if not os.path.exists('setup.cfg'):
             return {}
 
         cfg = ConfigParser()
@@ -359,7 +358,7 @@ class _Bootstrapper(object):
         distribution.
         """
 
-        if not pathlib.Path(self.path).is_dir:
+        if not os.path.isdir(self.path):
             return
 
         log.info('Attempting to import astropy_helpers from {0} {1!r}'.format(
@@ -388,7 +387,7 @@ class _Bootstrapper(object):
         but points easy_install directly to the source archive.
         """
 
-        if not pathlib.Path(self.path).is_file:
+        if not os.path.isfile(self.path):
             return
 
         log.info('Attempting to unpack and import astropy_helpers from '
@@ -447,7 +446,7 @@ class _Bootstrapper(object):
 
         # Return True on success, False on failure but download is allowed, and
         # otherwise raise SystemExit
-        path = pathlib.Path.resolve(self.path)
+        path = os.path.abspath(self.path)
 
         # Use an empty WorkingSet rather than the man
         # pkg_resources.working_set, since on older versions of setuptools this
@@ -459,8 +458,8 @@ class _Bootstrapper(object):
         if dist is None:
             # We didn't find an egg-info/dist-info in the given path, but if a
             # setup.py exists we can generate it
-            setup_py = pathlib.Path.joinpath(path, 'setup.py')
-            if pathlib.Path(setup_py).is_file:
+            setup_py = os.path.join(path, 'setup.py')
+            if os.path.isfile(setup_py):
                 # We use subprocess instead of run_setup from setuptools to
                 # avoid segmentation faults - see the following for more details:
                 # https://github.com/cython/cython/issues/2104
@@ -567,7 +566,7 @@ class _Bootstrapper(object):
         """
 
         if (self.path is None or
-                (pathlib.Path(self.path).exists and not pathlib.Path(self.path).is_dir)):
+                (os.path.exists(self.path) and not os.path.isdir(self.path))):
             return False
 
         if self.use_git:
@@ -662,9 +661,9 @@ class _Bootstrapper(object):
         .gitmodules file is changed between git versions.
         """
 
-        gitmodules_path = pathlib.Path.resolve('.gitmodules')
+        gitmodules_path = os.path.abspath('.gitmodules')
 
-        if not pathlib.Path.is_file(gitmodules_path):
+        if not os.path.isfile(gitmodules_path):
             return False
 
         # This is a minimal reader for gitconfig-style files.  It handles a few of
