@@ -5,7 +5,7 @@ Installation
 SunPy is a Python package for solar physics.  It relies on and enables the use
 of the wider ecosystem of scientific Python packages for solar physics.
 Therefore a working SunPy installation is more about installing the scientific
-Python ecosystem than SunPy itself.  SunPy supports and is compatible with Python 2.7. and 3.5+.
+Python ecosystem than SunPy itself.  SunPy supports and is compatible with Python 3.6+.
 
 If you are new to Python and scientific Python then continue to follow this
 guide to get setup with the whole environment. If you already have a working
@@ -31,8 +31,8 @@ To install the Anaconda Python distribution follow the instructions
 `here <https://docs.anaconda.com/anaconda/install/>`_. You will need to
 select the correct download for your platform and follow the install procedure.
 Note that although Anaconda makes it simple to switch between Python versions,
-we recommend that new users install the latest Python 3.x version of Anaconda.
-This is because Python 2.7 is scheduled to be deprecated in 2020.
+we recommend that new users install the latest Python 3.x version of Anaconda as
+SunPy only supports Python 3.6+.
 
 Installing SunPy on top of Anaconda
 ###################################
