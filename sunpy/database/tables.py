@@ -645,6 +645,13 @@ def entries_from_file(file, default_waveunit=None,
 
     """
     headers = fits.get_header(file)
+    # This is due to RICE compression adds a second header
+    # with no information in it. If we do not remove it here,
+    # it gets added to the database.
+    for header in headers:
+        if header['NAXIS'] == 0 and len(header) == 8:
+            headers.remove(header)
+
     if isinstance(file, str):
         filename = file
     else:
