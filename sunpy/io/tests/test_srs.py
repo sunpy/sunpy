@@ -1,7 +1,12 @@
 """
 This module implements tests for SRS Reader.
 """
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import os
+import pathlib
+>>>>>>> pathlib added astropy files not touched yet
 
 import pytest
 import numpy as np
@@ -32,7 +37,11 @@ LONGLAT.add_column(MaskedColumn(data=[x['latitude'] for x in COORDINATES], name=
 
 
 @pytest.mark.parametrize("path, number_of_rows",
+<<<<<<< HEAD
                          [(str(Path.home().joinpath(testpath, elem['file'])), elem['rows'])
+=======
+                         [(str(pathlib.Path.home().joinpath(testpath, elem['file'])), elem['rows'])
+>>>>>>> pathlib added astropy files not touched yet
                           for elem in filenames])
 def test_number_of_rows(path, number_of_rows):
     table = srs.read_srs(path)

@@ -6,7 +6,11 @@
 import os
 import glob
 import shutil
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import pathlib
+>>>>>>> pathlib added astropy files not touched yet
 import configparser
 
 import pytest
@@ -28,7 +32,11 @@ from sunpy.database.commands import NoSuchEntryError, EmptyCommandStackError
 from sunpy.data.test.waveunit import waveunitdir
 
 testpath = sunpy.data.test.rootdir
+<<<<<<< HEAD
 RHESSI_IMAGE = str(Path.home().joinpath(testpath, 'hsi_image_20101016_191218.fits'))
+=======
+RHESSI_IMAGE = str(pathlib.Path.home().joinpath(testpath, 'hsi_image_20101016_191218.fits'))
+>>>>>>> pathlib added astropy files not touched yet
 
 
 """
@@ -529,7 +537,11 @@ def test_download_from_qr(database, download_qr, tmpdir):
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers > 0
     for entry in database:
+<<<<<<< HEAD
         assert Path(entry.path).parent == str(tmpdir)
+=======
+        assert pathlib.Path(entry.path).parent == str(tmpdir)
+>>>>>>> pathlib added astropy files not touched yet
     database.undo()
     assert len(database) == 0
     database.redo()
@@ -892,7 +904,11 @@ def test_fetch(database, download_query, tmpdir):
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers
     for entry in database:
+<<<<<<< HEAD
         assert Path(entry.path).parent == str(tmpdir)
+=======
+        assert pathlib.Path(entry.path).parent == str(tmpdir)
+>>>>>>> pathlib added astropy files not touched yet
     database.undo()
     assert len(database) == 0
     database.redo()
@@ -949,13 +965,22 @@ def test_fetch_separate_filenames():
         vso.attrs.Instrument('AIA')
     ]
 
+<<<<<<< HEAD
     tmp_test_dir = str(Path.home().joinpath(
+=======
+    tmp_test_dir = str(pathlib.Path.home().joinpath(
+>>>>>>> pathlib added astropy files not touched yet
         sunpy.config.get('downloads', 'download_dir'),
         'tmp_test_dir/'
     ))
 
+<<<<<<< HEAD
     if not Path(tmp_test_dir).is_dir():
         Path(tmp_test_dir).mkdir()
+=======
+    if not pathlib.Path.is_dir(tmp_test_dir):
+        os.makedirs(tmp_test_dir)
+>>>>>>> pathlib added astropy files not touched yet
 
     path = tmp_test_dir + '{file}'
 
@@ -967,10 +992,17 @@ def test_fetch_separate_filenames():
     dir_contents = Path(tmp_test_dir).iterdir()
     assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
     assert 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits' in dir_contents
+<<<<<<< HEAD
     assert Path(Path.joinpath(
         tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits')).is_file()
     assert Path(Path.joinpath(
         tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits')).is_file()
+=======
+    assert pathlib.Path.is_file(pathlib.Path.joinpath(
+        tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))
+    assert pathlib.Path.is_file(pathlib.Path.joinpath(
+        tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))
+>>>>>>> pathlib added astropy files not touched yet
 
     # Teardown
     shutil.rmtree(tmp_test_dir)

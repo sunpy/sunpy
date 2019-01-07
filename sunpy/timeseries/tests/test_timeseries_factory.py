@@ -5,7 +5,12 @@ Created on Thu Jun 23 12:08:21 2016
 @author: alex_
 """
 
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import os
+import pathlib
+>>>>>>> pathlib added astropy files not touched yet
 import glob
 import pytest
 import datetime
@@ -30,6 +35,7 @@ from astropy.io import fits
 # ==============================================================================
 
 filepath = sunpy.data.test.rootdir
+<<<<<<< HEAD
 eve_filepath = str(Path.home().joinpath(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt'))
 fermi_gbm_filepath = str(Path.home().joinpath(filepath, 'gbm.fits'))
 norh_filepath = str(Path.home().joinpath(filepath, 'tca110810_truncated'))
@@ -40,6 +46,18 @@ noaa_pre_filepath = str(Path.home().joinpath(filepath, 'predicted-sunspot-radio-
 goes_filepath_com = str(Path.home().joinpath(filepath, 'go1520120601.fits.gz'))
 goes_filepath = str(Path.home().joinpath(filepath, 'go1520110607.fits'))
 a_list_of_many = glob.glob(str(Path.home().joinpath(filepath, "eve", "*")))
+=======
+eve_filepath = str(pathlib.Path.home().joinpath(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt'))
+fermi_gbm_filepath = str(pathlib.Path.home().joinpath(filepath, 'gbm.fits'))
+norh_filepath = str(pathlib.Path.home().joinpath(filepath, 'tca110810_truncated'))
+lyra_filepath = str(pathlib.Path.home().joinpath(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz'))
+rhessi_filepath = str(pathlib.Path.home().joinpath(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz'))
+noaa_ind_filepath = str(pathlib.Path.home().joinpath(filepath, 'RecentIndices_truncated.txt'))
+noaa_pre_filepath = str(pathlib.Path.home().joinpath(filepath, 'predicted-sunspot-radio-flux_truncated.txt'))
+goes_filepath_com = str(pathlib.Path.home().joinpath(filepath, 'go1520120601.fits.gz'))
+goes_filepath = str(pathlib.Path.home().joinpath(filepath, 'go1520110607.fits'))
+a_list_of_many = glob.glob(str(pathlib.Path.home().joinpath(filepath, "eve", "*")))
+>>>>>>> pathlib added astropy files not touched yet
 
 # ==============================================================================
 # Multi file Tests
@@ -51,7 +69,11 @@ class TestTimeSeries(object):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
+<<<<<<< HEAD
         ts_from_folder = sunpy.timeseries.TimeSeries(str(Path.home().joinpath(filepath, "eve")), source='EVE', concatenate=True)
+=======
+        ts_from_folder = sunpy.timeseries.TimeSeries(str(pathlib.Path.home().joinpath(filepath, "eve")), source='EVE', concatenate=True)
+>>>>>>> pathlib added astropy files not touched yet
         assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         # text the two methods get identical dataframes
         assert ts_from_list == ts_from_folder
@@ -62,7 +84,11 @@ class TestTimeSeries(object):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
+<<<<<<< HEAD
         ts_from_folder = sunpy.timeseries.TimeSeries(str(Path.home().joinpath(filepath, "eve")), source='EVE', concatenate=True)
+=======
+        ts_from_folder = sunpy.timeseries.TimeSeries(str(pathlib.Path.home().joinpath(filepath, "eve")), source='EVE', concatenate=True)
+>>>>>>> pathlib added astropy files not touched yet
         assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         # text the two methods get identical dataframes
         assert ts_from_list == ts_from_folder
@@ -78,7 +104,11 @@ class TestTimeSeries(object):
 
     def test_factory_generate_from_glob(self):
         # Test making a TimeSeries from a glob
+<<<<<<< HEAD
         ts_from_glob = sunpy.timeseries.TimeSeries(str(Path.home().joinpath(filepath, "eve", "*")), source='EVE', concatenate=True)
+=======
+        ts_from_glob = sunpy.timeseries.TimeSeries(str(pathlib.Path.home().joinpath(filepath, "eve", "*")), source='EVE', concatenate=True)
+>>>>>>> pathlib added astropy files not touched yet
         assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
 #==============================================================================
@@ -373,7 +403,11 @@ class TestTimeSeries(object):
             sunpy.timeseries.TimeSeries(data, meta)
 
     def test_invalid_filepath(self):
+<<<<<<< HEAD
         invalid_filepath = str(Path.home().joinpath(filepath, 'invalid_filepath_here'))
+=======
+        invalid_filepath = str(pathlib.Path.home().joinpath(filepath, 'invalid_filepath_here'))
+>>>>>>> pathlib added astropy files not touched yet
         with pytest.raises(NoMatchError):
             sunpy.timeseries.TimeSeries(invalid_filepath)
         # Now with silence_errors kwarg set
@@ -381,7 +415,11 @@ class TestTimeSeries(object):
             sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
 
     def test_invalid_file(self):
+<<<<<<< HEAD
         invalid_filepath = str(Path.home().joinpath(filepath, 'annotation_ppt.db'))
+=======
+        invalid_filepath = str(pathlib.Path.home().joinpath(filepath, 'annotation_ppt.db'))
+>>>>>>> pathlib added astropy files not touched yet
         with pytest.raises(TypeError):
             sunpy.timeseries.TimeSeries(invalid_filepath)
         # Now with silence_errors kwarg set

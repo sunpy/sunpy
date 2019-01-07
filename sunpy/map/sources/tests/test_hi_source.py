@@ -2,7 +2,12 @@
 This particular test file pertains to HIMap.
 """
 
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import os
+import pathlib
+>>>>>>> pathlib added astropy files not touched yet
 import glob
 
 from sunpy.map.sources.stereo import HIMap
@@ -10,7 +15,11 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
+<<<<<<< HEAD
 fitspath = glob.glob(str(Path.home().joinpath(path,"hi_20110910_114721_s7h2A.fts")))
+=======
+fitspath = glob.glob(str(pathlib.Path.home().joinpath(path,"hi_20110910_114721_s7h2A.fts")))
+>>>>>>> pathlib added astropy files not touched yet
 hi = Map(fitspath)
 
 def test_fitstoHI():

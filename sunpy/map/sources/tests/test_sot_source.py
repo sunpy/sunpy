@@ -3,7 +3,12 @@ This particular test file pertains to SOTMap.
 @Author: Pritish C. (VaticanCameos)
 """
 
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import os
+import pathlib
+>>>>>>> pathlib added astropy files not touched yet
 import glob
 
 import astropy.units as u
@@ -13,7 +18,11 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
+<<<<<<< HEAD
 fitspath = glob.glob(str(Path.home().joinpath(path, "HinodeSOT.fits")))
+=======
+fitspath = glob.glob(str(pathlib.Path.home().joinpath(path, "HinodeSOT.fits")))
+>>>>>>> pathlib added astropy files not touched yet
 sot = Map(fitspath)
 
 # SOT Tests

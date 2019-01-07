@@ -2,7 +2,12 @@
 """
 Test Generic Map
 """
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import os
+import pathlib
+>>>>>>> pathlib added astropy files not touched yet
 import tempfile
 import warnings
 
@@ -30,12 +35,20 @@ testpath = sunpy.data.test.rootdir
 
 @pytest.fixture
 def aia171_test_map():
+<<<<<<< HEAD
     return sunpy.map.Map(str(Path.home().joinpath(testpath, 'aia_171_level1.fits')))
+=======
+    return sunpy.map.Map(str(pathlib.Path.home().joinpath(testpath, 'aia_171_level1.fits')))
+>>>>>>> pathlib added astropy files not touched yet
 
 
 @pytest.fixture
 def heliographic_test_map():
+<<<<<<< HEAD
     return sunpy.map.Map(str(Path.home().joinpath(testpath, 'heliographic_phase_map.fits.gz')))
+=======
+    return sunpy.map.Map(str(pathlib.Path.home().joinpath(testpath, 'heliographic_phase_map.fits.gz')))
+>>>>>>> pathlib added astropy files not touched yet
 
 
 @pytest.fixture
@@ -75,7 +88,11 @@ def generic_map():
 
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same in pyfits and SunPy"""
+<<<<<<< HEAD
     data = fits.open(str(Path.home().joinpath(testpath, 'aia_171_level1.fits')))[0].data
+=======
+    data = fits.open(str(pathlib.Path.home().joinpath(testpath, 'aia_171_level1.fits')))[0].data
+>>>>>>> pathlib added astropy files not touched yet
     np.testing.assert_allclose(aia171_test_map.data, data)
 
 
@@ -250,7 +267,11 @@ def test_rotation_matrix_cd_cdelt_square():
 
 
 def test_swap_cd():
+<<<<<<< HEAD
     amap = sunpy.map.Map(str(Path.home().joinpath(testpath, 'swap_lv1_20140606_000113.fits')))
+=======
+    amap = sunpy.map.Map(str(pathlib.Path.home().joinpath(testpath, 'swap_lv1_20140606_000113.fits')))
+>>>>>>> pathlib added astropy files not touched yet
     np.testing.assert_allclose(amap.rotation_matrix, np.array([[1., 0], [0, 1.]]))
 
 

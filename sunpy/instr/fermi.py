@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import os
+import pathlib
+>>>>>>> pathlib added astropy files not touched yet
 import copy
 import urllib
 import datetime
@@ -71,7 +76,11 @@ def download_weekly_pointing_file(date):
         raise ValueError('No Fermi pointing files found for given date!')
 
     # download the file
+<<<<<<< HEAD
     destination = str(Path.home().joinpath(tmp_dir, full_fname))
+=======
+    destination = str(pathlib.Path.home().joinpath(tmp_dir, full_fname))
+>>>>>>> pathlib added astropy files not touched yet
     urllib.request.urlretrieve(pointing_file_url, destination)
 
     # return the location of the downloaded file

@@ -1,6 +1,10 @@
 """SunPy test data files"""
 import os
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import pathlib
+>>>>>>> pathlib added astropy files not touched yet
 import glob
 import fnmatch
 import re
@@ -11,8 +15,13 @@ import sunpy
 
 __all__ = ['rootdir', 'file_list', 'get_test_filepath', 'test_data_filenames']
 
+<<<<<<< HEAD
 rootdir = str(Path.home().joinpath(Path(sunpy.__file__).parent, "data", "test"))
 file_list = glob.glob(str(Path.home().joinpath(rootdir, '*.[!p]*')))
+=======
+rootdir = str(pathlib.Path.home().joinpath(pathlib.Path(sunpy.__file__).parent, "data", "test"))
+file_list = glob.glob(str(pathlib.Path.home().joinpath(rootdir, '*.[!p]*')))
+>>>>>>> pathlib added astropy files not touched yet
 
 
 
@@ -62,7 +71,11 @@ def test_data_filenames():
     excludes = r'|'.join([fnmatch.translate(x) for x in excludes]) or r'$.'
 
     for root, dirs, files in os.walk(rootdir):
+<<<<<<< HEAD
         files = [str(Path.home().joinpath(root, f)) for f in files]
+=======
+        files = [pathlib.Path.joinpath(root, f) for f in files]
+>>>>>>> pathlib added astropy files not touched yet
         files = [f for f in files if not re.match(excludes, f)]
         files = [file.replace(rootdir + os.path.sep, '') for file in files]
         test_data_filenames_list.extend(files)

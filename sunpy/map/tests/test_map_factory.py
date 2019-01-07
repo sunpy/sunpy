@@ -4,7 +4,12 @@ Created on Fri Jun 21 15:05:09 2013
 
 @author: stuart
 """
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import os
+import pathlib
+>>>>>>> pathlib added astropy files not touched yet
 import glob
 import tempfile
 
@@ -19,11 +24,19 @@ import sunpy.data.test
 
 
 filepath = sunpy.data.test.rootdir
+<<<<<<< HEAD
 a_list_of_many = glob.glob(str(Path.home().joinpath(filepath, "EIT", "*")))
 a_fname = a_list_of_many[0]
 
 AIA_171_IMAGE = str(Path.home().joinpath(filepath, 'aia_171_level1.fits'))
 RHESSI_IMAGE = str(Path.home().joinpath(filepath, 'hsi_image_20101016_191218.fits'))
+=======
+a_list_of_many = glob.glob(str(pathlib.Path.home().joinpath(filepath, "EIT", "*")))
+a_fname = a_list_of_many[0]
+
+AIA_171_IMAGE = str(pathlib.Path.home().joinpath(filepath, 'aia_171_level1.fits'))
+RHESSI_IMAGE = str(pathlib.Path.home().joinpath(filepath, 'hsi_image_20101016_191218.fits'))
+>>>>>>> pathlib added astropy files not touched yet
 
 #==============================================================================
 # Map Factory Tests
@@ -46,11 +59,19 @@ class TestMap(object):
         eitmap = sunpy.map.Map(a_fname)
         assert isinstance(eitmap, sunpy.map.GenericMap)
         # Directory
+<<<<<<< HEAD
         maps = sunpy.map.Map(str(Path.home().joinpath(filepath, "EIT")))
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
         # Glob
         maps = sunpy.map.Map(str(Path.home().joinpath(filepath, "EIT", "*")))
+=======
+        maps = sunpy.map.Map(str(pathlib.Path.home().joinpath(filepath, "EIT")))
+        assert isinstance(maps, list)
+        assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+        # Glob
+        maps = sunpy.map.Map(str(pathlib.Path.home().joinpath(filepath, "EIT", "*")))
+>>>>>>> pathlib added astropy files not touched yet
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
         # Already a Map
@@ -131,6 +152,7 @@ class TestMap(object):
 
     def test_soho(self):
         #Test EITMap, LASCOMap & MDIMap
+<<<<<<< HEAD
         eit = sunpy.map.Map(str(Path.home().joinpath(filepath, "EIT", "efz20040301.000010_s.fits")))
         assert isinstance(eit,sunpy.map.sources.EITMap)
 
@@ -141,10 +163,23 @@ class TestMap(object):
         assert isinstance(mdi_c,sunpy.map.sources.MDIMap)
 
         mdi_m = sunpy.map.Map(str(Path.home().joinpath(filepath, "mdi_fd_M_96m_01d.5874.0005_s.fits")))
+=======
+        eit = sunpy.map.Map(str(pathlib.Path.home().joinpath(filepath, "EIT", "efz20040301.000010_s.fits")))
+        assert isinstance(eit,sunpy.map.sources.EITMap)
+
+        lasco = sunpy.map.Map(str(pathlib.Path.home().joinpath(filepath, "lasco_c2_25299383_s.fts")))
+        assert isinstance(lasco,sunpy.map.sources.LASCOMap)
+
+        mdi_c = sunpy.map.Map(str(pathlib.Path.home().joinpath(filepath, "mdi_fd_Ic_6h_01d.5871.0000_s.fits")))
+        assert isinstance(mdi_c,sunpy.map.sources.MDIMap)
+
+        mdi_m = sunpy.map.Map(str(pathlib.Path.home().joinpath(filepath, "mdi_fd_M_96m_01d.5874.0005_s.fits")))
+>>>>>>> pathlib added astropy files not touched yet
         assert isinstance(mdi_m,sunpy.map.sources.MDIMap)
 
     def test_stereo(self):
         #Test EUVIMap & CORMap & HIMap
+<<<<<<< HEAD
         euvi = sunpy.map.Map(str(Path.home().joinpath(filepath, "euvi_20090615_000900_n4euA_s.fts")))
         assert isinstance(euvi,sunpy.map.sources.EUVIMap)
 
@@ -152,6 +187,15 @@ class TestMap(object):
         assert isinstance(cor,sunpy.map.sources.CORMap)
 
         hi = sunpy.map.Map(str(Path.home().joinpath(filepath,"hi_20110910_114721_s7h2A.fts")))
+=======
+        euvi = sunpy.map.Map(str(pathlib.Path.home().joinpath(filepath, "euvi_20090615_000900_n4euA_s.fts")))
+        assert isinstance(euvi,sunpy.map.sources.EUVIMap)
+
+        cor = sunpy.map.Map(str(pathlib.Path.home().joinpath(filepath, "cor1_20090615_000500_s4c1A.fts")))
+        assert isinstance(cor,sunpy.map.sources.CORMap)
+
+        hi = sunpy.map.Map(ostr(pathlib.Path.home().joinpath(filepath,"hi_20110910_114721_s7h2A.fts")))
+>>>>>>> pathlib added astropy files not touched yet
         assert isinstance(hi,sunpy.map.sources.HIMap)
 
     def test_rhessi(self):
@@ -161,7 +205,11 @@ class TestMap(object):
 
     def test_sot(self):
         #Test SOTMap
+<<<<<<< HEAD
         sot = sunpy.map.Map(str(Path.home().joinpath(filepath , "FGMG4_20110214_030443.7.fits")))
+=======
+        sot = sunpy.map.Map(str(pathlib.Path.home().joinpath(filepath , "FGMG4_20110214_030443.7.fits")))
+>>>>>>> pathlib added astropy files not touched yet
         assert isinstance(sot,sunpy.map.sources.SOTMap)
 
         #Test SWAPMap

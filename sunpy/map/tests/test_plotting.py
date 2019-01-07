@@ -2,7 +2,12 @@
 """
 Test Generic Map
 """
+<<<<<<< HEAD
 from pathlib import Path
+=======
+import os
+import pathlib
+>>>>>>> pathlib added astropy files not touched yet
 import pytest
 
 import numpy as np
@@ -23,12 +28,20 @@ testpath = sunpy.data.test.rootdir
 
 @pytest.fixture
 def aia171_test_map():
+<<<<<<< HEAD
     return sunpy.map.Map(str(Path.home().joinpath(testpath, 'aia_171_level1.fits')))
+=======
+    return sunpy.map.Map(str(pathlib.Path.home().joinpath(testpath, 'aia_171_level1.fits')))
+>>>>>>> pathlib added astropy files not touched yet
 
 
 @pytest.fixture
 def heliographic_test_map():
+<<<<<<< HEAD
     return sunpy.map.Map(str(Path.home().joinpath(testpath, 'heliographic_phase_map.fits.gz')))
+=======
+    return sunpy.map.Map(str(pathlib.Path.home().joinpath(testpath, 'heliographic_phase_map.fits.gz')))
+>>>>>>> pathlib added astropy files not touched yet
 
 
 @pytest.fixture
