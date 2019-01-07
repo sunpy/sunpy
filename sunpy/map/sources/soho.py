@@ -22,7 +22,7 @@ __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
 
 def _dsunAtSoho(date, rad_d, rad_1au=None):
-    """Determines the distance to the Sun from SOhO following
+    r"""Determines the distance to the Sun from SOhO following
     d_{\sun,Object} =
             D_{\sun\earth} \frac{\tan(radius_{1au}[rad])}{\tan(radius_{d}[rad])}
     though tan x ~ x for x << 1
@@ -68,7 +68,8 @@ class EITMap(GenericMap):
         self._fix_dsun()
         self._nickname = self.detector
         self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
     @property
     def rsun_obs(self):
@@ -128,7 +129,8 @@ class LASCOMap(GenericMap):
             self.meta['date_obs'] = self.meta['date-obs']
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = plt.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
     @property
     def measurement(self):

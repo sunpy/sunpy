@@ -90,7 +90,7 @@ class Downloader(object):
 
         Examples: http://server.com, server.org, ftp.server.org, etc.
         """
-        return re.search('(\w+://)?([\w\.]+)', url).group(2)
+        return re.search(r'(\w+://)?([\w\.]+)', url).group(2)
 
     def _default_callback(self, *args):
         """Default callback to execute on a successful download"""
