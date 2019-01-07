@@ -15,12 +15,12 @@ __all__ = ['Scraper']
 
 # regular expressions to convert datetime format
 # added `%e` as for milliseconds `%f/1000`
-TIME_CONVERSIONS = {'%Y': '\d{4}', '%y': '\d{2}',
-                    '%b': '[A-Z][a-z]{2}', '%B': '\W', '%m': '\d{2}',
-                    '%d': '\d{2}', '%j': '\d{3}',
-                    '%H': '\d{2}', '%I': '\d{2}',
-                    '%M': '\d{2}',
-                    '%S': '\d{2}', '%e': '\d{3}', '%f': '\d{6}'}
+TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
+                    '%b': '[A-Z][a-z]{2}', '%B': r'\W', '%m': r'\d{2}',
+                    '%d': r'\d{2}', '%j': r'\d{3}',
+                    '%H': r'\d{2}', '%I': r'\d{2}',
+                    '%M': r'\d{2}',
+                    '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'}
 
 
 class Scraper(object):
@@ -61,7 +61,7 @@ class Scraper(object):
     """
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
-        milliseconds = re.search('\%e', self.pattern)
+        milliseconds = re.search(r'\%e', self.pattern)
         if not milliseconds:
             self.now = datetime.datetime.now().strftime(self.pattern)
         else:
@@ -125,10 +125,12 @@ class Scraper(object):
         # remove the user and passwd from files if there:
         url = url.replace("anonymous:data@sunpy.org@", "")
 
-        # url_to_list substitutes '.' and '_' for '/' to then create
-        # a list of all the blocks in times - assuming they are all
-        # separated with either '.', '_' or '/'
-        url_to_list = lambda txt: re.sub(r'\.|_', '/', txt).split('/')
+        def url_to_list(txt):
+            # Substitutes '.' and '_' for '/'.
+            return re.sub(r'\.|_', '/', txt).split('/')
+
+        # create a list of all the blocks in times - assuming they are all
+        # separated with either '.', '_' or '/'.
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
         time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
@@ -168,8 +170,8 @@ class Scraper(object):
             regexp = r'\{}'.format(r) if not r.startswith('[') else r
             pattern = '%{}'.format(p)
             date_part = re.search(regexp, date_together)
-            date_together = date_together[:date_part.start()] + \
-                            date_together[date_part.end():]
+            date_together = date_together[:date_part.start()] \
+                + date_together[date_part.end():]
             if pattern not in final_pattern:
                 final_pattern.append('%{}'.format(p))
                 final_date.append(date_part.group())
@@ -234,11 +236,11 @@ class Scraper(object):
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
                                 if (datehref >= timerange.start and
-                                    datehref <= timerange.end):
+                                        datehref <= timerange.end):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
-            except:
+            except Exception:
                 raise
         return filesurls
 
@@ -256,11 +258,10 @@ class Scraper(object):
                     if self._URL_followsPattern(fullpath):
                         datehref = self._extractDateURL(fullpath)
                         if (datehref >= timerange.start and
-                            datehref <= timerange.end):
+                                datehref <= timerange.end):
                             filesurls.append(fullpath)
         filesurls = ['ftp://anonymous:data@sunpy.org@' + url[domain + 2:] for url in filesurls]
         return filesurls
-
 
     def _smallerPattern(self, directoryPattern):
         """Obtain the smaller time step for the given pattern"""
@@ -279,5 +280,5 @@ class Scraper(object):
                 return TimeDelta(365*u.day)
             else:
                 return None
-        except:
+        except Exception:
             raise

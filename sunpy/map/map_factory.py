@@ -46,9 +46,10 @@ except ImportError:
 
 __all__ = ['Map', 'MapFactory']
 
+
 class MapFactory(BasicRegistrationFactory):
     """
-    Map(\*args, \*\*kwargs)
+    Map(\\*args, \\*\\*kwargs)
 
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
@@ -114,9 +115,8 @@ class MapFactory(BasicRegistrationFactory):
 
     * Any mixture of the above not in a list
 
-    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')  # doctest: +SKIP
-    """
-
+    >>> mymap = sunpy.map.Map(((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits'))  # doctest: +SKIP
+    """  # noqa
 
     def _read_file(self, fname, **kwargs):
         """ Read in a file name and return the list of (data, meta) pairs in
@@ -291,7 +291,7 @@ class MapFactory(BasicRegistrationFactory):
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
-            except:
+            except Exception:
                 raise
 
             new_maps.append(new_map)
@@ -342,7 +342,7 @@ class MapFactory(BasicRegistrationFactory):
 def _is_url(arg):
     try:
         urlopen(arg)
-    except:
+    except Exception:
         return False
     return True
 
