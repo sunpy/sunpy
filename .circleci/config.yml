@@ -2,6 +2,14 @@ skip-check: &skip-check
   name: Check for [ci skip]
   command: bash .circleci/early_exit.sh
 
+merge-check: &merge-check
+  name: Check if we need to merge upstream master
+  command: |
+    if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
+      git fetch origin +refs/pull/$CIRCLE_PR_NUMBER/merge:pr/$CIRCLE_PR_NUMBER/merge
+      git checkout -qf pr/$CIRCLE_PR_NUMBER/merge
+    fi
+
 apt-run: &apt-install
   name: Install apt packages
   command: |
@@ -30,6 +38,8 @@ jobs:
       - image: circleci/python:3.6
     steps:
       - checkout
+      - run: *skip-check
+      - run: *merge-check
       - run: python setup.py egg_info
 
   egg-info-37:
@@ -37,6 +47,8 @@ jobs:
       - image: circleci/python:3.7
     steps:
       - checkout
+      - run: *skip-check
+      - run: *merge-check
       - run: python setup.py egg_info
 
   32bit:
@@ -48,6 +60,7 @@ jobs:
 
       - checkout
       - run: *skip-check
+      - run: *merge-check
       - run:
           name: yum dependencies
           command: yum install -y freetype freetype-devel libpng-devel tk
@@ -70,6 +83,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *merge-check
       - run: *apt-install
       - run: *tox-install
       - run: *image-tests
@@ -88,6 +102,7 @@ jobs:
 
       - checkout
       - run: *skip-check
+      - run: *merge-check
       - run: *apt-install
       - run: *tox-install
       - run: tox -e py37-build_docs
