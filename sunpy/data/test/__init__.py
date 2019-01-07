@@ -1,10 +1,14 @@
 """SunPy test data files"""
 import os
 <<<<<<< HEAD
+<<<<<<< HEAD
 from pathlib import Path
 =======
 import pathlib
 >>>>>>> pathlib added astropy files not touched yet
+=======
+from pathlib import Path
+>>>>>>> more files refactored today, some tests failing
 import glob
 import fnmatch
 import re
@@ -16,12 +20,17 @@ import sunpy
 __all__ = ['rootdir', 'file_list', 'get_test_filepath', 'test_data_filenames']
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 rootdir = str(Path.home().joinpath(Path(sunpy.__file__).parent, "data", "test"))
 file_list = glob.glob(str(Path.home().joinpath(rootdir, '*.[!p]*')))
 =======
 rootdir = str(pathlib.Path.home().joinpath(pathlib.Path(sunpy.__file__).parent, "data", "test"))
 file_list = glob.glob(str(pathlib.Path.home().joinpath(rootdir, '*.[!p]*')))
 >>>>>>> pathlib added astropy files not touched yet
+=======
+rootdir = str(Path.home().joinpath(Path(sunpy.__file__).parent, "data", "test"))
+file_list = glob.glob(str(Path.home().joinpath(rootdir, '*.[!p]*')))
+>>>>>>> more files refactored today, some tests failing
 
 
 
@@ -72,10 +81,14 @@ def test_data_filenames():
 
     for root, dirs, files in os.walk(rootdir):
 <<<<<<< HEAD
+<<<<<<< HEAD
         files = [str(Path.home().joinpath(root, f)) for f in files]
 =======
         files = [pathlib.Path.joinpath(root, f) for f in files]
 >>>>>>> pathlib added astropy files not touched yet
+=======
+        files = [str(Path.home().joinpath(root, f)) for f in files]
+>>>>>>> more files refactored today, some tests failing
         files = [f for f in files if not re.match(excludes, f)]
         files = [file.replace(rootdir + os.path.sep, '') for file in files]
         test_data_filenames_list.extend(files)
