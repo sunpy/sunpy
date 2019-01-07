@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import sys
 import platform
 
@@ -17,7 +17,7 @@ def get_extensions():
         cfg = setup_helpers.DistutilsExtensionArgs()
         cfg['include_dirs'].append('numpy')
         cfg['sources'].extend(sorted(glob(
-            os.path.join(os.path.dirname(__file__), 'src', 'ana', '*.c'))))
+            str(Path.home().joinpath(Path(__file__).parent, 'src', 'ana', '*.c')))))
         cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
         # Squash some warnings
         cfg['extra_compile_args'].extend(['-Wno-unused-but-set-variable',

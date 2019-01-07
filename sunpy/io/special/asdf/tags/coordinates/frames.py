@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+from pathlib import Path
 import glob
 
 from astropy.io.misc.asdf.tags.coordinates.frames import BaseCoordType
@@ -11,11 +11,11 @@ from ...types import SunPyType
 __all__ = ['SunPyCoordType']
 
 
-SCHEMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+SCHEMA_PATH = str(Path(Path.home().joinpath(Path(__file__).parent,
                                            '..', '..',
                                            'schemas',
                                            'sunpy.org',
-                                           'sunpy'))
+                                           'sunpy')).resolve())
 
 
 def _get_frames():
@@ -23,12 +23,12 @@ def _get_frames():
     By reading the schema files, get the list of all the frames we can
     save/load.
     """
-    search = os.path.join(SCHEMA_PATH, 'coordinates', 'frames', '*.yaml')
+    search = str(Path.home().joinpath(SCHEMA_PATH, 'coordinates', 'frames', '*.yaml'))
     files = glob.glob(search)
 
     names = []
     for fpath in files:
-        path, fname = os.path.split(fpath)
+        path, fname = Path(fpath).parent, Path(fpath).stem
         frame, _ = fname.split('-')
         exclude_schemas = []
         if frame not in exclude_schemas:

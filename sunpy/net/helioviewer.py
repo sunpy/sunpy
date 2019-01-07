@@ -6,7 +6,7 @@ This module provides a wrapper around the Helioviewer API.
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
-import os
+from pathlib import Path
 import json
 import errno
 import codecs
@@ -310,10 +310,10 @@ class HelioviewerClient(object):
         if directory is None:
             directory = sunpy.config.get('downloads', 'download_dir')
         else:
-            directory = os.path.abspath(os.path.expanduser(directory))
+            directory = str(Path(Path(directory).resolve()).resolve())
 
         try:
-            os.makedirs(directory)
+            Path(directory).mkdir()
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
