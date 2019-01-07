@@ -188,8 +188,8 @@ def default_wcs_grid(axes, units, ctypes):
                      linewidth=0.5)
 
 
-@u.quantity_input(grid_spacing=u.deg)
-def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg, **kwargs):
+@u.quantity_input
+def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg=10*u.deg, **kwargs):
     """
     Create a heliographic overlay using wcsaxes.
 

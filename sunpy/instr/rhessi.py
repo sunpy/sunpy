@@ -253,9 +253,9 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     return bproj_image
 
 
-@u.quantity_input(pixel_size=u.arcsec, image_dim=u.pix)
-def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
-                   image_dim=(64, 64) * u.pix):
+@u.quantity_input
+def backprojection(calibrated_event_list, pixel_size: u.arcsec=(1., 1.) * u.arcsec,
+                   image_dim: u.pix=(64, 64) * u.pix):
     """
     Given a stacked calibrated event list fits file create a back
     projection image.
