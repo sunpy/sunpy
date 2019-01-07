@@ -108,8 +108,8 @@ class HelioviewerClient(object):
                 key = (observatory, instrument, detector, measurement)
                 source_id = self.data_sources[key]
             except KeyError:
-                raise KeyError("The values used for observatory, instrument, detector, measurement"
-                               "do not correspond to a sourceId. Please check the list using"
+                raise KeyError("The values used for observatory, instrument, detector, measurement "
+                               "do not correspond to a source_id. Please check the list using "
                                "HelioviewerClient.data_sources.")
 
         params = {
@@ -173,8 +173,8 @@ class HelioviewerClient(object):
                 key = (observatory, instrument, detector, measurement)
                 source_id = self.data_sources[key]
             except KeyError:
-                raise KeyError("The values used for observatory, instrument, detector, measurement"
-                               "do not correspond to a sourceId. Please check the list using"
+                raise KeyError("The values used for observatory, instrument, detector, measurement "
+                               "do not correspond to a source_id. Please check the list using "
                                "HelioviewerClient.data_sources.")
 
         params = {
@@ -353,8 +353,9 @@ class HelioviewerClient(object):
         try:
             os.makedirs(directory)
         except OSError as e:
+            # TODO: Check this
             if e.errno != errno.EEXIST:
-                raise
+                raise OSError('Tried to create a directory and it failed.')
 
         response = self._request(params)
         try:
