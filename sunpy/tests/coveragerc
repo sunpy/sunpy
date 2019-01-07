@@ -1,8 +1,8 @@
 [run]
 source = sunpy
 omit =
-   sunpy/conftest*
    sunpy/cython_version*
+   sunpy/conftest.py
    sunpy/*setup*
    sunpy/extern/*
    sunpy/*/tests/*

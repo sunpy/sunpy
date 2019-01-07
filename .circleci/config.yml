@@ -51,6 +51,28 @@ jobs:
       - run: *merge-check
       - run: python setup.py egg_info
 
+  pip:
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - restore_cache:
+          keys: sample-data-v1
+
+      - checkout
+      - run: *skip-check
+      - run: *merge-check
+      - run: *apt-install
+      - run:
+          name: Install dependencies
+          command: pip install --progress-bar off -e .[all]
+      - run:
+          name: Run tests
+          command: PYTHONHASHSEED=42 python setup.py test --parallel=4
+
+    environment:
+          MPLBACKEND: agg
+          COLUMNS: 180
+
   32bit:
     docker:
       - image: quay.io/pypa/manylinux1_i686
@@ -125,6 +147,10 @@ workflows:
     jobs:
       - egg-info-36
       - egg-info-37
+
+  pip-test:
+    jobs:
+      - pip
 
   build-32:
     jobs:

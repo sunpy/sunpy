@@ -1,6 +1,7 @@
 variables:
   Agent.Source.Git.ShallowFetchDepth: 1
   CI_NAME: Azure Pipelines
+  CI_BUILD_ID: $(Build.BuildId)
   CI_BUILD_URL: "https://dev.azure.com/sunpy/sunpy/_build/results?buildId=$(Build.BuildId)"
 
 jobs:
