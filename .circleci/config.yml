@@ -67,7 +67,7 @@ jobs:
           command: pip install --progress-bar off -e .[all]
       - run:
           name: Run tests
-          command: PYTHONHASHSEED=42 python setup.py test --parallel=4
+          command: PYTHONHASHSEED=42 pytest -m "not figure" -n 4
 
     environment:
           MPLBACKEND: agg

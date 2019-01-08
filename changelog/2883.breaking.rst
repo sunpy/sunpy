@@ -1,2 +1,3 @@
-More changes to the Helioviewer Client API.
-This should, in theory, not break any existing code.
+All keywords have been added (with defaults) to each HelioviewerClient function.
+This means that there will be some changes to the style of the PNG screenshot that is returned.
+Returns for the JPEG 2000 and the other functions should be the same but not guaranteed.

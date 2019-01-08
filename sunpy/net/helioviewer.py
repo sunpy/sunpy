@@ -8,6 +8,8 @@ import codecs
 import urllib
 from collections import OrderedDict
 
+from astropy.utils.decorators import lazyproperty
+
 import sunpy
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
@@ -21,41 +23,43 @@ class HelioviewerClient(object):
         """
         Parameters
         ----------
-        url : str
+        url : `str`
             Default URL points to the Helioviewer API.
         """
-        self.data_sources = dict()
         self._api = url
-        self._init_src_dict()
 
-    def _init_src_dict(self):
+    @lazyproperty
+    def data_sources(self):
         """
         We trawl through the return from `getDataSources` to create a clean
         dictionary for all available sourceIDs.
+
+        Here is a list of all of them: https://api.helioviewer.org/docs/v2/#appendix_datasources
         """
+        data_sources_dict = dict()
         datasources = self.get_data_sources()
         for name, observ in datasources.items():
             # TRACE only has measurements and is thus nested once
             if name == "TRACE":
                 for instr, params in observ.items():
-                    self.data_sources[(name, None, None, instr)] = params['sourceId']
+                    data_sources_dict[(name, None, None, instr)] = params['sourceId']
             else:
                 for inst, detect in observ.items():
                     for wavelength, params in detect.items():
                         # These observatories and wavelengths are nested by more one level
                         if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:
                             for wave, adict in params.items():
-                                self.data_sources[(name, inst, wavelength, wave)] = adict['sourceId']
+                                data_sources_dict[(name, inst, wavelength, wave)] = adict['sourceId']
                         else:
-                            self.data_sources[(name, inst, None, wavelength)] = params['sourceId']
+                            data_sources_dict[(name, inst, None, wavelength)] = params['sourceId']
         # Sort the output for printing purposes
-        self.data_sources = OrderedDict(sorted(self.data_sources.items(), key=lambda x: x[1]))
+        return OrderedDict(sorted(data_sources_dict.items(), key=lambda x: x[1]))
 
     def get_data_sources(self):
         """
         Return a hierarchical dictionary of the available datasources on helioviewer.org.
 
-        This uses `getDataSources` from the Helioviewer API.
+        This uses ``getDataSources`` from the Helioviewer API.
 
         Returns
         -------
@@ -71,22 +75,22 @@ class HelioviewerClient(object):
         Finds the closest image available for the specified source and date.
         **This does not download any file.**
 
-        This uses `getClosestImage` from the Helioviewer API.
+        This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`_ from the Helioviewer API.
 
         Parameters
         ----------
-        date : `astropy.time.Time`, str
+        date : `astropy.time.Time`, `str`
             A `~sunpy.time.parse_time` parsable string or `~astropy.time.Time`
             object for the desired date of the image
-        observatory : str
+        observatory : `str`
             Observatory name
-        instrument : str
+        instrument : `str`
             Instrument name
-        detector : str
+        detector : `str`
             Detector name
-        measurement : str
+        measurement : `str`
             Measurement name
-        source_id : int
+        source_id : `int`
             ID number for the required instrument/measurement.
             This can be used directly instead of using the previous parameters.
 
@@ -130,24 +134,24 @@ class HelioviewerClient(object):
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
 
-        This uses `getJP2Image` from the Helioviewer API.
+        This uses `getJP2Image <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
 
         Parameters
         ----------
-        date : `astropy.time.Time`, str
+        date : `astropy.time.Time`, `str`
             A string or `~astropy.time.Time` object for the desired date of the image
-        observatory : str
+        observatory : `str`
             Observatory name
-        instrument : str
+        instrument : `str`
             Instrument name
-        measurement : str
+        measurement : `str`
             Measurement name
-        detector : str
+        detector : `str`
             Detector name
-        source_id : int
+        source_id : `int`
             ID number for the required instrument/measurement.
             This can be used directly instead of using the previous parameters.
-        directory : str
+        directory : `str`
             Directory to download JPEG 2000 image to.
         overwrite : bool
             Defaults to False.
@@ -155,7 +159,7 @@ class HelioviewerClient(object):
 
         Returns
         -------
-        out : str
+        out : `str`
             Returns a filepath to the downloaded JPEG 2000 image.
 
         Examples
@@ -195,7 +199,7 @@ class HelioviewerClient(object):
         Downloads the PNG that most closely matches the specified time and
         data source.
 
-        This function is different to `~sunpy.net.HelioviewerClient.download_jp2`.
+        This function is different to `~sunpy.net.helioviewer.HelioviewerClient.download_jp2`.
         Here you get PNG images and return more complex images.
 
         For example you can return an image that has multiple layers composited together
@@ -204,89 +208,89 @@ class HelioviewerClient(object):
         The image can also be cropped to a smaller field of view.
 
         These parameters are not pre-validated before they are passed to Helioviewer API.
-        See https://api.helioviewer.org/docs/v2/ for more information about
-        what values you can pass into this function.
+        See https://api.helioviewer.org/docs/v2/#appendix_coordinates for more information about
+        what coordinates values you can pass into this function.
 
-        This uses `takeScreenshot` from the Helioviewer API.
+        This uses `takeScreenshot <https://api.helioviewer.org/docs/v2/#Screenshots>`_ from the Helioviewer API.
 
         .. note::
 
-            Parameters x1, y1, x2 and y2 are set to `None`.
-            If all 4 are set to values, then keywords: width, height, x0, y0 will be ignored.
+            Parameters ``x1``, ``y1``, ``x2`` and ``y2`` are set to `None`.
+            If all 4 are set to values, then keywords: ``width``, ``height``, ``x0``, ``y0`` will be ignored.
 
         Parameters
         ----------
         date : `astropy.time.Time`, `str`
             A `parse_time` parsable string or `~astropy.time.Time` object
             for the desired date of the image
-        image_scale : float
+        image_scale : `float`
             The zoom scale of the image in arcseconds per pixel.
             For example, the scale of an AIA image is 0.6.
-        layers : str
+        layers : `str`
             Image datasource layer/layers to include in the screeshot.
             Each layer string is comma-separated with either:
             "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]".
             Multiple layers are: "[layer1],[layer2],[layer3]".
-        events : str, optional
+        events : `str`, optional
             Defaults to an  empty string to indicate no feature/event annotations.
             List feature/event types and FRMs to use to annoate the image.
             Example could be "[AR,HMI_HARP;SPoCA,1]" or "[CH,all,1]"
-        event_labels : bool, optional
+        event_labels : `bool`, optional
             Defaults to False.
             Annotate each event marker with a text label.
-        watermark : bool, optional
+        watermark : `bool`, optional
             Defaults to False.
             Overlay a watermark consisting of a Helioviewer logo and
             the datasource abbreviation(s) and timestamp(s) in the screenshot.
-        directory : str, optional
+        directory : `str`, optional
             Directory to download JPEG 2000 image to.
         overwrite : bool, optional
             Defaults to False.
             If set to True, will overwrite any files with the same name.
-        scale : bool, optional
+        scale : `bool`, optional
             Defaults to False.
             Overlay an image scale indicator.
-        scale_type : str, optional
+        scale_type : `str`, optional
             Defaults to Earth.
             What is the image scale indicator will be.
-        scale_x : int, optional
+        scale_x : `int`, optional
             Defaults to 0 (i.e, in the middle)
             Horizontal offset of the image scale indicator in arcseconds with respect
             to the center of the Sun.
-        scale_y : int, optional
+        scale_y : `int`, optional
             Defaults to 0 (i.e, in the middle)
             Vertical offset of the image scale indicator in arcseconds with respect
             to the center of the Sun.
-        x0 : float, optional
+        x0 : `float`, optional
             The horizontal offset from the center of the Sun.
-        y0 : float, optional
+        y0 : `float`, optional
             The vertical offset from the center of the Sun.
-        width : int, optional
+        width : `int`, optional
             Defaults to 4096.
             Width of the image in pixels.
-        height : int, optional
+        height : `int`, optional
             Defaults to 4096.
             Height of the image in pixels.
-        x1 : float, optional
+        x1 : `float`, optional
             Defaults to None
             The offset of the image's left boundary from the center
             of the sun, in arcseconds.
-        y1 : float, optional
+        y1 : `float`, optional
             Defaults to None
             The offset of the image's top boundary from the center
             of the sun, in arcseconds.
-        x2 : float, optional
+        x2 : `float`, optional
             Defaults to None
             The offset of the image's right boundary from the
             center of the sun, in arcseconds.
-        y2 : float, optional
+        y2 : `float`, optional
             Defaults to None
             The offset of the image's bottom boundary from the
             center of the sun, in arcseconds.
 
         Returns
         -------
-        out : str
+        out : `str`
             Returns a filepath to the downloaded PNG image.
 
         Examples
