@@ -6,78 +6,17 @@ import os
 import sunpy.data.test
 
 
-def test_test_data_filenames():
+def mockreturn(path):
+    paths = [
+        (os.path.join('test', 'data', ''), (), ('code.py', 'test_file', 'code.pyc', '__init__.py'))
+    ]
+    return paths
+
+
+def test_test_data_filenames(monkeypatch):
+    monkeypatch.setattr(os, 'walk', mockreturn)
+    monkeypatch.setattr(os.path, 'isfile', mockreturn)
     output = sunpy.data.test.test_data_filenames()
     assert isinstance(output, list)
-    # Only the test files and not the py/pyc files should be in the return.
-    assert sorted(output) == sorted(['aia_171_level1.fits',
-                                     'BIR_20110922_050000_01.fit',
-                                     'hi_20110910_114721_s7h2A.fts',
-                                     'lasco_c2_25299383_s.fts',
-                                     'generated_sample.genx',
-                                     'annotation_science.db',
-                                     'resampled_hmi.fits',
-                                     'hsi_obssumm_20110404_042.fits.gz',
-                                     'FGMG4_20110214_030443.7.fits',
-                                     'swap_lv1_20140606_000113.fits',
-                                     'annotation_lyra.db',
-                                     'HinodeXRT.fits',
-                                     'euvi_20090615_000900_n4euA_s.fts',
-                                     '2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2',
-                                     'go1520110607.fits',
-                                     'HinodeSOT.fits',
-                                     'hsi_obssumm_20120601_018_truncated.fits.gz',
-                                     'LATEST_EVE_L0CS_DIODES_1m.txt',
-                                     'annotation_ppt.db',
-                                     'heliographic_phase_map.fits.gz',
-                                     'gbm.fits',
-                                     'RecentIndices_truncated.txt',
-                                     'hsi_image_20101016_191218.fits',
-                                     'tsi20010130_025823_a2.fits',
-                                     '20150906SRS.txt',
-                                     '20150101SRS.txt',
-                                     'lyra_20150101-000000_lev3_std_truncated.fits.gz',
-                                     'hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits',
-                                     'test_ana.fz',
-                                     'hsi_obssumm_filedb_201104.txt',
-                                     'gzip_test.fts.gz',
-                                     '20150306SRS.txt',
-                                     'EVE_L0CS_DIODES_1m_truncated.txt',
-                                     'mdi_fd_Ic_6h_01d.5871.0000_s.fits',
-                                     'cor1_20090615_000500_s4c1A.fts',
-                                     'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits',
-                                     'annotation_manual.db',
-                                     'predicted-sunspot-radio-flux_truncated.txt',
-                                     'tca110810_truncated',
-                                     'mdi_fd_M_96m_01d.5874.0005_s.fits',
-                                     'EVE_He_II_304_averages.csv',
-                                     'go1520120601.fits.gz',
-                                     'gzip_test.fit.gz',
-                                     'BIR_20110922_051500_01.fit.gz',
-                                     'gzip_test.fits.gz',
-                                     'EIT{}efz20040301.110010_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.070014_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.010016_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.090010_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.030011_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.000010_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.080010_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.060010_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.020010_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.100010_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.050010_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.120010_s.fits'.format(os.path.sep),
-                                     'EIT{}efz20040301.040010_s.fits'.format(os.path.sep),
-                                     'waveunit{}medn_halph_fl_20050501_074655.fts'.format(os.path.sep),
-                                     'waveunit{}mq130812.084253.fits'.format(os.path.sep),
-                                     'waveunit{}na120701.091058.fits'.format(os.path.sep),
-                                     'waveunit{}svsm_e3100_S2_20110625_1856.fts'.format(os.path.sep),
-                                     'eve{}eve_04.txt'.format(os.path.sep),
-                                     'eve{}eve_03.txt'.format(os.path.sep),
-                                     'eve{}eve_05.txt'.format(os.path.sep),
-                                     'eve{}eve_02.txt'.format(os.path.sep),
-                                     'eve{}eve_01.txt'.format(os.path.sep),
-                                     'SWAP{}resampled1_swap.fits'.format(os.path.sep),
-                                     'SWAP{}resampled0_swap.fits'.format(os.path.sep),
-                                     'SWAP{}resampled3_swap.fits'.format(os.path.sep),
-                                     'SWAP{}resampled2_swap.fits'.format(os.path.sep)])
+    # Only the test file and not the py/pyc files should be in the return.
+    assert output == [os.path.join('test', 'data', '', 'test_file')]
