@@ -158,12 +158,14 @@ def write(fname, data, header, hdu_type=None, **kwargs):
     ----------
     fname : `str`
         File name, with extension
-
     data : `numpy.ndarray`
         n-dimensional data array
-
     header : `dict`
         A header dictionary
+    hdu_type: `None`, `~fits.CompImageHDU`
+        `None` will return a normal FITS files.
+        `~fits.CompImageHDU` will rice compress the FITS file.
+
     """
     # Copy header so the one in memory is left alone while changing it for
     # write.
