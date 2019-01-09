@@ -1,25 +1,26 @@
 """
 ========================================
-Using the SunPy Colormaps and matplotlib
+Using the SunPy Colormaps and Matplotlib
 ========================================
 
 This examples shows how you can use the SunPy colormaps with Matplotlib.
+Also the full range of colormaps we provide.
 """
 ###############################################################################
-# When import the sunpy colormaps with the following command we register the
-# SunPy colormap names with mapltotlib.
+# When the sunpy colormaps are imported with the following command, we register the
+# SunPy colormap names with Matplotlib.
 
-import matplotlib.pyplot as plt
-import sunpy.cm
+import sunpy.cm as cm
 
 ###############################################################################
 # You can now get at any of the colormaps, for example 'sdoaia171', with the
 # following command
 
+import matplotlib.pyplot as plt
 sdoaia171 = plt.get_cmap('sdoaia171')
 
 ###############################################################################
-# Let's now make a standard matplotlib plot
+# We can now create a standard matplotlib plot.
 
 import numpy as np
 delta = 0.025
@@ -37,5 +38,11 @@ im = ax.imshow(Z, interpolation='bilinear', cmap=sdoaia171,
 plt.show()
 
 ###############################################################################
-# If you don't remember what colormaps are available, you can get the list with
-print(sunpy.cm.cmlist.keys())
+# If you don't remember what colormaps are available, you can get the list with:
+
+print(cm.cmlist.keys())
+
+###############################################################################
+# We also provide a function that will display all our colormaps:
+
+cm.show_colormaps()
