@@ -2,6 +2,14 @@ skip-check: &skip-check
   name: Check for [ci skip]
   command: bash .circleci/early_exit.sh
 
+merge-check: &merge-check
+  name: Check if we need to merge upstream master
+  command: |
+    if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
+      git fetch origin +refs/pull/$CIRCLE_PR_NUMBER/merge:pr/$CIRCLE_PR_NUMBER/merge
+      git checkout -qf pr/$CIRCLE_PR_NUMBER/merge
+    fi
+
 apt-run: &apt-install
   name: Install apt packages
   command: |
@@ -30,6 +38,8 @@ jobs:
       - image: circleci/python:3.6
     steps:
       - checkout
+      - run: *skip-check
+      - run: *merge-check
       - run: python setup.py egg_info
 
   egg-info-37:
@@ -37,7 +47,31 @@ jobs:
       - image: circleci/python:3.7
     steps:
       - checkout
+      - run: *skip-check
+      - run: *merge-check
       - run: python setup.py egg_info
+
+  pip:
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - restore_cache:
+          keys: sample-data-v1
+
+      - checkout
+      - run: *skip-check
+      - run: *merge-check
+      - run: *apt-install
+      - run:
+          name: Install dependencies
+          command: pip install --progress-bar off -e .[all]
+      - run:
+          name: Run tests
+          command: PYTHONHASHSEED=42 pytest -m "not figure" -n 4
+
+    environment:
+          MPLBACKEND: agg
+          COLUMNS: 180
 
   32bit:
     docker:
@@ -48,12 +82,13 @@ jobs:
 
       - checkout
       - run: *skip-check
+      - run: *merge-check
       - run:
           name: yum dependencies
           command: yum install -y freetype freetype-devel libpng-devel tk
       - run:
           name: Install dependencies one
-          command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off numpy scipy astropy matplotlib==1.5.3
+          command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off numpy!=1.15.4 scipy astropy!=3.1.1 matplotlib==1.5.3
       - run:
           name: Install dependencies two
           command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off sqlalchemy scikit-image==0.13.1 glymur drms zeep beautifulsoup4 requests python-dateutil pytest pytest-cov pytest-mock pytest-xdist mock hypothesis pytest-astropy pytest-rerunfailures
@@ -70,6 +105,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *merge-check
       - run: *apt-install
       - run: *tox-install
       - run: *image-tests
@@ -88,6 +124,7 @@ jobs:
 
       - checkout
       - run: *skip-check
+      - run: *merge-check
       - run: *apt-install
       - run: *tox-install
       - run: tox -e py37-build_docs
@@ -110,6 +147,10 @@ workflows:
     jobs:
       - egg-info-36
       - egg-info-37
+
+  pip-test:
+    jobs:
+      - pip
 
   build-32:
     jobs:

@@ -55,7 +55,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`_
     * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`_
     * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`_
-    """
+    """  # noqa
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'eve'
 
@@ -166,10 +166,12 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         month = int(date_parts[2])
         day = int(date_parts[3])
 
-        # function to parse date column (HHMM)
-        parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
+        def parser(x):
+            # Parse date column (HHMM)
+            return datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
-        data = read_csv(fp, sep="\s+", names=fields, index_col=0, date_parser=parser, header=None, engine='python')
+        data = read_csv(fp, sep=r"\s+", names=fields,
+                        index_col=0, date_parser=parser, header=None, engine='python')
         if is_missing_data:  # If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
 

@@ -93,8 +93,8 @@ units of the input to the function are convertible to that specified
 by the decorator, for example ::
 
     >>> import astropy.units as u
-    >>> @u.quantity_input(myangle=u.arcsec)
-    ... def myfunction(myangle):
+    >>> @u.quantity_input
+    ... def myfunction(myangle: u.arcsec):
     ...     return myangle**2
 
 This function only accepts arguments that are convertible to arcseconds.
@@ -115,8 +115,8 @@ raises an error.
 The following is an example of a use-facing function that returns the area of a
 square, in units that are the square of the input length unit::
 
-    >>> @u.quantity_input(side_length=u.m)
-    ... def get_area_of_square(side_length):
+    >>> @u.quantity_input
+    ... def get_area_of_square(side_length: u.m):
     ...     """
     ...     Compute the area of a square.
     ...
@@ -136,8 +136,8 @@ square, in units that are the square of the input length unit::
 This more advanced example shows how a private function that does not accept
 quantities can be wrapped by a function that does::
 
-    >>> @u.quantity_input(side_length=u.m)
-    ... def some_function(length):
+    >>> @u.quantity_input
+    ... def some_function(length: u.m):
     ...     """
     ...     Does something useful.
     ...
