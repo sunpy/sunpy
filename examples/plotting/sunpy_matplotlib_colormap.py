@@ -45,4 +45,6 @@ print(cm.cmlist.keys())
 ###############################################################################
 # We also provide a function that will display all our colormaps:
 
+# The next line sets the thumbnail for the second figure in the gallery.
+# sphinx_gallery_thumbnail_number = 2
 cm.show_colormaps()
