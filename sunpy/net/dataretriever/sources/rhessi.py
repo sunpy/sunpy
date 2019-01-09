@@ -62,8 +62,8 @@ class RHESSIClient(GenericClient):
         --------
         >>> from sunpy.net.dataretriever.sources.rhessi import RHESSIClient
         >>> RHESSIClient().get_observing_summary_filename(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
-        ['https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits',
-        'https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110405_031.fits']
+        ['https://.../hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits',
+        'https://.../hessidata/metadata/catalog/hsi_obssumm_20110405_031.fits']
         """
         dt = TimeRange(time_range)
         # remove time from dates
