@@ -9,7 +9,7 @@ from astropy.time import TimeDelta
 from astropy.coordinates import SkyCoord, Longitude, BaseCoordinateFrame, get_body
 
 from sunpy.time import parse_time, is_time
-from sunpy.coordinates import HeliographicStonyhurst, frames
+from sunpy.coordinates import frames
 
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map',
@@ -137,15 +137,23 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     Example
     -------
     >>> import astropy.units as u
-    >>> from astropy.coordinates import SkyCoord
+    >>> from astropy.coordinates import SkyCoord, get_body
     >>> from sunpy.coordinates import frames
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
-    >>> start_time = '2010-09-10 12:34:56'
-    >>> end_time = '2010-09-10 13:34:56'
+    >>> from sunpy.time import parse_time
+    >>> start_time = parse_time('2010-09-10 12:34:56')
+    >>> end_time = parse_time('2010-09-10 13:34:56')
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=frames.Helioprojective)
     >>> solar_rotate_coordinate(c, time=end_time)
     <SkyCoord (Helioprojective: obstime=2010-09-10T13:34:56.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-        (-562.37689548, 119.26840368, 1.50083152e+08)>
+    (-562.89877819, 119.3152842, 1.50085078e+08)>
+    >>> new_observer = get_body("earth", end_time)
+    >>> solar_rotate_coordinate(c, observer=new_observer)
+    <SkyCoord (Helioprojective: obstime=2010-09-10T13:34:56.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (-562.89877819, 119.3152842, 1.50085078e+08)>
+    >>> new_observer = get_body("mars", end_time)
+    >>> solar_rotate_coordinate(c, observer=new_observer)
+    ???
     """
     # Check the input and create the new observer
     if (observer is not None) and (time is not None):
@@ -177,7 +185,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
 
     # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
     # latitude). Points off the limb are returned as nan.
-    heliographic_coordinate = coordinate.transform_to('heliographic_stonyhurst')
+    heliographic_coordinate = coordinate.transform_to(frames.HeliographicStonyhurst)
 
     # Compute the differential rotation
     drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
@@ -216,19 +224,19 @@ def _warp_sun_coordinates(xy, smap, observer, **diffrot_kwargs):
 
     # NOTE: The time is being subtracted - this is because this function
     # calculates the inverse of the transformation.
-    rotated_time = observer.obstime - smap.obstime
 
-    # We start by converting the pixel to world
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
+        # Get all the co-ordinates from the map
         hpc_coords = all_coordinates_from_map(smap)
+        print(xy)
 
         # then diff-rotate the hpc coordinates to the desired time
         rotated_coord = solar_rotate_coordinate(hpc_coords, observer=observer, **diffrot_kwargs)
 
         # To find the values that are behind the sun we need to convert them
         # to HeliographicStonyhurst
-        find_occult = rotated_coord.transform_to(HeliographicStonyhurst)
+        find_occult = rotated_coord.transform_to(frames.HeliographicStonyhurst)
 
         with np.errstate(invalid='ignore'):
             # and find which ones are outside the [-90, 90] range.
