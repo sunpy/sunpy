@@ -262,9 +262,9 @@ def test_world_to_pixel(generic_map):
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
 
 
-def test_save(generic_map):
+def test_save(aia171_test_map, generic_map):
     """Tests the map save function"""
-    aiamap = aia171_test_map()
+    aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
     aiamap.save(afilename, filetype='fits', clobber=True)
     loaded_save = sunpy.map.Map(afilename)
