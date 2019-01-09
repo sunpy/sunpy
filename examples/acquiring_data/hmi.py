@@ -1,15 +1,16 @@
 """
-====================
-Creating a HMI image
-====================
+====================================
+Downloading and plotting a HMI image
+====================================
 
 In this example, we will demonstrate how to download and plot
 line of sight magnetic field data from HMI.
 """
 # Start by importing the necessary modules.
+import astropy.units as u
+
 import sunpy.map
 from sunpy.net import Fido, attrs as a
-import astropy.units as u
 
 ###############################################################################
 # Now we will download some data with `sunpy.net.Fido`.

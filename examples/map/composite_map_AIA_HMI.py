@@ -36,7 +36,7 @@ comp_map = sunpy.map.Map(aia_map, hmi_map, composite=True)
 # Therefore the index is 1.
 # We will filter contours ranging from a few hundred to a thousand Gauss which
 # is the typical field associated to umbral regions of Active Regions.
-comp_map.set_levels(index = 1, levels = [-1000, -500, -250, 250, 500, 1000])
+comp_map.set_levels(index=1, levels=[-1000, -500, -250, 250, 500, 1000])
 
 ##############################################################################
 # Now let us look at the result. Notice that we can see the coronal structures
