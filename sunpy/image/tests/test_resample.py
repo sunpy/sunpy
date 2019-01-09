@@ -17,31 +17,31 @@ def aia171_test_map():
 def shape(aia171_test_map):
     return np.array(aia171_test_map.data.shape)
 
-def resample_meta(dimensions, method, center, minusone):
-    map_resampled = aia171_test_map().resample(dimensions)
+def resample_meta(aia171_test_map, dimensions, method, center, minusone):
+    map_resampled = aia171_test_map.resample(dimensions)
     return tuple(map_resampled.data.shape)
 
-def resample_method(method):
-    assert resample_meta((512, 512) * u.pix, method, False, False) == (512, 512)
-    assert resample_meta((2056, 2056) * u.pix, method, False, False) == (2056, 2056)
-    assert resample_meta((512, 512) * u.pix, method, False, True) == (512, 512)
-    assert resample_meta((2056, 2056) * u.pix, method, False, True) == (2056, 2056)
-    assert resample_meta((512, 512) * u.pix, method, True, False) == (512, 512)
-    assert resample_meta((2056, 2056) * u.pix, method, True, False) == (2056, 2056)
-    assert resample_meta((512, 512) * u.pix, method, True, True) == (512, 512)
-    assert resample_meta((2056, 2056) * u.pix, method, True, True) == (2056, 2056)
+def resample_method(aia171_test_map, method):
+    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, False, False) == (512, 512)
+    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix, method, False, False) == (2056, 2056)
+    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, False, True) == (512, 512)
+    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix, method, False, True) == (2056, 2056)
+    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, True, False) == (512, 512)
+    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix, method, True, False) == (2056, 2056)
+    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, True, True) == (512, 512)
+    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix, method, True, True) == (2056, 2056)
 
-def test_resample_neighbor():
-    resample_method('neighbor')
+def test_resample_neighbor(aia171_test_map):
+    resample_method(aia171_test_map, 'neighbor')
 
-def test_resample_nearest():
-    resample_method('nearest')
+def test_resample_nearest(aia171_test_map):
+    resample_method(aia171_test_map, 'nearest')
 
-def test_resample_linear():
-    resample_method('linear')
+def test_resample_linear(aia171_test_map):
+    resample_method(aia171_test_map, 'linear')
 
-def test_resample_spline():
-    resample_method('spline')
+def test_resample_spline(aia171_test_map):
+    resample_method(aia171_test_map, 'spline')
 
 def test_reshape(aia171_test_map, shape):
 
