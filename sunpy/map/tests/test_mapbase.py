@@ -273,9 +273,9 @@ def test_save(aia171_test_map, generic_map):
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
-def test_save_compressed(generic_map):
+def test_save_compressed(aia171_test_map, generic_map):
     """Tests the map save function"""
-    aiamap = aia171_test_map()
+    aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
     aiamap.save(afilename, filetype='fits', hdu_type=fits.CompImageHDU, overwrite=True)
     loaded_save = sunpy.map.Map(afilename)
