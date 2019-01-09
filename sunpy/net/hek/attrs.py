@@ -17,7 +17,6 @@ As with the VSO query, you can use the fundamental logic operators AND and OR
 to construct queries of almost arbitrary complexity. Note that complex queries
 result in multiple requests to the server which might make them less efficient.
 """
-from datetime import datetime
 from sunpy.net import attr
 from sunpy.time import parse_time
 
@@ -116,7 +115,7 @@ class Time(attr.Attr):
 
     @classmethod
     def dt(cls, start, end):
-        return cls(datetime(*start), datetime(*end))
+        return cls(parse_time(start), parse_time(end))
 
 
 # pylint: disable=R0913
