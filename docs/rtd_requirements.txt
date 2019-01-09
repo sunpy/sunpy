@@ -10,6 +10,7 @@ scikit-image
 glymur
 drms
 zeep
+asdf
 beautifulsoup4
 requests
 python-dateutil

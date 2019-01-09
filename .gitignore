@@ -208,7 +208,10 @@ docs/_build
 docs/generated
 docs/api/
 docs/whatsnew/latest_changelog.txt
+examples/**/*.asdf
 # This is incase you run the figure tests
 figure_test_images*
-
 tags
+
+### Pycharm(?)
+.idea

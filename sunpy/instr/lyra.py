@@ -230,7 +230,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     Remove LARs (Large Angle Rotations) from time series.
 
         >>> time_clean, channels_clean = _remove_lytaf_events(
-        ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +REMOTE_DATA
+        ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +SKIP
 
     """
     # Check inputs

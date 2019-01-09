@@ -27,5 +27,6 @@ jobs:
 
   - script: |
       pip install --upgrade codecov
-      codecov
+      codecov --name ${{ format(parameters.name) }}
     displayName: run codecov
+    condition: succeededOrFailed()

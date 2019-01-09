@@ -18,8 +18,8 @@ __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map',
            'is_all_off_disk']
 
 
-@u.quantity_input(duration=u.s, latitude=u.degree)
-def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
+@u.quantity_input
+def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='sidereal'):
     """
     This function computes the change in longitude over days in degrees.
 
@@ -201,7 +201,8 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     return heliographic_rotated.transform_to(new_observer).transform_to(coordinate.frame.name)
 
 
-def _warp_sun_coordinates(xy, smap, observer, **diffrot_kwargs):
+@u.quantity_input
+def _warp_sun_coordinates(xy, smap, dt: u.s, **diffrot_kwargs):
     """
     Function that returns a new list of coordinates for each input coord.
     This is an inverse function needed by the scikit-image `transform.warp`
@@ -258,7 +259,8 @@ def _warp_sun_coordinates(xy, smap, observer, **diffrot_kwargs):
     return xy2
 
 
-def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
+@u.quantity_input
+def diffrot_map(smap, time=None, dt: u.s=None, pad=False, **diffrot_kwargs):
     """
     Function to apply solar differential rotation to a sunpy map.
 
