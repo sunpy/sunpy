@@ -158,7 +158,12 @@ def test_solar_rotate_coordinate():
         assert isinstance(d.frame, frames.Helioprojective)
 
 
+def test_diffrot_map(aia171_test_map, all_off_disk_map):
 
+    # Test that the function correctly identifies a map that is entirely off
+    # the disk of the Sun and reports an error correctly
+    with pytest.raises(ValueError):
+        dmap = diffrot_map(all_off_disk_map)
 
 
 """
