@@ -12,6 +12,7 @@
 import os
 import sys
 import glob
+import builtins  # noqa
 import itertools
 
 try:
@@ -44,14 +45,13 @@ with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'README.rst')
 # Import ah_bootstrap after the python version validation
 import ah_bootstrap  # noqa
 from setuptools import setup  # noqa
+from astropy_helpers.git_helpers import get_git_devstr  # noqa
+from astropy_helpers.setup_helpers import get_package_info  # noqa
+from astropy_helpers.setup_helpers import get_debug_option, register_commands
+from astropy_helpers.version_helpers import generate_version_py  # noqa
 
-import builtins  # noqa
 builtins._SUNPY_SETUP_ = True
 
-from astropy_helpers.setup_helpers import (register_commands, get_debug_option,
-                                           get_package_info)  # noqa
-from astropy_helpers.git_helpers import get_git_devstr  # noqa
-from astropy_helpers.version_helpers import generate_version_py  # noqa
 
 # -- Read the Docs Setup  -----------------------------------------------------
 
@@ -138,6 +138,11 @@ if extra_tags:
 else:
     extras_require = None
 
+# Entry points
+entry_points['asdf_extensions'] = [
+    'sunpy = sunpy.io.special.asdf.extension:SunpyExtension',
+]
+
 setup(name=PACKAGENAME,
       version=VERSION,
       description=DESCRIPTION,
@@ -158,7 +163,6 @@ setup(name=PACKAGENAME,
       long_description_content_type='text/x-rst',
       cmdclass=cmdclassd,
       zip_safe=False,
-      use_2to3=False,
       entry_points=entry_points,
       python_requires='>={}'.format(__minimum_python_version__),
       include_package_data=True,

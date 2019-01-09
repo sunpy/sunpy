@@ -1,0 +1,1 @@
+Added gallery example showing how to access the SunPy solar physics constants.
