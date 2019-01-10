@@ -435,7 +435,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             slider_axes.remove(x)
 
         if len(slider_axes) != self.num_sliders:
-            raise ValueError("Number of sliders doesn't match number of slider axes.")
+            raise ValueError("Number of sliders doesn't match the number of slider axes.")
         self.slider_axes = slider_axes
 
         # Verify that combined slider_axes and image_axes make all axes
