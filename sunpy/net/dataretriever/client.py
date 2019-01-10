@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import copy
-import os
+from pathlib import Path
 from collections import OrderedDict, namedtuple
 from functools import partial
 import pathlib
@@ -242,16 +242,16 @@ class GenericClient(BaseClient):
         paths = []
         for i, filename in enumerate(filenames):
             if path is None:
-                fname = os.path.join(default_dir, '{file}')
+                fname = str(Path.home().joinpath(default_dir, '{file}'))
             elif isinstance(path, str) and '{file}' not in path:
-                fname = os.path.join(path, '{file}')
+                fname = str(Path.home().joinpath(path, '{file}'))
 
             temp_dict = qres[i]._map.copy()
             temp_dict['file'] = filename
             fname = fname.format(**temp_dict)
-            fname = os.path.expanduser(fname)
+            fname = str(Path(fname).resolve())
 
-            if os.path.exists(fname):
+            if Path(fname).exists():
                 fname = replacement_filename(fname)
 
             fname = partial(simple_path, fname)

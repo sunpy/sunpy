@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """SunPy sample data files"""
 import socket
-import os.path
+from pathlib import Path
 import warnings
 from shutil import move
 from zipfile import ZipFile
@@ -116,9 +116,9 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
     else:
         uncompressed_filename = filename
     # check if the (uncompressed) file exists
-    if not overwrite and os.path.isfile(os.path.join(sampledata_dir,
-                                                     uncompressed_filename)):
-        return os.path.join(sampledata_dir, uncompressed_filename)
+    if not overwrite and Path(str(Path.home().joinpath(sampledata_dir,
+                                                     uncompressed_filename))).is_file():
+        return str(Path.home().joinpath(sampledata_dir, uncompressed_filename))
     else:
         # check each provided url to find the file
         for base_url in url_list:
@@ -129,27 +129,27 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
                 url = urljoin(base_url, online_filename)
                 exists = url_exists(url)
                 if exists:
-                    f = download_file(os.path.join(base_url, online_filename),
+                    f = download_file(str(Path.home().joinpath(base_url, online_filename)),
                                       show_progress=show_progress,
                                       timeout=timeout)
-                    real_name, ext = os.path.splitext(f)
+                    real_name, ext = str(Path(f).stem), str(Path(f).suffix)
 
                     if ext == '.zip':
                         print("Unpacking: {}".format(real_name))
                         with ZipFile(f, 'r') as zip_file:
                             unzipped_f = zip_file.extract(real_name,
                                                           sampledata_dir)
-                        os.remove(f)
-                        move(unzipped_f, os.path.join(sampledata_dir,
-                                                      uncompressed_filename))
-                        return os.path.join(sampledata_dir,
-                                            uncompressed_filename)
+                        Path(f).unlink()
+                        move(unzipped_f, str(Path.home().joinpath(sampledata_dir,
+                                                      uncompressed_filename)))
+                        return str(Path.home().joinpath(sampledata_dir,
+                                            uncompressed_filename))
                     else:
                         # move files to the data directory
-                        move(f, os.path.join(sampledata_dir,
-                                             uncompressed_filename))
-                        return os.path.join(sampledata_dir,
-                                            uncompressed_filename)
+                        move(f, str(Path.home().joinpath(sampledata_dir,
+                                             uncompressed_filename)))
+                        return str(Path.home().joinpath(sampledata_dir,
+                                            uncompressed_filename))
             except (socket.error, socket.timeout) as e:
                 warnings.warn("Download failed with error {}. \n"
                               "Retrying with different mirror.".format(e))

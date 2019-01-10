@@ -7,7 +7,7 @@ import itertools
 import operator
 from datetime import datetime
 from contextlib import contextmanager
-import os.path
+from pathlib import Path
 
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -420,9 +420,9 @@ class Database(object):
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)
 
-            if os.path.isfile(path):
+            if Path(path).is_file():
                 entries = tables.entries_from_file(path, self.default_waveunit)
-            elif os.path.isdir(path):
+            elif Path(path).is_dir():
                 entries = tables.entries_from_dir(path, self.default_waveunit)
             else:
                 raise ValueError('The path is neither a file nor directory')

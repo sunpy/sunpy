@@ -3,7 +3,7 @@ This particular test file pertains to SWAPMap.
 @Author: Pritish C. (VaticanCameos)
 """
 
-import os
+from pathlib import Path
 import glob
 
 import pytest
@@ -13,7 +13,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitslist = glob.glob(os.path.join(path, "SWAP", "*"))
+fitslist = glob.glob(str(Path.home().joinpath(path, "SWAP", "*")))
 
 @pytest.fixture(scope="module", params=fitslist)
 def createSWAP(request):

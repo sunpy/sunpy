@@ -3,7 +3,7 @@ This particular test file pertains to SOTMap.
 @Author: Pritish C. (VaticanCameos)
 """
 
-import os
+from pathlib import Path
 import glob
 
 import astropy.units as u
@@ -13,7 +13,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "HinodeSOT.fits"))
+fitspath = glob.glob(str(Path.home().joinpath(path, "HinodeSOT.fits")))
 sot = Map(fitspath)
 
 # SOT Tests

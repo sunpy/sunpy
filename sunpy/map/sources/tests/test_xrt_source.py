@@ -3,7 +3,7 @@ This particular test file pertains to XRTMap.
 @Author: Pritish C. (VaticanCameos)
 """
 
-import os
+from pathlib import Path
 import glob
 import numpy as np
 from matplotlib import colors
@@ -15,7 +15,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "HinodeXRT.fits"))
+fitspath = glob.glob(str(Path.home().joinpath(path, "HinodeXRT.fits")))
 xrt = Map(fitspath)
 
 

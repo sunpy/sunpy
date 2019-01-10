@@ -15,7 +15,7 @@ anarw routines.
 Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
 Copyright (c) 2009--2011 Tim van Werkhoven.
 """
-import os
+from pathlib import Path
 import collections
 
 try:
@@ -52,7 +52,7 @@ def read(filename, debug=False, **kwargs):
     >>> data = sunpy.io.ana.read(filename)   # doctest: +SKIP
 
     """
-    if not os.path.isfile(filename):
+    if not Path(filename).is_file():
         raise IOError("File does not exist!")
 
     if _pyana is None:

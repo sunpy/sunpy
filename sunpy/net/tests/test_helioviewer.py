@@ -1,7 +1,7 @@
 """
 Helioviewer Client tests
 """
-import os
+from pathlib import Path
 import urllib
 from collections import OrderedDict
 import pytest
@@ -72,7 +72,7 @@ class TestHelioviewerClient:
         filepath = client.download_jp2('2012/01/01', observatory='SOHO',
                                        instrument='MDI', measurement='continuum')
         assert "2011_01_11__22_39_00_000__SOHO_MDI_MDI_continuum.jp2" in filepath
-        os.remove(filepath)
+        Path(filepath).unlink()
 
     @skip_glymur
     def test_download_jp2_map(self, client):
@@ -84,23 +84,23 @@ class TestHelioviewerClient:
                                        instrument='MDI', measurement='continuum')
         map_ = sunpy.map.Map(filepath)
         assert isinstance(map_, sunpy.map.GenericMap)
-        os.remove(filepath)
+        Path(filepath).unlink()
 
     def test_download_directory_not_exist_all(self, client, tmpdir):
         """
         Tests for missing directory.
         """
-        fake_dir = os.path.join(str(tmpdir), 'directorynotexist')
+        fake_dir = str(Path.home().joinpath(str(tmpdir), 'directorynotexist'))
         filepath = client.download_jp2('2020/01/01', observatory='SOHO',
                                        instrument='MDI', measurement='continuum',
                                        directory=fake_dir)
         assert 'directorynotexist' in filepath
-        os.remove(filepath)
-        fake_dir = os.path.join(str(tmpdir), 'directorynotexist_2')
+        Path(filepath).unlink()
+        fake_dir = str(Path.home().joinpath(str(tmpdir), 'directorynotexist_2'))
         filepath = client.download_png('2020/01/01', 2.4, "[SOHO,MDI,continuum,1,100]",
                                        directory=fake_dir)
         assert 'directorynotexist_2' in filepath
-        os.remove(filepath)
+        Path(filepath).unlink()
 
     def test_overwrite_jp2(self, client):
         """
@@ -117,8 +117,8 @@ class TestHelioviewerClient:
                                          instrument='MDI', measurement='continuum',
                                          overwrite=True)
         assert filepath_3 == filepath
-        os.remove(filepath)
-        os.remove(filepath_2)
+        Path(filepath).unlink()
+        Path(filepath_2).unlink()
 
     def test_overwrite_png(self, client):
         """
@@ -132,5 +132,5 @@ class TestHelioviewerClient:
         filepath_3 = client.download_png('2020/01/01', 2.4, "[SOHO,MDI,continuum,1,100]",
                                          overwrite=True)
         assert filepath_3 == filepath
-        os.remove(filepath)
-        os.remove(filepath_2)
+        Path(filepath).unlink()
+        Path(filepath_2).unlink()

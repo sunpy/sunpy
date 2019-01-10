@@ -5,7 +5,7 @@
 
 import pytest
 
-import os
+from pathlib import Path
 import tempfile
 import threading
 
@@ -55,8 +55,8 @@ def get_and_create_temp_directory(tmpdir):
     sunpy.config.add_section(
         "downloads", {"download_dir": tmpdir}
     )
-    if not os.path.isdir(sunpy.config.get('downloads', 'download_dir')):
-        os.makedirs(sunpy.config.get('downloads', 'download_dir'))
+    if not Path(sunpy.config.get('downloads', 'download_dir')).is_dir():
+        Path(sunpy.config.get('downloads', 'download_dir')).mkdir()
 
     return sunpy.config.get('downloads', 'download_dir')
 
@@ -109,7 +109,7 @@ def test_download_http():
     assert not timeout.fired
 
     for item in items:
-        assert os.path.exists(item['path'])
+        assert Path(item['path']).exists()
 
 @pytest.mark.remote_data
 def test_download_default_dir():
@@ -138,7 +138,7 @@ def test_download_default_dir():
 
         assert not timeout.fired
         assert not errback.fired
-        assert os.path.exists(os.path.join(tmpdir, 'jquery.min.js'))
+        assert Path(str(Path.home().joinpath(tmpdir, 'jquery.min.js'))).exists()
     finally:
         sunpy.config = _config
 
@@ -164,4 +164,4 @@ def test_download_dir():
     timer.cancel()
     assert not timeout.fired
     assert not errback.fired
-    assert os.path.exists(os.path.join(tmpdir, 'jquery.min.js'))
+    assert Path(str(Path.home().joinpath(tmpdir, 'jquery.min.js'))).exists()

@@ -1,5 +1,5 @@
 import re
-import os
+from pathlib import Path
 import collections
 
 try:
@@ -191,8 +191,8 @@ def _detect_filetype(filepath):
     # FITS
     #
     # Check the extensions to see if it is a gzipped FITS file
-    filepath_rest_ext1, ext1 = os.path.splitext(filepath)
-    _, ext2 = os.path.splitext(filepath_rest_ext1)
+    filepath_rest_ext1, ext1 = Path(filepath).stem, Path(filepath).suffix
+    _, ext2 = Path(filepath_rest_ext1).stem, Path(filepath_rest_ext1).suffix
 
     gzip_extensions = [".gz"]
     fits_extensions = [".fts", ".fit", ".fits"]

@@ -3,7 +3,7 @@
 This module provides a wrapper around the VSO API.
 """
 
-import os
+from pathlib import Path
 import re
 import sys
 import socket
@@ -368,12 +368,12 @@ class VSOClient(BaseClient):
 
         fname = pattern.format(file=name, **serialize_object(response))
 
-        if not overwrite and os.path.exists(fname):
+        if not overwrite and Path(fname).exists():
             fname = replacement_filename(fname)
 
-        dir_ = os.path.abspath(os.path.dirname(fname))
-        if not os.path.exists(dir_):
-            os.makedirs(dir_)
+        dir_ = Path(Path(fname).parent).resolve()
+        if not Path(dir_).exists():
+            Path(dir_).mkdir()
         return fname
 
     @deprecated("1.0", alternative="sunpy.net.Fido")
@@ -592,11 +592,11 @@ class VSOClient(BaseClient):
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = os.path.join(config.get('downloads', 'download_dir'),
-                                '{file}')
+            path = str(Path.home().joinpath(config.get('downloads', 'download_dir'),
+                                '{file}'))
         elif isinstance(path, str) and '{file}' not in path:
-            path = os.path.join(path, '{file}')
-        path = os.path.expanduser(path)
+            path = str(Path.home().joinpath(path, '{file}'))
+        path = str(Path(path).resolve())
 
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:

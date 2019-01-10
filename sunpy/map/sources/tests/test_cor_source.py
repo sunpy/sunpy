@@ -3,7 +3,7 @@ This particular test file pertains to CORMap.
 @Author: Pritish C. (VaticanCameos)
 """
 
-import os
+from pathlib import Path
 import glob
 
 from sunpy.map.sources.stereo import CORMap
@@ -11,7 +11,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "cor1_20090615_000500_s4c1A.fts"))
+fitspath = glob.glob(str(Path.home().joinpath(path, "cor1_20090615_000500_s4c1A.fts")))
 cor = Map(fitspath)
 
 # COR Tests

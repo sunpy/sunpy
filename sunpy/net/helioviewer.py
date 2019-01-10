@@ -1,7 +1,7 @@
 """
 This module provides a wrapper around the Helioviewer API.
 """
-import os
+from pathlib import Path
 import json
 import errno
 import codecs
@@ -352,10 +352,10 @@ class HelioviewerClient(object):
         if directory is None:
             directory = sunpy.config.get('downloads', 'download_dir')
         else:
-            directory = os.path.abspath(os.path.expanduser(directory))
+            directory = str(Path(directory).resolve())
 
         try:
-            os.makedirs(directory)
+            Path(directory).mkdir()
         except OSError as e:
             # TODO: Check this
             if e.errno != errno.EEXIST:

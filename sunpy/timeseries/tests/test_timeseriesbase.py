@@ -7,7 +7,7 @@ Created on Thu Jun 23 12:29:55 2016
 @author: alex_
 """
 
-import os
+from pathlib import Path
 import copy
 import glob
 import datetime
@@ -38,68 +38,68 @@ from sunpy.util.metadata import MetaDict
 
 filepath = sunpy.data.test.rootdir
 
-eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
-fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
-norh_filepath = os.path.join(filepath, 'tca110810_truncated')
-goes_filepath = os.path.join(filepath, 'goes.fits')
-lyra_filepath = os.path.join(filepath,
-                             'lyra_20150101-000000_lev3_std_truncated.fits.gz')
-rhessi_filepath = os.path.join(filepath,
-                               'hsi_obssumm_20120601_018_truncated.fits.gz')
-noaa_ind_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
-noaa_pre_filepath = os.path.join(filepath,
-                                 'predicted-sunspot-radio-flux_truncated.txt')
+eve_filepath = str(Path.home().joinpath(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt'))
+fermi_gbm_filepath = str(Path.home().joinpath(filepath, 'gbm.fits'))
+norh_filepath = str(Path.home().joinpath(filepath, 'tca110810_truncated'))
+goes_filepath = str(Path.home().joinpath(filepath, 'goes.fits'))
+lyra_filepath = str(Path.home().joinpath(filepath,
+                             'lyra_20150101-000000_lev3_std_truncated.fits.gz'))
+rhessi_filepath = str(Path.home().joinpath(filepath,
+                               'hsi_obssumm_20120601_018_truncated.fits.gz'))
+noaa_ind_filepath = str(Path.home().joinpath(filepath, 'RecentIndices_truncated.txt'))
+noaa_pre_filepath = str(Path.home().joinpath(filepath,
+                                 'predicted-sunspot-radio-flux_truncated.txt'))
 
-goes_filepath = os.path.join(filepath, 'go1520120601.fits.gz')
+goes_filepath = str(Path.home().joinpath(filepath, 'go1520120601.fits.gz'))
 
-a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
+a_list_of_many = glob.glob(str(Path.home().joinpath(filepath, "eve", "*")))
 
 
 @pytest.fixture
 def eve_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='EVE')
+    #ToDo: return sunpy.timeseries.TimeSeries(str(Path.home().joinpath(testpath, filename), source='EVE'))
     return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
 
 
 @pytest.fixture
 def fermi_gbm_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
+    #ToDo: return sunpy.timeseries.TimeSeries(str(Path.home().joinpath(testpath, filename), source='GBMSummary'))
     return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
 
 
 @pytest.fixture
 def norh_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NoRH')
+    #ToDo: return sunpy.timeseries.TimeSeries(str(Path.home().joinpath(testpath, filename), source='NoRH')
     return sunpy.timeseries.TimeSeries(norh_filepath, source='NoRH')
 
 
 @pytest.fixture
 def goes_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='XRS')
+    #ToDo: return sunpy.timeseries.TimeSeries(str(Path.home().joinpath(testpath, filename), source='XRS')
     return sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
 
 
 @pytest.fixture
 def lyra_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='LYRA')
+    #ToDo: return sunpy.timeseries.TimeSeries(str(Path.home().joinpath(testpath, filename), source='LYRA'))
     return sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')
 
 
 @pytest.fixture
 def rhessi_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='RHESSI')
+    #ToDo: return sunpy.timeseries.TimeSeries(str(Path.home().joinpath(testpath, filename), source='RHESSI'))
     return sunpy.timeseries.TimeSeries(rhessi_filepath, source='RHESSI')
 
 
 @pytest.fixture
 def noaa_ind_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
+    #ToDo: return sunpy.timeseries.TimeSeries(str(Path.home().joinpath(testpath, filename), source='NOAAIndices'))
     return sunpy.timeseries.TimeSeries(noaa_ind_filepath, source='NOAAIndices')
 
 
 @pytest.fixture
 def noaa_pre_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
+    #ToDo: return sunpy.timeseries.TimeSeries(str(Path.home().joinpath(testpath, filename), source='NOAAPredictIndices'))
     return sunpy.timeseries.TimeSeries(
         noaa_pre_filepath, source='NOAAPredictIndices')
 

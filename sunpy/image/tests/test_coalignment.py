@@ -10,7 +10,7 @@ from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift as sp_shift
 from sunpy.map import Map, MapSequence
 import pytest
-import os
+from pathlib import Path
 import sunpy.data.test
 from sunpy.image.coalignment import parabolic_turning_point, \
     repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
@@ -27,7 +27,7 @@ def aia171_test_clipping():
 @pytest.fixture
 def aia171_test_map():
     testpath = sunpy.data.test.rootdir
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+    return sunpy.map.Map(str(Path.home().joinpath(testpath, 'aia_171_level1.fits')))
 
 
 @pytest.fixture

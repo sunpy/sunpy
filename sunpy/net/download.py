@@ -5,7 +5,7 @@
 # the ESA Summer of Code (2011).
 
 
-import os
+from pathlib import Path
 import re
 import urllib
 import threading
@@ -21,7 +21,7 @@ __all__ = ['Downloader', 'Results']
 
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
-    return os.path.join(path, name)
+    return str(Path.home().joinpath(path, name))
 
 
 class Downloader(object):
@@ -49,9 +49,9 @@ class Downloader(object):
             with closing(urllib.request.urlopen(url)) as sock:
                 fullname = path(sock, url)
 
-                dir_ = os.path.abspath(os.path.dirname(fullname))
-                if not os.path.exists(dir_):
-                    os.makedirs(dir_)
+                dir_ = Path(Path(fullname).parent).resolve()
+                if not Path(dir_).exists():
+                    Path(dir_).mkdir()
 
                 with open(fullname, 'wb') as fd:
                     while True:

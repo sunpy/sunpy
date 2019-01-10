@@ -1,7 +1,7 @@
 import csv
 import copy
 import urllib
-import os.path
+from pathlib import Path
 import sqlite3
 import datetime
 from warnings import warn
@@ -452,7 +452,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
         dbname = "annotation_{0}.db".format(suffix)
         check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
         # Open SQLITE3 annotation files
-        connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+        connection = sqlite3.connect(str(Path.home().joinpath(lytaf_path, dbname)))
         # Create cursor to manipulate data in annotation file
         cursor = connection.cursor()
         # Check if lytaf file spans the start and end times defined by
@@ -477,7 +477,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
                 check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path,
                                     replace=True)
                 # ...and open new version of lytaf database.
-                connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+                connection = sqlite3.connect(str(Path.home().joinpathn(lytaf_path, dbname)))
                 cursor = connection.cursor()
         # Select and extract the data from event table within file within
         # given time range
@@ -569,7 +569,7 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
         # Check database file exists, else download it.
         check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
         # Open SQLITE3 LYTAF files
-        connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+        connection = sqlite3.connect(str(Path.home().joinpath(lytaf_path, dbname)))
         # Create cursor to manipulate data in annotation file
         cursor = connection.cursor()
         cursor.execute("select type from eventType;")
@@ -590,7 +590,7 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
 def download_lytaf_database(lytaf_dir=''):
     """download latest Proba2 pointing database from Proba2 Science Center"""
     url = 'http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
-    destination = os.path.join(lytaf_dir, 'annotation_ppt.db')
+    destination = str(Path.home().joinpath(lytaf_dir, 'annotation_ppt.db'))
     urllib.request.urlretrieve(url, destination)
 
     return

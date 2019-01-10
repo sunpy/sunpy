@@ -7,7 +7,7 @@ from collections import Hashable
 from datetime import datetime
 
 import pytest
-import os
+from pathlib import Path
 
 from astropy import units as u
 from astropy import conf
@@ -23,9 +23,9 @@ from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
 
 
-RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
-EIT_195_IMAGE = os.path.join(testdir, 'EIT/efz20040301.000010_s.fits')
-GOES_DATA = os.path.join(testdir, 'go1520110607.fits')
+RHESSI_IMAGE = str(Path.home().joinpath(testdir, 'hsi_image_20101016_191218.fits'))
+EIT_195_IMAGE = str(Path.home().joinpath(testdir, 'EIT/efz20040301.000010_s.fits'))
+GOES_DATA = str(Path.home().joinpath(testdir, 'go1520110607.fits'))
 
 """
 The hsi_image_20101016_191218.fits file and go1520110607.fits file lie in the
@@ -335,7 +335,7 @@ def test_entries_from_dir():
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
             break
-    assert entry.path in (os.path.join(waveunitdir, filename), filename)
+    assert entry.path in (str(Path.home().joinpath(waveunitdir, filename)), filename)
     assert filename.startswith(waveunitdir)
     assert len(entry.fits_header_entries) == 42
     assert entry.fits_header_entries == [
@@ -509,8 +509,8 @@ def test_create_display_table():
         'observation_time_start', 'instrument', 'size',
         'wavemin', 'path', 'starred', 'tags']
     table = _create_display_table(entries, columns)
-    filedir = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(filedir, 'test_table.txt'), 'r') as f:
+    filedir = Path(Path(__file__).resolve()).parent
+    with open(str(Path.home().joinpath(filedir, 'test_table.txt')), 'r') as f:
         stored_table = f.read()
     assert table.__str__().strip() == stored_table.strip()
     conf.reset('max_width')
