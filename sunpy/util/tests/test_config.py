@@ -15,6 +15,8 @@ def test_get_and_create_download_dir():
     config.set('downloads', 'download_dir', new_path)
     path = get_and_create_download_dir()
     assert path == os.path.join(USER, new_path)
+    # Set the config back
+    config.set('downloads', 'download_dir', os.path.join(USER, 'sunpy', 'data'))
 
 
 def test_get_and_create_sample_dir():
@@ -26,3 +28,5 @@ def test_get_and_create_sample_dir():
     config.set('downloads', 'sample_dir', new_path)
     path = get_and_create_sample_dir()
     assert path == new_path
+    # Set the config back
+    config.set('downloads', 'download_dir', os.path.join(USER, 'sunpy', 'data', 'sample_data'))
