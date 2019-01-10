@@ -25,7 +25,7 @@ plot_axis0 = 1
 slider_axis0 = 0
 
 ###############################################################################
-# Let's customize the values along the x-xaxis.  To do this, we must define the
+# Let's customize the values along the x-axis.  To do this, we must define the
 # edges of the pixels/bins being plotted along the x-axis.  This requires us to
 # supply an array, say xdata, of length equal to data.shape[plot_axis_index]+1.
 # In this example, the data has a shape of (10, 20) and let's say we are
