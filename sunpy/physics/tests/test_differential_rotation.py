@@ -48,7 +48,7 @@ testpath = sunpy.data.test.rootdir
 
 @pytest.fixture
 def aia171_test_map():
-    return sunpy.map.Map((str(Path.home().joinpath(testpath, 'aia_171_level1.fits'))))
+    return sunpy.map.Map((str(Path(testpath).joinpath('aia_171_level1.fits'))))
 
 
 @pytest.fixture

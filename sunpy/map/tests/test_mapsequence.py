@@ -18,7 +18,7 @@ def aia_map():
     Load SunPy's test AIA image.
     """
     testpath = sunpy.data.test.rootdir
-    aia_file = str(Path.home().joinpath(testpath, "aia_171_level1.fits"))
+    aia_file = str(Path(testpath).joinpath("aia_171_level1.fits"))
     return sunpy.map.Map(aia_file)
 
 

@@ -116,10 +116,10 @@ def _patch_coverage(testdir, sourcedir):  # pragma: no cover
     """
     import coverage
 
-    coveragerc = str(Path.home().joinpath(Path(__file__).parent, "coveragerc"))
+    coveragerc = str(Path(Path(__file__).parent).joinpath("coveragerc"))
 
     # Load the .coverage file output by pytest-cov
-    covfile = str(Path.home().joinpath(testdir, ".coverage"))
+    covfile = str(Path(testdir).joinpath(".coverage"))
     cov = coverage.Coverage(covfile, config_file=coveragerc)
     cov.load()
     cov.get_data()
@@ -130,7 +130,7 @@ def _patch_coverage(testdir, sourcedir):  # pragma: no cover
     else:
         dfs = cov.data_files
 
-    dfs.filename = str(Path.home().joinpath(sourcedir, ".coverage"))
+    dfs.filename = str(Path(sourcedir).joinpath(".coverage"))
 
     # Replace the testdir with source dir
     # Lovingly borrowed from astropy (see licences directory)
@@ -139,8 +139,7 @@ def _patch_coverage(testdir, sourcedir):  # pragma: no cover
         new_path = os.path.relpath(
             str(Path(key).resolve()),
             str(Path(testdir).resolve()))
-        new_path = str(Path(
-            str(Path.home().joinpath(sourcedir, new_path))).resolve())
+        new_path = str(Path(sourcedir).joinpath(new_path).resolve())
         lines[new_path] = lines.pop(key)
 
     cov.save()

@@ -58,7 +58,7 @@ class Parent(object):
         """ Return list that contains all files in the directory read in. """
         directory = str(Path(directory).resolve())
         return cls.read_many(
-            (str(Path.home().joinpath(directory, elem)) for elem in Path(directory).iterdir())
+            (str(Path(directory).joinpath(elem)) for elem in Path(directory).iterdir())
         )
 
     @classmethod
@@ -76,7 +76,7 @@ class Parent(object):
 
 Parent._create.add(
     run_cls('from_file'),
-    lambda cls, filename: Path(Path(filename).resolve()).is_file(),
+    lambda cls, filename: Path(filename).resolve().is_file(),
     [type, str], check=False
 )
 Parent._create.add(
@@ -84,7 +84,7 @@ Parent._create.add(
     # The lambda is necessary because introspection is performed on the
     # argspec of the function.
     run_cls('from_dir'),
-    lambda cls, directory: Path(Path(directory).resolve()).is_dir(),
+    lambda cls, directory: Path(directory).resolve().is_dir(),
     [type, str], check=False
 )
 # If it is not a kwarg and only one matches, do not return a list.

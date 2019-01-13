@@ -97,7 +97,7 @@ def test_save_path():
 
     # Test when path is str
     with tempfile.TemporaryDirectory() as target_dir:
-        files = Fido.fetch(qr, path=str(Path.home().joinpath(target_dir, "{instrument}", "{level}")))
+        files = Fido.fetch(qr, path=str(Path(target_dir).joinpath("{instrument}", "{level}")))
         for f in files:
             assert target_dir in f
             assert "eve{}0".format(os.path.sep) in f

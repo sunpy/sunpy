@@ -180,7 +180,7 @@ def replacement_filename(path):
         base, ext = str(Path(filename).stem), str(Path(filename).suffix)
         for c in count():
             name = base + '.' + str(c) + ext
-            newpath = str(Path.home().joinpath(dir_, name))
+            newpath = str(Path(dir_).joinpath(name))
             if not Path(newpath).exists():
                 return newpath
 

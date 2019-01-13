@@ -7,7 +7,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = str(Path.home().joinpath(path, "tsi20010130_025823_a2.fits"))
+fitspath = str(Path(path).joinpath("tsi20010130_025823_a2.fits"))
 
 @pytest.fixture(scope="module")
 def createTRACE():

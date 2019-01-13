@@ -12,7 +12,7 @@ from sunpy.map.mapbase import GenericMap
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(str(Path.home().joinpath(path, "iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits")))
+fitspath = glob.glob(str(Path(path).joinpath("iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits")))
 irislist = Map(fitspath)
 
 # IRIS Tests

@@ -371,7 +371,7 @@ class VSOClient(BaseClient):
         if not overwrite and Path(fname).exists():
             fname = replacement_filename(fname)
 
-        dir_ = Path(Path(fname).parent).resolve()
+        dir_ = Path(fname).parent.resolve()
         if not Path(dir_).exists():
             Path(dir_).mkdir()
         return fname
@@ -592,10 +592,10 @@ class VSOClient(BaseClient):
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = str(Path.home().joinpath(config.get('downloads', 'download_dir'),
+            path = str(Path(config.get('downloads', 'download_dir')).joinpath(
                                 '{file}'))
         elif isinstance(path, str) and '{file}' not in path:
-            path = str(Path.home().joinpath(path, '{file}'))
+            path = str(Path(path).joinpath('{file}'))
         path = str(Path(path).resolve())
 
         fileids = VSOClient.by_fileid(query_response)

@@ -51,7 +51,7 @@ def test_split_series_using_lytaf():
     '''test the downloading of the LYTAF file and subsequent queries'''
     tmp_dir = tempfile.mkdtemp()
     lyra.download_lytaf_database(lytaf_dir=tmp_dir)
-    assert Path(str(Path.home().joinpath(tmp_dir, 'annotation_ppt.db'))).exists()
+    assert Path(Path(tmp_dir).joinpath('annotation_ppt.db')).exists()
 
     # test split_series_using_lytaf
     # construct a dummy signal for testing purposes
@@ -85,7 +85,7 @@ def test_split_series_using_lytaf():
 def lyra_ts():
     # Create sample TimeSeries
     lyrats = timeseries.TimeSeries(
-        str(Path.home().joinpath(rootdir, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')),
+        str(Path(rootdir).joinpath('lyra_20150101-000000_lev3_std_truncated.fits.gz')),
         source='LYRA')
     lyrats.data = pandas.DataFrame(index=TIME,
                                    data={"CHANNEL1": CHANNELS[0],

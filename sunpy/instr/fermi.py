@@ -71,7 +71,7 @@ def download_weekly_pointing_file(date):
         raise ValueError('No Fermi pointing files found for given date!')
 
     # download the file
-    destination = str(Path.home().joinpath(tmp_dir, full_fname))
+    destination = str(Path(tmp_dir).joinpath(full_fname))
     urllib.request.urlretrieve(pointing_file_url, destination)
 
     # return the location of the downloaded file

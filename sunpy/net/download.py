@@ -21,7 +21,7 @@ __all__ = ['Downloader', 'Results']
 
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
-    return str(Path.home().joinpath(path, name))
+    return str(Path(path).joinpath(name))
 
 
 class Downloader(object):
@@ -49,7 +49,7 @@ class Downloader(object):
             with closing(urllib.request.urlopen(url)) as sock:
                 fullname = path(sock, url)
 
-                dir_ = Path(Path(fullname).parent).resolve()
+                dir_ = Path(fullname).parent.resolve()
                 if not Path(dir_).exists():
                     Path(dir_).mkdir()
 

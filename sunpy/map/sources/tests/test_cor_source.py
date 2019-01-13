@@ -11,7 +11,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(str(Path.home().joinpath(path, "cor1_20090615_000500_s4c1A.fts")))
+fitspath = glob.glob(str(Path(path).joinpath("cor1_20090615_000500_s4c1A.fts")))
 cor = Map(fitspath)
 
 # COR Tests

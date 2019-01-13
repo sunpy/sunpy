@@ -11,7 +11,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(str(Path.home().joinpath(path, "lasco_c2_25299383_s.fts")))
+fitspath = glob.glob(str(Path(path).joinpath("lasco_c2_25299383_s.fts")))
 lasco = Map(fitspath)
 
 # LASCO Tests

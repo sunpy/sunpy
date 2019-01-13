@@ -15,7 +15,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitslist = glob.glob(str(Path.home().joinpath(path, "EIT", "*")))
+fitslist = glob.glob(str(Path(path).joinpath("EIT", "*")))
 
 @pytest.fixture(scope="module", params=fitslist)
 def createEIT(request):

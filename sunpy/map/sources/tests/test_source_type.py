@@ -11,9 +11,9 @@ import sunpy.data.test
 from sunpy.tests.helpers import skip_glymur
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(str(Path.home().joinpath(path, "aia_171_level1.fits")))
+fitspath = glob.glob(str(Path(path).joinpath("aia_171_level1.fits")))
 aia = Map(fitspath)
-jp2path = glob.glob(str(Path.home().joinpath(path, "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")))
+jp2path = glob.glob(str(Path(path).joinpath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")))
 
 
 @skip_glymur

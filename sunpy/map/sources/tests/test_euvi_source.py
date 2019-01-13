@@ -11,7 +11,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(str(Path.home().joinpath(path, "euvi_20090615_000900_n4euA_s.fts")))
+fitspath = glob.glob(str(Path(path).joinpath("euvi_20090615_000900_n4euA_s.fts")))
 euvi = Map(fitspath)
 
 # EUVI Tests

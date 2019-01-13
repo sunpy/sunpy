@@ -104,7 +104,7 @@ class SunPyTestRunner(TestRunner):
     @keyword()
     def coverage(self, coverage, kwargs):
         if coverage:
-            coveragerc = str(Path.home().joinpath(self.base_path, "tests", "coveragerc"))
+            coveragerc = str(Path(self.base_path).joinpath("tests", "coveragerc"))
             ret = []
             for path in self.package_path:
                 ret += ["--cov", path, "--cov-config", coveragerc]

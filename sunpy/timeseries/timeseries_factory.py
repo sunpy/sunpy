@@ -305,7 +305,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             # Filepath
             elif (isinstance(arg, str) and
-                  Path(Path(arg).resolve()).is_file()):
+                  Path(arg).resolve().is_file()):
 
                 path = str(Path(arg).resolve())
 
@@ -318,10 +318,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             # Directory
             elif (isinstance(arg, str) and
-                  Path(Path(arg).resolve()).is_dir()):
+                  Path(arg).resolve().is_dir()):
 
                 path = str(Path(arg).resolve())
-                files = [str(Path.home().joinpath(path, elem)) for elem in Path(path).iterdir()]
+                files = [str(Path(path).joinpath(elem)) for elem in Path(path).iterdir()]
                 for afile in files:
                     # returns a boolean telling us if it were read and either a
                     # tuple or the original filepath for reading by a source

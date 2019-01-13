@@ -111,7 +111,7 @@ def download_fileobj(opn, directory, url='', default="file", overwrite=False):
     Fall back to default if both fail. Only overwrite existing files when
     overwrite is True. """
     filename = get_system_filename(opn, url, default)
-    path = str(Path.home().joinpath(directory, filename.decode('utf-8')))
+    path = str(Path(directory).joinpath(filename.decode('utf-8')))
     if not overwrite and Path(path).exists():
         path = replacement_filename(path)
     with open(path, 'wb') as fd:
@@ -154,7 +154,7 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
     >>> check_download_file("filename.txt", remotepath, download_dir='.')   # doctest: +SKIP
     """
     # Check if file already exists locally.  If not, try downloading it.
-    if replace or not Path(str(Path.home().joinpath(download_dir, filename))).is_file():
+    if replace or not Path(download_dir).joinpath(filename).is_file():
         # set local and remote file names be the same unless specified
         # by user.
         if not isinstance(remotename, str):

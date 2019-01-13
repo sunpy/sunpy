@@ -15,7 +15,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(str(Path.home().joinpath(path, "HinodeXRT.fits")))
+fitspath = glob.glob(str(Path(path).joinpath("HinodeXRT.fits")))
 xrt = Map(fitspath)
 
 

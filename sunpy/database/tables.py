@@ -743,18 +743,18 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
     Examples
     --------
-    >>> import os
+    >>> from pathlib import Path
     >>> from sunpy.data.test import rootdir as fitsdir
     >>> from sunpy.database.tables import entries_from_dir
 
-    >>> eitdir = str(Path.home().joinpath(fitsdir, 'EIT'))
+    >>> eitdir = str(Path(fitsdir).joinpath('EIT'))
     >>> entries = list(entries_from_dir(eitdir, default_waveunit='angstrom'))
     >>> len(entries)
     13
 
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):
-        filename_paths = (str(Path.home().joinpath(dirpath, name)) for name in filenames)
+        filename_paths = (str(Path(dirpath).joinpath(name)) for name in filenames)
         for path in fnmatch.filter(filename_paths, pattern):
             try:
                 filetype = sunpy_filetools._detect_filetype(path)

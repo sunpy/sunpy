@@ -10,7 +10,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(str(Path.home().joinpath(path,"hi_20110910_114721_s7h2A.fts")))
+fitspath = glob.glob(str(Path(path).joinpath("hi_20110910_114721_s7h2A.fts")))
 hi = Map(fitspath)
 
 def test_fitstoHI():

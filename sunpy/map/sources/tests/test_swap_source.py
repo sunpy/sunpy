@@ -13,7 +13,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitslist = glob.glob(str(Path.home().joinpath(path, "SWAP", "*")))
+fitslist = glob.glob(str(Path(path).joinpath("SWAP", "*")))
 
 @pytest.fixture(scope="module", params=fitslist)
 def createSWAP(request):

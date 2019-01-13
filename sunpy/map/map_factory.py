@@ -198,16 +198,16 @@ class MapFactory(BasicRegistrationFactory):
 
             # File name
             elif (isinstance(arg, str) and
-                  Path(Path(arg).resolve()).is_file()):
+                  Path(arg).resolve().is_file()):
                 path = str(Path(arg).resolve())
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
             elif (isinstance(arg, str) and
-                  Path(Path(arg).resolve()).is_dir()):
+                  Path(arg).resolve().is_dir()):
                 path = str(Path(arg).resolve())
-                files = [str(Path.home().joinpath(path, elem)) for elem in Path(path).iterdir()]
+                files = [str(Path(path).joinpath(elem)) for elem in Path(path).iterdir()]
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 

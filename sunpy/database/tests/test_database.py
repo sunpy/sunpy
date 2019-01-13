@@ -28,7 +28,7 @@ from sunpy.database.commands import NoSuchEntryError, EmptyCommandStackError
 from sunpy.data.test.waveunit import waveunitdir
 
 testpath = sunpy.data.test.rootdir
-RHESSI_IMAGE = str(Path.home().joinpath(testpath, 'hsi_image_20101016_191218.fits'))
+RHESSI_IMAGE = str(Path(testpath).joinpath('hsi_image_20101016_191218.fits'))
 
 
 """
@@ -949,8 +949,7 @@ def test_fetch_separate_filenames():
         vso.attrs.Instrument('AIA')
     ]
 
-    tmp_test_dir = str(Path.home().joinpath(
-        sunpy.config.get('downloads', 'download_dir'),
+    tmp_test_dir = str(Path(sunpy.config.get('downloads', 'download_dir')).joinpath(
         'tmp_test_dir/'
     ))
 
@@ -967,10 +966,10 @@ def test_fetch_separate_filenames():
     dir_contents = Path(tmp_test_dir).iterdir()
     assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
     assert 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits' in dir_contents
-    assert Path(str(Path.home().joinpath(
-        tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))).is_file()
-    assert Path(str(Path.home().joinpath(
-        tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))).is_file()
+    assert Path(str(Path(tmp_test_dir).joinpath(
+        'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))).is_file()
+    assert Path(str(Path(tmp_test_dir).joinpath(
+        'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))).is_file()
 
     # Teardown
     shutil.rmtree(tmp_test_dir)

@@ -90,13 +90,13 @@ class TestHelioviewerClient:
         """
         Tests for missing directory.
         """
-        fake_dir = str(Path.home().joinpath(str(tmpdir), 'directorynotexist'))
+        fake_dir = str(Path(tmpdir).joinpath('directorynotexist'))
         filepath = client.download_jp2('2020/01/01', observatory='SOHO',
                                        instrument='MDI', measurement='continuum',
                                        directory=fake_dir)
         assert 'directorynotexist' in filepath
         Path(filepath).unlink()
-        fake_dir = str(Path.home().joinpath(str(tmpdir), 'directorynotexist_2'))
+        fake_dir = str(Path(tmpdir).joinpath('directorynotexist_2'))
         filepath = client.download_png('2020/01/01', 2.4, "[SOHO,MDI,continuum,1,100]",
                                        directory=fake_dir)
         assert 'directorynotexist_2' in filepath

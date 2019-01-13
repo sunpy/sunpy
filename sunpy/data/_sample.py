@@ -116,9 +116,9 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
     else:
         uncompressed_filename = filename
     # check if the (uncompressed) file exists
-    if not overwrite and Path(str(Path.home().joinpath(sampledata_dir,
-                                                     uncompressed_filename))).is_file():
-        return str(Path.home().joinpath(sampledata_dir, uncompressed_filename))
+    if not overwrite and Path(sampledata_dir).joinpath(
+                        uncompressed_filename).is_file():
+        return str(Path(sampledata_dir).joinpath(uncompressed_filename))
     else:
         # check each provided url to find the file
         for base_url in url_list:
@@ -129,7 +129,7 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
                 url = urljoin(base_url, online_filename)
                 exists = url_exists(url)
                 if exists:
-                    f = download_file(str(Path.home().joinpath(base_url, online_filename)),
+                    f = download_file(str(Path(base_url).joinpath(online_filename)),
                                       show_progress=show_progress,
                                       timeout=timeout)
                     real_name, ext = str(Path(f).stem), str(Path(f).suffix)
@@ -140,15 +140,15 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
                             unzipped_f = zip_file.extract(real_name,
                                                           sampledata_dir)
                         Path(f).unlink()
-                        move(unzipped_f, str(Path.home().joinpath(sampledata_dir,
+                        move(unzipped_f, str(Path(sampledata_dir).joinpath(
                                                       uncompressed_filename)))
-                        return str(Path.home().joinpath(sampledata_dir,
+                        return str(Path(sampledata_dir).joinpath(
                                             uncompressed_filename))
                     else:
                         # move files to the data directory
-                        move(f, str(Path.home().joinpath(sampledata_dir,
+                        move(f, str(Path(sampledata_dir).joinpath(
                                              uncompressed_filename)))
-                        return str(Path.home().joinpath(sampledata_dir,
+                        return str(Path(sampledata_dir).joinpath(
                                             uncompressed_filename))
             except (socket.error, socket.timeout) as e:
                 warnings.warn("Download failed with error {}. \n"

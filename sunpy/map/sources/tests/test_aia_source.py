@@ -12,8 +12,8 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-jp2path = glob.glob(str(Path.home().joinpath(path, "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")))
-aiaimg = glob.glob(str(Path.home().joinpath(path, "aia_171_level1.fits")))
+jp2path = glob.glob(str(Path(path).joinpath("2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")))
+aiaimg = glob.glob(str(Path(path).joinpath("aia_171_level1.fits")))
 
 from sunpy.tests.helpers import SKIP_GLYMUR
 

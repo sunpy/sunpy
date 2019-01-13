@@ -549,9 +549,9 @@ class JSOCClient(BaseClient):
         # Ensure path has a {file} in it
         if path is None:
             default_dir = config.get("downloads", "download_dir")
-            path = str(Path.home().joinpath(default_dir, '{file}'))
+            path = str(Path(default_dir).joinpath('{file}'))
         elif isinstance(path, str) and '{file}' not in path:
-            path = str(Path.home().joinpath(path, '{file}'))
+            path = str(Path(path).joinpath('{file}'))
 
         paths = []
         for request in requests:

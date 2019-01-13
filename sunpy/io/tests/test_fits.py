@@ -8,10 +8,10 @@ from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
 
 testpath = sunpy.data.test.rootdir
 
-RHESSI_IMAGE = str(Path.home().joinpath(testpath, 'hsi_image_20101016_191218.fits'))
-EIT_195_IMAGE = str(Path.home().joinpath(testpath, 'EIT/efz20040301.000010_s.fits'))
-AIA_171_IMAGE = str(Path.home().joinpath(testpath, 'aia_171_level1.fits'))
-SWAP_LEVEL1_IMAGE = str(Path.home().joinpath(testpath, 'SWAP/resampled1_swap.fits'))
+RHESSI_IMAGE = str(Path(testpath).joinpath('hsi_image_20101016_191218.fits'))
+EIT_195_IMAGE = str(Path(testpath).joinpath('EIT/efz20040301.000010_s.fits'))
+AIA_171_IMAGE = str(Path(testpath).joinpath('aia_171_level1.fits'))
+SWAP_LEVEL1_IMAGE = str(Path(testpath).joinpath('SWAP/resampled1_swap.fits'))
 
 
 def read_hdus():

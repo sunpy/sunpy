@@ -25,13 +25,13 @@ def load_config():
     # Specify the working directory as a default so that the user's home
     # directory can be located in an OS-independent manner
     if not config.has_option('general', 'working_dir'):
-        config.set('general', 'working_dir', str(Path.home().joinpath(_get_home(), "sunpy")))
+        config.set('general', 'working_dir', str(Path(_get_home()).joinpath( "sunpy")))
 
     # Specify the database url as a default so that the user's home
     # directory can be located in an OS-independent manner
     if not config.has_option('database', 'url'):
-        config.set('database', 'url', "sqlite:///" + str(Path.home().joinpath(
-            _get_home(), "sunpy/sunpydb.sqlite")))
+        config.set('database', 'url', "sqlite:///" + str(Path(_get_home()).joinpath(
+            "sunpy/sunpydb.sqlite")))
 
     # Use absolute filepaths and adjust OS-dependent paths as needed
     filepaths = [
@@ -110,15 +110,15 @@ def _find_config_files():
 
     # find default configuration file
     module_dir = Path(sunpy.__file__).parent
-    config_files.append(str(Path.home().joinpath(module_dir, 'data', 'sunpyrc')))
+    config_files.append(str(Path(module_dir).joinpath('data', 'sunpyrc')))
 
     # if a user configuration file exists, add that to list of files to read
     # so that any values set there will override ones specified in the default
     # config file
     config_path = _get_user_configdir()
 
-    if Path(str(Path.home().joinpath(config_path, config_filename))).exists():
-        config_files.append(str(Path.home().joinpath(config_path, config_filename)))
+    if Path(config_path).joinpath(config_filename).exists():
+        config_files.append(str(Path(config_path).joinpath(config_filename)))
 
     return config_files
 
@@ -139,7 +139,7 @@ def _get_user_configdir():
         return configdir
 
     h = _get_home()
-    p = str(Path.home().joinpath(_get_home(), '.sunpy'))
+    p = str(Path(_get_home()).joinpath('.sunpy'))
 
     if Path(p).exists():
         if not _is_writable_dir(p):
@@ -185,7 +185,7 @@ def _expand_filepath(filepath, working_dir=""):
         return tempfile.gettempdir()
     # Relative filepaths
     elif not filepath.startswith("/"):
-        return  str(Path(Path.home().joinpath(working_dir, filepath)).resolve())
+        return  str(Path(working_dir).joinpath(filepath).resolve())
     # Absolute filepath
     else:
         return str(Path(filepath).resolve())

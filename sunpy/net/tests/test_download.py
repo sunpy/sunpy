@@ -138,7 +138,7 @@ def test_download_default_dir():
 
         assert not timeout.fired
         assert not errback.fired
-        assert Path(str(Path.home().joinpath(tmpdir, 'jquery.min.js'))).exists()
+        assert Path(tmpdir).joinpath('jquery.min.js').exists()
     finally:
         sunpy.config = _config
 
@@ -164,4 +164,4 @@ def test_download_dir():
     timer.cancel()
     assert not timeout.fired
     assert not errback.fired
-    assert Path(str(Path.home().joinpath(tmpdir, 'jquery.min.js'))).exists()
+    assert Path(tmpdir).joinpath('jquery.min.js').exists()

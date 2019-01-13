@@ -13,7 +13,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(str(Path.home().joinpath(path, "HinodeSOT.fits")))
+fitspath = glob.glob(str(Path(path).joinpath("HinodeSOT.fits")))
 sot = Map(fitspath)
 
 # SOT Tests

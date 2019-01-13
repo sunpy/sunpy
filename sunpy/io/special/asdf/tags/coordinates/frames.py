@@ -11,11 +11,11 @@ from ...types import SunPyType
 __all__ = ['SunPyCoordType']
 
 
-SCHEMA_PATH = Path(str(Path.home().joinpath(Path(__file__).parent,
+SCHEMA_PATH = Path(__file__).parent.joinpath(
                                            '..', '..',
                                            'schemas',
                                            'sunpy.org',
-                                           'sunpy'))).resolve()
+                                           'sunpy').resolve()
 
 
 def _get_frames():
@@ -23,7 +23,7 @@ def _get_frames():
     By reading the schema files, get the list of all the frames we can
     save/load.
     """
-    search = str(Path.home().joinpath(SCHEMA_PATH, 'coordinates', 'frames', '*.yaml'))
+    search = str(Path(SCHEMA_PATH).joinpath('coordinates', 'frames', '*.yaml'))
     files = glob.glob(search)
 
     names = []

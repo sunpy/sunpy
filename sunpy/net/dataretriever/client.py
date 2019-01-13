@@ -242,9 +242,9 @@ class GenericClient(BaseClient):
         paths = []
         for i, filename in enumerate(filenames):
             if path is None:
-                fname = str(Path.home().joinpath(default_dir, '{file}'))
+                fname = str(Path(default_dir).joinpath('{file}'))
             elif isinstance(path, str) and '{file}' not in path:
-                fname = str(Path.home().joinpath(path, '{file}'))
+                fname = str(Path(path).joinpath('{file}'))
 
             temp_dict = qres[i]._map.copy()
             temp_dict['file'] = filename

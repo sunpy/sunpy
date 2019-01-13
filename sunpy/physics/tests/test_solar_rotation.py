@@ -20,7 +20,7 @@ from sunpy.physics.solar_rotation import calculate_solar_rotate_shift, mapsequen
 @pytest.fixture
 def aia171_test_map():
     testpath = sunpy.data.test.rootdir
-    return sunpy.map.Map(str(Path.home().joinpath(testpath, 'aia_171_level1.fits')))
+    return sunpy.map.Map(str(Path(testpath).joinpath('aia_171_level1.fits')))
 
 
 @pytest.fixture
