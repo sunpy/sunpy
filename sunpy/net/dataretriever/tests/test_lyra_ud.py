@@ -9,7 +9,7 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-from hypothesis import given
+from hypothesis import given, settings, HealthCheck
 from sunpy.net.tests.strategies import time_attr
 
 LCClient = lyra.LYRAClient()
@@ -50,6 +50,7 @@ def test_can_handle_query(time):
     assert ans2 is False
 
 
+@settings(deadline=None, suppress_health_check=[HealthCheck.hung_test])
 @given(time_attr())
 def test_query(time):
     qr1 = LCClient.search(time, Instrument('lyra'))
