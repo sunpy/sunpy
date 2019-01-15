@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given, example
+from hypothesis import given, example, settings, HealthCheck
 
 from astropy.time import TimeDelta
 import astropy.units as u
@@ -65,6 +65,7 @@ def test_fixed_satellite(LCClient):
         assert "go13" in resp.url
 
 
+@settings(deadline=None, suppress_health_check=[HealthCheck.hung_test])
 @example(a.Time("2006-08-01", "2006-08-01"))
 # This example tests a time range with a satellite jump and no overlap
 @example(a.Time("2009-11-30", "2009-12-3"))
