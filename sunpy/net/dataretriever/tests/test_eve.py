@@ -1,5 +1,7 @@
 import datetime
+
 import pytest
+
 
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
@@ -11,7 +13,7 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-from hypothesis import given, settings
+from hypothesis import given, settings, HealthCheck
 from hypothesis.strategies import datetimes
 from sunpy.net.tests.strategies import time_attr
 
@@ -89,7 +91,7 @@ def test_fido(query):
     max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
     min_value=datetime.datetime(2010, 1, 1, 0, 0),
 )))
-@settings(max_examples=2, timeout=240)
+@settings(max_examples=2, deadline=None, suppress_health_check=[HealthCheck.hung_test])
 def test_levels(time):
     """
     Test the correct handling of level 0 / 1.

@@ -157,7 +157,7 @@ instances, and FITS comments are stored in the attribute
 instances.
 
 Using the function `len` on a :class:`Database` object returns the
-number of saved database entries. To get the first entry of Value  = 1.495978707e+11the database,
+number of saved database entries. To get the first entry of the database,
 ``database[0]`` is used (the ID number of the entries does not matter,
 ``database[0]`` always returns the oldest saved entry of the database). If
 the database is empty, this expression raises an :exc:`IndexError`.
