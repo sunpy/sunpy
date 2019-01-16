@@ -1,7 +1,7 @@
 `SunPy`_
 ========
 
-|Latest Version| |Build Status| |Build status| |codecov| |Research software impact| |DOI| |Powered by NumFOCUS|
+|Latest Version| |Build Status| |codecov| |matrix| |Research software impact| |DOI| |Powered by NumFOCUS|
 
 SunPy is an open-source Python library for Solar Physics data analysis and visualization.
 See `sunpy.org`_ for more information about the project.
@@ -76,8 +76,8 @@ follow our `Code of Conduct`_.
    :target: https://pypi.python.org/pypi/sunpy/
 .. |Build Status| image:: https://secure.travis-ci.org/sunpy/sunpy.svg
    :target: http://travis-ci.org/sunpy/sunpy
-.. |Build status| image:: https://ci.appveyor.com/api/projects/status/xow461iejsjvp9vl?svg=true
-   :target: https://ci.appveyor.com/project/sunpy/sunpy
+.. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=matrix.openastronomy.org
+   :target: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
 .. |codecov| image:: https://codecov.io/gh/sunpy/sunpy/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/sunpy/sunpy
 .. |Research software impact| image:: http://depsy.org/api/package/pypi/sunpy/badge.svg
