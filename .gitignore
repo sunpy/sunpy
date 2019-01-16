@@ -201,6 +201,7 @@ $RECYCLE.BIN/
 .hypothesis
 .pytest_cache
 sunpydata.sqlite
+sunpydata.sqlite-journal
 sunpy/_compiler.c
 sunpy/cython_version.py
 sunpy/version.py
