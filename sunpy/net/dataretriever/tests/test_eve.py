@@ -1,7 +1,7 @@
 import datetime
 
 import pytest
-from hypothesis import given, settings
+from hypothesis import given, settings, HealthCheck
 from sunpy.net.tests.strategies import time_attr, Times
 
 from sunpy.time import parse_time
@@ -89,7 +89,7 @@ def test_fido(query):
     max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
     min_value=datetime.datetime(2010, 1, 1, 0, 0),
 )))
-@settings(max_examples=2, timeout=240)
+@settings(max_examples=2, deadline=None, suppress_health_check=[HealthCheck.hung_test])
 def test_levels(time):
     """
     Test the correct handling of level 0 / 1.
