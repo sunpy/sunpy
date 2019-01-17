@@ -1,3 +1,5 @@
+from astropy.io import fits
+
 import sunpy.io.fits
 from sunpy.io.fits import get_header, extract_waveunit
 
@@ -95,3 +97,13 @@ def test_extra_comment_write(tmpdir):
     outfile = tmpdir / "test.fits"
     sunpy.io.fits.write(str(outfile), data, header)
     assert outfile.exists()
+
+
+def test_simple_write_compressed(tmpdir):
+    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    outfile = tmpdir / "test.fits"
+    sunpy.io.fits.write(str(outfile), data, header, hdu_type=fits.CompImageHDU)
+    assert outfile.exists()
+    with fits.open(str(outfile)) as hdul:
+        assert len(hdul) == 2
+        assert isinstance(hdul[1], fits.CompImageHDU)

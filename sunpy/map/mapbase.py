@@ -13,6 +13,7 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
+from astropy.io import fits
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
@@ -715,6 +716,13 @@ class GenericMap(NDData):
         return np.array([[np.cos(p), -1 * lam * np.sin(p)],
                          [1/lam * np.sin(p), np.cos(p)]])
 
+    @property
+    def fits_header(self):
+        """
+        A `~astropy.io.fits.Header` representation of the ``meta`` attribute.
+        """
+        return sunpy.io.fits.header_to_fits(self.meta)
+
 # #### Miscellaneous #### #
 
     def _fix_date(self):
@@ -874,6 +882,12 @@ class GenericMap(NDData):
 
         filetype : str
             'auto' or any supported file extension.
+
+        Keywords
+        --------
+        hdu_type: `None`, `~fits.CompImageHDU`
+            `None` will return a normal FITS files.
+            `~fits.CompImageHDU` will rice compress the FITS file.
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
