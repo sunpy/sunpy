@@ -266,11 +266,22 @@ def test_save(aia171_test_map, generic_map):
     """Tests the map save function"""
     aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-    aiamap.save(afilename, filetype='fits', clobber=True)
+    aiamap.save(afilename, filetype='fits', overwrite=True)
     loaded_save = sunpy.map.Map(afilename)
     assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
     assert loaded_save.meta == aiamap.meta
     assert_quantity_allclose(loaded_save.data, aiamap.data)
+
+
+def test_save_compressed(aia171_test_map, generic_map):
+    """Tests the map save function"""
+    aiamap = aia171_test_map
+    afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+    aiamap.save(afilename, filetype='fits', hdu_type=fits.CompImageHDU, overwrite=True)
+    loaded_save = sunpy.map.Map(afilename)
+    # We expect that round tripping to CompImageHDU will change the header and
+    # the data a little.
+    assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
 
 
 def test_default_shift():
@@ -661,3 +672,7 @@ def test_missing_metadata_warnings():
         array_map.peek()
     # There should be 4 warnings for missing metadata
     assert len([w for w in record if 'Missing metadata' in str(w)]) == 4
+
+
+def test_fits_header(aia171_test_map):
+    assert isinstance(aia171_test_map.fits_header, fits.Header)
