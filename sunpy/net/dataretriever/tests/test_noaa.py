@@ -18,7 +18,7 @@ def create_mock_unified_object(start_date, end_date):
     Let us create a mock QueryResponse object
     using that, we will construct UnifiedResponse
     We will prefill some downloaded data from
-    running noaa.NOAAIndicesClient().search(Time('2012/8/9', '2012/8/10'),
+    running noaa.NOAAIndicesClient().fetch(Time('2012/8/9', '2012/8/10'),
                                                     Instrument('noaa-indices'))
     '''
     # Create a mock QueryResponse object
