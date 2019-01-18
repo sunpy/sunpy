@@ -120,7 +120,7 @@ def get_header(afile):
         close = True
 
     try:
-        headers= []
+        headers = []
         for hdu in hdulist:
             try:
                 comment = "".join(hdu.header['COMMENT']).strip()
@@ -139,7 +139,7 @@ def get_header(afile):
             keydict = {}
             for card in hdu.header.cards:
                 if card.comment != '':
-                    keydict.update({card.keyword:card.comment})
+                    keydict.update({card.keyword: card.comment})
             header['KEYCOMMENTS'] = keydict
             header['WAVEUNIT'] = extract_waveunit(header)
 
@@ -204,11 +204,11 @@ def header_to_fits(header):
 
     for k, v in header.items():
         if isinstance(v, fits.header._HeaderCommentaryCards):
-            if k == 'comments':
+            if k.upper() == 'COMMENT':
                 comments = str(v).split('\n')
                 for com in comments:
-                    fits_header.add_comments(com)
-            elif k == 'history':
+                    fits_header.add_comment(com)
+            elif k.upper() == 'HISTORY':
                 hists = str(v).split('\n')
                 for hist in hists:
                     fits_header.add_history(hist)
@@ -306,5 +306,5 @@ def extract_waveunit(header):
                 waveunit = m.group(1)
                 break
     if waveunit == '':
-        return None # To fix problems associated with HMI FITS.
+        return None  # To fix problems associated with HMI FITS.
     return waveunit
