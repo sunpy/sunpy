@@ -31,13 +31,13 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
 def test_can_handle_query():
     ans1 = noaa.NOAAIndicesClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
-    assert ans1 == True
+    assert ans1 is True
     ans2 = noaa.NOAAIndicesClient._can_handle_query(
         Time('2012/7/7', '2012/7/7'))
-    assert ans2 == False
+    assert ans2 is False
     ans3 = noaa.NOAAIndicesClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'))
-    assert ans3 == False
+    assert ans3 is False
 
 
 @pytest.mark.remote_data
