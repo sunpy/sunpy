@@ -1,11 +1,12 @@
-from astropy.io import fits
+import os
+from collections import OrderedDict
+
+import astropy.io.fits as fits
 
 import sunpy.io.fits
-from sunpy.io.fits import get_header, extract_waveunit
-
 import sunpy.data.test
-import os
-
+from sunpy.util import MetaDict
+from sunpy.io.fits import get_header, extract_waveunit
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
 
 testpath = sunpy.data.test.rootdir
@@ -107,3 +108,11 @@ def test_simple_write_compressed(tmpdir):
     with fits.open(str(outfile)) as hdul:
         assert len(hdul) == 2
         assert isinstance(hdul[1], fits.CompImageHDU)
+
+def test_write_with_metadict_header_astropy(tmpdir):
+    fits_file = fits.open(AIA_171_IMAGE)
+    data, header = fits_file[0].data, fits_file[0].header
+    meta_header = MetaDict(OrderedDict(header))
+    temp_file = tmpdir / "temp.fits"
+    sunpy.io.fits.write(str(temp_file), data, meta_header)
+    assert temp_file.exists()
