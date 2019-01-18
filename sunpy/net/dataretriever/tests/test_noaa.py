@@ -62,7 +62,8 @@ def test_fetch(time, instrument):
     assert len(download_list) == len(qr1)
 
 
-@mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient._get_default_uri', return_value='https://example.com' )
+@mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient._get_default_uri',\
+ return_value='https://example.com' )
 @mock.patch('sunpy.net.fido_factory.Fido.fetch', return_value=['*']*19)
 def test_fido(mock_search, mock_fetch):
     qr = Fido.search(a.Time("2012/10/4", "2012/10/6"), a.Instrument('noaa-indices'))
