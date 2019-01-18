@@ -13,6 +13,33 @@ from sunpy.net import attrs as a
 LCClient = noaa.NOAAIndicesClient()
 
 
+def create_mock_unified_object(start_date, end_date):
+    '''
+    Let us create a mock QueryResponse object
+    using that, we will construct UnifiedResponse
+    We will prefill some downloaded data from
+    running noaa.NOAAIndicesClient().search(Time('2012/8/9', '2012/8/10'),
+                                                    Instrument('noaa-indices'))
+    '''
+    # Create a mock QueryResponse object
+    map_ = {}
+    map_['Time_start'] = parse_time(start_date)
+    map_['Time_end'] = parse_time(end_date)
+    map_['source'] = 'sdic'
+    map_['instrument'] = 'noaa-indices'
+    map_['physobs'] = 'sunspot number'
+    map_['provider'] = 'swpc'
+
+    resp = QueryResponse.create(map_, [''])
+    # Attach the client with the QueryResponse
+    resp.client = 'noaa-indices'
+
+    # Create a UnifiedResponse object
+    uresp = UnifiedResponse(resp)
+    print(type(uresp))
+    return (uresp)
+
+
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
     [(TimeRange('1995/06/03', '1995/06/04'),
@@ -62,11 +89,12 @@ def test_fetch(time, instrument):
     assert len(download_list) == len(qr1)
 
 
-@mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient._get_default_uri',
-            return_value='https://example.com')
-@mock.patch('sunpy.net.fido_factory.Fido.fetch', return_value=['*']*19)
-def test_fido(mock_search, mock_fetch):
-    qr = Fido.search(a.Time("2012/10/4", "2012/10/6"), a.Instrument('noaa-indices'))
+@mock.patch('sunpy.net.fido_factory.Fido.fetch',
+            side_effect=create_mock_unified_object("2012/10/4", "2012/10/6"))
+def test_fido(mock_search):
+    qr = Fido.search(a.Time("2012/10/4", "2012/10/6"),
+                     a.Instrument('noaa-indices'))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
+    assert isinstance(response, QueryResponse)
     assert len(response) == qr._numfile
