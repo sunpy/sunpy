@@ -1,5 +1,7 @@
 import pytest
 
+from unittest import mock
+
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
@@ -60,13 +62,10 @@ def test_fetch(time, instrument):
     assert len(download_list) == len(qr1)
 
 
-@pytest.mark.remote_data
-@pytest.mark.parametrize(
-    "time, instrument",
-    [(a.Time("2012/10/4", "2012/10/6"), a.Instrument('noaa-indices')),
-     (a.Time('2013/10/5', '2013/10/7'), a.Instrument('noaa-indices'))])
-def test_fido(time, instrument):
-    qr = Fido.search(time, instrument)
+@mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient._get_default_uri', return_value='https://example.com' )
+@mock.patch('sunpy.net.fido_factory.Fido.fetch', return_value=['*']*19)
+def test_fido(mock_search, mock_fetch):
+    qr = Fido.search(a.Time("2012/10/4", "2012/10/6"), a.Instrument('noaa-indices'))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
