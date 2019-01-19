@@ -1,3 +1,5 @@
+.. doctest-skip-all
+
 .. _database_guide:
 
 --------------------------
