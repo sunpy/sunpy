@@ -45,6 +45,7 @@ def test_fetch_working():
     # Mock UnifiedResponse object
     mock_qr = create_mock_unified_object('2012/10/4', '2012/10/6')
     assert isinstance(mock_qr, qr1)
+    assert mock_qr == qr1
 
     # Assert if the timerange is same
     assert qr1.time_range() == TimeRange('2012/10/4', '2012/10/6')
