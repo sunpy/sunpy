@@ -36,8 +36,7 @@ def create_mock_unified_object(start_date, end_date):
 @pytest.mark.remote_data
 def test_fetch_working():
     '''
-    Tests if the online server for noaa
-    is working.
+    Tests if the online server for noaa is working.
     Uses the url : ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
     '''
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
@@ -90,7 +89,7 @@ def test_query(mock_search):
             side_effect=create_mock_unified_object('2012/10/4', '2012/10/6'))
 @mock.patch('sunpy.net.download.Results.wait',
             return_value=['some/path/extension/RecentIndices.txt'])
-def test_fetch1(mock_wait, mock_search):
+def test_fetch(mock_wait, mock_search):
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
                           Instrument('noaa-indices'))
     res = LCClient.fetch(qr1)
