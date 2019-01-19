@@ -22,13 +22,15 @@ def create_mock_unified_object(start_date, end_date):
                                                     Instrument('noaa-indices'))
     '''
     # Create a mock QueryResponse object
-    map_ = {}
-    map_['Time_start'] = parse_time(start_date)
-    map_['Time_end'] = parse_time(end_date)
-    map_['source'] = 'sdic'
-    map_['instrument'] = 'noaa-indices'
-    map_['physobs'] = 'sunspot number'
-    map_['provider'] = 'swpc'
+    map_ = {
+        'Time_start': parse_time(start_date),
+        'Time_end':  parse_time(end_date),
+        'source': 'sdic',
+        'instrument': 'noaa-indices',
+        'physobs': 'sunspot number',
+        'provider': 'swpc'
+
+    }
 
     resp = QueryResponse.create(map_, LCClient._get_default_uri())
     # Attach the client with the QueryResponse
