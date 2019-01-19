@@ -41,6 +41,14 @@ def test_fetch_working():
     '''
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
                           Instrument('noaa-indices'))
+
+    # Mock UnifiedResponse object
+    mock_qr = create_mock_unified_object('2012/10/4', '2012/10/6')
+    assert isinstance(mock_qr, qr1)
+
+    # Assert if the timerange is same
+    assert qr1.time_range() == TimeRange('2012/10/4', '2012/10/6')
+
     res = LCClient.fetch(qr1)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
