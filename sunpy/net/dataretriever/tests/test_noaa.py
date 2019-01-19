@@ -6,7 +6,6 @@ from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
-from sunpy.net.dataretriever.client import QueryResponseBlock
 import sunpy.net.dataretriever.sources.noaa as noaa
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
@@ -16,21 +15,14 @@ LCClient = noaa.NOAAIndicesClient()
 
 def create_mock_unified_object(start_date, end_date):
     '''
-    Let us create a mock QueryResponse object
-    using that, we will construct UnifiedResponse
-    We will prefill some downloaded data from
-    running noaa.NOAAIndicesClient().fetch(Time('2012/8/9', '2012/8/10'),
-                                                    Instrument('noaa-indices'))
+    Creation of a UnifiedResponse from QueryResponse object, and prefill some
+    downloaded data from noaa.NOAAIndicesClient().fetch(Time('20 ..)
     '''
     # Create a mock QueryResponse object
     map_ = {
         'Time_start': parse_time(start_date),
         'Time_end':  parse_time(end_date),
-        'source': 'sdic',
-        'instrument': 'noaa-indices',
-        'physobs': 'sunspot number',
-        'provider': 'swpc'
-
+        'source': 'sdic'
     }
 
     resp = QueryResponse.create(map_, LCClient._get_default_uri())
@@ -38,8 +30,7 @@ def create_mock_unified_object(start_date, end_date):
     resp.client = 'noaa-indices'
 
     # Create a UnifiedResponse object
-    uresp = UnifiedResponse(resp)
-    return (uresp)
+    return UnifiedResponse(resp)
 
 
 @pytest.mark.remote_data
