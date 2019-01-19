@@ -5,7 +5,7 @@ from unittest import mock
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
-from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.dataretriever.client import QueryResponse, QueryResponseBlock
 import sunpy.net.dataretriever.sources.noaa as noaa
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
@@ -30,14 +30,28 @@ def create_mock_unified_object(start_date, end_date):
     map_['physobs'] = 'sunspot number'
     map_['provider'] = 'swpc'
 
-    resp = QueryResponse.create(map_, [''])
+    resp = QueryResponse.create(map_, LCClient._get_default_uri())
     # Attach the client with the QueryResponse
     resp.client = 'noaa-indices'
 
     # Create a UnifiedResponse object
     uresp = UnifiedResponse(resp)
-    print(type(uresp))
     return (uresp)
+
+
+@pytest.mark.remote_data
+def test_fetch_working():
+    '''
+    Tests if the online server for noaa
+    is working.
+    Uses the url : ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
+    '''
+    qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
+                          Instrument('noaa-indices'))
+    res = LCClient.fetch(qr1)
+    download_list = res.wait(progress=False)
+    assert len(download_list) == len(qr1)
+    assert download_list[0].split('/')[-1] == 'RecentIndices.txt'
 
 
 @pytest.mark.parametrize(
@@ -67,8 +81,9 @@ def test_can_handle_query():
     assert ans3 is False
 
 
-@pytest.mark.remote_data
-def test_query():
+@mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
+            side_effect=create_mock_unified_object('2012/8/9', '2012/8/10'))
+def test_query(mock_search):
     qr1 = LCClient.search(
         Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
     assert isinstance(qr1, QueryResponse)
@@ -77,13 +92,13 @@ def test_query():
     assert qr1.time_range().end == parse_time('2012/08/10')
 
 
-@pytest.mark.remote_data
-@pytest.mark.parametrize("time, instrument", [
-    (Time('2012/11/27', '2012/11/27'), Instrument('noaa-indices')),
-    (Time('2012/10/4', '2012/10/6'), Instrument('noaa-indices')),
-])
-def test_fetch(time, instrument):
-    qr1 = LCClient.search(time, instrument)
+@mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
+            side_effect=create_mock_unified_object('2012/10/4', '2012/10/6'))
+@mock.patch('sunpy.net.download.Results.wait',
+            return_value=['some/path/extension/RecentIndices.txt'])
+def test_fetch1(mock_wait, mock_search):
+    qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
+                          Instrument('noaa-indices'))
     res = LCClient.fetch(qr1)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
@@ -91,10 +106,10 @@ def test_fetch(time, instrument):
 
 @mock.patch('sunpy.net.fido_factory.Fido.fetch',
             side_effect=create_mock_unified_object("2012/10/4", "2012/10/6"))
-def test_fido(mock_search):
+def test_fido(mock_fetch):
     qr = Fido.search(a.Time("2012/10/4", "2012/10/6"),
                      a.Instrument('noaa-indices'))
     assert isinstance(qr, UnifiedResponse)
+
     response = Fido.fetch(qr)
-    assert isinstance(response, QueryResponse)
     assert len(response) == qr._numfile
