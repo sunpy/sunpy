@@ -26,7 +26,7 @@ jobs:
   - script: pip install --upgrade git+https://github.com/drdavella/tox-conda
     displayName: install tox-conda
 
-  - script: tox -vv -e ${{ parameters.tox }}
+  - script: tox -vvv -e ${{ parameters.tox }}
     displayName: run tox-conda
 
   - script: |
