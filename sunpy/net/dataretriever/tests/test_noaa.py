@@ -14,7 +14,7 @@ from sunpy.net import attrs as a
 LCClient = noaa.NOAAIndicesClient()
 
 
-def create_mock_unified_object(start_date, end_date):
+def mock_query_object(start_date, end_date):
     '''
     Creation of a QueryResponse object, and prefill some
     downloaded data from noaa.NOAAIndicesClient().fetch(Time('20 ..)
@@ -41,8 +41,8 @@ def test_fetch_working():
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
                           Instrument('noaa-indices'))
 
-    # Mock UnifiedResponse object
-    mock_qr = create_mock_unified_object('2012/10/4', '2012/10/6')
+    # Mock QueryResponse object
+    mock_qr = mock_query_object('2012/10/4', '2012/10/6')
     assert isinstance(mock_qr, qr1)
     assert mock_qr == qr1
 
@@ -83,7 +83,7 @@ def test_can_handle_query():
 
 
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
-            return_value=create_mock_unified_object('2012/8/9', '2012/8/10'))
+            return_value=mock_query_object('2012/8/9', '2012/8/10'))
 def test_query(mock_search):
     qr1 = LCClient.search(
         Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
@@ -94,7 +94,7 @@ def test_query(mock_search):
 
 
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
-            return_value=create_mock_unified_object('2012/10/4', '2012/10/6'))
+            return_value=mock_query_object('2012/10/4', '2012/10/6'))
 @mock.patch('sunpy.net.download.Results.wait',
             return_value=['some/path/extension/RecentIndices.txt'])
 def test_fetch(mock_wait, mock_search):
@@ -107,7 +107,7 @@ def test_fetch(mock_wait, mock_search):
 
 @mock.patch('sunpy.net.fido_factory.Fido.fetch',
             side_effect=(UnifiedResponse(
-                create_mock_unified_object("2012/10/4", "2012/10/6"))))
+                mock_query_object("2012/10/4", "2012/10/6"))))
 def test_fido(mock_fetch):
     qr = Fido.search(a.Time("2012/10/4", "2012/10/6"),
                      a.Instrument('noaa-indices'))
