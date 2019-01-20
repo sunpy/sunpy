@@ -10,6 +10,7 @@ import sunpy.net.dataretriever.sources.noaa as noaa
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+
 LCClient = noaa.NOAAIndicesClient()
 
 
@@ -105,7 +106,8 @@ def test_fetch(mock_wait, mock_search):
 
 
 @mock.patch('sunpy.net.fido_factory.Fido.fetch',
-            side_effect=(UnifiedResponse(create_mock_unified_object("2012/10/4", "2012/10/6"))))
+            side_effect=(UnifiedResponse(
+                create_mock_unified_object("2012/10/4", "2012/10/6"))))
 def test_fido(mock_fetch):
     qr = Fido.search(a.Time("2012/10/4", "2012/10/6"),
                      a.Instrument('noaa-indices'))
