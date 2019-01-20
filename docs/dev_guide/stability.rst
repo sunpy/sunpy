@@ -90,7 +90,7 @@ The current planned and existing sub-packages are:
     {% for module, prop in sunpy_modules.items() %}
         <tr>
             <td>
-                <a href="code_ref/{{ module }}.html">sunpy.{{ module }}</a>
+                <a href="../code_ref/{{ module }}.html">sunpy.{{ module }}</a>
             </td>
             <td align='center'>
                 <span class="{{ prop['status'] }}"></span>
