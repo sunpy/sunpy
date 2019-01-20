@@ -24,9 +24,3 @@ jobs:
 
   - script: tox -e ${{ parameters.tox }}
     displayName: run tox-conda
-
-  - script: |
-      pip install --upgrade codecov
-      codecov --name ${{ format(parameters.name) }}
-    displayName: run codecov
-    condition: succeededOrFailed()
