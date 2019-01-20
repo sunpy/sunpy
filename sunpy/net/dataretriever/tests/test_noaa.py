@@ -15,7 +15,7 @@ LCClient = noaa.NOAAIndicesClient()
 
 def create_mock_unified_object(start_date, end_date):
     '''
-    Creation of a UnifiedResponse from QueryResponse object, and prefill some
+    Creation of a QueryResponse object, and prefill some
     downloaded data from noaa.NOAAIndicesClient().fetch(Time('20 ..)
     '''
     # Create a mock QueryResponse object
@@ -28,9 +28,7 @@ def create_mock_unified_object(start_date, end_date):
     resp = QueryResponse.create(map_, LCClient._get_default_uri())
     # Attach the client with the QueryResponse
     resp.client = 'noaa-indices'
-
-    # Create a UnifiedResponse object
-    return UnifiedResponse(resp)
+    return resp
 
 
 @pytest.mark.remote_data
@@ -44,6 +42,7 @@ def test_fetch_working():
 
     # Mock UnifiedResponse object
     mock_qr = create_mock_unified_object('2012/10/4', '2012/10/6')
+    assert isinstance(mock_qr, qr1)
     assert mock_qr == qr1
 
     # Assert if the timerange is same
@@ -83,7 +82,7 @@ def test_can_handle_query():
 
 
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
-            side_effect=create_mock_unified_object('2012/8/9', '2012/8/10'))
+            return_value=create_mock_unified_object('2012/8/9', '2012/8/10'))
 def test_query(mock_search):
     qr1 = LCClient.search(
         Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
@@ -94,7 +93,7 @@ def test_query(mock_search):
 
 
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
-            side_effect=create_mock_unified_object('2012/10/4', '2012/10/6'))
+            return_value=create_mock_unified_object('2012/10/4', '2012/10/6'))
 @mock.patch('sunpy.net.download.Results.wait',
             return_value=['some/path/extension/RecentIndices.txt'])
 def test_fetch(mock_wait, mock_search):
@@ -106,7 +105,7 @@ def test_fetch(mock_wait, mock_search):
 
 
 @mock.patch('sunpy.net.fido_factory.Fido.fetch',
-            side_effect=create_mock_unified_object("2012/10/4", "2012/10/6"))
+            side_effect=(UnifiedResponse(create_mock_unified_object("2012/10/4", "2012/10/6"))))
 def test_fido(mock_fetch):
     qr = Fido.search(a.Time("2012/10/4", "2012/10/6"),
                      a.Instrument('noaa-indices'))
