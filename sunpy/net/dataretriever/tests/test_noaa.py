@@ -43,7 +43,7 @@ def test_fetch_working():
 
     # Mock QueryResponse object
     mock_qr = mock_query_object('2012/10/4', '2012/10/6')
-    assert isinstance(mock_qr, qr1)
+
     assert mock_qr == qr1
 
     # Assert if the timerange is same
