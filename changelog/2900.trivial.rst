@@ -1,1 +1,1 @@
-Added mock tests for `sunpy.net.dataretriever.sources.noaa`, for mocking online requests.
+Used `unittest.mock` for creating offline tests for simulating online tests for `test_noaa.py`
