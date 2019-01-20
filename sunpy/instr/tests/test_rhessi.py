@@ -2,9 +2,10 @@
 """
 Unit tests for `sunpy.instr.rhessi`
 """
+import sys
 import textwrap
 
-import mock
+from unittest import mock
 import numpy as np
 import pytest
 
@@ -125,7 +126,7 @@ def hessi_data():
                              Filename  Orb_st Orb_end         Start_time           End_time Status_flag    Npackets Drift_start   Drift_end Data source
          hsi_obssumm_19721101_139.fit       7       8 01-Nov-72 00:00:00 02-Nov-72 00:00:00           3           2       0.000       0.000
          hsi_obssumm_19721102_144.fit       9      10 02-Nov-72 00:00:00 03-Nov-72 00:00:00           4           1       0.000       0.000
-         """).splitlines()
+         """)
 
 
 def test_parse_observing_summary_dbase_file_mock():
@@ -133,8 +134,14 @@ def test_parse_observing_summary_dbase_file_mock():
     Ensure that all required data are extracted from the RHESSI
     observing summary database file mocked in `hessi_data()`
     """
-    mock_file = mock.mock_open()
-    mock_file.return_value.__iter__.return_value = hessi_data()
+
+    # We need to mock this test differently for 3.6 vs 3.7
+    # Hopefully they backport the fix to 3.6 in the future.
+    if sys.version_info[1] <= 6:
+        mock_file = mock.mock_open()
+        mock_file.return_value.__iter__.return_value = hessi_data().splitlines()
+    else:
+        mock_file = mock.mock_open(read_data=hessi_data())
 
     dbase_data = {}
     with mock.patch('sunpy.instr.rhessi.open', mock_file, create=True):
