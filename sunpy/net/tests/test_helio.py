@@ -1,6 +1,6 @@
 import urllib
 
-import mock
+from unittest import mock
 import pytest
 
 from sunpy.net.helio.parser import (link_test, taverna_parser, wsdl_retriever,
