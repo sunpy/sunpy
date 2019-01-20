@@ -427,11 +427,14 @@ def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
     out_meta['hglt_obs'] = new_observer.lat.value
 
     if is_sub_full_disk:
+        # Define a new reference pixel and the value at the reference pixel.
+        # Note that according to the FITS convention the first pixel in the
+        # image is at (1.0, 1.0).
         center_rotated = solar_rotate_coordinate(smap.center, observer=new_observer, **diffrot_kwargs)
         out_meta['crval1'] = center_rotated.Tx.value
         out_meta['crval2'] = center_rotated.Ty.value
-        out_meta['crpix1'] = smap.data.shape[1]/2.0 + ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
-        out_meta['crpix2'] = smap.data.shape[0]/2.0 + ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
+        out_meta['crpix1'] = 1 + smap.data.shape[1]/2.0 + ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
+        out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
 
     return sunpy.map.Map((out, out_meta))
 
@@ -680,7 +683,7 @@ def on_disk_bounding_coordinates(smap):
     -------
     (bl, tr) : `~list`
         Returns the bottom left and top right coordinates that bound the
-        spatial location of all the on disk pixels.
+        spatial location of all the on-disk pixels.
     """
     # Check that the input map is not all off disk.
     if is_all_off_disk(smap):
