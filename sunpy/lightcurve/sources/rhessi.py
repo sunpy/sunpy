@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 
 import datetime
+import warnings
 import matplotlib.dates
 import matplotlib.pyplot as plt
 from pandas import DataFrame
@@ -96,7 +97,8 @@ class RHESSISummaryLightCurve(LightCurve):
     @classmethod
     def _get_default_uri(cls):
         """Retrieves the latest RHESSI data."""
-        today = datetime.datetime.today()
+        warnings.warn("There seems to be no RHESSI data since 05-Aug-2018")
+        today = datetime.datetime(2018,8,5)
         days_back = 3
         time_range = TimeRange(today - datetime.timedelta(days=days_back),
                                today - datetime.timedelta(days=days_back - 1))

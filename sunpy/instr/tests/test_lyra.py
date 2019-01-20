@@ -82,7 +82,6 @@ def test_split_series_using_lytaf():
     assert split_no_lytaf[0]["subdata"].all() == dummy_data.all()
 
 
-@pytest.fixture
 def get_lyradata(dtype):
     if dtype == 'lc':
         # Create sample LYRALightCurve
