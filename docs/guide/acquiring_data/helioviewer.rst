@@ -20,6 +20,7 @@ We provide the follwing functions:
 2. As above but return the full JSON response instead of an image.
 3. Return all available datasources.
 4. Generates custom screenshots that allow labels and layers of images.
+5. Download the XML header embedded in a JPEG2000 image. This includes the FITS header as well as a section of Helioviewer-specific metadata.
 
 Nearly all requests require the user to specify the data they are interested in.
 Depending on the function, it consists of passing in either: *observatory*, *instrument*,

@@ -1,0 +1,1 @@
+Header information can be downloaded using get_jp2_header function. The API returns the information in XML format but using xmltodict library we convert the xml file into a dictionary. Two new libraries are added to support the same.
