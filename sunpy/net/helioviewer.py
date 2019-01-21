@@ -14,6 +14,9 @@ import sunpy
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
 
+import requests
+import xmltodict
+
 __all__ = ['HelioviewerClient']
 
 
@@ -188,6 +191,63 @@ class HelioviewerClient(object):
         }
 
         return self._get_file(params, directory=directory, overwrite=overwrite)
+
+    def get_jp2_header(self, date, observatory=None, instrument=None, detector=None,
+                       measurement=None, jp2_id=None, directory=None, overwrite=False):
+        """
+        Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section 
+        of Helioviewer-specific metadata.
+
+        This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+
+        Parameters
+        ----------
+        observatory : `str`
+            Observatory name
+        instrument : `str`
+            Instrument name
+        measurement : `str`
+            Measurement name
+        detector : `str`
+            Detector name
+        directory : `str`
+            Directory to download JPEG 2000 image to.
+        overwrite : bool
+            Defaults to False.
+            If set to True, will overwrite any files with the same name.
+
+        Returns
+        -------
+        out : `Dict`
+            Returns a dictionary containing the header information of JPEG 2000 image.
+
+        Examples
+        --------
+        >>> from sunpy.net import helioviewer
+        >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
+        >>> header = hv.get_jp2_header('2012/07/03', observatory='SDO',
+        ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
+        """
+        if jp2_id is None:
+            try:
+                key = (observatory, instrument, detector, measurement)
+                print(key)
+                source_id = self.data_sources[key]
+                metadata = self.get_closest_image(date, source_id = source_id)
+                jp2_id = metadata['id']
+            except KeyError:
+                raise KeyError("The values used for observatory, instrument, detector, measurement "
+                               "do not correspond to a source_id. Please check the list using "
+                               "HelioviewerClient.data_sources.")
+
+        URL = ('https://api.helioviewer.org/v2/getJP2Header/?id=' + (jp2_id))
+
+        params = {
+            "action": "getJP2Header",
+            "id" : jp2_id,
+        }
+
+        return self._get_header_information(URL)
 
     def download_png(self, date, image_scale, layers,
                      directory=None, overwrite=False, watermark=False,
@@ -390,3 +450,11 @@ class HelioviewerClient(object):
     def _format_date(self, date):
         """Formats a date for Helioviewer API requests"""
         return parse_time(date).isot + "Z"
+
+    def _get_header_information(self, URL):
+        response = requests.get(URL)
+        with open('header.xml', 'wb') as file:
+            file.write(response.content)
+        with open('header.xml') as fd:
+            doc = xmltodict.parse(fd.read())
+        return doc
