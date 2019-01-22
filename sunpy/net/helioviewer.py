@@ -210,11 +210,6 @@ class HelioviewerClient(object):
             Measurement name
         detector : `str`
             Detector name
-        directory : `str`
-            Directory to download JPEG 2000 image to.
-        overwrite : bool
-            Defaults to False.
-            If set to True, will overwrite any files with the same name.
 
         Returns
         -------
@@ -227,6 +222,9 @@ class HelioviewerClient(object):
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> header = hv.get_jp2_header('2012/07/03', observatory='SDO',
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
+        >>> fits_header = header['meta']['fits']  #The keys 'meta' and 'fits' can be used to get the fits header information
+        >>> helioviewer_meta_data = header['meta']['helioviewer'] #The keys 'meta' and 'helioviewer' can be used to extract the
+                                                                  #helioviewer specific metadata.
         """
         if jp2_id is None:
             try:

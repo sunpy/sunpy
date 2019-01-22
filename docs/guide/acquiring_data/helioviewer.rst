@@ -20,7 +20,7 @@ We provide the follwing functions:
 2. As above but return the full JSON response instead of an image.
 3. Return all available datasources.
 4. Generates custom screenshots that allow labels and layers of images.
-5. Download the header information present in a JPEG2000 image. This includes the follwoing:
+5. Download the header information present in a JPEG2000 image. This includes:
     5.1. FITS header 
     5.2. Helioviewer-specific metadata.
 

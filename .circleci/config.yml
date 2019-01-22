@@ -97,6 +97,9 @@ jobs:
       - run:
           name: Run tests
           command: PYTHONHASHSEED=42 /opt/python/cp36-cp36m/bin/python setup.py test --parallel=4
+      - run:
+          name: xml to dictionary conversion dependencies
+          command: conda install -c conda-forge xmltodict 
     environment:
           MPLBACKEND: agg
           COLUMNS: 180
