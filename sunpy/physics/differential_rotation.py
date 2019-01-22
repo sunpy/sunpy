@@ -101,14 +101,14 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     return Longitude(rotation.to(u.deg))
 
 
-def _get_new_observer(obstime, observer, time):
+def _get_new_observer(initial_obstime, observer, time):
     """
     Helper function that interprets the possible ways of specifying the
     input to the solar coordinate rotation function.
 
     Parameters
     ----------
-    obstime :
+    initial_obstime :
     observer :
     time :
 
@@ -128,7 +128,7 @@ def _get_new_observer(obstime, observer, time):
     elif time is not None:
         warnings.warn("Using 'time' assumes an Earth-based observer.")
         if isinstance(time, TimeDelta) or isinstance(time, u.Quantity):
-            new_observer_time = obstime + time
+            new_observer_time = initial_obstime + time
         else:
             new_observer_time = parse_time(time)
 
@@ -142,27 +142,41 @@ def _get_new_observer(obstime, observer, time):
 def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwargs):
     """
     Given a coordinate on the Sun, calculate where that coordinate maps to
-    at as seen by a new observer at some later or earlier time, given that
+    as seen by a new observer at some later or earlier time, given that
     the input coordinate rotates according to the solar rotation profile.
 
     The amount of solar rotation is based on the amount of time between the
     observation time of the input coordinate and the observation time of the
+    new observer. The new observer is specified in one of two ways, either
+    using the "observer" or "time" keywords.
+
+    If the "observer" keyword is set, it is used to specify the location
+    of the new observer in space and time.  The difference between the
+    coordinate time and the new observer time is used to calculate the amount
+    of solar rotation applied, and the location of the new observer in space
+    is used to calculate where the rotated coordinate is as seen from the
     new observer.
+
+    If the "time" keyword is set, it is used to specify the number of
+    seconds to rotate the coordinate by. Note that using the "time" keyword
+    assumes that the new observer is on the Earth. This may be a reasonable
+    assumption depending on the application.
+
+    Either the "observer" or "time" keyword must be specified, but both
+    cannot be specified at the same time.
 
     Parameters
     ----------
     coordinate : `~astropy.coordinates.SkyCoord`
         Any valid coordinate which is transformable to Heliographic Stonyhurst.
 
-    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
-        The location of the new observer.
-        Instruments in Earth orbit can be approximated by using the position
-        of the Earth at the observation time of the new observer.
+    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, None
+        The location of the new observer in space and time (the observer must have an
+        interpretable obstime property).
 
-    time : `~astropy.time.Time`
+    time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
 
-
-    **diff_rot_kwargs : keyword arguments
+    diff_rot_kwargs : `dict`
         Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
         Note that the keyword "frame_time" is automatically set to the value
         "sidereal".
@@ -231,11 +245,19 @@ def _rotate_submap_edges(smap, pixels, observer, diffrot_kwargs=None):
 
     Parameters
     ----------
-    smap :
-    pixels :
+    smap : `sunpy.map.Map`
+
+    pixels : `~astropy.units.Quantity`
+        A Quantity array of shape (M, 2) in pixel units.  Values (:, 0) are the y values of the
+        pixel indices, and values (:, 1) are the x values of the pixel indices.
+
     diffrot_kwargs :
-    observer :
-    time :
+        Keyword arguments accepted by `sunpy.physics.differential_rotation.diff_rot`.
+
+    observer : None ,
+
+    time : `~sunpy.time`
+
 
     Returns
     -------
@@ -259,12 +281,15 @@ def _get_extreme_position(coords, axis, operator=np.nanmax):
 
     Parameters
     ----------
-    coords :
-    axis :
+    coords : `~astropy.coordinates.SkyCoord`
+
+    axis :  'Tx', 'Ty'
+
     operator :
 
     Returns
     -------
+
     """
 
     extreme_values = []
@@ -289,9 +314,13 @@ def _get_bounding_coordinates(coords):
     ----------
     coords :
 
+
     Returns
     -------
-
+    bottom_left, top_right : `~list`
+        A pair of `~astropy.coordinates.SkyCoord` that specify the
+        bottom left hand and top right hand corner or bounding box that
+        minimally encloses the passed in coordinates.
     """
     rotated_x_min = _get_extreme_position(coords, "Tx", operator=np.nanmin)
     rotated_x_max = _get_extreme_position(coords, "Tx", operator=np.nanmax)
