@@ -103,25 +103,29 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
 def _get_new_observer(obstime, observer, time):
     """
+    Helper function that interprets the possible ways of specifying the
+    input to the solar coordinate rotation function.
 
-    obstime:
-    observer:
-    time:
-    :return:
+    Parameters
+    ----------
+    obstime :
+    observer :
+    time :
+
+    Returns
+    -------
+
     """
     # Check the input and create the new observer
     if (observer is not None) and (time is not None):
         raise ValueError("Either the 'observer' or the 'time' keyword must be specified, but not both simultaneously.")
-
-    if observer is not None:
+    elif observer is not None:
         # Check that the new_observer is specified correctly.
         if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
             raise ValueError(
                 "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
-
         new_observer = observer
-
-    if time is not None:
+    elif time is not None:
         warnings.warn("Using 'time' assumes an Earth-based observer.")
         if isinstance(time, TimeDelta) or isinstance(time, u.Quantity):
             new_observer_time = obstime + time
@@ -129,6 +133,8 @@ def _get_new_observer(obstime, observer, time):
             new_observer_time = parse_time(time)
 
         new_observer = get_body("earth", new_observer_time)
+    else:
+        raise ValueError("Either the 'observer' or the 'time' keyword must not be None.")
 
     return new_observer
 
@@ -238,7 +244,7 @@ def _rotate_submap_edges(smap, pixels, observer, diffrot_kwargs=None):
     # Coordinates
     c = smap.pixel_to_world(pixels[:, 1], pixels[:, 0])
 
-    #
+    # Only apply solar rotation if all coordinates are on the disk.
     if np.all(~coordinate_is_on_disk(c, smap.rsun_obs)):
         cr = deepcopy(c)
     else:
@@ -246,9 +252,58 @@ def _rotate_submap_edges(smap, pixels, observer, diffrot_kwargs=None):
     return cr
 
 
+def _get_extreme_position(coords, axis, operator=np.nanmax):
+    """
+    Helper function that calculates an extreme position from a list of
+    coordinates.
+
+    Parameters
+    ----------
+    coords :
+    axis :
+    operator :
+
+    Returns
+    -------
+    """
+
+    extreme_values = []
+    for coord in coords:
+        if axis == 'Tx':
+            extreme_value = operator(coord.Tx.value)
+        elif axis == 'Ty':
+            extreme_value = operator(coord.Ty.value)
+        else:
+            raise ValueError('The "axis" argument must be either "Tx" or "Ty"')
+        extreme_values.append(extreme_value)
+
+    return operator(extreme_values) * u.arcsec
+
+
+def _get_bounding_coordinates(coords):
+    """
+    Helper function that returns the bottom left and top right coordinates
+    that define a bounding box enclosing the passed in coordinates.
+
+    Parameters
+    ----------
+    coords :
+
+    Returns
+    -------
+
+    """
+    rotated_x_min = _get_extreme_position(coords, "Tx", operator=np.nanmin)
+    rotated_x_max = _get_extreme_position(coords, "Tx", operator=np.nanmax)
+    rotated_y_min = _get_extreme_position(coords, "Ty", operator=np.nanmin)
+    rotated_y_max = _get_extreme_position(coords, "Ty", operator=np.nanmax)
+    return SkyCoord(rotated_x_min, rotated_y_min, frame=Helioprojective, observer=coords[0].observer),\
+           SkyCoord(rotated_x_max, rotated_y_max, frame=Helioprojective, observer=coords[0].observer),
+
+
 def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
     """
-    Function that returns a new list of coordinates for each input coord.
+    Helper function that returns a new list of coordinates for each input coord.
     This is an inverse function needed by the scikit-image `transform.warp`
     function.
 
@@ -352,43 +407,36 @@ def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
         if not is_all_on_disk(smap):
             # Get the bottom left and top right coordinates that are the
             # vertices that define a box that encloses the on disk pixels
-            s_bl, s_tr = on_disk_bounding_coordinates(smap)
+            bottom_left, top_right = on_disk_bounding_coordinates(smap)
 
             # Create a submap that excludes the off disk emission that does
             # not need to be rotated.
-            smap = smap.submap(s_bl, s_tr)
+            smap = smap.submap(bottom_left, top_right)
+        bottom_left = smap.bottom_left_coord
+        top_right = smap.top_right_coord
 
         # Get the edges of the minimal submap that contains all the on-disk pixels.
         edges = map_edges(smap)
 
-        # Calculate the size of the output array.
-        # Calculate the difference between the top and the bottom.
+        # Calculate where the output array moves to.
         # Rotate the top and bottom edges
-        rotated_top = _rotate_submap_edges(smap, edges["top"], new_observer, diffrot_kwargs=diffrot_kwargs)
-        rotated_bottom = _rotate_submap_edges(smap, edges["bottom"], new_observer, diffrot_kwargs=diffrot_kwargs)
+        rotated_top = _rotate_submap_edges(smap, edges["top"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
+        rotated_bottom = _rotate_submap_edges(smap, edges["bottom"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
 
-        # Calculate the difference between the rotated top and bottom
-        difference_top_bottom_x = np.abs(rotated_top.Tx - rotated_bottom.Tx)
-        difference_top_bottom_y = np.abs(rotated_top.Ty - rotated_bottom.Ty)
-
-        # Calculate the difference between the left and right hand side.
         # Rotate the left and right hand edges
         rotated_lhs = _rotate_submap_edges(smap, edges["lhs"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
         rotated_rhs = _rotate_submap_edges(smap, edges["rhs"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
 
-        # Calculate the difference between the rotated left and right hand sides.
-        difference_lhs_rhs_x = np.abs(rotated_lhs.Tx - rotated_rhs.Tx)
-        difference_lhs_rhs_y = np.abs(rotated_lhs.Ty - rotated_rhs.Ty)
+        # Calculate the bounding box of the rotated map
+        rotated_bl, rotated_tr = _get_bounding_coordinates([rotated_top, rotated_bottom, rotated_lhs, rotated_rhs])
 
-        # Calculate the size of the bounding box in pixels
-        max_x = np.nanmax([np.nanmax(difference_top_bottom_x.value), np.nanmax(difference_lhs_rhs_x.value)]) * u.pix
-        rotated_nx = int(np.ceil(max_x / smap.scale.axis1).value)
-        max_y = np.nanmax([np.nanmax(difference_top_bottom_y.value), np.nanmax(difference_lhs_rhs_y.value)]) * u.pix
-        rotated_ny = int(np.ceil(max_y / smap.scale.axis2).value)
+        # Calculate the maximum distance in pixels the map has moved by comparing
+        # how far the original and rotated bounding boxes have moved.
+        diff_x = [(np.abs(rotated_bl.Tx - bottom_left.Tx)).value, (np.abs(rotated_tr.Tx - top_right.Tx)).value]
+        deltax = int(np.ceil(np.max(diff_x) / smap.scale.axis1).value)
 
-        # Change in size of the padded array relative to the input map.
-        deltax = np.max([0, rotated_nx - smap.data.shape[1]])
-        deltay = np.max([0, rotated_ny - smap.data.shape[0]])
+        diff_y = [(np.abs(rotated_bl.Ty - bottom_left.Ty)).value, (np.abs(rotated_tr.Ty - top_right.Ty)).value]
+        deltay = int(np.ceil(np.max(diff_y) / smap.scale.axis2).value)
 
         # Create a new `smap` with the padding around it
         padded_data = np.pad(smap.data, ((deltay, deltay), (deltax, deltax)), 'constant', constant_values=0)
@@ -412,10 +460,10 @@ def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
     warp_args.update(diffrot_kwargs)
 
     # Apply solar differential rotation as a scikit-image warp
-    out = transform.warp(to_norm(smap_data), inverse_map=_warp_sun_coordinates, map_args=warp_args)
+    out_data = transform.warp(to_norm(smap_data), inverse_map=_warp_sun_coordinates, map_args=warp_args)
 
     # Recover the original intensity range.
-    out = un_norm(out, smap.data)
+    out_data = un_norm(out_data, smap.data)
 
     # Update the meta information with the new date and time.
     out_meta = deepcopy(smap.meta)
@@ -423,8 +471,10 @@ def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
         del out_meta['date_obs']
     out_meta['date-obs'] = new_observer.obstime.strftime("%Y-%m-%dT%H:%M:%S")
 
-    # Need to update the observer location of the output map.
+    # Need to update the observer location for the output map.
     out_meta['hglt_obs'] = new_observer.lat.value
+    out_meta['hgln_obs'] = new_observer.lon.value
+    out_meta['dsun_obs'] = new_observer.radius.to(u.m).value
 
     if is_sub_full_disk:
         # Define a new reference pixel and the value at the reference pixel.
@@ -435,8 +485,9 @@ def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
         out_meta['crval2'] = center_rotated.Ty.value
         out_meta['crpix1'] = 1 + smap.data.shape[1]/2.0 + ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
         out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
-
-    return sunpy.map.Map((out, out_meta))
+        return (sunpy.map.Map(out_data, out_meta)).submap(rotated_bl, rotated_tr)
+    else:
+        return sunpy.map.Map(out_data, out_meta)
 
 
 # Functions that calculate useful quantities from maps.
