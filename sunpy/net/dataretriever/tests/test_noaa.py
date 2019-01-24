@@ -73,13 +73,13 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
 def test_can_handle_query():
     ans1 = noaa.NOAAIndicesClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
-    assert ans1 is True
+    assert ans1
     ans2 = noaa.NOAAIndicesClient._can_handle_query(
         Time('2012/7/7', '2012/7/7'))
-    assert ans2 is False
+    assert not ans2
     ans3 = noaa.NOAAIndicesClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'))
-    assert ans3 is False
+    assert not ans3
 
 
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
