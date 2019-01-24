@@ -21,8 +21,8 @@ We provide the follwing functions:
 3. Return all available datasources.
 4. Generates custom screenshots that allow labels and layers of images.
 5. Download the header information present in a JPEG2000 image. This includes:
-    5.1. FITS header 
-    5.2. Helioviewer-specific metadata.
+    - FITS header 
+    - Helioviewer-specific metadata.
 
 Nearly all requests require the user to specify the data they are interested in.
 Depending on the function, it consists of passing in either: *observatory*, *instrument*,

@@ -6,13 +6,12 @@ import json
 import errno
 import codecs
 import urllib
-import requests
-import xmltodict
 from collections import OrderedDict
 
 from astropy.utils.decorators import lazyproperty
 
 import sunpy
+from sunpy.util.xml import xml_to_dict
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
 
@@ -192,8 +191,7 @@ class HelioviewerClient(object):
 
         return self._get_file(params, directory=directory, overwrite=overwrite)
 
-    def get_jp2_header(self, date, observatory=None, instrument=None, detector=None,
-                       measurement=None, jp2_id=None):
+    def get_jp2_header(self, date, observatory=None, instrument=None, detector=None, measurement=None, jp2_id=None):
         """
         Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section 
         of Helioviewer-specific metadata.
@@ -214,7 +212,8 @@ class HelioviewerClient(object):
         Returns
         -------
         out : `dict`
-            Returns a dictionary containing the header information of JPEG 2000 image.
+            Returns a dictionary containing the header information of JPEG 2000 image. The returned dictionary
+            has two keys namely *fits* and *helioviewer*
 
         Examples
         --------
@@ -222,9 +221,10 @@ class HelioviewerClient(object):
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> header = hv.get_jp2_header('2012/07/03', observatory='SDO',
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
-        >>> fits_header = header['meta']['fits']  #The keys 'meta' and 'fits' can be used to get the fits header information
-        >>> helioviewer_meta_data = header['meta']['helioviewer'] #The keys 'meta' and 'helioviewer' can be used to extract the
-                                                                  #helioviewer specific metadata.
+        #The key 'fits' can be used to get the fits header information
+        >>> fits_header = header['fits']  # doctest: +REMOTE_DATA
+        #The keys 'meta' and 'helioviewer' can be used to extract the helioviewer specific metadata.
+        >>> helioviewer_meta_data = header['helioviewer']  # doctest: +REMOTE_DATA
         """
         if jp2_id is None:
             try:
@@ -239,9 +239,9 @@ class HelioviewerClient(object):
             "id" : jp2_id,
         }
 
-        responses = self._request(params).read().decode('utf-8')
-        header_info = xmltodict.parse(responses)
-        return header_info
+        responses = self._request(params)
+        responses = responses.read().decode('utf-8')  #Reads the output from HTTPResponse object and decodes it.
+        return xml_to_dict(responses)['meta']
 
     def download_png(self, date, image_scale, layers,
                      directory=None, overwrite=False, watermark=False,
