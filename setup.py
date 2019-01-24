@@ -23,6 +23,9 @@ try:
 except ImportError:
     from ConfigParser import ConfigParser
 
+# Fix for https://github.com/pypa/pip/issues/6163
+sys.path.insert(0, os.path.dirname(__file__))
+
 # Get some values from the setup.cfg
 conf = ConfigParser()
 conf.read(['setup.cfg'])
