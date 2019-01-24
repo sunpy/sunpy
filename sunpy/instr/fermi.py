@@ -451,6 +451,11 @@ def met_to_utc(timeinsec):
     """
     Converts Fermi Mission Elapsed Time (MET) in seconds to a datetime object.
 
+    .. warning::
+        This function does not account for leap seconds and can not be fixed in
+        SunPy's 0.9.x series of releases. However, it is fixed in the next major version
+        coming by May 2019.
+
     Parameters
     ----------
     timeinsec : `float`
