@@ -15,6 +15,9 @@ import glob
 import builtins  # noqa
 import itertools
 
+# Fix for https://github.com/pypa/pip/issues/6163
+sys.path.insert(0, os.path.dirname(__file__))
+
 try:
     from configparser import ConfigParser
 except ImportError:
