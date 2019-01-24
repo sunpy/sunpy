@@ -51,10 +51,15 @@ def test_fetch_working():
 
     # Compare if two objects have the same attribute
 
-    # Currently, QueryResponseBlock does not support
-    # comparison operation, so this is a ad-hoc
-    # hack for comparing the values
-    mock_qr[:][0]._map == qr1[:][0]._map
+    mock_qr = mock_qr[0]
+    qr = qr1[0]
+
+    assert mock_qr.source == qr.source
+    assert mock_qr.provider == qr.provider
+    assert mock_qr.physobs == qr.physobs
+    assert mock_qr.instrument == qr.instrument
+    assert mock_qr.url == qr.url
+    assert mock_qr.time == qr.time
 
     # Assert if the timerange is same
     assert qr1.time_range() == TimeRange('2012/10/4', '2012/10/6')
