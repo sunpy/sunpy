@@ -15,10 +15,10 @@ LCClient = noaa.NOAAIndicesClient()
 
 
 def mock_query_object(start_date, end_date):
-    '''
+    """
     Creation of a QueryResponse object, and prefill some
     downloaded data from noaa.NOAAIndicesClient().fetch(Time('20 ..)
-    '''
+    """
     # Create a mock QueryResponse object
     map_ = {
         'Time_start': parse_time(start_date),
@@ -28,16 +28,16 @@ def mock_query_object(start_date, end_date):
 
     resp = QueryResponse.create(map_, LCClient._get_default_uri())
     # Attach the client with the QueryResponse
-    resp.client = 'noaa-indices'
+    resp.client = LCClient
     return resp
 
 
 @pytest.mark.remote_data
 def test_fetch_working():
-    '''
+    """
     Tests if the online server for noaa is working.
     Uses the url : ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
-    '''
+    """
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
                           Instrument('noaa-indices'))
 
