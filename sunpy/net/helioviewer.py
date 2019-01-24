@@ -212,8 +212,8 @@ class HelioviewerClient(object):
         Returns
         -------
         out : `dict`
-            Returns a dictionary containing the header information of JPEG 2000 image. The returned dictionary
-            has two keys namely *fits* and *helioviewer*
+            Returns a dictionary containing the header information of JPEG 2000 image.
+            The returned dictionary has two keys: *fits* and *helioviewer*.
 
         Examples
         --------
@@ -223,7 +223,7 @@ class HelioviewerClient(object):
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
         #The key 'fits' can be used to get the fits header information
         >>> fits_header = header['fits']  # doctest: +REMOTE_DATA
-        #The keys 'meta' and 'helioviewer' can be used to extract the helioviewer specific metadata.
+        #The keys 'helioviewer' can be used to extract the helioviewer specific metadata.
         >>> helioviewer_meta_data = header['helioviewer']  # doctest: +REMOTE_DATA
         """
         if jp2_id is None:
@@ -240,7 +240,8 @@ class HelioviewerClient(object):
         }
 
         responses = self._request(params)
-        responses = responses.read().decode('utf-8')  #Reads the output from HTTPResponse object and decodes it.
+        #Reads the output from HTTPResponse object and decodes it.
+        responses = responses.read().decode('utf-8')
         return xml_to_dict(responses)['meta']
 
     def download_png(self, date, image_scale, layers,
