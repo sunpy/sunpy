@@ -9,8 +9,6 @@ This example shows how to create a simple visualization using
 # Start by importing the necessary modules.
 from itertools import product
 
-import matplotlib.pyplot as plt
-
 import astropy.wcs
 import astropy.units as u
 
@@ -37,21 +35,17 @@ sequence_array = map_sequence.as_array()
 # `~sunpy.visualization.animator.ImageAnimatorWCS` will need.
 # To create the new header we can use the stored meta information from the
 # ``map_sequence``.
-# We will be using a overally complex method to create a header.
 
 # This dictionary comphersion is extracting the three basic keywords we need
-# to create a astropy.wcs.WCS header: 'CTYPE','CUNIT', 'CDELT', 'CRVAL'
-# and 'CRPIX' from the meta information stored in the 'map_sequence'.
+# to create a astropy.wcs.WCS header: 'CTYPE','CUNIT' and 'CDELT'
+# from the meta information stored in the 'map_sequence'.
 wcs_input_dict = {f'{key}{n+1}': map_sequence.all_meta()[0].get(f'{key}{n}')
-                  for n, key in product([1, 2], ['CTYPE', 'CUNIT', 'CDELT', 'CRVAL', 'CRPIX'])}
+                  for n, key in product([1, 2], ['CTYPE', 'CUNIT', 'CDELT'])}
 
 # Now we need to get the time difference between the two observations.
 t0, t1 = map(parse_time, [k['date-obs'] for k in map_sequence.all_meta()])
 time_diff = (t1 - t0).to(u.s)
 wcs_input_dict.update({'CTYPE1': 'Time', 'CUNIT1': time_diff.unit.name, 'CDELT1': time_diff.value})
-
-# Now add the correct number of axes to the WCS header
-wcs_input_dict.update({'NAXIS': 3, 'NAXIS1': 2, 'NAXIS2': 1024, 'NAXIS3': 1024})
 
 # We can now just pass this into astropy.wcs.WCS to create our WCS header.
 wcs = astropy.wcs.WCS(wcs_input_dict)
@@ -61,52 +55,44 @@ print(wcs)
 
 ###############################################################################
 # Now we can create the animation.
-# As `~sunpy.visualization.animator.ImageAnimatorWCS` assumes the last two axes
-# are the two form the image, we can change this  by passing in the
-# ``image_axes`` keyword.
+# `~sunpy.visualization.animator.ImageAnimatorWCS` assumes the last two axes
+# are the two that form the image. However, they are the first two in this case,
+# so we change this by passing in the ``image_axes`` keyword.
 
-#sequence_array = np.rollaxis(sequence_array, -1)
 wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1])
 
 ###############################################################################
-# You might notice that the animation could do with having the axes ticks
-# being tidied up. To do this we can call
-# `~sunpy.visualization.animator.ImageAnimatorWCS.update_axes_style`.
+# You might notice that the animation could do with having the axes look neater.
+# As we are using a WCS object, we can use `~astropy.visualization.wcsaxes`
+# to change the properties of the visualization. The documentation is
+# `here <http://docs.astropy.org/en/stable/visualization/wcsaxes/index.html>`_
+# and details each possible method. In this example, we will just showcase some
+# of these possible methods.
 
-wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1])
-wcs_anim.update_axes_style((20 * u.arcsec), 't', 'r')
-# Notice the title for this one.
-# Is this the bug for https://github.com/sunpy/sunpy/pull/2894?
-
-###############################################################################
-# You might notice that the animation could do with having the axes ticks
-# being tidied up. Since we are using a WCS object, we can use
-# `~astropy.visualization.wcsaxes` to change the properties of the visualization.
-# `Documentation is here <http://docs.astropy.org/en/stable/visualization/wcsaxes/index.html>_`
-
+# We have to recreate the visualization since we displayed it earlier.
 wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1])
 
-# We need to access the underlying WCS axes object.
-# This way we change various properties of our visualization.
-ax = wcs_anim.axes
+# We need to access the underlying WCSAxes object, so we can change the
+# properties of our visualization. The methods on the ``axes.coords`` attribute
+# of ``wcs_anim`` allows us to set various properties.
+# We assign them to a easy to remember variable name.
+# Note the order of assignment out from ``wcs_anim.axes.coords``.
+time, solar_y, solar_x = wcs_anim.axes.coords
 
 # Now we can label the X and Y axes.
-ax.set_xlabel('Solar X (arsec)')
-ax.set_ylabel('Solar Y (arsec)')
-
-# To change the spacing of the ticks for each axis we have to go deeper.
-# ax.coords holds each axis in a list and we can index.
-y_axis, x_axis = ax.coords[1], ax.coords[2]
+solar_x.set_axislabel('Solar X (arsec)')
+solar_y.set_axislabel('Solar Y (arsec)')
 
 # Move the axis labels to avoid the slider.
-y_axis.set_axislabel_position('r')
-x_axis.set_axislabel_position('t')
+solar_x.set_axislabel_position('t')
+solar_y.set_axislabel_position('r')
 
-# Now we can change the spacing.
-y_axis.set_ticks(spacing=1*u.arcmin, color='black')
-x_axis.set_ticks(spacing=1*u.arcmin, color='black')
+# Now we can change the spacing and we have to use `astropy.units` here.
+# We are setting the spacing to be quite small here and this will cause overlap.
+solar_x.set_ticks(spacing=1*u.arcmin, color='black')
+solar_y.set_ticks(spacing=1*u.arcmin, color='black')
 
 # We can make sure the ticks do not overlap.
-y_axis.set_ticklabel(exclude_overlapping=True)
+solar_x.set_ticklabel(exclude_overlapping=True)
 # Set this one to false, so we can see the difference.
-x_axis.set_ticklabel(exclude_overlapping=True)
+solar_y.set_ticklabel(exclude_overlapping=False)
