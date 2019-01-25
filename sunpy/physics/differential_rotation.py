@@ -258,7 +258,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     return heliographic_rotated.transform_to(new_observer).transform_to(coordinate.frame.name)
 
 
-def _rotate_submap_edge(smap, pixels, observer, diffrot_kwargs=None):
+def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
     """
     Helper function that is used to calculate where the edge of a rectangular
     map move to on rotation.  If all the pixels passed in are not on disk and
@@ -277,7 +277,7 @@ def _rotate_submap_edge(smap, pixels, observer, diffrot_kwargs=None):
     observer : `~astropy.coordinates.SkyCoord`
         The location of the observer.
 
-    diffrot_kwargs : None, `~dict`
+    diff_rot_kwargs : None, `~dict`
         Keyword arguments accepted by `sunpy.physics.differential_rotation.diff_rot`.
 
     Returns
@@ -292,7 +292,7 @@ def _rotate_submap_edge(smap, pixels, observer, diffrot_kwargs=None):
     if np.all(~coordinate_is_on_disk(c, smap.rsun_obs)):
         coordinates = deepcopy(c)
     else:
-        coordinates = solar_rotate_coordinate(c, observer=observer, **diffrot_kwargs)
+        coordinates = solar_rotate_coordinate(c, observer=observer, **diff_rot_kwargs)
     return coordinates
 
 
@@ -357,7 +357,7 @@ def _get_bounding_coordinates(coords):
            SkyCoord(rotated_x_max, rotated_y_max, frame=Helioprojective, observer=coords[0].observer)
 
 
-def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
+def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     """
     Helper function that returns a new list of coordinates for each input coord.
     This is an inverse function needed by the scikit-image `transform.warp`
@@ -387,7 +387,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
         heliographic_coordinate = all_coordinates_from_map(smap).transform_to(new_observer).transform_to(HeliographicStonyhurst)
 
         # Compute the differential rotation.
-        drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diffrot_kwargs)
+        drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
         # Subtract the differential rotation.  This is the inverse of adding in
         # differential rotation.
@@ -415,7 +415,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
     return np.ma.array(xy2, mask=np.isnan(xy2))
 
 
-def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
+def diffrot_map(smap, observer=None, time=None, **diff_rot_kwargs):
     """
     Function to apply solar differential rotation to a sunpy map.
 
@@ -477,12 +477,12 @@ def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
 
         # Calculate where the output array moves to.
         # Rotate the top and bottom edges
-        rotated_top = _rotate_submap_edge(smap, edges["top"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
-        rotated_bottom = _rotate_submap_edge(smap, edges["bottom"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
+        rotated_top = _rotate_submap_edge(smap, edges["top"], observer=new_observer, diff_rot_kwargs=diff_rot_kwargs)
+        rotated_bottom = _rotate_submap_edge(smap, edges["bottom"], observer=new_observer, diff_rot_kwargs=diff_rot_kwargs)
 
         # Rotate the left and right hand edges
-        rotated_lhs = _rotate_submap_edge(smap, edges["lhs"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
-        rotated_rhs = _rotate_submap_edge(smap, edges["rhs"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
+        rotated_lhs = _rotate_submap_edge(smap, edges["lhs"], observer=new_observer, diff_rot_kwargs=diff_rot_kwargs)
+        rotated_rhs = _rotate_submap_edge(smap, edges["rhs"], observer=new_observer, diff_rot_kwargs=diff_rot_kwargs)
 
         # Calculate the bounding box of the rotated map
         rotated_bl, rotated_tr = _get_bounding_coordinates([rotated_top, rotated_bottom, rotated_lhs, rotated_rhs])
@@ -514,7 +514,7 @@ def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
 
     # Create the arguments for the warp function.
     warp_args = {'smap': smap, 'new_observer': new_observer}
-    warp_args.update(diffrot_kwargs)
+    warp_args.update(diff_rot_kwargs)
 
     # Apply solar differential rotation as a scikit-image warp
     out_data = transform.warp(to_norm(smap_data), inverse_map=_warp_sun_coordinates, map_args=warp_args)
@@ -537,7 +537,7 @@ def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
         # Define a new reference pixel and the value at the reference pixel.
         # Note that according to the FITS convention the first pixel in the
         # image is at (1.0, 1.0).
-        center_rotated = solar_rotate_coordinate(smap.center, observer=new_observer, **diffrot_kwargs)
+        center_rotated = solar_rotate_coordinate(smap.center, observer=new_observer, **diff_rot_kwargs)
         out_meta['crval1'] = center_rotated.Tx.value
         out_meta['crval2'] = center_rotated.Ty.value
         out_meta['crpix1'] = 1 + smap.data.shape[1]/2.0 + ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
