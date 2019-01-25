@@ -124,9 +124,9 @@ class GenericTimeSeries:
         return self._source
 
     @property
-    def columns(self):
+    def colnames(self):
         """A list of all the names of the columns in the data."""
-        return list(self.data.columns.values)
+        return list(self.data.colnames.values)
 
     @property
     def index(self):
@@ -197,7 +197,7 @@ class GenericTimeSeries:
         units = copy.copy(self.units)
 
         # Add the unit to the units dictionary if already there.
-        if not (colname in self.data.columns):
+        if not (colname in self.data.colnames):
             units[colname] = unit
 
         # Convert the given quantity into values for given units if necessary.
@@ -206,7 +206,7 @@ class GenericTimeSeries:
             values = values.to(units[colname]).value
 
         # Update or add the data.
-        if not (colname in self.data.columns) or overwrite:
+        if not (colname in self.data.colnames) or overwrite:
             data[colname] = values
 
         # Return a new TimeSeries with the given updated/added column.
@@ -480,14 +480,14 @@ class GenericTimeSeries:
         warnings.simplefilter('always', Warning)
 
         # Populate unspecified units:
-        for column in set(self.data.columns.tolist()) - set(self.units.keys()):
+        for column in set(self.data.colnames.tolist()) - set(self.units.keys()):
             # For all columns not present in the units dictionary.
             self.units[column] = u.dimensionless_unscaled
             warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
 
         # Re-arrange so it's in the same order as the columns and removed unused.
         units = OrderedDict()
-        for column in self.data.columns.tolist():
+        for column in self.data.colnames.tolist():
             units.update({column:self.units[column]})
 
         # Now use the amended units Ordered Dictionary
