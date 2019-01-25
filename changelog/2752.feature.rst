@@ -1,1 +1,0 @@
-Now able to change the ticks and axis labels user-defined units for `~sunpy.visualization.animator.ImageAnimatorWCS`
