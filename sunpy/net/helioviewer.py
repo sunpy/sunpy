@@ -200,6 +200,9 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
+        date : `astropy.time.Time`, `str`
+            A `~sunpy.time.parse_time` parsable string or `~astropy.time.Time`
+            object for the desired date of the image
         observatory : `str`
             Observatory name
         instrument : `str`
@@ -208,13 +211,16 @@ class HelioviewerClient(object):
             Measurement name
         detector : `str`
             Detector name
+        jp2_id : `int`
+            Unique JP2 image identifier.
+            This can be used directly instead of using the previous parameters.
 
         Returns
         -------
         out : `dict`
             Returns a dictionary containing the header information of JPEG 2000 image.
-            The returned dictionary has two keys: *fits* and *helioviewer*.
-
+            The returned dictionary may have either one or two keys: *fits* and *helioviewer*.
+            
         Examples
         --------
         >>> from sunpy.net import helioviewer

@@ -84,10 +84,8 @@ class TestHelioviewerClient:
         keys_header1 = header1.keys()
         keys_header2 = header2.keys()
         assert cmp(header1 == header2)
-        assert len(header1) == 2
-        assert len(header2) == 2
-        assert 'fits' and 'helioviewer' in keys_header1
-        assert 'fits' and 'helioviewer' in keys_header2        
+        assert len(header1) == len(header2) == 1
+        assert ('fits' in keys_header1) and ('fits' in keys_header2)
 
     @skip_glymur
     def test_download_jp2_map(self, client):
