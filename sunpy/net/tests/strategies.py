@@ -105,10 +105,10 @@ def goes_time(draw, time=Times(
     # `test_fido_indexing` adds 1 millisecond.
     # `test_offline_fido` adds 1 microsecond.
     # TODO: Track this issue down.
-    failing_time = Time('1983-05-01')
-    failing_time += 1*u.s
-    assume(failing_time not in tr)
-    assume(failing_time + draw(delta) not in tr)
+    # To avoid this we change the start of the timerange
+    tr._t1 -= 1*u.s
+    assume(Time('1983-05-01') not in tr)
+    assume(Time('1983-05-01') + draw(delta) not in tr)
 
     return a.Time(tr)
 
