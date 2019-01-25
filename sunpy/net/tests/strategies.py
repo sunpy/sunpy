@@ -8,6 +8,7 @@ from hypothesis import assume
 from hypothesis.strategies import one_of, datetimes, sampled_from
 
 import astropy.time
+import astropy.units as u
 from astropy.time import Time
 
 from sunpy.net import attrs as a
@@ -99,8 +100,15 @@ def goes_time(draw, time=Times(
 
     tr = TimeRange(t1, t2)
     # There is no GOES data for this date.
-    assume(Time('1983-5-1') not in tr)
-    assume(Time('1983-5-1') + draw(delta) not in tr)
+    # We seem to pick up an extra micro or millisecond when we create t1
+    # This seems to be test dependant.
+    # `test_fido_indexing` adds 1 millisecond.
+    # `test_offline_fido` adds 1 microsecond.
+    # TODO: Track this issue down.
+    # To avoid this we change the start of the timerange
+    tr._t1 -= 1*u.s
+    assume(Time('1983-05-01') not in tr)
+    assume(Time('1983-05-01') + draw(delta) not in tr)
 
     return a.Time(tr)
 
