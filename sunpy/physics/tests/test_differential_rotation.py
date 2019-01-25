@@ -325,23 +325,75 @@ def test_get_new_observer(aia171_test_map):
 
     # When the observer is set, it gets passed back out
     new_observer = _get_new_observer(initial_obstime, observer, None)
-
+    assert isinstance(new_observer, SkyCoord)
+    assert new_observer.transform_to(frames.HeliographicStonyhurst).lon == observer.transform_to(frames.HeliographicStonyhurst).lon
+    assert new_observer.transform_to(frames.HeliographicStonyhurst).lat == observer.transform_to(frames.HeliographicStonyhurst).lat
+    assert new_observer.transform_to(frames.HeliographicStonyhurst).radius == observer.transform_to(frames.HeliographicStonyhurst).radius
 
     # When the time is set, a coordinate for Earth comes back out
     for time in (rotation_interval, new_time, time_delta):
         new_observer = _get_new_observer(initial_obstime, None, time)
+        assert isinstance(new_observer, SkyCoord)
+        assert new_observer.transform_to(frames.HeliographicStonyhurst).lon == observer.transform_to(
+            frames.HeliographicStonyhurst).lon
+        assert new_observer.transform_to(frames.HeliographicStonyhurst).lat == observer.transform_to(
+            frames.HeliographicStonyhurst).lat
+        assert new_observer.transform_to(frames.HeliographicStonyhurst).radius == observer.transform_to(
+            frames.HeliographicStonyhurst).radius
 
     # The observer and the time cannot both be None
     with pytest.raises(ValueError):
         new_observer = _get_new_observer(initial_obstime, None, None)
 
 
-def test_rotate_submap_edge():
-    pass
+def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
+
+    observer = get_earth(aia171_test_map.date + 2*u.day)
+
+    # For a map that has all the edges off disk, the function should
+    # return just the edges of the map - no solar rotation applied.
+    for this_map in (aia171_test_map, all_off_disk_map):
+        edges = map_edges(this_map)
+        for this_edge in edges.keys():
+            pixels = edges[this_edge]
+            res = _rotate_submap_edge(this_map, pixels, observer)
+            assert all(res.Tx == (this_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
+            assert all(res.Ty == (this_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Ty)
+
+    # For an on disk map, all the edges should change
+    edges = map_edges(all_on_disk_map)
+    for this_edge in edges.keys():
+        pixels = edges[this_edge]
+        res = _rotate_submap_edge(all_on_disk_map, pixels, observer)
+        assert all(res.Tx != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
+        assert all(res.Ty != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Ty)
+
+    # For the limb map, two of the edges move and two do not
+    edges = map_edges(straddles_limb_map)
+    for this_edge in ('top', 'rhs'):
+        pixels = edges[this_edge]
+        res = _rotate_submap_edge(all_on_disk_map, pixels, observer)
+        assert all(res.Tx != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
+        assert all(res.Ty != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Ty)
+
+    for this_edge in ('bottom', 'lhs'):
+        pixels = edges[this_edge]
+        res = _rotate_submap_edge(all_on_disk_map, pixels, observer)
+        assert all(res.Tx != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
+        assert all(res.Ty != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Ty)
 
 
 def test_get_extreme_position():
-    pass
+    coords = SkyCoord([-1, 0, 1]*u.arcsec, [-2, 0, 2]*u.arcsec, frame=frames.Helioprojective)
+
+    assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1*u.arcsec
+    assert _get_extreme_position(coords, 'Ty', operator=np.nanmin) == -2*u.arcsec
+
+    assert _get_extreme_position(coords, 'Tx', operator=np.nanmax) == 1*u.arcsec
+    assert _get_extreme_position(coords, 'Ty', operator=np.nanmax) == 2*u.arcsec
+
+    with pytest.raises(ValueError):
+        _get_extreme_position(coords, 'lon', operator=np.nanmax)
 
 
 def test_get_bounding_coordinates():
