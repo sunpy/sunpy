@@ -34,6 +34,8 @@ following into your interactive Python shell: ::
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')  # doctest: +REMOTE_DATA
 
+.. doctest-skip-all
+
 This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time
 series from a GOES XRS FITS file. The TimeSeries factory uses `sunpy.io.fits` to
 read the FITS file. Note that if you have not downloaded the data already you

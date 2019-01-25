@@ -21,6 +21,7 @@ from sunpy.time import parse_time, TimeRange
 from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
 from sunpy.extern.six.moves import map
+from sunpy.io.header import FileHeader
 from sunpy.extern import six
 import sunpy.net
 
@@ -28,6 +29,19 @@ from sunpy import config
 
 
 TIME_FORMAT = config.get("general", "time_format")
+
+DEFAULT_HEADER = FileHeader([('SIMPLE', True),
+            ('BITPIX', 8),
+            ('NAXIS', 0),
+            ('EXTEND', True),
+            ('COMMENT', ''),
+            ('HISTORY', ''),
+            ('KEYCOMMENTS',
+            {'SIMPLE': 'conforms to FITS standard',
+            'BITPIX': 'array data type',
+            'NAXIS': 'number of array dimensions'}),
+            ('WAVEUNIT', None)])
+
 
 __all__ = [
     'WaveunitNotFoundError', 'WaveunitNotConvertibleError', 'JSONDump',
@@ -654,6 +668,12 @@ def entries_from_file(file, default_waveunit=None,
 
     """
     headers = fits.get_header(file)
+    # This just checks for blank default headers
+    # due to compression.
+    for header in headers:
+        if header == DEFAULT_HEADER:
+            headers.remove(header)
+
     if isinstance(file, (str, six.text_type)):
         filename = file
     else:

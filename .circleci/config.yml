@@ -59,7 +59,7 @@ jobs:
           command: yum install -y freetype freetype-devel libpng-devel tk
       - run:
           name: Install dependencies one
-          command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off numpy scipy astropy matplotlib==1.5.3
+          command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off numpy==1.15.3 scipy astropy matplotlib==1.5.3
       - run:
           name: Install dependencies two
           command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off sqlalchemy scikit-image==0.13.1 glymur drms suds-jurko beautifulsoup4 requests python-dateutil pytest pytest-cov pytest-mock pytest-xdist mock hypothesis pytest-astropy pytest-rerunfailures

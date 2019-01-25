@@ -1,19 +1,15 @@
 """
 Access the Helio Event Catalogue
 """
-from __future__ import print_function, absolute_import
+import io
+
+import suds
+from suds.client import Client as C
+from astropy.io.votable.table import parse_single_table
 
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
-from suds.client import Client as C
-import suds
-from astropy.io.votable.table import parse_single_table
-
-from sunpy.extern import six
-from sunpy.extern.six.moves import range, input
-
-__author__ = 'Michael Malocha'
 
 __all__ = ['HECClient']
 
@@ -37,7 +33,7 @@ def suds_unwrapper(wrapped_data):
     unwrapped : `str`
         The xml results with the wrapper removed
     """
-    if six.PY3 and not isinstance(wrapped_data, str):
+    if not isinstance(wrapped_data, str):
         wrapped_data = wrapped_data.decode("utf-8")
     HEADER = '<?xml version="1.0" encoding="UTF-8"?>\n'
     CATCH_1 = '<VOTABLE'
@@ -79,8 +75,8 @@ def votable_handler(xml_table):
     >>> type(temp)  # doctest: +SKIP
     astropy.io.votable.tree.Table
     """
-    fake_file = six.BytesIO()
-    fake_file.write(six.b(xml_table))
+    fake_file = io.BytesIO()
+    fake_file.write(bytes(xml_table, "utf-8"))
     votable = parse_single_table(fake_file)
     fake_file.close()
     return votable
@@ -95,7 +91,7 @@ class VotableInterceptor(suds.plugin.MessagePlugin):
 
     def received(self, context):
         # received xml as a string
-        self.last_payload = six.u(suds_unwrapper(context.reply))
+        self.last_payload = suds_unwrapper(context.reply)
         # clean up reply to prevent parsing
         context.reply = ""
         return context
@@ -163,7 +159,7 @@ class HECClient(object):
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
         >>> start = '2005/01/03'
         >>> end = '2005/12/03'
-        >>> temp = hc.time_query(start, end, max_records=10)   # doctest: +REMOTE_DATA
+        >>> temp = hc.time_query(start, end, max_records=10)   # doctest: +REMOTE_DATA +SKIP
 
         """
         while table is None:
@@ -194,11 +190,11 @@ class HECClient(object):
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
         >>> print(hc.get_table_names())   # doctest: +REMOTE_DATA
-        [('timed_see_flare',) ('hi_event',) ('yohkoh_flare_list',)
-         ('wind_mfi_bs_crossing_time',) ('seeds_soho',) ('seeds_stb',)
+        [(b'timed_see_flare',) (b'hi_event',) (b'yohkoh_flare_list',)
+         (b'wind_mfi_bs_crossing_time',) (b'seeds_soho',) (b'seeds_stb',)
          ...
-         ('rhessi_hxr_flare',) ('cactus_soho_flow',) ('cactus_soho_cme',)
-         ('stereob_het_sep',)]
+         (b'rhessi_hxr_flare',) (b'cactus_soho_flow',) (b'cactus_soho_cme',)
+         (b'stereob_het_sep',)]
 
         """
         self.hec_client.service.getTableNames()
@@ -223,7 +219,7 @@ class HECClient(object):
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> hc.make_table_list()  # doctest: +REMOTE_DATA
+        >>> hc.make_table_list()  # doctest: +REMOTE_DATA +SKIP
 
         """
         table_list = []

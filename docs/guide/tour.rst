@@ -1,3 +1,5 @@
+.. doctest-skip-all
+
 A brief tour of SunPy
 =====================
 
