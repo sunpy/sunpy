@@ -106,15 +106,37 @@ def _get_new_observer(initial_obstime, observer, time):
     Helper function that interprets the possible ways of specifying the
     input to the solar coordinate rotation function.
 
+    If the "observer" argument is not None, it is used to specify the location
+    of the new observer in space and time.
+
+    If the "time" argument is not None, it is used to calculate the duration
+    over which to the amount of solar rotation is calculated. Note that using
+    the "time" keyword assumes that the new observer is on the Earth. This may
+    be a reasonable assumption depending on the application.
+
+    Either the "observer" or "time" argument must be specified, but both
+    cannot be specified at the same time and both cannot be None.
+
     Parameters
     ----------
-    initial_obstime :
-    observer :
-    time :
+    initial_obstime : `~astropy.time.Time`
+        The initial time before solar rotation has been applied.
+
+    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, None
+        The location of the new observer in space and time (the observer must have an
+        interpretable obstime property).
+
+    time : `~astropy.time.Time`, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None
+        Used to define the duration over which the amount of solar rotation is
+        calculated.  If 'time' is an `~astropy.time.Time` then the time interval is
+        "time - initial_obstime"; if 'time' is `~astropy.time.TimeDelta` or
+        `~astropy.units.Quantity` then the calculation is "initial_obstime + time".
 
     Returns
     -------
-
+    new_observer : `~astropy.coordinates.SkyCoord`
+        The position of the observer in space and time after solar rotation has been
+        applied.
     """
     # Check the input and create the new observer
     if (observer is not None) and (time is not None):
@@ -236,9 +258,9 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     return heliographic_rotated.transform_to(new_observer).transform_to(coordinate.frame.name)
 
 
-def _rotate_submap_edges(smap, pixels, observer, diffrot_kwargs=None):
+def _rotate_submap_edge(smap, pixels, observer, diffrot_kwargs=None):
     """
-    Helper function that is used to calculate where the edges of a rectangular
+    Helper function that is used to calculate where the edge of a rectangular
     map move to on rotation.  If all the pixels passed in are not on disk and
     therefore subject to solar differential rotation, the coordinates
     corresponding to the input pixels are returned.
@@ -246,32 +268,32 @@ def _rotate_submap_edges(smap, pixels, observer, diffrot_kwargs=None):
     Parameters
     ----------
     smap : `sunpy.map.Map`
+        The input map from which the pixel coordinates are calculated.
 
     pixels : `~astropy.units.Quantity`
         A Quantity array of shape (M, 2) in pixel units.  Values (:, 0) are the y values of the
         pixel indices, and values (:, 1) are the x values of the pixel indices.
 
-    diffrot_kwargs :
+    observer : `~astropy.coordinates.SkyCoord`
+        The location of the observer.
+
+    diffrot_kwargs : None, `~dict`
         Keyword arguments accepted by `sunpy.physics.differential_rotation.diff_rot`.
-
-    observer : None ,
-
-    time : `~sunpy.time`
-
 
     Returns
     -------
-
+    coordinates : `~astropy.coordinates.SkyCoord`
+        The coordinates of a rotated edge.
     """
     # Coordinates
     c = smap.pixel_to_world(pixels[:, 1], pixels[:, 0])
 
     # Only apply solar rotation if all coordinates are on the disk.
     if np.all(~coordinate_is_on_disk(c, smap.rsun_obs)):
-        cr = deepcopy(c)
+        coordinates = deepcopy(c)
     else:
-        cr = solar_rotate_coordinate(c, observer=observer, **diffrot_kwargs)
-    return cr
+        coordinates = solar_rotate_coordinate(c, observer=observer, **diffrot_kwargs)
+    return coordinates
 
 
 def _get_extreme_position(coords, axis, operator=np.nanmax):
@@ -281,15 +303,20 @@ def _get_extreme_position(coords, axis, operator=np.nanmax):
 
     Parameters
     ----------
-    coords : `~astropy.coordinates.SkyCoord`
+    coords : `~list`
+        Each member of the list is a `~astropy.coordinates.SkyCoord`.
 
     axis :  'Tx', 'Ty'
+        Which helioprojective axis to examine.
 
-    operator :
+    operator : numpy function
+        A numpy function that finds an extreme value in an array
+        of helioprojective coordinate values.
 
     Returns
     -------
-
+    extreme value : `~astropy.units.Quantity`
+        An extreme position in units of arcseconds.
     """
 
     extreme_values = []
@@ -312,22 +339,22 @@ def _get_bounding_coordinates(coords):
 
     Parameters
     ----------
-    coords :
-
+    coords : `~list`
+        Each member of the list is a `~astropy.coordinates.SkyCoord`.
 
     Returns
     -------
     bottom_left, top_right : `~list`
         A pair of `~astropy.coordinates.SkyCoord` that specify the
-        bottom left hand and top right hand corner or bounding box that
-        minimally encloses the passed in coordinates.
+        bottom left hand and top right hand corner of a bounding box that
+        minimally encloses all the input coordinates.
     """
     rotated_x_min = _get_extreme_position(coords, "Tx", operator=np.nanmin)
     rotated_x_max = _get_extreme_position(coords, "Tx", operator=np.nanmax)
     rotated_y_min = _get_extreme_position(coords, "Ty", operator=np.nanmin)
     rotated_y_max = _get_extreme_position(coords, "Ty", operator=np.nanmax)
     return SkyCoord(rotated_x_min, rotated_y_min, frame=Helioprojective, observer=coords[0].observer),\
-           SkyCoord(rotated_x_max, rotated_y_max, frame=Helioprojective, observer=coords[0].observer),
+           SkyCoord(rotated_x_max, rotated_y_max, frame=Helioprojective, observer=coords[0].observer)
 
 
 def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
@@ -339,14 +366,15 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diffrot_kwargs):
     Parameters
     ----------
     xy : `numpy.ndarray`
-        Array from `transform.warp`
+        Array from `transform.warp`.
+
     smap : `~sunpy.map`
-        Original map that we want to transform
+        Original map that we want to transform.
 
     Returns
     -------
     xy2 : `~numpy.ndarray`
-        Array with the inverse transformation
+        Array with the inverse transformation.
     """
     # We start by converting the pixel to world
     with warnings.catch_warnings():
@@ -449,12 +477,12 @@ def diffrot_map(smap, observer=None, time=None, **diffrot_kwargs):
 
         # Calculate where the output array moves to.
         # Rotate the top and bottom edges
-        rotated_top = _rotate_submap_edges(smap, edges["top"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
-        rotated_bottom = _rotate_submap_edges(smap, edges["bottom"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
+        rotated_top = _rotate_submap_edge(smap, edges["top"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
+        rotated_bottom = _rotate_submap_edge(smap, edges["bottom"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
 
         # Rotate the left and right hand edges
-        rotated_lhs = _rotate_submap_edges(smap, edges["lhs"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
-        rotated_rhs = _rotate_submap_edges(smap, edges["rhs"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
+        rotated_lhs = _rotate_submap_edge(smap, edges["lhs"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
+        rotated_rhs = _rotate_submap_edge(smap, edges["rhs"], observer=new_observer, diffrot_kwargs=diffrot_kwargs)
 
         # Calculate the bounding box of the rotated map
         rotated_bl, rotated_tr = _get_bounding_coordinates([rotated_top, rotated_bottom, rotated_lhs, rotated_rhs])
@@ -652,12 +680,12 @@ def contains_full_disk(smap):
 
     # Test if all the edge pixels are more than one solar radius distant
     # and that the whole map is not all off disk.
-    return np.all(distance >= 1*u.R_sun) and ~is_all_off_disk(smap)
+    return np.all(distance > 1*u.R_sun) and ~is_all_off_disk(smap)
 
 
 def is_all_off_disk(smap):
     """
-    Checks to see if the entire map is off the solar disk.  The check is
+    Checks if the entire map is off the solar disk.  The check is
     performed by calculating the distance of every pixel from the center of
     the Sun.  If they are all off-disk, then the function returns True.
     Otherwise, the function returns False.
@@ -673,12 +701,12 @@ def is_all_off_disk(smap):
         Returns True if all map pixels are strictly more than one solar radius
         away from the center of the Sun.
     """
-    return np.all(find_pixel_radii(smap) > 1 * u.R_sun)
+    return np.all(~coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs))
 
 
 def is_all_on_disk(smap):
     """
-    Checks to see if the entire map is on the solar disk.  The check is
+    Checks if the entire map is on the solar disk.  The check is
     performed by calculating the distance of every pixel from the center of
     the Sun.  If they are all on-disk, then the function returns True.
     Otherwise, the function returns False.
@@ -694,12 +722,12 @@ def is_all_on_disk(smap):
         Returns True if all map pixels are strictly less than one solar radius
         away from the center of the Sun.
     """
-    return np.all(find_pixel_radii(smap) < 1 * u.R_sun)
+    return np.all(coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs))
 
 
 def contains_limb(smap):
     """
-    Checks to see if a map contains a portion of the solar limb.  The check is
+    Checks if a map contains a portion of the solar limb.  The check is
     performed by calculating the distance of every pixel from the center of
     the Sun.  If at least one pixel is on disk and at least one pixel is off
     disk, the function returns True.  Otherwise, the function returns False.
@@ -715,11 +743,11 @@ def contains_limb(smap):
     Returns
     -------
     contains_limb : `~bool`
-        Returns True if all map pixels are strictly less than one solar radius
-        away from the center of the Sun.
+        Returns True If at least one pixel is on disk and at least one pixel
+        is off disk.
     """
-    pixel_radii = find_pixel_radii(smap)
-    return np.logical_and(np.any(pixel_radii < 1 * u.R_sun), np.any(pixel_radii > 1 * u.R_sun))
+    on_disk = coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs)
+    return np.logical_and(np.any(on_disk), np.any(~on_disk))
 
 
 @u.quantity_input
@@ -756,7 +784,7 @@ def on_disk_bounding_coordinates(smap):
 
     Parameters
     ----------
-    smap : `~sunpy.map`
+    smap : `~sunpy.map.Map`
         The input map.
 
     Returns
@@ -778,8 +806,8 @@ def on_disk_bounding_coordinates(smap):
 
     # The bottom left and top right coordinates that contain
     # the on disk coordinates.
-    bl = SkyCoord(np.min(on_disk_coordinates.Tx), np.min(on_disk_coordinates.Ty),
-                  frame=Helioprojective, observer=coordinates.observer)
-    tr = SkyCoord(np.max(on_disk_coordinates.Tx), np.max(on_disk_coordinates.Ty),
-                  frame=Helioprojective, observer=coordinates.observer)
+    bl = SkyCoord(np.nanmin(on_disk_coordinates.Tx), np.nanmin(on_disk_coordinates.Ty),
+                  frame=Helioprojective, observer=smap.observer_coordinate)
+    tr = SkyCoord(np.nanmax(on_disk_coordinates.Tx), np.nanmax(on_disk_coordinates.Ty),
+                  frame=Helioprojective, observer=smap.observer_coordinate)
     return bl, tr
