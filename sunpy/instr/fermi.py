@@ -453,8 +453,8 @@ def met_to_utc(timeinsec):
 
     .. warning::
         This function does not account for leap seconds and can not be fixed in
-        SunPy's 0.9.x series of releases. However, it is fixed in the next major version
-        coming by May 2019.
+        SunPy's 0.9.x series of releases.
+        However, it is fixed in the next major version, 1.0.
 
     Parameters
     ----------
