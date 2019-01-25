@@ -3,7 +3,6 @@ import pytest
 
 import numpy as np
 from astropy import units as u
-from astropy.time import Time
 from astropy.coordinates import SkyCoord, BaseCoordinateFrame
 from astropy.coordinates import Longitude
 from astropy.tests.helper import assert_quantity_allclose
@@ -11,8 +10,12 @@ from astropy.time import TimeDelta
 
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
-from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate, diffrot_map, all_pixel_indices_from_map, all_coordinates_from_map, find_pixel_radii, map_edges, contains_full_disk, is_all_off_disk
-from sunpy.time import parse_time, is_time
+from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate,\
+    diffrot_map, all_pixel_indices_from_map, all_coordinates_from_map,\
+    find_pixel_radii, map_edges, contains_full_disk, is_all_off_disk,\
+    is_all_on_disk, contains_limb, coordinate_is_on_disk, on_disk_bounding_coordinates,\
+    _get_new_observer, _rotate_submap_edge, _get_extreme_position, _get_bounding_coordinates,\
+    _warp_sun_coordinates
 import sunpy.data.test
 import sunpy.map
 
@@ -57,11 +60,22 @@ def all_off_disk_map(aia171_test_map):
 
 
 @pytest.fixture
+def all_on_disk_map(aia171_test_map):
+    return aia171_test_map.submap((50, 60)*u.pix, (70, 85)*u.pix)
+
+
+@pytest.fixture
+def straddles_limb_map(aia171_test_map):
+    return aia171_test_map.submap((0, 0)*u.pix, (50, 40)*u.pix)
+
+
+@pytest.fixture
 def aia171_test_map_with_mask(aia171_test_map):
     shape = aia171_test_map.data.shape
     mask = np.zeros_like(aia171_test_map.data, dtype=bool)
     mask[0:shape[0]//2, 0:shape[1]//2] = True
     return sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
+
 
 @pytest.fixture
 def aia171_test_submap(aia171_test_map):
@@ -158,7 +172,7 @@ def test_solar_rotate_coordinate():
         assert isinstance(d.frame, frames.Helioprojective)
 
 
-def test_diffrot_map(aia171_test_map, all_off_disk_map):
+def test_diffrot_map(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
 
     # Test that the function correctly identifies a map that is entirely off
     # the disk of the Sun and reports an error correctly
@@ -166,52 +180,6 @@ def test_diffrot_map(aia171_test_map, all_off_disk_map):
         dmap = diffrot_map(all_off_disk_map)
 
 
-"""
-def test_warp_sun():
-    pass
-
-
-def test_diffrot_map(aia171_test_map):
-    # Test a submap without padding
-    aia_srot = diffrot_map(aia171_test_map, dt=-5 * u.day)
-    assert aia_srot.dimensions == aia171_test_map.dimensions
-    assert (aia171_test_map.date - TimeDelta(5*u.day)) - aia_srot.date < TimeDelta(1*u.second)
-
-
-def test_diffrot_submap(aia171_test_submap):
-    # Test a submap without padding
-    aia_srot = diffrot_map(aia171_test_submap, '2011-02-14T12:00:00')
-    assert aia_srot.dimensions == aia171_test_submap.dimensions
-    assert (aia171_test_submap.date - TimeDelta(0.5*u.day)) - aia_srot.date < TimeDelta(1*u.second)
-
-
-def test_diffrot_submap_pad(aia171_test_submap):
-    aia_srot = diffrot_map(aia171_test_submap, dt=-0.5 * u.day, pad=True)
-    assert aia_srot.dimensions >= aia171_test_submap.dimensions
-    assert (aia171_test_submap.date - TimeDelta(0.5*u.day)) - aia_srot.date < TimeDelta(1*u.second)
-    assert aia_srot.meta['naxis1'] == 35
-    assert aia_srot.meta['naxis2'] == 18
-
-
-def test_diffrot_allen_submap_pad(aia171_test_submap):
-    aia_srot = diffrot_map(aia171_test_submap, dt=-0.5 * u.day, pad=True, rot_type='allen')
-    assert aia_srot.dimensions >= aia171_test_submap.dimensions
-    assert (aia171_test_submap.date - TimeDelta(0.5*u.day)) - aia_srot.date < TimeDelta(1*u.second)
-    assert aia_srot.meta['naxis1'] == 35
-    assert aia_srot.meta['naxis2'] == 18
-
-
-def test_diffrot_manyinputs(aia171_test_map):
-    with pytest.raises(ValueError) as exc_info:
-        diffrot_map(aia171_test_map, '2010-01-01', dt=3 * u.hour)
-    assert 'Only a time or an interval is accepted' in str(exc_info.value)
-
-
-def test_diffrot_noinputs(aia171_test_map):
-    with pytest.raises(ValueError) as exc_info:
-        diffrot_map(aia171_test_map)
-    assert 'Either a time or an interval (`dt=`) needs to be provided' in str(exc_info.value)
-"""
 
 
 @pytest.fixture
@@ -288,11 +256,97 @@ def test_map_edges(all_off_disk_map):
     assert np.all(edges['bottom'][9] == [10, 9] * u.pix)
 
 
-def test_contains_full_disk(aia171_test_map, all_off_disk_map):
+def test_contains_full_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     assert contains_full_disk(aia171_test_map)
     assert ~contains_full_disk(all_off_disk_map)
+    assert ~contains_full_disk(all_on_disk_map)
+    assert ~contains_full_disk(straddles_limb_map)
 
 
-def test_is_all_off_disk(aia171_test_map, all_off_disk_map):
-    assert is_all_off_disk(all_off_disk_map)
+def test_is_all_off_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     assert ~is_all_off_disk(aia171_test_map)
+    assert is_all_off_disk(all_off_disk_map)
+    assert ~is_all_off_disk(all_on_disk_map)
+    assert ~is_all_off_disk(straddles_limb_map)
+
+
+def test_is_all_on_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
+    assert ~is_all_on_disk(aia171_test_map)
+    assert ~is_all_on_disk(all_off_disk_map)
+    assert is_all_on_disk(all_on_disk_map)
+    assert ~is_all_on_disk(straddles_limb_map)
+
+
+def test_contains_limb(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
+    assert contains_limb(aia171_test_map)
+    assert ~contains_limb(all_off_disk_map)
+    assert ~contains_limb(all_on_disk_map)
+    assert contains_limb(straddles_limb_map)
+
+
+def test_coordinate_is_on_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
+    scale = aia171_test_map.rsun_obs
+    off_disk = aia171_test_map.bottom_left_coord
+    on_disk = aia171_test_map.center
+
+    # Check for individual coordinates
+    assert coordinate_is_on_disk(on_disk, scale)
+    assert ~coordinate_is_on_disk(off_disk, scale)
+
+    # Check for sets of coordinates
+    assert np.any(coordinate_is_on_disk(all_coordinates_from_map(aia171_test_map), scale))
+    assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(aia171_test_map), scale))
+    assert np.all(~coordinate_is_on_disk(all_coordinates_from_map(all_off_disk_map), scale))
+    assert np.all(coordinate_is_on_disk(all_coordinates_from_map(all_on_disk_map), scale))
+    assert np.any(coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map), scale))
+    assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map), scale))
+
+
+def test_on_disk_bounding_coordinates(aia171_test_map):
+    bl, tr = on_disk_bounding_coordinates(aia171_test_map)
+    np.testing.assert_almost_equal(bl.Tx.to(u.arcsec).value, -954.17124289, decimal=1)
+    np.testing.assert_almost_equal(bl.Ty.to(u.arcsec).value, -965.93063472, decimal=1)
+    np.testing.assert_almost_equal(tr.Tx.to(u.arcsec).value, 964.27061417, decimal=1)
+    np.testing.assert_almost_equal(tr.Ty.to(u.arcsec).value, 971.63586861, decimal=1)
+
+
+# Tests of the helper functions
+def test_get_new_observer(aia171_test_map):
+    initial_obstime = aia171_test_map.date
+    rotation_interval = 2 * u.day
+    new_time = initial_obstime + rotation_interval
+    time_delta = new_time - initial_obstime
+    observer = get_earth(initial_obstime + rotation_interval)
+
+    # The observer and the time cannot both be not None
+    for time in (rotation_interval, new_time, time_delta):
+        with pytest.raises(ValueError):
+            new_observer = _get_new_observer(initial_obstime, observer, time)
+
+    # When the observer is set, it gets passed back out
+    new_observer = _get_new_observer(initial_obstime, observer, None)
+
+
+    # When the time is set, a coordinate for Earth comes back out
+    for time in (rotation_interval, new_time, time_delta):
+        new_observer = _get_new_observer(initial_obstime, None, time)
+
+    # The observer and the time cannot both be None
+    with pytest.raises(ValueError):
+        new_observer = _get_new_observer(initial_obstime, None, None)
+
+
+def test_rotate_submap_edge():
+    pass
+
+
+def test_get_extreme_position():
+    pass
+
+
+def test_get_bounding_coordinates():
+    pass
+
+
+def test_warp_sun_coordinates():
+    pass
