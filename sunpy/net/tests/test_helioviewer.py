@@ -83,7 +83,7 @@ class TestHelioviewerClient:
         header2 = client.get_jp2_header('1994/01/01', jp2_id = 1795504)
         keys_header1 = header1.keys()
         keys_header2 = header2.keys()
-        assert cmp(header1 == header2)
+        assert (header1 == header2)
         assert len(header1) == len(header2) == 1
         assert ('fits' in keys_header1) and ('fits' in keys_header2)
 
