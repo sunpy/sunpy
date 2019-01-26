@@ -56,7 +56,7 @@ class TestTimeSeries(object):
         # text the two methods get identical dataframes
         assert ts_from_list == ts_from_folder
         # test the frames have correct headings/keys (correct concatenation axis)
-        ts_from_list.columns == sunpy.timeseries.TimeSeries(a_list_of_many[0], source='EVE', concatenate=True).columns
+        ts_from_list.colnames == sunpy.timeseries.TimeSeries(a_list_of_many[0], source='EVE', concatenate=True).colnames
 
     def test_factory_concatenate_different_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
@@ -67,7 +67,7 @@ class TestTimeSeries(object):
         # text the two methods get identical dataframes
         assert ts_from_list == ts_from_folder
         # test the frames have correct headings/keys (correct concatenation axis)
-        ts_from_list.columns == sunpy.timeseries.TimeSeries(a_list_of_many[0], source='EVE', concatenate=True).columns
+        ts_from_list.colnames == sunpy.timeseries.TimeSeries(a_list_of_many[0], source='EVE', concatenate=True).colnames
 
     def test_factory_generate_list_of_ts(self):
         # Test making a list TimeSeries from multiple files
@@ -206,7 +206,7 @@ class TestTimeSeries(object):
         # Create normal TS from dataframe and check
         ts_generic = sunpy.timeseries.TimeSeries(data, meta, units)
         assert isinstance(ts_generic, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
-        assert ts_generic.columns == ['intensity']
+        assert ts_generic.colnames == ['intensity']
         assert ts_generic.units == units
         assert ts_generic.meta.metadata[0][2] == meta
 
@@ -230,13 +230,13 @@ class TestTimeSeries(object):
         # Create TS omitting units input arguments
         ts_1 = sunpy.timeseries.TimeSeries(data, meta)
         assert isinstance(ts_1, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
-        assert ts_1.columns == ['intensity']
+        assert ts_1.colnames == ['intensity']
         assert ts_1.units == OrderedDict([('intensity', u.dimensionless_unscaled)])
         assert ts_1.meta.metadata[0][2] == meta
 
         ts_2 = sunpy.timeseries.TimeSeries(data, units)
         assert isinstance(ts_2, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
-        assert ts_2.columns == ['intensity']
+        assert ts_2.colnames == ['intensity']
         assert ts_2.units == units
         assert ts_2.meta.metadata[0][2] == MetaDict()
 

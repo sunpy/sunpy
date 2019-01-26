@@ -126,7 +126,7 @@ class GenericTimeSeries:
     @property
     def colnames(self):
         """A list of all the names of the columns in the data."""
-        return list(self.data.colnames.values)
+        return list(self.data.columns.values)
 
     @property
     def index(self):
@@ -139,7 +139,7 @@ class GenericTimeSeries:
         The start and end times of the TimeSeries as a `~sunpy.time.TimeRange`
         object
         """
-        if len(self.data)>0:
+        if len(self.data) > 0:
             return TimeRange(self.data.index.min(), self.data.index.max())
         else:
             return None
@@ -197,7 +197,7 @@ class GenericTimeSeries:
         units = copy.copy(self.units)
 
         # Add the unit to the units dictionary if already there.
-        if not (colname in self.data.colnames):
+        if not (colname in self.data.columns):
             units[colname] = unit
 
         # Convert the given quantity into values for given units if necessary.
@@ -206,7 +206,7 @@ class GenericTimeSeries:
             values = values.to(units[colname]).value
 
         # Update or add the data.
-        if not (colname in self.data.colnames) or overwrite:
+        if not (colname in self.data.columns) or overwrite:
             data[colname] = values
 
         # Return a new TimeSeries with the given updated/added column.
@@ -255,7 +255,7 @@ class GenericTimeSeries:
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
             start = a.start.datetime
-            end   = a.end.datetime
+            end = a.end.datetime
         else:
             # Otherwise we already have the values
             start = a
@@ -296,7 +296,8 @@ class GenericTimeSeries:
         if isinstance(self, pandas.Series):
             return self
         else:
-            return GenericTimeSeries(self.data[column_name], TimeSeriesMetaData(self.meta.metadata.copy()))
+            return GenericTimeSeries(self.data[column_name],
+             TimeSeriesMetaData(self.meta.metadata.copy()))
         """
         # Extract column and remove empty rows
         data = self.data[[column_name]].dropna()
@@ -480,14 +481,14 @@ class GenericTimeSeries:
         warnings.simplefilter('always', Warning)
 
         # Populate unspecified units:
-        for column in set(self.data.colnames.tolist()) - set(self.units.keys()):
+        for column in set(self.data.columns.tolist()) - set(self.units.keys()):
             # For all columns not present in the units dictionary.
             self.units[column] = u.dimensionless_unscaled
             warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
 
         # Re-arrange so it's in the same order as the columns and removed unused.
         units = OrderedDict()
-        for column in self.data.colnames.tolist():
+        for column in self.data.columns.tolist():
             units.update({column:self.units[column]})
 
         # Now use the amended units Ordered Dictionary
@@ -510,7 +511,7 @@ class GenericTimeSeries:
         self.meta._truncate(self.time_range)
 
         # Remove non-existant columns
-        redundant_cols = list(set(self.meta.columns) - set(self.columns))
+        redundant_cols = list(set(self.meta.columns) - set(self.colnames))
         self.meta._remove_columns(redundant_cols)
 
 # #### Export/Output Methods #### #

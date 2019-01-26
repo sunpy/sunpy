@@ -227,7 +227,7 @@ def test_truncation_slices(eve_test_ts, truncation_slice_test_ts_1,
     assert len(eve_test_ts.data) == (len(truncation_slice_test_ts_1.data) +
                                      len(truncation_slice_test_ts_2.data))
     # Test column lists and unit dictionaries match
-    assert eve_test_ts.columns == truncation_slice_test_ts_1.columns == truncation_slice_test_ts_2.columns
+    assert eve_test_ts.colnames == truncation_slice_test_ts_1.colnames == truncation_slice_test_ts_2.colnames
     assert eve_test_ts.meta.columns == truncation_slice_test_ts_1.meta.columns == truncation_slice_test_ts_2.meta.columns
     assert eve_test_ts.units == truncation_slice_test_ts_1.units == truncation_slice_test_ts_2.units
     # Test MetaDict match
@@ -523,7 +523,7 @@ def test_generic_construction_concatenation():
     assert isinstance(ts_concat,
                       sunpy.timeseries.timeseriesbase.GenericTimeSeries)
     assert len(ts_concat.data) == len(times)
-    assert ts_concat.columns == ['intensity', 'intensity2']
+    assert ts_concat.colnames == ['intensity', 'intensity2']
     assert len(ts_concat.meta.metadata) == 2
 
 #==============================================================================
@@ -592,10 +592,10 @@ def test_add_column_from_array_no_units(eve_test_ts, column_quantity):
 def test_ts_to_table(generic_ts):
     tbl = generic_ts.to_table()
     assert isinstance(tbl, Table)
-    assert tbl.keys() == ['date', generic_ts.columns[0]]
+    assert tbl.keys() == ['date', generic_ts.colnames[0]]
     assert len(tbl) == len(generic_ts.data)
-    assert (tbl[generic_ts.columns[0]].quantity ==
-            generic_ts.quantity(generic_ts.columns[0])).all()
+    assert (tbl[generic_ts.colnames[0]].quantity ==
+            generic_ts.quantity(generic_ts.colnames[0])).all()
 
 
 def test_ts_to_dataframe(generic_ts):
