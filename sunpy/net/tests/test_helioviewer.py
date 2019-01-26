@@ -81,11 +81,9 @@ class TestHelioviewerClient:
         header1 = client.get_jp2_header('1994/01/01', observatory='SOHO',
                                               instrument='EIT', measurement='304')
         header2 = client.get_jp2_header('1994/01/01', jp2_id = 1795504)
-        keys_header1 = header1.keys()
-        keys_header2 = header2.keys()
-        assert (header1 == header2)
+        assert header1 == header2
         assert len(header1) == len(header2) == 1
-        assert ('fits' in keys_header1) and ('fits' in keys_header2)
+        assert ('fits' in header1.keys()) and ('fits' in keys_header2.keys())
 
     @skip_glymur
     def test_download_jp2_map(self, client):
