@@ -1,3 +1,18 @@
+Sunpy 0.9.6 (2019-01-28)
+========================
+
+Features
+--------
+
+- `sunpy.map.Map` can now save out rice compressed FITS files. (`#2826 <https://github.com/sunpy/sunpy/pull/2826>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed `sunpy.io.fits.write` to handle the keyword ``COMMENT`` correctly. (`#2880 <https://github.com/sunpy/sunpy/pull/2880>`__)
+
+
 Sunpy 0.9.5 (2018-11-27)
 ========================
 

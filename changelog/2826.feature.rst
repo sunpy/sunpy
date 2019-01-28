@@ -1,1 +1,0 @@
-`sunpy.map.Map` can now save out rice compressed FITS files.
