@@ -1,0 +1,1 @@
+Changed the attribute TimeSeries.columns to TimeSeries.colnames according to astropy
