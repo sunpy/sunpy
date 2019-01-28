@@ -1,1 +1,1 @@
-Changed the attribute TimeSeries.columns to TimeSeries.colnames according to astropy
+`TimeSeries.columns` renamed to `TimeSeries.colnames` to match `Astropy.table`.
