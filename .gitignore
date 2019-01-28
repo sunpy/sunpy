@@ -4,6 +4,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+pip-wheel-metadata/
 
 # C extensions
 *.so
