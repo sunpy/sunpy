@@ -63,6 +63,9 @@ jobs:
       - run: *merge-check
       - run: *apt-install
       - run:
+          name: Update pip
+          command: pip install -U pip
+      - run:
           name: Bypass numpy issue
           command: pip install numpy==1.15.4
       - run:
