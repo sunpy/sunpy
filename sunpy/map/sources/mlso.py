@@ -20,7 +20,7 @@ class KCorMap(GenericMap):
     The COronal Solar Magnetism Observatory (COSMO) K-coronagraph (K-Cor) is one of three proposed
     instruments in the COSMO facility suite. It is specifically designed to study the formation
     and dynamics of coronal mass ejections and the evolution of the density structure of
-    the low corona. The K-Cor records the polarization brightness (pB) formed by Thomson scattering 
+    the low corona. The K-Cor records the polarization brightness (pB) formed by Thomson scattering
     of photospheric light by coronal free electrons. The National Center for Atmospheric
     Research (NCAR), via the National Science Foundation (NSF), provided full funding for the
     COSMO K-Cor, which was deployed to the Mauna Loa Solar Observatory (MLSO) in Hawaii in
@@ -50,7 +50,13 @@ class KCorMap(GenericMap):
         cmap_string = self.meta['detector']
         return cmap_string.lower()
 
-        
+    @property
+    def observatory(self):
+        """
+        Returns the observatory.
+        """
+        return self.meta['observatory']
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to a COSMO image"""
