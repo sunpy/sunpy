@@ -14,7 +14,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "20181209_180305_kcor_l1.5.fts"))
+fitspath = glob.glob(os.path.join(path, "20181209_180305_kcor_l1.5_rebinned.fits"))
 
 
 @pytest.fixture()
