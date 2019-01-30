@@ -11,8 +11,10 @@ from collections import OrderedDict
 from astropy.utils.decorators import lazyproperty
 
 import sunpy
+from sunpy.util.xml import xml_to_dict
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
+
 
 __all__ = ['HelioviewerClient']
 
@@ -188,6 +190,65 @@ class HelioviewerClient(object):
         }
 
         return self._get_file(params, directory=directory, overwrite=overwrite)
+
+    def get_jp2_header(self, date, observatory=None, instrument=None, detector=None, measurement=None, jp2_id=None):
+        """
+        Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section 
+        of Helioviewer-specific metadata.
+
+        This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+
+        Parameters
+        ----------
+        date : `astropy.time.Time`, `str`
+            A `~sunpy.time.parse_time` parsable string or `~astropy.time.Time`
+            object for the desired date of the image
+        observatory : `str`
+            Observatory name
+        instrument : `str`
+            Instrument name
+        measurement : `str`
+            Measurement name
+        detector : `str`
+            Detector name
+        jp2_id : `int`
+            Unique JP2 image identifier.
+            This can be used directly instead of using the previous parameters.
+
+        Returns
+        -------
+        out : `dict`
+            Returns a dictionary containing the header information of JPEG 2000 image.
+            The returned dictionary may have either one or two keys: *fits* and *helioviewer*.
+
+        Examples
+        --------
+        >>> from sunpy.net import helioviewer
+        >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
+        >>> header = hv.get_jp2_header('2012/07/03', observatory='SDO',
+        ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
+        >>> # The key 'fits' can be used to get the fits header information
+        >>> fits_header = header['fits']  # doctest: +REMOTE_DATA
+        >>> # The keys 'helioviewer' can be used to extract the helioviewer specific metadata.
+        >>> helioviewer_meta_data = header['helioviewer']  # doctest: +REMOTE_DATA
+        """
+        if jp2_id is None:
+            try:
+                jp2_id = self.get_closest_image(date, observatory, instrument, detector, measurement)['id']
+            except KeyError:
+                raise KeyError("The values used for observatory, instrument, detector, measurement "
+                               "do not correspond to a source_id. Please check the list using "
+                               "HelioviewerClient.data_sources.")
+
+        params = {
+            "action": "getJP2Header",
+            "id" : jp2_id,
+        }
+
+        responses = self._request(params)
+        # Reads the output from HTTPResponse object and decodes it.
+        responses = responses.read().decode('utf-8')
+        return xml_to_dict(responses)['meta']
 
     def download_png(self, date, image_scale, layers,
                      directory=None, overwrite=False, watermark=False,
@@ -384,7 +445,6 @@ class HelioviewerClient(object):
         """
         response = urllib.request.urlopen(
             self._api, urllib.parse.urlencode(params).encode('utf-8'))
-
         return response
 
     def _format_date(self, date):
