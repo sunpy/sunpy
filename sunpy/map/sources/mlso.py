@@ -43,7 +43,10 @@ class KCorMap(GenericMap):
         self.meta['dsun_obs'] = (get_sunearth_distance(self.date)).to(u.m).value
         self._nickname = self.detector
         self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
+        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
+        # Negative value pixels can appear that lead to ugly looking images.
+        # This can be fixed by setting the lower limit of the normalization.
+        self.plot_settings['norm'].vmin = 0.0
 
     def _get_cmap_name(self):
         """Build the default color map name."""
