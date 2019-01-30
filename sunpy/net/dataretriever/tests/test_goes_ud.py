@@ -1,7 +1,7 @@
 import datetime
 
 import pytest
-from hypothesis import given, example, settings, HealthCheck
+from hypothesis import given, example, settings
 
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
@@ -63,7 +63,7 @@ def test_fixed_satellite(LCClient):
         assert "go13" in resp.url
 
 
-@settings(deadline=None, suppress_health_check=[HealthCheck.hung_test])
+@settings(deadline=50000)
 @example(a.Time("2006-08-01", "2006-08-01"))
 # This example tests a time range with a satellite jump and no overlap
 @example(a.Time("2009-11-30", "2009-12-3"))

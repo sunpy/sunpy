@@ -26,7 +26,7 @@ import sunpy.map
 import sunpy.coordinates
 import sunpy.data.test
 from sunpy.time import parse_time
-
+from sunpy.tests.helpers import skip_windows
 from sunpy.extern import six
 
 testpath = sunpy.data.test.rootdir
@@ -296,6 +296,7 @@ def test_save(aia171_test_map, generic_map):
     assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
+@skip_windows
 def test_save_compressed(aia171_test_map, generic_map):
     """Tests the map save function"""
     aiamap = aia171_test_map

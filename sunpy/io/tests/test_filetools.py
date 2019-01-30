@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import pytest
 import os
 
 import sunpy
 import sunpy.io
 import sunpy.data.test
 
-from sunpy.tests.helpers import skip_glymur, skip_ana
+from sunpy.tests.helpers import skip_glymur
+
+try:
+    from sunpy.io import _pyana
+    SKIP_ANA = False
+except:
+    SKIP_ANA = True
+
+skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available")
 
 testpath = sunpy.data.test.rootdir
 

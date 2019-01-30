@@ -9,4 +9,16 @@ jobs:
   parameters:
     name: Linux_37_online
     os: linux
-    tox: py37-online -- -n=8
+    tox: py37-online -- -n=4
+
+- template: azure-templates.yml
+  parameters:
+    name: Windows_27_offline
+    os: windows
+    tox: py27-offline
+
+- template: azure-templates.yml
+  parameters:
+    name: Windows_36_offline
+    os: windows
+    tox: py36-offline

@@ -10,7 +10,7 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-from hypothesis import given, settings, HealthCheck
+from hypothesis import given, settings
 
 from sunpy.net.tests.strategies import time_attr, range_time
 
@@ -48,7 +48,7 @@ def test_can_handle_query(time):
     assert ans2 is False
 
 
-@settings(deadline=None,  suppress_health_check=[HealthCheck.hung_test])
+@settings(deadline=50000)
 @pytest.mark.remote_data
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
 @given(time=range_time(datetime.datetime(1992, 6, 1)))

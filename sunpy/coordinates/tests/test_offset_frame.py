@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import hypothesis.strategies as st
-from hypothesis import given
+from hypothesis import given, settings
 
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
@@ -33,6 +33,7 @@ def test_null():
     assert off.origin.lon == 0*u.deg
 
 
+@settings(deadline=50000)
 @given(lon=lonitude(), lat=latitude())
 def test_transform(lon, lat):
     """
