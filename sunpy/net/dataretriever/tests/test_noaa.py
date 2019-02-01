@@ -14,7 +14,6 @@ from sunpy.net import attrs as a
 LCClient = noaa.NOAAIndicesClient()
 
 
-
 def mock_query_object(start_date, end_date):
     """
     Creation of a QueryResponse object, and prefill some

@@ -27,4 +27,4 @@ jobs:
   parameters:
     name: Linux_37_online
     os: linux
-    tox: py37-online -- -n=8
+    tox: py37-online -- -n=6
