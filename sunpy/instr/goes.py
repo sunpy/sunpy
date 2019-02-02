@@ -835,7 +835,7 @@ def calculate_radiative_loss_rate(goests, force_download=False,
     # object and change type to that required by _calc_rad_loss().
     # If LightCurve object does not contain temperature and
     # emission measure, calculate using calculate_temperature_em()
-    if 'temperature' in goests.columns and 'em' in goests.columns:
+    if 'temperature' in goests.colnames and 'em' in goests.colnames:
         # Use copy.deepcopy for replicating meta and data so that input
         # lightcurve is not altered.
         ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
