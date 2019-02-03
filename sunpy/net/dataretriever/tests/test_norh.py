@@ -21,6 +21,8 @@ from sunpy.net.tests.strategies import time_attr, range_time
 
 
 NORHClient = norh.NoRHClient()
+BASEURL = 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/\
+            pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 
 
 def create_url(start, end, wavelength):
@@ -38,7 +40,7 @@ def create_url(start, end, wavelength):
         raise ValueError('Wavelength should be 17Ghz or 34Ghz, found {}'.format(wavelength))
     start = datetime.strptime(start, '%Y/%m/%d')
     end = datetime.strptime(end, '%Y/%m/%d')
-    BASEURL = 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
+
     lst = list()
     for n in range(int((end - start).days)+1):
         lst.append((start+timedelta(n)).strftime(BASEURL.format(freq=freq)))
@@ -70,7 +72,9 @@ def mock_query_object(start_date, end_date, wavelength):
     with mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient._get_url_for_timerange',
                     return_value=create_url(start_date, end_date, wavelength)):
         resp = QueryResponse.create(map_,
-        NORHClient._get_url_for_timerange(map_['TimeRange'], wavelength=wavelength), time=time_range)
+                                    NORHClient._get_url_for_timerange(
+                                        map_['TimeRange'], wavelength=wavelength),
+                                    time=time_range)
         # Attach the client with the QueryResponse
         assert resp
         resp.client = NORHClient
@@ -83,7 +87,8 @@ def test_fetch_working():
     Tests if the mock fetch is containing the correct data.
     """
 
-    qr1 = NORHClient.search(a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz))
+    qr1 = NORHClient.search(a.Time('2012/10/4', '2012/10/6'),
+                            a.Instrument('norh'), a.Wavelength(17*u.GHz))
 
     # Create a mock query object
     mock_qr = mock_query_object('2012/10/4', '2012/10/6', wavelength=17*u.GHz)
@@ -119,8 +124,10 @@ def test_get_url_for_time_range(mock_get_url):
     urls = norh.NoRHClient()._get_url_for_timerange(TimeRange(parse_time('2012/3/7'),
             parse_time('2012/3/14')), wavelength=17*u.GHz)
     assert isinstance(urls, list)
-    assert urls[0] == 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120307'
-    assert urls[-1] == 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120314'
+    assert urls[0] == 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub\
+                        /nsro/norh/data/tcx/2012/03/tca120307'
+    assert urls[-1] == 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub\
+                        /nsro/norh/data/tcx/2012/03/tca120314'
 
 
 @given(time_attr())
@@ -174,12 +181,14 @@ def test_query_wrong_wave():
 @mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient._get_url_for_timerange',
             side_effect=create_url('2013/10/5', '2013/10/7', wavelength=34*u.GHz))
 @mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient.search',
-            side_effect=(UnifiedResponse(mock_query_object('2013/10/5', '2013/10/7', wavelength=34*u.GHz))))
+            side_effect=(UnifiedResponse(mock_query_object('2013/10/5', '2013/10/7',
+                         wavelength=34*u.GHz))))
 @mock.patch('sunpy.net.download.Results.wait', return_value=['some/path/extension/tcz131005',
             'some/path/extension/tcz131007', 'some/path/extension/tcz131006'])
 def test_get(mock_result, mock_fetch, mock_timerange):
     LCClient = norh.NoRHClient()
-    qr1 = LCClient.search(a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'), a.Wavelength(34*u.GHz))
+    qr1 = LCClient.search(a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'),
+                          a.Wavelength(34*u.GHz))
     res = LCClient.fetch(qr1)
     assert isinstance(res, Results)
     download_list = res.wait(progress=False)
@@ -189,7 +198,7 @@ def test_get(mock_result, mock_fetch, mock_timerange):
 @mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient._get_url_for_timerange',
             return_value=create_url('2012/10/4', '2012/10/6', wavelength=17*u.GHz))
 @mock.patch('sunpy.net.fido_factory.Fido.fetch', side_effect=(
-            UnifiedResponse(mock_query_object('2012/10/4', '2012/10/6', wavelength=17*u.GHz))))
+           UnifiedResponse(mock_query_object('2012/10/4', '2012/10/6', wavelength=17*u.GHz))))
 def test_fido(mock_fetch, mock_timerange):
     qr = Fido.search(a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz))
     assert isinstance(qr, UnifiedResponse)
