@@ -1,9 +1,10 @@
 # Standard import
-import pytest
-
-# Other packages import
 from unittest import mock
 from datetime import datetime, timedelta
+
+# Other packages import
+import pytest
+
 from hypothesis import given, settings, HealthCheck
 
 # Astropy import
