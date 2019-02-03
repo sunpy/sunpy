@@ -1,19 +1,14 @@
 from unittest import mock
 from datetime import datetime, timedelta
 
-# Other packages import
 import pytest
 from hypothesis import given, settings, HealthCheck
 
-# Astropy import
 import astropy.units as u
-
 from astropy.time import TimeDelta
 from astropy.time import Time
 
-# Sunpy import
 import sunpy.net.dataretriever.sources.norh as norh
-
 from sunpy.net.download import Results
 from sunpy.net.tests.strategies import time_attr, range_time
 from sunpy.net.dataretriever.client import QueryResponse
