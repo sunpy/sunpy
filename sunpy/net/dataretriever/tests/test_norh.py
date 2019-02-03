@@ -122,7 +122,8 @@ def test_fetch_working():
             return_value=create_url('2012/3/7', '2012/3/14', wavelength=17*u.GHz))
 def test_get_url_for_time_range(mock_get_url):
     urls = norh.NoRHClient()._get_url_for_timerange(TimeRange(parse_time('2012/3/7'),
-            parse_time('2012/3/14')), wavelength=17*u.GHz)
+                                                              parse_time('2012/3/14')),
+                                                    wavelength=17*u.GHz)
     assert isinstance(urls, list)
     assert urls[0] == 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub\
                         /nsro/norh/data/tcx/2012/03/tca120307'
