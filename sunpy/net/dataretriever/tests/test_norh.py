@@ -7,7 +7,6 @@ from hypothesis import given, settings, HealthCheck
 import astropy.units as u
 from astropy.time import TimeDelta
 from astropy.time import Time
-
 import sunpy.net.dataretriever.sources.norh as norh
 from sunpy.net.download import Results
 from sunpy.net.tests.strategies import time_attr, range_time
@@ -15,7 +14,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 
@@ -23,7 +21,6 @@ NORHClient = norh.NoRHClient()
 BASEURL = 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 
 def create_url(start, end, wavelength):
-
     """
     This function creates a url based on the NoRHClient data,
     instead of making an online request.
