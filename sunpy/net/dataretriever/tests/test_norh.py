@@ -123,7 +123,7 @@ def test_get_url_for_time_range(mock_get_url):
 # Wavelength 34 GHz
 @mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient._get_url_for_timerange',
             return_value=create_url('2012/3/7', '2012/3/14', wavelength=34*u.GHz))
-def test_get_url_for_time_range(mock_get_url):
+def test_get_url_for_time_range_34(mock_get_url):
     urls = norh.NoRHClient()._get_url_for_timerange(TimeRange(parse_time('2012/3/7'),
                                                               parse_time('2012/3/14')),
                                                     wavelength=34*u.GHz)
@@ -212,7 +212,7 @@ def test_fido(mock_fetch, mock_timerange):
             return_value=create_url('2012/10/4', '2012/10/6', wavelength=34*u.GHz))
 @mock.patch('sunpy.net.fido_factory.Fido.fetch', side_effect=(
            UnifiedResponse(mock_query_object('2012/10/4', '2012/10/6', wavelength=34*u.GHz))))
-def test_fido(mock_fetch, mock_timerange):
+def test_fido_34(mock_fetch, mock_timerange):
     qr = Fido.search(a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(34*u.GHz))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
