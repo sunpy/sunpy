@@ -1,6 +1,3 @@
-"""KCor Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121
-
 import matplotlib.pyplot as plt
 
 from astropy.visualization.mpl_normalize import ImageNormalize
@@ -15,7 +12,8 @@ __all__ = ['KCorMap']
 
 
 class KCorMap(GenericMap):
-    """K-Cor Image Map.
+    """
+    K-Cor Image Map.
 
     The COronal Solar Magnetism Observatory (COSMO) K-coronagraph (K-Cor) is one of three proposed
     instruments in the COSMO facility suite. It is specifically designed to study the formation
