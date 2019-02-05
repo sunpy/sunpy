@@ -11,6 +11,7 @@ from collections import OrderedDict
 from astropy.utils.decorators import lazyproperty
 
 import sunpy
+from sunpy.util.util import partial_match
 from sunpy.util.xml import xml_to_dict
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
@@ -109,14 +110,7 @@ class HelioviewerClient(object):
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
         2012-01-01T00:00:07.000
         """
-        if source_id is None:
-            try:
-                key = (observatory, instrument, detector, measurement)
-                source_id = self.data_sources[key]
-            except KeyError:
-                raise KeyError("The values used for observatory, instrument, detector, measurement "
-                               "do not correspond to a source_id. Please check the list using "
-                               "HelioviewerClient.data_sources.")
+        source_id = self._get_source_id(source_id, (observatory, instrument, detector, measurement))
 
         params = {
             "action": "getClosestImage",
@@ -171,17 +165,11 @@ class HelioviewerClient(object):
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO',
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', measurement='continuum')  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(filepath)  # doctest: +REMOTE_DATA
         >>> aia.peek()  # doctest: +SKIP
         """
-        if source_id is None:
-            try:
-                key = (observatory, instrument, detector, measurement)
-                source_id = self.data_sources[key]
-            except KeyError:
-                raise KeyError("The values used for observatory, instrument, detector, measurement "
-                               "do not correspond to a source_id. Please check the list using "
-                               "HelioviewerClient.data_sources.")
+        source_id = self._get_source_id(source_id, (observatory, instrument, detector, measurement))
 
         params = {
             "action": "getJP2Image",
@@ -193,7 +181,7 @@ class HelioviewerClient(object):
 
     def get_jp2_header(self, date, observatory=None, instrument=None, detector=None, measurement=None, jp2_id=None):
         """
-        Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section 
+        Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section
         of Helioviewer-specific metadata.
 
         This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
@@ -233,12 +221,7 @@ class HelioviewerClient(object):
         >>> helioviewer_meta_data = header['helioviewer']  # doctest: +REMOTE_DATA
         """
         if jp2_id is None:
-            try:
-                jp2_id = self.get_closest_image(date, observatory, instrument, detector, measurement)['id']
-            except KeyError:
-                raise KeyError("The values used for observatory, instrument, detector, measurement "
-                               "do not correspond to a source_id. Please check the list using "
-                               "HelioviewerClient.data_sources.")
+            jp2_id = self.get_closest_image(date, observatory, instrument, detector, measurement)['id']
 
         params = {
             "action": "getJP2Header",
@@ -450,3 +433,18 @@ class HelioviewerClient(object):
     def _format_date(self, date):
         """Formats a date for Helioviewer API requests"""
         return parse_time(date).isot + "Z"
+
+    def _get_source_id(self, source_id, key):
+        """Returns source_id based on the key"""
+        if source_id is None:
+            source_id_list = list(partial_match(key,self.data_sources))
+            if len(source_id_list) == 1:
+                source_id = source_id_list[0]
+                return source_id
+            else:
+                raise KeyError("The values used for observatory, instrument, detector, measurement "
+                               "do not correspond to a source_id. Please check the list using "
+                               "HelioviewerClient.data_sources. Expected 1 got " + str(len(source_id_list)) + 
+                               " values for source_id ", source_id_list)
+        else:
+            return source_id
