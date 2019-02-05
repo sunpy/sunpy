@@ -1,5 +1,5 @@
-"""Test cases for KCor Map subclass.
-This particular test file pertains to KCorMap.
+"""
+Test cases for KCor Map subclass.
 """
 
 import os
