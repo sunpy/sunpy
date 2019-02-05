@@ -212,3 +212,36 @@ def expand_list_generator(inp):
                 yield nested_item
         else:
             yield item
+
+def partial_match(key, dictionary):
+    """
+    Return value/values based on the partial key. Each element of the partial key is matched against the keys of the dictionary and if a match is found 
+    the value of the key is returned.
+    Even a partial match works here i.e even if the key matches partially
+    a value is returned. Note that this function uses a generator so we need to type cast the output to a list to get the values.
+
+    Parameters
+    ----------
+    key : `tuple`
+          A tuple containing the partial key.
+    dictionary: `dict`
+          The target dictionary from which we want to retrieve the value based on the partial key.
+
+    Returns
+    -------
+    `list`
+        A list consisting of all the values matching the partial key.
+
+    References
+    ----------
+    Taken from: https://stackoverflow.com/questions/18893624/partial-match-dictionary-keyof-tuples-in-python
+
+    Examples
+    ----------
+    >>> d = {('abc','def','ghi') : 1, ('abc', 'def', 'xyz') : 2, ('pqr', 'lmn', 'tuv') : 3}
+    >>> list(partial_match(('abc', 'def', None), d))
+
+    """
+    for k, v in dictionary.items():
+        if all(k1 == k2 or k2 is None  for k1, k2 in zip(k, key)):
+            yield v

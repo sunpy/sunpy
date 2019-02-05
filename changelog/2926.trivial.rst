@@ -1,0 +1,9 @@
+Users can now use fewer keywords in our `~sunpy.net.HelioviewerClient` to access the available sources. Either by `observatory` and `measurement` or `instrument` and `measurement` as this much information is enough to get the source ID for most of the cases.
+
+For example, if we want to use `~sunpy.net.helioviewer.HelioviewerClient.download_jp2` you can now do the  following:
+
+1. filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='HMI', detector=None, measurement='continuum')
+2. filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', measurement='continuum')
+3. filepath = hv.download_jp2('2012/07/03 14:30:00', instrument='HMI', measurement='continuum')
+
+These examples will now give the same result. An error message will be raised if an incomplete match is found.
