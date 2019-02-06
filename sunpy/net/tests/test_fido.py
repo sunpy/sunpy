@@ -5,7 +5,7 @@ import pathlib
 
 import pytest
 import hypothesis.strategies as st
-from hypothesis import given, assume, example, settings, HealthCheck
+from hypothesis import given, assume, example, settings
 
 import astropy.units as u
 from drms import DrmsQueryError
@@ -57,15 +57,16 @@ def online_query(draw, instrument=online_instruments(), time=time_attr()):
     return query
 
 
-@settings(deadline=None, suppress_health_check=[HealthCheck.hung_test])
+@settings(deadline=50000)
 @given(offline_query())
 def test_offline_fido(query):
     unifiedresp = Fido.search(query)
     check_response(query, unifiedresp)
 
 
-@settings(deadline=None,  suppress_health_check=[HealthCheck.hung_test])
+@settings(deadline=50000)
 @pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
 @given(online_query())
 def test_online_fido(query):
     unifiedresp = Fido.search(query)
@@ -247,7 +248,7 @@ def filter_queries(queries):
     return attr.and_(queries) not in queries
 
 
-@settings(deadline=None, suppress_health_check=[HealthCheck.hung_test])
+@settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_indexing(queries):
     query1, query2 = queries
@@ -286,7 +287,7 @@ def test_fido_indexing(queries):
         res[1.0132]
 
 
-@settings(deadline=None, suppress_health_check=[HealthCheck.hung_test])
+@settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_iter(queries):
     query1, query2 = queries
@@ -301,7 +302,7 @@ def test_fido_iter(queries):
         assert isinstance(resp, QueryResponse)
 
 
-@settings(deadline=None, suppress_health_check=[HealthCheck.hung_test])
+@settings(deadline=50000)
 @given(offline_query())
 def test_repr(query):
     res = Fido.search(query)
