@@ -38,8 +38,11 @@ class KCorMap(GenericMap):
         self.meta['observatory'] = 'MLSO'
         self.meta['detector'] = 'KCor'
         self.meta['waveunit'] = 'nanometer'
+        # Since KCor is on Earth, no need to raise the warning in mapbase
         self.meta['dsun_obs'] = (get_sunearth_distance(self.date)).to(u.m).value
+        self.meta['hgln_obs'] = 0.0
         self._nickname = self.detector
+
         self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
         # Negative value pixels can appear that lead to ugly looking images.
