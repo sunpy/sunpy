@@ -96,7 +96,7 @@ def test_hcrs_hgs():
     earth_hgs = earth_hcrs.transform_to(HeliographicStonyhurst)
 
     # The HGS longitude of the Earth should be zero within numerical error
-    assert quantity_allclose(earth_hgs.lon, 0*u.deg, atol=1e-12*u.deg)
+    assert quantity_allclose(earth_hgs.lon % (360*u.deg), 0*u.deg, atol=1e-12*u.deg)
 
     # The HGS latitude and radius should be within valid ranges
     assert quantity_allclose(earth_hgs.lat, 0*u.deg, atol=7.3*u.deg)
