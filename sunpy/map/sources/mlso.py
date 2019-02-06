@@ -32,7 +32,7 @@ class KCorMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         # Fill in some missing info
         self.meta['observatory'] = 'MLSO'
