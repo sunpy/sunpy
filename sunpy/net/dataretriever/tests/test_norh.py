@@ -1,7 +1,8 @@
-import datetime
 import pytest
 
 import astropy.units as u
+from astropy.time import TimeDelta
+from astropy.time import Time
 
 from sunpy.time.timerange import TimeRange
 from sunpy.net.dataretriever.client import QueryResponse
@@ -10,7 +11,7 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-from hypothesis import given
+from hypothesis import given, settings
 
 from sunpy.net.tests.strategies import time_attr, range_time
 
@@ -47,10 +48,10 @@ def test_can_handle_query(time):
     ans2 = norh.NoRHClient._can_handle_query(time)
     assert ans2 is False
 
-
 @pytest.mark.remote_data
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
-@given(time=range_time(datetime.datetime(1992, 6, 1)))
+@given(time=range_time(Time('1992-6-1')))
+@settings(max_examples=2, deadline=50000)
 def test_query(time, wave):
     qr1 = norh.NoRHClient().search(time, a.Instrument('norh'), wave)
     assert isinstance(qr1, QueryResponse)
@@ -59,10 +60,10 @@ def test_query(time, wave):
         # There are no observations everyday
         #  so the results found have to be equal or later than the queried time
         #  (looking at the date because it may search for miliseconds, but only date is available)
-        assert qr1.time_range().start.date() >= time.start.date()
+        assert qr1.time_range().start.strftime('%Y-%m-%d') >= time.start.strftime('%Y-%m-%d')
         #  and the end time equal or smaller.
         # hypothesis can give same start-end, but the query will give you from start to end (so +1)
-        assert qr1.time_range().end <= time.end + datetime.timedelta(days=1)
+        assert qr1.time_range().end <= time.end + TimeDelta(1*u.day)
 
 
 # Don't use time_attr here for speed.

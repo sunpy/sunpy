@@ -268,7 +268,7 @@ def _create_or(walker, query, factory):
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
     """
-    sunpy.net.Fido(\*args, \*\*kwargs)
+    sunpy.net.Fido(\\*args, \\*\\*kwargs)
 
     Search and Download data from a variety of supported sources.
     """
@@ -318,7 +318,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         ie. query is now of form A & B or ((A & B) | (C & D))
         This helps in modularising query into parts and handling each of the
         parts individually.
-        """
+        """  # noqa
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 
@@ -350,7 +350,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
         >>> downresp = Fido.fetch(unifresp)  # doctest: +SKIP
         >>> file_paths = downresp.wait()  # doctest: +SKIP
-        """
+        """  # noqa
         wait = kwargs.pop("wait", True)
         progress = kwargs.pop("progress", True)
         reslist = []

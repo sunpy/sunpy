@@ -224,12 +224,14 @@ class ImageAnimatorWCS(ImageAnimator):
         return axes
 
     def _set_unit_in_axis(self, axes):
+        x_index = self.slices_wcsaxes.index("x")
+        y_index = self.slices_wcsaxes.index("y")
         if self.unit_x_axis is not None:
-            axes.coords[2].set_format_unit(self.unit_x_axis)
-            axes.coords[2].set_ticks(exclude_overlapping=True)
+            axes.coords[x_index].set_format_unit(self.unit_x_axis)
+            axes.coords[x_index].set_ticks(exclude_overlapping=True)
         if self.unit_y_axis is not None:
-            axes.coords[1].set_format_unit(self.unit_y_axis)
-            axes.coords[1].set_ticks(exclude_overlapping=True)
+            axes.coords[y_index].set_format_unit(self.unit_y_axis)
+            axes.coords[y_index].set_ticks(exclude_overlapping=True)
 
     def plot_start_image(self, ax):
         """Sets up plot of initial image."""

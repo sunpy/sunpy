@@ -11,6 +11,7 @@ include sunpy/data/sunpyrc
 include sunpy/tests/figure_hashes_*.json
 include setup.py
 include ah_bootstrap.py
+include pyproject.toml
 
 recursive-include astropy_helpers *
 exclude astropy_helpers/.*

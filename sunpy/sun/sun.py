@@ -12,7 +12,7 @@ import astropy.units as u
 from astropy.coordinates import Angle, Latitude, Longitude
 
 from sunpy.sun import constants
-from sunpy.time import julian_day, parse_time, julian_centuries
+from sunpy.time import parse_time, julian_centuries
 from sunpy.util.decorators import add_common_docstring
 
 __all__ = [
@@ -62,7 +62,7 @@ def solar_cycle_number(t='now'):
 
     """
     time = parse_time(t)
-    result = (time.year + 8) % 28 + 1
+    result = (int(time.strftime('%Y')) + 8) % 28 + 1
     return result
 
 
@@ -149,7 +149,7 @@ def carrington_rotation_number(t='now'):
     Return the Carrington Rotation number
 
     """
-    jd = julian_day(t)
+    jd = parse_time(t).jd
     result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
     return result
 

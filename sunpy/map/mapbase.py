@@ -13,10 +13,12 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
+from astropy.io import fits
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
 import sunpy.io as io
+# The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
 import sunpy.cm
 from sunpy import config
@@ -77,16 +79,19 @@ class GenericMap(NDData):
     Scale:			 [2.402792 2.402792] arcsec / pix
     Reference Pixel:	 [512.5 512.5] pix
     Reference Coord:	 [3.22309951 1.38578135] arcsec
-    <BLANKLINE>
-    array([[ -96.,    7.,   -2., ..., -128., -128., -128.],
-           [ -97.,   -5.,    0., ...,  -99., -104., -128.],
-           [ -94.,    1.,   -4., ...,   -5.,  -38., -128.],
+    array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
+            -127.96519  , -127.96519  ],
+           [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
+            -104.04137  , -127.919716 ],
+           [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
+             -37.95505  , -127.87541  ],
            ...,
-           [-128., -128., -128., ..., -128., -128., -128.],
-           [-128., -128., -128., ..., -128., -128., -128.],
-           [-128., -128., -128., ..., -128., -128., -128.]], dtype=float32)
-
-
+           [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
+            -128.01454  , -128.01454  ],
+           [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
+            -127.899666 , -127.899666 ],
+           [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
+            -128.03072  , -128.03072  ]], dtype=float32)
 
     >>> aia.spatial_units   # doctest: +REMOTE_DATA
     SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
@@ -216,7 +221,7 @@ class GenericMap(NDData):
                    Detector:\t\t {det}
                    Measurement:\t\t {meas}
                    Wavelength:\t\t {wave}
-                   Observation Date:\t {date:{tmf}}
+                   Observation Date:\t {date}
                    Exposure Time:\t\t {dt:f}
                    Dimension:\t\t {dim}
                    Coordinate System:\t {coord.name}
@@ -224,7 +229,8 @@ class GenericMap(NDData):
                    Reference Pixel:\t {refpix}
                    Reference Coord:\t {refcoord}
                    """).format(obs=self.observatory, inst=self.instrument, det=self.detector,
-                               meas=self.measurement, wave=self.wavelength, date=self.date,
+                               meas=self.measurement, wave=self.wavelength,
+                               date=self.date.strftime(TIME_FORMAT),
                                dt=self.exposure_time,
                                dim=u.Quantity(self.dimensions),
                                scale=u.Quantity(self.scale),
@@ -264,7 +270,7 @@ class GenericMap(NDData):
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.isoformat()
+        w2.wcs.dateobs = self.date.iso
         w2.heliographic_observer = self.observer_coordinate
         w2.rsun = self.rsun_meters
 
@@ -367,9 +373,10 @@ class GenericMap(NDData):
 
     def _base_name(self):
         """Abstract the shared bit between name and latex_name"""
-        return "{nickname} {{measurement}} {date:{tmf}}".format(nickname=self.nickname,
-                                                                date=parse_time(self.date),
-                                                                tmf=TIME_FORMAT)
+        return "{nickname} {{measurement}} {date}".format(
+            nickname=self.nickname,
+            date=parse_time(self.date).strftime(TIME_FORMAT)
+        )
 
     @property
     def name(self):
@@ -493,8 +500,8 @@ class GenericMap(NDData):
         `~sunpy.map.GenericMap.shift`."""
         return self._shift
 
-    @u.quantity_input(axis1=u.deg, axis2=u.deg)
-    def shift(self, axis1, axis2):
+    @u.quantity_input
+    def shift(self, axis1: u.deg, axis2: u.deg):
         """
         Returns a map shifted by a specified amount to, for example, correct
         for a bad map location. These values are applied directly to the
@@ -709,6 +716,13 @@ class GenericMap(NDData):
         return np.array([[np.cos(p), -1 * lam * np.sin(p)],
                          [1/lam * np.sin(p), np.cos(p)]])
 
+    @property
+    def fits_header(self):
+        """
+        A `~astropy.io.fits.Header` representation of the ``meta`` attribute.
+        """
+        return sunpy.io.fits.header_to_fits(self.meta)
+
 # #### Miscellaneous #### #
 
     def _fix_date(self):
@@ -811,8 +825,8 @@ class GenericMap(NDData):
 
         return PixelPair(x * u.pixel, y * u.pixel)
 
-    @u.quantity_input(x=u.pixel, y=u.pixel)
-    def pixel_to_world(self, x, y, origin=0):
+    @u.quantity_input
+    def pixel_to_world(self, x: u.pixel, y: u.pixel, origin=0):
         """
         Convert a pixel coordinate to a data (world) coordinate by using
         `~astropy.wcs.WCS.wcs_pix2world`.
@@ -868,14 +882,20 @@ class GenericMap(NDData):
 
         filetype : str
             'auto' or any supported file extension.
+
+        Keywords
+        --------
+        hdu_type: `None`, `~fits.CompImageHDU`
+            `None` will return a normal FITS files.
+            `~fits.CompImageHDU` will rice compress the FITS file.
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
 
 # #### Image processing routines #### #
 
-    @u.quantity_input(dimensions=u.pixel)
-    def resample(self, dimensions, method='linear'):
+    @u.quantity_input
+    def resample(self, dimensions: u.pixel, method='linear'):
         """Returns a new Map that has been resampled up or down
 
         Arbitrary resampling of the Map to new dimension sizes.
@@ -1192,14 +1212,19 @@ class GenericMap(NDData):
         Scale:			 [2.402792 2.402792] arcsec / pix
         Reference Pixel:	 [127.5 126.5] pix
         Reference Coord:	 [3.22309951 1.38578135] arcsec
-        <BLANKLINE>
-        array([[ 451.,  566.,  586., ..., 1179., 1005.,  978.],
-               [ 475.,  515.,  556., ..., 1026., 1011., 1009.],
-               [ 547.,  621.,  621., ...,  935., 1074., 1108.],
-               ...,
-               [ 203.,  195.,  226., ...,  612.,  580.,  561.],
-               [ 207.,  213.,  233., ...,  651.,  622.,  537.],
-               [ 230.,  236.,  222., ...,  516.,  586.,  591.]], dtype=float32)
+        array([[ 450.4546 ,  565.81494,  585.0416 , ..., 1178.3234 , 1005.28284,
+                977.8161 ],
+            [ 474.20004,  516.1865 ,  555.7032 , ..., 1024.9636 , 1010.1449 ,
+                1010.1449 ],
+            [ 548.1609 ,  620.9256 ,  620.9256 , ...,  933.8139 , 1074.4924 ,
+                1108.4492 ],
+                ...,
+            [ 203.58617,  195.52335,  225.75891, ...,  612.7742 ,  580.52295,
+                560.3659 ],
+            [ 206.00058,  212.1806 ,  232.78065, ...,  650.96185,  622.12177,
+                537.6615 ],
+            [ 229.32516,  236.07002,  222.5803 , ...,  517.1058 ,  586.8026 ,
+                591.2992 ]], dtype=float32)
 
         >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +REMOTE_DATA
         SunPy Map
@@ -1216,13 +1241,16 @@ class GenericMap(NDData):
         Scale:			 [2.402792 2.402792] arcsec / pix
         Reference Pixel:	 [512.5 512.5] pix
         Reference Coord:	 [3.22309951 1.38578135] arcsec
-        <BLANKLINE>
-        array([[-96.,   7.,  -2.,  -3.,  -1.],
-               [-97.,  -5.,   0.,   0.,   1.],
-               [-94.,   1.,  -4.,   2.,  -2.],
-               [-97.,  -8.,  -3.,  -5.,  -1.],
-               [-96.,   6.,  -5.,  -1.,  -4.]], dtype=float32)
-
+        array([[-95.92475   ,   7.076416  ,  -1.9656711 ,  -2.9485066 ,
+                -0.98283553],
+            [-96.97533   ,  -5.1167884 ,   0.        ,   0.        ,
+                0.9746264 ],
+            [-93.99607   ,   1.0189276 ,  -4.0757103 ,   2.0378551 ,
+                -2.0378551 ],
+            [-96.97533   ,  -8.040668  ,  -2.9238791 ,  -5.1167884 ,
+                -0.9746264 ],
+            [-95.92475   ,   6.028058  ,  -4.9797    ,  -1.0483578 ,
+                -3.9313421 ]], dtype=float32)
         """
 
         if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
@@ -1299,8 +1327,8 @@ class GenericMap(NDData):
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
-    @u.quantity_input(dimensions=u.pixel, offset=u.pixel)
-    def superpixel(self, dimensions, offset=(0, 0)*u.pixel, func=np.sum):
+    @u.quantity_input
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel=(0, 0)*u.pixel, func=np.sum):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
@@ -1389,8 +1417,8 @@ class GenericMap(NDData):
 
 # #### Visualization #### #
 
-    @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, axes=None, grid_spacing=15*u.deg, **kwargs):
+    @u.quantity_input
+    def draw_grid(self, axes=None, grid_spacing: u.deg=15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1466,8 +1494,8 @@ class GenericMap(NDData):
 
         return [circ]
 
-    @u.quantity_input(width=u.deg, height=u.deg)
-    def draw_rectangle(self, bottom_left, width, height, axes=None, **kwargs):
+    @u.quantity_input
+    def draw_rectangle(self, bottom_left, width: u.deg, height: u.deg, axes=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
 
@@ -1528,8 +1556,8 @@ class GenericMap(NDData):
 
         return [rect]
 
-    @u.quantity_input(levels=u.percent)
-    def draw_contours(self, levels, axes=None, **contour_args):
+    @u.quantity_input
+    def draw_contours(self, levels: u.percent, axes=None, **contour_args):
         """
         Draw contours of the data.
 

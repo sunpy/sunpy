@@ -59,27 +59,31 @@ your map simply type::
     >>> my_map  # doctest: +REMOTE_DATA
     SunPy Map
     ---------
-    Observatory:         SDO
-    Instrument:      AIA 3
-    Detector:        AIA
-    Measurement:         171.0 Angstrom
-    Wavelength:      171.0 Angstrom
-    Observation Date:    2011-06-07 06:33:02
-    Exposure Time:       0.234256 s
-    Dimension:       [1024. 1024.] pix
-    Coordinate System:   helioprojective
-    Scale:           [2.402792 2.402792] arcsec / pix
-    Reference Pixel:     [512.5 512.5] pix
-    Reference Coord:     [3.22309951 1.38578135] arcsec
-    <BLANKLINE>
-    array([[ -96.,    7.,   -2., ..., -128., -128., -128.],
-           [ -97.,   -5.,    0., ...,  -99., -104., -128.],
-           [ -94.,    1.,   -4., ...,   -5.,  -38., -128.],
-           ...,
-           [-128., -128., -128., ..., -128., -128., -128.],
-           [-128., -128., -128., ..., -128., -128., -128.],
-           [-128., -128., -128., ..., -128., -128., -128.]], dtype=float32)
-
+    Observatory:		 SDO
+    Instrument:		 AIA 3
+    Detector:		 AIA
+    Measurement:		 171.0 Angstrom
+    Wavelength:		 171.0 Angstrom
+    Observation Date:	 2011-06-07 06:33:02
+    Exposure Time:		 0.234256 s
+    Dimension:		 [1024. 1024.] pix
+    Coordinate System:	 helioprojective
+    Scale:			 [2.402792 2.402792] arcsec / pix
+    Reference Pixel:	 [512.5 512.5] pix
+    Reference Coord:	 [3.22309951 1.38578135] arcsec
+    array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
+            -127.96519  , -127.96519  ],
+           [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
+            -104.04137  , -127.919716 ],
+           [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
+             -37.95505  , -127.87541  ],
+            ...,
+           [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
+            -128.01454  , -128.01454  ],
+           [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
+            -127.899666 , -127.899666 ],
+           [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
+            -128.03072  , -128.03072  ]], dtype=float32)
 
 This will show a representation of the data as well as some of its associated
 attributes. A number of other attributes are also available, for example the
@@ -113,9 +117,9 @@ NumPy `~numpy.ndarray`, so for example, to get
 the 0th element in the array ::
 
     >>> my_map.data[0, 0]  # doctest: +REMOTE_DATA
-    -96.0
+    -95.92475
     >>> my_map.data[0][0]  # doctest: +REMOTE_DATA
-    -96.0
+    -95.92475
 
 One important fact to remember is that the first
 index is for the y direction while the second index is for the x direction.
@@ -129,7 +133,7 @@ the SunPyGenericMap object ::
     >>> my_map.dimensions  # doctest: +REMOTE_DATA
     PixelPair(x=<Quantity 1024. pix>, y=<Quantity 1024. pix>)
     >>> my_map.dtype  # doctest: +REMOTE_DATA
-    dtype('>f4')
+    dtype('float32')
 
 Here the dimensions attribute is similar to the `~numpy.ndarray.shape`
 attribute, however returning an `~astropy.units.quantity.Quantity`.
@@ -147,17 +151,17 @@ Some basic statistical functions on the data array are also passed through to Ma
 objects::
 
     >>> my_map.min()  # doctest: +REMOTE_DATA
-    -128.0
+    -129.78036
     >>> my_map.max()  # doctest: +REMOTE_DATA
-    192131.0
+    192130.17
     >>> my_map.mean()  # doctest: +REMOTE_DATA
-    427.0214
+    427.02252
 
 but you can also access all the other `~numpy.ndarray` functions and attributes
 but accessing the data array directly. For example::
 
     >>> my_map.data.std()  # doctest: +REMOTE_DATA
-    826.40955
+    826.41016
 
 Plotting
 --------
@@ -366,10 +370,10 @@ normalization.
     import matplotlib.pyplot as plt
     import sunpy.data.sample
     smap = sunpy.map.Map(sunpy.data.sample.AIA_193_CUTOUT01_IMAGE)
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-1100, 0, txt, color='white')
     smap.plot()
     plt.colorbar()
@@ -424,10 +428,10 @@ addition of an associated boolean array which holds the mask.
     smap = sunpy.map.Map('/Users/schriste/Desktop/sunpy_test_img/XRT20141211_184221.9.fits')
     fig = plt.figure()
     smap.plot()
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     plt.colorbar()
     plt.show()
@@ -460,10 +464,10 @@ addition of an associated boolean array which holds the mask.
     cmap = smap.plot_settings['cmap']
     cmap.set_bad('blue', 1.0)
     smap.data = numpy.ma.masked_greater(smap.data, smap.mean() + 3 *smap.std())
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     norm = colors.Normalize()
     smap.plot(norm = norm)
@@ -484,10 +488,10 @@ addition of an associated boolean array which holds the mask.
     cmap.set_bad('blue', 1.0)
     smap.data = numpy.ma.masked_greater(smap.data, smap.mean() + 3 *smap.std())
     smap.data.mask[0:250,:] = False
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     norm = colors.Normalize()
     smap.plot(norm = norm)

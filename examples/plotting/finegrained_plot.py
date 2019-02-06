@@ -27,7 +27,7 @@ bottom_left = SkyCoord(-400*u.arcsec, -900*u.arcsec, frame=aiamap.coordinate_fra
 top_right = SkyCoord(800*u.arcsec, 700*u.arcsec, frame=aiamap.coordinate_frame)
 aiamap_sub = aiamap.submap(bottom_left, top_right)
 
-title_obsdate = '{:%Y-%b-%d %H:%M:%S}'.format(aiamap_sub.date)
+title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
 
 ###############################################################################
 # The SunPy map peek method shows a helioprojective  grid by default.
@@ -68,7 +68,7 @@ tx, ty = ax.coords
 # Use integer coordinates for either axis.
 tx.set_major_formatter('s')
 ty.set_major_formatter('s')
-ax.set_title('AIA 171 $\AA$ {}'.format(title_obsdate))
+ax.set_title(r'AIA 171 $\AA$ {}'.format(title_obsdate))
 ax.set_ylabel('Helioprojective Latitude [arcsec]')
 ax.set_xlabel('Helioprojective Longitude [arcsec]')
 plt.colorbar(fraction=0.045, pad=0.03, label='DN', ax=ax)

@@ -1,15 +1,15 @@
-import datetime
 import pytest
 
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time, Instrument, Source
+from sunpy.time import parse_time
+from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.lyra as lyra
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-from hypothesis import given
+from hypothesis import given, settings
 from sunpy.net.tests.strategies import time_attr
 
 LCClient = lyra.LYRAClient()
@@ -37,7 +37,7 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
 
 
 def test_get_url_for_date():
-    url = LCClient._get_url_for_date(datetime.date(2013, 2, 13))
+    url = LCClient._get_url_for_date(parse_time((2013, 2, 13)))
     assert url == 'http://proba2.oma.be/lyra/data/bsd/2013/02/13/lyra_20130213-000000_lev2_std.fits'
 
 
@@ -50,6 +50,7 @@ def test_can_handle_query(time):
     assert ans2 is False
 
 
+@settings(deadline=50000)
 @given(time_attr())
 def test_query(time):
     qr1 = LCClient.search(time, Instrument('lyra'))

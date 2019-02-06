@@ -1,5 +1,8 @@
 import pytest
 from numpy.testing import assert_almost_equal
+
+import astropy.units as u
+
 from sunpy.instr import fermi
 from sunpy.time import parse_time
 
@@ -49,3 +52,8 @@ def test_detector_angles():
     assert_almost_equal(det2['n7'].value, 127.35783, decimal=1)
     assert_almost_equal(det2['n8'].value, 122.98894, decimal=1)
     assert_almost_equal(det2['n9'].value, 126.95987, decimal=1)
+
+
+def test_met_to_utc():
+    time = fermi.met_to_utc(500000000)
+    assert (time - parse_time('2016-11-05T00:53:16.000')) < 1e-7 * u.s
