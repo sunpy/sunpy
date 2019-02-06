@@ -40,7 +40,7 @@ These are common 2D params, kwargs are frame specific
 two_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec], None),
     ([0 * u.deg, 0 * u.arcsec], {'obstime': '2011/01/01T00:00:00'}),
-    ([0 * u.deg, 0 * u.arcsec], {'representation': 'unitspherical'}),
+    ([0 * u.deg, 0 * u.arcsec], {'representation_type': 'unitspherical'}),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], None),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], None), (
         [UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)],
@@ -52,7 +52,7 @@ These are common 3D params, kwargs are frame specific
 three_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], None),
     ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'obstime': '2011/01/01T00:00:00'}),
-    ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'representation': 'spherical'}),
+    ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'representation_type': 'spherical'}),
     ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
      None),
     ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)], None), (
@@ -73,7 +73,7 @@ def test_create_hpc_2d(args, kwargs):
 
     # Check we have the right class!
     assert isinstance(hpc1, Helioprojective)
-    rep_kwarg = kwargs.get('representation', None) if kwargs else None
+    rep_kwarg = kwargs.get('representation_type', None) if kwargs else None
 
     if rep_kwarg and rep_kwarg == 'unitspherical':
         # Check that we have a unitspherical representation
@@ -102,7 +102,7 @@ def test_create_3d(args, kwargs):
 
     # Check we have the right class!
     assert isinstance(hpc1, Helioprojective)
-    rep_kwarg = kwargs.get('representation', None) if kwargs else None
+    rep_kwarg = kwargs.get('representation_type', None) if kwargs else None
 
     if rep_kwarg and rep_kwarg == 'spherical':
         # Check that we have a unitspherical representation
@@ -215,7 +215,7 @@ def test_HEE_creation():
                                obstime=parse_time('2018-12-21'))
     _ = HeliographicStonyhurst(x=1*u.km, y=1*u.km, z=1*u.km,
                                obstime=parse_time('2018-12-21'),
-                               representation='cartesian')
+                               representation_type='cartesian')
 
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
@@ -253,7 +253,7 @@ def test_create_hgs_force_2d(frame, args, kwargs):
     # Check we have the right class!
     assert isinstance(hgs1, frame)
 
-    rep_kwarg = kwargs.get('representation', None) if kwargs else None
+    rep_kwarg = kwargs.get('representation_type', None) if kwargs else None
 
     if rep_kwarg == 'unitspherical':
         assert isinstance(hgs1._data, UnitSphericalRepresentation)
@@ -281,7 +281,7 @@ def test_create_hgs_3d(frame, args, kwargs):
     # Check we have the right class!
     assert isinstance(hgs1, frame)
 
-    rep_kwarg = kwargs.get('representation', None) if kwargs else None
+    rep_kwarg = kwargs.get('representation_type', None) if kwargs else None
 
     if rep_kwarg == 'spherical':
         assert isinstance(hgs1._data, SphericalRepresentation)
@@ -373,7 +373,7 @@ two_D_parameters = [
 
 @pytest.mark.parametrize("args, kwargs",
                          two_D_parameters + [([0 * u.deg, 0 * u.arcsec],
-                                              {'representation': 'unitspherical'})])
+                                              {'representation_type': 'unitspherical'})])
 def test_skycoord_hpc(args, kwargs):
     """
     Test that when instantiating a HPC frame with SkyCoord calculate distance
