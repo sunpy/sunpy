@@ -3,7 +3,7 @@ from datetime import datetime
 from urllib.error import URLError
 from urllib.request import urlretrieve
 
-import mock
+from unittest import mock
 import pytest
 
 import sunpy.instr.rhessi
@@ -15,8 +15,6 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.dataretriever.client import QueryResponse
 
 LCClient = rhessi.RHESSIClient()
-
-# Test `rhessi.get_observing_summarym_dbase_file(...)`
 
 
 @pytest.fixture
@@ -170,8 +168,8 @@ def test_query(mock_get_observing_summary_dbase_file,
     qr1 = LCClient.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument('rhessi'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 3
-    assert qr1.time_range().start == parse_time('2003/11/01')
-    assert qr1.time_range().end == parse_time('2003/11/03T23:59:59.999')
+    assert qr1.time_range().start.datetime == parse_time('2003/11/01')
+    assert qr1.time_range().end.datetime == parse_time('2003/11/03T23:59:59.999')
 
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')

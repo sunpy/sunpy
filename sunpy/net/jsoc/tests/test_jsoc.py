@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 import tempfile
-import datetime
 import pandas as pd
 import astropy.table
 import astropy.time
-from astropy.time import Time as astropyTime
 import astropy.units as u
 import pytest
 
@@ -46,17 +44,16 @@ def test_empty_jsoc_response():
 @pytest.mark.remote_data
 def test_query():
     Jresp = client.search(
-        attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
+        vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
         attrs.Series('hmi.M_45s'), vso_attrs.Sample(90 * u.second))
     assert isinstance(Jresp, JSOCResponse)
     assert len(Jresp) == 2
 
 
-@pytest.mark.flaky(reruns=5)
 @pytest.mark.remote_data
 def test_post_pass():
     responses = client.search(
-        attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+        vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses)
     tmpresp = aa._d
@@ -67,7 +64,7 @@ def test_post_pass():
 @pytest.mark.remote_data
 def test_post_wavelength():
     responses = client.search(
-        attrs.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
+        vso_attrs.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
         attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(193 * u.AA) |
         attrs.Wavelength(335 * u.AA), attrs.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses)
@@ -85,7 +82,7 @@ def test_post_wavelength():
 @pytest.mark.remote_data
 def test_post_notify_fail():
     responses = client.search(
-        attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+        vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
         attrs.Series('hmi.M_45s'))
     with pytest.raises(ValueError):
         client.request_data(responses)
@@ -95,7 +92,7 @@ def test_post_notify_fail():
 def test_post_wave_series():
     with pytest.raises(TypeError):
         client.search(
-            attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+            vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
             attrs.Series('hmi.M_45s') | attrs.Series('aia.lev1_euv_12s'),
             attrs.Wavelength(193 * u.AA) | attrs.Wavelength(335 * u.AA))
 
@@ -103,7 +100,7 @@ def test_post_wave_series():
 @pytest.mark.remote_data
 def test_wait_get():
     responses = client.search(
-        attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     path = tempfile.mkdtemp()
     res = client.fetch(responses, path=path)
@@ -114,7 +111,7 @@ def test_wait_get():
 @pytest.mark.remote_data
 def test_get_request():
     responses = client.search(
-        attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
 
     bb = client.request_data(responses)
@@ -126,13 +123,13 @@ def test_get_request():
 @pytest.mark.remote_data
 def test_invalid_query():
     with pytest.raises(ValueError):
-        client.search(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
+        client.search(vso_attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
 
 
 @pytest.mark.remote_data
 def test_lookup_records_errors():
-    d1 = {'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35)),
-          'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35))}
+    d1 = {'end_time': astropy.time.Time('2014-01-01 01:00:35'),
+          'start_time': astropy.time.Time('2014-01-01 00:00:35')}
     with pytest.raises(ValueError):          # Series must be specified for a JSOC Query
         client._lookup_records(d1)
 
@@ -172,8 +169,8 @@ def test_make_recordset_errors():
         client._make_recordset(**d1)
 
     d1.update({
-        'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-        'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+        'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
+        'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai'),
         'primekey': {'T_REC': '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'}
         })
 
@@ -181,8 +178,8 @@ def test_make_recordset_errors():
         client._make_recordset(**d1)
 
     d1.update({
-        'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-        'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+        'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
+        'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai'),
         'wavelength': 604*u.AA,
         'primekey': {'WAVELNTH': '604'}
         })
@@ -194,8 +191,8 @@ def test_make_recordset_errors():
 @pytest.mark.remote_data
 def test_make_recordset():
     d1 = {'series': 'aia.lev1_euv_12s',
-          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)
+          'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
+          'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai')
           }
     exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'
     assert client._make_recordset(**d1) == exp
@@ -214,8 +211,8 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
     d1 = {'series': 'hmi.v_45s',
-          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+          'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
+          'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai'),
           'segment': 'foo,bar'
           }
     exp = 'hmi.v_45s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]{foo,bar}'
@@ -225,8 +222,8 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
     d1 = {'series': 'hmi.sharp_720s',
-          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+          'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
+          'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai'),
           'segment': ['continuum', 'magnetogram'],
           'primekey': {'HARPNUM': '4864'}
           }
@@ -242,7 +239,7 @@ def test_make_recordset():
 
 @pytest.mark.remote_data
 def test_search_metadata():
-    metadata = client.search_metadata(attrs.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
+    metadata = client.search_metadata(vso_attrs.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
                                       attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(304*u.AA))
     assert isinstance(metadata, pd.DataFrame)
     assert metadata.shape == (11, 176)
@@ -253,7 +250,7 @@ def test_search_metadata():
 @pytest.mark.remote_data
 def test_request_data_error():
     responses = client.search(
-        attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
         attrs.Protocol('foo'))
     with pytest.raises(TypeError):
@@ -263,7 +260,7 @@ def test_request_data_error():
 @pytest.mark.remote_data
 def test_request_data_protocol():
     responses = client.search(
-        attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
     req.wait()
@@ -271,7 +268,7 @@ def test_request_data_protocol():
     assert req._d['protocol'] == 'fits'
 
     responses = client.search(
-        attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
         attrs.Protocol('fits'))
     req = client.request_data(responses)
@@ -280,7 +277,7 @@ def test_request_data_protocol():
     assert req._d['protocol'] == 'fits'
 
     responses = client.search(
-        attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
         attrs.Protocol('as-is'))
     req = client.request_data(responses)
@@ -292,7 +289,7 @@ def test_request_data_protocol():
 @pytest.mark.remote_data
 def test_check_request():
     responses = client.search(
-        attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
     req.wait()
@@ -302,7 +299,7 @@ def test_check_request():
 @pytest.mark.remote_data
 def test_results_filenames():
     responses = client.search(
-        attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
+        vso_attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     path = tempfile.mkdtemp()
     aa = client.fetch(responses, path=path)

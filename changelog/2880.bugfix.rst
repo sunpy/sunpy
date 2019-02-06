@@ -1,0 +1,1 @@
+Fixed `sunpy.io.fits.write` to handle the keyword ``COMMENT`` correctly.

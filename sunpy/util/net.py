@@ -130,16 +130,16 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
 
     Parameters
     ----------
-    filename : string
+    filename : str
         Name of file.
 
-    remotepath : string
+    remotepath : str
         URL of the remote location from which filename can be downloaded.
 
-    download_dir : string
+    download_dir : str
         The files directory.
 
-    remotename : (optional) string
+    remotename : (optional) str
         filename under which the file is stored remotely.
         Default is same as filename.
 

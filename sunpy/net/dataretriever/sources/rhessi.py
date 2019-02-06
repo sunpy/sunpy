@@ -61,18 +61,17 @@ class RHESSIClient(GenericClient):
         Examples
         --------
         >>> from sunpy.net.dataretriever.sources.rhessi import RHESSIClient
-        >>> RHESSIClient().get_observing_summary_filename(('2011/04/04', '2011/04/05'))   # doctest: +REMOTE_DATA
-        ['https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits',
-        'https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110405_031.fits']
+        >>> RHESSIClient().get_observing_summary_filename(('2011/04/04', '2011/04/04'))   # doctest: +REMOTE_DATA
+        ['https://.../hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits']
         """
         dt = TimeRange(time_range)
         # remove time from dates
-        dt = TimeRange(dt.start.date(), dt.end.date())
+        dt = TimeRange(dt.start.datetime.date(), dt.end.datetime.date())
 
         filenames = []
 
-        diff_months = (dt.end.year - dt.start.year) * 12 + dt.end.month - dt.start.month
-        first_month = datetime(dt.start.year, dt.start.month, 1)
+        diff_months = (dt.end.datetime.year - dt.start.datetime.year) * 12 + dt.end.datetime.month - dt.start.datetime.month
+        first_month = datetime(dt.start.datetime.year, dt.start.datetime.month, 1)
         month_list = rrule(MONTHLY, dtstart=first_month, count=diff_months+1)
 
         # need to download and inspect the dbase file to determine the filename
@@ -134,9 +133,8 @@ class RHESSIClient(GenericClient):
 
         Parameters
         ----------
-        args : TimeRange, datetimes, date strings
-            Date range should be specified using a TimeRange, or start
-            and end dates at datetime instances or date strings.
+        timerange : `~sunpy.time.TimeRange`
+            Date range should be specified using a TimeRange.
         """
         return self.get_observing_summary_filename(timerange)
 

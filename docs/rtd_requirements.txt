@@ -1,6 +1,6 @@
 # This file is used on ReadTheDocs to build the
 # documentation and is separate of tox.ini and setup.cfg
-numpy
+numpy<1.16
 astropy
 scipy
 pandas
@@ -9,7 +9,9 @@ sqlalchemy
 scikit-image
 glymur
 drms
-suds-jurko
+zeep
+pytest
+asdf
 beautifulsoup4
 requests
 python-dateutil

@@ -10,26 +10,23 @@ jobs:
 
   steps:
   - task: CondaEnvironment@1
-    displayName: setup conda
-
-  - task: UsePythonVersion@0
-    displayName: setup python
+    displayName: 'Create conda environment'
     inputs:
-      versionSpec: 3.7
-
-  - script: python -m pip install --upgrade pip setuptools
-    displayName: upgrade pip and setuptools
+      createCustomEnvironment: True
+      environmentName: "test"
+      createOptions: python="3.6"
 
   - script: pip install --upgrade tox
     displayName: install tox
 
-  - script: pip install --upgrade git+https://github.com/drdavella/tox-conda
+  - script: pip install --upgrade tox-conda
     displayName: install tox-conda
 
-  - script: tox -vv -e ${{ parameters.tox }}
+  - script: tox -e ${{ parameters.tox }}
     displayName: run tox-conda
 
   - script: |
       pip install --upgrade codecov
-      codecov
+      codecov --name ${{ format(parameters.name) }}
     displayName: run codecov
+    condition: succeededOrFailed()

@@ -67,6 +67,12 @@ HELIO
 .. automodapi:: sunpy.net.helio.hec
     :headings: #~
 
+Helioviewer
+-----------
+
+.. automodapi:: sunpy.net.helioviewer
+    :headings: ^#
+
 Attr
 ----
 

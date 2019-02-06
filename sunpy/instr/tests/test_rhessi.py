@@ -2,10 +2,10 @@
 """
 Unit tests for `sunpy.instr.rhessi`
 """
-import os
-from datetime import datetime
+import sys
+import textwrap
 
-import mock
+from unittest import mock
 import numpy as np
 import pytest
 
@@ -13,6 +13,7 @@ import sunpy.io
 import sunpy.map
 from sunpy.data.test import get_test_filepath
 import sunpy.instr.rhessi as rhessi
+from sunpy.time import parse_time, is_time_equal
 
 
 @pytest.fixture
@@ -31,7 +32,7 @@ def test_backprojection():
     test_filename = 'hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits'
     amap = rhessi.backprojection(get_test_filepath(test_filename))
     assert isinstance(amap, sunpy.map.GenericMap)
-    assert amap.date == datetime(2002, 2, 20, 11, 6, 21)
+    assert is_time_equal(amap.date, parse_time((2002, 2, 20, 11, 6, 21)))
 
 
 def test_parse_obssum_dbase_file():
@@ -46,11 +47,11 @@ def test_parse_obssum_dbase_file():
     assert obssum['orb_end'][0] == 0
     assert obssum['orb_end'][-1] == 0
 
-    assert obssum['start_time'][0] == datetime(2011, 4, 1, 0, 0, 0)
-    assert obssum['start_time'][-1] == datetime(2011, 4, 30, 0, 0, 0)
+    assert obssum['start_time'][0] == parse_time((2011, 4, 1, 0, 0, 0))
+    assert obssum['start_time'][-1] == parse_time((2011, 4, 30, 0, 0, 0))
 
-    assert obssum['end_time'][0] == datetime(2011, 4, 2, 0, 0, 0)
-    assert obssum['end_time'][-1] == datetime(2011, 5, 1, 0, 0, 0)
+    assert obssum['end_time'][0] == parse_time((2011, 4, 2, 0, 0, 0))
+    assert obssum['end_time'][-1] == parse_time((2011, 5, 1, 0, 0, 0))
 
     assert obssum['status_flag'][0] == 0
     assert obssum['status_flag'][-1] == 0
@@ -75,11 +76,11 @@ def test_parse_observing_summary_dbase_file():
     assert obssum['orb_end'][0] == 0
     assert obssum['orb_end'][-1] == 0
 
-    assert obssum['start_time'][0] == datetime(2011, 4, 1, 0, 0, 0)
-    assert obssum['start_time'][-1] == datetime(2011, 4, 30, 0, 0, 0)
+    assert obssum['start_time'][0] == parse_time((2011, 4, 1, 0, 0, 0))
+    assert obssum['start_time'][-1] == parse_time((2011, 4, 30, 0, 0, 0))
 
-    assert obssum['end_time'][0] == datetime(2011, 4, 2, 0, 0, 0)
-    assert obssum['end_time'][-1] == datetime(2011, 5, 1, 0, 0, 0)
+    assert obssum['end_time'][0] == parse_time((2011, 4, 2, 0, 0, 0))
+    assert obssum['end_time'][-1] == parse_time((2011, 5, 1, 0, 0, 0))
 
     assert obssum['status_flag'][0] == 0
     assert obssum['status_flag'][-1] == 0
@@ -118,14 +119,14 @@ def test_uncompress_countrate():
 
 
 def hessi_data():
-    """Data expected in test file."""
-    return """HESSI Filedb File:
-Created: 1972-04-14T12:41:26.000
-Number of Files:           2
-                    Filename  Orb_st Orb_end         Start_time           End_time Status_flag    Npackets Drift_start   Drift_end Data source
-hsi_obssumm_19721101_139.fit       7       8 01-Nov-72 00:00:00 02-Nov-72 00:00:00           3           2       0.000       0.000
-hsi_obssumm_19721102_144.fit       9      10 02-Nov-72 00:00:00 03-Nov-72 00:00:00           4           1       0.000       0.000
-""".splitlines()
+    return textwrap.dedent("""\
+         HESSI Filedb File:
+         Created: 1972-04-14T12:41:26.000
+         Number of Files:           2
+                             Filename  Orb_st Orb_end         Start_time           End_time Status_flag    Npackets Drift_start   Drift_end Data source
+         hsi_obssumm_19721101_139.fit       7       8 01-Nov-72 00:00:00 02-Nov-72 00:00:00           3           2       0.000       0.000
+         hsi_obssumm_19721102_144.fit       9      10 02-Nov-72 00:00:00 03-Nov-72 00:00:00           4           1       0.000       0.000
+         """)
 
 
 def test_parse_observing_summary_dbase_file_mock():
@@ -133,8 +134,14 @@ def test_parse_observing_summary_dbase_file_mock():
     Ensure that all required data are extracted from the RHESSI
     observing summary database file mocked in `hessi_data()`
     """
-    mock_file = mock.mock_open()
-    mock_file.return_value.__iter__.return_value = hessi_data()
+
+    # We need to mock this test differently for 3.6 vs 3.7
+    # Hopefully they backport the fix to 3.6 in the future.
+    if sys.version_info[1] <= 6:
+        mock_file = mock.mock_open()
+        mock_file.return_value.__iter__.return_value = hessi_data().splitlines()
+    else:
+        mock_file = mock.mock_open(read_data=hessi_data())
 
     dbase_data = {}
     with mock.patch('sunpy.instr.rhessi.open', mock_file, create=True):
@@ -147,10 +154,10 @@ def test_parse_observing_summary_dbase_file_mock():
                                       'hsi_obssumm_19721102_144.fit']
     assert dbase_data['orb_st'] == [7, 9]
     assert dbase_data['orb_end'] == [8, 10]
-    assert dbase_data['start_time'] == [datetime(1972, 11, 1, 0, 0),
-                                        datetime(1972, 11, 2, 0, 0)]
-    assert dbase_data['end_time'] == [datetime(1972, 11, 2, 0, 0),
-                                      datetime(1972, 11, 3, 0, 0)]
+    assert dbase_data['start_time'] == [parse_time((1972, 11, 1, 0, 0)),
+                                        parse_time((1972, 11, 2, 0, 0))]
+    assert dbase_data['end_time'] == [parse_time((1972, 11, 2, 0, 0)),
+                                      parse_time((1972, 11, 3, 0, 0))]
     assert dbase_data['status_flag'] == [3, 4]
     assert dbase_data['npackets'] == [2, 1]
 

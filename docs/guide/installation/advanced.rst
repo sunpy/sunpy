@@ -96,8 +96,6 @@ To run the tests:
 
 - `hypothesis <https://github.com/HypothesisWorks/hypothesis-python>`_
 
-- `mock <https://github.com/testing-cabal/mock>`_
-
 - `pytest <https://docs.pytest.org/en/latest/>`_
 
 - `pytest-cov <https://github.com/pytest-dev/pytest-cov>`_

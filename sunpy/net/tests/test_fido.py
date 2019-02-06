@@ -5,7 +5,7 @@ import pathlib
 
 import pytest
 import hypothesis.strategies as st
-from hypothesis import given, assume, example
+from hypothesis import given, assume, example, settings
 
 import astropy.units as u
 from drms import DrmsQueryError
@@ -22,7 +22,7 @@ from sunpy.time import TimeRange, parse_time
 from sunpy import config
 
 from sunpy.net.tests.strategies import (online_instruments, offline_instruments,
-                                        time_attr, range_time, goes_time)
+                                        time_attr, goes_time)
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -57,13 +57,16 @@ def online_query(draw, instrument=online_instruments(), time=time_attr()):
     return query
 
 
+@settings(deadline=50000)
 @given(offline_query())
 def test_offline_fido(query):
     unifiedresp = Fido.search(query)
     check_response(query, unifiedresp)
 
 
+@settings(deadline=50000)
 @pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
 @given(online_query())
 def test_online_fido(query):
     unifiedresp = Fido.search(query)
@@ -149,7 +152,7 @@ def test_no_time_error():
 @pytest.mark.remote_data
 def test_no_match():
     with pytest.raises(DrmsQueryError):
-        Fido.search(a.jsoc.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
+        Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
                     a.vso.Sample(10*u.s))
 
 
@@ -245,6 +248,7 @@ def filter_queries(queries):
     return attr.and_(queries) not in queries
 
 
+@settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_indexing(queries):
     query1, query2 = queries
@@ -283,6 +287,7 @@ def test_fido_indexing(queries):
         res[1.0132]
 
 
+@settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_iter(queries):
     query1, query2 = queries
@@ -297,6 +302,7 @@ def test_fido_iter(queries):
         assert isinstance(resp, QueryResponse)
 
 
+@settings(deadline=50000)
 @given(offline_query())
 def test_repr(query):
     res = Fido.search(query)

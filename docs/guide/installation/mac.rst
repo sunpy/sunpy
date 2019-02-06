@@ -24,10 +24,10 @@ install your own version of Python. You will then have two versions of Python li
 your system at the same time. It can be confusing to make sure that when you install
 packages they are installed for the correct Python so beware.
 
-Python 2.7.3+
-^^^^^^^^^^^^^
+Python 3.6+
+^^^^^^^^^^^
 Download and install the latest version of
-`32 bit Python 2.7.3 <https://www.python.org/download/releases/2.7.3/>`
+`32 bit Python 3 <https://www.python.org/download/mac-osx/>`
 using their DMG installer. Next, choose your package installer of choice (either
 Macports or Homebrew) and follow the instructions below. If you do not have either
 go to their respective websites and install one of the other as needed.

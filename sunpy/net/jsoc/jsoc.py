@@ -120,7 +120,7 @@ class JSOCClient(BaseClient):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
+        >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
         ...                          a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
         The response object holds the records that your query will return:
@@ -156,7 +156,7 @@ class JSOCClient(BaseClient):
     it is used only if you need to make an export request. For example,::
 
         >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
+        >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
         ...                          a.jsoc.Series('hmi.m_45s'))  # doctest: +REMOTE_DATA
 
     The above is a successful query operation, and will return query responses as before.
@@ -178,7 +178,7 @@ class JSOCClient(BaseClient):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-        >>> response = client.search(a.jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
+        >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
         ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
         ...                          a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
@@ -256,7 +256,7 @@ class JSOCClient(BaseClient):
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-            >>> response = client.search(a.jsoc.Time('2017-09-06T12:00:00', '2017-09-06T12:02:00'),
+            >>> response = client.search(a.Time('2017-09-06T12:00:00', '2017-09-06T12:02:00'),
             ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
             ...                          a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
@@ -282,7 +282,7 @@ class JSOCClient(BaseClient):
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-            >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
+            >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
             ...                          a.jsoc.Series('hmi.v_45s'),
             ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
@@ -311,7 +311,7 @@ class JSOCClient(BaseClient):
             >>> from sunpy.net import jsoc
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
-            >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
+            >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
             ...                          a.jsoc.Series('aia.lev1_euv_12s'),
             ...                          a.jsoc.PrimeKey('WAVELNTH','171'))  # doctest: +REMOTE_DATA
             >>> print(response)  # doctest: +REMOTE_DATA
@@ -371,7 +371,7 @@ class JSOCClient(BaseClient):
             >>> from sunpy.net import attrs as a
             >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
             >>> metadata = client.search_metadata(
-            ...                         a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
+            ...                         a.Time('2014-01-01T00:00:00', '2014-01-01T00:01:00'),
             ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
             >>> print(metadata[['T_OBS', 'WAVELNTH']])  # doctest: +REMOTE_DATA
                                                                         T_OBS  WAVELNTH
@@ -690,8 +690,8 @@ class JSOCClient(BaseClient):
             # either through PrimeKey() attribute or Time() attribute.
             if not any(x in PKEY_LIST_TIME for x in primekey):
                 timestr = '{start}-{end}{sample}'.format(
-                        start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                        end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                        start=start_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                        end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                         sample=sample)
             else:
                 error_message = "Time attribute has been passed both as a Time()"\
@@ -837,9 +837,6 @@ class JSOCClient(BaseClient):
 
         # If Time has been passed as a PrimeKey, convert the Time object into TAI time scale,
         # and then, convert it to datetime object.
-
-        iargs['start_time'] = iargs['start_time'].tai.datetime
-        iargs['end_time'] = iargs['end_time'].tai.datetime
 
         ds = self._make_recordset(**iargs)
 

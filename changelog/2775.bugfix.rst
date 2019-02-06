@@ -1,1 +1,0 @@
-Fixed loading in LASCO C3 data.

@@ -15,7 +15,7 @@ English is the default language for all documentation strings and inline command
 Variables names should also be based on English words.
 In addition, the standard for spelling is American English.
 
--  Packages must be compatible with Python 2.7, and 3.x (for 3.x compatibility, the six package should be used for new code).
+-  Packages must be compatible with Python 3.
 -  The code *should* be importable with no dependencies other than the Python Standard Library, NumPy, SciPy, matplotlib, and
    components already required by SunPy.
    Adding dependencies to SunPy will be considered but are highly discouraged.
