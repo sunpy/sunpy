@@ -185,7 +185,7 @@ This references the `~sunpy.timeseries.metadata.TimeSeriesMetaData` object with
 the header information as read from the source files. A word of caution: many
 data sources provide little to no meta data so this variable might be empty.
 The meta data is described in more detail later in this guide. Similarly there
-are properties for getting `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.columns`
+are properties for getting `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.colnames`
 as a list of strings, `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.index`
 values and `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.time_range` of
 the data.  The actual data in a SunPy TimeSeries object is accessible through
@@ -210,7 +210,7 @@ Time series are columnar data so to get at a particular datum you need to
 first index the column, then the element you want. To get the names of the
 available columns: ::
 
-    >>> my_timeseries.data.columns
+    >>> my_timeseries.data.colnames
     Index(['xrsa', 'xrsb'], dtype='object')
 
 You can access the 0th element in the column `xrsa` with: ::
