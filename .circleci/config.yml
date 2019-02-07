@@ -70,7 +70,7 @@ jobs:
           command: pip install numpy==1.15.4
       - run:
           name: Install dependencies
-          command: pip install --progress-bar off -e .[all]
+          command: pip install --progress-bar off -e .[dev]
       - run:
           name: Run tests
           command: PYTHONHASHSEED=42 pytest -m "not figure" -n 4
