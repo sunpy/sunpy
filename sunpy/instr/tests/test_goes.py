@@ -256,7 +256,7 @@ def test_calculate_radiative_loss_rate():
     # data, but no EM data.
     goes_test = goes.calculate_radiative_loss_rate(goeslc_no_em)
     # we test that the column has been added
-    assert "rad_loss_rate" in goes_test.columns
+    assert "rad_loss_rate" in goes_test.colnames
     # Compare every 50th value to save on filesize
     return np.array(goes_test.data[::50])
 
