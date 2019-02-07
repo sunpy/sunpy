@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-import itertools
+from itertools import chain
 
 from setuptools.config import read_configuration
 
@@ -24,7 +24,18 @@ except Exception:
     # Catch everything, if it doesn't work, we still want SunPy to install.
     pass
 
+################################################################################
+# Programmatically generate some extras combos.
+################################################################################
 extras = read_configuration("setup.cfg")['options']['extras_require']
-extras['all'] = list(itertools.chain.from_iterable(extras.values()))
 
-setup(extras_require=extras)
+# Dev is everything
+extras['dev'] = list(chain(*extras.values()))
+
+# All is everything but tests and docs
+exclude_keys = ("tests", "docs", "dev")
+ex_extras = dict(filter(lambda i: i[0] not in exclude_keys, extras.items()))
+# Concatenate all the values together for 'all'
+extras['all'] = list(chain.from_iterable(ex_extras.values()))
+
+setup(extras_require=extras, cmdclass=cmdclass)
