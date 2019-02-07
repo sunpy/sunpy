@@ -63,6 +63,9 @@ traceWL = ct.trace_color_table('WL')
 
 hmimag = ct.hmi_mag_color_table()
 
+kcor = deepcopy(mplcm.get_cmap("gist_gray"))
+kcor.name = 'MLSO KCor'
+
 cmlist = {
           'sdoaia94': sdoaia94,
           'sdoaia131': sdoaia131,
@@ -108,7 +111,8 @@ cmlist = {
           'irissji5000': ct.iris_sji_color_table('5000'),
           'irissjiFUV': ct.iris_sji_color_table('FUV'),
           'irissjiNUV': ct.iris_sji_color_table('NUV'),
-          'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV')
+          'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
+          'kcor': kcor
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
