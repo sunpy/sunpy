@@ -120,8 +120,7 @@ def test_fido(time, instrument):
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
 
-
-@pytest.mark.flaky(reruns=5)
+@settings(deadline=50000)
 @given(goes_time())
 def test_time_for_url(LCClient, time):
     time = time.start.strftime("%Y/%m/%d")
