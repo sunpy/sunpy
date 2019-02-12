@@ -46,7 +46,7 @@ class TimeSeriesMetaData(object):
     |2012-06-02T12:00:00.000    |                 |                                                   |
     |-------------------------------------------------------------------------------------------------|
     <BLANKLINE>
-    >>> md.find(parse_time('2012-06-01T21:08:12')).columns
+    >>> md.find(parse_time('2012-06-01T21:08:12')).colnames
     ['EVE', 'GOES']
     >>> md.find(parse_time('2012-06-01T21:08:12')).values()
     ['eve_val', 'goes_val']
@@ -411,7 +411,7 @@ class TimeSeriesMetaData(object):
         self.metadata = truncated
 
     @property
-    def columns(self):
+    def colnames(self):
         """Returns a list of all the names of the columns in the metadata."""
         all_cols = set()
         for metatuple in self.metadata:

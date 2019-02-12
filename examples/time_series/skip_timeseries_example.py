@@ -81,7 +81,7 @@ ts_lyra.units
 # There are a couple of other useful properties you can quickly get:
 ts_lyra.time_range
 ts_lyra.index
-ts_lyra.columns
+ts_lyra.colnames
 # Further data is available from within the metadata, you can filter out for a
 # key using the TimeSeriesMetaData.get() method:
 combined_goes_ts.meta.get('telescop')

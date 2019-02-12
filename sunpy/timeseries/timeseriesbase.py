@@ -511,7 +511,7 @@ class GenericTimeSeries:
         self.meta._truncate(self.time_range)
 
         # Remove non-existant columns
-        redundant_cols = list(set(self.meta.columns) - set(self.colnames))
+        redundant_cols = list(set(self.meta.colnames) - set(self.colnames))
         self.meta._remove_columns(redundant_cols)
 
 # #### Export/Output Methods #### #

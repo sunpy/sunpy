@@ -502,13 +502,13 @@ to better fit your output.  For example: ::
 
 Similar to the TimeSeries, the metadata has some properties for convenient
 access to the global metadata details, including
-`~sunpy.timeseries.metadata.TimeSeriesMetaData.columns` as a list of
+`~sunpy.timeseries.metadata.TimeSeriesMetaData.colnames` as a list of
 strings, `~sunpy.timeseries.metadata.TimeSeriesMetaData.index` values
 and `~sunpy.timeseries.metadata.TimeSeriesMetaData.time_range` of the data.
 Beyond this, there are properties to get lists of details for all the entries in
 the `~sunpy.timeseries.metadata.TimeSeriesMetaData` object, including
 `~sunpy.timeseries.metadata.TimeSeriesMetaData.timeranges`,
-`~sunpy.timeseries.metadata.TimeSeriesMetaData.columns` (as a list of string
+`~sunpy.timeseries.metadata.TimeSeriesMetaData.colnames` (as a list of string
 column names) and `~sunpy.timeseries.metadata.TimeSeriesMetaData.metas`.
 Similar to TimeSeries objects you can `~sunpy.timeseries.metadata.TimeSeriesMetaData.truncate`
 and `~sunpy.timeseries.metadata.TimeSeriesMetaData.concatenate` `~sunpy.timeseries.metadata.TimeSeriesMetaData`

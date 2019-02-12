@@ -75,7 +75,7 @@ large_ts.meta.time_range
 # Further properties can be used to get lists of details, such as:
 # lists of the values:
 large_ts.meta.timeranges  # List of the time ranges
-large_ts.meta.columns  # List of the column names
+large_ts.meta.colnames  # List of the column names
 large_ts.meta.metas  # List of the meta dictionaries
 
 ##############################################################################

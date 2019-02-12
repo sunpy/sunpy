@@ -228,7 +228,7 @@ def test_truncation_slices(eve_test_ts, truncation_slice_test_ts_1,
                                      len(truncation_slice_test_ts_2.data))
     # Test column lists and unit dictionaries match
     assert eve_test_ts.colnames == truncation_slice_test_ts_1.colnames == truncation_slice_test_ts_2.colnames
-    assert eve_test_ts.meta.columns == truncation_slice_test_ts_1.meta.columns == truncation_slice_test_ts_2.meta.columns
+    assert eve_test_ts.meta.colnames == truncation_slice_test_ts_1.meta.colnames == truncation_slice_test_ts_2.meta.colnames
     assert eve_test_ts.units == truncation_slice_test_ts_1.units == truncation_slice_test_ts_2.units
     # Test MetaDict match
     assert eve_test_ts.meta.metadata[0][
@@ -420,7 +420,7 @@ def extraction_test_ts(eve_test_ts):
 def test_extraction(eve_test_ts, extraction_test_ts):
     # Test there's only one column in the data, metadata and units
     assert len(extraction_test_ts.data.columns) == 1
-    assert len(extraction_test_ts.meta.columns) == 1
+    assert len(extraction_test_ts.meta.colnames) == 1
     assert len(extraction_test_ts.units) == 1
 
     # Test this column name matches

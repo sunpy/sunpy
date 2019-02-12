@@ -1,1 +1,1 @@
-`sunpy.timeseries.TimeSeries.columns` renamed to `sunpy.timeseries.TimeSeries.colnames` to match `astropy.table.Table`.
+`sunpy.timeseries.TimeSeries.columns` and `sunpy.timeseries.TimeSeriesMetaData.columns` renamed to `sunpy.timeseries.TimeSeries.colnames` and `sunpy.timeseries.TimeSeriesMetaData.colnames` to match `astropy.table.Table`.

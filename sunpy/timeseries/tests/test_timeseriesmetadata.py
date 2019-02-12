@@ -393,7 +393,7 @@ def test_timeranges(basic_ascending_append_md):
 def test_columns(complex_append_md):
     lis = complex_append_md.metadata[0][1] + complex_append_md.metadata[1][1]
     lis.sort()
-    assert complex_append_md.columns == lis
+    assert complex_append_md.colnames == lis
 
 def test_metas(complex_append_md):
     lis = []
