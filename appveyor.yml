@@ -20,11 +20,6 @@ environment:
     - PYTHON_VERSION: "2.7"
     - PYTHON_VERSION: "3.6"
 
-matrix:
-    fast_finish: true
-    allow_failures:
-      - PYTHON_VERSION: "2.7"
-
 platform: x64
 
 os: Visual Studio 2017

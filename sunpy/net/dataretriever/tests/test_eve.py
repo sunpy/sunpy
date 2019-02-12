@@ -13,7 +13,7 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
-from hypothesis import given, settings, HealthCheck
+from hypothesis import given, settings
 from hypothesis.strategies import datetimes
 from sunpy.net.tests.strategies import time_attr
 
@@ -87,11 +87,9 @@ def test_fido(query):
 
 
 @pytest.mark.remote_data
-@given(time_attr(time=datetimes(
-    max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
-    min_value=datetime.datetime(2010, 1, 1, 0, 0),
-)))
-@settings(max_examples=2, deadline=None, suppress_health_check=[HealthCheck.hung_test])
+@pytest.mark.parametrize(
+    'time',
+    [(a.Time('2012/10/4', '2012/10/6')), (a.Time('2012/11/27', '2012/11/27'))])
 def test_levels(time):
     """
     Test the correct handling of level 0 / 1.

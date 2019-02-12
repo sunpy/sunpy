@@ -11,8 +11,6 @@ apt-run: &apt-install
 docs-install: &docs-install
   name: Install Python dependencies
   command: |
-    pip install --progress-bar=off -U numpy==1.15.2
-    pip install --progress-bar=off -U sphinx==1.7.9
     pip install -r requirements/docs.txt
 
 version: 2
@@ -44,6 +42,54 @@ jobs:
     steps:
       - checkout
       - run: python setup.py egg_info
+
+  pip3:
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - restore_cache:
+          keys: sample-data-v1
+
+      - checkout
+      - run: *skip-check
+      - run: *apt-install
+      - run:
+          name: Update pip
+          command: pip install -U pip
+      - run:
+          name: Install dependencies
+          command: pip install --progress-bar off -e .[all]
+      - run:
+          name: Run tests
+          command: python setup.py test
+
+    environment:
+          MPLBACKEND: agg
+          COLUMNS: 180
+
+  pip2:
+    docker:
+      - image: continuumio/miniconda2
+    steps:
+      - restore_cache:
+          keys: sample-data-v1
+
+      - checkout
+      - run: *skip-check
+      - run: *apt-install
+      - run:
+          name: Update pip
+          command: pip install -U pip
+      - run:
+          name: Install dependencies
+          command: pip install --progress-bar off -e .[all]
+      - run:
+          name: Run tests
+          command: python setup.py test
+
+    environment:
+          MPLBACKEND: agg
+          COLUMNS: 180
 
   32bit:
     docker:
@@ -101,6 +147,11 @@ workflows:
   build-32:
     jobs:
       - 32bit
+
+  pip-test:
+    jobs:
+      - pip3
+      - pip2
 
   egg-info:
     jobs:

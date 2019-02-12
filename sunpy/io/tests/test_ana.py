@@ -8,7 +8,13 @@ import pytest
 
 from sunpy.io import ana
 
-from sunpy.tests.helpers import skip_ana
+try:
+    from sunpy.io import _pyana
+    SKIP_ANA = False
+except:
+    SKIP_ANA = True
+
+skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available")
 
 # Create a test image, store it, reread it and compare
 img_size = (456, 345)

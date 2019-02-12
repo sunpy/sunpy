@@ -8,7 +8,7 @@ import sunpy.data.test
 from sunpy.util import MetaDict
 from sunpy.io.fits import get_header, extract_waveunit
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
-
+from sunpy.tests.helpers import skip_windows
 testpath = sunpy.data.test.rootdir
 
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
@@ -100,6 +100,7 @@ def test_extra_comment_write(tmpdir):
     assert outfile.exists()
 
 
+@skip_windows
 def test_simple_write_compressed(tmpdir):
     data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
     outfile = tmpdir / "test.fits"
@@ -108,6 +109,7 @@ def test_simple_write_compressed(tmpdir):
     with fits.open(str(outfile)) as hdul:
         assert len(hdul) == 2
         assert isinstance(hdul[1], fits.CompImageHDU)
+
 
 def test_write_with_metadict_header_astropy(tmpdir):
     fits_file = fits.open(AIA_171_IMAGE)

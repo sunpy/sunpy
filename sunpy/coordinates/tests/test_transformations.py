@@ -1,6 +1,7 @@
 from distutils.version import LooseVersion
 
 import numpy as np
+import pytest
 
 from  astropy import __version__
 ASTROPY_LT_3 = LooseVersion(__version__) < LooseVersion('3')
@@ -93,14 +94,15 @@ def test_hpc_hpc_null():
 
 def test_hcrs_hgs():
     # Get the current Earth location in HCRS
-    now = Time(parse_time('now'))
-    earth_hcrs = SkyCoord(get_body_barycentric('earth', now), frame='icrs', obstime=now).hcrs
+    adate = Time(parse_time('2015/05/01 01:13:00'))
+    earth_hcrs = SkyCoord(get_body_barycentric('earth', adate), frame='icrs', obstime=adate).hcrs
 
     # Convert from HCRS to HGS
     earth_hgs = earth_hcrs.transform_to(HeliographicStonyhurst)
 
     # The HGS longitude of the Earth should be zero within numerical error
-    assert quantity_allclose(earth_hgs.lon, 0*u.deg, atol=1e-12*u.deg)
+    # Due to an issue with wrapping at +-360, we shift it to pass the test
+    assert quantity_allclose((earth_hgs.lon+1*u.deg) % (360*u.deg), 1*u.deg, atol=1e-12*u.deg)
 
     # The HGS latitude and radius should be within valid ranges
     assert quantity_allclose(earth_hgs.lat, 0*u.deg, atol=7.3*u.deg)
