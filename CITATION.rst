@@ -3,20 +3,21 @@ Acknowledging or Citing SunPy
 
 If you have used SunPy in your scientific work we would appreciate it if you would acknowledge it.
 The continued growth and development of SunPy is dependent on the community being aware of the use SunPy.
-If you use SunPy, we therefore ask that you acknowledge SunPy appropriately in a publication, presentation, poster, or talk.
 
--  **For a publication**, we recommend the following line be added to
-   the conclusion or acknowledgements:
+Publications
+------------
+
+Please add the following line to the conclusion or acknowledgements:
 
    *This research has made use of SunPy, an open-source and free
    community-developed solar data analysis package written in Python
    (citation).*
 
-   The citation is to the `SunPy v0.5 paper`_/`arXiv(open access)`_. If
-   the journal allows please also include a link to sunpy.org. If you
-   have the time, please email us to let us know about your paper, as we
-   maintain a `public list`_ of papers on `Zotero`_. A BibTeX entry for
-   LaTeX users is:
+The citation should be to the `SunPy v0.5 paper`_/`arXiv(open access)`_.
+
+If you have the time, please also email us to let us know about your paper, as we
+maintain a `public list`_ of papers on `Zotero`_. A BibTeX entry for
+LaTeX users is:
 
 .. code:: bibtex
 
@@ -44,12 +45,12 @@ If you use SunPy, we therefore ask that you acknowledge SunPy appropriately in a
           adsnote = {Provided by the SAO/NASA Astrophysics Data System}
         }
 
--  **For a poster, talks, or project websites**, please include the
-   `Sunpy logo`_ on the title, conclusion slide, or about page. For
-   websites please link the image to `sunpy.org`_. Other versions of the
-   logo are available in the `sunpy-logo repository`_.
+Posters and talks
+-----------------
 
-Thank you, in advance, for your support.
+Please include the `Sunpy logo`_ on the title, conclusion slide, or
+bout page. For websites please link the image to `sunpy.org`_.
+Other versions of the logo are available in the `sunpy-logo repository`_.
 
 .. _SunPy v0.5 paper: https://iopscience.iop.org/article/10.1088/1749-4699/8/1/014009
 .. _arXiv(open access): https://arxiv.org/abs/1505.02563
