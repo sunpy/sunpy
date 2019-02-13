@@ -110,7 +110,8 @@ class HelioviewerClient(object):
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
         2012-01-01T00:00:07.000
         """
-        source_id = self._get_source_id(source_id, (observatory, instrument, detector, measurement))
+        if source_id is None:
+            source_id = self._get_source_id((observatory, instrument, detector, measurement))
 
         params = {
             "action": "getClosestImage",
@@ -169,7 +170,8 @@ class HelioviewerClient(object):
         >>> aia = sunpy.map.Map(filepath)  # doctest: +REMOTE_DATA
         >>> aia.peek()  # doctest: +SKIP
         """
-        source_id = self._get_source_id(source_id, (observatory, instrument, detector, measurement))
+        if source_id is None:
+            source_id = self._get_source_id((observatory, instrument, detector, measurement))
 
         params = {
             "action": "getJP2Image",
@@ -434,17 +436,14 @@ class HelioviewerClient(object):
         """Formats a date for Helioviewer API requests"""
         return parse_time(date).isot + "Z"
 
-    def _get_source_id(self, source_id, key):
-        """Returns source_id based on the key"""
-        if source_id is None:
-            source_id_list = list(partial_match(key,self.data_sources))
-            if len(source_id_list) == 1:
-                source_id = source_id_list[0]
-                return source_id
-            else:
-                raise KeyError("The values used for observatory, instrument, detector, measurement "
-                               "do not correspond to a source_id. Please check the list using "
-                               "HelioviewerClient.data_sources. Expected 1 got " + str(len(source_id_list)) + 
-                               " values for source_id ", source_id_list)
+    def _get_source_id(self, key):
+        """
+        Returns source_id based on the key.
+        """
+        source_id_list = list(partial_match(key,self.data_sources))
+        if len(source_id_list) == 1:
+            return source_id_list[0]
         else:
-            return source_id
+            raise KeyError("The values used: {observatory}, {instrument}, {detector}, {measurement} "
+                            "do not correspond to one source_id but str(len(source_id_list)) source_id(s)."
+                            " Please check the list using HelioviewerClient.data_sources.")

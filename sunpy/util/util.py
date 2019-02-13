@@ -240,6 +240,7 @@ def partial_match(key, dictionary):
     ----------
     >>> d = {('abc','def','ghi') : 1, ('abc', 'def', 'xyz') : 2, ('pqr', 'lmn', 'tuv') : 3}
     >>> list(partial_match(('abc', 'def', None), d))
+        [1, 2]
 
     """
     for k, v in dictionary.items():
