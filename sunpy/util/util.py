@@ -215,10 +215,11 @@ def expand_list_generator(inp):
 
 def partial_match(key, dictionary):
     """
-    Return value/values based on the partial key. Each element of the partial key is matched against the keys of the dictionary and if a match is found 
+    Return value/values based on the partial key.
+    Each element of the partial key is matched against the keys of the dictionary and if a match is found 
     the value of the key is returned.
-    Even a partial match works here i.e even if the key matches partially
-    a value is returned. Note that this function uses a generator so we need to type cast the output to a list to get the values.
+    Even a partial match works here i.e even if the key matches partially a value is returned.
+    Note that this function uses a generator so we need to type cast the output to a list to get the values.
 
     Parameters
     ----------
