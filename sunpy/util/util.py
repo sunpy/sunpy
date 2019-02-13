@@ -235,7 +235,7 @@ def partial_match(key, dictionary):
 
     References
     ----------
-    Taken from: https://stackoverflow.com/questions/18893624/partial-match-dictionary-keyof-tuples-in-python
+    * https://stackoverflow.com/questions/18893624/partial-match-dictionary-keyof-tuples-in-python
 
     Examples
     ----------

@@ -444,6 +444,6 @@ class HelioviewerClient(object):
         if len(source_id_list) == 1:
             return source_id_list[0]
         else:
-            raise KeyError("The values used: {observatory}, {instrument}, {detector}, {measurement} "
-                            "do not correspond to one source_id but str(len(source_id_list)) source_id(s)."
+            raise KeyError(f"The values used: {key} do not correspond to one source_id "
+                            "but "+ str(len(source_id_list)) + " source_id(s)."
                             " Please check the list using HelioviewerClient.data_sources.")
