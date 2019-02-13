@@ -15,3 +15,4 @@ We have a documentation :any:`index <genindex>` and a :any:`module <modindex>` l
   dev_guide/index
   whatsnew/index
   coc
+  about
