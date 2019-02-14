@@ -14,7 +14,7 @@ apt-run: &apt-install
   name: Install apt packages
   command: |
     apt update
-    apt install -y graphviz build-essential
+    apt install -y graphviz build-essential libopenjp2-7
 
 tox-install: &tox-install
   name: Install Tox
@@ -51,13 +51,10 @@ jobs:
       - run: *merge-check
       - run: python setup.py egg_info
 
-  pip:
+  pip-install:
     docker:
       - image: continuumio/miniconda3
     steps:
-      - restore_cache:
-          keys: sample-data-v1
-
       - checkout
       - run: *skip-check
       - run: *merge-check
@@ -66,18 +63,8 @@ jobs:
           name: Update pip
           command: pip install -U pip
       - run:
-          name: Bypass numpy issue
-          command: pip install numpy==1.15.4
-      - run:
-          name: Install dependencies
-          command: pip install --progress-bar off -e .[dev]
-      - run:
-          name: Run tests
-          command: PYTHONHASHSEED=42 pytest -m "not figure" -n 4
-
-    environment:
-          MPLBACKEND: agg
-          COLUMNS: 180
+          name: Install SunPy
+          command: pip install --progress-bar off -e .[all,dev]
 
   32bit:
     docker:
@@ -153,9 +140,9 @@ workflows:
       - egg-info-36
       - egg-info-37
 
-  pip-test:
+  pip-install:
     jobs:
-      - pip
+      - pip-install
 
   build-32:
     jobs:

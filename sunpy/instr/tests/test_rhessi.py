@@ -135,9 +135,8 @@ def test_parse_observing_summary_dbase_file_mock():
     observing summary database file mocked in `hessi_data()`
     """
 
-    # We need to mock this test differently for 3.6 vs 3.7
-    # Hopefully they backport the fix to 3.6 in the future.
-    if sys.version_info[1] <= 6:
+    # We need to mock this test differently for < 3.7.2.
+    if sys.version_info[2] < 2 or sys.version_info[1] < 7:
         mock_file = mock.mock_open()
         mock_file.return_value.__iter__.return_value = hessi_data().splitlines()
     else:
