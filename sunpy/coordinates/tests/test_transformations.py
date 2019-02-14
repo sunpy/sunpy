@@ -89,7 +89,7 @@ def test_hpc_hpc_null():
 
 def test_hcrs_hgs():
     # Get the current Earth location in HCRS
-    adate = Time(parse_time('2015/05/01 01:13:00'))
+    adate = parse_time('2015/05/01 01:13:00')
     earth_hcrs = SkyCoord(get_body_barycentric('earth', adate), frame='icrs', obstime=adate).hcrs
 
     # Convert from HCRS to HGS

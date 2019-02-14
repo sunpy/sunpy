@@ -9,21 +9,42 @@ jobs:
       vmImage: Ubuntu 16.04
 
   steps:
-  - task: CondaEnvironment@1
-    displayName: 'Create conda environment'
+
+  - ${{ if eq(parameters.os, 'linux') }}:
+    - script: |
+        sudo apt-get install -y libopenjpeg5
+      displayName: apt install openjpeg
+
+  - ${{ if eq(parameters.os, 'macos') }}:
+    - script: |
+        brew install openjpeg
+      displayName: brew install openjpeg
+
+  - ${{ if contains(parameters.tox, 'conda') }}:
+    - task: CondaEnvironment@1
+      displayName: 'Create conda environment'
+      inputs:
+        createCustomEnvironment: True
+        environmentName: "test"
+        createOptions: python="3.6"
+
+  - task: UsePythonVersion@0
     inputs:
-      createCustomEnvironment: True
-      environmentName: "test"
-      createOptions: python="3.6"
+      versionSpec: '3.6'
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.7'
 
   - script: pip install --upgrade tox
     displayName: install tox
 
-  - script: pip install --upgrade tox-conda
-    displayName: install tox-conda
+  - ${{ if contains(parameters.tox, 'conda') }}:
+    - script: pip install --upgrade tox-conda
+      displayName: install tox-conda
 
   - script: tox -e ${{ parameters.tox }}
-    displayName: run tox-conda
+    displayName: run tox
 
   - script: |
       pip install --upgrade codecov

@@ -171,7 +171,7 @@ class HelioviewerClient(object):
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO',
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
-        >>> aia = sunpy.map.Map(filepath)  # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(filepath)  # doctest: +SKIP
         >>> aia.peek()  # doctest: +SKIP
         """
         if source_id is None:
@@ -193,7 +193,7 @@ class HelioviewerClient(object):
 
     def get_jp2_header(self, date, observatory=None, instrument=None, detector=None, measurement=None, jp2_id=None):
         """
-        Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section 
+        Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section
         of Helioviewer-specific metadata.
 
         This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
