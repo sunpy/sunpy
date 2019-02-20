@@ -20,6 +20,7 @@ Object
 
 import pandas
 from astropy.units import Quantity
+from astropy.table import Table
 import sunpy.sun.constants as con
 
 # Solar radius measured outside earth's atmosphere in arcseconds
@@ -56,12 +57,13 @@ _density = [147.74, 146.66, 142.73, 116.10, 93.35,
            10.157, 5.566, 2.259, 0.4483, 0.1528,
            0.042, 0.00361, 1.99e-7]
 
-_d = {'mass': _mass, 'luminosity': _luminosity, 'temperature': _temperature, 'density': _density}
-interior = pandas.DataFrame(_d, index = _radius)
-interior.index.name = 'radius'
-interior.units = {'radius': con.radius, 'mass': con.mass, 'luminosity': con.luminosity,
+_d = {'radius': _radius, 'mass': _mass, 'luminosity': _luminosity, 'temperature': _temperature, 'density': _density}
+_units = {'radius': con.radius, 'mass': con.mass, 'luminosity': con.luminosity,
                   'temperature': Quantity(1e6, 'K'), 'density': Quantity(1, 'g cm**-3')}
+interior = Table(_d)
 interior.source = 'Turck-Chieze et al. (1988)'
+for labels in _units:
+    interior[labels].unit = _units[labels]
 
 # time -  10^9 years
 _time = [0, 0.143, 0.856, 1.863, 2.193, 3.020,
@@ -84,9 +86,10 @@ _tcentral_temperature = [13.35, 13.46, 13.68, 14.08, 14.22, 14.60,
                         15.12, 15.51, 16.18, 16.65, 17.13, 17.62,
                         18.42, 18.74, 18.81, 19.25]
 
-_t = {'luminosity': _tluminosity, 'radius': _tradius, 'central temperature': _tcentral_temperature}
-evolution = pandas.DataFrame(_t, index = _tradius)
-evolution.index.name = 'time'
-evolution.units = {'radius': con.radius, 'luminosity': con.luminosity,
+_t = {'time':_tradius, 'luminosity': _tluminosity, 'radius': _tradius, 'central temperature': _tcentral_temperature}
+_tunits = {'radius': con.radius, 'luminosity': con.luminosity,
                   'central temperature': Quantity(1e6, 'K'), 'time': Quantity(1e9, 'year')}
+evolution = Table(_t)
 evolution.source = 'Unknown'
+for labels in _tunits:
+    evolution[labels].unit = _tunits[labels]
