@@ -9,9 +9,9 @@ in pandas DataFrames with two added attributes
 
 Object
 ------
-    interior : pandas.DataFrame
+    interior : astropy.table.QTable
         The standard model of the solar interior
-    evolution : pandas.DataFrame
+    evolution : astropy.table.QTable
         The evolution as a function of time of the Sun
 
 .. todo:: Need source for evolution model.
@@ -20,7 +20,7 @@ Object
 
 import pandas
 from astropy.units import Quantity
-from astropy.table import Table
+from astropy.table import QTable
 import sunpy.sun.constants as con
 
 # Solar radius measured outside earth's atmosphere in arcseconds
@@ -60,10 +60,11 @@ _density = [147.74, 146.66, 142.73, 116.10, 93.35,
 _d = {'radius': _radius, 'mass': _mass, 'luminosity': _luminosity, 'temperature': _temperature, 'density': _density}
 _units = {'radius': con.radius, 'mass': con.mass, 'luminosity': con.luminosity,
                   'temperature': Quantity(1e6, 'K'), 'density': Quantity(1, 'g cm**-3')}
-interior = Table(_d)
+interior = QTable(_d)
 interior.source = 'Turck-Chieze et al. (1988)'
 for labels in _units:
     interior[labels].unit = _units[labels]
+interior.add_index('radius')
 
 # time -  10^9 years
 _time = [0, 0.143, 0.856, 1.863, 2.193, 3.020,
@@ -89,7 +90,8 @@ _tcentral_temperature = [13.35, 13.46, 13.68, 14.08, 14.22, 14.60,
 _t = {'time':_tradius, 'luminosity': _tluminosity, 'radius': _tradius, 'central temperature': _tcentral_temperature}
 _tunits = {'radius': con.radius, 'luminosity': con.luminosity,
                   'central temperature': Quantity(1e6, 'K'), 'time': Quantity(1e9, 'year')}
-evolution = Table(_t)
+evolution = QTable(_t)
 evolution.source = 'Unknown'
 for labels in _tunits:
     evolution[labels].unit = _tunits[labels]
+evolution.add_index('time')
