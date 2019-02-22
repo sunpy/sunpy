@@ -131,7 +131,7 @@ if 'templates_path' not in locals():  # in case parent conf.py defines it
 templates_path.append('_templates')
 
 # For the linkcheck
-linkcheck_ignore = [r" https://doi.org/\d+",
+linkcheck_ignore = [r"https://doi.org/\d+",
                     r"https://riot.im/\d+",
                     r"https://github.com/\d+",
                     r"http://docs.sunpy.org/\d+"]
