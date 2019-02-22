@@ -3,6 +3,7 @@ Provide a set of Hypothesis Strategies for various Fido related tests.
 """
 import datetime
 
+import numpy as np
 import hypothesis.strategies as st
 from hypothesis import assume
 from hypothesis.strategies import one_of, datetimes, sampled_from
@@ -97,13 +98,11 @@ def goes_time(draw, time=Times(
     assume(t2 < Time.now())
 
     # There is no GOES data for this date.
-    # We seem to pick up an extra micro or millisecond when we create t1
-    # This seems to be test dependant.
-    # `test_fido_indexing` adds 1 millisecond.
-    # `test_offline_fido` adds 1 microsecond.
-    # TODO: Track this issue down.
     assume(not (t1 <= Time('1983-05-01') <= t2))
     assume(not (t1 <= (Time('1983-05-01') + delta) <= t2))
+    # This checks if the range start and stops on that day.
+    assume((np.abs(Time('1983-05-01') - t1)) > astropy.time.TimeDelta(0.01))
+    assume((np.abs(Time('1983-05-01') - t2)) > astropy.time.TimeDelta(0.01))
 
     tr = TimeRange(t1, t2)
 
