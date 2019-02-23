@@ -59,7 +59,6 @@ from scipy import interpolate
 from scipy.integrate import trapz, cumtrapz
 
 from sunpy import sun
-from sunpy.net import hek
 from sunpy import timeseries
 from sunpy.time import parse_time
 from sunpy.util.net import check_download_file
@@ -106,6 +105,10 @@ def get_goes_event_list(timerange, goes_class_filter=None):
         e.g. 'M1', 'X2'.
 
     """
+
+    # import hek here so that other functions don't import hek as they don't need it
+    from sunpy.net import hek
+
     # use HEK module to search for GOES events
     client = hek.HEKClient()
     event_type = 'FL'
