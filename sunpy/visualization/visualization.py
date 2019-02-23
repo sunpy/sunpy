@@ -37,8 +37,7 @@ def toggle_pylab(fn):
 
 def axis_labels_from_ctype(ctype, unit):
     """
-    A function to return axis labels for the given coordinate type and unit
-    using python dictionary.
+    Returns axis labels for the given coordinate type and unit.
     
     Parameters
     ----------
