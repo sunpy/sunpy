@@ -40,12 +40,17 @@ def axis_labels_from_ctype(ctype, unit):
     A function to return axis labels for the given coordinate type and unit
     using python dictionary.
     
-    Parameters:
-    ctype: coordinates type
-    unit: required units
+    Parameters
+    ----------
+    ctype: string
+        coordinates type
+    unit: string
+        required units
     
-    Returns:
-    Axis_label [unit]
+    Returns
+    -------
+    string
+        Axis_label [unit]
     """
     ctype_short = ctype[:4]
 
