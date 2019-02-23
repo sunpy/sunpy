@@ -41,14 +41,14 @@ def axis_labels_from_ctype(ctype, unit):
     
     Parameters
     ----------
-    ctype: string
+    ctype: str
         coordinates type
     unit: string
         required units
     
     Returns
     -------
-    string
+    str
         Axis_label [unit]
     """
     ctype_short = ctype[:4]
