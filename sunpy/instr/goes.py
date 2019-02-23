@@ -105,8 +105,7 @@ def get_goes_event_list(timerange, goes_class_filter=None):
         e.g. 'M1', 'X2'.
 
     """
-
-    # import hek here so that other functions don't import hek as they don't need it
+    # Importing hek here to avoid calling code that relies on optional dependencies.
     from sunpy.net import hek
 
     # use HEK module to search for GOES events
