@@ -213,13 +213,13 @@ def expand_list_generator(inp):
         else:
             yield item
 
-def partial_match(key, dictionary):
+def partial_key_match(key, dictionary):
     """
     Return value/values based on the partial key.
     Each element of the partial key is matched against the keys of the dictionary and if a match is found 
     the value of the key is returned.
     Even a partial match works here i.e even if the key matches partially a value is returned.
-    Note that this function uses a generator so we need to type cast the output to a list to get the values.
+    The function returns a generator.
 
     Parameters
     ----------
@@ -240,10 +240,10 @@ def partial_match(key, dictionary):
     Examples
     ----------
     >>> d = {('abc','def','ghi') : 1, ('abc', 'def', 'xyz') : 2, ('pqr', 'lmn', 'tuv') : 3}
-    >>> list(partial_match(('abc', 'def', None), d))
+    >>> list(partial_key_match(('abc', 'def', None), d))
         [1, 2]
 
     """
     for k, v in dictionary.items():
-        if all(k1 == k2 or k2 is None  for k1, k2 in zip(k, key)):
+        if all(k1 == k2 or k2 is None for k1, k2 in zip(k, key)):
             yield v
