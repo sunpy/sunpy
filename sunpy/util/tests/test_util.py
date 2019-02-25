@@ -146,7 +146,7 @@ def test_expand_list_generator():
     lst = ['a', 'b', [], (['c', 'd']), tuple(), ['e']]
     assert list(util.expand_list_generator(lst)) == ['a', 'b', 'c', 'd', 'e']
 
-def test_partial_match():
+def test_partial_key_match():
     test_dict = {('a','b','c'):(1,2,3), ('a','b','d'):(4,5,6), ('e','f','g'):(8,7,9)}
-    assert list(util.partial_match(('a',None,'c'), test_dict))[0] == test_dict[('a','b','c')]
+    assert list(util.partial_key_match(('a',None,'c'), test_dict))[0] == test_dict[('a','b','c')]
     

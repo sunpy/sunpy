@@ -11,7 +11,7 @@ from collections import OrderedDict
 from astropy.utils.decorators import lazyproperty
 
 import sunpy
-from sunpy.util.util import partial_match
+from sunpy.util.util import partial_key_match
 from sunpy.util.xml import xml_to_dict
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
@@ -440,10 +440,10 @@ class HelioviewerClient(object):
         """
         Returns source_id based on the key.
         """
-        source_id_list = list(partial_match(key,self.data_sources))
-        if len(source_id_list) == 1:
-            return source_id_list[0]
-        else:
+        source_id_list = list(partial_key_match(key,self.data_sources))
+        if len(source_id_list) > 1:  # or maybe != 1
             raise KeyError(f"The values used: {key} do not correspond to one source_id "
-                            "but "+ str(len(source_id_list)) + " source_id(s)."
+                            "but" f" {len(source_id_list)} source_id(s)." 
                             " Please check the list using HelioviewerClient.data_sources.")
+        return source_id_list[0]
+            
