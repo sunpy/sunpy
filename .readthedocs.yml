@@ -1,9 +1,12 @@
-build:
-  image: latest
-
-requirements_file: docs/rtd_requirements.txt
+version: 2
 
 python:
-  version: 3.6
-  pip_install: false
-  setup_py_install: true
+   version: 3.7
+   install:
+      # Use this to override dep versions.
+      - requirements: docs/rtd_requirements.txt
+      - method: pip
+        path: .
+        extra_requirements:
+           - all
+           - docs
