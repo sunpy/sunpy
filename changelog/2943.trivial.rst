@@ -1,0 +1,1 @@
+Remove the pytest dependancy on the ``GenericMap`` asdf tag.
