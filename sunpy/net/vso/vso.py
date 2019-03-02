@@ -525,8 +525,8 @@ class VSOClient(BaseClient):
             time_near=datetime.utcnow()
         )
 
-    def fetch(self, query_response, path=None, methods=None,
-              downloader=None, wait=True, site=None, progress=True):
+    def fetch(self, query_response, path=None, methods=None, site=None,
+              progress=True, overwrite=False, downloader=None, wait=True):
         """
         Download data specified in the query_response.
 
@@ -537,7 +537,8 @@ class VSOClient(BaseClient):
 
         path : str
             Specify where the data is to be downloaded. Can refer to arbitrary
-            fields of the QueryResponseItem (instrument, source, time, ...) via
+            fields of the QueryResponseItem (instrument, source, time, ...)
+        via
             string formatting, moreover the file-name of the file downloaded can
             be referred to as file, e.g.
             "{source}/{instrument}/{time.start}/{file}".
@@ -550,13 +551,6 @@ class VSOClient(BaseClient):
             `PREFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
             and `SUFFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
             are listed on the VSO site.
-
-        downloader : `parfive.Downloader`, optional
-            The download manager to use.
-
-        wait : `bool`, optional
-           If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
 
         site : str
             There are a number of caching mirrors for SDO and other
@@ -574,11 +568,28 @@ class VSOClient(BaseClient):
             NMSU            New Mexico State University (US)
             =============== ========================================================
 
+        progress : `bool`, optional
+            If `True` show a progress bar showing how many of the total files
+            have been downloaded. If `False`, no progress bars will be shown at all.
+
+        overwrite : `bool` or `str`, optional
+            Determine how to handle downloading if a file already exists with the
+            same name. If `False` the file download will be skipped and the path
+            returned to the existing file, if `True` the file will be downloaded
+            and the existing file will be overwritten, if `'unique'` the filename
+            will be modified to be unique.
+
+        downloader : `parfive.Downloader`, optional
+            The download manager to use.
+
+        wait : `bool`, optional
+           If `False` ``downloader.download()`` will not be called. Only has
+           any effect if `downloader` is not `None`.
+
         Returns
         -------
-        out : :py:class:`Results`
-            Object that supplies a list of filenames with meta attributes
-            containing the respective QueryResponse.
+        out : `parfive.Results`
+            Object that supplies a list of filenames and any errors.
 
         Examples
         --------
