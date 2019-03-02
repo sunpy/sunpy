@@ -21,6 +21,8 @@ from astropy import units as u
 from astropy.table import QTable
 import sunpy.sun.constants as con
 
+__all__ = ["interior", "evolution"]
+
 # Solar radius measured outside earth's atmosphere in arcseconds
 
 # Standard Model - Interior Structure
