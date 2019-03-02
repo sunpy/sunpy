@@ -2,23 +2,21 @@
 Solar Physical Models
 ---------------------
 This module contains standard models of the sun from various sources. All data is saved
-in pandas DataFrames with two added attributes
+in Astropy QTables with an added attribute
 
 * source : names the source of the data
-* units : a dictionary with the units of each of the columns
 
 Object
 ------
-    interior : astropy.table.QTable
+    **interior** : ``astropy.table.QTable``
         The standard model of the solar interior
-    evolution : astropy.table.QTable
+    **evolution** : ``astropy.table.QTable``
         The evolution as a function of time of the Sun
 
 .. todo:: Need source for evolution model.
 
 """
 
-import pandas
 from astropy.units import Quantity
 from astropy.table import QTable
 import sunpy.sun.constants as con
