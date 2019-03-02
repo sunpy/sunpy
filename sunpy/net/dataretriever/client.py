@@ -292,8 +292,8 @@ class GenericClient(BaseClient):
                 return QueryResponse.create(self.map_, urls, times)
         return QueryResponse.create(self.map_, urls)
 
-    def fetch(self, qres, path=None, overwrite=False, progress=True,
-              max_conn=5, downloader=None, wait=True, **kwargs):
+    def fetch(self, qres, path=None, overwrite=False,
+              progress=True, downloader=None, wait=True):
         """
         Download a set of results.
 
@@ -305,14 +305,16 @@ class GenericClient(BaseClient):
         path : `str` or `pathlib.Path`, optional
             Path to the download directory
 
-        overwrite : `bool`, optional
-            Replace files with the same name if True
-
         progress : `bool`, optional
-            Print progress info to terminal
+            If `True` show a progress bar showing how many of the total files
+            have been downloaded. If `False`, no progress bar will be shown.
 
-        max_conns : `int`, optional
-            Maximum number of download connections.
+        overwrite : `bool` or `str`, optional
+            Determine how to handle downloading if a file already exists with the
+            same name. If `False` the file download will be skipped and the path
+            returned to the existing file, if `True` the file will be downloaded
+            and the existing file will be overwritten, if `'unique'` the filename
+            will be modified to be unique.
 
         downloader : `parfive.Downloader`, optional
             The download manager to use.
@@ -330,10 +332,10 @@ class GenericClient(BaseClient):
         # Check for type of path
         if path is not None:
             if isinstance(path, pathlib.Path):
-                path = str(path.absolute())
+                path = path.absolute().as_posix()
             elif not isinstance(path, str):
                 err = "path should be either 'pathlib.Path' or 'str'. "\
-                    "Got '{}'.".format(type(path))
+                      "Got '{}'.".format(type(path))
                 raise TypeError(err)
 
         urls = [qrblock.url for qrblock in qres]
@@ -345,7 +347,7 @@ class GenericClient(BaseClient):
         dl_set = True
         if not downloader:
             dl_set = False
-            downloader = Downloader(max_conn=max_conn, progress=progress)
+            downloader = Downloader(progress=progress, overwrite=overwrite)
 
         for url, filename in zip(urls, paths):
             downloader.enqueue_file(url, filename=filename)

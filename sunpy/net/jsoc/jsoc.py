@@ -432,8 +432,8 @@ class JSOCClient(BaseClient):
             return requests[0]
         return requests
 
-    def fetch(self, jsoc_response, path=None, overwrite=False, progress=True,
-              max_conn=5, downloader=None, wait=False, sleep=10):
+    def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
+              downloader=None, wait=True, sleep=10):
         """
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
@@ -446,11 +446,16 @@ class JSOCClient(BaseClient):
         path : `str`
             Path to save data to, defaults to SunPy download dir
 
-        overwrite : `bool`
-            Replace files with the same name if True
+        progress : `bool`, optional
+            If `True` show a progress bar showing how many of the total files
+            have been downloaded. If `False`, no progress bar will be shown.
 
-        progress : `bool`
-            Print progress info to terminal
+        overwrite : `bool` or `str`, optional
+            Determine how to handle downloading if a file already exists with the
+            same name. If `False` the file download will be skipped and the path
+            returned to the existing file, if `True` the file will be downloaded
+            and the existing file will be overwritten, if `'unique'` the filename
+            will be modified to be unique.
 
         max_conns : `int`
             Maximum number of download connections.
@@ -485,13 +490,13 @@ class JSOCClient(BaseClient):
         for response in responses:
             response.wait(verbose=progress)
             r = self.get_request(response, path=path, overwrite=overwrite,
-                                 progress=progress, max_conn=max_conn,
-                                 downloader=downloader, wait=wait)
+                                 progress=progress, downloader=downloader,
+                                 wait=wait)
 
         return r
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
-                    max_conn=5, downloader=None, wait=True):
+                    downloader=None, wait=True):
         """
         Query JSOC to see if the request(s) is ready for download.
 
@@ -506,14 +511,16 @@ class JSOCClient(BaseClient):
         path : `str`
             Path to save data to, defaults to SunPy download dir.
 
-        overwrite : `bool`
-            Replace files with the same name if True.
+        progress : `bool`, optional
+            If `True` show a progress bar showing how many of the total files
+            have been downloaded. If `False`, no progress bar will be shown.
 
-        progress : `bool`
-            Print progress info to terminal.
-
-        max_conns : `int`
-            Maximum number of download connections.
+        overwrite : `bool` or `str`, optional
+            Determine how to handle downloading if a file already exists with the
+            same name. If `False` the file download will be skipped and the path
+            returned to the existing file, if `True` the file will be downloaded
+            and the existing file will be overwritten, if `'unique'` the filename
+            will be modified to be unique.
 
         downloader : `parfive.Downloader`, optional
             The download manager to use.
@@ -568,27 +575,14 @@ class JSOCClient(BaseClient):
         dl_set = True
         if not downloader:
             dl_set = False
-            downloader = Downloader(max_conn=max_conn, progress=progress)
+            downloader = Downloader(progress=progress, overwrite=overwrite)
 
         urls = []
-        already_files = []
         for request in requests:
-
             if request.status == 0:
                 for index, data in request.data.iterrows():
-                    is_file = os.path.isfile(paths[index])
-                    if overwrite or not is_file:
-                        url_dir = request.request_url + '/'
-                        urls.append(urllib.parse.urljoin(url_dir, data['filename']))
-
-                    if not overwrite and is_file:
-                        print_message = "Skipping download of file {} as it " \
-                                        "has already been downloaded. " \
-                                        "If you want to redownload the data, "\
-                                        "please set overwrite to True"
-                        print(print_message.format(data['filename']))
-                        # Add the file on disk to the output
-                        already_files = paths[index]
+                    url_dir = request.request_url + '/'
+                    urls.append(urllib.parse.urljoin(url_dir, data['filename']))
         if urls:
             if progress:
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"
@@ -597,10 +591,9 @@ class JSOCClient(BaseClient):
                 downloader.enqueue_file(aurl, filename=fname)
 
         if dl_set and not wait:
-            return Results(already_files)
+            return Results()
 
         results = downloader.download()
-        results.data += already_files
         return results
 
     def _make_recordset(self, series, start_time='', end_time='', wavelength='',

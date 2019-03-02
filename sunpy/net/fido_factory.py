@@ -296,7 +296,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 
-    def fetch(self, *query_results, max_conn=5, progress=True, **kwargs):
+    def fetch(self, *query_results, path=None, max_conn=5, progress=True,
+              overwrite=False, **kwargs):
         """
         Download the records represented by
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
@@ -306,15 +307,18 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query_results : `sunpy.net.fido_factory.UnifiedResponse`
             Container returned by query method, or multiple.
 
+        path : `str`
+            The directory to retrieve the files into. Can refer to any fields
+            in `UnifiedResponse.response_block_properties` via string formatting,
+            moreover the file-name of the file downloaded can be referred to as file,
+            e.g. "{source}/{instrument}/{time.start}/{file}".
+
         max_conn : `int`, optional
             The number of parallel download slots.
 
-        progress : `bool`
-            Show a progress bar while the download is running.
-
         Returns
         -------
-        `sunpy.net.fido_factory.DownloadResponse`
+        `parfive.Results`
 
         Example
         --------
@@ -326,11 +330,11 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         if "wait" in kwargs or "downloader" in kwargs:
             raise ValueError("wait and downloader are not valid keyword arguments to Fido.fetch")
 
-        downloader = Downloader(max_conn=max_conn, progress=progress)
+        downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                reslist.append(block.client.fetch(block, progress=progress, downloader=downloader,
+                reslist.append(block.client.fetch(block, downloader=downloader,
                                                   wait=False, **kwargs))
 
         results = downloader.download()
