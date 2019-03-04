@@ -35,10 +35,6 @@ try:
     from .version import version as __version__
 except ImportError:
     __version__ = ''
-try:
-    from .version import githash as __githash__
-except ImportError:
-    __githash__ = ''
 
 if not _SUNPY_SETUP_:
     from sunpy.util.config import load_config, print_config

@@ -1,0 +1,1 @@
+Minimum numpy version is now >=1.14.5
