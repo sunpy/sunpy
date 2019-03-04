@@ -57,7 +57,7 @@ _density = [147.74, 146.66, 142.73, 116.10, 93.35,
            0.042, 0.00361, 1.99e-7]
 
 _d = {'mass': _mass, 'luminosity': _luminosity, 'temperature': _temperature, 'density': _density}
-interior = pandas.DataFrame(_d, index = _radius)
+interior = pandas.DataFrame((_d, index = _radius),(columns=['mass', 'luminosity', 'temperature','density' ,'radius']))
 interior.index.name = 'radius'
 interior.units = {'radius': con.radius, 'mass': con.mass, 'luminosity': con.luminosity,
                   'temperature': Quantity(1e6, 'K'), 'density': Quantity(1, 'g cm**-3')}
