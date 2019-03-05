@@ -56,7 +56,7 @@ jobs:
     condition: succeededOrFailed()
     inputs:
       testResultsFiles: '**/test-*.xml'
-      testRunTitle: 'Publish test results for $(parameters.name)'
+      testRunTitle: 'Publish test results for ${{ format(parameters.name) }}'
 
   - ${{ if contains(parameters.tox, 'online') }}:
     - task: PublishCodeCoverageResults@1
