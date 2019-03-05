@@ -212,7 +212,7 @@ def test_get(mock_result, sdate, edate, wave):
     [('2012/10/4', '2012/10/6',17*u.GHz),
     ('2012/10/4', '2012/10/6', 34*u.GHz)]
 )
-def test_fido_34(sdate,edate, wave):
+def test_fido(sdate,edate, wave):
     qr = Fido.search(a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(wave))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
