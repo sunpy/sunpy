@@ -43,7 +43,7 @@ jobs:
     - script: pip install --upgrade tox-conda
       displayName: install tox-conda
 
-  - script: tox -e ${{ parameters.tox }}
+  - script: tox -e ${{ parameters.tox }} --junitxml=junit/test-results.xml --cov-report=xml --cov-report=html
     displayName: run tox
 
   - script: |
@@ -51,3 +51,15 @@ jobs:
       codecov --name ${{ format(parameters.name) }}
     displayName: run codecov
     condition: succeededOrFailed()
+
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFiles: '**/test-*.xml'
+      testRunTitle: 'Publish test results for Python $(python.version)'
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+      reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
