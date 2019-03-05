@@ -19,7 +19,7 @@ class SunpyUserWarning(UserWarning, SunpyWarning):
     """
 
 
-class SunpyDeprecationWarning(SunpyWarning):
+class SunpyDeprecationWarning(DeprecationWarning, SunpyWarning):
     """
     A warning class to indicate a deprecated feature.
     """
