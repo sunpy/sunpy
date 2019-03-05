@@ -1,20 +1,19 @@
+*****************************
 Acknowledging or Citing SunPy
-=============================
+*****************************
 
 If you have used SunPy in your scientific work we would appreciate it if you would acknowledge it.
-The continued growth and development of SunPy is dependent on the community being aware of the use SunPy.
+The continued growth and development of SunPy is dependent on the community being aware of SunPy.
 
 Publications
-------------
+============
 
-Please add the following line to the conclusion or acknowledgements:
+Please add the following line within your methods, conclusion or acknowledgements sections:
 
    *This research has made use of SunPy vX.Y, an open-source and free
-   community-developed solar data analysis package written in Python
-   (citation).*
+   community-developed solar data analysis Python package (citation).*
 
-The citation should be to the `SunPy paper`_/`arXiv(open access)`_ and the
-version number should cite the `Zenodo DOI`_ for the version used in your work.
+The citation should be to the `SunPy paper`_ and the version number should cite the `Zenodo DOI`_ for the version used in your work.
 
 .. code:: bibtex
 
@@ -43,14 +42,13 @@ version number should cite the `Zenodo DOI`_ for the version used in your work.
         }
 
 Posters and talks
------------------
+=================
 
-Please include the `Sunpy logo`_ on the title, conclusion slide, or
-bout page. For websites please link the image to `sunpy.org`_.
+Please include the `Sunpy logo`_ on the title, conclusion slide, or about page.
+For websites please link the image to `sunpy.org`_.
 Other versions of the logo are available in the `sunpy-logo repository`_.
 
 .. _SunPy paper: https://iopscience.iop.org/article/10.1088/1749-4699/8/1/014009
-.. _arXiv(open access): https://arxiv.org/abs/1505.02563
 .. _Sunpy logo: https://sunpy.org/about/#acknowledging
 .. _sunpy.org: https://sunpy.org/
 .. _sunpy-logo repository: https://github.com/sunpy/sunpy-logo/
