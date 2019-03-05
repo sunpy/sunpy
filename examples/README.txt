@@ -1,5 +1,6 @@
+***************
 Example Gallery
-===============
+***************
 
 This gallery contains examples of how to use SunPy. Most of these examples
 require the SunPy sample data, which you can download by running::
