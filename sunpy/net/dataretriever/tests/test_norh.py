@@ -186,14 +186,16 @@ def test_query_wrong_wave():
         c.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'), a.Wavelength(50*u.GHz))
 
 
-@mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient._get_url_for_timerange',
-            side_effect=create_url('2013/10/5', '2013/10/7', wavelength=34*u.GHz))
-@mock.patch('sunpy.net.dataretriever.sources.norh.NoRHClient.search',
-            side_effect=(UnifiedResponse(mock_query_object('2013/10/5', '2013/10/7',
-                         wavelength=34*u.GHz))))
+@pytest.mark.usefixtures('create_mock_fetch')
+@pytest.mark.usefixtures('create_mock_url')
+@pytest.mark.parametrize(
+    "sdate, edate, wave",
+    [('2012/10/4', '2012/10/6',17*u.GHz),
+    ('2012/10/4', '2012/10/6', 34*u.GHz)]
+)
 @mock.patch('sunpy.net.download.Results.wait', return_value=['some/path/extension/tcz131005',
             'some/path/extension/tcz131007', 'some/path/extension/tcz131006'])
-def test_get(mock_result, mock_fetch, mock_timerange):
+def test_get(mock_result, sdate, edate, wave):
     LCClient = norh.NoRHClient()
     qr1 = LCClient.search(a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'),
                           a.Wavelength(34*u.GHz))
