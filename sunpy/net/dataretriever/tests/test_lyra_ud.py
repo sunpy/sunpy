@@ -1,13 +1,16 @@
 import pytest
+
 from unittest import mock
 from datetime import datetime, timedelta
 
 import astropy.units as u
+import sunpy.net.dataretriever.sources.lyra as lyra
+
 from sunpy.time.timerange import TimeRange
 from sunpy.time import parse_time
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
-import sunpy.net.dataretriever.sources.lyra as lyra
+
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
