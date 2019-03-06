@@ -116,7 +116,7 @@ class TestMap(object):
         #Test save out
         eitmap = sunpy.map.Map(a_fname)
         afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-        eitmap.save(afilename, filetype='fits', clobber=True)
+        eitmap.save(afilename, filetype='fits', overwrite=True)
         backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)
 
