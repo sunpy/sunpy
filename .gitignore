@@ -10,6 +10,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+pip-wheel-metadata/
 build/
 develop-eggs/
 dist/
@@ -204,7 +205,6 @@ sunpydata.sqlite
 sunpydata.sqlite-journal
 sunpy/_compiler.c
 sunpy/cython_version.py
-sunpy/version.py
 docs/_build
 docs/generated
 docs/api/
