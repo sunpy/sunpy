@@ -17,6 +17,7 @@ from sunpy.net import attrs as a
 LCClient = eve.EVEClient()
 BASEURL = eve.BASEURL
 
+
 def create_url(start, end):
     """
     This function creates a url based on the EVEClient data,
@@ -51,7 +52,8 @@ def mock_query_object(start_date, end_date, level=0):
     ed_datetime = datetime.strptime(end_date, '%Y/%m/%d') + timedelta(days=1)
     time_range = TimeRange(st_datetime, ed_datetime).split(int((ed_datetime-st_datetime).days))
 
-    with mock.patch('sunpy.net.dataretriever.sources.eve.EVEClient._get_url_for_timerange', return_value=(create_url(start_date, end_date))):
+    with mock.patch('sunpy.net.dataretriever.sources.eve.EVEClient._get_url_for_timerange',
+                    return_value=(create_url(start_date, end_date))):
         resp = QueryResponse.create(map_,
         LCClient._get_url_for_timerange(TimeRange(parse_time(start_date), parse_time(end_date))),
         time=time_range)
@@ -97,7 +99,8 @@ def test_fetch_working():
 
 @pytest.fixture
 def create_mock_url(mocker, sdate, edate, url_start, url_end):
-    mocker.patch('sunpy.net.dataretriever.sources.eve.EVEClient._get_url_for_timerange', return_value=(create_url(sdate, edate)))
+    mocker.patch('sunpy.net.dataretriever.sources.eve.EVEClient._get_url_for_timerange',
+                    return_value=(create_url(sdate, edate)))
 
 
 @pytest.fixture
@@ -168,12 +171,14 @@ def test_get(time, instrument):
     assert len(download_list) == len(qr1)
 
 
-@mock.patch('sunpy.net.dataretriever.sources.eve.EVEClient._get_url_for_timerange', return_value=(create_url('2012/10/4', '2012/10/6')))
+@mock.patch('sunpy.net.dataretriever.sources.eve.EVEClient._get_url_for_timerange',
+            return_value=(create_url('2012/10/4', '2012/10/6')))
 @mock.patch('sunpy.net.fido_factory.Fido.search', return_value=(
            UnifiedResponse(mock_query_object('2012/10/4', '2012/10/6'))))
 @mock.patch('sunpy.net.download.Results.wait',
             return_value=['some/path/extension/20121006_EVE_L0CS_DIODES_1m.1.txt',
-             'some/path/extension/20121005_EVE_L0CS_DIODES_1m.1.txt', 'some/path/extension/20121004_EVE_L0CS_DIODES_1m.1.txt']
+             'some/path/extension/20121005_EVE_L0CS_DIODES_1m.1.txt',
+             'some/path/extension/20121004_EVE_L0CS_DIODES_1m.1.txt']
 )
 def test_fido(mock_result, mock_search, mock_url):
     qr = Fido.search((a.Time('2012/10/4', '2012/10/6') & a.Instrument('eve') & a.Level(0)))
@@ -183,7 +188,8 @@ def test_fido(mock_result, mock_search, mock_url):
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
 
-def sid_effect(time,*args):
+
+def sid_effect(time, *args):
     """
     Helper function to return a list of UnifiedResponse object based on the
     `sunpy.net.attrs.Level`.
@@ -193,12 +199,13 @@ def sid_effect(time,*args):
     LevelVal = None
 
     if isinstance(level, attr.AttrOr):
-        LevelVal = [level.attrs[0].value , level.attrs[1].value]
-        qr = [mock_query_object(time[0],time[1],LevelVal[0]),mock_query_object(time[0],time[1],LevelVal[1])]
+        LevelVal = [level.attrs[0].value, level.attrs[1].value]
+        qr = [mock_query_object(time[0], time[1], LevelVal[0]),
+                 mock_query_object(time[0], time[1], LevelVal[1])]
 
     else:
         LevelVal = level.value
-        qr = mock_query_object(time[0],time[1],LevelVal)
+        qr = mock_query_object(time[0], time[1], LevelVal)
 
     return UnifiedResponse(qr)
 
