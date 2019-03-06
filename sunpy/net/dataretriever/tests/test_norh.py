@@ -105,9 +105,9 @@ def test_fetch_working():
 
     download_list.sort()
     # Assert each of the files have the same file names
-    assert download_list[0].split('/')[-1] == 'tca121004'
-    assert download_list[1].split('/')[-1] == 'tca121005'
-    assert download_list[2].split('/')[-1] == 'tca121006'
+    assert download_list[0].split('/')[-1].split('.')[0] == 'tca121004'
+    assert download_list[1].split('/')[-1].split('.')[0] == 'tca121005'
+    assert download_list[2].split('/')[-1].split('.')[0] == 'tca121006'
 
 @pytest.fixture
 def create_mock_url(mocker,sdate,edate,wave):
