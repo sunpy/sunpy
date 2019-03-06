@@ -167,6 +167,7 @@ class HelioviewerClient(object):
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO',
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', measurement='continuum')  # doctest: +REMOTE_DATA
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', instrument='HMI', measurement='continuum')  # doctest: +REMOTE_DATA
         >>> aia = sunpy.map.Map(filepath)  # doctest: +REMOTE_DATA
         >>> aia.peek()  # doctest: +SKIP
         """
@@ -443,7 +444,7 @@ class HelioviewerClient(object):
         source_id_list = list(partial_key_match(key,self.data_sources))
         if len(source_id_list) > 1:  # or maybe != 1
             raise KeyError(f"The values used: {key} do not correspond to one source_id "
-                            "but" f" {len(source_id_list)} source_id(s)." 
+                            f"but {len(source_id_list)} source_id(s)." 
                             " Please check the list using HelioviewerClient.data_sources.")
         return source_id_list[0]
             
