@@ -302,7 +302,7 @@ def test_fido_iter(queries):
 
 @settings(deadline=50000)
 @given(offline_query())
-def test_repr(query):
+def test_repr2(query):
     res = Fido.search(query)
 
     for rep_meth in (res.__repr__, res.__str__, res._repr_html_):
@@ -313,3 +313,7 @@ def test_repr(query):
         else:
             assert "Provider" not in rep_meth()
             assert "Providers" in rep_meth()
+
+
+def test_retry():
+    pass

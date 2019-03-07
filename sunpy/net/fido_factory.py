@@ -331,6 +331,20 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             raise ValueError("wait and downloader are not valid keyword arguments to Fido.fetch")
 
         downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
+
+        retries = [isinstance(arg, Results) for arg in query_results]
+        if all(retries):
+            results = Results()
+            for retry in query_results:
+                dr = downloader.retry(retry)
+                results.data += dr.data
+                results._errors += dr._errors
+            return results
+
+        elif any(retries):
+            raise TypeError("If any arguments to fetch are "
+                            "`parfive.Results` objects, all arguments must be.")
+
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
