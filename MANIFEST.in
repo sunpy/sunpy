@@ -6,6 +6,7 @@ include pyproject.toml
 include README.rst
 include RELEASE.rst
 include setup.py
+include setup.cfg
 
 recursive-include astropy_helpers *
 exclude astropy_helpers/.*

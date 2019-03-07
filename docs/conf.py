@@ -103,9 +103,9 @@ versionmod = get_distribution('sunpy')
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 # The short X.Y version.
-version = '.'.join(versionmod.version.split('.')[:2])
+release = '.'.join(versionmod.version.split('.')[:3])
 # The full version, including alpha/beta/rc tags.
-release = versionmod.version
+version = versionmod.version.split('+')[0]
 
 
 # -- Shut up numpy warnings from WCSAxes --------------------------------------
