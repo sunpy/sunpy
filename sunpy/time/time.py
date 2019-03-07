@@ -224,6 +224,7 @@ def convert_time_str(time_string, **kwargs):
                 break
             if ts is None:
                 continue
+            #problem!!
             return Time.strptime(ts, time_format, **kwargs) + time_delta
         except ValueError:
             pass
