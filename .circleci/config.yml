@@ -84,7 +84,7 @@ jobs:
       - run:
           name: Install dependencies one
           # Cat here to suppress the progress bar
-          command: pip3 install cython numpy scipy astropy matplotlib | cat
+          command: pip3 install cython numpy scipy astropy matplotlib asdf | cat
       - run:
           name: Install dependencies two
           # Cat here to suppress the progress bar
@@ -124,7 +124,7 @@ jobs:
       - run: *merge-check
       - run: *apt-install
       - run: *tox-install
-      - run: tox -e py37-build_docs
+      - run: tox -e build_docs
       - store_artifacts:
           path: docs/_build/html
 
