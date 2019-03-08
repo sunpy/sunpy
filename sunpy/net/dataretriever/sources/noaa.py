@@ -1,24 +1,16 @@
 # Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
 # This module was developed under funding provided by
 # Google Summer of Code 2014
-
-
-from ..client import GenericClient
-import os
 import tarfile
-from functools import partial
 from collections import OrderedDict
 
 from astropy.time import Time
 from astropy.time import TimeDelta
 import astropy.units as u
 
-import sunpy
-from sunpy.util import replacement_filename
-from sunpy.net.dataretriever.client import simple_path
-
 from sunpy.net.download import Downloader, Results
 
+from ..client import GenericClient
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
@@ -127,7 +119,7 @@ class SRSClient(GenericClient):
             return SRSClient._get_default_uri()
         result = list()
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
-        total_days = int(timerange.days) + 1
+        total_days = int(timerange.days.value) + 1
         all_dates = timerange.split(total_days)
         today_year = Time.now().strftime('%Y')
         for day in all_dates:
@@ -139,7 +131,6 @@ class SRSClient(GenericClient):
                     day.end.strftime('%Y'), day.end.strftime('%Y'))
             url = base_url + suffix
             result.append(url)
-
         return result
 
     def fetch(self, qres, path=None, error_callback=None, **kwargs):
