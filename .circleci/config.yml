@@ -6,6 +6,7 @@ merge-check: &merge-check
   name: Check if we need to merge upstream master
   command: |
     if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
+      git fetch origin --tags
       git fetch origin +refs/pull/$CIRCLE_PR_NUMBER/merge:pr/$CIRCLE_PR_NUMBER/merge
       git checkout -qf pr/$CIRCLE_PR_NUMBER/merge
     fi
