@@ -179,7 +179,7 @@ def test_diffrot_map(aia171_test_map, all_off_disk_map, all_on_disk_map, straddl
     with pytest.raises(ValueError):
         dmap = diffrot_map(all_off_disk_map)
 
-
+    # TODO - a lot more tests here, maybe use image hash comparison?
 
 
 @pytest.fixture
@@ -412,4 +412,14 @@ def test_get_bounding_coordinates():
 
 
 def test_warp_sun_coordinates(all_on_disk_map):
-    pass
+    new_observer = get_earth(all_on_disk_map.date + 1*u.hr)
+
+    # This array is not used in the function but is part of the signature
+    dummy_array = np.zeroes(10)
+
+    # Call the warp
+    xy2 = _warp_sun_coordinates(dummy_array, all_on_disk_map, new_observer)
+
+    # Test the properties of the output
+    assert xy2.shape == 0  # fill this in with the correct shape
+    assert isinstance(xy2, np.masked_array)  # fill this in with the correct type
