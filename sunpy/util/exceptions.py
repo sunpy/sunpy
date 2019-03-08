@@ -21,7 +21,7 @@ class SunpyUserWarning(UserWarning, SunpyWarning):
     """
 
 
-# for pep 565 compliance
+# For PEP 565 (https://www.python.org/dev/peps/pep-0565/) compliance.
 DeprecationClass = DeprecationWarning if sys.version_info >= (3, 7) else FutureWarning
 
 
