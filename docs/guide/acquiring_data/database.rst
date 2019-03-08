@@ -1,9 +1,8 @@
 .. The tests in the module are very fragile to change in ordering of VSO
    results. In their current form they are very hard to maintain.
-****************************************
-****************************************
-..  _database_guide:
-****************************************
+
+.. _database_guide:
+
 --------------------------
 Using the database package
 --------------------------
@@ -13,19 +12,22 @@ The database package offers the possibility to save retrieved data (e.g.
 via the :mod:`sunpy.net` package) onto a local or remote database. The
 database may be a single file located on a local hard drive (if a SQLite
 database is used) or a local or remote database server (see the SQLAlchemy
-documentation` for a list of supported databases
-<https://docs.sunpy.org/en/latest/guide/acquiring_data/index.html>
+documentation for a `list of supported databases
+<http://docs.sqlalchemy.org/en/latest/dialects/index.html>`_)
 This makes it possible to fetch required data from the local database
 instead of downloading it again from a remote server.
 
-1. Connecting and initializing the database :
+The package :mod:`sunpy.database` was developed as part of Google Summer of Code (GSOC) 2013.
+
+1. Connecting and initializing the database
 -------------------------------------------
-To start a connection to an existing or a new database, create a Database object:
-a :class:'Database' object:
+To start a connection to an existing or a new database, create
+a :class:`Database` object:
 
     >>> from sunpy.database import Database
     >>> database = Database('sqlite:///sunpydata.sqlite')
-this data base is example above connects to a new SQLite database with
+
+The database object in our example above connects to a new SQLite database with
 the file name "sunpydata.sqlite" in the current directory.
 
 The first parameter of :class:`Database` receives one mandatory argument:
@@ -53,13 +55,11 @@ can also be committed explicitly using the :meth:`Database.commit` method.
         [database]
         url = sqlite:////home/user/sunpy/my_database.sqlite
 
-________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
-2. <Adding new entries>
+
+2. Adding new entries
 ---------------------
-             Each entry in a database is an instance of the class
-             :class:tables.DatabaseEntry (
-                  https://docs.sunpy.org/en/latest/api/sunpy.database.tables.DatabaseEntry.html#sunpy.database.tables.DatabaseEntry
-             with the following attributes:
+Each entry in a database is an instance of the class
+:class:`tables.DatabaseEntry` with the following attributes:
 
 ====================== ===================================================
       Attribute                            Description
@@ -96,22 +96,33 @@ download_time          The date and time when the files connected to a
                        database!
 starred                Entries can be starred to mark them. By default,
                        this value is False.
-fits_header_entries    A list of :class:"tables.FitsHeaderEntry'<> instances.
+fits_header_entries    A list of :class:`tables.FitsHeaderEntry` instances.
 fits_key_comments      A list of :class:`tables.FitsKeyComment` instances.
 tags                   A list of :class:`tables.Tag` instances.
 ====================== ===================================================
 
-1. The id attribute is automatically set if an entry is added to a database.
-2. The attributes source, provider, physobs, fileid, observation_time_start, observation_time_end, instrument, size, wavemin, and          wavemax are set by methods which use the VSO interface. In particular, these are Database.add_from_vso_query_result(),            Database.download() and possibly Database.fetch().
-3 The attributes path and download_time are set by the method Database.download() and also possibly by Database.fetch().
-4 starred is set or changed via Database.star() or unstar().
-5 tags is set via Database.tag() or Database.remove_tag().
-6 The attribute fits_header_entries is set by the methods Database.download(), Database.add_from_dir(), and Database.add_from_file().
-----------------------------------------------------------------------------
-***************************************
-2.1 'Adding entries from one FITS file'
-***************************************
-The method :meth:`Database.add_from_file`(link here : https://docs.sunpy.org/en/latest/api/sunpy.database.Database.html#sunpy.database.Database.add_from_file) receives one positional argument
+* The ``id`` attribute is automatically set if an entry is added to a database.
+
+* The attributes ``source``, ``provider``, ``physobs``, ``fileid``,
+  ``observation_time_start``, ``observation_time_end``, ``instrument``,  ``size``,
+  ``wavemin``, and ``wavemax`` are set by methods which use the VSO interface. In
+  particular, these are :meth:`Database.add_from_vso_query_result`,
+  :meth:`Database.download` and   possibly :meth:`Database.fetch`.
+
+* The attributes ``path`` and ``download_time`` are set by the method
+  :meth:`Database.download` and also possibly by :meth:`Database.fetch`.
+
+* ``starred`` is set or changed via :meth:`Database.star` or :meth:`unstar`.
+
+* ``tags`` is set via :meth:`Database.tag` or :meth:`Database.remove_tag`.
+
+* The attribute ``fits_header_entries`` is set by the methods
+  :meth:`Database.download`, :meth:`Database.add_from_dir`, and
+  :meth:`Database.add_from_file`.
+
+2.1 Adding entries from one FITS file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The method :meth:`Database.add_from_file` receives one positional argument
 (either a string or a file-like object) which is used to add at least one
 new entry from the given FITS file to the database. Why "at least one" and
 not "exactly one"? The reason is that each database entry does not
@@ -211,13 +222,11 @@ In section 3, more advanced formats of the slicing syntax are introduced.
         number of groups
     XTENSION
         binary table extension
------------------------------------------------------------------------------------
------------------------------------------------------------------------------------
+
 2.2 Adding entries from a directory of FITS files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*************************************************
 Adding all FITS files from a directory works by calling the method
-:meth:`Database.add_from_dir()` and passing the desired directory to it. By
+:meth:`Database.add_from_dir` and passing the desired directory to it. By
 setting the keyword argument ``ignore_already_added`` to ``True``, no
 exception is raised if it is attempted to add an already existing entry
 
@@ -791,196 +800,3 @@ to 10 and therefore removes the 5 entries that been used least recently.
      18    2011-06-07 20:37:52 ...               19.5               19.5
      58    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
      59    2011-06-06 00:00:00 ...                N/A                N/A
-****************************************************************************************************************************************
-
-********************************************** 
-    QueryingHelioviewer.org_with_sunPy
-**********************************************
-SunPy can be used to make several basic requests using the The Helioviewer.org API including generating a PNG screenshot and downloading a JPEG 2000 image.
-
-As you can get JPEG 2000 images, you will need two other pieces of software in order to open them in Python. The first is OpenJPEG which is an open source library for reading and writing JPEG2000 files. The other package you will need is Glymur. Both of these are available as conda packages and ideally should be installed in this manner. Otherwise, please follow the instructions at the OpenJPEG homepage and the Glymur homepage.
-
-To interact with the Helioviewer API, users first create a HelioviewerClient instance. The client instance can then be used to make various queries against the API using the same parameters one would use when making a web request. Note that the HelioviewerClient does not currently offer full access to the HelioViewer API.
-
-We provide the follwing functions:
-               1. Download a JPEG 2000 image for the specified datasource that is the closest match in time to the date requested.
-               2. As above but return the full JSON response instead of an image.
-               3. Return all available datasources.
-               4. Generates custom screenshots that allow labels and layers of images.
-               5. Download the header information present in a JPEG2000 image. This includes:
-                  * FITS header
-                  * Helioviewer-specific metadata.
-                  
-  Nearly all requests require the user to specify the data they are interested in. Depending on the function, it consists of passing in   either: observatory, instrument, detector and measurement or source_id keywords.
-
-  To find out what the allowed values are, you can access the data_sources dictionary that is an attribute of the Helioviewer client.     Let us begin by retrieving the available list of sources that Helioviewer supports by using data_sources:
-
-
->>> from sunpy.net import helioviewer
->>> hv = helioviewer.HelioviewerClient()  
->>> for sourceid, obs in hv.data_sources.items():
-...     print(f"{sourceid}: {obs}")  
-('SOHO', 'EIT', None, '171'): 0
-('SOHO', 'EIT', None, '195'): 1
-('SOHO', 'EIT', None, '284'): 2
-('SOHO', 'EIT', None, '304'): 3
-('SOHO', 'LASCO', 'C2', 'white-light'): 4
-('SOHO', 'LASCO', 'C3', 'white-light'): 5
-('SOHO', 'MDI', None, 'magnetogram'): 6
-('SOHO', 'MDI', None, 'continuum'): 7
-('SDO', 'AIA', None, '94'): 8
-('SDO', 'AIA', None, '131'): 9
-('SDO', 'AIA', None, '171'): 10
-('SDO', 'AIA', None, '193'): 11
-('SDO', 'AIA', None, '211'): 12
-('SDO', 'AIA', None, '304'): 13
-('SDO', 'AIA', None, '335'): 14
-('SDO', 'AIA', None, '1600'): 15
-('SDO', 'AIA', None, '1700'): 16
-('SDO', 'AIA', None, '4500'): 17
-('SDO', 'HMI', None, 'continuum'): 18
-('SDO', 'HMI', None, 'magnetogram'): 19
-('STEREO_A', 'SECCHI', 'EUVI', '171'): 20
-('STEREO_A', 'SECCHI', 'EUVI', '195'): 21
-('STEREO_A', 'SECCHI', 'EUVI', '284'): 22
-('STEREO_A', 'SECCHI', 'EUVI', '304'): 23
-('STEREO_B', 'SECCHI', 'EUVI', '171'): 24
-('STEREO_B', 'SECCHI', 'EUVI', '195'): 25
-('STEREO_B', 'SECCHI', 'EUVI', '284'): 26
-('STEREO_B', 'SECCHI', 'EUVI', '304'): 27
-('STEREO_A', 'SECCHI', 'COR1', 'white-light'): 28
-('STEREO_A', 'SECCHI', 'COR2', 'white-light'): 29
-('STEREO_B', 'SECCHI', 'COR1', 'white-light'): 30
-('STEREO_B', 'SECCHI', 'COR2', 'white-light'): 31
-('PROBA2', 'SWAP', None, '174'): 32
-('Yohkoh', 'SXT', None, 'AlMgMn'): 33
-('Yohkoh', 'SXT', None, 'thin-Al'): 34
-('Yohkoh', 'SXT', None, 'white-light'): 35
-('Hinode', 'XRT', 'Al_med', 'Al_thick'): 39
-('Hinode', 'XRT', 'Al_med', 'Be_thick'): 40
-('Hinode', 'XRT', 'Al_med', 'Open'): 42
-('Hinode', 'XRT', 'Al_med', 'Ti_poly'): 43
-('Hinode', 'XRT', 'Al_poly', 'Al_mesh'): 44
-('Hinode', 'XRT', 'Al_poly', 'Al_thick'): 45
-('Hinode', 'XRT', 'Al_poly', 'Be_thick'): 46
-('Hinode', 'XRT', 'Al_poly', 'Open'): 48
-('Hinode', 'XRT', 'Al_poly', 'Ti_poly'): 49
-('Hinode', 'XRT', 'Be_med', 'Open'): 54
-('Hinode', 'XRT', 'Be_thin', 'Open'): 60
-('Hinode', 'XRT', 'C_poly', 'Al_mesh'): 62
-('Hinode', 'XRT', 'C_poly', 'Al_thick'): 63
-('Hinode', 'XRT', 'C_poly', 'Open'): 66
-('Hinode', 'XRT', 'C_poly', 'Ti_poly'): 67
-('Hinode', 'XRT', 'Open', 'Al_mesh'): 69
-('Hinode', 'XRT', 'Open', 'Al_thick'): 70
-('Hinode', 'XRT', 'Open', 'Be_thick'): 71
-('Hinode', 'XRT', 'Open', 'Ti_poly'): 74
-('TRACE', None, None, '171'): 75
-('TRACE', None, None, '195'): 76
-('TRACE', None, None, '284'): 77
-('TRACE', None, None, '1216'): 78
-('TRACE', None, None, '1550'): 79
-('TRACE', None, None, '1600'): 80
-('TRACE', None, None, '1700'): 81
-('TRACE', None, None, 'white-light'): 82
-('Hinode', 'XRT', 'Any', 'Any'): 10001
-('Hinode', 'XRT', 'Any', 'Al_mesh'): 10002
-('Hinode', 'XRT', 'Any', 'Al_thick'): 10003
-('Hinode', 'XRT', 'Any', 'Be_thick'): 10004
-('Hinode', 'XRT', 'Any', 'Gband'): 10005
-('Hinode', 'XRT', 'Any', 'Open'): 10006
-('Hinode', 'XRT', 'Any', 'Ti_poly'): 10007
-('Hinode', 'XRT', 'Al_med', 'Any'): 10008
-('Hinode', 'XRT', 'Al_poly', 'Any'): 10009
-('Hinode', 'XRT', 'Be_med', 'Any'): 10010
-('Hinode', 'XRT', 'Be_thin', 'Any'): 10011
-('Hinode', 'XRT', 'C_poly', 'Any'): 10012
-('Hinode', 'XRT', 'Open', 'Any'): 10013
-
-
-  Every JPEG 2000 file provided by the Helioviewer Project has been processed to generate an image that can be used for browsing    purposes. This typically involves following the standard image processing procedure used by each instrument team to convert their  science data into an image for a webpage. The JPEG 2000 image is then scaled between 0 and 255 (byte-scaled). Please note that the JPEG 2000 image data is not the same as the original science data.
-
-Suppose we want to download a JPEG 2000 image of the latest AIA 304 image available on Helioviewer.org. From the list above, we know that SDO/AIA 304 is (('SDO', 'AIA', None, '304'), 13). So observatory="SDO",``instrument=AIA``, detector=None, measurement=304 and the source_id is 13. So we can use the approach as shown in the following example:
-
-
->>>
->>> from sunpy.net.helioviewer import HelioviewerClient
->>> import matplotlib.pyplot as plt
->>> hv = HelioviewerClient()  
->>> file = hv.download_jp2('2012/01/01', observatory="SDO", instrument="AIA",
-...                        measurement="304")  
-
-
-Since detector=None we can ignore this keyword and skip it when we call this function. As we also have the source_id for AIA 304, which is 13, we could make the same request using:
-
-file = hv.download_jp2('2012/01/01', source_id=13)
-Since this is a JPEG 2000 image, to plot this image you can either call Glymur directly:
-
->>>
->>> import glymur 
->>> im = glymur.Jp2k(file)[:]  
-The better method is to load the image into a SunPy Map object:
-
->>>
->>> from sunpy.map import Map
->>> aia = Map(file)  
->>> aia.peek()  
-
-
-../../_images/helioviewer-1.png
-
-The SunPy Map selects a color table based on the JPEG 2000 image meta data for plotting. This will be the color table that is used by the Helioviewer Project to display JPEG 2000 images in their own clients.
-
-In this example we will query Helioviewer for the relevant JPEG 2000 file closest to the input time, for a SDO/HMI continuum image and crop to focus on an active region:
-
->>>
->>> from sunpy.net.helioviewer import HelioviewerClient
->>> import matplotlib.pyplot as plt
->>> from astropy.units import Quantity
->>> from sunpy.map import Map
->>> hv = HelioviewerClient()  
->>> data_sources = hv.get_data_sources()  
->>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO',
-...                            instrument='HMI', measurement='continuum')  
->>> hmi = Map(filepath)  
->>> xrange = Quantity([200, 550], 'arcsec')  
->>> yrange = Quantity([-400, 200], 'arcsec')  
->>> hmi.submap(xrange, yrange).peek()  
-../../_images/helioviewer-2.png
-The other main method is download_png. This allows more complex images to be created but again these are not the original science data. The biggest difference is that we do not use the separate keywords but have to pass them as a string of lists. This is the layer keyword in this function.
-
-We will recreate the first example using the PNG function:
-
->>>
->>> from sunpy.net.helioviewer import HelioviewerClient
->>> import matplotlib.pyplot as plt
->>> from matplotlib.image import imread
->>> hv = HelioviewerClient()  
->>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,304,1,100]", x0=0, y0=0, width=768, height=768, watermark=True)  
->>> im = imread(file)  
->>> plt.imshow(im)  
->>> plt.axis('off')  
->>> plt.show()  
-../../_images/helioviewer-3.png
-Since this is just a PNG, we can use matplotlib directly to plot this image. Note that the filename of the returned file has the date and time of the request, not of any of the times shown in the image itself. This is not a bug. The reason for this is that the user may ask for images from multiple sources, and each of them may have a different observation time. The problem becomes which time is the most appropriate to associate with the resultant image. Helioviewer.org doesn’t choose between the images times, but instead uses the request time to construct the image filename. This means that the image file names for request times in the future (like in this example) can look a little unusual compared to the times in the image.
-
-After the date string, we have a number (4.8) which refers to the image resolution in arcseconds per pixel (larger values mean lower resolution). The next input is the layers keyword which is "[SDO,AIA,304,1,100]". The first 4 are the observatory, instrument, detector, measurement values from before. Note that since SDO AIA has no detector value, you can skip this within the list. The 1 and 100 in the layer list refer to the visibility and opacity of the datasource. You can use the sourceid instead of the keywords, so it would be [13,1,100] for this example.
-
-Finally, the x0 and y0 are the center points about which to focus and the width and height are the pixel values for the image dimensions. These have defaults set so you do not need to supply these.
-
-In this example we will create a composite PNG image using data from two different SDO AIA wavelengths and LASCO C2 coronagraph data. The layer string is extended to include the additional data sources, and opacity is throttled down for the second AIA layer so that it does not completely block out the lower layer:
-
->>>
->>> from sunpy.net.helioviewer import HelioviewerClient
->>> import matplotlib.pyplot as plt
->>> from matplotlib.image import imread
->>> hv = HelioviewerClient()  
->>> file = hv.download_png('2012/01/01', 6,
-...                        "[SDO,AIA,304,1,100],[SDO,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]",
-...                        x0=0, y0=0, width=768, height=768, watermark=True)  
->>> im = imread(file)  
->>> plt.imshow(im)  
->>> plt.axis('off')  
->>> plt.show()  
-../../_images/helioviewer-4.png
-For more information about using querying Helioviewer.org, see the Helioviewer.org API documentation.
