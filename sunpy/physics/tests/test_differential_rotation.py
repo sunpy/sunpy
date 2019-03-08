@@ -302,6 +302,7 @@ def test_coordinate_is_on_disk(aia171_test_map, all_off_disk_map, all_on_disk_ma
     assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map), scale))
 
 
+# Testing values are derived from running the code, not from external sources
 def test_on_disk_bounding_coordinates(aia171_test_map):
     bl, tr = on_disk_bounding_coordinates(aia171_test_map)
     np.testing.assert_almost_equal(bl.Tx.to(u.arcsec).value, -954.17124289, decimal=1)
@@ -396,9 +397,14 @@ def test_get_extreme_position():
         _get_extreme_position(coords, 'lon', operator=np.nanmax)
 
 
-def test_get_bounding_coordinates():
-    pass
+# Test values are determined by running the code, not from external sources.
+def test_get_bounding_coordinates(all_on_disk_map):
+    bl, tr = _get_bounding_coordinates(all_coordinates_from_map(all_on_disk_map))
+    np.testing.assert_almost_equal(bl.Tx.to(u.arcsec).value, -263.64452221, decimal=1)
+    np.testing.assert_almost_equal(bl.Ty.to(u.arcsec).value, -64.36488378, decimal=1)
+    np.testing.assert_almost_equal(tr.Tx.to(u.arcsec).value, 101.00062542, decimal=1)
+    np.testing.assert_almost_equal(tr.Ty.to(u.arcsec).value, 396.16555688, decimal=1)
 
 
-def test_warp_sun_coordinates():
+def test_warp_sun_coordinates(all_on_disk_map):
     pass
