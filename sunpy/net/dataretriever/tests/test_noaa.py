@@ -21,13 +21,13 @@ def mock_query_object(start_date, end_date):
     """
     # Create a mock QueryResponse object
     map_ = {
-        'TimeRange' : TimeRange(parse_time(start_date), parse_time(end_date)),
+        'TimeRange': TimeRange(parse_time(start_date), parse_time(end_date)),
         'Time_start': parse_time(start_date),
         'Time_end':  parse_time(end_date),
         'source': 'sdic',
         'instrument': 'noaa-indices',
-        'physobs':'sunspot number',
-        'provider':'swpc'
+        'physobs': 'sunspot number',
+        'provider': 'swpc'
     }
 
     resp = QueryResponse.create(map_, LCClient._get_default_uri())
@@ -37,7 +37,7 @@ def mock_query_object(start_date, end_date):
 
 
 @pytest.mark.remote_data
-def test_fetch_working():
+def test_fetch_working(tmpdir):
     """
     Tests if the online server for noaa is working.
     Uses the url : ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
@@ -63,7 +63,8 @@ def test_fetch_working():
     # Assert if the timerange is same
     assert qr1.time_range() == TimeRange('2012/10/4', '2012/10/6')
 
-    res = LCClient.fetch(qr1)
+    target_dir = tmpdir.mkdir("down")
+    res = LCClient.fetch(qr1, path=target_dir.strpath)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
     assert download_list[0].split('/')[-1] == 'RecentIndices.txt'
