@@ -385,7 +385,7 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
 
 
 def test_get_extreme_position():
-    coords = SkyCoord([-1, 0, 1]*u.arcsec, [-2, 0, 2]*u.arcsec, frame=frames.Helioprojective)
+    coords = SkyCoord([-1, 0, 1, np.nan]*u.arcsec, [-2, 0, 2, -np.nan]*u.arcsec, frame=frames.Helioprojective)
 
     assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1*u.arcsec
     assert _get_extreme_position(coords, 'Ty', operator=np.nanmin) == -2*u.arcsec
@@ -397,13 +397,18 @@ def test_get_extreme_position():
         _get_extreme_position(coords, 'lon', operator=np.nanmax)
 
 
-# Test values are determined by running the code, not from external sources.
-def test_get_bounding_coordinates(all_on_disk_map):
-    bl, tr = _get_bounding_coordinates(all_coordinates_from_map(all_on_disk_map))
-    np.testing.assert_almost_equal(bl.Tx.to(u.arcsec).value, -263.64452221, decimal=1)
-    np.testing.assert_almost_equal(bl.Ty.to(u.arcsec).value, -64.36488378, decimal=1)
-    np.testing.assert_almost_equal(tr.Tx.to(u.arcsec).value, 101.00062542, decimal=1)
-    np.testing.assert_almost_equal(tr.Ty.to(u.arcsec).value, 396.16555688, decimal=1)
+def test_get_bounding_coordinates():
+    coords = SkyCoord([-1, 0, 1] * u.arcsec, [-2, 0, 2] * u.arcsec, frame=frames.Helioprojective,
+                      observer=get_earth("1999-09-13 00:00:00"))
+    bl, tr = _get_bounding_coordinates(coords)
+
+    assert bl.Tx == -1*u.arcsec
+    assert bl.Ty == -2*u.arcsec
+    assert bl.observer == coords[0].observer
+
+    assert tr.Tx == 1*u.arcsec
+    assert tr.Tt == 2*u.arcsec
+    assert tr.observer == coords[0].observer
 
 
 def test_warp_sun_coordinates(all_on_disk_map):
