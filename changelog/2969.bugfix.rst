@@ -1,0 +1,1 @@
+Changed HEC to recognize `parse_time()` output as `astropy.time.Time` object.
