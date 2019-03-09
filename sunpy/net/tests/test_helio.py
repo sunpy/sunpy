@@ -5,6 +5,7 @@ import pytest
 
 from sunpy.net.helio.parser import (link_test, taverna_parser, wsdl_retriever,
                                     endpoint_parser, webservice_parser)
+from sunpy.net.helio import hec
 
 
 def wsdl_endpoints():
@@ -251,3 +252,13 @@ def test_link_test_on_urlerror(mock_link_test):
     returns `None`
     """
     link_test('') is None
+
+    
+@pytest.mark.remote_data
+def test_time_query():
+    hc = hec.HECClient()
+    start = '2005/01/03'
+    end = '2005/12/03'
+    table_name = 'rhessi_hxr_flare'
+    res = hc.time_query(start, end, table=table_name, max_records=10)
+    assert len(res.array) == 10
