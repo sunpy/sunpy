@@ -262,3 +262,12 @@ def test_time_query():
     table_name = 'rhessi_hxr_flare'
     res = hc.time_query(start, end, table=table_name, max_records=10)
     assert len(res.array) == 10
+
+
+def test_get_table_names():
+    hc = hec.HECClient()
+    tables = hc.get_table_names()
+    assert len(tables) == 126
+    table = tables[0][0]
+    assert isinstance(table, bytes)
+    assert table == b'timed_see_flare'
