@@ -412,14 +412,22 @@ def test_get_bounding_coordinates():
 
 
 def test_warp_sun_coordinates(all_on_disk_map):
-    new_observer = get_earth(all_on_disk_map.date + 1*u.hr)
+    # Define an observer
+    new_observer = get_earth(all_on_disk_map.date + 6*u.hr)
 
     # This array is not used in the function but is part of the signature
-    dummy_array = np.zeroes(10)
+    dummy_array = np.zeros(10)
 
     # Call the warp
     xy2 = _warp_sun_coordinates(dummy_array, all_on_disk_map, new_observer)
 
     # Test the properties of the output
-    assert xy2.shape == 0  # fill this in with the correct shape
-    assert isinstance(xy2, np.masked_array)  # fill this in with the correct type
+    shape = all_on_disk_map.data.shape
+    assert xy2.shape == (shape[0]*shape[1], 2)
+    assert isinstance(xy2, np.ma.core.MaskedArray)
+
+    # Test the values - values are not independently found
+    np.testing.assert_almost_equal(xy2[0, 0], -2.74359833630745, decimal=2)
+    np.testing.assert_almost_equal(xy2[0, 1], -0.10005333435706998, decimal=2)
+    np.testing.assert_almost_equal(xy2[499, 0], 16.22662188294151, decimal=2)
+    np.testing.assert_almost_equal(xy2[499, 1], 24.012989749253194, decimal=2)
