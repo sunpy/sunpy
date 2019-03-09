@@ -253,7 +253,7 @@ def test_link_test_on_urlerror(mock_link_test):
     """
     link_test('') is None
 
-    
+
 @pytest.mark.remote_data
 def test_time_query():
     hc = hec.HECClient()
