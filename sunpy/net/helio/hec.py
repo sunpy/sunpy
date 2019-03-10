@@ -110,8 +110,8 @@ class HECClient(object):
             table = self.make_table_list()
         start_time = parse_time(start_time)
         end_time = parse_time(end_time)
-        results = self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
-                                                    ENDTIME=end_time.isoformat(),
+        results = self.hec_client.service.TimeQuery(STARTTIME=start_time.isot,
+                                                    ENDTIME=end_time.isot,
                                                     FROM=table,
                                                     MAXRECORDS=max_records)
         results = votable_handler(etree.tostring(results))
