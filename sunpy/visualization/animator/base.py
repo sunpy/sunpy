@@ -243,22 +243,22 @@ class BaseFuncAnimator:
         self.divider = make_axes_locatable(self.axes)
         pad = 0.01  # Padding between axes
         pad_size = Size.Fraction(pad, Size.AxesX(self.axes))
-        large_pad_size = Size.Fraction(0.1, Size.AxesY(self.axes))
+        large_pad_size = Size.Fraction(0.1, Size.Fixed(3.1))
 
         # Define size of useful axes cells, 50% each in x 20% for buttons in y.
         small_x = Size.Fraction((1.-2.*pad)/10, Size.AxesX(self.axes))
-        ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(self.axes))
+        ysize = Size.Fraction((1.-2.*pad)/15., Size.Fixed(3.1))
 
         # Set up grid, 3x3 with cells for padding.
         if self.num_buttons > 0:
             xsize = Size.Fraction((1.-2.*pad)/self.num_buttons, Size.AxesX(self.axes))
             horiz = [xsize] + [pad_size, xsize]*(self.num_buttons-1) + \
-                    [Size.Fraction(0.1, Size.AxesY(self.axes)), small_x]
+                    [Size.Fraction(0.1, Size.Fixed(3.1)), small_x]
             vert = [ysize, pad_size] * self.num_sliders + \
-                   [large_pad_size, large_pad_size, Size.AxesY(self.axes)]
+                   [large_pad_size, large_pad_size, Size.Fixed(3.1)]
         else:
             vert = [ysize, pad_size] * self.num_sliders + \
-                   [large_pad_size, Size.AxesY(self.axes)]
+                   [large_pad_size, Size.Fixed(3.1)]
             horiz = [Size.Fraction(0.8, Size.AxesX(self.axes))] + \
                     [Size.Fraction(0.1, Size.AxesX(self.axes))]*2
 

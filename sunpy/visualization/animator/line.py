@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 from . base import ArrayAnimator
 
@@ -77,7 +78,7 @@ class LineAnimator(ArrayAnimator):
           In this scenario the same x-axis values are used in every frame of the animation.
        b) Second, the x-axis array can have the same shape as the data array.
           In this scenario the x-axis is refreshed for each frame. For example, if
-          ``data.shape == axis_ranges[plot_axis_index] == (4, 3)``,
+          ``data.shape == axis_ranges[plot_axis_index] == (4, 3)``,     #shouldn't it be axis_ranges[plot_axis_index].shape ?
           where ``plot_axis_index == 0``, the 0th frame of the animation will show data from
           ``data[:, 0]`` with the x-axis described by ``axis_ranges[plot_axis_index][:, 0]``,
           while the 1st frame will show data from ``data[:, 1]`` with the x-axis described by
@@ -89,7 +90,7 @@ class LineAnimator(ArrayAnimator):
     """
 
     def __init__(self, data, plot_axis_index=-1, axis_ranges=None, ylabel=None, xlabel=None,
-                 xlim=None, ylim=None, **kwargs):
+                 xlim=None, ylim=None, aspect='auto', **kwargs):
         # Check inputs.
         self.plot_axis_index = int(plot_axis_index)
         if self.plot_axis_index not in range(-data.ndim, data.ndim):
@@ -124,6 +125,7 @@ class LineAnimator(ArrayAnimator):
         self.xlim = xlim
         self.xlabel = xlabel
         self.ylabel = ylabel
+        self.aspect = aspect
         # Run init for base class
         super(LineAnimator, self).__init__(data, image_axes=[self.plot_axis_index],
                                            axis_ranges=axis_ranges, **kwargs)
@@ -132,6 +134,7 @@ class LineAnimator(ArrayAnimator):
         """Sets up plot of initial image."""
         ax.set_xlim(self.xlim)
         ax.set_ylim(self.ylim)
+        ax.set_aspect(self.aspect)
         if self.xlabel is not None:
             ax.set_xlabel(self.xlabel)
         if self.ylabel is not None:
