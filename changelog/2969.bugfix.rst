@@ -1,1 +1,1 @@
-Changed HEC to recognize `parse_time()` output as `astropy.time.Time` object.
+`sunpy.net.helio.hec.HECClient.time_query` now resolves the correct input time format.
