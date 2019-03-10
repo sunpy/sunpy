@@ -194,6 +194,9 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.observer.lon == aia171_test_map.observer_coordinate.frame.lon
     assert frame.observer.radius == aia171_test_map.observer_coordinate.frame.radius
     assert frame.obstime == aia171_test_map.date
+    
+def test_HMI_file(genric_map):
+    assert generic_map.resampled_hmi.fits == 0
 
 
 # ==============================================================================
