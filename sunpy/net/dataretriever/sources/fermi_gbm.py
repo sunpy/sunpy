@@ -4,13 +4,14 @@ from ..client import GenericClient
 
 __all__ = ['GBMClient']
 
-class GBMCLient(GenericClient):
+
+class GBMClient(GenericClient):
 	def _get_url_for_timerange(self, timerange, **kwargs):
 		"""
 
 		Returns the url for Fermi/GBM data for the given date.
-       
-        baseurl = 'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
+
+		baseurl = 'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
 
 
 		Parameters
@@ -22,32 +23,32 @@ class GBMCLient(GenericClient):
 		-------
 
 		url for time of interest	
-        
-        """
 
-        
-        if 'detector' in kwargs:
-        	det = _check_det(kwargs['detector'])
+	"""
+
+		
+	#if 'detector' in kwargs:
+	#det = _check_det(kwargs['detector'])
 
 
-        	days = timerange.get_dates()
-        	urls = []
-        	for day in days:
-        		urls.append(self._get_url_for_date(day, **kwargs))
+		days = timerange.get_dates()
+		urls = []
+		for day in days:
+			urls.append(self._get_url_for_date(day, **kwargs))
 
-        	
-        	return urls
 
-    def _get_url_for_date(self, date, **kwargs):
-    	"""
-    	Returns URL dats of interest
+		return urls
 
-    	Parameters
-    	----------
-    	date : 'datetime.date'
+	def _get_url_for_date(self, date, **kwargs):
+		"""
+		Returns URL dats of interest
 
-    	Returns
-    	-------
+		Parameters
+		----------
+		date : 'datetime.date'
+
+		Returns
+		-------
 		url : str
 			the url at the date of interest
 
@@ -62,35 +63,35 @@ class GBMCLient(GenericClient):
 
 
 
-    def _makeimap(self):
-        """
-        Helper Function:used to hold information about source.
-        """
-        self.map_['source'] = 'Fermi'
-        self.map_['instrument'] = 'GBM'
-        self.map_['physobs'] = 'flux'
-        self.map_['provider'] = 'nasa'
+	def _makeimap(self):
+		"""
+		Helper Function:used to hold information about source.
+		"""
+		self.map_['source'] = 'Fermi'
+		self.map_['instrument'] = 'GBM'
+		self.map_['physobs'] = 'flux'
+		self.map_['provider'] = 'nasa'
 
 
 
-    @classmethod
-    def _can_handle_query(cls, *query):
-        """
-        Answers whether client can service the query.
-        Parameters
-        ----------
-        query : list of query objects
-        Returns
-        -------
-        boolean
-            answer as to whether client can service the query
-        """
-        chkattr =  ['Time', 'Instrument']
-        chklist =  [x.__class__.__name__ in chkattr for x in query]
-        for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'gbm':
-                return all(chklist)
-        return False
+	@classmethod
+	def _can_handle_query(cls, *query):
+		"""
+		Answers whether client can service the query.
+		Parameters
+		----------
+		query : list of query objects
+		Returns
+		-------
+		boolean
+		answer as to whether client can service the query
+		"""
+		chkattr =  ['Time', 'Instrument']
+		chklist =  [x.__class__.__name__ in chkattr for x in query]
+		for x in query:
+			if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'gbm':
+				return all(chklist)
+		return False
 
 
 
