@@ -3,6 +3,7 @@
 Test Generic Map
 """
 import os
+import glob
 import tempfile
 import warnings
 
@@ -27,6 +28,9 @@ from sunpy.time import parse_time
 
 testpath = sunpy.data.test.rootdir
 
+@pytest.fixture
+def HMI_file():
+    return sunpy.map.Map(glob.glob(os.path.join(testpath, "resampled_hmi.fits")))
 
 @pytest.fixture
 def aia171_test_map():
@@ -195,9 +199,9 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.observer.radius == aia171_test_map.observer_coordinate.frame.radius
     assert frame.obstime == aia171_test_map.date
     
-def test_HMI_file(genric_map):
-    assert generic_map.sunpy.data.test.resampled_hmi.fits == genric_map.carrington_longitude - sunpy.coordinates.get_sun_L0(generic_map.date)
-
+def test_heliographic_longitude_crln(HMI_file):
+    if HMI_file.heliographic_longitude == 0:
+        assert HMI_file.heliographic_longitude == HMI_file.carrington_longitude - sunpy.coordinates.get_sun_L0(HMI_file.date)
 
 # ==============================================================================
 # Test Rotation WCS conversion
