@@ -144,3 +144,10 @@ def test_vso_instrument(hek_client_creator):
         assert type(vc) == sunpy.net.vso.attrs.Instrument
     except ValueError:
         assert 1
+
+
+@pytest.mark.remote_data
+def test_HEKRow_get(hek_client_creator):
+    hc = hek_client_creator
+    assert hc[0]['event_peaktime'] == hc[0].get('event_peaktime')
+    assert hc[0].get('') == None
