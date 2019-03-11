@@ -196,7 +196,7 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.obstime == aia171_test_map.date
     
 def test_HMI_file(genric_map):
-    assert generic_map.resampled_hmi.fits == genric_map.carrington_longitude - sunpy.coordinates.get_sun_L0(generic_map.date)
+    assert generic_map.sunpy.data.test.resampled_hmi.fits == genric_map.carrington_longitude - sunpy.coordinates.get_sun_L0(generic_map.date)
 
 
 # ==============================================================================
