@@ -85,7 +85,7 @@ class HECClient(object):
         end_time : str, `~sunpy.time.parse_time` parsable objects
             The time where the query window closes
 
-        table : str
+        table : bytes
             The table to query from. If the table is unknown, the user will be
             prompted to pick from a list of tables.
 
@@ -107,7 +107,7 @@ class HECClient(object):
 
         """
         while table is None:
-            table = self.make_table_list()
+            table = self.select_table()
         start_time = parse_time(start_time)
         end_time = parse_time(end_time)
         results = self.hec_client.service.TimeQuery(STARTTIME=start_time.isot,
@@ -145,7 +145,7 @@ class HECClient(object):
         tables = votable_handler(etree.tostring(results))
         return tables.array
 
-    def make_table_list(self):
+    def select_table(self):
         """
         Creates a list of table names and prompts the user for a choice
 
@@ -156,14 +156,14 @@ class HECClient(object):
 
         Returns
         -------
-        temp: `bytes` or `None`
+        `bytes`
             contains the name of the table that the user picked.
 
         Examples
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> hc.make_table_list()  # doctest: +REMOTE_DATA +SKIP
+        >>> hc.select_table()  # doctest: +REMOTE_DATA +SKIP
 
         """
         tables = self.get_table_names()
