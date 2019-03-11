@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 from . base import ArrayAnimator
 
@@ -78,7 +77,7 @@ class LineAnimator(ArrayAnimator):
           In this scenario the same x-axis values are used in every frame of the animation.
        b) Second, the x-axis array can have the same shape as the data array.
           In this scenario the x-axis is refreshed for each frame. For example, if
-          ``data.shape == axis_ranges[plot_axis_index] == (4, 3)``,     #shouldn't it be axis_ranges[plot_axis_index].shape ?
+          ``data.shape == axis_ranges[plot_axis_index].shape == (4, 3)``,
           where ``plot_axis_index == 0``, the 0th frame of the animation will show data from
           ``data[:, 0]`` with the x-axis described by ``axis_ranges[plot_axis_index][:, 0]``,
           while the 1st frame will show data from ``data[:, 1]`` with the x-axis described by
