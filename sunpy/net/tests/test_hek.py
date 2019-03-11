@@ -150,4 +150,4 @@ def test_vso_instrument(hek_client_creator):
 def test_HEKRow_get(hek_client_creator):
     hc = hek_client_creator
     assert hc[0]['event_peaktime'] == hc[0].get('event_peaktime')
-    assert hc[0].get('') == None
+    assert hc[0].get('') is None
