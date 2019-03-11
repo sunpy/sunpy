@@ -5,6 +5,7 @@
 
 import pytest
 
+import sunpy
 from sunpy.net import hek
 from sunpy.net import attr
 
@@ -13,6 +14,20 @@ from sunpy.net import attr
 def foostrwrap(request):
     return hek.attrs._StringParamAttrWrapper("foo")
 
+
+@pytest.fixture
+@pytest.mark.remote_data
+def hek_client_creator():
+    startTime = '2011/08/09 07:23:56'
+    endTime = '2011/08/09 12:40:29'
+    eventType = 'FL'
+
+    hekTime = hek.attrs.Time(startTime, endTime)
+    hekEvent = hek.attrs.EventType(eventType)
+
+    h = hek.HEKClient()
+    hek_query = h.search(hekTime, hekEvent)
+    return hek_query
 
 def test_eventtype_collide():
     with pytest.raises(TypeError):
@@ -98,5 +113,34 @@ def test_hek_client():
 
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
-    assert hek_query[0]['event_peaktime'] == hek_query[0].get('event_peaktime')
-    assert hek_query[0].get('') == None
+    assert type(hek_query) == sunpy.net.hek.hek.HEKTable
+
+
+@pytest.mark.remote_data
+def test_getitem(hek_client_creator):
+    hc = hek_client_creator
+    assert hc.__getitem__(0) == hc[0]
+
+
+@pytest.mark.remote_data
+def test_get_voevent(hek_client_creator):
+    hc = hek_client_creator
+    ve = hc[0].get_voevent()
+    assert len(ve['voe:VOEvent']) == 7
+
+
+@pytest.mark.remote_data
+def test_vso_time(hek_client_creator):
+    hc = hek_client_creator
+    ve = hc[0].vso_time
+    assert type(ve) == sunpy.net.vso.attrs.Time
+
+
+@pytest.mark.remote_data
+def test_vso_instrument(hek_client_creator):
+    hc = hek_client_creator
+    try:
+        vc = hc[1].vso_instrument
+        assert type(vc) == sunpy.net.vso.attrs.Instrument
+    except ValueError:
+        assert 1
