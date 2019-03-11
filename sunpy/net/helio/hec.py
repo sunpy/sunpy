@@ -85,7 +85,7 @@ class HECClient(object):
         end_time : str, `~sunpy.time.parse_time` parsable objects
             The time where the query window closes
 
-        table : str
+        table : bytes
             The table to query from. If the table is unknown, the user will be
             prompted to pick from a list of tables.
 
@@ -107,7 +107,7 @@ class HECClient(object):
 
         """
         while table is None:
-            table = self.make_table_list()
+            table = self.select_table()
         start_time = parse_time(start_time)
         end_time = parse_time(end_time)
         results = self.hec_client.service.TimeQuery(STARTTIME=start_time.isot,
@@ -145,7 +145,7 @@ class HECClient(object):
         tables = votable_handler(etree.tostring(results))
         return tables.array
 
-    def make_table_list(self):
+    def select_table(self):
         """
         Creates a list of table names and prompts the user for a choice
 
@@ -156,39 +156,29 @@ class HECClient(object):
 
         Returns
         -------
-        temp: `str`
+        `bytes`
             contains the name of the table that the user picked.
 
         Examples
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> hc.make_table_list()  # doctest: +REMOTE_DATA +SKIP
+        >>> hc.select_table()  # doctest: +REMOTE_DATA +SKIP
 
         """
-        table_list = []
         tables = self.get_table_names()
-        for i in tables:
-            table = i[0]
-            if len(table) > 0:
-                table_list.append(table)
+        table_list = [t[0] for t in tables if len(t[0]) > 0]
         table_list.sort()
         for index, table in enumerate(table_list):
-            print(('{number:3d}) {table}'.format(number=index + 1,
-                                                 table=table)))
+            print(f'{index + 1} - {table.decode()}')
 
         while True:
-            stdinput = input("\nPlease enter a table number between 1 and "
-                             "{elem:d} "
-                             "('e' to exit): ".format(elem=len(table_list)))
-            if stdinput.lower() == "e" or stdinput.lower() == "exit":
-                temp = None
-                break
-            temp = [int(s) for s in stdinput.split() if s.isdigit()]
-            temp = temp[0] - 1
-            if temp in range(0, len(table_list)):
-                temp = table_list[temp]
-                break
+            user_input = input(f"\nPlease enter a table number between 1 and {len(table_list)} "
+                               "('e' to exit): ")
+            if user_input.lower() == "e" or user_input.lower() == "exit":
+                return None
+            if user_input.isdigit() and 1 <= int(user_input) <= len(table_list):
+                table_no = int(user_input)
+                return table_list[table_no - 1]
             else:
-                print("Choice outside of bounds")
-        return temp
+                print(f"Input must be an integer between 1 and {len(table_list)}")
