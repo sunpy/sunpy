@@ -371,7 +371,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                reslist.append(block.client.fetch(block, downloader=downloader,
+                reslist.append(block.client.fetch(block, path=path,
+                                                  downloader=downloader,
                                                   wait=False, **kwargs))
 
         results = downloader.download()
