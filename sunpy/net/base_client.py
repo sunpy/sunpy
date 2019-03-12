@@ -48,22 +48,18 @@ class BaseClient(ABC):
         ----------
         query_results:
             Results to download.
-
         path : `str` or `pathlib.Path`, optional
             Path to the download directory
-
         overwrite : `bool`, optional
-            Replace files with the same name if True
+            Replace files with the same name if True.
 
         progress : `bool`, optional
-            Print progress info to terminal
+            Print progress info to terminal.
 
         max_conns : `int`, optional
             Maximum number of download connections.
-
         downloader : `parfive.Downloader`, optional
             The download manager to use.
-
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
            any effect if `downloader` is not `None`.
