@@ -211,12 +211,12 @@ Downloading data
 ----------------
 Once you have located your files via a
 `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>`, you can
-download them via `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`::
+download them via `Fido.fetch <sunpy.net.fido_factory.unifieddownloaderfactory.fetch>`::
 
     >>> downloaded_files = Fido.fetch(results)  # doctest: +SKIP
 
-This downloads the files to the location set in you sunpy config
-file.  It also returns a list ``downloaded_files``, of absolute file paths
+This downloads the files to the location set in you sunpy config file. It also
+returns a `parfive.Results` object ``downloaded_files``, of absolute file paths
 of where the files have been downloaded to.
 
 You can also specify the path to which you want the data downloaded::
@@ -228,12 +228,32 @@ This downloads the query results into the directory
 filename ``{file}`` obtained from the client, and appended with the suffix
 ``.fits``. You can also use other properties of the returned query
 to define the path where the data is saved.  For example, to save the
-data to a subdirectory named after the instrument, use
+data to a subdirectory named after the instrument, use::
 
     >>> downloaded_files = Fido.fetch(results, path='./{instrument}/{file}.fits')  # doctest: +SKIP
 
 You can see the list of options that can be specified in path for all the files
 to be downloaded with ``results.response_block_properties``.
+
+Retrying Downloads
+^^^^^^^^^^^^^^^^^^
+
+If any files failed to download, the progress bar will show an incomplete number
+of files (i.e. 100/150) and the `parfive.Results` object will contain a list of
+the URLs that failed to transfer and the error associated with them. This can be
+accessed with the ``.errors`` attribute or by printing the `~parfive.Results`
+object::
+
+    >>> print(downloaded_files.errors)  # doctest: +SKIP
+
+The transfer can be retried by passing the `parfive.Results` object back to
+`Fido.fetch <sunpy.net.fido_factory.unifieddownloaderfactory.fetch>`::
+
+    >>> downloaded_files = Fido.fetch(downloaded_files)  # doctest: +SKIP
+
+doing this will append any newly downloaded file names to the list and replace
+the ``.errors`` list with any errors that occurred during the second attempt.
+
 
 .. _VSO: https://sdac.virtualsolar.org/cgi/search
 .. _JSOC: http://jsoc.stanford.edu/

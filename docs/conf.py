@@ -130,6 +130,7 @@ intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/latest/', No
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
 intersphinx_mapping['drms'] = ('http://docs.sunpy.org/projects/drms/en/stable/', None)
+intersphinx_mapping['parfive'] = ('https://parfive.readthedocs.io/en/latest/', None)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
