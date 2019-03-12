@@ -1,32 +1,26 @@
 # -*- coding: utf-8 -*-
 import copy
-import os
-from collections import OrderedDict, namedtuple
+from pathlib import Path
 from functools import partial
-import pathlib
+from collections import OrderedDict, namedtuple
 
 import numpy as np
+from parfive import Downloader
+
 import astropy.table
 import astropy.units as u
-from parfive import Downloader
 
 import parfive
 
 import sunpy
-from sunpy.time import TimeRange
-from sunpy.util import replacement_filename
 from sunpy import config
-
 from sunpy.net.base_client import BaseClient
 from sunpy.net.vso.attrs import Time, Wavelength, _Range
+from sunpy.time import TimeRange
 
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['QueryResponse', 'GenericClient']
-
-
-def simple_path(path, sock, url):
-    return path
 
 
 class QueryResponseBlock(object):
@@ -239,24 +233,19 @@ class GenericClient(BaseClient):
         List of full pathnames for each file (download_directory + filename)
         """
         # Create function to compute the filepath to download to if not set
-        default_dir = sunpy.config.get("downloads", "download_dir")
+        default_dir = Path(sunpy.config.get("downloads", "download_dir"))
 
         paths = []
         for i, filename in enumerate(filenames):
             if path is None:
-                fname = os.path.join(default_dir, '{file}')
-            elif isinstance(path, str) and '{file}' not in path:
-                fname = os.path.join(path, '{file}')
+                fname = default_dir / '{file}'
+            elif '{file}' not in str(path):
+                fname = path / '{file}'
 
             temp_dict = qres[i]._map.copy()
-            temp_dict['file'] = filename
-            fname = fname.format(**temp_dict)
-            fname = os.path.expanduser(fname)
-
-            if os.path.exists(fname):
-                fname = replacement_filename(fname)
-
-            fname = partial(simple_path, fname)
+            temp_dict['file'] = str(filename)
+            fname = fname.expanduser()
+            fname = Path(str(fname).format(**temp_dict))
 
             paths.append(fname)
 
@@ -303,7 +292,8 @@ class GenericClient(BaseClient):
             Results to download.
 
         path : `str` or `pathlib.Path`, optional
-            Path to the download directory
+            Path to the download directory, or file template including the
+            ``{file}`` string which will be replaced with the filename.
 
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
@@ -329,14 +319,8 @@ class GenericClient(BaseClient):
         results: `parfive.Results`
 
         """
-        # Check for type of path
         if path is not None:
-            if isinstance(path, pathlib.Path):
-                path = path.absolute().as_posix()
-            elif not isinstance(path, str):
-                err = "path should be either 'pathlib.Path' or 'str'. "\
-                      "Got '{}'.".format(type(path))
-                raise TypeError(err)
+            path = Path(path)
 
         urls = [qrblock.url for qrblock in qres]
 
