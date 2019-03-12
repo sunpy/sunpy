@@ -1,0 +1,1 @@
+added the FERMI GBM client in `sunpy.net.dataretriever.sources`
