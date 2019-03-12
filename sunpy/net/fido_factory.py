@@ -343,7 +343,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         If any downloads fail, they can be retried by passing the `parfive.Results` object back into ``fetch``.
 
-        >>> filepaths = Fido.fetch(filepaths)
+        >>> filepaths = Fido.fetch(filepaths)  # doctest: +SKIP
 
         """
 
