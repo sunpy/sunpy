@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import copy
 from pathlib import Path
-from functools import partial
 from collections import OrderedDict, namedtuple
 
 import numpy as np
