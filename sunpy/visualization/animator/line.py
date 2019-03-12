@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 from . base import ArrayAnimator
 
@@ -133,7 +134,6 @@ class LineAnimator(ArrayAnimator):
         """Sets up plot of initial image."""
         ax.set_xlim(self.xlim)
         ax.set_ylim(self.ylim)
-        ax.set_aspect(self.aspect)
         if self.xlabel is not None:
             ax.set_xlabel(self.xlabel)
         if self.ylabel is not None:
@@ -146,6 +146,25 @@ class LineAnimator(ArrayAnimator):
             xdata = np.squeeze(self.xdata[tuple(item)])
         else:
             xdata = self.xdata
+        
+        # following lines are for debugging...
+        fig = ax.get_figure()
+        size = fig.get_size_inches()*fig.dpi
+        print('fig_size: ', size)
+        '''
+        if self.aspect == None:
+            #self.aspect = float((3./4)*(self.xlim[1]-self.xlim[0])/(self.ylim[1]-self.ylim[0]))
+            print(self.aspect)
+        '''
+        figs = float((self.xlim[1] - self.xlim[0]) / (self.ylim[1] - self.ylim[0]))
+        print('datalim_ratio: ', figs)
+
+        box = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+        print('box_size: ', [box.height, box.width])
+
+        ax.set_aspect(self.aspect, adjustable = 'datalim')      # doesn't seem very helpful
+        # ...ends here
+
         line, = ax.plot(xdata, self.data[self.frame_index], **plot_args)
         return line
 
