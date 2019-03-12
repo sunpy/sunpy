@@ -112,7 +112,7 @@ def download_fileobj(opn, directory, url='', default="file", overwrite=False):
     overwrite is True. """
     filename = get_system_filename(opn, url, default)
     path = os.path.join(directory, filename.decode('utf-8'))
-    if not overwrite and os.path.exists(path):
+    if overwrite and os.path.exists(path):
         path = replacement_filename(path)
     with open(path, 'wb') as fd:
         shutil.copyfileobj(opn, fd)
