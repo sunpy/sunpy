@@ -6,12 +6,16 @@ be here, but rather in the particular subpackage.
 """
 import sys
 
+from astropy.utils.exceptions import AstropyWarning
+
 __all__ = ["SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning"]
 
 
-class SunpyWarning(Warning):
+class SunpyWarning(AstropyWarning):
     """
     The base warning class from which all Sunpy warnings should inherit.
+
+    Any warning inheriting from this class is handled by the Sunpy logger.
     """
 
 
@@ -30,4 +34,10 @@ DeprecationClass = DeprecationWarning if sys.version_info >= (3, 7) else FutureW
 class SunpyDeprecationWarning(DeprecationClass, SunpyWarning):
     """
     A warning class to indicate a deprecated feature.
+    """
+
+
+class SunpyPendingDeprecationWarning(PendingDeprecationWarning, SunpyWarning):
+    """
+    A warning class to indicate a soon-to-be deprecated feature.
     """
