@@ -297,7 +297,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return UnifiedResponse(query_walker.create(query, self))
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
-              overwrite=False, **kwargs):
+              overwrite=False, downloader=None, **kwargs):
         """
         Download the records represented by
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
@@ -316,6 +316,21 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         max_conn : `int`, optional
             The number of parallel download slots.
 
+        progress : `bool`, optional
+            If `True` show a progress bar showing how many of the total files
+            have been downloaded. If `False`, no progress bars will be shown at all.
+
+        overwrite : `bool` or `str`, optional
+            Determine how to handle downloading if a file already exists with the
+            same name. If `False` the file download will be skipped and the path
+            returned to the existing file, if `True` the file will be downloaded
+            and the existing file will be overwritten, if `'unique'` the filename
+            will be modified to be unique.
+
+        downloader : `parfive.Downloader`, optional
+            The download manager to use. If specified the ``max_conn``,
+            ``progress`` and ``overwrite`` arguments are ignored.
+
         Returns
         -------
         `parfive.Results`
@@ -327,11 +342,15 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
         """
 
-        if "wait" in kwargs or "downloader" in kwargs:
+        if "wait" in kwargs:
             raise ValueError("wait and downloader are not valid keyword arguments to Fido.fetch")
 
-        downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
+        if not downloader:
+            downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
+        elif not isinstance(downloader, Downloader):
+            raise TypeError("The downloader argument must be a parfive.Downloader object.")
 
+        # Handle retrying failed downloads
         retries = [isinstance(arg, Results) for arg in query_results]
         if all(retries):
             results = Results()
@@ -340,7 +359,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                 results.data += dr.data
                 results._errors += dr._errors
             return results
-
         elif any(retries):
             raise TypeError("If any arguments to fetch are "
                             "`parfive.Results` objects, all arguments must be.")
