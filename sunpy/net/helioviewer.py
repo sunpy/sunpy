@@ -6,15 +6,17 @@ import json
 import errno
 import codecs
 import urllib
+from pathlib import Path
 from collections import OrderedDict
+
+import parfive
 
 from astropy.utils.decorators import lazyproperty
 
 import sunpy
-from sunpy.util.xml import xml_to_dict
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
-
+from sunpy.util.xml import xml_to_dict
 
 __all__ = ['HelioviewerClient']
 
@@ -411,24 +413,23 @@ class HelioviewerClient(object):
     def _get_file(self, params, directory=None, overwrite=False):
         """Downloads a file and return the filepath to that file."""
         if directory is None:
-            directory = sunpy.config.get('downloads', 'download_dir')
+            directory = Path(sunpy.config.get('downloads', 'download_dir'))
         else:
-            directory = os.path.abspath(os.path.expanduser(directory))
+            directory = Path(directory).expanduser().absolute()
 
-        try:
-            os.makedirs(directory)
-        except OSError as e:
-            # TODO: Check this
-            if e.errno != errno.EEXIST:
-                raise OSError('Tried to create a directory and it failed.')
+        downloader = parfive.Downloader(overwrite=overwrite)
 
-        response = self._request(params)
-        try:
-            filepath = download_fileobj(response, directory, overwrite=overwrite)
-        finally:
-            response.close()
+        url = urllib.parse.urljoin(self._api,
+                                   "?" + urllib.parse.urlencode(params))
+        downloader.enqueue_file(url, path=directory)
 
-        return filepath
+        res = downloader.download()
+
+        if len(res) == 1:
+            return res[0]
+
+        else:
+            return res
 
     def _request(self, params):
         """
