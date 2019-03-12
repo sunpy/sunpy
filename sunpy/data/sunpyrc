@@ -25,7 +25,7 @@
 ; Time Format to be used for displaying time in output (e.g. graphs)
 ; The default time format is based on ISO8601 (replacing the T with space)
 ; note that the extra '%'s are escape characters
-time_format = %%Y-%%m-%%d %%H:%%M:%%S
+time_format = %Y-%m-%d %H:%M:%S
 
 ;;;;;;;;;;;;;
 ; Downloads ;
@@ -68,16 +68,16 @@ log_level = INFO
 use_color = True
 
 # Whether to log warnings.warn calls
-log_warnings = False
+log_warnings = True
 
 # Whether to log exceptions before raising them
 log_exceptions = False
 
 # Whether to always log messages to a log file
-log_to_file = True
+log_to_file = False
 
 # The file to log messages to
-log_file_path = ~/.sunpy/sunpy.log
+log_file_path = sunpy.log
 
 # Threshold for logging messages to log_file_path
 log_file_level = INFO

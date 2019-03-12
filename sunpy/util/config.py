@@ -21,7 +21,7 @@ def load_config():
     Read the sunpyrc configuration file. If one does not exists in the user's
     home directory then read in the defaults from module
     """
-    config = configparser.ConfigParser()
+    config = configparser.RawConfigParser()
 
     # Get locations of SunPy configuration files to be loaded
     config_files = _find_config_files()
