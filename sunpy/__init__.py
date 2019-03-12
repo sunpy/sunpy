@@ -51,18 +51,7 @@ if not _SUNPY_SETUP_:
     # Use the root logger as a dummy log before initializing Astropy's logger
     log = logging.getLogger()
 
-    from astropy.logger import _init_log
-
-    #  read and translate settings for Astropy's logger
-    if config.has_section('logger'):
-        from astropy.logger import Conf as LoggerConf
-        conf = LoggerConf()
-        option_list = ['log_level', 'use_color', 'log_warnings', 'log_exceptions', 'log_to_file', 'log_file_path',
-                       'log_file_level', 'log_file_format']
-        for this_option in option_list:
-            if config.has_option('logger', this_option):
-                setattr(conf, this_option, config.get('logger', this_option))
-
-    log = _init_log()
+    from sunpy.util.logger import _init_log
+    log = _init_log(config=config)
 
     __all__ = ['config', 'self_test', 'system_info']
