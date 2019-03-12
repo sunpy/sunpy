@@ -427,7 +427,6 @@ class HelioviewerClient(object):
 
         if len(res) == 1:
             return res[0]
-
         else:
             return res
 

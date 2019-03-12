@@ -178,7 +178,6 @@ class SRSClient(GenericClient):
         dobj = Downloader(max_conn=5)
 
         for aurl, fname in zip(urls, paths):
-            print(aurl, fname)
             dobj.enqueue_file(aurl, filename=fname)
 
         paths = dobj.download()
