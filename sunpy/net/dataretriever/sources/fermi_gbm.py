@@ -6,7 +6,6 @@ __all__ = ['GBMClient']
 
 
 class GBMClient(GenericClient):
-    
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
 
@@ -22,37 +21,29 @@ class GBMClient(GenericClient):
 
         Returns
         -------
-
-        url for time of interest    
-
+        url for time of interest
         """
 
-            
-        #checks if detector keyword
-        #if not defaults to detector 5
-        
+        # Checks if detector keyword
+        # If not defaults to detector 5
         if 'detector' in kwargs:
             det = _check_detector(kwargs['detector'])
 
         else:
             det = 'n5'
 
-        #check for datatype keyword - either CSPEC or CTIME
-        #deault type is CSPEC
+        # Check for datatype keyword - either CSPEC or CTIME
+        # Default type is CSPEC
 
         if 'datatype' in kwargs:
             data_type = _check_type(kwargs['datatype'])
-            
         else:
             data_type = 'cspec'
 
-        #c = datatype
         days = timerange.get_dates()
         urls = []
         for day in days:
             urls.append(self._get_url_for_date(day, det, data_type, **kwargs))
-
-
         return urls
 
     def _get_url_for_date(self, date, det, data_type,  **kwargs):
@@ -69,13 +60,11 @@ class GBMClient(GenericClient):
             the url at the date of interest
 
         """
-        
-        filename = 'glg_'+data_type+'_' + det + date.strftime('_%y%m%d_') + 'v00.pha'
+        filename = 'glg_' + data_type + '_' + det + date.strftime('_%y%m%d_') + 'v00.pha'
         url_path = urljoin(date.strftime('%Y/%m/%d/') + 'current/', filename)
         base_url = 'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
 
         return urljoin(base_url, url_path)
-
 
     def _makeimap(self):
         """
@@ -85,8 +74,6 @@ class GBMClient(GenericClient):
         self.map_['instrument'] = 'GBM'
         self.map_['physobs'] = 'flux'
         self.map_['provider'] = 'NASA'
-
-
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -100,15 +87,12 @@ class GBMClient(GenericClient):
         boolean
         answer as to whether client can service the query
         """
-        
-        chkattr =  ['Time', 'Instrument', 'Detector', 'Datatype']
-        chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chkattr = ['Time', 'Instrument', 'Detector', 'Datatype']
+        chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'gbm':
                 return all(chklist)
         return False
-
-
 
 
 def _check_detector(detector, **kwargs):
