@@ -237,6 +237,7 @@ class GenericClient(BaseClient):
 
         paths = []
         for i, filename in enumerate(filenames):
+            fname = Path(filename)
             if path is None:
                 fname = default_dir / '{file}'
             elif '{file}' not in str(path):
