@@ -335,11 +335,16 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         -------
         `parfive.Results`
 
-        Example
+        Examples
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
         >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
+
+        If any downloads fail, they can be retried by passing the `parfive.Results` object back into ``fetch``.
+
+        >>> filepaths = Fido.fetch(filepaths)
+
         """
 
         if "wait" in kwargs:
