@@ -1,7 +1,6 @@
 import pytest
-import numpy as np
 import hypothesis.strategies as st
-from hypothesis import given
+from hypothesis import given, settings
 
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
@@ -34,6 +33,7 @@ def test_null():
 
 
 @given(lon=lonitude(), lat=latitude())
+@settings(deadline=5000)
 def test_transform(lon, lat):
     """
     Test that the north pole in the new frame transforms back to the given

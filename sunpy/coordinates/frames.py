@@ -58,7 +58,7 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
 
         HeliographicStonyhurst(lon, lat, obstime)
         HeliographicStonyhurst(lon, lat, radius, obstime)
-        HeliographicStonyhurst(x, y, z, obstime, representation='cartesian')
+        HeliographicStonyhurst(x, y, z, obstime, representation_type='cartesian')
 
     Parameters
     ----------
@@ -133,7 +133,7 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     _default_wrap_angle = 180*u.deg
 
     def __init__(self, *args, **kwargs):
-        _rep_kwarg = kwargs.get('representation', None)
+        _rep_kwarg = kwargs.get('representation_type', None)
         wrap = kwargs.pop('wrap_longitude', True)
 
         if ('radius' in kwargs and kwargs['radius'].unit is u.one and

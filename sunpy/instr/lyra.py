@@ -415,7 +415,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     --------
     Get all events in the LYTAF files for January 2014
         >>> from sunpy.instr.lyra import get_lytaf_events
-        >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')  # doctest: +REMOTE_DATA
+        >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')  # doctest: +SKIP
 
     """
     # Check inputs

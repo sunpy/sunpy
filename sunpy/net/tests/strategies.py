@@ -3,6 +3,7 @@ Provide a set of Hypothesis Strategies for various Fido related tests.
 """
 import datetime
 
+import numpy as np
 import hypothesis.strategies as st
 from hypothesis import assume
 from hypothesis.strategies import one_of, datetimes, sampled_from
@@ -31,15 +32,16 @@ def Times(draw, max_value, min_value):
 def TimeDelta(draw):
     """
     Timedelta strategy that limits the maximum timedelta to being positive and
-    abs max is about 100 weeks + 100 days + 100 hours + a bit
+    abs max is about 10 weeks + 10 days + 10 hours + 10 minutes + a bit
     """
-    keys = st.sampled_from(['days', 'seconds', 'microseconds', 'milliseconds',
-                            'minutes', 'hours', 'weeks'])
-    values = st.floats(min_value=1, max_value=100)
+    keys = st.sampled_from(['weeks', 'days', 'hours', 'minutes', 'seconds'])
+    values = st.floats(min_value=1, max_value=10)
     delta = datetime.timedelta(**draw(st.dictionaries(keys, values)))
-    # We don't want a 0 timedelta
     delta = astropy.time.TimeDelta(delta, format='datetime')
+
+    # We don't want a 0 timedelta
     assume(delta.sec > 0)
+
     return delta
 
 
@@ -67,17 +69,15 @@ def online_instruments():
 
 @st.composite
 def time_attr(draw, time=Times(
-    max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
-    min_value=datetime.datetime(1900, 1, 1, 0, 0)
-    ),
+              max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
+              min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=TimeDelta()):
     """
-    Create an a.Time where it's always positive and doesn't have a massive time
-    delta.
+    Create an a.Time where it's always positive.
     """
     t1 = draw(time)
     t2 = t1 + draw(delta)
-    # We can't download data from the future...
+    # We can't download data from the future.
     assume(t2 < Time.now())
 
     return a.Time(t1, t2)
@@ -85,30 +85,35 @@ def time_attr(draw, time=Times(
 
 @st.composite
 def goes_time(draw, time=Times(
-    max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
-    min_value=datetime.datetime(1981, 1, 1, 0, 0)),
+              max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
+              min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=TimeDelta()):
     """
-    Create an a.Time where it's always positive and doesn't have a massive time
-    delta.
+    Create an a.Time where it's always positive.
     """
     t1 = draw(time)
-    t2 = t1 + draw(delta)
+    delta = draw(delta)
+    t2 = t1 + delta
     # We can't download data from the future.
     assume(t2 < Time.now())
 
-    tr = TimeRange(t1, t2)
     # There is no GOES data for this date.
-    assume(Time('1983-5-1') not in tr)
-    assume(Time('1983-5-1') + draw(delta) not in tr)
+    assume(not (t1 <= Time('1983-05-01') <= t2))
+    assume(not (t1 <= (Time('1983-05-01') + delta) <= t2))
+    # This checks if the range start and stops on that day.
+    assume((np.abs(Time('1983-05-01') - t1)) > astropy.time.TimeDelta(0.01))
+    assume((np.abs(Time('1983-05-01') - t2)) > astropy.time.TimeDelta(0.01))
+
+    tr = TimeRange(t1, t2)
 
     return a.Time(tr)
 
 
 def range_time(min_date, max_date=Time.now()):
     time = Times(
-        min_value=datetime.datetime(1960, 1, 1, 0, 0),
-        max_value=datetime.datetime(datetime.MAXYEAR, 1, 1, 0, 0),
+        min_value=datetime.datetime(1981, 1, 1, 0, 0),
+        max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
     )
     time = time.filter(lambda x: min_date < x < max_date)
+
     return time_attr(time=time)
