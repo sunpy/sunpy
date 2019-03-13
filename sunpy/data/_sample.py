@@ -11,6 +11,7 @@ from astropy.utils.data import download_file
 
 from sunpy.util.net import url_exists
 from sunpy.util.config import get_and_create_sample_dir
+from sunpy.util.exceptions import SunpyWarning, SunpyUserWarning
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
@@ -151,8 +152,7 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
                         return os.path.join(sampledata_dir,
                                             uncompressed_filename)
             except (socket.error, socket.timeout) as e:
-                warnings.warn("Download failed with error {}. \n"
-                              "Retrying with different mirror.".format(e))
+                warnings.warn("Download failed with error {}. Retrying with different mirror.".format(e), SunpyWarning)
         # if reach here then file has not been downloaded.
-        warnings.warn("File {} not found.".format(filename))
+        warnings.warn("File {} not found.".format(filename), SunpyUserWarning)
         return None
