@@ -30,7 +30,7 @@ testpath = sunpy.data.test.rootdir
 
 @pytest.fixture
 def hmi_test_map():
-    return sunpy.map.Map(glob.glob(os.path.join(testpath, "resampled_hmi.fits")))
+    return sunpy.map.Map(os.path.join(testpath, "resampled_hmi.fits"))
 
 @pytest.fixture
 def aia171_test_map():
