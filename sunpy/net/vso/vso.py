@@ -29,6 +29,7 @@ from sunpy.util.net import slugify, get_content_disposition
 from sunpy.net.vso.attrs import TIMEFORMAT, walker
 from sunpy.net.base_client import BaseClient
 from sunpy.util.decorators import deprecated
+from sunpy.util.exceptions import SunpyWarning
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -89,9 +90,8 @@ def check_connection(url):
     try:
         return urlopen(url).getcode() == 200
     except (socket.error, socket.timeout, HTTPError, URLError) as e:
-        warnings.warn(
-            "Connection failed with error {}. \n Retrying with different url and port.".format(e))
-        return None
+        warnings.warn("Connection failed with error {}. Retrying with different url and port.".format(e),
+                      SunpyWarning)
 
 
 def get_online_vso_url(api, url, port):
