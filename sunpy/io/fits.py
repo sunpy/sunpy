@@ -91,7 +91,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
                     message += line
                     message += '\n'
                 message += repr(e)
-                warnings.warn(message, SunpyWarning, stacklevel=2)
+                warnings.warn(message, SunpyWarning)
 
     return pairs
 
