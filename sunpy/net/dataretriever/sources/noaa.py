@@ -185,7 +185,7 @@ class SRSClient(GenericClient):
         outfiles = []
         for fname, srs_filename in zip(local_paths, local_filenames):
 
-            name = fname.split('/')[-1]
+            name = fname.name
 
             past_year = False
             for i, fname2 in enumerate(paths):
@@ -198,7 +198,7 @@ class SRSClient(GenericClient):
 
                 if year in name:
                     TarFile = tarfile.open(fname2)
-                    filepath = fname.rpartition('/')[0]
+                    filepath = fname.parent
                     member = TarFile.getmember('SRS/' + srs_filename)
                     member.name = name
                     TarFile.extract(member, path=filepath)
