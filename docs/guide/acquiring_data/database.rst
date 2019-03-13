@@ -267,7 +267,7 @@ sections.
    ...        self.instrument = instrument
    ...        self.wave = MockObject(wavemin=wavelength, wavemax=wavelength, waveunit='nm')
    >>> vso.VSOClient().search = Mock(return_value=[MockQR(f"2011050800000{t}", 'AIA', w) for
-   ...                                   t,w in zip([0,0,2,3], [17.1, 21.1, 9.4, 33.5])])
+   ...                                   t,w in zip([0,0,2,3], [17.1, 21.1, 9.4, 33.5])]) # doctest: +REMOTE_DATA
 
 After initialising the VSO client:
 
