@@ -61,12 +61,12 @@ def all_off_disk_map(aia171_test_map):
 
 @pytest.fixture
 def all_on_disk_map(aia171_test_map):
-    return aia171_test_map.submap((50, 60)*u.pix, (70, 85)*u.pix)
+    return aia171_test_map.submap((30, 60)*u.pix, (50, 85)*u.pix)
 
 
 @pytest.fixture
 def straddles_limb_map(aia171_test_map):
-    return aia171_test_map.submap((0, 0)*u.pix, (50, 40)*u.pix)
+    return aia171_test_map.submap((64, 80)*u.pix, (120, 127)*u.pix)
 
 
 @pytest.fixture
@@ -174,17 +174,37 @@ def test_solar_rotate_coordinate():
 
 def test_diffrot_map(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
 
-    # Test that the function correctly identifies a map that is entirely off
-    # the disk of the Sun and reports an error correctly
+    # Test a map that is entirely off the disk of the Sun
+    # Should report an error
     with pytest.raises(ValueError):
         dmap = diffrot_map(all_off_disk_map)
 
-    with pytest.raises(ValueError):
-        dmap =
+    # Test a full disk map
+    new_observer = get_earth(aia171_test_map.date + 6*u.hr)
+    dmap = diffrot_map(aia171_test_map, observer=new_observer)
+    assert dmap.data.shape == aia171_test_map.data.shape
 
-    # TODO - a lot more tests here, maybe use image hash comparison?
+    # Test a map that is entirely on disk - triggers sub full disk branches
+    # Rotated map should have a smaller extent in the x - direction
+    new_observer = get_earth(all_on_disk_map.date - 48*u.hr)
+    dmap = diffrot_map(all_on_disk_map, observer=new_observer)
+    assert dmap.data.shape[1] < all_on_disk_map.data.shape[1]
 
-    aia171_test_map_diff_rot =
+    # This rotated map should have a larger extent in the x direction
+    new_observer = get_earth(all_on_disk_map.date + 48*u.hr)
+    dmap = diffrot_map(all_on_disk_map, observer=new_observer)
+    assert dmap.data.shape[1] > all_on_disk_map.data.shape[1]
+
+    # Test a map that straddles the limb - triggers sub full disk branches
+    # Rotated map should have a smaller extent in the x - direction
+    new_observer = get_earth(straddles_limb_map.date + 48*u.hr)
+    dmap = diffrot_map(straddles_limb_map, observer=new_observer)
+    assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
+
+    # The output map should have the positional properties of the observer
+    assert dmap.date == new_observer.obstime
+    assert dmap.heliographic_latitude == new_observer.lat
+    assert dmap.heliographic_longitude == new_observer.lon
 
 
 @pytest.fixture
@@ -252,13 +272,13 @@ def test_map_edges(all_off_disk_map):
     assert np.all(edges['rhs'][0] == [0, 9] * u.pix)
     assert np.all(edges['rhs'][10] == [10, 9] * u.pix)
 
-    assert len(edges['top']) == 10
-    assert np.all(edges['top'][0] == [0, 0] * u.pix)
-    assert np.all(edges['top'][9] == [0, 9] * u.pix)
-
     assert len(edges['bottom']) == 10
-    assert np.all(edges['bottom'][0] == [10, 0] * u.pix)
-    assert np.all(edges['bottom'][9] == [10, 9] * u.pix)
+    assert np.all(edges['bottom'][0] == [0, 0] * u.pix)
+    assert np.all(edges['bottom'][9] == [0, 9] * u.pix)
+
+    assert len(edges['top']) == 10
+    assert np.all(edges['top'][0] == [10, 0] * u.pix)
+    assert np.all(edges['top'][9] == [10, 9] * u.pix)
 
 
 def test_contains_full_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
@@ -378,15 +398,15 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
     edges = map_edges(straddles_limb_map)
     for this_edge in ('top', 'rhs'):
         pixels = edges[this_edge]
-        res = _rotate_submap_edge(all_on_disk_map, pixels, observer)
-        assert all(res.Tx != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
-        assert all(res.Ty != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Ty)
+        res = _rotate_submap_edge(straddles_limb_map, pixels, observer)
+        assert all(res.Tx == (straddles_limb_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
+        assert all(res.Ty == (straddles_limb_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Ty)
 
     for this_edge in ('bottom', 'lhs'):
         pixels = edges[this_edge]
-        res = _rotate_submap_edge(all_on_disk_map, pixels, observer)
-        assert all(res.Tx != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
-        assert all(res.Ty != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Ty)
+        res = _rotate_submap_edge(straddles_limb_map, pixels, observer)
+        assert all(res.Tx != (straddles_limb_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
+        assert all(res.Ty != (straddles_limb_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Ty)
 
 
 def test_get_extreme_position():
@@ -412,19 +432,27 @@ def test_get_bounding_coordinates():
     assert bl.observer == coords[0].observer
 
     assert tr.Tx == 1*u.arcsec
-    assert tr.Tt == 2*u.arcsec
+    assert tr.Ty == 2*u.arcsec
     assert tr.observer == coords[0].observer
 
 
 def test_warp_sun_coordinates(all_on_disk_map):
-    new_observer = get_earth(all_on_disk_map.date + 1*u.hr)
+    # Define an observer
+    new_observer = get_earth(all_on_disk_map.date + 6*u.hr)
 
     # This array is not used in the function but is part of the signature
-    dummy_array = np.zeroes(10)
+    dummy_array = np.zeros(10)
 
     # Call the warp
     xy2 = _warp_sun_coordinates(dummy_array, all_on_disk_map, new_observer)
 
     # Test the properties of the output
-    assert xy2.shape == 0  # fill this in with the correct shape
-    assert isinstance(xy2, np.masked_array)  # fill this in with the correct type
+    shape = all_on_disk_map.data.shape
+    assert xy2.shape == (shape[0]*shape[1], 2)
+    assert isinstance(xy2, np.ma.core.MaskedArray)
+
+    # Test the values - values are not independently found
+    np.testing.assert_almost_equal(xy2[0, 0], -2.063284482734346, decimal=2)
+    np.testing.assert_almost_equal(xy2[0, 1], -0.23511899658107005, decimal=2)
+    np.testing.assert_almost_equal(xy2[499, 0], 16.396007639829428, decimal=2)
+    np.testing.assert_almost_equal(xy2[499, 1], 23.87553530074777, decimal=2)
