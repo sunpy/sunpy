@@ -41,10 +41,8 @@ class GBMClient(GenericClient):
             data_type = 'cspec'
 
         gbm_pattern = ('https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
-                           '%Y/%m/%d/current/'
-                           'glg_{data_type}_{det}_%y%m%d_v00.pha')
-                          
-        gbm_files = Scraper(gbm_pattern, data_type = data_type, det = det)        
+                       '%Y/%m/%d/current/glg_{data_type}_{det}_%y%m%d_v00.pha')
+        gbm_files = Scraper(gbm_pattern, data_type=data_type, det=det)
         urls = gbm_files.filelist(timerange)
 
         return urls
