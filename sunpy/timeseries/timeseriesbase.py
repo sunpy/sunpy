@@ -17,6 +17,7 @@ from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.metadata import MetaDict
+from sunpy.util.exceptions import SunpyUserWarning
 
 # define and register a new unit, needed for RHESSI
 det = u.def_unit('detector')
@@ -441,7 +442,7 @@ class GenericTimeSeries:
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
 
-                warnings.warn("Unknown value for "+meta_property.upper(), Warning)
+                warnings.warn("Unknown value for {0}.".format(meta_property.upper()), SunpyUserWarning)
 
     def _validate_units(self, units, **kwargs):
         """
@@ -464,7 +465,7 @@ class GenericTimeSeries:
             if not isinstance(units[key], astropy.units.UnitBase):
                 # If this is not a unit then this can't be a valid units dict.
                 result = False
-                warnings.warn("Invalid unit given for \""+str(key)+"\"", Warning)
+                warnings.warn("Invalid unit given for {0}.".format(key), SunpyUserWarning)
 
         return result
 
@@ -483,7 +484,7 @@ class GenericTimeSeries:
         for column in set(self.data.columns.tolist()) - set(self.units.keys()):
             # For all columns not present in the units dictionary.
             self.units[column] = u.dimensionless_unscaled
-            warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
+            warnings.warn("Unknown units for {0}.".format(column), SunpyUserWarning)
 
         # Re-arrange so it's in the same order as the columns and removed unused.
         units = OrderedDict()
