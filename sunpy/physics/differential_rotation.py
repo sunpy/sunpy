@@ -477,12 +477,12 @@ def diffrot_map(smap, observer=None, time=None, **diff_rot_kwargs):
 
         # Calculate where the output array moves to.
         # Rotate the top and bottom edges
-        rotated_top = _rotate_submap_edge(smap, edges["top"], observer=new_observer, diff_rot_kwargs=diff_rot_kwargs)
-        rotated_bottom = _rotate_submap_edge(smap, edges["bottom"], observer=new_observer, diff_rot_kwargs=diff_rot_kwargs)
+        rotated_top = _rotate_submap_edge(smap, edges["top"], observer=new_observer, **diff_rot_kwargs)
+        rotated_bottom = _rotate_submap_edge(smap, edges["bottom"], observer=new_observer, **diff_rot_kwargs)
 
         # Rotate the left and right hand edges
-        rotated_lhs = _rotate_submap_edge(smap, edges["lhs"], observer=new_observer, diff_rot_kwargs=diff_rot_kwargs)
-        rotated_rhs = _rotate_submap_edge(smap, edges["rhs"], observer=new_observer, diff_rot_kwargs=diff_rot_kwargs)
+        rotated_lhs = _rotate_submap_edge(smap, edges["lhs"], observer=new_observer, **diff_rot_kwargs)
+        rotated_rhs = _rotate_submap_edge(smap, edges["rhs"], observer=new_observer, **diff_rot_kwargs)
 
         # Calculate the bounding box of the rotated map
         rotated_bl, rotated_tr = _get_bounding_coordinates([rotated_top, rotated_bottom, rotated_lhs, rotated_rhs])
@@ -526,7 +526,7 @@ def diffrot_map(smap, observer=None, time=None, **diff_rot_kwargs):
     out_meta = deepcopy(smap.meta)
     if out_meta.get('date_obs', False):
         del out_meta['date_obs']
-    out_meta['date-obs'] = new_observer.obstime.strftime("%Y-%m-%dT%H:%M:%S")
+    out_meta['date-obs'] = new_observer.obstime.strftime("%Y-%m-%dT%H:%M:%S.%f")
 
     # Need to update the observer location for the output map.
     out_meta['hglt_obs'] = new_observer.lat.value
@@ -637,8 +637,8 @@ def map_edges(smap):
     """
     # Calculate all the edge pixels
     nx, ny = smap.dimensions.x.value, smap.dimensions.y.value
-    top = list(product([0.0], np.arange(nx))) * u.pix
-    bottom = list(product([ny - 1], np.arange(nx))) * u.pix
+    bottom = list(product([0.0], np.arange(nx))) * u.pix
+    top = list(product([ny - 1], np.arange(nx))) * u.pix
     lhs = list(product(np.arange(ny), [0])) * u.pix
     rhs = list(product(np.arange(ny), [nx - 1])) * u.pix
     return {"top": top, "bottom": bottom, "lhs": lhs, "rhs": rhs}
