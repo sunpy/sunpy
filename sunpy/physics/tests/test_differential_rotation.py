@@ -179,7 +179,12 @@ def test_diffrot_map(aia171_test_map, all_off_disk_map, all_on_disk_map, straddl
     with pytest.raises(ValueError):
         dmap = diffrot_map(all_off_disk_map)
 
+    with pytest.raises(ValueError):
+        dmap =
+
     # TODO - a lot more tests here, maybe use image hash comparison?
+
+    aia171_test_map_diff_rot =
 
 
 @pytest.fixture
