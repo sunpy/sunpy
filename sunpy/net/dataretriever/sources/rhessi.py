@@ -66,7 +66,7 @@ class RHESSIClient(GenericClient):
         """
         dt = TimeRange(time_range)
         # remove time from dates
-        dt = TimeRange(dt.start.datetime.date(), dt.end.datetime.date())
+        dt = TimeRange(dt.start.strftime('%Y-%m-%d'), dt.end.strftime('%Y-%m-%d'))
 
         filenames = []
 
