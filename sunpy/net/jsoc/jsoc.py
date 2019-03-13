@@ -18,6 +18,7 @@ from sunpy import config
 from sunpy.net.base_client import BaseClient
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
+from sunpy.util.exceptions import SunpyWarning
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
@@ -71,7 +72,7 @@ class JSOCResponse(Sequence):
         """
         Returns a set of class attributes on all the response blocks.
         """
-        warnings.warn("The JSOC client does not support response block properties", UserWarning)
+        warnings.warn("The JSOC client does not support response block properties.", SunpyWarning)
         return set()
 
 
