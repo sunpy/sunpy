@@ -8,7 +8,6 @@ __all__ = ['GBMClient']
 class GBMClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-
         Returns the url for Fermi/GBM data for the given date.
 
         baseurl = 'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
