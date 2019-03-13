@@ -13,6 +13,7 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
+from astropy.io import fits
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
@@ -610,14 +611,16 @@ class GenericMap(NDData):
         heliographic_longitude = self.meta.get('hgln_obs', None)
 
         if heliographic_longitude is None:
-            if self._default_heliographic_longitude is None:
-                warnings.warn_explicit(
-                    "Missing metadata for heliographic longitude: "
-                    "assuming longitude of 0 degrees",
-                    Warning, __file__,
-                    inspect.currentframe().f_back.f_lineno)
-                self._default_heliographic_longitude = 0
-            heliographic_longitude = self._default_heliographic_longitude
+            if self.meta.get('crln_obs', None) is not None:
+                heliographic_longitude = self.meta['crln_obs'] * u.deg - get_sun_L0(self.date)
+            else:
+                if self._default_heliographic_longitude is None:
+                    warnings.warn_explicit("Missing metadata for heliographic longitude: "
+                                           "assuming longitude of 0 degrees",
+                                           Warning, __file__,
+                                           inspect.currentframe().f_back.f_lineno)
+                    self._default_heliographic_longitude = 0
+                heliographic_longitude = self._default_heliographic_longitude
 
         if isinstance(heliographic_longitude, str):
             heliographic_longitude = float(heliographic_longitude)
@@ -714,6 +717,13 @@ class GenericMap(NDData):
 
         return np.array([[np.cos(p), -1 * lam * np.sin(p)],
                          [1/lam * np.sin(p), np.cos(p)]])
+
+    @property
+    def fits_header(self):
+        """
+        A `~astropy.io.fits.Header` representation of the ``meta`` attribute.
+        """
+        return sunpy.io.fits.header_to_fits(self.meta)
 
 # #### Miscellaneous #### #
 
@@ -874,6 +884,12 @@ class GenericMap(NDData):
 
         filetype : str
             'auto' or any supported file extension.
+
+        Keywords
+        --------
+        hdu_type: `None`, `~fits.CompImageHDU`
+            `None` will return a normal FITS files.
+            `~fits.CompImageHDU` will rice compress the FITS file.
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)

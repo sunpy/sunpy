@@ -27,6 +27,9 @@ from sunpy.time import parse_time
 
 testpath = sunpy.data.test.rootdir
 
+@pytest.fixture
+def hmi_test_map():
+    return sunpy.map.Map(os.path.join(testpath, "resampled_hmi.fits"))
 
 @pytest.fixture
 def aia171_test_map():
@@ -194,7 +197,9 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.observer.lon == aia171_test_map.observer_coordinate.frame.lon
     assert frame.observer.radius == aia171_test_map.observer_coordinate.frame.radius
     assert frame.obstime == aia171_test_map.date
-
+    
+def test_heliographic_longitude_crln(hmi_test_map):
+    assert hmi_test_map.heliographic_longitude == hmi_test_map.carrington_longitude - sunpy.coordinates.get_sun_L0(hmi_test_map.date)
 
 # ==============================================================================
 # Test Rotation WCS conversion
@@ -266,11 +271,22 @@ def test_save(aia171_test_map, generic_map):
     """Tests the map save function"""
     aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-    aiamap.save(afilename, filetype='fits', clobber=True)
+    aiamap.save(afilename, filetype='fits', overwrite=True)
     loaded_save = sunpy.map.Map(afilename)
     assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
     assert loaded_save.meta == aiamap.meta
     assert_quantity_allclose(loaded_save.data, aiamap.data)
+
+
+def test_save_compressed(aia171_test_map, generic_map):
+    """Tests the map save function"""
+    aiamap = aia171_test_map
+    afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+    aiamap.save(afilename, filetype='fits', hdu_type=fits.CompImageHDU, overwrite=True)
+    loaded_save = sunpy.map.Map(afilename)
+    # We expect that round tripping to CompImageHDU will change the header and
+    # the data a little.
+    assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
 
 
 def test_default_shift():
@@ -661,3 +677,7 @@ def test_missing_metadata_warnings():
         array_map.peek()
     # There should be 4 warnings for missing metadata
     assert len([w for w in record if 'Missing metadata' in str(w)]) == 4
+
+
+def test_fits_header(aia171_test_map):
+    assert isinstance(aia171_test_map.fits_header, fits.Header)

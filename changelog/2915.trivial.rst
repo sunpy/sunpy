@@ -1,0 +1,1 @@
+Fix support for pip 19 and isolated builds

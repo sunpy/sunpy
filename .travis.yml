@@ -1,4 +1,6 @@
-language: generic
+language: minimal
+group: travis_latest
+dist: xenial
 os: linux
 sudo: false
 
@@ -10,6 +12,7 @@ name: "Cron jobs"
 if: type = cron
 
 matrix:
+  fast_finish: true
   include:
     - os: osx
       name: "macOS 3.7 (py37-offline)"
@@ -22,6 +25,10 @@ matrix:
       env:
         - TOX_ENV='py37-online'
         - TOX_ARG='-- -n=8'
+
+    - name: "Figure tests (figure)"
+      env:
+        - TOX_ENV='figure'
 
     - name: "AstroPy dev (py37-astropydev)"
       env:
@@ -54,13 +61,12 @@ before_install:
   - pip install tox tox-conda
 
 script:
-  - tox -vv -e $TOX_ENV $TOX_ARG
-
-after_success:
+  - tox -e $TOX_ENV $TOX_ARG
+  - pip install --upgrade codecov
   - codecov
 
 after_failure:
-    # Send a nice matrix notification if the Astropy-dev job fails
-    - NOTIF_TEXT='Build '$TRAVIS_BUILD_NUMBER' (Astropy-dev) Failed:'$TRAVIS_BUILD_WEB_URL
-    - AVATAR_URL='https://s3-eu-west-1.amazonaws.com/cadair.com/Tessa-pride.png'
-    - if [[ -n "$NOTIFURL" && $TOX_ENV == *astropydev* ]]; then http --verify=no POST $NOTIFURL displayName="Travis Bot" avatarUrl="$AVATAR_URL" text="$NOTIF_TEXT"; fi
+  # Send a nice matrix notification if the Astropy-dev job fails
+  - NOTIF_TEXT='Build '$TRAVIS_BUILD_NUMBER' (Astropy-dev) Failed:'$TRAVIS_BUILD_WEB_URL
+  - AVATAR_URL='https://s3-eu-west-1.amazonaws.com/cadair.com/Tessa-pride.png'
+  - if [[ -n "$NOTIFURL" && $TOX_ENV == *astropydev* ]]; then http --verify=no POST $NOTIFURL displayName="Travis Bot" avatarUrl="$AVATAR_URL" text="$NOTIF_TEXT"; fi

@@ -89,14 +89,15 @@ def test_hpc_hpc_null():
 
 def test_hcrs_hgs():
     # Get the current Earth location in HCRS
-    now = Time(parse_time('now'))
-    earth_hcrs = SkyCoord(get_body_barycentric('earth', now), frame='icrs', obstime=now).hcrs
+    adate = parse_time('2015/05/01 01:13:00')
+    earth_hcrs = SkyCoord(get_body_barycentric('earth', adate), frame='icrs', obstime=adate).hcrs
 
     # Convert from HCRS to HGS
     earth_hgs = earth_hcrs.transform_to(HeliographicStonyhurst)
 
     # The HGS longitude of the Earth should be zero within numerical error
-    assert quantity_allclose(earth_hgs.lon, 0*u.deg, atol=1e-12*u.deg)
+    # Due to an issue with wrapping at +-360, we shift it to pass the test.
+    assert quantity_allclose((earth_hgs.lon+1*u.deg) % (360*u.deg), 1*u.deg, atol=1e-12*u.deg)
 
     # The HGS latitude and radius should be within valid ranges
     assert quantity_allclose(earth_hgs.lat, 0*u.deg, atol=7.3*u.deg)
@@ -169,7 +170,7 @@ def test_hgs_cartesian_rep_to_hpc():
                              frame=HeliographicStonyhurst(obstime=obstime),
                              representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
-    hgscoord_sph.representation = 'spherical'
+    hgscoord_sph.representation_type = 'spherical'
     hpccoord_cart = hgscoord_cart.transform_to(Helioprojective(obstime=obstime))
     hpccoord_sph = hgscoord_sph.transform_to(Helioprojective(obstime=obstime))
     assert_quantity_allclose(hpccoord_cart.Tx, hpccoord_sph.Tx)
@@ -187,7 +188,7 @@ def test_hgs_cartesian_rep_to_hcc():
                              frame=HeliographicStonyhurst(obstime=obstime),
                              representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
-    hgscoord_sph.representation = 'spherical'
+    hgscoord_sph.representation_type = 'spherical'
     hcccoord_cart = hgscoord_cart.transform_to(Heliocentric(obstime=obstime))
     hcccoord_sph = hgscoord_sph.transform_to(Heliocentric(obstime=obstime))
     assert_quantity_allclose(hcccoord_cart.x, hcccoord_sph.x)
@@ -205,7 +206,7 @@ def test_hgs_cartesian_rep_to_hgc():
                              frame=HeliographicStonyhurst(obstime=obstime),
                              representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
-    hgscoord_sph.representation = 'spherical'
+    hgscoord_sph.representation_type = 'spherical'
     # HGC
     hgccoord_cart = hgscoord_cart.transform_to(HeliographicCarrington(obstime=obstime))
     hgccoord_sph = hgscoord_sph.transform_to(HeliographicCarrington(obstime=obstime))

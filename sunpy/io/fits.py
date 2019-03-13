@@ -38,7 +38,7 @@ from astropy.io import fits
 
 from sunpy.io.header import FileHeader
 
-__all__ = ['read', 'get_header', 'write', 'extract_waveunit']
+__all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit']
 
 __author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
@@ -120,7 +120,7 @@ def get_header(afile):
         close = True
 
     try:
-        headers= []
+        headers = []
         for hdu in hdulist:
             try:
                 comment = "".join(hdu.header['COMMENT']).strip()
@@ -139,7 +139,7 @@ def get_header(afile):
             keydict = {}
             for card in hdu.header.cards:
                 if card.comment != '':
-                    keydict.update({card.keyword:card.comment})
+                    keydict.update({card.keyword: card.comment})
             header['KEYCOMMENTS'] = keydict
             header['WAVEUNIT'] = extract_waveunit(header)
 
@@ -150,7 +150,7 @@ def get_header(afile):
     return headers
 
 
-def write(fname, data, header, **kwargs):
+def write(fname, data, header, hdu_type=None, **kwargs):
     """
     Take a data header pair and write a FITS file.
 
@@ -158,16 +158,43 @@ def write(fname, data, header, **kwargs):
     ----------
     fname : `str`
         File name, with extension
-
     data : `numpy.ndarray`
         n-dimensional data array
-
     header : `dict`
         A header dictionary
+    hdu_type: `None`, `~fits.CompImageHDU`
+        `None` will return a normal FITS files.
+        `~fits.CompImageHDU` will rice compress the FITS file.
+
     """
     # Copy header so the one in memory is left alone while changing it for
     # write.
     header = header.copy()
+
+    fits_header = header_to_fits(header)
+
+    if isinstance(fname, str):
+        fname = os.path.expanduser(fname)
+
+    fitskwargs = {'output_verify': 'fix'}
+    fitskwargs.update(kwargs)
+
+    if not hdu_type:
+        hdu_type = fits.PrimaryHDU
+
+    hdu = hdu_type(data=data, header=fits_header)
+
+    if not isinstance(hdu, fits.PrimaryHDU):
+        hdul = fits.HDUList([fits.PrimaryHDU(), hdu])
+    else:
+        hdul = fits.HDUList([hdu])
+
+    hdul.writeto(fname, **fitskwargs)
+
+def header_to_fits(header):
+    """
+    Convert a header dict to a `~astropy.fits.Header`.
+    """
 
     # The comments need to be added to the header separately from the normal
     # kwargs. Find and deal with them:
@@ -177,11 +204,11 @@ def write(fname, data, header, **kwargs):
 
     for k, v in header.items():
         if isinstance(v, fits.header._HeaderCommentaryCards):
-            if k == 'comments':
+            if k.upper() == 'COMMENT':
                 comments = str(v).split('\n')
                 for com in comments:
-                    fits_header.add_comments(com)
-            elif k == 'history':
+                    fits_header.add_comment(com)
+            elif k.upper() == 'HISTORY':
                 hists = str(v).split('\n')
                 for hist in hists:
                     fits_header.add_history(hist)
@@ -197,15 +224,11 @@ def write(fname, data, header, **kwargs):
             if k in fits_header:
                 fits_header.comments[k] = v
     elif key_comments:
+
         raise TypeError("KEYCOMMENTS must be a dictionary")
 
-    if isinstance(fname, str):
-        fname = os.path.expanduser(fname)
 
-    fitskwargs = {'output_verify': 'fix'}
-    fitskwargs.update(kwargs)
-    fits.writeto(fname, data, header=fits_header, **fitskwargs)
-
+    return fits_header
 
 def extract_waveunit(header):
     """Attempt to read the wavelength unit from a given FITS header.
@@ -283,5 +306,5 @@ def extract_waveunit(header):
                 waveunit = m.group(1)
                 break
     if waveunit == '':
-        return None # To fix problems associated with HMI FITS.
+        return None  # To fix problems associated with HMI FITS.
     return waveunit

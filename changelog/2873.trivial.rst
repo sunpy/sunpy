@@ -1,0 +1,1 @@
+Stores entries from directories into database sorted by name. It adds mocks to the database user guide examples.
