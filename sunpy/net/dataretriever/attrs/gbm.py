@@ -1,12 +1,6 @@
 from sunpy.net.attr import SimpleAttr
 
-__all__ = ['Detector', 'Datatype']
-
-
-class Detector(SimpleAttr):
-    """
-    Detector number for FERMI GBM
-    """
+__all__ = ['Datatype']
 
 
 class Datatype(SimpleAttr):
