@@ -1,1 +1,1 @@
-Mapbase now converts Carrington longitude(crln_obs) to Stonyhurst longitude(hgln_obs), if Carrington longitude(crln_obs) is found in the header.
+If Carrington longitude ("crln_obs") is found in the FITS header, `~sunpy.map.Map` converts this to the correct Heliographic longitude. 
