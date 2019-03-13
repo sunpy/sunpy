@@ -510,16 +510,17 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             raise ValueError("Length of axis_ranges must equal number of axes")
 
         # Define error message for incompatible axis_range input.
-        def incompatible_axis_ranges_error_message(j):
-            return ("Unrecognized format for {0}th entry in axis_ranges: {1}\n"
-                    "axis_ranges must be None, a [min, max] pair, or "
-                    "an array-like giving the edge values of each pixel, "
-                    "i.e. length must be length of axis + 1.".format(j, axis_ranges[j]))
+        incompatible_axis_ranges_error_message = lambda j: \
+          "Unrecognized format for {0}th entry in axis_ranges: {1}\n".format(j, axis_ranges[j]) + \
+          "axis_ranges must be None, a [min, max] pair, or " + \
+          "an array-like giving the edge values of each pixel, " + \
+          "i.e. length must be length of axis + 1."
 
         # If axis range not given, define a function such that the range goes
         # from -0.5 to number of pixels-0.5.  Thus, the center of the pixels
         # along the axis will correspond to integer values.
-        def none_image_axis_range(j): return [-0.5, data_shape[j]-0.5]
+        none_image_axis_range = lambda j: [-0.5, data_shape[j]-0.5]
+
         # For each axis validate and translate the axis_ranges. For image axes,
         # also determine the plot extent.  To do this, iterate through image and slider
         # axes separately.  Iterate through image axes in reverse order
@@ -535,7 +536,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                 axis_ranges[i] = np.asarray(axis_ranges[i])
                 if len(axis_ranges[i]) == 2:
                     # Set extent.
-                    extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
+                    extent += [axis_ranges[i][0], axis_ranges[i][-1]]
                 elif axis_ranges[i].ndim == 1 and len(axis_ranges[i]) == data_shape[i]+1:
                     # If array of individual pixel edges supplied, first set extent
                     # from first and last pixel edge, then convert axis_ranges to pixel centers.
@@ -543,10 +544,10 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                     # is so that the plot extent can be derived from axis_ranges (above)
                     # and APIs using both [min, max] pair and manual definition of each pixel
                     # values can be unambiguously and simultanously supported.
-                    extent = extent + [axis_ranges[i][0], axis_ranges[i][-1]]
+                    extent += [axis_ranges[i][0], axis_ranges[i][-1]]
                     axis_ranges[i] = edges_to_centers_nd(axis_ranges[i])
                 elif axis_ranges[i].ndim == ndim and axis_ranges[i].shape[i] == data_shape[i]+1:
-                    extent = extent + [axis_ranges[i].min(), axis_ranges[i].max()]
+                    extent += [axis_ranges[i].min(), axis_ranges[i].max()]
                     axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
                 else:
                     raise ValueError(incompatible_axis_ranges_error_message(i))
@@ -574,6 +575,8 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         Must exist here but be defined in subclass.
 
         """
+        raise NotImplentedError(
+            "Must be defined and used by subclasses of {0}.".format(self.__class__))
 
     @abc.abstractmethod
     def update_plot(self, val, slider):  # pragma: no cover
