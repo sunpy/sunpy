@@ -255,6 +255,7 @@ def test_link_test_on_urlerror(mock_link_test):
 
 
 @pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
 def test_time_query():
     hc = hec.HECClient()
     start = '2005/01/03'
