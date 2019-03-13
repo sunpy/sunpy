@@ -1,0 +1,1 @@
+Fixes the calculation of the solar rotation of coordinates and the differential rotation of maps (fixes #2868, #2713, #2707, #2600, #2282)
