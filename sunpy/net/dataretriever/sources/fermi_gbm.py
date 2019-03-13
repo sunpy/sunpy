@@ -1,5 +1,5 @@
 from urllib.parse import urljoin
-
+from sunpy.util.scraper import Scraper
 from ..client import GenericClient
 
 __all__ = ['GBMClient']
@@ -40,31 +40,14 @@ class GBMClient(GenericClient):
         else:
             data_type = 'cspec'
 
-        days = timerange.get_dates()
-        urls = []
-        for day in days:
-            urls.append(self._get_url_for_date(day, det, data_type, **kwargs))
+        gbm_pattern = ('https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
+                           '%Y/%m/%d/current/'
+                           'glg_{data_type}_{det}_%y%m%d_v00.pha')
+                          
+        gbm_files = Scraper(gbm_pattern, data_type = data_type, det = det)        
+        urls = gbm_files.filelist(timerange)
+
         return urls
-
-    def _get_url_for_date(self, date, det, data_type,  **kwargs):
-        """
-        Returns URL dats of interest
-
-        Parameters
-        ----------
-        date : 'datetime.date'
-
-        Returns
-        -------
-        url : str
-            the url at the date of interest
-
-        """
-        filename = 'glg_' + data_type + '_' + det + date.strftime('_%y%m%d_') + 'v00.pha'
-        url_path = urljoin(date.strftime('%Y/%m/%d/') + 'current/', filename)
-        base_url = 'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
-
-        return urljoin(base_url, url_path)
 
     def _makeimap(self):
         """
