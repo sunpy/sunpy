@@ -158,7 +158,7 @@ def _get_new_observer(initial_obstime, observer, time):
     else:
         raise ValueError("Either the 'observer' or the 'time' keyword must not be None.")
 
-    return new_observer
+    return new_observer.transform_to(HeliographicStonyhurst)
 
 
 def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwargs):
