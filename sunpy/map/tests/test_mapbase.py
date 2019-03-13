@@ -3,7 +3,6 @@
 Test Generic Map
 """
 import os
-import glob
 import tempfile
 import warnings
 
