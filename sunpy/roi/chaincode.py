@@ -140,8 +140,7 @@ class Chaincode(np.ndarray):
             IndexMask = 1
             IndexValue = 0
         else:
-            log.("Not edges input")
-            return None
+            raise ValueError("No edges input.")
         mask = (self.coordinates[IndexMask, :] >= edge[0]) & \
             (self.coordinates[IndexMask, :] <= edge[1])
 # Should the edges be included?
