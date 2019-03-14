@@ -18,6 +18,7 @@ For more details checkout the :ref:`reference`.
    plotting
    units-coordinates
    time
+   logger
    roi
    customization
    logger
