@@ -587,7 +587,7 @@ class GenericMap(NDData):
 
         if heliographic_latitude is None:
             if self._default_heliographic_latitude is None:
-                warnings.warn_explicit("Missing metadata for heliographic latitude: assuming Earth-based observer.",
+                warnings.warn("Missing metadata for heliographic latitude: assuming Earth-based observer.",
                                        SunpyUserWarning)
                 self._default_heliographic_latitude = get_sun_B0(self.date)
             heliographic_latitude = self._default_heliographic_latitude

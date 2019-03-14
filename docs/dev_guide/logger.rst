@@ -65,4 +65,4 @@ Exceptions are raised simply with::
 
     raise ValueError("The following error occurred.")
 
-For more information on exceptions see the `Python documentation <https://docs.python.org/3.7/library/exceptions.html#exceptions.Warning>`_
+For more information on exceptions see the :ref:python:bltin-exceptions
