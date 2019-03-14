@@ -20,7 +20,7 @@ class GBMClient(GenericClient):
 
         Returns
         -------
-        url for time of interest
+        url(s) for time of interest
         """
 
         # Checks if detector keyword
@@ -31,11 +31,11 @@ class GBMClient(GenericClient):
         else:
             det = 'n5'
 
-        # Check for datatype keyword - either CSPEC or CTIME
+        # Check for resolution keyword - either CSPEC or CTIME
         # Default type is CSPEC
 
-        if 'datatype' in kwargs:
-            data_type = _check_type(kwargs['datatype'])
+        if 'resolution' in kwargs:
+            data_type = _check_type(kwargs['resolution'])
         else:
             data_type = 'cspec'
 
@@ -67,7 +67,7 @@ class GBMClient(GenericClient):
         boolean
         answer as to whether client can service the query
         """
-        chkattr = ['Time', 'Instrument', 'Detector', 'Datatype']
+        chkattr = ['Time', 'Instrument', 'Detector', 'Resolution']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'gbm':
@@ -94,7 +94,6 @@ def _check_type(datatype, **kwargs):
     """
     checks is datatype is either CSPEC or CTIME
     """
-
     if not isinstance(datatype, str):
         raise ValueError('{} is not str - either cspec or ctime'.format(datatype))
 
