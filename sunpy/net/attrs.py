@@ -2,9 +2,9 @@
 
 from .vso import attrs as vso
 from .jsoc import attrs as jsoc
-from .dataretriever.attrs import goes, gbm
+from .dataretriever.attrs import goes
 
-from .vso.attrs import Time, Instrument, Wavelength, Level, Sample, Detector
+from .vso.attrs import Time, Instrument, Wavelength, Level, Sample, Detector, Resolution
 
-__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'vso', 'jsoc',
-           'goes', 'gbm']
+__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution' 'vso', 'jsoc',
+           'goes']
