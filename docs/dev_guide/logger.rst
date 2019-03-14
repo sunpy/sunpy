@@ -7,7 +7,7 @@ Logging, Warnings, and Exceptions
 Overview
 --------
 
-Sunpy makes use of a logging system to deal with messages (:ref:`_logger`). This provides the users and
+Sunpy makes use of a logging system to deal with messages (see :ref:`logger`). This provides the users and
 developers the ability to decide which messages to show, to capture them, and to optionally also send
 them to a file. The logger will log all messages issued directly to it but also warnings issued
 through `warnings.warn` as well as exceptions.
@@ -20,10 +20,19 @@ by importing it explicitly::
 Messages can be issued directly to it with the following levels and in the following way::
 
     log.debug("Detailed information, typically of interest only when diagnosing problems.")
-    log.info("A message conveying information about the current task, and confirming that things are working as expected.")
-    log.warning("An indication that something unexpected happened, or indicative of some problem in the near future (e.g. ‘disk space low’). The software is still working as expected.")
-    log.error("Due to a more serious problem, the software has not been able to perform some function but the task is still continuing.")
-    log.critical("A serious error, indicating that the program itself may be unable to continue running. A real error may soon by issued and the task will fail.")
+
+    log.info("A message conveying information about the current task, and confirming that
+              things are working as expected.")
+
+    log.warning("An indication that something unexpected happened, or indicative of
+                 some problem in the near future (e.g. ‘disk space low’).
+
+                 The software is still working as expected.")
+    log.error("Due to a more serious problem, the software has not been able to
+               perform some function but the task is still continuing.")
+
+    log.critical("A serious error, indicating that the program itself may be unable to
+                  continue running. A real error may soon by issued and the task will fail.")
 
 The difference between logging a warning/error/critical compared to issuing a Python warning or raising
 an exception are subtle but important.
@@ -42,9 +51,9 @@ that fully describe the issue and end with a period.
 
 Issuing Warnings
 ----------------
-Sunpy warnings are provided by the `~sunpy.util.exceptions` module. The primary warning which
-should be used is `~SunpyUserWarning`. For deprecation use `~SunpyDeprecationWarning` or
-`~SunpyPendingDeprecationWarning`.
+Sunpy warnings are provided by the :mod:`sunpy.util` module. The primary warning which
+should be used is :class:`sunpy.util.exceptions.SunpyUserWarning`. For deprecation use :class:`sunpy.util.exceptions.SunpyDeprecationWarning` or
+:class:`sunpy.util.exceptions.SunpyPendingDeprecationWarning`.
 
 These warning classes must be used to interact correctly with the logging system.
 A warning can be issued in the following way::
@@ -65,4 +74,4 @@ Exceptions are raised simply with::
 
     raise ValueError("The following error occurred.")
 
-For more information on exceptions see the :ref:python:bltin-exceptions
+For more information on exceptions see the :ref:`python:bltin-exceptions` documentation.

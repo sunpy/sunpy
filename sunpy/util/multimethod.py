@@ -24,8 +24,6 @@ Multimethod implementation in pure Python.
 
 import warnings
 
-from sunpy.util.exceptions import SunpyWarning
-
 __all__ = ['TypeWarning', 'MultiMethod']
 
 SILENT = 0
@@ -87,8 +85,8 @@ class MultiMethod(object):
             raise TypeError
         elif overriden and override == WARN:
             # pylint: disable=W0631
-            warnings('Definition ({0}) overrides prior definition ({1}).'.format(_fmt_t(types), _fmt_t(signature)),
-                     SunpyWarning)
+            warnings.warn(f'Definition ({_fmt_t(types)}) overrides prior definition ({_fmt_t(signature)}).',
+                          TypeWarning, stacklevel=3)
 
         self.methods.append((types, fun))
 
