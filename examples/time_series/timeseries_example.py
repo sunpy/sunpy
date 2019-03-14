@@ -65,8 +65,6 @@ combined_goes_ts.peek()
 # You can concatenate manually:
 combined_goes_ts = lis_goes_ts[0].concatenate(lis_goes_ts[1])
 fig = combined_goes_ts.peek()
-# Note: peek returns a matplotlib figure object, which can be saved to a file using:
-fig.savefig('figure.png')
 
 ##############################################################################
 # The TimeSeries object has 3 primary data storage components:
@@ -171,7 +169,7 @@ ts_goes.to_array()
 # Table or a Numpy Array.
 # To generate some data and the corresponding dates
 base = datetime.datetime.today()
-dates = base - TimeDelta(np.arange(24 * 60)*u.minute)
+dates = Time(base) - TimeDelta(np.arange(24 * 60)*u.minute)
 intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 # Create the data DataFrame, header MetaDict and units OrderedDict
 data = DataFrame(intensity, index=dates, columns=['intensity'])

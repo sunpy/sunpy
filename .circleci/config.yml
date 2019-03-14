@@ -6,6 +6,7 @@ merge-check: &merge-check
   name: Check if we need to merge upstream master
   command: |
     if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
+      git fetch origin --tags
       git fetch origin +refs/pull/$CIRCLE_PR_NUMBER/merge:pr/$CIRCLE_PR_NUMBER/merge
       git checkout -qf pr/$CIRCLE_PR_NUMBER/merge
     fi
@@ -14,7 +15,7 @@ apt-run: &apt-install
   name: Install apt packages
   command: |
     apt update
-    apt install -y graphviz build-essential
+    apt install -y graphviz build-essential libopenjp2-7
 
 tox-install: &tox-install
   name: Install Tox
@@ -51,50 +52,47 @@ jobs:
       - run: *merge-check
       - run: python setup.py egg_info
 
-  pip:
+  pip-install:
     docker:
       - image: continuumio/miniconda3
     steps:
-      - restore_cache:
-          keys: sample-data-v1
-
       - checkout
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
       - run:
-          name: Install dependencies
-          command: pip install --progress-bar off -e .[all]
+          name: Update pip
+          command: pip install -U pip
       - run:
-          name: Run tests
-          command: PYTHONHASHSEED=42 pytest -m "not figure" -n 4
-
-    environment:
-          MPLBACKEND: agg
-          COLUMNS: 180
+          name: Install SunPy
+          command: pip install --progress-bar off -e .[all,dev]
 
   32bit:
     docker:
-      - image: quay.io/pypa/manylinux1_i686
+      - image: i386/ubuntu:latest
     steps:
       - restore_cache:
           keys: sample-data-v1
 
       - checkout
       - run: *skip-check
-      - run: *merge-check
       - run:
-          name: yum dependencies
-          command: yum install -y freetype freetype-devel libpng-devel tk
+          name: apt dependencies
+          command: |
+            export DEBIAN_FRONTEND="noninteractive"
+            apt-get update
+            apt-get install -y libfreetype6 libfreetype6-dev libpng-dev tk pkg-config python3-pip git openssh-client
       - run:
           name: Install dependencies one
-          command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off numpy!=1.15.4 scipy astropy!=3.1.1 matplotlib==1.5.3
+          # Cat here to suppress the progress bar
+          command: pip3 install cython numpy scipy astropy matplotlib asdf | cat
       - run:
           name: Install dependencies two
-          command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off sqlalchemy scikit-image==0.13.1 glymur drms zeep beautifulsoup4 requests python-dateutil pytest pytest-cov pytest-mock pytest-xdist mock hypothesis pytest-astropy pytest-rerunfailures
+          # Cat here to suppress the progress bar
+          command: pip3 install sqlalchemy scikit-image glymur drms zeep beautifulsoup4 requests python-dateutil pytest pytest-cov pytest-mock pytest-xdist hypothesis pytest-astropy pytest-rerunfailures | cat
       - run:
           name: Run tests
-          command: PYTHONHASHSEED=42 /opt/python/cp36-cp36m/bin/python setup.py test --parallel=4
+          command: PYTHONHASHSEED=42 python3 setup.py test --parallel=4
     environment:
           MPLBACKEND: agg
           COLUMNS: 180
@@ -127,7 +125,7 @@ jobs:
       - run: *merge-check
       - run: *apt-install
       - run: *tox-install
-      - run: tox -e py37-build_docs
+      - run: tox -e build_docs
       - store_artifacts:
           path: docs/_build/html
 
@@ -148,9 +146,9 @@ workflows:
       - egg-info-36
       - egg-info-37
 
-  pip-test:
+  pip-install:
     jobs:
-      - pip
+      - pip-install
 
   build-32:
     jobs:

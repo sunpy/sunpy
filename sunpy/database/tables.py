@@ -19,9 +19,23 @@ from astropy.units import Unit, nm, quantity, equivalencies
 import sunpy
 from sunpy import config
 from sunpy.time import parse_time
+from sunpy.io.header import FileHeader
 from sunpy.io import fits, file_tools as sunpy_filetools
 
 TIME_FORMAT = config.get("general", "time_format")
+
+DEFAULT_HEADER = FileHeader([('SIMPLE', True),
+            ('BITPIX', 8),
+            ('NAXIS', 0),
+            ('EXTEND', True),
+            ('COMMENT', ''),
+            ('HISTORY', ''),
+            ('KEYCOMMENTS',
+            {'SIMPLE': 'conforms to FITS standard',
+            'BITPIX': 'array data type',
+            'NAXIS': 'number of array dimensions'}),
+            ('WAVEUNIT', None)])
+
 
 __all__ = [
     'WaveunitNotFoundError', 'WaveunitNotConvertibleError', 'JSONDump',
@@ -645,6 +659,13 @@ def entries_from_file(file, default_waveunit=None,
 
     """
     headers = fits.get_header(file)
+
+    # This just checks for blank default headers
+    # due to compression.
+    for header in headers:
+        if header == DEFAULT_HEADER:
+            headers.remove(header)
+
     if isinstance(file, str):
         filename = file
     else:
@@ -753,7 +774,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):
-        filename_paths = (os.path.join(dirpath, name) for name in filenames)
+        filename_paths = (os.path.join(dirpath, name) for name in sorted(filenames))
         for path in fnmatch.filter(filename_paths, pattern):
             try:
                 filetype = sunpy_filetools._detect_filetype(path)
