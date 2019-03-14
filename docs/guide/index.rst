@@ -20,6 +20,7 @@ For more details checkout the :ref:`reference`.
    time
    roi
    customization
+   logger
    ssw
    bugs
    testingfeatures
