@@ -34,7 +34,9 @@ from sunpy.util.decorators import deprecated
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
-                     'port': 'nsoVSOi'}]
+                     'port': 'nsoVSOi'},
+                    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl',
+                     'port': 'sdacVSOi'}]
 
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 

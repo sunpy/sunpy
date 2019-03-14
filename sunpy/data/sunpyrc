@@ -5,13 +5,12 @@
 ; of it on your system in site-packages/sunpy/data/sunpyrc.  If you edit it
 ; there, please note that it will be overridden in your next install.
 ; If you want to keep a permanent local copy that will not be
-; over-written, place it in HOME/.sunpy/sunpyrc (unix/linux
-; like systems) and C:\Documents and Settings\yourname\.sunpy
-; (win32 systems).
-;
+; over-written, we use AppDirs https://pypi.org/project/appdirs/
+; to find the right place for each OS to place it.
+; So if you open the link, you can find the user_config_dir
+; or print(sunpy.util.config.CONFIG_DIR) to find it on your own system.
 ; Note that any relative filepaths specified in the SunPy configuration file
 ; will be relative to SunPy's working directory.
-;
 
 ;;;;;;;;;;;;;;;;;;;
 ; General Options ;
@@ -51,6 +50,6 @@ sample_dir = data/sample_data
 ; Location to specify sunpy database parameters.
 ; The default url of the database location can specified here. The url of
 ; the database comprises the database driver, its location and name, as well
-; as optional authentication parameters 
+; as optional authentication parameters
 ; Default value: sqlite:////<user's home directory>/sunpy/sunpydb.sqlite
 ; url = sqlite:////home/$USER/sunpy/sunpydb.sqlite

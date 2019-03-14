@@ -43,7 +43,7 @@ def aiaprep(aiamap):
     """
 
     if not isinstance(aiamap, (AIAMap, HMIMap)):
-        raise ValueError("Input must be an AIAMap")
+        raise ValueError("Input must be an AIAMap or HMIMap.")
 
     # Target scale is 0.6 arcsec/pixel, but this needs to be adjusted if the map
     # has already been rescaled.

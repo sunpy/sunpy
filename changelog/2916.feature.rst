@@ -1,0 +1,1 @@
+Add support for COSMO K-Coronograph (KCOR) FITS data.
