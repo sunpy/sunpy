@@ -14,7 +14,7 @@ Language Standard
 =================
 
 * All code must be compatible with Python 3.6 and later.
-  Usage of ``six``, ``__future__``, and ``2to3`` is not longer acceptable.
+  Usage of ``six``, ``__future__``, and ``2to3`` is no longer acceptable.
 
 * The new Python 3 formatting style should be used (i.e.
   ``"{0:s}".format("spam")`` instead of ``"%s" % "spam"``).

@@ -45,11 +45,11 @@ When reporting an issue, please try to provide a short description of the issue 
 Also provide any error output generated when you encountered the issue, we can use this information to debug the issue.
 For a good example of how to do this see issue `#2879`_.
 
-If you are making a feature request, please post as much information as possible regarding the feature you would like to see in SunPy.
+If there is functionality that is not currently available in SunPy you can make a feature request.
+Please write as much information as possible regarding the feature you would like to see in SunPy.
 
-We provide GitHub templates for both of these types of issue.
-Each one has several sections that detail the type of information we are seeking.
-Be sure to read over the comments in the GitHub text box.
+When you go to open either an issue or a feature request, there is a GitHub template that will guide you on the type of information we are seeking.
+Please be sure to read over the comments in the GitHub text box.
 
 .. _issue: https://github.com/sunpy/sunpy/issues
 .. _sunpy-dev@googlegroups.com: https://groups.google.com/forum/#!forum/sunpy-dev
@@ -200,6 +200,24 @@ you should hopefully see no changes for the ``astropy_helpers`` folder.
 
 .. _astropy_helpers: https://github.com/astropy/astropy-helpers
 
+Checking the code you have written
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now that you have written some code to address an issue.
+You will need to check two things:
+
+1. The changes you have made are correct, i.e., it fixes a bug or the feature works.
+   This requires you to run the code either manually or by writting/running a test function.
+   `pytest`_ is the framework we use for this.
+
+2. The changes you have made follow the correct coding style.
+   We follow the `PEP8`_ style for all Python code and depending on your setup, you can use a `linter program <https://realpython.com/python-code-quality/#how-to-improve-python-code-quality>`_ to check your code.
+   For documentation, we follow the `numpydoc style <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_.
+
+We provide more more detail about our :ref: `test suite and how to write tests <testing>`, and how to :ref: `create and style documentation <docs_guidelines>`.
+
+.. _pytest: https://docs.pytest.org/en/latest/
+
 Send it back to us
 ^^^^^^^^^^^^^^^^^^
 
@@ -209,8 +227,9 @@ This is a three stage process:
 1. Use ``git status`` to see that the only changes locally are the right ones.
 2. Use ``git add <path to file>`` to add the changes to `git`.
 3. Use ``git commit -m <message>`` to label those changes.
+4. Use ``git push`` to update your fork (copy) of SunPy on GitHub.
 
-Where you replace ``<message>`` with some text of the work you have done.
+Here you replace ``<message>`` with some text of the work you have done.
 We strongly recommend having a good commit message and this `commit guide`_ is worth reading.
 
 Next step is to open a pull request on GitHub.
@@ -224,8 +243,10 @@ Please fill this in and title the pull request.
 Now the final step is to press the green "Create pull request" button.
 
 As soon as you do this, you will be greeted by a message from the "sunpy bot" as well as several continuous integration checks.
-These are explained on our :ref: `Version Control <version_control>` page.
+These are explained on our :ref: `Pull Request Review <pr_review>` page.
 But what is important to know is that these run a series of tests to make sure that the changes do not cause any new errors.
+We strongly recommend that any code changes you have had, follow the `PEP8`_ style and that you have ran the code locally to make sure any changes do not break any existing code.
+We provide an overview on how to run the test suite :ref: `here <testing>`.
 Now we (the SunPy community) can review the code and offer suggestions and once we are happy, we can merge in the pull request.
 
 If you do not have time to finish what you started on or ran out of time during a sprint and do not want to submit a pull request, you can create a git patch instead:
@@ -242,5 +263,6 @@ Just remember, if you have any problems get in touch!
 
 .. _commit guide: https://chris.beams.io/posts/git-commit/
 .. _GitHub guide: https://guides.github.com/activities/hello-world/
+.. _PEP8: https://realpython.com/python-pep8/
 .. _Google Group: https://groups.google.com/forum/#!forum/sunpy
 .. _a SunPy contributor: stuart@mumford.me.uk
