@@ -8,7 +8,8 @@ import sys
 
 from astropy.utils.exceptions import AstropyWarning
 
-__all__ = ["SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning"]
+__all__ = ["SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning", "SunpyPendingDeprecationWarning"]
+
 
 
 class SunpyWarning(AstropyWarning):
