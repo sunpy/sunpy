@@ -10,7 +10,7 @@ Overview
 Sunpy makes use of a logging system to deal with messages (:ref:`_logger`). This provides the users and
 developers the ability to decide which messages to show, to capture them, and to optionally also send
 them to a file. The logger will log all messages issued directly to it but also warnings issued
-through warnings.warn() as well as exceptions.
+through `warnings.warn` as well as exceptions.
 
 The logger is configured as soon as sunpy is imported. You can access it
 by importing it explicitly::
