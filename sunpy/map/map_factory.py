@@ -260,18 +260,20 @@ class MapFactory(BasicRegistrationFactory):
 
         Parameters
         ----------
-
         composite : boolean, optional
-            Indicates if collection of maps should be returned as a CompositeMap
+            Indicates if collection of maps should be returned as a CompositeMap.
+            Default is ``False``.
 
         cube : boolean, optional
             Indicates if collection of maps should be returned as a MapCube
 
         sequence : boolean, optional
-            Indicates if collection of maps should be returned as a MapSequence
+            Indicates if collection of maps should be returned as a MapSequence.
+            Default is ``False``.
 
         silence_errors : boolean, optional
             If set, ignore data-header pairs which cause an exception.
+            Default is ``False``.
 
         Notes
         -----
