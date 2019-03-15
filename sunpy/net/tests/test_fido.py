@@ -1,6 +1,7 @@
 import os
 import copy
 import pathlib
+from unittest import mock
 
 import pytest
 import hypothesis.strategies as st
@@ -9,6 +10,7 @@ from hypothesis import given, assume, settings
 import astropy.units as u
 from drms import DrmsQueryError
 from parfive import Results
+from parfive.utils import FailedDownload
 
 from sunpy.net import attr
 from sunpy.net import Fido, attrs as a
@@ -315,5 +317,24 @@ def test_repr2(query):
             assert "Providers" in rep_meth()
 
 
-def test_retry():
-    pass
+@mock.patch("parfive.Downloader.download", return_value=Results(["/tmp/test"]))
+def test_retry(mock_retry):
+    """
+    """
+    res = Results()
+    res.data.append("/this/worked.fits")
+
+    err1 = FailedDownload("This is not a filename", "http://not.url/test", None)
+    err2 = FailedDownload("This is not a filename2", "http://not.url/test2", None)
+    res.errors.append(err1)
+    res.errors.append(err2)
+
+    mock_retry.return_value._errors += [err2]
+
+    res2 = Fido.fetch(res, Results(["/this/also/worked.fits"]))
+
+    assert res2 is not res
+
+    # Assert that the result of retry ends up in the returned Results() object
+    assert res2.data == ["/this/worked.fits", "/tmp/test", "/this/also/worked.fits", "/tmp/test"]
+    assert res2.errors == [err2, err2]
