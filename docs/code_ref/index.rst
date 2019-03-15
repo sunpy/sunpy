@@ -1,8 +1,8 @@
 .. _reference:
 
-==============
-Code Reference
-==============
+==================
+User Documentation
+==================
 
 .. toctree::
    :maxdepth: 2
@@ -24,3 +24,5 @@ Code Reference
    timeseries
    util
    visualization
+   bugs
+   troubleshooting

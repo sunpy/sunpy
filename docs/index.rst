@@ -9,7 +9,8 @@ We have a documentation :any:`index <genindex>` and a :any:`module <modindex>` l
 .. toctree::
   :maxdepth: 2
 
-  guide/index
+  tour
+  installation/index
   code_ref/index
   generated/gallery/index
   dev_guide/index

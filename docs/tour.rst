@@ -1,5 +1,5 @@
-A brief tour of SunPy
-=====================
+A Tour of SunPy
+===============
 
 This brief tutorial will walk you through some
 of the functionality offered by SunPy. Start by reading this tutorial

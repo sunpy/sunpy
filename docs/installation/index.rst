@@ -1,6 +1,6 @@
-============
-Installation
-============
+================
+Installing SunPy
+================
 
 SunPy is a Python package for solar physics.  It relies on and enables the use
 of the wider ecosystem of scientific Python packages for solar physics.
@@ -70,3 +70,4 @@ SunPy.
   :maxdepth: 2
 
   advanced.rst
+  testingfeatures
