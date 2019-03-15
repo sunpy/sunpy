@@ -6,9 +6,8 @@ from astropy.logger import AstropyLogger
 def _init_log(config=None):
     """
     Initializes the SunPy log--in most circumstances this is called automatically when importing sunpy.
+    This code is based on that provided by Astropy see licenses/ASTROPY.rst.
     """
-
-    global log
 
     orig_logger_cls = logging.getLoggerClass()
     logging.setLoggerClass(AstropyLogger)
