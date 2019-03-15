@@ -12,73 +12,6 @@ Fido ~`sunpy.net.fido_factory.UnifiedDownloaderFactory` can be used like so::
     >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Instrument('lyra'))  # doctest: +REMOTE_DATA
     >>> files = Fido.fetch(results)  # doctest: +SKIP
 
-.. automodapi:: sunpy.net
-   :no-heading:
-
-.. automodapi:: sunpy.net.fido_factory
-
-
-Dataretriever
--------------
-
-.. automodapi:: sunpy.net.dataretriever
-   :allowed-package-names: sources
-   :headings: ^#
-
-.. automodapi:: sunpy.net.dataretriever.sources
-   :headings: #~
-
-
-VSO
----
-
-.. automodapi:: sunpy.net.vso
-   :headings: ^#
-
-.. automodapi:: sunpy.net.vso.attrs
-   :headings: #~
-
-JSOC
-----
-
-.. automodapi:: sunpy.net.jsoc
-    :headings: ^#
-
-.. automodapi:: sunpy.net.jsoc.attrs
-    :headings: #~
-
-
-HEK
----
-
-.. automodapi:: sunpy.net.hek
-    :headings: ^#
-
-.. automodapi:: sunpy.net.hek2vso
-    :headings: ^#
-
-
-HELIO
------
-
-.. automodapi:: sunpy.net.helio
-    :headings: ^#
-
-.. automodapi:: sunpy.net.helio.hec
-    :headings: #~
-
-Helioviewer
------------
-
-.. automodapi:: sunpy.net.helioviewer
-    :headings: ^#
-
-Attr
-----
-
-.. automodapi:: sunpy.net.attr
-   :no-heading:
-
 ---------------------------------------
 Finding and Downloading Data using Fido
 ---------------------------------------
@@ -1155,3 +1088,70 @@ Once the status code is 0 you can download the data using the
 This returns a Results instance which can be used to watch the progress of the download::
 
     >>> res.wait(progress=True)   # doctest: +SKIP
+
+.. automodapi:: sunpy.net
+   :no-heading:
+
+.. automodapi:: sunpy.net.fido_factory
+
+
+Dataretriever
+-------------
+
+.. automodapi:: sunpy.net.dataretriever
+   :allowed-package-names: sources
+   :headings: ^#
+
+.. automodapi:: sunpy.net.dataretriever.sources
+   :headings: #~
+
+
+VSO
+---
+
+.. automodapi:: sunpy.net.vso
+   :headings: ^#
+
+.. automodapi:: sunpy.net.vso.attrs
+   :headings: #~
+
+JSOC
+----
+
+.. automodapi:: sunpy.net.jsoc
+    :headings: ^#
+
+.. automodapi:: sunpy.net.jsoc.attrs
+    :headings: #~
+
+
+HEK
+---
+
+.. automodapi:: sunpy.net.hek
+    :headings: ^#
+
+.. automodapi:: sunpy.net.hek2vso
+    :headings: ^#
+
+
+HELIO
+-----
+
+.. automodapi:: sunpy.net.helio
+    :headings: ^#
+
+.. automodapi:: sunpy.net.helio.hec
+    :headings: #~
+
+Helioviewer
+-----------
+
+.. automodapi:: sunpy.net.helioviewer
+    :headings: ^#
+
+Attr
+----
+
+.. automodapi:: sunpy.net.attr
+   :no-heading:

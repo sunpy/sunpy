@@ -5,32 +5,6 @@ The database submodule can be used to provide a local cache of the files and
 records retrieved from various remote services. For an introduction to the
 database see :ref:`database_guide`.
 
-
-.. automodapi:: sunpy.database
-    :no-inheritance-diagram:
-
-Submodules
-----------
-
-.. automodapi:: sunpy.database.tables
-    :headings: ^+
-    :no-inheritance-diagram:
-
-.. automodapi:: sunpy.database.caching
-    :headings: ^+
-    :no-inheritance-diagram:
-
-.. automodapi:: sunpy.database.commands
-    :headings: ^+
-    :no-inheritance-diagram:
-
-.. automodapi:: sunpy.database.attrs
-    :headings: ^+
-    :no-inheritance-diagram:
-
-.. The tests in the module are very fragile to change in ordering of VSO
-   results. In their current form they are very hard to maintain.
-
 .. _database_guide:
 
 --------------------------
@@ -173,7 +147,7 @@ passing on the value of the received argument (if it was a string)
 or by reading the value of ``file.name`` where ``file`` is the passed argument.
 If the path cannot be determined, it stays as ``None`` (the default value).
 
-``wavemin`` and `wavemax`` are only set if the wavelength unit
+``wavemin`` and ``wavemax`` are only set if the wavelength unit
 of the FITS file can be found out or if the ``default_waveunit`` attribute of
 the database object is set. These values are then
 used to convert from the used units to nanometers. The rationale behind
@@ -830,3 +804,28 @@ to 10 and therefore removes the 5 entries that been used least recently.
      18    2011-06-07 20:37:52 ...               19.5               19.5
      58    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
      59    2011-06-06 00:00:00 ...                N/A                N/A
+
+.. automodapi:: sunpy.database
+    :no-inheritance-diagram:
+
+Submodules
+----------
+
+.. automodapi:: sunpy.database.tables
+    :headings: ^+
+    :no-inheritance-diagram:
+
+.. automodapi:: sunpy.database.caching
+    :headings: ^+
+    :no-inheritance-diagram:
+
+.. automodapi:: sunpy.database.commands
+    :headings: ^+
+    :no-inheritance-diagram:
+
+.. automodapi:: sunpy.database.attrs
+    :headings: ^+
+    :no-inheritance-diagram:
+
+.. The tests in the module are very fragile to change in ordering of VSO
+   results. In their current form they are very hard to maintain.

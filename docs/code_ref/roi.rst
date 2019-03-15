@@ -1,14 +1,3 @@
-SunPy roi
-=========
-
-.. warning::
-
-   The roi module is still in development, the API is subject to change.
-
-.. automodapi:: sunpy.roi
-
-.. automodapi:: sunpy.roi.chaincode
-
 ==================
 Region of Interest
 ==================
@@ -36,3 +25,12 @@ This creates an roi called result for the specific time range. Querying the newl
     Event description: UV occult.
 
 Check out the code reference for the time range object for more information.
+
+
+.. warning::
+
+   The roi module is still in development, the API is subject to change.
+
+.. automodapi:: sunpy.roi
+
+.. automodapi:: sunpy.roi.chaincode

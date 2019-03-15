@@ -1,13 +1,3 @@
-SunPy time
-==========
-
-The time submodule contains helpers for converting strings to
-`astropy.time.Time` objects and handling common operations on these objects. As
-well as this a `~sunpy.time.TimeRange` object is provided for representing a
-period of time and performing operations on that range.
-
-.. automodapi:: sunpy.time
-
 .. _time-in-sunpy:
 
 =============
@@ -256,3 +246,5 @@ split a TimeRange object into two new TimeRange objects: ::
     time_range.split(2)
 
 Check out the code reference for the `sunpy.time.TimeRange` object for more information.
+
+.. automodapi:: sunpy.time

@@ -1,22 +1,6 @@
 SunPy visualization
 ===================
 
-`sunpy.visualization` contains plotting helpers and functions.
-
-.. automodapi:: sunpy.visualization
-
-.. automodapi:: sunpy.visualization.animator
-    :headings: ^#
-
-.. automodapi:: sunpy.visualization.wcsaxes_compat
-    :headings: ^#
-
-.. _plotting:
-
------------------
-Plotting in SunPy
------------------
-
 SunPy makes use of `matplotlib <https://matplotlib.org/>`_ for all of its
 plotting - as such, it tries to follow the matplotlib plotting philosophy. It is
 therefore useful to go over how matplotlib works as background.
@@ -329,3 +313,14 @@ units to plot a AIA image and a zoomed in view of an active region.
 
 
     plt.show()
+
+
+`sunpy.visualization` contains plotting helpers and functions.
+
+.. automodapi:: sunpy.visualization
+
+.. automodapi:: sunpy.visualization.animator
+    :headings: ^#
+
+.. automodapi:: sunpy.visualization.wcsaxes_compat
+    :headings: ^#
