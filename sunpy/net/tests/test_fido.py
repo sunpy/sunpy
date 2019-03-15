@@ -3,27 +3,27 @@ import copy
 import pathlib
 from unittest import mock
 
-import pytest
 import hypothesis.strategies as st
-from hypothesis import given, assume, settings
-
-import astropy.units as u
+import pytest
 from drms import DrmsQueryError
+from hypothesis import assume, given, settings
 from parfive import Results
 from parfive.utils import FailedDownload
 
-from sunpy.net import attr
-from sunpy.net import Fido, attrs as a
-from sunpy.net.base_client import BaseClient
-from sunpy.net.vso import QueryResponse as vsoQueryResponse
-from sunpy.net.fido_factory import UnifiedResponse
-from sunpy.net.dataretriever.client import QueryResponse
-from sunpy.util.datatype_factory_base import MultipleMatchError
-from sunpy.time import TimeRange, parse_time
-from sunpy import config
+import astropy.units as u
 
-from sunpy.net.tests.strategies import (online_instruments, offline_instruments,
-                                        time_attr, goes_time)
+from sunpy import config
+from sunpy.net import Fido, attr
+from sunpy.net import attrs as a
+from sunpy.net.base_client import BaseClient
+from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.dataretriever.sources.goes import XRSClient
+from sunpy.net.fido_factory import UnifiedResponse
+from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, time_attr
+from sunpy.net.vso import QueryResponse as vsoQueryResponse
+from sunpy.net.vso.vso import DownloadFailed
+from sunpy.time import TimeRange, parse_time
+from sunpy.util.datatype_factory_base import MultipleMatchError
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -338,3 +338,79 @@ def test_retry(mock_retry):
     # Assert that the result of retry ends up in the returned Results() object
     assert res2.data == ["/this/worked.fits", "/tmp/test", "/this/also/worked.fits", "/tmp/test"]
     assert res2.errors == [err2, err2]
+
+
+@st.composite
+def multi_instrument_offline_qr(draw, instrument=offline_instruments().filter(lambda x: x.value != "soon")):
+    queries = [draw(instrument), draw(instrument)]
+    for i, query in enumerate(queries):
+        if isinstance(query, a.Instrument) and query.value == 'goes':
+            queries[i] = query & draw(goes_time())
+        else:
+            queries[i] = attr.and_(query, draw(time_attr()))
+
+    return Fido.search(queries[0] | queries[1])
+
+
+def results_generator(dl):
+    http = list(dl.http_queue._queue)
+    ftp = list(dl.ftp_queue._queue)
+
+    outputs = []
+    for url in http+ftp:
+        outputs.append(pathlib.Path(url.keywords['url'].split("/")[-1]))
+
+    return Results(outputs)
+
+
+@settings(max_examples=5)
+@mock.patch("parfive.Downloader.download", new=results_generator)
+@given(multi_instrument_offline_qr())
+def test_multi_fetch(qr):
+    """
+    Strategy for any valid offline query
+    """
+    res = Fido.fetch(qr)
+
+    # Assert that all the different clients lead to one Results object with the
+    # right number of files.
+    assert qr.file_num == len(res)
+
+
+@pytest.mark.remote_data
+@mock.patch("sunpy.net.vso.VSOClient.download_all",
+            return_value=Results([], errors=[DownloadFailed(None)]))
+@mock.patch("parfive.Downloader.download", new=results_generator)
+def test_vso_errors_with_second_client(mock_download_all):
+    query = a.Time("2011/01/01", "2011/01/02") & (a.Instrument("goes") | a.Instrument("EIT"))
+
+    qr = Fido.search(query)
+
+    res = Fido.fetch(qr)
+    assert len(res.errors) == 1
+    assert len(res) != qr.file_num
+
+    # Assert that all the XRSClient records are in the output.
+    for resp in qr.responses:
+        if isinstance(resp, XRSClient):
+            assert len(resp) == len(res)
+
+
+def test_downloader_type_error():
+    with pytest.raises(TypeError):
+        Fido.fetch([], downloader=Results())
+
+
+def test_mixed_retry_error():
+    with pytest.raises(TypeError):
+        Fido.fetch([], Results())
+
+
+@mock.patch("sunpy.net.dataretriever.sources.goes.XRSClient.fetch", return_value=["hello"])
+def test_client_fetch_wrong_type(mock_fetch):
+    query = a.Time("2011/01/01", "2011/01/02") & a.Instrument("goes")
+
+    qr = Fido.search(query)
+
+    with pytest.raises(TypeError):
+        Fido.fetch(qr)

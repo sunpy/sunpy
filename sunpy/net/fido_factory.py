@@ -348,9 +348,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
 
         if "wait" in kwargs:
-            raise ValueError("wait and downloader are not valid keyword arguments to Fido.fetch")
+            raise ValueError("wait is not a valid keyword argument to Fido.fetch.")
 
-        if not downloader:
+        if downloader is None:
             downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
         elif not isinstance(downloader, Downloader):
             raise TypeError("The downloader argument must be a parfive.Downloader object.")
@@ -382,7 +382,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             if result is None:
                 continue
             if not isinstance(result, Results):
-                raise ValueError(
+                raise TypeError(
                     "If wait is False a client must return a parfive.Downloader and either None"
                     " or a parfive.Results object.")
             results.data += result.data
