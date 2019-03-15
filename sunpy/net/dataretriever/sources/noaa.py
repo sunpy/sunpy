@@ -190,11 +190,10 @@ class SRSClient(GenericClient):
             past_year = False
             for i, fname2 in enumerate(paths):
 
-                if fname2.endswith('.txt'):
+                if fname2.name.endswith('.txt'):
                     continue
 
-                year = fname2.split('/')[-1]
-                year = year.split('_SRS')[0]
+                year = fname2.name.split('_SRS')[0]
 
                 if year in name:
                     TarFile = tarfile.open(fname2)

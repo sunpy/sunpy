@@ -477,23 +477,23 @@ class JSOCClient(BaseClient):
             A Results object
 
         """
-
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
+
         # Make response iterable
         if not isiterable(responses):
             responses = [responses]
+
         # Add them to the response for good measure
         jsoc_response.requests = [r for r in responses]
         time.sleep(sleep/2.)
 
         for response in responses:
             response.wait(verbose=progress)
-            r = self.get_request(response, path=path, overwrite=overwrite,
-                                 progress=progress, downloader=downloader,
-                                 wait=wait)
 
-        return r
+        return self.get_request(responses, path=path, overwrite=overwrite,
+                                progress=progress, downloader=downloader,
+                                wait=wait)
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
                     downloader=None, wait=True):

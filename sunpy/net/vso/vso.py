@@ -737,9 +737,7 @@ class VSOClient(BaseClient):
                     except NoData:
                         results.add_error('', DownloadFailed(dresponse))
                         continue
-                    # except Exception:
-                    #     # FIXME: Is this a good idea?
-                    #     results.add_error('', DownloadFailed(dresponse))
+
             elif code == '300' or code == '412' or code == '405':
                 if code == '300':
                     try:
