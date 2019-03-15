@@ -2,6 +2,7 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 import tarfile
+import pathlib
 from collections import OrderedDict
 
 from parfive import Downloader
@@ -189,6 +190,7 @@ class SRSClient(GenericClient):
 
             past_year = False
             for i, fname2 in enumerate(paths):
+                fname2 = pathlib.Path(fname2)
 
                 if fname2.name.endswith('.txt'):
                     continue
