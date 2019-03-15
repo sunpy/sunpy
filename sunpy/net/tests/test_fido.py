@@ -340,18 +340,6 @@ def test_retry(mock_retry):
     assert res2.errors == [err2, err2]
 
 
-@st.composite
-def multi_instrument_offline_qr(draw, instrument=offline_instruments().filter(lambda x: x.value != "soon")):
-    queries = [draw(instrument), draw(instrument)]
-    for i, query in enumerate(queries):
-        if isinstance(query, a.Instrument) and query.value == 'goes':
-            queries[i] = query & draw(goes_time())
-        else:
-            queries[i] = attr.and_(query, draw(time_attr()))
-
-    return Fido.search(queries[0] | queries[1])
-
-
 def results_generator(dl):
     http = list(dl.http_queue._queue)
     ftp = list(dl.ftp_queue._queue)
@@ -361,20 +349,6 @@ def results_generator(dl):
         outputs.append(pathlib.Path(url.keywords['url'].split("/")[-1]))
 
     return Results(outputs)
-
-
-@settings(max_examples=5)
-@mock.patch("parfive.Downloader.download", new=results_generator)
-@given(multi_instrument_offline_qr())
-def test_multi_fetch(qr):
-    """
-    Strategy for any valid offline query
-    """
-    res = Fido.fetch(qr)
-
-    # Assert that all the different clients lead to one Results object with the
-    # right number of files.
-    assert qr.file_num == len(res)
 
 
 @pytest.mark.remote_data
@@ -406,7 +380,8 @@ def test_mixed_retry_error():
         Fido.fetch([], Results())
 
 
-@mock.patch("sunpy.net.dataretriever.sources.goes.XRSClient.fetch", return_value=["hello"])
+@mock.patch("sunpy.net.dataretriever.sources.goes.XRSClient.fetch",
+            return_value=["hello"])
 def test_client_fetch_wrong_type(mock_fetch):
     query = a.Time("2011/01/01", "2011/01/02") & a.Instrument("goes")
 
