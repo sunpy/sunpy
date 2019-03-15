@@ -211,7 +211,7 @@ Downloading data
 ----------------
 Once you have located your files via a
 `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>`, you can
-download them via `Fido.fetch <sunpy.net.fido_factory.unifieddownloaderfactory.fetch>`::
+download them via `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`::
 
     >>> downloaded_files = Fido.fetch(results)  # doctest: +SKIP
 
