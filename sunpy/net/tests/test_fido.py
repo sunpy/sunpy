@@ -320,6 +320,7 @@ def test_repr2(query):
 @mock.patch("parfive.Downloader.download", return_value=Results(["/tmp/test"]))
 def test_retry(mock_retry):
     """
+    Test that you can use Fido.fetch to retry failed downloads.
     """
     res = Results()
     res.data.append("/this/worked.fits")
