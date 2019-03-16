@@ -2,7 +2,6 @@
 import numpy as np
 
 import astropy.units as u
-from astropy.tests.helper import assert_quantity_allclose
 from asdf.yamlutil import custom_tree_to_tagged_tree
 
 import sunpy.map
@@ -57,7 +56,7 @@ class GenericMapType(SunPyType):
             assert ok in new.meta
             assert new.meta[ok] == ov
 
-        assert_quantity_allclose(old.shifted_value, new.shifted_value)
+        assert u.allclose(old.shifted_value, new.shifted_value)
         if old.mask is not None and new.mask is not None:
             np.testing.assert_allclose(old.mask, new.mask)
         assert old.unit == new.unit

@@ -27,6 +27,9 @@ from sunpy.time import parse_time
 
 testpath = sunpy.data.test.rootdir
 
+@pytest.fixture
+def hmi_test_map():
+    return sunpy.map.Map(os.path.join(testpath, "resampled_hmi.fits"))
 
 @pytest.fixture
 def aia171_test_map():
@@ -194,7 +197,9 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.observer.lon == aia171_test_map.observer_coordinate.frame.lon
     assert frame.observer.radius == aia171_test_map.observer_coordinate.frame.radius
     assert frame.obstime == aia171_test_map.date
-
+    
+def test_heliographic_longitude_crln(hmi_test_map):
+    assert hmi_test_map.heliographic_longitude == hmi_test_map.carrington_longitude - sunpy.coordinates.get_sun_L0(hmi_test_map.date)
 
 # ==============================================================================
 # Test Rotation WCS conversion

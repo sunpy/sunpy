@@ -1,0 +1,1 @@
+`sunpy.net.helio.hec.HECClient.time_query` now resolves the correct input time format.
