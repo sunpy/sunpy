@@ -45,7 +45,7 @@ given then some default values are assumed. Here is a simple example::
     >>> import numpy as np
 
     >>> data = np.arange(0,100).reshape(10,10)
-    >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
+    >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy', 'cunit1': 'arcsec', 'cunit2': 'arcsec'}
     >>> my_map = sunpy.map.Map(data, header)
 
 The keys in the header follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_.

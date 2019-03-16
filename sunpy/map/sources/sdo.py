@@ -39,7 +39,6 @@ class AIAMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing info

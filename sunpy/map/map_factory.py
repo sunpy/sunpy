@@ -8,7 +8,7 @@ import astropy.io.fits
 from astropy.wcs import WCS
 
 import sunpy
-from sunpy.map.mapbase import GenericMap
+from sunpy.map.mapbase import GenericMap, MapMetaValidationError
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapsequence import MapSequence
 
@@ -78,15 +78,15 @@ class MapFactory(BasicRegistrationFactory):
     * data, wcs object, in tuple
 
     >>> from astropy.wcs import WCS
-    >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
-    >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
+    >>> wcs = WCS(sunpy.data.sample.AIA_171_ROLL_IMAGE)     # doctest: +REMOTE_DATA
+    >>> data = fits.getdata(sunpy.data.sample.AIA_171_ROLL_IMAGE)    # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA
 
     * data, wcs object, not in tuple
 
     >>> from astropy.wcs import WCS
-    >>> wcs = WCS(sunpy.data.sample.AIA_171_IMAGE)     # doctest: +REMOTE_DATA
-    >>> data = fits.getdata(sunpy.data.sample.AIA_171_IMAGE)    # doctest: +REMOTE_DATA
+    >>> wcs = WCS(sunpy.data.sample.AIA_171_ROLL_IMAGE)     # doctest: +REMOTE_DATA
+    >>> data = fits.getdata(sunpy.data.sample.AIA_171_ROLL_IMAGE)    # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA
 
     * File names
@@ -290,15 +290,19 @@ class MapFactory(BasicRegistrationFactory):
 
             try:
                 new_map = self._check_registered_widgets(data, meta, **kwargs)
+                new_maps.append(new_map)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
+            except MapMetaValidationError as e:
+                warnings.warn(f"One of the data, header pairs failed to validate with: {e}")
             except Exception:
                 raise
 
-            new_maps.append(new_map)
-
         new_maps += already_maps
+
+        if not len(new_maps):
+            raise RuntimeError('No maps loaded')
 
         # If the list is meant to be a sequence, instantiate a map sequence
         if sequence:

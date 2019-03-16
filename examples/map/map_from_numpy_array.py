@@ -19,7 +19,7 @@ import sunpy.data.sample
 # SunPy Maps store 2D data in a numpy array and additional data in a metadata
 # dictionary giving information relating to the data and instrument.
 data = np.random.rand(20,15)
-header = {}
+header = {'cunit1': 'arcsec', 'cunit2': 'arcsec'}
 manual_map = sunpy.map.Map((data, header))
 
 ##############################################################################
