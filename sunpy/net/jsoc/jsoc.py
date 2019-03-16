@@ -3,7 +3,6 @@ import os
 import time
 import urllib
 import warnings
-from functools import partial
 from collections import Sequence
 
 import drms
@@ -13,10 +12,10 @@ import astropy.units as u
 import astropy.time
 import astropy.table
 from astropy.utils.misc import isiterable
+from parfive import Downloader, Results
 
 from sunpy import config
 from sunpy.net.base_client import BaseClient
-from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
 
@@ -25,10 +24,6 @@ __all__ = ['JSOCClient', 'JSOCResponse']
 
 PKEY_LIST_TIME = {'T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
                   'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime'}
-
-
-def simple_path(path, sock, url):
-    return path
 
 
 class NotExportedError(Exception):
@@ -437,8 +432,8 @@ class JSOCClient(BaseClient):
             return requests[0]
         return requests
 
-    def fetch(self, jsoc_response, path=None, overwrite=False, progress=True,
-              max_conn=5, downloader=None, sleep=10):
+    def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
+              downloader=None, wait=True, sleep=10):
         """
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
@@ -451,17 +446,26 @@ class JSOCClient(BaseClient):
         path : `str`
             Path to save data to, defaults to SunPy download dir
 
-        overwrite : `bool`
-            Replace files with the same name if True
+        progress : `bool`, optional
+            If `True` show a progress bar showing how many of the total files
+            have been downloaded. If `False`, no progress bar will be shown.
 
-        progress : `bool`
-            Print progress info to terminal
+        overwrite : `bool` or `str`, optional
+            Determine how to handle downloading if a file already exists with the
+            same name. If `False` the file download will be skipped and the path
+            returned to the existing file, if `True` the file will be downloaded
+            and the existing file will be overwritten, if `'unique'` the filename
+            will be modified to be unique.
 
         max_conns : `int`
             Maximum number of download connections.
 
-        downloader: `~sunpy.net.download.Downloader` instance
-            A Custom downloader to use
+        downloader : `parfive.Downloader`, optional
+            The download manager to use.
+
+        wait : `bool`, optional
+           If `False` ``downloader.download()`` will not be called. Only has
+           any effect if `downloader` is not `None`.
 
         sleep : `int`
             The number of seconds to wait between calls to JSOC to check the status
@@ -473,27 +477,26 @@ class JSOCClient(BaseClient):
             A Results object
 
         """
-
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
+
         # Make response iterable
         if not isiterable(responses):
             responses = [responses]
+
         # Add them to the response for good measure
         jsoc_response.requests = [r for r in responses]
         time.sleep(sleep/2.)
 
-        r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
-
         for response in responses:
             response.wait(verbose=progress)
-            r = self.get_request(response, path=path, overwrite=overwrite,
-                                 progress=progress, results=r)
 
-        return r
+        return self.get_request(responses, path=path, overwrite=overwrite,
+                                progress=progress, downloader=downloader,
+                                wait=wait)
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
-                    max_conn=5, downloader=None, results=None):
+                    downloader=None, wait=True):
         """
         Query JSOC to see if the request(s) is ready for download.
 
@@ -508,20 +511,23 @@ class JSOCClient(BaseClient):
         path : `str`
             Path to save data to, defaults to SunPy download dir.
 
-        overwrite : `bool`
-            Replace files with the same name if True.
+        progress : `bool`, optional
+            If `True` show a progress bar showing how many of the total files
+            have been downloaded. If `False`, no progress bar will be shown.
 
-        progress : `bool`
-            Print progress info to terminal.
+        overwrite : `bool` or `str`, optional
+            Determine how to handle downloading if a file already exists with the
+            same name. If `False` the file download will be skipped and the path
+            returned to the existing file, if `True` the file will be downloaded
+            and the existing file will be overwritten, if `'unique'` the filename
+            will be modified to be unique.
 
-        max_conns : `int`
-            Maximum number of download connections.
+        downloader : `parfive.Downloader`, optional
+            The download manager to use.
 
-        downloader : `~sunpy.net.download.Downloader`
-            A Custom downloader to use
-
-        results: `~sunpy.net.download.Results`
-            A `~sunpy.net.download.Results` manager to use.
+        wait : `bool`, optional
+           If `False` ``downloader.download()`` will not be called. Only has
+           any effect if `downloader` is not `None`.
 
         Returns
         -------
@@ -564,50 +570,30 @@ class JSOCClient(BaseClient):
                     fname = path
                 fname = fname.format(file=filename)
                 fname = os.path.expanduser(fname)
-                fname = partial(simple_path, fname)
                 paths.append(fname)
 
-        if downloader is None:
-            downloader = Downloader(max_conn=max_conn, max_total=max_conn)
-
-        # A Results object tracks the number of downloads requested and the
-        # number that have been completed.
-        if results is None:
-            results = Results(lambda _: downloader.stop(),
-                              done=lambda maps: [v['path'] for v in maps.values()])
+        dl_set = True
+        if not downloader:
+            dl_set = False
+            downloader = Downloader(progress=progress, overwrite=overwrite)
 
         urls = []
         for request in requests:
-
             if request.status == 0:
                 for index, data in request.data.iterrows():
-                    is_file = os.path.isfile(paths[index].args[0])
-                    if overwrite or not is_file:
-                        url_dir = request.request_url + '/'
-                        urls.append(urllib.parse.urljoin(url_dir, data['filename']))
-
-                    if not overwrite and is_file:
-                        print_message = "Skipping download of file {} as it " \
-                                        "has already been downloaded. " \
-                                        "If you want to redownload the data, "\
-                                        "please set overwrite to True"
-                        print(print_message.format(data['filename']))
-                        # Add the file on disk to the output
-                        results.map_.update({data['filename']:
-                                            {'path': paths[index].args[0]}})
+                    url_dir = request.request_url + '/'
+                    urls.append(urllib.parse.urljoin(url_dir, data['filename']))
         if urls:
             if progress:
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"
                 print(print_message.format(len(urls), request._d['size']))
-            for i, url in enumerate(urls):
-                downloader.download(url, callback=results.require([url]),
-                                    errback=lambda x: print(x), path=paths[i])
+            for aurl, fname in zip(urls, paths):
+                downloader.enqueue_file(aurl, filename=fname)
 
-        else:
-            # Make Results think it has finished.
-            results.require([])
-            results.poke()
+        if dl_set and not wait:
+            return Results()
 
+        results = downloader.download()
         return results
 
     def _make_recordset(self, series, start_time='', end_time='', wavelength='',

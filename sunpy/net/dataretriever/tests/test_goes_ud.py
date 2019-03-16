@@ -96,16 +96,14 @@ def test_query_error(LCClient):
 ])
 def test_get(LCClient, time, instrument):
     qr1 = LCClient.search(time, instrument)
-    res = LCClient.fetch(qr1)
-    download_list = res.wait(progress=False)
+    download_list = LCClient.fetch(qr1)
     assert len(download_list) == len(qr1)
 
 
 @pytest.mark.remote_data
 def test_new_logic(LCClient):
     qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
-    res = LCClient.fetch(qr)
-    download_list = res.wait(progress=False)
+    download_list = LCClient.fetch(qr)
     assert len(download_list) == len(qr)
 
 

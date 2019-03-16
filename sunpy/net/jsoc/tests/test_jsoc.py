@@ -6,9 +6,9 @@ import astropy.table
 import astropy.time
 import astropy.units as u
 import pytest
+from parfive import Results
 
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
-from sunpy.net.download import Results
 import sunpy.net.jsoc.attrs as attrs
 import sunpy.net.vso.attrs as vso_attrs
 
@@ -105,7 +105,7 @@ def test_wait_get():
     path = tempfile.mkdtemp()
     res = client.fetch(responses, path=path)
     assert isinstance(res, Results)
-    assert res.total == 1
+    assert len(res) == 1
 
 
 @pytest.mark.remote_data
@@ -302,9 +302,8 @@ def test_results_filenames():
         vso_attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     path = tempfile.mkdtemp()
-    aa = client.fetch(responses, path=path)
-    assert isinstance(aa, Results)
-    files = aa.wait(progress=False)
+    files = client.fetch(responses, path=path)
+    assert isinstance(files, Results)
     assert len(files) == len(responses)
-    for hmiurl in aa.map_:
+    for hmiurl in files:
         assert os.path.isfile(hmiurl)
