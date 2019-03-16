@@ -1,2 +1,3 @@
 Maps no longer assume that the pixel units are arcseconds if the units aren't
-explicitly set.
+explicitly set. In addition to this if critical metadata is missing from when
+creating a map, the map will fail to initialize and will raise an error.
