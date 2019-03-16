@@ -15,8 +15,6 @@ SunPy util
 
 .. automodapi:: sunpy.util.net
 
-.. automodapi:: sunpy.util.progressbar
-
 .. automodapi:: sunpy.util.xml
 
 .. automodapi:: sunpy.util.scraper

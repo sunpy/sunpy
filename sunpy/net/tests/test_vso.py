@@ -258,7 +258,7 @@ def test_path(client, tmpdir):
         va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
         va.Instrument('aia'), va.Wavelength(171 * u.AA))
     tmp_dir = tmpdir / "{file}"
-    files = client.fetch(qr, path=tmp_dir).wait(progress=False)
+    files = client.fetch(qr, path=tmp_dir)
 
     assert len(files) == 1
 
