@@ -16,7 +16,7 @@ User Documentation
    instr
    io
    map
-   net
+   net/index
    physics
    roi
    sun
