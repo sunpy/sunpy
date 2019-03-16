@@ -1,16 +1,15 @@
+import datetime
 from unittest import mock
 
 import pytest
-import parfive
 
-from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time, Instrument
-from sunpy.net.dataretriever.client import QueryResponse
-import sunpy.net.dataretriever.sources.noaa as noaa
-from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.dataretriever.sources import noaa
+from sunpy.net.vso.attrs import Instrument, Time
+from sunpy.time import parse_time
+from sunpy.time.timerange import TimeRange
 
 LCClient = noaa.NOAAIndicesClient()
 
@@ -31,7 +30,7 @@ def mock_query_object(start_date, end_date):
         'provider': 'swpc'
     }
 
-    resp = QueryResponse.create(map_, LCClient._get_default_uri())
+    resp = QueryResponse.create(map_, LCClient._get_url_for_timerange(None))
     # Attach the client with the QueryResponse
     resp.client = LCClient
     return resp
@@ -144,3 +143,20 @@ def test_fido(mock_wait, mock_search, mock_enqueue):
     # GenericClient tests or in parfive itself.
     assert mock_enqueue.called_once_with(("ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt",
                                           "/some/path/RecentIndices.txt"))
+
+
+@pytest.mark.remote_data
+def test_srs_tar_unpack():
+    qr = Fido.search(a.Instrument("soon") & a.Time("2015/01/01", "2015/01/01T23:59:29"))
+    res = Fido.fetch(qr)
+    assert len(res) == 1
+    assert res.data[0].endswith("20150101SRS.txt")
+
+
+@pytest.mark.remote_data
+def test_srs_current_year():
+    year = datetime.date.today().year
+    qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/01/01", f"{year}/01/01T23:59:29"))
+    res = Fido.fetch(qr)
+    assert len(res) == 1
+    assert res.data[0].endswith(f"{year}0101SRS.txt")

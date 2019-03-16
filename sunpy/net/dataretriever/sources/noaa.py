@@ -16,17 +16,12 @@ __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
 
 class NOAAIndicesClient(GenericClient):
-
     @staticmethod
-    def _get_default_uri():
-        """Return the url to download indices"""
-        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
-
-    def _get_url_for_timerange(self, timerange, **kwargs):
+    def _get_url_for_timerange(timerange, **kwargs):
         """
         Helper function:
         """
-        return NOAAIndicesClient._get_default_uri()
+        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
 
     def _makeimap(self):
         """
@@ -104,19 +99,7 @@ class NOAAPredictClient(GenericClient):
 
 
 class SRSClient(GenericClient):
-
-    @staticmethod
-    def _get_default_uri():
-        today = Time.now()
-        year = today.strftime('%Y')
-        date = today.strftime('%Y%m%d')
-        return [('ftp://ftp.swpc.noaa.gov/pub/warehouse/',
-                 '{0}/SRS/{1}SRS.txt').format(year, date)]
-
     def _get_url_for_timerange(self, timerange, **kwargs):
-
-        if not timerange:
-            return SRSClient._get_default_uri()
         result = list()
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
         total_days = int(timerange.days.value) + 1
@@ -213,7 +196,7 @@ class SRSClient(GenericClient):
             if past_year is False:
                 outfiles.append(fname)
 
-        paths.data = outfiles
+        paths.data = list(map(str, outfiles))
         return paths
 
     def _makeimap(self):
