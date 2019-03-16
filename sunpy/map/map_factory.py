@@ -243,7 +243,7 @@ class MapFactory(BasicRegistrationFactory):
         # order as the input, currently they are not.
         return data_header_pairs, already_maps
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
         to determine which is the correct Map-type to build.
@@ -254,15 +254,15 @@ class MapFactory(BasicRegistrationFactory):
 
         Parameters
         ----------
-        composite : boolean, optional
-            Indicates if collection of maps should be returned as a CompositeMap.
-            Default is ``False``.
+        composite : `bool`, optional
+            Indicates if collection of maps should be returned as a `~sunpy.map.CompositeMap`.
+            Default is `False`.
 
-        sequence : boolean, optional
-            Indicates if collection of maps should be returned as a MapSequence.
-            Default is ``False``.
+        sequence : `bool`, optional
+            Indicates if collection of maps should be returned as a `sunpy.map.MapSequence`.
+            Default is `False`.
 
-        silence_errors : boolean, optional
+        silence_errors : `bool`, optional
             If set, ignore data-header pairs which cause an exception.
             Default is ``False``.
 
@@ -271,12 +271,6 @@ class MapFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
         as `memmap` for FITS files.
         """
-
-        # Hack to get around Python 2.x not backporting PEP 3102.
-        composite = kwargs.pop('composite', False)
-
-        sequence = kwargs.pop('sequence', False)
-        silence_errors = kwargs.pop('silence_errors', False)
 
         data_header_pairs, already_maps = self._parse_args(*args, **kwargs)
 
