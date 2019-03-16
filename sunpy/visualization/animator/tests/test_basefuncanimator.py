@@ -1,13 +1,11 @@
-# -*- coding: utf-8 -*-
-
 from functools import partial
+
+import matplotlib.animation as mplanim
+import matplotlib.pyplot as plt
+import numpy as np
 import pytest
 
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as mplanim
-
-from sunpy.visualization.animator import base, BaseFuncAnimator
+from sunpy.visualization.animator import BaseFuncAnimator, base
 
 
 class FuncAnimatorTest(BaseFuncAnimator):
@@ -61,7 +59,7 @@ def test_edges_to_centers_nd():
     edges_axis = 0
     axis_range = np.zeros((10, 2))
     axis_range[:, 0] = np.arange(10, 20)
-    expected = np.zeros((9,2))
+    expected = np.zeros((9, 2))
     expected[:, edges_axis] = np.arange(10.5, 19)
     output = base.edges_to_centers_nd(axis_range, edges_axis)
     assert np.array_equal(output, expected)
