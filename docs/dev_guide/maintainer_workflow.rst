@@ -6,7 +6,7 @@ Workflow for Maintainers
 
 This page is for maintainers who can merge our own or other peoples' changes into the upstream repository.
 
-Being as how you're a maintainer, you are completely on top of the basic git stuff in :ref:`newcomers`.
+Being as how you're a maintainer, you are completely on top of the basic git stuff in :ref:`newcomers` and `Astropy's git workflow <http://docs.astropy.org/en/stable/development/workflow/development_workflow.html#development-workflow>`_.
 
 Integrating changes via the web interface (recommended)
 =======================================================
