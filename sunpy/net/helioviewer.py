@@ -106,6 +106,7 @@ class HelioviewerClient(object):
         --------
         >>> from sunpy.net import helioviewer
         >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
+        >>> # We can just pass the observatory and measurement or instrument and measurement to get the value for source ID.
         >>> metadata = client.get_closest_image('2012/01/01', source_id=11)  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
         2012-01-01T00:00:07.000
@@ -164,6 +165,7 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
+        >>> # We can just pass the observatory and measurement or instrument and measurement to get the value for source ID.
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO',
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', measurement='continuum')  # doctest: +REMOTE_DATA
@@ -216,6 +218,7 @@ class HelioviewerClient(object):
         --------
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
+        >>> # We can just pass the observatory and measurement or instrument and measurement to get the value for source ID.
         >>> header = hv.get_jp2_header('2012/07/03', observatory='SDO',
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
         >>> # The key 'fits' can be used to get the fits header information
