@@ -21,7 +21,7 @@ We provide the follwing functions:
 3. Return all available datasources.
 4. Generates custom screenshots that allow labels and layers of images.
 5. Download the header information present in a JPEG2000 image. This includes:
-    - FITS header 
+    - FITS header
     - Helioviewer-specific metadata.
 
 Nearly all requests require the user to specify the data they are interested in.
@@ -142,7 +142,7 @@ Since this is a JPEG 2000 image, to plot this image you can either call Glymur d
 The better method is to load the image into a SunPy Map object::
 
    >>> from sunpy.map import Map
-   >>> aia = Map(file)  # doctest: +REMOTE_DATA
+   >>> aia = Map(file)  # doctest: +SKIP
    >>> aia.peek()  # doctest: +SKIP
 
 .. image:: helioviewer-1.png
@@ -160,7 +160,7 @@ In this example we will query Helioviewer for the relevant JPEG 2000 file closes
    >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
    >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO',
    ...                            instrument='HMI', measurement='continuum')  # doctest: +REMOTE_DATA
-   >>> hmi = Map(filepath)  # doctest: +REMOTE_DATA
+   >>> hmi = Map(filepath)  # doctest: +SKIP
    >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
    >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA
    >>> hmi.submap(xrange, yrange).peek()  # doctest: +SKIP

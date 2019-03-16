@@ -71,14 +71,15 @@ class ImageAnimator(ArrayAnimator):
         # and hence how to plot and update it.
         self._non_regular_plot_axis = False
         # Run init for parent class
-        super(ImageAnimator, self).__init__(data, image_axes=image_axes,
-                                            axis_ranges=axis_ranges, **kwargs)
+        super().__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def plot_start_image(self, ax):
         """Sets up plot of initial image."""
         # Create extent arg
         extent = []
         # reverse because numpy is in y-x and extent is x-y
+        if max([len(self.axis_ranges[i]) for i in self.image_axes[::-1]]) > 2:
+            self._non_regular_plot_axis = True
         for i in self.image_axes[::-1]:
             if self._non_regular_plot_axis is False and len(self.axis_ranges[i]) > 2:
                 self._non_regular_plot_axis = True
@@ -86,8 +87,7 @@ class ImageAnimator(ArrayAnimator):
             extent.append(self.axis_ranges[i][-1])
 
         imshow_args = {'interpolation': 'nearest',
-                       'origin': 'lower',
-                       'extent': extent}
+                       'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
 
         # If value along an axis is set with an array, generate a NonUniformImage
@@ -100,22 +100,14 @@ class ImageAnimator(ArrayAnimator):
             # Initialize a NonUniformImage with the relevant data and axis values and
             # add the image to the axes.
             im = mpl.image.NonUniformImage(ax, **imshow_args)
-            im.set_data(self.axis_ranges[self.image_axes[0]],
-                        self.axis_ranges[self.image_axes[1]], data)
+            im.set_data(axis_ranges[self.image_axes[0]], axis_ranges[self.image_axes[1]], data)
             ax.add_image(im)
-            # Define the xlim and ylim bearing in mind that the pixel values along
-            # the axes are plotted in the middle of the pixel.  Therefore make sure
-            # there's half a pixel buffer either side of the ends of the axis ranges.
-            x_ranges = self.axis_ranges[self.image_axes[0]]
-            xlim = (x_ranges[0] - (x_ranges[1] - x_ranges[0]) / 2.,
-                    x_ranges[-1] + (x_ranges[-1] - x_ranges[-2]) / 2.)
-            y_ranges = self.axis_ranges[self.image_axes[1]]
-            ylim = (y_ranges[0] - (y_ranges[1] - y_ranges[0]) / 2.,
-                    y_ranges[-1] + (y_ranges[-1] - y_ranges[-2]) / 2.)
-            ax.set_xlim(xlim)
-            ax.set_ylim(ylim)
+            # Define the xlim and ylim from the pixel edges.
+            ax.set_xlim(self.extent[0], self.extent[1])
+            ax.set_ylim(self.extent[2], self.extent[3])
         else:
             # Else produce a more basic plot with regular axes.
+            imshow_args.update({'extent': extent})
             im = ax.imshow(self.data[self.frame_index], **imshow_args)
         if self.if_colorbar:
             self._add_colorbar(im)
@@ -124,9 +116,8 @@ class ImageAnimator(ArrayAnimator):
 
     def update_plot(self, val, im, slider):
         """Updates plot based on slider/array dimension being iterated."""
-        val = int(val)
+        ind = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
-        ind = int(np.argmin(np.abs(self.axis_ranges[ax_ind] - val)))
         self.frame_slice[ax_ind] = ind
         if val != slider.cval:
             if self._non_regular_plot_axis:
@@ -139,6 +130,8 @@ class ImageAnimator(ArrayAnimator):
             else:
                 im.set_array(self.data[self.frame_index])
             slider.cval = val
+        # Update slider label to reflect real world values in axis_ranges.
+        super().update_plot(val, im, slider)
 
 
 class ImageAnimatorWCS(ImageAnimator):
@@ -214,8 +207,7 @@ class ImageAnimatorWCS(ImageAnimator):
         self.slices_wcsaxes = list_slices_wcsaxes[::-1]
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
-        super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes,
-                                               axis_ranges=axis_ranges, **kwargs)
+        super().__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def _get_main_axes(self):
         axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
@@ -246,9 +238,8 @@ class ImageAnimatorWCS(ImageAnimator):
 
     def update_plot(self, val, im, slider):
         """Updates plot based on slider/array dimension being iterated."""
-        val = int(val)
+        ind = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
-        ind = int(np.argmin(np.abs(self.axis_ranges[ax_ind] - val)))
         self.frame_slice[ax_ind] = ind
         list_slices_wcsaxes = list(self.slices_wcsaxes)
         list_slices_wcsaxes[self.wcs.naxis-ax_ind-1] = val
@@ -258,3 +249,5 @@ class ImageAnimatorWCS(ImageAnimator):
             self._set_unit_in_axis(self.axes)
             im.set_array(self.data[self.frame_index])
             slider.cval = val
+        # Update slider label to reflect real world values in axis_ranges.
+        super().update_plot(val, im, slider)

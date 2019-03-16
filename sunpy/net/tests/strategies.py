@@ -3,6 +3,7 @@ Provide a set of Hypothesis Strategies for various Fido related tests.
 """
 import datetime
 
+import numpy as np
 import hypothesis.strategies as st
 from hypothesis import assume
 from hypothesis.strategies import one_of, datetimes, sampled_from
@@ -47,9 +48,9 @@ def TimeDelta(draw):
 def offline_instruments():
     """
     Returns a strategy for any instrument that does not need the internet to do
-    a query
+    a query.
     """
-    offline_instr = ['lyra', 'noaa-indices', 'noaa-predict', 'goes']
+    offline_instr = ['lyra', 'noaa-indices', 'noaa-predict', 'soon', 'goes']
     offline_instr = st.builds(a.Instrument, st.sampled_from(offline_instr))
 
     return st.one_of(offline_instr)
@@ -57,10 +58,10 @@ def offline_instruments():
 
 def online_instruments():
     """
-    Returns a strategy for any instrument that does not need the internet to do
-    a query
+    Returns a strategy for any instrument that does need the internet to do
+    a query.
     """
-    online_instr = ['rhessi']
+    online_instr = ['eve', 'rhessi', 'norh']
     online_instr = st.builds(a.Instrument, st.sampled_from(online_instr))
 
     return online_instr
@@ -97,13 +98,11 @@ def goes_time(draw, time=Times(
     assume(t2 < Time.now())
 
     # There is no GOES data for this date.
-    # We seem to pick up an extra micro or millisecond when we create t1
-    # This seems to be test dependant.
-    # `test_fido_indexing` adds 1 millisecond.
-    # `test_offline_fido` adds 1 microsecond.
-    # TODO: Track this issue down.
     assume(not (t1 <= Time('1983-05-01') <= t2))
     assume(not (t1 <= (Time('1983-05-01') + delta) <= t2))
+    # This checks if the range start and stops on that day.
+    assume((np.abs(Time('1983-05-01') - t1)) > astropy.time.TimeDelta(0.01))
+    assume((np.abs(Time('1983-05-01') - t2)) > astropy.time.TimeDelta(0.01))
 
     tr = TimeRange(t1, t2)
 

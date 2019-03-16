@@ -1,23 +1,21 @@
 import os
 import copy
-import tempfile
 import pathlib
 
 import pytest
 import hypothesis.strategies as st
-from hypothesis import given, assume, example, settings
+from hypothesis import given, assume, settings
 
 import astropy.units as u
 from drms import DrmsQueryError
 
 from sunpy.net import attr
-from sunpy.net.vso import attrs as va
 from sunpy.net import Fido, attrs as a
 from sunpy.net.base_client import BaseClient
 from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
 from sunpy.net.dataretriever.client import QueryResponse
-from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
+from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.time import TimeRange, parse_time
 from sunpy import config
 
@@ -34,8 +32,6 @@ def offline_query(draw, instrument=offline_instruments()):
     """
     query = draw(instrument)
     # If we have AttrAnd then we don't have GOES
-    if isinstance(query, a.Instrument) and query.value == 'norh':
-        query &= a.Wavelength(17*u.GHz)
     if isinstance(query, a.Instrument) and query.value == 'goes':
         query &= draw(goes_time())
     else:
@@ -44,16 +40,14 @@ def offline_query(draw, instrument=offline_instruments()):
 
 
 @st.composite
-def online_query(draw, instrument=online_instruments(), time=time_attr()):
+def online_query(draw, instrument=online_instruments()):
     query = draw(instrument)
-    # If we have AttrAnd then we don't have RHESSI
-    if isinstance(query, a.Instrument) and query.value == 'rhessi':
-        # Build a time attr which does not span a month.
-        year = draw(st.integers(min_value=2003, max_value=2017))
-        month = draw(st.integers(min_value=1, max_value=12))
-        days = draw(st.integers(min_value=1, max_value=28))
-        query = query & a.Time("{}-{}-01".format(year, month, days),
-                               "{}-{}-{}".format(year, month, days))
+
+    if isinstance(query, a.Instrument) and query.value == 'eve':
+        query &= a.Level(0)
+    if isinstance(query, a.Instrument) and query.value == 'norh':
+        query &= a.Wavelength(17*u.GHz)
+
     return query
 
 
@@ -64,10 +58,15 @@ def test_offline_fido(query):
     check_response(query, unifiedresp)
 
 
-@settings(deadline=50000)
 @pytest.mark.remote_data
 @pytest.mark.flaky(reruns=5)
-@given(online_query())
+# Until we get more mocked, we can't really do this to online clients.
+# TODO: Hypothesis this again
+@pytest.mark.parametrize("query", [
+    (a.Instrument('eve') & a.Time('2014/7/7', '2014/7/14') & a.Level(0)),
+    (a.Instrument('rhessi') & a.Time('2014/7/7', '2014/7/14')),
+    (a.Instrument('norh') & a.Time('2014/7/7', '2014/7/14') & a.Wavelength(17*u.GHz)),
+])
 def test_online_fido(query):
     unifiedresp = Fido.search(query)
     check_response(query, unifiedresp)
@@ -95,29 +94,30 @@ def check_response(query, unifiedresp):
 
 
 @pytest.mark.remote_data
-def test_save_path():
+def test_save_path(tmpdir):
     qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
 
     # Test when path is str
-    with tempfile.TemporaryDirectory() as target_dir:
-        files = Fido.fetch(qr, path=os.path.join(target_dir, "{instrument}", "{level}"))
-        for f in files:
-            assert target_dir in f
-            assert "eve{}0".format(os.path.sep) in f
+    target_dir = tmpdir.mkdir("down")
+    path = os.path.join(target_dir, "{instrument}", "{level}")
+    files = Fido.fetch(qr, path=path)
+    for f in files:
+        assert target_dir.strpath in f
+        assert "eve{}0".format(os.path.sep) in f
 
 
 @pytest.mark.remote_data
-def test_save_path_pathlib():
-    pathlib = pytest.importorskip('pathlib')
+@pytest.mark.flaky(reruns=5)
+def test_save_path_pathlib(tmpdir):
     qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
 
     # Test when path is pathlib.Path
-    with tempfile.TemporaryDirectory() as target_dir:
-        path = pathlib.Path(target_dir, "{instrument}", "{level}")
-        files = Fido.fetch(qr, path=path)
-        for f in files:
-            assert target_dir in f
-            assert "eve{}0".format(os.path.sep) in f
+    target_dir = tmpdir.mkdir("down")
+    path = pathlib.Path(target_dir, "{instrument}", "{level}")
+    files = Fido.fetch(qr, path=path)
+    for f in files:
+        assert target_dir.strpath in f
+        assert "eve{}0".format(os.path.sep) in f
 
 
 """
