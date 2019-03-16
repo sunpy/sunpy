@@ -1,19 +1,13 @@
-------------------------
+************************
 Using SunPy's HEK module
-------------------------
+************************
 
-The Heliophysics Event Knowledgebase (HEK) is a repository of feature
-and event information about the Sun.  Entries are generated both
-by automated algorithms and human observers.  SunPy accesses this
-information through the `hek` module, which was developed through
-support from the European Space Agency Summer of Code in Space
-(ESA-SOCIS) 2011.
+The Heliophysics Event Knowledgebase (HEK) is a repository of feature and event information about the Sun. Entries are generated both by automated algorithms and human observers. SunPy accesses this information through the hek module, which was developed through support from the European Space Agency Summer of Code in Space (ESA-SOCIS) 2011.
 
 1. Setting up the client
-------------------------
+========================
 
-SunPy's HEK module is in sunpy.net.  It can be imported into your
-session as follows:
+SunPy’s HEK module is in sunpy.net. It can be imported into your session as follows:
 
     >>> from sunpy.net import hek
     >>> client = hek.HEKClient()  # doctest: +REMOTE_DATA
@@ -21,12 +15,9 @@ session as follows:
 This creates a client that we will use to interact with the HEK.
 
 2. A simple query
------------------
+========================
 
-To search the HEK, you need a start time, an end time, and an event
-type.  Times are specified as strings or Python datetime objects.  Event types
-are specified as upper case, two letter strings, and are identical to
-the two letter abbreviations found at the HEK website,
+To search the HEK, you need a start time, an end time, and an event type. Times are specified as strings or Python datetime objects. Event types are specified as upper case, two letter strings, and are identical to the two letter abbreviations found at the HEK website,
 http://www.lmsal.com/hek/VOEvent_Spec.html.
 
     >>> tstart = '2011/08/09 07:23:56'
@@ -42,17 +33,17 @@ in the HEK within the time range 2011/08/09 07:23: 56 UT - 2011/08/09
 12:40:20 UT will be returned, regardless of which feature recognition
 method used to detect the flare.
 
-Let's break down the arguments of client.search.  The first argument::
+Let's break down the arguments of client.search.  The first argument :
 
     hek.attrs.Time(tstart,tend)
 
-sets the start and end times for the query.  The second argument::
+sets the start and end times for the query.  The second argument:
 
     hek.attrs.EventType(event_type)
 
 sets the type of event to look for.  Since we have defined event_type
 = 'FL', this sets the query to look for flares.  We could have also
-set the flare event type using the syntax::
+set the flare event type using the syntax :
 
     hek.attrs.FL
 
@@ -61,25 +52,19 @@ guide.
 
 
 3. The result
--------------
+=============
 
 So, how many flare detections did the query turn up?
 
     >>> len(result)  # doctest: +REMOTE_DATA
     19
 
-The object returned by the above query is a list of Python dictionary
-objects. Each dictionary consists of key-value pairs that exactly
-correspond to the parameters listed at
-http://www.lmsal.com/hek/VOEvent_Spec.html. You can inspect all the
-dictionary keys very simply:
+The object returned by the above query is a list of Python dictionary objects. Each dictionary consists of key-value pairs that exactly correspond to the parameters listed at http://www.lmsal.com/hek/VOEvent_Spec.html. You can inspect all the dictionary keys very simply:
+
+>>>
 
     >>> result[0].keys() # doctest:+SKIP
-    [u'skel_startc1',
-     u'concept',
-     u'frm_versionnumber',
-     u'hrc_coord',
-     u'refs_orig',....
+    [u'skel_startc1',u'concept',u'frm_versionnumber',u'hrc_coord',u'refs_orig',....
 
 and so on. Remember, the HEK query we made returns all the flares in
 the time-range stored in the HEK, regardless of the feature
@@ -113,7 +98,7 @@ It is likely each flare on the Sun was actually detected multiple
 times by many different methods.
 
 4. More complex queries
------------------------
+=======================
 
 The HEK client allows you to make more complex queries.  There are two
 key features you need to know in order to make use of the full power
@@ -148,7 +133,7 @@ command is your friend here; scroll down to section DATA you will see:
     etc etc...
 
 The object hek.attrs knows the attributes of the HEK.  You'll see that
-one of the attributes is a flare object::
+one of the attributes is a flare object :
 
     FL = <sunpy.net.hek.attrs.FL object>
 
@@ -156,39 +141,39 @@ We can replace hek.attrs.EventType('FL') with hek.attrs.FL - they do
 the same thing, setting the query to look for flare events.  Both
 methods of setting the event type are provided as a convenience
 
-Let's look further at the FRM attribute::
+Let's look further at the FRM attribute :
 
     >>> help(hek.attrs.FRM) # doctest:+SKIP
     Help on FRM in module sunpy.net.hek.attrs object:
     class FRM(__builtin__.object)
-     |  Data descriptors defined here:
-     |
-     |  __dict__
-     |      dictionary for instance variables (if defined)
-     |
-     |  __weakref__
-     |      list of weak references to the object (if defined)
-     |
-     |  ----------------------------------------------------------------------
-     |  Data and other attributes defined here:
-     |
-     |  Contact = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |
-     |  HumanFlag = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |
-     |  Identifier = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |
-     |  Institute = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |
-     |  Name = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |
-     |  ParamSet = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |
-     |  SpecificID = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |
-     |  URL = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |
-     |  VersionNumber = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
+ |  Data descriptors defined here:
+ |
+ |  __dict__
+ |      dictionary for instance variables (if defined)
+ |
+ |  __weakref__
+ |      list of weak references to the object (if defined)
+ |
+ |  ----------------------------------------------------------------------
+ |  Data and other attributes defined here:
+ |
+ |  Contact = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
+ |
+ |  HumanFlag = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
+ |
+ |  Identifier = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
+ |
+ |  Institute = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
+ |
+ |  Name = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
+ |
+ |  ParamSet = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
+ |
+ |  SpecificID = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
+ |
+ |  URL = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
+ |
+ |  VersionNumber = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
 
 Let's say I am only interested in those flares identified by the SSW
 Latest Events tool.  I can retrieve those entries only from the HEK
@@ -262,7 +247,7 @@ cases the client returns only those results from the HEK that
 definitely satisfy the criteria passed to it.
 
 5. Getting data for your event
-------------------------------
+==============================
 
 The 'hek2vso' module allows you to take an HEK event and acquire VSO
 records specific to that event.
