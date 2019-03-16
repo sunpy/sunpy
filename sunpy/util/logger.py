@@ -5,10 +5,11 @@ from astropy.logger import AstropyLogger
 
 def _init_log(config=None):
     """
-    Initializes the SunPy log--in most circumstances this is called automatically when importing sunpy.
-    This code is based on that provided by Astropy see licenses/ASTROPY.rst.
-    """
+    Initializes the SunPy log.
 
+    In most circumstances this is called automatically when importing SunPy.
+    This code is based on that provided by Astropy see "licenses/ASTROPY.rst".
+    """
     orig_logger_cls = logging.getLoggerClass()
     logging.setLoggerClass(AstropyLogger)
     try:
@@ -23,7 +24,9 @@ def _init_log(config=None):
 
 
 def _config_to_loggerConf(config):
-    """Translate user-provided config to Astropy's LoggerConf. """
+    """
+    Translates a user-provided config to ~`astropy.logger.LoggerConf`.
+    """
 
     if config.has_section('logger'):
         from astropy.logger import Conf as LoggerConf

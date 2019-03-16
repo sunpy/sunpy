@@ -1,5 +1,8 @@
-import platform
+"""
+This module provides functions to retrieve system information.
+"""
 import datetime
+import platform
 
 __all__ = ['get_sys_dict', 'system_info']
 
@@ -10,18 +13,13 @@ def get_sys_dict():
 
     Returns
     -------
-    sys_prop : `dict`
-        A dictionary containing the programs and versions installed on this
-        machine
-
+    `dict`
+        A dictionary containing the programs and versions installed on this machine.
     """
-
     try:
         from sunpy.version import version as sunpy_version
-        from sunpy.version import githash as sunpy_git_description
     except ImportError:
-        sunpy_version = 'Missing version.py; re-run setup.py'
-        sunpy_git_description = 'N/A'
+        sunpy_version = 'Missing sunpy version.'
 
     # Dependencies
     try:
@@ -56,6 +54,7 @@ def get_sys_dict():
 
     try:
         from PyQt4.QtCore import PYQT_VERSION_STR as pyqt_version
+        from PyQt5.QtCore import PYQT_VERSION_STR as pyqt_version
     except ImportError:
         pyqt_version = "NOT INSTALLED"
 
@@ -69,23 +68,34 @@ def get_sys_dict():
     except ImportError:
         sqlalchemy_version = "NOT INSTALLED"
 
+    try:
+        from parfive import __version__ as parfive_version
+    except ImportError:
+        parfive_version = "NOT INSTALLED"
+
+    try:
+        from drms import __version__ as drms_version
+    except ImportError:
+        drms_version = "NOT INSTALLED"
+
     sys_prop = {'Time': datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
                 'System': platform.system(), 'Processor': platform.processor(),
-                'SunPy': sunpy_version, 'SunPy_git': sunpy_git_description,
+                'SunPy': sunpy_version,
                 'Arch': platform.architecture()[0], "Python": platform.python_version(),
                 'NumPy': numpy_version,
                 'SciPy': scipy_version, 'matplotlib': matplotlib_version,
                 'Astropy': astropy_version, 'Pandas': pandas_version,
                 'beautifulsoup': bs4_version, 'PyQt': pyqt_version,
-                'Zeep': zeep_version, 'Sqlalchemy': sqlalchemy_version
+                'Zeep': zeep_version, 'Sqlalchemy': sqlalchemy_version,
+                'parfive': parfive_version, 'drms': drms_version
                 }
     return sys_prop
 
 
 def system_info():
     """
-    Takes dictionary from sys_info() and prints the contents in an attractive fashion.
-
+    Takes dictionary from sys_info() and prints the contents in an attractive
+    fashion.
     """
     sys_prop = get_sys_dict()
 
@@ -120,7 +130,7 @@ def system_info():
     print(" Required Libraries ")
     print("###########")
 
-    for sys_info in ['Python', 'NumPy', 'SciPy', 'matplotlib', 'Astropy', 'Pandas']:
+    for sys_info in ['Python', 'NumPy', 'SciPy', 'matplotlib', 'Astropy', 'Pandas', 'parfive']:
         print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
 
     print("\n")
@@ -130,5 +140,5 @@ def system_info():
     print(" Recommended Libraries ")
     print("###########")
 
-    for sys_info in ['beautifulsoup', 'PyQt', 'Zeep', 'Sqlalchemy']:
+    for sys_info in ['beautifulsoup', 'PyQt', 'Zeep', 'Sqlalchemy', 'drms']:
         print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
