@@ -72,6 +72,10 @@ def get_and_create_download_dir():
     """
     Get the config of download directory and create one if not present.
     """
+    download_dir = os.environ.get('SUNPY_DOWNLOADDIR')
+    if download_dir:
+        return download_dir
+
     download_dir = Path(sunpy.config.get('downloads', 'download_dir')).expanduser().resolve()
     if not _is_writable_dir(download_dir):
         raise RuntimeError(f'Could not write to SunPy downloads directory="{download_dir}"')
