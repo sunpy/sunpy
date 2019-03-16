@@ -8,7 +8,7 @@ The following files are available in this submodule:
 import sys
 from pathlib import Path
 
-from ._sample import _base_urls, _sample_files, download_sample_data
+from ._sample import _sample_files, download_sample_data
 
 files = download_sample_data()
 
