@@ -123,13 +123,11 @@ class TestHelioviewerClient:
         filepath_2 = client.download_jp2('2020/01/01', observatory='SOHO',
                                          instrument='MDI', measurement='continuum',
                                          overwrite=False)
-        assert filepath_2 is not filepath
+        assert filepath_2 == filepath
         filepath_3 = client.download_jp2('2020/01/01', observatory='SOHO',
                                          instrument='MDI', measurement='continuum',
                                          overwrite=True)
         assert filepath_3 == filepath
-        os.remove(filepath)
-        os.remove(filepath_2)
 
     def test_overwrite_png(self, client):
         """
@@ -143,5 +141,3 @@ class TestHelioviewerClient:
         filepath_3 = client.download_png('2020/01/01', 2.4, "[SOHO,MDI,continuum,1,100]",
                                          overwrite=True)
         assert filepath_3 == filepath
-        os.remove(filepath)
-        os.remove(filepath_2)
