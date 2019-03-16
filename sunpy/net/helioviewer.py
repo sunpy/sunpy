@@ -76,6 +76,8 @@ class HelioviewerClient(object):
                           detector=None, measurement=None, source_id=None):
         """
         Finds the closest image available for the specified source and date.
+        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+        can then be used to get required information.
         **This does not download any file.**
 
         This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`_ from the Helioviewer API.
@@ -106,7 +108,6 @@ class HelioviewerClient(object):
         --------
         >>> from sunpy.net import helioviewer
         >>> client = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> # We can just pass the observatory and measurement or instrument and measurement to get the value for source ID.
         >>> metadata = client.get_closest_image('2012/01/01', source_id=11)  # doctest: +REMOTE_DATA
         >>> print(metadata['date'])  # doctest: +REMOTE_DATA
         2012-01-01T00:00:07.000
@@ -131,7 +132,8 @@ class HelioviewerClient(object):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
-
+        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+        can then be used to get required information.
         This uses `getJP2Image <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
 
         Parameters
@@ -165,7 +167,6 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> # We can just pass the observatory and measurement or instrument and measurement to get the value for source ID.
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO',
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', measurement='continuum')  # doctest: +REMOTE_DATA
@@ -188,7 +189,8 @@ class HelioviewerClient(object):
         """
         Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section
         of Helioviewer-specific metadata.
-
+        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+        can then be used to get required information.
         This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
 
         Parameters
@@ -218,7 +220,6 @@ class HelioviewerClient(object):
         --------
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> # We can just pass the observatory and measurement or instrument and measurement to get the value for source ID.
         >>> header = hv.get_jp2_header('2012/07/03', observatory='SDO',
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
         >>> # The key 'fits' can be used to get the fits header information
