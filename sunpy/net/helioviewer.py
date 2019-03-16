@@ -76,11 +76,13 @@ class HelioviewerClient(object):
                           detector=None, measurement=None, source_id=None):
         """
         Finds the closest image available for the specified source and date.
-        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-        can then be used to get required information.
         **This does not download any file.**
 
         This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`_ from the Helioviewer API.
+
+        .. note::
+            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+            can then be used to get required information.
 
         Parameters
         ----------
@@ -135,6 +137,10 @@ class HelioviewerClient(object):
         We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
         can then be used to get required information.
         This uses `getJP2Image <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+
+        .. note::
+            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+            can then be used to get required information.
 
         Parameters
         ----------
@@ -192,6 +198,10 @@ class HelioviewerClient(object):
         We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
         can then be used to get required information.
         This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+
+        .. note::
+            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+            can then be used to get required information.
 
         Parameters
         ----------
