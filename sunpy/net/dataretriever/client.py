@@ -1,30 +1,25 @@
 # -*- coding: utf-8 -*-
 import copy
-import os
+from pathlib import Path
 from collections import OrderedDict, namedtuple
-from functools import partial
-import pathlib
 
 import numpy as np
+from parfive import Downloader
+
 import astropy.table
 import astropy.units as u
 
-import sunpy
-from sunpy.time import TimeRange
-from sunpy.util import replacement_filename
-from sunpy import config
+import parfive
 
+import sunpy
+from sunpy import config
 from sunpy.net.base_client import BaseClient
-from sunpy.net.download import Downloader, Results
 from sunpy.net.vso.attrs import Time, Wavelength, _Range
+from sunpy.time import TimeRange
 
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['QueryResponse', 'GenericClient']
-
-
-def simple_path(path, sock, url):
-    return path
 
 
 class QueryResponseBlock(object):
@@ -237,24 +232,20 @@ class GenericClient(BaseClient):
         List of full pathnames for each file (download_directory + filename)
         """
         # Create function to compute the filepath to download to if not set
-        default_dir = sunpy.config.get("downloads", "download_dir")
+        default_dir = Path(sunpy.config.get("downloads", "download_dir"))
 
         paths = []
         for i, filename in enumerate(filenames):
+            fname = Path(filename)
             if path is None:
-                fname = os.path.join(default_dir, '{file}')
-            elif isinstance(path, str) and '{file}' not in path:
-                fname = os.path.join(path, '{file}')
+                fname = default_dir / '{file}'
+            elif '{file}' not in str(path):
+                fname = path / '{file}'
 
             temp_dict = qres[i]._map.copy()
-            temp_dict['file'] = filename
-            fname = fname.format(**temp_dict)
-            fname = os.path.expanduser(fname)
-
-            if os.path.exists(fname):
-                fname = replacement_filename(fname)
-
-            fname = partial(simple_path, fname)
+            temp_dict['file'] = str(filename)
+            fname = fname.expanduser()
+            fname = Path(str(fname).format(**temp_dict))
 
             paths.append(fname)
 
@@ -290,7 +281,8 @@ class GenericClient(BaseClient):
                 return QueryResponse.create(self.map_, urls, times)
         return QueryResponse.create(self.map_, urls)
 
-    def fetch(self, qres, path=None, error_callback=None, **kwargs):
+    def fetch(self, qres, path=None, overwrite=False,
+              progress=True, downloader=None, wait=True):
         """
         Download a set of results.
 
@@ -299,24 +291,36 @@ class GenericClient(BaseClient):
         qres : `~sunpy.net.dataretriever.QueryResponse`
             Results to download.
 
-        path : string or pathlib.Path
-            Path to the download directory
+        path : `str` or `pathlib.Path`, optional
+            Path to the download directory, or file template including the
+            ``{file}`` string which will be replaced with the filename.
 
-        error_callback : Function
-            Callback function for error during downloads
+        progress : `bool`, optional
+            If `True` show a progress bar showing how many of the total files
+            have been downloaded. If `False`, no progress bar will be shown.
+
+        overwrite : `bool` or `str`, optional
+            Determine how to handle downloading if a file already exists with the
+            same name. If `False` the file download will be skipped and the path
+            returned to the existing file, if `True` the file will be downloaded
+            and the existing file will be overwritten, if `'unique'` the filename
+            will be modified to be unique.
+
+        downloader : `parfive.Downloader`, optional
+            The download manager to use.
+
+        wait : `bool`, optional
+           If `False` ``downloader.download()`` will not be called. Only has
+           any effect if `downloader` is not `None`.
 
         Returns
         -------
-        Results Object
+
+        results: `parfive.Results`
+
         """
-        # Check for type of path
         if path is not None:
-            if isinstance(path, pathlib.Path):
-                path = str(path.absolute())
-            elif not isinstance(path, str):
-                err = "path should be either 'pathlib.Path' or 'str'. "\
-                    "Got '{}'.".format(type(path))
-                raise TypeError(err)
+            path = Path(path)
 
         urls = [qrblock.url for qrblock in qres]
 
@@ -324,17 +328,18 @@ class GenericClient(BaseClient):
 
         paths = self._get_full_filenames(qres, filenames, path)
 
-        res = Results(lambda x: None, 0, lambda map_: self._link(map_))
+        dl_set = True
+        if not downloader:
+            dl_set = False
+            downloader = Downloader(progress=progress, overwrite=overwrite)
 
-        dobj = Downloader(max_conn=len(urls), max_total=len(urls))
+        for url, filename in zip(urls, paths):
+            downloader.enqueue_file(url, filename=filename)
 
-        # We cast to list here in list(zip... to force execution of
-        # res.require([x]) at the start of the loop.
-        for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                                     urls), paths)):
-            dobj.download(aurl, fname, ncall, error_callback)
+        if dl_set and not wait:
+            return
 
-        return res
+        return downloader.download()
 
     def _link(self, map_):
         """Helper Function"""

@@ -1,15 +1,15 @@
+import datetime
 from unittest import mock
 
 import pytest
 
-from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time, Instrument
-from sunpy.net.dataretriever.client import QueryResponse
-import sunpy.net.dataretriever.sources.noaa as noaa
-from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.dataretriever.sources import noaa
+from sunpy.net.vso.attrs import Instrument, Time
+from sunpy.time import parse_time
+from sunpy.time.timerange import TimeRange
 
 LCClient = noaa.NOAAIndicesClient()
 
@@ -30,7 +30,7 @@ def mock_query_object(start_date, end_date):
         'provider': 'swpc'
     }
 
-    resp = QueryResponse.create(map_, LCClient._get_default_uri())
+    resp = QueryResponse.create(map_, LCClient._get_url_for_timerange(None))
     # Attach the client with the QueryResponse
     resp.client = LCClient
     return resp
@@ -64,8 +64,7 @@ def test_fetch_working(tmpdir):
     assert qr1.time_range() == TimeRange('2012/10/4', '2012/10/6')
 
     target_dir = tmpdir.mkdir("down")
-    res = LCClient.fetch(qr1, path=target_dir.strpath)
-    download_list = res.wait(progress=False)
+    download_list = LCClient.fetch(qr1, path=target_dir)
     assert len(download_list) == len(qr1)
     assert download_list[0].split('/')[-1] == 'RecentIndices.txt'
 
@@ -110,23 +109,54 @@ def test_query(mock_search):
 
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
             return_value=mock_query_object('2012/10/4', '2012/10/6'))
-@mock.patch('sunpy.net.download.Results.wait',
-            return_value=['some/path/extension/RecentIndices.txt'])
-def test_fetch(mock_wait, mock_search):
+# The return value of download is irrelevant
+@mock.patch('parfive.Downloader.download',
+            return_value=None)
+@mock.patch('parfive.Downloader.enqueue_file')
+def test_fetch(mock_wait, mock_search, mock_enqueue):
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
                           Instrument('noaa-indices'))
-    res = LCClient.fetch(qr1)
-    download_list = res.wait(progress=False)
-    assert len(download_list) == len(qr1)
+    LCClient.fetch(qr1, path="/some/path/{file}")
+
+    # Here we assert that the `fetch` function has called the parfive
+    # Downloader.enqueue_file method with the correct arguments. Everything
+    # that happens after this point should either be tested in the
+    # GenericClient tests or in parfive itself.
+    assert mock_enqueue.called_once_with(("ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt",
+                                          "/some/path/RecentIndices.txt"))
 
 
-@mock.patch('sunpy.net.fido_factory.Fido.fetch',
-            side_effect=(UnifiedResponse(
-                mock_query_object("2012/10/4", "2012/10/6"))))
-def test_fido(mock_fetch):
-    qr = Fido.search(a.Time("2012/10/4", "2012/10/6"),
-                     a.Instrument('noaa-indices'))
-    assert isinstance(qr, UnifiedResponse)
+@mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
+            return_value=mock_query_object('2012/10/4', '2012/10/6'))
+# The return value of download is irrelevant
+@mock.patch('parfive.Downloader.download',
+            return_value=None)
+@mock.patch('parfive.Downloader.enqueue_file')
+def test_fido(mock_wait, mock_search, mock_enqueue):
+    qr1 = Fido.search(Time('2012/10/4', '2012/10/6'),
+                      Instrument('noaa-indices'))
+    Fido.fetch(qr1, path="/some/path/{file}")
 
-    response = Fido.fetch(qr)
-    assert len(response) == qr._numfile
+    # Here we assert that the `fetch` function has called the parfive
+    # Downloader.enqueue_file method with the correct arguments. Everything
+    # that happens after this point should either be tested in the
+    # GenericClient tests or in parfive itself.
+    assert mock_enqueue.called_once_with(("ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt",
+                                          "/some/path/RecentIndices.txt"))
+
+
+@pytest.mark.remote_data
+def test_srs_tar_unpack():
+    qr = Fido.search(a.Instrument("soon") & a.Time("2015/01/01", "2015/01/01T23:59:29"))
+    res = Fido.fetch(qr)
+    assert len(res) == 1
+    assert res.data[0].endswith("20150101SRS.txt")
+
+
+@pytest.mark.remote_data
+def test_srs_current_year():
+    year = datetime.date.today().year
+    qr = Fido.search(a.Instrument("soon") & a.Time(f"{year}/01/01", f"{year}/01/01T23:59:29"))
+    res = Fido.fetch(qr)
+    assert len(res) == 1
+    assert res.data[0].endswith(f"{year}0101SRS.txt")

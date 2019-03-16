@@ -1,0 +1,3 @@
+The keyword arguments to all client ``.fetch`` methods have been changed to
+support the new parfive downloader and to ensure consisteny across all Fido
+clients.
