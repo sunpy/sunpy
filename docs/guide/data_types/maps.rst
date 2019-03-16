@@ -658,15 +658,15 @@ application).
 To apply this form of solar derotation to a `~sunpy.map.MapSequence`, simply import the
 function and apply it to your `~sunpy.map.MapSequence`::
 
-    >>> from sunpy.physics.transforms.solar_rotation import mapsequence_solar_derotate
+    >>> from sunpy.physics.solar_rotation import mapsequence_solar_derotate
     >>> derotated = mapsequence_solar_derotate(mc)  # doctest: +REMOTE_DATA
 
-For more info see `~sunpy.physics.transforms.solar_rotation.mapsequence`.
+For more info see `~sunpy.physics.solar_rotation.mapsequence_solar_derotate`.
 
 If you just want to calculate the shifts required to compensate for solar
 rotation relative to the first map in the `~sunpy.map.MapSequence` without applying them, use::
 
-    >>> from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift
+    >>> from sunpy.physics.solar_rotation import calculate_solar_rotate_shift
     >>> shifts = calculate_solar_rotate_shift(mc)  # doctest: +REMOTE_DATA
 
 Please consult the docstring of the `~sunpy.image.coalignment.mapsequence_coalign_by_match_template` function in order to learn about
