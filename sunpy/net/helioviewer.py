@@ -1,9 +1,7 @@
 """
 This module provides a wrapper around the Helioviewer API.
 """
-import os
 import json
-import errno
 import codecs
 import urllib
 from pathlib import Path
@@ -15,7 +13,6 @@ from astropy.utils.decorators import lazyproperty
 
 import sunpy
 from sunpy.time import parse_time
-from sunpy.util.net import download_fileobj
 from sunpy.util.xml import xml_to_dict
 from sunpy.util.util import partial_key_match
 
@@ -458,7 +455,6 @@ class HelioviewerClient(object):
         source_id_list = list(partial_key_match(key,self.data_sources))
         if len(source_id_list) > 1:  # or maybe != 1
             raise KeyError(f"The values used: {key} do not correspond to one source_id "
-                            f"but {len(source_id_list)} source_id(s)." 
+                            f"but {len(source_id_list)} source_id(s)."
                             " Please check the list using HelioviewerClient.data_sources.")
         return source_id_list[0]
-            

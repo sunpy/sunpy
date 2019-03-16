@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-"""SunPy sample data files"""
 import warnings
 from pathlib import Path
 from collections import namedtuple
