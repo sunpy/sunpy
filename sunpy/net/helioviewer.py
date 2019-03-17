@@ -455,6 +455,7 @@ class HelioviewerClient(object):
         source_id_list = list(partial_key_match(key, self.data_sources))
         if len(source_id_list) > 1:  # or maybe != 1
             raise KeyError(f"The values used: {key} do not correspond to one source_id "
-                           f"but {len(source_id_list)} source_id(s)."
-                           " Please check the list using HelioviewerClient.data_sources.")
+                            f"but {len(source_id_list)} source_id(s)."
+                            " Please check the list using HelioviewerClient.data_sources.")
         return source_id_list[0]
+            

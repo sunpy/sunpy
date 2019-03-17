@@ -1,34 +1,30 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jun 23 12:08:21 2016
-
-@author: alex_
-"""
-
 import os
 import glob
 import pytest
 import datetime
-import numpy as np
-from pandas import DataFrame
 from collections import OrderedDict
 
+import numpy as np
+import pytest
+from pandas import DataFrame
+
+import astropy.units as u
+from astropy.io import fits
+from astropy.table import Table
+from astropy.time import TimeDelta
+
 import sunpy.data.test
+import sunpy.io
 import sunpy.timeseries
+from sunpy.time import parse_time
+from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.metadata import MetaDict
 import sunpy.io
 from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util import SunpyUserWarning
 
-import astropy.units as u
-from astropy.table import Table
-from sunpy.time import parse_time
-from astropy.time import TimeDelta
-from astropy.io import fits
-
-# ==============================================================================
+# =============================================================================
 # TimeSeries Factory Tests
-# ==============================================================================
+# =============================================================================
 
 filepath = sunpy.data.test.rootdir
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
@@ -43,9 +39,9 @@ goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
 goes_filepath = os.path.join(filepath, 'go1520110607.fits')
 a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
-# ==============================================================================
+# =============================================================================
 # Multi file Tests
-# ==============================================================================
+# =============================================================================
 
 
 class TestTimeSeries(object):
@@ -76,16 +72,16 @@ class TestTimeSeries(object):
         ts_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE')
         assert isinstance(ts_list, list)
         for ts in ts_list:
-          assert isinstance(ts, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
+            assert isinstance(ts, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
     def test_factory_generate_from_glob(self):
         # Test making a TimeSeries from a glob
         ts_from_glob = sunpy.timeseries.TimeSeries(os.path.join(filepath, "eve", "*"), source='EVE', concatenate=True)
         assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
-#==============================================================================
+# =============================================================================
 # Individual Implicit Source Tests
-#==============================================================================
+# =============================================================================
 
     def test_implicit_fermi_gbm(self):
         # Test a GBMSummary TimeSeries
@@ -123,58 +119,58 @@ class TestTimeSeries(object):
         ts_esp = sunpy.timeseries.TimeSeries(esp_filepath)
         assert isinstance(ts_esp, sunpy.timeseries.sources.eve.ESPTimeSeries)
 
-#==============================================================================
+# =============================================================================
 # Individual Explicit Sources Tests
-#==============================================================================
+# =============================================================================
 
     def test_eve(self):
-        #Test an EVE TimeSeries
+        # Test an EVE TimeSeries
         ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
         assert isinstance(ts_eve, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
     def test_esp(self):
-        #Test an ESP TimeSeries
+        # Test an ESP TimeSeries
         ts_esp = sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
         assert isinstance(ts_esp, sunpy.timeseries.sources.eve.ESPTimeSeries)
 
     def test_fermi_gbm(self):
-        #Test a GBMSummary TimeSeries
+        # Test a GBMSummary TimeSeries
         with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
             ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_norh(self):
-        #Test a NoRH TimeSeries
+        # Test a NoRH TimeSeries
         ts_norh = sunpy.timeseries.TimeSeries(norh_filepath, source='NoRH')
         assert isinstance(ts_norh, sunpy.timeseries.sources.norh.NoRHTimeSeries)
 
     def test_goes(self):
-        #Test a GOES TimeSeries
+        # Test a GOES TimeSeries
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_goes_com(self):
-        #Test a GOES TimeSeries
+        # Test a GOES TimeSeries
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_lyra(self):
-        #Test a LYRA TimeSeries
+        # Test a LYRA TimeSeries
         ts_lyra = sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')
         assert isinstance(ts_lyra, sunpy.timeseries.sources.lyra.LYRATimeSeries)
 
     def test_rhessi(self):
-        #Test a RHESSI TimeSeries
+        # Test a RHESSI TimeSeries
         ts_rhessi = sunpy.timeseries.TimeSeries(rhessi_filepath, source='RHESSI')
         assert isinstance(ts_rhessi, sunpy.timeseries.sources.rhessi.RHESSISummaryTimeSeries)
 
     def test_noaa_ind(self):
-        #Test a NOAAPredictIndices TimeSeries
+        # Test a NOAAPredictIndices TimeSeries
         ts_noaa_ind = sunpy.timeseries.TimeSeries(noaa_ind_filepath, source='NOAAIndices')
         assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
 
     def test_noaa_pre(self):
-        #Test a NOAAIndices TimeSeries
+        # Test a NOAAIndices TimeSeries
         ts_noaa_pre = sunpy.timeseries.TimeSeries(noaa_pre_filepath, source='NOAAPredictIndices')
         assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
 
@@ -193,9 +189,9 @@ class TestTimeSeries(object):
             'https://umbra.nascom.nasa.gov/goes/fits/2018/go1520180626.fits')
         assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
-#==============================================================================
+# =============================================================================
 # Manual TimeSeries Tests
-#==============================================================================
+# =============================================================================
 
     def test_meta_from_fits_header(self):
         # Generate the data and the corrisponding dates
@@ -230,7 +226,7 @@ class TestTimeSeries(object):
         # Create the data DataFrame, header MetaDict and units OrderedDict
         data = DataFrame(intensity, index=times, columns=['intensity'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        meta = MetaDict({'key':'value'})
+        meta = MetaDict({'key': 'value'})
 
         # Create normal TS from dataframe and check
         ts_generic = sunpy.timeseries.TimeSeries(data, meta, units)
@@ -254,7 +250,7 @@ class TestTimeSeries(object):
         # Create the data DataFrame, header MetaDict and units OrderedDict
         data = DataFrame(intensity, index=times, columns=['intensity'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        meta = MetaDict({'key':'value'})
+        meta = MetaDict({'key': 'value'})
 
         # Create TS omitting units input arguments
         ts_1 = sunpy.timeseries.TimeSeries(data, meta)
@@ -278,9 +274,9 @@ class TestTimeSeries(object):
         # Create the data DataFrame, header MetaDict and units OrderedDict
         data = DataFrame(intensity, index=times, columns=['intensity'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        meta_md = MetaDict({'key':'value'})
-        meta_di = {'key':'value'}
-        meta_od = OrderedDict({'key':'value'})
+        meta_md = MetaDict({'key': 'value'})
+        meta_di = {'key': 'value'}
+        meta_od = OrderedDict({'key': 'value'})
 
         # Create TS using different dictionary meta types
         ts_md = sunpy.timeseries.TimeSeries(data, meta_md, units)
@@ -288,6 +284,7 @@ class TestTimeSeries(object):
         ts_od = sunpy.timeseries.TimeSeries(data, meta_od, units)
         assert ts_md == ts_di == ts_od
         assert ts_md.meta.metadata[0][2] == ts_di.meta.metadata[0][2] == ts_od.meta.metadata[0][2]
+
 
     def test_generic_construction_ts_list(self):
         # Generate the data and the corrisponding dates
@@ -300,9 +297,9 @@ class TestTimeSeries(object):
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
-        meta = MetaDict({'key': 'value'})
-        meta2 = MetaDict({'key2': 'value2'})
+        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        meta = MetaDict({'key':'value'})
+        meta2 = MetaDict({'key2':'value2'})
 
         # Create TS individually
         ts_1 = sunpy.timeseries.TimeSeries(data, meta, units)
@@ -316,7 +313,7 @@ class TestTimeSeries(object):
         assert ts_list[1] == ts_2
 
         # Create TS using a tuple
-        ts_list2 = sunpy.timeseries.TimeSeries(((data, meta, units),(data2, meta2, units2)))
+        ts_list2 = sunpy.timeseries.TimeSeries(((data, meta, units), (data2, meta2, units2)))
         assert ts_list == ts_list2
 
     def test_generic_construction_concatenation(self):
@@ -330,9 +327,9 @@ class TestTimeSeries(object):
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
-        meta = MetaDict({'key':'value'})
-        meta2 = MetaDict({'key2':'value2'})
+        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        meta = MetaDict({'key': 'value'})
+        meta2 = MetaDict({'key2': 'value2'})
 
         # Create TS individually
         ts_1 = sunpy.timeseries.TimeSeries(data, meta, units)
@@ -344,7 +341,7 @@ class TestTimeSeries(object):
         assert isinstance(ts_concat_2, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
 
         # Create TS using a tuple
-        ts_concat_3 = sunpy.timeseries.TimeSeries(((data, meta, units),(data2, meta2, units2)), concatenate=True)
+        ts_concat_3 = sunpy.timeseries.TimeSeries(((data, meta, units), (data2, meta2, units2)), concatenate=True)
         assert isinstance(ts_concat_3, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
         assert ts_concat_1 == ts_concat_2 == ts_concat_3
 
@@ -356,8 +353,8 @@ class TestTimeSeries(object):
 
         # Create the units and meta objects
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        meta = MetaDict({'key':'value'})
-        tbl_meta = MetaDict({'t_key':'t_value'})
+        meta = MetaDict({'key': 'value'})
+        tbl_meta = MetaDict({'t_key': 't_value'})
 
         # Create a suitable mixin qtable
         table = Table([times, intensity], names=['time', 'intensity'], meta=tbl_meta)
@@ -379,9 +376,9 @@ class TestTimeSeries(object):
         with pytest.raises(ValueError):
             sunpy.timeseries.TimeSeries((dual_index_table, meta, units))
 
-# ==============================================================================
+# =============================================================================
 # Test some other options
-# ==============================================================================
+# =============================================================================
 
     def test_passed_ts(self):
         # Test an EVE TimeSeries
@@ -391,12 +388,12 @@ class TestTimeSeries(object):
         ts_from_ts_2 = sunpy.timeseries.TimeSeries(ts_eve)
         assert ts_eve == ts_from_ts_1 == ts_from_ts_2
 
-#==============================================================================
+# =============================================================================
 # Test some Errors
-#==============================================================================
+# =============================================================================
 
     def test_invalid_manual_data(self):
-        meta = MetaDict({'key':'value'})
+        meta = MetaDict({'key': 'value'})
         data = []
         with pytest.raises(NoMatchError):
             sunpy.timeseries.TimeSeries(data, meta)
@@ -428,9 +425,9 @@ class TestTimeSeries(object):
         assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_2)
 
     def test_validate_meta_basic(self):
-        valid_meta_1 = MetaDict({'key':'value'})
+        valid_meta_1 = MetaDict({'key': 'value'})
         assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_1)
-        valid_meta_2 = OrderedDict({'key':'value'})
+        valid_meta_2 = OrderedDict({'key': 'value'})
         assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_2)
         invalid_meta = []
         assert not sunpy.timeseries.TimeSeries._validate_meta(invalid_meta)
