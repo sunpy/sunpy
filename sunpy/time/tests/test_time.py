@@ -8,7 +8,7 @@ import astropy.time
 from astropy.time import Time
 
 import sunpy.time as time
-from sunpy.time import parse_time, is_time_equal
+from sunpy.time import is_time_equal, parse_time
 
 LANDING = Time('1966-02-03', format='isot')
 
@@ -179,9 +179,6 @@ def test_parse_time_date():
 
 
 def test_parse_time_now():
-    """
-    Ensure 'parse_time' can be called with 'now' argument to get utc
-    """
     now = parse_time('now')
     assert isinstance(now, astropy.time.Time)
     assert now.format == 'datetime'
@@ -274,10 +271,8 @@ def test_parse_time_astropy_formats(ts, fmt):
 def test_parse_time_int_float():
     # int and float values are not unique
     # The format has to be mentioned
-
     with pytest.raises(ValueError):
         parse_time(100)
-
     with pytest.raises(ValueError):
         parse_time(100.0)
 
@@ -329,70 +324,6 @@ def test_parse_time_list_2():
     assert np.all(parse_time(tstrings) == Time(tstrings))
 
 
-def test_break_time():
-    t = datetime(2007, 5, 4, 21, 8, 12)
-    assert time.break_time(t) == '20070504_210812'
-
-
-def test_day_of_year():
-    # Note that 2008 is a leap year, 2011 is a standard year
-    # test that it starts at 1
-    assert time.day_of_year('2011/01/01') == 1.0
-    # test fractional day
-    assert time.day_of_year('2011/01/01 06:00') == 1.25
-    assert time.day_of_year('2011/01/01 12:00') == 1.50
-    assert time.day_of_year('2011/01/01 18:00') == 1.75
-    # test correct number of days in a (standard) year
-    assert time.day_of_year('2011/12/31') == 365
-    # test correct number of days in a (leap) year
-    assert time.day_of_year('2008/12/31') == 366
-    # test a few extra dates in standard year
-    assert time.day_of_year('2011/08/01') == 213
-    assert time.day_of_year('2011/04/10') == 100
-    assert time.day_of_year('2011/01/31') == 31
-    assert time.day_of_year('2011/09/30') == 273
-    # test a few extra dates in a leap year
-    assert time.day_of_year('2008/08/01') == 214
-    assert time.day_of_year('2008/04/10') == 101
-    assert time.day_of_year('2008/01/31') == 31
-    assert time.day_of_year('2008/09/30') == 274
-
-
-def test_day_of_year_leapsecond():
-    # 2015 had a leap second.
-    # 30/06/2015 23:59:60 was a leap second
-    assert time.day_of_year('2015/01/31') == 31
-    assert time.day_of_year('2015/04/10') == 100
-    assert time.day_of_year('2015/06/30 23:59:60') == 182
-    assert time.day_of_year('2015/08/01') == 213.00001157407408
-    assert time.day_of_year('2015/09/30') == 273.00001157407405
-
-
-def test__iter_empty():
-
-    class CountDown(object):
-
-        def __init__(self, start_from=0):
-            self.start = start_from
-
-        def __iter__(self):
-            return self
-
-        def __next__(self):
-            self.start -= 1
-
-            if self.start < 0:
-                raise StopIteration
-
-            return self.start
-
-        next = __next__   # Support Py2.x
-
-    one_count = CountDown(1)
-    assert time.time._iter_empty(one_count) is False
-    assert time.time._iter_empty(one_count) is True
-
-
 def test_is_time():
     assert time.is_time(datetime.utcnow()) is True
     assert time.is_time('2017-02-14 08:08:12.999') is True
@@ -405,17 +336,3 @@ def test_is_time():
 def test_is_time_in_given_format():
     assert time.is_time_in_given_format('2017-02-14 08:08:12.999', "%Y-%m-%d %H:%M:%S.%f") is True
     assert time.is_time_in_given_format('2017-02-14 08:08:12.999', "%Y-%m-%dT%H:%M:%S.%f") is False
-
-
-def test_get_day():
-    end_of_day = datetime(year=2017, month=1, day=1, hour=23, minute=59, second=59,
-                          microsecond=999)
-
-    begining_of_day = time.get_day(end_of_day)
-    assert begining_of_day.year == 2017
-    assert begining_of_day.month == 1
-    assert begining_of_day.day == 1
-    assert begining_of_day.hour == 0
-    assert begining_of_day.minute == 0
-    assert begining_of_day.second == 0
-    assert begining_of_day.microsecond == 0
