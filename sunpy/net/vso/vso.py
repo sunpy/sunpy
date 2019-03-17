@@ -96,8 +96,7 @@ def check_connection(url):
 
 def get_online_vso_url(api, url, port):
     if isinstance(api, zeep.client.Client):
-        if check_connection(api.wsdl.location):
-            return api
+        return api
 
     if url and check_connection(url):
         api = zeep.Client(url, port)
@@ -265,7 +264,7 @@ class VSOClient(BaseClient):
     def __init__(self, url=None, port=None, api=None):
         api = get_online_vso_url(api, url, port)
         if api is None:
-            raise ConnectionError("Cannot find an online VSO mirror")
+            raise ConnectionError("Cannot find an online VSO mirror.")
         self.api = api
 
     def make(self, atype, **kwargs):

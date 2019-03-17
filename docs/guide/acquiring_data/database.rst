@@ -258,7 +258,7 @@ sections.
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
 
 .. testsetup:: *
-   >>> from unittest.mock import Mock
+   >>> from unittest.mock import Mock, patch
    >>> from sunpy.tests.mocks import MockObject
    >>> class MockQR:
    ...    def __init__(self, start_time, instrument, wavelength):
@@ -266,8 +266,9 @@ sections.
    ...        self.time = MockObject(start=start_time, end=end_time)
    ...        self.instrument = instrument
    ...        self.wave = MockObject(wavemin=wavelength, wavemax=wavelength, waveunit='nm')
-   >>> vso.VSOClient().search = Mock(return_value=[MockQR(f"2011050800000{t}", 'AIA', w) for
-   ...                                   t,w in zip([0,0,2,3], [17.1, 21.1, 9.4, 33.5])]) # doctest: +REMOTE_DATA
+   >>> with patch.object(vso.VSOClient, '__init__', lambda x: None):
+   ...    vso.VSOClient().search = Mock(return_value=[MockQR(f"2011050800000{t}", 'AIA', w) for
+   ...                                   t, w in zip([0,0,2,3], [17.1, 21.1, 9.4, 33.5])])
 
 After initialising the VSO client:
 
