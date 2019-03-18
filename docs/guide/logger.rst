@@ -36,12 +36,12 @@ The logger
 The logger is configured as soon as sunpy is imported. You can access it
 by importing it explicitly::
 
-    from sunpy import log
+    >>> from sunpy import log
 
 or also by::
 
-    import logging
-    log = logging.getLogger('sunpy')
+    >>> import logging
+    >>> log = logging.getLogger('sunpy')
 
 You can use it to issue your own messages or to change its defaults. If you'd like to
 capture messages as they are generated you can do that with a context manager::

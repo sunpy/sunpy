@@ -119,7 +119,6 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     @staticmethod
     def _parse_average_csv(fp):
         """Parses an EVE Averages file."""
-        log.info('\nin _parse_average_csv()')
         return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
 
     @staticmethod
