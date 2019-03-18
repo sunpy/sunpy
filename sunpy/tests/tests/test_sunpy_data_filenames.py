@@ -1,6 +1,4 @@
-"""
-Note: This test lives here because we have to exclude sunpy/data from pytest.
-"""
+# This test lives here because we have to exclude sunpy/data from pytest.
 import os
 
 import sunpy.data.test
