@@ -5,6 +5,7 @@ import pytest
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import widgets
 import matplotlib.animation as mplanim
 import matplotlib.backend_bases as mback
 
@@ -51,6 +52,15 @@ def test_base_func_init(fig, colorbar, buttons):
     event = mback.KeyEvent(name='key_press_event', canvas=fig.canvas, key='down')
     tfa._key_press(event)
     assert tfa.active_slider == 0
+
+    slide = tfa.active_slider
+    slider = widgets.Slider(fig.gca(), str(slide), ranges[slide][0], ranges[slide][1])
+    slider.slider_ind = slide
+    butt = widgets.Button(fig.gca(), ">")
+    butt.clicked = False
+    event.key = 'p'
+    tfa._click_slider_button(event=event, button=butt, slider=slider)
+    assert butt.label._text == "||"
 
 
 @pytest.fixture
