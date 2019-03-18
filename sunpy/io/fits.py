@@ -37,7 +37,7 @@ import collections
 from astropy.io import fits
 
 from sunpy.io.header import FileHeader
-from sunpy.util.exceptions import SunpyWarning
+from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit']
 
@@ -91,7 +91,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
                     message += line
                     message += '\n'
                 message += repr(e)
-                warnings.warn(message, SunpyWarning)
+                warnings.warn(message, SunpyUserWarning)
 
     return pairs
 
