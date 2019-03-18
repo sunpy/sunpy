@@ -1,0 +1,1 @@
+Fix initialization of ``VSOClient`` when no wsdl link is found.

@@ -91,15 +91,22 @@ def check_connection(url):
     except (socket.error, socket.timeout, HTTPError, URLError) as e:
         warnings.warn(
             "Connection failed with error {}. \n Retrying with different url and port.".format(e))
+        return None
 
 
 def get_online_vso_url(api, url, port):
-    if api is None and (url is None or port is None):
-        for mirror in DEFAULT_URL_PORT:
-            if check_connection(mirror['url']):
-                api = zeep.Client(mirror['url'], port_name=mirror['port'])
-                api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
-                return api
+    if isinstance(api, zeep.client.Client):
+        return api
+
+    if url and check_connection(url):
+        api = zeep.Client(url, port)
+        return api
+
+    for mirror in DEFAULT_URL_PORT:
+        if check_connection(mirror['url']):
+            api = zeep.Client(mirror['url'], port_name=mirror['port'])
+            api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
+            return api
 
 
 class QueryResponse(list):
@@ -256,6 +263,8 @@ class VSOClient(BaseClient):
 
     def __init__(self, url=None, port=None, api=None):
         api = get_online_vso_url(api, url, port)
+        if api is None:
+            raise ConnectionError("Cannot find an online VSO mirror.")
         self.api = api
 
     def make(self, atype, **kwargs):
