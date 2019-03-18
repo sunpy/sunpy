@@ -45,6 +45,17 @@ e.g. `~sunpy.map.sources.sdo.AIAMap` or `~sunpy.map.sources.soho.LASCOMap`
 (see :ref:`map-classes` to see a list of all of them), or if no
 instrument matches, a 2D map `~sunpy.map.mapbase.GenericMap`.
 
+Fixing map metadata
+^^^^^^^^^^^^^^^^^^^
+
+If you need to fix the metadata of a fits file before it is handed to `Map`, this can be done as
+follows:
+
+    >>> [data, header] = sunpy.io.fits.read(filepath) # doctest: +SKIP
+    >>> header['cunit1'] = 'arcsec' # doctest: +SKIP
+    >>> header['cunit2'] = 'arcsec' # doctest: +SKIP
+    >>> map = sunpy.map.Map(data, header) # doctest: +SKIP
+
 
 .. autoclass:: sunpy.map.map_factory.MapFactory
 

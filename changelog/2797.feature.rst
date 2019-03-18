@@ -1,0 +1,3 @@
+The download manager for Fido.fetch has been replaced with `parfive
+<https://parfive.readthedocs.io/en/latest/>_`. This provides advanced progress
+bars, proper handling of overwriting and the ability to retry failed downloads.
