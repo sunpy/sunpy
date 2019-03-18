@@ -77,7 +77,7 @@ log_exceptions = False
 log_to_file = False
 
 # The file to log messages to
-log_file_path = sunpy.log
+# log_file_path = sunpy.log
 
 # Threshold for logging messages to log_file_path
 log_file_level = INFO

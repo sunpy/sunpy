@@ -37,28 +37,29 @@ Messages can be issued directly to it with the following levels and in the follo
 The difference between logging a warning/error/critical compared to issuing a Python warning or raising
 an exception are subtle but important.
 
-Use Python `warnings.warn()` in library code if the issue is avoidable and the user code should be
+Use Python `warnings.warn` in library code if the issue is avoidable and the user code should be
 modified to eliminate the warning.
 
-Use `log.warning()` if there is likely nothing the user can do about the situation, but the event
+Use ``log.warning()`` if there is likely nothing the user can do about the situation, but the event
 should still be noted. An example of this might be if the input data are all zeros. This may be unavoidable or
 even by design but you may want to let the user know.
 
-True exceptions (not `log.error()`) should be raised only when there is no way for the function to proceed.
+True exceptions (not ``log.error()``) should be raised only when there is no way for the function to proceed.
 
 Regardless of the type (log message or warning or exception) messages should be one or two complete sentences
 that fully describe the issue and end with a period.
 
 Issuing Warnings
 ----------------
-Sunpy warnings are provided by the :mod:`sunpy.util` module. The primary warning which
-should be used is :class:`sunpy.util.exceptions.SunpyUserWarning`. For deprecation use :class:`sunpy.util.exceptions.SunpyDeprecationWarning` or
-:class:`sunpy.util.exceptions.SunpyPendingDeprecationWarning`.
+SunPy warnings are provided by the `sunpy.util` module. The primary warning which
+should be used is `sunpy.util.exceptions.SunpyUserWarning`. For deprecation use `sunpy.util.exceptions.SunpyDeprecationWarning` or
+`sunpy.util.exceptions.SunpyPendingDeprecationWarning`.
 
 These warning classes must be used to interact correctly with the logging system.
 A warning can be issued in the following way::
 
-    import warnings
+    >>> import warnings
+    >>> warnings.warn("You have been warned about something you did not do correctly.", SunpyUserWarning)
     warnings.warn("You have been warned about something you did not do correctly.", SunpyUserWarning)
 
 See the section above for a discussion about the distinction between `log.warn()` and `warnings.warn()`.

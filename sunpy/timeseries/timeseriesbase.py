@@ -465,7 +465,7 @@ class GenericTimeSeries:
             if not isinstance(units[key], astropy.units.UnitBase):
                 # If this is not a unit then this can't be a valid units dict.
                 result = False
-                warnings.warn("Invalid unit given for {0}.".format(key), SunpyUserWarning)
+                warnings.warn(f"Invalid unit given for {key}.", SunpyUserWarning)
 
         return result
 
@@ -484,7 +484,7 @@ class GenericTimeSeries:
         for column in set(self.data.columns.tolist()) - set(self.units.keys()):
             # For all columns not present in the units dictionary.
             self.units[column] = u.dimensionless_unscaled
-            warnings.warn("Unknown units for {0}.".format(column), SunpyUserWarning)
+            warnings.warn(f"Unknown units for {column}.", SunpyUserWarning)
 
         # Re-arrange so it's in the same order as the columns and removed unused.
         units = OrderedDict()
