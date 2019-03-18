@@ -1,14 +1,14 @@
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.sun import sun
-from astropy.tests.helper import assert_quantity_allclose
 
 
 def test_true_longitude():
     # source: http://www.satellite-calculations.com/Satellite/suncalc.htm
     # values are deviating a little because of lack of time parameter in
     # true_longitude function
-    assert_quantity_allclose(sun.true_longitude("2002/12/23"), 270.978 * u.deg, atol=1.1  * u.deg)
+    assert_quantity_allclose(sun.true_longitude("2002/12/23"), 270.978 * u.deg, atol=1.1 * u.deg)
     assert_quantity_allclose(sun.true_longitude("2003/01/29"), 308.661 * u.deg, atol=1.1 * u.deg)
     assert_quantity_allclose(sun.true_longitude("2004/05/12"), 51.617 * u.deg, atol=1.1 * u.deg)
     assert_quantity_allclose(sun.true_longitude("2006/07/04"), 101.910 * u.deg, atol=1.1 * u.deg)
@@ -33,14 +33,12 @@ def test_mean_anomaly():
     assert_quantity_allclose(sun.mean_anomaly("2008/07/29"), 203.933 * u.deg, atol=1 * u.deg)
     assert_quantity_allclose(sun.mean_anomaly("2011/01/31"), 26.742 * u.deg, atol=1 * u.deg)
 
-#These values are tested from the functions after the integration of astropy.units
+# These values are tested from the functions after the integration of astropy.units
 
 
 def test_solar_cycle_number():
     assert_quantity_allclose(sun.solar_cycle_number("2012/11/11"), 5, atol=1e-1)
-    #76
     assert_quantity_allclose(sun.solar_cycle_number("2011/2/22"), 4, atol=1e-1)
-    #23
     assert_quantity_allclose(sun.solar_cycle_number("2034/1/15"), 27, atol=1e-1)
 
 

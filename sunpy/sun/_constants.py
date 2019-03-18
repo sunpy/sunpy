@@ -1,21 +1,11 @@
 """
-Collection of solar physical constants.
-
-The list is not meant to be comprehensive, but just a convenient list for
-everyday use.
-
-.. todo:: Need better sources for some constants as well as error values.
-
+This module provies a non-comprehensive collection of solar physical constants.
 """
-
-from astropy.constants import Constant
-
+# We want to keep the old constants for now.
+# TODO: Need better sources for some constants as well as error values.
 # This is to keep the old solar values until we make the choice to move to IAU2015 Values
-import astropy
-if int(astropy.__version__[0]) >= 2:
-    import astropy.constants.astropyconst13 as astrocon
-else:
-    import astropy.constants as astrocon
+import astropy.constants.astropyconst13 as astrocon
+from astropy.constants import Constant
 
 __all__ = ['physical_constants']
 
