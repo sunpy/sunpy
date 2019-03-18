@@ -1,14 +1,9 @@
 """
-Fundamental Solar Physical Constants
-------------------------------------
-These constants are taken from various sources. The structure of this module is heavily
-based on if not directly copied from the SciPy constants module but contains Solar
-Physical constants.
+This module provides fundamental solar physical constants.
 """
-
 from astropy.table import Table
 
-from sunpy.sun import _constants as _con  # pylint: disable=E0611
+from sunpy.sun import _constants as _con
 
 __all__ = [
     'get', 'find', 'print_all', 'spectral_classification', 'au', 'mass', 'equatorial_radius',
@@ -26,17 +21,17 @@ def get(key):
 
     Parameters
     ----------
-    key : Python string or unicode
-        Key in dictionary in `constants`
+    key : `str`
+        Key in dictionary in ``constants``.
 
     Returns
     -------
-    constant :  `~astropy.units.Constant`
+    constant : `~astropy.units.Constant`
 
     See Also
     --------
-    _constants : Contains the description of `constants`, which, as a
-        dictionary literal object, does not itself possess a docstring.
+    `sunpy.sun.constants`
+        Contains the description of ``constants``, which, as a dictionary literal object, does not itself possess a docstring.
 
     Examples
     --------
@@ -49,45 +44,39 @@ def get(key):
 
 def find(sub=None):
     """
-    Return list of constants keys containing a given string
+    Return list of constants keys containing a given string.
 
     Parameters
     ----------
-    sub : str, unicode
-        Sub-string to search keys for.  By default, return all keys.
+    sub : `str`, optional
+        Sub-string to search keys for. By default set to `None` and returns all keys.
 
     Returns
     -------
-    keys : None or list
+    `None`, `list`
+        The matching keys.
 
     See Also
     --------
-    _constants : Contains the description of `constants`, which, as a
-        dictionary literal object, does not itself possess a docstring.
-
+    `sunpy.sun.constants`
+        Contains the description of ``constants``, which, as a dictionary literal object, does not itself possess a docstring.
     """
     if sub is None:
         result = list(constants.keys())
     else:
-        result = [key for key in constants \
-                 if sub.lower() in key.lower()]
+        result = [key for key in constants if sub.lower() in key.lower()]
 
     result.sort()
     return result
 
 
-def print_all(key=None):
+def print_all():
     """
     Provides a table of the complete list of constants.
 
-    Parameters
-    ----------
-    key : Python string or unicode
-        Key in dictionary `constants`
-
     Returns
     -------
-    table : `astropy.table.Table`
+    `astropy.table.Table`
     """
     data_rows = []
     for key, this_constant in constants.items():
@@ -102,9 +91,7 @@ def print_all(key=None):
 
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
-
 au = astronomical_unit = get('mean distance')
-
 # The following variables from _gets are brought out by making them
 # accessible through a call such as sun.volume
 mass = get('mass')
@@ -117,8 +104,6 @@ effective_temperature = get('effective temperature')
 luminosity = get('luminosity')
 mass_conversion_rate = get('mass conversion rate')
 escape_velocity = get('escape velocity')
-
 sfu = get('solar flux unit')
-
 # Observable parameters
 average_angular_size = get('average angular size')
