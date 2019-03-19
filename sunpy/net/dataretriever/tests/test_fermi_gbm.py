@@ -50,7 +50,7 @@ def test_can_handle_query(time):
 @pytest.mark.parametrize("time,instrument", [
     (a.Time('2012/8/9', '2012/8/10'), a.Instrument('gbm')),
 ])
-def test_query():
+def test_query(time, instrument):
     qr1 = LCClient.search(time, instrument)
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
