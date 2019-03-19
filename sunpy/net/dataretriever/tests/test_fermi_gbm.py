@@ -47,8 +47,11 @@ def test_can_handle_query(time):
 
 
 @pytest.mark.remote_data
+@pytest.mark.parametrize("time,instrument", [
+    (a.Time('2012/8/9', '2012/8/10'), a.Instrument('gbm')),
+])
 def test_query():
-    qr1 = LCClient.search(a.Time('2012/8/9', '2012/8/10'), a.Instrument('gbm'))
+    qr1 = LCClient.search(time, instrument)
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range().start == time.start
@@ -61,8 +64,7 @@ def test_query():
 ])
 def test_get(time, instrument):
     qr1 = LCClient.search(time, instrument)
-    res = LCClient.fetch(qr1)
-    download_list = res.wait(progress=False)
+    download_list = LCClient.fetch(qr1)
     assert len(download_list) == len(qr1)
 
 
@@ -74,6 +76,6 @@ def test_fido(query):
     qr = Fido.search(query)
     client = qr.get_response(0).client
     assert isinstance(qr, UnifiedResponse)
-    assert isinstance(client, eve.EVEClient)
+    assert type(client) == type(LCClient)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
