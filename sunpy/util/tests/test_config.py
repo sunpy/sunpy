@@ -11,21 +11,25 @@ USER = os.path.expanduser('~')
 
 
 def test_is_writable_dir(tmpdir, tmp_path):
-    writeable_dir = tmpdir.mkdir("can_you_right_to_me")
-    just_a_path = tmp_path / "sub"
-    assert _is_writable_dir(writeable_dir)
-    assert not _is_writable_dir(just_a_path)
+    assert _is_writable_dir(tmpdir)
 
 
-def test_get_user_configdir(tmpdir):
+def test_get_user_configdir(tmpdir, tmp_path, undo_config_dir_patch):
     # Default
     assert USER in CONFIG_DIR
     assert CONFIG_DIR.split(os.path.sep)[-1] == "sunpy"
     assert CONFIG_DIR == _get_user_configdir()
-    # Try to set a manual one.
+    # Try to set a manual one (already created)
     tmp_config_dir = tmpdir.mkdir("config_here")
     os.environ["SUNPY_CONFIGDIR"] = tmp_config_dir.strpath
     assert tmp_config_dir == _get_user_configdir()
+    # Bypass this under windows.
+    if not (os.name == "nt"):
+        os.unsetenv("SUNPY_CONFIGDIR")
+    del os.environ["SUNPY_CONFIGDIR"]
+    # Try to set a manual one (not created)
+    os.environ["SUNPY_CONFIGDIR"] = str(tmp_path)
+    assert str(tmp_path) == _get_user_configdir()
     # Bypass this under windows.
     if not (os.name == "nt"):
         os.unsetenv("SUNPY_CONFIGDIR")
