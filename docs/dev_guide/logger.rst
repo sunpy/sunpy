@@ -73,6 +73,6 @@ want to use is
 
 Exceptions are raised simply with::
 
-    raise ValueError("The following error occurred.")
+    >>> raise ValueError("The following error occurred.")  #doctest: +SKIP
 
 For more information on exceptions see the :ref:`python:bltin-exceptions` documentation.
