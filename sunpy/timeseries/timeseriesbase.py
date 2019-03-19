@@ -442,7 +442,7 @@ class GenericTimeSeries:
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
 
-                warnings.warn("Unknown value for {0}.".format(meta_property.upper()), SunpyUserWarning)
+                warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
 
     def _validate_units(self, units, **kwargs):
         """
