@@ -30,8 +30,9 @@ class GBMClient(GenericClient):
     --------
     >>> from sunpy.net import Fido, attrs as a
     >>> res = Fido.search(a.Time('2015-06-21 00:00', '2015-06-23 23:59'),
-    ...                   a.Instrument('gbm'), a.Detector('n3'), a.Resolution('ctime'))
-    >>> res
+    ...                   a.Instrument('gbm'), a.Detector('n3'), a.Resolution('ctime')) #doctest: +REMOTE_DATA
+
+    >>> res #doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at 0x125961c50>
     Results from 1 Provider:
 
