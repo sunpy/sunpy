@@ -30,12 +30,13 @@ class GBMClient(GenericClient):
     --------
     >>> from sunpy.net import Fido, attrs as a
     >>> res = Fido.search(a.Time('2015-06-21 00:00', '2015-06-23 23:59'),
-    ...                   a.Instrument('gbm'), a.Detector('n3'), a.Resolution('ctime')) #doctest: +REMOTE_DATA
+    ...                   a.Instrument('gbm'), a.Detector('n3'),
+    ...                   a.Resolution('ctime')) #doctest: +REMOTE_DATA
 
     >>> res #doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at 0x125961c50>
     Results from 1 Provider:
-
+    <BLANKLINE>
     3 Results from the GBMClient:
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str5     str3       str3
@@ -43,8 +44,8 @@ class GBMClient(GenericClient):
     2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
     2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
     2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
-
-
+    <BLANKLINE>
+    <BLANKLINE>
     References
     ----------
     * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`_
