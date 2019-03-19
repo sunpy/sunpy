@@ -109,14 +109,12 @@ def test_get_correlation_shifts():
 
     # Input array is too big in either direction
     test_array = np.zeros((4, 3))
-    y_test, x_test = get_correlation_shifts(test_array)
-    assert(y_test is None)
-    assert(x_test is None)
-    test_array = np.zeros((3, 4))
-    y_test, x_test = get_correlation_shifts(test_array)
-    assert(y_test is None)
-    assert(x_test is None)
+    with pytest.raises(ValueError):
+        get_correlation_shifts(test_array)
 
+    test_array = np.zeros((3, 4))
+    with pytest.raises(ValueError):
+        get_correlation_shifts(test_array)
 
 def test_find_best_match_location(aia171_test_map_layer, aia171_test_template,
                                   aia171_test_shift):

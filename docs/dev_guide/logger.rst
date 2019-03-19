@@ -59,8 +59,8 @@ These warning classes must be used to interact correctly with the logging system
 A warning can be issued in the following way::
 
     >>> import warnings
+    >>> from sunpy.util import SunpyUserWarning
     >>> warnings.warn("You have been warned about something you did not do correctly.", SunpyUserWarning)
-    warnings.warn("You have been warned about something you did not do correctly.", SunpyUserWarning)
 
 See the section above for a discussion about the distinction between `log.warn()` and `warnings.warn()`.
 
