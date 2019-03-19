@@ -17,7 +17,7 @@ class SunpyWarning(AstropyWarning):
     The base warning class from which all Sunpy warnings should inherit.
 
     Any warning inheriting from this class is handled by the Sunpy logger.
-    Should likely not be used.
+    This warning should not be issued in normal code. Use SunpyUserWarning instead or a specific sub-class.
     """
 
 
