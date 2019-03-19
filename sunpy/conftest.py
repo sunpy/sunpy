@@ -1,3 +1,4 @@
+import os
 import json
 import pathlib
 import warnings
@@ -32,6 +33,27 @@ def pytest_addoption(parser):
 def figure_base_dir(request):
     sunpy.tests.helpers.figure_base_dir = pathlib.Path(
         request.config.getoption("--figure_dir"))
+
+
+@pytest.fixture(scope='session', autouse=True)
+def tmp_config_dir(request):
+    """
+    Globally set the default config for all tests.
+    """
+    os.environ["SUNPY_CONFIGDIR"] = str(pathlib.Path(__file__).parent / "data")
+    yield
+    del os.environ["SUNPY_CONFIGDIR"]
+
+
+@pytest.fixture()
+def undo_config_dir_patch():
+    """
+    Provide a way for certain tests to not have the config dir.
+    """
+    oridir = os.environ["SUNPY_CONFIGDIR"]
+    del os.environ["SUNPY_CONFIGDIR"]
+    yield
+    os.environ["SUNPY_CONFIGDIR"] = oridir
 
 
 def pytest_runtest_setup(item):
