@@ -781,13 +781,13 @@ class GenericMap(NDData):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
-                warnings.warn("Unknown value for {0}.".format(meta_property.upper()), SunpyUserWarning)
+                warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
 
         if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
             self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
             warnings.warn("SunPy Map does not support three dimensional data "
-                          "and therefore cannot represent heliocentric coordinates. Proceed at your own risk."
-                          , SunpyUserWarning)
+                          "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.",
+                          SunpyUserWarning)
 
 
 # #### Data conversion routines #### #

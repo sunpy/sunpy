@@ -520,7 +520,7 @@ class TimeSeriesMetaData(object):
                 col_overlap = list(set(self.metadata[i][1]) & set(self.metadata[j][1]))
                 # If we have an overlap then show a warning
                 if col_overlap:
-                    warnings.warn('Metadata entries {0} and {1} contain interleaved data.'.format(str(i), str(j)),
+                    warnings.warn(f'Metadata entries {i} and {j} contain interleaved data.',
                                   SunpyUserWarning)
 
         # ToDo: Check all entries are in tr.start time order.
