@@ -1,3 +1,1 @@
-Add logger messaging system based on AstropyLogger, cleaned up all warnings, removed all print statements.
-The function `sunpy.image.coalignment.get_correlation_shifts()` now issues an error when the number of dimensions
-are not correct instead of a warning and returning None.
+Add logger messaging system based on `~astropy.logger.AstropyLogger`, cleaned up all warnings, removed all print statements.
