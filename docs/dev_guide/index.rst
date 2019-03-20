@@ -22,4 +22,5 @@ We currently recommend the :ref:`newcomers` as the place to start.
    tests
    stability
    funding
+   logger
    example_gallery
