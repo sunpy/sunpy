@@ -41,8 +41,8 @@ def solar_cycle_number(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def solar_semidiameter_angular_size(t='now'):
     """
-    Return the angular size of the semi-diameter of the Sun as a function of time as viewed from
-    Earth (in arcsec)
+    Return the angular size of the semi-diameter of the Sun as a function of
+    time as viewed from Earth (in arcsec)
 
     Parameters
     ----------
@@ -59,8 +59,8 @@ def solar_semidiameter_angular_size(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def position(t='now'):
     """
-    Returns the position of the Sun (right ascension and declination) on the celestial sphere using
-    the equatorial coordinate system in arcsec.
+    Returns the position of the Sun (right ascension and declination) on the
+    celestial sphere using the equatorial coordinate system in arcsec.
 
     Parameters
     ----------
@@ -124,8 +124,8 @@ def longitude_sun_perigee(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def mean_anomaly(t='now'):
     """
-    Returns the mean anomaly (the angle through which the Sun has moved assuming a circular orbit)
-    as a function of time.
+    Returns the mean anomaly (the angle through which the Sun has moved
+    assuming a circular orbit) as a function of time.
 
     Parameters
     ----------
