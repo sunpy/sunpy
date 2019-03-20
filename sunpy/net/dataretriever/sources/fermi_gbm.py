@@ -33,8 +33,7 @@ class GBMClient(GenericClient):
     >>> res = Fido.search(a.Time('2015-06-21 00:00', '2015-06-23 23:59'),
     ...                   a.Instrument('gbm'), a.Detector('n3'),
     ...                   a.Resolution('ctime')) #doctest: +REMOTE_DATA
-
-    >>> print(res) #doctest: +REMOTE_DATA +ELLIPSIS
+    >>> print(res) #doctest: +REMOTE_DATA
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the GBMClient:
@@ -46,12 +45,7 @@ class GBMClient(GenericClient):
     2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
     <BLANKLINE>
     <BLANKLINE>
-    References
-    ----------
-    * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`_
-    * `Fermi GBM Homepage <https://fermi.gsfc.nasa.gov/science/instruments/gbm.html>`_
-    * `Fermi Science Support Center <https://fermi.gsfc.nasa.gov/ssc/>`_
-    * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`_
+    <BLANKLINE>
     """
 
     def _get_url_for_timerange(self, timerange, **kwargs):
