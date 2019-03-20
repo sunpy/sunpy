@@ -14,9 +14,9 @@ class GBMClient(GenericClient):
 
     The instrument consists of 12 Sodium Iodide (NaI) scintillation
     detectors, which are sensitive of an energy range from 4keV to 1MeV.
-    At any one time, 6 of the NaI detectors are Sunward facing. The
-    detectors are numbered ['n0, n1', ...'n11']. This client supports the
-    user to choose which detector to use through the 'a.Detector' attribute.
+    At any one time, 6 of the NaI detectors are Sunward facing.
+    The detectors are numbered 'n1' to 'n11'. This client supports the user
+    to choose which detector to use through the 'a.Detector' attribute.
     The default detector is 'n5'.
 
     The GBM data comes in daily version files in two formats:
