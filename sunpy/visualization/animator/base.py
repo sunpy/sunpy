@@ -539,7 +539,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             elif len(axis_ranges[i]) == 2:
                 axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
                                              data_shape[i]+1)
-                axis_ranges[i] = edges_to_centers_nd(axis_ranges[i])
+                axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
             elif len(axis_ranges[i]) == data_shape[i]+1:
                 # If array of individual pixel edges supplied, convert to pixel centers.
                 axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]), i)
