@@ -21,8 +21,7 @@ class GBMClient(GenericClient):
 
     The GBM data comes in daily version files in two formats:
 
-        * CSPEC - counts accumulated every  4.096 seconds in 128 energy channels
-    for each detector.
+        * CSPEC - counts accumulated every  4.096 seconds in 128 energy channels for each detector.
         * CTIME - counts accumulated every 0.256 seconds in 8 energy channels
 
     Both of which can be accessed through the attrs 'a.Resolution'.
@@ -35,8 +34,7 @@ class GBMClient(GenericClient):
     ...                   a.Instrument('gbm'), a.Detector('n3'),
     ...                   a.Resolution('ctime')) #doctest: +REMOTE_DATA
 
-    >>> res #doctest: +REMOTE_DATA +ELLIPSIS
-    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    >>> print(res) #doctest: +REMOTE_DATA +ELLIPSIS
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the GBMClient:
