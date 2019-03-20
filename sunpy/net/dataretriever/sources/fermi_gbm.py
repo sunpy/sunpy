@@ -34,7 +34,7 @@ class GBMClient(GenericClient):
     ...                   a.Resolution('ctime')) #doctest: +REMOTE_DATA
 
     >>> res #doctest: +REMOTE_DATA +ELLIPSIS
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x125961c50>
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
     3 Results from the GBMClient:
