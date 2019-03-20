@@ -1,34 +1,23 @@
-# -*- coding: utf-8 -*-
-from matplotlib import pyplot
+"""
+This module provides plotting support in iPython.
+"""
+from matplotlib import pyplot as plt
+
+__all__ = ["toggle_pylab", "axis_labels_from_ctype"]
 
 
 def toggle_pylab(fn):
     """
-    A decorator to prevent functions from opening matplotlib windows
-    unexpectedly when sunpy is run in interactive shells like ipython
-    --pylab.
+    A decorator to prevent functions from opening Matplotlib windows
+    unexpectedly when SunPy is run in interactive shells like iPython.
 
-    Toggles the value of matplotlib.pyplot.isinteractive() to preserve the
-    users' expectations of pylab's behaviour in general.
-
-    Parameters
-    ----------
-    fn : function object
-        ?
-
-    Returns
-    ------
-    ? : ?
-        ?
-    .. todo::
-        improve documentation
+    Toggles the value of `matplotlib.pyplot.isinteractive`.
     """
-
-    if pyplot.isinteractive():
+    if plt.isinteractive():
         def fn_itoggle(*args, **kwargs):
-            pyplot.ioff()
+            plt.ioff()
             ret = fn(*args, **kwargs)
-            pyplot.ion()
+            plt.ion()
             return ret
         return fn_itoggle
     else:
@@ -38,18 +27,18 @@ def toggle_pylab(fn):
 def axis_labels_from_ctype(ctype, unit):
     """
     Returns axis labels for the given coordinate type and unit.
-    
+
     Parameters
     ----------
     ctype: `str`
-        Coordinate type
+        Coordinate type.
     unit: `str`
-        Required unit
-    
+        Required unit.
+
     Returns
     -------
     `str`
-        Axis_Label [Unit].
+        "Axis Label [Unit]"
     """
     ctype_short = ctype[:4]
 
