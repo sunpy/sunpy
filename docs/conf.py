@@ -150,7 +150,7 @@ linkcheck_anchors = False
 
 # This is added to the end of RST files - a good place to put substitutions to
 # be used globally.
-rst_epilog += """
+rst_epilog = """
 .. SunPy
 .. _SunPy: http://sunpy.org
 .. _`SunPy mailing list`: http://groups.google.com/group/sunpy
