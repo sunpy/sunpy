@@ -26,6 +26,7 @@ from skimage.feature import match_template
 # SunPy imports
 import sunpy.map
 from sunpy.map.mapbase import GenericMap
+from sunpy import log
 
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
@@ -251,8 +252,7 @@ def get_correlation_shifts(array):
     ny = array.shape[0]
     nx = array.shape[1]
     if nx > 3 or ny > 3:
-        print('Input array is too big in at least one dimension. Returning Nones')
-        return None, None
+        raise ValueError("Input array dimension should not be greater than 3 in any dimension.")
 
     # Find where the maximum of the input array is
     ij = np.unravel_index(np.argmax(array), array.shape)
