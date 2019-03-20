@@ -8,15 +8,15 @@ __all__ = ['GBMClient']
 class GBMClient(GenericClient):
     """
     This GBMClient is for the Gamma-Ray Burst Monitor (GBM) instrument
-    aboard the Fermi satellite. Although GBMs primary objective  is to
+    aboard the Fermi satellite. Although GBMs primary objective is to
     detect gamma-ray bursts, it provides high quailty high energy solar
     flare observations.
 
     The instrument consists of 12 Sodium Iodide (NaI) scintillation
-    detectors, which are sensitive of an energy range from 4keV to 1MeV.
+    detectors, which are sensitive to an energy range of 4keV to 1MeV.
     At any one time, 6 of the NaI detectors are Sunward facing.
     The detectors are numbered 'n1' to 'n11'. This client supports the user
-    to choose which detector to use through the 'a.Detector' attribute.
+    to choose which detector to use through the `a.Detector <sunpy.net.attrs.Detector>` attribute.
     The default detector is 'n5'.
 
     The GBM data comes in daily version files in two formats:
@@ -24,7 +24,7 @@ class GBMClient(GenericClient):
         * CSPEC - counts accumulated every  4.096 seconds in 128 energy channels for each detector.
         * CTIME - counts accumulated every 0.256 seconds in 8 energy channels
 
-    Both of which can be accessed through the attrs 'a.Resolution'.
+    Both of which can be accessed through the attrs `a.Resolution <sunpy.net.attrs.Resolution>`.
     The default data type is CSPEC unless the user defines.
 
     Examples
@@ -69,7 +69,6 @@ class GBMClient(GenericClient):
         # If not defaults to detector 5
         if 'detector' in kwargs:
             det = _check_detector(kwargs['detector'])
-
         else:
             det = 'n5'
 
