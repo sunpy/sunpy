@@ -20,9 +20,11 @@ class GBMClient(GenericClient):
     The default detector is 'n5'.
 
     The GBM data comes in daily version files in two formats:
-        CSPEC - counts accumulated every  4.096 seconds in 128 energy channels
+
+        * CSPEC - counts accumulated every  4.096 seconds in 128 energy channels
     for each detector.
-        CTIME - counts accumulated every 0.256 seconds in 8 energy channels
+        * CTIME - counts accumulated every 0.256 seconds in 8 energy channels
+
     Both of which can be accessed through the attrs 'a.Resolution'.
     The default data type is CSPEC unless the user defines.
 
