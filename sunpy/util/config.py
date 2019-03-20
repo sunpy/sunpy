@@ -2,10 +2,10 @@
 import os
 import configparser
 from pathlib import Path
+import shutil
 
 import sunpy
 from sunpy.extern.appdirs import AppDirs
-
 
 __all__ = ['load_config', 'print_config', 'CONFIG_DIR']
 
@@ -123,3 +123,26 @@ def _get_user_configdir():
     if not _is_writable_dir(configdir):
         raise RuntimeError(f'Could not write to SUNPY_CONFIGDIR="{configdir}"')
     return configdir
+
+
+def write_config(overwrite=False):
+    """
+    Copies default config file to user config directory.
+    """
+    config_filename = 'sunpyrc'
+    module_dir = Path(sunpy.__file__).parent
+    config_file = module_dir / 'data' / config_filename
+    user_config_dir = Path(_get_user_configdir())
+    user_config_file = user_config_dir / config_filename
+
+    if not _is_writable_dir(user_config_dir):
+        raise RuntimeError(f'Could not write to SunPy config directory="{user_config_dir}"')
+
+    # No config file exists in user directory
+    if not user_config_file.exists():
+        shutil.copyfile(config_file, user_config_file)
+
+    # File exists and needs to be overwritten
+    elif overwrite:
+        os.remove(user_config_file)
+        shutil.copyfile(config_file, user_config_file)
