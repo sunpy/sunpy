@@ -8,8 +8,8 @@ import sys
 
 from astropy.utils.exceptions import AstropyWarning
 
-__all__ = ["SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning", "SunpyPendingDeprecationWarning"]
-
+__all__ = ["SunpyWarning", "SunpyUserWarning", "SunpyDeprecationWarning",
+           "SunpyPendingDeprecationWarning"]
 
 
 class SunpyWarning(AstropyWarning):
@@ -17,7 +17,8 @@ class SunpyWarning(AstropyWarning):
     The base warning class from which all Sunpy warnings should inherit.
 
     Any warning inheriting from this class is handled by the Sunpy logger.
-    This warning should not be issued in normal code. Use SunpyUserWarning instead or a specific sub-class.
+    This warning should not be issued in normal code. Use SunpyUserWarning
+    instead or a specific sub-class.
     """
 
 
