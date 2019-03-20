@@ -48,24 +48,18 @@ class MapSequence(object):
 
     MapSequences can be co-aligned using the routines in sunpy.image.coalignment.
     """
-    #pylint: disable=W0613,E1101
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, sortby='date', derotate=False, **kwargs):
         """Creates a new Map instance"""
-
-        # Hack to get around Python 2.x not backporting PEP 3102.
-        sortby = kwargs.pop('sortby', 'date')
-        derotate = kwargs.pop('derotate', False)
 
         self.maps = expand_list(args)
 
         for m in self.maps:
             if not isinstance(m, GenericMap):
-                raise ValueError(
-                           'MapSequence expects pre-constructed map objects.')
+                raise ValueError('MapSequence expects pre-constructed map objects.')
 
         # Optionally sort data
         if sortby is not None:
-            if sortby is 'date':
+            if sortby == 'date':
                 self.maps.sort(key=self._sort_by_date())
             else:
                 raise ValueError("Only sort by date is supported")

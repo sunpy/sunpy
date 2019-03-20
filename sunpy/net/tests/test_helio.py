@@ -279,7 +279,9 @@ def test_select_table(client, monkeypatch):
 
 
 @pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
 def test_time_query(client):
+    hc = hec.HECClient()
     start = '2005/01/03'
     end = '2005/12/03'
     table_name = b'rhessi_hxr_flare'

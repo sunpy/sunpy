@@ -22,7 +22,7 @@
 Multimethod implementation in pure Python.
 """
 
-from warnings import warn
+import warnings
 
 __all__ = ['TypeWarning', 'MultiMethod']
 
@@ -85,9 +85,8 @@ class MultiMethod(object):
             raise TypeError
         elif overriden and override == WARN:
             # pylint: disable=W0631
-            warn('Definition ({0}) overrides prior definition ({1}).'.format(_fmt_t(types),
-                                                                             _fmt_t(signature)),
-                 TypeWarning, stacklevel=3)
+            warnings.warn(f'Definition ({_fmt_t(types)}) overrides prior definition ({_fmt_t(signature)}).',
+                          TypeWarning, stacklevel=3)
 
         self.methods.append((types, fun))
 

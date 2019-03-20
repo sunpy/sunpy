@@ -36,7 +36,12 @@ def TimeDelta(draw):
     """
     keys = st.sampled_from(['weeks', 'days', 'hours', 'minutes', 'seconds'])
     values = st.floats(min_value=1, max_value=10)
-    delta = datetime.timedelta(**draw(st.dictionaries(keys, values)))
+    time_dict = {'days': st.floats(min_value=1, max_value=8),
+                 'hours': st.floats(min_value=1, max_value=12),
+                 'minutes': st.floats(min_value=1, max_value=30),
+                 'seconds': st.floats(min_value=1, max_value=60)}
+
+    delta = datetime.timedelta(**draw(st.fixed_dictionaries(time_dict)))
     delta = astropy.time.TimeDelta(delta, format='datetime')
 
     # We don't want a 0 timedelta
@@ -48,9 +53,9 @@ def TimeDelta(draw):
 def offline_instruments():
     """
     Returns a strategy for any instrument that does not need the internet to do
-    a query
+    a query.
     """
-    offline_instr = ['lyra', 'noaa-indices', 'noaa-predict', 'goes']
+    offline_instr = ['lyra', 'noaa-indices', 'noaa-predict', 'soon', 'goes']
     offline_instr = st.builds(a.Instrument, st.sampled_from(offline_instr))
 
     return st.one_of(offline_instr)
@@ -58,10 +63,10 @@ def offline_instruments():
 
 def online_instruments():
     """
-    Returns a strategy for any instrument that does not need the internet to do
-    a query
+    Returns a strategy for any instrument that does need the internet to do
+    a query.
     """
-    online_instr = ['rhessi']
+    online_instr = ['eve', 'rhessi', 'norh']
     online_instr = st.builds(a.Instrument, st.sampled_from(online_instr))
 
     return online_instr

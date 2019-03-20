@@ -6,6 +6,7 @@ merge-check: &merge-check
   name: Check if we need to merge upstream master
   command: |
     if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
+      git fetch origin --tags
       git fetch origin +refs/pull/$CIRCLE_PR_NUMBER/merge:pr/$CIRCLE_PR_NUMBER/merge
       git checkout -qf pr/$CIRCLE_PR_NUMBER/merge
     fi
@@ -88,7 +89,7 @@ jobs:
       - run:
           name: Install dependencies two
           # Cat here to suppress the progress bar
-          command: pip3 install sqlalchemy scikit-image glymur drms zeep beautifulsoup4 requests python-dateutil pytest pytest-cov pytest-mock pytest-xdist hypothesis pytest-astropy pytest-rerunfailures | cat
+          command: pip3 install sqlalchemy scikit-image glymur drms zeep beautifulsoup4 requests python-dateutil pytest pytest-cov pytest-mock pytest-xdist hypothesis pytest-astropy pytest-rerunfailures parfive[ftp] | cat
       - run:
           name: Run tests
           command: PYTHONHASHSEED=42 python3 setup.py test --parallel=4

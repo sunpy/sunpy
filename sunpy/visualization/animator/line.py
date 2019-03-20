@@ -1,6 +1,6 @@
 import numpy as np
 
-from . base import ArrayAnimator
+from . base import ArrayAnimator, edges_to_centers_nd
 
 __all__ = ['LineAnimator']
 
@@ -34,8 +34,9 @@ class LineAnimator(ArrayAnimator):
 
     axis_ranges: `list` of physical coordinates or None
         Each element of axis_ranges provides an array of physical coordinates for the
-        corresponding dimension of the data array.  If an element is None, array indices will be
-        used for that axis.  If axis_range itself is None, array indices will be used for all axes.
+        pixel/bin edges along the corresponding dimension of the data array.
+        If an element is None, array indices will be used for that axis.
+        If axis_range itself is None, array indices will be used for all axes.
         For more information, see the Notes section of this docstring.
 
     xlabel: `str`
@@ -66,16 +67,23 @@ class LineAnimator(ArrayAnimator):
     Additional information on API of axes_ranges kwarg.
 
     #. X-axis values must be supplied (if desired) as an array in the element of
-       the axis_ranges list corresponding to the plot_axis_index in the data array, i.e.
-       ``x_axis_values == axis_ranges[plot_axis_index]``
+       the axis_ranges list corresponding to the plot_axis_index in the data array,
+       i.e. ``x_axis_values == axis_ranges[plot_axis_index]``
+
+    #. The x-axis values represent the edges of the pixels/bins along the plotted
+       axis, not the centers. Therefore there must be 1 more x-axis value than
+       there are data points along the x-axis.
 
     #. The shape of the x-axis values array can take two forms.
 
-       a) First, it can equal the the length of the data array along the dimension
-          corresponding to the x-axis, i.e.
-          ``len(axis_ranges[plot_axis_index]) == len(data[plot_axis_index])``
-          In this scenario the same x-axis values are used in every frame of the animation.
-       b) Second, the x-axis array can have the same shape as the data array.
+       a) First, it can have a length 1 greater than the length of the data array
+          along the dimension corresponding to the x-axis, i.e.
+          ``len(axis_ranges[plot_axis_index]) == len(data[plot_axis_index])+1``
+          In this scenario the same x-axis values are used in every frame of the
+          animation.
+       b) Second, the x-axis array can have the same shape as the data array, with
+          the exception of the plotted axis which, as above, must be 1 greater than
+          the length of the data array along that dimension.
           In this scenario the x-axis is refreshed for each frame. For example, if
           ``data.shape == axis_ranges[plot_axis_index] == (4, 3)``,
           where ``plot_axis_index == 0``, the 0th frame of the animation will show data from
@@ -83,8 +91,7 @@ class LineAnimator(ArrayAnimator):
           while the 1st frame will show data from ``data[:, 1]`` with the x-axis described by
           ``axis_ranges[plot_axis_index][:, 1]``.
 
-    #. For the slider axes the axis range is an array of the same length as the dimension of the
-       data array to which that slider corresponds.
+    #. The API holds for slider axes.
 
     """
 
@@ -98,14 +105,6 @@ class LineAnimator(ArrayAnimator):
         if data.ndim < 2:
             raise ValueError("data must have at least two dimensions.  One for data "
                              "for each single plot and at least one for time/iteration.")
-        # Ensure axis_ranges are input correctly.
-        if axis_ranges is not None:
-            if axis_ranges[self.plot_axis_index] is not None:
-                if (len(axis_ranges[self.plot_axis_index]) != data.shape[self.plot_axis_index] and
-                        axis_ranges[self.plot_axis_index].shape != data.shape):
-                    raise ValueError("The plot_axis_index axis range must be specified as None "
-                                     "a 1D array of same length as plot_axis_index axis, "
-                                     "or an array of same shape as data.")
         # Define number of slider axes.
         self.naxis = data.ndim
         self.num_sliders = self.naxis-1
@@ -115,7 +114,10 @@ class LineAnimator(ArrayAnimator):
         if axis_ranges is None or axis_ranges[self.plot_axis_index] is None:
             self.xdata = np.arange(data.shape[self.plot_axis_index])
         else:
-            self.xdata = np.asarray(axis_ranges[self.plot_axis_index])
+            # Else derive the xdata as the centers of the pixel/bin edges
+            # supplied by the user for the plotted axis.
+            self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]),
+                                             plot_axis_index)
         if ylim is None:
             ylim = (data.min(), data.max())
         if xlim is None:
@@ -125,8 +127,8 @@ class LineAnimator(ArrayAnimator):
         self.xlabel = xlabel
         self.ylabel = ylabel
         # Run init for base class
-        super(LineAnimator, self).__init__(data, image_axes=[self.plot_axis_index],
-                                           axis_ranges=axis_ranges, **kwargs)
+        super().__init__(data, image_axes=[self.plot_axis_index], axis_ranges=axis_ranges,
+                         **kwargs)
 
     def plot_start_image(self, ax):
         """Sets up plot of initial image."""
@@ -165,3 +167,5 @@ class LineAnimator(ArrayAnimator):
                 item.insert(i, slice(None))
                 line.set_xdata(self.xdata[tuple(item)])
             slider.cval = val
+        # Update slider label to reflect real world values in axis_ranges.
+        super().update_plot(val, slider)
