@@ -14,6 +14,8 @@ except ImportError:  # pragma: no cover
                   ImportWarning)
     scikit_image_not_found = True  # pragma: no cover
 
+from sunpy.util.exceptions import SunpyUserWarning
+
 __all__ = ['affine_transform']
 
 
@@ -102,7 +104,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     if use_scipy or scikit_image_not_found:
         if np.any(np.isnan(image)):
-            warnings.warn("Setting NaNs to 0 for SciPy rotation", RuntimeWarning)
+            warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
         # Transform the image using the scipy affine transform
         rotated_image = scipy.ndimage.interpolation.affine_transform(
                 np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
@@ -117,13 +119,12 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
         # Transform the image using the skimage function
         if not np.issubdtype(image.dtype, np.float64):
-            warnings.warn("Input data has been cast to float64", RuntimeWarning)
+            warnings.warn("Input data has been cast to float64.", SunpyUserWarning)
             adjusted_image = image.astype(np.float64)
         else:
             adjusted_image = image.copy()
         if np.any(np.isnan(adjusted_image)) and order >= 4:
-            warnings.warn("Setting NaNs to 0 for higher-order scikit-image rotation",
-                          RuntimeWarning)
+            warnings.warn("Setting NaNs to 0 for higher-order scikit-image rotation.", SunpyUserWarning)
             adjusted_image = np.nan_to_num(adjusted_image)
 
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
