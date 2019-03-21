@@ -4,14 +4,15 @@ Re-write release.rst for SunPy
 
 
 Usage:
-    generate_releasemd.xsh <prev_version> [<prev_tag>] [--commit-count] [--project-name=<project-name>] [--pretty-project-name=<pretty-project-name>] [--repo=<repo>] [--auth]
+    generate_releasemd.xsh <prev_version> [<prev_tag>] [--project-name=<project-name>] [--author-sort=<author-sort>] [--show-commit-count] [--pretty-project-name=<pretty-project-name>] [--repo=<repo>] [--auth]
 
 Options:
-    prev_version                                   The PyPI release name of the previous release
+    prev_version                                   The PyPI release name of the previous release (should not start with v)
     prev_tag                                       The tag name for the previous release, if not specified will be v<prev_version>
-    --commit-count                                 Generate commit count stats
     --project-name=<project-name>                  The project name on PyPI [default: sunpy]
-    --pretty-project-name=<pretty-project-name>    The project name to use in the printed output [default: SunPy]
+    --author-sort=<author-sort>                    How to sort the contributors in the list. Can be alphabet or numeric. [default: alphabet]
+    --show-commit-count                            Show number of commits next to the contributors [default: false]
+    --pretty-project-name=<pretty-project-name>    The project name to use in the printed output [default: <project-name>]
     --repo=<repo>                                  The GitHub repository name, will default to <project-name>/<project-name>
     --auth                                         Prompt for GH auth
 """
@@ -173,13 +174,18 @@ def get_datetime_of_pypi_version(pkg, version):
 # Handle input
 
 prev_version = args['<prev_version>']
+if prev_version.startswith("v"):
+    raise ValueError("prev_version should not start with v")
 prev_tag = args['<prev_tag>'] if args['<prev_tag>'] else "v"+args['<prev_version>']
 
-commit_count = args['--commit-count']
+commit_count = args['--show-commit-count']
+
+author_sort = args['--author-sort']
+if author_sort not in ("alphabet", "numeric"):
+    raise ValueError("--author_sort should be one of 'alphabet' or 'numeric'")
 
 
 # Parse Git trickery.
-
 current_log = $(git shortlog -ns --no-merges @(prev_tag+"..HEAD"))
 
 # Get all the authors for all releases up to the previous release
@@ -190,7 +196,8 @@ current = {a.split('\t')[1] for a in current_log.split('\n')[:-1]}
 
 new = current.difference(prev)
 
-ncommits = int($(git rev-list HEAD @("^"+prev_tag) --count).strip())
+gitcount = $(git rev-list HEAD @("^"+prev_tag) --count)
+ncommits = int(gitcount.strip())
 npeople = len(current)
 nnew = len(new)
 
@@ -203,18 +210,23 @@ for i, line in enumerate(lines):
     if commit_count:
         outl = line
     else:
-        outl = '    ' + line.split('\t')[1]
+        outl = line.split('\t')[1]
     if any([a in line for a in new]):
         outl += '  *'
     shortlog.append(outl)
 
+if author_sort == "alphabet":
+    shortlog.sort()
+
+shortlog = list(map(lambda x: '    ' + x, shortlog))
 
 # Get PR info
 
 pkgdt = get_datetime_of_pypi_version(args['--project-name'], prev_version)
 
-icache = 'issues.json'
-prcache = 'prs.json'
+mkdir .github_cache
+icache = '.github_cache/issues.json'
+prcache = '.github_cache/prs.json'
 
 verbose = False
 repo = f"{args['--project-name']}/{args['--project-name']}" if not args['--repo'] else args['--repo']
@@ -226,6 +238,9 @@ output = '\n'.join(shortlog)
 
 
 pretty_project_name = args["--pretty-project-name"] if args["--pretty-project-name"] else args["--project-name"]
+
+print("-"*80)
+print()
 print(f"This release of {pretty_project_name} contains {ncommits} commits in {prcnt['merged']} merged pull requests closing {icnt['closed']} issues from {npeople} people, {nnew} of which are first time contributors to {pretty_project_name}.")
 print()
 print("The people who have contributed to the code for this release are:")

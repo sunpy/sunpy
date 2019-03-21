@@ -13,8 +13,7 @@ from sunpy.data.sample import NOAAINDICES_TIMESERIES, NOAAPREDICT_TIMESERIES
 
 ###############################################################################
 # For this example we will use the SunPy sample data. This code snippet grabs
-# the most current NOAA solar cycle data as a ``TimeSeries``
-# (see :ref:`timeseries_code_ref`).
+# the most current NOAA solar cycle data as a ``TimeSeries``.
 
 noaa = ts.TimeSeries(NOAAINDICES_TIMESERIES, source='noaaindices')
 noaa_predict = ts.TimeSeries(NOAAPREDICT_TIMESERIES, source='noaapredictindices')

@@ -30,7 +30,7 @@ comp_map = sunpy.map.Map(aia_map, hmi_map, composite=True)
 ##############################################################################
 # Now we want to see what coronal features overlap with regions of strong
 # line of sight magnetic field. So we need to set the contour levels of
-# our composite map using `.set_levels`.
+# our composite map using `sunpy.map.CompositeMap.set_levels`.
 
 # We want to contour the HMI map, which is the second image in our composite map.
 # Therefore the index is 1.

@@ -30,6 +30,7 @@ from sunpy.image.transform import affine_transform
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 from sunpy.coordinates import get_sun_B0, get_sun_L0, get_sunearth_distance
+from sunpy.util.exceptions import SunpyUserWarning
 
 from astropy.nddata import NDData
 
@@ -170,10 +171,8 @@ class GenericMap(NDData):
             new_2d_slice.extend([slice(None), slice(None)])
             data = data[new_2d_slice]
             # Warn the user that the data has been truncated
-            warnings.warn_explicit("This file contains more than 2 dimensions. "
-                                   "Only the first two dimensions will be used."
-                                   " The truncated data will not be saved in a new file.",
-                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
+            warnings.warn("This file contains more than 2 dimensions. "
+                          "Data will be truncated to the first two dimensions.", SunpyUserWarning)
 
         super(GenericMap, self).__init__(data, meta=header, **kwargs)
 
@@ -411,11 +410,8 @@ class GenericMap(NDData):
         time = self.meta.get('date-obs', None)
         if time is None:
             if self._default_time is None:
-                warnings.warn_explicit(
-                    "Missing metadata for observation time:"
-                    " setting observation time to current time",
-                    Warning, __file__,
-                    inspect.currentframe().f_back.f_lineno)
+                warnings.warn("Missing metadata for observation time: setting observation time to current time.",
+                              SunpyUserWarning)
                 self._default_time = parse_time('now')
             time = self._default_time
         return parse_time(time)
@@ -432,10 +428,8 @@ class GenericMap(NDData):
 
         if dsun is None:
             if self._default_dsun is None:
-                warnings.warn_explicit("Missing metadata for Sun-spacecraft"
-                                       " separation: assuming Sun-Earth distance",
-                                       Warning, __file__,
-                                       inspect.currentframe().f_back.f_lineno)
+                warnings.warn("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance.",
+                              SunpyUserWarning)
                 self._default_dsun = get_sunearth_distance(self.date).to(u.m)
             return self._default_dsun
 
@@ -555,10 +549,8 @@ class GenericMap(NDData):
                                                                     None)))
 
         if rsun_arcseconds is None:
-            warnings.warn_explicit("Missing metadata for solar radius:"
-                                   " assuming photospheric limb as seen from Earth",
-                                   Warning, __file__,
-                                   inspect.currentframe().f_back.f_lineno)
+            warnings.warn("Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
+                          SunpyUserWarning)
             rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).to('arcsec').value
 
         return u.Quantity(rsun_arcseconds, 'arcsec')
@@ -576,10 +568,8 @@ class GenericMap(NDData):
 
         if carrington_longitude is None:
             if self._default_carrington_longitude is None:
-                warnings.warn_explicit("Missing metadata for Carrington longitude:"
-                                       " assuming Earth-based observer",
-                                       Warning, __file__,
-                                       inspect.currentframe().f_back.f_lineno)
+                warnings.warn("Missing metadata for Carrington longitude: assuming Earth-based observer.",
+                              SunpyUserWarning)
                 self._default_carrington_longitude = get_sun_L0(self.date)
             carrington_longitude = self._default_carrington_longitude
 
@@ -597,10 +587,8 @@ class GenericMap(NDData):
 
         if heliographic_latitude is None:
             if self._default_heliographic_latitude is None:
-                warnings.warn_explicit("Missing metadata for heliographic latitude:"
-                                       " assuming Earth-based observer",
-                                       Warning, __file__,
-                                       inspect.currentframe().f_back.f_lineno)
+                warnings.warn("Missing metadata for heliographic latitude: assuming Earth-based observer.",
+                                       SunpyUserWarning)
                 self._default_heliographic_latitude = get_sun_B0(self.date)
             heliographic_latitude = self._default_heliographic_latitude
 
@@ -619,10 +607,8 @@ class GenericMap(NDData):
                 heliographic_longitude = self.meta['crln_obs'] * u.deg - get_sun_L0(self.date)
             else:
                 if self._default_heliographic_longitude is None:
-                    warnings.warn_explicit("Missing metadata for heliographic longitude: "
-                                           "assuming longitude of 0 degrees",
-                                           Warning, __file__,
-                                           inspect.currentframe().f_back.f_lineno)
+                    warnings.warn("Missing metadata for heliographic longitude: assuming longitude of 0 degrees.",
+                                  SunpyUserWarning)
                     self._default_heliographic_longitude = 0
                 heliographic_longitude = self._default_heliographic_longitude
 
@@ -795,16 +781,13 @@ class GenericMap(NDData):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
-
-                warnings.warn("Unknown value for " + meta_property.upper(),
-                              Warning)
+                warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
 
         if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
             self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
-
-            warnings.warn("SunPy Map currently does not support three dimensional data,"
-                          " and therefore can not represent heliocentric coordinates. "
-                          "Creating a map in this frame will almost certainly result in errors.")
+            warnings.warn("SunPy Map does not support three dimensional data "
+                          "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.",
+                          SunpyUserWarning)
 
 
 # #### Data conversion routines #### #
@@ -1715,13 +1698,13 @@ class GenericMap(NDData):
             # Check that the image is properly oriented
             if (not wcsaxes_compat.is_wcsaxes(axes) and
                     not np.array_equal(self.rotation_matrix, np.identity(2))):
-                warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
-                              Warning)
+                warnings.warn("This map is not properly oriented. Plot axes may be incorrect.",
+                              SunpyUserWarning)
 
             elif not wcsaxes_compat.is_wcsaxes(axes):
                 warnings.warn("WCSAxes not being used as the axes object for this plot."
-                              " Plots may have expected behaviour",
-                              Warning)
+                              " Plots may have unexpected behaviour.",
+                              SunpyUserWarning)
 
         # Normal plot
         imshow_args = copy.deepcopy(self.plot_settings)
