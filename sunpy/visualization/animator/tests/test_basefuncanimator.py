@@ -82,7 +82,7 @@ def test_edges_to_centers_nd():
     edges_axis = 0
     axis_range = np.zeros((10, 2))
     axis_range[:, 0] = np.arange(10, 20)
-    expected = np.zeros((9,2))
+    expected = np.zeros((9, 2))
     expected[:, edges_axis] = np.arange(10.5, 19)
     output = base.edges_to_centers_nd(axis_range, edges_axis)
     assert np.array_equal(output, expected)
@@ -106,6 +106,7 @@ class ArrayAnimatorTest(ArrayAnimator):
         label = self.axis_ranges[ax_ind][ind]
         slider.valtext.set_text("{0}".format(label))
 
+
 def test_sanitize_axis_ranges():
     data_shape = (10, 20)
     data = np.random.rand(*data_shape)
@@ -113,10 +114,10 @@ def test_sanitize_axis_ranges():
     axis_ranges1 = np.tile(np.linspace(0, 100, data_shape[1]+1), (data_shape[0], 1))
     axis_ranges = np.asarray([None, axis_ranges1])
     aanim = ArrayAnimatorTest(data=data)
-    out_axis_ranges, out_extent = aanim._sanitize_axis_ranges(axis_ranges=axis_ranges, data_shape=data_shape)
+    out_axis_ranges, out_extent = aanim._sanitize_axis_ranges(axis_ranges=axis_ranges, 
+                                                                data_shape=data_shape)
     exp_axis_ranges = [np.arange(10), base.edges_to_centers_nd(axis_ranges1, edges_axis)]
     exp_extent = [0.0, 100.0]
     assert exp_extent == out_extent
     assert np.array_equal(exp_axis_ranges[0], out_axis_ranges[0])
     assert np.array_equal(exp_axis_ranges[1], out_axis_ranges[1])
-    
