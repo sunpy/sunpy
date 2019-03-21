@@ -1,4 +1,3 @@
-from urllib.parse import urljoin
 from sunpy.util.scraper import Scraper
 from ..client import GenericClient
 
@@ -47,24 +46,20 @@ class GBMClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
-
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns the url for Fermi/GBM data for the given date.
 
-        baseurl = 'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
-
-
         Parameters
         ----------
-        timerange : sunpy.time.TimeRange
-            time range for which to download the data
+        timerange : `sunpy.time.TimeRange`
+            The time range for which to download the data.
 
         Returns
         -------
-        url(s) for time of interest
+        `str`:
+            The url(s) for time of interest.
         """
-
         # Checks if detector keyword
         # If not defaults to detector 5
         if 'detector' in kwargs:
@@ -74,7 +69,6 @@ class GBMClient(GenericClient):
 
         # Check for resolution keyword - either CSPEC or CTIME
         # Default type is CSPEC
-
         if 'resolution' in kwargs:
             data_type = _check_type(kwargs['resolution'])
         else:
@@ -89,7 +83,7 @@ class GBMClient(GenericClient):
 
     def _makeimap(self):
         """
-        Helper Function:used to hold information about source.
+        Helper function used to hold information about source.
         """
         self.map_['source'] = 'FERMI'
         self.map_['instrument'] = 'GBM'
@@ -99,14 +93,17 @@ class GBMClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Answers whether client can service the query.
+        Answers whether a client can service the query.
+
         Parameters
         ----------
-        query : list of query objects
+        query : `list`
+            A list of of query objects.
+
         Returns
         -------
-        boolean
-        answer as to whether client can service the query
+        `bool`
+            `True` if this client can service the query, otherwise `False`.
         """
         chkattr = ['Time', 'Instrument', 'Detector', 'Resolution']
         chklist = [x.__class__.__name__ in chkattr for x in query]
@@ -118,7 +115,7 @@ class GBMClient(GenericClient):
 
 def _check_detector(detector, **kwargs):
     """
-    checks to see if detector is in right format
+    checks to see if detector is in right format.
     """
     detector_numbers = [str(i) for i in range(12)]
     detector_list = ['n' + i for i in detector_numbers]
@@ -133,13 +130,12 @@ def _check_detector(detector, **kwargs):
 
 def _check_type(datatype, **kwargs):
     """
-    checks is datatype is either CSPEC or CTIME
+    checks is datatype is either "CSPEC" or "CTIME".
     """
     if not isinstance(datatype, str):
         raise ValueError('{} is not str - either cspec or ctime'.format(datatype))
 
     if datatype.lower() != 'cspec' and datatype.lower() != 'ctime':
         raise ValueError('{} not value datatype - either cspec or ctime'.format(datatype))
-
     else:
         return datatype.lower()
