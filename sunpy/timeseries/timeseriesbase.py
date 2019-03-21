@@ -16,8 +16,8 @@ from astropy.table import Column, Table
 from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.util.metadata import MetaDict
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.metadata import MetaDict
 
 # define and register a new unit, needed for RHESSI
 det = u.def_unit('detector')
