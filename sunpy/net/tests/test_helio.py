@@ -255,7 +255,7 @@ def test_link_test_on_urlerror(mock_link_test):
 
 
 @pytest.mark.remote_data
-@pytest.fixture(scope="module")
+@pytest.fixture
 def client():
     link = 'http://helio.mssl.ucl.ac.uk:80/helio_hec/HelioTavernaService?wsdl'
     return HECClient(link)
