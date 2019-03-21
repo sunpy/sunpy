@@ -9,8 +9,8 @@ import itertools
 from sunpy.time import TimeRange, parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from sunpy.util.metadata import MetaDict
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.metadata import MetaDict
 
 __all__ = ["TimeSeriesMetaData"]
 
@@ -323,7 +323,7 @@ class TimeSeriesMetaData(object):
 
         Parameters
         ----------
-        `~sunpy.timeseries.TimeSeriesMetaData`
+        tsmetadata2 : `~sunpy.timeseries.TimeSeriesMetaData`
             The second TimeSeriesMetaData object.
         """
         # Create a copy of the metadata
