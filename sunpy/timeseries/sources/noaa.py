@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from pandas.io.parsers import read_csv
 
-from astropy import units as u
+import astropy.units as u
 from astropy.time import Time
 
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries

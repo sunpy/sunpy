@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-"""EVE TimeSeries subclass definitions."""
 import os
 import codecs
 from astropy.time import TimeDelta
@@ -123,22 +121,21 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     """
     SDO EVE LightCurve for level 0CS data.
 
-    The Extreme Ultraviolet Variability Experiment (EVE) is an instrument on board
-    the Solar Dynamics Observatory (SDO). The EVE instrument is designed to
-    measure the solar extreme ultraviolet (EUV) irradiance. The EUV radiation
-    includes the 0.1-105 nm range, which provides the majority of the energy
-    for heating Earth’s thermosphere and creating Earth’s ionosphere (charged plasma).
+    The Extreme Ultraviolet Variability Experiment (EVE) is an instrument on board the Solar Dynamics Observatory (SDO).
+    The EVE instrument is designed to measure the solar extreme ultraviolet (EUV) irradiance.
+    The EUV radiation includes the 0.1-105 nm range, which provides the majority
+    of the energy for heating Earth’s thermosphere and creating Earth’s ionosphere (charged plasma).
 
-    EVE includes several irradiance instruments: The Multiple EUV Grating
-    Spectrographs (MEGS)-A is a grazing- incidence spectrograph that measures
-    the solar EUV irradiance in the 5 to 37 nm range with 0.1-nm resolution,
-    and the MEGS-B is a normal-incidence, dual-pass spectrograph that measures
-    the solar EUV irradiance in the 35 to 105 nm range with 0.1-nm resolution.
+    EVE includes several irradiance instruments:
 
-    Level 0CS data is primarily used for space weather. It is provided near
-    real-time and is crudely calibrated 1-minute averaged broadband irradiances
-    from ESP and MEGS-P broadband. For other levels of EVE data, use
-    `~sunpy.net.Fido`, with `sunpy.net.attrs.Instrument('eve')`.
+    * The Multiple EUV Grating Spectrographs (MEGS)-A is a grazing- incidence spectrograph
+      that measures the solar EUV irradiance in the 5 to 37 nm range with 0.1-nm resolution,
+    * The MEGS-B is a normal-incidence, dual-pass spectrograph that measures the solar EUV
+      irradiance in the 35 to 105 nm range with 0.1-nm resolution.
+
+    Level 0CS data is primarily used for space weather.
+    It is provided near real-time and is crudely calibrated 1-minute averaged broadband irradiances from ESP and MEGS-P broadband.
+    For other levels of EVE data, use `~sunpy.net.Fido`, with `sunpy.net.attrs.Instrument('eve')`.
 
     Data is available starting on 2010/03/01.
 
@@ -148,7 +145,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')  # doctest: +REMOTE_DATA
     >>> eve = sunpy.timeseries.TimeSeries("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')  # doctest: +REMOTE_DATA
-    >>> eve.peek(subplots=True)    # doctest: +SKIP
+    >>> eve.peek(subplots=True)  # doctest: +SKIP
 
     References
     ----------
@@ -157,12 +154,13 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`__
     * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`__
     * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`__
-    """  # noqa
+    """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'eve'
 
     def peek(self, column=None, **kwargs):
-        """Plots the time series in a new figure. An example is shown below.
+        """
+        Plots the time series in a new figure. An example is shown below:
 
         .. plot::
 
@@ -173,12 +171,10 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
-        column : `str`
-            The column to display. If None displays all.
-
+        column : `str`, optional
+            The column to display. Defaults to `None`, so it will display all.
         **kwargs : `dict`
-            Any additional plot arguments that should be used
-            when plotting.
+            Any additional plot arguments that should be used when plotting.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -206,7 +202,9 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
     @classmethod
     def _parse_file(cls, filepath):
-        """Parses an EVE CSV file."""
+        """
+        Parses an EVE CSV file.
+        """
         cls._filename = basename(filepath)
         with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
             # Determine type of EVE CSV file and parse
@@ -220,14 +218,19 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
     @staticmethod
     def _parse_average_csv(fp):
-        """Parses an EVE Averages file."""
+        """
+        Parses an EVE Averages file.
+        """
+        print('\nin _parse_average_csv()')
         return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
 
     @staticmethod
     def _parse_level_0cs(fp):
-        """Parses and EVE Level 0CS file."""
+        """
+        Parses and EVE Level 0CS file.
+        """
         is_missing_data = False  # boolean to check for missing data
-        missing_data_val = np.nan
+        missing_data_val = numpy.nan
         header = []
         fields = []
         line = fp.readline()
@@ -299,6 +302,8 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to an EVE image"""
+        """
+        Determines if header corresponds to an EVE image.
+        """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)

@@ -8,7 +8,7 @@ import matplotlib.dates
 import matplotlib.pyplot as plt
 from pandas import DataFrame
 
-from astropy import units as u
+import astropy.units as u
 
 import sunpy.io
 from sunpy.instr import rhessi

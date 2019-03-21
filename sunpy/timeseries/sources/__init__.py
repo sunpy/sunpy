@@ -13,7 +13,3 @@ from sunpy.timeseries.sources.lyra import LYRATimeSeries
 from sunpy.timeseries.sources.noaa import NOAAIndicesTimeSeries, NOAAPredictIndicesTimeSeries
 from sunpy.timeseries.sources.norh import NoRHTimeSeries
 from sunpy.timeseries.sources.rhessi import RHESSISummaryTimeSeries
-
-__all__ = ['EVESpWxTimeSeries', 'XRSTimeSeries', 'NOAAIndicesTimeSeries',
-           'NOAAPredictIndicesTimeSeries', 'LYRATimeSeries', 'NoRHTimeSeries',
-           'RHESSISummaryTimeSeries', 'GBMSummaryTimeSeries']

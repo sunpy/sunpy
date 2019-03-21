@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from astropy import units as u
+import astropy.units as u
 from astropy.time import Time
 
 import sunpy.io
