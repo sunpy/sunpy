@@ -8,7 +8,7 @@ __all__ = ["BasicRegistrationFactory", "NoMatchError",
            "MultipleMatchError", "ValidationFunctionError"]
 
 
-class BasicRegistrationFactory(object):
+class BasicRegistrationFactory:
     """
     Generalized registerable factory type.
 

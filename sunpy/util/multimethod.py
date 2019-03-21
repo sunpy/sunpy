@@ -18,7 +18,7 @@ class TypeWarning(UserWarning):
     pass
 
 
-class MultiMethod(object):
+class MultiMethod:
     """
     A multimethod is a callable object that decides which code to execute based
     on the type of one or more of its arguments.
