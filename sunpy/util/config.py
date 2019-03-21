@@ -3,11 +3,14 @@ import os
 import configparser
 from pathlib import Path
 import shutil
+import warnings
 
 import sunpy
 from sunpy.extern.appdirs import AppDirs
+from sunpy.util.exceptions import SunpyUserWarning
 
-__all__ = ['load_config', 'print_config', 'CONFIG_DIR']
+
+__all__ = ['load_config', 'write_config', 'print_config', 'CONFIG_DIR']
 
 # This is to avoid creating a new config dir for each new dev version.
 # We use AppDirs to locate and create the config directory.
@@ -138,11 +141,13 @@ def write_config(overwrite=False):
     if not _is_writable_dir(user_config_dir):
         raise RuntimeError(f'Could not write to SunPy config directory="{user_config_dir}"')
 
-    # No config file exists in user directory
-    if not user_config_file.exists():
-        shutil.copyfile(config_file, user_config_file)
-
-    # File exists and needs to be overwritten
-    elif overwrite:
-        os.remove(user_config_file)
+    if user_config_file.exists():
+        if overwrite:
+            os.remove(user_config_file)
+            shutil.copyfile(config_file, user_config_file)
+        else:
+            message = "User config file already exists. " \
+                      "To overwrite it use `write_config(overwrite=True)`"
+            warnings.warn(message, SunpyUserWarning)
+    else:
         shutil.copyfile(config_file, user_config_file)
