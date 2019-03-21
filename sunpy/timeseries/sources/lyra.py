@@ -7,7 +7,7 @@ from collections import OrderedDict
 import pandas
 from matplotlib import pyplot as plt
 
-from astropy import units as u
+import astropy.units as u
 from astropy.time import TimeDelta
 
 import sunpy.io
