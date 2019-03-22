@@ -111,6 +111,7 @@ def test_tag_hashability():
 
 
 @pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
 def test_entries_from_fido_search_result(fido_search_result):
     entries = list(entries_from_fido_search_result(fido_search_result))
     # 66 entries for 8 instruments in fido_search_result
