@@ -27,26 +27,31 @@ result = Fido.search(a.Time('2015/11/04 12:00:00', '2015/11/04 12:10:00'),
 
 ###############################################################################
 # Now we can see what results we obtained from our search.
+# Notice we have two files. One is the full disk image we plan to display
+# and the other is a synoptic version of said image.
+
 print(result)
 
 ###############################################################################
 # Once we are happy with the results obtained from the search.
 # We can download the data with `Fido.fetch` .
 # In this case we only want one file so we can index the result.
+# A `Fido` result can be from several clients, so we have to index the first
+# client and then index the first result.
 
-# Notice we have two files. One is the full disk image we plan to display
-# and the other is a synoptic version of said image.
-downloaded_files = Fido.fetch(result)
+# Slice the first record returned by the first client.
+downloaded_file = Fido.fetch(result[0, 0])
 
 ###############################################################################
 # The ``downloaded_files`` variables returns a list with the path for the file
 # that was downloaded.
-print(downloaded_files)
+
+print(downloaded_file)
 
 ###############################################################################
 # Now we are going to create a `sunpy.map.Map` object out of the first result.
 
-hmi_map = sunpy.map.Map(downloaded_files[0])
+hmi_map = sunpy.map.Map(downloaded_file)
 
 ###############################################################################
 # Once we have created our Map, we can plot it quite simply doing:
