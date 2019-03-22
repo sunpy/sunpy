@@ -37,7 +37,7 @@ def get(key):
     --------
     >>> from sunpy.sun import constants
     >>> constants.get('mass')
-    <<class 'astropy.constants.iau2012.IAU2012'> name='Solar mass' value=1.9891e+30 uncertainty=5e+25 unit='kg' reference="Allen's Astrophysical Quantities 4th Ed.">
+    <<class 'astropy.constants.iau2015.IAU2015'> name='Solar mass' value=1.9884754153381438e+30 uncertainty=9.236140093538353e+25 unit='kg' reference='IAU 2015 Resolution B 3 + CODATA 2014'>
     """
     return constants[key]
 

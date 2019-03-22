@@ -148,11 +148,11 @@ a short bit of code to get you started: ::
 
     # the solar radius
     >>> print(con.radius)
-      Name   = Solar radius
-      Value  = 695508000.0
-      Uncertainty  = 26000.0
+      Name   = Nominal solar radius
+      Value  = 695700000.0
+      Uncertainty  = 0.0
       Unit  = m
-      Reference = Allen's Astrophysical Quantities 4th Ed.
+      Reference = IAU 2015 Resolution B 3
 
 Not all constants have a shortcut assigned to them (as above). The rest of the constants
 are stored in a dictionary. The following code grabs the dictionary and gets all of the
@@ -190,25 +190,25 @@ that can be expressed in length units ::
 
     >>> from sunpy.sun import constants as con
     >>> con.radius
-    <<class 'astropy.constants.iau2012.IAU2012'> name='Solar radius' value=695508000.0 uncertainty=26000.0 unit='m' reference="Allen's Astrophysical Quantities 4th Ed.">
+    <<class 'astropy.constants.iau2015.IAU2015'> name='Nominal solar radius' value=695700000.0 uncertainty=0.0 unit='m' reference='IAU 2015 Resolution B 3'>
 
 shows the solar radius in units of meters.  The same physical quantity can be expressed in different units instead using the `.to()` method::
 
     >>> con.radius.to('km')
-    <Quantity 695508. km>
+    <Quantity 695700. km>
 
 or equivalently::
 
     >>> import astropy.units as u
     >>> con.radius.to(u.km)
-    <Quantity 695508. km>
+    <Quantity 695700. km>
 
 If, as is sometimes the case, you need just the raw value or the unit from a quantity, you can access these individually
 with the `value` and `unit` attributes, respectively::
 
     >>> r = con.radius.to(u.km)
     >>> r.value
-    695508.0
+    695700.0
     >>> r.unit
     Unit("km")
 
