@@ -254,7 +254,7 @@ class BaseFuncAnimator:
             vert = [ysize, pad_size] * self.num_sliders + \
                    [large_pad_size, large_pad_size, Size.AxesY(self.axes)]
         else:
-            vert = [ysize, pad_size] * self.num_sliders + \
+            vert = [ysize, large_pad_size] * self.num_sliders + \
                    [large_pad_size, Size.AxesY(self.axes)]
             horiz = [Size.Fraction(0.8, Size.AxesX(self.axes))] + \
                     [Size.Fraction(0.1, Size.AxesX(self.axes))]*2
