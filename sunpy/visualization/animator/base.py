@@ -526,7 +526,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                     # and APIs using both [min, max] pair and manual definition of each pixel
                     # values can be unambiguously and simultanously supported.
                     extent += [axis_ranges[i][0], axis_ranges[i][-1]]
-                    axis_ranges[i] = edges_to_centers_nd(axis_ranges[i])
+                    axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)     # probably this change is required(?)
                 elif axis_ranges[i].ndim == ndim and axis_ranges[i].shape[i] == data_shape[i]+1:
                     extent += [axis_ranges[i].min(), axis_ranges[i].max()]
                     axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
