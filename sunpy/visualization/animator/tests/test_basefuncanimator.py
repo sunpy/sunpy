@@ -109,6 +109,7 @@ class ArrayAnimatorTest(ArrayAnimator):
 
 axis_ranges1 = np.tile(np.linspace(0, 100, 21), (10, 1))
 
+
 @pytest.mark.parametrize('axis_ranges, exp_extent, exp_axis_ranges',
                           [(np.asarray([None, None]), [-0.5, 19.5],
                           [np.arange(10), np.array([-0.5, 19.5])]),
