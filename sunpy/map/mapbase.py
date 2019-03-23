@@ -1732,11 +1732,12 @@ class GenericMap(NDData):
             y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units[1]).value)
             imshow_args.update({'extent': x_range + y_range})
         imshow_args.update(imshow_kwargs)
+        imshow_args.pop("norm")
 
         if self.mask is None:
             ret = axes.imshow(self.data, **imshow_args)
         else:
-            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_kwargs)
+            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_args)
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes, units=self.spatial_units,
