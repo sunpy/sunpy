@@ -50,6 +50,6 @@ scaled_map = sunpy.map.Map(aia.data, aia.meta, mask=mask.mask)
 
 fig = plt.figure()
 plt.subplot(projection=scaled_map)
-scaled_map.plot(cmap=palette)
+scaled_map.plot(cmap=palette, norm=None)
 scaled_map.draw_limb()
 plt.show()
