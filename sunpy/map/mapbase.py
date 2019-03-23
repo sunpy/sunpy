@@ -1734,9 +1734,9 @@ class GenericMap(NDData):
         imshow_args.update(imshow_kwargs)
 
         if self.mask is None:
-            ret = axes.imshow(self.data, **imshow_args)
+            ret = axes.imshow(self.data, **imshow_kwargs)
         else:
-            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_args)
+            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_kwargs)
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes, units=self.spatial_units,
