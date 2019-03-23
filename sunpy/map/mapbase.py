@@ -1734,7 +1734,7 @@ class GenericMap(NDData):
         imshow_args.update(imshow_kwargs)
 
         if self.mask is None:
-            ret = axes.imshow(self.data, **imshow_kwargs)
+            ret = axes.imshow(self.data, **imshow_args)
         else:
             ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_kwargs)
 
