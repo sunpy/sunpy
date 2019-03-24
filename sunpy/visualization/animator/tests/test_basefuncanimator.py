@@ -111,16 +111,16 @@ axis_ranges1 = np.tile(np.linspace(0, 100, 21), (10, 1))
 
 
 @pytest.mark.parametrize('axis_ranges, exp_extent, exp_axis_ranges',
-                          [(np.asarray([None, None]), [-0.5, 19.5],
+                          [([None, None], [-0.5, 19.5],
                           [np.arange(10), np.array([-0.5, 19.5])]),
 
-                          (np.asarray([[0, 10], [0, 20]]), [0, 20],
+                          ([[0, 10], [0, 20]], [0, 20],
                           [np.arange(0.5, 10.5), np.asarray([0, 20])]),
 
-                          (np.asarray([np.arange(0, 11), np.arange(0, 21)]), [0, 20],
+                          ([np.arange(0, 11), np.arange(0, 21)], [0, 20],
                           [np.arange(0.5, 10.5), np.arange(0.5, 20.5)]),
                           
-                          (np.asarray([None, axis_ranges1]), [0.0, 100.0],
+                          ([None, axis_ranges1], [0.0, 100.0],
                           [np.arange(10), base.edges_to_centers_nd(axis_ranges1, 1)])])
 def test_sanitize_axis_ranges(axis_ranges, exp_extent, exp_axis_ranges):
     data_shape = (10, 20)
