@@ -103,9 +103,9 @@ versionmod = get_distribution('sunpy')
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 # The short X.Y version.
-release = '.'.join(versionmod.version.split('.')[:3])
+version = '.'.join(versionmod.version.split('.')[:3])
 # The full version, including alpha/beta/rc tags.
-version = versionmod.version.split('+')[0]
+release = versionmod.version.split('+')[0]
 
 
 # -- Shut up numpy warnings from WCSAxes --------------------------------------
@@ -155,7 +155,7 @@ rst_epilog = """
 .. _SunPy: http://sunpy.org
 .. _`SunPy mailing list`: http://groups.google.com/group/sunpy
 .. _`SunPy dev mailing list`: http://groups.google.com/group/sunpy-dev
-""".format(sunpy)
+"""
 
 # -- Project information ------------------------------------------------------
 project = u'SunPy'
@@ -203,7 +203,7 @@ html_favicon = "./logo/favicon.ico"
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = '{0} v{1}'.format(project, release)
+html_title = f'{project} v{release}'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + 'doc'
