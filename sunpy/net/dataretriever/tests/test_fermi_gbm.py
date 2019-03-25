@@ -108,12 +108,19 @@ def test_query(mock_search):
     assert qr1.time_range().end == parse_time('2012/08/10')
 
 
-@pytest.mark.remote_data
-@pytest.mark.parametrize("time,instrument", [
-    (a.Time('2012/11/27', '2012/11/27'), a.Instrument('gbm')),
-])
-def test_get(time, instrument):
-    qr1 = LCClient.search(time, instrument)
+# @pytest.mark.remote_data
+# @pytest.mark.parametrize("time,instrument", [
+#     (a.Time('2012/11/27', '2012/11/27'), a.Instrument('gbm')),
+# ])
+# def test_get(time, instrument):
+#     qr1 = LCClient.search(time, instrument)
+#     download_list = LCClient.fetch(qr1)
+#     assert len(download_list) == len(qr1)
+
+@mock.patch('sunpy.net.dataretriever.sources.fermi_gbm.GBMClient.search',
+            return_value=mock_querry_object('2012/11/27', '2012/11/27'))
+def test_get(time):
+    qr1 = LCClient.search(time, a.Instrument('gbm'))
     download_list = LCClient.fetch(qr1)
     assert len(download_list) == len(qr1)
 
