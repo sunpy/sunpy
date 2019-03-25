@@ -97,16 +97,15 @@ def test_can_handle_query(time):
     assert ans4 is False
 
 
-@pytest.mark.remote_data
-@pytest.mark.parametrize("time,instrument", [
-    (a.Time('2012/8/9', '2012/8/10'), a.Instrument('gbm')),
-])
-def test_query(time, instrument):
-    qr1 = LCClient.search(time, instrument)
+@mock.patch('sunpy.net.dataretriever.sources.fermi_gbm.GBMClient.search',
+            return_value=mock_querry_object('2012/8/9', '2012/8/10'))
+def test_query(mock_search):
+    qr1 = LCClient.search(a.Time('2012/8/9', '2012/8/10'),
+                          a.Instrument('GBM'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
+    assert qr1.time_range().start == parse_time('2012/08/09')
+    assert qr1.time_range().end == parse_time('2012/08/10')
 
 
 @pytest.mark.remote_data
