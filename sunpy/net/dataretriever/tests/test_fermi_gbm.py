@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 
 from sunpy.time import parse_time
@@ -12,6 +14,56 @@ from hypothesis import given
 
 LCClient = fermi_gbm.GBMClient()
 
+def mock_querry_object(start, end):
+    """ 
+    Creating a Querry Response object and prefilling it with 
+    some information LCClient 
+    """
+    # Creating a Querry Response Object
+    obj = {
+        'TimeRange': TimeRange(parse_time(start_date), parse_time(end_date)),
+        'Time_start': parse_time(start_date),
+        'Time_end':  parse_time(end_date),
+        'source': 'FERMI',
+        'instrument': 'GBM',
+        'physobs': 'flux',
+        'provider': 'NASA'
+    }
+    results = QueryResponse.create(obj,LCClient._get_url_for_timerange(None))
+    results.client = LCClient
+    return result
+
+@pytest.mark.remote_data
+def test_fetch_working(tmpdir):
+    """
+    Tests if the online server for fermi_gbm is working.
+    
+    """
+    qr1 = LCClient.search(Time('2011/06/07', '2011/06/09'),
+                          Instrument('GBM'))
+
+    # Mock QueryResponse object
+    mock_qr = mock_query_object('2011/06/07', '2011/06/09')
+
+    # Compare if two objects have the same attribute
+
+    mock_qr = mock_qr[0]
+    qr = qr1[0]
+
+    assert mock_qr.source == qr.source
+    assert mock_qr.provider == qr.provider
+    assert mock_qr.physobs == qr.physobs
+    assert mock_qr.instrument == qr.instrument
+    assert mock_qr.url == qr.url
+    assert mock_qr.time == qr.time
+    
+    # Assert if the timerange is same
+    assert qr1.time_range() == TimeRange('2011/06/07', '2011/06/09')
+
+    target_dir = tmpdir.mkdir("down")
+    download_list = LCClient.fetch(qr1, path=target_dir)
+    assert len(download_list) == len(qr1)
+    print(download_list)
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end",
