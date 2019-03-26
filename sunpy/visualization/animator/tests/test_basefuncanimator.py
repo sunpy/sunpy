@@ -9,7 +9,7 @@ from matplotlib import widgets
 import matplotlib.animation as mplanim
 import matplotlib.backend_bases as mback
 
-from sunpy.visualization.animator import base, BaseFuncAnimator, ArrayAnimator
+from sunpy.visualization.animator import base, BaseFuncAnimator, ArrayAnimator, LineAnimator
 
 
 class FuncAnimatorTest(BaseFuncAnimator):
@@ -132,3 +132,15 @@ def test_sanitize_axis_ranges(axis_ranges, exp_extent, exp_axis_ranges):
     assert exp_extent == out_extent
     assert np.array_equal(exp_axis_ranges[0], out_axis_ranges[0])
     assert np.array_equal(exp_axis_ranges[1], out_axis_ranges[1])
+
+
+xdata = np.tile(np.linspace(0, 100, 11), (5, 5, 1))
+
+
+@pytest.mark.parametrize('plot_axis_index, axis_ranges, xlabel, xlim',
+                        [(-1, None, None, None),
+                        (-1, [None, None, xdata], 'x-axis', None)])
+def test_lineanimator_init(plot_axis_index, axis_ranges, xlabel, xlim):
+    data = np.random.random((5, 5, 10))
+    ani = LineAnimator(data=data, plot_axis_index=plot_axis_index, axis_ranges=axis_ranges,
+                      xlabel=xlabel, xlim=xlim)
