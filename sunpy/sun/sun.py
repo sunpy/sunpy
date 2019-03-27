@@ -17,7 +17,7 @@ __all__ = [
     "true_rightascension", "true_obliquity_of_ecliptic", "apparent_latitude", "true_latitude",
     "apparent_longitude", "true_anomaly", "true_longitude",
     "equation_of_center", "geometric_mean_longitude", "carrington_rotation_number", "mean_anomaly",
-    "longitude_sun_perigee", "mean_ecliptic_longitude", "eccentricity_sunearth_orbit", "position",
+    "longitude_sun_perigee", "mean_ecliptic_longitude", "eccentricity_sun_earth_orbit", "position",
     "solar_semidiameter_angular_size", "solar_cycle_number"
 ]
 
@@ -74,7 +74,7 @@ def position(t='now'):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def eccentricity_sunearth_orbit(t='now'):
+def eccentricity_sun_earth_orbit(t='now'):
     """
     Returns the eccentricity of the Sun Earth Orbit.
 
