@@ -319,8 +319,10 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     obstime: SunPy Time
         The date and time of the observation, used to convert to heliographic
         carrington coordinates.
-    observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`
-        The coordinate of the observer in the solar system.
+    observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`, str
+        The coordinate of the observer in the solar system. If a string must
+        be a solar system body that can be parsed by
+        ~`sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`.
     rsun: `~astropy.units.Quantity`
         The physical (length) radius of the Sun. Used to calculate the position
         of the limb for calculating distance from the observer to the
