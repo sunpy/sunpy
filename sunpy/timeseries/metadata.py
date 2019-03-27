@@ -2,7 +2,6 @@
 This module provies metadata support for `~sunpy.timeseries.TimeSeries`.
 """
 import copy
-import inspect
 import warnings
 import itertools
 
@@ -95,9 +94,12 @@ class TimeSeriesMetaData(object):
                 self.metadata.append((timerange, colnames, MetaDict()))
             elif isinstance(timerange, TimeRange):
                 self.metadata.append((timerange, [], MetaDict()))
-                warnings.warn("No time range given for metadata. This will mean the metadata can't be linked to columns in data.", SunpyUserWarning)
+                warnings.warn("No time range given for metadata. "
+                              "This will mean the metadata can't be linked "
+                              "to columns in data.", SunpyUserWarning)
             else:
-                raise ValueError("You cannot create a TimeSeriesMetaData object without specifying a TimeRange")
+                raise ValueError("You cannot create a TimeSeriesMetaData "
+                                 "object without specifying a TimeRange")
 
     def __eq__(self, other):
         """
@@ -556,8 +558,11 @@ class TimeSeriesMetaData(object):
         # Parameters
         colspace = ' | '
         liswidths = (26, 15, width-2-2*len(colspace) - 26 - 15)
-        colheadings = '|' + 'TimeRange'.ljust(100)[:liswidths[0]] + colspace + 'Columns'.ljust(100)[:liswidths[1]] + colspace + 'Meta'.ljust(100)[:liswidths[2]] + '|'
-        rowspace = "-" * (liswidths[0] + len(colspace) + liswidths[1] + len(colspace) + liswidths[2])
+        colheadings = '|' + 'TimeRange'.ljust(100)[:liswidths[0]] + colspace
+        colheadings += 'Columns'.ljust(100)[:liswidths[1]] + colspace
+        colheadings += 'Meta'.ljust(100)[:liswidths[2]] + '|'
+        rowspace = "-" * (liswidths[0] + len(colspace) + liswidths[1]
+                          + len(colspace) + liswidths[2])
         rowspace = '|' + rowspace + '|'
 
         # Headings

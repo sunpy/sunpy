@@ -1,6 +1,5 @@
 import os
 import glob
-import pytest
 import datetime
 from collections import OrderedDict
 
@@ -17,10 +16,9 @@ import sunpy.data.test
 import sunpy.io
 import sunpy.timeseries
 from sunpy.time import parse_time
+from sunpy.util import SunpyUserWarning
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.metadata import MetaDict
-import sunpy.io
-from sunpy.util.datatype_factory_base import NoMatchError
 
 # =============================================================================
 # TimeSeries Factory Tests

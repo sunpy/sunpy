@@ -343,7 +343,6 @@ class GenericTimeSeries:
             return self
 
         # Check the sources match if specified.
-        same_source = kwargs.get('same_source', False)
         if same_source and not (isinstance(otherts, self.__class__)):
             raise TypeError("TimeSeries classes must match if specified.")
 
