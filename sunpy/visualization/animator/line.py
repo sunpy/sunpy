@@ -156,4 +156,4 @@ class LineAnimator(ArrayAnimator):
                 line.set_xdata(self.xdata[tuple(item)])
             slider.cval = val
         # Update slider label to reflect real world values in axis_ranges.
-        super().update_plot(val, None, slider)
+        super().update_plot(val, line, slider)

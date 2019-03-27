@@ -558,7 +558,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         raise NotImplementedError("Must be defined and used by subclasses of {0}.".format(self.__class__))
 
     @abc.abstractmethod
-    def update_plot(self, val, im, slider):
+    def update_plot(self, val, artist, slider):
         """
         Abstract method for updating the plot.
 
