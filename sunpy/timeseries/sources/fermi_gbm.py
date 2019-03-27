@@ -119,7 +119,6 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         # extn3 - eclipse times?
         energy_bins = hdulist[1].data
         count_data = hdulist[2].data
-        misc = hdulist[3].data
 
         # rebin the 128 energy channels into some summary ranges
         # 4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV

@@ -21,6 +21,7 @@ import sunpy.timeseries
 from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
@@ -56,7 +57,7 @@ def eve_test_ts():
 
 @pytest.fixture
 def esp_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='ESP')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='ESP')
     return sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
 
 @pytest.fixture

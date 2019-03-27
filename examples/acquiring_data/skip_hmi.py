@@ -20,7 +20,7 @@ from sunpy.net import Fido, attrs as a
 
 # We set a time range from ``2015/11/04 12:00:00`` to ``2015/11/04 12:10:00``
 # for HMI ``LOS_magnetic_field`` with the images spaced every 720 seconds.
-result = Fido.search(a.Time('2015/11/04 12:00:00', '2015/11/04 12:10:00'),
+result = Fido.search(a.Time('2018/11/04 12:00:00', '2018/11/04 12:10:00'),
                      a.Instrument('hmi'),
                      a.Sample(720*u.s),
                      a.vso.Physobs('LOS_magnetic_field'))

@@ -1,38 +1,41 @@
 import os
 import codecs
-from astropy.time import TimeDelta
-from collections import OrderedDict
-import matplotlib.pyplot as plt
-from pandas.io.parsers import read_csv
 from os.path import basename
+from datetime import datetime
+from collections import OrderedDict
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import dates
+from pandas import DataFrame
+from pandas.io.parsers import read_csv
+
+import astropy.units as u
+from astropy.time import TimeDelta
+
 import sunpy.io
+from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
-from pandas import DataFrame
-import astropy.units as u
-import numpy as np
-from datetime import datetime
-from matplotlib import dates
-from sunpy.time import parse_time
 
 __all__ = ['EVESpWxTimeSeries', 'ESPTimeSeries']
 
 
 class ESPTimeSeries(GenericTimeSeries):
     """
-    SDO EVE/ESP Level1 data
+    SDO EVE/ESP Level 1 data.
 
     The Extreme ultraviolet Spectro-Photometer (ESP) is an irradiance instrument
     which is part of the Extreme ultraviolet Variability Experiment (EVE) onboard
-    SDO. ESP provides high time cadence (0.25s) EUV irradiance measurments in five
+    SDO. ESP provides high time cadence (0.25s) EUV irradiance measurements in five
     channels, one soft X-ray and 4 EUV. The first four orders of the diffraction grating
-    gives measurments centered on 18nm, 26nm, 30nm and 36nm. The zeroth order (obtained
-    by 4 photodiodes) provides the soft X-ray measurments from 0.1-7nm.
+    gives measurements centered on 18nm, 26nm, 30nm and 36nm. The zeroth order (obtained
+    by 4 photodiodes) provides the soft X-ray measurements from 0.1-7nm.
 
     The ESP level 1 fits files are fully calibrated. The TimeSeries object created from
     an ESP fits file will conatain 4 columns namely:
 
-        * 'QD' - sum of 4 quad diodes, this is the soft X-ray measurments 0.1-7nm
+        * 'QD' - sum of 4 quad diodes, this is the soft X-ray measurements 0.1-7nm
         * 'CH_18' - EUV irradiance 18nm
         * 'CH_26' - EUV irradiance 26nm
         * 'CH_30' - EUV irradiance 30nm
@@ -50,7 +53,6 @@ class ESPTimeSeries(GenericTimeSeries):
     -----
     The 36nm channel demonstrates a significant noise and it is not recommended to be
     used for short-time observations of solar irradiance.
-
     """
 
     _source = 'esp'
@@ -80,7 +82,7 @@ class ESPTimeSeries(GenericTimeSeries):
     @classmethod
     def _parse_file(cls, filepath):
         """
-        parses a EVE ESP level 1 data
+        Parses a EVE ESP level 1 data.
         """
         hdus = sunpy.io.read_file(filepath)
         return cls._parse_hdus(hdus)
@@ -110,7 +112,9 @@ class ESPTimeSeries(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to an EVE image"""
+        """
+        Determines if header corresponds to an EVE image.
+        """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
         if 'meta' in kwargs.keys():
@@ -230,7 +234,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         Parses and EVE Level 0CS file.
         """
         is_missing_data = False  # boolean to check for missing data
-        missing_data_val = numpy.nan
+        missing_data_val = np.nan
         header = []
         fields = []
         line = fp.readline()

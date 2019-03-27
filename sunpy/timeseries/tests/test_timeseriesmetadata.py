@@ -5,6 +5,7 @@ import pytest
 
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
 # =============================================================================
