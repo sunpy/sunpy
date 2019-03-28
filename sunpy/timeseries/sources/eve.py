@@ -3,18 +3,99 @@
 import os
 import codecs
 import numpy
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import OrderedDict
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
 from os.path import basename
-
+import sunpy.io
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
-
+from pandas import DataFrame
 from astropy import units as u
+import numpy as np 
 
-__all__ = ['EVESpWxTimeSeries']
+__all__ = ['EVESpWxTimeSeries', 'ESPTimeSeries']
+
+
+class ESPTimeSeries(GenericTimeSeries):
+    """
+    SDO EVE ESP Level1 data
+    """
+
+    _source = 'esp'
+
+
+    def peek(self, title = 'EVE/ESP Level1', **kwargs):
+
+        self._validate_data_for_ploting()
+
+        names = ('Flux \n 0.1-7nm', 'Flux \n 18nm', 'Flux \n 26nm', 'Flux \n 30nm', 'Flux \n 36nm')
+
+        figure = plt.figure()
+        axes = plt.gca()
+        axes = self.data.plot(ax = axes, subplots = True, sharex = True, **kwargs)
+        plt.legend(loc = 'upper right')
+        plt.xlim(self.data.index[0], self.data.index[-1])
+
+
+        axes[0].set_title(title)
+        for i, ax in enumerate(axes):
+            ax.set_ylabel(names[i])
+        axes[-1].set_xlabel('Time (UT) ' + str(self.data.index[0])[0:11])
+        plt.tight_layout()
+        plt.subplots_adjust(hspace = 0.05)
+
+        figure.show()
+
+    @classmethod
+    def _parse_file(cls, filepath):
+        """
+        parses a EVE ESP level 1 data
+        """
+        hdus = sunpy.io.read_file(filepath)
+        return cls._parse_hdus(hdus)
+
+    @classmethod
+    def _parse_hdus(cls, hdulist):
+        header = MetaDict(OrderedDict(hdulist[0].header))
+        # Adding telescope to MetaData
+        header.update({'TELESCOP':hdulist[1].header['TELESCOP'].split()[0]})
+
+        year = hdulist[1].data['year']
+        doy = hdulist[1].data['doy']
+        hour = hdulist[1].data['hour']
+        minute = hdulist[1].data['minute']
+        sec = hdulist[1].data['sec']
+
+        time_frame = []
+        for i in range(len(year)):
+            a = datetime(2013, 1,1) +timedelta(days = int(doy[i])-1, hours = int(hour[i]), minutes = int(minute[i]), seconds=float(sec[i]))
+            time_frame.append(a)
+
+        colnames = ['QD', 'CH_18', 'CH_26', 'CH_30', 'CH_36']
+
+        all_data = [hdulist[1].data[x] for x in colnames]
+        data = DataFrame(np.array(all_data).T, index = time_frame, columns = colnames)
+        data.sort_index(inplace = True)
+
+        units = OrderedDict([('QD', u.W/u.m**2),
+                             ('CH_18', u.W/u.m**2),
+                             ('CH_26', u.W/u.m**2),
+                             ('CH_30', u.W/u.m**2),
+                             ('CH_36', u.W/u.m**2)])
+
+        return data, header, units
+
+    @classmethod
+    def is_datasource_for(cls, **kwargs):
+        """Determines if header corresponds to an EVE image"""
+        if kwargs.get('source', ''):
+            return kwargs.get('source', '').lower().startswith(cls._source)
+        if 'meta' in kwargs.keys():
+            return kwargs['meta'].get('TELESCOP', '').startswith('SDO/EVE')
+
+
 
 
 class EVESpWxTimeSeries(GenericTimeSeries):
@@ -57,7 +138,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`_
     """  # noqa
     # Class attribute used to specify the source class of the TimeSeries.
-    _source = 'eve'
+    _source = 'evel1'
 
     def peek(self, column=None, **kwargs):
         """Plots the time series in a new figure. An example is shown below.
@@ -200,3 +281,5 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         """Determines if header corresponds to an EVE image"""
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
+
+
