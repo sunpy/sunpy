@@ -231,7 +231,8 @@ napoleon_use_rtype = False
 # Disable google style docstrings
 napoleon_google_docstring = False
 
-extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
+extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest',
+               'sphinx.ext.githubpages', 'sphinx_asdf']
 
 # -- Options for the edit_on_github extension ---------------------------------
 # Don't import the module as "version" or it will override the
@@ -274,6 +275,19 @@ if has_sphinx_gallery:
         'abort_on_example_error': True,
         'plot_gallery': True
     }
+
+
+# -- Options for ASDF schema docs -------------------------------------------
+# Top-level directory containing ASDF schemas (relative to current directory)
+asdf_schema_path = '../sunpy/io/special/asdf/schemas'
+# This is the prefix common to all schema IDs in this repository
+asdf_schema_standard_prefix = 'sunpy.org/sunpy'
+asdf_schema_reference_mappings = [
+    ('tag:stsci.edu:asdf',
+     'http://asdf-standard.readthedocs.io/en/latest/generated/stsci.edu/asdf/'),
+    ('tag:astropy.org:astropy',
+     'http://astropy.readthedocs.io/en/latest/generated/astropy.org/astropy/'),
+]
 
 
 """

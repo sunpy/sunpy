@@ -268,6 +268,23 @@ which is equivalent to::
         (0., 0.048591, 1.51846026e+11)>)>
 
 
+ASDF Schemas
+------------
+
+Sunpy defines `ASDF <http://asdf-standard.readthedocs.io>`__ schemas that are
+used for validating the representation of Sunpy-specific coordinates in the
+ASDF format. These schemas contain useful documentation about the associated
+types, and can also be used by other implementations that wish to interoperate
+with these transform definitions.
+
+.. asdf-autoschemas::
+
+   coordinates/frames/heliocentric-1.0.0
+   coordinates/frames/heliographic_carrington-1.0.0
+   coordinates/frames/heliographic_stonyhurst-1.0.0
+   coordinates/frames/helioprojective-1.0.0
+
+
 .. automodapi:: sunpy.coordinates
     :headings: ^#
 
