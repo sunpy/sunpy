@@ -49,6 +49,8 @@ We will take action when members of our community violate this code such as cont
 
 Parts of this code of conduct have been adapted from the `astropy <http://www.astropy.org/code_of_conduct.html>`__ and the `Python Software Fundation <https://www.python.org/psf/codeofconduct/>`__ codes of conduct.
 
+----
+
 License
 =======
 
