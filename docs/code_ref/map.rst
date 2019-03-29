@@ -142,3 +142,17 @@ manually register your class and matching method using the following method
     import sunpy.map
 
     sunpy.map.Map.register(FutureMap, FutureMap.some_matching_method)
+
+
+ASDF Schemas
+------------
+
+Sunpy defines an `ASDF <http://asdf-standard.readthedocs.io>`__ schema that is
+used for validating the representation of the `~sunpy.map.GenericMap` type in
+the ASDF format. This schema contains useful documentation about the associated
+types, and can also be used by other implementations that wish to interoperate
+with these transform definitions.
+
+.. asdf-autoschemas::
+
+   map/generic_map-1.0.0
