@@ -6,6 +6,7 @@ import pytest
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import widgets
+import matplotlib.axes as maxes
 import matplotlib.animation as mplanim
 import matplotlib.backend_bases as mback
 
@@ -78,6 +79,11 @@ def test_to_anim(funcanimator):
     assert isinstance(ani, mplanim.FuncAnimation)
 
 
+def test_to_axes(funcanimator):
+    ax = funcanimator._get_main_axes()
+    assert isinstance(ax, maxes._subplots.SubplotBase)
+
+
 def test_edges_to_centers_nd():
     edges_axis = 0
     axis_range = np.zeros((10, 2))
@@ -95,16 +101,10 @@ class ArrayAnimatorTest(ArrayAnimator):
         self.slider_axes = [0]
 
     def plot_start_image(self, ax):
-        im = ax.imshow(self.data[0])
-        if self.if_colorbar:
-            self._add_colorbar(im)
-        return im
+        pass
 
-    def update_plot(self, val, slider):
-        ind = int(val)
-        ax_ind = self.slider_axes[slider.slider_ind]
-        label = self.axis_ranges[ax_ind][ind]
-        slider.valtext.set_text("{0}".format(label))
+    def update_plot(self, val, artist, slider):
+        pass
 
 
 axis_ranges1 = np.tile(np.linspace(0, 100, 21), (10, 1))
