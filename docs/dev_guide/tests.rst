@@ -302,6 +302,9 @@ To avoid running the tests::
 
     $ pytest -m "not figure"
 
+The output (regardless if via ``tox`` or ``pytest``) of these figure tests will be in a "tmp" folder within your work folder.
+For example, "<local clone location>/tmp/figure_test_images" which is ignored by git.
+
 Writing Doctests
 ----------------
 
