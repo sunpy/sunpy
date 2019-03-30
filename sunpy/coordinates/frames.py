@@ -100,7 +100,7 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     >>> sc = SkyCoord(HeliographicStonyhurst(-10*u.deg, 2*u.deg))
     >>> sc
     <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-        (-10., 2., 695508.)>
+        (-10., 2., 695700.)>
 
     Notes
     -----
@@ -336,11 +336,11 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km, obstime="2010/01/01T00:00:00",
     ...               frame="helioprojective")
     >>> sc
-    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (0., 0., 5.)>
     >>> sc = SkyCoord(0*u.deg, 0*u.deg, obstime="2010/01/01T00:00:00", frame="helioprojective")
     >>> sc
-    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
         (0., 0.)>
     """
 
