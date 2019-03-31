@@ -28,7 +28,7 @@ def mock_query_object(start_date, end_date):
     """
     # Create a mock QueryResponse object
     map_ = {
-        'TimeRange': TimeRange(parse_time(start_date), parse_time(end_date)),
+        'TimeRange': TimeRange(start_date, end_date),
         'Time_start': parse_time(start_date),
         'Time_end':  parse_time(end_date),
         'source': 'Proba2',
@@ -37,8 +37,7 @@ def mock_query_object(start_date, end_date):
         'provider': 'esa'
     }
 
-    resp = QueryResponse.create(map_,
-    LCClient._get_url_for_timerange(TimeRange(parse_time(start_date), parse_time(end_date))))
+    resp = QueryResponse.create(map_,LCClient._get_url_for_timerange(TimeRange(start_date, end_date)))
     # Attach the client with the QueryResponse
     resp.client = LCClient
     return resp
