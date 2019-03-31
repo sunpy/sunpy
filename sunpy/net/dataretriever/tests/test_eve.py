@@ -73,7 +73,7 @@ def test_fetch_working():
     """
 
     qr1 = LCClient.search(a.Time('2012/10/4', '2012/10/6'),
-                            a.Instrument('eve'))
+                          a.Instrument('eve'))
 
     # Create a mock query object
     mock_qr = mock_query_object('2012/10/4', '2012/10/6')
