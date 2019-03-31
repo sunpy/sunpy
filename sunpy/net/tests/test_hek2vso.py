@@ -30,13 +30,14 @@ hekTime = hek.attrs.Time(startTime, endTime)
 hekEvent = hek.attrs.EventType(eventType)
 
 
-@pytest.mark.remote_data
 @pytest.fixture(scope="function")
+@pytest.mark.remote_data
 def h2v_client():
     return hek2vso.H2VClient()
 
 
 @pytest.fixture(scope="function")
+@pytest.mark.remote_data
 def hek_client():
     return hek.HEKClient()
 
@@ -88,7 +89,7 @@ def test_vso_attribute_parse(hek_client):
     )
     assert vso_query[3].unit == u.Unit("Angstrom")
 
-
+@pytest.mark.remote_data
 class TestH2VClient(object):
     """Tests the H2V class"""
 
@@ -100,7 +101,6 @@ class TestH2VClient(object):
         assert client.vso_results == []
         assert client.num_of_records == 0
 
-    @pytest.mark.remote_data
     def test_translate_and_query(self, h2v_client, hek_client):
         h = hek_client
         h2v = h2v_client
@@ -113,7 +113,6 @@ class TestH2VClient(object):
         assert isinstance(h2v_q, list)
         assert isinstance(h2v_q[0], vso.vso.QueryResponse)
 
-    @pytest.mark.remote_data
     def test_full_query(self, h2v_client, hek_client):
         h2v = h2v_client
         h = hek_client
@@ -143,7 +142,6 @@ class TestH2VClient(object):
             if i != 2:
                 assert h2v_q_1[i].total_size() == h2v_q_2[i].total_size()
 
-    @pytest.mark.remote_data
     def test_quick_clean(self, h2v_client, hek_client):
         h2v = h2v_client
         h2v_q = h2v.full_query(
