@@ -3,7 +3,7 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-from collections import Hashable
+from collections.abc import Hashable
 from datetime import datetime
 
 import pytest
