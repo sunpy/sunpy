@@ -40,9 +40,9 @@ def mock_query_object(start_date, end_date, level=0):
     """
     # Create a mock QueryResponse object
     map_ = {
-        'TimeRange': TimeRange(parse_time(start_date), parse_time(end_date)),
-        'Time_start': parse_time(start_date),
-        'Time_end':  parse_time(end_date),
+        'TimeRange': TimeRange(start_date, end_date),
+        'Time_start': start_date,
+        'Time_end':  end_date,
         'source': 'SDO',
         'instrument': 'eve',
         'physobs': 'irradiance',
@@ -55,7 +55,7 @@ def mock_query_object(start_date, end_date, level=0):
     with mock.patch('sunpy.net.dataretriever.sources.eve.EVEClient._get_url_for_timerange',
                     return_value=(create_url(start_date, end_date))):
         resp = QueryResponse.create(map_,
-        LCClient._get_url_for_timerange(TimeRange(parse_time(start_date), parse_time(end_date))),
+        LCClient._get_url_for_timerange(TimeRange(start_date, end_date)),
         time=time_range)
     # Attach the client with the QueryResponse
     # Here level 0 corresponds to the default client, i.e. LCClient
@@ -131,7 +131,7 @@ def create_mock_search_using_side_effect(mocker, sdate, edate):
      )
 ])
 def test_get_url_for_time_range(sdate, edate, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(TimeRange(parse_time(sdate), parse_time(edate)))
+    urls = LCClient._get_url_for_timerange(TimeRange(sdate, edate))
 
     assert isinstance(urls, list)
     assert urls[0] == url_start
