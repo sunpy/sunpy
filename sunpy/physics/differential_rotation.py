@@ -262,7 +262,7 @@ def diffrot_map(smap, time=None, dt: u.s=None, pad=False, **diffrot_kwargs):
 
     if (time is not None) and (dt is not None):
         raise ValueError('Only a time or an interval is accepted')
-    elif not (time or dt):
+    elif (time is None) and (dt is None):
         raise ValueError('Either a time or an interval (`dt=`) needs to be provided')
     elif time:
         new_time = parse_time(time)

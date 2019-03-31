@@ -169,7 +169,7 @@ class GenericMap(NDData):
 
             new_2d_slice = [0]*(ndim-2)
             new_2d_slice.extend([slice(None), slice(None)])
-            data = data[new_2d_slice]
+            data = data[tuple(new_2d_slice)]
             # Warn the user that the data has been truncated
             warnings.warn("This file contains more than 2 dimensions. "
                           "Data will be truncated to the first two dimensions.", SunpyUserWarning)
