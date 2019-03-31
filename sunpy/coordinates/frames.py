@@ -407,7 +407,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
         c = self.observer.radius**2 - self.rsun**2
         b = -2 * self.observer.radius * np.cos(alpha)
-        d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
+        # Ingore sqrt of NaNs
+        with np.errstate(invalid='ignore'):
+            d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
 
         return self.realize_frame(SphericalRepresentation(lon=lon,
                                                           lat=lat,
