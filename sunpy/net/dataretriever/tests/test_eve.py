@@ -100,19 +100,18 @@ def test_fetch_working():
 @pytest.fixture
 def create_mock_url(mocker, sdate, edate, url_start, url_end):
     mocker.patch('sunpy.net.dataretriever.sources.eve.EVEClient._get_url_for_timerange',
-                    return_value=(create_url(sdate, edate)))
+                return_value=(create_url(sdate, edate)))
 
 
 @pytest.fixture
 def create_mock_search(mocker, sdate, edate):
     mocker.patch('sunpy.net.dataretriever.sources.eve.EVEClient.search',
-            return_value=mock_query_object(sdate, edate))
+                return_value=mock_query_object(sdate, edate))
 
 
 @pytest.fixture
 def create_mock_search_using_side_effect(mocker, sdate, edate):
-    mocker.patch('sunpy.net.Fido.search',
-            side_effect=sid_effect)
+    mocker.patch('sunpy.net.Fido.search',side_effect=sid_effect)
 
 
 @pytest.mark.usefixtures('create_mock_url')
@@ -159,7 +158,6 @@ def test_query(mock_search):
     assert qr1.time_range().end == parse_time('2012/08/11')  # includes end.
 
 
-
 @mock.patch('sunpy.net.dataretriever.sources.eve.EVEClient.search',
             return_value=mock_query_object('2012/11/27', '2012/11/27'))
 @mock.patch('sunpy.net.download.Results.wait',
@@ -177,8 +175,8 @@ def test_get(time, instrument):
            UnifiedResponse(mock_query_object('2012/10/4', '2012/10/6'))))
 @mock.patch('sunpy.net.download.Results.wait',
             return_value=['some/path/extension/20121006_EVE_L0CS_DIODES_1m.1.txt',
-             'some/path/extension/20121005_EVE_L0CS_DIODES_1m.1.txt',
-             'some/path/extension/20121004_EVE_L0CS_DIODES_1m.1.txt']
+            'some/path/extension/20121005_EVE_L0CS_DIODES_1m.1.txt',
+            'some/path/extension/20121004_EVE_L0CS_DIODES_1m.1.txt']
 )
 def test_fido(mock_result, mock_search, mock_url):
     qr = Fido.search((a.Time('2012/10/4', '2012/10/6') & a.Instrument('eve') & a.Level(0)))
