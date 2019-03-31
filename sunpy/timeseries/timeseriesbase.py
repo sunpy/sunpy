@@ -552,7 +552,7 @@ class GenericTimeSeries:
         """
         return self.data
 
-    def to_array(self, **kwargs):
+    def to_array(self, columns=None):
         """
         Return a numpy array of the give TimeSeries object.
 
@@ -562,16 +562,16 @@ class GenericTimeSeries:
             If None, return all columns minus the index, otherwise, returns
             specified columns.
 
-        kwargs :
-            All keyword arguments are handed to the `as_matix` method of the DataFrame.
-
         Returns
         -------
         values : `~numpy.ndarray`
             If the caller is heterogeneous and contains booleans or objects,
             the result will be of dtype=object. See Notes.
         """
-        return self.data.as_matrix(**kwargs)
+        if columns:
+            return self.data.values[columns]
+        else:
+            return self.data.values
 
     def __eq__(self, other):
         """
