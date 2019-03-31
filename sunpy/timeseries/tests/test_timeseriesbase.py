@@ -489,7 +489,7 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
         comined_units)
 
     # Test data is the concatenation
-    comined_df = pd.concat([eve_test_ts.data, fermi_gbm_test_ts.data])
+    comined_df = pd.concat([eve_test_ts.data, fermi_gbm_test_ts.data], sort=True)
     comined_df = comined_df.sort_index()
     assert_frame_equal(concatenation_different_data_test_ts.data, comined_df)
 
