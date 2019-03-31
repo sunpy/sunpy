@@ -89,6 +89,7 @@ def test_vso_attribute_parse(hek_client):
     )
     assert vso_query[3].unit == u.Unit("Angstrom")
 
+
 @pytest.mark.remote_data
 class TestH2VClient(object):
     """Tests the H2V class"""
