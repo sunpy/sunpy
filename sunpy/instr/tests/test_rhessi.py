@@ -2,7 +2,7 @@
 """
 Unit tests for `sunpy.instr.rhessi`
 """
-import sys
+import platform
 import textwrap
 from distutils.version import LooseVersion
 
@@ -135,9 +135,8 @@ def test_parse_observing_summary_dbase_file_mock():
     Ensure that all required data are extracted from the RHESSI
     observing summary database file mocked in `hessi_data()`
     """
-
-    # We need to mock this test differently for < 3.7.2.
-    if LooseVersion(sys.version) < LooseVersion("3.7.2"):
+    # We need to mock this test differently for <= 3.7.0 and below.
+    if LooseVersion(platform.python_version()) <= LooseVersion("3.7.0"):
         mock_file = mock.mock_open()
         mock_file.return_value.__iter__.return_value = hessi_data().splitlines()
     else:
