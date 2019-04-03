@@ -73,18 +73,7 @@ def test_fetch_working():
     assert mock_qr.physobs == qr.physobs
     assert mock_qr.instrument == qr.instrument
     assert mock_qr.url == qr.url
-
-    # Here the mock object contains `datetime.datetime` object by default,
-    # so no parsing required
-
-    sdate1 = mock_qr.time.start.value
-    sdate2 = datetime.strptime(qr.time.start.value, "%Y-%m-%dT%H:%M:%S.%f")
-
-    edate1 = mock_qr.time.end.value
-    edate2 = datetime.strptime(qr.time.end.value, "%Y-%m-%dT%H:%M:%S.%f")
-
-    assert abs(sdate2 - sdate1) < timedelta(seconds=1)
-    assert abs(edate2 - edate1) < timedelta(seconds=1)
+    assert mock_qr.time.seconds - qr.time.seconds < 1* u.s
 
 
 @pytest.mark.parametrize(
