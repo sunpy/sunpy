@@ -176,8 +176,7 @@ def test_get(mock_result, mock_fetch):
             '/some/extension/go1520121006.fits', '/some/extension/go1520121005.fits'])
 def test_new_logic(mock_result, mock_fetch):
     qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
-    res = LCClient.fetch(qr)
-    download_list = res.wait(progress=False)
+    download_list = LCClient.fetch(qr)
     assert len(download_list) == len(qr)
 
 

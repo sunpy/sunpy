@@ -96,7 +96,7 @@ def deprecated(since, message='', name='', alternative=''):
 
             category = SunpyDeprecationWarning
 
-            warnings.warn(message, category, stacklevel=2)
+            warnings.warn(message, category)
 
             return func(*args, **kwargs)
 

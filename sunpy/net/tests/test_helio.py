@@ -5,6 +5,7 @@ import pytest
 
 from sunpy.net.helio.parser import (link_test, taverna_parser, wsdl_retriever,
                                     endpoint_parser, webservice_parser)
+from sunpy.net.helio.hec import HECClient
 
 
 def wsdl_endpoints():
@@ -251,3 +252,37 @@ def test_link_test_on_urlerror(mock_link_test):
     returns `None`
     """
     link_test('') is None
+
+
+@pytest.mark.remote_data
+@pytest.fixture
+def client():
+    link = 'http://helio.mssl.ucl.ac.uk:80/helio_hec/HelioTavernaService?wsdl'
+    return HECClient(link)
+
+
+@pytest.mark.remote_data
+def test_get_table_names(client):
+    tables = client.get_table_names()
+    assert len(tables) == 126
+    table = tables[0][0]
+    assert isinstance(table, bytes)
+    assert table == b'timed_see_flare'
+
+
+@pytest.mark.remote_data
+def test_select_table(client, monkeypatch):
+    monkeypatch.setattr('builtins.input', lambda x: "11")
+    assert isinstance(client.select_table(), bytes)
+    monkeypatch.setattr('builtins.input', lambda x: "e")
+    assert client.select_table() is None
+
+
+@pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
+def test_time_query(client):
+    start = '2005/01/03'
+    end = '2005/12/03'
+    table_name = b'rhessi_hxr_flare'
+    res = client.time_query(start, end, table=table_name, max_records=10)
+    assert len(res.array) == 10

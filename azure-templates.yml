@@ -60,6 +60,7 @@ jobs:
 
   - ${{ if contains(parameters.tox, 'online') }}:
     - task: PublishCodeCoverageResults@1
+      condition: succeededOrFailed()
       inputs:
         codeCoverageTool: Cobertura
         summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'

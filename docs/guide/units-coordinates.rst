@@ -149,14 +149,14 @@ A SkyCoord object to represent a point on the Sun can then be created::
   ...              frame=frames.HeliographicStonyhurst)
   >>> c
   <SkyCoord (HeliographicStonyhurst: obstime=2017-08-01T00:00:00.000): (lon, lat, radius) in (deg, deg, km)
-      (70., -30., 695508.)>
+      (70., -30., 695700.)>
 
 This `~astropy.coordinates.SkyCoord` object can then be transformed to any
 other coordinate frame defined either in Astropy or SunPy, for example::
 
   >>> c.transform_to(frames.Helioprojective)
-  <SkyCoord (Helioprojective: obstime=2017-08-01T00:00:00.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-      (769.74997696, -498.75932128, 1.51668819e+08)>
+  <SkyCoord (Helioprojective: obstime=2017-08-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+      (769.96270814, -498.89715922, 1.51668773e+08)>
 
 
 It is also possible to convert three dimensional positions to astrophysical
@@ -164,7 +164,7 @@ frames defined in Astropy, for example `~astropy.coordimates.ICRS`.
 
   >>> c.transform_to('icrs')
   <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
-    (49.85053118, 0.05723938, 1417577.0297545...)>
+    (49.84856512, 0.05394699, 1417743.94689472)>
 
 
 
@@ -189,8 +189,8 @@ one observer to a coordinate seen by another::
 
   >>> hpc1.transform_to(frames.Helioprojective(observer="venus",
   ...                                          obstime="2017-07-26"))
-  <SkyCoord (Helioprojective: obstime=2017-07-26T00:00:00.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'venus'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-    (-1285.11970265, 106.17983302, 1.08317783e+08)>
+  <SkyCoord (Helioprojective: obstime=2017-07-26T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'venus'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+      (-1285.47497992, 106.20918654, 1.0831774e+08)>
 
 
 Using Coordinates with SunPy Map

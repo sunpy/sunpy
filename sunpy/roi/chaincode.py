@@ -1,4 +1,5 @@
 import numpy as np
+from sunpy import log
 
 __authors__ = ["David PS"]
 __email__ = "dps.helio-?-gmail.com"
@@ -139,8 +140,7 @@ class Chaincode(np.ndarray):
             IndexMask = 1
             IndexValue = 0
         else:
-            print("Not edges input")
-            return None
+            raise ValueError("No edges input.")
         mask = (self.coordinates[IndexMask, :] >= edge[0]) & \
             (self.coordinates[IndexMask, :] <= edge[1])
 # Should the edges be included?

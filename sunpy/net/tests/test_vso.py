@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-
+from unittest import mock
 import astropy.units as u
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
+from sunpy.net.vso.vso import VSOClient, get_online_vso_url
 from sunpy.net.vso import QueryResponse
 from sunpy.net import attr
-
 from sunpy.tests.mocks import MockObject
 
 
@@ -258,7 +258,7 @@ def test_path(client, tmpdir):
         va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
         va.Instrument('aia'), va.Wavelength(171 * u.AA))
     tmp_dir = tmpdir / "{file}"
-    files = client.fetch(qr, path=tmp_dir).wait(progress=False)
+    files = client.fetch(qr, path=tmp_dir)
 
     assert len(files) == 1
 
@@ -410,3 +410,20 @@ def test_vso_hmi(client, tmpdir):
         fileids = dri.fileiditem.fileid
         series = list(map(lambda x: x.split(':')[0], fileids))
         assert all([s == series[0] for s in series])
+
+
+@mock.patch('sunpy.net.vso.vso.check_connection', return_value=None)
+def test_get_online_vso_url(mock_urlopen):
+    """
+    No wsdl links returned valid HTTP response? Return None
+    """
+    assert get_online_vso_url(None, None, None) is None
+
+
+@mock.patch('sunpy.net.vso.vso.get_online_vso_url', return_value=None)
+def test_VSOClient(mock_vso_url):
+    """
+    Unable to find any valid VSO mirror? Raise ConnectionError
+    """
+    with pytest.raises(ConnectionError):
+        VSOClient()

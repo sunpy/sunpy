@@ -10,7 +10,7 @@ import warnings
 import inspect
 
 from sunpy.time import TimeRange, parse_time
-
+from sunpy.util.exceptions import SunpyUserWarning
 
 class TimeSeriesMetaData(object):
     """
@@ -82,9 +82,10 @@ class TimeSeriesMetaData(object):
                 self.metadata.append((timerange, colnames, MetaDict()))
             elif isinstance(timerange, TimeRange):
                 self.metadata.append((timerange, [], MetaDict()))
-                warnings.warn("No time range given for metadata. This will mean the metadata can't be linked to columns in data.", Warning)
+                warnings.warn("No time range given for metadata therefore metadata can't be linked to columns.",
+                              SunpyUserWarning)
             else:
-                raise ValueError("You cannot create a TimeSeriesMetaData object without specifying a TimeRange")
+                raise ValueError("You cannot create a TimeSeriesMetaData object without specifying a TimeRange.")
 
     def __eq__(self, other):
         """
@@ -519,8 +520,8 @@ class TimeSeriesMetaData(object):
                 col_overlap = list(set(self.metadata[i][1]) & set(self.metadata[j][1]))
                 # If we have an overlap then show a warning
                 if col_overlap:
-                    warnings.warn_explicit('Metadata entries ' + str(i) + ' and ' + str(j) + ' contain interleaved data.',
-                                           Warning, __file__, inspect.currentframe().f_back.f_lineno)
+                    warnings.warn(f'Metadata entries {i} and {j} contain interleaved data.',
+                                  SunpyUserWarning)
 
         # ToDo: Check all entries are in tr.start time order.
 

@@ -1,10 +1,15 @@
+import os
 import json
 import pathlib
 import warnings
 import importlib
 
 import pytest
-from pkg_resources import parse_version
+
+import sunpy.tests.helpers
+from sunpy.tests.hash import HASH_LIBRARY_NAME
+from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -13,12 +18,6 @@ except ImportError:
     pass
 else:
     matplotlib.use('Agg')
-
-# isort:imports-firstparty
-import sunpy.tests.helpers
-from sunpy.tests.hash import HASH_LIBRARY_NAME
-from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
-from sunpy.util.exceptions import SunpyDeprecationWarning
 
 # Don't actually import pytest_remotedata because that can do things to the
 # entrypoints code in pytest.
@@ -34,6 +33,27 @@ def pytest_addoption(parser):
 def figure_base_dir(request):
     sunpy.tests.helpers.figure_base_dir = pathlib.Path(
         request.config.getoption("--figure_dir"))
+
+
+@pytest.fixture(scope='session', autouse=True)
+def tmp_config_dir(request):
+    """
+    Globally set the default config for all tests.
+    """
+    os.environ["SUNPY_CONFIGDIR"] = str(pathlib.Path(__file__).parent / "data")
+    yield
+    del os.environ["SUNPY_CONFIGDIR"]
+
+
+@pytest.fixture()
+def undo_config_dir_patch():
+    """
+    Provide a way for certain tests to not have the config dir.
+    """
+    oridir = os.environ["SUNPY_CONFIGDIR"]
+    del os.environ["SUNPY_CONFIGDIR"]
+    yield
+    os.environ["SUNPY_CONFIGDIR"] = oridir
 
 
 def pytest_runtest_setup(item):

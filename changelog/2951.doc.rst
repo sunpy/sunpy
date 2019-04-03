@@ -1,0 +1,1 @@
+Major clean up of the developer documentation.

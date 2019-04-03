@@ -80,7 +80,7 @@ class TestFiletools(object):
         # Test write FITS
         aiapair = sunpy.io.read_file(AIA_171_IMAGE)[0]
         sunpy.io.write_file("aia_171_image.fits", aiapair[0], aiapair[1],
-                            clobber=True)
+                            overwrite=True)
         assert os.path.exists("aia_171_image.fits")
         outpair = sunpy.io.read_file(AIA_171_IMAGE)[0]
         assert np.all(np.equal(outpair[0], aiapair[0]))

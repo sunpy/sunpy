@@ -96,7 +96,17 @@ except ImportError:
           'the "glymur" package to be installed')
     sys.exit(1)
 
-from sunpy import version as versionmod
+from pkg_resources import get_distribution
+versionmod = get_distribution('sunpy')
+
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
+# The short X.Y version.
+version = '.'.join(versionmod.version.split('.')[:3])
+# The full version, including alpha/beta/rc tags.
+release = versionmod.version.split('+')[0]
+
 
 # -- Shut up numpy warnings from WCSAxes --------------------------------------
 import numpy as np
@@ -120,6 +130,7 @@ intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/latest/', No
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
 intersphinx_mapping['drms'] = ('http://docs.sunpy.org/projects/drms/en/stable/', None)
+intersphinx_mapping['parfive'] = ('https://parfive.readthedocs.io/en/latest/', None)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -139,25 +150,17 @@ linkcheck_anchors = False
 
 # This is added to the end of RST files - a good place to put substitutions to
 # be used globally.
-rst_epilog += """
+rst_epilog = """
 .. SunPy
 .. _SunPy: http://sunpy.org
 .. _`SunPy mailing list`: http://groups.google.com/group/sunpy
 .. _`SunPy dev mailing list`: http://groups.google.com/group/sunpy-dev
-""".format(sunpy)
+"""
 
 # -- Project information ------------------------------------------------------
 project = u'SunPy'
 author = u'The SunPy Community'
 copyright = u'{}, {}'.format(datetime.datetime.now().year, author)
-
-# The version info for the project you're documenting, acts as replacement for
-# |version| and |release|, also used in various other places throughout the
-# built documents.
-# The short X.Y version.
-version = versionmod.version.split('-', 1)[0]
-# The full version, including alpha/beta/rc tags.
-release = versionmod.version
 
 try:
     from sunpy_sphinx_theme.conf import *
@@ -200,7 +203,7 @@ html_favicon = "./logo/favicon.ico"
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = '{0} v{1}'.format(project, release)
+html_title = f'{project} v{release}'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + 'doc'
@@ -234,8 +237,8 @@ extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphin
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
 edit_on_github_project = "sunpy/sunpy"
-if versionmod.release:
-    edit_on_github_branch = "{0}.{1}".format(versionmod.major, versionmod.minor)
+if 'dev' not in release:
+    edit_on_github_branch = "{}".format(version)
 else:
     edit_on_github_branch = "master"
 edit_on_github_source_root = ""
