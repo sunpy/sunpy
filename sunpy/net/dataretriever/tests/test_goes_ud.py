@@ -172,7 +172,7 @@ def test_get(mock_result, mock_fetch):
 @mock.patch('sunpy.net.fido_factory.Fido.fetch',
             side_effect=(UnifiedResponse(
                 mock_query_object('2012/10/4', '2012/10/6'))))
-@mock.patch('sunpy.net.download.Results.wait', return_value=['/home/yash/sunpy/data/go1520121004.fits',
+@mock.patch('sunpy.net.download.Results.wait', return_value=['/some/extension/go1520121004.fits',
             '/some/extension/go1520121006.fits', '/some/extension/go1520121005.fits'])
 def test_new_logic(mock_result, mock_fetch):
     qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
