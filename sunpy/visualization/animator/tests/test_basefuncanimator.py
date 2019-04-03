@@ -50,7 +50,7 @@ def test_base_func_init(fig, colorbar, buttons):
     assert tfa.active_slider == 1
 
     fig = plt.figure()
-    event = mback.KeyEvent(name='key_press_event', canvas=fig.canvas, key='down')
+    event = mback.KeyEvent(name='key_press_event', canvas=fig.canvas, key='down', valinit=0)
     tfa._key_press(event)
     assert tfa.active_slider == 0
 
@@ -62,6 +62,19 @@ def test_base_func_init(fig, colorbar, buttons):
     event.key = 'p'
     tfa._click_slider_button(event=event, button=butt, slider=slider)
     assert butt.label._text == "||"
+
+    tfa._start_play(event, butt, slider)
+    assert tfa.timer
+    
+    tfa._stop_play(event)
+    assert tfa.timer == None
+
+    tfa._previous(slider)
+    assert slider.val == slider.valmin
+
+    tfa._step(slider)
+    assert slider.val == slider.valmax
+
 
 
 @pytest.fixture
