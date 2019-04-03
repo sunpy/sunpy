@@ -75,12 +75,14 @@ Generally the more people that can look over a pull request the better it will t
 
 .. _pull requests: https://github.com/sunpy/sunpy/pulls
 
-Code
-----
+Code (to solve Issues)
+----------------------
 
 If you would prefer to code instead, we have several repositories you can investigate.
 The main one is the SunPy repository with where all the known `issues`_ with SunPy are detailed.
 Each issue should have a series of labels that provide information about nature of the issue.
+If you found an issue you'd like to work on, please make sure to add a comment on the issue
+to let people know that you are working on it!
 
 If you are unsure where to start we suggest the `Package Novice label`_.
 These are issues that have been deemed a good way to be eased into SunPy and are achievable with little understanding of the SunPy codebase.
@@ -88,7 +90,7 @@ Please be aware that this does not mean the issue is "easy", just that you do no
 
 We also tag issues for specific events such as  `Hacktoberfest`_ under the `Hacktoberfest label`_.
 The scope of the issues should be appropriate for that specific event.
-We do particpate in several other events but right now we do not have decidated labels.
+We do particpate in several other events but right now we do not have dedicated labels.
 So please use the above labels for starting issues!
 
 In addition, we have several other repositories that have open issues and you might find these more interesting than the main repository.
