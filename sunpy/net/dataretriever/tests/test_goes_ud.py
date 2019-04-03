@@ -29,7 +29,7 @@ def mock_query_object(start_date, end_date):
     """
     # Create a mock QueryResponse object
     map_ = {
-        'TimeRange' : TimeRange(parse_time(start_date), parse_time(end_date)),
+        'TimeRange': TimeRange(parse_time(start_date), parse_time(end_date)),
         'Time_start': parse_time(start_date),
         'Time_end':  parse_time(end_date),
         'source': 'nasa',
@@ -160,7 +160,7 @@ def test_query_error():
             side_effect=(UnifiedResponse(
                 mock_query_object('1983/06/17', '1983/06/18'))))
 @mock.patch('sunpy.net.download.Results.wait', return_value=['/some/extension/go06830617.fits',
-                                                     '/some/extension/go06830618.fits'])
+            '/some/extension/go06830618.fits'])
 def test_get(mock_result, mock_fetch):
     qr1 = LCClient.search(Time('1983/06/17', '1983/06/18'), Instrument('XRS'))
     res = LCClient.fetch(qr1)
@@ -172,7 +172,7 @@ def test_get(mock_result, mock_fetch):
             side_effect=(UnifiedResponse(
                 mock_query_object('2012/10/4', '2012/10/6'))))
 @mock.patch('sunpy.net.download.Results.wait', return_value=['/some/extension/go1520121004.fits',
- '/some/extension/go1520121006.fits', '/some/extension/go1520121005.fits'])
+            '/some/extension/go1520121006.fits', '/some/extension/go1520121005.fits'])
 def test_get(mock_result, mock_fetch):
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
     res = LCClient.fetch(qr1)
@@ -184,7 +184,7 @@ def test_get(mock_result, mock_fetch):
             side_effect=(UnifiedResponse(
                 mock_query_object('2012/10/4', '2012/10/6'))))
 @mock.patch('sunpy.net.download.Results.wait', return_value=['/home/yash/sunpy/data/go1520121004.fits',
- '/some/extension/go1520121006.fits', '/some/extension/go1520121005.fits'])
+            '/some/extension/go1520121006.fits', '/some/extension/go1520121005.fits'])
 def test_new_logic(mock_result, mock_fetch):
     qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
     res = LCClient.fetch(qr)
@@ -192,13 +192,11 @@ def test_new_logic(mock_result, mock_fetch):
     assert len(download_list) == len(qr)
 
 
-
 @mock.patch('sunpy.net.fido_factory.Fido.fetch',
             side_effect=(UnifiedResponse(
                 mock_query_object('2012/10/4', '2012/10/6'))))
 @mock.patch('sunpy.net.download.Results.wait', return_value=['/some/extension/go1520121006.fits',
-'/some/extension/go1520121004.fits', '/some/extension/go1520121005.fits']
-)
+            '/some/extension/go1520121004.fits', '/some/extension/go1520121005.fits'])
 def test_fido(time, instrument):
     qr = Fido.search(a.Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
     assert isinstance(qr, UnifiedResponse)
@@ -210,8 +208,7 @@ def test_fido(time, instrument):
             side_effect=(UnifiedResponse(
                 mock_query_object('2013/10/5', '2013/10/7'))))
 @mock.patch('sunpy.net.download.Results.wait', return_value=['/some/extension/go1520131007.fits',
-'/some/extension/go1520131005.fits', '/some/extension/go1520131006.fits']
-)
+            '/some/extension/go1520131005.fits', '/some/extension/go1520131006.fits'])
 def test_fido(time, instrument):
     qr = Fido.search(a.Time('2013/10/5', '2013/10/7'), Instrument('XRS'))
     assert isinstance(qr, UnifiedResponse)
