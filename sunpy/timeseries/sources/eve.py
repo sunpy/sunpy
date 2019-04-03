@@ -14,6 +14,7 @@ from sunpy.util.metadata import MetaDict
 from pandas import DataFrame
 from astropy import units as u
 import numpy as np 
+from matplotlib import dates
 
 __all__ = ['EVESpWxTimeSeries', 'ESPTimeSeries']
 
@@ -35,14 +36,14 @@ class ESPTimeSeries(GenericTimeSeries):
         figure = plt.figure()
         axes = plt.gca()
         axes = self.data.plot(ax = axes, subplots = True, sharex = True, **kwargs)
-        plt.legend(loc = 'upper right')
         plt.xlim(self.data.index[0], self.data.index[-1])
-
 
         axes[0].set_title(title)
         for i, ax in enumerate(axes):
             ax.set_ylabel(names[i])
+            ax.legend(loc = 'upper right')
         axes[-1].set_xlabel('Time (UT) ' + str(self.data.index[0])[0:11])
+        axes[-1].xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
         plt.tight_layout()
         plt.subplots_adjust(hspace = 0.05)
 
