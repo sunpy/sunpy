@@ -50,12 +50,12 @@ def test_base_func_init(fig, colorbar, buttons):
     assert tfa.active_slider == 1
 
     fig = plt.figure()
-    event = mback.KeyEvent(name='key_press_event', canvas=fig.canvas, key='down', valinit=0)
+    event = mback.KeyEvent(name='key_press_event', canvas=fig.canvas, key='down')
     tfa._key_press(event)
     assert tfa.active_slider == 0
 
     slide = tfa.active_slider
-    slider = widgets.Slider(fig.gca(), str(slide), ranges[slide][0], ranges[slide][1])
+    slider = widgets.Slider(fig.gca(), str(slide), ranges[slide][0], ranges[slide][1], valinit=0)
     slider.slider_ind = slide
     butt = widgets.Button(fig.gca(), ">")
     butt.clicked = False
@@ -70,10 +70,10 @@ def test_base_func_init(fig, colorbar, buttons):
     assert tfa.timer == None
 
     tfa._previous(slider)
-    assert slider.val == slider.valmin
+    assert slider.val == slider.valmax
 
     tfa._step(slider)
-    assert slider.val == slider.valmax
+    assert slider.val == slider.valmin
 
 
 
