@@ -39,7 +39,8 @@ download_dir = data
 
 ; Location where the sample data will be downloaded. If not specified, will be
 ; downloaded to platform specific user data directory.
-; sample_dir = data/sample_data
+; The default directory is specified by appdirs (https://github.com/ActiveState/appdirs)
+; sample_dir = /data/sample_data
 
 ;;;;;;;;;;;;
 ; Database ;
