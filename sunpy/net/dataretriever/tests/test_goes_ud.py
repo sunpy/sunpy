@@ -73,7 +73,7 @@ def test_fetch_working():
     assert mock_qr.physobs == qr.physobs
     assert mock_qr.instrument == qr.instrument
     assert mock_qr.url == qr.url
-    assert mock_qr.time.seconds - qr.time.seconds < 1* u.s
+    assert mock_qr.time.seconds - qr.time.seconds < 1 * u.s
 
 
 @pytest.mark.parametrize(
