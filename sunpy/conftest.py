@@ -3,6 +3,7 @@ import json
 import pathlib
 import warnings
 import importlib
+import tempfile
 
 import pytest
 
@@ -54,6 +55,28 @@ def undo_config_dir_patch():
     del os.environ["SUNPY_CONFIGDIR"]
     yield
     os.environ["SUNPY_CONFIGDIR"] = oridir
+
+
+@pytest.fixture(scope='session', autouse=True)
+def tmp_dl_dir(request):
+    """
+    Globally set the default download directory for the test run to a tmp dir.
+    """
+    with tempfile.TemporaryDirectory() as tmpdir:
+        os.environ["SUNPY_DOWNLOADDIR"] = tmpdir
+        yield tmpdir
+        del os.environ["SUNPY_DOWNLOADDIR"]
+
+
+@pytest.fixture()
+def undo_download_dir_patch():
+    """
+    Provide a way for certain tests to not have tmp download dir.
+    """
+    oridir = os.environ["SUNPY_DOWNLOADDIR"]
+    del os.environ["SUNPY_DOWNLOADDIR"]
+    yield
+    os.environ["SUNPY_DOWNLOADDIR"] = oridir
 
 
 def pytest_runtest_setup(item):

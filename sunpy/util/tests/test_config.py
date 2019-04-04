@@ -1,11 +1,12 @@
 import io
 import os
 import sys
+from pathlib import Path
 
 from sunpy import config
 from sunpy.util.config import (get_and_create_sample_dir, get_and_create_download_dir,
                                CONFIG_DIR, print_config,
-                               _find_config_files, _get_user_configdir, _is_writable_dir)
+                               _find_config_files, _get_user_configdir, _is_writable_dir, dirs)
 
 USER = os.path.expanduser('~')
 
@@ -36,7 +37,7 @@ def test_get_user_configdir(tmpdir, tmp_path, undo_config_dir_patch):
     del os.environ["SUNPY_CONFIGDIR"]
 
 
-def test_print_config_files():
+def test_print_config_files(undo_download_dir_patch):
     # TODO: Tidy this up.
     stdout = sys.stdout
     out = io.StringIO()
@@ -51,10 +52,10 @@ def test_print_config_files():
     assert get_and_create_sample_dir() in printed
 
 
-def test_get_and_create_download_dir():
+def test_get_and_create_download_dir(undo_download_dir_patch):
     # test default config
     path = get_and_create_download_dir()
-    assert path == os.path.join(USER, 'sunpy', 'data')
+    assert Path(path) == Path(USER) / 'sunpy' / 'data'
     # test updated config
     new_path = os.path.join(USER, 'sunpy_data_here_please')
     config.set('downloads', 'download_dir', new_path)
@@ -68,7 +69,7 @@ def test_get_and_create_download_dir():
 def test_get_and_create_sample_dir():
     # test default config
     path = get_and_create_sample_dir()
-    assert path == os.path.join(USER, 'sunpy', 'data', 'sample_data')
+    assert Path(path) == Path(dirs.user_data_dir)
     # test updated config
     new_path = os.path.join(USER, 'sample_data_here_please')
     config.set('downloads', 'sample_dir', new_path)
