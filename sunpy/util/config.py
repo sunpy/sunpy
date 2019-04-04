@@ -39,11 +39,12 @@ def load_config():
     if not config.has_option('database', 'url'):
         config.set('database', 'url', "sqlite:///" + str(Path.home() / "sunpy" / "sunpydb.sqlite"))
 
+    # Set the download_dir to be relative to the working_dir
     working_dir = Path(config.get('general', 'working_dir'))
-    sample_dir = Path(config.get('downloads', 'sample_dir'))
     download_dir = Path(config.get('downloads', 'download_dir'))
-    config.set('downloads', 'sample_dir', str((working_dir / sample_dir).expanduser().resolve()))
-    config.set('downloads', 'download_dir', str((working_dir / download_dir).expanduser().resolve()))
+    sample_dir = config.get('downloads', 'sample_dir', fallback=dirs.user_data_dir)
+    config.set('downloads', 'sample_dir', Path(sample_dir).expanduser().resolve().as_posix())
+    config.set('downloads', 'download_dir', (working_dir / download_dir).expanduser().resolve().as_posix())
 
     return config
 
@@ -71,6 +72,10 @@ def get_and_create_download_dir():
     """
     Get the config of download directory and create one if not present.
     """
+    download_dir = os.environ.get('SUNPY_DOWNLOADDIR')
+    if download_dir:
+        return download_dir
+
     download_dir = Path(sunpy.config.get('downloads', 'download_dir')).expanduser().resolve()
     if not _is_writable_dir(download_dir):
         raise RuntimeError(f'Could not write to SunPy downloads directory="{download_dir}"')
