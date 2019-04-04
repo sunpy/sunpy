@@ -2,8 +2,7 @@
 """EVE TimeSeries subclass definitions."""
 import os
 import codecs
-import numpy
-from datetime import datetime, timedelta
+from astropy.time import TimeDelta
 from collections import OrderedDict
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
@@ -13,21 +12,51 @@ from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from pandas import DataFrame
 from astropy import units as u
-import numpy as np 
+import numpy as np
 from matplotlib import dates
+from sunpy.time import parse_time
 
 __all__ = ['EVESpWxTimeSeries', 'ESPTimeSeries']
 
 
 class ESPTimeSeries(GenericTimeSeries):
     """
-    SDO EVE ESP Level1 data
+    SDO EVE/ESP Level1 data
+
+    The Extreme ultraviolet Spectro-Photometer (ESP) is an irradiance instrument 
+    which is part of the Extreme ultraviolet Variability Experiment (EVE) onboard 
+    SDO. ESP provides high time cadence (0.25s) EUV irradiance measurments in five 
+    channels, one soft X-ray and 4 EUV. The first four orders of the diffraction grating 
+    gives measurments centered on 18nm, 26nm, 30nm and 36nm. The zeroth order (obtained 
+    by 4 photodiodes) provides the soft X-ray measurments from 0.1-7nm. 
+
+    The ESP level 1 fits files are fully calibrated. The TimeSeries object created from
+    an ESP fits file will conatain 4 columns namely:
+
+        * 'QD' - sum of 4 quad diodes, this is the soft X-ray measurments 0.1-7nm
+        * 'CH_18' - EUV irradiance 18nm
+        * 'CH_26' - EUV irradiance 26nm
+        * 'CH_30' - EUV irradiance 30nm
+        * 'CH_36' - EUV irradiance 36nm        
+
+    References
+    ----------
+    * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`_
+    * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`_
+    * `README ESP data <http://lasp.colorado.edu/eve/data_access/evewebdata/products/level1/esp/EVE_ESP_L1_V6_README.pdf>`_
+    * `ESP lvl1 data <http://lasp.colorado.edu/eve/data_access/evewebdata/misc/eve_calendars/calendar_level1_2018.html>`_
+    * `ESP instrument paper <https://doi.org/10.1007/s11207-009-9485-8>`_
+    
+    Notes
+    -----
+    The 36nm channel demonstrates a significant noise and it is not recommended to be 
+    used for short-time observations of solar irradiance.
+
     """
 
     _source = 'esp'
 
-
-    def peek(self, title = 'EVE/ESP Level1', **kwargs):
+    def peek(self, title='EVE/ESP Level1', **kwargs):
 
         self._validate_data_for_ploting()
 
@@ -35,17 +64,17 @@ class ESPTimeSeries(GenericTimeSeries):
 
         figure = plt.figure()
         axes = plt.gca()
-        axes = self.data.plot(ax = axes, subplots = True, sharex = True, **kwargs)
+        axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
         plt.xlim(self.data.index[0], self.data.index[-1])
 
         axes[0].set_title(title)
         for i, ax in enumerate(axes):
             ax.set_ylabel(names[i])
-            ax.legend(loc = 'upper right')
+            ax.legend(loc='upper right')
         axes[-1].set_xlabel('Time (UT) ' + str(self.data.index[0])[0:11])
         axes[-1].xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
         plt.tight_layout()
-        plt.subplots_adjust(hspace = 0.05)
+        plt.subplots_adjust(hspace=0.05)
 
         figure.show()
 
@@ -61,24 +90,16 @@ class ESPTimeSeries(GenericTimeSeries):
     def _parse_hdus(cls, hdulist):
         header = MetaDict(OrderedDict(hdulist[0].header))
         # Adding telescope to MetaData
-        header.update({'TELESCOP':hdulist[1].header['TELESCOP'].split()[0]})
+        header.update({'TELESCOP': hdulist[1].header['TELESCOP'].split()[0]})
 
-        year = hdulist[1].data['year']
-        doy = hdulist[1].data['doy']
-        hour = hdulist[1].data['hour']
-        minute = hdulist[1].data['minute']
-        sec = hdulist[1].data['sec']
-
-        time_frame = []
-        for i in range(len(year)):
-            a = datetime(2013, 1,1) +timedelta(days = int(doy[i])-1, hours = int(hour[i]), minutes = int(minute[i]), seconds=float(sec[i]))
-            time_frame.append(a)
+        start_time = parse_time(hdulist[1].header['T_OBS'])
+        times = start_time + TimeDelta(hdulist[1].data['SOD']*u.second)
 
         colnames = ['QD', 'CH_18', 'CH_26', 'CH_30', 'CH_36']
 
         all_data = [hdulist[1].data[x] for x in colnames]
-        data = DataFrame(np.array(all_data).T, index = time_frame, columns = colnames)
-        data.sort_index(inplace = True)
+        data = DataFrame(np.array(all_data).T, index=times.isot.astype('datetime64'), columns=colnames)
+        data.sort_index(inplace=True)
 
         units = OrderedDict([('QD', u.W/u.m**2),
                              ('CH_18', u.W/u.m**2),
@@ -94,9 +115,7 @@ class ESPTimeSeries(GenericTimeSeries):
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
         if 'meta' in kwargs.keys():
-            return kwargs['meta'].get('TELESCOP', '').startswith('SDO/EVE')
-
-
+            return kwargs['meta'].get('TELESCOP', '').endswith('SDO/EVE')
 
 
 class EVESpWxTimeSeries(GenericTimeSeries):
@@ -139,7 +158,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`_
     """  # noqa
     # Class attribute used to specify the source class of the TimeSeries.
-    _source = 'evel1'
+    _source = 'eve'
 
     def peek(self, column=None, **kwargs):
         """Plots the time series in a new figure. An example is shown below.
@@ -207,7 +226,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file."""
         is_missing_data = False  # boolean to check for missing data
-        missing_data_val = numpy.nan
+        missing_data_val = np.nan
         header = []
         fields = []
         line = fp.readline()
@@ -282,5 +301,3 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         """Determines if header corresponds to an EVE image"""
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
-
-
