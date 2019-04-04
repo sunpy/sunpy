@@ -13,7 +13,7 @@ from sunpy.util.metadata import MetaDict
 from pandas import DataFrame
 from astropy import units as u
 import numpy as np
-import datetime
+from datetime import datetime
 from matplotlib import dates
 from sunpy.time import parse_time
 
