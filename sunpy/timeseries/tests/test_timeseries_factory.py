@@ -31,6 +31,7 @@ from astropy.io import fits
 
 filepath = sunpy.data.test.rootdir
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
+esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
@@ -115,6 +116,11 @@ class TestTimeSeries(object):
         ts_rhessi = sunpy.timeseries.TimeSeries(rhessi_filepath)
         assert isinstance(ts_rhessi, sunpy.timeseries.sources.rhessi.RHESSISummaryTimeSeries)
 
+    def test_implicit_esp(self):
+        # Test an ESP TimeSeries
+        ts_esp = sunpy.timeseries.TimeSeries(esp_filepath)
+        assert isinstance(ts_esp, sunpy.timeseries.sources.eve.ESPTimeSeries)
+
 #==============================================================================
 # Individual Explicit Sources Tests
 #==============================================================================
@@ -123,6 +129,11 @@ class TestTimeSeries(object):
         #Test an EVE TimeSeries
         ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
         assert isinstance(ts_eve, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
+
+    def test_esp(self):
+        #Test an ESP TimeSeries
+        ts_esp = sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
+        assert isinstance(ts_esp, sunpy.timeseries.sources.eve.ESPTimeSeries)
 
     def test_fermi_gbm(self):
         #Test a GBMSummary TimeSeries
