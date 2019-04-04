@@ -274,7 +274,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         data = read_csv(fp, sep=r"\s+", names=fields,
                         index_col=0, date_parser=parser, header=None, engine='python')
         if is_missing_data:  # If missing data specified in header
-            data[data == float(missing_data_val)] = numpy.nan
+            data[data == float(missing_data_val)] = np.nan
 
         # Add the units data
         units = OrderedDict([('XRS-B proxy', u.W/u.m**2),
