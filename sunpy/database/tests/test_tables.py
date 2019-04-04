@@ -407,14 +407,14 @@ def test_entries_from_dir_recursively_true():
     entries = list(entries_from_dir(testdir, True,
                                     default_waveunit='angstrom',
                                     time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 128
+    assert len(entries) == 130
 
 
 def test_entries_from_dir_recursively_false():
     entries = list(entries_from_dir(testdir, False,
                                     default_waveunit='angstrom',
                                     time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 107
+    assert len(entries) == 109
 
 
 @pytest.mark.remote_data
