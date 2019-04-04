@@ -39,6 +39,7 @@ from sunpy.util.metadata import MetaDict
 filepath = sunpy.data.test.rootdir
 
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
+esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 goes_filepath = os.path.join(filepath, 'goes.fits')
@@ -60,6 +61,10 @@ def eve_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='EVE')
     return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
 
+@pytest.fixture
+def esp_test_ts():
+    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='ESP')
+    return sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
 
 @pytest.fixture
 def fermi_gbm_test_ts():
@@ -157,10 +162,11 @@ def table_ts():
 #==============================================================================
 
 
-def test_units_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
+def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                     lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
                     noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.units, OrderedDict)
+    assert isinstance(esp_test_ts.units, OrderedDict)
     assert isinstance(fermi_gbm_test_ts.units, OrderedDict)
     assert isinstance(norh_test_ts.units, OrderedDict)
     assert isinstance(goes_test_ts.units, OrderedDict)
@@ -172,10 +178,11 @@ def test_units_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
     assert isinstance(table_ts.units, OrderedDict)
 
 
-def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
+def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                    lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
                    noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(esp_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(fermi_gbm_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(norh_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(goes_test_ts.meta, TimeSeriesMetaData)
@@ -187,10 +194,11 @@ def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
     assert isinstance(table_ts.meta, TimeSeriesMetaData)
 
 
-def test_data_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
+def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                    lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
                    noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.data, DataFrame)
+    assert isinstance(esp_test_ts.data, DataFrame)
     assert isinstance(fermi_gbm_test_ts.data, DataFrame)
     assert isinstance(norh_test_ts.data, DataFrame)
     assert isinstance(goes_test_ts.data, DataFrame)
@@ -618,6 +626,9 @@ def test_ts_to_array(generic_ts):
 def test_eve_peek(eve_test_ts):
     eve_test_ts.peek()
 
+@figure_test
+def test_esp_peek(esp_test_ts):
+    esp_test_ts.peek()
 
 @figure_test
 def test_fermi_gbm_peek(fermi_gbm_test_ts):
@@ -672,6 +683,12 @@ def test_eve_invalid_peek(eve_test_ts):
     with pytest.raises(ValueError):
         empty_ts.peek()
 
+def test_esp_invalid_peek(esp_test_ts):
+    a = esp_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = esp_test_ts.time_range.start - TimeDelta(1*u.day)
+    empty_ts = esp_test_ts.truncate(TimeRange(a, b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
 
 def test_fermi_gbm_invalid_peek(fermi_gbm_test_ts):
     a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
