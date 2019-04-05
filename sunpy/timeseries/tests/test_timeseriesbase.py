@@ -39,7 +39,7 @@ from sunpy.util.metadata import MetaDict
 filepath = sunpy.data.test.rootdir
 
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
-esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00')
+esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00_truncated.fits')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 goes_filepath = os.path.join(filepath, 'goes.fits')
