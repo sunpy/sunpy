@@ -31,7 +31,7 @@ from astropy.io import fits
 
 filepath = sunpy.data.test.rootdir
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
-esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00')
+esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00_truncated.fits')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')

@@ -42,11 +42,11 @@ class ESPTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`_
-    * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`_
-    * `README ESP data <http://lasp.colorado.edu/eve/data_access/evewebdata/products/level1/esp/EVE_ESP_L1_V6_README.pdf>`_
-    * `ESP lvl1 data <http://lasp.colorado.edu/eve/data_access/evewebdata/misc/eve_calendars/calendar_level1_2018.html>`_
-    * `ESP instrument paper <https://doi.org/10.1007/s11207-009-9485-8>`_
+    * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`__
+    * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`__
+    * `README ESP data <http://lasp.colorado.edu/eve/data_access/evewebdata/products/level1/esp/EVE_ESP_L1_V6_README.pdf>`__
+    * `ESP lvl1 data <http://lasp.colorado.edu/eve/data_access/evewebdata/misc/eve_calendars/calendar_level1_2018.html>`__
+    * `ESP instrument paper <https://doi.org/10.1007/s11207-009-9485-8>`__
     
     Notes
     -----
@@ -152,11 +152,11 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`_
-    * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`_
-    * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`_
-    * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`_
-    * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`_
+    * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`__
+    * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`__
+    * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`__
+    * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`__
+    * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`__
     """  # noqa
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'eve'
