@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from functools import partial
-import pytest
 
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import widgets
-import matplotlib.axes as maxes
 import matplotlib.animation as mplanim
+import matplotlib.axes as maxes
 import matplotlib.backend_bases as mback
+import matplotlib.pyplot as plt
+import numpy as np
+import pytest
+from matplotlib import widgets
 
-from sunpy.visualization.animator import base, BaseFuncAnimator, ArrayAnimator, LineAnimator
+from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, base
 
 
 class FuncAnimatorTest(BaseFuncAnimator):
@@ -65,16 +65,15 @@ def test_base_func_init(fig, colorbar, buttons):
 
     tfa._start_play(event, butt, slider)
     assert tfa.timer
-    
+
     tfa._stop_play(event)
-    assert tfa.timer == None
+    assert tfa.timer is None
 
     tfa._previous(slider)
     assert slider.val == slider.valmax
 
     tfa._step(slider)
     assert slider.val == slider.valmin
-
 
 
 @pytest.fixture
@@ -124,7 +123,7 @@ axis_ranges1 = np.tile(np.linspace(0, 100, 21), (10, 1))
 
 
 @pytest.mark.parametrize('axis_ranges, exp_extent, exp_axis_ranges',
-                          [([None, None], [-0.5, 19.5],
+                         [([None, None], [-0.5, 19.5],
                           [np.arange(10), np.array([-0.5, 19.5])]),
 
                           ([[0, 10], [0, 20]], [0, 20],
@@ -132,16 +131,15 @@ axis_ranges1 = np.tile(np.linspace(0, 100, 21), (10, 1))
 
                           ([np.arange(0, 11), np.arange(0, 21)], [0, 20],
                           [np.arange(0.5, 10.5), np.arange(0.5, 20.5)]),
-                          
+
                           ([None, axis_ranges1], [0.0, 100.0],
                           [np.arange(10), base.edges_to_centers_nd(axis_ranges1, 1)])])
 def test_sanitize_axis_ranges(axis_ranges, exp_extent, exp_axis_ranges):
     data_shape = (10, 20)
     data = np.random.rand(*data_shape)
-    edges_axis = 1
     aanim = ArrayAnimatorTest(data=data)
     out_axis_ranges, out_extent = aanim._sanitize_axis_ranges(axis_ranges=axis_ranges,
-                                                                data_shape=data_shape)
+                                                              data_shape=data_shape)
     assert exp_extent == out_extent
     assert np.array_equal(exp_axis_ranges[0], out_axis_ranges[0])
     assert np.array_equal(exp_axis_ranges[1], out_axis_ranges[1])
@@ -151,9 +149,9 @@ xdata = np.tile(np.linspace(0, 100, 11), (5, 5, 1))
 
 
 @pytest.mark.parametrize('plot_axis_index, axis_ranges, xlabel, xlim',
-                        [(-1, None, None, None),
-                        (-1, [None, None, xdata], 'x-axis', None)])
+                         [(-1, None, None, None),
+                          (-1, [None, None, xdata], 'x-axis', None)])
 def test_lineanimator_init(plot_axis_index, axis_ranges, xlabel, xlim):
     data = np.random.random((5, 5, 10))
-    ani = LineAnimator(data=data, plot_axis_index=plot_axis_index, axis_ranges=axis_ranges,
-                      xlabel=xlabel, xlim=xlim)
+    LineAnimator(data=data, plot_axis_index=plot_axis_index, axis_ranges=axis_ranges,
+                 xlabel=xlabel, xlim=xlim)
