@@ -75,6 +75,9 @@ def test_base_func_init(fig, colorbar, buttons):
     tfa._step(slider)
     assert slider.val == slider.valmin
 
+    tfa._connect_fig_events()
+    assert mback.MouseEvent is not None
+
 
 @pytest.fixture
 def funcanimator():
