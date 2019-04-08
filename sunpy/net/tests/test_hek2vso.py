@@ -91,71 +91,71 @@ def test_vso_attribute_parse(hek_client):
 
 
 @pytest.mark.remote_data
-class TestH2VClient(object):
-    """Tests the H2V class"""
+def test_members(h2v_client):
+    client = h2v_client
+    assert isinstance(client.hek_client, hek.HEKClient)
+    assert isinstance(client.vso_client, vso.VSOClient)
+    assert client.hek_results == ""
+    assert client.vso_results == []
+    assert client.num_of_records == 0
 
-    def test_members(self, h2v_client):
-        client = h2v_client
-        assert isinstance(client.hek_client, hek.HEKClient)
-        assert isinstance(client.vso_client, vso.VSOClient)
-        assert client.hek_results == ""
-        assert client.vso_results == []
-        assert client.num_of_records == 0
+@pytest.mark.remote_data
+def test_translate_and_query(h2v_client, hek_client):
+    h = hek_client
+    h2v = h2v_client
+    q = h.search(
+        hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType)
+    )
+    h2v_q = h2v.translate_and_query(q)
 
-    def test_translate_and_query(self, h2v_client, hek_client):
-        h = hek_client
-        h2v = h2v_client
-        q = h.search(
-            hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType)
+    assert len(q) == len(h2v_q)
+    assert isinstance(h2v_q, list)
+    assert isinstance(h2v_q[0], vso.vso.QueryResponse)
+
+@pytest.mark.remote_data
+def test_full_query(h2v_client, hek_client):
+    h2v = h2v_client
+    h = hek_client
+    h2v_q_1 = h2v.full_query(
+        (
+            hek.attrs.Time(startTime, endTime),
+            hek.attrs.EventType(eventType),
         )
-        h2v_q = h2v.translate_and_query(q)
+    )
 
-        assert len(q) == len(h2v_q)
-        assert isinstance(h2v_q, list)
-        assert isinstance(h2v_q[0], vso.vso.QueryResponse)
+    assert h2v.num_of_records == 2908
+    assert len(h2v.vso_results) == 19
+    assert len(h2v.hek_results) == 19
 
-    def test_full_query(self, h2v_client, hek_client):
-        h2v = h2v_client
-        h = hek_client
-        h2v_q_1 = h2v.full_query(
-            (
-                hek.attrs.Time(startTime, endTime),
-                hek.attrs.EventType(eventType),
-            )
+    h2v._quick_clean()
+    q = h.search(
+        hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType)
+    )
+    h2v_q_2 = h2v.translate_and_query(q)
+
+    assert len(h2v_q_1) == len(h2v_q_2)
+    assert len(h2v.hek_results) == len(q)
+    assert h2v.hek_results[0].get_voevent() == q[0].get_voevent()
+
+    for i in range(len(h2v_q_1)):
+        assert len(h2v_q_1[i]) == len(h2v_q_2[i])
+        if i != 2:
+            assert h2v_q_1[i].total_size() == h2v_q_2[i].total_size()
+
+@pytest.mark.remote_data
+def test_quick_clean(h2v_client, hek_client):
+    h2v = h2v_client
+    h2v_q = h2v.full_query(
+        (
+            hek.attrs.Time(startTime, endTime),
+            hek.attrs.EventType(eventType),
         )
+    )
 
-        assert h2v.num_of_records == 2908
-        assert len(h2v.vso_results) == 19
-        assert len(h2v.hek_results) == 19
+    assert h2v.num_of_records != 0
+    assert len(h2v.vso_results) != 0
 
-        h2v._quick_clean()
-        q = h.search(
-            hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType)
-        )
-        h2v_q_2 = h2v.translate_and_query(q)
+    h2v._quick_clean()
 
-        assert len(h2v_q_1) == len(h2v_q_2)
-        assert len(h2v.hek_results) == len(q)
-        assert h2v.hek_results[0].get_voevent() == q[0].get_voevent()
-
-        for i in range(len(h2v_q_1)):
-            assert len(h2v_q_1[i]) == len(h2v_q_2[i])
-            if i != 2:
-                assert h2v_q_1[i].total_size() == h2v_q_2[i].total_size()
-
-    def test_quick_clean(self, h2v_client, hek_client):
-        h2v = h2v_client
-        h2v_q = h2v.full_query(
-            (
-                hek.attrs.Time(startTime, endTime),
-                hek.attrs.EventType(eventType),
-            )
-        )
-
-        assert h2v.num_of_records != 0
-        assert len(h2v.vso_results) != 0
-
-        h2v._quick_clean()
-
-        assert h2v.vso_results == []
-        assert h2v.num_of_records == 0
+    assert h2v.vso_results == []
+    assert h2v.num_of_records == 0
