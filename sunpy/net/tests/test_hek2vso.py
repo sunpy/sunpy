@@ -99,28 +99,25 @@ def test_members(h2v_client):
     assert client.vso_results == []
     assert client.num_of_records == 0
 
+
 @pytest.mark.remote_data
 def test_translate_and_query(h2v_client, hek_client):
     h = hek_client
     h2v = h2v_client
-    q = h.search(
-        hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType)
-    )
+    q = h.search(hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType))
     h2v_q = h2v.translate_and_query(q)
 
     assert len(q) == len(h2v_q)
     assert isinstance(h2v_q, list)
     assert isinstance(h2v_q[0], vso.vso.QueryResponse)
 
+
 @pytest.mark.remote_data
 def test_full_query(h2v_client, hek_client):
     h2v = h2v_client
     h = hek_client
     h2v_q_1 = h2v.full_query(
-        (
-            hek.attrs.Time(startTime, endTime),
-            hek.attrs.EventType(eventType),
-        )
+        (hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType))
     )
 
     assert h2v.num_of_records == 2908
@@ -128,9 +125,7 @@ def test_full_query(h2v_client, hek_client):
     assert len(h2v.hek_results) == 19
 
     h2v._quick_clean()
-    q = h.search(
-        hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType)
-    )
+    q = h.search(hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType))
     h2v_q_2 = h2v.translate_and_query(q)
 
     assert len(h2v_q_1) == len(h2v_q_2)
@@ -142,14 +137,12 @@ def test_full_query(h2v_client, hek_client):
         if i != 2:
             assert h2v_q_1[i].total_size() == h2v_q_2[i].total_size()
 
+
 @pytest.mark.remote_data
 def test_quick_clean(h2v_client, hek_client):
     h2v = h2v_client
     h2v_q = h2v.full_query(
-        (
-            hek.attrs.Time(startTime, endTime),
-            hek.attrs.EventType(eventType),
-        )
+        (hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType))
     )
 
     assert h2v.num_of_records != 0
