@@ -1,4 +1,4 @@
-language: minimal
+language: python
 group: travis_latest
 dist: xenial
 os: linux
@@ -15,22 +15,27 @@ matrix:
   fast_finish: true
   include:
     - os: osx
+      language: generic
       name: "macOS 3.7 (py37-offline)"
+      python: "3.7"
       env: TOX_ENV='py37-offline'
 
     - name: "3.6 offline (py36-offline)"
+      python: "3.6"
       env: TOX_ENV='py36-offline'
 
     - name: "3.7 online (py37-online)"
+      python: "3.7"
       env:
         - TOX_ENV='py37-online'
-        - TOX_ARG='-- -n=8'
+        - TOX_ARG='-- -n=4'
 
     - name: "Figure tests (figure)"
       env:
         - TOX_ENV='figure'
 
     - name: "AstroPy dev (py37-astropydev)"
+      python: "3.7"
       env:
         - TOX_ENV='py37-astropydev'
       addons:
@@ -39,6 +44,7 @@ matrix:
             - httpie
 
     - name: "NumPy dev (py37-numpydev)"
+      python: "3.7"
       addons:
         apt:
           packages:
@@ -49,9 +55,10 @@ matrix:
 
   allow_failures:
     - name: "3.7 online (py37-online)"
+      python: "3.7"
       env:
         - TOX_ENV='py37-online'
-        - TOX_ARG='-- -n=8'
+        - TOX_ARG='-- -n=4'
 
 before_install:
   - git clone --depth 1 git://github.com/astropy/ci-helpers.git

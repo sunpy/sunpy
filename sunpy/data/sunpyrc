@@ -35,12 +35,12 @@ time_format = %Y-%m-%d %H:%M:%S
 ; Location to save download data to. Path should be specified relative to the
 ; SunPy working directory.
 ; Default value: data/
-;download_dir = /tmp
 download_dir = data
 
-; Location where the sample data will be downloaded. Path should be specified
-; relative to the SunPy working directory.
-sample_dir = data/sample_data
+; Location where the sample data will be downloaded. If not specified, will be
+; downloaded to platform specific user data directory.
+; The default directory is specified by appdirs (https://github.com/ActiveState/appdirs)
+; sample_dir = /data/sample_data
 
 ;;;;;;;;;;;;
 ; Database ;
