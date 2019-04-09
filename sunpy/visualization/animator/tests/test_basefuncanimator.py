@@ -54,6 +54,10 @@ def test_base_func_init(fig, colorbar, buttons):
     tfa._key_press(event)
     assert tfa.active_slider == 0
 
+    event = mback.KeyEvent(name='key_press_event', canvas=fig.canvas, key='up')
+    tfa._key_press(event)
+    assert tfa.active_slider == 1
+
     slide = tfa.active_slider
     slider = widgets.Slider(fig.gca(), str(slide), ranges[slide][0], ranges[slide][1], valinit=0)
     slider.slider_ind = slide
@@ -74,6 +78,9 @@ def test_base_func_init(fig, colorbar, buttons):
 
     tfa._step(slider)
     assert slider.val == slider.valmin
+
+    tfa._slider_changed(val=2, slider=slider)
+    assert np.array(tfa.im.get_array()).all() == data[2].all()
 
     tfa._connect_fig_events()
     assert mback.MouseEvent is not None
