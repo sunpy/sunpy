@@ -2,13 +2,12 @@ from unittest import mock
 from datetime import datetime, timedelta
 
 import pytest
-from hypothesis import given, settings, HealthCheck
+from hypothesis import given, settings
 
 import astropy.units as u
 from astropy.time import TimeDelta
 from astropy.time import Time
 import sunpy.net.dataretriever.sources.norh as norh
-from sunpy.net.download import Results
 from sunpy.net.tests.strategies import time_attr, range_time
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
@@ -20,15 +19,16 @@ from sunpy.time.timerange import TimeRange
 NORHClient = norh.NoRHClient()
 BASEURL = 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 
+
 def create_url(start, end, wavelength):
     """
     This function creates a url based on the NoRHClient data,
     instead of making an online request.
     """
     if wavelength == 34 * u.GHz:
-            freq = 'tcz'
+        freq = 'tcz'
     elif wavelength == 17 * u.GHz:
-            freq = 'tca'
+        freq = 'tca'
     else:
         raise ValueError('Wavelength should be 17Ghz or 34Ghz, found {}'.format(wavelength))
     start = datetime.strptime(start, '%Y/%m/%d')
@@ -100,7 +100,7 @@ def test_fetch_working():
 
     # Assert the fetch object, and whether it returns the correct set of files
     res = NORHClient.fetch(qr1)
-    download_list = res.wait(progress=False)
+    download_list = res
     assert len(download_list) == len(qr1)
 
     download_list.sort()
@@ -109,23 +109,26 @@ def test_fetch_working():
     assert download_list[1].split('/')[-1].split('.')[0] == 'tca121005'
     assert download_list[2].split('/')[-1].split('.')[0] == 'tca121006'
 
-@pytest.fixture
-def create_mock_url(mocker,sdate,edate,wave):
-    mocker.patch('sunpy.net.dataretriever.sources.norh.NoRHClient._get_url_for_timerange',
-                return_value=create_url(sdate,edate,wave))
 
 @pytest.fixture
-def create_mock_fetch(mocker, sdate, edate, wave):
-    mocker.patch('sunpy.net.fido_factory.Fido.fetch', side_effect=(
+def create_mock_url(mocker, sdate, edate, wave):
+    mocker.patch('sunpy.net.dataretriever.sources.norh.NoRHClient._get_url_for_timerange',
+                 return_value=create_url(sdate, edate, wave))
+
+
+@pytest.fixture
+def create_mock_search(mocker, sdate, edate, wave):
+    mocker.patch('sunpy.net.dataretriever.sources.norh.NoRHClient.search', side_effect=(
            UnifiedResponse(mock_query_object(sdate, edate, wave))))
+
 
 @pytest.mark.usefixtures('create_mock_url')
 @pytest.mark.parametrize(
     "sdate, edate, wave",
-    [('2012/3/7', '2012/3/14',17*u.GHz),
-    ('2012/3/7', '2012/3/14', 34*u.GHz)]
+    [('2012/3/7', '2012/3/14', 17*u.GHz),
+     ('2012/3/7', '2012/3/14', 34*u.GHz)]
 )
-def test_get_url_for_time_range(sdate,edate,wave):
+def test_get_url_for_time_range(sdate, edate, wave):
     urls = norh.NoRHClient()._get_url_for_timerange(TimeRange(parse_time('2012/3/7'),
                                                               parse_time('2012/3/14')),
                                                     wavelength=wave)
@@ -147,6 +150,7 @@ def test_can_handle_query(time):
     assert ans1 is True
     ans2 = norh.NoRHClient._can_handle_query(time)
     assert ans2 is False
+
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
@@ -186,34 +190,37 @@ def test_query_wrong_wave():
         c.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'), a.Wavelength(50*u.GHz))
 
 
-@pytest.mark.usefixtures('create_mock_fetch')
+@pytest.mark.usefixtures('create_mock_search')
 @pytest.mark.usefixtures('create_mock_url')
 @pytest.mark.parametrize(
     "sdate, edate, wave",
-    [('2012/10/4', '2012/10/6',17*u.GHz),
-    ('2012/10/4', '2012/10/6', 34*u.GHz)]
+    [('2012/10/4', '2012/10/6', 17*u.GHz),
+     ('2012/10/4', '2012/10/6', 34*u.GHz)]
 )
-@mock.patch('sunpy.net.download.Results.wait', return_value=['some/path/extension/tcz131005',
-            'some/path/extension/tcz131007', 'some/path/extension/tcz131006'])
-def test_get(mock_result, sdate, edate, wave):
+@mock.patch('parfive.Downloader.download', return_value=None)
+@mock.patch('parfive.Downloader.enqueue_file')
+def test_get(mock_enqueue, mock_download, sdate, edate, wave):
     LCClient = norh.NoRHClient()
-    qr1 = LCClient.search(a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'),
-                          a.Wavelength(34*u.GHz))
-    res = LCClient.fetch(qr1)
-    assert isinstance(res, Results)
-    download_list = res.wait(progress=False)
-    assert len(download_list) == len(qr1)
+    qr1 = LCClient.search(a.Time(sdate, edate), a.Instrument('norh'),
+                          a.Wavelength(wave))
+    LCClient.fetch(qr1)
+    assert mock_enqueue.called_once_with(create_url(sdate, edate, wave))
 
 
-@pytest.mark.usefixtures('create_mock_fetch')
+@pytest.mark.usefixtures('create_mock_search')
 @pytest.mark.usefixtures('create_mock_url')
 @pytest.mark.parametrize(
     "sdate, edate, wave",
-    [('2012/10/4', '2012/10/6',17*u.GHz),
-    ('2012/10/4', '2012/10/6', 34*u.GHz)]
+    [('2012/10/4', '2012/10/6', 17*u.GHz),
+     ('2012/10/4', '2012/10/6', 34*u.GHz)]
 )
-def test_fido(sdate,edate, wave):
-    qr = Fido.search(a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(wave))
-    assert isinstance(qr, UnifiedResponse)
-    response = Fido.fetch(qr)
-    assert len(response) == qr._numfile
+@mock.patch('parfive.Downloader.download', return_value=None)
+@mock.patch('parfive.Downloader.enqueue_file')
+def test_fido(mock_enqueue, mock_download, sdate, edate, wave):
+    qr = Fido.search(a.Time(sdate, edate), a.Instrument('norh'), a.Wavelength(wave))
+    Fido.fetch(qr, path='/some/path/')
+
+    assert mock_enqueue.called_once_with(create_url(sdate, edate, wave),
+                                         '/some/path/tca121004',
+                                         '/some/path/tca121005',
+                                         '/some/path/tca121006')
