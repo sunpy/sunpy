@@ -126,7 +126,7 @@ class ArrayAnimatorTest(ArrayAnimator):
         pass
 
     def update_plot(self, val, artist, slider):
-        pass
+        super().update_plot(val, artist, slider)
 
 
 axis_ranges1 = np.tile(np.linspace(0, 100, 21), (10, 1))
