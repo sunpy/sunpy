@@ -204,6 +204,11 @@ def test_get(mock_enqueue, mock_download, sdate, edate, wave):
     qr1 = LCClient.search(a.Time(sdate, edate), a.Instrument('norh'),
                           a.Wavelength(wave))
     LCClient.fetch(qr1)
+
+    # Here we assert that the `fetch` function has called the parfive
+    # Downloader.enqueue_file method with the correct arguments. Everything
+    # that happens after this point should either be tested in the
+    # GenericClient tests or in parfive itself.
     assert mock_enqueue.called_once_with(create_url(sdate, edate, wave))
 
 
@@ -220,6 +225,10 @@ def test_fido(mock_enqueue, mock_download, sdate, edate, wave):
     qr = Fido.search(a.Time(sdate, edate), a.Instrument('norh'), a.Wavelength(wave))
     Fido.fetch(qr, path='/some/path/')
 
+    # Here we assert that the `fetch` function has called the parfive
+    # Downloader.enqueue_file method with the correct arguments. Everything
+    # that happens after this point should either be tested in the
+    # GenericClient tests or in parfive itself.
     assert mock_enqueue.called_once_with(create_url(sdate, edate, wave),
                                          '/some/path/tca121004',
                                          '/some/path/tca121005',
