@@ -10,8 +10,8 @@ from astropy.visualization import wcsaxes
 # It should only be used by tests and other such hacks.
 _FORCE_NO_WCSAXES = False
 
-__all__ = ["is_wcsaxes", "gca_wcs", "get_world_transform", "solar_coord_type_from_ctype",
-           "default_wcs_ticks", "wcsaxes_heliographic_overlay"]
+__all__ = ["is_wcsaxes", "gca_wcs", "get_world_transform",
+           "wcsaxes_heliographic_overlay"]
 
 
 def is_wcsaxes(axes):
@@ -97,65 +97,7 @@ def get_world_transform(axes):
     return transform
 
 
-def solar_coord_type_from_ctype(ctype):
-    """
-    Determine whether a particular `~astropy.wcs.WCS` ctype corresponds to an
-    angle or scalar coordinate.
-    """
-    if ctype[2:4] == 'LN':
-        if ctype[:4] in ['HPLN', 'HGLN']:
-            return 'longitude', 180.
-        return 'longitude', None
-    elif ctype[2:4] == 'LT':
-        return 'latitude', None
-    else:
-        return 'scalar', None
-
-
-def default_wcs_ticks(axes, units, ctypes):
-    """
-    Set the ticks on a `~astropy.visualization.wcsaxes.WCSAxes` plot.
-    """
-    if not isinstance(axes, wcsaxes.WCSAxes):
-        raise TypeError("This axes is not a WCSAxes")
-
-    x = axes.coords[0]
-    y = axes.coords[1]
-
-    if x.ticks.get_tick_out() == 'in':
-        x.set_ticks(color='white')
-    if y.ticks.get_tick_out() == 'in':
-        y.set_ticks(color='white')
-
-    x.set_ticks_position('bl')
-    y.set_ticks_position('bl')
-
-    xtype = solar_coord_type_from_ctype(ctypes[0])
-    ytype = solar_coord_type_from_ctype(ctypes[1])
-
-    x.set_coord_type(*xtype)
-    y.set_coord_type(*ytype)
-
-    if xtype[0] == 'scalar':
-        x.set_major_formatter('x.x')
-    elif units[0] is u.deg:
-        x.set_major_formatter('d.d')
-    elif units[0] is u.arcsec:
-        x.set_major_formatter('s.s')
-    else:
-        x.set_major_formatter('x.x')
-
-    if ytype[0] == 'scalar':
-        x.set_major_formatter('x.x')
-    elif units[1] is u.deg:
-        y.set_major_formatter('d.d')
-    elif units[1] is u.arcsec:
-        y.set_major_formatter('s.s')
-    else:
-        y.set_major_formatter('x.x')
-
-
-def default_wcs_grid(axes, units, ctypes):
+def default_wcs_grid(axes):
     """
     Apply some default `~astropy.visualization.wcsaxes.WCSAxes` grid
     formatting.
@@ -165,10 +107,7 @@ def default_wcs_grid(axes, units, ctypes):
     axes : `~astropy.visualization.wcsaxes.WCSAxes`
         The `~astropy.visualization.wcsaxes.WCSAxes` object to draw the world
         coordinate grid on.
-    units : `tuple`
-        The axes units (``(x, y)`` order).
     """
-    default_wcs_ticks(axes, units, ctypes)
     axes.coords.grid(color='white', alpha=0.6, linestyle='dotted',
                      linewidth=0.5)
 

@@ -3,7 +3,6 @@ Map is a generic Map class from which all other Map classes inherit from.
 """
 import copy
 import warnings
-import inspect
 from collections import namedtuple
 import textwrap
 
@@ -13,7 +12,6 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
-from astropy.io import fits
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
@@ -152,7 +150,8 @@ class GenericMap(NDData):
         An __init_subclass__ hook initializes all of the subclasses of a given class.
         So for each subclass, it will call this block of code on import.
         This replicates some metaclass magic without the need to be aware of metaclasses.
-        Here we use this to register each subclass in a dict that has the `is_datasource_for` attribute.
+        Here we use this to register each subclass in a dict that has the
+        `is_datasource_for` attribute.
         This is then passed into the Map Factory so we can register them.
         """
         super().__init_subclass__(**kwargs)
