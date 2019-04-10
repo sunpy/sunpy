@@ -129,16 +129,17 @@ def create_mock_search(mocker, sdate, edate, wave):
      ('2012/3/7', '2012/3/14', 34*u.GHz)]
 )
 def test_get_url_for_time_range(sdate, edate, wave):
-    urls = norh.NoRHClient()._get_url_for_timerange(TimeRange(parse_time('2012/3/7'),
-                                                              parse_time('2012/3/14')),
+    urls = norh.NoRHClient()._get_url_for_timerange(TimeRange(parse_time(sdate),
+                                                              parse_time(edate)),
                                                     wavelength=wave)
     assert isinstance(urls, list)
     if wave.value == 17.0:
-        assert urls[0] == 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120307'
-        assert urls[-1] == 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120314'
+        prefix_filename = 'tca'
     else:
-        assert urls[0] == 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tcz120307'
-        assert urls[-1] == 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tcz120314'
+        prefix_filename = 'tcz'
+
+    assert urls[0] == f'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/{prefix_filename}120307'
+    assert urls[-1] == f'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/{prefix_filename}120314'
 
 
 @given(time_attr())
@@ -190,8 +191,7 @@ def test_query_wrong_wave():
         c.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'), a.Wavelength(50*u.GHz))
 
 
-@pytest.mark.usefixtures('create_mock_search')
-@pytest.mark.usefixtures('create_mock_url')
+@pytest.mark.usefixtures('create_mock_search', 'create_mock_url')
 @pytest.mark.parametrize(
     "sdate, edate, wave",
     [('2012/10/4', '2012/10/6', 17*u.GHz),
@@ -212,8 +212,7 @@ def test_get(mock_enqueue, mock_download, sdate, edate, wave):
     assert mock_enqueue.called_once_with(create_url(sdate, edate, wave))
 
 
-@pytest.mark.usefixtures('create_mock_search')
-@pytest.mark.usefixtures('create_mock_url')
+@pytest.mark.usefixtures('create_mock_search', 'create_mock_url')
 @pytest.mark.parametrize(
     "sdate, edate, wave",
     [('2012/10/4', '2012/10/6', 17*u.GHz),
