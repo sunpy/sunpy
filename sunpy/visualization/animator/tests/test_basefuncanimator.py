@@ -37,7 +37,7 @@ def test_base_func_init(fig, colorbar, buttons):
     func0 = partial(update_plotval, data=data)
     func1 = partial(update_plotval, data=data*10)
     funcs = [func0, func1]
-    ranges = [(0, 3), (4, 7)]
+    ranges = [(0, 3), (0, 3)]
 
     tfa = FuncAnimatorTest(data, funcs, ranges, fig=fig, colorbar=colorbar,
                            button_func=buttons[0],
@@ -54,32 +54,33 @@ def test_base_func_init(fig, colorbar, buttons):
     tfa._key_press(event)
     assert tfa.active_slider == 0
 
-    event = mback.KeyEvent(name='key_press_event', canvas=fig.canvas, key='up')
+    event.key = 'up'
     tfa._key_press(event)
     assert tfa.active_slider == 1
 
     slide = tfa.active_slider
-    slider = widgets.Slider(fig.gca(), str(slide), ranges[slide][0], ranges[slide][1], valinit=0)
-    slider.slider_ind = slide
+    sliders = tfa.sliders
     butt = widgets.Button(fig.gca(), ">")
     butt.clicked = False
     event.key = 'p'
-    tfa._click_slider_button(event=event, button=butt, slider=slider)
+    tfa._click_slider_button(event=event, button=butt, slider=sliders[slide]._slider)
     assert butt.label._text == "||"
 
-    tfa._start_play(event, butt, slider)
+    event.key = 'left'
+    tfa._key_press(event)
+    assert sliders[slide]._slider.val == sliders[slide]._slider.valmax
+
+    event.key = 'right'
+    tfa._key_press(event)
+    assert sliders[slide]._slider.val == sliders[slide]._slider.valmin
+
+    tfa._start_play(event, butt, sliders[slide]._slider)
     assert tfa.timer
 
     tfa._stop_play(event)
     assert tfa.timer is None
 
-    tfa._previous(slider)
-    assert slider.val == slider.valmax
-
-    tfa._step(slider)
-    assert slider.val == slider.valmin
-
-    tfa._slider_changed(val=2, slider=slider)
+    tfa._slider_changed(val=2, slider=sliders[slide]._slider)
     assert np.array(tfa.im.get_array()).all() == data[2].all()
 
     tfa._connect_fig_events()
