@@ -60,11 +60,15 @@ def test_base_func_init(fig, colorbar, buttons):
 
     slide = tfa.active_slider
     sliders = tfa.sliders
-    butt = widgets.Button(fig.gca(), ">")
+    buttons = tfa.slider_buttons
+    butt = buttons[tfa.active_slider]._button
     butt.clicked = False
     event.key = 'p'
     tfa._click_slider_button(event=event, button=butt, slider=sliders[slide]._slider)
     assert butt.label._text == "||"
+
+    tfa._key_press(event)
+    assert butt.label._text == ">"
 
     event.key = 'left'
     tfa._key_press(event)
