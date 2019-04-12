@@ -146,6 +146,10 @@ def _get_new_observer(initial_obstime, observer, time):
         if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
             raise ValueError(
                 "The 'observer' must be an astropy.coordinates.BaseCoordinateFrame or an astropy.coordinates.SkyCoord.")
+        if not hasattr(observer, "obstime"):
+            raise ValueError("The observer must have the 'obstime' property.")
+        if observer.obstime is None:
+            raise ValueError("The observer 'obstime' property must not be None.")
         new_observer = observer
     elif time is not None:
         warnings.warn("Using 'time' assumes an Earth-based observer.")
