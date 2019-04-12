@@ -12,7 +12,7 @@ from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
 from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate,\
     differential_rotate, all_pixel_indices_from_map, all_coordinates_from_map,\
-    find_pixel_radii, map_edges, contains_full_disk, is_all_off_disk,\
+    map_edges, contains_full_disk, is_all_off_disk,\
     is_all_on_disk, contains_limb, coordinate_is_on_disk, on_disk_bounding_coordinates,\
     _get_new_observer, _rotate_submap_edge, _get_extreme_position, _get_bounding_coordinates,\
     _warp_sun_coordinates
@@ -234,28 +234,6 @@ def test_all_coordinates_from_map(sub_smap):
     assert coordinates.frame.name == sub_smap.coordinate_frame.name
 
 
-def test_find_pixel_radii(aia171_test_map):
-    # The known maximum radius
-    known_maximum_pixel_radius = 1.77805631 * u.R_sun
-
-    # Calculate the pixel radii
-    pixel_radii = find_pixel_radii(aia171_test_map)
-
-    # The shape of the pixel radii is the same as the input map
-    assert pixel_radii.shape[0] == int(aia171_test_map.dimensions[0].value)
-    assert pixel_radii.shape[1] == int(aia171_test_map.dimensions[1].value)
-
-    # Make sure the unit is solar radii
-    assert pixel_radii.unit == u.R_sun
-
-    # Make sure the maximum
-    assert np.allclose(np.max(pixel_radii).value, known_maximum_pixel_radius.value)
-
-    # Test that the new scale is used
-    pixel_radii = find_pixel_radii(aia171_test_map, scale=2*aia171_test_map.rsun_obs)
-    assert np.allclose(np.max(pixel_radii).value, known_maximum_pixel_radius.value / 2)
-
-
 def test_map_edges(all_off_disk_map):
     edges = map_edges(all_off_disk_map)
     assert type(edges) is dict
@@ -352,23 +330,24 @@ def test_get_new_observer(aia171_test_map):
     # When the observer is set, it gets passed back out
     new_observer = _get_new_observer(initial_obstime, observer, None)
     assert isinstance(new_observer, SkyCoord)
-    assert new_observer.transform_to(frames.HeliographicStonyhurst).lon == observer.transform_to(frames.HeliographicStonyhurst).lon
-    assert new_observer.transform_to(frames.HeliographicStonyhurst).lat == observer.transform_to(frames.HeliographicStonyhurst).lat
-    assert new_observer.transform_to(frames.HeliographicStonyhurst).radius == observer.transform_to(frames.HeliographicStonyhurst).radius
+    np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lon.to(u.deg).value,
+                                   observer.transform_to(frames.HeliographicStonyhurst).lon.to(u.deg).value, decimal=3)
+    np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lat.to(u.deg).value,
+                                   observer.transform_to(frames.HeliographicStonyhurst).lat.to(u.deg).value, decimal=3)
+    np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).radius.to(u.au).value,
+                                   observer.transform_to(frames.HeliographicStonyhurst).radius.to(u.au).value, decimal=3)
 
     # When the time is set, a coordinate for Earth comes back out
     for time in (rotation_interval, new_time, time_delta):
         new_observer = _get_new_observer(initial_obstime, None, time)
         assert isinstance(new_observer, SkyCoord)
-        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lon,
-                                       observer.transform_to(frames.HeliographicStonyhurst).lon,
-                                       decimal=2)
-        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lat,
-                                       observer.transform_to(frames.HeliographicStonyhurst).lat,
-                                       decimal=2)
-        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).radius,
-                                       observer.transform_to(frames.HeliographicStonyhurst).radius,
-                                       decimal=2)
+
+        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lon.to(u.deg).value,
+                                       observer.transform_to(frames.HeliographicStonyhurst).lon.to(u.deg).value, decimal=3)
+        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lat.to(u.deg).value,
+                                       observer.transform_to(frames.HeliographicStonyhurst).lat.to(u.deg).value, decimal=3)
+        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).radius.to(u.au).value,
+                                       observer.transform_to(frames.HeliographicStonyhurst).radius.to(u.au).value, decimal=3)
 
     # The observer and the time cannot both be None
     with pytest.raises(ValueError):
