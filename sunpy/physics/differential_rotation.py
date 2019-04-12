@@ -12,7 +12,7 @@ from sunpy.time import parse_time
 from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
 
 
-__all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map',
+__all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate',
            'all_pixel_indices_from_map', 'all_coordinates_from_map',
            'find_pixel_radii', 'map_edges', 'contains_full_disk',
            'is_all_off_disk', 'is_all_on_disk', 'contains_limb',
@@ -415,7 +415,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     return np.ma.array(xy2, mask=np.isnan(xy2))
 
 
-def diffrot_map(smap, observer=None, time=None, **diff_rot_kwargs):
+def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     """
     Function to apply solar differential rotation to a sunpy map.
 
@@ -434,7 +434,7 @@ def diffrot_map(smap, observer=None, time=None, **diff_rot_kwargs):
 
     Returns
     -------
-    diffrot_map : `~sunpy.map`
+    differential_rotate : `~sunpy.map`
         A map with the result of applying solar differential rotation to the
         input map.
     """
@@ -646,14 +646,16 @@ def map_edges(smap):
 
 def contains_full_disk(smap):
     """
-    Checks if a map contains the full disk of the Sun.  A map contains
-    the full disk of the Sun if the following two conditions are met:
-    (1) all the pixels at the edge of the map are more than 1 solar
-    radius from the center of the Sun and, (2) the map is not all off
-    disk.  If both these conditions are met, the function returns True.
-    Otherwise, the function returns False.  Note that the function
-    assumes that the input map is rectangular.  Note also that in the
-    case of coronagraph images the disk itself need not be observed.
+    Checks if a map contains the full disk of the Sun.
+
+    A map contains the full disk of the Sun if the following two
+    conditions are met: (1) all the pixels at the edge of the map are
+    more than 1 solar radius from the center of the Sun and, (2) the
+    map is not all off disk.  If both these conditions are met, the
+    function returns True. Otherwise, the function returns False.
+    Note that the function assumes that the input map is rectangular.
+    Note also that in the case of coronagraph images the disk itself
+    need not be observed.
 
     Parameters
     ----------
@@ -685,10 +687,12 @@ def contains_full_disk(smap):
 
 def is_all_off_disk(smap):
     """
-    Checks if the entire map is off the solar disk.  The check is
-    performed by calculating the distance of every pixel from the center of
-    the Sun.  If they are all off-disk, then the function returns True.
-    Otherwise, the function returns False.
+    Checks if the entire map is off the solar disk.
+
+    The check is performed by calculating the distance of every
+    pixel from the center of the Sun.  If they are all off-disk,
+    then the function returns True. Otherwise, the function
+    returns False.
 
     Parameters
     ----------
@@ -706,10 +710,11 @@ def is_all_off_disk(smap):
 
 def is_all_on_disk(smap):
     """
-    Checks if the entire map is on the solar disk.  The check is
-    performed by calculating the distance of every pixel from the center of
-    the Sun.  If they are all on-disk, then the function returns True.
-    Otherwise, the function returns False.
+    Checks if the entire map is on the solar disk.
+
+    The check is performed by calculating the distance of every pixel
+    from the center of the Sun.  If they are all on-disk, then the
+    function returns True. Otherwise, the function returns False.
 
     Parameters
     ----------
@@ -727,13 +732,14 @@ def is_all_on_disk(smap):
 
 def contains_limb(smap):
     """
-    Checks if a map contains a portion of the solar limb.  The check is
-    performed by calculating the distance of every pixel from the center of
-    the Sun.  If at least one pixel is on disk and at least one pixel is off
-    disk, the function returns True.  Otherwise, the function returns False.
-    Note that this function will also true if the entire solar limb is within
-    the field of view of the map.  Note also that in the case of coronagraph
-    images the limb itself need not be observed.
+    Checks if a map contains a portion of the solar limb.
+
+    The check is performed by calculating the distance of every pixel from
+    the center of the Sun.  If at least one pixel is on disk and at least one
+    pixel is off disk, the function returns True.  Otherwise, the function
+    returns False. Note that this function will also true if the entire solar
+    limb is within the field of view of the map.  Note also that in the case
+    of coronagraph images the limb itself need not be observed.
 
     Parameters
     ----------
@@ -753,10 +759,10 @@ def contains_limb(smap):
 @u.quantity_input
 def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
     """
-    Checks if the coordinate is on disk.  The check is performed by
-    comparing converting the co-ordinate to Helioprojective co-ordinates
-    and then comparing the coordinate's distance from the center of
-    the Sun to the solar radius.
+    Checks if the helioprojective Cartesian coordinate is on disk.
+
+    The check is performed by comparing the coordinate's distance
+    from the center of the Sun to the solar radius.
 
     Parameters
     ----------
@@ -773,8 +779,9 @@ def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
     """
     # Calculate the radii of every pixel in helioprojective Cartesian
     # co-ordinate distance units.
-    c = coordinate.transform_to(Helioprojective)
-    return u.R_sun * (np.sqrt(c.Tx ** 2 + c.Ty ** 2) / scale) < 1 * u.R_sun
+    if not isinstance(coordinate.frame, Helioprojective):
+        raise ValueError("Input coordinate must be in the Helioprojective Cartesian frame.")
+    return u.R_sun * (np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2) / scale) < 1 * u.R_sun
 
 
 def on_disk_bounding_coordinates(smap):
