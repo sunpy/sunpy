@@ -11,7 +11,7 @@ from astropy.time import TimeDelta
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
 from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate,\
-    diffrot_map, all_pixel_indices_from_map, all_coordinates_from_map,\
+    differential_rotate, all_pixel_indices_from_map, all_coordinates_from_map,\
     find_pixel_radii, map_edges, contains_full_disk, is_all_off_disk,\
     is_all_on_disk, contains_limb, coordinate_is_on_disk, on_disk_bounding_coordinates,\
     _get_new_observer, _rotate_submap_edge, _get_extreme_position, _get_bounding_coordinates,\
@@ -172,33 +172,33 @@ def test_solar_rotate_coordinate():
         assert isinstance(d.frame, frames.Helioprojective)
 
 
-def test_diffrot_map(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
+def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
 
     # Test a map that is entirely off the disk of the Sun
     # Should report an error
     with pytest.raises(ValueError):
-        dmap = diffrot_map(all_off_disk_map)
+        dmap = differential_rotate(all_off_disk_map)
 
     # Test a full disk map
     new_observer = get_earth(aia171_test_map.date + 6*u.hr)
-    dmap = diffrot_map(aia171_test_map, observer=new_observer)
+    dmap = differential_rotate(aia171_test_map, observer=new_observer)
     assert dmap.data.shape == aia171_test_map.data.shape
 
     # Test a map that is entirely on disk - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_observer = get_earth(all_on_disk_map.date - 48*u.hr)
-    dmap = diffrot_map(all_on_disk_map, observer=new_observer)
+    dmap = differential_rotate(all_on_disk_map, observer=new_observer)
     assert dmap.data.shape[1] < all_on_disk_map.data.shape[1]
 
     # This rotated map should have a larger extent in the x direction
     new_observer = get_earth(all_on_disk_map.date + 48*u.hr)
-    dmap = diffrot_map(all_on_disk_map, observer=new_observer)
+    dmap = differential_rotate(all_on_disk_map, observer=new_observer)
     assert dmap.data.shape[1] > all_on_disk_map.data.shape[1]
 
     # Test a map that straddles the limb - triggers sub full disk branches
     # Rotated map should have a smaller extent in the x - direction
     new_observer = get_earth(straddles_limb_map.date + 48*u.hr)
-    dmap = diffrot_map(straddles_limb_map, observer=new_observer)
+    dmap = differential_rotate(straddles_limb_map, observer=new_observer)
     assert dmap.data.shape[1] < straddles_limb_map.data.shape[1]
 
     # The output map should have the positional properties of the observer
@@ -360,12 +360,15 @@ def test_get_new_observer(aia171_test_map):
     for time in (rotation_interval, new_time, time_delta):
         new_observer = _get_new_observer(initial_obstime, None, time)
         assert isinstance(new_observer, SkyCoord)
-        assert new_observer.transform_to(frames.HeliographicStonyhurst).lon == observer.transform_to(
-            frames.HeliographicStonyhurst).lon
-        assert new_observer.transform_to(frames.HeliographicStonyhurst).lat == observer.transform_to(
-            frames.HeliographicStonyhurst).lat
-        assert new_observer.transform_to(frames.HeliographicStonyhurst).radius == observer.transform_to(
-            frames.HeliographicStonyhurst).radius
+        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lon,
+                                       observer.transform_to(frames.HeliographicStonyhurst).lon,
+                                       decimal=2)
+        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lat,
+                                       observer.transform_to(frames.HeliographicStonyhurst).lat,
+                                       decimal=2)
+        np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).radius,
+                                       observer.transform_to(frames.HeliographicStonyhurst).radius,
+                                       decimal=2)
 
     # The observer and the time cannot both be None
     with pytest.raises(ValueError):
