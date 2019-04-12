@@ -144,9 +144,6 @@ def test_solar_rotate_coordinate():
     # Test that the code properly filters the observer keyword
     with pytest.raises(ValueError):
         d = solar_rotate_coordinate(c, observer='earth')
-    with pytest.raises(TypeError):
-        no_obstime = SkyCoord(-570*u.arcsec, 120*u.arcsec, frame=frames.Helioprojective)
-        d = solar_rotate_coordinate(c, observer=no_obstime)
 
     # Test that the code properly filters the time keyword
     with pytest.raises(ValueError):
@@ -322,10 +319,15 @@ def test_get_new_observer(aia171_test_map):
     time_delta = new_time - initial_obstime
     observer = get_earth(initial_obstime + rotation_interval)
 
-    # The observer and the time cannot both be not None
+    # The observer time is set along with other definitions of time
     for time in (rotation_interval, new_time, time_delta):
         with pytest.raises(ValueError):
             new_observer = _get_new_observer(initial_obstime, observer, time)
+
+    # Obstime property is present but the value is None
+    observer_obstime_is_none = SkyCoord(12*u.deg, 46*u.deg, frame=frames.HeliographicStonyhurst)
+    with pytest.raises(ValueError):
+        new_observer = _get_new_observer(None, observer_obstime_is_none, None)
 
     # When the observer is set, it gets passed back out
     new_observer = _get_new_observer(initial_obstime, observer, None)
