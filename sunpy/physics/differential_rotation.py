@@ -14,7 +14,7 @@ from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate',
            'all_pixel_indices_from_map', 'all_coordinates_from_map',
-           'find_pixel_radii', 'map_edges', 'contains_full_disk',
+           'map_edges', 'contains_full_disk',
            'is_all_off_disk', 'is_all_on_disk', 'contains_limb',
            'coordinate_is_on_disk', 'on_disk_bounding_coordinates']
 
@@ -158,7 +158,7 @@ def _get_new_observer(initial_obstime, observer, time):
     else:
         raise ValueError("Either the 'observer' or the 'time' keyword must not be None.")
 
-    return new_observer
+    return new_observer.transform_to(HeliographicStonyhurst)
 
 
 def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwargs):
@@ -579,43 +579,6 @@ def all_coordinates_from_map(smap):
     """
     x, y = all_pixel_indices_from_map(smap)
     return smap.pixel_to_world(x, y)
-
-
-def find_pixel_radii(smap, scale=None):
-    """
-    Find the distance of every pixel in a map from the center of the Sun.
-    The answer is returned in units of solar radii.
-
-    Parameters
-    ----------
-    smap : `~sunpy.map.Map`
-        A SunPy map.
-
-    scale : None | `~astropy.units.Quantity`
-        The radius of the Sun expressed in map units.  For example, in typical
-        helioprojective Cartesian maps the solar radius is expressed in units
-        of arcseconds.  If None then the map is queried for the scale.
-
-    Returns
-    -------
-    radii : `~astropy.units.Quantity`
-        An array the same shape as the input map.  Each entry in the array
-        gives the distance in solar radii of the pixel in the corresponding
-        entry in the input map data.
-    """
-
-    # Calculate the helioprojective Cartesian co-ordinates of every pixel.
-    coords = all_coordinates_from_map(smap).transform_to(Helioprojective)
-
-    # Calculate the radii of every pixel in helioprojective Cartesian
-    # co-ordinate distance units.
-    radii = np.sqrt(coords.Tx ** 2 + coords.Ty ** 2)
-
-    # Re-scale the output to solar radii
-    if scale is None:
-        return u.R_sun * (radii / smap.rsun_obs)
-    else:
-        return u.R_sun * (radii / scale)
 
 
 def map_edges(smap):

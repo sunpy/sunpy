@@ -36,6 +36,21 @@ def toggle_pylab(fn):
 
 
 def axis_labels_from_ctype(ctype, unit):
+    """
+    Returns axis labels for the given coordinate type and unit.
+    
+    Parameters
+    ----------
+    ctype: `str`
+        Coordinate type
+    unit: `str`
+        Required unit
+    
+    Returns
+    -------
+    `str`
+        Axis_Label [Unit].
+    """
     ctype_short = ctype[:4]
 
     labels = {'HGLN': 'Heliographic Longitude [{}]'.format(unit),

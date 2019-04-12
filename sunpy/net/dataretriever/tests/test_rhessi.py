@@ -3,7 +3,7 @@ from datetime import datetime
 from urllib.error import URLError
 from urllib.request import urlretrieve
 
-import mock
+from unittest import mock
 import pytest
 
 import sunpy.instr.rhessi

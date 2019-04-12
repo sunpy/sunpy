@@ -1,16 +1,12 @@
-recursive-include sunpy *.py
-recursive-include sunpy *.h
-recursive-include sunpy *.c
-recursive-include sunpy/data *
-recursive-include sunpy *.txt
-include README.rst
-include RELEASE.rst
+# All files in sunpy/ should be included in package_data in setup.cfg
+include ah_bootstrap.py
 include CHANGELOG.rst
 include licenses/*.rst
-include sunpy/data/sunpyrc
-include sunpy/tests/figure_hashes_*.json
+include pyproject.toml
+include README.rst
+include RELEASE.rst
 include setup.py
-include ah_bootstrap.py
+include setup.cfg
 
 recursive-include astropy_helpers *
 exclude astropy_helpers/.*

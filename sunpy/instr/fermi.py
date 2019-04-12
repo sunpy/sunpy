@@ -1,7 +1,6 @@
 import os
 import copy
 import urllib
-import datetime
 import tempfile
 from collections import OrderedDict
 
