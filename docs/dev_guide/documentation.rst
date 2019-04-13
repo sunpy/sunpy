@@ -30,6 +30,11 @@ We backtick each type in the documentation strings so that they are interlinked 
        Description of parameter x.
     """
 
+SunPy Specific Rules
+--------------------
+
+* For all rst files, we enforce a one sentenace per line rule and ignore the line length.
+
 Sphinx
 ======
 
