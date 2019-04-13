@@ -1,3 +1,7 @@
+"""
+This module provides processing routines for data captured with the LYRA (Lyman
+Alpha Radiometer) instrument on Proba-2.
+"""
 import csv
 import copy
 import urllib
@@ -13,8 +17,10 @@ from astropy.io import fits
 from astropy.time import Time
 
 from sunpy.time import parse_time
-from sunpy.util.net import check_download_file
+from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.config import get_and_create_download_dir
+from sunpy.util.decorators import add_common_docstring
+from sunpy.util.net import check_download_file
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
@@ -100,7 +106,6 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
     To also retrieve information on the artifacts during that day:
         >>> ts_nolars, artifact_status = remove_lytaf_events_from_timeseries(
         ...        lyrats, artifacts=["LAR"], return_artifacts=True)  # doctest: +REMOTE_DATA
-
     """
     # Check that input argument is of correct type
     if not lytaf_path:
@@ -231,7 +236,6 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
 
         >>> time_clean, channels_clean = _remove_lytaf_events(
         ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +SKIP
-
     """
     # Check inputs
     if not lytaf_path:
@@ -416,7 +420,6 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     Get all events in the LYTAF files for January 2014
         >>> from sunpy.instr.lyra import get_lytaf_events
         >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')  # doctest: +SKIP
-
     """
     # Check inputs
     # Check lytaf path
@@ -539,7 +542,8 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
 
 
 def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
-    """Prints the different event types in the each of the LYTAF databases.
+    """
+    Prints the different event types in the each of the LYTAF databases.
 
     Parameters
     ----------
@@ -554,7 +558,6 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     -------
     all_event_types : `list`
         List of all events types in all lytaf databases.
-
     """
     # Set lytaf_path is not done by user
     if not lytaf_path:
@@ -588,7 +591,9 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
 
 
 def download_lytaf_database(lytaf_dir=''):
-    """download latest Proba2 pointing database from Proba2 Science Center"""
+    """
+    download latest Proba2 pointing database from Proba2 Science Center.
+    """
     url = 'http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
     destination = os.path.join(lytaf_dir, 'annotation_ppt.db')
     urllib.request.urlretrieve(url, destination)
@@ -598,23 +603,24 @@ def download_lytaf_database(lytaf_dir=''):
 
 def split_series_using_lytaf(timearray, data, lytaf):
     """
-    Proba-2 analysis code for splitting up LYRA timeseries around locations
-    where LARs (and other data events) are observed.
+    Splits LYRA timeseries around locations where "LARs" (and other data
+    events) are observed.
 
     Parameters
     ----------
-    timearray : `numpy.ndarray` of times understood by `sunpy.time.parse_time`
-        function.
-    data : `numpy.array` corresponding to the given time array
+    timearray : `numpy.ndarray`
+        An array of times understood by `sunpy.time.parse_time`.
+    data : `numpy.ndarray`
+        An array corresponding to the given time array.
     lytaf : `numpy.recarray`
-        Events obtained from querying LYTAF database using
-        lyra.get_lytaf_events().
+        Events obtained from querying the LYTAF database using
+        `sunpy.instr.lyra.get_lytaf_events`.
 
-    Output
-    ------
-    output : `list` of dictionaries
+    Returns
+    -------
+    `list` of `dict`
         Each dictionary contains a sub-series corresponding to an interval of
-        'good data'.
+        "good data".
     """
     n = len(timearray)
     mask = np.ones(n)
@@ -678,10 +684,8 @@ def split_series_using_lytaf(timearray, data, lytaf):
 
 
 def _lytaf_event2string(integers):
-    if type(integers) == int:
+    if isinstance(integers, int):
         integers = [integers]
-    # else:
-    #    n=len(integers)
     out = []
 
     for i in integers:
@@ -711,28 +715,34 @@ def _lytaf_event2string(integers):
     return out
 
 
+# TODO: Change this function to only need the amount of channels to be passed in.
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def _prep_columns(time, channels=None, filecolumns=None):
     """
     Checks and prepares data to be written out to a file.
 
-    Firstly, this function converts the elements of time, whose entries are
-    assumed to be `astropy.time.Time` or `np.ndarray` objects, to time strings.  Secondly, it checks
-    whether the number of elements in an input list of column names,
-    filecolumns, is equal to the number of arrays in the list, channels.
-    If not, a ValueError is raised.  If however filecolumns equals None, a
-    filenames list is generated equal to ["time", "channel0", "channel1",...,
-    "channelN"] where N is the number of arrays in the list, channels
-    (assuming 0-indexed counting).
+    Parameters
+    ----------
+    time: {parse_time_types}
+        A list or array of times.
+    channels: `list`, optional
+        A list of the channels found within the data.
+    filecolumns: `list`, optional
+        A list of strings that are the column names for the file.
+        Defaults to `None`, which means that a filenames list is generated
+        equal to ``["time", "channel0", "channel1",..., "channelN"]``
+        where ``N`` is the number of arrays in the ``channels`` list (if provided).
 
+    Returns
+    -------
+    `numpy.ndarray`, `list`
+        The time strings in an array and a list of string headers for each column of data.
     """
-    # Convert np.array or Time objects to time strings.
     time = parse_time(time)
     time.precision = 9
     string_time = np.array(time.isot)
 
-    # If filenames is given...
     if filecolumns:
-        # ...check all the elements are strings...
         if all(isinstance(column, str) for column in filecolumns) is False:
             raise TypeError("All elements in filecolumns must by strings.")
         # ...and that there are the same number of elements as there

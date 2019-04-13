@@ -1,18 +1,17 @@
 import tempfile
 
-import pytest
 import numpy as np
-
-import sunpy.map
-import sunpy.data.test as test
-from sunpy.instr.aia import aiaprep
+import pytest
 
 from astropy.io.fits.verify import VerifyWarning
 
+import sunpy.data.test as test
+import sunpy.map
+from sunpy.instr.aia import aiaprep
+
+
 # Define the original and prepped images first so they're available to all
 # functions
-
-
 @pytest.fixture(scope="module",
                 params=[test.get_test_filepath("aia_171_level1.fits"),
                         test.get_test_filepath("resampled_hmi.fits")])

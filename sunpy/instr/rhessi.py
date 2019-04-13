@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
 """
-    Provides programs to process and analyze RHESSI data.
-
-    .. warning:: This module is in development.
-
+This module provides processing routines programs to process and analyze RHESSI
+data.
 """
 
 import re
@@ -12,14 +9,11 @@ import csv
 import numpy as np
 
 import astropy.units as u
-from astropy.time import TimeDelta
-from astropy.time import Time
-
+from astropy.time import Time, TimeDelta
 
 import sunpy.io
-from sunpy.time import TimeRange, parse_time
 from sunpy.coordinates import sun
-
+from sunpy.time import TimeRange, parse_time
 
 __all__ = ['parse_observing_summary_hdulist', 'backprojection', 'parse_observing_summary_dbase_file']
 
@@ -36,9 +30,13 @@ lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
 
 def parse_observing_summary_dbase_file(filename):
     """
-    Parse the RHESSI observing summary database file. This file lists the
-    name of observing summary files for specific time ranges along with other
-    info
+    Parse the RHESSI observing summary database file.
+
+    This file lists the name of observing summary files
+    for specific time ranges along with other info.
+
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     Parameters
     ----------
@@ -47,7 +45,7 @@ def parse_observing_summary_dbase_file(filename):
 
     Returns
     -------
-    out : `dict`
+    `dict`
         Return a `dict` containing the parsed data in the dbase file.
 
     Examples
@@ -57,11 +55,7 @@ def parse_observing_summary_dbase_file(filename):
 
     References
     ----------
-    | https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing%20Summary%20Data
-
-    .. note::
-        This API is currently limited to providing data from whole days only.
-
+    https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing%20Summary%20Data
     """
     # An example dbase file can be found at:
     # https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
@@ -107,14 +101,13 @@ def parse_observing_summary_hdulist(hdulist):
 
     Parameters
     ----------
-    hdulist : list
+    hdulist : `list`
         The HDU list from the fits file.
 
     Returns
     -------
     out : `dict`
         Returns a dictionary.
-
     """
     header = hdulist[0].header
 
@@ -144,17 +137,18 @@ def parse_observing_summary_hdulist(hdulist):
 
 
 def uncompress_countrate(compressed_countrate):
-    """Convert the compressed count rate inside of observing summary file from
-    a compressed byte to a true count rate
+    """
+    Convert the compressed count rate inside of observing summary file from a
+    compressed byte to a true count rate.
 
     Parameters
     ----------
-    compressed_countrate : byte array
+    compressed_countrate : `byte` array
         A compressed count rate returned from an observing summary file.
 
     References
     ----------
-    Hsi_obs_summ_decompress.pro `<https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
+    `Hsi_obs_summ_decompress.pro <https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
     """
 
     # Ensure uncompressed counts are between 0 and 255
@@ -175,19 +169,17 @@ def uncompress_countrate(compressed_countrate):
 
 
 def hsi_linecolors():
-    """Define discrete colors to use for RHESSI plots
-
-    Parameters
-    ----------
-    None
+    """
+    Define discrete colors to use for RHESSI plots.
 
     Returns
     -------
-    tuple : matplotliblib color list
+    `tuple` :
+         A tuple of names of colours.
 
     References
     ----------
-    hsi_linecolors.pro `<https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro>`_
+    `hsi_linecolors.pro <https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro>`__
     """
     return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange',
             'olive')
@@ -196,30 +188,26 @@ def hsi_linecolors():
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
                  image_dim=(64, 64)):
     """
-    Given a stacked calibrated event list fits file create a back
-    projection image for an individual detectors. This function is used by
-    backprojection.
+    Given a stacked calibrated event list fits file create a back projection
+    image for an individual detectors.
 
     Parameters
     ----------
-    calibrated_event_list : str
-        filename of a RHESSI calibrated event list
-    detector : int
-        the detector number
-    pixel_size : 2-tuple
-        the size of the pixels in arcseconds. Default is (1,1).
-    image_dim : 2-tuple
-        the size of the output image in number of pixels
+    calibrated_event_list : `str`
+        Filename of a RHESSI calibrated event list.
+    detector : `int`, optional
+        The detector number.
+    pixel_size : `tuple`, optional
+        A length 2 tuple with the size of the pixels in arcseconds.
+        Defaults to  ``(1, 1)``.
+    image_dim : `tuple`, optional
+        A length 2 tuple with the size of the output image in number of pixels.
+        Defaults to ``(64, 64)``.
 
     Returns
     -------
-    out : ndarray
-        Return a backprojection image.
-
-    Examples
-    --------
-    >>> import sunpy.instr.rhessi as rhessi
-
+    `numpy.ndarray`
+        A backprojection image.
     """
     # info_parameters = fits[2]
     # detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
@@ -253,37 +241,31 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
 
 
 @u.quantity_input
-def backprojection(calibrated_event_list, pixel_size: u.arcsec=(1., 1.) * u.arcsec,
-                   image_dim: u.pix=(64, 64) * u.pix):
+def backprojection(calibrated_event_list, pixel_size: u.arcsec = (1., 1.) * u.arcsec,
+                   image_dim: u.pix = (64, 64) * u.pix):
     """
-    Given a stacked calibrated event list fits file create a back
-    projection image.
+    Given a stacked calibrated event list fits file create a back projection
+    image.
 
-    .. warning:: The image is not in the right orientation!
+    .. warning::
+
+        The image will not be in the right orientation.
 
     Parameters
     ----------
-    calibrated_event_list : str
-        filename of a RHESSI calibrated event list
-    pixel_size : `~astropy.units.Quantity` instance
-        the size of the pixels in arcseconds. Default is (1,1).
-    image_dim : `~astropy.units.Quantity` instance
-        the size of the output image in number of pixels
+    calibrated_event_list : `str`
+        Filename of a RHESSI calibrated event list.
+    pixel_size : `tuple`, optional
+        A length 2 tuple with the size of the pixels in arcsecond
+        `~astropy.units.Quantity`. Defaults to  ``(1, 1) * u.arcsec``.
+    image_dim : `tuple`, optional
+        A length 2 tuple with the size of the output image in number of pixel
+        `~astropy.units.Quantity` Defaults to ``(64, 64) * u.pix``.
 
     Returns
     -------
-    out : RHESSImap
-        Return a backprojection map.
-
-    Examples
-    --------
-    This example is broken.
-    >>> import sunpy.data
-    >>> import sunpy.data.sample # doctest: +REMOTE_DATA
-    >>> import sunpy.instr.rhessi as rhessi
-    >>> map = rhessi.backprojection(sunpy.data.sample.RHESSI_EVENT_LIST)   # doctest: +SKIP
-    >>> map.peek()   # doctest: +SKIP
-
+    `sunpy.map.sources.RHESSImap`
+        A backprojection map.
     """
     # import sunpy.map in here so that net and timeseries don't end up importing map
     import sunpy.map
@@ -334,14 +316,20 @@ def backprojection(calibrated_event_list, pixel_size: u.arcsec=(1., 1.) * u.arcs
 
 def _build_energy_bands(label, bands):
     """
+    Creates a list of strings with the correct formatting for axis labels.
+
     Parameters
     ----------
     label: `str`
+        The ``label`` to use as a basis.
     bands: `list` of `str`
+        The bands to append to the ``label``.
+
     Returns
     -------
-    bands_with_units: `list` of `str`
-        Each `str` item is an energy band and its unit
+    `list` of `str`
+        Each string is an energy band and its unit.
+
     Example
     -------
     >>> from sunpy.instr.rhessi import _build_energy_bands

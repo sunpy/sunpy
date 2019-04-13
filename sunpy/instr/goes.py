@@ -4,16 +4,16 @@ Contains functions useful for analysing GOES/XRS data.
 Each of the Geostationary Operational Environmental Satellite (GOES) series
 since the mid-1970s has carried an X-Ray Sensor (XRS) which observes
 full-disk-integrated solar flux in two broadband channels:
-1--8 angstrom (long); and 0.5--4 angstrom (short).  For more information on
+1--8 angstrom (long); and 0.5--4 angstrom (short). For more information on
 the GOES/XRS instrument, see [Ref1]_.  GOES/XRS has become
 the "standard candle" for solar coronal observations due its longevity and
-consistency.  The GOES event list, based on GOES/XRS observations, has
+consistency. The GOES event list, based on GOES/XRS observations, has
 become the standard solar flare catalogue.
 See https://www.ngdc.noaa.gov/stp/solar/solarflares.html for information
 on the GOES event list definitions and data.
 
 The functions in this module provide useful software to analyse GOES/XRS
-observations.  First they allow the GOES event list to be imported into a
+observations. First they allow the GOES event list to be imported into a
 Python session (`~sunpy.instr.goes.get_goes_event_list`).
 
 They also allow the thermodynamic properties of the emitting solar plasma to be
@@ -41,8 +41,8 @@ References
 ----------
 
 .. [Ref1] Hanser, F.A., & Sellers, F.B. 1996, Proc. SPIE, 2812, 344
-.. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI: `10.1051/0004-6361/200911712 <https://doi.org/10.1051/0004-6361/200911712>`__
-
+.. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI:
+          `10.1051/0004-6361/200911712 <https://doi.org/10.1051/0004-6361/200911712>`__
 """
 
 import csv
@@ -53,17 +53,18 @@ import datetime
 from itertools import dropwhile
 
 import numpy as np
+from scipy import interpolate
+from scipy.integrate import cumtrapz, trapz
+
 import astropy.units as u
 from astropy.time import TimeDelta
-from scipy import interpolate
-from scipy.integrate import trapz, cumtrapz
 
-from sunpy.sun import constants
 from sunpy import timeseries
+from sunpy.coordinates import get_sunearth_distance, sun
+from sunpy.sun import constants
 from sunpy.time import parse_time
-from sunpy.util.net import check_download_file
-from sunpy.coordinates import sun
 from sunpy.util.config import get_and_create_download_dir
+from sunpy.util.net import check_download_file
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
                         'M': u.Quantity(1e-5, "W/m^2"),
@@ -99,11 +100,14 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     ----------
     timerange : `sunpy.time.TimeRange`
         The time range to download the event list for.
-
-    goes_class_filter: (optional) str
+    goes_class_filter: `str`, optional
         A string specifying a minimum GOES class for inclusion in the list,
-        e.g. 'M1', 'X2'.
+        e.g., "M1", "X2".
 
+    Returns
+    -------
+    `list`:
+        A list of all the flares found for the given time range.
     """
     # Importing hek here to avoid calling code that relies on optional dependencies.
     from sunpy.net import hek
@@ -152,42 +156,38 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 def calculate_temperature_em(goests, abundances="coronal",
                              download=False, download_dir=None):
     """
-    Calculates temperature and emission measure from a `~sunpy.timeseries.XRSTimeSeries`.
+    Calculates temperature and emission measure from a
+    `~sunpy.timeseries.XRSTimeSeries`.
 
     This function calculates the isothermal temperature and
     corresponding volume emission measure of the solar soft X-ray
-    emitting plasma observed by the GOES/XRS.  This is done using the
+    emitting plasma observed by the GOES/XRS. This is done using the
     observed flux ratio of the short (0.5-4 angstrom) to long (1-8 angstrom)
-    channels.  The results are returned in a new LightCurve object which
-    contains metadata and flux data of the input LightCurve object in
+    channels. The results are returned in a new TimeSeries object which
+    contains metadata and flux data of the input TimeSeries object in
     addition to the newly found temperature and emission measure values.
 
     Parameters
     ----------
     goeslc : `~sunpy.timeseries.XRSTimeSeries`
-        LightCurve object containing GOES flux data which MUST
-        be in units of W/m^2.
-
-    abundances : (optional) string equalling 'coronal' or 'photospheric'
-        States whether photospheric or coronal abundances should be
-        assumed.
-        Default='coronal'
-
-    download : (optional) `bool`
-        If True, the GOES temperature and emission measure data files are
-        downloaded.  It is important to do this if a new version of the files
+        The TimeSeries containing GOES flux data which **MUST**
+        be in units of "W/m^2".
+    abundances : {'coronal' | 'photospheric'}, optional
+        States whether "photospheric" or "coronal" abundances should be
+        assumed, default to 'coronal'.
+    download : `bool`, optional
+        If `True`, the GOES temperature and emission measure data files are
+        downloaded. It is important to do this if a new version of the files
         has been generated due to a new CHIANTI version being released or the
         launch of new GOES satellites since these files were last downloaded.
-        Default=False
-
-    download_dir : (optional) `string`
+        Defaults to `False`.
+    download_dir : `str`, optional
         The directory to download the GOES temperature and emission measure
-        data files to.
-        Default=SunPy default download directory
+        data files to, defaults to the default download directory.
 
     Returns
     -------
-    ts_new : `~sunpy.timeseries.XRSTimeSeries`
+    `~sunpy.timeseries.XRSTimeSeries`
         Contains same metadata and data as input timeseries with the
         following two additional data columns:
 
@@ -200,18 +200,17 @@ def calculate_temperature_em(goests, abundances="coronal",
     using the methods of White et al. (2005) who used the
     CHIANTI atomic physics database to model the response of the ratio
     of the short (0.5-4 angstrom) to long (1-8 angstrom) channels of the
-    XRSs onboard various GOES satellites.  This method assumes an
-    isothermal plasma, the ionisation equilibria of
+    XRSs onboard various GOES satellites. This method assumes an
+    isothermal plasma, the ionization equilibria of
     [2]_, and a constant density of 10**10 cm**-3.
     (See [1]_ for justification of this last assumption.)
-    This function is based on goes_chianti_tem.pro in SolarSoftWare
+    This function is based on "goes_chianti_tem.pro" in SolarSoft
     written in IDL by Stephen White.
 
     Recent fluxes released to the public are scaled to be consistent
-    with GOES-7.  In fact these recent fluxes are correct and so this
+    with GOES-7. In fact these recent fluxes are correct and so this
     correction must be removed before proceeding to use transfer
     functions.
-    Email Rodney Viereck (NOAA) for more information.
 
     Measurements of short channel flux of less than 1e-10 W/m**2 or
     long channel flux less than 3e-8 W/m**2 are not considered good.
@@ -376,7 +375,6 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     <Quantity [11.28295376, 11.28295376] MK>
     >>> em  # doctest: +REMOTE_DATA
     <Quantity [4.78577516e+48, 4.78577516e+48] 1 / cm3>
-
     """
     if not download_dir:
         download_dir = get_and_create_download_dir()
@@ -512,7 +510,6 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     ...                               abundances="coronal")  # doctest: +REMOTE_DATA
     >>> temp  # doctest: +REMOTE_DATA
     <Quantity [12.27557778, 12.27557778] MK>
-
     """
     if not download_dir:
         download_dir = get_and_create_download_dir()
@@ -669,7 +666,6 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     ...                           abundances="coronal")  # doctest: +REMOTE_DATA
     >>> em  # doctest: +REMOTE_DATA
     <Quantity [3.45200672e+48, 3.45200672e+48] 1 / cm3>
-
     """
     if not download_dir:
         download_dir = get_and_create_download_dir()
@@ -982,8 +978,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
     modeltemp = np.asarray(modeltemp)
     model_loss_rate = np.asarray(model_loss_rate)
     # Ensure input values of flux ratio are within limits of model table
-    if temp.value.min() < modeltemp.min() or \
-    temp.value.max() > modeltemp.max():
+    if temp.value.min() < modeltemp.min() or temp.value.max() > modeltemp.max():
         raise ValueError("All values in temp must be within the range " +
                          "{} - {} MK.".format(np.min(modeltemp/1e6),
                                                 np.max(modeltemp/1e6)))
@@ -1184,7 +1179,6 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     <Quantity 1.96860565e+19 s W>
     >>> lx_out["shortlum_int"]  # doctest: +REMOTE_DATA
     <Quantity 1.96860565e+18 s W>
-
     """
     # Calculate X-ray luminosities
     longlum = _calc_xraylum(longflux, date=date)
@@ -1264,7 +1258,6 @@ def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
     >>> xraylum = _calc_xraylum(flux, date="2014-04-21")  # doctest: +REMOTE_DATA
     >>> xraylum  # doctest: +REMOTE_DATA
     <Quantity [1.98751663e+18, 1.98751663e+18] W>
-
     """
     if date is not None:
         date = parse_time(date)
@@ -1376,5 +1369,4 @@ def _assert_chrono_order(obstime):
     chrono_check = np.array(obstime) - np.roll(obstime, 1)
     chrono_check = chrono_check[1:]
     if not all(val > TimeDelta(0*u.day) for val in chrono_check):
-        raise ValueError(
-            "Elements of obstime must be in chronological order.")
+        raise ValueError("Elements of obstime must be in chronological order.")
