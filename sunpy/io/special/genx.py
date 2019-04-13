@@ -64,7 +64,7 @@ def struct_to_data(xdrdata, subskeleton):
     read in the right order (that's why `OrderedDict` is used). Then the data is
     read and the `subskeleton` is updated with the data itself.
     """
-    #http://www.harrisgeospatial.com/docs/SIZE.html
+    #https://www.harrisgeospatial.com/docs/SIZE.html
     types_dict = {
         2: (xdrdata.unpack_int, np.int16), # int
         3: (xdrdata.unpack_int, np.int32), # long

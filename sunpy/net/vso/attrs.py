@@ -217,7 +217,7 @@ class Provider(SimpleAttr):
     -----
     More information about each source may be found within in the VSO Registry.
     For a list of sources see
-    http://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
+    https://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
     """
     pass
 
@@ -236,7 +236,7 @@ class Source(SimpleAttr):
     User Interface programmers should note that some names may be encoded as
     UTF-8. Please note that 'Source' is used internally by VSO to represent
     what the VSO Data Model refers to as 'Observatory'.  For a list of sources
-    see http://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
+    see https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
     """
     pass
 
@@ -253,7 +253,7 @@ class Instrument(SimpleAttr):
     -----
     More information about each instrument supported by the VSO may be found
     within the VSO Registry. For a list of instruments see
-    http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
+    https://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
     def __init__(self, value):
         if not isinstance(value, str):
@@ -273,7 +273,7 @@ class Detector(SimpleAttr):
     Notes
     -----
     For a list of values understood by the VSO see
-    http://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
+    https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
 
     References
     ----------
@@ -294,7 +294,7 @@ class Physobs(SimpleAttr):
     -----
     More information about each instrument may be found within the VSO
     Registry.  For a list of physical observables see
-    http://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
+    https://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
     """
     pass
 

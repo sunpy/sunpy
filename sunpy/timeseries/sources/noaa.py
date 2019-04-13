@@ -190,7 +190,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     References
     ----------
     * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products/3-day-geomagnetic-forecast>`_
-    * `Predicted solar indices <http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt>`_
+    * `Predicted solar indices <https://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt>`_
     * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
     * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
 
