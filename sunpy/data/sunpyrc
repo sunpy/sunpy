@@ -2,7 +2,7 @@
 ; SunPy Configuration
 ;
 ; This is a sample sunpy configuration file - you can find a copy
-; of it on your system in site-packages/sunpy/data/sunpyrc.  If you edit it
+; of it on your system in site-packages/sunpy/data/sunpyrc. If you edit it
 ; there, please note that it will be overridden in your next install.
 ; If you want to keep a permanent local copy that will not be
 ; over-written, we use AppDirs https://pypi.org/project/appdirs/
