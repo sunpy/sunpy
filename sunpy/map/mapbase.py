@@ -313,7 +313,7 @@ class GenericMap(NDData):
             ...
 
         and this will generate a plot with the correct WCS coordinates on the
-        axes. See http://wcsaxes.readthedocs.io for more information.
+        axes. See https://wcsaxes.readthedocs.io for more information.
         """
         # This code is reused from Astropy
 
@@ -773,7 +773,7 @@ class GenericMap(NDData):
 
         if err_message:
             err_message.append(
-                'See http://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
+                'See https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
                 'instructions on how to add missing metadata.')
             raise MapMetaValidationError('\n'.join(err_message))
 
@@ -1424,7 +1424,7 @@ class GenericMap(NDData):
         coordinate system.
 
         To overlay other coordinate systems see the `WCSAxes Documentation
-        <http://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`_
+        <https://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`_
 
         Parameters
         ----------

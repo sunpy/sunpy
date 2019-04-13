@@ -8,7 +8,7 @@ The purpose of the page is to describe the standards that are expected of all th
 All potential developers should read and abide by the following standards.
 Code which does not follow these standards closely will not be accepted.
 
-We try to closely follow the coding style and conventions proposed by `Astropy <http://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
+We try to closely follow the coding style and conventions proposed by `Astropy <https://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
 
 Language Standard
 =================

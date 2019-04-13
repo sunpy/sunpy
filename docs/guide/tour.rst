@@ -183,7 +183,7 @@ Quantities and units are powerful tools for keeping track of variables with
 physical meaning and make it straightforward to convert the same physical
 quantity into different units. To learn more about the capabilities of
 quantities and units, consult :ref:`units-coordinates-sunpy` or
-`the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__.
+`the astropy tutorial <http://learn.astropy.org/Quantities.html>`__.
 
 To demonstrate this, let's look at the solar radius constant. This is a physical quantity
 that can be expressed in length units ::
@@ -250,8 +250,8 @@ or you can convert the output::
 
 
 This is an extremely brief summary of the powerful capbilities of Astropy units.  To find out more, see
-the `the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__ and
-`documentation <http://docs.astropy.org/en/stable/units/index.html>`__
+the `the astropy tutorial <http://learn.astropy.org/Quantities.html>`__ and
+`documentation <https://docs.astropy.org/en/stable/units/index.html>`__
 
 
 Working with Times

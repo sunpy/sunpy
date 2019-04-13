@@ -47,7 +47,7 @@ Overall, we are good to each other and apply this code of conduct to all communi
 We pledge to help the entire community follow the code of conduct, and to not remain silent when we see violations of the code of conduct.
 We will take action when members of our community violate this code such as contacting confidential@sunpy.org (all emails sent to this address will be treated with the strictest confidence) or talking privately with the person.
 
-Parts of this code of conduct have been adapted from the `astropy <http://www.astropy.org/code_of_conduct.html>`__ and the `Python Software Fundation <https://www.python.org/psf/codeofconduct/>`__ codes of conduct.
+Parts of this code of conduct have been adapted from the `astropy <https://www.astropy.org/code_of_conduct.html>`__ and the `Python Software Fundation <https://www.python.org/psf/codeofconduct/>`__ codes of conduct.
 
 ----
 

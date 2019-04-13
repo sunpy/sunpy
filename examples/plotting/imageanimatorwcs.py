@@ -65,7 +65,7 @@ wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1
 # You might notice that the animation could do with having the axes look neater.
 # As we are using a WCS object, we can use `~astropy.visualization.wcsaxes`
 # to change the properties of the visualization. The documentation is
-# `here <http://docs.astropy.org/en/stable/visualization/wcsaxes/index.html>`_
+# `here <https://docs.astropy.org/en/stable/visualization/wcsaxes/index.html>`_
 # and details each possible method. In this example, we will just showcase some
 # of these possible methods.
 
