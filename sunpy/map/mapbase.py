@@ -27,8 +27,8 @@ from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
 from sunpy.image.transform import affine_transform
-from sunpy.image.rescale import reshape_image_to_4d_superpixel
-from sunpy.image.rescale import resample as sunpy_image_resample
+from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_sun_B0, get_sun_L0, get_sunearth_distance
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -51,7 +51,7 @@ class GenericMap(NDData):
 
     Parameters
     ----------
-    data : `~numpy.ndarray`, list
+    data : `numpy.ndarray`, list
         A 2d list or ndarray containing the map data.
     header : dict
         A dictionary of the original image header tags.
