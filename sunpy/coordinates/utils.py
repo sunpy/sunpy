@@ -28,7 +28,7 @@ class GreatArc(object):
     center : `~astropy.coordinates.SkyCoord`
         Center of the sphere.
 
-    points : `None`, `int`, `~numpy.ndarray`
+    points : `None`, `int`, `numpy.ndarray`
         Number of points along the great arc.  If None, the arc is calculated
         at 100 equally spaced points from start to end.  If int, the arc is
         calculated at "points" equally spaced points from start to end.  If a
@@ -167,7 +167,7 @@ class GreatArc(object):
 
         Parameters
         ----------
-        points : `None`, `int`, `~numpy.ndarray`
+        points : `None`, `int`, `numpy.ndarray`
             If None, use the default locations of parameterized points along the
             arc.  If int, the arc is calculated at "points" equally spaced
             points from start to end.  If a numpy.ndarray is passed, it must be
@@ -193,7 +193,7 @@ class GreatArc(object):
 
         Parameters
         ----------
-        points : `None`, `int`, `~numpy.ndarray`
+        points : `None`, `int`, `numpy.ndarray`
             If None, use the default locations of parameterized points along the
             arc.  If int, the arc is calculated at "points" equally spaced
             points from start to end.  If a numpy.ndarray is passed, it must be
@@ -220,7 +220,7 @@ class GreatArc(object):
 
         Parameters
         ----------
-        points : `None`, `int`, `~numpy.ndarray`
+        points : `None`, `int`, `numpy.ndarray`
             If None, use the default locations of parameterized points along the
             arc.  If int, the arc is calculated at "points" equally spaced
             points from start to end.  If a numpy.ndarray is passed, it must be
