@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-SunPy sample data files
-
-The following files are available in this submodule:
-
+The following files are available in this module:
 """
 import sys
 from pathlib import Path

@@ -62,6 +62,7 @@ _sample_files = {v: k for k, v in _sample_files.items()}
 
 _error = namedtuple("error", ("filepath_partial", "url", "response"))
 
+
 def download_sample_data(overwrite=False):
     """
     Download all sample data at once. This will overwrite any existing files.
@@ -70,10 +71,6 @@ def download_sample_data(overwrite=False):
     ----------
     overwrite: `bool`
         Overwrite existing sample data.
-
-    Returns
-    -------
-    None
     """
     # Creating the directory for sample files to be downloaded
     sampledata_dir = Path(get_and_create_sample_dir())
