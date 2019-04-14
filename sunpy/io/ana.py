@@ -5,7 +5,7 @@ This is a modified version of `pyana <https://github.com/tvwerkhoven/pyana>`__.
 
 .. warning::
 
-    The reading and writing of ana file is not supported under Windows.
+    The reading and writing of ana files is not supported under Windows.
 """
 import os
 import collections
@@ -83,7 +83,7 @@ def get_header(filename, debug=False):
     return [FileHeader(data['header'])]
 
 
-def write(filename, data, comments=False, compress=1, debug=False):
+def write(filename, data, comments=False, compress=True, debug=False):
     """
     Saves a 2D `numpy.array` as an ANA file and returns the bytes written or
     ``NULL``.
@@ -96,10 +96,10 @@ def write(filename, data, comments=False, compress=1, debug=False):
         The data to be stored.
     comments : `~sunpy.io.header.FileHeader`, optional
         The comments to be stored as a header.
-    compress : `int`, {0, 1} optional
-        To compress the data or not with ``1`` to compress and ``0`` is uncompressed.
+    compress : `bool`, optional
+        Compress the data with `True` (the default).
     debug : `bool`, optional
-        Prints verbose debug information.
+        Prints verbose debug information, defaults to `False`.
 
     Returns
     -------
@@ -108,12 +108,12 @@ def write(filename, data, comments=False, compress=1, debug=False):
 
     Examples
     --------
-    >>> written = sunpy.io.ana.write(filename, data, comments=False, compress=1)  # doctest: +SKIP
+    >>> written = sunpy.io.ana.write(filename, data, comments=False, compress=True)  # doctest: +SKIP
     """
     if _pyana is None:
         raise ImportError("C extension for ANA is missing, please rebuild")
 
     if comments:
-        return _pyana.fzwrite(filename, data, compress, comments, debug)
+        return _pyana.fzwrite(filename, data, int(compress), comments, debug)
     else:
-        return _pyana.fzwrite(filename, data, compress, '', debug)
+        return _pyana.fzwrite(filename, data, int(compress), '', debug)
