@@ -780,3 +780,86 @@ def on_disk_bounding_coordinates(smap):
     tr = SkyCoord(np.nanmax(on_disk_coordinates.Tx), np.nanmax(on_disk_coordinates.Ty),
                   frame=Helioprojective, observer=smap.observer_coordinate)
     return bl, tr
+
+
+def is_in_map(coordinate, smap):
+    """
+    Returns True if the input coordinate(s) is(are) in the area defined by the
+    input map.
+
+    The check is performed
+
+    Parameters
+    ----------
+
+    :param smap:
+    :param coordinate:
+
+    Returns
+    -------
+
+    """
+    x = smap.bl.Tx <= coordinate.transform_to(smap.frame).Tx <= smap.tr.Tx
+    y = smap.bl.Ty <= coordinate.transform_to(smap.frame).Ty <= smap.tr.Ty
+    return np.logical_and(x, y)
+
+
+def overlap_coordinates(smap1, smap2):
+    """
+    Returns the bottom left and top right coordinates of a bounding box
+    containing the overlap of the two input maps.  If one of the
+    coordinates does not exist None is returned.
+
+    Parameters
+    ----------
+    smap1 :
+    smap2 :
+
+    Returns
+    -------
+    (bl, tr) : `~list`
+
+
+    """
+    bl1, tr1 = smap1.bottom_left, smap1.top_right
+    bl2, tr2 = smap2.bottom_left, smap2.top_right
+
+    if is_in_map(bl1, smap2):
+        bl = bl1
+    elif is_in_map(bl2, smap1):
+        bl = bl2
+    else:
+        bl = None
+
+    if is_in_map(tr1, smap2):
+        tr = tr1
+    elif is_in_map(tr2, smap1):
+        tr = tr2
+    else:
+        tr = None
+
+    return bl, tr
+
+
+def overlap(smap1, smap2):
+    """
+    Returns True if the maps overlap in space.
+
+    The check is performed by calculating the overlap between the two
+    maps.  An overlap is found when both a bottom left coordinate and a
+    top right coordinate to the common area between the two maps can be
+    defined.
+
+    Parameters
+    ----------
+    smap1 : `~sunpy.map.Map`
+        The input map.
+
+    Returns
+    -------
+    overlap : `~bool`
+        A Boolean value that is True if the two maps overlap in space
+        and False otherwise.
+    """
+    bl, tr = overlap_coordinates(smap1, smap2)
+    return (bl is not None) and (tr is not None)
