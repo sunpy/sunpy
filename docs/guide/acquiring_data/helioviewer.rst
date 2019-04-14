@@ -2,7 +2,7 @@
 Querying Helioviewer.org with SunPy
 -----------------------------------
 
-SunPy can be used to make several basic requests using the The `Helioviewer.org API <https://api.helioviewer.org/docs/v2/>`_ including generating a PNG screenshot and downloading a `JPEG 2000 <http://wiki.helioviewer.org/wiki/JPEG_2000>`_ image.
+SunPy can be used to make several basic requests using the The `Helioviewer.org API <https://api.helioviewer.org/docs/v2/>`_ including generating a PNG screenshot and downloading a `JPEG 2000 <https://wiki.helioviewer.org/wiki/JPEG_2000>`_ image.
 
 As you can get JPEG 2000 images, you will need two other pieces of software in order to open them in Python.
 The first is OpenJPEG which is an open source library for reading and writing JPEG2000 files.

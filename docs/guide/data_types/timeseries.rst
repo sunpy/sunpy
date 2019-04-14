@@ -52,7 +52,7 @@ csv) and formats, and so it is not always possible to detect the source. For
 this reason, it is good practice to explicitly state the source for the file.
 SunPy ships with a number of known instrumental sources.  If you would like
 SunPy to include another instrumental source please follow the `SunPy
-contribution guide <http://http://sunpy.org/contribute/>`.
+contribution guide <https://sunpy.org/contribute/>`.
 
 The `~sunpy.timeseries.TimeSeries` factory has the ability to make a list of
 TimeSeries objects using a list of filepaths, a folder or a glob, for example: ::
@@ -158,7 +158,7 @@ in tables, without additional arguments.  For example: ::
 Note that due to the properties of the `~astropy.time.Time` object, this will be
 a mixin column which since it is a single object, limits the versatility of
 the `~astropy.table.Table` a little. For more on mixin columns see the `Astropy
-docs <http://docs.astropy.org/en/stable/table/mixin_columns.html>`_.  The units
+docs <https://docs.astropy.org/en/stable/table/mixin_columns.html>`_.  The units
 will be taken from the table quantities for each column, the metadata will
 simply be the table.meta dictionary.  You can also explicitly add metadata and
 units, these will be added to the relevant dictionaries using the dictionary
@@ -230,7 +230,7 @@ you provide. You can consider the data as x or y values: ::
     >>> y = my_timeseries.data.values
 
 You can read more about indexing at the `pandas documentation website
-<http://pandas.pydata.org/pandas-docs/stable/>`_.
+<https://pandas.pydata.org/pandas-docs/stable/>`_.
 
 A TimeSeries can also return an Astropy `~astropy.units.quantity.Quantity` for a
 given column using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.quantity`
@@ -291,7 +291,7 @@ You can even change all the values for a given time: ::
 
 Note, you will need to be careful to consider units when modifying the
 TimeSeries data directly. For further details about editing Pandas DataFames you
-can read the `pandas documentation website <http://pandas.pydata.org/pandas-docs/stable/>`_.
+can read the `pandas documentation website <https://pandas.pydata.org/pandas-docs/stable/>`_.
 
 Additionally the TimeSeries provides the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.add_column`
 method which will either add a new column or update a current column if the
@@ -440,7 +440,7 @@ method: ::
     >>> table.show_in_browser(jsviewer=True)  # doctest: +SKIP
 
 For further details about editing Astropy tables you can read the `astropy
-documentation website <http://docs.astropy.org/en/stable/table/>`_.
+documentation website <https://docs.astropy.org/en/stable/table/>`_.
 
 
 6. A Detailed Look at the Metadata

@@ -557,8 +557,8 @@ class VSOClient(BaseClient):
             Methods are a concatenation of one PREFIX followed by any number of
             SUFFIXES i.e. `PREFIX-SUFFIX_SUFFIX2_SUFFIX3`.
             The full list of
-            `PREFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
-            and `SUFFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
+            `PREFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
+            and `SUFFIXES <https://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
             are listed on the VSO site.
 
         site : str

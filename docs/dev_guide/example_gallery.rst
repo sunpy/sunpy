@@ -4,7 +4,7 @@
 Example Gallery
 ***************
 
-The purpose of the page is to describe the contribution guidelines for the `SunPy Example Gallery <http://docs.sunpy.org/en/stable/generated/gallery/index.html>`_.
+The purpose of the page is to describe the contribution guidelines for the `SunPy Example Gallery <https://docs.sunpy.org/en/stable/generated/gallery/index.html>`_.
 
 All potential contributors to the SunPy Example Gallery should read and abide by the following guidelines.
 
