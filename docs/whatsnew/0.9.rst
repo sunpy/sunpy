@@ -115,7 +115,7 @@ Data is downloaded using::
 
 which returns a set of filepaths to the downloaded data.
 
-For more information on accessing JSOC data using SunPy please `consult the documentation <http://docs.sunpy.org/guide/acquiring_data/jsoc.rst>`_.
+For more information on accessing JSOC data using SunPy please `consult the documentation <https://docs.sunpy.org/guide/acquiring_data/jsoc.rst>`_.
 
 .. _whatsnew-0.9-renamed-removed:
 

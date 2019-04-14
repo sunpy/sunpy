@@ -224,7 +224,7 @@ def check_download_file(filename, remotepath, download_dir, remotename=None, rep
     Examples
     --------
     >>> from sunpy.util.net import check_download_file
-    >>> remotepath = "http://www.download_repository.com/downloads/"
+    >>> remotepath = "https://www.download_repository.com/downloads/"
     >>> check_download_file("filename.txt", remotepath, download_dir='.')  # doctest: +SKIP
     """
     # Check if file already exists locally.  If not, try downloading it.

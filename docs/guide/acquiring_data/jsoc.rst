@@ -7,7 +7,7 @@ as well as certain other missions and instruments. These data are available from
 which can be directly accessed by the online `JSOC interface <http://jsoc.stanford.edu/ajax/lookdata.html>`_.
 
 SunPy's JSOC Client provides an easier interface to query for JSOC data and make export requests.
-It uses `drms module <http://docs.sunpy.org/projects/drms>`_ as its backend, and exposes a similar API as
+It uses `drms module <https://docs.sunpy.org/projects/drms>`_ as its backend, and exposes a similar API as
 the VSO Client.
 
 There are two ways of downloading JSOC data. One way is using Sunpy's unified search interface,

@@ -24,12 +24,12 @@ class ESPTimeSeries(GenericTimeSeries):
     """
     SDO EVE/ESP Level1 data
 
-    The Extreme ultraviolet Spectro-Photometer (ESP) is an irradiance instrument 
-    which is part of the Extreme ultraviolet Variability Experiment (EVE) onboard 
-    SDO. ESP provides high time cadence (0.25s) EUV irradiance measurments in five 
-    channels, one soft X-ray and 4 EUV. The first four orders of the diffraction grating 
-    gives measurments centered on 18nm, 26nm, 30nm and 36nm. The zeroth order (obtained 
-    by 4 photodiodes) provides the soft X-ray measurments from 0.1-7nm. 
+    The Extreme ultraviolet Spectro-Photometer (ESP) is an irradiance instrument
+    which is part of the Extreme ultraviolet Variability Experiment (EVE) onboard
+    SDO. ESP provides high time cadence (0.25s) EUV irradiance measurments in five
+    channels, one soft X-ray and 4 EUV. The first four orders of the diffraction grating
+    gives measurments centered on 18nm, 26nm, 30nm and 36nm. The zeroth order (obtained
+    by 4 photodiodes) provides the soft X-ray measurments from 0.1-7nm.
 
     The ESP level 1 fits files are fully calibrated. The TimeSeries object created from
     an ESP fits file will conatain 4 columns namely:
@@ -38,7 +38,7 @@ class ESPTimeSeries(GenericTimeSeries):
         * 'CH_18' - EUV irradiance 18nm
         * 'CH_26' - EUV irradiance 26nm
         * 'CH_30' - EUV irradiance 30nm
-        * 'CH_36' - EUV irradiance 36nm        
+        * 'CH_36' - EUV irradiance 36nm
 
     References
     ----------
@@ -47,10 +47,10 @@ class ESPTimeSeries(GenericTimeSeries):
     * `README ESP data <http://lasp.colorado.edu/eve/data_access/evewebdata/products/level1/esp/EVE_ESP_L1_V6_README.pdf>`__
     * `ESP lvl1 data <http://lasp.colorado.edu/eve/data_access/evewebdata/misc/eve_calendars/calendar_level1_2018.html>`__
     * `ESP instrument paper <https://doi.org/10.1007/s11207-009-9485-8>`__
-    
+
     Notes
     -----
-    The 36nm channel demonstrates a significant noise and it is not recommended to be 
+    The 36nm channel demonstrates a significant noise and it is not recommended to be
     used for short-time observations of solar irradiance.
 
     """
