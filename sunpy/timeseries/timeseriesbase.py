@@ -173,7 +173,7 @@ class GenericTimeSeries:
         colname : `str`
             The heading of the column you want output.
 
-        quantity : `~astropy.units.quantity.Quantity` or `~numpy.ndarray`
+        quantity : `~astropy.units.quantity.Quantity` or `numpy.ndarray`
             The values to be placed within the column.
             If updating values only then a numpy array is permitted.
 
@@ -564,7 +564,7 @@ class GenericTimeSeries:
 
         Returns
         -------
-        values : `~numpy.ndarray`
+        values : `numpy.ndarray`
             If the caller is heterogeneous and contains booleans or objects,
             the result will be of dtype=object. See Notes.
         """
