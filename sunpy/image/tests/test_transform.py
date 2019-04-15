@@ -1,9 +1,9 @@
-from sunpy.image.transform import affine_transform
 import numpy as np
-from skimage import transform as tf
-import skimage.data as images
 import pytest
+import skimage.data as images
+from skimage import transform as tf
 
+from sunpy.image.transform import affine_transform
 from sunpy.util import SunpyUserWarning
 
 # Define test image first so it's accessible to all functions.

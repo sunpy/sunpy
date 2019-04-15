@@ -186,7 +186,7 @@ def _warp_sun_coordinates(xy, smap, dt: u.s, **diffrot_kwargs):
 
     Returns
     -------
-    xy2 : `~numpy.ndarray`
+    xy2 : `numpy.ndarray`
         Array with the inverse transformation
     """
     # NOTE: The time is being subtracted - this is because this function
