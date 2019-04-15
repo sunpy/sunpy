@@ -16,7 +16,6 @@ from itertools import chain
 from astropy.table import Table, Row, Column
 from astropy.time import Time
 
-from sunpy import log
 from sunpy.net import attr
 from sunpy.util import unique
 from sunpy.net.hek import attrs
@@ -77,7 +76,6 @@ class HEKClient(object):
                 if len(results) > 0:
                     return HEKTable(results)
                 else:
-                    log.info('Search returned no results')
                     return HEKTable()
 
             page += 1
