@@ -11,7 +11,7 @@ from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 
 from astropy.time import Time
-from astropy import units as u
+import astropy.units as u
 
 __all__ = ['GBMSummaryTimeSeries']
 

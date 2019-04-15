@@ -10,7 +10,7 @@ import matplotlib.dates
 from pandas import DataFrame
 from matplotlib import pyplot as plt
 
-from astropy import units as u
+import astropy.units as u
 from astropy.time import TimeDelta, Time
 
 import sunpy.io

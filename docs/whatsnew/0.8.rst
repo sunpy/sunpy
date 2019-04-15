@@ -91,7 +91,7 @@ The SunPy coordinates package describes locations in physical space, and coordin
 
 Coordinates can be defined very simply::
 
-    >>> from astropy import units as u
+    >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import frames
     >>> a = SkyCoord(200*u.arcsec, 300*u.arcsec, frame=frames.Helioprojective)
