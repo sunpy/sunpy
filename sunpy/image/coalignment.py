@@ -22,7 +22,7 @@ import numpy as np
 from scipy.ndimage.interpolation import shift
 from skimage.feature import match_template
 
-from astropy import units as u
+import astropy.units as u
 
 import sunpy.map
 from sunpy.map.mapbase import GenericMap

@@ -9,7 +9,7 @@ from datetime import datetime
 import pytest
 import os
 
-from astropy import units as u
+import astropy.units as u
 from astropy import conf
 import numpy as np
 
