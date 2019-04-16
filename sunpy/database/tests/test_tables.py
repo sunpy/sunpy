@@ -11,6 +11,8 @@ import os
 
 import astropy.units as u
 from astropy import conf
+from astropy.utils.exceptions import AstropyUserWarning
+
 import numpy as np
 
 from sunpy.database import Database
@@ -257,7 +259,8 @@ def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
 
 
 def test_entries_from_file():
-    entries = list(entries_from_file(MQ_IMAGE))
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        entries = list(entries_from_file(MQ_IMAGE))
     assert len(entries) == 1
     entry = entries[0]
     assert len(entry.fits_header_entries) == 31
@@ -332,8 +335,9 @@ def test_entries_from_file_time_string_parse_format():
 
 
 def test_entries_from_dir():
-    entries = list(entries_from_dir(
-        waveunitdir, time_string_parse_format='%d/%m/%Y'))
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        entries = list(entries_from_dir(
+            waveunitdir, time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 4
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
@@ -404,16 +408,18 @@ def test_entries_from_dir():
 
 
 def test_entries_from_dir_recursively_true():
-    entries = list(entries_from_dir(testdir, True,
-                                    default_waveunit='angstrom',
-                                    time_string_parse_format='%d/%m/%Y'))
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        entries = list(entries_from_dir(testdir, True,
+                                        default_waveunit='angstrom',
+                                        time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 130
 
 
 def test_entries_from_dir_recursively_false():
-    entries = list(entries_from_dir(testdir, False,
-                                    default_waveunit='angstrom',
-                                    time_string_parse_format='%d/%m/%Y'))
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        entries = list(entries_from_dir(testdir, False,
+                                        default_waveunit='angstrom',
+                                        time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 109
 
 
