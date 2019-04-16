@@ -11,7 +11,7 @@ import sunpy.io
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from pandas import DataFrame
-from astropy import units as u
+import astropy.units as u
 import numpy as np
 from datetime import datetime
 from matplotlib import dates

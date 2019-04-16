@@ -13,7 +13,7 @@ __version__ = "June 11th, 2013"
 
 import pytest
 
-from astropy import units as u
+import astropy.units as u
 from astropy import table
 from sunpy.time import parse_time
 from sunpy.net import hek

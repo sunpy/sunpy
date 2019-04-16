@@ -5,7 +5,7 @@ import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift as sp_shift
 
-from astropy import units as u
+import astropy.units as u
 
 import sunpy.data.test
 from sunpy.image.coalignment import (_default_fmap_function, _lower_clip, _upper_clip, apply_shifts,

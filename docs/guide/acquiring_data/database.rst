@@ -710,7 +710,7 @@ raised. This also means that there is no default unit that is
 used by the class. To know how you can specify a detail using astropy
 check `astropy.units`.
 
-    >>> from astropy import units as u
+    >>> import astropy.units as u
     >>> print(display_entries(
     ...     database.search(vso.attrs.Wavelength(1.0*u.nm, 2.0*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end',
