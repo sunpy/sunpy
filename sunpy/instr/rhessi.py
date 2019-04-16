@@ -11,7 +11,7 @@ import csv
 
 import numpy as np
 
-from astropy import units as u
+import astropy.units as u
 from astropy.time import TimeDelta
 from astropy.time import Time
 

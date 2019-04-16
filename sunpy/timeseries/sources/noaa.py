@@ -9,7 +9,7 @@ from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from astropy.time import Time
 from sunpy.util.metadata import MetaDict
 
-from astropy import units as u
+import astropy.units as u
 
 __all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries']
 

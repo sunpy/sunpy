@@ -5,7 +5,7 @@ from itertools import product
 
 import numpy as np
 
-from astropy import units as u
+import astropy.units as u
 from astropy.coordinates import SkyCoord, Longitude
 
 from sunpy.time import parse_time

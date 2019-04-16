@@ -17,7 +17,7 @@ Instrument('aia') & Instrument('eit').
 """
 import collections
 
-from astropy import units as u
+import astropy.units as u
 from astropy.time import Time
 
 from sunpy.time import TimeRange as _TimeRange
