@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-isort:skip_file
+isort:skip_file.
 """
 import platform
 from distutils.version import LooseVersion
@@ -10,11 +9,11 @@ import pytest
 
 import astropy.units as u
 asdf = pytest.importorskip('asdf', '2.0')
-from asdf.tests.helpers import assert_roundtrip_tree
+from asdf.tests.helpers import assert_roundtrip_tree  # noqa
 
-import sunpy.map
-from sunpy.data.test import get_test_filepath
-from sunpy.io.special.asdf.extension import SunpyExtension
+import sunpy.map  # noqa
+from sunpy.data.test import get_test_filepath  # noqa
+from sunpy.io.special.asdf.extension import SunpyExtension  # noqa
 
 
 @pytest.fixture
