@@ -11,6 +11,7 @@ import pytest
 from matplotlib import widgets
 
 from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, base
+from sunpy.tests.helpers import figure_test
 
 
 class FuncAnimatorTest(BaseFuncAnimator):
@@ -119,6 +120,22 @@ def test_edges_to_centers_nd():
     expected[:, edges_axis] = np.arange(10.5, 19)
     output = base.edges_to_centers_nd(axis_range, edges_axis)
     assert np.array_equal(output, expected)
+
+
+@pytest.fixture
+def line_test():
+    np.random.seed(1)
+    data_shape0 = (10, 20)
+    data0 = np.random.rand(*data_shape0)
+    plot_axis0 = 1
+    slider_axis0 = 0
+    xdata = np.tile(np.linspace(0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
+    return LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata])
+
+
+@figure_test
+def test_lineanimator(line_test):
+    plt.show()
 
 
 class ArrayAnimatorTest(ArrayAnimator):
