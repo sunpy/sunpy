@@ -18,6 +18,7 @@ import sunpy.timeseries
 from sunpy.util.metadata import MetaDict
 import sunpy.io
 from sunpy.util.datatype_factory_base import NoMatchError
+from sunpy.util import SunpyUserWarning
 
 import astropy.units as u
 from astropy.table import Table
@@ -88,7 +89,8 @@ class TestTimeSeries(object):
 
     def test_implicit_fermi_gbm(self):
         # Test a GBMSummary TimeSeries
-        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
+        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+            ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_implicit_norh(self):
@@ -137,7 +139,8 @@ class TestTimeSeries(object):
 
     def test_fermi_gbm(self):
         #Test a GBMSummary TimeSeries
-        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
+        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+            ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_norh(self):
@@ -271,7 +274,6 @@ class TestTimeSeries(object):
         assert ts_md == ts_di == ts_od
         assert ts_md.meta.metadata[0][2] == ts_di.meta.metadata[0][2] == ts_od.meta.metadata[0][2]
 
-
     def test_generic_construction_ts_list(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
@@ -283,9 +285,9 @@ class TestTimeSeries(object):
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
-        meta = MetaDict({'key':'value'})
-        meta2 = MetaDict({'key2':'value2'})
+        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
+        meta = MetaDict({'key': 'value'})
+        meta2 = MetaDict({'key2': 'value2'})
 
         # Create TS individually
         ts_1 = sunpy.timeseries.TimeSeries(data, meta, units)
@@ -313,7 +315,7 @@ class TestTimeSeries(object):
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
         meta = MetaDict({'key':'value'})
         meta2 = MetaDict({'key2':'value2'})
 
@@ -362,13 +364,14 @@ class TestTimeSeries(object):
         with pytest.raises(ValueError):
             sunpy.timeseries.TimeSeries((dual_index_table, meta, units))
 
-#==============================================================================
+# ==============================================================================
 # Test some other options
-#==============================================================================
+# ==============================================================================
 
     def test_passed_ts(self):
         # Test an EVE TimeSeries
-        ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
+        with pytest.warns(SunpyUserWarning, match='Unknown units'):
+            ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
         ts_from_ts_1 = sunpy.timeseries.TimeSeries(ts_eve, source='EVE')
         ts_from_ts_2 = sunpy.timeseries.TimeSeries(ts_eve)
         assert ts_eve == ts_from_ts_1 == ts_from_ts_2
