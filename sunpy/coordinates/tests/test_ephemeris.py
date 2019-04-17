@@ -8,7 +8,7 @@ from astropy.time import Time
 from sunpy.coordinates.ephemeris import *
 
 
-def test_get_body_barycentric():
+def test_get_body_heliographic_stonyhurst():
     # Validate against published values from the Astronomical Almanac (2013)
     e1 = get_body_heliographic_stonyhurst('earth', '2013-Jan-01')
     assert_quantity_allclose(e1.lon, 0*u.deg, atol=1e-12*u.deg)
