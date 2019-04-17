@@ -13,6 +13,7 @@ from astropy.coordinates import (SkyCoord, Angle, Longitude,
                                  get_body_barycentric)
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 from astropy._erfa.core import ErfaWarning
+from astropy.constants import c as speed_of_light
 
 from sunpy.time import parse_time
 
@@ -24,7 +25,7 @@ __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
            'get_sun_orientation']
 
 
-def get_body_heliographic_stonyhurst(body, time='now'):
+def get_body_heliographic_stonyhurst(body, time='now', observer=None):
     """
     Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the location of a
     solar-system body at a specified time.
@@ -35,6 +36,9 @@ def get_body_heliographic_stonyhurst(body, time='now'):
         The solar-system body for which to calculate positions
     time : various
         Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+    observer : `~astropy.coordinates.SkyCoord`
+        If not None, the returned coordinate is the apparent location (i.e., factors in light
+        travel time)
 
     Returns
     -------
@@ -43,8 +47,25 @@ def get_body_heliographic_stonyhurst(body, time='now'):
     """
     obstime = parse_time(time)
 
-    body_icrs = ICRS(get_body_barycentric(body, obstime))
-    body_hgs = body_icrs.transform_to(HGS(obstime=obstime))
+    if observer is None:
+        body_icrs = get_body_barycentric(body, obstime)
+    else:
+        observer_icrs = SkyCoord(observer).icrs.cartesian
+
+        # This implementation is modeled after Astropy's `_get_apparent_body_position`
+        light_travel_time = 0.*u.s
+        emitted_time = obstime
+        delta_light_travel_time = 1.*u.s # placeholder value
+        while np.any(np.fabs(delta_light_travel_time) > 1.0e-8*u.s):
+            body_icrs = get_body_barycentric(body, emitted_time)
+            distance = (body_icrs - observer_icrs).norm()
+            delta_light_travel_time = light_travel_time - distance / speed_of_light
+            light_travel_time = distance / speed_of_light
+            emitted_time = obstime - light_travel_time
+
+        print('Apparent location factors in {} seconds of light travel time'.format(light_travel_time.to('s').value))
+
+    body_hgs = ICRS(body_icrs).transform_to(HGS(obstime=obstime))
 
     return body_hgs
 
