@@ -8,5 +8,6 @@ from sunpy.map.mapbase import GenericMap
 from . mapsequence import MapSequence
 from . compositemap import CompositeMap
 
+from sunpy.map.maputils import *
 from sunpy.map.map_factory import Map
 from sunpy.map import sources
