@@ -6,6 +6,8 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import matplotlib.pyplot as plt
 
+from astropy.coordinates import CartesianRepresentation, SkyCoord, HeliocentricTrueEcliptic
+import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize
 from astropy.visualization import AsinhStretch
 
@@ -46,6 +48,43 @@ class AIAMap(GenericMap):
         self._nickname = self.detector
         self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
+
+    @property
+    def observer_coordinate(self):
+        """
+        The Heliographic Stonyhurst Coordinate of the observer.
+        The HAE coordinates in the header are used instead of the HGS coordinates in the header.
+        """
+        vector = CartesianRepresentation(self.meta['haex_obs'],
+                                         self.meta['haey_obs'],
+                                         self.meta['haez_obs'])
+        coord = SkyCoord(vector * u.m, frame=HeliocentricTrueEcliptic, obstime=self.date)
+        return coord.heliographic_stonyhurst
+
+    @property
+    def heliographic_latitude(self):
+        """Heliographic latitude (calculated from HAE coordinates)."""
+        return self.observer_coordinate.lat
+
+    @property
+    def heliographic_longitude(self):
+        """Heliographic longitude (calculated from HAE coordinates)."""
+        return self.observer_coordinate.lon
+
+    @property
+    def carrington_latitude(self):
+        """Carrington latitude (calculated from HAE coordinates)."""
+        return self.observer_coordinate.heliographic_carrington.lat
+
+    @property
+    def carrington_longitude(self):
+        """Carrington longitude (calculated from HAE coordinates)."""
+        return self.observer_coordinate.heliographic_carrington.lon
+
+    @property
+    def dsun(self):
+        """The observer distance from the Sun (calculated from HAE coordinates)."""
+        return self.observer_coordinate.radius.to('m')
 
     @property
     def observatory(self):
