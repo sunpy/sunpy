@@ -342,6 +342,7 @@ class GenericTimeSeries:
             raise TypeError("TimeSeries classes must match if specified.")
 
         # Concatenate the metadata and data
+        kwargs['sort'] = kwargs.pop('sort', False)
         meta = self.meta.concatenate(otherts.meta)
         data = pd.concat([self.data.copy(), otherts.data], **kwargs)
 
