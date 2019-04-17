@@ -268,11 +268,9 @@ and times. Here is a short example: ::
 
     # This returns a astropy.time.Time object. All SunPy functions which require
     # time as an input sanitize the input using parse_time.
-    >>> sunpy.time.day_of_year('2004-Jul-05 12:00:02')
-    187.50002314814816
 
     # the julian day
-    >>> sunpy.time.julian_day((2010,4,30))
+    >>> sunpy.time.parse_time((2010,4,30)).jd
     2455316.5
 
     # TimeRange objects are useful for representing ranges of time
