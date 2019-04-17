@@ -17,7 +17,7 @@ __all__ = ['TimeRange']
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-class TimeRange(object):
+class TimeRange:
     """
     A class to create and handle time ranges.
 
