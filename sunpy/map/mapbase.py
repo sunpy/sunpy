@@ -1738,8 +1738,7 @@ class GenericMap(NDData):
             ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_args)
 
         if wcsaxes_compat.is_wcsaxes(axes):
-            wcsaxes_compat.default_wcs_grid(axes, units=self.spatial_units,
-                                            ctypes=self.wcs.wcs.ctype)
+            wcsaxes_compat.default_wcs_grid(axes)
 
         # Set current image (makes colorbar work)
         plt.sca(axes)

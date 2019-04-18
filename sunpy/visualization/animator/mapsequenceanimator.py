@@ -80,10 +80,6 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
 
         if wcsaxes_compat.is_wcsaxes(im.axes):
             im.axes.reset_wcs(self.mapsequence[i].wcs)
-            wcsaxes_compat.default_wcs_ticks(im.axes,
-                                             self.mapsequence[i].spatial_units,
-                                             self.mapsequence[i].coordinate_system)
-
         # Having this line in means the plot will resize for non-homogenous
         # maps. However it also means that if you zoom in on the plot bad
         # things happen.

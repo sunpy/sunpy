@@ -11,7 +11,7 @@ from astropy.visualization import wcsaxes
 _FORCE_NO_WCSAXES = False
 
 __all__ = ["is_wcsaxes", "gca_wcs", "get_world_transform",
-           "wcsaxes_heliographic_overlay"]
+           "default_wcs_grid", "wcsaxes_heliographic_overlay"]
 
 
 def is_wcsaxes(axes):
