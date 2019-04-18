@@ -3,8 +3,5 @@ Holds utility map function which do not belong in map objects
 """
 
 
-__all__ = ['test_function']
+__all__ = []
 
-
-def test_function(map):
-    return map.name
