@@ -130,12 +130,13 @@ def line_test():
     plot_axis0 = 1
     slider_axis0 = 0
     xdata = np.tile(np.linspace(0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
-    return LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata])
+    fig = plt.figure()
+    return LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata], fig=fig)
 
 
 @figure_test
 def test_lineanimator(line_test):
-    plt.show()
+    LineAnimator.plot_start_image(ax=fig.gca())
 
 
 class ArrayAnimatorTest(ArrayAnimator):
