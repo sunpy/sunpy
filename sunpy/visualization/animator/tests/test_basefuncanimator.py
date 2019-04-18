@@ -136,7 +136,7 @@ def line_test():
 
 @figure_test
 def test_lineanimator(line_test):
-    LineAnimator.plot_start_image(ax=fig.gca())
+    line_test.plot_start_image(ax=line_test.fig.gca())
 
 
 class ArrayAnimatorTest(ArrayAnimator):
