@@ -41,7 +41,7 @@ r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 mask = ma.masked_less_equal(r, 1)
 palette = aia.plot_settings['cmap']
 palette.set_bad('black')
-norm=mpl.colors.Normalize(vmin=-3000,vmax=4000)
+norm = mpl.colors.Normalize(vmin=-3000,vmax=4000)
 ###############################################################################
 # Now we create a new custom aia with our new mask and
 # plot the result using our modified colormap
@@ -50,6 +50,6 @@ scaled_map = sunpy.map.Map(aia.data, aia.meta, mask=mask.mask)
 
 fig = plt.figure()
 plt.subplot(projection=scaled_map)
-scaled_map.plot(cmap=palette,norm=norm)
+scaled_map.plot(cmap=palette, norm=norm)
 scaled_map.draw_limb()
 plt.show()
