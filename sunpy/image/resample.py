@@ -128,7 +128,7 @@ def _resample_neighbor(orig, dimensions, offset, m1):
                        (base + offset) - offset)
     cd = np.array(dimlist).round().astype(int)
 
-    return orig[list(cd)]
+    return orig[tuple(list(cd))]
 
 
 def _resample_spline(orig, dimensions, offset, m1):
@@ -138,7 +138,7 @@ def _resample_spline(orig, dimensions, offset, m1):
     nslices = [slice(0, j) for j in list(dimensions)]
     newcoords = np.mgrid[nslices]
 
-    newcoords_dims = list(range(np.rank(newcoords)))
+    newcoords_dims = list(range(newcoords.ndim))
 
     # make first index last
     newcoords_dims.append(newcoords_dims.pop(0))
