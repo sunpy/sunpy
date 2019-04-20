@@ -440,6 +440,21 @@ def test_add_entry_from_hek_qr(database):
     # *something*
     assert len(database) > 1
 
+@pytest.mark.remote_data
+def test_download_from_hek_query_result(database, hek_qr, tmpdir):
+    assert len(database) == 0
+    database.download_from_hek_query_result(
+        hek_qr, path=str(tmpdir.join('{file}.fits')))
+    fits_pattern = str(tmpdir.join('*.fits'))
+    num_of_fits_headers = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+    assert len(database) == num_of_fits_headers > 0
+    for entry in database:
+        assert os.path.dirname(entry.path) == str(tmpdir)
+    database.undo()
+    assert len(database) == 0
+    database.redo()
+    assert len(database) == num_of_fits_headers > 0
 
 def num_entries_from_vso_query(db, query, path=None, file_pattern='',
                                overwrite=False):
