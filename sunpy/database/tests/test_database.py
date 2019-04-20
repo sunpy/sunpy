@@ -451,10 +451,6 @@ def test_download_from_hek_query_result(database, hek_qr, tmpdir):
     assert len(database) == num_of_fits_headers > 0
     for entry in database:
         assert os.path.dirname(entry.path) == str(tmpdir)
-    database.undo()
-    assert len(database) == 0
-    database.redo()
-    assert len(database) == num_of_fits_headers > 0
 
 def num_entries_from_vso_query(db, query, path=None, file_pattern='',
                                overwrite=False):
