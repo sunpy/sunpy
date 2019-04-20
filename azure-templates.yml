@@ -31,7 +31,7 @@ jobs:
     - script: pip install --upgrade tox-conda
       displayName: install tox-conda
 
-  - script: tox -e ${{ parameters.tox }} --junitxml=junit/test-results.xml --cov-report=xml --cov-report=html
+  - script: tox -e ${{ parameters.tox }} -vvv --junitxml=junit/test-results.xml --cov-report=xml --cov-report=html
     displayName: run tox
 
   - script: |
