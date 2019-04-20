@@ -819,23 +819,21 @@ class Database(object):
         self.add_many(self._download_and_collect_entries(
             query_result, client=client, path=path, progress=progress, overwrite=overwrite))
 
-    def download_from_hek_query_result(self,query_result, path=None, progress=False):
-        """download_from_hek_query_result(query_result,path=None, progress=False)
+    def download_from_hek_query_result(self,query_result, path=None,
+                                       progress=False):
+        """Download_from_hek_query_result(query_result,path=None, progress=False)
+        Add new database entries from a HEK query by translating it into a VSO query
+        and invoking the [download_from_vso_query_result] method.
 
-                Add new database entries from a HEK query by translating it into a VSO query
-                and invoking the [download_from_vso_query_result] method.
-
-                Parameters
-                ----------
-                query_result : sunpy.net.vso.QueryResponse
-                    A VSO query response that was returned by the ``query`` method of a
-                    :class:`sunpy.net.vso.VSOClient` object.
-                path , progress
-                """
-        # step 1 - translate HEK qr to VSO qr
+        Parameters
+        ----------
+        query_result : sunpy.net.vso.QueryResponse
+            A VSO query response that was returned by the ``query`` method of a
+            :class:`sunpy.net.vso.VSOClient` object.
+        path , progress
+        """
         translated_query = itertools.chain.from_iterable(
             H2VClient().translate_and_query(query_result))
-        # step 2 - pass translated query , path and progress to download_from_vso_query_result
         self.download_from_vso_query_result(translated_query,path=path,progress=progress)
 
 
