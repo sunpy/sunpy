@@ -7,6 +7,7 @@ This example shows how to mask off emission from the disk.
 """
 import numpy as np
 import numpy.ma as ma
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 import astropy.units as u
@@ -41,7 +42,7 @@ r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 mask = ma.masked_less_equal(r, 1)
 palette = aia.plot_settings['cmap']
 palette.set_bad('black')
-norm = mpl.colors.Normalize(vmin=-3000, vmax=4000)
+norm = mpl.colors.Normalize(vmin=-1000, vmax=3000)
 ###############################################################################
 # Now we create a new custom aia with our new mask and
 # plot the result using our modified colormap
