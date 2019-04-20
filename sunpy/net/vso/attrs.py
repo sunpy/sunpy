@@ -18,7 +18,6 @@ Instrument('aia') & Instrument('eit').
 import collections
 
 import astropy.units as u
-from astropy.time import Time
 
 from sunpy.time import TimeRange as _TimeRange
 from sunpy.net.attr import (Attr, AttrWalker, AttrAnd,
@@ -86,7 +85,7 @@ class Wavelength(Attr, _Range):
         units is valid input.
         """
 
-        if not wavemax:
+        if wavemax is None:
             wavemax = wavemin
 
         if not all(isinstance(var, u.Quantity) for var in [wavemin, wavemax]):
