@@ -42,6 +42,9 @@ r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 mask = ma.masked_less_equal(r, 1)
 palette = aia.plot_settings['cmap']
 palette.set_bad('black')
+
+###############################################################################
+# Now we normalize our image to brighten edges 
 norm = mpl.colors.Normalize(vmin=-1000, vmax=3000)
 ###############################################################################
 # Now we create a new custom aia with our new mask and
