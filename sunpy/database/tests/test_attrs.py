@@ -6,7 +6,7 @@
 from datetime import datetime
 
 import pytest
-from astropy import units as u
+import astropy.units as u
 
 from sunpy.database.database import Database
 from sunpy.database import tables

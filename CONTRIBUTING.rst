@@ -78,9 +78,11 @@ Generally the more people that can look over a pull request the better it will t
 Code
 ----
 
-If you would prefer to code instead, we have several repositories you can investigate.
+If you would prefer to code instead, the best way to start is to work on an exisiting and known `issues`_.
+We have several repositories you can investigate.
 The main one is the SunPy repository with where all the known `issues`_ with SunPy are detailed.
-Each issue should have a series of labels that provide information about nature of the issue.
+Each issue should have a series of labels that provide information about the nature of the issue.
+If you find an issue you'd like to work on, please make sure to add a comment to let people know that you are working on it! This will make it less likely that effort is duplicated.
 
 If you are unsure where to start we suggest the `Package Novice label`_.
 These are issues that have been deemed a good way to be eased into SunPy and are achievable with little understanding of the SunPy codebase.
@@ -88,7 +90,7 @@ Please be aware that this does not mean the issue is "easy", just that you do no
 
 We also tag issues for specific events such as  `Hacktoberfest`_ under the `Hacktoberfest label`_.
 The scope of the issues should be appropriate for that specific event.
-We do particpate in several other events but right now we do not have decidated labels.
+We do particpate in several other events but right now we do not have dedicated labels.
 So please use the above labels for starting issues!
 
 In addition, we have several other repositories that have open issues and you might find these more interesting than the main repository.
@@ -112,14 +114,19 @@ CSS/HTML:
 .. _Hacktoberfest: https://hacktoberfest.digitalocean.com/
 .. _Hacktoberfest label: https://github.com/sunpy/sunpy/issues?q=is%3Aissue+is%3Aopen+label%3AHacktoberfest
 
+If you already have code that you've developed or already have your own idea of code you'd like to work on please first have a look at the issue list to see if any existing issues are related to your idea.
+If you find nothing then create your own issue to stimulate the addition of your code and make sure to let people know about it chat room or by email.
+Creating an issue creates a permanent record.
+It may be possible your idea may be outside of the scope of the repository you are trying to contribute to and the issue comments are a great place to have that discussion where potential future contributors can also see.
+
 Setting up a development environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The instructions in this following section are based upon three resources:
 
-* `Astropy Dev Workflow <http://docs.astropy.org/en/latest/development/workflow/development_workflow.html>`_
-* `Astropy Dev environment <http://docs.astropy.org/en/latest/development/workflow/get_devel_version.html#get-devel>`_
-* `Astropy Pull Request Example <http://docs.astropy.org/en/latest/development/workflow/git_edit_workflow_examples.html#astropy-fix-example>`_
+* `Astropy Dev Workflow <https://docs.astropy.org/en/latest/development/workflow/development_workflow.html>`_
+* `Astropy Dev environment <https://docs.astropy.org/en/latest/development/workflow/get_devel_version.html#get-devel>`_
+* `Astropy Pull Request Example <https://docs.astropy.org/en/latest/development/workflow/git_edit_workflow_examples.html#astropy-fix-example>`_
 
 **We strongly recommend that you read these links.**
 These links are more in-depth than this guide but you will need to replace ``astropy`` with ``sunpy``.

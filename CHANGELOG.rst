@@ -643,7 +643,7 @@ Bug fixes
 -  Add support for ANA data.
 -  Updated sun.constants to use astropy.constants objects which include
    units, source, and error instide. For more info check out
-   http://docs.astropy.org/en/latest/constants/index.html
+   https://docs.astropy.org/en/latest/constants/index.html
 -  Add some beta support for IRIS data products
 -  Add a new MapCubeAnimator class with interactive widgets which is
    returned by mapcube.peek().

@@ -1,14 +1,15 @@
-# Author: David PS <dps.helio -?- gmail.com>
-
 # TODO: REMOVE UNITTEST
 import unittest
-from sunpy.roi.chaincode import Chaincode
+
 import numpy as np
+
+from sunpy.roi.chaincode import Chaincode
+
 
 class CCTests(unittest.TestCase):
 
     def testEnds(self):
-        cc = Chaincode([0, 0], "2460") # Can I test more than one path? How?
+        cc = Chaincode([0, 0], "2460")  # Can I test more than one path? How?
         end = [0, 0]
         self.assertTrue(cc.matchend(end))
 

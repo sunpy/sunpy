@@ -1,11 +1,12 @@
-"""SunPy configuration file functionality"""
+"""
+This module provides SunPy's configuration file functionality.
+"""
 import os
 import configparser
 from pathlib import Path
 
 import sunpy
 from sunpy.extern.appdirs import AppDirs
-
 
 __all__ = ['load_config', 'print_config', 'CONFIG_DIR']
 
@@ -18,8 +19,10 @@ CONFIG_DIR = dirs.user_config_dir
 
 def load_config():
     """
-    Read the sunpyrc configuration file. If one does not exists in the user's
-    home directory then read in the defaults from module
+    Read the "sunpyrc" configuration file.
+
+    If one does not exists in the user's home directory then read in the
+    defaults from "sunpy/data/sunpyrc".
     """
     config = configparser.RawConfigParser()
 
@@ -39,17 +42,20 @@ def load_config():
     if not config.has_option('database', 'url'):
         config.set('database', 'url', "sqlite:///" + str(Path.home() / "sunpy" / "sunpydb.sqlite"))
 
+    # Set the download_dir to be relative to the working_dir
     working_dir = Path(config.get('general', 'working_dir'))
-    sample_dir = Path(config.get('downloads', 'sample_dir'))
     download_dir = Path(config.get('downloads', 'download_dir'))
-    config.set('downloads', 'sample_dir', str((working_dir / sample_dir).expanduser().resolve()))
-    config.set('downloads', 'download_dir', str((working_dir / download_dir).expanduser().resolve()))
+    sample_dir = config.get('downloads', 'sample_dir', fallback=dirs.user_data_dir)
+    config.set('downloads', 'sample_dir', Path(sample_dir).expanduser().resolve().as_posix())
+    config.set('downloads', 'download_dir', (working_dir / download_dir).expanduser().resolve().as_posix())
 
     return config
 
 
 def _find_config_files():
-    """Finds locations of SunPy configuration files"""
+    """
+    Finds locations of SunPy configuration files.
+    """
     config_files = []
     config_filename = 'sunpyrc'
 
@@ -71,6 +77,10 @@ def get_and_create_download_dir():
     """
     Get the config of download directory and create one if not present.
     """
+    download_dir = os.environ.get('SUNPY_DOWNLOADDIR')
+    if download_dir:
+        return download_dir
+
     download_dir = Path(sunpy.config.get('downloads', 'download_dir')).expanduser().resolve()
     if not _is_writable_dir(download_dir):
         raise RuntimeError(f'Could not write to SunPy downloads directory="{download_dir}"')
@@ -90,7 +100,9 @@ def get_and_create_sample_dir():
 
 
 def print_config():
-    """Print current configuration options"""
+    """
+    Print current configuration options.
+    """
     print("FILES USED:")
     for file_ in _find_config_files():
         print("  " + file_)
@@ -104,7 +116,9 @@ def print_config():
 
 
 def _is_writable_dir(p):
-    """Checks to see if a directory exists and is writable."""
+    """
+    Checks to see if a directory is writable.
+    """
     if not Path(p).exists():
         Path(p).mkdir(parents=True)
     return Path(p).is_dir() and os.access(p, os.W_OK)
@@ -115,8 +129,8 @@ def _get_user_configdir():
     Return the string representing the configuration dir.
 
     The default is set by "AppDirs" and can be accessed by importing
-    ``sunpy.util.config.CONFIG_DIR``.
-    You can override this with the "SUNPY_CONFIGDIR" environment variable.
+    ``sunpy.util.config.CONFIG_DIR``. You can override this with the
+    "SUNPY_CONFIGDIR" environment variable.
     """
     configdir = os.environ.get('SUNPY_CONFIGDIR', CONFIG_DIR)
 

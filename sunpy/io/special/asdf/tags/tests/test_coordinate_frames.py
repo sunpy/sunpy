@@ -5,12 +5,12 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-asdf = pytest.importorskip('asdf', '2.0.2')
 from asdf.tests.helpers import assert_roundtrip_tree
 
-from sunpy.coordinates.frames import (Heliocentric, Helioprojective,
-                                      HeliographicCarrington,
-                                      HeliographicStonyhurst)
+from sunpy.coordinates.frames import (Heliocentric, HeliographicCarrington,
+                                      HeliographicStonyhurst, Helioprojective)
+
+asdf = pytest.importorskip('asdf', '2.0.2')
 
 
 @pytest.fixture(

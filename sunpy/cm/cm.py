@@ -3,13 +3,13 @@ This module provides a set of colormaps specific for solar data.
 """
 from copy import deepcopy
 
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.cm as mplcm
+import matplotlib.pyplot as plt
+import numpy as np
 
 from sunpy.cm import color_tables as ct
 
-__all__ = [ 'show_colormaps', 'cmlist']
+__all__ = ['show_colormaps', 'cmlist']
 
 sdoaia94 = ct.aia_color_table(94)
 sdoaia131 = ct.aia_color_table(131)
@@ -67,52 +67,52 @@ kcor = deepcopy(mplcm.get_cmap("gist_gray"))
 kcor.name = 'MLSO KCor'
 
 cmlist = {
-          'sdoaia94': sdoaia94,
-          'sdoaia131': sdoaia131,
-          'sdoaia171': sdoaia171,
-          'sdoaia193': sdoaia193,
-          'sdoaia211': sdoaia211,
-          'sdoaia304': sdoaia304,
-          'sdoaia335': sdoaia335,
-          'sdoaia1600': sdoaia1600,
-          'sdoaia1700': sdoaia1700,
-          'sdoaia4500': sdoaia4500,
-          'sohoeit171': sohoeit171,
-          'sohoeit195': sohoeit195,
-          'sohoeit284': sohoeit284,
-          'sohoeit304': sohoeit304,
-          'soholasco2': soholasco2,
-          'soholasco3': soholasco3,
-          'sswidlsoholasco2': sswidlsoholasco2,
-          'sswidlsoholasco3': sswidlsoholasco3,
-          'stereocor1': stereocor1,
-          'stereocor2': stereocor2,
-          'stereohi1': stereohi1,
-          'stereohi2': stereohi2,
-          'rhessi': mplcm.jet,
-          'yohkohsxtal': yohkohsxtal,
-          'yohkohsxtwh': yohkohsxtwh,
-          'hinodexrt': hinodexrt,
-          'hinodesotintensity': hinodesotintensity,
-          'trace171': trace171,
-          'trace195': trace195,
-          'trace284': trace284,
-          'trace1216': trace1216,
-          'trace1550': trace1550,
-          'trace1600': trace1600,
-          'trace1700': trace1700,
-          'traceWL': traceWL,
-          'hmimag': hmimag,
-          'irissji1330': ct.iris_sji_color_table('1330'),
-          'irissji1400': ct.iris_sji_color_table('1400'),
-          'irissji1600': ct.iris_sji_color_table('1600'),
-          'irissji2796': ct.iris_sji_color_table('2796'),
-          'irissji2832': ct.iris_sji_color_table('2832'),
-          'irissji5000': ct.iris_sji_color_table('5000'),
-          'irissjiFUV': ct.iris_sji_color_table('FUV'),
-          'irissjiNUV': ct.iris_sji_color_table('NUV'),
-          'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
-          'kcor': kcor
+    'sdoaia94': sdoaia94,
+    'sdoaia131': sdoaia131,
+    'sdoaia171': sdoaia171,
+    'sdoaia193': sdoaia193,
+    'sdoaia211': sdoaia211,
+    'sdoaia304': sdoaia304,
+    'sdoaia335': sdoaia335,
+    'sdoaia1600': sdoaia1600,
+    'sdoaia1700': sdoaia1700,
+    'sdoaia4500': sdoaia4500,
+    'sohoeit171': sohoeit171,
+    'sohoeit195': sohoeit195,
+    'sohoeit284': sohoeit284,
+    'sohoeit304': sohoeit304,
+    'soholasco2': soholasco2,
+    'soholasco3': soholasco3,
+    'sswidlsoholasco2': sswidlsoholasco2,
+    'sswidlsoholasco3': sswidlsoholasco3,
+    'stereocor1': stereocor1,
+    'stereocor2': stereocor2,
+    'stereohi1': stereohi1,
+    'stereohi2': stereohi2,
+    'rhessi': mplcm.jet,
+    'yohkohsxtal': yohkohsxtal,
+    'yohkohsxtwh': yohkohsxtwh,
+    'hinodexrt': hinodexrt,
+    'hinodesotintensity': hinodesotintensity,
+    'trace171': trace171,
+    'trace195': trace195,
+    'trace284': trace284,
+    'trace1216': trace1216,
+    'trace1550': trace1550,
+    'trace1600': trace1600,
+    'trace1700': trace1700,
+    'traceWL': traceWL,
+    'hmimag': hmimag,
+    'irissji1330': ct.iris_sji_color_table('1330'),
+    'irissji1400': ct.iris_sji_color_table('1400'),
+    'irissji1600': ct.iris_sji_color_table('1600'),
+    'irissji2796': ct.iris_sji_color_table('2796'),
+    'irissji2832': ct.iris_sji_color_table('2832'),
+    'irissji5000': ct.iris_sji_color_table('5000'),
+    'irissjiFUV': ct.iris_sji_color_table('FUV'),
+    'irissjiNUV': ct.iris_sji_color_table('NUV'),
+    'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
+    'kcor': kcor
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
@@ -121,7 +121,8 @@ for name, cmap in cmlist.items():
 
 
 def show_colormaps(search=None):
-    """Displays a plot of the custom color maps supported in SunPy.
+    """
+    Displays a plot of the custom color maps supported in SunPy.
 
     Parameters
     ----------
@@ -142,7 +143,6 @@ def show_colormaps(search=None):
 
     References
     ----------
-
     """
 
     if search is not None:
@@ -154,7 +154,7 @@ def show_colormaps(search=None):
 
     nmaps = len(maps) + 1
 
-    a = np.linspace(0, 1, 256).reshape(1, -1)  # pylint: disable=E1103
+    a = np.linspace(0, 1, 256).reshape(1, -1)
     a = np.vstack((a, a))
 
     fig = plt.figure(figsize=(7, 10), dpi=128)
@@ -164,6 +164,5 @@ def show_colormaps(search=None):
         plt.axis("off")
         plt.imshow(a, aspect='auto', cmap=name, origin='lower')
         pos = list(ax.get_position().bounds)
-        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
-                 horizontalalignment='right')
+        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10, horizontalalignment='right')
     plt.show()

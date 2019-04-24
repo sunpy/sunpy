@@ -117,6 +117,21 @@ def test_hek_client():
 
 
 @pytest.mark.remote_data
+def test_hek_empty_search_result():
+    startTime = '1985-05-04 00:00:00'
+    endTime = '1985-05-04 00:00:00'
+    eventType = 'FL'
+
+    hekTime = hek.attrs.Time(startTime, endTime)
+    hekEvent = hek.attrs.EventType(eventType)
+
+    h = hek.HEKClient()
+    hek_query = h.search(hekTime, hekEvent)
+    assert type(hek_query) == sunpy.net.hek.hek.HEKTable
+    assert len(hek_query) == 0
+
+
+@pytest.mark.remote_data
 def test_getitem(hek_client_creator):
     hc = hek_client_creator
     assert hc.__getitem__(0) == hc[0]

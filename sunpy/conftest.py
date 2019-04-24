@@ -3,6 +3,7 @@ import json
 import pathlib
 import warnings
 import importlib
+import tempfile
 
 import pytest
 
@@ -56,6 +57,28 @@ def undo_config_dir_patch():
     os.environ["SUNPY_CONFIGDIR"] = oridir
 
 
+@pytest.fixture(scope='session', autouse=True)
+def tmp_dl_dir(request):
+    """
+    Globally set the default download directory for the test run to a tmp dir.
+    """
+    with tempfile.TemporaryDirectory() as tmpdir:
+        os.environ["SUNPY_DOWNLOADDIR"] = tmpdir
+        yield tmpdir
+        del os.environ["SUNPY_DOWNLOADDIR"]
+
+
+@pytest.fixture()
+def undo_download_dir_patch():
+    """
+    Provide a way for certain tests to not have tmp download dir.
+    """
+    oridir = os.environ["SUNPY_DOWNLOADDIR"]
+    del os.environ["SUNPY_DOWNLOADDIR"]
+    yield
+    os.environ["SUNPY_DOWNLOADDIR"] = oridir
+
+
 def pytest_runtest_setup(item):
     """
     pytest hook to skip all tests that have the mark 'remotedata' if the
@@ -89,8 +112,8 @@ def pytest_unconfigure(config):
         generate_figure_webpage(new_hash_library)
         turn_off_internet()
 
-        print('All images from image tests can be found in {0}'.format(figure_base_dir))
-        print("The corresponding hash library is {0}".format(hashfile))
+        print('All images from image tests can be found in {0}'.format(figure_base_dir.resolve()))
+        print("The corresponding hash library is {0}".format(hashfile.resolve()))
 
 
 def pytest_sessionstart(session):

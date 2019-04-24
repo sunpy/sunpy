@@ -5,7 +5,7 @@ from itertools import product
 
 import numpy as np
 
-from astropy import units as u
+import astropy.units as u
 from astropy.coordinates import SkyCoord, Longitude
 
 from sunpy.time import parse_time
@@ -140,7 +140,7 @@ def solar_rotate_coordinate(coordinate,
     >>> end_time = '2010-09-10 13:34:56'
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=frames.Helioprojective)
     >>> solar_rotate_coordinate(c, end_time)
-    <SkyCoord (Helioprojective: obstime=2010-09-10T13:34:56.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+    <SkyCoord (Helioprojective: obstime=2010-09-10T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (-562.37689548, 119.26840368, 1.50083152e+08)>
 
     """
@@ -186,7 +186,7 @@ def _warp_sun_coordinates(xy, smap, dt: u.s, **diffrot_kwargs):
 
     Returns
     -------
-    xy2 : `~numpy.ndarray`
+    xy2 : `numpy.ndarray`
         Array with the inverse transformation
     """
     # NOTE: The time is being subtracted - this is because this function
@@ -262,7 +262,7 @@ def diffrot_map(smap, time=None, dt: u.s=None, pad=False, **diffrot_kwargs):
 
     if (time is not None) and (dt is not None):
         raise ValueError('Only a time or an interval is accepted')
-    elif not (time or dt):
+    elif (time is None) and (dt is None):
         raise ValueError('Either a time or an interval (`dt=`) needs to be provided')
     elif time:
         new_time = parse_time(time)

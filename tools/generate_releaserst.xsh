@@ -186,7 +186,10 @@ if author_sort not in ("alphabet", "numeric"):
 
 
 # Parse Git trickery.
-current_log = $(git shortlog -ns --no-merges @(prev_tag+"..HEAD"))
+flags = "-s"
+# Sort numerically if the option is specified
+flags = flags + "n" if author_sort == "numeric" else flags
+current_log = $(git shortlog @(flags) --no-merges @(prev_tag+"..HEAD"))
 
 # Get all the authors for all releases up to the previous release
 prev = {a.split('\t')[1] for a in $(git shortlog -ns --no-merges @($(git rev-list --max-parents=0 HEAD).split("\n")[0]+".."+prev_tag)).split('\n')[:-1]}
@@ -215,16 +218,13 @@ for i, line in enumerate(lines):
         outl += '  *'
     shortlog.append(outl)
 
-if author_sort == "alphabet":
-    shortlog.sort()
-
 shortlog = list(map(lambda x: '    ' + x, shortlog))
 
 # Get PR info
 
 pkgdt = get_datetime_of_pypi_version(args['--project-name'], prev_version)
 
-mkdir .github_cache
+mkdir -p .github_cache
 icache = '.github_cache/issues.json'
 prcache = '.github_cache/prs.json'
 

@@ -173,7 +173,7 @@ class GenericTimeSeries:
         colname : `str`
             The heading of the column you want output.
 
-        quantity : `~astropy.units.quantity.Quantity` or `~numpy.ndarray`
+        quantity : `~astropy.units.quantity.Quantity` or `numpy.ndarray`
             The values to be placed within the column.
             If updating values only then a numpy array is permitted.
 
@@ -342,6 +342,7 @@ class GenericTimeSeries:
             raise TypeError("TimeSeries classes must match if specified.")
 
         # Concatenate the metadata and data
+        kwargs['sort'] = kwargs.pop('sort', False)
         meta = self.meta.concatenate(otherts.meta)
         data = pd.concat([self.data.copy(), otherts.data], **kwargs)
 
@@ -552,7 +553,7 @@ class GenericTimeSeries:
         """
         return self.data
 
-    def to_array(self, **kwargs):
+    def to_array(self, columns=None):
         """
         Return a numpy array of the give TimeSeries object.
 
@@ -562,16 +563,16 @@ class GenericTimeSeries:
             If None, return all columns minus the index, otherwise, returns
             specified columns.
 
-        kwargs :
-            All keyword arguments are handed to the `as_matix` method of the DataFrame.
-
         Returns
         -------
-        values : `~numpy.ndarray`
+        values : `numpy.ndarray`
             If the caller is heterogeneous and contains booleans or objects,
             the result will be of dtype=object. See Notes.
         """
-        return self.data.as_matrix(**kwargs)
+        if columns:
+            return self.data.values[columns]
+        else:
+            return self.data.values
 
     def __eq__(self, other):
         """

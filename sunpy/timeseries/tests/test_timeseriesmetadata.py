@@ -10,6 +10,7 @@ import copy
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.time import TimeRange
 from sunpy.util.metadata import MetaDict
+from sunpy.util import SunpyUserWarning
 from collections import OrderedDict
 
 import pytest
@@ -27,6 +28,7 @@ def basic_1_md():
     lis = [ ( tr, colnames, metadict ) ]
     return TimeSeriesMetaData(lis)
 
+
 @pytest.fixture
 def basic_2_md():
     tr = TimeRange('2010-01-02 13:59:57.468999', '2010-01-03 13:59:56.091999')
@@ -35,6 +37,7 @@ def basic_2_md():
     lis = [ ( tr, colnames, metadict ) ]
     return TimeSeriesMetaData(lis)
 
+
 @pytest.fixture
 def basic_3_md():
     tr = TimeRange('2010-01-03 13:59:57.468999', '2010-01-03 13:59:56.091999')
@@ -42,6 +45,7 @@ def basic_3_md():
     metadict = MetaDict(OrderedDict([('md3_key1', 'value1'), ('md3_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_3')]))
     lis = [ ( tr, colnames, metadict ) ]
     return TimeSeriesMetaData(lis)
+
 
 @pytest.fixture
 def basic_4_md():
@@ -60,26 +64,28 @@ def overlap_and_interleave_with_basic_1_md():
     lis = [ ( tr, colnames, metadict ) ]
     return TimeSeriesMetaData(lis)
 
-#==============================================================================
-# Test Creating TimeSeriesMetaData With Limited Input
-#==============================================================================
 
+# ==============================================================================
+# Test Creating TimeSeriesMetaData With Limited Input
+# ==============================================================================
 def test_create_mithout_metadata():
     tr = TimeRange('2010-01-01 13:59:57.468999', '2010-01-02 13:59:56.091999')
-    colnames = [ 'column1', 'column2' ]
+    colnames = ['column1', 'column2']
     tsmd_1 = TimeSeriesMetaData(timerange=tr, colnames=colnames)
     assert isinstance(tsmd_1, TimeSeriesMetaData)
     assert tsmd_1.metadata[0][1] == colnames
-    tsmd_2 = TimeSeriesMetaData(timerange=tr)
+    with pytest.warns(SunpyUserWarning, match='No time range given for metadata'):
+        tsmd_2 = TimeSeriesMetaData(timerange=tr)
     assert isinstance(tsmd_1, TimeSeriesMetaData)
     assert tsmd_2.metadata[0][1] == []
     assert tsmd_1.metadata[0][0] == tsmd_2.metadata[0][0] == tr
     assert tsmd_1.metadata[0][2] == tsmd_2.metadata[0][2] == MetaDict()
     assert len(tsmd_1.metadata) == len(tsmd_2.metadata) == 1
 
+
 def test_create_mithout_metadata_or_timerange():
     # without a timerange we should get errors
-    colnames = [ 'column1', 'column2' ]
+    colnames = ['column1', 'column2']
     with pytest.raises(ValueError):
         TimeSeriesMetaData(colnames=colnames)
     with pytest.raises(ValueError):
@@ -424,10 +430,13 @@ def test_remove_columns(complex_append_md):
     assert cols_removed_md.metadata[0][1] == cols_removed_md.metadata[2][1] == cols_removed_md.metadata[3][1] == [complex_append_md.metadata[0][1][1]]
     assert cols_removed_md.metadata[1][1] == [complex_append_md.metadata[1][1][0]]
 
+
 def test_validate_meta_good(complex_append_md):
     assert complex_append_md._validate_meta(complex_append_md)
+
 
 def test_validate_meta_interleaved(basic_1_md, overlap_and_interleave_with_basic_1_md):
     concatenated = copy.deepcopy(basic_1_md)
     concatenated = concatenated.concatenate(overlap_and_interleave_with_basic_1_md)
-    assert concatenated._validate_meta(concatenated)
+    with pytest.warns(SunpyUserWarning, match='Metadata entries 0 and 1 contain interleaved data.'):
+        assert concatenated._validate_meta(concatenated)

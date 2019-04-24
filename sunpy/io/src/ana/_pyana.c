@@ -194,7 +194,7 @@ static PyObject *pyana_fzread(PyObject *self, PyObject *args) {
 	// NB: Use 'N' for PyArrayObject s, because when using 'O' it will create
 	// another reference count such that the memory will never be deallocated.
 	// See:
-	// http://www.mail-archive.com/numpy-discussion@scipy.org/msg13354.html
+	// https://www.mail-archive.com/numpy-discussion@scipy.org/msg13354.html
 	// ([Numpy-discussion] numpy CAPI questions)
 	return Py_BuildValue("{s:N,s:{s:i,s:(ii),s:s}}",
 		"data", anadata,
