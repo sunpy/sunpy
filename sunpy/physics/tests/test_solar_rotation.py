@@ -43,15 +43,15 @@ def aia171_test_mapsequence(aia171_test_submap):
 # Known displacements for these mapsequence layers when the layer index is set to 0
 @pytest.fixture
 def known_displacements_layer_index0():
-    return {'x': np.asarray([-0.089361,  -9.872888, -19.677882]),
-            'y': np.asarray([-0.113397,  0.137566,  0.376327])}
+    return {'x': np.asarray([-0.08936103, -9.17561247, -18.28045652]),
+            'y': np.asarray([-0.11339651,  0.12010122, 0.3430753])}
 
 
 # Known displacements for these mapsequence layers when the layer index is set to 1
 @pytest.fixture
 def known_displacements_layer_index1():
-    return {'x': np.asarray([9.671631, -0.089361, -9.872888]),
-            'y': np.asarray([-0.376532, -0.113397,  0.137566])}
+    return {'x': np.asarray([8.97745012, -0.08936103, -9.17562044]),
+            'y': np.asarray([-0.35739578, -0.11339651, 0.12010142])}
 
 
 def test_calculate_solar_rotate_shift(aia171_test_mapsequence, known_displacements_layer_index0, known_displacements_layer_index1):
@@ -62,8 +62,6 @@ def test_calculate_solar_rotate_shift(aia171_test_mapsequence, known_displacemen
 
     # Test that the rotation relative to a nonzero layer_index works
     test_output = calculate_solar_rotate_shift(aia171_test_mapsequence, layer_index=1)
-    print(test_output['x'].to('arcsec').value, test_output['y'].to('arcsec').value)
-
     assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index1['x'], rtol=5e-2, atol=1e-5)
     assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index1['y'], rtol=5e-2, atol=1e-5)
 
