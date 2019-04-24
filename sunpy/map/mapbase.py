@@ -441,7 +441,10 @@ class GenericMap(NDData):
     @property
     def waveunit(self):
         """The `~astropy.units.Unit` of the wavelength of this observation."""
-        return u.Unit(self.meta.get("waveunit", ""))
+        unit = self.meta.get("waveunit")
+        if unit is None:
+            return u.one
+        return u.Unit(unit)
 
     @property
     def wavelength(self):
