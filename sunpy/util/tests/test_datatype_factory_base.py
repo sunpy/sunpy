@@ -1,9 +1,7 @@
 import pytest
 
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory
-from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.datatype_factory_base import MultipleMatchError
-from sunpy.util.datatype_factory_base import ValidationFunctionError
+from sunpy.util.datatype_factory_base import (BasicRegistrationFactory, MultipleMatchError,
+                                              NoMatchError, ValidationFunctionError)
 
 
 class BaseWidget(object):

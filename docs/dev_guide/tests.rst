@@ -5,7 +5,7 @@ Testing Guidelines
 ******************
 
 This section describes the testing framework and format standards for tests in SunPy.
-Here we have heavily adapted the `Astropy version <http://docs.astropy.org/en/latest/development/testguide.html>`_, and **it is worth reading that link.**
+Here we have heavily adapted the `Astropy version <https://docs.astropy.org/en/latest/development/testguide.html>`_, and **it is worth reading that link.**
 
 Testing Framework
 =================
@@ -302,11 +302,14 @@ To avoid running the tests::
 
     $ pytest -m "not figure"
 
+The output (regardless if via ``tox`` or ``pytest``) of these figure tests will be in a "figure_test_images" folder within your work folder.
+For example, "<local clone location>/figure_test_images" which is ignored by git.
+
 Writing Doctests
 ----------------
 
 Code examples in the documentation will also be run as tests and this helps to validate that the documentation is accurate and up to date.
-SunPy uses the same system as Astropy, so for information on writing doctests see the astropy `documentation <http://docs.astropy.org/en/latest/development/testguide.html#writing-doctests>`_.
+SunPy uses the same system as Astropy, so for information on writing doctests see the astropy `documentation <https://docs.astropy.org/en/latest/development/testguide.html#writing-doctests>`_.
 
 You do not have to do anything extra in order to run any documentation tests.
 Within our ``setup.cfg`` file we have set default options for ``pytest``, such that you only need to run::

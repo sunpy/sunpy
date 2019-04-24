@@ -2,7 +2,7 @@
 ; SunPy Configuration
 ;
 ; This is a sample sunpy configuration file - you can find a copy
-; of it on your system in site-packages/sunpy/data/sunpyrc.  If you edit it
+; of it on your system in site-packages/sunpy/data/sunpyrc. If you edit it
 ; there, please note that it will be overridden in your next install.
 ; If you want to keep a permanent local copy that will not be
 ; over-written, we use AppDirs https://pypi.org/project/appdirs/
@@ -35,12 +35,12 @@ time_format = %Y-%m-%d %H:%M:%S
 ; Location to save download data to. Path should be specified relative to the
 ; SunPy working directory.
 ; Default value: data/
-;download_dir = /tmp
 download_dir = data
 
-; Location where the sample data will be downloaded. Path should be specified
-; relative to the SunPy working directory.
-sample_dir = data/sample_data
+; Location where the sample data will be downloaded. If not specified, will be
+; downloaded to platform specific user data directory.
+; The default directory is specified by appdirs (https://github.com/ActiveState/appdirs)
+; sample_dir = /data/sample_data
 
 ;;;;;;;;;;;;
 ; Database ;

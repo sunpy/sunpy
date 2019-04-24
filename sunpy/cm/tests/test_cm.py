@@ -1,8 +1,7 @@
-import pytest
-
 import matplotlib.pyplot as plt
 
 import sunpy.cm as cm
+
 
 # Checks that colormaps are imported by MPL
 def test_get_cmap():

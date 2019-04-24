@@ -100,7 +100,7 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     >>> sc = SkyCoord(HeliographicStonyhurst(-10*u.deg, 2*u.deg))
     >>> sc
     <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-        (-10., 2., 695508.)>
+        (-10., 2., 695700.)>
 
     Notes
     -----
@@ -319,8 +319,10 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     obstime: SunPy Time
         The date and time of the observation, used to convert to heliographic
         carrington coordinates.
-    observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`
-        The coordinate of the observer in the solar system.
+    observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`, str
+        The coordinate of the observer in the solar system. If you supply a string,
+        it must be a solar system body that can be parsed by
+        `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`.
     rsun: `~astropy.units.Quantity`
         The physical (length) radius of the Sun. Used to calculate the position
         of the limb for calculating distance from the observer to the
@@ -334,11 +336,11 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km, obstime="2010/01/01T00:00:00",
     ...               frame="helioprojective")
     >>> sc
-    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (0., 0., 5.)>
     >>> sc = SkyCoord(0*u.deg, 0*u.deg, obstime="2010/01/01T00:00:00", frame="helioprojective")
     >>> sc
-    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
         (0., 0.)>
     """
 
@@ -405,7 +407,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
         c = self.observer.radius**2 - self.rsun**2
         b = -2 * self.observer.radius * np.cos(alpha)
-        d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
+        # Ingore sqrt of NaNs
+        with np.errstate(invalid='ignore'):
+            d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
 
         return self.realize_frame(SphericalRepresentation(lon=lon,
                                                           lat=lat,

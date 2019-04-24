@@ -6,7 +6,7 @@ from collections import OrderedDict
 from matplotlib import pyplot as plt
 import pandas
 
-from astropy import units as u
+import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 import sunpy.io

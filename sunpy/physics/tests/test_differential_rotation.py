@@ -2,7 +2,7 @@ import os
 import pytest
 
 import numpy as np
-from astropy import units as u
+import astropy.units as u
 from astropy.time import Time
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import Longitude
@@ -124,7 +124,7 @@ def test_solar_rotate_coordinate():
     # Test the coordinate
     np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -562.3768, decimal=1)
     np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 119.2684, decimal=1)
-    np.testing.assert_almost_equal(d.distance.to(u.km).value, 150083151.97246578, decimal=1)
+    np.testing.assert_almost_equal(d.distance.to(u.km).value, 150082909.3081299, decimal=1)
 
     # Test that the SkyCoordinate is Helioprojective
     assert isinstance(d.frame, frames.Helioprojective)

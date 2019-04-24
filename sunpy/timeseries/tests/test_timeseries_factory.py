@@ -18,6 +18,7 @@ import sunpy.timeseries
 from sunpy.util.metadata import MetaDict
 import sunpy.io
 from sunpy.util.datatype_factory_base import NoMatchError
+from sunpy.util import SunpyUserWarning
 
 import astropy.units as u
 from astropy.table import Table
@@ -31,6 +32,7 @@ from astropy.io import fits
 
 filepath = sunpy.data.test.rootdir
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
+esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00_truncated.fits')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
@@ -87,7 +89,8 @@ class TestTimeSeries(object):
 
     def test_implicit_fermi_gbm(self):
         # Test a GBMSummary TimeSeries
-        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
+        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+            ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_implicit_norh(self):
@@ -115,6 +118,11 @@ class TestTimeSeries(object):
         ts_rhessi = sunpy.timeseries.TimeSeries(rhessi_filepath)
         assert isinstance(ts_rhessi, sunpy.timeseries.sources.rhessi.RHESSISummaryTimeSeries)
 
+    def test_implicit_esp(self):
+        # Test an ESP TimeSeries
+        ts_esp = sunpy.timeseries.TimeSeries(esp_filepath)
+        assert isinstance(ts_esp, sunpy.timeseries.sources.eve.ESPTimeSeries)
+
 #==============================================================================
 # Individual Explicit Sources Tests
 #==============================================================================
@@ -124,9 +132,15 @@ class TestTimeSeries(object):
         ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
         assert isinstance(ts_eve, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
+    def test_esp(self):
+        #Test an ESP TimeSeries
+        ts_esp = sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
+        assert isinstance(ts_esp, sunpy.timeseries.sources.eve.ESPTimeSeries)
+
     def test_fermi_gbm(self):
         #Test a GBMSummary TimeSeries
-        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
+        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+            ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_norh(self):
@@ -260,7 +274,6 @@ class TestTimeSeries(object):
         assert ts_md == ts_di == ts_od
         assert ts_md.meta.metadata[0][2] == ts_di.meta.metadata[0][2] == ts_od.meta.metadata[0][2]
 
-
     def test_generic_construction_ts_list(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
@@ -272,9 +285,9 @@ class TestTimeSeries(object):
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
-        meta = MetaDict({'key':'value'})
-        meta2 = MetaDict({'key2':'value2'})
+        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
+        meta = MetaDict({'key': 'value'})
+        meta2 = MetaDict({'key2': 'value2'})
 
         # Create TS individually
         ts_1 = sunpy.timeseries.TimeSeries(data, meta, units)
@@ -302,7 +315,7 @@ class TestTimeSeries(object):
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        units2 = OrderedDict([('intensity2', u.W/u.m**2)])
         meta = MetaDict({'key':'value'})
         meta2 = MetaDict({'key2':'value2'})
 
@@ -351,13 +364,14 @@ class TestTimeSeries(object):
         with pytest.raises(ValueError):
             sunpy.timeseries.TimeSeries((dual_index_table, meta, units))
 
-#==============================================================================
+# ==============================================================================
 # Test some other options
-#==============================================================================
+# ==============================================================================
 
     def test_passed_ts(self):
         # Test an EVE TimeSeries
-        ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
+        with pytest.warns(SunpyUserWarning, match='Unknown units'):
+            ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
         ts_from_ts_1 = sunpy.timeseries.TimeSeries(ts_eve, source='EVE')
         ts_from_ts_2 = sunpy.timeseries.TimeSeries(ts_eve)
         assert ts_eve == ts_from_ts_1 == ts_from_ts_2

@@ -65,11 +65,11 @@ SunPy has the following strict requirements:
 
 - `Python <https://www.python.org/>`_ 2.7.x, 3.5.x or later
 
-- `NumPy <http://www.numpy.org/>`_  1.6.0 or later
+- `NumPy <https://www.numpy.org/>`_  1.6.0 or later
 
 - `SciPy <https://www.scipy.org/>`_ 0.10.0 or later
 
-- `Astropy <http://www.astropy.org/>`__ 1.0.0 or later
+- `Astropy <https://www.astropy.org/>`__ 1.0.0 or later
 
 SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features
@@ -79,9 +79,9 @@ are needed. SunPy will import even if these dependencies are not installed.
   For `~sunpy.timeseries`, `~sunpy.map`, `~sunpy.spectra`, `~sunpy.instr`
   and `~sunpy.visualization`.
 
-- `pandas <http://pandas.pydata.org/>`_ 0.10 or later: For `~sunpy.timeseries`.
+- `pandas <https://pandas.pydata.org/>`_ 0.10 or later: For `~sunpy.timeseries`.
 
-- `sqlalchemy <http://www.sqlalchemy.org>`_: For the `~sunpy.database` package.
+- `sqlalchemy <https://www.sqlalchemy.org>`_: For the `~sunpy.database` package.
 
 - `suds-jurko <https://bitbucket.org/jurko/suds>`_: For `~sunpy.net`.
 
@@ -218,20 +218,20 @@ Building documentation
     Building the documentation is in general not necessary unless you
     are writing new documentation or do not have internet access, because
     the latest (and archive) versions of SunPy's documentation are
-    available at `docs.sunpy.org <http://docs.sunpy.org/en/stable/>`_ .
+    available at `docs.sunpy.org <https://docs.sunpy.org/en/stable/>`_ .
 
 Building the documentation requires the SunPy source code and some additional
 packages:
 
-    - `Sphinx <http://www.sphinx-doc.org/en/stable/>`_ (and its dependencies) 1.0 or later
+    - `Sphinx <https://www.sphinx-doc.org/en/stable/>`_ (and its dependencies) 1.0 or later
 
-    - `Graphviz <http://www.graphviz.org>`_
+    - `Graphviz <https://www.graphviz.org>`_
 
 .. note::
 
     Sphinx also requires a reasonably modern LaTeX installation to render
     equations.  Per the `Sphinx documentation
-    <http://www.sphinx-doc.org/en/stable/builders.html?highlight=latex.html#sphinx.builders.latex.LaTeXBuilder>`_,
+    <https://www.sphinx-doc.org/en/stable/builders.html?highlight=latex.html#sphinx.builders.latex.LaTeXBuilder>`_,
     for the TexLive distribution the following packages are required to be
     installed:
 

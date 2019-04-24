@@ -31,14 +31,16 @@ from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.tests.helpers import figure_test
 from sunpy.util.metadata import MetaDict
+from sunpy.util import SunpyUserWarning
 
-#==============================================================================
+# ==============================================================================
 # TimeSeries Tests
-#==============================================================================
+# ==============================================================================
 
 filepath = sunpy.data.test.rootdir
 
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
+esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00_truncated.fits')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 goes_filepath = os.path.join(filepath, 'goes.fits')
@@ -58,13 +60,21 @@ a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 @pytest.fixture
 def eve_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='EVE')
-    return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
+    with pytest.warns(SunpyUserWarning, match='Unknown units'):
+        return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
+
+
+@pytest.fixture
+def esp_test_ts():
+    # ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='ESP')
+    return sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
 
 
 @pytest.fixture
 def fermi_gbm_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
-    return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
+    # ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
+    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+        return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
 
 
 @pytest.fixture
@@ -122,8 +132,9 @@ def generic_ts():
 
 @pytest.fixture
 def concatenate_multi_files_ts():
-    return sunpy.timeseries.TimeSeries(
-        a_list_of_many, source='EVE', concatenate=True)
+    with pytest.warns(SunpyUserWarning, match='Unknown units'):
+        return sunpy.timeseries.TimeSeries(
+            a_list_of_many, source='EVE', concatenate=True)
 
 #==============================================================================
 # Test Creating TimeSeries From Various Dataformats
@@ -157,10 +168,11 @@ def table_ts():
 #==============================================================================
 
 
-def test_units_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
+def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                     lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
                     noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.units, OrderedDict)
+    assert isinstance(esp_test_ts.units, OrderedDict)
     assert isinstance(fermi_gbm_test_ts.units, OrderedDict)
     assert isinstance(norh_test_ts.units, OrderedDict)
     assert isinstance(goes_test_ts.units, OrderedDict)
@@ -172,10 +184,11 @@ def test_units_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
     assert isinstance(table_ts.units, OrderedDict)
 
 
-def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
+def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                    lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
                    noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(esp_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(fermi_gbm_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(norh_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(goes_test_ts.meta, TimeSeriesMetaData)
@@ -187,10 +200,11 @@ def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
     assert isinstance(table_ts.meta, TimeSeriesMetaData)
 
 
-def test_data_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
+def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                    lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
                    noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.data, DataFrame)
+    assert isinstance(esp_test_ts.data, DataFrame)
     assert isinstance(fermi_gbm_test_ts.data, DataFrame)
     assert isinstance(norh_test_ts.data, DataFrame)
     assert isinstance(goes_test_ts.data, DataFrame)
@@ -461,7 +475,8 @@ def test_concatenation_of_slices(eve_test_ts, concatenated_slices_test_ts):
 @pytest.fixture
 def concatenation_different_data_test_ts(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate
-    return eve_test_ts.concatenate(fermi_gbm_test_ts)
+    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+        return eve_test_ts.concatenate(fermi_gbm_test_ts)
 
 
 def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
@@ -489,7 +504,7 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
         comined_units)
 
     # Test data is the concatenation
-    comined_df = pd.concat([eve_test_ts.data, fermi_gbm_test_ts.data])
+    comined_df = pd.concat([eve_test_ts.data, fermi_gbm_test_ts.data], sort=False)
     comined_df = comined_df.sort_index()
     assert_frame_equal(concatenation_different_data_test_ts.data, comined_df)
 
@@ -512,7 +527,7 @@ def test_generic_construction_concatenation():
     data = DataFrame(intensity1, index=times, columns=['intensity'])
     data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
     units = OrderedDict([('intensity', u.W / u.m**2)])
-    units2 = OrderedDict([('intensity', u.W / u.m**2)])
+    units2 = OrderedDict([('intensity2', u.W / u.m**2)])
     meta = MetaDict({'key': 'value'})
     meta2 = MetaDict({'key2': 'value2'})
 
@@ -620,6 +635,11 @@ def test_eve_peek(eve_test_ts):
 
 
 @figure_test
+def test_esp_peek(esp_test_ts):
+    esp_test_ts.peek()
+
+
+@figure_test
 def test_fermi_gbm_peek(fermi_gbm_test_ts):
     fermi_gbm_test_ts.peek()
 
@@ -672,12 +692,23 @@ def test_eve_invalid_peek(eve_test_ts):
     with pytest.raises(ValueError):
         empty_ts.peek()
 
+def test_esp_invalid_peek(esp_test_ts):
+    a = esp_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = esp_test_ts.time_range.start - TimeDelta(1*u.day)
+    empty_ts = esp_test_ts.truncate(TimeRange(a, b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
 
 def test_fermi_gbm_invalid_peek(fermi_gbm_test_ts):
-    a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = fermi_gbm_test_ts.time_range.start - TimeDelta(1*u.day)
+    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+        a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
+
+    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+        b = fermi_gbm_test_ts.time_range.start - TimeDelta(1*u.day)
+
     empty_ts = fermi_gbm_test_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError), pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
         empty_ts.peek()
 
 

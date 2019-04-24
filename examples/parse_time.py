@@ -34,7 +34,7 @@ t2 = parse_time('1995-Dec-31 23:59:60')
 # You can mention the scale of the time as a keyword parameter if you need.
 # Similar to scale you can pass in any astropy Time compatible keywords to
 # ``parse_time``. See all arguments
-# `here: <http://docs.astropy.org/en/stable/time/#creating-a-time-object>`__
+# `here: <https://docs.astropy.org/en/stable/time/#creating-a-time-object>`__
 t3 = parse_time('2012:124:21:08:12', scale='tai')
 
 

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from sunpy import log
 import logging
-from astropy.logger import AstropyLogger
-from sunpy import config
 import os.path
+
+from astropy.logger import AstropyLogger
+
+from sunpy import config, log
 
 level_to_numeric = {'CRITICAL': 50, 'ERROR':40, 'WARNING': 30, 'INFO': 20, 'DEBUG': 10, 'NOTSET': 0}
 
@@ -19,15 +20,21 @@ def test_is_the_logger_there():
 
 
 def test_is_level_configed():
-    """Test to make sure that the logger follows the config:
-        log_level"""
+    """
+    Test to make sure that the logger follows the config:
+
+    log_level
+    """
     config_level_numeric = level_to_numeric.get(config.get('logger', 'log_level'))
     assert log.getEffectiveLevel() == config_level_numeric
 
 
 def test_is_log_to_file_configed():
-    """Test to make sure that the logger follows the config:
-        log_to_file, log_file_level, log_file_path"""
+    """
+    Test to make sure that the logger follows the config:
+
+    log_to_file, log_file_level, log_file_path
+    """
 
     if config.get('logger', 'log_to_file') == 'True':
         #  there must be two handlers, one streaming and one to file.
@@ -58,7 +65,9 @@ def test_origin():
 
 
 def send_to_log(message, kind='INFO'):
-    """A simple function to demonstrate the logger generating an origin."""
+    """
+    A simple function to demonstrate the logger generating an origin.
+    """
     if kind.lower() == 'info':
         log.info(message)
     elif kind.lower() == 'debug':
