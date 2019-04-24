@@ -163,7 +163,7 @@ def test_solar_rotate_coordinate():
         # Test the coordinate
         np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -562.89877818, decimal=1)
         np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 119.3152842, decimal=1)
-        np.testing.assert_almost_equal(d.distance.to(u.km).value, 1.500850782e+08, decimal=1)
+        np.testing.assert_allclose(d.distance.to(u.km).value, 1.500848e+08, rtol=1e-5)
 
         # Test that the SkyCoordinate is Helioprojective
         assert isinstance(d.frame, frames.Helioprojective)
