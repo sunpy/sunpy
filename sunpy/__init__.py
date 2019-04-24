@@ -6,8 +6,8 @@ An open-source Python library for Solar Physics data analysis.
 
 Web Links
 ---------
-Homepage: http://sunpy.org
-Documentation: http://docs.sunpy.org/en/stable/
+Homepage: https://sunpy.org
+Documentation: https://docs.sunpy.org/en/stable/
 """
 # Enforce Python version check during package import.
 # This is the same check as the one at the top of setup.py
@@ -45,5 +45,13 @@ if not _SUNPY_SETUP_:
 
     # Load user configuration
     config = load_config()
+
+    import logging
+
+    # Use the root logger as a dummy log before initializing Astropy's logger
+    log = logging.getLogger()
+
+    from sunpy.util.logger import _init_log
+    log = _init_log(config=config)
 
     __all__ = ['config', 'self_test', 'system_info']

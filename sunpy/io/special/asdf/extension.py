@@ -3,10 +3,9 @@ from pathlib import Path
 from asdf import AsdfExtension
 from asdf.util import filepath_to_url
 
+from .tags.coordinates import *  # noqa
+from .tags.map import *  # noqa
 from .types import SunPyType
-
-from .tags.map import *
-from .tags.coordinates import *
 
 __all__ = ['SunpyExtension']
 

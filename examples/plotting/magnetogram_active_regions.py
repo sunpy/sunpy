@@ -11,7 +11,7 @@ This example shows how to overplot Active Region location on magnetogram plots.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from astropy import units as u
+import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.time import TimeDelta
 

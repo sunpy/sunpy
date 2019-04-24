@@ -13,7 +13,7 @@ via the :mod:`sunpy.net` package) onto a local or remote database. The
 database may be a single file located on a local hard drive (if a SQLite
 database is used) or a local or remote database server (see the SQLAlchemy
 documentation for a `list of supported databases
-<http://docs.sqlalchemy.org/en/latest/dialects/index.html>`_)
+<https://docs.sqlalchemy.org/en/latest/dialects/index.html>`_)
 This makes it possible to fetch required data from the local database
 instead of downloading it again from a remote server.
 
@@ -258,7 +258,7 @@ sections.
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
 
 .. testsetup:: *
-   >>> from unittest.mock import Mock
+   >>> from unittest.mock import Mock, patch
    >>> from sunpy.tests.mocks import MockObject
    >>> class MockQR:
    ...    def __init__(self, start_time, instrument, wavelength):
@@ -266,8 +266,9 @@ sections.
    ...        self.time = MockObject(start=start_time, end=end_time)
    ...        self.instrument = instrument
    ...        self.wave = MockObject(wavemin=wavelength, wavemax=wavelength, waveunit='nm')
-   >>> vso.VSOClient().search = Mock(return_value=[MockQR(f"2011050800000{t}", 'AIA', w) for
-   ...                                   t,w in zip([0,0,2,3], [17.1, 21.1, 9.4, 33.5])])
+   >>> with patch.object(vso.VSOClient, '__init__', lambda x: None):
+   ...    vso.VSOClient().search = Mock(return_value=[MockQR(f"2011050800000{t}", 'AIA', w) for
+   ...                                   t, w in zip([0,0,2,3], [17.1, 21.1, 9.4, 33.5])])
 
 After initialising the VSO client:
 
@@ -709,7 +710,7 @@ raised. This also means that there is no default unit that is
 used by the class. To know how you can specify a detail using astropy
 check `astropy.units`.
 
-    >>> from astropy import units as u
+    >>> import astropy.units as u
     >>> print(display_entries(
     ...     database.search(vso.attrs.Wavelength(1.0*u.nm, 2.0*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end',

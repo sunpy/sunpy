@@ -835,7 +835,7 @@ def run_cmd(cmd):
     except ValueError:
         # Due to an OSX oddity locale.getdefaultlocale() can also crash
         # depending on the user's locale/language settings.  See:
-        # http://bugs.python.org/issue18378
+        # https://bugs.python.org/issue18378
         stdio_encoding = 'latin1'
 
     # Unlikely to fail at this point but even then let's be flexible

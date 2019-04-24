@@ -27,7 +27,7 @@ import sunpy.data.sample
 # Or using creating manually by using tuple with the data/header within:
 
 data = np.random.rand(20, 15)
-header = {}
+header = {'cunit1': 'arcsec', 'cunit2': 'arcsec'}
 manual_map = sunpy.map.Map((data, header))
 
 ##############################################################################

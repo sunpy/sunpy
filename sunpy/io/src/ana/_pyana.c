@@ -63,14 +63,7 @@ struct module_state {
     PyObject *error;
 };
 
-#if PY_MAJOR_VERSION >= 3
 #define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
-#else
-#define GETSTATE(m) (&_state)
-static struct module_state _state;
-#endif
-
-#if PY_MAJOR_VERSION >= 3
 
 static int pyana_traverse(PyObject *m, visitproc visit, void *arg) {
     Py_VISIT(GETSTATE(m)->error);
@@ -100,18 +93,8 @@ static struct PyModuleDef moduledef = {
 PyMODINIT_FUNC
 PyInit__pyana(void)
 
-#else
-#define INITERROR return
-
-void
-init_pyana(void)
-#endif
 {
-#if PY_MAJOR_VERSION >= 3
     PyObject *module = PyModule_Create(&moduledef);
-#else
-    PyObject *module = Py_InitModule("_pyana", PyanaMethods);
-#endif
 
     if (module == NULL)
         INITERROR;
@@ -125,9 +108,7 @@ init_pyana(void)
 
     import_array();
 
-#if PY_MAJOR_VERSION >= 3
     return module;
-#endif
 }
 
 
@@ -213,7 +194,7 @@ static PyObject *pyana_fzread(PyObject *self, PyObject *args) {
 	// NB: Use 'N' for PyArrayObject s, because when using 'O' it will create
 	// another reference count such that the memory will never be deallocated.
 	// See:
-	// http://www.mail-archive.com/numpy-discussion@scipy.org/msg13354.html
+	// https://www.mail-archive.com/numpy-discussion@scipy.org/msg13354.html
 	// ([Numpy-discussion] numpy CAPI questions)
 	return Py_BuildValue("{s:N,s:{s:i,s:(ii),s:s}}",
 		"data", anadata,

@@ -1,34 +1,28 @@
 """
 Solar Physical Models
 ---------------------
-This module contains standard models of
-the sun from various sources. All data is saved
-in Astropy QTables with an added attribute
+This module contains standard models of the Sun from various sources.
+
+All data is saved in `astropy.table.QTable` with an added attribute:
 
 * source : names the source of the data
 
 Object
 ------
     interior : `astropy.table.QTable`
-        The standard model of the solar interior
+        The standard model of the solar interior.
     evolution : `astropy.table.QTable`
-        The evolution as a function of time of the Sun
+        The evolution as a function of time of the Sun.
 
-.. todo:: Need source for evolution model.
-
+References
+----------
+* Adapted from Turck-Chieze et al. (1988) with composition: X = 0.7046, Y = 0.2757, Z = 0.0197
 """
-
-from astropy import units as u
+import astropy.units as u
 from astropy.table import QTable
-import sunpy.sun.constants as con
 
 __all__ = ["interior", "evolution"]
 
-# Solar radius measured outside earth's atmosphere in arcseconds
-
-# Standard Model - Interior Structure
-# adapted from Turck-Chieze et al. (1988)
-# Composition X = 0.7046, Y = 0.2757, Z = 0.0197
 
 # Radius -  R_sun
 _radius = [0, 0.01, 0.022, 0.061, 0.090, 0.120,

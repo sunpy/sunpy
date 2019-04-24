@@ -36,7 +36,12 @@ def TimeDelta(draw):
     """
     keys = st.sampled_from(['weeks', 'days', 'hours', 'minutes', 'seconds'])
     values = st.floats(min_value=1, max_value=10)
-    delta = datetime.timedelta(**draw(st.dictionaries(keys, values)))
+    time_dict = {'days': st.floats(min_value=1, max_value=8),
+                 'hours': st.floats(min_value=1, max_value=12),
+                 'minutes': st.floats(min_value=1, max_value=30),
+                 'seconds': st.floats(min_value=1, max_value=60)}
+
+    delta = datetime.timedelta(**draw(st.fixed_dictionaries(time_dict)))
     delta = astropy.time.TimeDelta(delta, format='datetime')
 
     # We don't want a 0 timedelta

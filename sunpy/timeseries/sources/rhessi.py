@@ -10,7 +10,7 @@ from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.instr import rhessi
 import sunpy.io
-from astropy import units as u
+import astropy.units as u
 
 __all__ = ['RHESSISummaryTimeSeries']
 

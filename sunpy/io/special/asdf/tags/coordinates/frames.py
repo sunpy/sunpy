@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 import os
 import glob
 
 from astropy.io.misc.asdf.tags.coordinates.frames import BaseCoordType
 
 import sunpy.coordinates
-from ...types import SunPyType
 
+from ...types import SunPyType
 
 __all__ = ['SunPyCoordType']
 

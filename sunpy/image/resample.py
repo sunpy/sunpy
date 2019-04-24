@@ -1,4 +1,6 @@
-"""Image resampling methods"""
+"""
+Image resampling methods.
+"""
 import numpy as np
 import scipy.interpolate
 import scipy.ndimage
@@ -7,47 +9,46 @@ __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 
 
 def resample(orig, dimensions, method='linear', center=False, minusone=False):
-    """Returns a new `numpy.ndarray` that has been resampled up or down.
+    """
+    Returns a new `numpy.ndarray` that has been resampled up or down.
 
     Arbitrary resampling of source array to new dimension sizes.
     Currently only supports maintaining the same number of dimensions.
     To use 1-D arrays, first promote them to shape (x,1).
 
     Uses the same parameters and creates the same co-ordinate lookup points
-    as IDL's congrid routine (which apparently originally came from a
+    as IDL's ``congrid`` routine (which apparently originally came from a
     VAX/VMS routine of the same name.)
 
     Parameters
     ----------
-    orig : `~numpy.ndarray`
-        Original inout array.
-    dimensions : tuple
-        Dimensions that new `~numpy.ndarray` should have.
-    method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
+    orig : `numpy.ndarray`
+        Original input array.
+    dimensions : `tuple`
+        Dimensions that new `numpy.ndarray` should have.
+    method : {'neighbor' | 'nearest' | 'linear' | 'spline'}, optional
         Method to use for resampling interpolation.
             * neighbor - Closest value from original data
-            * nearest and linear - Uses n x 1-D interpolations calculated by
+            * nearest and linear - Uses "n x 1D" interpolations calculated by
               `scipy.interpolate.interp1d`.
-            * spline - Uses ndimage.map_coordinates
-    center : bool
-        If True, interpolation points are at the centers of the bins,
-        otherwise points are at the front edge of the bin.
-    minusone : bool
-        For orig.shape = (i,j) & new dimensions = (x,y), if set to False
-        orig is resampled by factors of (i/x) * (j/y), otherwise orig
-        is resampled by(i-1)/(x-1) * (j-1)/(y-1)
-        This prevents extrapolation one element beyond bounds of input
-        array.
+            * spline - Uses `scipy.ndimage.map_coordinates`
+    center : `bool`, optional
+        If `False` (default) the interpolation points are at the front edge of the bin.
+        If `True`, interpolation points are at the centers of the bins
+    minusone : `bool`, optional
+        For ``orig.shape = (i,j)`` & new dimensions ``= (x,y)``, if set to `False`
+        (default) ``orig`` is resampled by factors of ``(i/x) * (j/y)``,
+        otherwise ``orig`` is resampled by ``(i-1)/(x-1) * (j-1)/(y-1)``.
+        This prevents extrapolation one element beyond bounds of input array.
 
     Returns
     -------
-    out : `~numpy.ndarray`
-        A new `~numpy.ndarray` which has been resampled to the desired
-        dimensions.
+    out : `numpy.ndarray`
+        A new `numpy.ndarray` which has been resampled to the desired dimensions.
 
     References
     ----------
-    | https://scipy-cookbook.readthedocs.io/items/Rebinning.html
+    https://scipy-cookbook.readthedocs.io/items/Rebinning.html
     """
 
     # Verify that number dimensions requested matches original shape
@@ -55,7 +56,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
         raise UnequalNumDimensions("Number of dimensions must remain the same "
                                    "when calling resample.")
 
-    #@note: will this be okay for integer (e.g. JPEG 2000) data?
+    # TODO: Will this be okay for integer (e.g. JPEG 2000) data?
     if orig.dtype not in [np.float64, np.float32]:
         orig = orig.astype(np.float64)
 
@@ -79,8 +80,9 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 
 
 def _resample_nearest_linear(orig, dimensions, method, offset, m1):
-    """Resample Map using either linear or nearest interpolation."""
-
+    """
+    Resample Map using either linear or nearest interpolation.
+    """
     dimlist = []
 
     # calculate new dims
@@ -114,8 +116,9 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
 
 
 def _resample_neighbor(orig, dimensions, offset, m1):
-    """Resample Map using closest-value interpolation."""
-
+    """
+    Resample Map using closest-value interpolation.
+    """
     dimlist = []
     dimensions = np.asarray(dimensions, dtype=int)
 
@@ -125,23 +128,21 @@ def _resample_neighbor(orig, dimensions, offset, m1):
                        (base + offset) - offset)
     cd = np.array(dimlist).round().astype(int)
 
-    return orig[list(cd)]
+    return orig[tuple(list(cd))]
 
 
 def _resample_spline(orig, dimensions, offset, m1):
-    """Resample Map using spline-based interpolation."""
-
-    oslices = [slice(0, j) for j in orig.shape]
-    # FIXME: not used?!
-    old_coords = np.ogrid[oslices]  # pylint: disable=W0612
+    """
+    Resample Map using spline-based interpolation.
+    """
     nslices = [slice(0, j) for j in list(dimensions)]
     newcoords = np.mgrid[nslices]
 
-    newcoords_dims = list(range(np.rank(newcoords)))
+    newcoords_dims = list(range(newcoords.ndim))
 
     # make first index last
     newcoords_dims.append(newcoords_dims.pop(0))
-    newcoords_tr = newcoords.transpose(newcoords_dims)  # pylint: disable=W0612
+    newcoords_tr = newcoords.transpose(newcoords_dims)
 
     # makes a view that affects newcoords
     newcoords_tr += offset
@@ -155,12 +156,13 @@ def _resample_spline(orig, dimensions, offset, m1):
 
 
 def reshape_image_to_4d_superpixel(img, dimensions, offset):
-    """Re-shape the two dimension input image into a a four dimensional
-    array whose first and third dimensions express the number of original
-    pixels in the x and y directions that form one superpixel. The reshaping
-    makes it very easy to perform operations on superpixels.
+    """
+    Re-shape the two dimension input image into a a four dimensional array
+    whose first and third dimensions express the number of original pixels in
+    the "x" and "y" directions that form one superpixel. The reshaping makes it
+    very easy to perform operations on superpixels.
 
-    An application of this reshaping is the following.  Let's say you have an
+    An application of this reshaping is the following. Let's say you have an
     array::
 
          x = np.array([[0, 0, 0, 1, 1, 1],
@@ -170,11 +172,11 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
                        [1, 0, 1, 0, 1, 1],
                        [0, 0, 1, 0, 0, 0]])
 
-    and you want to sum over 2x2 non-overlapping sub-arrays.  For example, you
+    and you want to sum over 2x2 non-overlapping sub-arrays. For example, you
     could have a noisy image and you want to increase the signal-to-noise ratio.
     Summing over all the non-overlapping 2x2 sub-arrays will create a
-    superpixel array of the original data.  Every pixel in the superpixel array
-    is the sum of the values in a 2x2 sub-array of the original array,
+    superpixel array of the original data. Every pixel in the superpixel array
+    is the sum of the values in a 2x2 sub-array of the original array.
 
     This summing can be done by reshaping the array::
 
@@ -193,27 +195,23 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
     Parameters
     ----------
     img : `numpy.ndarray`
-        A two-dimensional `~numpy.ndarray` of the form (y, x).
-
+        A two-dimensional `numpy.ndarray` of the form ``(y, x)``.
     dimensions : array-like
         A two element array-like object containing integers that describe the
-        superpixel summation in the (y, x) directions.
-
+        superpixel summation in the ``(y, x)`` directions.
     offset : array-like
         A two element array-like object containing integers that describe
-        where in the input image the array reshaping begins in the (y, x)
+        where in the input image the array reshaping begins in the ``(y, x)``
         directions.
 
     Returns
     -------
-    A four dimensional `~numpy.ndarray` that can be used to easily create
+    A four dimensional `numpy.ndarray` that can be used to easily create
     two-dimensional arrays of superpixels of the input image.
 
     References
     ----------
-    Taken from
     https://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
-
     """
     # make sure the input dimensions are integers
     dimensions = [int(dim) for dim in dimensions]
@@ -229,10 +227,12 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
 
 
 class UnrecognizedInterpolationMethod(ValueError):
-    """Unrecognized interpolation method specified."""
-    pass
+    """
+    Unrecognized interpolation method specified.
+    """
 
 
 class UnequalNumDimensions(ValueError):
-    """Number of dimensions does not match input array"""
-    pass
+    """
+    Number of dimensions does not match input array.
+    """

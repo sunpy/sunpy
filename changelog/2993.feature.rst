@@ -1,0 +1,2 @@
+The default location of the sunpy sample data has changed to be in the platform
+specific data directory as provided by `appdirs <https://github.com/ActiveState/appdirs>`__.
