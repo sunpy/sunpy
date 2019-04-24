@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from functools import partial
 
 import matplotlib.animation as mplanim
@@ -8,10 +6,9 @@ import matplotlib.backend_bases as mback
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from matplotlib import widgets
 
-from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, base
 from sunpy.tests.helpers import figure_test
+from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, base
 
 
 class FuncAnimatorTest(BaseFuncAnimator):
@@ -122,8 +119,8 @@ def test_edges_to_centers_nd():
     assert np.array_equal(output, expected)
 
 
-@pytest.fixture
-def line_test():
+@figure_test
+def test_lineanimator_figure():
     np.random.seed(1)
     data_shape0 = (10, 20)
     data0 = np.random.rand(*data_shape0)
@@ -132,12 +129,7 @@ def line_test():
     xdata = np.tile(np.linspace(0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
     fig = plt.figure()
     ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata], fig=fig)
-    return ani.plot_start_image(ax=fig.gca())
-
-
-@figure_test
-def test_lineanimator(line_test):
-    plt.show()
+    ani.plot_start_image(ax=fig.gca())
 
 
 class ArrayAnimatorTest(ArrayAnimator):
