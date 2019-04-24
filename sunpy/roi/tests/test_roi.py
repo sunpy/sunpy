@@ -1,5 +1,6 @@
 from sunpy.roi import roi
-from sunpy.time import parse_time, TimeRange, is_time_equal
+from sunpy.time import TimeRange, is_time_equal, parse_time
+
 
 def test_roi_instance():
     region = roi(times=['2012-06-20 05:00', '2012-06-20 07:00'],

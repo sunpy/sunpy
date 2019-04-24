@@ -1,8 +1,10 @@
-from sunpy.image.transform import affine_transform
 import numpy as np
-from skimage import transform as tf
-import skimage.data as images
 import pytest
+import skimage.data as images
+from skimage import transform as tf
+
+from sunpy.image.transform import affine_transform
+from sunpy.util import SunpyUserWarning
 
 # Define test image first so it's accessible to all functions.
 original = images.camera().astype('float')
@@ -203,7 +205,7 @@ def test_nan_skimage_low(identity):
 def test_nan_skimage_high(identity):
     # Test replacement of NaN values for scikit-image rotation with order >=4
     in_arr = np.array([[np.nan]])
-    with pytest.warns(RuntimeWarning, match='Setting NaNs to 0 for higher-order scikit-image rotation'):
+    with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for higher-order scikit-image rotation.'):
         out_arr = affine_transform(in_arr, rmatrix=identity, order=4)
     assert not np.all(np.isnan(out_arr))
 
@@ -211,7 +213,7 @@ def test_nan_skimage_high(identity):
 def test_nan_scipy(identity):
     # Test replacement of NaN values for scipy rotation
     in_arr = np.array([[np.nan]])
-    with pytest.warns(RuntimeWarning, match='Setting NaNs to 0 for SciPy rotation'):
+    with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for SciPy rotation.'):
         out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True)
     assert not np.all(np.isnan(out_arr))
 
@@ -219,6 +221,6 @@ def test_nan_scipy(identity):
 def test_int(identity):
     # Test casting of integer array to float array
     in_arr = np.array([[100]], dtype=int)
-    with pytest.warns(RuntimeWarning, match='Input data has been cast to float64'):
+    with pytest.warns(SunpyUserWarning, match='Input data has been cast to float64.'):
         out_arr = affine_transform(in_arr, rmatrix=identity)
     assert np.issubdtype(out_arr.dtype, np.floating)

@@ -15,9 +15,10 @@ import sys
 from astropy import units
 from astropy.table import Table
 
+from tqdm import tqdm
+
 from sunpy.net import hek
 from sunpy.net import vso
-from sunpy.util.progressbar import TTYProgressBar
 
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'
@@ -186,24 +187,14 @@ class H2VClient(object):
         >>> res = h2v.translate_and_query(q)  # doctest: +REMOTE_DATA
         """
         vso_query = translate_results_to_query(hek_results)
-        result_size = len(vso_query)
-        if progress:
-            sys.stdout.write('\rQuerying VSO webservice')
-            sys.stdout.flush()
-            pbar = TTYProgressBar(result_size)
 
-        for query in vso_query:
+        for query in tqdm(vso_query, unit="records"):
             temp = self.vso_client.search(*query)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
             if limit is not None:
                 if self.num_of_records >= limit:
                     break
-            if progress:
-                pbar.poke()
-
-        if progress:
-            pbar.finish()
 
         return self.vso_results
 

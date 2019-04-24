@@ -60,11 +60,15 @@ class EITMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        GenericMap.__init__(self, data, header, **kwargs)
+        # Assume pixel units are arcesc if not given
+        header['cunit1'] = header.get('cunit1', 'arcsec')
+        header['cunit2'] = header.get('cunit2', 'arcsec')
 
+        GenericMap.__init__(self, data, header, **kwargs)
         # Fill in some missing info
         self.meta['detector'] = "EIT"
         self.meta['waveunit'] = "Angstrom"
+
         self._fix_dsun()
         self._nickname = self.detector
         self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
@@ -172,7 +176,9 @@ class MDIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
+        # Assume pixel units are arcesc if not given
+        header['cunit1'] = header.get('cunit1', 'arcsec')
+        header['cunit2'] = header.get('cunit2', 'arcsec')
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing or broken info

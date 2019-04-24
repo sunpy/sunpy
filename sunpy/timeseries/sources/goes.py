@@ -10,7 +10,7 @@ import matplotlib.dates
 from pandas import DataFrame
 from matplotlib import pyplot as plt
 
-from astropy import units as u
+import astropy.units as u
 from astropy.time import TimeDelta, Time
 
 import sunpy.io
@@ -43,7 +43,7 @@ class XRSTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `GOES Mission Homepage <http://www.goes.noaa.gov>`_
+    * `GOES Mission Homepage <https://www.goes.noaa.gov>`_
     * `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
     * `GOES XRS Guide <https://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`_
     * `NASCOM Data Archive <https://umbra.nascom.nasa.gov/goes/fits/>`_

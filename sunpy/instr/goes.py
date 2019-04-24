@@ -367,8 +367,8 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     --------
     >>> from sunpy.instr.goes import _goes_chianti_tem
     >>> from astropy.units import Quantity
-    >>> longflux = Quantity([7e-6, 7e-6], unit="W/m/m")
-    >>> shortflux = Quantity([7e-7, 7e-7], unit="W/m/m")
+    >>> longflux = Quantity([7e-6, 7e-6], unit="W/m**2")
+    >>> shortflux = Quantity([7e-7, 7e-7], unit="W/m**2")
     >>> temp, em = _goes_chianti_tem(longflux, shortflux, satellite=15,
     ...                              date='2014-04-16',
     ...                              abundances="coronal")  # doctest: +REMOTE_DATA

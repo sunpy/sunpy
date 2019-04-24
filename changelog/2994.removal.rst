@@ -1,0 +1,3 @@
+The deprecated ``sunpy.physics.transforms`` module has been removed, it is
+replaced by `sunpy.physics.solar_rotation` and
+`sunpy.physics.differential_rotation`.

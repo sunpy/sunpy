@@ -24,12 +24,15 @@ import sunpy.sun
 import sunpy.data.test
 import sunpy.coordinates
 from sunpy.time import parse_time
+from sunpy.util import SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
+
 
 @pytest.fixture
 def hmi_test_map():
     return sunpy.map.Map(os.path.join(testpath, "resampled_hmi.fits"))
+
 
 @pytest.fixture
 def aia171_test_map():
@@ -159,7 +162,8 @@ def test_detector(generic_map):
 
 
 def test_dsun(generic_map):
-    assert generic_map.dsun == sunpy.coordinates.get_sunearth_distance(generic_map.date).to(u.m)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for Sun-spacecraft separation'):
+        assert generic_map.dsun == sunpy.coordinates.get_sunearth_distance(generic_map.date).to(u.m)
 
 
 def test_rsun_meters(generic_map):
@@ -167,7 +171,8 @@ def test_rsun_meters(generic_map):
 
 
 def test_rsun_obs(generic_map):
-    assert generic_map.rsun_obs == sunpy.sun.solar_semidiameter_angular_size(generic_map.date)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for solar radius'):
+        assert generic_map.rsun_obs == sunpy.sun.solar_semidiameter_angular_size(generic_map.date)
 
 
 def test_coordinate_system(generic_map):
@@ -175,15 +180,18 @@ def test_coordinate_system(generic_map):
 
 
 def test_carrington_longitude(generic_map):
-    assert generic_map.carrington_longitude == sunpy.coordinates.get_sun_L0(generic_map.date)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for Carrington longitude'):
+        assert generic_map.carrington_longitude == sunpy.coordinates.get_sun_L0(generic_map.date)
 
 
 def test_heliographic_latitude(generic_map):
-    assert generic_map.heliographic_latitude == sunpy.coordinates.get_sun_B0(generic_map.date)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for heliographic latitude'):
+        assert generic_map.heliographic_latitude == sunpy.coordinates.get_sun_B0(generic_map.date)
 
 
 def test_heliographic_longitude(generic_map):
-    assert generic_map.heliographic_longitude == 0.
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for heliographic longitude'):
+        assert generic_map.heliographic_longitude == 0.
 
 
 def test_units(generic_map):
@@ -197,9 +205,11 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.observer.lon == aia171_test_map.observer_coordinate.frame.lon
     assert frame.observer.radius == aia171_test_map.observer_coordinate.frame.radius
     assert frame.obstime == aia171_test_map.date
-    
+
+
 def test_heliographic_longitude_crln(hmi_test_map):
     assert hmi_test_map.heliographic_longitude == hmi_test_map.carrington_longitude - sunpy.coordinates.get_sun_L0(hmi_test_map.date)
+
 
 # ==============================================================================
 # Test Rotation WCS conversion
@@ -228,7 +238,9 @@ def test_rotation_matrix_cd_cdelt():
         'CD2_1': 10,
         'CD2_2': 0,
         'NAXIS1': 6,
-        'NAXIS2': 6
+        'NAXIS2': 6,
+        'CUNIT1': 'arcsec',
+        'CUNIT2': 'arcsec'
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1.], [1., 0]]))
@@ -248,7 +260,9 @@ def test_rotation_matrix_cd_cdelt_square():
         'CD2_1': 10,
         'CD2_2': 0,
         'NAXIS1': 6,
-        'NAXIS2': 6
+        'NAXIS2': 6,
+        'CUNIT1': 'arcsec',
+        'CUNIT2': 'arcsec'
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1], [1., 0]]))
@@ -304,7 +318,9 @@ def test_default_shift():
         'CD2_1': 10,
         'CD2_2': 0,
         'NAXIS1': 6,
-        'NAXIS2': 6
+        'NAXIS2': 6,
+        'CUNIT1': 'arcsec',
+        'CUNIT2': 'arcsec',
     }
     cd_map = sunpy.map.Map((data, header))
     assert cd_map.shifted_value[0].value == 0
@@ -592,8 +608,8 @@ def test_validate_meta(generic_map):
             'waveunit': 'ANGSTROM'
         }
         bad_map = sunpy.map.Map((generic_map.data, bad_header))
-        for count, meta_property in enumerate(('cunit1', 'cunit2', 'waveunit')):
-            assert meta_property.upper() in str(w[count].message)
+
+    assert 'waveunit'.upper() in str(w[0].message)
 
 
 # Heliographic Map Tests
@@ -664,7 +680,10 @@ def test_more_than_two_dimensions():
     bad_data = np.random.rand(4, 4, 3, 5)
     hdr = fits.Header()
     hdr['TELESCOP'] = 'XXX'
-    bad_map = sunpy.map.Map(bad_data, hdr)
+    hdr['cunit1'] = 'arcsec'
+    hdr['cunit2'] = 'arcsec'
+    with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
+        bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim is 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
@@ -673,7 +692,10 @@ def test_more_than_two_dimensions():
 def test_missing_metadata_warnings():
     # Checks that warnings for missing metadata are only raised once
     with pytest.warns(Warning) as record:
-        array_map = sunpy.map.Map(np.random.rand(20, 15), {})
+        header = {}
+        header['cunit1'] = 'arcsec'
+        header['cunit2'] = 'arcsec'
+        array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
     # There should be 4 warnings for missing metadata
     assert len([w for w in record if 'Missing metadata' in str(w)]) == 4

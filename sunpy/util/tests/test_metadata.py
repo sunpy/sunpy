@@ -3,10 +3,13 @@ import pytest
 from sunpy.util.metadata import MetaDict
 
 
+# TODO: Should these be here and not in util?
 def check_contents(metadict_inst, expected):
     """
     Ensure that the key/values of `metadict_inst` match those of the key/value
-    pairs in `expected`. The case of the keys is ignored, as is the order.
+    pairs in `expected`.
+
+    The case of the keys is ignored, as is the order.
     """
     assert len(metadict_inst) == len(expected)
 
@@ -16,8 +19,10 @@ def check_contents(metadict_inst, expected):
 
 def check_insertion_order(metadict_inst, expected):
     """
-    Ensure that the keys of `metadict_inst` are in the same order
-    as the keys in `expected`. The keys case is ignored.
+    Ensure that the keys of `metadict_inst` are in the same order as the keys
+    in `expected`.
+
+    The keys case is ignored.
     """
     def normalise_keys(lst_pairs):
         return [key.lower() for key, _ in lst_pairs]
@@ -27,9 +32,8 @@ def check_insertion_order(metadict_inst, expected):
 
 def check_contents_and_insertion_order(metadict_inst, expected):
     """
-    Ensure both the contents and order of the the key/values of
-    `metadict_inst` match the key/values in `expected`. Keys are
-    case insensitive.
+    Ensure both the contents and order of the the key/values of `metadict_inst`
+    match the key/values in `expected`. Keys are case insensitive.
 
     Parameters
     ----------
@@ -45,7 +49,7 @@ def check_contents_and_insertion_order(metadict_inst, expected):
 
 def pairs_to_dict(lst_of_pairs):
     """
-    Convert a list/tuple of lists/tuples to a dictionary
+    Convert a list/tuple of lists/tuples to a dictionary.
 
     Parameters
     ----------
@@ -116,7 +120,7 @@ def test_init_with_tuple_of_tuples(sea_locations):
 
 def test_init_with_dict(sea_locations):
     """
-    Initialise `MetaDict` with standard Python dictionary
+    Initialise `MetaDict` with standard Python dictionary.
 
     Order of insertion is *not* preserved - only check the contents.
     """
@@ -137,8 +141,7 @@ def test_init_with_metadict(atomic_weights):
 
 def test_init_with_illegal_arg():
     """
-    Ensure attempt to initialise with a nonsensical data structure
-    is rejected.
+    Ensure attempt to initialise with a nonsensical data structure is rejected.
     """
     with pytest.raises(TypeError):
         MetaDict(set(('a', 'b', 'c', 'd')))
@@ -168,7 +171,7 @@ def test_getitem(seas_metadict):
 
 def test_setitem_existing_entry(seas_metadict):
     """
-    Test `MetaDict.__setitem__(...)` on an existing entry
+    Test `MetaDict.__setitem__(...)` on an existing entry.
     """
     len_before = len(seas_metadict)
     seas_metadict['NORWEGIAN'] = 'Scandinavia'
@@ -179,7 +182,9 @@ def test_setitem_existing_entry(seas_metadict):
 
 def test_setitem_new_entry(seas_metadict):
     """
-    Test `MetaDict.__setitem__(...)`. Add a new entry
+    Test `MetaDict.__setitem__(...)`.
+
+    Add a new entry
     """
     len_before = len(seas_metadict)
     seas_metadict['Irish'] = 'N.Europe'
@@ -215,10 +220,8 @@ def test_has_key(seas_metadict):
     """
     Test `MetaDict.has_key(...)`
     """
-    # suppress pep8/flake8 'W601 .has_key() is deprecated, ...' warnings
-    # as MetaDict explicitly supports the 'has_key()' method
+    # MetaDict explicitly supports the 'has_key()' method
     assert seas_metadict.has_key('LaPteV') is True  # noqa
-
     assert seas_metadict.has_key('Beaufort') is False  # noqa
 
 
@@ -245,11 +248,11 @@ def test_pop(seas_metadict):
 
 def test_update_with_distinct_keys(seas_metadict, sea_locations, atomic_weights):
     """
-    Update the MetaDict 'world_seas', with another MetaDict, 'chem_elems'
-    which has a completley different set of keys.
+    Update the MetaDict 'world_seas', with another MetaDict, 'chem_elems' which
+    has a completley different set of keys.
 
-    This should result in adding 'chem_elems' onto 'world_seas'. Original
-    insertion order of 'world_seas' should be preserved.
+    This should result in adding 'chem_elems' onto 'world_seas'.
+    Original insertion order of 'world_seas' should be preserved.
     """
     world_seas = seas_metadict
     chem_elems = MetaDict(atomic_weights)
@@ -302,12 +305,13 @@ def test_update_with_like_keys(seas_metadict, seas_and_atomic_weights, combined_
 
 def test_update_with_dict(seas_metadict, seas_and_atomic_weights, combined_seas_atomic):
     """
-    Update an existing `MetaDict` with a standard python dictionary some of whose
-    keys are the same, some are different.
+    Update an existing `MetaDict` with a standard python dictionary some of
+    whose keys are the same, some are different.
 
-    In the updated `MetaDict`, values of existing keys should be updated but as
-    we are using a standard dictionary, insertion order of the new items is
-    non-deterministic so only check the contents of the updated structure.
+    In the updated `MetaDict`, values of existing keys should be updated
+    but as we are using a standard dictionary, insertion order of the
+    new items is non-deterministic so only check the contents of the
+    updated structure.
     """
     seas_metadict.update(pairs_to_dict(seas_and_atomic_weights))
 
@@ -316,7 +320,9 @@ def test_update_with_dict(seas_metadict, seas_and_atomic_weights, combined_seas_
 
 def test_update_with_same_metadict(seas_metadict, sea_locations):
     """
-    Upadate a 'MetaDict' with itself. Nothing should changes.
+    Upadate a 'MetaDict' with itself.
+
+    Nothing should changes.
     """
     seas_metadict.update(seas_metadict)
 
@@ -325,8 +331,9 @@ def test_update_with_same_metadict(seas_metadict, sea_locations):
 
 def test_key_case_insensitivity(seas_metadict):
     """
-    The keys of a `Metadict` are case insensitive. Using the key 'BALTIC'
-    is identical to the key 'baltic'.
+    The keys of a `Metadict` are case insensitive.
+
+    Using the key 'BALTIC' is identical to the key 'baltic'.
     """
 
     # membership
@@ -340,8 +347,7 @@ def test_key_case_insensitivity(seas_metadict):
     assert seas_metadict.get('labrador') == 'americas'
     assert seas_metadict.get('labRAdor') == 'americas'
 
-    # suppress pep8/flake8 'W601 .has_key() is deprecated, ...' warnings
-    # as MetaDict explicitly supports the 'has_key()' method
+    # MetaDict explicitly supports the 'has_key()' method
     assert seas_metadict.has_key('BALTIC')  # noqa
     assert seas_metadict.has_key('balTIC')  # noqa
 

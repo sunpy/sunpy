@@ -380,13 +380,9 @@ class Database(object):
         """
         self.session.commit()
 
-    def _download_and_collect_entries(self, query_result, **kwargs):
-
-        client = kwargs.pop('client', None)
-        path = kwargs.pop('path', None)
-        progress = kwargs.pop('progress', False)
-        methods = kwargs.pop('methods', ('URL-FILE_Rice', 'URL-FILE'))
-        overwrite = kwargs.pop('overwrite', False)
+    def _download_and_collect_entries(self, query_result, client=None,
+                                      path=None, progress=False, methods=None,
+                                      overwrite=False, **kwargs):
 
         if kwargs:
             k, v = kwargs.popitem()
@@ -415,7 +411,7 @@ class Database(object):
         for temp in delete_entries:
             self.remove(temp)
 
-        paths = client.fetch(query_result, path).wait(progress=progress)
+        paths = client.fetch(query_result, path)
 
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)
@@ -442,12 +438,8 @@ class Database(object):
                 entry.download_time = datetime.utcnow()
                 yield entry
 
-
     def fetch(self, *query, **kwargs):
-
         """
-        fetch(*query[, path, overwrite, client, progress, methods])
-
         Check if the query has already been used to collect new data.
 
         If yes, query the database using the method

@@ -1,20 +1,20 @@
 """
 This module provides a wrapper around the Helioviewer API.
 """
-import os
 import json
-import errno
 import codecs
 import urllib
+from pathlib import Path
 from collections import OrderedDict
+
+import parfive
 
 from astropy.utils.decorators import lazyproperty
 
 import sunpy
-from sunpy.util.xml import xml_to_dict
 from sunpy.time import parse_time
-from sunpy.util.net import download_fileobj
-
+from sunpy.util.xml import xml_to_dict
+from sunpy.util.util import partial_key_match
 
 __all__ = ['HelioviewerClient']
 
@@ -79,6 +79,10 @@ class HelioviewerClient(object):
 
         This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`_ from the Helioviewer API.
 
+        .. note::
+            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+            can then be used to get required information.
+
         Parameters
         ----------
         date : `astropy.time.Time`, `str`
@@ -110,13 +114,7 @@ class HelioviewerClient(object):
         2012-01-01T00:00:07.000
         """
         if source_id is None:
-            try:
-                key = (observatory, instrument, detector, measurement)
-                source_id = self.data_sources[key]
-            except KeyError:
-                raise KeyError("The values used for observatory, instrument, detector, measurement "
-                               "do not correspond to a source_id. Please check the list using "
-                               "HelioviewerClient.data_sources.")
+            source_id = self._get_source_id((observatory, instrument, detector, measurement))
 
         params = {
             "action": "getClosestImage",
@@ -135,8 +133,13 @@ class HelioviewerClient(object):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
-
+        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+        can then be used to get required information.
         This uses `getJP2Image <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+
+        .. note::
+            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+            can then be used to get required information.
 
         Parameters
         ----------
@@ -171,17 +174,13 @@ class HelioviewerClient(object):
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO',
         ...                            instrument='HMI', detector=None, measurement='continuum')  # doctest: +REMOTE_DATA
-        >>> aia = sunpy.map.Map(filepath)  # doctest: +SKIP
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', measurement='continuum')  # doctest: +REMOTE_DATA
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', instrument='HMI', measurement='continuum')  # doctest: +REMOTE_DATA
+        >>> aia = sunpy.map.Map(filepath)  # doctest: +REMOTE_DATA
         >>> aia.peek()  # doctest: +SKIP
         """
         if source_id is None:
-            try:
-                key = (observatory, instrument, detector, measurement)
-                source_id = self.data_sources[key]
-            except KeyError:
-                raise KeyError("The values used for observatory, instrument, detector, measurement "
-                               "do not correspond to a source_id. Please check the list using "
-                               "HelioviewerClient.data_sources.")
+            source_id = self._get_source_id((observatory, instrument, detector, measurement))
 
         params = {
             "action": "getJP2Image",
@@ -195,8 +194,13 @@ class HelioviewerClient(object):
         """
         Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section
         of Helioviewer-specific metadata.
-
+        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+        can then be used to get required information.
         This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+
+        .. note::
+            We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
+            can then be used to get required information.
 
         Parameters
         ----------
@@ -233,12 +237,7 @@ class HelioviewerClient(object):
         >>> helioviewer_meta_data = header['helioviewer']  # doctest: +REMOTE_DATA
         """
         if jp2_id is None:
-            try:
-                jp2_id = self.get_closest_image(date, observatory, instrument, detector, measurement)['id']
-            except KeyError:
-                raise KeyError("The values used for observatory, instrument, detector, measurement "
-                               "do not correspond to a source_id. Please check the list using "
-                               "HelioviewerClient.data_sources.")
+            jp2_id = self.get_closest_image(date, observatory, instrument, detector, measurement)['id']
 
         params = {
             "action": "getJP2Header",
@@ -411,24 +410,22 @@ class HelioviewerClient(object):
     def _get_file(self, params, directory=None, overwrite=False):
         """Downloads a file and return the filepath to that file."""
         if directory is None:
-            directory = sunpy.config.get('downloads', 'download_dir')
+            directory = Path(sunpy.config.get('downloads', 'download_dir'))
         else:
-            directory = os.path.abspath(os.path.expanduser(directory))
+            directory = Path(directory).expanduser().absolute()
 
-        try:
-            os.makedirs(directory)
-        except OSError as e:
-            # TODO: Check this
-            if e.errno != errno.EEXIST:
-                raise OSError('Tried to create a directory and it failed.')
+        downloader = parfive.Downloader(overwrite=overwrite)
 
-        response = self._request(params)
-        try:
-            filepath = download_fileobj(response, directory, overwrite=overwrite)
-        finally:
-            response.close()
+        url = urllib.parse.urljoin(self._api,
+                                   "?" + urllib.parse.urlencode(params))
+        downloader.enqueue_file(url, path=directory)
 
-        return filepath
+        res = downloader.download()
+
+        if len(res) == 1:
+            return res[0]
+        else:
+            return res
 
     def _request(self, params):
         """
@@ -450,3 +447,14 @@ class HelioviewerClient(object):
     def _format_date(self, date):
         """Formats a date for Helioviewer API requests"""
         return parse_time(date).isot + "Z"
+
+    def _get_source_id(self, key):
+        """
+        Returns source_id based on the key.
+        """
+        source_id_list = list(partial_key_match(key, self.data_sources))
+        if len(source_id_list) > 1:  # or maybe != 1
+            raise KeyError(f"The values used: {key} do not correspond to one source_id "
+                           f"but {len(source_id_list)} source_id(s)."
+                           " Please check the list using HelioviewerClient.data_sources.")
+        return source_id_list[0]

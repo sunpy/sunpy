@@ -48,9 +48,9 @@ class NoRHTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Nobeyama Radioheliograph Homepage <http://solar.nro.nao.ac.jp/norh/>`_
-    * `Analysis Manual <http://solar.nro.nao.ac.jp/norh/doc/manuale/index.html>`_
-    * `Nobeyama Correlation Plots <http://solar.nro.nao.ac.jp/norh/html/cor_plot/>`_
+    * `Nobeyama Radioheliograph Homepage <https://solar.nro.nao.ac.jp/norh/>`_
+    * `Analysis Manual <https://solar.nro.nao.ac.jp/norh/doc/manuale/index.html>`_
+    * `Nobeyama Correlation Plots <https://solar.nro.nao.ac.jp/norh/html/cor_plot/>`_
     """
 
     # Class attribute used to specify the source class of the TimeSeries.

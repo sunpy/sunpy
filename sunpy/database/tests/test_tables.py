@@ -3,14 +3,16 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-from collections import Hashable
+from collections.abc import Hashable
 from datetime import datetime
 
 import pytest
 import os
 
-from astropy import units as u
+import astropy.units as u
 from astropy import conf
+from astropy.utils.exceptions import AstropyUserWarning
+
 import numpy as np
 
 from sunpy.database import Database
@@ -111,6 +113,7 @@ def test_tag_hashability():
 
 
 @pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
 def test_entries_from_fido_search_result(fido_search_result):
     entries = list(entries_from_fido_search_result(fido_search_result))
     # 66 entries for 8 instruments in fido_search_result
@@ -256,7 +259,8 @@ def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
 
 
 def test_entries_from_file():
-    entries = list(entries_from_file(MQ_IMAGE))
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        entries = list(entries_from_file(MQ_IMAGE))
     assert len(entries) == 1
     entry = entries[0]
     assert len(entry.fits_header_entries) == 31
@@ -331,8 +335,9 @@ def test_entries_from_file_time_string_parse_format():
 
 
 def test_entries_from_dir():
-    entries = list(entries_from_dir(
-        waveunitdir, time_string_parse_format='%d/%m/%Y'))
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        entries = list(entries_from_dir(
+            waveunitdir, time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 4
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
@@ -403,17 +408,19 @@ def test_entries_from_dir():
 
 
 def test_entries_from_dir_recursively_true():
-    entries = list(entries_from_dir(testdir, True,
-                                    default_waveunit='angstrom',
-                                    time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 128
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        entries = list(entries_from_dir(testdir, True,
+                                        default_waveunit='angstrom',
+                                        time_string_parse_format='%d/%m/%Y'))
+    assert len(entries) == 130
 
 
 def test_entries_from_dir_recursively_false():
-    entries = list(entries_from_dir(testdir, False,
-                                    default_waveunit='angstrom',
-                                    time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 107
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        entries = list(entries_from_dir(testdir, False,
+                                        default_waveunit='angstrom',
+                                        time_string_parse_format='%d/%m/%Y'))
+    assert len(entries) == 109
 
 
 @pytest.mark.remote_data
@@ -441,7 +448,7 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
-    assert len(entries) == 4
+    assert len(entries) == 8
     assert entries == [
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
@@ -470,6 +477,34 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             observation_time_start=datetime(2012, 12, 24, 0, 1, 58),
             observation_time_end=datetime(2012, 12, 25, 0, 1, 57),
             instrument='VIRGO', size=14.0, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/sph/VIRGO_D4.2_SPH_960411_120914.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0),
+            observation_time_end=datetime(2012, 9, 14, 0, 0),
+            instrument='VIRGO', size=512000.0, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_blue_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_green_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_red_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59),
+            instrument='VIRGO', size=32652.0, wavemin=None,
             wavemax=None)]
 
 

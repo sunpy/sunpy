@@ -17,6 +17,7 @@ from sunpy import config
 from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.metadata import MetaDict
+from sunpy.util.exceptions import SunpyUserWarning
 
 # define and register a new unit, needed for RHESSI
 det = u.def_unit('detector')
@@ -172,7 +173,7 @@ class GenericTimeSeries:
         colname : `str`
             The heading of the column you want output.
 
-        quantity : `~astropy.units.quantity.Quantity` or `~numpy.ndarray`
+        quantity : `~astropy.units.quantity.Quantity` or `numpy.ndarray`
             The values to be placed within the column.
             If updating values only then a numpy array is permitted.
 
@@ -341,6 +342,7 @@ class GenericTimeSeries:
             raise TypeError("TimeSeries classes must match if specified.")
 
         # Concatenate the metadata and data
+        kwargs['sort'] = kwargs.pop('sort', False)
         meta = self.meta.concatenate(otherts.meta)
         data = pd.concat([self.data.copy(), otherts.data], **kwargs)
 
@@ -441,7 +443,7 @@ class GenericTimeSeries:
                 u.Unit(self.meta.get(meta_property),
                        parse_strict='silent').physical_type == 'unknown'):
 
-                warnings.warn("Unknown value for "+meta_property.upper(), Warning)
+                warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
 
     def _validate_units(self, units, **kwargs):
         """
@@ -464,7 +466,7 @@ class GenericTimeSeries:
             if not isinstance(units[key], astropy.units.UnitBase):
                 # If this is not a unit then this can't be a valid units dict.
                 result = False
-                warnings.warn("Invalid unit given for \""+str(key)+"\"", Warning)
+                warnings.warn(f"Invalid unit given for {key}.", SunpyUserWarning)
 
         return result
 
@@ -483,7 +485,7 @@ class GenericTimeSeries:
         for column in set(self.data.columns.tolist()) - set(self.units.keys()):
             # For all columns not present in the units dictionary.
             self.units[column] = u.dimensionless_unscaled
-            warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
+            warnings.warn(f"Unknown units for {column}.", SunpyUserWarning)
 
         # Re-arrange so it's in the same order as the columns and removed unused.
         units = OrderedDict()
@@ -551,7 +553,7 @@ class GenericTimeSeries:
         """
         return self.data
 
-    def to_array(self, **kwargs):
+    def to_array(self, columns=None):
         """
         Return a numpy array of the give TimeSeries object.
 
@@ -561,16 +563,16 @@ class GenericTimeSeries:
             If None, return all columns minus the index, otherwise, returns
             specified columns.
 
-        kwargs :
-            All keyword arguments are handed to the `as_matix` method of the DataFrame.
-
         Returns
         -------
-        values : `~numpy.ndarray`
+        values : `numpy.ndarray`
             If the caller is heterogeneous and contains booleans or objects,
             the result will be of dtype=object. See Notes.
         """
-        return self.data.as_matrix(**kwargs)
+        if columns:
+            return self.data.values[columns]
+        else:
+            return self.data.values
 
     def __eq__(self, other):
         """

@@ -45,7 +45,7 @@ given then some default values are assumed. Here is a simple example::
     >>> import numpy as np
 
     >>> data = np.arange(0,100).reshape(10,10)
-    >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
+    >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy', 'cunit1': 'arcsec', 'cunit2': 'arcsec'}
     >>> my_map = sunpy.map.Map(data, header)
 
 The keys in the header follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_.
@@ -305,7 +305,7 @@ data from minimum to maximum is displayed as best as possible for most cases.
 This means that it is never necessary to touch the data such as applying a function
 such sqrt or log to the data to make your plot look good.
 There are many normalizations available from matplotlib such as `~matplotlib.colors.Lognorm`. Other
-`more exotic normalizations <http://docs.astropy.org/en/stable/visualization/index.html>`_ are also
+`more exotic normalizations <https://docs.astropy.org/en/stable/visualization/index.html>`_ are also
 made available from Astropy.  Just like the colormap the default normalization
 can be changed through the plot_settings dictionary or directly for the individual
 plot by passing a keyword argument. The following example shows the difference between
@@ -658,15 +658,15 @@ application).
 To apply this form of solar derotation to a `~sunpy.map.MapSequence`, simply import the
 function and apply it to your `~sunpy.map.MapSequence`::
 
-    >>> from sunpy.physics.transforms.solar_rotation import mapsequence_solar_derotate
+    >>> from sunpy.physics.solar_rotation import mapsequence_solar_derotate
     >>> derotated = mapsequence_solar_derotate(mc)  # doctest: +REMOTE_DATA
 
-For more info see `~sunpy.physics.transforms.solar_rotation.mapsequence`.
+For more info see `~sunpy.physics.solar_rotation.mapsequence_solar_derotate`.
 
 If you just want to calculate the shifts required to compensate for solar
 rotation relative to the first map in the `~sunpy.map.MapSequence` without applying them, use::
 
-    >>> from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift
+    >>> from sunpy.physics.solar_rotation import calculate_solar_rotate_shift
     >>> shifts = calculate_solar_rotate_shift(mc)  # doctest: +REMOTE_DATA
 
 Please consult the docstring of the `~sunpy.image.coalignment.mapsequence_coalign_by_match_template` function in order to learn about

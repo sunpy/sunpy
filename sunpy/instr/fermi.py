@@ -374,7 +374,7 @@ def rotate_vector(vector, axis, theta):
 
     Reference
     ---------
-    http://en.wikipedia.org/wiki/Euler-Rodrigues_parameters#Rotation_angle_and_rotation_axis
+    https://en.wikipedia.org/wiki/Euler-Rodrigues_parameters#Rotation_angle_and_rotation_axis
     """
 
     axis = axis / np.sqrt(np.dot(axis, axis))
