@@ -130,8 +130,8 @@ class LASCOMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
 
-        self.meta['cunit1'] = self.meta['cunit1'].lower()
-        self.meta['cunit2'] = self.meta['cunit2'].lower()
+        header['cunit1'] = header['cunit1'].lower()
+        header['cunit2'] = header['cunit2'].lower()
 
         super().__init__(data, header, **kwargs)
 
