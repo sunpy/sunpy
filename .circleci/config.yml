@@ -65,7 +65,7 @@ jobs:
           command: pip install -U pip
       - run:
           name: Install SunPy
-          command: pip install --no-use-pep517 --progress-bar off -e .[all,dev]
+          command: pip install --progress-bar off .[all,dev]
 
   32bit:
     docker:
