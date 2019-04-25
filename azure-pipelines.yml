@@ -27,7 +27,7 @@ jobs:
   parameters:
     name: Linux_37_online
     os: linux
-    tox: py37-online -- -n 4 --dist=loadfile
+    tox: py37-online --
 
 - template: azure-templates.yml
   parameters:
