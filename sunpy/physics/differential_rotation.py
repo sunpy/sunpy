@@ -325,7 +325,7 @@ def _get_extreme_position(coords, axis, operator=np.nanmax):
         elif axis == 'Ty':
             extreme_value = operator(coord.Ty.value)
         else:
-            raise ValueError('The "axis" argument must be either "Tx" or "Ty"')
+            raise ValueError('The "axis" argument must be either "Tx" or "Ty".')
         extreme_values.append(extreme_value)
 
     return operator(extreme_values) * u.arcsec
