@@ -1,5 +1,5 @@
 """
-Holds utility map function which do not belong in map objects
+This submodule provides utility functions to act on `sunpy.map.Map` instances.
 """
 
 
