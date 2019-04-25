@@ -10,12 +10,15 @@ from astropy.time import TimeDelta
 
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
-from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate,\
-    differential_rotate, all_pixel_indices_from_map, all_coordinates_from_map,\
-    map_edges, contains_full_disk, is_all_off_disk,\
-    is_all_on_disk, contains_limb, coordinate_is_on_disk, on_disk_bounding_coordinates,\
-    _get_new_observer, _rotate_submap_edge, _get_extreme_position, _get_bounding_coordinates,\
-    _warp_sun_coordinates
+from sunpy.physics.differential_rotation import (diff_rot, solar_rotate_coordinate,
+                                                 differential_rotate, all_pixel_indices_from_map,
+                                                 all_coordinates_from_map, map_edges,
+                                                 contains_full_disk, is_all_off_disk,
+                                                 is_all_on_disk, contains_limb,
+                                                 coordinate_is_on_disk, on_disk_bounding_coordinates,
+                                                 _get_new_observer, _rotate_submap_edge,
+                                                 _get_extreme_position, _get_bounding_coordinates,
+                                                 _warp_sun_coordinates)
 import sunpy.data.test
 import sunpy.map
 

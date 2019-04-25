@@ -343,17 +343,17 @@ def _get_bounding_coordinates(coords):
 
     Returns
     -------
-    bottom_left, top_right : `~list`
-        A pair of `~astropy.coordinates.SkyCoord` that specify the
-        bottom left hand and top right hand corner of a bounding box that
-        minimally encloses all the input coordinates.
+    bottom_left, top_right : `~astropy.coordinates.SkyCoord`
+        A  `~astropy.coordinates.SkyCoord` of length 2 that specifies the
+        bottom left hand (first entry) and top right hand (second entry) corner
+        of a bounding box that minimally encloses all the input coordinates.
     """
     rotated_x_min = _get_extreme_position(coords, "Tx", operator=np.nanmin)
     rotated_x_max = _get_extreme_position(coords, "Tx", operator=np.nanmax)
     rotated_y_min = _get_extreme_position(coords, "Ty", operator=np.nanmin)
     rotated_y_max = _get_extreme_position(coords, "Ty", operator=np.nanmax)
-    return SkyCoord(rotated_x_min, rotated_y_min, frame=Helioprojective, observer=coords[0].observer),\
-           SkyCoord(rotated_x_max, rotated_y_max, frame=Helioprojective, observer=coords[0].observer)
+    return SkyCoord([rotated_x_min, rotated_x_max], [rotated_y_min, rotated_y_max],
+                    frame=Helioprojective, observer=coords[0].observer)
 
 
 def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
@@ -541,7 +541,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         out_meta['crval2'] = center_rotated.Ty.value
         out_meta['crpix1'] = 1 + smap.data.shape[1]/2.0 + ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
         out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
-        return (sunpy.map.Map(out_data, out_meta)).submap(rotated_bl, rotated_tr)
+        return sunpy.map.Map(out_data, out_meta).submap(rotated_bl, rotated_tr)
     else:
         return sunpy.map.Map(out_data, out_meta)
 
