@@ -266,7 +266,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
 
     Parameters
     ----------
-    smap : `sunpy.map.Map`
+    smap : `~sunpy.map.Map`
         The input map from which the pixel coordinates are calculated.
 
     pixels : `~astropy.units.Quantity`
@@ -277,7 +277,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
         The location of the observer.
 
     diff_rot_kwargs : None, `~dict`
-        Keyword arguments accepted by `sunpy.physics.differential_rotation.diff_rot`.
+        Keyword arguments accepted by `~sunpy.physics.differential_rotation.diff_rot`.
 
     Returns
     -------
@@ -367,7 +367,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     xy : `numpy.ndarray`
         Array from `transform.warp`.
 
-    smap : `~sunpy.map`
+    smap : `~sunpy.map.GenericMap`
         Original map that we want to transform.
 
     Returns
@@ -420,7 +420,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
 
     Parameters
     ----------
-    smap : `~sunpy.map`
+    smap : `~sunpy.map.GenericMap`
         Original map that we want to transform.
 
     observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
@@ -433,7 +433,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
 
     Returns
     -------
-    differential_rotate : `~sunpy.map`
+    differential_rotate : `~sunpy.map.GenericMap`
         A map with the result of applying solar differential rotation to the
         input map.
     """
@@ -553,7 +553,7 @@ def all_pixel_indices_from_map(smap):
 
     Parameters
     ----------
-    smap : `~sunpy.map.Map`
+    smap : `~sunpy.map.GenericMap`
         A SunPy map.
 
     Returns
@@ -571,7 +571,7 @@ def all_coordinates_from_map(smap):
 
     Parameters
     ----------
-    smap : `~sunpy.map.Map`
+    smap : `~sunpy.map.GenericMap`
         A SunPy map.
 
     Returns
@@ -589,8 +589,8 @@ def map_edges(smap):
 
     Parameters
     ----------
-    smap : `~sunpy.map`
-        The input map
+    smap : `~sunpy.map.GenericMap`
+        The input map.
 
     Returns
     -------
@@ -621,8 +621,8 @@ def contains_full_disk(smap):
 
     Parameters
     ----------
-    smap : `~sunpy.map`
-        The input map
+    smap : `~sunpy.map.GenericMap`
+        The input map.
 
     Returns
     -------
@@ -658,7 +658,7 @@ def is_all_off_disk(smap):
 
     Parameters
     ----------
-    smap : `~sunpy.map`
+    smap : `~sunpy.map.GenericMap`
         The input map.
 
     Returns
@@ -680,7 +680,7 @@ def is_all_on_disk(smap):
 
     Parameters
     ----------
-    smap : `~sunpy.map`
+    smap : `~sunpy.map.GenericMap`
         The input map.
 
     Returns
@@ -705,7 +705,7 @@ def contains_limb(smap):
 
     Parameters
     ----------
-    smap : `~sunpy.map`
+    smap : `~sunpy.map.GenericMap`
         The input map.
 
     Returns
@@ -731,7 +731,7 @@ def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
     coordinate : `~sunpy.coordinate`
         The input coordinate.
 
-    scale : `~astropy.units`
+    scale : `~astropy.units.Quantity`
         The pixel scale size in units of arcseconds.
 
     Returns
@@ -753,7 +753,7 @@ def on_disk_bounding_coordinates(smap):
 
     Parameters
     ----------
-    smap : `~sunpy.map.Map`
+    smap : `~sunpy.map.GenericMap`
         The input map.
 
     Returns
