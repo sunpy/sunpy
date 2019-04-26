@@ -10,6 +10,10 @@ from astropy.coordinates import SkyCoord, Longitude, BaseCoordinateFrame, get_bo
 
 from sunpy.time import parse_time
 from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
+from sunpy.map.maputils import (all_coordinates_from_map, is_all_off_disk,
+                                coordinate_is_on_disk, contains_full_disk,
+                                is_all_on_disk, on_disk_bounding_coordinates,
+                                map_edges)
 
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']

@@ -3,13 +3,14 @@ import pytest
 
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import SkyCoord, BaseCoordinateFrame
+from astropy.coordinates import SkyCoord
 from astropy.coordinates import Longitude
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
 
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
+from sunpy.map.maputils import map_edges
 from sunpy.physics.differential_rotation import (diff_rot, solar_rotate_coordinate,
                                                  differential_rotate,
                                                  _get_new_observer, _rotate_submap_edge,
