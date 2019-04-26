@@ -8,8 +8,13 @@ ASTROPY_LT_3 = LooseVersion(__version__) < LooseVersion('3')
 
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
-from astropy.coordinates import (SkyCoord, get_body_barycentric, HeliocentricTrueEcliptic, Angle,
+from astropy.coordinates import (SkyCoord, get_body_barycentric, Angle,
                                  ConvertError)
+try:
+    from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+
 from astropy.time import Time
 
 from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
@@ -141,13 +146,13 @@ def test_hgs_hcrs():
                          obstime=obstime)
 
     # Transform to HTE at observation-time equinox
-    earth_hte = earth_hgs.transform_to(HeliocentricTrueEcliptic(equinox=obstime))
+    earth_hme = earth_hgs.transform_to(HeliocentricMeanEcliptic(equinox=obstime))
 
     # Validate against published values from the Astronomical Almanac (2013), page C6 per page E2
     # The dominant source of inaccuracy is the limited precision of the published B0 used above
-    assert quantity_allclose(earth_hte.lon, Angle('308d13m30.51s') - 180*u.deg, atol=5*u.arcsec)
-    assert quantity_allclose(earth_hte.lat, -Angle('-0.27s'), atol=10*u.arcsec)
-    assert quantity_allclose(earth_hte.distance, 0.9848139*u.AU, atol=5e-7*u.AU)
+    assert quantity_allclose(earth_hme.lon, Angle('308d13m30.51s') - 180*u.deg, atol=5*u.arcsec)
+    assert quantity_allclose(earth_hme.lat, -Angle('-0.27s'), atol=10*u.arcsec)
+    assert quantity_allclose(earth_hme.distance, 0.9848139*u.AU, atol=5e-7*u.AU)
 
 
 def test_hgs_hgc_roundtrip():
