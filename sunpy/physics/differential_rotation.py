@@ -728,8 +728,9 @@ def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
 
     Parameters
     ----------
-    coordinate : `~sunpy.coordinate`
-        The input coordinate.
+    coordinate : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+        The input coordinate.  The frame property of the input
+        coordinate must be helioprojective.
 
     scale : `~astropy.units.Quantity`
         The pixel scale size in units of arcseconds.
