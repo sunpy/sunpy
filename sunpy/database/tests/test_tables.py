@@ -448,8 +448,8 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
-    assert len(entries) == 8
-    assert entries == [
+    assert len(entries) == 10
+    expected = [
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/level1/1212/HK/121222_1.H01',
@@ -506,6 +506,9 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             observation_time_end=datetime(2014, 3, 30, 23, 59),
             instrument='VIRGO', size=32652.0, wavemin=None,
             wavemax=None)]
+
+    for e in expected:
+        assert e in entries
 
 
 def test_create_display_table_missing_entries():

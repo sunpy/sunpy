@@ -1,6 +1,9 @@
 .. The tests in the module are very fragile to change in ordering of VSO
    results. In their current form they are very hard to maintain.
 
+.. Skip all doctests here until the database locked error is fixed.
+.. doctest-skip-all
+
 .. _database_guide:
 
 --------------------------
