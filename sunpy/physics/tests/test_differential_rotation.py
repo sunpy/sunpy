@@ -11,11 +11,7 @@ from astropy.time import TimeDelta
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
 from sunpy.physics.differential_rotation import (diff_rot, solar_rotate_coordinate,
-                                                 differential_rotate, all_pixel_indices_from_map,
-                                                 all_coordinates_from_map, map_edges,
-                                                 contains_full_disk, is_all_off_disk,
-                                                 is_all_on_disk, contains_limb,
-                                                 coordinate_is_on_disk, on_disk_bounding_coordinates,
+                                                 differential_rotate,
                                                  _get_new_observer, _rotate_submap_edge,
                                                  _get_extreme_position, _get_bounding_coordinates,
                                                  _warp_sun_coordinates)
@@ -205,113 +201,6 @@ def test_differential_rotate(aia171_test_map, all_off_disk_map, all_on_disk_map,
     assert dmap.date == new_observer.obstime
     assert dmap.heliographic_latitude == new_observer.lat
     assert dmap.heliographic_longitude == new_observer.lon
-
-
-@pytest.fixture
-def sub_smap(aia171_test_map):
-    return aia171_test_map.submap((0, 0)*u.pix, (50, 60)*u.pix)
-
-
-def test_all_pixel_indices_from_map(sub_smap):
-    pixel_indices = all_pixel_indices_from_map(sub_smap)
-    shape = sub_smap.data.shape
-    ny = shape[0]
-    nx = shape[1]
-    assert np.all(pixel_indices.shape == (2, ny, nx))
-    assert np.all(pixel_indices.unit == u.pix)
-    assert np.all(pixel_indices[:, 0, 0] == [0., 0.] * u.pix)
-    assert np.all(pixel_indices[:, 0, nx-1] == [nx-1, 0.] * u.pix)
-    assert np.all(pixel_indices[:, ny-1, 0] == [0., ny-1] * u.pix)
-    assert np.all(pixel_indices[:, ny-1, nx-1] == [nx-1, ny-1] * u.pix)
-
-
-def test_all_coordinates_from_map(sub_smap):
-    coordinates = all_coordinates_from_map(sub_smap)
-    shape = sub_smap.data.shape
-    assert coordinates.shape == (shape[0], shape[1])
-    assert isinstance(coordinates, SkyCoord)
-    assert isinstance(coordinates.frame, BaseCoordinateFrame)
-    assert coordinates.frame.name == sub_smap.coordinate_frame.name
-
-
-def test_map_edges(all_off_disk_map):
-    edges = map_edges(all_off_disk_map)
-    assert type(edges) is dict
-    keys = edges.keys()
-    assert 'lhs' in keys
-    assert 'rhs' in keys
-    assert 'top' in keys
-    assert 'bottom' in keys
-    assert len(edges['lhs']) == 11
-    assert np.all(edges['lhs'][0] == [0, 0] * u.pix)
-    assert np.all(edges['lhs'][10] == [10, 0] * u.pix)
-
-    assert len(edges['rhs']) == 11
-    assert np.all(edges['rhs'][0] == [0, 9] * u.pix)
-    assert np.all(edges['rhs'][10] == [10, 9] * u.pix)
-
-    assert len(edges['bottom']) == 10
-    assert np.all(edges['bottom'][0] == [0, 0] * u.pix)
-    assert np.all(edges['bottom'][9] == [0, 9] * u.pix)
-
-    assert len(edges['top']) == 10
-    assert np.all(edges['top'][0] == [10, 0] * u.pix)
-    assert np.all(edges['top'][9] == [10, 9] * u.pix)
-
-
-def test_contains_full_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
-    assert contains_full_disk(aia171_test_map)
-    assert ~contains_full_disk(all_off_disk_map)
-    assert ~contains_full_disk(all_on_disk_map)
-    assert ~contains_full_disk(straddles_limb_map)
-
-
-def test_is_all_off_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
-    assert ~is_all_off_disk(aia171_test_map)
-    assert is_all_off_disk(all_off_disk_map)
-    assert ~is_all_off_disk(all_on_disk_map)
-    assert ~is_all_off_disk(straddles_limb_map)
-
-
-def test_is_all_on_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
-    assert ~is_all_on_disk(aia171_test_map)
-    assert ~is_all_on_disk(all_off_disk_map)
-    assert is_all_on_disk(all_on_disk_map)
-    assert ~is_all_on_disk(straddles_limb_map)
-
-
-def test_contains_limb(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
-    assert contains_limb(aia171_test_map)
-    assert ~contains_limb(all_off_disk_map)
-    assert ~contains_limb(all_on_disk_map)
-    assert contains_limb(straddles_limb_map)
-
-
-def test_coordinate_is_on_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
-    scale = aia171_test_map.rsun_obs
-    off_disk = aia171_test_map.bottom_left_coord
-    on_disk = aia171_test_map.center
-
-    # Check for individual coordinates
-    assert coordinate_is_on_disk(on_disk, scale)
-    assert ~coordinate_is_on_disk(off_disk, scale)
-
-    # Check for sets of coordinates
-    assert np.any(coordinate_is_on_disk(all_coordinates_from_map(aia171_test_map), scale))
-    assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(aia171_test_map), scale))
-    assert np.all(~coordinate_is_on_disk(all_coordinates_from_map(all_off_disk_map), scale))
-    assert np.all(coordinate_is_on_disk(all_coordinates_from_map(all_on_disk_map), scale))
-    assert np.any(coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map), scale))
-    assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map), scale))
-
-
-# Testing values are derived from running the code, not from external sources
-def test_on_disk_bounding_coordinates(aia171_test_map):
-    bl, tr = on_disk_bounding_coordinates(aia171_test_map)
-    np.testing.assert_almost_equal(bl.Tx.to(u.arcsec).value, -954.17124289, decimal=1)
-    np.testing.assert_almost_equal(bl.Ty.to(u.arcsec).value, -965.93063472, decimal=1)
-    np.testing.assert_almost_equal(tr.Tx.to(u.arcsec).value, 964.27061417, decimal=1)
-    np.testing.assert_almost_equal(tr.Ty.to(u.arcsec).value, 971.63586861, decimal=1)
 
 
 # Tests of the helper functions
