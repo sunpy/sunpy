@@ -132,15 +132,15 @@ def test_hcrs_hgs_array_obstime():
 
 def test_hgs_hcrs():
     # This test checks the HGS->HCRS transformation by transforming from HGS to
-    # HeliocentricTrueEcliptic (HTE).  It will fail if there are errors in Astropy's
-    # HCRS->ICRS or ICRS->HTE transformations.
+    # HeliocentricMeanEcliptic (HME).  It will fail if there are errors in Astropy's
+    # HCRS->ICRS or ICRS->HME transformations.
 
     # Use published HGS coordinates in the Astronomical Almanac (2013), pages C6-C7
     obstime = Time('2013-01-28')
     earth_hgs = SkyCoord(0*u.deg, -5.73*u.deg, 0.9848139*u.AU, frame=HeliographicStonyhurst,
                          obstime=obstime)
 
-    # Transform to HTE at observation-time equinox
+    # Transform to HME at observation-time equinox
     earth_hme = earth_hgs.transform_to(HeliocentricMeanEcliptic(equinox=obstime))
 
     # Validate against published values from the Astronomical Almanac (2013), page C6 per page E2
