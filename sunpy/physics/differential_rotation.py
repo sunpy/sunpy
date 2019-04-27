@@ -1,4 +1,3 @@
-from itertools import chain, product
 import warnings
 from copy import deepcopy
 
