@@ -58,7 +58,7 @@ jobs:
           command: pip install -U pip
       - run:
           name: Install dependencies
-          command: pip install --progress-bar off -e .[all]
+          command: pip install --progress-bar off .[all]
       - run:
           name: Run tests
           command: python setup.py test
@@ -82,7 +82,7 @@ jobs:
           command: pip install -U pip
       - run:
           name: Install dependencies
-          command: pip install --progress-bar off -e .[all]
+          command: pip install --progress-bar off .[all]
       - run:
           name: Run tests
           command: python setup.py test
