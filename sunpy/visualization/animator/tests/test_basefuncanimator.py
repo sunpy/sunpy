@@ -119,19 +119,6 @@ def test_edges_to_centers_nd():
     assert np.array_equal(output, expected)
 
 
-@figure_test
-def test_lineanimator_figure():
-    np.random.seed(1)
-    data_shape0 = (10, 20)
-    data0 = np.random.rand(*data_shape0)
-    plot_axis0 = 1
-    slider_axis0 = 0
-    xdata = np.tile(np.linspace(0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
-    fig = plt.figure()
-    ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata], fig=fig)
-    ani.plot_start_image(ax=fig.gca())
-
-
 class ArrayAnimatorTest(ArrayAnimator):
     def __init__(self, data):
         self.naxis = data.ndim
@@ -181,3 +168,15 @@ def test_lineanimator_init(plot_axis_index, axis_ranges, xlabel, xlim):
     data = np.random.random((5, 5, 10))
     LineAnimator(data=data, plot_axis_index=plot_axis_index, axis_ranges=axis_ranges,
                  xlabel=xlabel, xlim=xlim)
+
+@figure_test
+def test_lineanimator_figure():
+    np.random.seed(1)
+    data_shape0 = (10, 20)
+    data0 = np.random.rand(*data_shape0)
+    plot_axis0 = 1
+    slider_axis0 = 0
+    xdata = np.tile(np.linspace(0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
+    fig = plt.figure()
+    ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata], fig=fig)
+    ani.plot_start_image(ax=fig.gca())
