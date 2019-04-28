@@ -168,7 +168,7 @@ class XRSTimeSeries(GenericTimeSeries):
             xrsa = hdulist[2].data['FLUX'][0][:, 1]
             seconds_from_start = hdulist[2].data['TIME'][0]
         elif 1 <= len(hdulist) <= 3:
-            start_time = parse_time(header['TIMEZERO'])
+            start_time = parse_time(header['TIMEZERO'], format='utime')
             seconds_from_start = hdulist[0].data[0]
             xrsb = hdulist[0].data[1]
             xrsa = hdulist[0].data[2]
