@@ -355,10 +355,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                   _is_url(arg)):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
-                pairs = self._read_file(path, **kwargs)
-                # data_header_pairs += pairs
-                filepaths.append(pairs[1])
-
+                read, result = self._read_file(path, **kwargs)
+                if read:
+                    data_header_pairs.append(result)
+                else:
+                    filepaths.append(result)
             else:
                 # raise ValueError("File not found or invalid input")
                 raise NoMatchError("File not found or invalid input")
