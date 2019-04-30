@@ -228,7 +228,7 @@ def on_disk_bounding_coordinates(smap):
 
     Returns
     -------
-    (bl, tr) : `~list`
+    (bl, tr) : `~astropy.coordinates.SkyCoord`
         Returns the bottom left and top right coordinates that bound the
         spatial location of all the on-disk pixels.
     """
@@ -245,8 +245,8 @@ def on_disk_bounding_coordinates(smap):
 
     # The bottom left and top right coordinates that contain
     # the on disk coordinates.
-    bl = SkyCoord(np.nanmin(on_disk_coordinates.Tx), np.nanmin(on_disk_coordinates.Ty),
-                  frame=Helioprojective, observer=smap.observer_coordinate)
-    tr = SkyCoord(np.nanmax(on_disk_coordinates.Tx), np.nanmax(on_disk_coordinates.Ty),
-                  frame=Helioprojective, observer=smap.observer_coordinate)
-    return bl, tr
+    tx = on_disk_coordinates.Tx.value
+    ty = on_disk_coordinates.Ty.value
+    return SkyCoord([np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
+                    [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
+                    frame=Helioprojective, observer=smap.observer_coordinate)
