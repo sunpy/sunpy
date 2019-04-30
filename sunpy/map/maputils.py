@@ -218,7 +218,7 @@ def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
 
 def on_disk_bounding_coordinates(smap):
     """
-    Returns the the bottom left and top-right coordinates of a minimal
+    Returns the the bottom left and top-right coordinates of the smallest
     rectangular region that contains all the on-disk pixels in the input map.
 
     Parameters
@@ -228,9 +228,10 @@ def on_disk_bounding_coordinates(smap):
 
     Returns
     -------
-    (bl, tr) : `~astropy.coordinates.SkyCoord`
-        Returns the bottom left and top right coordinates that bound the
-        spatial location of all the on-disk pixels.
+    bl, tr : `~astropy.coordinates.SkyCoord`
+        Returns a SkyCoord of length 2 such that the first entry is the bottom left
+        coordinate and the second entry is the top right coordinate of the smallest
+        rectangular region that contains all the on-disk pixels in the input map.
     """
     # Check that the input map is not all off disk.
     if is_all_off_disk(smap):
