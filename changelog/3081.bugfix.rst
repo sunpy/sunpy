@@ -1,0 +1,1 @@
+Fixes bug when creating a timeseries from a URL and bug when creating a TimeSeries from  older GOES/XRS fits files. 

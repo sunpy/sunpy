@@ -178,6 +178,21 @@ class TestTimeSeries(object):
         ts_noaa_pre = sunpy.timeseries.TimeSeries(noaa_pre_filepath, source='NOAAPredictIndices')
         assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
 
+# ==============================================================================
+# Remote Sources Tests
+# ==============================================================================
+
+    @pytest.mark.remote_data
+    def test_goes_remote(self):
+        # Older format file
+        goes = sunpy.timeseries.TimeSeries(
+            'https://umbra.nascom.nasa.gov/goes/fits/1986/go06860129.fits')
+        assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+        # Newer format
+        goes = sunpy.timeseries.TimeSeries(
+            'https://umbra.nascom.nasa.gov/goes/fits/2018/go1520180626.fits')
+        assert isinstance(goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+
 #==============================================================================
 # Manual TimeSeries Tests
 #==============================================================================
