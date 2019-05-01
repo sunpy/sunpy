@@ -823,7 +823,7 @@ class Database(object):
                                        progress=False):
         """Download_from_hek_query_result(query_result,path=None, progress=False)
         Add new database entries from a HEK query by translating it into a VSO query
-        and invoking the [download_from_vso_query_result] method.
+        and invoking  `sunpy.database.database.download_from_vso_query_result`.
 
         Parameters
         ----------
