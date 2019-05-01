@@ -289,11 +289,11 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
 def test_get_extreme_position():
     coords = SkyCoord([-1, 0, 1, np.nan]*u.arcsec, [-2, 0, 2, -np.nan]*u.arcsec, frame=frames.Helioprojective)
 
-    assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1*u.arcsec
-    assert _get_extreme_position(coords, 'Ty', operator=np.nanmin) == -2*u.arcsec
+    assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1
+    assert _get_extreme_position(coords, 'Ty', operator=np.nanmin) == -2
 
-    assert _get_extreme_position(coords, 'Tx', operator=np.nanmax) == 1*u.arcsec
-    assert _get_extreme_position(coords, 'Ty', operator=np.nanmax) == 2*u.arcsec
+    assert _get_extreme_position(coords, 'Tx', operator=np.nanmax) == 1
+    assert _get_extreme_position(coords, 'Ty', operator=np.nanmax) == 2
 
     with pytest.raises(ValueError):
         _get_extreme_position(coords, 'lon', operator=np.nanmax)
