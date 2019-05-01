@@ -327,7 +327,7 @@ def _get_extreme_position(coords, axis, operator=np.nanmax):
             raise ValueError('The "axis" argument must be either "Tx" or "Ty".')
         extreme_values.append(extreme_value)
 
-    return operator(extreme_values) * u.arcsec
+    return operator(extreme_values)
 
 
 def _get_bounding_coordinates(coords):
@@ -351,7 +351,8 @@ def _get_bounding_coordinates(coords):
     rotated_x_max = _get_extreme_position(coords, "Tx", operator=np.nanmax)
     rotated_y_min = _get_extreme_position(coords, "Ty", operator=np.nanmin)
     rotated_y_max = _get_extreme_position(coords, "Ty", operator=np.nanmax)
-    return SkyCoord([rotated_x_min, rotated_x_max], [rotated_y_min, rotated_y_max],
+    return SkyCoord([rotated_x_min, rotated_x_max] * u.arcsec,
+                    [rotated_y_min, rotated_y_max] * u.arcsec,
                     frame=Helioprojective, observer=coords[0].observer)
 
 

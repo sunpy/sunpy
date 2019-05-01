@@ -8,6 +8,7 @@ import numpy as np
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
+from sunpy.map import GenericMap
 from sunpy.coordinates import Helioprojective
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
@@ -106,7 +107,7 @@ def contains_full_disk(smap):
     y = [p[1] for p in edge_pixels] * u.pix
 
     # Calculate the edge of the world
-    edge_of_world = smap.pixel_to_world(x, y).transform_to(Helioprojective)
+    edge_of_world = smap.pixel_to_world(x, y)
 
     # Calculate the distance of the edge of the world in solar radii
     distance = u.R_sun * np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2) / smap.rsun_obs
@@ -211,8 +212,6 @@ def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
     """
     # Calculate the radii of every pixel in helioprojective Cartesian
     # co-ordinate distance units.
-    if not isinstance(coordinate.frame, Helioprojective):
-        raise ValueError("Input coordinate must be in the Helioprojective Cartesian frame.")
     return u.R_sun * (np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2) / scale) < 1 * u.R_sun
 
 
