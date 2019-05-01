@@ -1,0 +1,1 @@
+Add a helper utility for creating a `sunpy.map.Map` header
