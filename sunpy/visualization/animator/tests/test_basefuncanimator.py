@@ -1,4 +1,5 @@
 from functools import partial
+from itertools import product
 
 import matplotlib.animation as mplanim
 import matplotlib.axes as maxes
@@ -6,8 +7,13 @@ import matplotlib.backend_bases as mback
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+import astropy.wcs
+import astropy.units as u
 
+import sunpy.data.test
+from sunpy.time import parse_time
 from sunpy.tests.helpers import figure_test
+from sunpy.data.sample import AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE
 from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, ImageAnimatorWCS, base
 
 
@@ -185,13 +191,9 @@ def test_lineanimator_figure():
 
 @figure_test
 def test_imageanimator_figure():
-    from itertools import product
-    import astropy.wcs
-    import astropy.units as u
-    import sunpy.map
-    from sunpy.time import parse_time
-    from sunpy.data.sample import AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE
-    map_seuence = sunpy.map.Map(AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE, sequence=True)
+    AIA_171 = sunpy.data.test.get_test_filepath('aia_171_level1.fits')
+    KCOR = sunpy.data.test.get_test_filepath('20181209_180305_kcor_l1.5_rebinned.fits')
+    map_seuence = sunpy.map.Map(AIA_171, KCOR, sequence=True)
     sequence_array = map_seuence.as_array()
     wcs_input_dict = {f'{key}{n+1}': map_seuence.all_meta()[0].get(f'{key}{n}')
                       for n, key in product([1, 2], ['CTYPE', 'CUNIT', 'CDELT'])}
