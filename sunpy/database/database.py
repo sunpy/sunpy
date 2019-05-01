@@ -827,7 +827,7 @@ class Database(object):
 
         Parameters
         ----------
-        query_result : sunpy.net.vso.QueryResponse
+        query_result : `sunpy.net.vso.QueryResponse`
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
         path , progress
