@@ -13,10 +13,10 @@ import matplotlib.pyplot as plt
 import astropy
 from sunpy.coordinates import frames
 
-__all__ = ['meta_helper']
+__all__ = ['MapHelper']
 
 
-class map_helper:
+class MapHelper:
     """
     A helper class for knowing what is required in a `sunpy.map.Map` header.
     A `sunpy.map.Map` header consists of a dictionary that contains meta information
@@ -39,16 +39,16 @@ class map_helper:
 
         * print the accepeted meta keywords that are used in a sunpy.map.Map header
           >>> from sunpy import map
-          >>> map.meta_helper.acceptable_meta_keywords() 
+          >>> map.MapHelper.acceptable_meta_keywords() 
           cunit1  :  Units of the coordinate increments along naxis1 e.g. arcsec **required
           ...
           CD2_2  :  Matrix element CDi_j describing the rotation required to align solar North with the top of the image.
 
         * check is a meta keyword is acceptable and print information about it
-          >>> map.meta_helper.acceptable_meta_keywords('exptime')
+          >>> map.MapHelper.acceptable_meta_keywords('exptime')
           exptime is an accepted keyword  :  exposure time of observation, in seconds e.g 2
 
-          >>> map.meta_helper.acceptable_meta_keywords('keyword_test')
+          >>> map.MapHelper.acceptable_meta_keywords('keyword_test')
           keyword_test  is not in the accepted meta data required for sunpy.map.Map 
     
     Creating headers from map_helper:
@@ -61,12 +61,12 @@ class map_helper:
           >>> import numpy as np
 
           >>> data = np.random.rand(1024, 1024)
-          >>> header = map.map_helper.make_header(data)
+          >>> header = map.MapHelper.make_header(data)
           >>> my_map = map.Map(data, header)
         
         * Create a header from a reference SkyCoord object
           >>> my_coord = SkyCoord(100*u.arcsec, 100*u.arcsec, obstime = '2013-10-28 01:00', frame = frames.Helioprojective)
-          >>> header = map.map_helper.make_header(data, my_coord)
+          >>> header = map.MapHelper.make_header(data, my_coord)
           >>> my_map = map.Map(data, header)
 
 
@@ -142,7 +142,7 @@ class map_helper:
 
         >>> data = np.random.rand(1024, 1024)
         >>> my_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime="2017-08-01", observer = 'earth', frame=frames.Helioprojective)
-        >>> my_header = map.meta_helper.make_header(data, my_coord, crval = [0,0], cdelt = [2,2])
+        >>> my_header = map.MapHelper.make_header(data, my_coord, crval = [0,0], cdelt = [2,2])
         >>> my_map = map.Map(data, my_header)
 
         """
@@ -266,7 +266,7 @@ def _get_meta_from_coordinate(coordinate):
 
     return coord_meta
 
-meta_helper = map_helper()
+MapHelper = MapHelper()
 
 acceptable_meta = {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
                   'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
