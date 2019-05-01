@@ -829,7 +829,6 @@ class Database(object):
         ----------
         query_result : `sunpy.net.vso.QueryResponse`
             A VSO query response that was returned by `sunpy.net.vso.VSOClient.query`.
-            :class:`sunpy.net.vso.VSOClient` object.
         path , progress
         """
         translated_query = itertools.chain.from_iterable(
