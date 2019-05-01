@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 
 from sunpy.tests.helpers import figure_test
-from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, base
+from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, ImageAnimatorWCS, base
 
 
 class FuncAnimatorTest(BaseFuncAnimator):
@@ -169,6 +169,7 @@ def test_lineanimator_init(plot_axis_index, axis_ranges, xlabel, xlim):
     LineAnimator(data=data, plot_axis_index=plot_axis_index, axis_ranges=axis_ranges,
                  xlabel=xlabel, xlim=xlim)
 
+
 @figure_test
 def test_lineanimator_figure():
     np.random.seed(1)
@@ -180,3 +181,23 @@ def test_lineanimator_figure():
     fig = plt.figure()
     ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata], fig=fig)
     ani.plot_start_image(ax=fig.gca())
+
+
+@figure_test
+def test_imageanimator_figure():
+    from itertools import product
+    import astropy.wcs
+    import astropy.units as u
+    import sunpy.map
+    from sunpy.time import parse_time
+    from sunpy.data.sample import AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE
+    map_seuence = sunpy.map.Map(AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE, sequence=True)
+    sequence_array = map_seuence.as_array()
+    wcs_input_dict = {f'{key}{n+1}': map_seuence.all_meta()[0].get(f'{key}{n}')
+                      for n, key in product([1, 2], ['CTYPE', 'CUNIT', 'CDELT'])}
+    t0, t1 = map(parse_time, [k['date-obs'] for k in map_seuence.all_meta()])
+    time_diff = (t1 - t0).to(u.s)
+    wcs_input_dict.update({'CTYPE1': 'Time', 'CUNIT1': time_diff.unit.name, 'CDELT1': time_diff.value})
+    wcs = astropy.wcs.WCS(wcs_input_dict)
+    wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1])
+    plt.show()
