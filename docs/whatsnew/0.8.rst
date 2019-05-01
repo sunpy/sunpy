@@ -233,7 +233,7 @@ Maps can now be transformed using solar differential rates.
     import astropy.units as u
     import sunpy.map
     import sunpy.data.sample
-    from sunpy.physics.differential_rotation import diffrot_map
+    ``from sunpy.physics.differential_rotation import diffrot_map``
     aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     dr_map = diffrot_map(aia_map, dt=-4*u.day)
 
