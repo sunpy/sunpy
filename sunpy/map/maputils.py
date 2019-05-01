@@ -92,7 +92,8 @@ def contains_full_disk(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input map.
+        The input map.  The world coordinate frame must be helioprojective
+        Cartesian.
 
     Returns
     -------
