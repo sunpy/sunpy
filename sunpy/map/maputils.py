@@ -134,7 +134,7 @@ def is_all_off_disk(smap):
     Returns
     -------
     is_all_off_disk : `~bool`
-        Returns True if all map pixels are strictly more than one solar radius
+        Returns `True` if all map pixels are strictly more than one solar radius
         away from the center of the Sun.
     """
     return np.all(~coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs))
