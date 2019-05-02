@@ -133,9 +133,11 @@ def _get_new_observer(initial_obstime, observer, time):
 
     Returns
     -------
-    new_observer : `~astropy.coordinates.SkyCoord`
-        The position of the observer in space and time after solar rotation has been
-        applied.
+    new_observer : `~astropy.coordinates.SkyCoord`, `~astropy.coordinates.BaseCoordinateFrame`
+        The position of the observer in space and time. If the "time" keyword is used
+        the output is an `~astropy.coordinates.SkyCoord`. If the "observer" keyword
+        is not None the output has the same type as the "observer" keyword.  In all cases
+        the output is specified in the heliographic Stonyhurst coordinate system.
     """
     # Check the input and create the new observer
     if (observer is not None) and (time is not None):
