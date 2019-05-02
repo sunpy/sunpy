@@ -651,14 +651,16 @@ class GenericMap(NDData):
         heliographic_longitude = self.meta.get('hgln_obs', None)
 
         if heliographic_longitude is None:
-            if self._default_heliographic_longitude is None:
-                warnings.warn_explicit(
-                    "Missing metadata for heliographic longitude: "
-                    "assuming longitude of 0 degrees",
-                    Warning, __file__,
-                    inspect.currentframe().f_back.f_lineno)
-                self._default_heliographic_longitude = 0
-            heliographic_longitude = self._default_heliographic_longitude
+            if self.meta.get('crln_obs', None) is not None:
+                heliographic_longitude = self.meta['crln_obs'] * u.deg - get_sun_L0(self.date)
+            else:
+                if self._default_heliographic_longitude is None:
+                    warnings.warn_explicit("Missing metadata for heliographic longitude: "
+                                           "assuming longitude of 0 degrees",
+                                           Warning, __file__,
+                                           inspect.currentframe().f_back.f_lineno)
+                    self._default_heliographic_longitude = 0
+                heliographic_longitude = self._default_heliographic_longitude
 
         if isinstance(heliographic_longitude, six.string_types):
             heliographic_longitude = float(heliographic_longitude)
