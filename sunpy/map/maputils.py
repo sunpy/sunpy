@@ -228,7 +228,7 @@ def on_disk_bounding_coordinates(smap):
     Returns
     -------
     bl, tr : `~astropy.coordinates.SkyCoord`
-        Returns a SkyCoord of length 2 such that the first entry is the bottom left
+        Returns a `~astropy.coordinates.SkyCoord` of length 2 such that the first entry is the bottom left
         coordinate and the second entry is the top right coordinate of the smallest
         rectangular region that contains all the on-disk pixels in the input map.
     """
