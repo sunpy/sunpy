@@ -16,6 +16,7 @@ from astropy._erfa.core import ErfaWarning
 from astropy.constants import c as speed_of_light
 
 from sunpy.time import parse_time
+from sunpy import log
 
 from .frames import HeliographicStonyhurst as HGS
 from .transformations import _SUN_DETILT_MATRIX
@@ -37,7 +38,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
     time : various
         Time to use as `~astropy.time.Time` or in a parse_time-compatible format
     observer : `~astropy.coordinates.SkyCoord`
-        If not None, the returned coordinate is the apparent location (i.e., factors in light
+        If not None, the returned coordinate is the apparent location (i.e., accounts for light
         travel time)
 
     Returns
@@ -63,7 +64,8 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
             light_travel_time = distance / speed_of_light
             emitted_time = obstime - light_travel_time
 
-        print('Apparent location factors in {} seconds of light travel time'.format(light_travel_time.to('s').value))
+        log.info(f"Apparent body location accounts for {light_travel_time.to('s').value:.2f}"
+                  " seconds of light travel time")
 
     body_hgs = ICRS(body_icrs).transform_to(HGS(obstime=obstime))
 
