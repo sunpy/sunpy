@@ -145,7 +145,7 @@ def is_all_on_disk(smap):
     Checks if the entire map is on the solar disk.
 
     The check is performed by calculating the distance of every pixel
-    from the center of the Sun.  If they are all on-disk, then the
+    from the center of the Sun. If they are all on-disk, then the
     function returns True. Otherwise, the function returns False.
 
     Parameters
