@@ -225,7 +225,6 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         """
         Parses an EVE Averages file.
         """
-        print('\nin _parse_average_csv()')
         return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
 
     @staticmethod
