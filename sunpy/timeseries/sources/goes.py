@@ -112,8 +112,8 @@ class XRSTimeSeries(GenericTimeSeries):
         figure.show()
 
     # ToDo: is this part of the DL pipeline? If so delete.
-    @classmethod
-    def _get_goes_sat_num(self, start, end):
+    @staticmethod
+    def _get_goes_sat_num(start, end):
         """Parses the query time to determine which GOES satellite to use."""
 
         goes_operational = {
@@ -133,10 +133,8 @@ class XRSTimeSeries(GenericTimeSeries):
 
         sat_list = []
         for sat_num in goes_operational:
-            if ((start >= goes_operational[sat_num].start and
-                 start <= goes_operational[sat_num].end and
-                (end >= goes_operational[sat_num].start and
-                 end <= goes_operational[sat_num].end))):
+            if (goes_operational[sat_num].start <= start <= goes_operational[sat_num].end and
+                    goes_operational[sat_num].start <= end <= goes_operational[sat_num].end):
                 # if true then the satellite with sat_num is available
                 sat_list.append(sat_num)
 
@@ -168,7 +166,7 @@ class XRSTimeSeries(GenericTimeSeries):
             xrsa = hdulist[2].data['FLUX'][0][:, 1]
             seconds_from_start = hdulist[2].data['TIME'][0]
         elif 1 <= len(hdulist) <= 3:
-            start_time = parse_time(header['TIMEZERO'])
+            start_time = parse_time(header['TIMEZERO'], format='utime')
             seconds_from_start = hdulist[0].data[0]
             xrsb = hdulist[0].data[1]
             xrsa = hdulist[0].data[2]
