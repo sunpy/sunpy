@@ -13,7 +13,6 @@ import astropy.units as u
 import sunpy.data.test
 from sunpy.time import parse_time
 from sunpy.tests.helpers import figure_test
-from sunpy.data.sample import AIA_193_CUTOUT01_IMAGE, AIA_193_CUTOUT02_IMAGE
 from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, ImageAnimatorWCS, base
 
 
