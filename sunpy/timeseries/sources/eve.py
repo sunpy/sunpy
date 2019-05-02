@@ -1,40 +1,41 @@
-# -*- coding: utf-8 -*-
-"""EVE TimeSeries subclass definitions."""
 import os
 import codecs
-from astropy.time import TimeDelta
-from collections import OrderedDict
-import matplotlib.pyplot as plt
-from pandas.io.parsers import read_csv
 from os.path import basename
+from datetime import datetime
+from collections import OrderedDict
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import dates
+from pandas import DataFrame
+from pandas.io.parsers import read_csv
+
+import astropy.units as u
+from astropy.time import TimeDelta
+
 import sunpy.io
+from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
-from pandas import DataFrame
-import astropy.units as u
-import numpy as np
-from datetime import datetime
-from matplotlib import dates
-from sunpy.time import parse_time
 
 __all__ = ['EVESpWxTimeSeries', 'ESPTimeSeries']
 
 
 class ESPTimeSeries(GenericTimeSeries):
     """
-    SDO EVE/ESP Level1 data
+    SDO EVE/ESP Level 1 data.
 
     The Extreme ultraviolet Spectro-Photometer (ESP) is an irradiance instrument
     which is part of the Extreme ultraviolet Variability Experiment (EVE) onboard
-    SDO. ESP provides high time cadence (0.25s) EUV irradiance measurments in five
+    SDO. ESP provides high time cadence (0.25s) EUV irradiance measurements in five
     channels, one soft X-ray and 4 EUV. The first four orders of the diffraction grating
-    gives measurments centered on 18nm, 26nm, 30nm and 36nm. The zeroth order (obtained
-    by 4 photodiodes) provides the soft X-ray measurments from 0.1-7nm.
+    gives measurements centered on 18nm, 26nm, 30nm and 36nm. The zeroth order (obtained
+    by 4 photodiodes) provides the soft X-ray measurements from 0.1-7nm.
 
     The ESP level 1 fits files are fully calibrated. The TimeSeries object created from
     an ESP fits file will conatain 4 columns namely:
 
-        * 'QD' - sum of 4 quad diodes, this is the soft X-ray measurments 0.1-7nm
+        * 'QD' - sum of 4 quad diodes, this is the soft X-ray measurements 0.1-7nm
         * 'CH_18' - EUV irradiance 18nm
         * 'CH_26' - EUV irradiance 26nm
         * 'CH_30' - EUV irradiance 30nm
@@ -52,7 +53,6 @@ class ESPTimeSeries(GenericTimeSeries):
     -----
     The 36nm channel demonstrates a significant noise and it is not recommended to be
     used for short-time observations of solar irradiance.
-
     """
 
     _source = 'esp'
@@ -82,7 +82,7 @@ class ESPTimeSeries(GenericTimeSeries):
     @classmethod
     def _parse_file(cls, filepath):
         """
-        parses a EVE ESP level 1 data
+        Parses a EVE ESP level 1 data.
         """
         hdus = sunpy.io.read_file(filepath)
         return cls._parse_hdus(hdus)
@@ -112,7 +112,9 @@ class ESPTimeSeries(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to an EVE image"""
+        """
+        Determines if header corresponds to an EVE image.
+        """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
         if 'meta' in kwargs.keys():
@@ -123,22 +125,21 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     """
     SDO EVE LightCurve for level 0CS data.
 
-    The Extreme Ultraviolet Variability Experiment (EVE) is an instrument on board
-    the Solar Dynamics Observatory (SDO). The EVE instrument is designed to
-    measure the solar extreme ultraviolet (EUV) irradiance. The EUV radiation
-    includes the 0.1-105 nm range, which provides the majority of the energy
-    for heating Earth’s thermosphere and creating Earth’s ionosphere (charged plasma).
+    The Extreme Ultraviolet Variability Experiment (EVE) is an instrument on board the Solar Dynamics Observatory (SDO).
+    The EVE instrument is designed to measure the solar extreme ultraviolet (EUV) irradiance.
+    The EUV radiation includes the 0.1-105 nm range, which provides the majority
+    of the energy for heating Earth’s thermosphere and creating Earth’s ionosphere (charged plasma).
 
-    EVE includes several irradiance instruments: The Multiple EUV Grating
-    Spectrographs (MEGS)-A is a grazing- incidence spectrograph that measures
-    the solar EUV irradiance in the 5 to 37 nm range with 0.1-nm resolution,
-    and the MEGS-B is a normal-incidence, dual-pass spectrograph that measures
-    the solar EUV irradiance in the 35 to 105 nm range with 0.1-nm resolution.
+    EVE includes several irradiance instruments:
 
-    Level 0CS data is primarily used for space weather. It is provided near
-    real-time and is crudely calibrated 1-minute averaged broadband irradiances
-    from ESP and MEGS-P broadband. For other levels of EVE data, use
-    `~sunpy.net.Fido`, with `sunpy.net.attrs.Instrument('eve')`.
+    * The Multiple EUV Grating Spectrographs (MEGS)-A is a grazing- incidence spectrograph
+      that measures the solar EUV irradiance in the 5 to 37 nm range with 0.1-nm resolution,
+    * The MEGS-B is a normal-incidence, dual-pass spectrograph that measures the solar EUV
+      irradiance in the 35 to 105 nm range with 0.1-nm resolution.
+
+    Level 0CS data is primarily used for space weather.
+    It is provided near real-time and is crudely calibrated 1-minute averaged broadband irradiances from ESP and MEGS-P broadband.
+    For other levels of EVE data, use `~sunpy.net.Fido`, with `sunpy.net.attrs.Instrument('eve')`.
 
     Data is available starting on 2010/03/01.
 
@@ -148,7 +149,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')  # doctest: +REMOTE_DATA
     >>> eve = sunpy.timeseries.TimeSeries("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')  # doctest: +REMOTE_DATA
-    >>> eve.peek(subplots=True)    # doctest: +SKIP
+    >>> eve.peek(subplots=True)  # doctest: +SKIP
 
     References
     ----------
@@ -157,12 +158,13 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`__
     * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`__
     * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`__
-    """  # noqa
+    """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'eve'
 
     def peek(self, column=None, **kwargs):
-        """Plots the time series in a new figure. An example is shown below.
+        """
+        Plots the time series in a new figure. An example is shown below:
 
         .. plot::
 
@@ -173,12 +175,10 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
-        column : `str`
-            The column to display. If None displays all.
-
+        column : `str`, optional
+            The column to display. Defaults to `None`, so it will display all.
         **kwargs : `dict`
-            Any additional plot arguments that should be used
-            when plotting.
+            Any additional plot arguments that should be used when plotting.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -206,7 +206,9 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
     @classmethod
     def _parse_file(cls, filepath):
-        """Parses an EVE CSV file."""
+        """
+        Parses an EVE CSV file.
+        """
         cls._filename = basename(filepath)
         with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
             # Determine type of EVE CSV file and parse
@@ -220,12 +222,16 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
     @staticmethod
     def _parse_average_csv(fp):
-        """Parses an EVE Averages file."""
+        """
+        Parses an EVE Averages file.
+        """
         return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
 
     @staticmethod
     def _parse_level_0cs(fp):
-        """Parses and EVE Level 0CS file."""
+        """
+        Parses and EVE Level 0CS file.
+        """
         is_missing_data = False  # boolean to check for missing data
         missing_data_val = np.nan
         header = []
@@ -299,6 +305,8 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to an EVE image"""
+        """
+        Determines if header corresponds to an EVE image.
+        """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
