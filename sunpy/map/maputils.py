@@ -122,7 +122,7 @@ def is_all_off_disk(smap):
     Checks if the entire `~sunpy.map.Map` is off the solar disk.
 
     The check is performed by calculating the distance of every
-    pixel from the center of the Sun.  If they are all off-disk,
+    pixel from the center of the Sun. If they are all off-disk,
     then the function returns True. Otherwise, the function
     returns False.
 
