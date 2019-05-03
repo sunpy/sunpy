@@ -181,7 +181,7 @@ def contains_limb(smap):
     Returns
     -------
     contains_limb : `~bool`
-        Returns True If at least one pixel is on disk and at least one pixel
+        Returns `True` If at least one pixel is on disk and at least one pixel
         is off disk.
     """
     on_disk = coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs)
