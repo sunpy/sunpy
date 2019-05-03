@@ -169,7 +169,11 @@ def contains_limb(smap):
     The check is performed by calculating the distance of every pixel from
     the center of the Sun.  If at least one pixel is on disk and at least one
     pixel is off disk, the function returns `True`. Otherwise, the function
-    returns False. Note that this function will also true if the entire solar
+    returns `False`. 
+    
+    Note
+    ----
+    This will also return `True` if the entire solar
     limb is within the field of view of the map.  Note also that in the case
     of coronagraph images the limb itself need not be observed.
 
