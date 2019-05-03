@@ -105,7 +105,7 @@ def _get_new_observer(initial_obstime, observer, time):
     Helper function that interprets the possible ways of specifying the
     input to the solar coordinate rotation function.
 
-    If the "observer" argument is not None, it is used to specify the location
+    If the "observer" argument is not `None`, it is used to specify the location
     of the new observer in space and time.
 
     If the "time" argument is not None, it is used to calculate the duration
