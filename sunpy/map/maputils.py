@@ -208,7 +208,7 @@ def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
     Returns
     -------
     is_on_disk : `~bool`
-        Returns True if the coordinate is on disk, False otherwise.
+        Returns `True` if the coordinate is on disk, `False` otherwise.
     """
     # Calculate the radii of every pixel in helioprojective Cartesian
     # co-ordinate distance units.
