@@ -108,7 +108,7 @@ def _get_new_observer(initial_obstime, observer, time):
     If the "observer" argument is not `None`, it is used to specify the location
     of the new observer in space and time.
 
-    If the "time" argument is not None, it is used to calculate the duration
+    If the "time" argument is not `None`, it is used to calculate the duration
     over which to the amount of solar rotation is calculated. Note that using
     the "time" keyword assumes that the new observer is on the Earth. This may
     be a reasonable assumption depending on the application.
