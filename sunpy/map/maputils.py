@@ -27,8 +27,8 @@ def all_pixel_indices_from_map(smap):
 
     Returns
     -------
-    out : `~numpy.array`
-        A numpy array with the all the pixel indices built from the
+    `~numpy.array`
+        A `numpy.array` with the all the pixel indices built from the
         dimensions of the map.
     """
     return np.meshgrid(*[np.arange(v.value) for v in smap.dimensions]) * u.pix
@@ -41,11 +41,11 @@ def all_coordinates_from_map(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        A SunPy map.
+        The input `~sunpy.map.Map`.
 
     Returns
     -------
-    out : `~astropy.coordinates.SkyCoord`
+    `~astropy.coordinates.SkyCoord`
         An array of sky coordinates in the coordinate system "coordinate_system".
     """
     x, y = all_pixel_indices_from_map(smap)
@@ -59,12 +59,12 @@ def map_edges(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input map.
+        The input `~sunpy.map.Map`.
 
     Returns
     -------
     maps_edges : `~dict`
-        Returns the pixels of edge of the map
+        Returns the pixels of edge of the map.
     """
     # Calculate all the edge pixels
     nx, ny = smap.dimensions.x.value, smap.dimensions.y.value
@@ -83,7 +83,7 @@ def contains_full_disk(smap):
     conditions are met: (1) all the pixels at the edge of the map are
     more than 1 solar radius from the center of the Sun and, (2) the
     map is not all off disk.  If both these conditions are met, the
-    function returns True. Otherwise, the function returns False.
+    function returns `True`. Otherwise, the function returns `False`.
     Note that the function assumes that the input map is rectangular.
     Note also that in the case of coronagraph images the disk itself
     need not be observed.
@@ -91,13 +91,13 @@ def contains_full_disk(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input map.  The world coordinate frame must be helioprojective
-        Cartesian.
+        The input `~sunpy.map.Map`. The world coordinate frame must be
+        helioprojective Cartesian.
 
     Returns
     -------
-    contains_full_disk : `~bool`
-        Returns False if any of the edge pixels are less than one solar radius
+    `~bool`
+        Returns `False` if any of the edge pixels are less than one solar radius
         away from the center of the Sun.
     """
     # Calculate all the edge pixels
@@ -129,11 +129,11 @@ def is_all_off_disk(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input map.
+        The input `~sunpy.map.Map`.
 
     Returns
     -------
-    is_all_off_disk : `~bool`
+    `~bool`
         Returns `True` if all map pixels are strictly more than one solar radius
         away from the center of the Sun.
     """
@@ -151,12 +151,12 @@ def is_all_on_disk(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input map.
+        The input `~sunpy.map.Map`.
 
     Returns
     -------
-    is_all_on_disk : `~bool`
-        Returns True if all map pixels are strictly less than one solar radius
+    `~bool`
+        Returns `True` if all map pixels are strictly less than one solar radius
         away from the center of the Sun.
     """
     return np.all(coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs))
@@ -180,11 +180,11 @@ def contains_limb(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input map.
+        The input `~sunpy.map.Map`.
 
     Returns
     -------
-    contains_limb : `~bool`
+    `~bool`
         Returns `True` If at least one pixel is on disk and at least one pixel
         is off disk.
     """
@@ -211,7 +211,7 @@ def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
 
     Returns
     -------
-    is_on_disk : `~bool`
+    `~bool`
         Returns `True` if the coordinate is on disk, `False` otherwise.
     """
     # Calculate the radii of every pixel in helioprojective Cartesian
@@ -227,7 +227,7 @@ def on_disk_bounding_coordinates(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input map.
+        The input `~sunpy.map.Map`.
 
     Returns
     -------
