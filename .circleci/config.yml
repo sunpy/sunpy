@@ -21,6 +21,10 @@ tox-install: &tox-install
   name: Install Tox
   command: |
     pip install tox
+
+tox-conda-install: &tox-conda-install
+  name: Install Tox-Conda
+  command: |
     pip install tox-conda
 
 image-run: &image-tests
@@ -65,7 +69,10 @@ jobs:
           command: pip install -U pip
       - run:
           name: Install SunPy
-          command: pip install --progress-bar off .[all,dev]
+          command: |
+            pip install --progress-bar off .[all,dev]
+            pip install --no-use-pep517 -e .[all,dev]
+            python setup.py develop
 
   32bit:
     docker:
@@ -106,6 +113,7 @@ jobs:
       - run: *merge-check
       - run: *apt-install
       - run: *tox-install
+      - run: *tox-conda-install
       - run: *image-tests
       - store_artifacts:
           path: figure_test_images
