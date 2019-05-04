@@ -269,7 +269,6 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
     ----------
     smap : `~sunpy.map.Map`
         The input map from which the pixel coordinates are calculated.
-
     pixels : `~astropy.units.Quantity`
         A Quantity array of shape (M, 2) in pixel units.  Values (:, 0) are the y values of the
         pixel indices, and values (:, 1) are the x values of the pixel indices.
