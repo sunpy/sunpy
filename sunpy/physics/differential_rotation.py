@@ -374,7 +374,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
 
     Returns
     -------
-    xy2 : `~numpy.ndarray`
+    xy2 : `numpy.ndarray`
         Array with the inverse transformation.
     """
     # We start by converting the pixel to world
