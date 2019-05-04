@@ -431,7 +431,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         of the Earth at the observation time of the new observer.
 
     time : sunpy-compatible time
-        date/time at which the input co-ordinate will be rotated to.
+        Date/time at which the input coordinate will be rotated to.
 
     Returns
     -------
