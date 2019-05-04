@@ -424,7 +424,6 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     ----------
     smap : `~sunpy.map.GenericMap`
         Original map that we want to transform.
-
     observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
         The location of the new observer.
         Instruments in Earth orbit can be approximated by using the position
