@@ -344,7 +344,7 @@ def _get_bounding_coordinates(coords):
 
     Returns
     -------
-    bottom_left, top_right : `~astropy.coordinates.SkyCoord`
+    `~astropy.coordinates.SkyCoord`
         A  `~astropy.coordinates.SkyCoord` of length 2 that specifies the
         bottom left hand (first entry) and top right hand (second entry) corner
         of a bounding box that minimally encloses all the input coordinates.
