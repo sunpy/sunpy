@@ -429,7 +429,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         Instruments in Earth orbit can be approximated by using the position
         of the Earth at the observation time of the new observer.
 
-    time : sunpy-compatible time
+    time : sunpy-compatible time, optional
         Date/time at which the input coordinate will be rotated to.
 
     Returns
