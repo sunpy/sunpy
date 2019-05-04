@@ -262,7 +262,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
     """
     Helper function that is used to calculate where the edge of a rectangular
     map move to on rotation.
-    
+
     If all the pixels passed in are not on disk and
     therefore subject to solar differential rotation, the coordinates
     corresponding to the input pixels are returned.
@@ -314,7 +314,7 @@ def _get_extreme_position(coords, axis, operator=np.nanmax):
 
     Returns
     -------
-    extreme value : `~astropy.units.Quantity`
+    `float`
         An extreme position in units of arcseconds.
     """
 
@@ -361,7 +361,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     """
     Helper function that returns a new list of coordinates for each input coord.
     This is an inverse function needed by `skimage.transform.warp`
-    
+
     function.
 
     Parameters
@@ -434,7 +434,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
 
     Returns
     -------
-    differential_rotate : `~sunpy.map.GenericMap`
+    `~sunpy.map.GenericMap`
         A map with the result of applying solar differential rotation to the
         input map.
     """
