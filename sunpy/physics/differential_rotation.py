@@ -434,7 +434,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
 
     Returns
     -------
-    differential_rotate : `~sunpy.map.GenericMap`
+    `~sunpy.map.GenericMap`
         A map with the result of applying solar differential rotation to the
         input map.
     """
