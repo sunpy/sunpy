@@ -338,7 +338,7 @@ def _get_bounding_coordinates(coords):
 
     Parameters
     ----------
-    coords : `~list`
+    coords : `list`
         Each member of the list is a `~astropy.coordinates.SkyCoord`.
 
     Returns
