@@ -368,7 +368,6 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     ----------
     xy : `numpy.ndarray`
         Output from `skimage.transform.warp`.
-
     smap : `~sunpy.map.GenericMap`
         Original map that we want to transform.
 
