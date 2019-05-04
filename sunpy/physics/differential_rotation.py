@@ -361,7 +361,8 @@ def _get_bounding_coordinates(coords):
 def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     """
     Helper function that returns a new list of coordinates for each input coord.
-    This is an inverse function needed by the scikit-image `transform.warp`
+    This is an inverse function needed by `skimage.transform.warp`
+    
     function.
 
     Parameters
