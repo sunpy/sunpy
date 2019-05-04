@@ -317,7 +317,6 @@ def _get_extreme_position(coords, axis, operator=np.nanmax):
     `float`
         An extreme position in units of arcseconds.
     """
-
     extreme_values = []
     for coord in coords:
         if axis == 'Tx':
@@ -417,19 +416,44 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
 
 def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     """
-    Function to apply solar differential rotation to a sunpy map.
+    Function to transform a `~sunpy.map.Map` taking into account simultaneously
+    both solar differential rotation and the changing location of the
+    observer.
+
+    The function transforms the input map data pixels by first rotating each
+    pixel according to solar differential rotation.  The amount of solar
+    differential applied is calculated by the time difference between the
+    observation time of map and the new observation time, as specified by either the
+    "time" keyword or the "obstime" property of the "observer" keyword.
+    The location of the rotated pixels are then transformed to locations on the Sun
+    as seen from the new observer position.  This is desirable since in most cases
+    the observer does not remain at a fixed position in space. If
+    the "time" keyword is used then the new observer position is assumed to
+    be based on the location of the Earth.  If the "observer" keyword is used then
+    this defines the new observer position.
+
+    The function works with full disk maps and maps that contain portions of the
+    solar disk (maps that are entirely off-disk will raise an error).  When the
+    input map contains the full disk, the output map has the same dimensions as
+    the input map.  When the input map images only part of the solar disk, only
+    the on-disk pixels are differentially rotated and the output map can have
+    a different dimensions compared to the input map.  In this case any off-disk
+    emission shown in the input map is not included in the output map.
 
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
         Original map that we want to transform.
-    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, optional
+    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, None, optional
         The location of the new observer.
         Instruments in Earth orbit can be approximated by using the position
         of the Earth at the observation time of the new observer.
-
-    time : sunpy-compatible time, optional
-        Date/time at which the input coordinate will be rotated to.
+    time : sunpy-compatible time, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None, optional
+        Used to define the duration over which the amount of solar rotation is
+        calculated.  If 'time' is an `~astropy.time.Time` then the time interval
+        is difference between 'time' and the map observation time. If 'time' is
+        `~astropy.time.TimeDelta` or `~astropy.units.Quantity` then the calculation
+        is "initial_obstime + time".
 
     Returns
     -------
