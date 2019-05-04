@@ -310,7 +310,7 @@ def _get_extreme_position(coords, axis, operator=np.nanmax):
         Which helioprojective axis to examine.
     operator : numpy function
         A numpy function that finds an extreme value in an array
-        of helioprojective coordinate values.
+        of helioprojective coordinate values. Defaults to `numpy.nanmax`.
 
     Returns
     -------
