@@ -368,7 +368,6 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     ----------
     xy : `numpy.ndarray`
         Output from `skimage.transform.warp`.
-
     smap : `~sunpy.map.GenericMap`
         Original map that we want to transform.
 
@@ -424,12 +423,12 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     ----------
     smap : `~sunpy.map.GenericMap`
         Original map that we want to transform.
-    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
+    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, optional
         The location of the new observer.
         Instruments in Earth orbit can be approximated by using the position
         of the Earth at the observation time of the new observer.
 
-    time : sunpy-compatible time
+    time : sunpy-compatible time, optional
         Date/time at which the input coordinate will be rotated to.
 
     Returns
