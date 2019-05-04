@@ -261,7 +261,9 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
 def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
     """
     Helper function that is used to calculate where the edge of a rectangular
-    map move to on rotation.  If all the pixels passed in are not on disk and
+    map move to on rotation.
+    
+    If all the pixels passed in are not on disk and
     therefore subject to solar differential rotation, the coordinates
     corresponding to the input pixels are returned.
 
