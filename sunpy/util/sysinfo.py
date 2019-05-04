@@ -53,10 +53,14 @@ def get_sys_dict():
         bs4_version = "NOT INSTALLED"
 
     try:
-        from PyQt4.QtCore import PYQT_VERSION_STR as pyqt_version
-        from PyQt5.QtCore import PYQT_VERSION_STR as pyqt_version
+        from PyQt4.QtCore import PYQT_VERSION_STR as pyqt4_version
     except ImportError:
-        pyqt_version = "NOT INSTALLED"
+        pyqt4_version = "NOT INSTALLED"
+
+    try:
+        from PyQt5.QtCore import PYQT_VERSION_STR as pyqt5_version
+    except ImportError:
+        pyqt5_version = "NOT INSTALLED"
 
     try:
         from zeep import __version__ as zeep_version
@@ -82,10 +86,10 @@ def get_sys_dict():
                 'System': platform.system(), 'Processor': platform.processor(),
                 'SunPy': sunpy_version,
                 'Arch': platform.architecture()[0], "Python": platform.python_version(),
-                'NumPy': numpy_version,
+                'NumPy': numpy_version, 'PyQt5': pyqt5_version,
                 'SciPy': scipy_version, 'matplotlib': matplotlib_version,
                 'Astropy': astropy_version, 'Pandas': pandas_version,
-                'beautifulsoup': bs4_version, 'PyQt': pyqt_version,
+                'beautifulsoup': bs4_version, 'PyQt4': pyqt4_version,
                 'Zeep': zeep_version, 'Sqlalchemy': sqlalchemy_version,
                 'parfive': parfive_version, 'drms': drms_version
                 }
@@ -110,7 +114,7 @@ def system_info():
     print("###########")
     # OS and architecture information
 
-    for sys_info in ['Time', 'System', 'Processor', 'Arch', 'SunPy', 'SunPy_git']:
+    for sys_info in ['Time', 'System', 'Processor', 'Arch', 'SunPy']:
         print('{0} : {1}'.format(sys_info, sys_prop[sys_info]))
 
     if sys_prop['System'] == "Linux":
@@ -140,5 +144,5 @@ def system_info():
     print(" Recommended Libraries ")
     print("###########")
 
-    for sys_info in ['beautifulsoup', 'PyQt', 'Zeep', 'Sqlalchemy', 'drms']:
+    for sys_info in ['beautifulsoup', 'PyQt4', 'PyQt5', 'Zeep', 'Sqlalchemy', 'drms']:
         print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
