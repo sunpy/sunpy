@@ -211,10 +211,10 @@ class BaseFuncAnimator:
 # =============================================================================
     def _set_active_slider(self, ind):
         self._dehighlight_slider(self.active_slider)
-        self._highliget_slider(ind)
+        self._highlight_slider(ind)
         self.active_slider = ind
 
-    def _highliget_slider(self, ind):
+    def _highlight_slider(self, ind):
         ax = self.sliders[ind]
         [a.set_linewidth(2.0) for n, a in ax.spines.items()]
         self.fig.canvas.draw()
