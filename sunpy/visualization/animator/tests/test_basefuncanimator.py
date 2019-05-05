@@ -61,46 +61,44 @@ def test_base_func_init(fig, colorbar, buttons):
     tfa._key_press(event)
     assert tfa.active_slider == 1
 
-    slide = tfa.active_slider
-    sliders = tfa.sliders
-    buttons = tfa.slider_buttons
-    butt = buttons[tfa.active_slider]._button
-    butt.clicked = False
+    tfa.slider_buttons[tfa.active_slider]._button.clicked = False
     event.key = 'p'
-    tfa._click_slider_button(event=event, button=butt, slider=sliders[slide]._slider)
-    assert butt.label._text == "||"
+    tfa._click_slider_button(event=event, button=tfa.slider_buttons[tfa.active_slider]._button,
+                             slider=tfa.sliders[tfa.active_slider]._slider)
+    assert tfa.slider_buttons[tfa.active_slider]._button.label._text == "||"
 
     tfa._key_press(event)
-    assert butt.label._text == ">"
+    assert tfa.slider_buttons[tfa.active_slider]._button.label._text == ">"
 
     event.key = 'left'
     tfa._key_press(event)
-    assert sliders[slide]._slider.val == sliders[slide]._slider.valmax
+    assert tfa.sliders[tfa.active_slider]._slider.val == tfa.sliders[tfa.active_slider]._slider.valmax
 
     event.key = 'right'
     tfa._key_press(event)
-    assert sliders[slide]._slider.val == sliders[slide]._slider.valmin
+    assert tfa.sliders[tfa.active_slider]._slider.val == tfa.sliders[tfa.active_slider]._slider.valmin
 
     event.key = 'right'
     tfa._key_press(event)
-    assert sliders[slide]._slider.val == sliders[slide]._slider.valmin + 1
+    assert tfa.sliders[tfa.active_slider]._slider.val == tfa.sliders[tfa.active_slider]._slider.valmin + 1
 
     event.key = 'left'
     tfa._key_press(event)
-    assert sliders[slide]._slider.val == sliders[slide]._slider.valmin
+    assert tfa.sliders[tfa.active_slider]._slider.val == tfa.sliders[tfa.active_slider]._slider.valmin
 
-    tfa._start_play(event, butt, sliders[slide]._slider)
+    tfa._start_play(event, tfa.slider_buttons[tfa.active_slider]._button,
+                    tfa.sliders[tfa.active_slider]._slider)
     assert tfa.timer
 
     tfa._stop_play(event)
     assert tfa.timer is None
 
-    tfa._slider_changed(val=2, slider=sliders[slide]._slider)
+    tfa._slider_changed(val=2, slider=tfa.sliders[tfa.active_slider]._slider)
     assert np.array(tfa.im.get_array()).all() == data[2].all()
 
-    tfa._connect_fig_events()
-    assert mback.MouseEvent is not None
-
+    event.inaxes = tfa.sliders[0]
+    tfa._mouse_click(event)
+    assert tfa.active_slider == 0
 
 @pytest.fixture
 def funcanimator():
