@@ -81,6 +81,14 @@ def test_base_func_init(fig, colorbar, buttons):
     tfa._key_press(event)
     assert sliders[slide]._slider.val == sliders[slide]._slider.valmin
 
+    event.key = 'right'
+    tfa._key_press(event)
+    assert sliders[slide]._slider.val == sliders[slide]._slider.valmin + 1
+
+    event.key = 'left'
+    tfa._key_press(event)
+    assert sliders[slide]._slider.val == sliders[slide]._slider.valmin
+
     tfa._start_play(event, butt, sliders[slide]._slider)
     assert tfa.timer
 
