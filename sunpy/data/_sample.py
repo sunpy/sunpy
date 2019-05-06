@@ -104,7 +104,7 @@ def download_sample_data(overwrite=False):
             new_url = urljoin(retry_url, file_name)
             results._errors[i] = _error(err.filepath_partial,
                                         new_url,
-                                        err.response)
+                                        err.exception)
 
         results = dl.retry(results)
 
