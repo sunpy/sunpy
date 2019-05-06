@@ -56,7 +56,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
         # This implementation is modeled after Astropy's `_get_apparent_body_position`
         light_travel_time = 0.*u.s
         emitted_time = obstime
-        delta_light_travel_time = 1.*u.s # placeholder value
+        delta_light_travel_time = 1.*u.s  # placeholder value
         while np.any(np.fabs(delta_light_travel_time) > 1.0e-8*u.s):
             body_icrs = get_body_barycentric(body, emitted_time)
             distance = (body_icrs - observer_icrs).norm()
