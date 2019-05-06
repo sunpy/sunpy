@@ -19,12 +19,13 @@ __all__ = ['MapHelper']
 class MapHelper:
     """
     A helper class for knowing what is required in a `sunpy.map.Map` header.
+
     A `sunpy.map.Map` header consists of a dictionary that contains meta information
-    about the map data. This meta is generally found in the FITS header of an image
-    file. This helper is defined to assist the user in finding out what meta data
-    keywords are accepted in a map header, and can produce a header MetaDict from a 
-    coordinate object, or through default meta that can be then passed into `Map` 
-    to create a Map object.
+    about the map data. This meta information is generally found in the FITS header 
+    of an image file. This helper is defined to assist the user in finding out what
+    meta data keywords are accepted in a map header, and can produce a header 
+    `sunpy.util.MetaDict` from a coordinate object, or through default meta that 
+    can be then passed into `sunpy.map.Map` to create a map.
 
     `map_helper.acceptable_meta_keywords()` prints the accepted meta that is used in 
     creating a sunpy.map.Map
@@ -240,20 +241,19 @@ def _get_meta_from_coordinate(coordinate):
             * dsun_obs
             * rsun_obs
             * t_obs, date_obs
-
     """
     coord_meta = {}
 
     if not isinstance(coordinate, (SkyCoord, frames.BaseCoordinateFrame)):
-        raise ValueError('takes an Astropy coordinate frame or SkyCoord instance.')
+        raise ValueError('Input must be an Astropy coordinate frame or SkyCoord instance.')
 
     if isinstance(coordinate, SkyCoord):
         if coordinate.obstime is None or coordinate.frame is None:
-            raise ValueError('SkyCoord needs an observation time and a frame')
+            raise ValueError('SkyCoord needs an observation time and a frame.')
         skycoord_wcs = astropy.wcs.utils.celestial_frame_to_wcs(coordinate.frame)
     elif isinstance(coordinate, frames.SunPyBaseCoordinateFrame):
         if coordinate.obstime is None:
-            raise ValueError('frame needs an observation time')
+            raise ValueError('Frame needs an observation time.')
         skycoord_wcs = astropy.wcs.utils.celestial_frame_to_wcs(coordinate)
 
     coord_meta['ctype1'], coord_meta['ctype2'] = skycoord_wcs.wcs.ctype
