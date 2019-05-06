@@ -1,36 +1,32 @@
-# -*- coding: utf-8 -*-
-"""GOES XRS TimeSeries subclass definitions."""
-# pylint: disable=W0221,W0222,E1101,E1121
-
+"""
+This module provies GOES XRS `~sunpy.timeseries.TimeSeries` source.
+"""
 import datetime
 from collections import OrderedDict
 
-import numpy as np
 import matplotlib.dates
-from pandas import DataFrame
+import numpy as np
 from matplotlib import pyplot as plt
+from pandas import DataFrame
 
 import astropy.units as u
-from astropy.time import TimeDelta, Time
+from astropy.time import Time, TimeDelta
 
 import sunpy.io
-from sunpy.time import TimeRange, parse_time, is_time_in_given_format
-from sunpy.util.metadata import MetaDict
+from sunpy.time import TimeRange, is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-
-__author__ = ["Alex Hamilton"]
-__email__ = "####"
+from sunpy.util.metadata import MetaDict
 
 __all__ = ['XRSTimeSeries']
 
 
 class XRSTimeSeries(GenericTimeSeries):
     """
-    GOES XRS Time Series
+    GOES XRS Time Series.
 
-    Each GOES satellite there are two X-ray Sensors (XRS) which provide solar X
-    ray fluxes for the wavelength bands of 0.5 to 4 Å (short channel)
-    and 1 to 8 Å (long channel). Most recent data is usually available one or two days late.
+    Each GOES satellite there are two X-ray Sensors (XRS) which provide solar X ray fluxes
+    for the wavelength bands of 0.5 to 4 Å (short channel) sand 1 to 8 Å (long channel).
+    Most recent data is usually available one or two days late.
 
     Data is available starting on 1981/01/01.
 
@@ -48,16 +44,17 @@ class XRSTimeSeries(GenericTimeSeries):
     * `GOES XRS Guide <https://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`_
     * `NASCOM Data Archive <https://umbra.nascom.nasa.gov/goes/fits/>`_
 
-    Notes:
-    https://umbra.nascom.nasa.gov/goes/fits/goes_fits_files_notes.txt
-    """  # noqa
-
+    Notes
+    -----
+    * https://umbra.nascom.nasa.gov/goes/fits/goes_fits_files_notes.txt
+    """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'xrs'
 
     def peek(self, title="GOES Xray Flux"):
-        """Plots GOES XRS light curve is the usual manner. An example is shown
-        below.
+        """
+        Plots GOES XRS light curve is the usual manner. An example is shown
+        below:
 
         .. plot::
 
@@ -68,12 +65,11 @@ class XRSTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
-        title : `str`
-            The title of the plot.
-
+        title : `str`. optional
+            The title of the plot. Defaults to "GOES Xray Flux".
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
-        """  # noqa
+        """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
 
@@ -103,7 +99,7 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.xaxis.grid(False, 'major')
         axes.legend()
 
-        # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
+        # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
         formatter = matplotlib.dates.DateFormatter('%H:%M')
         axes.xaxis.set_major_formatter(formatter)
 
@@ -111,11 +107,17 @@ class XRSTimeSeries(GenericTimeSeries):
         figure.autofmt_xdate()
         figure.show()
 
-    # ToDo: is this part of the DL pipeline? If so delete.
+    # TODO: is this part of the DL pipeline? If so delete.
     @staticmethod
     def _get_goes_sat_num(start, end):
-        """Parses the query time to determine which GOES satellite to use."""
+        """
+        Parses the query time to determine which GOES satellite to use.
 
+        Parameters
+        ----------
+        filepath : `str`
+            The path to the file you want to parse.
+        """
         goes_operational = {
             2: TimeRange('1980-01-04', '1983-05-01'),
             5: TimeRange('1983-05-02', '1984-08-01'),
@@ -146,14 +148,27 @@ class XRSTimeSeries(GenericTimeSeries):
 
     @classmethod
     def _parse_file(cls, filepath):
-        """Parses a GOES/XRS FITS file from
-        https://umbra.nascom.nasa.gov/goes/fits/"""
+        """
+        Parses a GOES/XRS FITS file.
 
+        Parameters
+        ----------
+        filepath : `str`
+            The path to the file you want to parse.
+        """
         hdus = sunpy.io.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod
     def _parse_hdus(cls, hdulist):
+        """
+        Parses a GOES/XRS FITS `~astropy.io.fits.HDUList` from a FITS file.
+
+        Parameters
+        ----------
+        hdulist : `astropy.io.fits.HDUList`
+            A HDU list.
+        """
         header = MetaDict(OrderedDict(hdulist[0].header))
         if len(hdulist) == 4:
             if is_time_in_given_format(hdulist[0].header['DATE-OBS'], '%d/%m/%Y'):
@@ -195,7 +210,10 @@ class XRSTimeSeries(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to a GOES lightcurve TimeSeries"""
+        """
+        Determines if header corresponds to a GOES lightcurve
+        `~sunpy.timeseries.TimeSeries`.
+        """
         if 'source' in kwargs.keys():
             if kwargs.get('source', ''):
                 return kwargs.get('source', '').lower().startswith(cls._source)
