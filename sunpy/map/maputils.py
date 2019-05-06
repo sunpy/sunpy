@@ -12,8 +12,10 @@ import random
 import matplotlib.pyplot as plt
 import astropy
 from sunpy.coordinates import frames
+import warnings
+from sunpy.util.exceptions import SunpyUserWarning
 
-__all__ = ['MapHelper']
+__all__ = ['maphelper']
 
 
 class MapHelper:
@@ -69,9 +71,6 @@ class MapHelper:
           >>> my_coord = SkyCoord(100*u.arcsec, 100*u.arcsec, obstime = '2013-10-28 01:00', frame = frames.Helioprojective)
           >>> header = map.MapHelper.make_header(data, my_coord)
           >>> my_map = map.Map(data, header)
-
-
-
     """
     def acceptable_meta_keywords(self, *key):
         """
@@ -81,13 +80,13 @@ class MapHelper:
         if key:
             for k in key:
                 if k in acceptable_meta.keys():
-                    print(k, ' : ', acceptable_meta[k])
+                    print(k, " : ", acceptable_meta[k])
                 else:
-                    print(k, ' is not in the accepted meta data required for sunpy.map.Map \n The accepted keywords are : \n', list(acceptable_meta.keys()))
+                    print(k, " is not in the accepted meta data required for sunpy.map.Map \n The accepted keywords are : \n", list(acceptable_meta.keys()))
             return
 
         for k in acceptable_meta:
-            print(k, ' : ', acceptable_meta[k])
+            print(k, " : ", acceptable_meta[k])
 
     def make_header(self, data, *coordinate, crval=None, crpix=None, cdelt=None, **kwargs):
         """
@@ -150,12 +149,12 @@ class MapHelper:
 
         if coordinate:
             if not isinstance(coordinate[0], (SkyCoord, frames.BaseCoordinateFrame)):
-                raise ValueError('coordinate needs to be an Astropy coordinate frame or SkyCoord instance.')
+                raise ValueError("coordinate needs to be an Astropy coordinate frame or SkyCoord instance.")
 
             meta = _get_meta_from_coordinate(coordinate[0])
 
         else:
-            print('Using default meta assuming Earth based observer at current time with `arcsec` cunit type')
+            warnings.warn("Using default meta assuming Earth based observer at current time with `arcsec` cunit type", SunpyUserWarning)
             meta = _default_meta()
 
         # if no crval options set, default to 0, 0
@@ -245,15 +244,15 @@ def _get_meta_from_coordinate(coordinate):
     coord_meta = {}
 
     if not isinstance(coordinate, (SkyCoord, frames.BaseCoordinateFrame)):
-        raise ValueError('Input must be an Astropy coordinate frame or SkyCoord instance.')
+        raise ValueError("Input must be an Astropy coordinate frame or SkyCoord instance.")
 
     if isinstance(coordinate, SkyCoord):
         if coordinate.obstime is None or coordinate.frame is None:
-            raise ValueError('SkyCoord needs an observation time and a frame.')
+            raise ValueError("SkyCoord needs an observation time and a frame.")
         skycoord_wcs = astropy.wcs.utils.celestial_frame_to_wcs(coordinate.frame)
     elif isinstance(coordinate, frames.SunPyBaseCoordinateFrame):
         if coordinate.obstime is None:
-            raise ValueError('Frame needs an observation time.')
+            raise ValueError("Frame needs an observation time.")
         skycoord_wcs = astropy.wcs.utils.celestial_frame_to_wcs(coordinate)
 
     coord_meta['ctype1'], coord_meta['ctype2'] = skycoord_wcs.wcs.ctype
@@ -266,7 +265,7 @@ def _get_meta_from_coordinate(coordinate):
 
     return coord_meta
 
-MapHelper = MapHelper()
+maphelper = MapHelper()
 
 acceptable_meta = {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
                   'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
