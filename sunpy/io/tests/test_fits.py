@@ -6,11 +6,11 @@ import pytest
 import astropy.io.fits as fits
 from astropy.utils.exceptions import AstropyUserWarning
 
-import sunpy.io.fits
 import sunpy.data.test
-from sunpy.util import MetaDict
-from sunpy.io.fits import get_header, extract_waveunit
+import sunpy.io.fits
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
+from sunpy.io.fits import extract_waveunit, get_header
+from sunpy.util import MetaDict
 
 testpath = sunpy.data.test.rootdir
 

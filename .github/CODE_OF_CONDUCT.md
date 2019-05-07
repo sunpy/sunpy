@@ -71,7 +71,7 @@ will be treated with the strictest confidence) or talking privately with
 the person.
 
 Parts of this code of conduct have been adapted from the
-[astropy](http://www.astropy.org/code_of_conduct.html) and the [Python
+[astropy](https://www.astropy.org/code_of_conduct.html) and the [Python
 Software Fundation](https://www.python.org/psf/codeofconduct/) codes of
 conduct.
 

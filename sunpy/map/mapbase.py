@@ -3,7 +3,6 @@ Map is a generic Map class from which all other Map classes inherit from.
 """
 import copy
 import warnings
-import inspect
 from collections import namedtuple
 import textwrap
 
@@ -13,7 +12,6 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
-from astropy.io import fits
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
@@ -27,8 +25,8 @@ from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
 from sunpy.image.transform import affine_transform
-from sunpy.image.rescale import reshape_image_to_4d_superpixel
-from sunpy.image.rescale import resample as sunpy_image_resample
+from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_sun_B0, get_sun_L0, get_sunearth_distance
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -51,7 +49,7 @@ class GenericMap(NDData):
 
     Parameters
     ----------
-    data : `~numpy.ndarray`, list
+    data : `numpy.ndarray`, list
         A 2d list or ndarray containing the map data.
     header : dict
         A dictionary of the original image header tags.
@@ -152,7 +150,8 @@ class GenericMap(NDData):
         An __init_subclass__ hook initializes all of the subclasses of a given class.
         So for each subclass, it will call this block of code on import.
         This replicates some metaclass magic without the need to be aware of metaclasses.
-        Here we use this to register each subclass in a dict that has the `is_datasource_for` attribute.
+        Here we use this to register each subclass in a dict that has the
+        `is_datasource_for` attribute.
         This is then passed into the Map Factory so we can register them.
         """
         super().__init_subclass__(**kwargs)
@@ -313,7 +312,7 @@ class GenericMap(NDData):
             ...
 
         and this will generate a plot with the correct WCS coordinates on the
-        axes. See http://wcsaxes.readthedocs.io for more information.
+        axes. See https://wcsaxes.readthedocs.io for more information.
         """
         # This code is reused from Astropy
 
@@ -773,7 +772,7 @@ class GenericMap(NDData):
 
         if err_message:
             err_message.append(
-                'See http://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
+                'See https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
                 'instructions on how to add missing metadata.')
             raise MapMetaValidationError('\n'.join(err_message))
 
@@ -1424,7 +1423,7 @@ class GenericMap(NDData):
         coordinate system.
 
         To overlay other coordinate systems see the `WCSAxes Documentation
-        <http://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`_
+        <https://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`_
 
         Parameters
         ----------
@@ -1739,8 +1738,7 @@ class GenericMap(NDData):
             ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_args)
 
         if wcsaxes_compat.is_wcsaxes(axes):
-            wcsaxes_compat.default_wcs_grid(axes, units=self.spatial_units,
-                                            ctypes=self.wcs.wcs.ctype)
+            wcsaxes_compat.default_wcs_grid(axes)
 
         # Set current image (makes colorbar work)
         plt.sca(axes)

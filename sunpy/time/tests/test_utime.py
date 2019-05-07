@@ -1,8 +1,7 @@
-import pytest
 from astropy.time import Time
 
-# Ignore PEP8 F401 warning here, this registers TimeUTime in astropy.time.Time
-from sunpy.time import TimeUTime
+# This registers TimeUTime in astropy.time.Time
+from sunpy.time import TimeUTime  # noqa
 
 
 def test_utime_t0():
@@ -14,8 +13,6 @@ def test_utime_random_date():
 
 
 def test_conversion_from_utime():
-    """
-    This is expected to fail until astropy issue 7092 is resolved.
-    """
+    # This is expected to fail until astropy issue 7092 is resolved.
     t2 = Time(1231853576.0, format='utime')
     assert t2.isot == '2018-01-13T13:32:56.000'

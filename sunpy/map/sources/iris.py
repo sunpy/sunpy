@@ -31,7 +31,7 @@ class SJIMap(GenericMap):
 
     References
     ----------
-    * `IRIS Mission Page <http://iris.lmsal.com>`_
+    * `IRIS Mission Page <https://iris.lmsal.com>`_
     * `IRIS Analysis Guide <https://iris.lmsal.com/itn26/itn26.pdf>`_
     * `IRIS Instrument Paper <https://doi.org/10.1007/s11207-014-0485-y>`_
     """

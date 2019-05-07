@@ -16,5 +16,5 @@ print(con.constants.keys())
 
 ##############################################################################
 # The following command will display all constants as well as their values
-# in an astropy `Table <http://docs.astropy.org/en/stable/table/index.html>`_
+# in an astropy `Table <https://docs.astropy.org/en/stable/table/index.html>`_
 print(con.print_all())

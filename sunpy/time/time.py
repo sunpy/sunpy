@@ -1,20 +1,25 @@
+"""
+This module provies a collection of time handing functions.
+"""
 import re
 import textwrap
-from datetime import datetime, date
+from datetime import date, datetime
 from functools import singledispatch
 
 import numpy as np
 
 import astropy.time
-from astropy.time import Time
 import astropy.units as u
+from astropy.time import Time
 
-from sunpy.time.utime import TimeUTime  # noqa: F401
+# This is not called but imported to register it
+from sunpy.time.utime import TimeUTime  # noqa
 from sunpy.util.decorators import add_common_docstring
 
 __all__ = [
-    'find_time', 'parse_time', 'is_time', 'day_of_year', 'break_time',
-    'get_day', 'is_time_in_given_format', 'is_time_equal'
+    'find_time', 'parse_time', 'is_time',
+    'is_time_in_given_format', 'is_time_equal',
+    'julian_centuries'
 ]
 
 # Mapping of time format codes to regular expressions.
@@ -62,6 +67,7 @@ TIME_FORMAT_LIST = [
 def is_time_equal(t1, t2):
     """
     Work around for https://github.com/astropy/astropy/issues/6970.
+
     Remove the usage of this function once the fix is in place.
     """
     if abs(t1 - t2) < 1 * u.nanosecond:
@@ -107,10 +113,9 @@ def _regex_parse_time(inp, format):
 
 def find_time(string, format):
     """
-    Return iterator of occurrences of date formatted with format
-    in string.
+    Return iterator of occurrences of date formatted with format in string.
 
-    Currently supported format codes: TODO: ADD THIS
+    Currently supported format codes:
     """
     re_format = format
     for key, value in REGEX.items():
@@ -127,22 +132,6 @@ def find_time(string, format):
 
 
 find_time.__doc__ += ', '.join(list(REGEX.keys()))
-
-
-def _iter_empty(iter):
-    try:
-        next(iter)
-    except StopIteration:
-        return True
-    return False
-
-
-def _astropy_time(time):
-    """
-    Return an `~astropy.time.Time` instance, running it through `~sunpy.time.parse_time` if needed
-    """
-    return time if isinstance(time, astropy.time.Time) else astropy.time.Time(
-        parse_time(time))
 
 
 @singledispatch
@@ -250,7 +239,9 @@ def _variables_for_parse_time_docstring():
     types2 += ["astropy.time." + t.__qualname__ for t in types if t.__module__.startswith("astropy.time")]
     parse_time_types = str(types2)[1:-1].replace("'", "`")
     ret['parse_time_types'] = parse_time_types
-
+    ret['parse_time_desc'] = """
+                             Any time input, will be passed into `~sunpy.time.parse_time`.
+                             """
     ret['astropy_time_formats'] = textwrap.fill(str(list(astropy.time.Time.FORMATS.keys())),
                                                 subsequent_indent=' '*10)
 
@@ -260,18 +251,13 @@ def _variables_for_parse_time_docstring():
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def parse_time(time_string, *, format=None, **kwargs):
     """
-    Takes a time input (string, pandas or numpy time, datetime and others) will parse
-    and return a `astropy.time.Time` object.
-    This is similar to the anytim function in IDL.
+    Takes a time input and will parse and return a `astropy.time.Time`.
 
     Parameters
     ----------
     time_string : {parse_time_types}
-
         Time to parse.
-
     format : `str`, optional
-
         Specifies the format user has provided the time_string in.
         We support the same formats of `astropy.time.Time`.
 
@@ -280,13 +266,10 @@ def parse_time(time_string, *, format=None, **kwargs):
           >>> list(astropy.time.Time.FORMATS)
           {astropy_time_formats}
 
-    kwargs : dict
-        Additional keyword arguments that can be passed to `astropy.time.Time`
-
     Returns
     -------
     `astropy.time.Time`
-        `~astropy.time.Time` object corresponding to input time string
+        `~astropy.time.Time` corresponding to input time string.
 
     Examples
     --------
@@ -298,11 +281,11 @@ def parse_time(time_string, *, format=None, **kwargs):
 
     Notes
     -----
+    Additional keyword arguments can be passed to `astropy.time.Time`
 
     The list of time formats are show by the following examples::
 
       {parse_time_formats}
-
     """
     if time_string is 'now':
         rt = Time.now()
@@ -314,19 +297,19 @@ def parse_time(time_string, *, format=None, **kwargs):
 
 def is_time(time_string, time_format=None):
     """
-    Returns true if the input is a valid date/time representation
+    Returns true if the input is a valid date/time representation.
 
     Parameters
     ----------
-    time_string : [ int, float, time_string, datetime ]
-        Date to parse which can be either time_string, int, datetime object.
-    time_format : [ basestring, utime, datetime ]
-        Specifies the format user has provided the time_string in.
+    time_string : `int`, `float`, ``time_string``, `datetime`
+        Date to parse.
+    time_format : basestring, utime, `datetime`, optional
+        Specifies the format user has provided the ``time_string`` in.
 
     Returns
     -------
-    out : bool
-        True if can be parsed by parse_time
+    `bool`
+        `True` if can be parsed by `sunpy.time.parse_time`.
 
     Examples
     --------
@@ -347,55 +330,36 @@ def is_time(time_string, time_format=None):
         return True
 
 
-def day_of_year(time_string):
+def is_time_in_given_format(time_string, time_format):
     """
-    Returns the (fractional) day of year.
-
-    Note: This function takes into account leap seconds.
+    Tests whether a time string is formatted according to the given time
+    format.
 
     Parameters
     ----------
-    time_string : str
-        A parse_time compatible string
+    time_string : `str`
+        Date to parse.
+    time_format : basestring, utime, `datetime`, optional
+        Specifies the format user has provided the ``time_string`` in.
 
     Returns
     -------
-    out : float
-        The fractional day of year (where Jan 1st is 1).
-
-    Examples
-    --------
-    >>> import sunpy.time
-    >>> sunpy.time.day_of_year('2012/01/01')
-    1.0
-    >>> sunpy.time.day_of_year('2012/08/01')
-    214.00001157407408
-    >>> sunpy.time.day_of_year('2005-08-04T00:18:02.000Z')
-    216.01252314814815
-
+    `bool`
+        `True` if can it if follows the ``time_format``.
     """
-    SECONDS_IN_DAY = 60 * 60 * 24.0
-    time = parse_time(time_string)
-    time_diff = time - Time.strptime(time.strftime('%Y'), '%Y')
-    return time_diff.jd + 1
-
-
-def break_time(t='now', time_format=None):
-    """Given a time returns a string. Useful for naming files."""
-    # TODO: should be able to handle a time range
-    return parse_time(t, format=time_format).strftime("%Y%m%d_%H%M%S")
-
-
-def get_day(dt):
-    """ Return datetime for the beginning of the day of given datetime. """
-    return datetime(dt.year, dt.month, dt.day)
-
-
-def is_time_in_given_format(time_string, time_format):
-    """Tests whether a time string is formatted according to the given time
-    format."""
     try:
         datetime.strptime(time_string, time_format)
         return True
     except ValueError:
         return False
+
+
+def julian_centuries(t='now'):
+    """
+    Returns the number of Julian centuries since J1900.0 (noon on 1900 January
+    0).
+    """
+    DAYS_IN_JULIAN_CENTURY = 36525.0
+
+    # J1900.0 is 2415021.0
+    return (parse_time(t).jd - 2415020.0) / DAYS_IN_JULIAN_CENTURY
