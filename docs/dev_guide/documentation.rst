@@ -10,7 +10,7 @@ Overview
 All code must be documented and we follow these style conventions described here:
 
 * `numpydoc <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_
-* `astropy <http://docs.astropy.org/en/latest/development/docrules.html>`_
+* `astropy <https://docs.astropy.org/en/latest/development/docrules.html>`_
 
 We recommend having a read of these and unless stated overwise, we stick to these standards.
 
@@ -30,10 +30,15 @@ We backtick each type in the documentation strings so that they are interlinked 
        Description of parameter x.
     """
 
+SunPy Specific Rules
+--------------------
+
+* For all rst files, we enforce a one sentenace per line rule and ignore the line length.
+
 Sphinx
 ======
 
-All of the SunPy documentation (like this page) is built by `Sphinx <http://www.sphinx-doc.org/en/stable/>`_, which is a tool especially well-suited for documenting Python projects.
+All of the SunPy documentation (like this page) is built by `Sphinx <https://www.sphinx-doc.org/en/stable/>`_, which is a tool especially well-suited for documenting Python projects.
 Sphinx works by parsing files written using a `a Mediawiki-like syntax <http://docutils.sourceforge.net/docs/user/rst/quickstart.html>`_ called `reStructuredText <http://docutils.sourceforge.net/rst.html>`_.
 In addition to parsing static files of reStructuredText, Sphinx can also be told to parse code comments.
 In fact, in addition to what you are reading right now, the `Python documentation <https://www.python.org/doc/>`_ was also created using Sphinx.

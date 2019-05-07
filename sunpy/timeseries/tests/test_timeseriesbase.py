@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Test Generic TimeSeries
-
-Created on Thu Jun 23 12:29:55 2016
-
-@author: alex_
-"""
-
 import os
 import copy
 import glob
@@ -20,25 +11,27 @@ from pandas import DataFrame
 from pandas.util.testing import assert_frame_equal
 
 import astropy.units as u
-from astropy.time import TimeDelta
 from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import TimeDelta
 
 import sunpy
 import sunpy.data.test
 import sunpy.timeseries
+from sunpy.tests.helpers import figure_test
 from sunpy.time import TimeRange, parse_time
 from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.tests.helpers import figure_test
+from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 
-#==============================================================================
+# =============================================================================
 # TimeSeries Tests
-#==============================================================================
+# =============================================================================
 
 filepath = sunpy.data.test.rootdir
 
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
+esp_filepath = os.path.join(filepath, 'eve_l1_esp_2011046_00_truncated.fits')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 goes_filepath = os.path.join(filepath, 'goes.fits')
@@ -57,49 +50,56 @@ a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 @pytest.fixture
 def eve_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='EVE')
-    return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='EVE')
+    with pytest.warns(SunpyUserWarning, match='Unknown units'):
+        return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
 
 
 @pytest.fixture
+def esp_test_ts():
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='ESP')
+    return sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
+
+@pytest.fixture
 def fermi_gbm_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
-    return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
+    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+        return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
 
 
 @pytest.fixture
 def norh_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NoRH')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NoRH')
     return sunpy.timeseries.TimeSeries(norh_filepath, source='NoRH')
 
 
 @pytest.fixture
 def goes_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='XRS')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='XRS')
     return sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
 
 
 @pytest.fixture
 def lyra_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='LYRA')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='LYRA')
     return sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')
 
 
 @pytest.fixture
 def rhessi_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='RHESSI')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='RHESSI')
     return sunpy.timeseries.TimeSeries(rhessi_filepath, source='RHESSI')
 
 
 @pytest.fixture
 def noaa_ind_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
     return sunpy.timeseries.TimeSeries(noaa_ind_filepath, source='NOAAIndices')
 
 
 @pytest.fixture
 def noaa_pre_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
     return sunpy.timeseries.TimeSeries(
         noaa_pre_filepath, source='NOAAPredictIndices')
 
@@ -122,12 +122,13 @@ def generic_ts():
 
 @pytest.fixture
 def concatenate_multi_files_ts():
-    return sunpy.timeseries.TimeSeries(
-        a_list_of_many, source='EVE', concatenate=True)
+    with pytest.warns(SunpyUserWarning, match='Unknown units'):
+        return sunpy.timeseries.TimeSeries(
+            a_list_of_many, source='EVE', concatenate=True)
 
-#==============================================================================
+# =============================================================================
 # Test Creating TimeSeries From Various Dataformats
-#==============================================================================
+# =============================================================================
 
 
 @pytest.fixture
@@ -136,8 +137,7 @@ def table_ts():
     base = parse_time(datetime.datetime.today())
     times = base - TimeDelta(np.arange(24 * 60)*u.minute)
     intensity = u.Quantity(
-        np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60)))), u.W / u.m
-        **2)
+        np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60)))), u.W / u.m ** 2)
 
     # Create the units and meta objects
     units = OrderedDict([('intensity', u.W / u.m**2)])
@@ -152,15 +152,16 @@ def table_ts():
     # Create TS from dataframe and check
     return sunpy.timeseries.TimeSeries(table, meta, units)
 
-#==============================================================================
+# =============================================================================
 # Test Resulting TimeSeries Parameters
-#==============================================================================
+# =============================================================================
 
 
-def test_units_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
+def test_units_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                     lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
                     noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.units, OrderedDict)
+    assert isinstance(esp_test_ts.units, OrderedDict)
     assert isinstance(fermi_gbm_test_ts.units, OrderedDict)
     assert isinstance(norh_test_ts.units, OrderedDict)
     assert isinstance(goes_test_ts.units, OrderedDict)
@@ -172,10 +173,11 @@ def test_units_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
     assert isinstance(table_ts.units, OrderedDict)
 
 
-def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
+def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                    lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
                    noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(esp_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(fermi_gbm_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(norh_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(goes_test_ts.meta, TimeSeriesMetaData)
@@ -187,10 +189,11 @@ def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
     assert isinstance(table_ts.meta, TimeSeriesMetaData)
 
 
-def test_data_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
+def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                    lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
                    noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.data, DataFrame)
+    assert isinstance(esp_test_ts.data, DataFrame)
     assert isinstance(fermi_gbm_test_ts.data, DataFrame)
     assert isinstance(norh_test_ts.data, DataFrame)
     assert isinstance(goes_test_ts.data, DataFrame)
@@ -201,11 +204,11 @@ def test_data_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
     assert isinstance(generic_ts.data, DataFrame)
     assert isinstance(table_ts.data, DataFrame)
 
-    # ToDo: check length? (should match the number of columns)
+    # TODO: check length? (should match the number of columns)
 
-#==============================================================================
+# =============================================================================
 # Test Basic Single-Timeseries Truncation Operations
-#==============================================================================
+# =============================================================================
 
 
 @pytest.fixture
@@ -264,9 +267,9 @@ def test_truncation_dates(eve_test_ts, truncation_dates_test_ts):
     assert truncation_dates_test_ts.time_range == truncation_dates_test_ts.meta.time_range == eve_test_ts.time_range.split(
         3)[1]
 
-#==============================================================================
+# =============================================================================
 # Test Basic Single-Timeseries Truncation Operations
-#==============================================================================
+# =============================================================================
 
 
 @pytest.fixture
@@ -406,9 +409,9 @@ def test_truncated_outside_tr_ts(truncated_new_tr_all_before_ts,
                                  truncated_new_tr_all_after_ts):
     assert truncated_new_tr_all_before_ts.meta.metadata == truncated_new_tr_all_after_ts.meta.metadata == []
 
-#==============================================================================
+# =============================================================================
 # Test Extraction Operations
-#==============================================================================
+# =============================================================================
 
 
 @pytest.fixture
@@ -432,9 +435,9 @@ def test_extraction(eve_test_ts, extraction_test_ts):
     extracted_df = extracted_df.sort_index()
     assert_frame_equal(extraction_test_ts.data, extracted_df)
 
-#==============================================================================
+# =============================================================================
 # Test Concatenation Operations
-#==============================================================================
+# =============================================================================
 
 
 @pytest.fixture
@@ -461,14 +464,15 @@ def test_concatenation_of_slices(eve_test_ts, concatenated_slices_test_ts):
 @pytest.fixture
 def concatenation_different_data_test_ts(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate
-    return eve_test_ts.concatenate(fermi_gbm_test_ts)
+    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+        return eve_test_ts.concatenate(fermi_gbm_test_ts)
 
 
 def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
                                          concatenation_different_data_test_ts):
-    # ToDo: test the metadata is as expected using the below. (note ATM this fails if the order is changed)
-    #assert concatenation_different_data_test_ts.meta.metadata[0] == fermi_gbm_test_ts.meta.metadata[0]
-    #assert concatenation_different_data_test_ts.meta.metadata[1] == eve_test_ts.meta.metadata[0]
+    # TODO: test the metadata is as expected using the below. (note ATM this fails if the order is changed)
+    # assert concatenation_different_data_test_ts.meta.metadata[0] == fermi_gbm_test_ts.meta.metadata[0]
+    # assert concatenation_different_data_test_ts.meta.metadata[1] == eve_test_ts.meta.metadata[0]
     value = True
     for key in list(concatenation_different_data_test_ts.meta.metadata[0][2]
                     .keys()):
@@ -489,7 +493,7 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
         comined_units)
 
     # Test data is the concatenation
-    comined_df = pd.concat([eve_test_ts.data, fermi_gbm_test_ts.data], sort=True)
+    comined_df = pd.concat([eve_test_ts.data, fermi_gbm_test_ts.data], sort=False)
     comined_df = comined_df.sort_index()
     assert_frame_equal(concatenation_different_data_test_ts.data, comined_df)
 
@@ -512,7 +516,7 @@ def test_generic_construction_concatenation():
     data = DataFrame(intensity1, index=times, columns=['intensity'])
     data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
     units = OrderedDict([('intensity', u.W / u.m**2)])
-    units2 = OrderedDict([('intensity', u.W / u.m**2)])
+    units2 = OrderedDict([('intensity2', u.W / u.m**2)])
     meta = MetaDict({'key': 'value'})
     meta2 = MetaDict({'key2': 'value2'})
 
@@ -526,9 +530,9 @@ def test_generic_construction_concatenation():
     assert ts_concat.columns == ['intensity', 'intensity2']
     assert len(ts_concat.meta.metadata) == 2
 
-#==============================================================================
+# =============================================================================
 # Test Data Manipulation
-#==============================================================================
+# =============================================================================
 
 
 @pytest.fixture
@@ -584,9 +588,9 @@ def test_add_column_from_array_no_units(eve_test_ts, column_quantity):
     ts = eve_test_ts.add_column('array_added', column_quantity.value)
     assert (ts.quantity('array_added') == column_quantity.value).all()
 
-#==============================================================================
+# =============================================================================
 # Test Exporting to different formats
-#==============================================================================
+# =============================================================================
 
 
 def test_ts_to_table(generic_ts):
@@ -609,14 +613,19 @@ def test_ts_to_array(generic_ts):
     assert isinstance(arr, np.ndarray)
     assert len(arr) == len(generic_ts.data)
 
-#==============================================================================
+# =============================================================================
 # Test Basic Working Peek
-#==============================================================================
+# =============================================================================
 
 
 @figure_test
 def test_eve_peek(eve_test_ts):
     eve_test_ts.peek()
+
+
+@figure_test
+def test_esp_peek(esp_test_ts):
+    esp_test_ts.peek()
 
 
 @figure_test
@@ -629,6 +638,7 @@ def test_norh_peek(norh_test_ts):
     norh_test_ts.peek()
 
 
+# TODO: Fix this
 """
 @figure_test
 def test_goes_peek(goes_test_ts):
@@ -660,9 +670,9 @@ def test_noaa_pre_peek(noaa_pre_test_ts):
 def test_generic_ts_peek(generic_ts):
     generic_ts.peek()
 
-#==============================================================================
+# =============================================================================
 # Test Peek Of Invalid Data for all sources
-#==============================================================================
+# =============================================================================
 
 
 def test_eve_invalid_peek(eve_test_ts):
@@ -672,12 +682,23 @@ def test_eve_invalid_peek(eve_test_ts):
     with pytest.raises(ValueError):
         empty_ts.peek()
 
+def test_esp_invalid_peek(esp_test_ts):
+    a = esp_test_ts.time_range.start - TimeDelta(2*u.day)
+    b = esp_test_ts.time_range.start - TimeDelta(1*u.day)
+    empty_ts = esp_test_ts.truncate(TimeRange(a, b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
 
 def test_fermi_gbm_invalid_peek(fermi_gbm_test_ts):
-    a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = fermi_gbm_test_ts.time_range.start - TimeDelta(1*u.day)
+    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+        a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
+
+    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+        b = fermi_gbm_test_ts.time_range.start - TimeDelta(1*u.day)
+
     empty_ts = fermi_gbm_test_ts.truncate(TimeRange(a, b))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError), pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
         empty_ts.peek()
 
 
@@ -728,9 +749,9 @@ def test_generic_ts_invalid_peek(generic_ts):
     with pytest.raises(ValueError):
         empty_ts.peek()
 
-#==============================================================================
+# =============================================================================
 # Test Other Functions
-#==============================================================================
+# =============================================================================
 
 
 def test_equality(generic_ts, table_ts):
@@ -753,11 +774,10 @@ def test_ts_index(generic_ts):
 def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().data.equals(generic_ts.data.sort_index())
 
-#_validate_units
 
-#_validate_meta
-
-# ToDo:
-###Extracting column as quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
-###Updating a column using quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
-###Updating the units# ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)
+# TODO:
+# _validate_units
+# _validate_meta
+# Extracting column as quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
+# Updating a column using quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
+# Updating the units# ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)

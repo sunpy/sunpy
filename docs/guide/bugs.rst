@@ -8,7 +8,7 @@ lists first: it is possible that someone else has already run into
 your problem.
 
 If not, please provide the following information in your e-mail to the
-`mailing list <http://groups.google.com/forum/#!forum/sunpy>`_:
+`mailing list <https://groups.google.com/forum/#!forum/sunpy>`_:
 
   * your operating system; (Linux/UNIX users: post the output of ``uname -a``)
 

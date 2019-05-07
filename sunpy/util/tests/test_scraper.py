@@ -1,11 +1,11 @@
 import pytest
 
+import astropy.units as u
+from astropy.time import TimeDelta
+
+from sunpy.data.test import rootdir
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.scraper import Scraper
-
-from astropy.time import TimeDelta
-import astropy.units as u
-
 
 PATTERN_EXAMPLES = [
     ('%b%y', TimeDelta(31*u.day)),
@@ -149,18 +149,19 @@ def testURL_patternMilliseconds():
     assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
     assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
 
-# Local files don't work
-# def testFilesRange_sameDirectory_local():
-#     s = Scraper('/'.join(['file:/',sunpy.data.test.rootdir,
-#                           'EIT','efz%Y%m%d.%H%M%S_s.fits']))
-#     print(s.pattern)
-#     print(s.now)
-#     startdate = parse_time((2004, 3, 1, 4, 0))
-#     enddate = parse_time((2004, 3, 1, 6, 30))
-#     assert len(s.filelist(TimeRange(startdate, enddate))) == 3
-#     startdate = parse_time((2010, 1, 10, 20, 30))
-#     enddate = parse_time((2010, 1, 20, 20, 30))
-#     assert len(s.filelist(TimeRange(startdate, enddate))) == 0
+
+@pytest.mark.xfail
+def testFilesRange_sameDirectory_local():
+    s = Scraper('/'.join(['file:/', rootdir,
+                          'EIT', 'efz%Y%m%d.%H%M%S_s.fits']))
+    print(s.pattern)
+    print(s.now)
+    startdate = parse_time((2004, 3, 1, 4, 0))
+    enddate = parse_time((2004, 3, 1, 6, 30))
+    assert len(s.filelist(TimeRange(startdate, enddate))) == 3
+    startdate = parse_time((2010, 1, 10, 20, 30))
+    enddate = parse_time((2010, 1, 20, 20, 30))
+    assert len(s.filelist(TimeRange(startdate, enddate))) == 0
 
 
 @pytest.mark.xfail

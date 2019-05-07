@@ -8,7 +8,7 @@ This page is for maintainers who can merge our own or other peoples' changes int
 
 Seeing as how you're a maintainer, you should be completely on top of the basic git workflow in :ref:`newcomers` and Astropy's `git workflow`_.
 
-.. _git workflow: http://docs.astropy.org/en/stable/development/workflow/development_workflow.html#development-workflow
+.. _git workflow: https://docs.astropy.org/en/stable/development/workflow/development_workflow.html#development-workflow
 
 Integrating changes via the web interface (recommended)
 =======================================================
@@ -167,7 +167,7 @@ These guidelines are adapted from `guidelines`_ followed by astropy:
 
 * Issues that require fixing in master, but that also are confirmed to apply to supported stable version lines should be marked with a "Affects Release" label and the corresponding supported stable version label "v0.4.x".
 
-.. _guidelines: :http://docs.astropy.org/en/stable/development/workflow/maintainer_workflow.html#using-milestones-and-labels
+.. _guidelines: :https://docs.astropy.org/en/stable/development/workflow/maintainer_workflow.html#using-milestones-and-labels
 
 Using Projects
 ==============

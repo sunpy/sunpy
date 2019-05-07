@@ -18,7 +18,7 @@ References
 ----------
 * Adapted from Turck-Chieze et al. (1988) with composition: X = 0.7046, Y = 0.2757, Z = 0.0197
 """
-from astropy import units as u
+import astropy.units as u
 from astropy.table import QTable
 
 __all__ = ["interior", "evolution"]

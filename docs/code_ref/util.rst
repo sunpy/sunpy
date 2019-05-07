@@ -3,11 +3,7 @@ SunPy util
 
 .. automodapi:: sunpy.util
 
-.. automodapi:: sunpy.util.cond_dispatch
-
 .. automodapi:: sunpy.util.config
-
-.. automodapi:: sunpy.util.create
 
 .. automodapi:: sunpy.util.datatype_factory_base
 
