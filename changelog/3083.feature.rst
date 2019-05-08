@@ -1,1 +1,1 @@
-Added a helper function that allows users to create a meta header for custom created `sunpy.map.Map`.
+Added a helper function that allows users to create a meta header for custom created `sunpy.map.GenericMap`.
