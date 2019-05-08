@@ -52,25 +52,24 @@ def solar_wcs_frame_mapping(wcs):
         return Heliocentric(obstime=dateobs, observer=observer)
 
 
-
-def solar_frame_to_wcs_mapping(frame, projection = 'TAN'):
+def solar_frame_to_wcs_mapping(frame, projection='TAN'):
     """
     For a given frame, this function returns the corresponding WCS object.
     It registers the WCS coordinates types from their associated frame in the
     `astropy.wcs.utils.celestial_frame_to_wcs` registry.
-    """    
-    wcs = WCS(naxis = 2)
-    
+    """
+    wcs = WCS(naxis=2)
+
     if hasattr(frame, 'rsun'):
         wcs.rsun = frame.rsun
     else:
         wcs.rsun = None
-        
+
     if hasattr(frame, 'observer'):
         wcs.heliographic_observer = frame.observer
-    
+
     if isinstance(frame, BaseCoordinateFrame):
-        
+
         wcs.wcs.dateobs = frame.obstime.utc.isot
         if isinstance(frame, Helioprojective):
             xcoord = 'HPLN' + '-' + projection
@@ -91,9 +90,9 @@ def solar_frame_to_wcs_mapping(frame, projection = 'TAN'):
 
     else:
         return None
-    
-    wcs.wcs.ctype = [xcoord , ycoord]
-    
+
+    wcs.wcs.ctype = [xcoord, ycoord]
+
     return wcs
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
