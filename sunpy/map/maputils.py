@@ -36,12 +36,12 @@ def all_pixel_indices_from_map(smap):
 
 def all_coordinates_from_map(smap):
     """
-    Returns the co-ordinates of every pixel in a map.
+    Returns the coordinates of every pixel in a map.
 
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input `~sunpy.map.Map`.
+        A SunPy map.
 
     Returns
     -------
@@ -59,11 +59,11 @@ def map_edges(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input `~sunpy.map.Map`.
+        A SunPy map.
 
     Returns
     -------
-    maps_edges : `~dict`
+    `~dict`
         Returns the pixels of edge of the map.
     """
     # Calculate all the edge pixels
@@ -82,23 +82,25 @@ def contains_full_disk(smap):
     A map contains the full disk of the Sun if the following two
     conditions are met: (1) all the pixels at the edge of the map are
     more than 1 solar radius from the center of the Sun and, (2) the
-    map is not all off disk.  If both these conditions are met, the
+    map is not all off disk. If both these conditions are met, the
     function returns `True`. Otherwise, the function returns `False`.
-    Note that the function assumes that the input map is rectangular.
-    Note also that in the case of coronagraph images the disk itself
-    need not be observed.
 
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input `~sunpy.map.Map`. The world coordinate frame must be
-        helioprojective Cartesian.
+        A map in helioprojective Cartesian coordinates.
 
     Returns
     -------
     `~bool`
-        Returns `False` if any of the edge pixels are less than one solar radius
-        away from the center of the Sun.
+        Returns `False` if any of the edge pixels are less than one solar
+        radius away from the center of the Sun.
+
+    Notes
+    -----
+    * The function assumes that the input map is rectangular.
+    * In the case of coronagraph images the disk itself need not be observed.
+
     """
     # Calculate all the edge pixels
     edges = map_edges(smap)
@@ -117,6 +119,33 @@ def contains_full_disk(smap):
     return np.all(distance > 1*u.R_sun) and ~is_all_off_disk(smap)
 
 
+@u.quantity_input
+def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
+    """
+    Checks if the helioprojective Cartesian coordinate is on disk.
+
+    The check is performed by comparing the coordinate's distance
+    from the center of the Sun to the solar radius.
+
+    Parameters
+    ----------
+    coordinate : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+        The input coordinate. The coordinate frame must be
+        `~sunpy.coordinates.Helioprojective`.
+
+    scale : `~astropy.units.Quantity`
+        The pixel scale size in units of arcseconds.
+
+    Returns
+    -------
+    `~bool`
+        Returns `True` if the coordinate is on disk, `False` otherwise.
+    """
+    # Calculate the radii of every pixel in helioprojective Cartesian
+    # co-ordinate distance units.
+    return u.R_sun * (np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2) / scale) < 1 * u.R_sun
+
+
 def is_all_off_disk(smap):
     """
     Checks if the entire `~sunpy.map.Map` is off the solar disk.
@@ -129,7 +158,7 @@ def is_all_off_disk(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input `~sunpy.map.Map`.
+        A map in helioprojective Cartesian coordinates.
 
     Returns
     -------
@@ -151,7 +180,7 @@ def is_all_on_disk(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input `~sunpy.map.Map`.
+        A map in helioprojective Cartesian coordinates.
 
     Returns
     -------
@@ -169,54 +198,27 @@ def contains_limb(smap):
     The check is performed by calculating the distance of every pixel from
     the center of the Sun.  If at least one pixel is on disk and at least one
     pixel is off disk, the function returns `True`. Otherwise, the function
-    returns `False`. 
-    
-    Note
-    ----
-    This will also return `True` if the entire solar
-    limb is within the field of view of the map.  Note also that in the case
-    of coronagraph images the limb itself need not be observed.
+    returns `False`.
 
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input `~sunpy.map.Map`.
+        A map in helioprojective Cartesian coordinates.
 
     Returns
     -------
     `~bool`
         Returns `True` If at least one pixel is on disk and at least one pixel
         is off disk.
+
+    Notes
+    -----
+    This will also return `True` if the entire solar
+    limb is within the field of view of the map.  Also in the case
+    of coronagraph images the limb itself need not be observed.
     """
     on_disk = coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs)
     return np.logical_and(np.any(on_disk), np.any(~on_disk))
-
-
-@u.quantity_input
-def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
-    """
-    Checks if the helioprojective Cartesian coordinate is on disk.
-
-    The check is performed by comparing the coordinate's distance
-    from the center of the Sun to the solar radius.
-
-    Parameters
-    ----------
-    coordinate : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
-        The input coordinate.  The frame property of the input
-        coordinate must be helioprojective.
-
-    scale : `~astropy.units.Quantity`
-        The pixel scale size in units of arcseconds.
-
-    Returns
-    -------
-    `~bool`
-        Returns `True` if the coordinate is on disk, `False` otherwise.
-    """
-    # Calculate the radii of every pixel in helioprojective Cartesian
-    # co-ordinate distance units.
-    return u.R_sun * (np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2) / scale) < 1 * u.R_sun
 
 
 def on_disk_bounding_coordinates(smap):
@@ -227,14 +229,15 @@ def on_disk_bounding_coordinates(smap):
     Parameters
     ----------
     smap : `~sunpy.map.GenericMap`
-        The input `~sunpy.map.Map`.
+        A map in helioprojective Cartesian coordinates.
 
     Returns
     -------
-    bl, tr : `~astropy.coordinates.SkyCoord`
-        Returns a `~astropy.coordinates.SkyCoord` of length 2 such that the first entry is the bottom left
-        coordinate and the second entry is the top right coordinate of the smallest
-        rectangular region that contains all the on-disk pixels in the input map.
+    `~astropy.coordinates.SkyCoord`
+        A `~astropy.coordinates.SkyCoord` of length 2 such that the
+        first entry is the bottom left coordinate and the second entry is the
+        top right coordinate of the smallest rectangular region that contains
+        all the on-disk pixels in the input map.
     """
     # Check that the input map is not all off disk.
     if is_all_off_disk(smap):
