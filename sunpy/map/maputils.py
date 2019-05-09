@@ -121,21 +121,18 @@ def contains_full_disk(smap):
 
 
 @u.quantity_input
-def coordinate_is_on_disk(coordinate, rsun_obs: u.arcsecond):
+def coordinate_is_on_disk(coordinate):
     """
     Checks if the helioprojective Cartesian coordinate is on disk.
 
-    The check is performed by comparing the coordinate's distance
-    from the center of the Sun to the solar radius.
+    The check is performed by comparing the coordinate's angular distance
+    to the angular size of the solar radius.
 
     Parameters
     ----------
     coordinate : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
         The input coordinate. The coordinate frame must be
         `~sunpy.coordinates.Helioprojective`.
-
-    rsun_obs : `~astropy.units.Quantity`
-        The radius of the Sun in arcseconds.
 
     Returns
     -------
@@ -144,7 +141,9 @@ def coordinate_is_on_disk(coordinate, rsun_obs: u.arcsecond):
     """
     # Calculate the radii of every pixel in helioprojective Cartesian
     # co-ordinate distance units.
-    return u.R_sun * (np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2) / rsun_obs.to(u.arcsecond)) < 1 * u.R_sun
+    c_radius = np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2)
+    solar_radius_angular_size = np.arctan(coordinate.rsun / coordinate.observer.radius.to(u.km)).to(u.arcsec)
+    return c_radius < solar_radius_angular_size
 
 
 def is_all_off_disk(smap):
