@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
+import astropy.units as u
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
@@ -54,6 +55,24 @@ class EUVIMap(GenericMap):
         https://sohowww.nascom.nasa.gov/solarsoft/stereo/secchi/doc/FITS_keywords.pdf
         """
         return self.meta.get('rsun', None)
+
+    @property
+    def rsun_obs(self):
+        """
+        Radius of the sun in arcseconds as a quantity.
+
+        References
+        ----------
+        https://sohowww.nascom.nasa.gov/solarsoft/stereo/secchi/doc/FITS_keywords.pdf
+        """
+        rsun_arcseconds = self.meta.get('rsun', None)
+
+        if rsun_arcseconds is None:
+            warnings.warn("Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
+                          SunpyUserWarning)
+            rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).to('arcsec').value
+
+        return u.Quantity(rsun_arcseconds, 'arcsec')
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
