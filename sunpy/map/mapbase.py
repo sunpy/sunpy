@@ -12,6 +12,7 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
+from astropy.visualization import AsymmetricPercentileInterval
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
@@ -1654,7 +1655,7 @@ class GenericMap(NDData):
         figure.show()
 
     @toggle_pylab
-    def plot(self, annotate=True, axes=None, title=True, **imshow_kwargs):
+    def plot(self, annotate=True, axes=None, title=True, clip_percentile=None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
@@ -1668,6 +1669,13 @@ class GenericMap(NDData):
         axes: `~matplotlib.axes` or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
+
+        title : bool
+            If True, include the title
+
+        clip_percentile : tuple of 2 numbers
+            If provided, the data will be clipped to the percentile interval bounded by the two
+            numbers
 
         **imshow_kwargs  : dict
             Any additional imshow arguments that should be used
@@ -1731,6 +1739,15 @@ class GenericMap(NDData):
             y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units[1]).value)
             imshow_args.update({'extent': x_range + y_range})
         imshow_args.update(imshow_kwargs)
+
+        if clip_percentile is not None:
+            if len(clip_percentile) == 2:
+                vmin, vmax = AsymmetricPercentileInterval(*clip_percentile).get_limits(self.data)
+            else:
+                raise ValueError("Clip percentile interval must be a tuple of 2 numbers")
+
+            imshow_args['vmin'] = vmin
+            imshow_args['vmax'] = vmax
 
         if self.mask is None:
             ret = axes.imshow(self.data, **imshow_args)
