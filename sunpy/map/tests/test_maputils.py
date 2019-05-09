@@ -116,21 +116,20 @@ def test_contains_limb(aia171_test_map, all_off_disk_map, all_on_disk_map, strad
 
 
 def test_coordinate_is_on_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
-    scale = aia171_test_map.rsun_obs
     off_disk = aia171_test_map.bottom_left_coord
     on_disk = aia171_test_map.center
 
     # Check for individual coordinates
-    assert coordinate_is_on_disk(on_disk, scale)
-    assert ~coordinate_is_on_disk(off_disk, scale)
+    assert coordinate_is_on_disk(on_disk)
+    assert ~coordinate_is_on_disk(off_disk)
 
     # Check for sets of coordinates
-    assert np.any(coordinate_is_on_disk(all_coordinates_from_map(aia171_test_map), scale))
-    assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(aia171_test_map), scale))
-    assert np.all(~coordinate_is_on_disk(all_coordinates_from_map(all_off_disk_map), scale))
-    assert np.all(coordinate_is_on_disk(all_coordinates_from_map(all_on_disk_map), scale))
-    assert np.any(coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map), scale))
-    assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map), scale))
+    assert np.any(coordinate_is_on_disk(all_coordinates_from_map(aia171_test_map)))
+    assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(aia171_test_map)))
+    assert np.all(~coordinate_is_on_disk(all_coordinates_from_map(all_off_disk_map)))
+    assert np.all(coordinate_is_on_disk(all_coordinates_from_map(all_on_disk_map)))
+    assert np.any(coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map)))
+    assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map)))
 
 
 # Testing values are derived from running the code, not from external sources
