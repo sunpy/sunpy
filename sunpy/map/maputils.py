@@ -141,9 +141,12 @@ def coordinate_is_on_disk(coordinate):
     """
     # Calculate the radii of every pixel in helioprojective Cartesian
     # co-ordinate distance units.
-    c_radius = np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2)
+    coordinate_radius = np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2)
+    # The tangent of the angular size of the solar radius is equal to the radius
+    # of the Sun divided by the distance between the observer and the
+    # center of the Sun.
     solar_radius_angular_size = np.arctan(coordinate.rsun / coordinate.observer.radius.to(u.km)).to(u.arcsec)
-    return c_radius < solar_radius_angular_size
+    return coordinate_radius < solar_radius_angular_size
 
 
 def is_all_off_disk(smap):
