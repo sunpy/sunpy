@@ -54,7 +54,7 @@ def all_coordinates_from_map(smap):
 
 def map_edges(smap):
     """
-    Returns the pixel locations of the edges of a rectangular input map.
+    Returns the pixel locations of the edges of an input map.
 
     Parameters
     ----------
@@ -98,8 +98,9 @@ def contains_full_disk(smap):
 
     Notes
     -----
-    * The function assumes that the input map is rectangular.
-    * In the case of coronagraph images the disk itself need not be observed.
+    * The disk itself need not be imaged.  For example, in coronagraph images such as those
+    * from LASCO C2 and C3 the full disk is within the field of view of the instrument,
+    * but the solar disk itself is not imaged.
 
     """
     # Calculate all the edge pixels
@@ -120,7 +121,7 @@ def contains_full_disk(smap):
 
 
 @u.quantity_input
-def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
+def coordinate_is_on_disk(coordinate, rsun_obs: u.arcsecond):
     """
     Checks if the helioprojective Cartesian coordinate is on disk.
 
@@ -133,8 +134,8 @@ def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
         The input coordinate. The coordinate frame must be
         `~sunpy.coordinates.Helioprojective`.
 
-    scale : `~astropy.units.Quantity`
-        The pixel scale size in units of arcseconds.
+    rsun_obs : `~astropy.units.Quantity`
+        The radius of the Sun in arcseconds.
 
     Returns
     -------
@@ -143,12 +144,12 @@ def coordinate_is_on_disk(coordinate, scale: u.arcsecond):
     """
     # Calculate the radii of every pixel in helioprojective Cartesian
     # co-ordinate distance units.
-    return u.R_sun * (np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2) / scale) < 1 * u.R_sun
+    return u.R_sun * (np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2) / rsun_obs.to(u.arcsecond)) < 1 * u.R_sun
 
 
 def is_all_off_disk(smap):
     """
-    Checks if the entire `~sunpy.map.Map` is off the solar disk.
+    Checks if the entire `~sunpy.map.GenericMap` is off the solar disk.
 
     The check is performed by calculating the distance of every
     pixel from the center of the Sun. If they are all off-disk,
@@ -165,6 +166,12 @@ def is_all_off_disk(smap):
     `~bool`
         Returns `True` if all map pixels are strictly more than one solar radius
         away from the center of the Sun.
+
+    Notes
+    -----
+    * For coronagraph images such as those from LASCO C2 and C3 the full disk is
+    * within the field of view of the instrument, but the solar disk itself is not imaged.
+    * For such images this function will return `False`.
     """
     return np.all(~coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs))
 
