@@ -289,7 +289,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
     c = smap.pixel_to_world(pixels[:, 1], pixels[:, 0])
 
     # Only apply solar rotation if all coordinates are on the disk.
-    if np.all(~coordinate_is_on_disk(c, smap.rsun_obs)):
+    if np.all(~coordinate_is_on_disk(c)):
         coordinates = deepcopy(c)
     else:
         coordinates = solar_rotate_coordinate(c, observer=observer, **diff_rot_kwargs)
