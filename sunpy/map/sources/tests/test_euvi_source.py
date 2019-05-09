@@ -32,3 +32,8 @@ def test_measurement():
 def test_observatory():
     """Tests the observatory property of the EUVIMap object."""
     assert euvi.observatory == "STEREO A"
+
+def test_rsun_obs():
+    """Tests the rsun_obs property"""
+    assert euvi.rsun_obs.value == euvi.meta['rsun']
+
