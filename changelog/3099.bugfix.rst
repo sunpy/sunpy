@@ -1,0 +1,1 @@
+Added rsun_obs property to STEREO map sources. It returns a quantity in arcsec consistent with other Maps and overwrites mapbase's assumption of a photospheric limb as seen Added rsun_obs property to stereo map sources.
