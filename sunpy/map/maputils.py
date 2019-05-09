@@ -172,7 +172,7 @@ def is_all_off_disk(smap):
     * within the field of view of the instrument, but the solar disk itself is not imaged.
     * For such images this function will return `False`.
     """
-    return np.all(~coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs))
+    return np.all(~coordinate_is_on_disk(all_coordinates_from_map(smap)))
 
 
 def is_all_on_disk(smap):
@@ -194,7 +194,7 @@ def is_all_on_disk(smap):
         Returns `True` if all map pixels are strictly less than one solar radius
         away from the center of the Sun.
     """
-    return np.all(coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs))
+    return np.all(coordinate_is_on_disk(all_coordinates_from_map(smap)))
 
 
 def contains_limb(smap):
@@ -223,7 +223,7 @@ def contains_limb(smap):
     limb is within the field of view of the map.  Also in the case
     of coronagraph images the limb itself need not be observed.
     """
-    on_disk = coordinate_is_on_disk(all_coordinates_from_map(smap), smap.rsun_obs)
+    on_disk = coordinate_is_on_disk(all_coordinates_from_map(smap))
     return np.logical_and(np.any(on_disk), np.any(~on_disk))
 
 
@@ -253,7 +253,7 @@ def on_disk_bounding_coordinates(smap):
     coordinates = all_coordinates_from_map(smap)
 
     # Find which coordinates are on the disk
-    on_disk = coordinate_is_on_disk(coordinates, smap.rsun_obs)
+    on_disk = coordinate_is_on_disk(coordinates)
     on_disk_coordinates = coordinates[on_disk]
 
     # The bottom left and top right coordinates that contain
