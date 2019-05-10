@@ -1,0 +1,1 @@
+Fixed bugs related to using `plot()` and `peek()` with the `inline` Matplotlib backend in Jupyter notebook.
