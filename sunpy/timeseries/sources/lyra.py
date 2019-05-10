@@ -5,6 +5,7 @@ import sys
 from collections import OrderedDict
 
 import pandas
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 
 import astropy.units as u
@@ -95,7 +96,9 @@ class LYRATimeSeries(GenericTimeSeries):
         for axe in axes:
             axe.locator_params(axis='y',nbins=6)
 
-        figure.show()
+        # Show the figure if using an interactive Matplotlib backend
+        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
+            figure.show()
 
     @classmethod
     def _parse_file(cls, filepath):

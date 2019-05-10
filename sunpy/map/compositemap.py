@@ -4,6 +4,7 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 import numpy as np
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 import astropy.units as u
@@ -509,8 +510,9 @@ class CompositeMap(object):
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
 
-        figure.show()
-
+        # Show the figure if using an interactive Matplotlib backend
+        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
+            figure.show()
 
 class OutOfRangeAlphaValue(ValueError):
     """Exception to raise when an alpha value outside of the range 0-1 is

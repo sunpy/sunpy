@@ -6,6 +6,7 @@ from collections import OrderedDict
 
 import matplotlib.dates
 import numpy as np
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 
@@ -105,7 +106,10 @@ class XRSTimeSeries(GenericTimeSeries):
 
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
-        figure.show()
+
+        # Show the figure if using an interactive Matplotlib backend
+        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
+            figure.show()
 
     # TODO: is this part of the DL pipeline? If so delete.
     @staticmethod
