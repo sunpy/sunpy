@@ -6,6 +6,7 @@ import copy
 import warnings
 from collections import OrderedDict
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -410,7 +411,10 @@ class GenericTimeSeries:
         # Now make the plot
         figure = plt.figure()
         self.plot(**kwargs)
-        figure.show()
+
+        # Show the figure if using an interactive Matplotlib backend
+        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
+            figure.show()
 
     def _validate_data_for_ploting(self):
         """

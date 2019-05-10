@@ -4,6 +4,7 @@ source.
 """
 from collections import OrderedDict
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas
@@ -79,7 +80,9 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes.set_ylabel('Correlation')
         axes.legend()
 
-        figure.show()
+        # Show the figure if using an interactive Matplotlib backend
+        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
+            figure.show()
 
     @classmethod
     def _parse_file(cls, filepath):

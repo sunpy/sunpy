@@ -4,6 +4,7 @@ from os.path import basename
 from datetime import datetime
 from collections import OrderedDict
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import dates
@@ -77,7 +78,9 @@ class ESPTimeSeries(GenericTimeSeries):
         plt.tight_layout()
         plt.subplots_adjust(hspace=0.05)
 
-        figure.show()
+        # Show the figure if using an interactive Matplotlib backend
+        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
+            figure.show()
 
     @classmethod
     def _parse_file(cls, filepath):

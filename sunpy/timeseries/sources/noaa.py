@@ -4,7 +4,8 @@ This module provies NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
 from collections import OrderedDict
 
 import numpy as np
-from matplotlib import pyplot as plt
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
 
 import astropy.units as u
@@ -99,7 +100,9 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes.xaxis.grid(True, 'major')
         axes.legend()
 
-        figure.show()
+        # Show the figure if using an interactive Matplotlib backend
+        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
+            figure.show()
 
     @classmethod
     def _parse_file(cls, filepath):
