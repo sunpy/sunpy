@@ -7,6 +7,7 @@ from collections import namedtuple
 import textwrap
 
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import patches, cm, colors
 
@@ -1650,7 +1651,9 @@ class GenericMap(NDData):
         else:
             raise TypeError("draw_grid should be a bool or an astropy Quantity.")
 
-        figure.show()
+        # Show the figure if using an interactive Matplotlib backend
+        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
+            figure.show()
 
     def plot(self, annotate=True, axes=None, title=True, **imshow_kwargs):
         """
