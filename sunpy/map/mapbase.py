@@ -1655,29 +1655,30 @@ class GenericMap(NDData):
         figure.show()
 
     @toggle_pylab
-    def plot(self, annotate=True, axes=None, title=True, clip_percentile=None, **imshow_kwargs):
+    @u.quantity_input(clip_interval=u.percent)
+    def plot(self, annotate=True, axes=None, title=True, clip_interval=None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
 
         Parameters
         ----------
-        annotate : bool
-            If True, the data is plotted at it's natural scale; with
+        annotate : `bool`, optional
+            If `True`, the data is plotted at its natural scale; with
             title and axis labels.
 
         axes: `~matplotlib.axes` or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
-        title : bool
-            If True, include the title
+        title : `bool`, optional
+            If `True`, include the title.
 
-        clip_percentile : tuple of 2 numbers
+        clip_interval : two-element `~astropy.units.Quantity`, optional
             If provided, the data will be clipped to the percentile interval bounded by the two
-            numbers
+            numbers.
 
-        **imshow_kwargs  : dict
+        **imshow_kwargs  : `dict`
             Any additional imshow arguments that should be used
             when plotting.
 
@@ -1740,11 +1741,12 @@ class GenericMap(NDData):
             imshow_args.update({'extent': x_range + y_range})
         imshow_args.update(imshow_kwargs)
 
-        if clip_percentile is not None:
-            if len(clip_percentile) == 2:
-                vmin, vmax = AsymmetricPercentileInterval(*clip_percentile).get_limits(self.data)
+        if clip_interval is not None:
+            if len(clip_interval) == 2:
+                clip_percentages = clip_interval.to('%').value
+                vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data)
             else:
-                raise ValueError("Clip percentile interval must be a tuple of 2 numbers")
+                raise ValueError("Clip percentile interval must be specified as two numbers.")
 
             imshow_args['vmin'] = vmin
             imshow_args['vmax'] = vmax
