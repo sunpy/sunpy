@@ -20,7 +20,7 @@ import sunpy.io as io
 import sunpy.coordinates
 import sunpy.cm
 from sunpy import config
-from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
+from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
@@ -1592,7 +1592,6 @@ class GenericMap(NDData):
                           **contour_args)
         return cs
 
-    @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
              colorbar=True, basic_plot=False, **matplot_args):
         """
@@ -1653,7 +1652,6 @@ class GenericMap(NDData):
 
         figure.show()
 
-    @toggle_pylab
     def plot(self, annotate=True, axes=None, title=True, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
