@@ -3,25 +3,7 @@ This module provides plotting support in iPython.
 """
 from matplotlib import pyplot as plt
 
-__all__ = ["toggle_pylab", "axis_labels_from_ctype"]
-
-
-def toggle_pylab(fn):
-    """
-    A decorator to prevent functions from opening Matplotlib windows
-    unexpectedly when SunPy is run in interactive shells like iPython.
-
-    Toggles the value of `matplotlib.pyplot.isinteractive`.
-    """
-    if plt.isinteractive():
-        def fn_itoggle(*args, **kwargs):
-            plt.ioff()
-            ret = fn(*args, **kwargs)
-            plt.ion()
-            return ret
-        return fn_itoggle
-    else:
-        return fn
+__all__ = ["axis_labels_from_ctype"]
 
 
 def axis_labels_from_ctype(ctype, unit):
