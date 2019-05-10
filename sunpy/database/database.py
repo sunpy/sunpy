@@ -819,7 +819,7 @@ class Database(object):
         self.add_many(self._download_and_collect_entries(
             query_result, client=client, path=path, progress=progress, overwrite=overwrite))
 
-    def download_from_hek_query_result(self,query_result, path=None,
+    def download_from_hek_query_result(self, query_result, path=None,
                                        progress=False):
         """Download_from_hek_query_result(query_result,path=None, progress=False)
         Add new database entries from a HEK query by translating it into a VSO query
@@ -833,7 +833,7 @@ class Database(object):
         """
         translated_query = itertools.chain.from_iterable(
             H2VClient().translate_and_query(query_result))
-        self.download_from_vso_query_result(translated_query,path=path,progress=progress)
+        self.download_from_vso_query_result(translated_query, path=path, progress=progress)
 
 
     def add_from_vso_query_result(self, query_result,

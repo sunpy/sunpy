@@ -449,8 +449,7 @@ def test_download_from_hek_query_result(database, hek_qr, tmpdir):
     num_of_fits_headers = sum(
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers > 0
-    for entry in database:
-        assert os.path.dirname(entry.path) == str(tmpdir)
+    assert [os.path.dirname(entry.path) for entry in database] == [str(tmpdir)] * len(database)
 
 def num_entries_from_vso_query(db, query, path=None, file_pattern='',
                                overwrite=False):
