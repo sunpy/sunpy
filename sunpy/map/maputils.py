@@ -98,10 +98,9 @@ def contains_full_disk(smap):
 
     Notes
     -----
-    * The disk itself need not be imaged.  For example, in coronagraph images such as those
-    * from LASCO C2 and C3 the full disk is within the field of view of the instrument,
-    * but the solar disk itself is not imaged.
-
+    The disk itself need not be imaged.  For example, in coronagraph images such as those
+    from LASCO C2 and C3 the full disk is within the field of view of the instrument,
+    but the solar disk itself is not imaged.
     """
     # Calculate all the edge pixels
     edges = map_edges(smap)
@@ -145,7 +144,7 @@ def coordinate_is_on_disk(coordinate):
     # The tangent of the angular size of the solar radius is equal to the radius
     # of the Sun divided by the distance between the observer and the
     # center of the Sun.
-    solar_radius_angular_size = np.arctan(coordinate.rsun / coordinate.observer.radius.to(u.km)).to(u.arcsec)
+    solar_radius_angular_size = np.arctan(coordinate.rsun / coordinate.observer.radius).to(u.arcsec)
     return coordinate_angles < solar_radius_angular_size
 
 
