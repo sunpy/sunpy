@@ -68,9 +68,7 @@ class EUVIMap(GenericMap):
         rsun_arcseconds = self.meta.get('rsun', None)
 
         if rsun_arcseconds is None:
-            warnings.warn("Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
-                          SunpyUserWarning)
-            rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).to('arcsec').value
+            rsun_arcseconds = super().rsun_obs
 
         return u.Quantity(rsun_arcseconds, 'arcsec')
 
