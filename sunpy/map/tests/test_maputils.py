@@ -64,27 +64,22 @@ def test_all_coordinates_from_map(sub_smap):
 
 def test_map_edges(all_off_disk_map):
     edges = map_edges(all_off_disk_map)
-    assert type(edges) is dict
-    keys = edges.keys()
-    assert 'lhs' in keys
-    assert 'rhs' in keys
-    assert 'top' in keys
-    assert 'bottom' in keys
-    assert len(edges['lhs']) == 11
-    assert np.all(edges['lhs'][0] == [0, 0] * u.pix)
-    assert np.all(edges['lhs'][10] == [10, 0] * u.pix)
+    assert type(edges) is tuple
+    assert len(edges[2]) == 11
+    assert np.all(edges[2][0] == [0, 0] * u.pix)
+    assert np.all(edges[2][10] == [10, 0] * u.pix)
 
-    assert len(edges['rhs']) == 11
-    assert np.all(edges['rhs'][0] == [0, 9] * u.pix)
-    assert np.all(edges['rhs'][10] == [10, 9] * u.pix)
+    assert len(edges[3]) == 11
+    assert np.all(edges[3][0] == [0, 9] * u.pix)
+    assert np.all(edges[3][10] == [10, 9] * u.pix)
 
-    assert len(edges['bottom']) == 10
-    assert np.all(edges['bottom'][0] == [0, 0] * u.pix)
-    assert np.all(edges['bottom'][9] == [0, 9] * u.pix)
+    assert len(edges[1]) == 10
+    assert np.all(edges[1][0] == [0, 0] * u.pix)
+    assert np.all(edges[1][9] == [0, 9] * u.pix)
 
-    assert len(edges['top']) == 10
-    assert np.all(edges['top'][0] == [10, 0] * u.pix)
-    assert np.all(edges['top'][9] == [10, 9] * u.pix)
+    assert len(edges[0]) == 10
+    assert np.all(edges[0][0] == [10, 0] * u.pix)
+    assert np.all(edges[0][9] == [10, 9] * u.pix)
 
 
 def test_contains_full_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
