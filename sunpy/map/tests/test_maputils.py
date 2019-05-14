@@ -9,7 +9,7 @@ from sunpy.map.maputils import (all_pixel_indices_from_map,
                                 all_coordinates_from_map, map_edges,
                                 contains_full_disk, is_all_off_disk,
                                 is_all_on_disk, contains_limb,
-                                coordinate_is_on_disk, on_disk_bounding_coordinates)
+                                coordinate_is_on_solar_disk, on_disk_bounding_coordinates)
 import sunpy.data.test
 import sunpy.map
 
@@ -110,21 +110,21 @@ def test_contains_limb(aia171_test_map, all_off_disk_map, all_on_disk_map, strad
     assert contains_limb(straddles_limb_map)
 
 
-def test_coordinate_is_on_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
+def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     off_disk = aia171_test_map.bottom_left_coord
     on_disk = aia171_test_map.center
 
     # Check for individual coordinates
-    assert coordinate_is_on_disk(on_disk)
-    assert ~coordinate_is_on_disk(off_disk)
+    assert coordinate_is_on_solar_disk(on_disk)
+    assert ~coordinate_is_on_solar_disk(off_disk)
 
     # Check for sets of coordinates
-    assert np.any(coordinate_is_on_disk(all_coordinates_from_map(aia171_test_map)))
-    assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(aia171_test_map)))
-    assert np.all(~coordinate_is_on_disk(all_coordinates_from_map(all_off_disk_map)))
-    assert np.all(coordinate_is_on_disk(all_coordinates_from_map(all_on_disk_map)))
-    assert np.any(coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map)))
-    assert np.any(~coordinate_is_on_disk(all_coordinates_from_map(straddles_limb_map)))
+    assert np.any(coordinate_is_on_solar_disk(all_coordinates_from_map(aia171_test_map)))
+    assert np.any(~coordinate_is_on_solar_disk(all_coordinates_from_map(aia171_test_map)))
+    assert np.all(~coordinate_is_on_solar_disk(all_coordinates_from_map(all_off_disk_map)))
+    assert np.all(coordinate_is_on_solar_disk(all_coordinates_from_map(all_on_disk_map)))
+    assert np.any(coordinate_is_on_solar_disk(all_coordinates_from_map(straddles_limb_map)))
+    assert np.any(~coordinate_is_on_solar_disk(all_coordinates_from_map(straddles_limb_map)))
 
 
 # Testing values are derived from running the code, not from external sources
