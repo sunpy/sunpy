@@ -9,5 +9,6 @@ from . mapsequence import MapSequence
 from . compositemap import CompositeMap
 
 from sunpy.map.maputils import *
+from sunpy.map.maphelper import *
 from sunpy.map.map_factory import Map
 from sunpy.map import sources
