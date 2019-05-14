@@ -12,13 +12,30 @@ from sunpy.coordinates import frames
 import warnings
 from sunpy.util.exceptions import SunpyUserWarning
 
-__all__ = ['meta_keywords', 'make_header', 'make_header_from_skycoord']
+__all__ = ['meta_keywords', 'make_header']
 
 
 def meta_keywords(*key):
     """
     Prints the accepted metadata keywords that are used when
     creating a `sunpy.map.Map`.
+
+    Examples
+    --------
+
+    * Print all accepted meta keywords that are used in a `sunpy.map.GenericMap` header:
+        >>> from sunpy import map
+        >>> map.meta_keywords()
+        cunit1  :  Units of the coordinate increments along naxis1 e.g. arcsec **required
+        cunit2  :  Units of the coordinate increments along naxis2 e.g. arcsec **required
+        crval1  :  Coordinate value at reference point on naxis1 **required
+        crval2  :  Coordinate value at reference point on naxis2 **required
+        ...
+
+    * Print information about certain meta keyword:
+        >>> map.meta_keywords('ctype1')
+        ctype1  :  Coordinate type projection along naxis1 of data e.g. HPLT-TAN
+
     """
     if key:
         for k in key:
@@ -32,12 +49,8 @@ def meta_keywords(*key):
         print(k, " : ", acceptable_meta[k])
 
 
-def make_header(data):
-	return MetaDict({'cdelt1':1, 'cdelt2':1})
-
-
 @u.quantity_input
-def make_header_from_skycoord(data, coordinate, crpix=None, cdelt=None, **kwargs):
+def make_header(data, coordinate, reference_pixel='center', scale=u.Quantity([1.0*u.arcsec, 1.0*u.arcsec]), **kwargs):
     """
     Function to create a `sunpy.util.meta.MetaDict` from a coordinate object (`astropy.coordinates.SkyCoord` or coordinate frame)
     that is required to create a `sunpy.map.Map`
@@ -46,17 +59,15 @@ def make_header_from_skycoord(data, coordinate, crpix=None, cdelt=None, **kwargs
     ----------
     data : `~numpy.ndarray`
         Array data of Map for which a header is required.
-    coordinates : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseFrame`, optional
-        Coordinate object to get meta information for map header.
-         If not set, default parameters are used.
-    crpix : `numpy.array` or `list` of size of 2, optional
+    coordinates : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseFrame`
+        Coordinate object to get meta information for map header. 
+    reference_pixel :`~astropy.units.Quantity` of size 2, optional
         Reference pixel along each axis.
-        first index is ``crpix1``, second index is ``crpix2``.
-        Defaults to the venter of data array, ``(data.shape[0] + 1)/2., (data.shape[1] + 1)/2.)``.
-    cdelt : `numpy.array` or `list` of size of 2, optional
-        Pixel scaling along each axis (i.e. the spatial scale of the pixels)
-        first index is ``cdelt1``, second index is ``cdelt2``.
-        Defaults to ``(0. 0)``.
+        first index is the x axis, second index is the y axis.
+        Defaults to the center of data array, ``(data.shape[0] + 1)/2., (data.shape[1] + 1)/2.)``.
+    scale : `~astropy.units.Quantity` of size 2, optional
+        Pixel scaling along x and y axis (i.e. the spatial scale of the pixels (dx, dy))
+        Defaults to ``([1., 1.] arcsec)``.
     **kwargs:
         Additional arguments that will be put into metadict header. These must be in the
         list of acceptable meta keywords.
@@ -76,23 +87,21 @@ def make_header_from_skycoord(data, coordinate, crpix=None, cdelt=None, **kwargs
 
     >>> data = np.random.rand(1024, 1024)
     >>> my_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime="2017-08-01", observer = 'earth', frame=frames.Helioprojective)
-    >>> my_header = map.make_header_from_skycoord(data, my_coord, crval = [0,0], cdelt = [2,2])
+    >>> my_header = map.make_header(data, my_coord)
     >>> my_map = map.Map(data, my_header)
     """
-
     if not isinstance(coordinate, (SkyCoord, frames.BaseCoordinateFrame)):
         raise ValueError("coordinate needs to be an Astropy coordinate frame or SkyCoord instance.")
     meta = _get_meta_from_coordinate(coordinate)
 
     meta['crval1'], meta['crval2'] = coordinate.Tx.value, coordinate.Ty.value
-    # if no crpix options set, default to 0, 0
-    if crpix is None:
-        meta['crpix1'], meta['crpix2'] = (data.shape[0] + 1)/2., (data.shape[1] + 1)/2.
-    else:
-        meta['crpix1'], meta['crpix2'] = crpix[0], crpix[1]
 
-    if cdelt is not None and isinstance(cdelt[0] and cdelt[1],u.Quantity):
-        meta['cdelt1'], meta['cdelt2'] = cdelt[0].to(u.deg), cdelt[1].to(u.deg)
+    if reference_pixel == 'center':
+        reference_pixel = u.Quantity([(data.shape[0] + 1)/2.*u.pix, (data.shape[1] + 1)/2.*u.pix])
+
+    meta['crpix1'], meta['crpix2'] = reference_pixel[0], reference_pixel[1]
+
+    meta['cdelt1'], meta['cdelt2'] = scale[0], scale[1]
 
     meta_dict = MetaDict(meta)
 
@@ -100,8 +109,9 @@ def make_header_from_skycoord(data, coordinate, crpix=None, cdelt=None, **kwargs
         if key in acceptable_meta:
             meta_dict[key] = kwargs[key]
 
-    return meta_dict  
-    
+    return meta_dict
+
+
 def _get_meta_from_coordinate(coordinate):
     """
     Function to get WCS meta data from an `astropy.coordinates.SkyCoord` or frame using
@@ -121,7 +131,7 @@ def _get_meta_from_coordinate(coordinate):
             * hgln_obs, hglt_obs
             * dsun_obs
             * rsun_obs
-            * t_obs, date_obs
+            * date_obs
     """
 
     coord_meta = {}
@@ -138,8 +148,9 @@ def _get_meta_from_coordinate(coordinate):
             raise ValueError("Frame needs an observation time.")
         skycoord_wcs = astropy.wcs.utils.celestial_frame_to_wcs(coordinate)
 
+    cunit1, cunit2 = skycoord_wcs.wcs.cunit
     coord_meta = dict(skycoord_wcs.to_header())
-
+    coord_meta['cunit1'], coord_meta['cunit2'] = cunit1, cunit2  # this is done as to_header transforms cunit to deg
     coord_meta['hgln_obs'], coord_meta['hglt_obs'] = skycoord_wcs.heliographic_observer.lon, skycoord_wcs.heliographic_observer.lat
     coord_meta['dsun_obs'] = skycoord_wcs.heliographic_observer.radius.to(u.m)
     coord_meta['rsun_ref'] = skycoord_wcs.rsun.to(u.m)
