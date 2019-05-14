@@ -63,16 +63,19 @@ def map_edges(smap):
 
     Returns
     -------
-    `~dict`
-        Returns the pixels of edge of the map.
+    `~tuple`
+        Returns the pixels of edge of the map; the zeroth, first,
+        second and third tuple values return the top, bottom,
+        left hand side and right hand side pixel locations
+        respectively of the input map.
     """
     # Calculate all the edge pixels
     nx, ny = smap.dimensions.x.value, smap.dimensions.y.value
-    bottom = list(product([0.0], np.arange(nx))) * u.pix
     top = list(product([ny - 1], np.arange(nx))) * u.pix
-    lhs = list(product(np.arange(ny), [0])) * u.pix
-    rhs = list(product(np.arange(ny), [nx - 1])) * u.pix
-    return {"top": top, "bottom": bottom, "lhs": lhs, "rhs": rhs}
+    bottom = list(product([0], np.arange(nx))) * u.pix
+    left_hand_side = list(product(np.arange(ny), [0])) * u.pix
+    right_hand_side = list(product(np.arange(ny), [nx - 1])) * u.pix
+    return top, bottom, left_hand_side, right_hand_side
 
 
 def contains_full_disk(smap):
@@ -104,7 +107,7 @@ def contains_full_disk(smap):
     """
     # Calculate all the edge pixels
     edges = map_edges(smap)
-    edge_pixels = list(chain.from_iterable([edges["lhs"], edges["rhs"], edges["top"], edges["bottom"]]))
+    edge_pixels = list(chain.from_iterable([edges[0], edges[1], edges[2], edges[3]]))
     x = [p[0] for p in edge_pixels] * u.pix
     y = [p[1] for p in edge_pixels] * u.pix
 
