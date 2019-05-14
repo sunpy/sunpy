@@ -67,19 +67,19 @@ def test_map_edges(all_off_disk_map):
     assert type(edges) is tuple
     assert len(edges[2]) == 11
     assert np.all(edges[2][0] == [0, 0] * u.pix)
-    assert np.all(edges[2][10] == [10, 0] * u.pix)
+    assert np.all(edges[2][10] == [0, 10] * u.pix)
 
     assert len(edges[3]) == 11
-    assert np.all(edges[3][0] == [0, 9] * u.pix)
-    assert np.all(edges[3][10] == [10, 9] * u.pix)
+    assert np.all(edges[3][0] == [9, 0] * u.pix)
+    assert np.all(edges[3][10] == [9, 10] * u.pix)
 
     assert len(edges[1]) == 10
     assert np.all(edges[1][0] == [0, 0] * u.pix)
-    assert np.all(edges[1][9] == [0, 9] * u.pix)
+    assert np.all(edges[1][9] == [9, 0] * u.pix)
 
     assert len(edges[0]) == 10
-    assert np.all(edges[0][0] == [10, 0] * u.pix)
-    assert np.all(edges[0][9] == [10, 9] * u.pix)
+    assert np.all(edges[0][0] == [0, 10] * u.pix)
+    assert np.all(edges[0][9] == [9, 10] * u.pix)
 
 
 def test_contains_full_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
