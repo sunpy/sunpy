@@ -64,17 +64,17 @@ def map_edges(smap):
     Returns
     -------
     `~tuple`
-        Returns the pixels of edge of the map; the zeroth, first,
-        second and third tuple values return the top, bottom,
-        left hand side and right hand side pixel locations
-        respectively of the input map.
+        Returns the pixel locations at the edge of the map;
+        the zeroth, first, second and third tuple values
+        return the top, bottom, left hand side and right
+        hand side pixel locations respectively of the input map.
     """
     # Calculate all the edge pixels
     nx, ny = smap.dimensions.x.value, smap.dimensions.y.value
-    top = list(product([ny - 1], np.arange(nx))) * u.pix
-    bottom = list(product([0], np.arange(nx))) * u.pix
-    left_hand_side = list(product(np.arange(ny), [0])) * u.pix
-    right_hand_side = list(product(np.arange(ny), [nx - 1])) * u.pix
+    top = list(product(np.arange(nx), [ny - 1])) * u.pix
+    bottom = list(product(np.arange(nx), [0])) * u.pix
+    left_hand_side = list(product([0], np.arange(ny))) * u.pix
+    right_hand_side = list(product([nx - 1], np.arange(ny))) * u.pix
     return top, bottom, left_hand_side, right_hand_side
 
 
