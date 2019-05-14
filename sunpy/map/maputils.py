@@ -13,7 +13,7 @@ from sunpy.coordinates import Helioprojective
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'map_edges', 'contains_full_disk',
            'is_all_off_disk', 'is_all_on_disk', 'contains_limb',
-           'coordinate_is_on_disk', 'on_disk_bounding_coordinates']
+           'coordinate_is_on_solar_disk', 'on_disk_bounding_coordinates']
 
 
 def all_pixel_indices_from_map(smap):
@@ -46,7 +46,8 @@ def all_coordinates_from_map(smap):
     Returns
     -------
     `~astropy.coordinates.SkyCoord`
-        An array of sky coordinates in the coordinate system "coordinate_system".
+        An two-dimensional array of sky coordinates in the coordinate
+        system "coordinate_system".
     """
     x, y = all_pixel_indices_from_map(smap)
     return smap.pixel_to_world(x, y)
@@ -101,9 +102,11 @@ def contains_full_disk(smap):
 
     Notes
     -----
-    The disk itself need not be imaged.  For example, in coronagraph images such as those
-    from LASCO C2 and C3 the full disk is within the field of view of the instrument,
-    but the solar disk itself is not imaged.
+    This function checks if the image coordinates include the solar disk.
+    Therefore this function would return `True` for a coronagraph image
+    such as from LASCO/C3 or STEREO/SECCHI COR1 since the solar disk is
+    within the field of the view of the instrument (although no emission
+    from the disk itself is present in the data.)
     """
     # Calculate all the edge pixels
     edges = map_edges(smap)
@@ -123,12 +126,14 @@ def contains_full_disk(smap):
 
 
 @u.quantity_input
-def coordinate_is_on_disk(coordinate):
+def coordinate_is_on_solar_disk(coordinates):
     """
-    Checks if the helioprojective Cartesian coordinate is on disk.
+    Checks if the helioprojective Cartesian coordinates are on the solar disk.
 
     The check is performed by comparing the coordinate's angular distance
-    to the angular size of the solar radius.
+    to the angular size of the solar radius.  The solar disk is assumed to be
+    a circle i.e., solar oblateness and other effects that cause the solar disk to
+    be non-circular are not taken in to account.
 
     Parameters
     ----------
@@ -143,11 +148,11 @@ def coordinate_is_on_disk(coordinate):
     """
     # Calculate the radius of every pixel from the center of the Sun
     # in helioprojective Cartesian coordinates.
-    coordinate_angles = np.sqrt(coordinate.Tx ** 2 + coordinate.Ty ** 2)
+    coordinate_angles = np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2)
     # The tangent of the angular size of the solar radius is equal to the radius
     # of the Sun divided by the distance between the observer and the
     # center of the Sun.
-    solar_radius_angular_size = np.arctan(coordinate.rsun / coordinate.observer.radius).to(u.arcsec)
+    solar_radius_angular_size = np.arctan(coordinates.rsun / coordinates.observer.radius)
     return coordinate_angles < solar_radius_angular_size
 
 
@@ -173,11 +178,11 @@ def is_all_off_disk(smap):
 
     Notes
     -----
-    * For coronagraph images such as those from LASCO C2 and C3 the full disk is
-    * within the field of view of the instrument, but the solar disk itself is not imaged.
-    * For such images this function will return `False`.
+    For coronagraph images such as those from LASCO C2 and C3 the full disk is
+    within the field of view of the instrument, but the solar disk itself is not imaged.
+    For such images this function will return `False`.
     """
-    return np.all(~coordinate_is_on_disk(all_coordinates_from_map(smap)))
+    return np.all(~coordinate_is_on_solar_disk(all_coordinates_from_map(smap)))
 
 
 def is_all_on_disk(smap):
@@ -199,12 +204,13 @@ def is_all_on_disk(smap):
         Returns `True` if all map pixels are strictly less than one solar radius
         away from the center of the Sun.
     """
-    return np.all(coordinate_is_on_disk(all_coordinates_from_map(smap)))
+    return np.all(coordinate_is_on_solar_disk(all_coordinates_from_map(smap)))
 
 
 def contains_limb(smap):
     """
-    Checks if a map contains a portion of the solar limb.
+    Checks if a map contains any part of the solar limb or equivalently whether
+    the map contains both on-disk and off-disk pixels.
 
     The check is performed by calculating the distance of every pixel from
     the center of the Sun.  If at least one pixel is on disk and at least one
@@ -228,7 +234,7 @@ def contains_limb(smap):
     limb is within the field of view of the map.  Also in the case
     of coronagraph images the limb itself need not be observed.
     """
-    on_disk = coordinate_is_on_disk(all_coordinates_from_map(smap))
+    on_disk = coordinate_is_on_solar_disk(all_coordinates_from_map(smap))
     return np.logical_and(np.any(on_disk), np.any(~on_disk))
 
 
@@ -258,7 +264,7 @@ def on_disk_bounding_coordinates(smap):
     coordinates = all_coordinates_from_map(smap)
 
     # Find which coordinates are on the disk
-    on_disk = coordinate_is_on_disk(coordinates)
+    on_disk = coordinate_is_on_solar_disk(coordinates)
     on_disk_coordinates = coordinates[on_disk]
 
     # The bottom left and top right coordinates that contain
