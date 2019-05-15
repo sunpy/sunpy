@@ -19,10 +19,7 @@ def peek_show(func):
     @wraps(func)
     def show_if_interactive(*args, **kwargs):
         figure = func(*args, **kwargs)
-        # Show the figure if using an interactive Matplotlib backend
-        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
-            plt.show()
-
+        plt.show()
         # NOTE: We do not return `figure` here because `peek()` methods return `None`.
 
     return show_if_interactive
