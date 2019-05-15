@@ -1418,7 +1418,7 @@ class GenericMap(NDData):
 # #### Visualization #### #
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg=15*u.deg, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1655,8 +1655,9 @@ class GenericMap(NDData):
         figure.show()
 
     @toggle_pylab
-    @u.quantity_input(clip_interval=u.percent)
-    def plot(self, annotate=True, axes=None, title=True, clip_interval=None, **imshow_kwargs):
+    @u.quantity_input
+    def plot(self, annotate=True, axes=None, title=True,
+             clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
