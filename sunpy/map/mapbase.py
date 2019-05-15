@@ -1701,7 +1701,7 @@ class GenericMap(NDData):
                               SunpyUserWarning)
                 # Check if the image is properly oriented
                 if not np.array_equal(self.rotation_matrix, np.identity(2)):
-                    warnings.warn("This map is not properly oriented. Plot axes may be incorrect.",
+                    warnings.warn("The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
                                   SunpyUserWarning)
 
         # Normal plot
