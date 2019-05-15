@@ -99,16 +99,15 @@ def system_info():
     """
     sys_prop = get_sys_dict()
 
-# title
-    print("==========================================================")
-    print(" SunPy Installation Information\n")
-    print("==========================================================\n")
+    # title
+    print("==============================")
+    print("SunPy Installation Information")
+    print("==============================\n")
 
-
-# general properties
-    print("###########")
-    print(" General")
-    print("###########")
+    # general properties
+    print("#######")
+    print("General")
+    print("#######")
     # OS and architecture information
 
     for sys_info in ['Time', 'System', 'Processor', 'Arch', 'SunPy', 'SunPy_git']:
@@ -126,16 +125,20 @@ def system_info():
         print("Unknown OS ({0})".format(sys_prop['Processor']))
 
     print("\n")
-# required libraries
-    print("###########")
-    print(" Required Libraries ")
-    print("###########")
+    # required libraries
+    print("##################")
+    print("Required Libraries")
+    print("##################")
 
     for sys_info in ['Python', 'NumPy', 'SciPy',
               'matplotlib', 'Astropy', 'Pandas']:
         print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
 
     print("\n")
+    # recommended
+    print("#####################")
+    print("Recommended Libraries")
+    print("#####################")
 
 # recommended
     print("###########")
