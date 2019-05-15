@@ -5,6 +5,7 @@ import os
 import re
 import datetime
 from ftplib import FTP
+from urllib.error import HTTPError
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
@@ -67,9 +68,11 @@ class Scraper(object):
         else:
             now = datetime.datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime(self.pattern[0:milliseconds.start()] +
-                                    str(milliseconds_) +
-                                    self.pattern[milliseconds.end():])
+            self.now = now.strftime('{start}{milli:03d}{end}'.format(
+                start=self.pattern[0:milliseconds.start()],
+                milli=milliseconds_,
+                end=self.pattern[milliseconds.end():]
+            ))
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
@@ -234,6 +237,11 @@ class Scraper(object):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
+            except HTTPError as http_err:
+                # Ignore missing directories (issue #2684).
+                if http_err.code == 404:
+                    continue
+                raise
             except Exception:
                 raise
         return filesurls
