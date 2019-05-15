@@ -10,6 +10,7 @@
     "sunpy.map.tests.test_plotting.test_peek_grid_spacing_aia171": "9ddc7026bc6ba47bc79c039e255ed4b1b9e6fdedfbd6c73279390bcd427dab4a",
     "sunpy.map.tests.test_plotting.test_peek_limb_aia171": "dbee8e3f01517a79b6305e03e52b3b6cdcfb4deb46f6d3d92efdcf6700e73742",
     "sunpy.map.tests.test_plotting.test_plot_aia171": "eb9784d991df9291be773eaafcdb979bccc3d9d628a88c30369c5bc8c922e2bf",
+    "sunpy.map.tests.test_plotting.test_plot_aia171_clip": "d16762707b2df85108b43763ad4ee617e4267876e87782cc8b0fa11d45f7ddd0",
     "sunpy.map.tests.test_plotting.test_plot_aia171_nowcsaxes": "bb26ffc0b687ec737a65ccfc97b77ec1948db4782dc906b60df80f1bc45750e3",
     "sunpy.map.tests.test_plotting.test_plot_aia171_superpixel": "7bd6e4676e97df576d28fcc5405f727175ce4317cf61d6f86662700a6c49312c",
     "sunpy.map.tests.test_plotting.test_plot_aia171_superpixel_nowcsaxes": "cc63ec9ac905682e379519468d5ccdd379d6079fa856f6581d8ae283b4132be3",
