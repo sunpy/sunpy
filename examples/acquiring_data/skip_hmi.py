@@ -8,6 +8,7 @@ line of sight magnetic field data from HMI.
 """
 # Start by importing the necessary modules.
 import astropy.units as u
+import matplotlib.pyplot as plt
 
 import sunpy.map
 from sunpy.net import Fido, attrs as a
@@ -56,4 +57,7 @@ hmi_map = sunpy.map.Map(downloaded_file)
 ###############################################################################
 # Once we have created our Map, we can plot it quite simply doing:
 
-hmi_map.peek()
+fig = plt.figure()
+hmi_map.plot()
+
+plt.show()
