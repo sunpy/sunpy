@@ -18,6 +18,7 @@ import sunpy.io
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+from sunpy.visualization import peek_show
 
 __all__ = ['EVESpWxTimeSeries', 'ESPTimeSeries']
 
@@ -58,6 +59,7 @@ class ESPTimeSeries(GenericTimeSeries):
 
     _source = 'esp'
 
+    @peek_show
     def peek(self, title='EVE/ESP Level1', **kwargs):
 
         self._validate_data_for_ploting()
@@ -78,9 +80,7 @@ class ESPTimeSeries(GenericTimeSeries):
         plt.tight_layout()
         plt.subplots_adjust(hspace=0.05)
 
-        # Show the figure if using an interactive Matplotlib backend
-        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
-            figure.show()
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -165,6 +165,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'eve'
 
+    @peek_show
     def peek(self, column=None, **kwargs):
         """
         Plots the time series in a new figure. An example is shown below:
@@ -205,7 +206,8 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             if "title" not in kwargs:
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
             data.plot(**kwargs)
-        figure.show()
+
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):

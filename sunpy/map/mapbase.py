@@ -21,7 +21,7 @@ import sunpy.io as io
 import sunpy.coordinates
 import sunpy.cm
 from sunpy import config
-from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype
+from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype, peek_show
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
@@ -1593,6 +1593,7 @@ class GenericMap(NDData):
                           **contour_args)
         return cs
 
+    @peek_show
     def peek(self, draw_limb=False, draw_grid=False,
              colorbar=True, basic_plot=False, **matplot_args):
         """
@@ -1651,9 +1652,8 @@ class GenericMap(NDData):
         else:
             raise TypeError("draw_grid should be a bool or an astropy Quantity.")
 
-        # Show the figure if using an interactive Matplotlib backend
-        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
-            figure.show()
+        return figure
+
 
     def plot(self, annotate=True, axes=None, title=True, **imshow_kwargs):
         """
