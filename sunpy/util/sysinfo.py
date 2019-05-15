@@ -104,14 +104,14 @@ def system_info():
     sys_prop = get_sys_dict()
 
     # title
-    print("==========================================================")
-    print(" SunPy Installation Information\n")
-    print("==========================================================\n")
+    print("==============================")
+    print("SunPy Installation Information")
+    print("==============================\n")
 
     # general properties
-    print("###########")
-    print(" General")
-    print("###########")
+    print("#######")
+    print("General")
+    print("#######")
     # OS and architecture information
 
     for sys_info in ['Time', 'System', 'Processor', 'Arch', 'SunPy']:
@@ -130,19 +130,18 @@ def system_info():
 
     print("\n")
     # required libraries
-    print("###########")
-    print(" Required Libraries ")
-    print("###########")
+    print("##################")
+    print("Required Libraries")
+    print("##################")
 
     for sys_info in ['Python', 'NumPy', 'SciPy', 'matplotlib', 'Astropy', 'Pandas', 'parfive']:
         print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
 
     print("\n")
-
     # recommended
-    print("###########")
-    print(" Recommended Libraries ")
-    print("###########")
+    print("#####################")
+    print("Recommended Libraries")
+    print("#####################")
 
     for sys_info in ['beautifulsoup', 'PyQt4', 'PyQt5', 'Zeep', 'Sqlalchemy', 'drms']:
         print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
