@@ -166,8 +166,6 @@ def testFilesRange_sameDirectory_local():
     # tries to open a directory as a binary file.
     s = Scraper('/'.join(['file:/', rootdir,
                           'EIT', 'efz%Y%m%d.%H%M%S_s.fits']))
-    print(s.pattern)
-    print(s.now)
     startdate = parse_time((2004, 3, 1, 4, 0))
     enddate = parse_time((2004, 3, 1, 6, 30))
     assert len(s.filelist(TimeRange(startdate, enddate))) == 3
