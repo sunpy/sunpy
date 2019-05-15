@@ -30,12 +30,14 @@ import sunpy.data.sample as sample_data
 ###############################################################################
 # The following image of the flare is now fairly iconic.
 aia_cutout03_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT03_IMAGE)
-aia_cutout03_map.peek()
+fig = plt.figure()
+aia_cutout03_map.plot()
 
 ###############################################################################
 # Let's take a look at the GOES XRS data.
 goes = sunpy.timeseries.TimeSeries(sample_data.GOES_XRS_TIMESERIES)
-goes.peek()
+fig = plt.figure()
+goes.plot()
 
 ###############################################################################
 # Next let's investigate the AIA full disk images that are available. Please
@@ -73,8 +75,7 @@ ax = fig.add_subplot(616, projection=aia_1600_map)
 aia_1600_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_1600_map.draw_grid()
 
-plt.tight_layout(pad=6.50)
-plt.show()
+fig.tight_layout(pad=6.50)
 
 ###############################################################################
 # We also provide a series of AIA cutouts so that you can get a sense of the
@@ -101,15 +102,18 @@ aia_cutout04_map.plot()
 ax = fig.add_subplot(515, projection=aia_cutout05_map)
 aia_cutout05_map.plot()
 
-plt.tight_layout(pad=5.50)
-plt.show()
+fig.tight_layout(pad=5.50)
 
 ###############################################################################
 # There are a number of other data sources, such as SWAP.
 swap_map = sunpy.map.Map(sample_data.SWAP_LEVEL1_IMAGE)
-swap_map.peek()
+fig = plt.figure()
+swap_map.plot()
 
 ###############################################################################
 # As well as RHESSI.
 rhessi_map = sunpy.map.Map(sample_data.RHESSI_IMAGE)
-rhessi_map.peek()
+fig = plt.figure()
+rhessi_map.plot()
+
+plt.show()
