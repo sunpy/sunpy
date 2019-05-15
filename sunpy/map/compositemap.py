@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.visualization import axis_labels_from_ctype
+from sunpy.visualization import axis_labels_from_ctype, peek_show
 
 from sunpy.util import expand_list
 
@@ -455,6 +455,7 @@ class CompositeMap(object):
         plt.sci(ret[0])
         return ret
 
+    @peek_show
     def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
              draw_grid=False, **matplot_args):
         """Displays the map in a new figure.
@@ -510,9 +511,8 @@ class CompositeMap(object):
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
 
-        # Show the figure if using an interactive Matplotlib backend
-        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
-            figure.show()
+        return figure
+
 
 class OutOfRangeAlphaValue(ValueError):
     """Exception to raise when an alpha value outside of the range 0-1 is

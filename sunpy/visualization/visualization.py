@@ -1,9 +1,31 @@
 """
 This module provides plotting support in iPython.
 """
+from functools import wraps
+
 from matplotlib import pyplot as plt
 
-__all__ = ["axis_labels_from_ctype"]
+__all__ = ['peek_show', "axis_labels_from_ctype"]
+
+
+def peek_show(func):
+    """
+    A decorator to place on ``peek()`` methods to show the figure.
+
+    The ``peek()`` method should return the figure then this method will
+    attempt to show it in the correct way. This decorator will not return the
+    figure to the user.
+    """
+    @wraps(func)
+    def show_if_interactive(*args, **kwargs):
+        figure = func(*args, **kwargs)
+        # Show the figure if using an interactive Matplotlib backend
+        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
+            figure.show()
+
+        # NOTE: We do not return `figure` here because `peek()` methods return `None`.
+
+    return show_if_interactive
 
 
 def axis_labels_from_ctype(ctype, unit):

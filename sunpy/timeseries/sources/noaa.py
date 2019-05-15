@@ -13,6 +13,7 @@ from astropy.time import Time
 
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+from sunpy.visualization import peek_show
 
 __all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries']
 
@@ -50,6 +51,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaaindices'
 
+    @peek_show
     def peek(self, type='sunspot SWO'):
         """
         Plots NOAA Indices as a function of time. An example is shown below.
@@ -100,9 +102,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes.xaxis.grid(True, 'major')
         axes.legend()
 
-        # Show the figure if using an interactive Matplotlib backend
-        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
-            figure.show()
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -189,6 +189,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaapredictindices'
 
+    @peek_show
     def peek(self, **plot_args):
         """
         Plots predicted NOAA Indices as a function of time. An example is shown
@@ -225,7 +226,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes.xaxis.grid(True, 'major')
         axes.legend()
 
-        figure.show()
+        return figure
+
 
     @staticmethod
     def _parse_file(filepath):

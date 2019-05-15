@@ -19,6 +19,7 @@ from sunpy.time import TimeRange
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
+from sunpy.visualization import peek_show
 
 # define and register a new unit, needed for RHESSI
 det = u.def_unit('detector')
@@ -396,6 +397,7 @@ class GenericTimeSeries:
 
         return axes
 
+    @peek_show
     def peek(self, **kwargs):
         """
         Displays the `~sunpy.timeseries.TimeSeries` in a new figure.
@@ -412,9 +414,7 @@ class GenericTimeSeries:
         figure = plt.figure()
         self.plot(**kwargs)
 
-        # Show the figure if using an interactive Matplotlib backend
-        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
-            figure.show()
+        return figure
 
     def _validate_data_for_ploting(self):
         """

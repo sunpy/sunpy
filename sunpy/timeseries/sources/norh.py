@@ -17,6 +17,7 @@ from sunpy import config
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+from sunpy.visualization import peek_show
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -54,6 +55,7 @@ class NoRHTimeSeries(GenericTimeSeries):
     def __init__(self, data, header, units, **kwargs):
         super(NoRHTimeSeries, self).__init__(data, header, units, **kwargs)
 
+    @peek_show
     def peek(self):
         """
         Plot the NoRH lightcurve TimeSeries.
@@ -80,9 +82,8 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes.set_ylabel('Correlation')
         axes.legend()
 
-        # Show the figure if using an interactive Matplotlib backend
-        if mpl.get_backend() in mpl.rcsetup.interactive_bk:
-            figure.show()
+        return figure
+
 
     @classmethod
     def _parse_file(cls, filepath):
