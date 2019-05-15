@@ -3,7 +3,7 @@ This module provides plotting support in iPython.
 """
 from functools import wraps
 
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 
 __all__ = ['peek_show', "axis_labels_from_ctype"]
 
@@ -21,7 +21,7 @@ def peek_show(func):
         figure = func(*args, **kwargs)
         # Show the figure if using an interactive Matplotlib backend
         if mpl.get_backend() in mpl.rcsetup.interactive_bk:
-            figure.show()
+            plt.show()
 
         # NOTE: We do not return `figure` here because `peek()` methods return `None`.
 
