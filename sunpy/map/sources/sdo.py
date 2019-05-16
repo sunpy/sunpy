@@ -6,7 +6,13 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import matplotlib.pyplot as plt
 
-from astropy.coordinates import CartesianRepresentation, SkyCoord, HeliocentricTrueEcliptic
+from astropy.coordinates import CartesianRepresentation, SkyCoord
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the incorrect name HeliocentricTrueEcliptic
+try:
+        from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+        from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize
 from astropy.visualization import AsinhStretch
@@ -58,7 +64,7 @@ class AIAMap(GenericMap):
         vector = CartesianRepresentation(self.meta['haex_obs'],
                                          self.meta['haey_obs'],
                                          self.meta['haez_obs'])
-        coord = SkyCoord(vector * u.m, frame=HeliocentricTrueEcliptic, obstime=self.date)
+        coord = SkyCoord(vector * u.m, frame=HeliocentricMeanEcliptic, obstime=self.date)
         return coord.heliographic_stonyhurst
 
     @property
