@@ -10,9 +10,9 @@ from astropy.coordinates import CartesianRepresentation, SkyCoord
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
 # with the incorrect name HeliocentricTrueEcliptic
 try:
-        from astropy.coordinates import HeliocentricMeanEcliptic
+    from astropy.coordinates import HeliocentricMeanEcliptic
 except ImportError:
-        from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize
 from astropy.visualization import AsinhStretch
