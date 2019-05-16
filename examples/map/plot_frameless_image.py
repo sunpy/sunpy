@@ -15,12 +15,11 @@ import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
 
 ##############################################################################
-# Create a Map
+# Create a `sunpy.map.GenericMap`.
 smap = sunpy.map.Map(AIA_171_IMAGE)
 
-
 ##############################################################################
-# Plot the Map without a frame
+# Plot the Map without a frame.
 
 # Setup a frameless figure and an axes which spans the whole canvas.
 figure = plt.figure(frameon=False)
@@ -36,5 +35,6 @@ figure.add_axes(axes)
 im = smap.plot(axes=axes, annotate=False)
 
 ##############################################################################
-# At this point you could save the figure with `plt.savefig()` or show it:
+# At this point you could save the figure with ``plt.savefig()`` or show it:
+
 plt.show()
