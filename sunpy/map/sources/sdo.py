@@ -47,7 +47,7 @@ class AIAMap(GenericMap):
     References
     ----------
     * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`_
-    * `Instrument Page <http://aia.lmsal.com>`_
+    * `Instrument Page <https://aia.lmsal.com>`_
     * `Fits Header keywords <http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf>`_
     * `Analysis Guide <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/>`_
     * `Instrument Paper <https://doi.org/10.1007/s11207-011-9776-8>`_

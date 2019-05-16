@@ -73,7 +73,11 @@ class HEKClient(object):
             results.extend(result['result'])
 
             if not result['overmax']:
-                return HEKTable(results)
+                if len(results) > 0:
+                    return HEKTable(results)
+                else:
+                    return HEKTable()
+
             page += 1
 
     def search(self, *query):

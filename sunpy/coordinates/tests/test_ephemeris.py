@@ -2,13 +2,14 @@
 
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
-from astropy.coordinates import EarthLocation
+from astropy.coordinates import SkyCoord, EarthLocation
 from astropy.time import Time
+from astropy.constants import c as speed_of_light
 
 from sunpy.coordinates.ephemeris import *
 
 
-def test_get_body_barycentric():
+def test_get_body_heliographic_stonyhurst():
     # Validate against published values from the Astronomical Almanac (2013)
     e1 = get_body_heliographic_stonyhurst('earth', '2013-Jan-01')
     assert_quantity_allclose(e1.lon, 0*u.deg, atol=1e-12*u.deg)
@@ -20,6 +21,23 @@ def test_get_body_barycentric():
     assert_quantity_allclose((e2.lon+1*u.deg)%(360*u.deg), 1*u.deg, atol=1e-12*u.deg)
     assert_quantity_allclose(e2.lat, 7.19*u.deg, atol=5e-3*u.deg)
     assert_quantity_allclose(e2.radius, 1.0092561*u.AU, atol=5e-7*u.AU)
+
+
+def test_get_body_heliographic_stonyhurst_light_travel_time():
+    # Tests whether the apparent position of the Sun accoutns for light travel time
+    t = Time('2012-06-05 22:34:48.350')  # An arbitrary test time
+
+    # Use the implemented correction for light travel time
+    implementation = get_body_heliographic_stonyhurst('sun', t, observer=get_earth(t))
+    implementation_icrs = SkyCoord(implementation).icrs.cartesian
+
+    # Use a manual correction for light travel time
+    light_travel_time = get_earth(t).radius / speed_of_light
+    manual = get_body_heliographic_stonyhurst('sun', t - light_travel_time)
+    manual_icrs = SkyCoord(manual).icrs.cartesian
+
+    difference = (implementation_icrs - manual_icrs).norm()
+    assert_quantity_allclose(difference, 0*u.m, atol=1*u.m)
 
 
 def test_get_earth():

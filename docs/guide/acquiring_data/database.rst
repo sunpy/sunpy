@@ -1,6 +1,9 @@
 .. The tests in the module are very fragile to change in ordering of VSO
    results. In their current form they are very hard to maintain.
 
+.. Skip all doctests here until the database locked error is fixed.
+.. doctest-skip-all
+
 .. _database_guide:
 
 --------------------------
@@ -13,7 +16,7 @@ via the :mod:`sunpy.net` package) onto a local or remote database. The
 database may be a single file located on a local hard drive (if a SQLite
 database is used) or a local or remote database server (see the SQLAlchemy
 documentation for a `list of supported databases
-<http://docs.sqlalchemy.org/en/latest/dialects/index.html>`_)
+<https://docs.sqlalchemy.org/en/latest/dialects/index.html>`_)
 This makes it possible to fetch required data from the local database
 instead of downloading it again from a remote server.
 
@@ -710,7 +713,7 @@ raised. This also means that there is no default unit that is
 used by the class. To know how you can specify a detail using astropy
 check `astropy.units`.
 
-    >>> from astropy import units as u
+    >>> import astropy.units as u
     >>> print(display_entries(
     ...     database.search(vso.attrs.Wavelength(1.0*u.nm, 2.0*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end',
