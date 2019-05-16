@@ -39,10 +39,9 @@ class AIAMap(GenericMap):
     Notes
     -----
     Observer location: The standard AIA FITS header provides the spacecraft location in multiple
-    coordinate systems: Heliocentric Aries Ecliptic (HAE), Heliographic Stonyhurst (HGS),
-    and Heliographic Carrington (HGC).  SunPy uses the provided HAE coordinates due to
-    accuracy concerns with the provided HGS and HGC coordinates, but other software packages
-    may make different choices.
+    coordinate systems, including Heliocentric Aries Ecliptic (HAE) and Heliographic Stonyhurst
+    (HGS).  SunPy uses the provided HAE coordinates due to accuracy concerns with the provided
+    HGS coordinates, but other software packages may make different choices.
 
     References
     ----------
