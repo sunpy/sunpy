@@ -89,6 +89,20 @@ def print_all():
     return t
 
 
+# Add a list of constants to the docs
+_lines = [
+    'The following constants are available:\n',
+    '====================== ============== ================ =================================',
+    '         Name              Value            Unit                 Description',
+    '====================== ============== ================ =================================',
+]
+for key, const in constants.items():
+    _lines.append('{0:^22} {1:^14.9g} {2:^16} {3}'.format(
+        key, const.value, const._unit_string, const.name))
+_lines.append(_lines[1])
+if __doc__ is not None:
+    __doc__ += '\n'.join(_lines)
+
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
 au = astronomical_unit = get('mean distance')

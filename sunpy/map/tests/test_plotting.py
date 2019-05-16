@@ -47,6 +47,11 @@ def test_plot_aia171(aia171_test_map):
 
 
 @figure_test
+def test_plot_aia171_clip(aia171_test_map):
+    aia171_test_map.plot(clip_interval=(5., 99.)*u.percent)
+
+
+@figure_test
 def test_peek_aia171(aia171_test_map):
     aia171_test_map.peek()
 

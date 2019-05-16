@@ -1,5 +1,5 @@
 """
-Helper functions for image manipulation
+Helper functions for image manipulation.
 """
 import numpy as np
 from skimage.util import img_as_float
@@ -9,17 +9,17 @@ __all__ = ['to_norm', 'un_norm']
 
 def to_norm(arr):
     """
-    Helper function to normalise/scale an array.  This is needed for example
-    for scikit-image which uses floats between 0 and 1.
+    Helper function to normalise/scale an array. This is needed for example for
+    scikit-image which uses floats between 0 and 1.
 
     Parameters
     ----------
-    arr : `~numpy.ndarray`
+    arr : `numpy.ndarray`
         Array to normalise.
 
     Returns
     -------
-    arr : `~numpy.ndarray`
+    arr : `numpy.ndarray`
         Array with values between 0 (min) and 1 (max)
 
     Examples
@@ -40,19 +40,19 @@ def to_norm(arr):
 
 def un_norm(arr, original):
     """
-    Helper function to un-normalise (or re-scale) an array based in
-    the values of the original array.
+    Helper function to un-normalise (or re-scale) an array based in the values
+    of the original array.
 
     Parameters
     ----------
-    arr : `~numpy.ndarray`
+    arr : `numpy.ndarray`
         Array of floats to un-normalise with values in [0,1]
-    original : `~numpy.ndarray`
+    original : `numpy.ndarray`
         Original array with the min and max values
 
     Returns
     -------
-    arr : `~numpy.ndarray`
+    arr : `numpy.ndarray`
         Array with values between `original.min()` and `original.max()` . Note
         that the type of the original image is not guaranteed to be reproduced.
 

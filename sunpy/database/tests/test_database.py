@@ -13,6 +13,7 @@ import pytest
 import sqlalchemy
 
 from astropy import units
+from astropy.utils.exceptions import AstropyUserWarning
 
 import sunpy
 import sunpy.data.test
@@ -608,7 +609,8 @@ def test_add_entries_from_fido_search_result_ignore_duplicates(database, fido_se
 
 def test_add_fom_path(database):
     assert len(database) == 0
-    database.add_from_dir(waveunitdir)
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        database.add_from_dir(waveunitdir)
     assert len(database) == 4
     database.undo()
     assert len(database) == 0
@@ -617,16 +619,19 @@ def test_add_fom_path(database):
 
 
 def test_add_fom_path_duplicates(database):
-    database.add_from_dir(waveunitdir)
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        database.add_from_dir(waveunitdir)
     assert len(database) == 4
-    with pytest.raises(EntryAlreadyAddedError):
+    with pytest.raises(EntryAlreadyAddedError), pytest.warns(AstropyUserWarning, match='File may have been truncated'):
         database.add_from_dir(waveunitdir)
 
 
 def test_add_fom_path_ignore_duplicates(database):
-    database.add_from_dir(waveunitdir)
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        database.add_from_dir(waveunitdir)
     assert len(database) == 4
-    database.add_from_dir(waveunitdir, ignore_already_added=True)
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        database.add_from_dir(waveunitdir, ignore_already_added=True)
     assert len(database) == 8
 
 

@@ -38,7 +38,7 @@ class BaseFuncAnimator:
     slider_functions: `list`
         A list of functions to call when that slider is changed.
         These functions will have `val`, the axes image object and the slider
-        widget instance passed to them, i.e.: update_slider(val, im, slider)
+        widget instance passed to them, e.g., ``update_slider(val, im, slider)``
     slider_ranges: `list`
         A list of ``[min,max]`` pairs to set the ranges for each slider or an array
         of values for all points of the slider.
@@ -211,10 +211,10 @@ class BaseFuncAnimator:
 # =============================================================================
     def _set_active_slider(self, ind):
         self._dehighlight_slider(self.active_slider)
-        self._highliget_slider(ind)
+        self._highlight_slider(ind)
         self.active_slider = ind
 
-    def _highliget_slider(self, ind):
+    def _highlight_slider(self, ind):
         ax = self.sliders[ind]
         [a.set_linewidth(2.0) for n, a in ax.spines.items()]
         self.fig.canvas.draw()
@@ -558,7 +558,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         raise NotImplementedError("Must be defined and used by subclasses of {0}.".format(self.__class__))
 
     @abc.abstractmethod
-    def update_plot(self, val, slider):  # pragma: no cover
+    def update_plot(self, val, artist, slider):
         """
         Abstract method for updating the plot.
 

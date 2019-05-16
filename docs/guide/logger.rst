@@ -29,12 +29,17 @@ Messages can have one of several levels
 
 * CRITICAL: A serious error, indicating that the program itself may be unable to continue running.
 
-By default, only WARNING, ERROR, and ERROR messages are displayed.
+By default, only WARNING, ERROR, and INFO messages are displayed.
 
-The logger
-==========
-The logger is configured as soon as sunpy is imported. You can access it
-by importing it explicitly::
+Configuring the logging system
+==============================
+The default configuration for the logger is determined by the default SunPy
+configuration file. To make permanent changes to the logger configuration
+see the ``[logger]`` section of the Sunpy configuration
+file (:doc:`sunpyrc </guide/customization>`).
+
+If you'd like to control the logger configuration for your current session
+first import the logger::
 
     >>> from sunpy import log
 
@@ -43,7 +48,19 @@ or also by::
     >>> import logging
     >>> log = logging.getLogger('sunpy')
 
-You can use it to issue your own messages or to change its defaults. If you'd like to
+The threshold level for messages can be set with::
+
+    >>> log.setLevel('DEBUG')
+
+This will display DEBUG and all messages with that level and above. If you'd like to see the fewest
+relevant messages you'd set the logging level to WARNING or above.
+
+For other options such as whether to log to a file or what level of messages the log file should
+contain, see the the Sunpy configuration file (:doc:`sunpyrc </guide/customization>`).
+
+Context managers
+================
+If you'd like to
 capture messages as they are generated you can do that with a context manager::
 
     >>> from sunpy import log
@@ -59,8 +76,3 @@ It is also possible to send the messages to a custom file with::
     ...     # your code here  #doctest: +SKIP
 
 which will save the messages to a local file called ``myfile.log``.
-
-User Configuration
-==================
-Options for the logger can be set in the ``[logger]`` section
-of the Sunpy configuration file (:doc:`sunpyrc </guide/customization>`).

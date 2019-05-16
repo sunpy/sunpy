@@ -1,15 +1,17 @@
+"""
+This module provides a web scraper.
+"""
 import os
 import re
 import datetime
 from ftplib import FTP
+from urllib.error import HTTPError
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 
-from astropy.time import TimeDelta
 import astropy.units as u
-
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
 
 __all__ = ['Scraper']
 
@@ -29,16 +31,15 @@ class Scraper(object):
 
     Parameters
     ----------
-    pattern : str
-        A string containing the url with the date encoded as
-        datetime formats, and any other parameter as kwargs
-        as string format.
+    pattern : `str`
+        A string containing the url with the date encoded as datetime formats,
+        and any other parameter as ``kwargs`` as a string format.
 
     Attributes
     ----------
-    pattern : str
+    pattern : `str`
         A converted string with the kwargs.
-    now : datetime.datetime
+    now : `datetime.datetime`
         The pattern with the actual date.
 
     Examples
@@ -56,7 +57,7 @@ class Scraper(object):
 
     Notes
     -----
-    The now attribute does not return an existent file, but just how the
+    The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
     def __init__(self, pattern, **kwargs):
@@ -67,32 +68,29 @@ class Scraper(object):
         else:
             now = datetime.datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime(self.pattern[0:milliseconds.start()] +
-                                    str(milliseconds_) +
-                                    self.pattern[milliseconds.end():])
+            self.now = now.strftime('{start}{milli:03d}{end}'.format(
+                start=self.pattern[0:milliseconds.start()],
+                milli=milliseconds_,
+                end=self.pattern[milliseconds.end():]
+            ))
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
 
     def range(self, timerange):
         """
-        Gets the directories for a certain range of time
-        (i.e. using `~sunpy.time.TimeRange`).
+        Gets the directories for a certain range of time.
 
         Parameters
         ----------
-
         timerange : `~sunpy.time.timerange.TimeRange`
-            Time interval where to find the directories for a given
-            pattern.
+            Time interval where to find the directories for a given pattern.
 
         Returns
         -------
-
-        directories : list of strings
-            List of all the possible directories valid for the time
-            range given. Notice that these directories may not exist
-            in the archive.
+        `list` of `str`
+            `List` of all the possible directories valid for the time range given.
+            Notice that these directories may not exist in the archive.
         """
         # find directory structure - without file names
         directorypattern = os.path.dirname(self.pattern) + '/'
@@ -110,7 +108,9 @@ class Scraper(object):
             return directories
 
     def _URL_followsPattern(self, url):
-        """Check whether the url provided follows the pattern"""
+        """
+        Check whether the url provided follows the pattern.
+        """
         pattern = self.pattern
         for k, v in TIME_CONVERSIONS.items():
             pattern = pattern.replace(k, v)
@@ -120,8 +120,9 @@ class Scraper(object):
         return False
 
     def _extractDateURL(self, url):
-        """Extracts the date from a particular url following the pattern"""
-
+        """
+        Extracts the date from a particular url following the pattern.
+        """
         # remove the user and passwd from files if there:
         url = url.replace("anonymous:data@sunpy.org@", "")
 
@@ -153,14 +154,14 @@ class Scraper(object):
                 for time_bit in time_formats:
                     time_order.remove(time_bit)
         # Find and remove repeated elements eg: %Y in ['%Y', '%Y%m%d']
-        #   Make all as single strings
+        # Make all as single strings
         date_together = ''.join(final_date)
         pattern_together = ''.join(final_pattern)
         re_together = pattern_together
         for k, v in TIME_CONVERSIONS.items():
             re_together = re_together.replace(k, v)
 
-        #   Lists to contain the unique elements of the date and the pattern
+        # Lists to contain the unique elements of the date and the pattern
         final_date = list()
         final_pattern = list()
         re_together = re_together.replace('[A-Z]', '\\[A-Z]')
@@ -180,20 +181,17 @@ class Scraper(object):
 
     def filelist(self, timerange):
         """
-        Returns the list of existent files in the archive for the
-        given time range.
+        Returns the list of existent files in the archive for the given time
+        range.
 
         Parameters
         ----------
-
         timerange : `~sunpy.time.TimeRange`
-            Time interval where to find the directories for a given
-            pattern.
+            Time interval where to find the directories for a given pattern.
 
         Returns
         -------
-
-        filesurls : list of strings
+        filesurls : `list` of `str`
             List of all the files found between the time range given.
 
         Examples
@@ -214,11 +212,10 @@ class Scraper(object):
         Note
         ----
 
-        The search is strict with the time range, so if the archive scraped
-        contains daily files, but the range doesn't start from the beginning
-        of the day, then the file for that day won't be selected. The end of
-        the timerange will normally be OK as includes the file on such end.
-
+        The search is strict with the time range, so if the archive scraped contains daily files,
+        but the range doesn't start from the beginning of the day, then the file for that day
+        won't be selected. The end of the timerange will normally be OK as includes the file
+        on such end time.
         """
         directories = self.range(timerange)
         filesurls = []
@@ -240,6 +237,11 @@ class Scraper(object):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
+            except HTTPError as http_err:
+                # Ignore missing directories (issue #2684).
+                if http_err.code == 404:
+                    continue
+                raise
             except Exception:
                 raise
         return filesurls
@@ -264,7 +266,9 @@ class Scraper(object):
         return filesurls
 
     def _smallerPattern(self, directoryPattern):
-        """Obtain the smaller time step for the given pattern"""
+        """
+        Obtain the smaller time step for the given pattern.
+        """
         try:
             if "%S" in directoryPattern:
                 return TimeDelta(1*u.second)

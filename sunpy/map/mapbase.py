@@ -3,7 +3,6 @@ Map is a generic Map class from which all other Map classes inherit from.
 """
 import copy
 import warnings
-import inspect
 from collections import namedtuple
 import textwrap
 
@@ -13,7 +12,7 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
-from astropy.io import fits
+from astropy.visualization import AsymmetricPercentileInterval
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
@@ -27,8 +26,8 @@ from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
 from sunpy.image.transform import affine_transform
-from sunpy.image.rescale import reshape_image_to_4d_superpixel
-from sunpy.image.rescale import resample as sunpy_image_resample
+from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_sun_B0, get_sun_L0, get_sunearth_distance
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -51,7 +50,7 @@ class GenericMap(NDData):
 
     Parameters
     ----------
-    data : `~numpy.ndarray`, list
+    data : `numpy.ndarray`, list
         A 2d list or ndarray containing the map data.
     header : dict
         A dictionary of the original image header tags.
@@ -152,7 +151,8 @@ class GenericMap(NDData):
         An __init_subclass__ hook initializes all of the subclasses of a given class.
         So for each subclass, it will call this block of code on import.
         This replicates some metaclass magic without the need to be aware of metaclasses.
-        Here we use this to register each subclass in a dict that has the `is_datasource_for` attribute.
+        Here we use this to register each subclass in a dict that has the
+        `is_datasource_for` attribute.
         This is then passed into the Map Factory so we can register them.
         """
         super().__init_subclass__(**kwargs)
@@ -313,7 +313,7 @@ class GenericMap(NDData):
             ...
 
         and this will generate a plot with the correct WCS coordinates on the
-        axes. See http://wcsaxes.readthedocs.io for more information.
+        axes. See https://wcsaxes.readthedocs.io for more information.
         """
         # This code is reused from Astropy
 
@@ -773,7 +773,7 @@ class GenericMap(NDData):
 
         if err_message:
             err_message.append(
-                'See http://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
+                'See https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
                 'instructions on how to add missing metadata.')
             raise MapMetaValidationError('\n'.join(err_message))
 
@@ -1418,13 +1418,13 @@ class GenericMap(NDData):
 # #### Visualization #### #
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg=15*u.deg, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
 
         To overlay other coordinate systems see the `WCSAxes Documentation
-        <http://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`_
+        <https://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`_
 
         Parameters
         ----------
@@ -1655,22 +1655,31 @@ class GenericMap(NDData):
         figure.show()
 
     @toggle_pylab
-    def plot(self, annotate=True, axes=None, title=True, **imshow_kwargs):
+    @u.quantity_input
+    def plot(self, annotate=True, axes=None, title=True,
+             clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
 
         Parameters
         ----------
-        annotate : bool
-            If True, the data is plotted at it's natural scale; with
+        annotate : `bool`, optional
+            If `True`, the data is plotted at its natural scale; with
             title and axis labels.
 
         axes: `~matplotlib.axes` or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
-        **imshow_kwargs  : dict
+        title : `bool`, optional
+            If `True`, include the title.
+
+        clip_interval : two-element `~astropy.units.Quantity`, optional
+            If provided, the data will be clipped to the percentile interval bounded by the two
+            numbers.
+
+        **imshow_kwargs  : `dict`
             Any additional imshow arguments that should be used
             when plotting.
 
@@ -1695,16 +1704,15 @@ class GenericMap(NDData):
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         if not _basic_plot:
-            # Check that the image is properly oriented
-            if (not wcsaxes_compat.is_wcsaxes(axes) and
-                    not np.array_equal(self.rotation_matrix, np.identity(2))):
-                warnings.warn("This map is not properly oriented. Plot axes may be incorrect.",
-                              SunpyUserWarning)
-
-            elif not wcsaxes_compat.is_wcsaxes(axes):
+            if not wcsaxes_compat.is_wcsaxes(axes):
                 warnings.warn("WCSAxes not being used as the axes object for this plot."
-                              " Plots may have unexpected behaviour.",
+                              " Plots may have unexpected behaviour. To fix this pass "
+                              "'projection=map' when creating the axes",
                               SunpyUserWarning)
+                # Check if the image is properly oriented
+                if not np.array_equal(self.rotation_matrix, np.identity(2)):
+                    warnings.warn("The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
+                                  SunpyUserWarning)
 
         # Normal plot
         imshow_args = copy.deepcopy(self.plot_settings)
@@ -1733,14 +1741,23 @@ class GenericMap(NDData):
             imshow_args.update({'extent': x_range + y_range})
         imshow_args.update(imshow_kwargs)
 
+        if clip_interval is not None:
+            if len(clip_interval) == 2:
+                clip_percentages = clip_interval.to('%').value
+                vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data)
+            else:
+                raise ValueError("Clip percentile interval must be specified as two numbers.")
+
+            imshow_args['vmin'] = vmin
+            imshow_args['vmax'] = vmax
+
         if self.mask is None:
             ret = axes.imshow(self.data, **imshow_args)
         else:
             ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_args)
 
         if wcsaxes_compat.is_wcsaxes(axes):
-            wcsaxes_compat.default_wcs_grid(axes, units=self.spatial_units,
-                                            ctypes=self.wcs.wcs.ctype)
+            wcsaxes_compat.default_wcs_grid(axes)
 
         # Set current image (makes colorbar work)
         plt.sca(axes)

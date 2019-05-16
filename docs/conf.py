@@ -126,10 +126,10 @@ check_sphinx_version(needs_sphinx)
 
 # Add any custom intersphinx for SunPy
 intersphinx_mapping.pop('h5py', None)
-intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/latest/', None)
-intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
-intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
-intersphinx_mapping['drms'] = ('http://docs.sunpy.org/projects/drms/en/stable/', None)
+intersphinx_mapping['sqlalchemy'] = ('https://docs.sqlalchemy.org/en/latest/', None)
+intersphinx_mapping['pandas'] = ('https://pandas.pydata.org/pandas-docs/stable/', None)
+intersphinx_mapping['skimage'] = ('https://scikit-image.org/docs/stable/', None)
+intersphinx_mapping['drms'] = ('https://docs.sunpy.org/projects/drms/en/stable/', None)
 intersphinx_mapping['parfive'] = ('https://parfive.readthedocs.io/en/latest/', None)
 
 # List of patterns, relative to source directory, that match files and
@@ -145,16 +145,16 @@ templates_path.append('_templates')
 linkcheck_ignore = [r"https://doi.org/\d+",
                     r"https://riot.im/\d+",
                     r"https://github.com/\d+",
-                    r"http://docs.sunpy.org/\d+"]
+                    r"https://docs.sunpy.org/\d+"]
 linkcheck_anchors = False
 
 # This is added to the end of RST files - a good place to put substitutions to
 # be used globally.
 rst_epilog = """
 .. SunPy
-.. _SunPy: http://sunpy.org
-.. _`SunPy mailing list`: http://groups.google.com/group/sunpy
-.. _`SunPy dev mailing list`: http://groups.google.com/group/sunpy-dev
+.. _SunPy: https://sunpy.org
+.. _`SunPy mailing list`: https://groups.google.com/group/sunpy
+.. _`SunPy dev mailing list`: https://groups.google.com/group/sunpy-dev
 """
 
 # -- Project information ------------------------------------------------------
@@ -265,12 +265,6 @@ if has_sphinx_gallery:
                                            (os.path.join('..', 'examples/computer_vision_techniques'))]),
         'gallery_dirs': path.joinpath('generated', 'gallery'),  # path to save gallery generated examples
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
-        'reference_url': {
-            'sunpy': None,
-            'astropy': 'http://docs.astropy.org/en/stable/',
-            'matplotlib': 'https://matplotlib.org/',
-            'numpy': 'http://docs.scipy.org/doc/numpy/',
-        },
         'abort_on_example_error': True,
         'plot_gallery': True
     }
@@ -291,9 +285,10 @@ except Exception:
 
 def setup(app):
     if not has_sphinx_gallery:
-        app.warn('The sphinx_gallery extension is not installed, so the '
-                 'gallery will not be built. You will probably see '
-                 'additional warnings about undefined references due '
-                 'to this.')
+        import warnings
+        warnings.warn('The sphinx_gallery extension is not installed, so the '
+                      'gallery will not be built. You will probably see '
+                      'additional warnings about undefined references due '
+                      'to this.')
     if has_yaml:
         app.connect("source-read", rstjinja)

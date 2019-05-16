@@ -121,7 +121,7 @@ Both `~astropy.coordinates.SkyCoord` and
 `~astropy.coordinates.SkyCoord.transform_to` method. This can be used to
 transform the frame to any other frame, either implemented in SunPy or in
 Astropy `the astropy documentation
-<http://docs.astropy.org/en/stable/coordinates/transforming.html>`_ for more
+<https://docs.astropy.org/en/stable/coordinates/transforming.html>`_ for more
 details. An example of transforming the center of the solar disk to Carrington
 coordinates is::
 

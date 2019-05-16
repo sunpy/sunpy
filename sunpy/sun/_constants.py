@@ -10,7 +10,7 @@ __all__ = ['physical_constants']
 physical_constants = {}
 
 # references
-gsfc_fact = "http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html"
+gsfc_fact = "https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html"
 allen = "Allen's Astrophysical Quantities 4th Ed."
 asplund = "Asplund et al. 2006"
 fivian = "Fivian et al. 2008"

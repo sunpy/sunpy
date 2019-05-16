@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 from asdf.types import CustomType
-
 
 __all__ = ['SunPyType']
 

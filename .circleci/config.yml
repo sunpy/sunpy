@@ -21,6 +21,10 @@ tox-install: &tox-install
   name: Install Tox
   command: |
     pip install tox
+
+tox-conda-install: &tox-conda-install
+  name: Install Tox-Conda
+  command: |
     pip install tox-conda
 
 image-run: &image-tests
@@ -65,7 +69,10 @@ jobs:
           command: pip install -U pip
       - run:
           name: Install SunPy
-          command: pip install --progress-bar off -e .[all,dev]
+          command: |
+            pip install --progress-bar off .[all,dev]
+            pip install --no-use-pep517 -e .[all,dev]
+            python setup.py develop
 
   32bit:
     docker:
@@ -106,12 +113,13 @@ jobs:
       - run: *merge-check
       - run: *apt-install
       - run: *tox-install
+      - run: *tox-conda-install
       - run: *image-tests
       - store_artifacts:
-          path: tmp/figure_test_images
+          path: figure_test_images
       - run:
-          name: "Image comparison page is available at:"
-          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/tmp/figure_test_images/fig_comparison.html"; echo $FIGS_URL
+          name: "Image comparison page is available at: "
+          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/figure_test_images/fig_comparison.html"; echo $FIGS_URL
 
   html-docs:
     docker:
