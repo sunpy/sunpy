@@ -57,11 +57,6 @@ def test_peek_aia171(aia171_test_map):
 
 
 @figure_test
-def test_peek_basic_plot_aia171(aia171_test_map):
-    aia171_test_map.peek(basic_plot=True)
-
-
-@figure_test
 def test_peek_grid_aia171(aia171_test_map):
     aia171_test_map.peek(draw_grid=True)
 
