@@ -1704,16 +1704,15 @@ class GenericMap(NDData):
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         if not _basic_plot:
-            # Check that the image is properly oriented
-            if (not wcsaxes_compat.is_wcsaxes(axes) and
-                    not np.array_equal(self.rotation_matrix, np.identity(2))):
-                warnings.warn("This map is not properly oriented. Plot axes may be incorrect.",
-                              SunpyUserWarning)
-
-            elif not wcsaxes_compat.is_wcsaxes(axes):
+            if not wcsaxes_compat.is_wcsaxes(axes):
                 warnings.warn("WCSAxes not being used as the axes object for this plot."
-                              " Plots may have unexpected behaviour.",
+                              " Plots may have unexpected behaviour. To fix this pass "
+                              "'projection=map' when creating the axes",
                               SunpyUserWarning)
+                # Check if the image is properly oriented
+                if not np.array_equal(self.rotation_matrix, np.identity(2)):
+                    warnings.warn("The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
+                                  SunpyUserWarning)
 
         # Normal plot
         imshow_args = copy.deepcopy(self.plot_settings)
