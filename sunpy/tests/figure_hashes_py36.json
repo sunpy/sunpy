@@ -4,7 +4,6 @@
     "sunpy.map.tests.test_plotting.test_heliographic_peek": "f826ff27728903a6e5fb7eafe4754df3ea86cf033ed41756155946a0ef6c247c",
     "sunpy.map.tests.test_plotting.test_heliographic_rectangle": "e366f103b4f96946fb06da1d591b3bdb8ee027eaf387b3ff78b0bb7b5ad69124",
     "sunpy.map.tests.test_plotting.test_peek_aia171": "bfbe20f58929eb19812b9bbb2c21f4d3fbb7e53defcd00e484ef6c1a943d2222",
-    "sunpy.map.tests.test_plotting.test_peek_basic_plot_aia171": "376d4acfbab17abac8d82cbbeb37eb3033281a0a15bc29c6b03c3a6a4d4da43d",
     "sunpy.map.tests.test_plotting.test_peek_grid_aia171": "0c5b912605c7d6e08f85e4b1993dc04091c2439157089f081819c0a2defb88d1",
     "sunpy.map.tests.test_plotting.test_peek_grid_limb_aia171": "9f2f31497ec2fd63cfe4b56dacce1675aefdb92ad344e318a9a51b0b713e2889",
     "sunpy.map.tests.test_plotting.test_peek_grid_spacing_aia171": "9ddc7026bc6ba47bc79c039e255ed4b1b9e6fdedfbd6c73279390bcd427dab4a",
