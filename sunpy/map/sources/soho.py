@@ -4,17 +4,25 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib import colors
 
 import astropy.units as u
+from astropy.coordinates import CartesianRepresentation, SkyCoord
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
-from astropy.coordinates import CartesianRepresentation, SkyCoord, HeliocentricTrueEcliptic
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
+
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the incorrect name HeliocentricTrueEcliptic
+try:
+    from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
@@ -75,7 +83,7 @@ class EITMap(GenericMap):
         vector = CartesianRepresentation(self.meta['HEC_X'],
                                          self.meta['HEC_Y'],
                                          self.meta['HEC_Z'])
-        coord = SkyCoord(vector * u.m, frame=HeliocentricTrueEcliptic, obstime=self.date)
+        coord = SkyCoord(vector * u.m, frame=HeliocentricMeanEcliptic, obstime=self.date)
         return coord.heliographic_stonyhurst
 
     @property
