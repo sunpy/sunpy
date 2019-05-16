@@ -36,6 +36,14 @@ class AIAMap(GenericMap):
     211 A (Fe XIV), 304 A (He II), 335 A (Fe XVI). One telescope observes
     in the visible 1600 A (C IV) and the nearby continuun (1700 A).
 
+    Notes
+    -----
+    Observer location: The standard AIA FITS header provides the spacecraft location in multiple
+    coordinate systems: Heliocentric Aries Ecliptic (HAE), Heliographic Stonyhurst (HGS),
+    and Heliographic Carrington (HGC).  SunPy uses the provided HAE coordinates due to
+    accuracy concerns with the provided HGS and HGC coordinates, but other software packages
+    may make different choices.
+
     References
     ----------
     * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`_
@@ -59,7 +67,9 @@ class AIAMap(GenericMap):
     def observer_coordinate(self):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
-        The HAE coordinates in the header are used instead of the HGS coordinates in the header.
+
+        This coordinate is determined using the Heliocentric Aries Ecliptic (HAE) coordinates
+        in the header.
         """
         vector = CartesianRepresentation(self.meta['haex_obs'],
                                          self.meta['haey_obs'],
@@ -69,27 +79,27 @@ class AIAMap(GenericMap):
 
     @property
     def heliographic_latitude(self):
-        """Heliographic latitude (calculated from HAE coordinates)."""
+        """Heliographic latitude."""
         return self.observer_coordinate.lat
 
     @property
     def heliographic_longitude(self):
-        """Heliographic longitude (calculated from HAE coordinates)."""
+        """Heliographic longitude."""
         return self.observer_coordinate.lon
 
     @property
     def carrington_latitude(self):
-        """Carrington latitude (calculated from HAE coordinates)."""
+        """Carrington latitude."""
         return self.observer_coordinate.heliographic_carrington.lat
 
     @property
     def carrington_longitude(self):
-        """Carrington longitude (calculated from HAE coordinates)."""
+        """Carrington longitude."""
         return self.observer_coordinate.heliographic_carrington.lon
 
     @property
     def dsun(self):
-        """The observer distance from the Sun (calculated from HAE coordinates)."""
+        """The observer distance from the Sun."""
         return self.observer_coordinate.radius.to('m')
 
     @property
