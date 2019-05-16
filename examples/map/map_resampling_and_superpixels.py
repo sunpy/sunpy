@@ -36,7 +36,12 @@ print(aia_map.meta)
 # specifying the dimensions as an Astropy Quantity in pixels:
 dimensions = u.Quantity([40, 40], u.pixel)
 aia_resampled_map = aia_map.resample(dimensions)
-aia_resampled_map.peek(draw_limb=True, draw_grid=True)
+
+fig = plt.figure()
+aia_resampled_map.plot()
+aia_resampled_map.draw_grid()
+aia_resampled_map.draw_limb()
+
 # Note that this uses linear interpolation, you can change this using the method
 # (‘neighbor’, ‘nearest’, ‘linear’ or ‘spline’) keyword argument option.
 
@@ -49,5 +54,10 @@ aia_resampled_map.peek(draw_limb=True, draw_grid=True)
 # example you can reduce the AIA map resolution by a factor of 16 using:
 dimensions = u.Quantity(aia_map.dimensions) / 16
 aia_superpixel_map = aia_map.superpixel(dimensions)
-aia_superpixel_map.peek(draw_limb=True, draw_grid=True)
+
+fig = plt.figure()
+aia_superpixel_map.plot()
+aia_superpixel_map.draw_grid()
+aia_superpixel_map.draw_limb()
+
 plt.show()

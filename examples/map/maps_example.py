@@ -40,9 +40,9 @@ print(manual_map.meta)
 # naxis details that correspond to the array used for the data.
 
 ##############################################################################
-# You can quickly plot a map using the peek method:
-
-manual_map.peek()
+# You can quickly plot a map using the plot method:
+fig = plt.figure()
+manual_map.plot()
 
 ##############################################################################
 # SunPy Maps have a number of attributes that can be accessed easily.
@@ -58,7 +58,9 @@ print(manual_map.coordinate_system)
 # returns the location of the given FITS file.
 
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-aia_map.peek(draw_limb=True)
+fig = plt.figure()
+aia_map.plot()
+aia_map.draw_limb()
 
 ##############################################################################
 # This has comprehensive metadata:
@@ -88,8 +90,10 @@ print(aia_map.coordinate_frame)
 bottom_left = aia_map.bottom_left_coord
 top_right = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame=aia_map.coordinate_frame)
 aia_submap = aia_map.submap(bottom_left, top_right)
-aia_submap.peek(draw_limb=True)
 
+fig = plt.figure()
+aia_submap.plot()
+aia_submap.draw_limb()
 ##############################################################################
 # Similarly, if you want to reduce the angular resolution of the map you can use
 # the `~sunpy.map.GenericMap.resample` method, specifying the dimensions as an
@@ -97,7 +101,11 @@ aia_submap.peek(draw_limb=True)
 
 dimensions = u.Quantity([50, 50], u.pixel)
 aia_resampled_map = aia_map.resample(dimensions)
-aia_resampled_map.peek(draw_limb=True, draw_grid=True)
+
+fig = plt.figure()
+aia_resampled_map.plot()
+aia_resampled_map.draw_grid()
+aia_resampled_map.draw_limb()
 
 ##############################################################################
 # Similar to resampling you can use the `~sunpy.map.GenericMap.superpixel`
@@ -108,13 +116,20 @@ aia_resampled_map.peek(draw_limb=True, draw_grid=True)
 
 dimensions = u.Quantity(aia_map.dimensions) / 16
 aia_superpixel_map = aia_map.superpixel(dimensions)
-aia_superpixel_map.peek(draw_limb=True)
+
+fig = plt.figure()
+aia_superpixel_map.plot()
+aia_superpixel_map.draw_limb()
 
 ##############################################################################
 # Maps can also be rotated using the `~sunpy.map.GenericMap.rotate` method:
 
 aia_rotated_submap = aia_submap.rotate(angle=10 * u.deg)
-aia_rotated_submap.peek(draw_limb=True, draw_grid=True)
+
+fig = plt.figure()
+aia_rotated_submap.plot()
+aia_rotated_submap.draw_limb()
+aia_rotated_submap.draw_grid()
 
 # Note: the data array is expanded so that none of the original data is lost
 # through clipping.
