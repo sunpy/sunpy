@@ -60,18 +60,21 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
     data : `~numpy.ndarray`
         Array data of Map for which a header is required.
     coordinates : `~astropy.coordinates.SkyCoord`
-        Coordinate object to get meta information for map header. 
+        Coordinate object to get meta information for map header.
     reference_pixel :`~astropy.units.Quantity` of size 2, optional
         Reference pixel along each axis. These are expected to be Cartestian ordered, i.e
         the first index is the x axis, second index is the y axis.
         Defaults to the center of data array, ``(data.shape[0] + 1)/2., (data.shape[1] + 1)/2.)``.
     scale : `~astropy.units.Quantity` of size 2, optional
-        Pixel scaling along x and y axis (i.e. the spatial scale of the pixels (dx, dy)). These are 
+        Pixel scaling along x and y axis (i.e. the spatial scale of the pixels (dx, dy)). These are
         expected to be Cartestian ordered, i.e [dx, dy].
         Defaults to ``([1., 1.] arcsec)``.
     **kwargs:
-        Additional arguments that will be put into metadict header. These must be in the
-        list of acceptable meta keywords.
+        Additional arguments that will be put into the metadict header. These must be in the
+        list of map meta keywords. The keyword arguments for the instrument meta can
+        be given as ``instrument``, ``telescope``, ``observatory``, ``wavelength``, ``exposure``,
+        which will be translated to the accepted meta keywords ``instrume``, ``telescop``,
+        ``obsrvtry``, ``wavelnth``, ``exptime`` respectively.
 
     Returns
     -------
@@ -96,7 +99,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
         raise ValueError("coordinate needs to be a SkyCoord instance.")
 
     if coordinate.obstime is None:
-      raise ValueError("The coordinate needs an observation time, `obstime`.")
+        raise ValueError("The coordinate needs an observation time, `obstime`.")
 
     coordinate = coordinate.transform_to(frames.Helioprojective)
 
@@ -114,7 +117,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
     if scale is None:
         scale = u.Quantity([1.0*u.arcsec, 1.0*u.arcsec])
 
-    meta_wcs['crval1'], meta_wcs['crval2'] = coordinate.Tx.to_value(meta_wcs['cunit1']), coordinate.Ty.to_value(meta_wcs['cunit2'])    
+    meta_wcs['crval1'], meta_wcs['crval2'] = coordinate.Tx.to_value(meta_wcs['cunit1']), coordinate.Ty.to_value(meta_wcs['cunit2'])
 
     meta_wcs['crpix1'], meta_wcs['crpix2'] = reference_pixel[0].to_value(u.pixel), reference_pixel[1].to_value(u.pixel)
 
@@ -131,9 +134,9 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
 
 def _get_wcs_meta(coordinate):
     """
-    Function to get WCS meta from the SkyCoord using 
+    Function to get WCS meta from the SkyCoord using
     `astropy.wcs.utils.celestial_frame_to_wcs`
-    
+
     Parameters
     ----------
     coordinate : ~`astropy.coordinates.SkyCoord`
@@ -153,15 +156,16 @@ def _get_wcs_meta(coordinate):
 
     cunit1, cunit2 = skycoord_wcs.wcs.cunit
     coord_meta = dict(skycoord_wcs.to_header())
-    coord_meta['cunit1'], coord_meta['cunit2'] = cunit1, cunit2  
+    coord_meta['cunit1'], coord_meta['cunit2'] = cunit1, cunit2
 
     return coord_meta
 
+
 def _get_observer_meta(coordinate):
     """
-    Function to get observer meta from the SkyCoord using 
+    Function to get observer meta from the SkyCoord using
     `astropy.wcs.utils.celestial_frame_to_wcs`
-    
+
     Parameters
     ----------
     coordinate : ~`astropy.coordinates.SkyCoord`
@@ -173,7 +177,7 @@ def _get_observer_meta(coordinate):
             * hgln_obs, hglt_obs
             * dsun_obs
             * rsun_obs
-    """    
+    """
     coord_meta = {}
 
     skycoord_wcs = astropy.wcs.utils.celestial_frame_to_wcs(coordinate.frame)
@@ -185,13 +189,14 @@ def _get_observer_meta(coordinate):
 
     return coord_meta
 
+
 def _get_instrument_meta(**kwargs):
     """
     Function to correctly name keywords from kwargs
     """
     coord = {}
 
-    conversion = {'instrument':'instrume', 'telescope':'telescop', 'observatory':'obsrvtry', 'wavelength':'wavelnth', 'exposure':'exptime'}
+    conversion = {'instrument': 'instrume', 'telescope': 'telescop', 'observatory': 'obsrvtry', 'wavelength': 'wavelnth', 'exposure': 'exptime'}
 
     for key in kwargs:
         if key in conversion:
