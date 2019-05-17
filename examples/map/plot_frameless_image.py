@@ -32,7 +32,7 @@ figure.add_axes(axes)
 # Plot the map without any annotations
 # This might raise a warning about the axes being wrong but we can ignore this
 # as we are not plotting any axes.
-im = smap.plot(axes=axes, annotate=False)
+im = smap.plot(axes=axes, annotate=False, clip_interval=(1, 99.99)*u.percent)
 
 ##############################################################################
 # At this point you could save the figure with ``plt.savefig()`` or show it:
