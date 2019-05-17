@@ -14,6 +14,17 @@ from astropy.coordinates import (SkyCoord, Angle, Longitude,
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 from astropy._erfa.core import ErfaWarning
 from astropy.constants import c as speed_of_light
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the incorrect name HeliocentricTrueEcliptic
+try:
+    from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+try:
+    from astroquery.jplhorizons import Horizons
+    ASTROQUERY_PRESENT = True
+except ImportError:
+    ASTROQUERY_PRESENT = False
 
 from sunpy.time import parse_time
 from sunpy import log
@@ -23,7 +34,7 @@ from .transformations import _SUN_DETILT_MATRIX
 
 __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
            'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
-           'get_sun_orientation']
+           'get_sun_orientation', 'get_horizons_coord']
 
 
 def get_body_heliographic_stonyhurst(body, time='now', observer=None):
@@ -271,3 +282,38 @@ def _sun_north_angle_to_z(frame):
         angle = angle[0]
 
     return Angle(angle)
+
+
+def get_horizons_coord(body, time='now', id_type='majorbody'):
+    """
+    Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of
+    solar-system body at a specified time.
+
+    Parameters
+    ----------
+    body : `str`
+        The solar-system body for which to calculate positions
+    id_type : `str`
+        If 'majorbody', search by name for planets or satellites.  If 'id', search by ID number.
+    time : various
+        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+
+    Returns
+    -------
+    out : `~astropy.coordinates.SkyCoord`
+        Location of the solar-system body
+    """
+    obstime = parse_time(time)
+
+    if not ASTROQUERY_PRESENT:
+        raise ImportError("This function requires the astroquery package.")
+
+    query = Horizons(id=body, id_type=id_type,
+                     location='500@10',      # Heliocentric (mean ecliptic)
+                     epochs=obstime.tdb.jd)  # Time must be provided in JD TDB
+    result = query.vectors()
+
+    vector = CartesianRepresentation(result[0]['x', 'y', 'z'])*u.AU
+    coord = SkyCoord(vector, frame=HeliocentricMeanEcliptic, obstime=obstime)
+
+    return coord.transform_to(HGS)
