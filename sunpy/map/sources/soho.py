@@ -15,6 +15,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.coordinates import get_sun_L0
 
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
 # with the incorrect name HeliocentricTrueEcliptic
@@ -235,7 +236,7 @@ class MDIMap(GenericMap):
 
     @property
     def heliographic_longitude(self):
-        return self.meta["OBS_L0"]
+        return self.meta['OBS_L0'] * u.deg - get_sun_L0(self.date)
 
     @property
     def measurement(self):
