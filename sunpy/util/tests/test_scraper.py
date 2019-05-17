@@ -1,3 +1,6 @@
+import datetime
+from unittest.mock import patch, Mock
+
 import pytest
 
 import astropy.units as u
@@ -140,22 +143,29 @@ def testURL_pattern():
     assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
 
 
-@pytest.mark.xfail
-def testURL_patternMilliseconds():
+def testURL_patternMillisecondsGeneric():
     s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
-    # NOTE: Seems that if below fails randomly - not understood why
-    #       with `== True` fails a bit less...
     assert s._URL_followsPattern('fd_20130410_231211_119.fts')
     assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
     assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
 
 
+def testURL_patternMillisecondsZeroPadded():
+    # Asserts solution to ticket #1954.
+    # Milliseconds must be zero-padded in order to match URL lengths.
+    now_mock = Mock(return_value=datetime.datetime(2019, 4, 19, 0, 0, 0, 4009))
+    with patch('datetime.datetime', now=now_mock):
+        s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
+    now_mock.assert_called_once()
+    assert s.now == 'fd_20190419_000000_004.fts'
+
+
 @pytest.mark.xfail
 def testFilesRange_sameDirectory_local():
+    # Fails due to an IsADirectoryError, wrapped in a URLError, after `requests`
+    # tries to open a directory as a binary file.
     s = Scraper('/'.join(['file:/', rootdir,
                           'EIT', 'efz%Y%m%d.%H%M%S_s.fits']))
-    print(s.pattern)
-    print(s.now)
     startdate = parse_time((2004, 3, 1, 4, 0))
     enddate = parse_time((2004, 3, 1, 6, 30))
     assert len(s.filelist(TimeRange(startdate, enddate))) == 3
@@ -199,3 +209,13 @@ def test_ftp():
     s = Scraper(pattern)
     timerange = TimeRange('2016/5/18 15:28:00', '2016/5/20 16:30:50')
     assert len(s.filelist(timerange)) == 2
+
+
+@pytest.mark.remote_data
+def test_filelist_url_missing_directory():
+    # Asserts solution to ticket #2684.
+    # Attempting to access data for the year 1960 results in a 404, so no files are returned.
+    pattern = 'http://lasp.colorado.edu/eve/data_access/evewebdataproducts/level2/%Y/%j/'
+    s = Scraper(pattern)
+    timerange = TimeRange('1960/01/01 00:00:00', '1960/01/02 00:00:00')
+    assert len(s.filelist(timerange)) == 0
