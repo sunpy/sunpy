@@ -73,11 +73,11 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
         Additional arguments that will be put into the metadict header. These must be in the
         list of map meta keywords. The keyword arguments for the instrument meta can also be given 
         in certain forms which will be translated to fits standard:
-            * ``instrument`` 
-            * ``telescope``
-            * ``observatory``
-            * ``wavelength``
-            * ``exposure``
+        * ``instrument`` 
+        * ``telescope``
+        * ``observatory``
+        * ``wavelength``
+        * ``exposure``
 
     Returns
     -------
@@ -101,15 +101,14 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
     if not isinstance(coordinate, (SkyCoord, frames.BaseCoordinateFrame)):
         raise ValueError("coordinate needs to be a coordinate frame or an SkyCoord instance.")
 
-    if coordinate.obstime is None:
-        raise ValueError("The coordinate needs an observation time, `obstime`.")
-
     if isinstance(coordinate, SkyCoord):
         coordinate = coordinate.frame
 
-    if coordinate.name == 'heliocentric':
-        raise ValueError("SunPy Map does not support three dimensional data "
-                         "and therefore cannot represent heliocentric coordinates.")
+    if coordinate.obstime is None:
+        raise ValueError("The coordinate needs an observation time, `obstime`.")
+
+    if isinstance(coordinate, frames.Heliocentric):
+        raise ValueError("This function does not currently support heliocentric coordinates.")
 
     meta_wcs = _get_wcs_meta(coordinate)
 
@@ -118,7 +117,6 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
         meta_wcs.update(meta_observer)
 
     meta_instrument = _get_instrument_meta(**kwargs)
-
     meta_wcs.update(meta_instrument)
 
     if reference_pixel is None:
