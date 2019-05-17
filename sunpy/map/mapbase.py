@@ -1418,7 +1418,7 @@ class GenericMap(NDData):
 # #### Visualization #### #
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg=15*u.deg, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1654,8 +1654,9 @@ class GenericMap(NDData):
 
         return figure
 
-    @u.quantity_input(clip_interval=u.percent)
-    def plot(self, annotate=True, axes=None, title=True, clip_interval=None, **imshow_kwargs):
+    @u.quantity_input
+    def plot(self, annotate=True, axes=None, title=True,
+             clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
@@ -1702,16 +1703,15 @@ class GenericMap(NDData):
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         if not _basic_plot:
-            # Check that the image is properly oriented
-            if (not wcsaxes_compat.is_wcsaxes(axes) and
-                    not np.array_equal(self.rotation_matrix, np.identity(2))):
-                warnings.warn("This map is not properly oriented. Plot axes may be incorrect.",
-                              SunpyUserWarning)
-
-            elif not wcsaxes_compat.is_wcsaxes(axes):
+            if not wcsaxes_compat.is_wcsaxes(axes):
                 warnings.warn("WCSAxes not being used as the axes object for this plot."
-                              " Plots may have unexpected behaviour.",
+                              " Plots may have unexpected behaviour. To fix this pass "
+                              "'projection=map' when creating the axes",
                               SunpyUserWarning)
+                # Check if the image is properly oriented
+                if not np.array_equal(self.rotation_matrix, np.identity(2)):
+                    warnings.warn("The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
+                                  SunpyUserWarning)
 
         # Normal plot
         imshow_args = copy.deepcopy(self.plot_settings)
