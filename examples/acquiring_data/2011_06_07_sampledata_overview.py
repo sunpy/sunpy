@@ -6,6 +6,7 @@ Sample Data Set Overview
 An overview of the coordinated sample data set for the SOL-2011-06-07 event.
 """
 import matplotlib.pyplot as plt
+import astropy.units as u
 
 import sunpy.map
 import sunpy.timeseries
@@ -52,22 +53,22 @@ aia_1600_map = sunpy.map.Map(sample_data.AIA_1600_IMAGE)
 
 fig = plt.figure(figsize=(6, 28))
 ax = fig.add_subplot(611, projection=aia_131_map)
-aia_131_map.plot()
+aia_131_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_131_map.draw_grid()
 ax = fig.add_subplot(612, projection=aia_171_map)
-aia_171_map.plot()
+aia_171_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_171_map.draw_grid()
 ax = fig.add_subplot(613, projection=aia_211_map)
-aia_211_map.plot()
+aia_211_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_211_map.draw_grid()
 ax = fig.add_subplot(614, projection=aia_335_map)
-aia_335_map.plot()
+aia_335_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_335_map.draw_grid()
 ax = fig.add_subplot(615, projection=aia_094_map)
-aia_094_map.plot()
+aia_094_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_094_map.draw_grid()
 ax = fig.add_subplot(616, projection=aia_1600_map)
-aia_1600_map.plot()
+aia_1600_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_1600_map.draw_grid()
 plt.tight_layout(pad=6.50)
 plt.show()
