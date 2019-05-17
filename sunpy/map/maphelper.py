@@ -40,7 +40,7 @@ def meta_keywords(*key):
     if key:
         for k in key:
             if k in map_meta_keywords.keys():
-                print(k, " : ", acceptable_meta[k])
+                print(k, " : ", map_meta_keywords[k])
             else:
                 print(k, " is not a meta keyword required for sunpy.map.Map \n The map meta keywords are : \n", list(map_meta_keywords.keys()))
         return
