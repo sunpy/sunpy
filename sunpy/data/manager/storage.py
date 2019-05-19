@@ -1,0 +1,48 @@
+from abc import ABCMeta, abstractmethod
+
+
+class StorageProviderBase(metaclass=ABCMeta):
+    """Base class for remote data manager storage providers"""
+    @abstractmethod
+    def find_by_hash(self, file_hash):
+        """
+        Returns the file details if hash found in storage.
+        Returns `None` if hash not found.
+
+        Parameters
+        ----------
+        file_hash: `str`
+        Hash of the file
+
+        Returns
+        -------
+        `dict` or `None`
+        `dict` contains the details of the file. `None` if hash not found.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def store(self, details):
+        """
+        Stores the details in the storage.
+
+        Parameters
+        ----------
+        details: `dict`
+        Details to be stored
+        """
+        raise NotImplementedError
+
+
+class InMemStorage(StorageProviderBase):
+    def __init__(self):
+        self.cache = []
+
+    def store(self, details):
+        self.cache += [details]
+
+    def find_by_hash(self, file_hash):
+        for i in self.cache:
+            if i['file_hash'] == file_hash:
+                return i
+        return None
