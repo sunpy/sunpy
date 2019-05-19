@@ -286,8 +286,9 @@ def _sun_north_angle_to_z(frame):
 
 def get_horizons_coord(body, time='now', id_type='majorbody'):
     """
-    Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of
-    solar-system body at a specified time.
+    Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
+    solar-system body at a specified time.  This function requires the Astroquery package to
+    be installed and requires Internet access.
 
     Parameters
     ----------
@@ -302,16 +303,27 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     -------
     out : `~astropy.coordinates.SkyCoord`
         Location of the solar-system body
+
+    References
+    ----------
+    * `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`_
+    * `Astroquery <https://astroquery.readthedocs.io/en/latest/>`_
     """
     obstime = parse_time(time)
 
     if not ASTROQUERY_PRESENT:
-        raise ImportError("This function requires the astroquery package.")
+        raise ImportError("This function requires the Astroquery package to be installed.")
 
     query = Horizons(id=body, id_type=id_type,
                      location='500@10',      # Heliocentric (mean ecliptic)
                      epochs=obstime.tdb.jd)  # Time must be provided in JD TDB
-    result = query.vectors()
+    try:
+        result = query.vectors()
+    except:  # Catch and re-raise all exceptions, and also provide query URL if generated
+        if query.uri is not None:
+            log.error(f"See the raw output from the JPL HORIZONS query at {query.uri}")
+        raise
+    log.info(f"Obtained JPL HORIZONS location for {result[0]['targetname']}")
 
     vector = CartesianRepresentation(result[0]['x', 'y', 'z'])*u.AU
     coord = SkyCoord(vector, frame=HeliocentricMeanEcliptic, obstime=obstime)
