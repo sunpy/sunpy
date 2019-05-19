@@ -5,6 +5,7 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.coordinates import SkyCoord, EarthLocation
 from astropy.time import Time
 from astropy.constants import c as speed_of_light
+import pytest
 
 from sunpy.coordinates.ephemeris import *
 
@@ -111,3 +112,17 @@ def test_get_sun_orientation():
     # Check the Southern Hemisphere
     angle = get_sun_orientation(EarthLocation(lat=-40*u.deg, lon=-75*u.deg), '2017-02-18 13:00')
     assert_quantity_allclose(angle, -110.8*u.deg, atol=0.1*u.deg)
+
+
+@pytest.mark.remote_data
+def test_get_horizons_coord():
+    # Validate against published values from the Astronomical Almanac (2013)
+    e1 = get_horizons_coord('Geocenter', '2013-Jan-01')
+    assert_quantity_allclose((e1.lon + 1*u.deg) % (360*u.deg), 1*u.deg, atol=5e-6*u.deg)
+    assert_quantity_allclose(e1.lat, -3.03*u.deg, atol=5e-3*u.deg)
+    assert_quantity_allclose(e1.radius, 0.9832947*u.AU, atol=5e-7*u.AU)
+
+    e2 = get_horizons_coord('Geocenter', '2013-Sep-01')
+    assert_quantity_allclose((e2.lon + 1*u.deg) % (360*u.deg), 1*u.deg, atol=5e-6*u.deg)
+    assert_quantity_allclose(e2.lat, 7.19*u.deg, atol=5e-3*u.deg)
+    assert_quantity_allclose(e2.radius, 1.0092561*u.AU, atol=5e-7*u.AU)
