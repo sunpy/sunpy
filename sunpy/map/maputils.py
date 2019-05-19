@@ -64,7 +64,7 @@ def map_edges(smap):
 
     Returns
     -------
-    `~tuple`
+    top, bottom, left_hand_side, right_hand_side : `~astropy.units.Quantity`
         Returns the pixel locations at the edge of the map;
         the zeroth, first, second and third tuple values
         return the top, bottom, left hand side and right
@@ -137,7 +137,7 @@ def coordinate_is_on_solar_disk(coordinates):
 
     Parameters
     ----------
-    coordinate : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
         The input coordinate. The coordinate frame must be
         `~sunpy.coordinates.Helioprojective`.
 
@@ -148,6 +148,8 @@ def coordinate_is_on_solar_disk(coordinates):
     """
     # Calculate the radius of every pixel from the center of the Sun
     # in helioprojective Cartesian coordinates.
+    if not isinstance(coordinates.frame, Helioprojective):
+        raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
     coordinate_angles = np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2)
     # The tangent of the angular size of the solar radius is equal to the radius
     # of the Sun divided by the distance between the observer and the
@@ -158,11 +160,11 @@ def coordinate_is_on_solar_disk(coordinates):
 
 def is_all_off_disk(smap):
     """
-    Checks if the entire `~sunpy.map.GenericMap` is off the solar disk.
+    Checks if none of the coordinates in the `~sunpy.map.GenericMap` are on the solar disk.
 
-    The check is performed by calculating the distance of every
-    pixel from the center of the Sun. If they are all off-disk,
-    then the function returns `True`. Otherwise, the function
+    The check is performed by calculating the angle of every pixel from
+    the center of the Sun. If they are all greater than the angular
+    radius of the Sun, then the function returns `True`. Otherwise, the function
     returns `False`.
 
     Parameters
@@ -173,8 +175,8 @@ def is_all_off_disk(smap):
     Returns
     -------
     `~bool`
-        Returns `True` if all map pixels are strictly more than one solar radius
-        away from the center of the Sun.
+        Returns `True` if all map pixels have an angular radius greater than
+        the angular radius of the Sun.
 
     Notes
     -----
@@ -187,34 +189,11 @@ def is_all_off_disk(smap):
 
 def is_all_on_disk(smap):
     """
-    Checks if the entire map is on the solar disk.
+    Checks if all of the coordinates in the `~sunpy.map.GenericMap` are on the solar disk.
 
-    The check is performed by calculating the distance of every pixel
-    from the center of the Sun. If they are all on-disk, then the
-    function returns `True`. Otherwise, the function returns `False`.
-
-    Parameters
-    ----------
-    smap : `~sunpy.map.GenericMap`
-        A map in helioprojective Cartesian coordinates.
-
-    Returns
-    -------
-    `~bool`
-        Returns `True` if all map pixels are strictly less than one solar radius
-        away from the center of the Sun.
-    """
-    return np.all(coordinate_is_on_solar_disk(all_coordinates_from_map(smap)))
-
-
-def contains_limb(smap):
-    """
-    Checks if a map contains any part of the solar limb or equivalently whether
-    the map contains both on-disk and off-disk pixels.
-
-    The check is performed by calculating the distance of every pixel from
-    the center of the Sun.  If at least one pixel is on disk and at least one
-    pixel is off disk, the function returns `True`. Otherwise, the function
+    The check is performed by calculating the angle of every pixel from
+    the center of the Sun. If they are all less than the angular
+    radius of the Sun, then the function returns `True`. Otherwise, the function
     returns `False`.
 
     Parameters
@@ -225,14 +204,39 @@ def contains_limb(smap):
     Returns
     -------
     `~bool`
-        Returns `True` If at least one pixel is on disk and at least one pixel
-        is off disk.
+        Returns `True` if all map pixels have an angular radius less than
+        the angular radius of the Sun.
+    """
+    return np.all(coordinate_is_on_solar_disk(all_coordinates_from_map(smap)))
+
+
+def contains_limb(smap):
+    """
+    Checks if a map contains any part of the solar limb or equivalently whether
+    the map contains both on-disk and off-disk pixels.
+
+    The check is performed by calculating the angular distance of every pixel from
+    the center of the Sun.  If at least one pixel is on disk (less than the solar
+    angular radius) and at least one pixel is off disk (greater than the solar
+    angular distance), the function returns `True`. Otherwise, the function
+    returns `False`.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        A map in helioprojective Cartesian coordinates.
+
+    Returns
+    -------
+    `~bool`
+        Returns `True` If at least one coordinate of the map is on disk and at
+        least one coordinate of the map is off disk.
 
     Notes
     -----
-    This will also return `True` if the entire solar
-    limb is within the field of view of the map.  Also in the case
-    of coronagraph images the limb itself need not be observed.
+    For coronagraph images such as those from LASCO C2 and C3 the full disk is
+    within the field of view of the instrument, but the solar disk itself is not imaged.
+    For such images this function will return `True`.
     """
     on_disk = coordinate_is_on_solar_disk(all_coordinates_from_map(smap))
     return np.logical_and(np.any(on_disk), np.any(~on_disk))
@@ -240,8 +244,8 @@ def contains_limb(smap):
 
 def on_disk_bounding_coordinates(smap):
     """
-    Returns the the bottom left and top-right coordinates of the smallest
-    rectangular region that contains all the on-disk pixels in the input map.
+    Returns the the bottom left and top right coordinates of the smallest
+    rectangular region that contains all the on disk coordinates of the input map.
 
     Parameters
     ----------
