@@ -6,10 +6,11 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord, BaseCoordinateFrame
 
 from sunpy.map.maputils import (all_pixel_indices_from_map,
-                                all_coordinates_from_map, map_edges,
+                                all_coordinates_from_map, map_edges, solar_angular_radius,
                                 contains_full_disk, is_all_off_disk,
                                 is_all_on_disk, contains_limb,
                                 coordinate_is_on_solar_disk, on_disk_bounding_coordinates)
+from sunpy.coordinates import HeliographicStonyhurst
 import sunpy.data.test
 import sunpy.map
 
@@ -82,6 +83,13 @@ def test_map_edges(all_off_disk_map):
     assert np.all(edges[0][9] == [9, 10] * u.pix)
 
 
+def test_solar_angular_radius(aia171_test_map):
+    on_disk = aia171_test_map.center
+    sar = solar_angular_radius(on_disk)
+    assert isinstance(sar, u.Quantity)
+    np.testing.assert_almost_equal(sar.to(u.arcsec).value, 971.80181131, decimal=1)
+
+
 def test_contains_full_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
     assert contains_full_disk(aia171_test_map)
     assert ~contains_full_disk(all_off_disk_map)
@@ -117,6 +125,10 @@ def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_d
     # Check for individual coordinates
     assert coordinate_is_on_solar_disk(on_disk)
     assert ~coordinate_is_on_solar_disk(off_disk)
+
+    # Raise the error
+    with pytest.raises(ValueError):
+        coordinate_is_on_solar_disk(on_disk.transform_to(HeliographicStonyhurst))
 
     # Check for sets of coordinates
     assert np.any(coordinate_is_on_solar_disk(all_coordinates_from_map(aia171_test_map)))

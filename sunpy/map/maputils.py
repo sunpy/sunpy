@@ -11,7 +11,7 @@ from astropy.coordinates import SkyCoord
 from sunpy.coordinates import Helioprojective
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
-           'map_edges', 'contains_full_disk',
+           'map_edges', 'solar_angular_radius', 'contains_full_disk',
            'is_all_off_disk', 'is_all_on_disk', 'contains_limb',
            'coordinate_is_on_solar_disk', 'on_disk_bounding_coordinates']
 
@@ -79,13 +79,36 @@ def map_edges(smap):
     return top, bottom, left_hand_side, right_hand_side
 
 
+@u.quantity_input
+def solar_angular_radius(coordinates):
+    """
+    Calculates the solar angular radius as seen by the observer.
+
+    The tangent of the angular size of the Sun is equal to the radius
+    of the Sun divided by the distance between the observer and the
+    center of the Sun.
+
+    Parameters
+    ----------
+    coordinates : `~astropy.coordinates.SkyCoord`, `~sunpy.coordinates.frames.Helioprojective`
+        The input coordinate. The coordinate frame must be
+        `~sunpy.coordinates.Helioprojective`.
+
+    Returns
+    -------
+    angle : `~astropy.units.Quantity`
+        The solar angular radius.
+    """
+    return np.arctan(coordinates.rsun / coordinates.observer.radius)
+
+
 def contains_full_disk(smap):
     """
     Checks if a map contains the full disk of the Sun.
 
     A map contains the full disk of the Sun if the following two
-    conditions are met: (1) all the pixels at the edge of the map are
-    more than 1 solar radius from the center of the Sun and, (2) the
+    conditions are met: (1) all the coordinates at the edge of the map are
+    more than solar angular radius from the center of the Sun and, (2) the
     map is not all off disk. If both these conditions are met, the
     function returns `True`. Otherwise, the function returns `False`.
 
@@ -97,8 +120,8 @@ def contains_full_disk(smap):
     Returns
     -------
     `~bool`
-        Returns `False` if any of the edge pixels are less than one solar
-        radius away from the center of the Sun.
+        Returns `False` if any of the coordinates at the edge of the map
+         are less than one solar radius away from the center of the Sun.
 
     Notes
     -----
@@ -118,11 +141,11 @@ def contains_full_disk(smap):
     edge_of_world = smap.pixel_to_world(x, y)
 
     # Calculate the distance of the edge of the world in solar radii
-    distance = u.R_sun * np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2) / smap.rsun_obs
+    coordinate_angles = np.sqrt(edge_of_world.Tx ** 2 + edge_of_world.Ty ** 2)
 
     # Test if all the edge pixels are more than one solar radius distant
     # and that the whole map is not all off disk.
-    return np.all(distance > 1*u.R_sun) and ~is_all_off_disk(smap)
+    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and ~is_all_off_disk(smap)
 
 
 @u.quantity_input
@@ -146,16 +169,12 @@ def coordinate_is_on_solar_disk(coordinates):
     `~bool`
         Returns `True` if the coordinate is on disk, `False` otherwise.
     """
-    # Calculate the radius of every pixel from the center of the Sun
-    # in helioprojective Cartesian coordinates.
+
     if not isinstance(coordinates.frame, Helioprojective):
         raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
-    coordinate_angles = np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2)
-    # The tangent of the angular size of the solar radius is equal to the radius
-    # of the Sun divided by the distance between the observer and the
-    # center of the Sun.
-    solar_radius_angular_size = np.arctan(coordinates.rsun / coordinates.observer.radius)
-    return coordinate_angles < solar_radius_angular_size
+    # Calculate the angle of every pixel from the center of the Sun and compare it the angular
+    # radius of the Sun.
+    return np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2) < solar_angular_radius(coordinates)
 
 
 def is_all_off_disk(smap):
@@ -204,7 +223,7 @@ def is_all_on_disk(smap):
     Returns
     -------
     `~bool`
-        Returns `True` if all map pixels have an angular radius less than
+        Returns `True` if all map coordinates have an angular radius less than
         the angular radius of the Sun.
     """
     return np.all(coordinate_is_on_solar_disk(all_coordinates_from_map(smap)))
