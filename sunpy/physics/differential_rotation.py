@@ -10,7 +10,7 @@ from astropy.coordinates import SkyCoord, Longitude, BaseCoordinateFrame, get_bo
 from sunpy.time import parse_time
 from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
 from sunpy.map import (all_coordinates_from_map, is_all_off_disk,
-                       coordinate_is_on_disk, contains_full_disk,
+                       coordinate_is_on_solar_disk, contains_full_disk,
                        is_all_on_disk, on_disk_bounding_coordinates,
                        map_edges)
 
@@ -289,7 +289,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
     c = smap.pixel_to_world(pixels[:, 1], pixels[:, 0])
 
     # Only apply solar rotation if all coordinates are on the disk.
-    if np.all(~coordinate_is_on_disk(c)):
+    if np.all(~coordinate_is_on_solar_disk(c)):
         coordinates = deepcopy(c)
     else:
         coordinates = solar_rotate_coordinate(c, observer=observer, **diff_rot_kwargs)
