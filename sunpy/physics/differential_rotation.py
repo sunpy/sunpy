@@ -500,12 +500,12 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
 
         # Calculate where the output array moves to.
         # Rotate the top and bottom edges
-        rotated_top = _rotate_submap_edge(smap, edges["top"], observer=new_observer, **diff_rot_kwargs)
-        rotated_bottom = _rotate_submap_edge(smap, edges["bottom"], observer=new_observer, **diff_rot_kwargs)
+        rotated_top = _rotate_submap_edge(smap, edges[0], observer=new_observer, **diff_rot_kwargs)
+        rotated_bottom = _rotate_submap_edge(smap, edges[1], observer=new_observer, **diff_rot_kwargs)
 
         # Rotate the left and right hand edges
-        rotated_lhs = _rotate_submap_edge(smap, edges["lhs"], observer=new_observer, **diff_rot_kwargs)
-        rotated_rhs = _rotate_submap_edge(smap, edges["rhs"], observer=new_observer, **diff_rot_kwargs)
+        rotated_lhs = _rotate_submap_edge(smap, edges[2], observer=new_observer, **diff_rot_kwargs)
+        rotated_rhs = _rotate_submap_edge(smap, edges[3], observer=new_observer, **diff_rot_kwargs)
 
         # Calculate the bounding box of the rotated map
         rotated_bl, rotated_tr = _get_bounding_coordinates([rotated_top, rotated_bottom, rotated_lhs, rotated_rhs])
