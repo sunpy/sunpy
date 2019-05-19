@@ -257,7 +257,7 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
     # return just the edges of the map - no solar rotation applied.
     for this_map in (aia171_test_map, all_off_disk_map):
         edges = map_edges(this_map)
-        for this_edge in edges.keys():
+        for this_edge in range(0, 4):
             pixels = edges[this_edge]
             res = _rotate_submap_edge(this_map, pixels, observer)
             assert all(res.Tx == (this_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
@@ -265,7 +265,7 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
 
     # For an on disk map, all the edges should change
     edges = map_edges(all_on_disk_map)
-    for this_edge in edges.keys():
+    for this_edge in range(0, 4):
         pixels = edges[this_edge]
         res = _rotate_submap_edge(all_on_disk_map, pixels, observer)
         assert all(res.Tx != (all_on_disk_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
@@ -273,13 +273,13 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
 
     # For the limb map, two of the edges move and two do not
     edges = map_edges(straddles_limb_map)
-    for this_edge in ('top', 'rhs'):
+    for this_edge in (0, 3):
         pixels = edges[this_edge]
         res = _rotate_submap_edge(straddles_limb_map, pixels, observer)
         assert all(res.Tx == (straddles_limb_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
         assert all(res.Ty == (straddles_limb_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Ty)
 
-    for this_edge in ('bottom', 'lhs'):
+    for this_edge in (1, 2):
         pixels = edges[this_edge]
         res = _rotate_submap_edge(straddles_limb_map, pixels, observer)
         assert all(res.Tx != (straddles_limb_map.pixel_to_world(pixels[:, 1], pixels[:, 0])).Tx)
