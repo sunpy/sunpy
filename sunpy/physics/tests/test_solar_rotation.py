@@ -43,15 +43,15 @@ def aia171_test_mapsequence(aia171_test_submap):
 # Known displacements for these mapsequence layers when the layer index is set to 0
 @pytest.fixture
 def known_displacements_layer_index0():
-    return {'x': np.asarray([-0.08936103, -9.17561247, -18.28045652]),
-            'y': np.asarray([-0.11339651,  0.12010122, 0.3430753])}
+    return {'x': np.asarray([-0.089361,  -10.570323, -21.075823]),
+            'y': np.asarray([-0.113397, 0.155022, 0.409435])}
 
 
 # Known displacements for these mapsequence layers when the layer index is set to 1
 @pytest.fixture
 def known_displacements_layer_index1():
-    return {'x': np.asarray([8.97745012, -0.08936103, -9.17562044]),
-            'y': np.asarray([-0.35739578, -0.11339651, 0.12010142])}
+    return {'x': np.asarray([10.365743, -0.089361, -10.570315]),
+            'y': np.asarray([-0.395786, -0.113397, 0.155022])}
 
 
 def test_calculate_solar_rotate_shift(aia171_test_mapsequence, known_displacements_layer_index0, known_displacements_layer_index1):
