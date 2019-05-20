@@ -272,11 +272,10 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
     smap : `~sunpy.map.Map`
         The input map from which the pixel coordinates are calculated.
     pixels : `~astropy.units.Quantity`
-        A Quantity array of shape (M, 2) in pixel units.  Values (:, 0) are the y values of the
-        pixel indices, and values ``[:, 1]`` are the "x" values of the pixel indices.
+        A Quantity array of shape (M, 2) in pixel units.  Values (:, 0) are the x values of the
+        pixel indices, and values ``[:, 1]`` are the "y" values of the pixel indices.
     observer : `~astropy.coordinates.SkyCoord`
         The location of the observer.
-
     diff_rot_kwargs : None, `~dict`
         Keyword arguments accepted by `~sunpy.physics.differential_rotation.diff_rot`.
 
@@ -286,7 +285,7 @@ def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
         The coordinates of a rotated edge.
     """
     # Coordinates
-    c = smap.pixel_to_world(pixels[:, 1], pixels[:, 0])
+    c = smap.pixel_to_world(pixels[:, 0], pixels[:, 1])
 
     # Only apply solar rotation if all coordinates are on the disk.
     if np.all(~coordinate_is_on_solar_disk(c)):
