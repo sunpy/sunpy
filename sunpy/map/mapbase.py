@@ -28,7 +28,7 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.transform import affine_transform
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
-from sunpy.coordinates import get_sun_B0, get_sun_L0, get_sunearth_distance, get_earth
+from sunpy.coordinates import get_earth
 from sunpy.util.exceptions import SunpyUserWarning
 
 from astropy.nddata import NDData
