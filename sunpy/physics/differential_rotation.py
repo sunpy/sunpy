@@ -443,11 +443,11 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     ----------
     smap : `~sunpy.map.GenericMap`
         Original map that we want to transform.
-    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, None, optional
+    observer : `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`, `None`, optional
         The location of the new observer.
         Instruments in Earth orbit can be approximated by using the position
         of the Earth at the observation time of the new observer.
-    time : sunpy-compatible time, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, None, optional
+    time : sunpy-compatible time, `~astropy.time.TimeDelta`, `~astropy.units.Quantity`, `None`, optional
         Used to define the duration over which the amount of solar rotation is
         calculated.  If 'time' is an `~astropy.time.Time` then the time interval
         is difference between 'time' and the map observation time. If 'time' is
