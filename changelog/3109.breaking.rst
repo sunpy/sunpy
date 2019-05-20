@@ -1,0 +1,3 @@
+Remove the ``basic_plot`` keyword argument from
+`~sunpy.map.Map.GenericMap.peek`. An example has been added to the gallery
+showing how to make a plot like this.
