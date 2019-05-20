@@ -588,7 +588,7 @@ class GenericMap(NDData):
         if heliographic_latitude is None:
             if self._default_heliographic_latitude is None:
                 warnings.warn("Missing metadata for heliographic latitude: assuming Earth-based observer.",
-                                       SunpyUserWarning)
+                              SunpyUserWarning)
                 self._default_heliographic_latitude = get_sun_B0(self.date)
             heliographic_latitude = self._default_heliographic_latitude
 
@@ -788,7 +788,6 @@ class GenericMap(NDData):
             warnings.warn("SunPy Map does not support three dimensional data "
                           "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.",
                           SunpyUserWarning)
-
 
 # #### Data conversion routines #### #
     def world_to_pixel(self, coordinate, origin=0):
@@ -1595,7 +1594,7 @@ class GenericMap(NDData):
 
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
-             colorbar=True, basic_plot=False, **matplot_args):
+             colorbar=True, **matplot_args):
         """
         Displays the map in a new figure.
 
@@ -1610,31 +1609,16 @@ class GenericMap(NDData):
             parallels and meridians.
         colorbar : bool
             Whether to display a colorbar next to the plot.
-        basic_plot : bool
-            If true, the data is plotted by itself at it's natural scale; no
-            title, labels, or axes are shown.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting.
         """
-
-        # Create a figure and add title and axes
-        figure = plt.figure(frameon=not basic_plot)
-
-        # Basic plot
-        if basic_plot:
-            axes = plt.Axes(figure, [0., 0., 1., 1.])
-            axes.set_axis_off()
-            figure.add_axes(axes)
-            matplot_args.update({'annotate': False, "_basic_plot": True})
-
-        # Normal plot
-        else:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
+        figure = plt.figure()
+        axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         im = self.plot(axes=axes, **matplot_args)
 
-        if colorbar and not basic_plot:
+        if colorbar:
             if draw_grid:
                 pad = 0.12  # Pad to compensate for ticks and axes labels
             else:
@@ -1695,24 +1679,19 @@ class GenericMap(NDData):
         >>> aia.draw_grid()   # doctest: +SKIP
 
         """
-
-        # extract hiddden kwarg
-        _basic_plot = imshow_kwargs.pop("_basic_plot", False)
-
         # Get current axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        if not _basic_plot:
-            if not wcsaxes_compat.is_wcsaxes(axes):
-                warnings.warn("WCSAxes not being used as the axes object for this plot."
-                              " Plots may have unexpected behaviour. To fix this pass "
-                              "'projection=map' when creating the axes",
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            warnings.warn("WCSAxes not being used as the axes object for this plot."
+                          " Plots may have unexpected behaviour. To fix this pass "
+                          "'projection=map' when creating the axes",
+                          SunpyUserWarning)
+            # Check if the image is properly oriented
+            if not np.array_equal(self.rotation_matrix, np.identity(2)):
+                warnings.warn("The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
                               SunpyUserWarning)
-                # Check if the image is properly oriented
-                if not np.array_equal(self.rotation_matrix, np.identity(2)):
-                    warnings.warn("The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
-                                  SunpyUserWarning)
 
         # Normal plot
         imshow_args = copy.deepcopy(self.plot_settings)
