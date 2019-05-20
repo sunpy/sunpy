@@ -1,8 +1,4 @@
 """SOHO Map subclass definitions"""
-# pylint: disable=W0221,W0222,E1101,E1121
-
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,7 +11,6 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
-from sunpy.coordinates import get_sun_L0
 
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
 # with the incorrect name HeliocentricTrueEcliptic
@@ -75,42 +70,14 @@ class EITMap(GenericMap):
         return u.Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
 
     @property
-    def observer_coordinate(self):
-        """
-        The Heliographic Stonyhurst Coordinate of the observer.
-
-        Calculated from the ``HEC_X``, ``HEC_Y``, ``HEC_Z`` headers.
-        """
-        vector = CartesianRepresentation(self.meta['HEC_X'],
-                                         self.meta['HEC_Y'],
-                                         self.meta['HEC_Z'])
-        coord = SkyCoord(vector * u.m, frame=HeliocentricMeanEcliptic, obstime=self.date)
-        return coord.heliographic_stonyhurst
-
-    @property
-    def heliographic_latitude(self):
-        """Heliographic latitude."""
-        return self.observer_coordinate.lat
-
-    @property
-    def heliographic_longitude(self):
-        """Heliographic longitude."""
-        return self.observer_coordinate.lon
-
-    @property
-    def carrington_latitude(self):
-        """Carrington latitude."""
-        return self.observer_coordinate.heliographic_carrington.lat
-
-    @property
-    def carrington_longitude(self):
-        """Carrington longitude."""
-        return self.observer_coordinate.heliographic_carrington.lon
-
-    @property
-    def dsun(self):
-        """The observer distance from the Sun."""
-        return self.observer_coordinate.radius.to('m')
+    def _supported_observer_coordinates(self):
+        return [(('hec_x', 'hec_x', 'hec_x'), {'x': self.meta.get('hec_x'),
+                                               'y': self.meta.get('hec_x'),
+                                               'z': self.meta.get('hec_x'),
+                                               'unit': u.m,
+                                               'representation': CartesianRepresentation,
+                                               'frame': HeliocentricMeanEcliptic})
+        ] + super()._supported_observer_coordinates
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -219,24 +186,21 @@ class MDIMap(GenericMap):
             self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
 
     @property
+    def _supported_observer_coordinates(self):
+        return [(('obs_l0', 'obs_b0', 'obs_dist'), {'lon': self.meta.get('obs_l0'),
+                                                    'lat': self.meta.get('obs_b0'),
+                                                    'radius': self.meta.get('obs_dist'),
+                                                    'unit': (u.deg, u.deg, u.m),
+                                                    'frame': "heliographic_carrington"}),
+        ] + super()._supported_observer_coordinates
+
+    @property
     def detector(self):
         return "MDI"
 
     @property
     def waveunit(self):
         return "Angstrom"
-
-    @property
-    def dsun(self):
-        return self.meta["OBS_DIST"]
-
-    @property
-    def heliographic_latitude(self):
-        return self.meta["OBS_B0"]
-
-    @property
-    def heliographic_longitude(self):
-        return self.meta['OBS_L0'] * u.deg - get_sun_L0(self.date)
 
     @property
     def measurement(self):
