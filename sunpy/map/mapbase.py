@@ -29,6 +29,7 @@ from sunpy.image.transform import affine_transform
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_earth
+from sunpy.util import expand_list
 from sunpy.util.exceptions import SunpyUserWarning
 
 from astropy.nddata import NDData
@@ -567,6 +568,15 @@ class GenericMap(NDData):
                                                         'radius': self.meta.get('dsun_obs'),
                                                         'unit': (u.deg, u.deg, u.m),
                                                         'frame': "heliographic_carrington"}),]
+
+    def _remove_existing_observer_location(self):
+        """
+        Remove all keys that this map might use for observer location.
+        """
+        all_keys = expand_list([e[0] for e in self._supported_observer_coordinates])
+        for key in all_keys:
+            self.meta.pop(key)
+
     @property
     def observer_coordinate(self):
         """

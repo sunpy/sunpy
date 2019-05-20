@@ -211,6 +211,13 @@ def test_heliographic_longitude_crln(hmi_test_map):
     assert hmi_test_map.heliographic_longitude == hmi_test_map.carrington_longitude - sunpy.coordinates.get_sun_L0(hmi_test_map.date)
 
 
+def test_remove_observers(aia171_test_map):
+    aia171_test_map._remove_existing_observer_location()
+    with pytest.warns(SunpyUserWarning,
+                      match='Missing metadata for observer: assuming Earth-based observer.*'):
+        aia171_test_map.observer_coordinate
+
+
 # ==============================================================================
 # Test Rotation WCS conversion
 # ==============================================================================
