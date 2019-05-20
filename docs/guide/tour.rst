@@ -123,7 +123,6 @@ plots can be built by combining SunPy with matplotlib.
     aia.plot()
     aia.draw_limb()
     aia.draw_grid()
-    aia.draw_limb()
     plt.colorbar()
 
     plt.show()

@@ -12,6 +12,7 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
+from astropy.visualization import AsymmetricPercentileInterval
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
@@ -587,7 +588,7 @@ class GenericMap(NDData):
         if heliographic_latitude is None:
             if self._default_heliographic_latitude is None:
                 warnings.warn("Missing metadata for heliographic latitude: assuming Earth-based observer.",
-                                       SunpyUserWarning)
+                              SunpyUserWarning)
                 self._default_heliographic_latitude = get_sun_B0(self.date)
             heliographic_latitude = self._default_heliographic_latitude
 
@@ -787,7 +788,6 @@ class GenericMap(NDData):
             warnings.warn("SunPy Map does not support three dimensional data "
                           "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.",
                           SunpyUserWarning)
-
 
 # #### Data conversion routines #### #
     def world_to_pixel(self, coordinate, origin=0):
@@ -1417,7 +1417,7 @@ class GenericMap(NDData):
 # #### Visualization #### #
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg=15*u.deg, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1594,7 +1594,7 @@ class GenericMap(NDData):
 
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
-             colorbar=True, basic_plot=False, **matplot_args):
+             colorbar=True, **matplot_args):
         """
         Displays the map in a new figure.
 
@@ -1609,31 +1609,16 @@ class GenericMap(NDData):
             parallels and meridians.
         colorbar : bool
             Whether to display a colorbar next to the plot.
-        basic_plot : bool
-            If true, the data is plotted by itself at it's natural scale; no
-            title, labels, or axes are shown.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting.
         """
-
-        # Create a figure and add title and axes
-        figure = plt.figure(frameon=not basic_plot)
-
-        # Basic plot
-        if basic_plot:
-            axes = plt.Axes(figure, [0., 0., 1., 1.])
-            axes.set_axis_off()
-            figure.add_axes(axes)
-            matplot_args.update({'annotate': False, "_basic_plot": True})
-
-        # Normal plot
-        else:
-            axes = wcsaxes_compat.gca_wcs(self.wcs)
+        figure = plt.figure()
+        axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         im = self.plot(axes=axes, **matplot_args)
 
-        if colorbar and not basic_plot:
+        if colorbar:
             if draw_grid:
                 pad = 0.12  # Pad to compensate for ticks and axes labels
             else:
@@ -1654,22 +1639,31 @@ class GenericMap(NDData):
         figure.show()
 
     @toggle_pylab
-    def plot(self, annotate=True, axes=None, title=True, **imshow_kwargs):
+    @u.quantity_input
+    def plot(self, annotate=True, axes=None, title=True,
+             clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
 
         Parameters
         ----------
-        annotate : bool
-            If True, the data is plotted at it's natural scale; with
+        annotate : `bool`, optional
+            If `True`, the data is plotted at its natural scale; with
             title and axis labels.
 
         axes: `~matplotlib.axes` or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
-        **imshow_kwargs  : dict
+        title : `bool`, optional
+            If `True`, include the title.
+
+        clip_interval : two-element `~astropy.units.Quantity`, optional
+            If provided, the data will be clipped to the percentile interval bounded by the two
+            numbers.
+
+        **imshow_kwargs  : `dict`
             Any additional imshow arguments that should be used
             when plotting.
 
@@ -1685,24 +1679,18 @@ class GenericMap(NDData):
         >>> aia.draw_grid()   # doctest: +SKIP
 
         """
-
-        # extract hiddden kwarg
-        _basic_plot = imshow_kwargs.pop("_basic_plot", False)
-
         # Get current axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        if not _basic_plot:
-            # Check that the image is properly oriented
-            if (not wcsaxes_compat.is_wcsaxes(axes) and
-                    not np.array_equal(self.rotation_matrix, np.identity(2))):
-                warnings.warn("This map is not properly oriented. Plot axes may be incorrect.",
-                              SunpyUserWarning)
-
-            elif not wcsaxes_compat.is_wcsaxes(axes):
-                warnings.warn("WCSAxes not being used as the axes object for this plot."
-                              " Plots may have unexpected behaviour.",
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            warnings.warn("WCSAxes not being used as the axes object for this plot."
+                          " Plots may have unexpected behaviour. To fix this pass "
+                          "'projection=map' when creating the axes",
+                          SunpyUserWarning)
+            # Check if the image is properly oriented
+            if not np.array_equal(self.rotation_matrix, np.identity(2)):
+                warnings.warn("The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
                               SunpyUserWarning)
 
         # Normal plot
@@ -1731,6 +1719,16 @@ class GenericMap(NDData):
             y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units[1]).value)
             imshow_args.update({'extent': x_range + y_range})
         imshow_args.update(imshow_kwargs)
+
+        if clip_interval is not None:
+            if len(clip_interval) == 2:
+                clip_percentages = clip_interval.to('%').value
+                vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data)
+            else:
+                raise ValueError("Clip percentile interval must be specified as two numbers.")
+
+            imshow_args['vmin'] = vmin
+            imshow_args['vmax'] = vmax
 
         if self.mask is None:
             ret = axes.imshow(self.data, **imshow_args)

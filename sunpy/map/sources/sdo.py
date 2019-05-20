@@ -6,6 +6,14 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import matplotlib.pyplot as plt
 
+from astropy.coordinates import CartesianRepresentation, SkyCoord
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the incorrect name HeliocentricTrueEcliptic
+try:
+    from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize
 from astropy.visualization import AsinhStretch
 
@@ -28,6 +36,13 @@ class AIAMap(GenericMap):
     211 A (Fe XIV), 304 A (He II), 335 A (Fe XVI). One telescope observes
     in the visible 1600 A (C IV) and the nearby continuun (1700 A).
 
+    Notes
+    -----
+    Observer location: The standard AIA FITS header provides the spacecraft location in multiple
+    coordinate systems, including Heliocentric Aries Ecliptic (HAE) and Heliographic Stonyhurst
+    (HGS).  SunPy uses the provided HAE coordinates due to accuracy concerns with the provided
+    HGS coordinates, but other software packages may make different choices.
+
     References
     ----------
     * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`_
@@ -46,6 +61,45 @@ class AIAMap(GenericMap):
         self._nickname = self.detector
         self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
+
+    @property
+    def observer_coordinate(self):
+        """
+        The Heliographic Stonyhurst Coordinate of the observer.
+
+        This coordinate is determined using the Heliocentric Aries Ecliptic (HAE) coordinates
+        in the header.
+        """
+        vector = CartesianRepresentation(self.meta['haex_obs'],
+                                         self.meta['haey_obs'],
+                                         self.meta['haez_obs'])
+        coord = SkyCoord(vector * u.m, frame=HeliocentricMeanEcliptic, obstime=self.date)
+        return coord.heliographic_stonyhurst
+
+    @property
+    def heliographic_latitude(self):
+        """Heliographic latitude."""
+        return self.observer_coordinate.lat
+
+    @property
+    def heliographic_longitude(self):
+        """Heliographic longitude."""
+        return self.observer_coordinate.lon
+
+    @property
+    def carrington_latitude(self):
+        """Carrington latitude."""
+        return self.observer_coordinate.heliographic_carrington.lat
+
+    @property
+    def carrington_longitude(self):
+        """Carrington longitude."""
+        return self.observer_coordinate.heliographic_carrington.lon
+
+    @property
+    def dsun(self):
+        """The observer distance from the Sun."""
+        return self.observer_coordinate.radius.to('m')
 
     @property
     def observatory(self):
