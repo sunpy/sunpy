@@ -1,0 +1,4 @@
+`sunpy.map.GenericMap` now checks for a complete observer location rather than
+individually defaulting coordinates (lat, lon, distance) to Earth position. If
+any one of the three coordinates is missing from the header the observer will
+be defaulted to Earth and a warning raised.
