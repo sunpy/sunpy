@@ -20,11 +20,6 @@ try:
     from astropy.coordinates import HeliocentricMeanEcliptic
 except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
-try:
-    from astroquery.jplhorizons import Horizons
-    ASTROQUERY_PRESENT = True
-except ImportError:
-    ASTROQUERY_PRESENT = False
 
 from sunpy.time import parse_time
 from sunpy import log
@@ -311,9 +306,8 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     """
     obstime = parse_time(time)
 
-    if not ASTROQUERY_PRESENT:
-        raise ImportError("This function requires the Astroquery package to be installed.")
-
+    # Import here so that astroquery is not a module-level dependency
+    from astroquery.jplhorizons import Horizons
     query = Horizons(id=body, id_type=id_type,
                      location='500@10',      # Heliocentric (mean ecliptic)
                      epochs=obstime.tdb.jd)  # Time must be provided in JD TDB
