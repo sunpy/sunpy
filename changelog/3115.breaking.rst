@@ -1,0 +1,1 @@
+`sunpy.map.GenericMap` will no longer use the key `solar_b0` as a value for heliographic latitude.
