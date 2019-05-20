@@ -17,13 +17,13 @@ __all__ = ['meta_keywords', 'make_fitswcs_header']
 
 def meta_keywords(*key):
     """
-    Prints the accepted metadata keywords that are used when
-    creating a `sunpy.map.Map`.
+    Returns the accepted metadata keywords that are used when
+    creating a `sunpy.map.Map` in the form of a `dict`
 
     Examples
     --------
 
-    * Print all accepted meta keywords that are used in a `sunpy.map.GenericMap` header:
+    * Returns a dictionary of all accepted meta keywords that are used in a `sunpy.map.GenericMap` header:
         >>> from sunpy import map
         >>> map.meta_keywords()
         cunit1  :  Units of the coordinate increments along naxis1 e.g. arcsec **required
@@ -31,22 +31,8 @@ def meta_keywords(*key):
         crval1  :  Coordinate value at reference point on naxis1 **required
         crval2  :  Coordinate value at reference point on naxis2 **required
         ...
-
-    * Print information about certain meta keyword:
-        >>> map.meta_keywords('ctype1')
-        ctype1  :  Coordinate type projection along naxis1 of data e.g. HPLT-TAN
-
     """
-    if key:
-        for k in key:
-            if k in map_meta_keywords.keys():
-                print(k, " : ", map_meta_keywords[k])
-            else:
-                print(k, " is not a meta keyword required for sunpy.map.Map \n The map meta keywords are : \n", list(map_meta_keywords.keys()))
-        return
-
-    for k in map_meta_keywords:
-        print(k, " : ", map_meta_keywords[k])
+    return map_meta_keywords
 
 
 @u.quantity_input
@@ -71,9 +57,9 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
         Defaults to ``([1., 1.] arcsec/pixel)``.
     **kwargs:
         Additional arguments that will be put into the metadict header. These must be in the
-        list of map meta keywords. The keyword arguments for the instrument meta can also be given 
+        list of map meta keywords. The keyword arguments for the instrument meta can also be given
         in certain forms which will be translated to fits standard:
-        * ``instrument`` 
+        * ``instrument``
         * ``telescope``
         * ``observatory``
         * ``wavelength``
