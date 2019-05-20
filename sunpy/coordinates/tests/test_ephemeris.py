@@ -116,6 +116,9 @@ def test_get_sun_orientation():
 
 @pytest.mark.remote_data
 def test_get_horizons_coord():
+    # get_horizons_coord() depends on astroquery
+    astroquery = pytest.importorskip("astroquery")
+
     # Validate against published values from the Astronomical Almanac (2013)
     e1 = get_horizons_coord('Geocenter', '2013-Jan-01')
     assert_quantity_allclose((e1.lon + 1*u.deg) % (360*u.deg), 1*u.deg, atol=5e-6*u.deg)
@@ -126,3 +129,14 @@ def test_get_horizons_coord():
     assert_quantity_allclose((e2.lon + 1*u.deg) % (360*u.deg), 1*u.deg, atol=5e-6*u.deg)
     assert_quantity_allclose(e2.lat, 7.19*u.deg, atol=5e-3*u.deg)
     assert_quantity_allclose(e2.radius, 1.0092561*u.AU, atol=5e-7*u.AU)
+
+
+@pytest.mark.remote_data
+def test_consistency_with_horizons():
+    # get_horizons_coord() depends on astroquery
+    astroquery = pytest.importorskip("astroquery")
+
+    # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
+    e1 = get_earth()
+    e2 = get_horizons_coord('Geocenter')
+    assert_quantity_allclose(e1.separation_3d(e2), 0*u.km, atol=25*u.km)
