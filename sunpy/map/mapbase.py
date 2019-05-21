@@ -28,7 +28,8 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.transform import affine_transform
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
-from sunpy.coordinates import get_sun_B0, get_sun_L0, get_sunearth_distance
+from sunpy.coordinates import get_earth
+from sunpy.util import expand_list
 from sunpy.util.exceptions import SunpyUserWarning
 
 from astropy.nddata import NDData
@@ -422,20 +423,6 @@ class GenericMap(NDData):
         return self.meta.get('detector', "")
 
     @property
-    def dsun(self):
-        """The observer distance from the Sun."""
-        dsun = self.meta.get('dsun_obs', None)
-
-        if dsun is None:
-            if self._default_dsun is None:
-                warnings.warn("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance.",
-                              SunpyUserWarning)
-                self._default_dsun = get_sunearth_distance(self.date).to(u.m)
-            return self._default_dsun
-
-        return u.Quantity(dsun, 'm')
-
-    @property
     def exposure_time(self):
         """Exposure time of the image in seconds."""
         return self.meta.get('exptime', 0.0) * u.s
@@ -562,71 +549,75 @@ class GenericMap(NDData):
                            self.meta.get('ctype2', 'HPLT-   '))
 
     @property
-    def carrington_longitude(self):
-        """Carrington longitude (crln_obs)."""
-        carrington_longitude = self.meta.get('crln_obs', None)
+    def _supported_observer_coordinates(self):
+        """
+        A list of supported coordinate systems.
 
-        if carrington_longitude is None:
-            if self._default_carrington_longitude is None:
-                warnings.warn("Missing metadata for Carrington longitude: assuming Earth-based observer.",
-                              SunpyUserWarning)
-                self._default_carrington_longitude = get_sun_L0(self.date)
-            carrington_longitude = self._default_carrington_longitude
+        This is a list so it can easily maintain a strict order. The list of
+        two element tuples, the first item in the tuple is the keys that need
+        to be in the header to use this coordinate system and the second is the
+        kwargs to SkyCoord.
+        """
+        return [(('hgln_obs', 'hglt_obs', 'dsun_obs'), {'lon': self.meta.get('hgln_obs'),
+                                                        'lat': self.meta.get('hglt_obs'),
+                                                        'radius': self.meta.get('dsun_obs'),
+                                                        'unit': (u.deg, u.deg, u.m),
+                                                        'frame': "heliographic_stonyhurst"}),
+                (('crln_obs', 'crlt_obs', 'dsun_obs'), {'lon': self.meta.get('crln_obs'),
+                                                        'lat': self.meta.get('crlt_obs'),
+                                                        'radius': self.meta.get('dsun_obs'),
+                                                        'unit': (u.deg, u.deg, u.m),
+                                                        'frame': "heliographic_carrington"}),]
 
-        if isinstance(carrington_longitude, str):
-            carrington_longitude = float(carrington_longitude)
-
-        return u.Quantity(carrington_longitude, 'deg')
-
-    @property
-    def heliographic_latitude(self):
-        """Heliographic latitude."""
-        heliographic_latitude = self.meta.get('hglt_obs',
-                                              self.meta.get('crlt_obs',
-                                                            self.meta.get('solar_b0', None)))
-
-        if heliographic_latitude is None:
-            if self._default_heliographic_latitude is None:
-                warnings.warn("Missing metadata for heliographic latitude: assuming Earth-based observer.",
-                              SunpyUserWarning)
-                self._default_heliographic_latitude = get_sun_B0(self.date)
-            heliographic_latitude = self._default_heliographic_latitude
-
-        if isinstance(heliographic_latitude, str):
-            heliographic_latitude = float(heliographic_latitude)
-
-        return u.Quantity(heliographic_latitude, 'deg')
-
-    @property
-    def heliographic_longitude(self):
-        """Heliographic longitude."""
-        heliographic_longitude = self.meta.get('hgln_obs', None)
-
-        if heliographic_longitude is None:
-            if self.meta.get('crln_obs', None) is not None:
-                heliographic_longitude = self.meta['crln_obs'] * u.deg - get_sun_L0(self.date)
-            else:
-                if self._default_heliographic_longitude is None:
-                    warnings.warn("Missing metadata for heliographic longitude: assuming longitude of 0 degrees.",
-                                  SunpyUserWarning)
-                    self._default_heliographic_longitude = 0
-                heliographic_longitude = self._default_heliographic_longitude
-
-        if isinstance(heliographic_longitude, str):
-            heliographic_longitude = float(heliographic_longitude)
-
-        return u.Quantity(heliographic_longitude, 'deg')
+    def _remove_existing_observer_location(self):
+        """
+        Remove all keys that this map might use for observer location.
+        """
+        all_keys = expand_list([e[0] for e in self._supported_observer_coordinates])
+        for key in all_keys:
+            self.meta.pop(key)
 
     @property
     def observer_coordinate(self):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
         """
-        return SkyCoord(lat=self.heliographic_latitude,
-                        lon=self.heliographic_longitude,
-                        radius=self.dsun,
-                        obstime=self.date,
-                        frame='heliographic_stonyhurst')
+        for keys, kwargs in self._supported_observer_coordinates:
+            if all([k in self.meta for k in keys]):
+                return SkyCoord(obstime=self.date, **kwargs).heliographic_stonyhurst
+
+        all_keys = [str(e[0]) for e in self._supported_observer_coordinates]
+        all_keys = '\n'.join(all_keys)
+        warning_message = ("Missing metadata for observer: assuming Earth-based observer."
+                           "The following sets of keys were checked:\n" + all_keys)
+        warnings.warn(warning_message, SunpyUserWarning)
+
+        return get_earth(self.date)
+
+    @property
+    def heliographic_latitude(self):
+        """Heliographic latitude."""
+        return self.observer_coordinate.lat
+
+    @property
+    def heliographic_longitude(self):
+        """Heliographic longitude."""
+        return self.observer_coordinate.lon
+
+    @property
+    def carrington_latitude(self):
+        """Carrington latitude."""
+        return self.observer_coordinate.heliographic_carrington.lat
+
+    @property
+    def carrington_longitude(self):
+        """Carrington longitude."""
+        return self.observer_coordinate.heliographic_carrington.lon
+
+    @property
+    def dsun(self):
+        """The observer distance from the Sun."""
+        return self.observer_coordinate.radius.to('m')
 
     @property
     def _reference_longitude(self):
