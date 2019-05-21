@@ -162,7 +162,7 @@ def test_detector(generic_map):
 
 
 def test_dsun(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for Sun-spacecraft separation'):
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
         assert generic_map.dsun == sunpy.coordinates.get_sunearth_distance(generic_map.date).to(u.m)
 
 
@@ -180,17 +180,17 @@ def test_coordinate_system(generic_map):
 
 
 def test_carrington_longitude(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for Carrington longitude'):
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
         assert generic_map.carrington_longitude == sunpy.coordinates.get_sun_L0(generic_map.date)
 
 
 def test_heliographic_latitude(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for heliographic latitude'):
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
         assert generic_map.heliographic_latitude == sunpy.coordinates.get_sun_B0(generic_map.date)
 
 
 def test_heliographic_longitude(generic_map):
-    with pytest.warns(SunpyUserWarning, match='Missing metadata for heliographic longitude'):
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
         assert generic_map.heliographic_longitude == 0.
 
 
@@ -209,6 +209,13 @@ def test_coordinate_frame(aia171_test_map):
 
 def test_heliographic_longitude_crln(hmi_test_map):
     assert hmi_test_map.heliographic_longitude == hmi_test_map.carrington_longitude - sunpy.coordinates.get_sun_L0(hmi_test_map.date)
+
+
+def test_remove_observers(aia171_test_map):
+    aia171_test_map._remove_existing_observer_location()
+    with pytest.warns(SunpyUserWarning,
+                      match='Missing metadata for observer: assuming Earth-based observer.*'):
+        aia171_test_map.observer_coordinate
 
 
 # ==============================================================================
@@ -697,8 +704,8 @@ def test_missing_metadata_warnings():
         header['cunit2'] = 'arcsec'
         array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
-    # There should be 4 warnings for missing metadata
-    assert len([w for w in record if 'Missing metadata' in str(w)]) == 4
+    # There should be 2 warnings for missing metadata (obstime and observer location)
+    assert len([w for w in record if w.category is SunpyUserWarning]) == 2
 
 
 def test_fits_header(aia171_test_map):
