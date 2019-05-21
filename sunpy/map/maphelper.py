@@ -24,13 +24,11 @@ def meta_keywords(*key):
     --------
 
     * Returns a dictionary of all accepted meta keywords that are used in a `sunpy.map.GenericMap` header:
-        >>> from sunpy import map
-        >>> map.meta_keywords()
-        cunit1  :  Units of the coordinate increments along naxis1 e.g. arcsec **required
-        cunit2  :  Units of the coordinate increments along naxis2 e.g. arcsec **required
-        crval1  :  Coordinate value at reference point on naxis1 **required
-        crval2  :  Coordinate value at reference point on naxis2 **required
-        ...
+        >>> import sunpy.map
+        >>> sunpy.map.meta_keywords()
+        {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required', 
+         'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
+         ...
     """
     return map_meta_keywords
 
