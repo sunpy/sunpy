@@ -3,6 +3,7 @@ import warnings
 import numpy as np
 
 import astropy.units as u
+import astropy.wcs
 from astropy.coordinates import SkyCoord
 
 from sunpy.coordinates import frames
@@ -121,7 +122,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     meta_dict = MetaDict(meta_wcs)
 
     for key in kwargs:
-        if key in map_meta_keywords:
+        if key in _map_meta_keywords:
             meta_dict[key] = kwargs[key]
 
     return meta_dict
