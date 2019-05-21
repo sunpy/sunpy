@@ -6,7 +6,7 @@ import sunpy.map
 from astropy.wcs import WCS
 
 from sunpy.coordinates.frames import Helioprojective, Heliocentric, HeliographicStonyhurst, HeliographicCarrington
-from ..wcs_utils import solar_wcs_frame_mapping
+from ..wcs_utils import solar_wcs_frame_mapping, solar_frame_to_wcs_mapping
 
 
 def test_hpc():
@@ -104,3 +104,46 @@ def test_wcs_extras():
     assert result.observer.lon.value == 0
     assert result.observer.radius.value == 10
     assert result.rsun.value == header['rsun_ref']
+
+
+def test_hpc_frame_to_wcs():
+    frame = Helioprojective(obstime='2013-10-28')
+    result_wcs = solar_frame_to_wcs_mapping(frame)
+
+    assert isinstance(result_wcs, WCS)
+
+    assert result_wcs.wcs.ctype[0] == 'HPLN-TAN'
+    assert result_wcs.wcs.cunit[0] == 'arcsec'
+    assert result_wcs.wcs.dateobs == '2013-10-28T00:00:00.000'
+    assert isinstance(result_wcs.heliographic_observer, HeliographicStonyhurst)
+    assert result_wcs.rsun == frame.rsun
+
+
+def test_hgs_frame_to_wcs():
+    frame = HeliographicStonyhurst(obstime='2013-10-28')
+    result_wcs = solar_frame_to_wcs_mapping(frame)
+
+    assert isinstance(result_wcs, WCS)
+
+    assert result_wcs.wcs.ctype[0] == 'HGLN-TAN'
+    assert result_wcs.wcs.cunit[0] == 'deg'
+    assert result_wcs.wcs.dateobs == '2013-10-28T00:00:00.000'
+
+
+def test_hgc_frame_to_wcs():
+    frame = HeliographicCarrington(obstime='2013-10-28')
+    result_wcs = solar_frame_to_wcs_mapping(frame)
+
+    assert isinstance(result_wcs, WCS)
+
+    assert result_wcs.wcs.ctype[0] == 'CRLN-TAN'
+    assert result_wcs.wcs.cunit[0] == 'deg'
+
+
+def test_hcc_frame_to_wcs():
+    frame = Heliocentric(obstime='2013-10-28')
+    result_wcs = solar_frame_to_wcs_mapping(frame)
+
+    assert isinstance(result_wcs, WCS)
+
+    assert result_wcs.wcs.ctype[0] == 'SOLX'
