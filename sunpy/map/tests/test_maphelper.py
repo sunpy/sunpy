@@ -44,26 +44,6 @@ def test_metakeywords():
     assert isinstance(meta, dict)
 
 
-# def test_get_observer_meta(hpc_test_header):
-#     result = sunpy.map.maphelper._get_observer_meta(hpc_test_header.frame)
-#     assert isinstance(result, dict)
-#     assert result['dsun_obs'] == hpc_test_header.frame.observer.radius.to_value(u.m)
-#     assert result['hgln_obs'] == hpc_test_header.frame.observer.lon.to_value(u.deg)
-#     assert result['rsun_ref'] == hpc_test_header.frame.rsun.to_value()
-
-
-# def test_get_instrument_meta():
-#     result = sunpy.map.maphelper._get_instrument_meta(instrument = 'test', exposure = 2, telescope = 'test2')
-#     assert isinstance(result, dict)
-#     assert result['instrume'] == 'test'
-#     assert result['exptime'] == 2
-#     assert result['telescop'] == 'test2'
-
-#     # try a keyword that is not understood
-#     result = sunpy.map.maphelper._get_instrument_meta(nonkeyword = 'test')
-#     assert result == {}
-
-
 def test_make_fits_header(map_data, hpc_test_header, hgc_test_header, hgs_test_header, hcc_test_header, hpc_test_header_notime):
 
     # Check that different coordinate frames return header MetaDict or not in the case of HCC
