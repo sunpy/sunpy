@@ -11,6 +11,7 @@ from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
 from sunpy.map import (all_coordinates_from_map, contains_full_disk, coordinate_is_on_solar_disk,
                        is_all_off_disk, is_all_on_disk, map_edges, on_disk_bounding_coordinates)
 from sunpy.time import parse_time
+from sunpy.util import expand_list
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
 
@@ -467,8 +468,6 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     # Only this function needs scikit image
     from skimage import transform
     from sunpy.image.util import to_norm, un_norm
-    # Import map here for performance reasons.
-    import sunpy.map
 
     # Check whether the input contains the full disk of the Sun
     is_sub_full_disk = not contains_full_disk(smap)
@@ -523,7 +522,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         padded_meta['crpix2'] += deltay
 
         # Create the padded map that will be used to create the rotated map.
-        smap = sunpy.map.Map(padded_data, padded_meta)
+        smap = smap._new_instance(padded_data, padded_meta)
 
     # Check for masked maps
     if smap.mask is not None:
@@ -548,6 +547,12 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     out_meta['date-obs'] = new_observer.obstime.strftime("%Y-%m-%dT%H:%M:%S.%f")
 
     # Need to update the observer location for the output map.
+    # Remove all the possible observer keys
+    all_keys = expand_list([e[0] for e in smap._supported_observer_coordinates])
+    for key in all_keys:
+        out_meta.pop(key)
+
+    # Add a new HGS observer
     out_meta['hglt_obs'] = new_observer.lat.value
     out_meta['hgln_obs'] = new_observer.lon.value
     out_meta['dsun_obs'] = new_observer.radius.to(u.m).value
@@ -561,6 +566,6 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         out_meta['crval2'] = center_rotated.Ty.value
         out_meta['crpix1'] = 1 + smap.data.shape[1]/2.0 + ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
         out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
-        return sunpy.map.Map(out_data, out_meta).submap(rotated_bl, rotated_tr)
+        return smap._new_instance(out_data, out_meta).submap(rotated_bl, rotated_tr)
     else:
-        return sunpy.map.Map(out_data, out_meta)
+        return smap._new_instance(out_data, out_meta)
