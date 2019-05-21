@@ -225,17 +225,7 @@ Data sources that do not provide FITS files need to have a ``source`` keyword to
 Differential rotation of maps
 =============================
 
-Maps can now be transformed using solar differential rates.
-
-.. plot::
-    :include-source:
-
-    import astropy.units as u
-    import sunpy.map
-    import sunpy.data.sample
-    from sunpy.physics.differential_rotation import diffrot_map
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    dr_map = diffrot_map(aia_map, dt=-4*u.day)
+Maps can now be transformed using solar differential rates using ``from sunpy.physics.differential_rotation import diffrot_map``.
 
 .. _whatsnew-0.8-renamed-removed:
 
