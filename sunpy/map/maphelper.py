@@ -1,15 +1,18 @@
-import sunpy.map
-from sunpy.util import MetaDict
-from astropy.coordinates import SkyCoord
+import random
+import warnings
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+import astropy
 from astropy import units as u
+from astropy.coordinates import SkyCoord
+
+import sunpy.map
+from sunpy.coordinates import frames
 from sunpy.sun import constants as con
 from sunpy.time import parse_time
-import numpy as np
-import random
-import matplotlib.pyplot as plt
-import astropy
-from sunpy.coordinates import frames
-import warnings
+from sunpy.util import MetaDict
 from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['meta_keywords', 'make_fitswcs_header']
@@ -26,7 +29,7 @@ def meta_keywords(*key):
     * Returns a dictionary of all accepted meta keywords that are used in a `sunpy.map.GenericMap` header:
         >>> import sunpy.map
         >>> sunpy.map.meta_keywords()
-        {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required', 
+        {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
          'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
          ...
     """
@@ -34,10 +37,12 @@ def meta_keywords(*key):
 
 
 @u.quantity_input
-def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: u.arcsec/u.pix = None, **kwargs):
+def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
+                        scale: u.arcsec/u.pix = None, **kwargs):
     """
-    Function to create a `sunpy.util.meta.MetaDict` from a coordinate object (`astropy.coordinates.SkyCoord`
-    or a coordinate frame) that is required to create a `sunpy.map.Map`
+    Function to create a `sunpy.util.meta.MetaDict` from a coordinate object
+    (`astropy.coordinates.SkyCoord` or a coordinate frame) that is required to
+    create a `sunpy.map.Map`
 
     Parameters
     ----------
@@ -66,7 +71,8 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
     Returns
     -------
     `~sunpy.util.MetaDict`
-        A `sunpy.util.MetaDict` that contains the header information required for making a `sunpy.map.Map`
+        A `sunpy.util.MetaDict` that contains the header information required
+        for making a `sunpy.map.GenericMap`
 
     Examples
     --------
@@ -77,7 +83,8 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
     >>> import numpy as np
 
     >>> data = np.random.rand(1024, 1024)
-    >>> my_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime="2017-08-01", observer = 'earth', frame=frames.Helioprojective)
+    >>> my_coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime="2017-08-01",
+    ...                     observer = 'earth', frame=frames.Helioprojective)
     >>> my_header = sunpy.map.make_fitswcs_header(data, my_coord)
     >>> my_map = sunpy.map.Map(data, my_header)
     """
@@ -96,7 +103,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
 
     meta_wcs = _get_wcs_meta(coordinate)
 
-    if hasattr(coordinate, "observer"):
+    if hasattr(coordinate, "observer") and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
         meta_observer = _get_observer_meta(coordinate)
         meta_wcs.update(meta_observer)
 
@@ -108,11 +115,14 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None, scale: 
     if scale is None:
         scale = u.Quantity([1.0*u.arcsec, 1.0*u.arcsec])
 
-    meta_wcs['crval1'], meta_wcs['crval2'] = coordinate.spherical.lat.to_value(meta_wcs['cunit1']), coordinate.spherical.lon.to_value(meta_wcs['cunit2'])
+    meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lat.to_value(meta_wcs['cunit1']),
+                                              coordinate.spherical.lon.to_value(meta_wcs['cunit2']))
 
-    meta_wcs['crpix1'], meta_wcs['crpix2'] = reference_pixel[0].to_value(u.pixel), reference_pixel[1].to_value(u.pixel)
+    meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel),
+                                              reference_pixel[1].to_value(u.pixel))
 
-    meta_wcs['cdelt1'], meta_wcs['cdelt2'] = scale[0]*meta_wcs['cunit1']/u.pixel, scale[1]*meta_wcs['cunit2']/u.pixel
+    meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0]*meta_wcs['cunit1']/u.pixel,
+                                              scale[1]*meta_wcs['cunit2']/u.pixel)
 
     meta_dict = MetaDict(meta_wcs)
 
@@ -170,10 +180,11 @@ def _get_observer_meta(coordinate):
     """
     coord_meta = {}
 
-    coord_meta['hgln_obs'], coord_meta['hglt_obs'] = coordinate.observer.lon.to_value(u.deg), coordinate.observer.lat.to_value(u.deg)
+    coord_meta['hgln_obs'] = coordinate.observer.lon.to_value(u.deg)
+    coord_meta['hglt_obs'] = coordinate.observer.lat.to_value(u.deg)
     coord_meta['dsun_obs'] = coordinate.observer.radius.to_value(u.m)
     coord_meta['rsun_ref'] = coordinate.rsun.to_value()
-    coord_meta['rsun_obs'] = np.arctan((coordinate.rsun/coordinate.observer.radius).decompose()).to_value(u.arcsec)
+    coord_meta['rsun_obs'] = np.arctan(coordinate.rsun / coordinate.observer.radius).to_value(u.arcsec)
 
     return coord_meta
 
@@ -184,7 +195,8 @@ def _get_instrument_meta(**kwargs):
     """
     coord = {}
 
-    conversion = {'instrument': 'instrume', 'telescope': 'telescop', 'observatory': 'obsrvtry', 'wavelength': 'wavelnth', 'exposure': 'exptime'}
+    conversion = {'instrument': 'instrume', 'telescope': 'telescop',
+                  'observatory': 'obsrvtry', 'wavelength': 'wavelnth', 'exposure': 'exptime'}
 
     kwargs_temp = kwargs.copy()
     for key in kwargs_temp:
