@@ -87,7 +87,6 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
             xcoord = 'CRLN' + '-' + projection
             ycoord = 'CRLT' + '-' + projection
             wcs.wcs.cunit = ['deg', 'deg']
-
     else:
         return None
 
