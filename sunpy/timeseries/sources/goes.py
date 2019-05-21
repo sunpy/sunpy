@@ -109,6 +109,8 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
 
+        return figure
+
     # TODO: is this part of the DL pipeline? If so delete.
     @staticmethod
     def _get_goes_sat_num(start, end):
