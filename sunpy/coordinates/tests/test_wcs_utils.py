@@ -136,8 +136,8 @@ def test_hgc_frame_to_wcs():
 
     assert isinstance(result_wcs, WCS)
 
-    # assert result_wcs.wcs.ctype[0] == 'CRLN-TAN'
-    # assert result_wcs.wcs.cunit[0] == 'deg'
+    assert result_wcs.wcs.ctype[0] == 'CRLN-TAN'
+    assert result_wcs.wcs.cunit[0] == 'deg'
 
 
 def test_hcc_frame_to_wcs():
