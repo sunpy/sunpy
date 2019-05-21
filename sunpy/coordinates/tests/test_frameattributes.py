@@ -92,6 +92,16 @@ def test_string_coord():
     assert coord.obstime == parse_time(obstime)
 
 
+def test_none_observer_coord():
+    obstime = "2011-01-01"
+
+    obs = Helioprojective(observer="none", obstime=obstime).observer
+    assert obs is None
+
+    obs = Helioprojective(observer="none", obstime=None).observer
+    assert obs is None
+
+
 def test_coord_get():
 
     # Test default (instance=None)
