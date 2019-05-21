@@ -1,5 +1,5 @@
-Sunpy 1.0.0.dev1270+g996e6e26b (2019-05-21)
-===========================================
+Sunpy 1.0.0.RC1 (2019-05-21)
+============================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -132,7 +132,7 @@ Bug Fixes
 - Fix generation of the coordinate transformation graph with Astropy 3.1.dev (`#2636 <https://github.com/sunpy/sunpy/pull/2636>`__)
 - Prevent helioviewer from erroring when downloading file to a directory that
   does not exist. It will now create the directory when required. (`#2642 <https://github.com/sunpy/sunpy/pull/2642>`__)
-- Fix transformations into/out of Heliographic Stonyhurst frame when 
+- Fix transformations into/out of Heliographic Stonyhurst frame when
   the coordinate representation is Cartesian. (`#2646 <https://github.com/sunpy/sunpy/pull/2646>`__)
 - Running the figure tests with ``setup.py test`` now saves the figures and the hashes to the same directory as setup.py. (`#2658 <https://github.com/sunpy/sunpy/pull/2658>`__)
 - ``sunpy.instr.fermi.met_to_utc`` now returns the correct utc time which takes into account the leap seconds that have passed. (`#2679 <https://github.com/sunpy/sunpy/pull/2679>`__)
