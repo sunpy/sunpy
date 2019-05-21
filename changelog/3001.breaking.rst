@@ -1,2 +1,0 @@
-Updated the solar values in `sunpy.sun.constants` to IAU 2015 values.
-Renamed `eccentricity_sunearth_orbit` to `eccentricity_sun_earth_orbit`.

@@ -1,1 +1,0 @@
-Use of ``textwrap`` to keep source code indented when multiline texts is used

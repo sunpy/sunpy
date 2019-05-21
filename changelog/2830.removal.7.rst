@@ -1,2 +1,0 @@
-Removed `GenericClient.query` in favour of `GenericClient.search`
-

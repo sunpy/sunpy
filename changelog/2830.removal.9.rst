@@ -1,2 +1,0 @@
-Removed `JSOCClient.check_request` in favour of `request.status`
-

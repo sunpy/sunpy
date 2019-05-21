@@ -1,2 +1,0 @@
-The default style for Map plots have changed to reflect the changes in Astropy
-3.2.

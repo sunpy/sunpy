@@ -1,2 +1,0 @@
-Removed `sunpy.cm.get_cmap` in favour of `plt.get_cmap`
-

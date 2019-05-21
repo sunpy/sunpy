@@ -1,1 +1,0 @@
-Fixes the calculation of the solar rotation of coordinates and the differential rotation of `sunpy.map.GenericMap`.

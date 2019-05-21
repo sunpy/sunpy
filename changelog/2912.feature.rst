@@ -1,1 +1,0 @@
-Add a new WSDL URL and port to support SunPy use of VSO instance at SDAC.

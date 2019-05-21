@@ -1,1 +1,0 @@
-Remove the usage of six and all ``__future__`` imports
