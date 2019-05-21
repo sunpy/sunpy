@@ -1,2 +1,0 @@
-HEKClient search method now returns table instead of list of dict
-

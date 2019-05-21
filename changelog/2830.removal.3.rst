@@ -1,2 +1,0 @@
-Removed `database.download` in favour of `database.fetch`
-

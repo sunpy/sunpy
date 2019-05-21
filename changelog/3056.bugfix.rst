@@ -1,1 +1,0 @@
-`~sunpy.map.sources.AIAMap` now uses the provided HAE coordinates instead of the provided HGS coordinates to determine the observer location.

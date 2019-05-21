@@ -1,1 +1,0 @@
-Fix bug in `sunpy.net.hek` which raised and error if a search returned zero results, now returns an empty `sunpy.net.hek.HEKTable`.

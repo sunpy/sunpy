@@ -1,1 +1,0 @@
-Removed `julian_day`, `julian_centuries`, `day_of_year`, `break_time`, `get_day`.
