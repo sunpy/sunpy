@@ -78,15 +78,16 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
         elif isinstance(frame, Heliocentric):
             xcoord = 'SOLX'
             ycoord = 'SOLY'
-            wcs.wcs.cunit = ['arcsec', 'arcsec']
-        elif isinstance(frame, HeliographicStonyhurst):
-            xcoord = 'HGLN' + '-' + projection
-            ycoord = 'HGLT' + '-' + projection
             wcs.wcs.cunit = ['deg', 'deg']
         elif isinstance(frame, HeliographicCarrington):
             xcoord = 'CRLN' + '-' + projection
             ycoord = 'CRLT' + '-' + projection
             wcs.wcs.cunit = ['deg', 'deg']
+        elif isinstance(frame, HeliographicStonyhurst):
+            xcoord = 'HGLN' + '-' + projection
+            ycoord = 'HGLT' + '-' + projection
+            wcs.wcs.cunit = ['deg', 'deg']
+
     else:
         return None
 
