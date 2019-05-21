@@ -4,16 +4,13 @@ from copy import deepcopy
 import numpy as np
 
 from astropy import units as u
+from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, get_body
 from astropy.time import TimeDelta
-from astropy.coordinates import SkyCoord, Longitude, BaseCoordinateFrame, get_body
 
+from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
+from sunpy.map import (all_coordinates_from_map, contains_full_disk, coordinate_is_on_solar_disk,
+                       is_all_off_disk, is_all_on_disk, map_edges, on_disk_bounding_coordinates)
 from sunpy.time import parse_time
-from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
-from sunpy.map import (all_coordinates_from_map, is_all_off_disk,
-                       coordinate_is_on_solar_disk, contains_full_disk,
-                       is_all_on_disk, on_disk_bounding_coordinates,
-                       map_edges)
-
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'differential_rotate']
 
