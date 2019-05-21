@@ -63,43 +63,14 @@ class AIAMap(GenericMap):
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
 
     @property
-    def observer_coordinate(self):
-        """
-        The Heliographic Stonyhurst Coordinate of the observer.
-
-        This coordinate is determined using the Heliocentric Aries Ecliptic (HAE) coordinates
-        in the header.
-        """
-        vector = CartesianRepresentation(self.meta['haex_obs'],
-                                         self.meta['haey_obs'],
-                                         self.meta['haez_obs'])
-        coord = SkyCoord(vector * u.m, frame=HeliocentricMeanEcliptic, obstime=self.date)
-        return coord.heliographic_stonyhurst
-
-    @property
-    def heliographic_latitude(self):
-        """Heliographic latitude."""
-        return self.observer_coordinate.lat
-
-    @property
-    def heliographic_longitude(self):
-        """Heliographic longitude."""
-        return self.observer_coordinate.lon
-
-    @property
-    def carrington_latitude(self):
-        """Carrington latitude."""
-        return self.observer_coordinate.heliographic_carrington.lat
-
-    @property
-    def carrington_longitude(self):
-        """Carrington longitude."""
-        return self.observer_coordinate.heliographic_carrington.lon
-
-    @property
-    def dsun(self):
-        """The observer distance from the Sun."""
-        return self.observer_coordinate.radius.to('m')
+    def _supported_observer_coordinates(self):
+        return [(('haex_obs', 'haey_obs', 'haez_obs'), {'x': self.meta.get('haex_obs'),
+                                                        'y': self.meta.get('haey_obs'),
+                                                        'z': self.meta.get('haez_obs'),
+                                                        'unit': u.m,
+                                                        'representation': CartesianRepresentation,
+                                                        'frame': HeliocentricMeanEcliptic})
+        ] + super()._supported_observer_coordinates
 
     @property
     def observatory(self):
