@@ -84,7 +84,8 @@ m.draw_rectangle(aia_bottom_left, aia_width, aia_height)
 ###############################################################################
 # Create a submap of this area
 subaia = maps['AIA'].submap(aia_bottom_left, aia_top_right)
-subaia.peek()
+fig = plt.figure()
+subaia.plot()
 
 ###############################################################################
 # We now want to crop out this same area on the STEREO EUVI image. First, we
@@ -125,7 +126,8 @@ for i, (m, coord) in enumerate(zip([maps['EUVI'], maps['AIA']],
 ###############################################################################
 # We can now zoom in on the region in the EUVI image:
 subeuvi = maps['EUVI'].submap(hpc_B[0], hpc_B[3])
-subeuvi.peek()
+fig = plt.figure()
+subeuvi.plot()
 
 ###############################################################################
 # Putting them together:
@@ -133,3 +135,5 @@ fig = plt.figure(figsize=(15, 5))
 for i, m in enumerate((subeuvi, subaia)):
     ax = fig.add_subplot(1, 2, i+1, projection=m.wcs)
     m.plot(axes=ax)
+
+plt.show()

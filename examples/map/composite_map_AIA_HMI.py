@@ -10,6 +10,7 @@ measure the line of sight magnetic field at the photospheric level.
 """
 
 # Start by importing the necessary modules.
+import matplotlib.pyplot as plt
 import sunpy.map
 import sunpy.data.sample
 
@@ -43,4 +44,7 @@ comp_map.set_levels(index=1, levels=[-1000, -500, -250, 250, 500, 1000])
 # present on the AIA image and how they correspond to the line of sight
 # magnetic field.
 
-comp_map.peek()
+fig = plt.figure()
+comp_map.plot()
+
+plt.show()
