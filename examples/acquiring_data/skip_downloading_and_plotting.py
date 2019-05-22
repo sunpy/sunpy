@@ -6,6 +6,8 @@ Downloading and plotting LASCO C3 data
 In this example, we show how to acquire and plot SOHO/LASCO C3 data using SunPy.
 """
 # Import the required modules.
+import matplotlib.pyplot as plt
+
 from sunpy.net import Fido, attrs
 import sunpy.map
 from sunpy.io.file_tools import read_file
@@ -53,4 +55,7 @@ header['CUNIT2'] = 'arcsec'
 
 # Now we can pass in the data and header directly into `sunpy.map.Map`
 lascomap = sunpy.map.Map(data, header)
-lascomap.peek()
+
+fig = plt.figure()
+lascomap.plot()
+plt.show()

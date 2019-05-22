@@ -4,6 +4,7 @@ source.
 """
 from collections import OrderedDict
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas
@@ -16,6 +17,7 @@ from sunpy import config
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+from sunpy.visualization import peek_show
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -53,6 +55,7 @@ class NoRHTimeSeries(GenericTimeSeries):
     def __init__(self, data, header, units, **kwargs):
         super(NoRHTimeSeries, self).__init__(data, header, units, **kwargs)
 
+    @peek_show
     def peek(self):
         """
         Plot the NoRH lightcurve TimeSeries.
@@ -79,7 +82,8 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes.set_ylabel('Correlation')
         axes.legend()
 
-        figure.show()
+        return figure
+
 
     @classmethod
     def _parse_file(cls, filepath):

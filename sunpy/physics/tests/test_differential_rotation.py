@@ -134,7 +134,7 @@ def test_solar_rotate_coordinate():
     obs_time = '2010-09-10 12:34:56'
     observer = get_earth(obs_time)
     c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obs_time, observer=observer, frame=frames.Helioprojective)
-    new_time = '2010-09-10 13:34:56'
+    new_time = '2010-09-11 12:34:56'
     new_observer = get_earth(new_time)
 
     # Test that when both the observer and the time are specified, an error is raised.
@@ -151,7 +151,7 @@ def test_solar_rotate_coordinate():
 
     # Test that the code gives the same output for multiple different inputs
     # that define the same observer location and time.
-    for i, definition in enumerate((1 * u.hour, TimeDelta(1*u.hour), new_time, new_observer)):
+    for i, definition in enumerate((1 * u.day, TimeDelta(1*u.day), new_time, new_observer)):
         if i in (0, 1, 2):
             d = solar_rotate_coordinate(c, time=definition)
         else:
@@ -161,9 +161,9 @@ def test_solar_rotate_coordinate():
         assert isinstance(d, SkyCoord)
 
         # Test the coordinate
-        np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -562.89877818, decimal=1)
-        np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 119.3152842, decimal=1)
-        np.testing.assert_allclose(d.distance.to(u.km).value, 1.500848e+08, rtol=1e-5)
+        np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -371.8885208634674, decimal=1)
+        np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 105.35006656251727, decimal=1)
+        np.testing.assert_allclose(d.distance.to(u.km).value, 1.499642e+08, rtol=1e-5)
 
         # Test that the SkyCoordinate is Helioprojective
         assert isinstance(d.frame, frames.Helioprojective)
