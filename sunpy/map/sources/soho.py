@@ -71,10 +71,10 @@ class EITMap(GenericMap):
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('hec_x', 'hec_x', 'hec_x'), {'x': self.meta.get('hec_x'),
-                                               'y': self.meta.get('hec_x'),
-                                               'z': self.meta.get('hec_x'),
-                                               'unit': u.m,
+        return [(('hec_x', 'hec_y', 'hec_z'), {'x': self.meta.get('hec_x'),
+                                               'y': self.meta.get('hec_y'),
+                                               'z': self.meta.get('hec_z'),
+                                               'unit': u.km,
                                                'representation': CartesianRepresentation,
                                                'frame': HeliocentricMeanEcliptic})
         ] + super()._supported_observer_coordinates
