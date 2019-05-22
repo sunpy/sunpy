@@ -137,7 +137,7 @@ def test_get_horizons_coord(tmpdir):
 
 
 @pytest.mark.remote_data
-def test_consistency_with_horizons():
+def test_consistency_with_horizons(tmpdir):
     # get_horizons_coord() depends on astroquery
     astroquery = pytest.importorskip("astroquery")
 
