@@ -16,6 +16,7 @@ from collections import OrderedDict
 
 import numpy as np
 from pandas import DataFrame
+import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
