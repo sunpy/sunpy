@@ -299,10 +299,41 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     out : `~astropy.coordinates.SkyCoord`
         Location of the solar-system body
 
+    Notes
+    -----
+    Be aware that there can be discrepancies between the coordinates returned by JPL HORIZONS,
+    the coordinates reported in mission data files, and the coordinates returned by
+    `~sunpy.coordinates.get_body_heliographic_stonyhurst()`.
+
     References
     ----------
     * `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`_
     * `Astroquery <https://astroquery.readthedocs.io/en/latest/>`_
+
+    Examples
+    --------
+    >>> from sunpy.coordinates import get_horizons_coord
+
+    Query the location of Venus
+
+    >>> get_horizons_coord('Venus barycenter', '2001-02-03 04:05:06')  # doctest: +REMOTE_DATA
+    INFO: Obtained JPL HORIZONS location for Venus Barycenter (2) [sunpy.coordinates.ephemeris]
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000): (lon, lat, radius) in (deg, deg, AU)
+        (326.06844114, -1.64998481, 0.71915147)>
+
+    Query the location of the SDO spacecraft
+
+    >>> get_horizons_coord('SDO', '2011-11-11 11:11:11')  # doctest: +REMOTE_DATA
+    INFO: Obtained JPL HORIZONS location for Solar Dynamics Observatory (spac [sunpy.coordinates.ephemeris]
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-11-11T11:11:11.000): (lon, lat, radius) in (deg, deg, AU)
+        (0.01018888, 3.29640407, 0.99011042)>
+
+    Query the location of the SOHO spacecraft via its ID number (-21)
+
+    >>> get_horizons_coord(-21, '2004-05-06 11:22:33', 'id')  # doctest: +REMOTE_DATA
+    INFO: Obtained JPL HORIZONS location for SOHO (spacecraft) (-21) [sunpy.coordinates.ephemeris]
+    <SkyCoord (HeliographicStonyhurst: obstime=2004-05-06T11:22:33.000): (lon, lat, radius) in (deg, deg, AU)
+        (0.2523461, -3.55863351, 0.99923086)>
     """
     obstime = parse_time(time)
 
