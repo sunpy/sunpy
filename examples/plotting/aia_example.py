@@ -18,5 +18,6 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 ###############################################################################
 # Now we do a quick plot.
 
-aiamap.peek()
+fig = plt.figure()
+aiamap.plot()
 plt.show()

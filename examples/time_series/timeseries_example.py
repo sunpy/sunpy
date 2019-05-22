@@ -16,6 +16,7 @@ from collections import OrderedDict
 
 import numpy as np
 from pandas import DataFrame
+import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
@@ -53,7 +54,8 @@ lis_goes_ts = sunpy.timeseries.TimeSeries(goes_files[:2], source='XRS')
 lis_goes_ts = sunpy.timeseries.TimeSeries(goes_files, source='XRS')
 # Using concatenate=True kwarg you can merge the files into one TimeSeries:
 combined_goes_ts = sunpy.timeseries.TimeSeries(goes_files, source='XRS', concatenate=True)
-combined_goes_ts.peek()
+fig, ax = plt.subplots()
+combined_goes_ts.plot()
 # Note: ATM we only accept TimeSeries of a single class being created together
 # with the factory. The issue is that several source filetypes don't contain
 # metadata that enables us to reliably implicitly gather the source and ATM the
@@ -64,7 +66,8 @@ combined_goes_ts.peek()
 ##############################################################################
 # You can concatenate manually:
 combined_goes_ts = lis_goes_ts[0].concatenate(lis_goes_ts[1])
-fig = combined_goes_ts.peek()
+fig, ax = plt.subplots()
+combined_goes_ts.plot()
 
 ##############################################################################
 # The TimeSeries object has 3 primary data storage components:
@@ -109,7 +112,8 @@ print(combined_goes_ts.meta.to_string(2))
 
 ##############################################################################
 # The TimeSeries objects can be visualised using peek():
-ts_goes.peek()
+fig, ax = plt.subplots()
+ts_goes.plot()
 # And you can use subplots:
 ts_eve.peek(subplots=True)
 
@@ -130,7 +134,8 @@ tr = TimeRange('2011-06-07 05:00', '2011-06-07 06:30')
 ts_goes_trunc = ts_goes.truncate(tr)
 # Or using strings:
 ts_goes_trunc = ts_goes.truncate('2011-06-07 05:00', '2011-06-07 06:30')
-ts_goes_trunc.peek()
+fig, ax = plt.subplots()
+ts_goes_trunc.plot()
 # Note: the strings are parsed using SunPy's string parser.
 # Debate: how should we deal with metadata when truncating.
 
@@ -140,7 +145,8 @@ df_downsampled = ts_goes_trunc.data.resample('10T', 'mean')
 # To get this into a similar TimeSeries we can copy the original:
 ts_downsampled = copy.deepcopy(ts_goes_trunc)
 ts_downsampled.data = df_downsampled
-ts_downsampled.peek()
+fig, ax = plt.subplots()
+ts_downsampled.plot()
 # You can use 'mean', 'sum' and 'std' methods and any other methods in Pandas.
 # Note: changing values within the datframe directly will often affect the units
 # involved, but these won't be picked up by the TimeSeries object. Take care
@@ -152,8 +158,11 @@ df_upsampled = ts_downsampled.data.resample('1T', 'ffill')
 # And this can be made into a TimeSeries using:
 ts_upsampled = copy.deepcopy(ts_downsampled)
 ts_upsampled.data = df_upsampled
-ts_upsampled.peek()
+fig, ax = plt.subplots()
+ts_upsampled.plot()
 # Note: 'ffill', 'bfill' and 'pad' methods work, and as before others should also.
+
+plt.show()
 
 ##############################################################################
 # The data from the TimeSeries can be retrieved in a number of formats:

@@ -24,7 +24,8 @@ from sunpy.data.sample import NOAAINDICES_TIMESERIES as noaa_ind
 
 ts_noaa_ind = TimeSeries(noaa_ind, source='NOAAIndices')
 my_timeseries = ts_noaa_ind.truncate('1991/01/01', '2001/01/01')
-my_timeseries.peek()
+fig, ax = plt.subplots()
+my_timeseries.plot()
 
 ##############################################################################
 # To find extrema in any TimeSeries, we first define a function findpeaks that
@@ -95,21 +96,22 @@ def findpeaks(series, DELTA):
         minpeaks.append((mnpos, mn))
     return minpeaks, maxpeaks
 
+
 ##############################################################################
 # Now we take the column 'sunspot SWO' of this TimeSeries and try to find it's
 # extrema using the function findpeaks. We take the value of DELTA to be
 # approximately the length of smallest peak that we wish to detect.
-
 series = my_timeseries.data['sunspot SWO']
 minpeaks, maxpeaks = findpeaks(series, DELTA=10.)
 # Plotting the figure and extremum points
-plt.figure()
-plt.ylabel('Sunspot Number')
-plt.xlabel('Time')
-plt.title('Peaks in TimeSeries')
+fig, ax = plt.subplots()
+ax.set_ylabel('Sunspot Number')
+ax.set_xlabel('Time')
+ax.set_title('Peaks in TimeSeries')
 series.plot()
-plt.scatter(*zip(*minpeaks), color='red', label='min')
-plt.scatter(*zip(*maxpeaks), color='green', label='max')
-plt.legend()
-plt.grid(True)
+ax.scatter(*zip(*minpeaks), color='red', label='min')
+ax.scatter(*zip(*maxpeaks), color='green', label='max')
+ax.legend()
+ax.grid(True)
+
 plt.show()

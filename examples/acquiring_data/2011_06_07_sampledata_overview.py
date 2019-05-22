@@ -32,13 +32,12 @@ import sunpy.data.sample as sample_data
 aia_cutout03_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT03_IMAGE)
 fig = plt.figure()
 aia_cutout03_map.plot()
-plt.show()
 
 ###############################################################################
 # Let's take a look at the GOES XRS data.
 goes = sunpy.timeseries.TimeSeries(sample_data.GOES_XRS_TIMESERIES)
-goes.peek()
-plt.show()
+fig = plt.figure()
+goes.plot()
 
 ###############################################################################
 # Next let's investigate the AIA full disk images that are available. Please
@@ -55,23 +54,28 @@ fig = plt.figure(figsize=(6, 28))
 ax = fig.add_subplot(611, projection=aia_131_map)
 aia_131_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_131_map.draw_grid()
+
 ax = fig.add_subplot(612, projection=aia_171_map)
 aia_171_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_171_map.draw_grid()
+
 ax = fig.add_subplot(613, projection=aia_211_map)
 aia_211_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_211_map.draw_grid()
+
 ax = fig.add_subplot(614, projection=aia_335_map)
 aia_335_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_335_map.draw_grid()
+
 ax = fig.add_subplot(615, projection=aia_094_map)
 aia_094_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_094_map.draw_grid()
+
 ax = fig.add_subplot(616, projection=aia_1600_map)
 aia_1600_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_1600_map.draw_grid()
-plt.tight_layout(pad=6.50)
-plt.show()
+
+fig.tight_layout(pad=6.50)
 
 ###############################################################################
 # We also provide a series of AIA cutouts so that you can get a sense of the
@@ -85,30 +89,31 @@ aia_cutout05_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT05_IMAGE)
 fig = plt.figure(figsize=(6, 28))
 ax = fig.add_subplot(511, projection=aia_cutout01_map)
 aia_cutout01_map.plot()
+
 ax = fig.add_subplot(512, projection=aia_cutout02_map)
 aia_cutout02_map.plot()
+
 ax = fig.add_subplot(513, projection=aia_cutout03_map)
 aia_cutout03_map.plot()
+
 ax = fig.add_subplot(514, projection=aia_cutout04_map)
 aia_cutout04_map.plot()
+
 ax = fig.add_subplot(515, projection=aia_cutout05_map)
 aia_cutout05_map.plot()
-plt.tight_layout(pad=5.50)
-plt.show()
+
+fig.tight_layout(pad=5.50)
 
 ###############################################################################
 # There are a number of other data sources, such as SWAP.
 swap_map = sunpy.map.Map(sample_data.SWAP_LEVEL1_IMAGE)
 fig = plt.figure()
-ax = plt.subplot(projection=swap_map)
 swap_map.plot()
-plt.show()
 
 ###############################################################################
 # As well as RHESSI.
 rhessi_map = sunpy.map.Map(sample_data.RHESSI_IMAGE)
 fig = plt.figure()
-#ax = plt.subplot(projection=rhessi_map)
-ax = plt.subplot()
 rhessi_map.plot()
+
 plt.show()
