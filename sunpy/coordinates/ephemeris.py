@@ -344,7 +344,7 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
                      epochs=obstime.tdb.jd)  # Time must be provided in JD TDB
     try:
         result = query.vectors()
-    except:  # Catch and re-raise all exceptions, and also provide query URL if generated
+    except Exception:  # Catch and re-raise all exceptions, and also provide query URL if generated
         if query.uri is not None:
             log.error(f"See the raw output from the JPL HORIZONS query at {query.uri}")
         raise
