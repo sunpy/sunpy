@@ -17,12 +17,11 @@ def peek_show(func):
     figure to the user.
     """
     @wraps(func)
-    def show_if_interactive(*args, **kwargs):
-        figure = func(*args, **kwargs)
+    def show_figure(*args, **kwargs):
+        _ = func(*args, **kwargs)
         plt.show()
-        # NOTE: We do not return `figure` here because `peek()` methods return `None`.
 
-    return show_if_interactive
+    return show_figure
 
 
 def axis_labels_from_ctype(ctype, unit):

@@ -458,7 +458,10 @@ class CompositeMap(object):
     @peek_show
     def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
              draw_grid=False, **matplot_args):
-        """Displays the map in a new figure.
+        """
+        Displays a graphical overview of the data in this object for user evaluation.
+        For the creation of plots, users should instead use the `~sunpy.map.CompositeMap.plot`
+        method and Matplotlib's pyplot framework.
 
         Parameters
         ----------
