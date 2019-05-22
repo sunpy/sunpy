@@ -55,7 +55,7 @@ def test_print_config_files(undo_download_dir_patch):
 def test_get_and_create_download_dir(undo_download_dir_patch):
     # test default config
     path = get_and_create_download_dir()
-    assert Path(path) == (Path(USER) / 'sunpy' / 'data').resolve()
+    assert Path(path) == Path(USER) / 'sunpy' / 'data'
     # test updated config
     new_path = os.path.join(USER, 'sunpy_data_here_please')
     config.set('downloads', 'download_dir', new_path)
@@ -69,7 +69,7 @@ def test_get_and_create_download_dir(undo_download_dir_patch):
 def test_get_and_create_sample_dir():
     # test default config
     path = get_and_create_sample_dir()
-    assert Path(path) == Path(dirs.user_data_dir).resolve()
+    assert Path(path) == Path(dirs.user_data_dir)
     # test updated config
     new_path = os.path.join(USER, 'sample_data_here_please')
     config.set('downloads', 'sample_dir', new_path)
