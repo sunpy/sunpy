@@ -1,49 +1,31 @@
 """SOHO Map subclass definitions"""
-# pylint: disable=W0221,W0222,E1101,E1121
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib import colors
 
-from astropy.units import Quantity
+import astropy.units as u
+from astropy.coordinates import CartesianRepresentation, SkyCoord
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
-from sunpy.sun import constants
-from sunpy.sun import sun
 from sunpy.map.sources.source_type import source_stretch
-from sunpy.coordinates import get_sunearth_distance
+
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the incorrect name HeliocentricTrueEcliptic
+try:
+    from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
 
-def _dsunAtSoho(date, rad_d, rad_1au=None):
-    r"""Determines the distance to the Sun from SOhO following
-    d_{\sun,Object} =
-            D_{\sun\earth} \frac{\tan(radius_{1au}[rad])}{\tan(radius_{d}[rad])}
-    though tan x ~ x for x << 1
-    d_{\sun,Object} =
-            D_{\sun\eart} \frac{radius_{1au}[rad]}{radius_{d}[rad]}
-    since radius_{1au} and radius_{d} are dividing each other we can use [arcsec]
-    instead.
-
-    ---
-    TODO: Does this apply just to observations on the same Earth-Sun line?
-    If not it can be moved outside here.
-    """
-    if not rad_1au:
-        rad_1au = sun.solar_semidiameter_angular_size(date)
-    dsun = get_sunearth_distance(date) * constants.au * (rad_1au / rad_d)
-    # return scalar value not astropy.quantity
-    return dsun.value
-
-
 class EITMap(GenericMap):
-    """SOHO EIT Image Map.
+    """
+    SOHO EIT Image Map.
 
     SOHO EIT is an extreme ultraviolet (EUV) imager able to image the solar
     transition region and inner corona in four selected bandpasses,
@@ -57,6 +39,7 @@ class EITMap(GenericMap):
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
     * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`_
     * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`_
+
     """
 
     def __init__(self, data, header, **kwargs):
@@ -64,26 +47,37 @@ class EITMap(GenericMap):
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
 
-        GenericMap.__init__(self, data, header, **kwargs)
-        # Fill in some missing info
-        self.meta['detector'] = "EIT"
-        self.meta['waveunit'] = "Angstrom"
+        super().__init__(data, header, **kwargs)
 
-        self._fix_dsun()
         self._nickname = self.detector
         self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
     @property
+    def detector(self):
+        return "EIT"
+
+    @property
+    def waveunit(self):
+        return "Angstrom"
+
+    @property
     def rsun_obs(self):
         """
         Returns the solar radius as measured by EIT in arcseconds.
         """
-        return Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
+        return u.Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
 
-    def _fix_dsun(self):
-        self.meta['dsun_obs'] = _dsunAtSoho(self.date, self.rsun_obs)
+    @property
+    def _supported_observer_coordinates(self):
+        return [(('hec_x', 'hec_y', 'hec_z'), {'x': self.meta.get('hec_x'),
+                                               'y': self.meta.get('hec_y'),
+                                               'z': self.meta.get('hec_z'),
+                                               'unit': u.km,
+                                               'representation': CartesianRepresentation,
+                                               'frame': HeliocentricMeanEcliptic})
+        ] + super()._supported_observer_coordinates
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -92,7 +86,8 @@ class EITMap(GenericMap):
 
 
 class LASCOMap(GenericMap):
-    """SOHO LASCO Image Map
+    """
+    SOHO LASCO Image Map
 
     The Large Angle and Spectrometric COronagraph (LASCO) is a set of three
     Lyot-type coronagraphs (C1, C2, and C3) that image the solar corona from
@@ -111,10 +106,10 @@ class LASCOMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        header['cunit1'] = header['cunit1'].lower()
+        header['cunit2'] = header['cunit2'].lower()
 
-        self.meta['CUNIT1'] = self.meta['CUNIT1'].lower()
-        self.meta['CUNIT2'] = self.meta['CUNIT2'].lower()
+        super().__init__(data, header, **kwargs)
 
         # Fill in some missing or broken info
         # Test if change has already been applied
@@ -179,11 +174,9 @@ class MDIMap(GenericMap):
         # Assume pixel units are arcesc if not given
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         # Fill in some missing or broken info
-        self.meta['detector'] = "MDI"
-        self._fix_dsun()
         self._nickname = self.detector + " " + self.measurement
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)
@@ -193,36 +186,28 @@ class MDIMap(GenericMap):
             self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
 
     @property
+    def _supported_observer_coordinates(self):
+        return [(('obs_l0', 'obs_b0', 'obs_dist'), {'lon': self.meta.get('obs_l0'),
+                                                    'lat': self.meta.get('obs_b0'),
+                                                    'radius': self.meta.get('obs_dist'),
+                                                    'unit': (u.deg, u.deg, u.AU),
+                                                    'frame': "heliographic_carrington"}),
+        ] + super()._supported_observer_coordinates
+
+    @property
+    def detector(self):
+        return "MDI"
+
+    @property
+    def waveunit(self):
+        return "Angstrom"
+
+    @property
     def measurement(self):
         """
         Returns the type of data in the map.
         """
         return "magnetogram" if self.meta.get('dpc_obsr', " ").find('Mag') != -1 else "continuum"
-
-    def _fix_dsun(self):
-        """ Solar radius in arc-seconds at 1 au
-            previous value radius_1au = 959.644
-            radius = constants.average_angular_size
-            There are differences in the keywords in the test FITS data and in
-            the Helioviewer JPEG2000 files.  In both files, MDI stores the
-            the radius of the Sun in image pixels, and a pixel scale size.
-            The names of these keywords are different in the FITS versus the
-            JP2 file.  The code below first looks for the keywords relevant to
-            a FITS file, and then a JPEG2000 file.  For more information on
-            MDI FITS header keywords please go to http://soi.stanford.edu/,
-            http://soi.stanford.edu/data/ and
-            http://soi.stanford.edu/magnetic/Lev1.8/ .
-        """
-        scale = self.meta.get('xscale', self.meta.get('cdelt1'))
-        radius_in_pixels = self.meta.get('r_sun', self.meta.get('radius'))
-        radius = scale * radius_in_pixels
-        self.meta['radius'] = radius
-
-        if not radius:
-            # radius = sun.angular_size(self.date)
-            self.meta['dsun_obs'] = constants.au
-        else:
-            self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
