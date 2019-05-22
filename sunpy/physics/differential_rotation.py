@@ -251,9 +251,9 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
                                     heliographic_coordinate.lat,
                                     heliographic_coordinate.radius,
-                                    obstime = new_observer.obstime,
-                                    observer = new_observer,
-                                    frame = HeliographicStonyhurst)
+                                    obstime=new_observer.obstime,
+                                    observer=new_observer,
+                                    frame=HeliographicStonyhurst)
 
     # Calculate where the rotated co-ordinate appears as seen by new observer,
     # and then transform it into the co-ordinate system of the input
