@@ -3,6 +3,7 @@ This module FERMI GBM `~sunpy.timeseries.TimeSeries` source.
 """
 from collections import OrderedDict
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -14,6 +15,7 @@ import sunpy.io
 from sunpy.instr import fermi
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+from sunpy.visualization import peek_show
 
 __all__ = ['GBMSummaryTimeSeries']
 
@@ -58,6 +60,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'gbmsummary'
 
+    @peek_show
     def peek(self):
         """
         Plots the GBM lightcurve TimeSeries. An example can be seen below:
@@ -87,7 +90,8 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
         figure.autofmt_xdate()
-        figure.show()
+
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):

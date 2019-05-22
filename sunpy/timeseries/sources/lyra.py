@@ -5,6 +5,7 @@ import sys
 from collections import OrderedDict
 
 import pandas
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 
 import astropy.units as u
@@ -15,6 +16,7 @@ from sunpy import config
 from sunpy.time import parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+from sunpy.visualization import peek_show
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -54,6 +56,7 @@ class LYRATimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'lyra'
 
+    @peek_show
     def peek(self, names=3, **kwargs):
         """
         Plots the LYRA data. An example is shown below:
@@ -95,7 +98,7 @@ class LYRATimeSeries(GenericTimeSeries):
         for axe in axes:
             axe.locator_params(axis='y',nbins=6)
 
-        figure.show()
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):
