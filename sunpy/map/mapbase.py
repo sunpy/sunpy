@@ -1597,7 +1597,9 @@ class GenericMap(NDData):
     def peek(self, draw_limb=False, draw_grid=False,
              colorbar=True, basic_plot=False, **matplot_args):
         """
-        Displays the map in a new figure.
+        Displays a graphical overview of the data in this object for user evaluation.
+        For the creation of plots, users should instead use the `~sunpy.map.GenericMap.plot`
+        method and Matplotlib's pyplot framework.
 
         Parameters
         ----------
