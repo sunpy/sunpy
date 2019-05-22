@@ -218,15 +218,17 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
     >>> from sunpy.time import parse_time
     >>> start_time = parse_time('2010-09-10 12:34:56')
-    >>> end_time = parse_time('2010-09-10 13:34:56')
+    >>> end_time = parse_time('2010-09-11 13:34:56')
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
     >>> solar_rotate_coordinate(c, time=end_time)
-    <SkyCoord (Helioprojective: obstime=2010-09-10T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-    (-562.89557218, 119.31528517, 1.50084836e+08)>
+    <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
+        (-5.08888749e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (-363.04027419, 104.87807178, 1.499598e+08)>
     >>> new_observer = get_body("earth", end_time)
     >>> solar_rotate_coordinate(c, observer=new_observer)
-    <SkyCoord (Helioprojective: obstime=2010-09-10T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-        (-562.89557218, 119.31528517, 1.50084836e+08)>
+    <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
+        (-5.08888749e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (-363.04027419, 104.87807178, 1.499598e+08)>
     """
     # Check the input and create the new observer
     new_observer = _get_new_observer(coordinate.obstime, observer, time)
@@ -246,14 +248,17 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
     # Rotate the input co-ordinate as seen by the original observer
-    heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot, heliographic_coordinate.lat,
-                                    obstime=coordinate.obstime, observer=coordinate.observer,
+    heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
+                                    heliographic_coordinate.lat,
+                                    heliographic_coordinate.radius,
+                                    obstime=new_observer.obstime,
+                                    observer=new_observer,
                                     frame=HeliographicStonyhurst)
 
     # Calculate where the rotated co-ordinate appears as seen by new observer,
     # and then transform it into the co-ordinate system of the input
     # co-ordinate.
-    return heliographic_rotated.transform_to(new_observer).transform_to(coordinate.frame.name)
+    return heliographic_rotated.transform_to(coordinate.frame.name)
 
 
 def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
