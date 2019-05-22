@@ -21,7 +21,7 @@ import sunpy.io as io
 import sunpy.coordinates
 import sunpy.cm
 from sunpy import config
-from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
+from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype, peek_show
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
@@ -1591,11 +1591,13 @@ class GenericMap(NDData):
                           **contour_args)
         return cs
 
-    @toggle_pylab
+    @peek_show
     def peek(self, draw_limb=False, draw_grid=False,
              colorbar=True, **matplot_args):
         """
-        Displays the map in a new figure.
+        Displays a graphical overview of the data in this object for user evaluation.
+        For the creation of plots, users should instead use the `~sunpy.map.GenericMap.plot`
+        method and Matplotlib's pyplot framework.
 
         Parameters
         ----------
@@ -1635,9 +1637,8 @@ class GenericMap(NDData):
         else:
             raise TypeError("draw_grid should be a bool or an astropy Quantity.")
 
-        figure.show()
+        return figure
 
-    @toggle_pylab
     @u.quantity_input
     def plot(self, annotate=True, axes=None, title=True,
              clip_interval: u.percent = None, **imshow_kwargs):
