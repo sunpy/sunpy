@@ -436,13 +436,21 @@ class GenericMap(NDData):
     def measurement(self):
         """Measurement name, defaults to the wavelength of image."""
         return u.Quantity(self.meta.get('wavelnth', 0),
-                          self.meta.get('waveunit', ""))
+                          self.waveunit)
+
+    @property
+    def waveunit(self):
+        """The `~astropy.units.Unit` of the wavelength of this observation."""
+        unit = self.meta.get("waveunit")
+        if unit is None:
+            return u.one
+        return u.Unit(unit)
 
     @property
     def wavelength(self):
         """Wavelength of the observation."""
         return u.Quantity(self.meta.get('wavelnth', 0),
-                          self.meta.get('waveunit', ""))
+                          self.waveunit)
 
     @property
     def observatory(self):
@@ -739,7 +747,7 @@ class GenericMap(NDData):
 
     def _get_cmap_name(self):
         """Build the default color map name."""
-        cmap_string = (self.observatory + self.meta['detector'] +
+        cmap_string = (self.observatory + self.detector +
                        str(int(self.wavelength.to('angstrom').value)))
         return cmap_string.lower()
 
