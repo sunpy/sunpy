@@ -1,13 +1,12 @@
 import os
-import urllib
 import platform
+import urllib
 import warnings
+from functools import wraps
 
 import matplotlib.pyplot as plt
 import pytest
 from matplotlib.testing import compare
-
-from astropy.utils.decorators import wraps
 
 from sunpy.tests import hash
 
