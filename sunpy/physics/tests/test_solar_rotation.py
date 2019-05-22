@@ -43,15 +43,15 @@ def aia171_test_mapsequence(aia171_test_submap):
 # Known displacements for these mapsequence layers when the layer index is set to 0
 @pytest.fixture
 def known_displacements_layer_index0():
-    return {'x': np.asarray([-0.08936103, -9.17565841, -18.28054844]),
-            'y': np.asarray([-0.11339651, 0.12014796, 0.34316662])}
+    return {'x': np.asarray([1.136868e-13, -1.048550e+01, -2.099555e+01]),
+            'y': np.asarray([1.136868e-13, 2.685361e-01, 5.230608e-01])}
 
 
 # Known displacements for these mapsequence layers when the layer index is set to 1
 @pytest.fixture
 def known_displacements_layer_index1():
-    return {'x': np.asarray([8.97749601, -0.08936103, -9.17566638]),
-            'y': np.asarray([-0.35744467, -0.11339651, 0.12014816])}
+    return {'x': np.asarray([1.045963e+01, 8.526513e-14, -1.048549e+01]),
+            'y': np.asarray([-2.825134e-01, 1.136868e-13, 2.685360e-01])}
 
 
 def test_calculate_solar_rotate_shift(aia171_test_mapsequence, known_displacements_layer_index0, known_displacements_layer_index1):
@@ -82,7 +82,7 @@ def test_mapsequence_solar_derotate(aia171_test_mapsequence, aia171_test_submap)
     assert(isinstance(tmc, sunpy.map.MapSequence))
 
     # Test that the shape of data is correct when clipped
-    clipped_shape = (24, 20)
+    clipped_shape = (25, 18)
     for m in tmc:
         assert(m.data.shape == clipped_shape)
 
