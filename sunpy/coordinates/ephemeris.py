@@ -14,6 +14,12 @@ from astropy.coordinates import (SkyCoord, Angle, Longitude,
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 from astropy._erfa.core import ErfaWarning
 from astropy.constants import c as speed_of_light
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the incorrect name HeliocentricTrueEcliptic
+try:
+    from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
 from sunpy.time import parse_time
 from sunpy import log
@@ -23,7 +29,7 @@ from .transformations import _SUN_DETILT_MATRIX
 
 __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
            'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
-           'get_sun_orientation']
+           'get_sun_orientation', 'get_horizons_coord']
 
 
 def get_body_heliographic_stonyhurst(body, time='now', observer=None):
@@ -271,3 +277,90 @@ def _sun_north_angle_to_z(frame):
         angle = angle[0]
 
     return Angle(angle)
+
+
+def get_horizons_coord(body, time='now', id_type='majorbody'):
+    """
+    Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
+    solar-system body at a specified time.  This function requires the Astroquery package to
+    be installed and requires Internet access.
+
+    Parameters
+    ----------
+    body : `str`
+        The solar-system body for which to calculate positions
+    id_type : `str`
+        If 'majorbody', search by name for planets or satellites.  If 'id', search by ID number.
+    time : various
+        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+
+    Returns
+    -------
+    `~astropy.coordinates.SkyCoord`
+        Location of the solar-system body
+
+    Notes
+    -----
+    Be aware that there can be discrepancies between the coordinates returned by JPL HORIZONS,
+    the coordinates reported in mission data files, and the coordinates returned by
+    `~sunpy.coordinates.get_body_heliographic_stonyhurst`.
+
+    References
+    ----------
+    * `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`_
+    * `Astroquery <https://astroquery.readthedocs.io/en/latest/>`_
+
+    Examples
+    --------
+    .. Run these tests with a temp cache dir
+    .. testsetup::
+        >>> from astropy.config.paths import set_temp_cache
+        >>> import tempfile
+        >>> c = set_temp_cache(tempfile.mkdtemp())
+        >>> _ = c.__enter__()
+
+    >>> from sunpy.coordinates import get_horizons_coord
+
+    Query the location of Venus
+
+    >>> get_horizons_coord('Venus barycenter', '2001-02-03 04:05:06')  # doctest: +REMOTE_DATA
+    INFO: Obtained JPL HORIZONS location for Venus Barycenter (2) [sunpy.coordinates.ephemeris]
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000): (lon, lat, radius) in (deg, deg, AU)
+        (326.06844114, -1.64998481, 0.71915147)>
+
+    Query the location of the SDO spacecraft
+
+    >>> get_horizons_coord('SDO', '2011-11-11 11:11:11')  # doctest: +REMOTE_DATA
+    INFO: Obtained JPL HORIZONS location for Solar Dynamics Observatory (spac [sunpy.coordinates.ephemeris]
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-11-11T11:11:11.000): (lon, lat, radius) in (deg, deg, AU)
+        (0.01018888, 3.29640407, 0.99011042)>
+
+    Query the location of the SOHO spacecraft via its ID number (-21)
+
+    >>> get_horizons_coord(-21, '2004-05-06 11:22:33', 'id')  # doctest: +REMOTE_DATA
+    INFO: Obtained JPL HORIZONS location for SOHO (spacecraft) (-21) [sunpy.coordinates.ephemeris]
+    <SkyCoord (HeliographicStonyhurst: obstime=2004-05-06T11:22:33.000): (lon, lat, radius) in (deg, deg, AU)
+        (0.2523461, -3.55863351, 0.99923086)>
+
+    .. testcleanup::
+        >>> _ = c.__exit__()
+    """
+    obstime = parse_time(time)
+
+    # Import here so that astroquery is not a module-level dependency
+    from astroquery.jplhorizons import Horizons
+    query = Horizons(id=body, id_type=id_type,
+                     location='500@10',      # Heliocentric (mean ecliptic)
+                     epochs=obstime.tdb.jd)  # Time must be provided in JD TDB
+    try:
+        result = query.vectors()
+    except Exception:  # Catch and re-raise all exceptions, and also provide query URL if generated
+        if query.uri is not None:
+            log.error(f"See the raw output from the JPL HORIZONS query at {query.uri}")
+        raise
+    log.info(f"Obtained JPL HORIZONS location for {result[0]['targetname']}")
+
+    vector = CartesianRepresentation(result[0]['x', 'y', 'z'])*u.AU
+    coord = SkyCoord(vector, frame=HeliocentricMeanEcliptic, obstime=obstime)
+
+    return coord.transform_to(HGS)
