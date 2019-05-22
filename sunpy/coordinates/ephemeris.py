@@ -296,14 +296,14 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
 
     Returns
     -------
-    out : `~astropy.coordinates.SkyCoord`
+    `~astropy.coordinates.SkyCoord`
         Location of the solar-system body
 
     Notes
     -----
     Be aware that there can be discrepancies between the coordinates returned by JPL HORIZONS,
     the coordinates reported in mission data files, and the coordinates returned by
-    `~sunpy.coordinates.get_body_heliographic_stonyhurst()`.
+    `~sunpy.coordinates.get_body_heliographic_stonyhurst`.
 
     References
     ----------
