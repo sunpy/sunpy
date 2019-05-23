@@ -1,7 +1,7 @@
 {
-    "description": "<p>v1.0.0rc2</p>\n<p>Landed in some more bug fixes and features.</p>",
-    "license": "other-open",
-    "title": "sunpy/sunpy: v1.0.0rc2",
+    "description": "The community-developed, free and open-source solar data analysis environment for Python.",
+    "license": "BSD-2-Clause",
+    "title": "SunPy",
     "version": "v1.0.0rc2",
     "upload_type": "software",
     "publication_date": "2019-05-22",
