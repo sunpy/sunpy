@@ -5,14 +5,17 @@
     "upload_type": "software",
     "creators": [
         {
-            "affiliation": "@aperiosoftware",
-            "name": "Stuart Mumford"
+            "affiliation": "1 - DKIST. 2 - Aperio Software",
+            "name": "Stuart Mumford",
+            "orcid": "0000-0003-4217-4642"
         },
         {
-            "affiliation": "@NASA-GSFC-Heliophysics",
-            "name": "Steven Christe"
+            "affiliation": "NASA Goddard Space Flight Center",
+            "name": "Steven Christe",
+            "orcid": "0000-0001-6127-795X"
         },
         {
+            "affiliation": "Aperio Software",
             "name": "Nabil Freij"
         },
         {
@@ -24,17 +27,20 @@
             "name": "Keith Hughitt"
         },
         {
-            "name": "DanRyanIrish"
+            "affiliation": "1 - NASA Goddard Space Flight Center. 2 - Catholic University of America",
+            "name": "Daniel F. Ryan"
         },
         {
             "name": "Simon Liedtke"
         },
         {
+            "affiliation": "NASA Goddard Space Flight Center",
             "name": "Albert Y. Shih"
         },
         {
-            "affiliation": "@UCL-RITS",
-            "name": "David P\u00e9rez-Su\u00e1rez"
+            "affiliation": "University College London",
+            "name": "David Pérez-Suárez",
+            "orcid": "0000-0003-0784-6909"
         },
         {
             "name": "Pritish Chakraborty"
@@ -44,7 +50,7 @@
             "name": "Vishnunarayan K I"
         },
         {
-            "name": "aringlis"
+            "name": "Andrew R. Inglis"
         },
         {
             "affiliation": "IIIT Hyderabad",
@@ -52,7 +58,8 @@
         },
         {
             "affiliation": "DIRAC Institute, UW",
-            "name": "Brigitta Sipocz"
+            "name": "Brigitta M. Sipocz",
+            "orcid": "0000-0002-3713-6337"
         },
         {
             "name": "Rishabh Sharma"
@@ -61,13 +68,17 @@
             "name": "Drew Leonard"
         },
         {
-            "name": "Russell J. Hewett"
+            "affiliation": "Virginia Tech",
+            "name": "Russell J. Hewett",
+            "orcid": "0000-0001-8944-4705"
         },
         {
             "name": "Alex-Ian-Hamilton"
         },
         {
-            "name": "David Stansby"
+            "affiliation": "Imperial College London",
+            "name": "David Stansby",
+            "orcid": "0000-0002-1365-1908"
         },
         {
             "affiliation": "International Insititute of Information Technology Bhubaneswar",
@@ -84,6 +95,7 @@
             "name": "Ankit Kumar"
         },
         {
+            "affiliation": "NASA Goddard Space Flight Center",
             "name": "Laura Hayes"
         },
         {
