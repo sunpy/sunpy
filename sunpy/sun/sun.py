@@ -81,7 +81,7 @@ def eccentricity_sun_earth_orbit(t='now'):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a palongitude_Sun_perigee, true_latitude and apparent_latitude need to be fixedrse_time-compatible
+        A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
     T = julian_centuries(t)
