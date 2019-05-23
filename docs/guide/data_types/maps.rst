@@ -37,9 +37,29 @@ may vary. SunPy can also create maps from the jpg2000 files from
 
 Creating Custom Maps
 --------------------
-It is also possible to create maps using custom data (e.g. from a simulation).
-To do this you need to provide `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`
-with both the data array as well as some basic meta information. If no header is
+It is also possible to create maps using custom data (e.g. from a simulation or an observation
+from a data source that is not explicitly supported in SunPy.) To do this you need to provide
+`sunpy.map.Map <sunpy.map.map_factory.MapFactory>` with both the data array as well as appropriate
+meta information. The meta information is important as it informs the `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`
+of the correct coordinate information associated with the data array. 
+
+The keys that are required for the header information follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_.
+The header information should be in the form of a `dict` or `sunpy.utils.MetaDict <sunpy.utils.MetaDict>`. 
+SunPy now provides map a header helper function to assist the user in creating a header 
+that contains the correct meta information to generate a `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`. 
+
+Here's an example of using the helper function to list all the current meta keywords currently
+used by `sunpy.map.Map <sunpy.map.map_factory.MapFactory>` to make a map::
+    
+    >>> from sunpy.map import header_helper
+
+    >>> header_helper.meta_keywords()
+    {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
+     'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required', 
+     'crval1': 'Coordinate value at reference point on naxis1 **required'
+     ...
+
+If no header is
 given then some default values are assumed. Here is a simple example::
 
     >>> import numpy as np
@@ -47,8 +67,7 @@ given then some default values are assumed. Here is a simple example::
     >>> data = np.arange(0,100).reshape(10,10)
     >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy', 'cunit1': 'arcsec', 'cunit2': 'arcsec'}
     >>> my_map = sunpy.map.Map(data, header)
-
-The keys in the header follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_.
+    
 
 Inspecting maps
 ---------------
