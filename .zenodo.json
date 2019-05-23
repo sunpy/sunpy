@@ -2,9 +2,7 @@
     "description": "The community-developed, free and open-source solar data analysis environment for Python.",
     "license": "BSD-2-Clause",
     "title": "SunPy",
-    "version": "v1.0.0rc2",
     "upload_type": "software",
-    "publication_date": "2019-05-22",
     "creators": [
         {
             "affiliation": "@aperiosoftware",
@@ -111,11 +109,6 @@
     ],
     "access_right": "open",
     "related_identifiers": [
-        {
-            "scheme": "url",
-            "identifier": "https://github.com/sunpy/sunpy/tree/v1.0.0rc2",
-            "relation": "isSupplementTo"
-        },
         {
             "scheme": "doi",
             "identifier": "10.5281/zenodo.591887",
