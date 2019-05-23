@@ -63,7 +63,7 @@ This returns a `dictionary` that contains the meta keywords that the `sunpy.map.
 used to generate a map. 
 
 To create a header, the `header_helper` function also allows the user to generate a map
-header from an `astropy.coordinates.SkyCoord` defined by the user. 
+header from an `astropy.coordinates.SkyCoord` defined by the user:: 
 
     >>> import numpy as np
     >>> import astropy.units as u
