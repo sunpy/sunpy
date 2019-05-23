@@ -50,7 +50,7 @@ that contains the correct meta information to generate a `sunpy.map.Map <sunpy.m
 
 Here's an example of using the helper function to list all the current meta keywords currently
 used by `sunpy.map.Map <sunpy.map.map_factory.MapFactory>` to make a map::
-    
+
     >>> from sunpy.map import header_helper
 
     >>> header_helper.meta_keywords()
@@ -59,14 +59,43 @@ used by `sunpy.map.Map <sunpy.map.map_factory.MapFactory>` to make a map::
      'crval1': 'Coordinate value at reference point on naxis1 **required'
      ...
 
-If no header is
-given then some default values are assumed. Here is a simple example::
+This returns a `dictionary` that contains the meta keywords that the `sunpy.map.Map <sunpy.map.map_factory.MapFactory>` 
+used to generate a map. 
+
+To create a header, the `header_helper` function also allows the user to generate a map
+header from an `astropy.coordinates.SkyCoord` defined by the user. 
 
     >>> import numpy as np
+    >>> import astropy.units as u
+    >>> import sunpy.map
+    >>> from sunpy.coordinates import frames
+    >>> from astropy.coordinates import SkyCoord
 
     >>> data = np.arange(0,100).reshape(10,10)
-    >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy', 'cunit1': 'arcsec', 'cunit2': 'arcsec'}
+    >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
+    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord)
+    >>> header
+    MetaDict([('wcsaxes', 2),
+          ('crpix1', 5.5),
+          ('crpix2', 5.5),
+          ('cdelt1', <Quantity 1. arcsec2 / pix>),
+          ('cdelt2', <Quantity 1. arcsec2 / pix>),
+          ('cunit1', Unit("arcsec")),
+          ('cunit2', Unit("arcsec")),
+          ('ctype1', 'HPLN-TAN'),
+          ('ctype2', 'HPLT-TAN'),
+          ('crval1', 0.0),
+          ('crval2', 0.0),
+          ('lonpole', 180.0),
+          ('latpole', 0.0),
+          ('date-obs', '2013-10-28T00:00:00.000'),
+          ('hgln_obs', 0.0),
+          ('hglt_obs', 4.7711570596394015),
+          ('dsun_obs', 148644585949.4918),
+          ('rsun_ref', 695700.0),
+          ('rsun_obs', 965.3723815059902)])
     >>> my_map = sunpy.map.Map(data, header)
+    
     
 
 Inspecting maps
