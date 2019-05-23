@@ -1,0 +1,125 @@
+{
+    "description": "<p>v1.0.0rc2</p>\n<p>Landed in some more bug fixes and features.</p>",
+    "license": "other-open",
+    "title": "sunpy/sunpy: v1.0.0rc2",
+    "version": "v1.0.0rc2",
+    "upload_type": "software",
+    "publication_date": "2019-05-22",
+    "creators": [
+        {
+            "affiliation": "@aperiosoftware",
+            "name": "Stuart Mumford"
+        },
+        {
+            "affiliation": "@NASA-GSFC-Heliophysics",
+            "name": "Steven Christe"
+        },
+        {
+            "name": "Nabil Freij"
+        },
+        {
+            "affiliation": "@google",
+            "name": "Florian Mayer"
+        },
+        {
+            "affiliation": "National Institutes of Health",
+            "name": "Keith Hughitt"
+        },
+        {
+            "name": "DanRyanIrish"
+        },
+        {
+            "name": "Simon Liedtke"
+        },
+        {
+            "name": "Albert Y. Shih"
+        },
+        {
+            "affiliation": "@UCL-RITS",
+            "name": "David P\u00e9rez-Su\u00e1rez"
+        },
+        {
+            "name": "Pritish Chakraborty"
+        },
+        {
+            "affiliation": "IIT Indore",
+            "name": "Vishnunarayan K I"
+        },
+        {
+            "name": "aringlis"
+        },
+        {
+            "affiliation": "IIIT Hyderabad",
+            "name": "Punyaslok Pattnaik"
+        },
+        {
+            "affiliation": "DIRAC Institute, UW",
+            "name": "Brigitta Sipocz"
+        },
+        {
+            "name": "Rishabh Sharma"
+        },
+        {
+            "name": "Drew Leonard"
+        },
+        {
+            "name": "Russell J. Hewett"
+        },
+        {
+            "name": "Alex-Ian-Hamilton"
+        },
+        {
+            "name": "David Stansby"
+        },
+        {
+            "affiliation": "International Insititute of Information Technology Bhubaneswar",
+            "name": "Asish Panda"
+        },
+        {
+            "name": "Matt Earnshaw"
+        },
+        {
+            "affiliation": "@kossiitkgp",
+            "name": "Nitin Choudhary"
+        },
+        {
+            "name": "Ankit Kumar"
+        },
+        {
+            "name": "Laura Hayes"
+        },
+        {
+            "affiliation": "@sunpy  @fossasia @apache",
+            "name": "Prateek Chanda"
+        },
+        {
+            "name": "Md Akramul Haque"
+        },
+        {
+            "name": "Sudarshan Konge"
+        },
+        {
+            "name": "mdmueller"
+        },
+        {
+            "affiliation": "NASA/GSFC",
+            "name": "Michael Kirk"
+        },
+        {
+            "name": "haathi"
+        }
+    ],
+    "access_right": "open",
+    "related_identifiers": [
+        {
+            "scheme": "url",
+            "identifier": "https://github.com/sunpy/sunpy/tree/v1.0.0rc2",
+            "relation": "isSupplementTo"
+        },
+        {
+            "scheme": "doi",
+            "identifier": "10.5281/zenodo.591887",
+            "relation": "isVersionOf"
+        }
+    ]
+}
