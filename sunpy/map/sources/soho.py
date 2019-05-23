@@ -75,7 +75,7 @@ class EITMap(GenericMap):
                                                'y': self.meta.get('hec_y'),
                                                'z': self.meta.get('hec_z'),
                                                'unit': u.km,
-                                               'representation': CartesianRepresentation,
+                                               'representation_type': CartesianRepresentation,
                                                'frame': HeliocentricMeanEcliptic})
         ] + super()._supported_observer_coordinates
 
