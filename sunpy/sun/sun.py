@@ -389,7 +389,7 @@ def print_params(t='now'):
     from sunpy.coordinates.ephemeris import (get_sun_L0, get_sun_B0,
                                              get_sun_P, get_sunearth_distance)
 
-    print('Solar Ephemeris for {}\n'.format(parse_time(t).ctime()))
+    print('Solar Ephemeris for {} UTC\n'.format(parse_time(t).utc))
     print('Distance = {}'.format(get_sunearth_distance(t)))
     print('Semidiameter = {}'.format(solar_semidiameter_angular_size(t)))
     print('True (long, lat) = ({}, {})'.format(true_longitude(t), true_latitude(t)))

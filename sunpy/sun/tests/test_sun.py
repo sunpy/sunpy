@@ -100,3 +100,8 @@ def test_apparent_rightascension():
     assert_quantity_allclose(sun.apparent_rightascension("2012/11/11"), 15.103 * u.hourangle, atol=1e-3 * u.hourangle)
     assert_quantity_allclose(sun.apparent_rightascension("2013/12/13"), 17.356 * u.hourangle, atol=1e-3 * u.hourangle)
     assert_quantity_allclose(sun.apparent_rightascension("2512/04/09"), 1.196 * u.hourangle, atol=1e-3 * u.hourangle)
+
+
+def test_print_params():
+    # Test only for any issues with printing; accuracy is covered by other tests
+    sun.print_params()
