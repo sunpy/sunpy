@@ -21,8 +21,8 @@ from sunpy.util.decorators import add_common_docstring
 
 __all__ = [
     "print_params", "apparent_declination",
-    "apparent_rightascension", "apparent_obliquity_of_ecliptic", "true_declination",
-    "true_rightascension", "true_obliquity_of_ecliptic", "apparent_latitude", "true_latitude",
+    "apparent_rightascension", "true_obliquity_of_ecliptic", "true_declination",
+    "true_rightascension", "mean_obliquity_of_ecliptic", "apparent_latitude", "true_latitude",
     "apparent_longitude", "true_longitude", "carrington_rotation_number", "position",
     "solar_semidiameter_angular_size", "solar_cycle_number"
 ]
@@ -186,9 +186,9 @@ def apparent_latitude(t='now'):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def true_obliquity_of_ecliptic(t='now'):
+def mean_obliquity_of_ecliptic(t='now'):
     """
-    Returns the true obliquity of the ecliptic, using the IAU 2006 definition.
+    Returns the mean obliquity of the ecliptic, using the IAU 2006 definition.
 
     Parameters
     ----------
@@ -213,7 +213,7 @@ def true_rightascension(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    y = np.cos(true_obliquity_of_ecliptic(t)) * np.sin(true_longitude(t))
+    y = np.cos(mean_obliquity_of_ecliptic(t)) * np.sin(true_longitude(t))
     x = np.cos(true_longitude(t))
     true_ra = np.arctan2(y, x)
     return Longitude(true_ra, u.hourangle)
@@ -230,14 +230,14 @@ def true_declination(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    result = np.arcsin(np.sin(true_obliquity_of_ecliptic(t)) * np.sin(true_longitude(t)))
+    result = np.arcsin(np.sin(mean_obliquity_of_ecliptic(t)) * np.sin(true_longitude(t)))
     return Latitude(result, u.deg)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def apparent_obliquity_of_ecliptic(t='now'):
+def true_obliquity_of_ecliptic(t='now'):
     """
-    Returns the apparent obliquity of the ecliptic, using the IAU 2006 definition.
+    Returns the true obliquity of the ecliptic, using the IAU 2006 definition.
 
     Parameters
     ----------
@@ -264,7 +264,7 @@ def apparent_rightascension(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    y = np.cos(apparent_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t))
+    y = np.cos(true_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t))
     x = np.cos(apparent_longitude(t))
     app_ra = np.arctan2(y, x)
     return Longitude(app_ra.to(u.hourangle))
@@ -281,7 +281,7 @@ def apparent_declination(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    result = np.arcsin(np.sin(apparent_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t)))
+    result = np.arcsin(np.sin(true_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t)))
     return Latitude(result, u.deg)
 
 
