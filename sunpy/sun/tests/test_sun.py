@@ -42,9 +42,9 @@ def test_solar_semidiameter_angular_size():
     assert_quantity_allclose(sun.solar_semidiameter_angular_size("2001/07/21"), 944.039007 * u.arcsec, atol=1e-3 * u.arcsec)
 
 
-def test_true_obliquity_of_ecliptic():
+def test_mean_obliquity_of_ecliptic():
     t = Time('1992-10-13', scale='tdb')
-    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t), 84384.8*u.arcsec, atol=0.1*u.arcsec)
+    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t), 84384.8*u.arcsec, atol=0.1*u.arcsec)
 
 
 def test_true_rightascension():
@@ -59,10 +59,9 @@ def test_true_declination():
     assert_quantity_allclose(sun.true_declination("2014/05/27"), 21.245*u.deg, atol=1e-3*u.deg)
 
 
-def test_apparent_obliquity_of_ecliptic():
+def test_true_obliquity_of_ecliptic():
     t = Time('1992-10-13', scale='tdb')
-    assert_quantity_allclose(sun.apparent_obliquity_of_ecliptic(t), 84384.5*u.arcsec,
-                             atol=0.1*u.arcsec)
+    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t), 84384.5*u.arcsec, atol=0.1*u.arcsec)
 
 
 def test_apparent_rightascension():
