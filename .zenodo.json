@@ -5,8 +5,8 @@
     "upload_type": "software",
     "creators": [
         {
-            "affiliation": "1 - DKIST. 2 - Aperio Software",
-            "name": "Stuart Mumford",
+            "affiliation": "1 - University of Sheffield. 2 - National Solar Observatory / DKIST. 3 - Aperio Software",
+            "name": "Stuart J. Mumford",
             "orcid": "0000-0003-4217-4642"
         },
         {
@@ -57,15 +57,17 @@
             "name": "Punyaslok Pattnaik"
         },
         {
-            "affiliation": "DIRAC Institute, UW",
-            "name": "Brigitta M. Sipocz",
+            "affiliation": "DIRAC Institute, Department of Astronomy, University of Washington",
+            "name": "Brigitta M. Sipőcz",
             "orcid": "0000-0002-3713-6337"
         },
         {
             "name": "Rishabh Sharma"
         },
         {
-            "name": "Drew Leonard"
+            "name": "Drew Leonard",
+            "affiliation": "Aperio Software",
+            "orcid": "0000-0001-5270-7487"
         },
         {
             "affiliation": "Virginia Tech",
@@ -85,7 +87,8 @@
             "name": "Asish Panda"
         },
         {
-            "name": "Matt Earnshaw"
+            "name": "Matt Earnshaw",
+            "orcid": "0000-0001-8236-2811"
         },
         {
             "affiliation": "@kossiitkgp",
@@ -99,7 +102,8 @@
             "name": "Laura Hayes"
         },
         {
-            "affiliation": "@sunpy  @fossasia @apache",
+            "affiliation": "IIEST Shibpur",
+            "orcid": "0000-0002-7068-2866",
             "name": "Prateek Chanda"
         },
         {
