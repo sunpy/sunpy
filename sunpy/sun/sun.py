@@ -57,7 +57,7 @@ def solar_semidiameter_angular_size(t='now'):
     """
     # Import here to avoid a circular import
     from sunpy.coordinates import get_sunearth_distance
-    solar_semidiameter_rad = (constants.radius.to(u.AU)) / get_sunearth_distance(t)
+    solar_semidiameter_rad = constants.radius / get_sunearth_distance(t)
     return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
 
 
@@ -112,8 +112,10 @@ def true_longitude(t='now'):
     time = parse_time(t)
     sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
     coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
+
     # Astropy's GeocentricMeanEcliptic includes aberration from Earth motion, so remove it
     lon = coord.lon + Angle('20.496s') * 1*u.AU / coord.distance
+
     return Longitude(lon)
 
 
@@ -157,7 +159,8 @@ def true_latitude(t='now'):
     sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
     coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
 
-    # Astropy's GeocentricMeanEcliptic includes aberration from Earth motion, but it's ignorable
+    # Astropy's GeocentricMeanEcliptic includes aberration from Earth motion, but the contribution
+    # is negligible
     lat = coord.lat
 
     return Latitude(lat)
@@ -179,7 +182,7 @@ def apparent_latitude(t='now'):
     sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
     coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
 
-    # Astropy's GeocentricMeanEcliptic does not include nutation, but it's ignorable
+    # Astropy's GeocentricMeanEcliptic does not include nutation, but the contribution is negligible
     lat = coord.lat
 
     return Latitude(lat)
@@ -188,7 +191,8 @@ def apparent_latitude(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def mean_obliquity_of_ecliptic(t='now'):
     """
-    Returns the mean obliquity of the ecliptic, using the IAU 2006 definition.
+    Returns the mean obliquity of the ecliptic, using the IAU 2006 definition.  No correction for
+    nutation is included.
 
     Parameters
     ----------
@@ -205,7 +209,8 @@ def mean_obliquity_of_ecliptic(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_rightascension(t='now'):
     """
-    Return the true right ascension of the Sun.
+    Return the Sun's true geometric right ascension, referred to the mean equinox of date.  No
+    corrections for nutation or aberration are included.
 
     Parameters
     ----------
@@ -213,16 +218,22 @@ def true_rightascension(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    y = np.cos(mean_obliquity_of_ecliptic(t)) * np.sin(true_longitude(t))
-    x = np.cos(true_longitude(t))
-    true_ra = np.arctan2(y, x)
-    return Longitude(true_ra, u.hourangle)
+    obl = mean_obliquity_of_ecliptic(t)  # excludes nutation
+    lon = true_longitude(t)
+    lat = true_latitude(t)
+
+    # See Astronomical Algorithms (Meeus 1998 p.93)
+    y = np.sin(lon) * np.cos(obl) - np.tan(lat) * np.sin(obl)
+    x = np.cos(lon)
+    result = np.arctan2(y, x)
+    return Longitude(result, u.hourangle)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_declination(t='now'):
     """
-    Return the true declination of the Sun.
+    Return the Sun's true geometric declination, referred to the mean equinox of date.  No
+    corrections for nutation or aberration are included.
 
     Parameters
     ----------
@@ -230,14 +241,20 @@ def true_declination(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    result = np.arcsin(np.sin(mean_obliquity_of_ecliptic(t)) * np.sin(true_longitude(t)))
+    obl = mean_obliquity_of_ecliptic(t)  # excludes nutation
+    lon = true_longitude(t)
+    lat = true_latitude(t)
+
+    # See Astronomical Algorithms (Meeus 1998 p.93)
+    result = np.arcsin(np.sin(lat) * np.cos(obl) + np.cos(lat) * np.sin(obl) * np.sin(lon))
     return Latitude(result, u.deg)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_obliquity_of_ecliptic(t='now'):
     """
-    Returns the true obliquity of the ecliptic, using the IAU 2006 definition.
+    Returns the true obliquity of the ecliptic, using the IAU 2006 definition.  Correction for
+    nutation is included.
 
     Parameters
     ----------
@@ -256,7 +273,8 @@ def true_obliquity_of_ecliptic(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def apparent_rightascension(t='now'):
     """
-    Returns the apparent right ascension of the Sun.
+    Return the Sun's apparent right ascension, referred to the true equinox of date.  Corrections
+    for nutation and aberration (for Earth motion) are included.
 
     Parameters
     ----------
@@ -264,16 +282,22 @@ def apparent_rightascension(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    y = np.cos(true_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t))
-    x = np.cos(apparent_longitude(t))
-    app_ra = np.arctan2(y, x)
-    return Longitude(app_ra.to(u.hourangle))
+    obl = true_obliquity_of_ecliptic(t)  # includes nutation
+    lon = apparent_longitude(t)
+    lat = apparent_latitude(t)
+
+    # See Astronomical Algorithms (Meeus 1998 p.93)
+    y = np.sin(lon) * np.cos(obl) - np.tan(lat) * np.sin(obl)
+    x = np.cos(lon)
+    result = np.arctan2(y, x)
+    return Longitude(result, u.hourangle)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def apparent_declination(t='now'):
     """
-    Returns the apparent declination of the Sun.
+    Return the Sun's apparent declination, referred to the true equinox of date.  Corrections for
+    nutation and aberration (for Earth motion) are included.
 
     Parameters
     ----------
@@ -281,7 +305,12 @@ def apparent_declination(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    result = np.arcsin(np.sin(true_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t)))
+    obl = true_obliquity_of_ecliptic(t)  # includes nutation
+    lon = apparent_longitude(t)
+    lat = apparent_latitude(t)
+
+    # See Astronomical Algorithms (Meeus 1998 p.93)
+    result = np.arcsin(np.sin(lat) * np.cos(obl) + np.cos(lat) * np.sin(obl) * np.sin(lon))
     return Latitude(result, u.deg)
 
 

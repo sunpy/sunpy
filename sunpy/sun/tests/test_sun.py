@@ -68,13 +68,13 @@ def test_apparent_rightascension():
     # Validate against a published value from the Astronomical Almanac (1992)
     t = Time('1992-10-13', scale='tdb')
     assert_quantity_allclose(sun.apparent_rightascension(t), Angle('13h13m30.749s'),
-                             atol=0.5*u.arcsec)
+                             atol=0.01*u.arcsec)
 
 
 def test_apparent_declination():
     # Validate against a published value from the Astronomical Almanac (1992)
     t = Time('1992-10-13', scale='tdb')
-    assert_quantity_allclose(sun.apparent_declination(t), Angle('-7d47m01.74s'), atol=1*u.arcsec)
+    assert_quantity_allclose(sun.apparent_declination(t), Angle('-7d47m01.74s'), atol=0.05*u.arcsec)
 
 
 def test_print_params():
