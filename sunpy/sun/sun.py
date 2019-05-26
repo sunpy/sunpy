@@ -23,9 +23,7 @@ __all__ = [
     "print_params", "apparent_declination",
     "apparent_rightascension", "apparent_obliquity_of_ecliptic", "true_declination",
     "true_rightascension", "true_obliquity_of_ecliptic", "apparent_latitude", "true_latitude",
-    "apparent_longitude", "true_anomaly", "true_longitude",
-    "equation_of_center", "geometric_mean_longitude", "carrington_rotation_number", "mean_anomaly",
-    "longitude_sun_perigee", "mean_ecliptic_longitude", "eccentricity_sun_earth_orbit", "position",
+    "apparent_longitude", "true_longitude", "carrington_rotation_number", "position",
     "solar_semidiameter_angular_size", "solar_cycle_number"
 ]
 
@@ -81,96 +79,6 @@ def position(t='now'):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def eccentricity_sun_earth_orbit(t='now'):
-    """
-    Returns the eccentricity of the Earth's orbit.
-
-    .. warning::
-        This function does not use the coordinates framework, so there may be inconsistencies.
-
-    Parameters
-    ----------
-    t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
-
-    Notes
-    -----
-    Based on formulae in "Astronomical Formulae for Calculators" by Meeus
-    """
-    T = julian_centuries(t)
-    result = 0.016751040 - 0.00004180 * T - 0.0000001260 * T**2
-    return result
-
-
-@add_common_docstring(**_variables_for_parse_time_docstring())
-def mean_ecliptic_longitude(t='now'):
-    """
-    Returns the mean ecliptic longitude of the Sun.
-
-    .. warning::
-        This function does not use the coordinates framework, so there may be inconsistencies.
-
-    Parameters
-    ----------
-    t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
-
-    Notes
-    -----
-    Based on formulae in "Astronomical Formulae for Calculators" by Meeus
-    """
-    T = julian_centuries(t)
-    result = 279.696680 + 36000.76892 * T + 0.0003025 * T**2
-    result = result * u.deg
-    return Longitude(result)
-
-
-@add_common_docstring(**_variables_for_parse_time_docstring())
-def longitude_sun_perigee(t='now'):
-    """
-    Returns the current solar perigee.
-
-    .. warning::
-        This function does not return an accurate value.
-
-    Parameters
-    ----------
-    t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
-    """
-    # TODO: FIX THIS
-    return 1
-
-
-@add_common_docstring(**_variables_for_parse_time_docstring())
-def mean_anomaly(t='now'):
-    """
-    Returns the mean anomaly (the angle through which the Sun has moved
-    assuming a circular orbit).
-
-    .. warning::
-        This function does not use the coordinates framework, so there may be inconsistencies.
-
-    Parameters
-    ----------
-    t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
-
-    Notes
-    -----
-    Based on formulae in "Astronomical Formulae for Calculators" by Meeus
-    """
-    T = julian_centuries(t)
-    result = 358.475830 + 35999.049750 * T - 0.0001500 * T**2 - 0.00000330 * T**3
-    result = result * u.deg
-    return Longitude(result)
-
-
-@add_common_docstring(**_variables_for_parse_time_docstring())
 def carrington_rotation_number(t='now'):
     """
     Return the Carrington Rotation number.
@@ -187,56 +95,6 @@ def carrington_rotation_number(t='now'):
     jd = parse_time(t).jd
     result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
     return result
-
-
-@add_common_docstring(**_variables_for_parse_time_docstring())
-def geometric_mean_longitude(t='now'):
-    """
-    Returns the geometric mean longitude of the Sun.
-
-    .. warning::
-        This function does not use the coordinates framework, so there may be inconsistencies.
-
-    Parameters
-    ----------
-    t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
-
-    Notes
-    -----
-    Based on formulae in "Astronomical Formulae for Calculators" by Meeus
-    """
-    T = julian_centuries(t)
-    result = 279.696680 + 36000.76892 * T + 0.0003025 * T**2
-    result = result * u.deg
-    return Longitude(result)
-
-
-@add_common_docstring(**_variables_for_parse_time_docstring())
-def equation_of_center(t='now'):
-    """
-    Returns the Sun's equation of center.
-
-    .. warning::
-        This function does not use the coordinates framework, so there may be inconsistencies.
-
-    Parameters
-    ----------
-    t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
-
-    Notes
-    -----
-    Based on formulae in "Astronomical Formulae for Calculators" by Meeus
-    """
-    T = julian_centuries(t)
-    mna = mean_anomaly(t)
-    result = ((1.9194600 - 0.0047890 * T - 0.0000140 * T**2) * np.sin(mna) +
-              (0.0200940 - 0.0001000 * T) * np.sin(2 * mna) + 0.0002930 * np.sin(3 * mna))
-    result = result * u.deg
-    return Angle(result)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -257,28 +115,6 @@ def true_longitude(t='now'):
     # Astropy's GeocentricMeanEcliptic includes aberration from Earth motion, so remove it
     lon = coord.lon + Angle('20.496s') * 1*u.AU / coord.distance
     return Longitude(lon)
-
-
-@add_common_docstring(**_variables_for_parse_time_docstring())
-def true_anomaly(t='now'):
-    """
-    Returns the Sun's true anomaly.
-
-    .. warning::
-        This function does not use the coordinates framework, so there may be inconsistencies.
-
-    Parameters
-    ----------
-    t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
-
-    Notes
-    -----
-    Based on formulae in "Astronomical Formulae for Calculators" by Meeus
-    """
-    result = mean_anomaly(t) + equation_of_center(t)
-    return Longitude(result)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
