@@ -63,10 +63,11 @@ that will return a `dict` of all the current meta keywords and their description
 The `header_helper <sunpy.map.header_helper>` functionality also includes a utility function
 `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` that will return a header with the
 appropiate FITS keywords once the map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames`
-is passed. The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` is defined by the
-user, and contains information on the reference coordinate, the required WCS meta and the observer location. The function returns a `sunpy.utils.MetaDict <sunpy.utils.MetaDict>`. The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time. 
+is passed. The `astropy.coordinates.SkyCoord` is defined by the user, and contains information on the reference frame,
+reference coordinate and observer location. The function returns a `sunpy.utils.MetaDict <sunpy.utils.MetaDict>`.
+The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time. 
 
-The `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` function also takes optional keywords arguments including `reference_pixel` and `scale` which describe the pixel coordinate at the reference coordinate (defined by the `SkyCoord`) and the spatial scale of the pixels, respectively. If neither of these are given their values default to the center of the data array and 1 arcsec, respectively.
+The `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` function also takes optional keywords arguments including `reference_pixel` and `scale` which describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinate.SkyCoord`) and the spatial scale of the pixels, respectively. If neither of these are given their values default to the center of the data array and 1 arcsec, respectively.
 
 Here's an example of creating a header from some generic data and an `astropy.coordinate.SkyCoord`::
 
@@ -106,6 +107,7 @@ values of `crpix` and `cdelt` were set to the default values.
 
 These keywords can be passed to the function in the form of an `astropy.units.Quanity` with associated units. 
 Here's another example of passing `reference_pixel` and `scale` to the function::
+    
     >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord, 
                                                              reference_pixel = u.Quantity([5, 5]*u.pixel),
                                                              scale = u.Quantity([2, 2] *u.arcsec/u.pixel))
