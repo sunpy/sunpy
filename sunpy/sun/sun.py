@@ -16,16 +16,17 @@ from astropy import _erfa as erfa
 from astropy.coordinates.builtin_frames.utils import get_jd12
 
 from sunpy.sun import constants
-from sunpy.time import julian_centuries, parse_time
+from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
 __all__ = [
-    "print_params", "apparent_declination",
-    "apparent_rightascension", "true_obliquity_of_ecliptic", "true_declination",
-    "true_rightascension", "mean_obliquity_of_ecliptic", "apparent_latitude", "true_latitude",
-    "apparent_longitude", "true_longitude", "carrington_rotation_number", "position",
-    "solar_semidiameter_angular_size", "solar_cycle_number"
+    "solar_cycle_number", "solar_semidiameter_angular_size", "carrington_rotation_number",
+    "position",
+    "true_longitude", "apparent_longitude", "true_latitude", "apparent_latitude",
+    "mean_obliquity_of_ecliptic", "true_rightascension", "true_declination",
+    "true_obliquity_of_ecliptic", "apparent_rightascension", "apparent_declination",
+    "print_params"
 ]
 
 
@@ -65,8 +66,9 @@ def solar_semidiameter_angular_size(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def position(t='now'):
     """
-    Returns the position of the Sun (right ascension and declination) on the
-    celestial sphere using the equatorial coordinate system.
+    Returns the apparent position of the Sun (right ascension and declination) on the
+    celestial sphere using the equatorial coordinate system, referred to the true equinox of date.
+    Corrections for nutation and aberration (for Earth motion) are included.
 
     Parameters
     ----------
@@ -74,8 +76,8 @@ def position(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    ra = true_rightascension(t)
-    dec = true_declination(t)
+    ra = apparent_rightascension(t)
+    dec = apparent_declination(t)
     return ra, dec
 
 
@@ -132,6 +134,10 @@ def apparent_longitude(t='now'):
     t : {parse_time_types}
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
+
+    Notes
+    -----
+    The nutation model is IAU 2000A nutation with adjustments to match IAU 2006 precession.
     """
     time = parse_time(t)
     sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
@@ -263,6 +269,10 @@ def true_obliquity_of_ecliptic(t='now'):
     t : {parse_time_types}
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
+
+    Notes
+    -----
+    The nutation model is IAU 2000A nutation with adjustments to match IAU 2006 precession.
     """
     time = parse_time(t)
     jd1, jd2 = get_jd12(time, 'tt')
@@ -319,7 +329,10 @@ def apparent_declination(t='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def print_params(t='now'):
     """
-    Print out a summary of Solar ephemeris.
+    Print out a summary of solar ephemeris. 'True' values are true geometric values referred to the
+    mean equinox of date, with no corrections for nutation or aberration.  'Apparent' values are
+    referred to the true equinox of date, with corrections for nutation and aberration (for Earth
+    motion).
 
     Parameters
     ----------
@@ -327,7 +340,7 @@ def print_params(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    # import here to avoid circular import
+    # Import here to avoid circular import
     from sunpy.coordinates.ephemeris import (get_sun_L0, get_sun_B0,
                                              get_sun_P, get_sunearth_distance)
 
