@@ -159,7 +159,7 @@ def _get_new_observer(initial_obstime, observer, time):
     else:
         raise ValueError("Either the 'observer' or the 'time' keyword must not be None.")
 
-    return new_observer.transform_to(HeliographicStonyhurst)
+    return new_observer
 
 
 def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwargs):
@@ -246,14 +246,16 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
     # Rotate the input co-ordinate as seen by the original observer
-    heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot, heliographic_coordinate.lat,
-                                    obstime=coordinate.obstime, observer=coordinate.observer,
+    heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
+                                    heliographic_coordinate.lat,
+                                    heliographic_coordinate.radius,
+                                    obstime=coordinate.obstime, observer=new_observer,
                                     frame=HeliographicStonyhurst)
 
     # Calculate where the rotated co-ordinate appears as seen by new observer,
     # and then transform it into the co-ordinate system of the input
     # co-ordinate.
-    return heliographic_rotated.transform_to(new_observer).transform_to(coordinate.frame.name)
+    return heliographic_rotated.transform_to(coordinate.frame.name)
 
 
 def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
@@ -380,16 +382,25 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
         interval = (parse_time(new_observer.obstime) - parse_time(smap.date)).to(u.s)
 
         # These are the co-ordinates at the new observer.
-        heliographic_coordinate = all_coordinates_from_map(smap).transform_to(new_observer).transform_to(HeliographicStonyhurst)
+        heliographic_coordinate = all_coordinates_from_map(smap).transform_to(HeliographicStonyhurst)
+        heliographic_coordinate = SkyCoord(heliographic_coordinate.lon,
+                                                         heliographic_coordinate.lat,
+                                                         heliographic_coordinate.radius,
+                                                         obstime=new_observer.obstime,
+                                                         observer=new_observer,
+                                           frame=HeliographicStonyhurst)
 
         # Compute the differential rotation.
         drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
         # Subtract the differential rotation.  This is the inverse of adding in
         # differential rotation.
-        rotated_coord = SkyCoord(heliographic_coordinate.lon - drot, heliographic_coordinate.lat,
-                                 obstime=new_observer.obstime, observer=new_observer,
-                                 frame=HeliographicStonyhurst).transform_to(smap.observer_coordinate)
+        rotated_coord = SkyCoord(heliographic_coordinate.lon - drot,
+                                 heliographic_coordinate.lat,
+                                 heliographic_coordinate.radius,
+                                 obstime=heliographic_coordinate.obstime,
+                                 observer=smap.observer_coordinate,
+                                 frame=HeliographicStonyhurst)
 
         # Find which coordinates are not on the visible disk of the Sun.
         with np.errstate(invalid='ignore'):
