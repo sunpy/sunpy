@@ -1,1 +1,1 @@
-Moved to using `AppDirs <https://github.com/ActiveState/appdirs>`_ as the place to host our configuration file.
+Moved to using `AppDirs <https://github.com/ActiveState/appdirs>`__ as the place to host our configuration file.

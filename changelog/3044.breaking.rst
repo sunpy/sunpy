@@ -1,2 +1,1 @@
-Renamed ``sunpy/image/rescale.py`` to ``sunpy/image/resample.py``.
-Therefore imports will have to change.
+Renamed ``sunpy.image.rescale`` to `sunpy.image.resample`.

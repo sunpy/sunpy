@@ -1,1 +1,1 @@
-Added a gallery example for `Downloading and plotting a HMI image` and `Creating a Composite map`.
+Added a gallery example for "Downloading and plotting a HMI image" and "Creating a Composite map".

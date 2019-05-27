@@ -1,3 +1,1 @@
-MapCube has been renamed to MapSequence.
-MapCube does not actually work on cubes but a sequence of maps.
-Due to this change, MapCube is now deprecated but will not be removed until SunPy 1.0.
+``sunpy.map.MapCube`` has been renamed to `sunpy.map.MapSequence` to better reflect its use as a collection of map objects.
