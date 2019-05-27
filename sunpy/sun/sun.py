@@ -5,11 +5,12 @@ import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import Angle, Latitude, Longitude, SkyCoord
-# Versions of Astropy that do not have GeocentricMeanEcliptic have the same frame
-# with the incorrect name GeocentricTrueEcliptic
+# Versions of Astropy that do not have *MeanEcliptic frames have the same frames
+# with the misleading names *TrueEcliptic
 try:
-    from astropy.coordinates import GeocentricMeanEcliptic
+    from astropy.coordinates import HeliocentricMeanEcliptic, GeocentricMeanEcliptic
 except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
     from astropy.coordinates import GeocentricTrueEcliptic as GeocentricMeanEcliptic
 from astropy import _erfa as erfa
 from astropy.coordinates.builtin_frames.utils import get_jd12
@@ -110,11 +111,12 @@ def true_longitude(t='now'):
         time string, number, or a datetime object.
     """
     time = parse_time(t)
-    sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
-    coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
 
-    # Astropy's GeocentricMeanEcliptic includes aberration from Earth motion, so remove it
-    lon = coord.lon + Angle('20.496s') * 1*u.AU / coord.distance
+    # Calculate Earth's true geometric longitude and add 180 degrees for the Sun's longitude.
+    # This approach is used because Astropy's GeocentricMeanEcliptic includes aberration.
+    earth = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='gcrs', obstime=time)
+    coord = earth.transform_to(HeliocentricMeanEcliptic(equinox=time))
+    lon = coord.lon + 180*u.deg
 
     return Longitude(lon)
 
