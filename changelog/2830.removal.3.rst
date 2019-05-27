@@ -1,2 +1,1 @@
-Removed `database.download` in favour of `database.fetch`
-
+Removed ``database.download`` in favour of `sunpy.database.Database.fetch`
