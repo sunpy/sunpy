@@ -1,1 +1,1 @@
-Fix initialization of ``VSOClient`` when no wsdl link is found.
+Fix initialization of `~sunpy.net.vso.VSOClient` when no WSDL link is found.

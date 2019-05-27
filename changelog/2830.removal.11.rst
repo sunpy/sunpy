@@ -1,2 +1,1 @@
-Removed `attr.Wave` in favour of `attr.Wavelength`
-
+Removed ``sunpy.net.attrs.Wave`` in favour of `a.Wavelength <~sunpy.net.vso.attrs.Wavelength>`
