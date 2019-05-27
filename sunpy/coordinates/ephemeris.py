@@ -35,7 +35,8 @@ __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
 def get_body_heliographic_stonyhurst(body, time='now', observer=None):
     """
     Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the location of a
-    solar-system body at a specified time.
+    solar-system body at a specified time.  The location can be corrected for light travel time
+    to an observer.
 
     Parameters
     ----------
@@ -44,13 +45,20 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
     time : various
         Time to use as `~astropy.time.Time` or in a parse_time-compatible format
     observer : `~astropy.coordinates.SkyCoord`
-        If not None, the returned coordinate is the apparent location (i.e., accounts for light
-        travel time)
+        If None, the returned coordinate is the instantaneous or "true" location.
+        If not None, the returned coordinate is the astrometric location (i.e., accounts for light
+        travel time to the specified observer)
 
     Returns
     -------
     out : `~sunpy.coordinates.frames.HeliographicStonyhurst`
         Location of the solar-system body in the `~sunpy.coordinates.HeliographicStonyhurst` frame
+
+    Notes
+    -----
+    There is no correction for aberration due to observer motion.  For a body close to the Sun in
+    angular direction relative to the observer, the correction can be negligible because the
+    apparent location of the body will shift in tandem with the Sun.
     """
     obstime = parse_time(time)
 
@@ -282,8 +290,9 @@ def _sun_north_angle_to_z(frame):
 def get_horizons_coord(body, time='now', id_type='majorbody'):
     """
     Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
-    solar-system body at a specified time.  This function requires the Astroquery package to
-    be installed and requires Internet access.
+    solar-system body at a specified time.  This location is the instantaneous or "true" location,
+    and is not corrected for light travel time or observer motion.  This function requires the
+    Astroquery package to be installed and requires an Internet connection.
 
     Parameters
     ----------
