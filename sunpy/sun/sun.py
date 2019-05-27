@@ -357,5 +357,5 @@ def print_params(t='now'):
                                                  apparent_declination(t).to_string()))
     print('Heliographic long. and lat of disk center = ({}, {})'.format(get_sun_L0(t).to_string(),
                                                                         get_sun_B0(t).to_string()))
-    print('Position angle of north pole in = {}'.format(get_sun_P(t)))
+    print('Position angle of north pole = {}'.format(get_sun_P(t)))
     print('Carrington Rotation Number = {}'.format(carrington_rotation_number(t)))
