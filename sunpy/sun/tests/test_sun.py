@@ -1,3 +1,5 @@
+from astropy.coordinates import Angle
+from astropy.time import Time
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
 
@@ -5,35 +7,27 @@ from sunpy.sun import sun
 
 
 def test_true_longitude():
-    # source: http://www.satellite-calculations.com/Satellite/suncalc.htm
-    # values are deviating a little because of lack of time parameter in
-    # true_longitude function
-    assert_quantity_allclose(sun.true_longitude("2002/12/23"), 270.978 * u.deg, atol=1.1 * u.deg)
-    assert_quantity_allclose(sun.true_longitude("2003/01/29"), 308.661 * u.deg, atol=1.1 * u.deg)
-    assert_quantity_allclose(sun.true_longitude("2004/05/12"), 51.617 * u.deg, atol=1.1 * u.deg)
-    assert_quantity_allclose(sun.true_longitude("2006/07/04"), 101.910 * u.deg, atol=1.1 * u.deg)
-    assert_quantity_allclose(sun.true_longitude("2007/09/16"), 172.767 * u.deg, atol=1.1 * u.deg)
-    assert_quantity_allclose(sun.true_longitude("2009/02/11"), 322.394 * u.deg, atol=1.1 * u.deg)
+    # Validate against a published value from the Astronomical Almanac (1992)
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.true_longitude(t), Angle('199d54m26.17s'), atol=0.1*u.arcsec)
 
 
-def test_apparent_declination():
-    assert_quantity_allclose(sun.apparent_declination("2002/12/22"), -22.964 * u.deg, atol=1 * u.deg)
-    assert_quantity_allclose(sun.apparent_declination("2003/1/12"), -21.743 * u.deg, atol=1 * u.deg)
-    assert_quantity_allclose(sun.apparent_declination("2004/02/13"), -13.478 * u.deg, atol=1 * u.deg)
-    assert_quantity_allclose(sun.apparent_declination("2005/12/3"), -22.152 * u.deg, atol=1 * u.deg)
-    assert_quantity_allclose(sun.apparent_declination("2013/02/26"), -8.547 * u.deg, atol=1 * u.deg)
-    assert_quantity_allclose(sun.apparent_declination("2014/05/1"), 15.141 * u.deg, atol=1 * u.deg)
+def test_apparent_longitude():
+    # Validate against a published value from the Astronomical Almanac (1992)
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.apparent_longitude(t), Angle('199d54m21.56s'), atol=0.1*u.arcsec)
 
 
-def test_mean_anomaly():
-    assert_quantity_allclose(sun.mean_anomaly("2002/12/12"), 337.538 * u.deg, atol=1 * u.deg)
-    assert_quantity_allclose(sun.mean_anomaly("2003/03/25"), 79.055 * u.deg, atol=1 * u.deg)
-    assert_quantity_allclose(sun.mean_anomaly("2005/06/05"), 150.492 * u.deg, atol=1 * u.deg)
-    assert_quantity_allclose(sun.mean_anomaly("2006/11/17"), 312.860 * u.deg, atol=1 * u.deg)
-    assert_quantity_allclose(sun.mean_anomaly("2008/07/29"), 203.933 * u.deg, atol=1 * u.deg)
-    assert_quantity_allclose(sun.mean_anomaly("2011/01/31"), 26.742 * u.deg, atol=1 * u.deg)
+def test_true_latitude():
+    # Validate against a published value from the Astronomical Almanac (1992)
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.true_latitude(t), Angle('0.72s'), atol=0.05*u.arcsec)
 
-# These values are tested from the functions after the integration of astropy.units
+
+def test_apparent_latitude():
+    # Validate against a published value from the Astronomical Almanac (1992)
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.apparent_latitude(t), Angle('0.72s'), atol=0.05*u.arcsec)
 
 
 def test_solar_cycle_number():
@@ -48,58 +42,67 @@ def test_solar_semidiameter_angular_size():
     assert_quantity_allclose(sun.solar_semidiameter_angular_size("2001/07/21"), 944.039007 * u.arcsec, atol=1e-3 * u.arcsec)
 
 
-def test_mean_ecliptic_longitude():
-    assert_quantity_allclose(sun.mean_ecliptic_longitude("2012/11/11"), 230.544 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.mean_ecliptic_longitude("2101/04/29"), 36.811 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.mean_ecliptic_longitude("2003/09/15"), 173.554 * u.deg, atol=1e-3 * u.deg)
+def test_mean_obliquity_of_ecliptic():
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t), 84384.8*u.arcsec, atol=0.1*u.arcsec)
 
 
-def test_equation_of_center():
-    assert_quantity_allclose(sun.equation_of_center("2012/11/11"), -1.540 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.equation_of_center("2014/05/27"), 1.178 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.equation_of_center("2134/01/01"), -0.161 * u.deg, atol=1e-3 * u.deg)
+def test_true_rightascension():
+    assert_quantity_allclose(sun.true_rightascension("2012/11/11"), 226.548*u.deg, atol=1e-3*u.deg)
+    assert_quantity_allclose(sun.true_rightascension("2142/02/03"), 316.466*u.deg, atol=1e-3*u.deg)
+    assert_quantity_allclose(sun.true_rightascension("2013/12/11"), 258.150*u.deg, atol=1e-3*u.deg)
 
 
-def test_true_anomaly():
-    assert_quantity_allclose(sun.true_anomaly("2012/11/11"), 305.842 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_anomaly("2242/06/29"), 170.010 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_anomaly("2020/01/01"), 356.735 * u.deg, atol=1e-3 * u.deg)
-
-
-def test_apparent_longitude():
-    assert_quantity_allclose(sun.apparent_longitude("2012/11/11"), 228.994 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.apparent_longitude("2014/05/27"), 65.648 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.apparent_longitude("2134/02/12"), 323.066 * u.deg, atol=1e-3 * u.deg)
-
-
-def test_true_obliquity_of_ecliptic():
-    assert_quantity_allclose(sun.true_obliquity_of_ecliptic("2012/11/11"), 23.437 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_obliquity_of_ecliptic("2132/12/29"), 23.421 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_obliquity_of_ecliptic("2002/03/15"), 23.438 * u.deg, atol=1e-3 * u.deg)
-
-
-def test_true_rightasenscion():
-    assert_quantity_allclose(sun.true_rightascension("2012/11/11"), 226.550 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_rightascension("2142/02/03"), 316.466 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_rightascension("2013/12/11"), 258.150 * u.deg, atol=1e-3 * u.deg)
+def test_true_rightascension_J2000():
+    # Validate against JPL HORIZONS output
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.true_rightascension(t, equinox_of_date=False),
+                             Angle('13h13m53.65s'), atol=0.01*u.arcsec)
 
 
 def test_true_declination():
-    assert_quantity_allclose(sun.true_declination("2012/11/11"), -17.467 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_declination("2245/12/01"), -21.717 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_declination("2014/05/27"), 21.245 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_declination("2012/11/11"), -17.470*u.deg, atol=1e-3*u.deg)
+    assert_quantity_allclose(sun.true_declination("2245/12/01"), -21.717*u.deg, atol=1e-3*u.deg)
+    assert_quantity_allclose(sun.true_declination("2014/05/27"), 21.245*u.deg, atol=1e-3*u.deg)
 
 
-def test_apparent_obliquity_of_ecliptic():
-    assert_quantity_allclose(sun.apparent_obliquity_of_ecliptic("2012/11/11"), 23.435 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.apparent_obliquity_of_ecliptic("2014/05/27"), 23.438 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.apparent_obliquity_of_ecliptic("2412/02/26"), 23.388 * u.deg, atol=1e-3 * u.deg)
+def test_true_declination_J2000():
+    # Validate against JPL HORIZONS output
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.true_declination(t, equinox_of_date=False),
+                             Angle('-7d49m20.8s'), atol=0.05*u.arcsec)
+
+
+def test_true_obliquity_of_ecliptic():
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t), 84384.5*u.arcsec, atol=0.1*u.arcsec)
 
 
 def test_apparent_rightascension():
-    assert_quantity_allclose(sun.apparent_rightascension("2012/11/11"), 15.103 * u.hourangle, atol=1e-3 * u.hourangle)
-    assert_quantity_allclose(sun.apparent_rightascension("2013/12/13"), 17.356 * u.hourangle, atol=1e-3 * u.hourangle)
-    assert_quantity_allclose(sun.apparent_rightascension("2512/04/09"), 1.196 * u.hourangle, atol=1e-3 * u.hourangle)
+    # Validate against a published value from the Astronomical Almanac (1992)
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.apparent_rightascension(t), Angle('13h13m30.749s'),
+                             atol=0.01*u.arcsec)
+
+
+def test_apparent_rightascension_J2000():
+    # Regression-only test
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.apparent_rightascension(t, equinox_of_date=False),
+                             Angle('13h13m52.37s'), atol=0.01*u.arcsec)
+
+
+def test_apparent_declination():
+    # Validate against a published value from the Astronomical Almanac (1992)
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.apparent_declination(t), Angle('-7d47m01.74s'), atol=0.05*u.arcsec)
+
+
+def test_apparent_declination_J2000():
+    # Regression-only test
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.apparent_declination(t, equinox_of_date=False),
+                             Angle('-7d49m13.09s'), atol=0.05*u.arcsec)
 
 
 def test_print_params():
