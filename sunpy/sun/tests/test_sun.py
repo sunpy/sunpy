@@ -53,10 +53,24 @@ def test_true_rightascension():
     assert_quantity_allclose(sun.true_rightascension("2013/12/11"), 258.150*u.deg, atol=1e-3*u.deg)
 
 
+def test_true_rightascension_J2000():
+    # Validate against JPL HORIZONS output
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.true_rightascension(t, equinox_of_date=False),
+                             Angle('13h13m53.65s'), atol=0.01*u.arcsec)
+
+
 def test_true_declination():
     assert_quantity_allclose(sun.true_declination("2012/11/11"), -17.470*u.deg, atol=1e-3*u.deg)
     assert_quantity_allclose(sun.true_declination("2245/12/01"), -21.717*u.deg, atol=1e-3*u.deg)
     assert_quantity_allclose(sun.true_declination("2014/05/27"), 21.245*u.deg, atol=1e-3*u.deg)
+
+
+def test_true_declination_J2000():
+    # Validate against JPL HORIZONS output
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.true_declination(t, equinox_of_date=False),
+                             Angle('-7d49m20.8s'), atol=0.05*u.arcsec)
 
 
 def test_true_obliquity_of_ecliptic():
@@ -71,10 +85,24 @@ def test_apparent_rightascension():
                              atol=0.01*u.arcsec)
 
 
+def test_apparent_rightascension_J2000():
+    # Regression-only test
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.apparent_rightascension(t, equinox_of_date=False),
+                             Angle('13h13m52.37s'), atol=0.01*u.arcsec)
+
+
 def test_apparent_declination():
     # Validate against a published value from the Astronomical Almanac (1992)
     t = Time('1992-10-13', scale='tdb')
     assert_quantity_allclose(sun.apparent_declination(t), Angle('-7d47m01.74s'), atol=0.05*u.arcsec)
+
+
+def test_apparent_declination_J2000():
+    # Regression-only test
+    t = Time('1992-10-13', scale='tdb')
+    assert_quantity_allclose(sun.apparent_declination(t, equinox_of_date=False),
+                             Angle('-7d49m13.09s'), atol=0.05*u.arcsec)
 
 
 def test_print_params():
