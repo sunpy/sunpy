@@ -34,8 +34,7 @@ def meta_keywords():
 def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
                         scale: u.arcsec/u.pix = None,
                         rotation_angle: u.deg = None,
-                        rotation_matrix_pc=None,
-                        rotation_matrix_cd=None,
+                        rotation_matrix=None,
                         **kwargs):
     """
     Function to create a FITS-WCS header from a coordinate object
@@ -57,13 +56,12 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
         expected to be Cartestian ordered, i.e [dx, dy].
         Defaults to ``([1., 1.] arcsec/pixel)``.
     rotation_angle : `~astropy.unit.Quantity`, optional
-        Coordinate system reference angle i.e. the rotation of the pixel array wrt the WCS.
-    rotation_matrix_pc : `~np.ndarray` of dimensions 2x2, optional
+        Coordinate system rotation angle, will be converted to a rotation
+        matrix and stored in the `PCi_j` matrix. Can not be specified with
+        ``rotation_matrix``.
+    rotation_matrix : `~numpy.ndarray` of dimensions 2x2, optional
         Matrix describing the rotation required to align solar North with
-        the top of the image in PCi_j convention.
-    rotation_matrix_cd : `~np.ndarray` of dimensions 2x2, optional
-        Matrix describing the rotation required to align solar North with
-        the top of the image in CDi_j convention.
+        the top of the image in FITS PCi_j convention. Can not be specified with ``rotation_angle``.
     **kwargs:
         Additional arguments that will be put into the metadict header if they
         are in the list returned by `~sunpy.map.meta_keywords`. Additional
@@ -131,15 +129,21 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0]*meta_wcs['cunit1']/u.pixel,
                                               scale[1]*meta_wcs['cunit2']/u.pixel)
 
-    if rotation_angle is not None:
-        meta_wcs['crota2'] = rotation_angle.to_value()
+    if rotation_angle is not None and rotation_matrix is not None:
+        raise ValueError("Can not specify both rotation angle and rotation matrix.")
 
-    if rotation_matrix_pc is not None:
-        meta_wcs['PC1_1'], meta_wcs['PC1_2'], meta_wcs['PC2_1'], meta_wcs['PC2_2'] = rotation_matrix_pc[0, 0], rotation_matrix_pc[0, 1], \
-                                                                                     rotation_matrix_pc[1, 0], rotation_matrix_pc[1, 1]
-    if rotation_matrix_cd is not None:
-        meta_wcs['CD1_1'], meta_wcs['CD1_2'], meta_wcs['CD2_1'], meta_wcs['CD2_2'] = rotation_matrix_cd[0, 0], rotation_matrix_cd[0, 1], \
-                                                                                     rotation_matrix_cd[1, 0], rotation_matrix_cd[1, 1]
+    if rotation_angle is not None:
+        lam = scale[0] / scale[1]
+        p = np.deg2rad(rotation_angle)
+
+        rotation_matrix = np.array([[np.cos(p), -1 * lam * np.sin(p)],
+                                    [1/lam * np.sin(p), np.cos(p)]])
+
+    if rotation_matrix is not None:
+        (meta_wcs['PC1_1'], meta_wcs['PC1_2'],
+         meta_wcs['PC2_1'], meta_wcs['PC2_2']) = (rotation_matrix[0, 0], rotation_matrix[0, 1],
+                                                  rotation_matrix[1, 0], rotation_matrix[1, 1])
+
     meta_dict = MetaDict(meta_wcs)
 
     for key in kwargs:
