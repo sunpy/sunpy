@@ -9,13 +9,63 @@ What's New in SunPy 1.0?
 Overview
 ========
 
-SunPy 1.0 brings <Fill in>
+SunPy 1.0 now uses Astropy Time everywhere
+This and all future versions of SunPy will support only Python 3.6 and higher.
+This is because Python 2 `will not be maintained after 2019 <https://python3statement.org/>`_.
+The 0.9.x series will receive bugfixes only up until the end of life of Python 2 (around 6 months).
+No new functionality will be added to the 0.9.x series, which will also be the last version to include `sunpy.spectra`, `sunpy.lightcurve` and `sunpy.wcs`, all of which were deprecated in 0.8.
+All new functionality will be available only in SunPy 1.0 and higher.
+
+On this page, you can read about some of the big changes in this release:
+
+* :ref:`whatsnew-1.0-python`
+* :ref:`whatsnew-0.9-time`
+* :ref:`whatsnew-0.9-download`
+* :ref:`whatsnew-0.9-renamed-removed`
+
+SunPy 1.0 includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+By the numbers:
+
+* 1691 commits have been added since 0.9
+* 546 issues have been closed since 0.9
+* ??? pull requests have been merged since 0.9
+* 48 people have contributed since 0.9
+* 21 new contributors
+
+There are numerous breaking changes to SunPy, notably in the implementation of time, which has been switched to using Astropy yimr
+There have been numerous improvements to large parts of SunPy, notably in the content of SunPy's documentation, and the continuous integration testing of SunPy.
+In addition, SunPy co-ordinate system functionality has been improved, and the transformation between SunPy specific co-ordinate systems and those implemented by Astropy is now tested.
+
+.. _whatsnew-1.0-python:
 
 Supported versions of Python
 ============================
 
-
 SunPy is tested against Python 3.6, and 3.7.
+
+.. _whatsnew-1.0-time:
+
+Astropy Time is used everywhere
+===============================
+
+SunPy now uses Astropy's Time object everywhere to represent time.  For a full
+
+.. _whatsnew-1.0-download:
+
+Improved file downloading capability
+====================================
+
+Parallel file downloading has been implemented using the parfive package.  This improves download speed
+The file download capability has been re-written to use the parfive package.
+
+
+Improved file downloading capability
+====================================
+
+Parallel file downloading has been implemented using the parfive package.  This improves download speed
+The file download capability has been re-written to use the parfive package.
+
 
 Renamed/removed functionality
 =============================
