@@ -107,8 +107,8 @@ values of ``crpix`` and ``cdelt`` were set to the default values.
 These keywords can be passed to the function in the form of an `astropy.units.Quanity` with associated units. 
 Here's another example of passing ``reference_pixel`` and ``scale`` to the function::
     
-    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord, 
-                                                             reference_pixel = u.Quantity([5, 5]*u.pixel),
+    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,\
+                                                             reference_pixel = u.Quantity([5, 5]*u.pixel),\
                                                              scale = u.Quantity([2, 2] *u.arcsec/u.pixel))
     >>> header
     MetaDict([('wcsaxes', 2),
@@ -140,10 +140,10 @@ function and will be translated to the FITS standard: ``observtory``, ``instrume
 
 An example of creating a header with these additional keywords::
 
-    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord, 
-                                                             reference_pixel = u.Quantity([5, 5]*u.pixel),
-                                                             scale = u.Quantity([2, 2] *u.arcsec/u.pixel), 
-                                                             instrument = 'Test case', detector = 'UV detector',
+    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,\
+                                                             reference_pixel = u.Quantity([5, 5]*u.pixel),\
+                                                             scale = u.Quantity([2, 2] *u.arcsec/u.pixel),\
+                                                             instrument = 'Test case', detector = 'UV detector',\
                                                              wavelength = 1000, waveunit = 'angstrom')
     >>> header
     MetaDict([('wcsaxes', 2),
@@ -172,8 +172,8 @@ An example of creating a header with these additional keywords::
     
 From these header MetaDict's that are generated, we can now create a custom map::
 
-    >>> my_map = sunpy.map.Map(data, header)
-    >>> my_map.peek()    
+    >>> my_map = sunpy.map.Map(data, header) # doctest: +SKIP
+    >>> my_map.peek()
 
 Inspecting maps
 ---------------
