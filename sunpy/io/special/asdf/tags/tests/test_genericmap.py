@@ -13,6 +13,7 @@ from asdf.tests.helpers import assert_roundtrip_tree  # noqa
 
 import sunpy.map  # noqa
 from sunpy.data.test import get_test_filepath  # noqa
+from sunpy.tests.helpers import asdf_entry_points
 from sunpy.io.special.asdf.extension import SunpyExtension  # noqa
 
 
@@ -31,6 +32,7 @@ skip_windows_asdf = pytest.mark.skipif(
 
 
 @skip_windows_asdf
+@asdf_entry_points
 def test_genericmap_basic(aia171_test_map, tmpdir):
 
     tree = {'smap': aia171_test_map}
@@ -39,6 +41,7 @@ def test_genericmap_basic(aia171_test_map, tmpdir):
 
 
 @skip_windows_asdf
+@asdf_entry_points
 def test_genericmap_mask(aia171_test_map, tmpdir):
 
     mask = np.zeros_like(aia171_test_map.data)

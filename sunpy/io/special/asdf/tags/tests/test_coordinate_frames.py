@@ -7,6 +7,7 @@ import pytest
 import astropy.units as u
 from asdf.tests.helpers import assert_roundtrip_tree
 
+from sunpy.tests.helpers import asdf_entry_points
 from sunpy.coordinates.frames import (Heliocentric, HeliographicCarrington,
                                       HeliographicStonyhurst, Helioprojective)
 
@@ -16,6 +17,7 @@ asdf = pytest.importorskip('asdf', '2.0.2')
 @pytest.fixture(
     params=(Heliocentric, HeliographicCarrington, HeliographicStonyhurst,
             Helioprojective))
+@asdf_entry_points
 def coordframe_scalar(request):
     frame = request.param
 
@@ -30,6 +32,7 @@ def coordframe_scalar(request):
 @pytest.fixture(
     params=(Heliocentric, HeliographicCarrington, HeliographicStonyhurst,
             Helioprojective))
+@asdf_entry_points
 def coordframe_array(request):
     frame = request.param
 
@@ -50,12 +53,14 @@ skip_windows_asdf = pytest.mark.skipif(
 
 
 @skip_windows_asdf
+@asdf_entry_points
 def test_saveframe(coordframe_scalar, tmpdir):
     tree = {'frame': coordframe_scalar}
     assert_roundtrip_tree(tree, tmpdir)
 
 
 @skip_windows_asdf
+@asdf_entry_points
 def test_saveframe_arr(coordframe_array, tmpdir):
     tree = {'frame': coordframe_array}
     assert_roundtrip_tree(tree, tmpdir)
