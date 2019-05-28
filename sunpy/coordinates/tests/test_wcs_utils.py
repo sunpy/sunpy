@@ -18,6 +18,15 @@ def test_hpc():
     assert isinstance(result, Helioprojective)
 
 
+def test_hpc_flipped():
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['HPLT', 'HPLN']
+
+    result = solar_wcs_frame_mapping(wcs)
+
+    assert isinstance(result, Helioprojective)
+
+
 def test_hgs():
     wcs = WCS(naxis=2)
     wcs.wcs.ctype = ['HGLN', 'HGLT']
