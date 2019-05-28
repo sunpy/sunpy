@@ -37,18 +37,143 @@ may vary. SunPy can also create maps from the jpg2000 files from
 
 Creating Custom Maps
 --------------------
-It is also possible to create maps using custom data (e.g. from a simulation).
-To do this you need to provide `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`
-with both the data array as well as some basic meta information. If no header is
-given then some default values are assumed. Here is a simple example::
+It is also possible to create maps using custom data (e.g. from a simulation or an observation
+from a data source that is not explicitly supported in SunPy.) To do this you need to provide
+`sunpy.map.Map <sunpy.map.map_factory.MapFactory>` with both the data array as well as appropriate
+meta information. The meta information is important as it informs the `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`
+of the correct coordinate information associated with the data array. The meta information should be provided to
+`sunpy.map.Map <sunpy.map.map_factory.MapFactory>` in the form of a header as a `dict` or `MetaDict <sunpy.util.MetaDict>`.
+
+The keys that are required for the header information follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_. SunPy now provides a map header helper function to assist the user in creating a header that contains the correct meta information
+to generate a `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`.
+
+The helper functionality includes a `meta_keywords <sunpy.map.header_helper.meta_keywords>` function
+that will return a `dict` of all the current meta keywords and their descriptions currently used by
+`sunpy.map.Map <sunpy.map.map_factory.MapFactory>` to make a map::
+
+    >>> from sunpy.map import header_helper
+
+    >>> header_helper.meta_keywords() # doctest: +SKIP
+    {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
+     'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
+     'crval1': 'Coordinate value at reference point on naxis1 **required'
+     ...
+
+The `header_helper <sunpy.map.header_helper>` functionality also includes a utility function
+`make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` that will return a header with the
+appropiate FITS keywords once the map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames`
+is passed. The `astropy.coordinates.SkyCoord` is defined by the user, and contains information on the reference frame,
+reference coordinate and observer location. The function returns a `sunpy.utils.MetaDict <sunpy.utils.MetaDict>`.
+The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time.
+
+The `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` function also takes optional keywords arguments including ``reference_pixel`` and ``scale`` which describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinate.SkyCoord`) and the spatial scale of the pixels, respectively. If neither of these are given their values default to the center of the data array and 1 arcsec, respectively.
+
+Here's an example of creating a header from some generic data and an `astropy.coordinate.SkyCoord`::
 
     >>> import numpy as np
+    >>> import astropy.units as u
+    >>> from sunpy.coordinates import frames
+    >>> from astropy.coordinates import SkyCoord
 
     >>> data = np.arange(0,100).reshape(10,10)
-    >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy', 'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-    >>> my_map = sunpy.map.Map(data, header)
+    >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
+    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord)
+    >>> header
+    MetaDict([('wcsaxes', 2),
+          ('crpix1', 5.5),
+          ('crpix2', 5.5),
+          ('cdelt1', <Quantity 1. arcsec2 / pix>),
+          ('cdelt2', <Quantity 1. arcsec2 / pix>),
+          ('cunit1', Unit("arcsec")),
+          ('cunit2', Unit("arcsec")),
+          ('ctype1', 'HPLN-TAN'),
+          ('ctype2', 'HPLT-TAN'),
+          ('crval1', 0.0),
+          ('crval2', 0.0),
+          ('lonpole', 180.0),
+          ('latpole', 0.0),
+          ('date-obs', '2013-10-28T00:00:00.000'),
+          ('hgln_obs', 0.0),
+          ('hglt_obs', 4.7711570596394015),
+          ('dsun_obs', 148644585949.4918),
+          ('rsun_ref', 695700.0),
+          ('rsun_obs', 965.3723815059902)])
 
-The keys in the header follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_.
+From this we can see now that the function returned a `sunpy.utils.MetaDict` that populated
+the standard FITS keywords with information provided by the passed `astropy.coordinates.SkyCoord`,
+and the data array. Since the ``reference_pixel`` and keywords were not passed in the example above, the
+values of ``crpix`` and ``cdelt`` were set to the default values.
+
+These keywords can be passed to the function in the form of an `astropy.units.Quanity` with associated units.
+Here's another example of passing ``reference_pixel`` and ``scale`` to the function::
+
+    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
+    ...                                                      reference_pixel=u.Quantity([5, 5]*u.pixel),
+    ...                                                      scale=u.Quantity([2, 2] *u.arcsec/u.pixel))
+    >>> header
+    MetaDict([('wcsaxes', 2),
+          ('crpix1', 5.0),
+          ('crpix2', 5.0),
+          ('cdelt1', <Quantity 2. arcsec2 / pix2>),
+          ('cdelt2', <Quantity 2. arcsec2 / pix2>),
+          ('cunit1', Unit("arcsec")),
+          ('cunit2', Unit("arcsec")),
+          ('ctype1', 'HPLN-TAN'),
+          ('ctype2', 'HPLT-TAN'),
+          ('crval1', 0.0),
+          ('crval2', 0.0),
+          ('lonpole', 180.0),
+          ('latpole', 0.0),
+          ('date-obs', '2013-10-28T00:00:00.000'),
+          ('hgln_obs', 0.0),
+          ('hglt_obs', 4.7711570596394015),
+          ('dsun_obs', 148644585949.4918),
+          ('rsun_ref', 695700.0),
+          ('rsun_obs', 965.3723815059902)])
+
+As we can see, a list of WCS and observer meta information is contained within the generated headers,
+however we may want to include other meta information including the observatory name, the wavelength and
+waveunit of the observation. Any of the keywords listed in `header_helper.meta_keywords` can be passed
+to the `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` and will then populate the returned MetaDict header.
+Furthermore, the following observation keywords can be passed to the `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>`
+function and will be translated to the FITS standard: ``observtory``, ``instrument``,``telescope``, ``wavelength``, ``exposure``.
+
+An example of creating a header with these additional keywords::
+
+    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
+    ...                                                      reference_pixel = u.Quantity([5, 5]*u.pixel),
+    ...                                                      scale = u.Quantity([2, 2] *u.arcsec/u.pixel),
+    ...                                                      instrument = 'Test case', detector = 'UV detector',
+    ...                                                      wavelength = 1000, waveunit = 'angstrom')
+    >>> header
+    MetaDict([('wcsaxes', 2),
+          ('crpix1', 5.0),
+          ('crpix2', 5.0),
+          ('cdelt1', <Quantity 2. arcsec2 / pix2>),
+          ('cdelt2', <Quantity 2. arcsec2 / pix2>),
+          ('cunit1', Unit("arcsec")),
+          ('cunit2', Unit("arcsec")),
+          ('ctype1', 'HPLN-TAN'),
+          ('ctype2', 'HPLT-TAN'),
+          ('crval1', 0.0),
+          ('crval2', 0.0),
+          ('lonpole', 180.0),
+          ('latpole', 0.0),
+          ('date-obs', '2013-10-28T00:00:00.000'),
+          ('hgln_obs', 0.0),
+          ('hglt_obs', 4.7711570596394015),
+          ('dsun_obs', 148644585949.4918),
+          ('rsun_ref', 695700.0),
+          ('rsun_obs', 965.3723815059902),
+          ('instrume', 'Test case'),
+          ('wavelnth', 1000),
+          ('detector', 'UV detector'),
+          ('waveunit', 'angstrom')])
+
+From these header MetaDict's that are generated, we can now create a custom map::
+
+    >>> my_map = sunpy.map.Map(data, header) # doctest: +SKIP
+    >>> my_map.peek() # doctest: +SKIP
 
 Inspecting maps
 ---------------
@@ -90,9 +215,9 @@ attributes. A number of other attributes are also available, for example the
 `~sunpy.map.GenericMap.date`, `~sunpy.map.GenericMap.exposure_time`,
 `~sunpy.map.GenericMap.center` and others (see `~sunpy.map.GenericMap`)::
 
-    >>> map_date = my_map.date
-    >>> map_exptime = my_map.exposure_time
-    >>> map_center = my_map.center
+    >>> map_date = my_map.date  # doctest: +REMOTE_DATA
+    >>> map_exptime = my_map.exposure_time  # doctest: +REMOTE_DATA
+    >>> map_center = my_map.center  # doctest: +REMOTE_DATA
 
 To get a list of all of the attributes check the documentation by typing::
 
@@ -104,7 +229,7 @@ please refer to :ref:`units-coordinates-sunpy` for more details.
 
 The meta data for the map is accessed by ::
 
-    >>> header = my_map.meta
+    >>> header = my_map.meta  # doctest: +REMOTE_DATA
 
 This references the meta data dictionary with the header information as read
 from the source file.
@@ -141,8 +266,8 @@ attribute, however returning an `~astropy.units.quantity.Quantity`.
 If you'd like to use the data in a SunPy `~sunpy.map.GenericMap` object
 elsewhere, you can use either of the following::
 
-    >>> var = my_map.data
-    >>> var = my_map.data.copy()
+    >>> var = my_map.data  # doctest: +REMOTE_DATA
+    >>> var = my_map.data.copy()  # doctest: +REMOTE_DATA
 
 Python makes use of pointers so if you want to alter the data and keep the
 original data in the map intact make sure to copy it.
