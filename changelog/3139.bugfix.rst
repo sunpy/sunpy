@@ -1,1 +1,1 @@
-Add support for rotation parameters to `sunpy.map.make_fitswcs_header`
+Add support for rotation parameters to `sunpy.map.make_fitswcs_header`.

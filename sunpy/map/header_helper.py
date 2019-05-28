@@ -57,11 +57,12 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
         Defaults to ``([1., 1.] arcsec/pixel)``.
     rotation_angle : `~astropy.unit.Quantity`, optional
         Coordinate system rotation angle, will be converted to a rotation
-        matrix and stored in the `PCi_j` matrix. Can not be specified with
+        matrix and stored in the ``PCi_j`` matrix. Can not be specified with
         ``rotation_matrix``.
     rotation_matrix : `~numpy.ndarray` of dimensions 2x2, optional
         Matrix describing the rotation required to align solar North with
-        the top of the image in FITS PCi_j convention. Can not be specified with ``rotation_angle``.
+        the top of the image in FITS ``PCi_j`` convention. Can not be specified
+        with ``rotation_angle``.
     **kwargs:
         Additional arguments that will be put into the metadict header if they
         are in the list returned by `~sunpy.map.meta_keywords`. Additional
