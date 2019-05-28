@@ -118,7 +118,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     if reference_pixel is None:
         reference_pixel = u.Quantity([(data.shape[1] + 1)/2.*u.pixel, (data.shape[0] + 1)/2.*u.pixel])
     if scale is None:
-        scale = u.Quantity([1.0*u.arcsec, 1.0*u.arcsec])
+        scale = [1., 1.] * (u.arcsec/u.pixel)
 
     meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lat.to_value(meta_wcs['cunit1']),
                                               coordinate.spherical.lon.to_value(meta_wcs['cunit2']))
@@ -126,14 +126,14 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel),
                                               reference_pixel[1].to_value(u.pixel))
 
-    meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0]*meta_wcs['cunit1']/u.pixel,
-                                              scale[1]*meta_wcs['cunit2']/u.pixel)
+    meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0].to_value(meta_wcs['cunit1']/u.pixel),
+                                              scale[1].to_value(meta_wcs['cunit2']/u.pixel))
 
     if rotation_angle is not None and rotation_matrix is not None:
         raise ValueError("Can not specify both rotation angle and rotation matrix.")
 
     if rotation_angle is not None:
-        lam = scale[0] / scale[1]
+        lam = meta_wcs['cdelt1'] / meta_wcs['cdelt2']
         p = np.deg2rad(rotation_angle)
 
         rotation_matrix = np.array([[np.cos(p), -1 * lam * np.sin(p)],
@@ -177,7 +177,7 @@ def _get_wcs_meta(coordinate):
 
     cunit1, cunit2 = skycoord_wcs.wcs.cunit
     coord_meta = dict(skycoord_wcs.to_header())
-    coord_meta['cunit1'], coord_meta['cunit2'] = cunit1, cunit2
+    coord_meta['cunit1'], coord_meta['cunit2'] = cunit1.to_string("fits"), cunit2.to_string("fits")
 
     return coord_meta
 
