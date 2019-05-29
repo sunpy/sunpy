@@ -106,5 +106,5 @@ If not, please provide the following information in your e-mail to the `mailing 
     If you can't post a piece of code that we can run and reproduce your error, the chances of getting help are significantly diminished.
     Very often, the mere act of trying to minimize your code to the smallest bit that produces the error will help you find a bug in **your** code that is causing the problem.
 
-.. mailing list: https://groups.google.com/forum/#!forum/sunpy
-.. issue tracker:  https://github.com/sunpy/sunpy/issues
+.. _`mailing list`: https://groups.google.com/forum/#!forum/sunpy
+.. _`issue tracker`:  https://github.com/sunpy/sunpy/issues
