@@ -22,8 +22,6 @@ class DataManager:
 
         Parameters
         ----------
-        func: function
-        function for the decorator
         name: str
         The name to reference the file with
         urls: list
@@ -32,6 +30,7 @@ class DataManager:
         Hash of file
         """
         def decorator(func):
+            @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 # skip hash check = down
                 # skip file name = down or replace
