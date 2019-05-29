@@ -36,13 +36,13 @@ class StorageProviderBase(metaclass=ABCMeta):
 
 class InMemStorage(StorageProviderBase):
     def __init__(self):
-        self.cache = []
+        self._store = []
 
     def store(self, details):
-        self.cache += [details]
+        self._store += [details]
 
     def find_by_hash(self, file_hash):
-        for i in self.cache:
+        for i in self._store:
             if i['file_hash'] == file_hash:
                 return i
         return None
