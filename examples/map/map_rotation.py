@@ -33,10 +33,15 @@ print(aia_map.meta)
 ##############################################################################
 # Maps can also be rotated by using the `~sunpy.map.GenericMap.rotate` method
 # with a specified angle, supplied as an Astropy Quantity with angular units:
-aia_rotated = aia_map.rotate(angle = 30 * u.deg)
-aia_rotated.peek(draw_limb=True, draw_grid=True)
+aia_rotated = aia_map.rotate(angle=30 * u.deg)
+
+plt.figure()
+aia_rotated.plot()
+aia_rotated.draw_limb()
+aia_rotated.draw_grid()
+
 # Or using Radians
-aia_rotated = aia_map.rotate(angle = 0.5 * u.rad)
+aia_rotated = aia_map.rotate(angle=0.5 * u.rad)
 # Note: the data array is expanded so that none of the original data is lost
 # through clipping.
 # Also note that subsequent rotations are not compunded, the map is only rotated

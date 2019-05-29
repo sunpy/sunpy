@@ -6,6 +6,7 @@ from collections import OrderedDict
 
 import matplotlib.dates
 import numpy as np
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 
@@ -16,6 +17,7 @@ import sunpy.io
 from sunpy.time import TimeRange, is_time_in_given_format, parse_time
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+from sunpy.visualization import peek_show
 
 __all__ = ['XRSTimeSeries']
 
@@ -51,6 +53,7 @@ class XRSTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'xrs'
 
+    @peek_show
     def peek(self, title="GOES Xray Flux"):
         """
         Plots GOES XRS light curve is the usual manner. An example is shown
@@ -105,7 +108,8 @@ class XRSTimeSeries(GenericTimeSeries):
 
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
-        figure.show()
+
+        return figure
 
     # TODO: is this part of the DL pipeline? If so delete.
     @staticmethod

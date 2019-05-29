@@ -1,10 +1,13 @@
-import pytest
-from sunpy.util.metadata import MetaDict
-import sunpy.map
 import numpy as np
+import pytest
+
+import astropy.units as u
 from astropy.coordinates import SkyCoord
-from astropy import units as u
+from astropy.wcs import WCS
+
+import sunpy.map
 from sunpy.coordinates import frames
+from sunpy.util.metadata import MetaDict
 
 
 # test setups
@@ -15,22 +18,26 @@ def map_data():
 
 @pytest.fixture
 def hpc_test_header():
-    return SkyCoord(0*u.arcsec, 0*u.arcsec, observer='earth', obstime='2013-10-28 00:00', frame=frames.Helioprojective)
+    return SkyCoord(0*u.arcsec, 0*u.arcsec, observer='earth',
+                    obstime='2013-10-28 00:00', frame=frames.Helioprojective)
 
 
 @pytest.fixture
 def hgc_test_header():
-    return SkyCoord(70*u.deg, -30*u.deg, observer='earth', obstime='2013-10-28 00:00', frame=frames.HeliographicCarrington)
+    return SkyCoord(70*u.deg, -30*u.deg, observer='earth',
+                    obstime='2013-10-28 00:00', frame=frames.HeliographicCarrington)
 
 
 @pytest.fixture
 def hgs_test_header():
-    return SkyCoord(-50*u.deg, 50*u.deg, observer='earth',  obstime='2013-10-28 00:00', frame=frames.HeliographicStonyhurst)
+    return SkyCoord(-50*u.deg, 50*u.deg, observer='earth',
+                    obstime='2013-10-28 00:00', frame=frames.HeliographicStonyhurst)
 
 
 @pytest.fixture
 def hcc_test_header():
-    return SkyCoord(-72241*u.km, 361206.1*u.km, 589951.4*u.km, obstime='2013-10-28 00:00', frame=frames.Heliocentric)
+    return SkyCoord(-72241*u.km, 361206.1*u.km, 589951.4*u.km,
+                    obstime='2013-10-28 00:00', frame=frames.Heliocentric)
 
 
 @pytest.fixture
@@ -44,7 +51,22 @@ def test_metakeywords():
     assert isinstance(meta, dict)
 
 
-def test_make_fits_header(map_data, hpc_test_header, hgc_test_header, hgs_test_header, hcc_test_header, hpc_test_header_notime):
+def test_rotation_angle(map_data, hpc_test_header):
+    header = sunpy.map.make_fitswcs_header(map_data, hpc_test_header,
+                                           rotation_angle=90*u.deg)
+    wcs = WCS(header)
+    np.testing.assert_allclose(wcs.wcs.pc, [[0, -1], [1, 0]], atol=1e-5)
+
+
+def test_rotation_matrix(map_data, hpc_test_header):
+    header = sunpy.map.make_fitswcs_header(map_data, hpc_test_header,
+                                           rotation_matrix=np.array([[1, 0], [0, 1]]))
+    wcs = WCS(header)
+    np.testing.assert_allclose(wcs.wcs.pc, [[1, 0], [0, 1]], atol=1e-5)
+
+
+def test_make_fits_header(map_data, hpc_test_header, hgc_test_header,
+                          hgs_test_header, hcc_test_header, hpc_test_header_notime):
 
     # Check that different coordinate frames return header MetaDict or not in the case of HCC
     assert isinstance(sunpy.map.make_fitswcs_header(map_data, hpc_test_header), MetaDict)
@@ -68,12 +90,15 @@ def test_make_fits_header(map_data, hpc_test_header, hgc_test_header, hgs_test_h
     assert header['crpix1'] == 5.5
     assert header['ctype1'] == 'HPLN-TAN'
     assert header['dsun_obs'] == hpc_test_header.frame.observer.radius.to_value(u.m)
+    assert isinstance(WCS(header), WCS)
 
     # Check no observer info for HGS and HGC
     header = sunpy.map.make_fitswcs_header(map_data, hgs_test_header)
     assert header.get('dsun_obs') is None
+    assert isinstance(WCS(header), WCS)
     header = sunpy.map.make_fitswcs_header(map_data, hgc_test_header)
     assert header.get('dsun_obs') is None
+    assert isinstance(WCS(header), WCS)
 
     # Check arguments not given as astropy Quantities
     with pytest.raises(TypeError):

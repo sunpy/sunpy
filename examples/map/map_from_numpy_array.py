@@ -18,7 +18,7 @@ import sunpy.data.sample
 ##############################################################################
 # SunPy Maps store 2D data in a numpy array and additional data in a metadata
 # dictionary giving information relating to the data and instrument.
-data = np.random.rand(20,15)
+data = np.random.rand(20, 15)
 header = {'cunit1': 'arcsec', 'cunit2': 'arcsec'}
 manual_map = sunpy.map.Map((data, header))
 
@@ -30,6 +30,8 @@ manual_map = sunpy.map.Map((data, header))
 print(manual_map.coordinate_system)
 
 ##############################################################################
-# You can quickly plot a map using the peek method:
-manual_map.peek()
+# You can quickly plot a map using the plot method:
+fig = plt.figure()
+manual_map.plot()
+
 plt.show()
