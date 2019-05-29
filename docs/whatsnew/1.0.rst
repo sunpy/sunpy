@@ -19,9 +19,10 @@ All new functionality will be available only in SunPy 1.0 and higher.
 On this page, you can read about some of the big changes in this release:
 
 * :ref:`whatsnew-1.0-python`
-* :ref:`whatsnew-0.9-time`
-* :ref:`whatsnew-0.9-download`
-* :ref:`whatsnew-0.9-renamed-removed`
+* :ref:`whatsnew-1.0-time`
+* :ref:`whatsnew-1.0-download`
+* :ref:`whatsnew-1.0-logging`
+* :ref:`whatsnew-1.0-renamed-removed`
 
 SunPy 1.0 includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
@@ -59,13 +60,14 @@ Improved file downloading capability
 Parallel file downloading has been implemented using the parfive package.  This improves download speed
 The file download capability has been re-written to use the parfive package.
 
+.. _whatsnew-1.0-logging:
 
-Improved file downloading capability
+Logging used to record SunPy notices
 ====================================
 
-Parallel file downloading has been implemented using the parfive package.  This improves download speed
-The file download capability has been re-written to use the parfive package.
+SunPy now uses a logging system to record warnings, information etc as SunPy is running.
 
+.. _whatsnew-1.0-renamed-removed:
 
 Renamed/removed functionality
 =============================
