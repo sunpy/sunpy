@@ -7,7 +7,7 @@ from astropy import units as u
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, get_body
 from astropy.time import TimeDelta
 
-from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
+from sunpy.coordinates import HeliographicStonyhurst, Helioprojective, Heliocentric
 from sunpy.map import (all_coordinates_from_map, contains_full_disk, coordinate_is_on_solar_disk,
                        is_all_off_disk, is_all_on_disk, map_edges, on_disk_bounding_coordinates)
 from sunpy.time import parse_time
@@ -381,39 +381,33 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
         # The time interval between the new observer time and the map observation time.
         interval = (parse_time(new_observer.obstime) - parse_time(smap.date)).to(u.s)
 
-        # These are the co-ordinates at the new observer.
+        # These are the co-ordinates at the current observer.
         heliographic_coordinate = all_coordinates_from_map(smap).transform_to(HeliographicStonyhurst)
-        heliographic_coordinate = SkyCoord(heliographic_coordinate.lon,
-                                           heliographic_coordinate.lat,
-                                           heliographic_coordinate.radius,
-                                           obstime=new_observer.obstime,
-                                           observer=new_observer,
-                                           frame=HeliographicStonyhurst)
 
         # Compute the differential rotation.
         drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
-        # Subtract the differential rotation.  This is the inverse of adding in
-        # differential rotation.
-        rotated_coord = SkyCoord(heliographic_coordinate.lon - drot,
+        # Add in the differential rotation and change to the new observer location.  Note that changing to the new
+        # observer location does not mean anything in Heliographic Stonyhurst coordinates.  The new observer location
+        # will be used later.
+        rotated_coord = SkyCoord(heliographic_coordinate.lon + drot,
                                  heliographic_coordinate.lat,
                                  heliographic_coordinate.radius,
                                  obstime=heliographic_coordinate.obstime,
-                                 observer=smap.observer_coordinate,
+                                 observer=smap.new_observer,
                                  frame=HeliographicStonyhurst)
 
-        # Find which coordinates are not on the visible disk of the Sun.
-        with np.errstate(invalid='ignore'):
-            occult = np.logical_or(np.less(rotated_coord.lon, -90 * u.deg),
-                                   np.greater(rotated_coord.lon, 90 * u.deg))
+        # As seen from the new observer, which ones are on disk
+        where_on_disk_from_new_observer = rotated_coord.transform_to(Heliocentric).z.value > 0
 
-        # NaN-ing values that move to the other side of the sun
-        rotated_coord.data.lon[occult] = np.nan * u.deg
-        rotated_coord.data.lat[occult] = np.nan * u.deg
-        rotated_coord.cache.clear()
+        # These are the coordinates which are on the front of the disk at the new location
+        coordinates_on_disk_at_new_observer = rotated_coord[where_on_disk_from_new_observer].transform_to(Helioprojective)
+
+        # Re-project the pixels which are on disk back to location of the previous observer
+        coordinates_on_disk_at_old_observer = coordinates_on_disk_at_new_observer.transform_to(Helioprojective(observer=smap.observer_coordinate))
 
         # Go back to pixel co-ordinates
-        x2, y2 = smap.world_to_pixel(rotated_coord)
+        x2, y2 = smap.world_to_pixel(coordinates_on_disk_at_old_observer)
 
     # Re-stack the data to make it correct output form
     xy2 = np.dstack([x2.T.value.flat, y2.T.value.flat])[0]
