@@ -2,16 +2,17 @@ import os
 import urllib
 import platform
 import warnings
+import pkg_resources
+from functools import wraps
 
 import matplotlib.pyplot as plt
 import pytest
 from matplotlib.testing import compare
 
-from astropy.utils.decorators import wraps
-
 from sunpy.tests import hash
 
-__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors']
+__all__ = ['skip_windows', 'skip_glymur', 'skip_ana',
+           'warnings_as_errors', 'asdf_entry_points']
 
 # SunPy's JPEG2000 capabilities rely on the glymur library.
 # First we check to make sure that glymur imports correctly before proceeding.
@@ -36,6 +37,11 @@ else:
 skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows")
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported")
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available")
+
+
+# Skip if the SunPy ASDF entry points are missing.
+asdf_entry_points = pytest.mark.skipif(not list(pkg_resources.iter_entry_points('asdf_extensions', 'sunpy')),
+                                       reason="No SunPy ASDF entry points.")
 
 
 @pytest.fixture

@@ -5,6 +5,7 @@ import datetime
 from collections import OrderedDict
 
 import matplotlib.dates
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from pandas import DataFrame
 
@@ -14,6 +15,7 @@ import sunpy.io
 from sunpy.instr import rhessi
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+from sunpy.visualization import peek_show
 
 __all__ = ['RHESSISummaryTimeSeries']
 
@@ -59,6 +61,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'rhessi'
 
+    @peek_show
     def peek(self, title="RHESSI Observing Summary Count Rate"):
         """
         Plots RHESSI Count Rate light curve. An example is shown below:
@@ -102,7 +105,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
-        figure.show()
+
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):

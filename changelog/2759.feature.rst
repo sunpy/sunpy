@@ -1,2 +1,1 @@
-HEKClient search method now returns table instead of list of dict
-
+`~sunpy.net.hek.HEKClient.search` now returns an `astropy.table.Table` instead of list of a `dict`.

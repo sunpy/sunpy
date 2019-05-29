@@ -68,7 +68,7 @@ class AIAMap(GenericMap):
                                                         'y': self.meta.get('haey_obs'),
                                                         'z': self.meta.get('haez_obs'),
                                                         'unit': u.m,
-                                                        'representation': CartesianRepresentation,
+                                                        'representation_type': CartesianRepresentation,
                                                         'frame': HeliocentricMeanEcliptic})
         ] + super()._supported_observer_coordinates
 

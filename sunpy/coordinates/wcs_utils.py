@@ -14,7 +14,7 @@ def solar_wcs_frame_mapping(wcs):
     type values in the `astropy.wcs.utils.wcs_to_celestial_frame` registry.
     """
 
-    dateobs = wcs.wcs.dateobs if wcs.wcs.dateobs else None
+    dateobs = wcs.wcs.dateobs or None
 
     # SunPy Map adds 'heliographic_observer' and 'rsun' attributes to the WCS
     # object. We check for them here, and default to None.
@@ -28,27 +28,19 @@ def solar_wcs_frame_mapping(wcs):
     else:
         rsun = None
 
-    # First we try the Celestial sub, which rectifies the order.
-    # It will return anything matching ??LN*, ??LT*
-    wcss = wcs.sub([WCSSUB_CELESTIAL])
+    # Truncate the ctype to the first four letters
+    ctypes = {c[:4] for c in wcs.wcs.ctype}
 
-    # If the SUB works, use it.
-    if wcss.naxis == 2:
-        wcs = wcss
-
-    xcoord = wcs.wcs.ctype[0][0:4]
-    ycoord = wcs.wcs.ctype[1][0:4]
-
-    if xcoord == 'HPLN' and ycoord == 'HPLT':
+    if {'HPLN', 'HPLT'} <= ctypes:
         return Helioprojective(obstime=dateobs, observer=observer, rsun=rsun)
 
-    if xcoord == 'HGLN' and ycoord == 'HGLT':
+    if {'HGLN', 'HGLT'} <= ctypes:
         return HeliographicStonyhurst(obstime=dateobs)
 
-    if xcoord == 'CRLN' and ycoord == 'CRLT':
+    if {'CRLN', 'CRLT'} <= ctypes:
         return HeliographicCarrington(obstime=dateobs)
 
-    if xcoord == 'SOLX' and ycoord == 'SOLY':
+    if {'SOLX', 'SOLY'} <= ctypes:
         return Heliocentric(obstime=dateobs, observer=observer)
 
 
