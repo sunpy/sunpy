@@ -418,7 +418,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
                                  frame=HeliographicStonyhurst)
 
         # As seen from the map observer, which coordinates are on disk and which are behind the Sun.
-        where_off_disk_from_new_observer = rotated_coord.transform_to(
+        where_off_disk_from_map_observer = rotated_coord.transform_to(
             Heliocentric(observer=smap.observer_coordinate)).z.value < 0
 
         # Re-project the pixels which are on disk back to location of the original observer
@@ -430,7 +430,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     # Re-stack the data to make it correct output form
     xy2 = np.dstack([x2.T.value.flat, y2.T.value.flat])[0]
     # Set the off disk coordinates to NaN so they are not included in the output image.
-    xy2[where_off_disk_from_new_observer.flat] = np.nan
+    xy2[where_off_disk_from_map_observer.flat] = np.nan
 
     return xy2
 
