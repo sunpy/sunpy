@@ -437,9 +437,14 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
 
 def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     """
-    Function to transform a `~sunpy.map.Map` taking into account simultaneously
-    both solar differential rotation and the changing location of the
-    observer.
+    Warp a `~sunpy.map.GenericMap` to take into account both solar differential
+    rotation and the changing location of the observer.
+
+    .. warning::
+        This function, while greatly improved in 1.0, is still experimental.
+        Please validate that it gives you results you expect and report any
+        discrepancies on the SunPy issue tracker.
+
 
     The function transforms the input map data pixels by first rotating each
     pixel according to solar differential rotation.  The amount of solar
