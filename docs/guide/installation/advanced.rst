@@ -86,7 +86,7 @@ which will run many of the SunPy tests.
 The tests should run and print out any failures, which you can report at the `SunPy issue tracker <https://github.com/sunpy/sunpy/issues>`__.
 
 SunPy's Requirements
-####################
+--------------------
 
 SunPy has the following strict requirements:
 
