@@ -384,10 +384,10 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
         # These are the co-ordinates at the new observer.
         heliographic_coordinate = all_coordinates_from_map(smap).transform_to(HeliographicStonyhurst)
         heliographic_coordinate = SkyCoord(heliographic_coordinate.lon,
-                                                         heliographic_coordinate.lat,
-                                                         heliographic_coordinate.radius,
-                                                         obstime=new_observer.obstime,
-                                                         observer=new_observer,
+                                           heliographic_coordinate.lat,
+                                           heliographic_coordinate.radius,
+                                           obstime=new_observer.obstime,
+                                           observer=new_observer,
                                            frame=HeliographicStonyhurst)
 
         # Compute the differential rotation.
