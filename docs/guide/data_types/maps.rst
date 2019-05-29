@@ -78,7 +78,7 @@ Here's an example of creating a header from some generic data and an `astropy.co
     >>> data = np.arange(0,100).reshape(10,10)
     >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
     >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord)
-    >>> header
+    >>> header   # doctest: +SKIP
     MetaDict([('wcsaxes', 2),
           ('crpix1', 5.5),
           ('crpix2', 5.5),
@@ -110,7 +110,7 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
     ...                                                      reference_pixel=u.Quantity([5, 5]*u.pixel),
     ...                                                      scale=u.Quantity([2, 2] *u.arcsec/u.pixel))
-    >>> header
+    >>> header  # doctest: +SKIP
     MetaDict([('wcsaxes', 2),
           ('crpix1', 5.0),
           ('crpix2', 5.0),
@@ -145,7 +145,7 @@ An example of creating a header with these additional keywords::
     ...                                                      scale = u.Quantity([2, 2] *u.arcsec/u.pixel),
     ...                                                      instrument = 'Test case', detector = 'UV detector',
     ...                                                      wavelength = 1000, waveunit = 'angstrom')
-    >>> header
+    >>> header  # doctest: +SKIP
     MetaDict([('wcsaxes', 2),
           ('crpix1', 5.0),
           ('crpix2', 5.0),
