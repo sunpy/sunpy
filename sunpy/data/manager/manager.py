@@ -95,6 +95,29 @@ class DataManager:
         finally:
             self._skip_hash_check = False
 
+    def get(self, name):
+        """get the file by name
+
+        Parameters
+        ----------
+        name: str
+        Name of the file given to the data manager, same as the one provided
+        in `~sunpy.data.manager.manager.DataManager.require`
+
+        Returns
+        -------
+        file: str
+        Path of the file
+
+        Raises
+        ------
+        KeyError
+        If name is not in the cache
+
+        TODO: Return `Path` instead?
+        """
+        return self._file_cache[name]
+
     def _download_and_hash(self, urls):
         # TODO: Handle multiple urls
         path = self._downloader.download(urls[0])

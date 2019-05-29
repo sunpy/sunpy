@@ -21,7 +21,10 @@ def test_basic():
 
     @manager.require('test_file', ['url1', 'url2'], 'hash')
     def foo():
-        pass
+        assert manager.get('test_file') == '/tmp/lol'
     foo()
+    print(storage._store)
 
     assert downloader.times_called == 1
+    assert len(storage._store) == 1
+    assert storage._store[0]['file_path'] == '/tmp/lol'
