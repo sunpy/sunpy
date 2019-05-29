@@ -21,29 +21,12 @@ from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
 __all__ = [
-    "solar_cycle_number", "solar_semidiameter_angular_size", "carrington_rotation_number",
-    "position",
+    "solar_semidiameter_angular_size", "position", "carrington_rotation_number",
     "true_longitude", "apparent_longitude", "true_latitude", "apparent_latitude",
     "mean_obliquity_of_ecliptic", "true_rightascension", "true_declination",
     "true_obliquity_of_ecliptic", "apparent_rightascension", "apparent_declination",
     "print_params"
 ]
-
-
-@add_common_docstring(**_variables_for_parse_time_docstring())
-def solar_cycle_number(t='now'):
-    """
-    Return the solar cycle number.
-
-    Parameters
-    ----------
-    t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
-    """
-    time = parse_time(t)
-    result = (int(time.strftime('%Y')) + 8) % 28 + 1
-    return result
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())

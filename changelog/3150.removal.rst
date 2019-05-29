@@ -1,0 +1,1 @@
+Removed `~sunpy.sun.sun.solar_cycle_number` because it was fundamentally flawed
