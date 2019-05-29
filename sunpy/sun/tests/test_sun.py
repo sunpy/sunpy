@@ -30,12 +30,6 @@ def test_apparent_latitude():
     assert_quantity_allclose(sun.apparent_latitude(t), Angle('0.72s'), atol=0.05*u.arcsec)
 
 
-def test_solar_cycle_number():
-    assert_quantity_allclose(sun.solar_cycle_number("2012/11/11"), 5, atol=1e-1)
-    assert_quantity_allclose(sun.solar_cycle_number("2011/2/22"), 4, atol=1e-1)
-    assert_quantity_allclose(sun.solar_cycle_number("2034/1/15"), 27, atol=1e-1)
-
-
 def test_solar_semidiameter_angular_size():
     assert_quantity_allclose(sun.solar_semidiameter_angular_size("2012/11/11"), 968.871294 * u.arcsec, atol=1e-3 * u.arcsec)
     assert_quantity_allclose(sun.solar_semidiameter_angular_size("2043/03/01"), 968.326347 * u.arcsec, atol=1e-3 * u.arcsec)
