@@ -9,12 +9,18 @@ What's New in SunPy 1.0?
 Overview
 ========
 
-SunPy 1.0 now uses Astropy Time everywhere
-This and all future versions of SunPy will support only Python 3.6 and higher.
-This is because Python 2 `will not be maintained after 2019 <https://python3statement.org/>`_.
-The 0.9.x series will receive bugfixes only up until the end of life of Python 2 (around 6 months).
+
+SunPy 1.0 brings these headline changes:
+* A complete transition of the whole code base to use ~astropy.time.Time, which was implemented by Vishnunarayan K I as part of Google Summer of Code 2018.
+* A rewrite of how all the clients in sunpy.net download files from the internet. This means vastly improved progress bars, skipping downloads if files are present, and better visibility and retrying of download errors.
+* A rewrite of the differential rotation and image warping code to correctly account for observer location using the Astropy coordinate functionality.
+* Removal of many deprecated functions and submodules, we have used the 1.0 release as a chance to clean out SunPy reducing the number of lines of Python code in the project by almost 3,000!
+* The first release of SunPy to be Python 3 only, requiring Python 3.6+.  This is because Python 2 `will not be maintained after 2019 <https://python3statement.org/>`_.
+
+
 No new functionality will be added to the 0.9.x series, which will also be the last version to include `sunpy.spectra`, `sunpy.lightcurve` and `sunpy.wcs`, all of which were deprecated in 0.8.
-All new functionality will be available only in SunPy 1.0 and higher.
+
+
 
 On this page, you can read about some of the big changes in this release:
 
@@ -22,6 +28,8 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-1.0-time`
 * :ref:`whatsnew-1.0-download`
 * :ref:`whatsnew-1.0-logging`
+* :ref:`whatsnew-1.0-diffrot`
+* :ref:`whatsnew-1.0-maputils`
 * :ref:`whatsnew-1.0-renamed-removed`
 
 SunPy 1.0 includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
@@ -36,21 +44,75 @@ By the numbers:
 
 There are numerous breaking changes to SunPy, notably in the implementation of time, which has been switched to using Astropy yimr
 There have been numerous improvements to large parts of SunPy, notably in the content of SunPy's documentation, and the continuous integration testing of SunPy.
-In addition, SunPy co-ordinate system functionality has been improved, and the transformation between SunPy specific co-ordinate systems and those implemented by Astropy is now tested.
 
 .. _whatsnew-1.0-python:
 
 Supported versions of Python
 ============================
 
-SunPy is tested against Python 3.6, and 3.7.
+SunPy 1.0 has dropped Python 2 support as Python 2 is nearing the end of its support cycle.
+To port your code to Python 3, there is some good advice `here <https://docs.python.org/3/howto/pyporting.html>`__.
+If you need Python 2 support, you use SunPy 0.9.X which will see bug fixes until 2020.
+As a result, SunPy's minimum Python version is Python 3.6 and is routinely tested against Python 3.6 and 3.7.
 
 .. _whatsnew-1.0-time:
 
 Astropy Time is used everywhere
 ===============================
 
-SunPy now uses Astropy's Time object everywhere to represent time.  For a full
+SunPy now uses Astropy's `~astropy.time.Time` object everywhere to represent time. This comes with numerous benefits:
+
+- **Support for non-UTC time scales.**
+  UTC as well as non-UTC time scales like TAI, TT, UT1 etc. can be used with `astropy.time.Time`.
+  .. code:: python
+      >>> t = Time('2012-06-18T02:00:05.453', scale='tai')
+      >>> t
+      <Time object: scale='tai' format='isot' value=2012-06-18T02:00:05.453>
+  `~astropy.time.Time` also provides easy conversion between different scales.
+  .. code:: python
+      >>> t.utc
+      <Time object: scale='utc' format='isot' value=2012-06-18T01:59:31.453>
+- **Support for high precision times.**
+  `~astropy.time.Time` can provide sub-nanosecond precision for time objects while python
+  `datetime` was restricted to microseconds.
+  .. code:: python
+    >>> t = Time('2012-06-18T02:00:05.453123123')
+    >>> t
+    <Time object: scale='utc' format='isot' value=2012-06-18T02:00:05.453>
+    >>> t.precision = 9
+    >>> t
+    <Time object: scale='utc' format='isot' value=2012-06-18T02:00:05.453123123>
+- **Support for leap seconds**
+  This was one of the bigger motivation for the transition to `astropy.time.Time`.
+  `datetime` has no support for leap second while `~astropy.time.Time` supports leap seconds.
+  A leap second is a one-second adjustment applied to UTC to keep it close to the mean solar time.
+  .. code:: python
+    >>> Time('2016-12-31T23:59:60')
+    <Time object: scale='utc' format='isot' value=2016-12-31T23:59:60.000>
+    >>> Time('2016-12-31T23:59:59') + 1 * u.s
+    <Time object: scale='utc' format='isot' value=2016-12-31T23:59:60.000>
+- **Support for numerous formats**
+  `~astropy.time.Time` can parse numerous formats including python `datetime`.
+  .. code:: python
+    >>> list(Time.FORMATS)
+    ['jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps', 'plot_date', 'datetime', 'iso', 'isot', 'yday', 'fits', 'byear', 'jyear', 'byear_str', 'jyear_str']
+  .. code:: python
+
+    >>> import datetime
+    >>> Time(datetime.datetime.now())
+    <Time object: scale='utc' format='datetime' value=2018-10-20 15:36:16.364089>
+Changes to SunPy
+++++++++++++++++
+- **All functions which used to return** `datetime` **now return** `~astropy.time.Time`
+  And all functions which return `datetime.timedelta` now return `astropy.time.TimeDelta`.
+  For example, the properties of `sunpy.time.TimeRange` which  used to return `datetime.datetime` and `datetime.timedelta` now return `astropy.time.Time` and `astropy.time.TimeDelta`
+- **Changes to** `~sunpy.time.parse_time`
+  `~sunpy.time.parse_time` has been reduced to a tiny wrapper over `~astropy.time.Time`.
+  The API of `~sunpy.time.parse_time` is mostly similar to that of `~astropy.time.Time`.
+  `~sunpy.time.parse_time` supports parsing a few more formats than `~astropy.time.Time`, which
+  are `numpy.datetime64`, `pandas.Series`, `pandas.DatetimeIndex`, utime and a few other time formats.
+
+The work on the transition from `datetime` to `astropy.time.Time` was done as a part of  Vishnunarayan's Google Summer of Code 2018 project.
 
 .. _whatsnew-1.0-download:
 
@@ -67,10 +129,33 @@ Logging used to record SunPy notices
 
 SunPy now uses a logging system to record warnings, information etc as SunPy is running.
 
+.. _whatsnew-1.0-diffrot:
+
+Improvements to differential rotation
+=====================================
+
+Applying the effect of solar differential rotation to coordinates now properly takes in to account the changing position of the observer.
+For example, since the Earth moves, observers on the Earth must take in to account the solar differential rotation of the Sun and the
+motion of the Earth when calculating a location on the Sun.
+
+This
+
+The code 
+
+
+
+
+.. _whatsnew-1.0-maputils:
+
+Map utility functions
+=====================
+
 .. _whatsnew-1.0-renamed-removed:
 
 Renamed/removed functionality
 =============================
+
+
 
 <Fill In>
 
