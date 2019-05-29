@@ -1,0 +1,2 @@
+Correctly implement the image warping when transforming Maps for differential
+rotation and change in observer position.
