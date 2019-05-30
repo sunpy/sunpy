@@ -54,54 +54,70 @@ As a result, SunPy's minimum Python version has been raised to Python 3.6 and is
 Astropy Time is used everywhere
 ===============================
 
-SunPy now uses Astropy's `~astropy.time.Time` object everywhere to represent time. This comes with numerous benefits:
+SunPy now uses Astropy's `~astropy.time.Time` object everywhere to represent time.
+This comes with numerous benefits:
 
 - **Support for non-UTC time scales.**
   UTC as well as non-UTC time scales like TAI, TT, UT1 etc. can be used with `astropy.time.Time`.
+
   .. code:: python
+
       >>> t = Time('2012-06-18T02:00:05.453', scale='tai')
       >>> t
       <Time object: scale='tai' format='isot' value=2012-06-18T02:00:05.453>
+
   `~astropy.time.Time` also provides easy conversion between different scales.
+
   .. code:: python
+
       >>> t.utc
       <Time object: scale='utc' format='isot' value=2012-06-18T01:59:31.453>
+
 - **Support for high precision times.**
   `~astropy.time.Time` can provide sub-nanosecond precision for time objects while python
   `datetime` was restricted to microseconds.
+
   .. code:: python
+
     >>> t = Time('2012-06-18T02:00:05.453123123')
     >>> t
     <Time object: scale='utc' format='isot' value=2012-06-18T02:00:05.453>
     >>> t.precision = 9
     >>> t
     <Time object: scale='utc' format='isot' value=2012-06-18T02:00:05.453123123>
+
 - **Support for leap seconds**
   This was one of the bigger motivation for the transition to `astropy.time.Time`.
   `datetime` has no support for leap second while `~astropy.time.Time` supports leap seconds.
   A leap second is a one-second adjustment applied to UTC to keep it close to the mean solar time.
+
   .. code:: python
+
     >>> Time('2016-12-31T23:59:60')
     <Time object: scale='utc' format='isot' value=2016-12-31T23:59:60.000>
     >>> Time('2016-12-31T23:59:59') + 1 * u.s
     <Time object: scale='utc' format='isot' value=2016-12-31T23:59:60.000>
+
 - **Support for numerous formats**
   `~astropy.time.Time` can parse numerous formats including python `datetime`.
+
   .. code:: python
+
     >>> list(Time.FORMATS)
     ['jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps', 'plot_date', 'datetime', 'iso', 'isot', 'yday', 'fits', 'byear', 'jyear', 'byear_str', 'jyear_str']
+
   .. code:: python
+
     >>> import datetime
     >>> Time(datetime.datetime.now())
     <Time object: scale='utc' format='datetime' value=2018-10-20 15:36:16.364089>
 
-Changes to SunPy
-++++++++++++++++
-
 - **All functions which used to return** `datetime` **now return** `~astropy.time.Time`
+
   And all functions which return `datetime.timedelta` now return `astropy.time.TimeDelta`.
   For example, the properties of `sunpy.time.TimeRange` which  used to return `datetime.datetime` and `datetime.timedelta` now return `astropy.time.Time` and `astropy.time.TimeDelta`
 - **Changes to** `~sunpy.time.parse_time`
+
   `~sunpy.time.parse_time` has been reduced to a tiny wrapper over `~astropy.time.Time`.
   The API of `~sunpy.time.parse_time` is mostly similar to that of `~astropy.time.Time`.
   `~sunpy.time.parse_time` supports parsing a few more formats than `~astropy.time.Time`, which
@@ -144,9 +160,10 @@ Applying the effect of solar differential rotation to coordinates now properly t
 For example, since the Earth moves, observers on the Earth must take in to account the solar differential rotation of the Sun and the motion of the Earth when calculating a location on the Sun.
 
 - **Support for applying solar differential rotation to coordinates.**
-    Solar differential rotation of on-disk coordinates can be specified using either time or a new observer. If time is
-    specified, then the new observer is assumed to be located on the Earth.
-  .. code:: python
+
+    Solar differential rotation of on-disk coordinates can be specified using either time or a new observer.
+    If time is specified, then the new observer is assumed to be located on the Earth::
+
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import Helioprojective
@@ -156,12 +173,13 @@ For example, since the Earth moves, observers on the Earth must take in to accou
     >>> duration = 25*u.hour
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
     >>> solar_rotate_coordinate(c, time=duration)
-    <SkyCoord (Helioprojective: obstime=2010-09-10T12:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
+
+    <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
         (-5.08888749e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (-363.04027419, 104.87807178, 1.499598e+08)>
 
-  Due to the ellipticity of the Earth's orbit, the amount of solar rotation is different at different times in the year.
-  .. code:: python
+  Due to the ellipticity of the Earth's orbit, the amount of solar rotation is different at different times in the year::
+
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import Helioprojective
@@ -177,8 +195,8 @@ For example, since the Earth moves, observers on the Earth must take in to accou
 
     The user can also explicitly specify an observer at a different time and location in space.  The amount of solar
     rotation applied depends on the time difference between the observation time of the`~astropy.coordinates.SkyCoord`
-    and the time of the observer.
-  .. code:: python
+    and the time of the observer::
+
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
@@ -194,10 +212,11 @@ For example, since the Earth moves, observers on the Earth must take in to accou
         (-715.77862011, 31.87928146, 1.34122226e+08)>
 
 - **Experimental support for applying solar differential rotation to maps.**
-    Applying solar differential rotation to maps also accounts for changing observer position.  This functionality is
-    still experimental.
-    For example, to differentially rotate a map back 23 hours:
-  .. code:: python
+
+    Applying solar differential rotation to maps also accounts for changing observer position.
+    This functionality is still experimental.
+    For example, to differentially rotate a map back 23 hours::
+
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE
     >>> import astropy.units as u
@@ -205,9 +224,10 @@ For example, since the Earth moves, observers on the Earth must take in to accou
     >>> aia = sunpy.map.Map(AIA_171_IMAGE)
     >>> differential_rotate(aia, time=-23*u.hour)
 
-    `~sunpy.physics.differential_rotation.differential_rotate` also accepts a new observer keyword.  The amount of
-    solar differential rotation is calculated using the time difference between the map date and observation time of the
-    new observer.  For example,
+    `~sunpy.physics.differential_rotation.differential_rotate` also accepts a new observer keyword.
+    The amount of solar differential rotation is calculated using the time difference between the map date and observation time of the new observer.
+    For example::
+
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE
     >>> import astropy.units as u
@@ -216,16 +236,14 @@ For example, since the Earth moves, observers on the Earth must take in to accou
     >>> new_observer = SkyCoord(lon=-15*u.deg, lat=-4*u.deg, radius=1*u.au, obstime=aia.date-34*u.hour, frame=HeliographicStonyhurst)
     >>> differential_rotate(aia, observer=new_observer)
 
-
 .. _whatsnew-1.0-maputils:
 
 Map utility functions
 =====================
 
 A new submodule `~sunpy.map.maputils` provides a number utility functions that act on `sunpy.map.GenericMap` instances.
-For example,
+For example::
 
-  .. code:: python
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE
     >>> import astropy.units as u
@@ -234,6 +252,7 @@ For example,
     >>> aia = sunpy.map.Map(AIA_171_IMAGE)
     >>> contains_full_disk(aia)
     True
+
     >>> coordinates = all_coordinates_from_map(aia) # The coordinates for every map pixel
     >>> coordinates.shape
     (1024, 1024)
@@ -252,7 +271,7 @@ This is just some of the renamed or removed functionality.
 * ``axis_ranges`` kwarg of ``sunpy.visualization.animator.ArrayAnimator``, ``sunpy.visualization.animator.ImageAnimator`` and ``sunpy.visualization.animator.LineAnimator`` now must be entered as ``None``, ``[min, max]`` or pixel edges of each array element.
 * The Helioviewer client has been switched to using the newer Helioviewer API. This has meant that we have changed some of the keywords that were passed into client’s methods.
 * Removed ``sunpy.net.jsoc.attrs.Time`` because it served the same purpose as ``sunpy.net.attrs.Time`` after the switch to ``astropy.time.Time``.
-* The deprecated ``sunpy.lightcurve`` (replaced by ``sunpy.timeseries``, ``sunpy.wcs`` and ``sunpy.spectra`` (replaced by ``radiospectra module) modules have now been removed.
+* The deprecated ``sunpy.lightcurve`` (replaced by ``sunpy.timeseries``, ``sunpy.wcs`` and ``sunpy.spectra`` (replaced by ``radiospectra`` module) modules have now been removed.
 
 Full change log
 ===============
