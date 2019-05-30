@@ -364,7 +364,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     calculates the pixel locations of those pixels in the map.
 
     To do this it converts the input pixel coordinates to helioprojective
-    coordinates as seen by new_observer, then transforms them to Heliographic
+    coordinates as seen by new_observer, then transforms them to heliographic
     Stonyhurst, adds the differential rotation correction and then transforms
     them back to helioprojective coordinates as seen by the map observer and
     then calculates their corresponding pixel coordinates in the input map.
@@ -384,7 +384,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
         Pixel coordinates in the map corresponding to the input pixels in the
         warped image.
     """
-    # We start by converting the pixel to world
+    # Suppress NaN warnings in coordinate transforms
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
 
