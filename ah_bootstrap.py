@@ -48,10 +48,7 @@ import sys
 from distutils import log
 from distutils.debug import DEBUG
 
-try:
-    from ConfigParser import ConfigParser, RawConfigParser
-except ImportError:
-    from configparser import ConfigParser, RawConfigParser
+from configparser import ConfigParser, RawConfigParser
 
 import pkg_resources
 
@@ -119,24 +116,27 @@ if SETUP_CFG.has_option('options', 'python_requires'):
 
     # We want the Python version as a string, which we can get from the platform module
     import platform
-    python_version = platform.python_version()
-
-    if not req.specifier.contains(python_version):
+    # strip off trailing '+' incase this is a dev install of python
+    python_version = platform.python_version().strip('+')
+    # allow pre-releases to count as 'new enough'
+    if not req.specifier.contains(python_version, True):
         if parent_package is None:
-            print("ERROR: Python {} is required by this package".format(req.specifier))
+            message = "ERROR: Python {} is required by this package\n".format(req.specifier)
         else:
-            print("ERROR: Python {} is required by {}".format(req.specifier, parent_package))
+            message = "ERROR: Python {} is required by {}\n".format(req.specifier, parent_package)
+        sys.stderr.write(message)
         sys.exit(1)
 
 if sys.version_info < __minimum_python_version__:
 
     if parent_package is None:
-        print("ERROR: Python {} or later is required by astropy-helpers".format(
-            __minimum_python_version__))
+        message = "ERROR: Python {} or later is required by astropy-helpers\n".format(
+            __minimum_python_version__)
     else:
-        print("ERROR: Python {} or later is required by astropy-helpers for {}".format(
-            __minimum_python_version__, parent_package))
+        message = "ERROR: Python {} or later is required by astropy-helpers for {}\n".format(
+            __minimum_python_version__, parent_package)
 
+    sys.stderr.write(message)
     sys.exit(1)
 
 _str_types = (str, bytes)
@@ -153,7 +153,7 @@ try:
     import setuptools
     assert LooseVersion(setuptools.__version__) >= LooseVersion('30.3')
 except (ImportError, AssertionError):
-    print("ERROR: setuptools 30.3 or later is required by astropy-helpers")
+    sys.stderr.write("ERROR: setuptools 30.3 or later is required by astropy-helpers\n")
     sys.exit(1)
 
 # typing as a dependency for 1.6.1+ Sphinx causes issues when imported after
@@ -835,7 +835,7 @@ def run_cmd(cmd):
     except ValueError:
         # Due to an OSX oddity locale.getdefaultlocale() can also crash
         # depending on the user's locale/language settings.  See:
-        # https://bugs.python.org/issue18378
+        # http://bugs.python.org/issue18378
         stdio_encoding = 'latin1'
 
     # Unlikely to fail at this point but even then let's be flexible
