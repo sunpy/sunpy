@@ -48,12 +48,12 @@ class HelioviewerClient(object):
             else:
                 for inst, detect in observ.items():
                     for wavelength, params in detect.items():
-                        # These observatories and wavelengths are nested by more one level
-                        if name in ["Hinode", "STEREO_A", "STEREO_B", "MLSO"] or wavelength in ["C2", "C3", "KCor"]:
+                        if 'sourceId' in params:
+                            data_sources_dict[(name, inst, None, wavelength)] = params['sourceId']
+                        else:
                             for wave, adict in params.items():
                                 data_sources_dict[(name, inst, wavelength, wave)] = adict['sourceId']
-                        else:
-                            data_sources_dict[(name, inst, None, wavelength)] = params['sourceId']
+
         # Sort the output for printing purposes
         return OrderedDict(sorted(data_sources_dict.items(), key=lambda x: x[1]))
 
