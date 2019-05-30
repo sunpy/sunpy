@@ -97,7 +97,6 @@ SunPy now uses Astropy's `~astropy.time.Time` object everywhere to represent tim
     >>> list(Time.FORMATS)
     ['jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps', 'plot_date', 'datetime', 'iso', 'isot', 'yday', 'fits', 'byear', 'jyear', 'byear_str', 'jyear_str']
   .. code:: python
-
     >>> import datetime
     >>> Time(datetime.datetime.now())
     <Time object: scale='utc' format='datetime' value=2018-10-20 15:36:16.364089>
@@ -134,21 +133,104 @@ SunPy now uses a logging system to record warnings, information etc as SunPy is 
 Improvements to differential rotation
 =====================================
 
-Applying the effect of solar differential rotation to coordinates now properly takes in to account the changing position of the observer.
-For example, since the Earth moves, observers on the Earth must take in to account the solar differential rotation of the Sun and the
-motion of the Earth when calculating a location on the Sun.
+Applying the effect of solar differential rotation to coordinates now properly takes in to account the changing position
+of the observer.  For example, since the Earth moves, observers on the Earth must take in to account the solar
+differential rotation of the Sun and the motion of the Earth when calculating a location on the Sun.
 
-This
+- **Support for applying solar differential rotation to coordinates.**
+    Solar differential rotation of on-disk coordinates can be specified using either time or a new observer. If time is
+    specified, then the new observer is assumed to be located on the Earth.
+  .. code:: python
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import Helioprojective
+    >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
+    >>> from sunpy.time import parse_time
+    >>> start_time = '2010-09-10 12:34:56'
+    >>> duration = 25*u.hour
+    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
+    >>> solar_rotate_coordinate(c, time=duration)
+    <SkyCoord (Helioprojective: obstime=2010-09-10T12:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
+        (-5.08888749e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (-363.04027419, 104.87807178, 1.499598e+08)>
 
-The code 
+  Due to the ellipticity of the Earth's orbit, the amount of solar rotation is different at different times in the year.
+  .. code:: python
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import Helioprojective
+    >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
+    >>> from sunpy.time import parse_time
+    >>> start_time = '2010-06-10 12:34:56'
+    >>> duration = 25*u.hour
+    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
+    >>> solar_rotate_coordinate(c, time=duration)
+    <SkyCoord (Helioprojective: obstime=2010-06-10T12:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-06-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
+        (0., 0.58398742, 1.01539908)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (-359.11576773, 117.18020622, 1.51263627e+08)>
 
+    The user can also explicitly specify an observer at a different time and location in space.  The amount of solar
+    rotation applied depends on the time difference between the observation time of the`~astropy.coordinates.SkyCoord`
+    and the time of the observer.
+  .. code:: python
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
+    >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
+    >>> from sunpy.time import parse_time
+    >>> start_time = parse_time('2010-06-10 12:34:56')
+    >>> duration = 25*u.hour
+    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
+    >>> new_observer = SkyCoord(lon=20*u.deg, lat=8*u.deg, radius=0.9*u.au, obstime=end_time, frame=HeliographicStonyhurst)
+    >>> solar_rotate_coordinate(c, observer=new_observer)
+    <SkyCoord (Helioprojective: obstime=2010-06-10T12:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-06-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
+        (20., 8., 0.9)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (-715.77862011, 31.87928146, 1.34122226e+08)>
 
+- **Experimental support for applying solar differential rotation to maps.**
+    Applying solar differential rotation to maps also accounts for changing observer position.  This functionality is
+    still experimental.
+    For example, to differentially rotate a map back 23 hours:
+  .. code:: python
+    >>> import sunpy.map
+    >>> from sunpy.data.sample import AIA_171_IMAGE
+    >>> import astropy.units as u
+    >>> from sunpy.physics.differential_rotation import differential_rotate
+    >>> aia = sunpy.map.Map(AIA_171_IMAGE)
+    >>> differential_rotate(aia, time=-23*u.hour)
+
+    `~sunpy.physics.differential_rotation.differential_rotate` also accepts a new observer keyword.  The amount of
+    solar differential rotation is calculated using the time difference between the map date and observation time of the
+    new observer.  For example,
+    >>> import sunpy.map
+    >>> from sunpy.data.sample import AIA_171_IMAGE
+    >>> import astropy.units as u
+    >>> from sunpy.physics.differential_rotation import differential_rotate
+    >>> aia = sunpy.map.Map(AIA_171_IMAGE)
+    >>> new_observer = SkyCoord(lon=-15*u.deg, lat=-4*u.deg, radius=1*u.au, obstime=aia.date-34*u.hour, frame=HeliographicStonyhurst)
+    >>> differential_rotate(aia, observer=new_observer)
 
 
 .. _whatsnew-1.0-maputils:
 
 Map utility functions
 =====================
+
+A new submodule `~sunpy.map.maputils` provides a number utility functions that act on `sunpy.map.GenericMap` instances.
+This interrogate maps for some simple information.  For example,
+
+  .. code:: python
+    >>> import sunpy.map
+    >>> from sunpy.data.sample import AIA_171_IMAGE
+    >>> import astropy.units as u
+    >>> from sunpy.physics.differential_rotation import differential_rotate
+    >>> from sunpy.map import contains_full_disk, all_coordinates_from_map
+    >>> aia = sunpy.map.Map(AIA_171_IMAGE)
+    >>> contains_full_disk(aia)
+    True
+    >>> coordinates = all_coordinates_from_map(aia) # The coordinates for every map pixel
+    >>> coordinates.shape
+    (1024, 1024)
 
 .. _whatsnew-1.0-renamed-removed:
 
