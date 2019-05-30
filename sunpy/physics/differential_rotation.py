@@ -496,7 +496,6 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
 
     # Only this function needs scikit image
     from skimage import transform
-    from sunpy.image.util import to_norm, un_norm
 
     # Check whether the input contains the full disk of the Sun
     is_sub_full_disk = not contains_full_disk(smap)
