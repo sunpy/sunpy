@@ -58,7 +58,7 @@ from astropy.time import TimeDelta
 from scipy import interpolate
 from scipy.integrate import trapz, cumtrapz
 
-from sunpy import sun
+from sunpy.sun import constants
 from sunpy import timeseries
 from sunpy.time import parse_time
 from sunpy.util.net import check_download_file
@@ -1270,7 +1270,7 @@ def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
         date = parse_time(date)
         xraylum = 4 * np.pi * get_sunearth_distance(date).to("m")**2 * flux
     else:
-        xraylum = 4 * np.pi * sun.constants.au.to("m")**2 * flux
+        xraylum = 4 * np.pi * constants.au.to("m")**2 * flux
     return xraylum
 
 

@@ -23,7 +23,7 @@ from astropy.coordinates.representation import (CartesianRepresentation, Spheric
 from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
 from astropy.coordinates.matrix_utilities import matrix_product, rotation_matrix, matrix_transpose
 
-from sunpy.sun import sun
+from sunpy.sun import constants
 
 from .frames import Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst
 
@@ -34,7 +34,7 @@ except ImportError:
     make_transform_graph_docs = lambda: _make_transform_graph_docs(frame_transform_graph)
 
 
-RSUN_METERS = sun.constants.get('radius').si.to(u.m)
+RSUN_METERS = constants.get('radius').si.to(u.m)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',

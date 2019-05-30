@@ -8,7 +8,7 @@ import glob
 
 from sunpy.map.sources.stereo import EUVIMap
 from sunpy.map import Map
-from sunpy.sun import sun
+from sunpy.coordinates import sun
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir

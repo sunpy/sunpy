@@ -13,12 +13,12 @@ from astropy.coordinates.representation import (CartesianRepresentation, Spheric
                                                 CylindricalRepresentation,
                                                 UnitSphericalRepresentation)
 
-from sunpy import sun
+from sunpy.sun import constants
 
 from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
 
-RSUN_METERS = sun.constants.get('radius').si.to(u.m)
-DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
+RSUN_METERS = constants.get('radius').si.to(u.m)
+DSUN_METERS = constants.get('mean distance').si.to(u.m)
 
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective']
