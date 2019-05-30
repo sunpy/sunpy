@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from sunpy.extern import six
 from sunpy.extern.six.moves import range, zip
 from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.error import HTTPError
 
 __all__ = ['Scraper']
 
@@ -66,9 +67,11 @@ class Scraper(object):
         else:
             now = datetime.datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime(self.pattern[0:milliseconds.start()] +
-                                    str(milliseconds_) +
-                                    self.pattern[milliseconds.end():])
+            self.now = now.strftime('{start}{milli:03d}{end}'.format(
+                start=self.pattern[0:milliseconds.start()],
+                milli=milliseconds_,
+                end=self.pattern[milliseconds.end():]
+            ))
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
@@ -237,7 +240,12 @@ class Scraper(object):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
-            except:
+            except HTTPError as http_err:
+                # Ignore missing directories (issue #2684).
+                if http_err.code == 404:
+                    continue
+                raise
+            except Exception:
                 raise
         return filesurls
 

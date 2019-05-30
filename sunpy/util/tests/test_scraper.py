@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import pytest
 import datetime
+from mock import patch, MagicMock as Mock
 
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
@@ -148,18 +149,29 @@ def testURL_patternMilliseconds():
     assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
     assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
 
-# Local files don't work
-# def testFilesRange_sameDirectory_local():
-#     s = Scraper('/'.join(['file:/',sunpy.data.test.rootdir,
-#                           'EIT','efz%Y%m%d.%H%M%S_s.fits']))
-#     print(s.pattern)
-#     print(s.now)
-#     startdate = datetime.datetime(2004, 3, 1, 4, 0)
-#     enddate = datetime.datetime(2004, 3, 1, 6, 30)
-#     assert len(s.filelist(TimeRange(startdate, enddate))) == 3
-#     startdate = datetime.datetime(2010, 1, 10, 20, 30)
-#     enddate = datetime.datetime(2010, 1, 20, 20, 30)
-#     assert len(s.filelist(TimeRange(startdate, enddate))) == 0
+
+def testURL_patternMillisecondsZeroPadded():
+    # Asserts solution to ticket #1954.
+    # Milliseconds must be zero-padded in order to match URL lengths.
+    now_mock = Mock(return_value=datetime.datetime(2019, 4, 19, 0, 0, 0, 4009))
+    with patch('datetime.datetime', now=now_mock):
+        s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
+    now_mock.assert_called_once()
+    assert s.now == 'fd_20190419_000000_004.fts'
+
+
+@pytest.mark.xfail
+def testFilesRange_sameDirectory_local():
+    # Fails due to an IsADirectoryError, wrapped in a URLError, after `requests`
+    # tries to open a directory as a binary file.
+    s = Scraper('/'.join(['file:/', rootdir,
+                          'EIT', 'efz%Y%m%d.%H%M%S_s.fits']))
+    startdate = parse_time((2004, 3, 1, 4, 0))
+    enddate = parse_time((2004, 3, 1, 6, 30))
+    assert len(s.filelist(TimeRange(startdate, enddate))) == 3
+    startdate = parse_time((2010, 1, 10, 20, 30))
+    enddate = parse_time((2010, 1, 20, 20, 30))
+    assert len(s.filelist(TimeRange(startdate, enddate))) == 0
 
 
 @pytest.mark.xfail
