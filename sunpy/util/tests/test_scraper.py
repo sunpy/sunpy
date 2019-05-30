@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import pytest
 import datetime
-from unittest.mock import patch, Mock
+from mock import patch, MagicMock as Mock
 
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
