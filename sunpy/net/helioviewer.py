@@ -48,12 +48,12 @@ class HelioviewerClient(object):
             else:
                 for inst, detect in observ.items():
                     for wavelength, params in detect.items():
-                        # These observatories and wavelengths are nested by more one level
-                        if name in ["Hinode", "STEREO_A", "STEREO_B"] or wavelength in ["C2", "C3"]:
+                        if 'sourceId' in params:
+                            data_sources_dict[(name, inst, None, wavelength)] = params['sourceId']
+                        else:
                             for wave, adict in params.items():
                                 data_sources_dict[(name, inst, wavelength, wave)] = adict['sourceId']
-                        else:
-                            data_sources_dict[(name, inst, None, wavelength)] = params['sourceId']
+
         # Sort the output for printing purposes
         return OrderedDict(sorted(data_sources_dict.items(), key=lambda x: x[1]))
 
@@ -453,9 +453,8 @@ class HelioviewerClient(object):
         Returns source_id based on the key.
         """
         source_id_list = list(partial_key_match(key, self.data_sources))
-        if len(source_id_list) > 1:  # or maybe != 1
+        if len(source_id_list) != 1:
             raise KeyError(f"The values used: {key} do not correspond to one source_id "
                            f"but {len(source_id_list)} source_id(s)."
                            " Please check the list using HelioviewerClient.data_sources.")
         return source_id_list[0]
-            
