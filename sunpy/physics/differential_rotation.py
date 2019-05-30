@@ -7,7 +7,7 @@ from astropy import units as u
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, get_body
 from astropy.time import TimeDelta
 
-from sunpy.coordinates import HeliographicStonyhurst, Helioprojective
+from sunpy.coordinates import HeliographicStonyhurst, Helioprojective, Heliocentric
 from sunpy.map import (all_coordinates_from_map, contains_full_disk, coordinate_is_on_solar_disk,
                        is_all_off_disk, is_all_on_disk, map_edges, on_disk_bounding_coordinates)
 from sunpy.time import parse_time
@@ -159,7 +159,7 @@ def _get_new_observer(initial_obstime, observer, time):
     else:
         raise ValueError("Either the 'observer' or the 'time' keyword must not be None.")
 
-    return new_observer.transform_to(HeliographicStonyhurst)
+    return new_observer
 
 
 def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwargs):
@@ -360,67 +360,91 @@ def _get_bounding_coordinates(coords):
 
 def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
     """
-    Helper function that returns a new list of coordinates for each input coord.
-    This is an inverse function needed by `skimage.transform.warp`
+    This function takes pixel coordinates in the warped image (`xy`) and
+    calculates the pixel locations of those pixels in the map.
 
-    function.
+    To do this it converts the input pixel coordinates to helioprojective
+    coordinates as seen by new_observer, then transforms them to heliographic
+    Stonyhurst, adds the differential rotation correction and then transforms
+    them back to helioprojective coordinates as seen by the map observer and
+    then calculates their corresponding pixel coordinates in the input map.
+
+    This is an inverse function needed by `skimage.transform.warp`.
 
     Parameters
     ----------
     xy : `numpy.ndarray`
-        Output from `skimage.transform.warp`.
+        Pixel coordinates in the warped image.
     smap : `~sunpy.map.GenericMap`
         Original map that we want to transform.
 
     Returns
     -------
     xy2 : `numpy.ndarray`
-        Array with the inverse transformation.
+        Pixel coordinates in the map corresponding to the input pixels in the
+        warped image.
     """
-    # We start by converting the pixel to world
+    # Suppress NaN warnings in coordinate transforms
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
 
         # The time interval between the new observer time and the map observation time.
         interval = (parse_time(new_observer.obstime) - parse_time(smap.date)).to(u.s)
 
-        # These are the co-ordinates at the new observer.
-        heliographic_coordinate = all_coordinates_from_map(smap).transform_to(new_observer).transform_to(HeliographicStonyhurst)
+        # We need to get the input pixel coordinates into the OUTPUT HPC frame.
+        # To save us having to construct a WCS etc, we do the transformation
+        # using the output map, and then replace the observer in place before
+        # transforming to HGS. This is acceptable because the pixel -> world
+        # transformation is independent of the observer.
+        input_pixels = xy.T * u.pix
+        map_coord = smap.pixel_to_world(*input_pixels)
+        output_hpc_coords = SkyCoord(map_coord.Tx,
+                                     map_coord.Ty,
+                                     map_coord.distance,
+                                     obstime=new_observer.obstime,
+                                     observer=new_observer,
+                                     frame=Helioprojective)
+        heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
 
         # Compute the differential rotation.
         drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
-        # Subtract the differential rotation.  This is the inverse of adding in
-        # differential rotation.
-        rotated_coord = SkyCoord(heliographic_coordinate.lon - drot, heliographic_coordinate.lat,
-                                 obstime=new_observer.obstime, observer=new_observer,
-                                 frame=HeliographicStonyhurst).transform_to(smap.observer_coordinate)
+        # Add in the differential rotation shift
+        rotated_coord = SkyCoord(heliographic_coordinate.lon + drot,
+                                 heliographic_coordinate.lat,
+                                 heliographic_coordinate.radius,
+                                 obstime=new_observer.obstime,
+                                 observer=new_observer,
+                                 frame=HeliographicStonyhurst)
 
-        # Find which coordinates are not on the visible disk of the Sun.
-        with np.errstate(invalid='ignore'):
-            occult = np.logical_or(np.less(rotated_coord.lon, -90 * u.deg),
-                                   np.greater(rotated_coord.lon, 90 * u.deg))
+        # As seen from the map observer, which coordinates are on disk and which are behind the Sun.
+        where_off_disk_from_map_observer = rotated_coord.transform_to(
+            Heliocentric(observer=smap.observer_coordinate)).z.value < 0
 
-        # NaN-ing values that move to the other side of the sun
-        rotated_coord.data.lon[occult] = np.nan * u.deg
-        rotated_coord.data.lat[occult] = np.nan * u.deg
-        rotated_coord.cache.clear()
+        # Re-project the pixels which are on disk back to location of the original observer
+        coordinates_at_map_observer = rotated_coord.transform_to(smap.coordinate_frame)
 
         # Go back to pixel co-ordinates
-        x2, y2 = smap.world_to_pixel(rotated_coord)
+        x2, y2 = smap.world_to_pixel(coordinates_at_map_observer)
 
     # Re-stack the data to make it correct output form
     xy2 = np.dstack([x2.T.value.flat, y2.T.value.flat])[0]
+    # Set the off disk coordinates to NaN so they are not included in the output image.
+    xy2[where_off_disk_from_map_observer.flat] = np.nan
 
-    # Returned a masked array with the non-finite entries masked.
-    return np.ma.array(xy2, mask=np.isnan(xy2))
+    return xy2
 
 
 def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     """
-    Function to transform a `~sunpy.map.Map` taking into account simultaneously
-    both solar differential rotation and the changing location of the
-    observer.
+    Warp a `~sunpy.map.GenericMap` to take into account both solar differential
+    rotation and the changing location of the observer.
+
+    .. warning::
+        This function, while greatly improved in 1.0, is still experimental.
+        Please validate that it gives you results you expect and report any
+        discrepancies on the SunPy issue tracker.
+
 
     The function transforms the input map data pixels by first rotating each
     pixel according to solar differential rotation.  The amount of solar
@@ -540,10 +564,8 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
     warp_args.update(diff_rot_kwargs)
 
     # Apply solar differential rotation as a scikit-image warp
-    out_data = transform.warp(to_norm(smap_data), inverse_map=_warp_sun_coordinates, map_args=warp_args)
-
-    # Recover the original intensity range.
-    out_data = un_norm(out_data, smap.data)
+    out_data = transform.warp(smap_data, inverse_map=_warp_sun_coordinates,
+                              map_args=warp_args, preserve_range=True, cval=np.nan)
 
     # Update the meta information with the new date and time.
     out_meta = deepcopy(smap.meta)

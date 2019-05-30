@@ -317,19 +317,17 @@ def test_warp_sun_coordinates(all_on_disk_map):
     # Define an observer
     new_observer = get_earth(all_on_disk_map.date + 6*u.hr)
 
-    # This array is not used in the function but is part of the signature
-    dummy_array = np.zeros(10)
+    dummy_array = np.zeros((500, 2))
 
     # Call the warp
     xy2 = _warp_sun_coordinates(dummy_array, all_on_disk_map, new_observer)
 
     # Test the properties of the output
     shape = all_on_disk_map.data.shape
-    assert xy2.shape == (shape[0]*shape[1], 2)
-    assert isinstance(xy2, np.ma.core.MaskedArray)
+    assert xy2.shape == dummy_array.shape
+    assert isinstance(xy2, np.ndarray)
 
     # Test the values - values are not independently found
-    np.testing.assert_almost_equal(xy2[0, 0], -2.063284482734346, decimal=2)
-    np.testing.assert_almost_equal(xy2[0, 1], -0.23511899658107005, decimal=2)
-    np.testing.assert_almost_equal(xy2[499, 0], 16.396007639829428, decimal=2)
-    np.testing.assert_almost_equal(xy2[499, 1], 23.87553530074777, decimal=2)
+    # We are passing in 500 pairs of (0,0) so all the output pixels should be the same
+    np.testing.assert_almost_equal(xy2[:, 0], 2.3776536242111312, decimal=2)
+    np.testing.assert_almost_equal(xy2[:, 1], 0.23785889303423113, decimal=2)
