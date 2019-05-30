@@ -9,19 +9,6 @@ What's New in SunPy 1.0?
 Overview
 ========
 
-
-SunPy 1.0 brings these headline changes:
-* A complete transition of the whole code base to use ~astropy.time.Time, which was implemented by Vishnunarayan K I as part of Google Summer of Code 2018.
-* A rewrite of how all the clients in sunpy.net download files from the internet. This means vastly improved progress bars, skipping downloads if files are present, and better visibility and retrying of download errors.
-* A rewrite of the differential rotation and image warping code to correctly account for observer location using the Astropy coordinate functionality.
-* Removal of many deprecated functions and submodules, we have used the 1.0 release as a chance to clean out SunPy reducing the number of lines of Python code in the project by almost 3,000!
-* The first release of SunPy to be Python 3 only, requiring Python 3.6+.  This is because Python 2 `will not be maintained after 2019 <https://python3statement.org/>`_.
-
-
-No new functionality will be added to the 0.9.x series, which will also be the last version to include `sunpy.spectra`, `sunpy.lightcurve` and `sunpy.wcs`, all of which were deprecated in 0.8.
-
-
-
 On this page, you can read about some of the big changes in this release:
 
 * :ref:`whatsnew-1.0-python`
@@ -32,7 +19,17 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-1.0-maputils`
 * :ref:`whatsnew-1.0-renamed-removed`
 
-SunPy 1.0 includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+SunPy 1.0 brings these headline changes:
+
+* A complete transition of the whole code base to use ~astropy.time.Time, which was implemented by Vishnunarayan K I as part of Google Summer of Code 2018.
+* A rewrite of how all the clients in sunpy.net download files from the internet.
+  This means vastly improved progress bars, skipping downloads if files are present, and better visibility and retrying of download errors.
+* A rewrite of the differential rotation and image warping code to correctly account for observer location using the Astropy coordinate functionality.
+* Removal of many deprecated functions and submodules, we have used the 1.0 release as a chance to clean out SunPy reducing the number of lines of Python code in the project by almost 3,000!
+* The first release of SunPy to be Python 3 only, requiring Python 3.6+.  This is because Python 2 `will not be maintained after 2019 <https://python3statement.org/>`_.
+
+There have been numerous improvements to large parts of SunPy, notably in the content of SunPy's documentation, and the continuous integration testing of SunPy.
+SunPy 1.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
@@ -42,9 +39,6 @@ By the numbers:
 * 48 people have contributed since 0.9
 * 21 new contributors
 
-There are numerous breaking changes to SunPy, notably in the implementation of time, which has been switched to using Astropy yimr
-There have been numerous improvements to large parts of SunPy, notably in the content of SunPy's documentation, and the continuous integration testing of SunPy.
-
 .. _whatsnew-1.0-python:
 
 Supported versions of Python
@@ -52,8 +46,8 @@ Supported versions of Python
 
 SunPy 1.0 has dropped Python 2 support as Python 2 is nearing the end of its support cycle.
 To port your code to Python 3, there is some good advice `here <https://docs.python.org/3/howto/pyporting.html>`__.
-If you need Python 2 support, you use SunPy 0.9.X which will see bug fixes until 2020.
-As a result, SunPy's minimum Python version is Python 3.6 and is routinely tested against Python 3.6 and 3.7.
+If you need Python 2 support, you use SunPy 0.9.X which will see bug fixes until 2020 but no new features.
+As a result, SunPy's minimum Python version has been raised to Python 3.6 and is routinely tested against Python 3.6 and 3.7.
 
 .. _whatsnew-1.0-time:
 
@@ -100,8 +94,10 @@ SunPy now uses Astropy's `~astropy.time.Time` object everywhere to represent tim
     >>> import datetime
     >>> Time(datetime.datetime.now())
     <Time object: scale='utc' format='datetime' value=2018-10-20 15:36:16.364089>
+
 Changes to SunPy
 ++++++++++++++++
+
 - **All functions which used to return** `datetime` **now return** `~astropy.time.Time`
   And all functions which return `datetime.timedelta` now return `astropy.time.TimeDelta`.
   For example, the properties of `sunpy.time.TimeRange` which  used to return `datetime.datetime` and `datetime.timedelta` now return `astropy.time.Time` and `astropy.time.TimeDelta`
@@ -118,24 +114,34 @@ The work on the transition from `datetime` to `astropy.time.Time` was done as a 
 Improved file downloading capability
 ====================================
 
-Parallel file downloading has been implemented using the parfive package.  This improves download speed
-The file download capability has been re-written to use the parfive package.
+The file download capability has been re-written to use the `parfive package <https://github.com/Cadair/parfive>`__.
+This brings parallel file downloading which will decrease the total download time.
+Furthermore, this brings the ability to re-download failed files and a very pretty progress bar.
 
 .. _whatsnew-1.0-logging:
 
 Logging used to record SunPy notices
 ====================================
 
-SunPy now uses a logging system to record warnings, information etc as SunPy is running.
+All messages provided by SunPy use this logging facility which is based on the Python logging module rather than print statements.
+
+Messages can have one of several levels:
+
+* DEBUG: Detailed information, typically of interest only when diagnosing problems.
+* INFO: A message conveying information about the current task, and confirming that things are working as expected
+* WARNING: An indication that something unexpected happened, and that user action may be required.
+* ERROR: indicates a more serious issue where something failed but the task is continuing
+* CRITICAL: A serious error, indicating that the program itself may be unable to continue running.
+
+By default, only WARNING, ERROR, and INFO messages are displayed.
 
 .. _whatsnew-1.0-diffrot:
 
 Improvements to differential rotation
 =====================================
 
-Applying the effect of solar differential rotation to coordinates now properly takes in to account the changing position
-of the observer.  For example, since the Earth moves, observers on the Earth must take in to account the solar
-differential rotation of the Sun and the motion of the Earth when calculating a location on the Sun.
+Applying the effect of solar differential rotation to coordinates now properly takes in to account the changing position of the observer.
+For example, since the Earth moves, observers on the Earth must take in to account the solar differential rotation of the Sun and the motion of the Earth when calculating a location on the Sun.
 
 - **Support for applying solar differential rotation to coordinates.**
     Solar differential rotation of on-disk coordinates can be specified using either time or a new observer. If time is
@@ -217,7 +223,7 @@ Map utility functions
 =====================
 
 A new submodule `~sunpy.map.maputils` provides a number utility functions that act on `sunpy.map.GenericMap` instances.
-This interrogate maps for some simple information.  For example,
+For example,
 
   .. code:: python
     >>> import sunpy.map
@@ -237,9 +243,16 @@ This interrogate maps for some simple information.  For example,
 Renamed/removed functionality
 =============================
 
+This is just some of the renamed or removed functionality.
 
-
-<Fill In>
+* ``sunpy.sun.sun`` functions have been re-implemented using Astropy for significantly improved accuracy. Some functions have been removed.
+* Renamed ``eccentricity_sunearth_orbit`` to ``eccentricity_sun_earth_orbit``.
+* Removed ``sunpy.time.julian_day``, ``sunpy.time.julian_centuries``, ``sunpy.time.day_of_year``, ``sunpy.time.break_time``, ``sunpy.time.get_day``.
+* Move the matplotlib animators from ``sunpy.visualisation.imageanimator`` and ``sunpy.visualization.mapcubeanimator`` to ``sunpy.visualization.animator``.
+* ``axis_ranges`` kwarg of ``sunpy.visualization.animator.ArrayAnimator``, ``sunpy.visualization.animator.ImageAnimator`` and ``sunpy.visualization.animator.LineAnimator`` now must be entered as ``None``, ``[min, max]`` or pixel edges of each array element.
+* The Helioviewer client has been switched to using the newer Helioviewer API. This has meant that we have changed some of the keywords that were passed into client’s methods.
+* Removed ``sunpy.net.jsoc.attrs.Time`` because it served the same purpose as ``sunpy.net.attrs.Time`` after the switch to ``astropy.time.Time``.
+* The deprecated ``sunpy.lightcurve`` (replaced by ``sunpy.timeseries``, ``sunpy.wcs`` and ``sunpy.spectra`` (replaced by ``radiospectra module) modules have now been removed.
 
 Full change log
 ===============
