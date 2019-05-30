@@ -4,12 +4,12 @@ import os
 import datetime
 import re
 from ftplib import FTP
-from urllib.error import HTTPError
 
 from bs4 import BeautifulSoup
 from sunpy.extern import six
 from sunpy.extern.six.moves import range, zip
 from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.error import HTTPError
 
 __all__ = ['Scraper']
 

@@ -1,3 +1,16 @@
+Sunpy v0.9.9 (2019-05-30)
+=========================
+
+Bug Fixes
+---------
+
+- Fix `sunpy.util.scraper.Scraper` failing if a directory is not found on a remote server. (`#3063 <https://github.com/sunpy/sunpy/pull/3063>`__)
+- Correctly zero pad milliseconds in the `sunpy.util.scraper.Scraper` formatting to prevent errors when the millisecond value was less than 100. (`#3063 <https://github.com/sunpy/sunpy/pull/3063>`__)
+- Make a correction to `sunpy.coordinates.wcs_utils.solar_wcs_frame_mapping` so
+  that `astropy.wcs.WCS` objects are correctly converted to
+  `sunpy.coordinates.frames` objects irrespective of the ordering of the axes. (`#3116 <https://github.com/sunpy/sunpy/pull/3116>`__)
+
+
 Sunpy 0.9.7 (2019-05-01)
 ========================
 
