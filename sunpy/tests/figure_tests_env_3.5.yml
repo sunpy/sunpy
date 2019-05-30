@@ -69,7 +69,7 @@ dependencies:
   - python-dateutil=2.6.1=py35_0
   - pytz=2017.3=py_2
   - pywavelets=0.5.2=py35_1
-  - qt=5.6.2=7
+  - qt=5.6.2
   - readline=7.0=0
   - requests=2.18.4=py35_1
   - scikit-image=0.13.1=py35_0

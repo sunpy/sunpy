@@ -93,7 +93,7 @@ before_script:
     # Download the sample data for the online builds only.
     - if [[ $SETUP_CMD == *online-only* ]] || [[ $SETUP_CMD == *remote-data* ]] || [[ $PYTHON_VERSION == "2.7" ]]; then python -m "sunpy.data.sample"; fi
     - if [[ $MAIN_CMD == py.test* ]]; then pip install -e ./; fi
-    - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; python -m "sunpy.data.sample"; fi
+    - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION
     - if [[ $JOB == *pip* ]]; then pip install .[all]; fi
 
 script:
