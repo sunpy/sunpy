@@ -9,6 +9,11 @@ What's New in SunPy 1.0?
 Overview
 ========
 
+The SunPy project is pleased to announce the release of sunpy 1.0.
+A 1.0 release is considered a symbolic act and it signals that the sunpy library is mature enough in many areas.
+This maturity means that the existing API of the library should only change in extraordinary circumstances and can be relied upon in production environments.
+It did allow many underlying changes that we could have not done otherwise.
+
 On this page, you can read about some of the big changes in this release:
 
 * :ref:`whatsnew-1.0-python`
