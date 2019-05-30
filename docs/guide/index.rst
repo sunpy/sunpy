@@ -22,6 +22,4 @@ For more details checkout the :ref:`reference`.
    customization
    logger
    ssw
-   bugs
-   testingfeatures
    troubleshooting

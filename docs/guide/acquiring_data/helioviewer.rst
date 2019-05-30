@@ -98,6 +98,7 @@ Let us begin by retrieving the available list of sources that Helioviewer suppor
     ('TRACE', None, None, '1600'): 80
     ('TRACE', None, None, '1700'): 81
     ('TRACE', None, None, 'white-light'): 82
+    ('MLSO', 'COSMO', 'KCor', '735'): 83
     ('Hinode', 'XRT', 'Any', 'Any'): 10001
     ('Hinode', 'XRT', 'Any', 'Al_mesh'): 10002
     ('Hinode', 'XRT', 'Any', 'Al_thick'): 10003
