@@ -31,7 +31,7 @@ conf = ConfigParser()
 conf.read(['setup.cfg'])
 metadata = dict(conf.items('metadata'))
 
-PACKAGENAME = metadata.get('package_name', 'sunpy')
+PACKAGENAME = str(metadata.get('package_name', 'sunpy'))
 DESCRIPTION = metadata.get('description', 'SunPy: Python for Solar Physics')
 AUTHOR = metadata.get('author', 'The SunPy Community')
 AUTHOR_EMAIL = metadata.get('author_email', '')
