@@ -27,11 +27,16 @@ def test_true_longitude(t1, t2):
 
 
 def test_apparent_longitude(t1, t2):
+    aberration_1au = Angle('20.496s')
     # Validate against a published value from the Astronomical Almanac (1992, C2+C16+B30)
-    assert_quantity_allclose(sun.apparent_longitude(t1), Angle('199d54m21.543s'), atol=0.005*u.arcsec)
+    assert_quantity_allclose(sun.apparent_longitude(t1),
+                             Angle('199d54m26.17s') + Angle('15.908s') - aberration_1au / 0.9976085,
+                             atol=0.005*u.arcsec)
 
     # Validate against a published value from the Astronomical Almanac (2013, C2+C12+B61)
-    assert_quantity_allclose(sun.apparent_longitude(t2), Angle('85d58m49.334s'), atol=0.005*u.arcsec)
+    assert_quantity_allclose(sun.apparent_longitude(t2),
+                             Angle('85d58m57.46') + Angle('12.0489s') - aberration_1au / 1.0159149,
+                             atol=0.005*u.arcsec)
 
 
 def test_true_latitude(t1, t2):
@@ -59,10 +64,15 @@ def test_solar_semidiameter_angular_size():
     assert_quantity_allclose(sun.solar_semidiameter_angular_size("2001/07/21"), 944.039007 * u.arcsec, atol=1e-3 * u.arcsec)
 
 
-def test_mean_obliquity_of_ecliptic(t1):
-    # Regression-only test
-    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t1), 84384.8*u.arcsec,
-                             atol=0.1*u.arcsec)
+def test_mean_obliquity_of_ecliptic(t1, t2):
+    # Validate against a published value from the Astronomical Almanac (1992, C1)
+    # Note that the publication date pre-dates the IAU 2006 definition of obliquity
+    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t1), 84384.82*u.arcsec,
+                             atol=0.05*u.arcsec)
+
+    # Validate against a published value from the Astronomical Almanac (2013, C1)
+    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t2), 84375.098*u.arcsec,
+                             atol=0.005*u.arcsec)
 
 
 def test_true_rightascension():
@@ -97,10 +107,15 @@ def test_true_declination_J2000(t1, t2):
                              Angle('23d22m13.97s'), atol=0.005*u.arcsec)
 
 
-def test_true_obliquity_of_ecliptic(t1):
-    # Regression-only test
-    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t1), 84384.5*u.arcsec,
-                             atol=0.1*u.arcsec)
+def test_true_obliquity_of_ecliptic(t1, t2):
+    # Validate against a published value from the Astronomical Almanac (1992, C1+B30)
+    # Note that the publication date pre-dates the IAU 2006 definition of obliquity
+    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t1), (84384.82 - 0.308)*u.arcsec,
+                             atol=0.05*u.arcsec)
+
+    # Validate against a published value from the Astronomical Almanac (2013, C1+B61)
+    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t2), (84375.098 - 7.0153)*u.arcsec,
+                             atol=0.005*u.arcsec)
 
 
 def test_apparent_rightascension(t1, t2):
@@ -131,6 +146,18 @@ def test_apparent_declination_J2000(t1):
     # Regression-only test
     assert_quantity_allclose(sun.apparent_declination(t1, equinox_of_date=False),
                              Angle('-7d49m13.1s'), atol=0.05*u.arcsec)
+
+
+def test_position(t1, t2):
+    pos1 = sun.position(t1)
+    ra1 = sun.apparent_rightascension(t1)
+    dec1 = sun.apparent_declination(t1)
+    assert_quantity_allclose(pos1, (ra1, dec1))
+
+    pos2 = sun.position(t2, equinox_of_date=False)
+    ra2 = sun.apparent_rightascension(t2, equinox_of_date=False)
+    dec2 = sun.apparent_declination(t2, equinox_of_date=False)
+    assert_quantity_allclose(pos2, (ra2, dec2))
 
 
 def test_print_params():
