@@ -5,7 +5,7 @@ import numpy as np
 from astropy.coordinates import SkyCoord
 import astropy.units as u
 
-from sunpy.sun import sun
+from sunpy.coordinates import sun
 import sunpy.map
 import sunpy.data.test
 from sunpy.coordinates import frames

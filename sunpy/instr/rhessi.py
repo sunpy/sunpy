@@ -18,7 +18,7 @@ from astropy.time import Time
 
 import sunpy.io
 from sunpy.time import TimeRange, parse_time
-from sunpy.sun.sun import solar_semidiameter_angular_size
+from sunpy.coordinates.sun import solar_semidiameter_angular_size
 from sunpy.coordinates import get_sunearth_distance
 
 

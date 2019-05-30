@@ -23,7 +23,7 @@ import sunpy.cm
 from sunpy import config
 from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype, peek_show
 from sunpy.sun import constants
-from sunpy.sun import sun
+from sunpy.coordinates import sun
 from sunpy.time import parse_time, is_time
 from sunpy.image.transform import affine_transform
 from sunpy.image.resample import reshape_image_to_4d_superpixel

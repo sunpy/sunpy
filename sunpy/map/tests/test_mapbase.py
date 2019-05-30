@@ -23,6 +23,7 @@ import sunpy.map
 import sunpy.sun
 import sunpy.data.test
 import sunpy.coordinates
+from sunpy.coordinates import sun
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 
@@ -172,7 +173,7 @@ def test_rsun_meters(generic_map):
 
 def test_rsun_obs(generic_map):
     with pytest.warns(SunpyUserWarning, match='Missing metadata for solar radius'):
-        assert generic_map.rsun_obs == sunpy.sun.solar_semidiameter_angular_size(generic_map.date)
+        assert generic_map.rsun_obs == sun.solar_semidiameter_angular_size(generic_map.date)
 
 
 def test_coordinate_system(generic_map):
