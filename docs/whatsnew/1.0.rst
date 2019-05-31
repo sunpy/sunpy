@@ -26,6 +26,7 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-1.0-time`
 * :ref:`whatsnew-1.0-download`
 * :ref:`whatsnew-1.0-logging`
+* :ref:`whatsnew-1.0-coordinates`
 * :ref:`whatsnew-1.0-diffrot`
 * :ref:`whatsnew-1.0-maputils`
 * :ref:`whatsnew-1.0-moved-config`
@@ -150,6 +151,71 @@ It is possible to retry any downloads which fail with::
   >>> files = Fido.fetch(files)  # Retry the downloads which failed
 
 
+.. _whatsnew-1.0-coordinates:
+
+Improvements to coordinates functionality
+=========================================
+
+- **Accurate Sun-specific coordinates calculations**
+
+  Sun-specific coordinates calculations have been grouped together in `sunpy.coordinates.sun`, and the underlying implementations have been re-written to use Astropy rather than approximate expressions.
+  Nearly all of the returned values now match published values in the *Astronomical Almanac* to published precision (e.g., the hundredth of an arcsecond for apparent right ascension).
+  For times that are provided to these functions, the user should take care to specify whether the time is other than UT (e.g., TT), which can be done using `~astropy.time.Time` (see above).
+
+- **Improved tools to get positions of bodies in the solar system**
+
+  The existing function `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst` has been enhanced to be able to correct for light travel time.
+  When one specifies an observer, the function determines the emission time in the past that results in photons arriving at the observer at the observation time.
+  The function then returns the location of the requested body at that emission time.
+
+  .. code:: python
+
+    >>> t = '2012-06-05 22:34:48.350'
+
+    >>> without_correction = get_body_heliographic_stonyhurst('venus', t)
+    >>> print(without_correction)
+    <HeliographicStonyhurst Coordinate (obstime=2012-06-05T22:34:48.350): (lon, lat, radius) in (deg, deg, AU)
+        (359.92620234, 0.02752007, 0.72602872)>
+
+    >>> with_correction = get_body_heliographic_stonyhurst('venus', t, observer=get_earth(t))
+    INFO: Apparent body location accounts for 144.06 seconds of light travel time [sunpy.coordinates.ephemeris]
+    >>> print(with_correction)
+    <HeliographicStonyhurst Coordinate (obstime=2012-06-05T22:34:48.350): (lon, lat, radius) in (deg, deg, AU)
+        (359.92355609, 0.02734159, 0.72602853)>
+
+  There is a new function `~sunpy.coordinates.ephemeris.get_horizons_coord` that queries `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`_ for the location of solar-system bodies.
+  JPL HORIZONS includes not only planets and other natural bodies in the solar system, but also major spacecraft.
+  This function requires the `Astroquery <https://astroquery.readthedocs.io/en/latest/>`_ package and an Internet connection.
+
+
+  - Query the location of Venus
+
+  .. code:: python
+
+    >>> get_horizons_coord('Venus barycenter', '2001-02-03 04:05:06')  # doctest: +REMOTE_DATA
+    INFO: Obtained JPL HORIZONS location for Venus Barycenter (2) [sunpy.coordinates.ephemeris]
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000): (lon, lat, radius) in (deg, deg, AU)
+        (326.06844114, -1.64998481, 0.71915147)>
+
+  - Query the location of the SDO spacecraft
+
+  .. code:: python
+
+    >>> get_horizons_coord('SDO', '2011-11-11 11:11:11')  # doctest: +REMOTE_DATA
+    INFO: Obtained JPL HORIZONS location for Solar Dynamics Observatory (spac [sunpy.coordinates.ephemeris]
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-11-11T11:11:11.000): (lon, lat, radius) in (deg, deg, AU)
+        (0.01018888, 3.29640407, 0.99011042)>
+
+  - Query the location of the SOHO spacecraft via its ID number (-21)
+
+  .. code:: python
+
+    >>> get_horizons_coord(-21, '2004-05-06 11:22:33', 'id')  # doctest: +REMOTE_DATA
+    INFO: Obtained JPL HORIZONS location for SOHO (spacecraft) (-21) [sunpy.coordinates.ephemeris]
+    <SkyCoord (HeliographicStonyhurst: obstime=2004-05-06T11:22:33.000): (lon, lat, radius) in (deg, deg, AU)
+        (0.2523461, -3.55863351, 0.99923086)>
+
+
 .. _whatsnew-1.0-logging:
 
 Logging used to record SunPy notices
@@ -157,7 +223,7 @@ Logging used to record SunPy notices
 
 All messages provided by SunPy use a new logging facility which is based on the Python logging module rather than print statements.
 
-Messages can have one of several levels:
+Messages can have one of several levels, in increasing order of importance:
 
 * DEBUG: Detailed information, typically of interest only when diagnosing problems.
 * INFO: A message conveying information about the current task, and confirming that things are working as expected.
@@ -165,7 +231,7 @@ Messages can have one of several levels:
 * ERROR: An indication that a more serious issue has occured, where something failed but the task is continuing.
 * CRITICAL: A serious error, indicating that the program itself may be unable to continue running.
 
-By default, only WARNING, ERROR, and INFO messages are displayed.
+By default, all messages except for DEBUG messages are displayed.
 
 See the :ref:`logger` documentation for instructions on how to control the verbosity of the logger.
 
