@@ -78,26 +78,28 @@ Here's an example of creating a header from some generic data and an `astropy.co
     >>> data = np.arange(0,100).reshape(10,10)
     >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
     >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord)
-    >>> header   # doctest: +SKIP
-    MetaDict([('wcsaxes', 2),
-          ('crpix1', 5.5),
-          ('crpix2', 5.5),
-          ('cdelt1', <Quantity 1. arcsec2 / pix>),
-          ('cdelt2', <Quantity 1. arcsec2 / pix>),
-          ('cunit1', Unit("arcsec")),
-          ('cunit2', Unit("arcsec")),
-          ('ctype1', 'HPLN-TAN'),
-          ('ctype2', 'HPLT-TAN'),
-          ('crval1', 0.0),
-          ('crval2', 0.0),
-          ('lonpole', 180.0),
-          ('latpole', 0.0),
-          ('date-obs', '2013-10-28T00:00:00.000'),
-          ('hgln_obs', 0.0),
-          ('hglt_obs', 4.7711570596394015),
-          ('dsun_obs', 148644585949.4918),
-          ('rsun_ref', 695700.0),
-          ('rsun_obs', 965.3723815059902)])
+    >>> for key, value in header.items():
+    ...     print(f"{key}: {value}")
+    wcsaxes: 2
+    crpix1: 5.5
+    crpix2: 5.5
+    cdelt1: 1.0
+    cdelt2: 1.0
+    cunit1: arcsec
+    cunit2: arcsec
+    ctype1: HPLN-TAN
+    ctype2: HPLT-TAN
+    crval1: 0.0
+    crval2: 0.0
+    lonpole: 180.0
+    latpole: 0.0
+    date-obs: 2013-10-28T00:00:00.000
+    hgln_obs: 0.0
+    hglt_obs: 4.7711570596394
+    dsun_obs: 148644585949.49176
+    rsun_ref: 695700.0
+    rsun_obs: 965.3723815059902
+
 
 From this we can see now that the function returned a `sunpy.utils.MetaDict` that populated
 the standard FITS keywords with information provided by the passed `astropy.coordinates.SkyCoord`,
@@ -110,26 +112,27 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
     ...                                                      reference_pixel=u.Quantity([5, 5]*u.pixel),
     ...                                                      scale=u.Quantity([2, 2] *u.arcsec/u.pixel))
-    >>> header  # doctest: +SKIP
-    MetaDict([('wcsaxes', 2),
-          ('crpix1', 5.0),
-          ('crpix2', 5.0),
-          ('cdelt1', <Quantity 2. arcsec2 / pix2>),
-          ('cdelt2', <Quantity 2. arcsec2 / pix2>),
-          ('cunit1', Unit("arcsec")),
-          ('cunit2', Unit("arcsec")),
-          ('ctype1', 'HPLN-TAN'),
-          ('ctype2', 'HPLT-TAN'),
-          ('crval1', 0.0),
-          ('crval2', 0.0),
-          ('lonpole', 180.0),
-          ('latpole', 0.0),
-          ('date-obs', '2013-10-28T00:00:00.000'),
-          ('hgln_obs', 0.0),
-          ('hglt_obs', 4.7711570596394015),
-          ('dsun_obs', 148644585949.4918),
-          ('rsun_ref', 695700.0),
-          ('rsun_obs', 965.3723815059902)])
+    >>> for key, value in header.items():
+    ...     print(f"{key}: {value}")
+    wcsaxes: 2
+    crpix1: 5.0
+    crpix2: 5.0
+    cdelt1: 2.0
+    cdelt2: 2.0
+    cunit1: arcsec
+    cunit2: arcsec
+    ctype1: HPLN-TAN
+    ctype2: HPLT-TAN
+    crval1: 0.0
+    crval2: 0.0
+    lonpole: 180.0
+    latpole: 0.0
+    date-obs: 2013-10-28T00:00:00.000
+    hgln_obs: 0.0
+    hglt_obs: 4.7711570596394
+    dsun_obs: 148644585949.49176
+    rsun_ref: 695700.0
+    rsun_obs: 965.3723815059902
 
 As we can see, a list of WCS and observer meta information is contained within the generated headers,
 however we may want to include other meta information including the observatory name, the wavelength and
