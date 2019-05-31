@@ -120,6 +120,7 @@ class DataManager:
 
     def _download_and_hash(self, urls):
         # TODO: Handle multiple urls
+        # TODO: Calculate path here. Don't depened on subclasses of downloader to use unique path
         path = self._downloader.download(urls[0])
 
         # TODO: Calculate the hash
