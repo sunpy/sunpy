@@ -280,6 +280,9 @@ which is equivalent to::
 .. automodapi:: sunpy.coordinates.ephemeris
     :headings: ^#
 
+.. automodapi:: sunpy.coordinates.sun
+    :headings: ^#
+
 .. automodapi:: sunpy.coordinates.offset_frame
     :headings: ^#
 

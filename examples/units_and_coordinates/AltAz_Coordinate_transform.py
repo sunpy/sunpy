@@ -10,7 +10,7 @@ elevation as a factor.
 """
 from astropy.coordinates import EarthLocation, AltAz, SkyCoord
 from astropy.time import Time
-from sunpy.coordinates import frames, get_sunearth_distance
+from sunpy.coordinates import frames, sun
 import astropy.units as u
 
 ######################################################################################
@@ -36,7 +36,7 @@ print('Altitude is {0} and Azimuth is {1}'.format(sun_altaz.T.alt, sun_altaz.T.a
 # We should get our original input which was the center of the Sun.
 # To go from Altitude/Azimuth to Helioprojective, you will need the distance to the Sun.
 # solar distance. Define distance with SunPy's almanac.
-distance = get_sunearth_distance(obstime)
+distance = sun.earth_distance(obstime)
 b = SkyCoord(az=sun_altaz.T.az, alt=sun_altaz.T.alt, distance=distance, frame=frame_altaz)
 sun_helio = b.transform_to(frames.Helioprojective)
 print('The helioprojective point is {0}, {1}'.format(sun_helio.T.Tx, sun_helio.T.Ty))

@@ -1,11 +1,11 @@
 import pytest
 
-from astropy.coordinates import Angle
+from astropy.coordinates import Angle, EarthLocation, SkyCoord
 from astropy.time import Time
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
 
-from sunpy.sun import sun
+from sunpy.coordinates import sun
 
 
 @pytest.fixture
@@ -57,11 +57,11 @@ def test_apparent_latitude(t1, t2):
     assert_quantity_allclose(sun.apparent_latitude(t2), Angle('-0.42s'), atol=0.005*u.arcsec)
 
 
-def test_solar_semidiameter_angular_size():
+def test_angular_radius():
     # Regression-only test
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2012/11/11"), 968.871294 * u.arcsec, atol=1e-3 * u.arcsec)
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2043/03/01"), 968.326347 * u.arcsec, atol=1e-3 * u.arcsec)
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2001/07/21"), 944.039007 * u.arcsec, atol=1e-3 * u.arcsec)
+    assert_quantity_allclose(sun.angular_radius("2012/11/11"), 968.871*u.arcsec, atol=1e-3*u.arcsec)
+    assert_quantity_allclose(sun.angular_radius("2043/03/01"), 968.326*u.arcsec, atol=1e-3*u.arcsec)
+    assert_quantity_allclose(sun.angular_radius("2001/07/21"), 944.039*u.arcsec, atol=1e-3*u.arcsec)
 
 
 def test_mean_obliquity_of_ecliptic(t1, t2):
@@ -148,13 +148,13 @@ def test_apparent_declination_J2000(t1):
                              Angle('-7d49m13.1s'), atol=0.05*u.arcsec)
 
 
-def test_position(t1, t2):
-    pos1 = sun.position(t1)
+def test_sky_position(t1, t2):
+    pos1 = sun.sky_position(t1)
     ra1 = sun.apparent_rightascension(t1)
     dec1 = sun.apparent_declination(t1)
     assert_quantity_allclose(pos1, (ra1, dec1))
 
-    pos2 = sun.position(t2, equinox_of_date=False)
+    pos2 = sun.sky_position(t2, equinox_of_date=False)
     ra2 = sun.apparent_rightascension(t2, equinox_of_date=False)
     dec2 = sun.apparent_declination(t2, equinox_of_date=False)
     assert_quantity_allclose(pos2, (ra2, dec2))
@@ -163,3 +163,63 @@ def test_position(t1, t2):
 def test_print_params():
     # Test only for any issues with printing; accuracy is covered by other tests
     sun.print_params()
+
+
+def test_B0():
+    # Validate against a published value from Astronomical Algorithms (Meeus 1998, p.191)
+    assert_quantity_allclose(sun.B0('1992-Oct-13'), 5.99*u.deg, atol=5e-3*u.deg)
+
+
+def test_B0_array_time():
+    # Validate against published values from the Astronomical Almanac (2013)
+    sun_B0 = sun.B0(Time(['2013-04-01', '2013-12-01']))
+    assert_quantity_allclose(sun_B0[0], -6.54*u.deg, atol=5e-3*u.deg)
+    assert_quantity_allclose(sun_B0[1], 0.88*u.deg, atol=5e-3*u.deg)
+
+
+def test_L0():
+    # Validate against a published value from Astronomical Algorithms (Meeus 1998, p.191)
+    assert_quantity_allclose(sun.L0('1992-Oct-13'), 238.6317*u.deg, atol=5e-5*u.deg)
+
+
+def test_L0_array_time():
+    # Validate against published values from the Astronomical Almanac (2013)
+    sun_L0 = sun.L0(Time(['2013-04-01', '2013-12-01']))
+    assert_quantity_allclose(sun_L0[0], 221.44*u.deg, atol=3e-2*u.deg)
+    assert_quantity_allclose(sun_L0[1], 237.83*u.deg, atol=3e-2*u.deg)
+
+
+def test_P():
+    # Validate against a published value from Astronomical Algorithms (Meeus 1998, p.191)
+    assert_quantity_allclose(sun.P('1992-Oct-13'), 26.27*u.deg, atol=5e-3*u.deg)
+
+
+def test_P_array_time():
+    # Validate against published values from the Astronomical Almanac (2013)
+    sun_P = sun.P(Time(['2013-04-01', '2013-12-01']))
+    assert_quantity_allclose(sun_P[0], -26.15*u.deg, atol=1e-2*u.deg)
+    assert_quantity_allclose(sun_P[1], 16.05*u.deg, atol=1e-2*u.deg)
+
+
+def test_earth_distance():
+    # Validate against a published value from Astronomical Algorithms (Meeus 1998, p.191)
+    assert_quantity_allclose(sun.earth_distance('1992-Oct-13'), 0.997608*u.AU, atol=5e-7*u.AU)
+
+
+def test_earth_distance_array_time():
+    # Validate against published values from the Astronomical Almanac (2013)
+    sunearth_distance = sun.earth_distance(Time(['2013-04-01', '2013-12-01']))
+    assert_quantity_allclose(sunearth_distance[0], 0.9992311*u.AU, atol=5e-7*u.AU)
+    assert_quantity_allclose(sunearth_distance[1], 0.9861362*u.AU, atol=5e-7*u.AU)
+
+
+def test_orientation():
+    # Not currently aware of a published value to check against, so just self-check for now
+
+    # Check the Northern Hemisphere
+    angle = sun.orientation(EarthLocation(lat=40*u.deg, lon=-75*u.deg), '2017-07-18 12:00')
+    assert_quantity_allclose(angle, -59.4*u.deg, atol=0.1*u.deg)
+
+    # Check the Southern Hemisphere
+    angle = sun.orientation(EarthLocation(lat=-40*u.deg, lon=-75*u.deg), '2017-02-18 13:00')
+    assert_quantity_allclose(angle, -110.8*u.deg, atol=0.1*u.deg)
