@@ -104,23 +104,6 @@ This comes with numerous benefits:
 
 - **Support for numerous formats**
   `~astropy.time.Time` can parse numerous formats including python `datetime`.
-  .. code:: python
-    >>> list(Time.FORMATS)
-    ['jd', 'mjd', 'decimalyear', 'unix', 'cxcsec', 'gps', 'plot_date', 'datetime', 'iso', 'isot', 'yday', 'fits', 'byear', 'jyear', 'byear_str', 'jyear_str']
-  .. code:: python
-    >>> import datetime
-    >>> Time(datetime.datetime.now())
-    <Time object: scale='utc' format='datetime' value=2018-10-20 15:36:16.364089>
-
-Changes to SunPy
-++++++++++++++++
-- **All functions which used to return** `datetime` **now return** `~astropy.time.Time`
-  And all functions which return `datetime.timedelta` now return `astropy.time.TimeDelta`.
-  For example, the properties of `sunpy.time.TimeRange` which  used to return `datetime.datetime` and `datetime.timedelta` now return `astropy.time.Time` and `astropy.time.TimeDelta`
-- **Changes to** `~sunpy.time.parse_time`
-
-- **Support for numerous formats**
-  `~astropy.time.Time` can parse numerous formats including python `datetime`.
 
   .. code:: python
 
