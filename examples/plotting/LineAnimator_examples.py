@@ -1,7 +1,7 @@
 """
-=============
-LineAnimator
-=============
+===========================
+How to use the LineAnimator
+===========================
 
 This example shows off some ways in which you can use the
 LineAnimator object to animate line plots.
