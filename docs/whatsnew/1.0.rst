@@ -48,9 +48,10 @@ Supported versions of Python
 ============================
 
 SunPy 1.0 has dropped Python 2 support as Python 2 is nearing the end of its support cycle.
-To port your code to Python 3, there is some good advice `here <https://docs.python.org/3/howto/pyporting.html>`__ and a good breakdown of the relevant changes in Python 3 on the `Python 3 for Scientists <https://python-3-for-scientists.readthedocs.io/en/latest/>`__ page.
-If you still need Python 2 support, SunPy 0.9.X will see bug fixes until 2020 but no new features.
-As a result, SunPy's minimum Python version has been raised to Python 3.6 and is routinely tested against Python 3.6 and 3.7.
+To port your code to Python 3, there is some good advice `here <https://docs.python.org/3/howto/pyporting.html>`__ and a
+good breakdown of the relevant changes in Python 3 on the `Python 3 for Scientists <https://python-3-for-scientists.readthedocs.io/en/latest/>`__
+page. If you still need Python 2 support, SunPy 0.9.X will see bug fixes until 2020 but no new features. As a result,
+SunPy's minimum Python version has been raised to Python 3.6 and is routinely tested against Python 3.6 and 3.7.
 
 .. _whatsnew-1.0-time:
 
@@ -90,7 +91,7 @@ This comes with numerous benefits:
     <Time object: scale='utc' format='isot' value=2012-06-18T02:00:05.453123123>
 
 - **Support for leap seconds**
-  This was one of the bigger motivation for the transition to `astropy.time.Time`.
+  This was one of the bigger motivations for the transition to `astropy.time.Time`.
   `datetime` has no support for leap second while `~astropy.time.Time` supports leap seconds.
   A leap second is a one-second adjustment applied to UTC to keep it close to the mean solar time.
 
@@ -151,7 +152,8 @@ Improved file downloading capability
 ====================================
 
 The file download capability has been re-written to use the `parfive package <https://github.com/Cadair/parfive>`__.
-This brings much prettier and informative progress bars, better reporting of download errors and the ability to re-download failed files.
+This brings much prettier and informative progress bars, better reporting of download errors and the ability to
+re-download failed files.
 
 .. image:: https://user-images.githubusercontent.com/1391051/50290236-ecf07b00-0462-11e9-80b2-9473c918802a.gif
    :alt: Parfive progress bars in a Jupyter Notebook
