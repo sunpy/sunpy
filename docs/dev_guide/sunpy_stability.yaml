@@ -32,8 +32,8 @@ roi:
   status: planned
   comments: There is very little functionality.
 sun:
-  status: stable
-  comments: Any future changes should largely maintain backwards compatibility.
+  status: dev
+  comments: Sub-module `constants` is stable.  Sub-module `models` will likely have major changes.  Sub-module `sun` is deprecated in 1.0 and will be removed in 2.0.
 time:
   status: stable
   comments: Any future changes should largely maintain backwards compatibility.
