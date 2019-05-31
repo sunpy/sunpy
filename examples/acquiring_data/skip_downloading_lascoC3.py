@@ -8,7 +8,7 @@ How to download SOHO/LASCO C3 data with Fido and make a plot.
 """
 import matplotlib.pyplot as plt
 
-from sunpy.net import Fido, attrs
+from sunpy.net import Fido, attrs as a
 import sunpy.map
 from sunpy.io.file_tools import read_file
 
@@ -17,9 +17,9 @@ from sunpy.io.file_tools import read_file
 # `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`, a downloader client.
 # We define two search variables:
 # a timerange and the instrument.
-timerange = attrs.Time('1998/05/24 11:00', '1998/05/24 11:20')
-instrument = attrs.Instrument('LASCO')
-detector = attrs.Detector('C3')
+timerange = a.Time('1998/05/24 11:00', '1998/05/24 11:20')
+instrument = a.Instrument('LASCO')
+detector = a.Detector('C3')
 result = Fido.search(timerange, instrument)
 
 ###############################################################################
