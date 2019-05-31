@@ -31,7 +31,7 @@ smap = aia.submap(bottom_left, top_right)
 # map coordinates if we pass the transformation but this transform expects
 # the values to be in degrees and not arcseconds.
 fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1, projection=smap)
+ax = plt.subplot(projection=smap)
 print(ax)
 ax.imshow(smap.data)
 # plot a point in the middle of the image
