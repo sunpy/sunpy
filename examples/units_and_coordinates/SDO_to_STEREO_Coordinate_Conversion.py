@@ -122,7 +122,7 @@ subeuvi.plot()
 
 ###############################################################################
 # Putting them together:
-fig = plt.figure()
+fig = plt.figure(figsize=(15, 5))
 for i, m in enumerate((subeuvi, subaia)):
     ax = fig.add_subplot(1, 2, i+1, projection=m)
     m.plot(axes=ax)
