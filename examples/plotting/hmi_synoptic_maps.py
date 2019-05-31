@@ -42,7 +42,7 @@ syn_map.plot_settings['norm'] = plt.Normalize(-1500, 1500)
 
 ###############################################################################
 # Let's plot the results
-fig = plt.figure()
+fig = plt.figure(figsize=(12, 5))
 axes = plt.subplot(projection=syn_map)
 im = syn_map.plot()
 
