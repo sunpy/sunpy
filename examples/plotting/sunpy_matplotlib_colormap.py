@@ -1,28 +1,27 @@
+# coding: utf-8
 """
-========================================
-Using the SunPy Colormaps and Matplotlib
-========================================
+=========================================
+Using the SunPy Colormaps with matplotlib
+=========================================
 
-This examples shows how you can use the SunPy colormaps with Matplotlib.
-Also the full range of colormaps we provide.
+How you can use the SunPy colormaps with matplotlib.
 """
-###############################################################################
-# When the sunpy colormaps are imported with the following command, we register the
-# SunPy colormap names with Matplotlib.
+import numpy as np
+import matplotlib.pyplot as plt
 
 import sunpy.cm as cm
 
 ###############################################################################
-# You can now get at any of the colormaps, for example 'sdoaia171', with the
-# following command
-
-import matplotlib.pyplot as plt
+# When the sunpy colormaps are imported, the SunPy colormaps are registered
+# with matplotlib. It is now possible to access the colormaps with the following command
 sdoaia171 = plt.get_cmap('sdoaia171')
 
 ###############################################################################
-# We can now create a standard matplotlib plot.
+# You can get the list of all SunPy colormaps with:
+print(cm.cmlist.keys())
 
-import numpy as np
+###############################################################################
+# Let's now create a data array.
 delta = 0.025
 x = y = np.arange(-3.0, 3.0, delta)
 X, Y = np.meshgrid(x, y)
@@ -30,21 +29,10 @@ Z1 = np.exp(-X**2 - Y**2)
 Z2 = np.exp(-(X - 1)**2 - (Y - 1)**2)
 Z = (Z1 - Z2) * 2
 
+###############################################################################
+# Let's now plot the results with the colormap.
 fig, ax = plt.subplots()
 im = ax.imshow(Z, interpolation='bilinear', cmap=sdoaia171,
                origin='lower', extent=[-3, 3, -3, 3],
                vmax=abs(Z).max(), vmin=-abs(Z).max())
-
 plt.show()
-
-###############################################################################
-# If you don't remember what colormaps are available, you can get the list with:
-
-print(cm.cmlist.keys())
-
-###############################################################################
-# We also provide a function that will display all our colormaps:
-
-# The next line sets the thumbnail for the second figure in the gallery.
-# sphinx_gallery_thumbnail_number = 2
-cm.show_colormaps()

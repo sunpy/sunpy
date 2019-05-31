@@ -1,13 +1,10 @@
 """
-===============================
-Fine grained Plotting Features
-===============================
+=====================================
+Fine grained Plotting Features of Map
+=====================================
 
-An example to show control over various plotting features.
+How to control various plotting features of map.
 """
-###############################################################################
-# Import the necessary modules for plotting.
-
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 import matplotlib.pyplot as plt
