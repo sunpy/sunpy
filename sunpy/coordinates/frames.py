@@ -13,12 +13,9 @@ from astropy.coordinates.representation import (CartesianRepresentation, Spheric
                                                 CylindricalRepresentation,
                                                 UnitSphericalRepresentation)
 
-from sunpy.sun import constants
+from sunpy.sun.constants import radius as _RSUN
 
 from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
-
-RSUN_METERS = constants.get('radius').si.to(u.m)
-DSUN_METERS = constants.get('mean distance').si.to(u.m)
 
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective']
@@ -138,7 +135,7 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
 
         if ('radius' in kwargs and kwargs['radius'].unit is u.one and
                 u.allclose(kwargs['radius'], 1*u.one)):
-            kwargs['radius'] = RSUN_METERS.to(u.km)
+            kwargs['radius'] = _RSUN.to(u.km)
 
         super(HeliographicStonyhurst, self).__init__(*args, **kwargs)
 
@@ -146,9 +143,9 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
         # If representation was explicitly passed, do not change the rep.
         if not _rep_kwarg:
             # If we were passed a 3D rep extract the distance, otherwise
-            # calculate it from RSUN.
+            # calculate it from _RSUN.
             if isinstance(self._data, UnitSphericalRepresentation):
-                distance = RSUN_METERS.to(u.km)
+                distance = _RSUN.to(u.km)
                 self._data = SphericalRepresentation(lat=self._data.lat,
                                                      lon=self._data.lon,
                                                      distance=distance)
@@ -366,7 +363,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     }
 
     obstime = TimeFrameAttributeSunPy()
-    rsun = Attribute(default=RSUN_METERS.to(u.km))
+    rsun = Attribute(default=_RSUN.to(u.km))
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
     _default_wrap_angle = 180*u.deg
 

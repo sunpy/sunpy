@@ -23,7 +23,8 @@ except ImportError:
 
 from sunpy.time import parse_time
 from sunpy import log
-from sunpy.util.decorators import deprecated
+from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.time.time import _variables_for_parse_time_docstring
 
 from .frames import HeliographicStonyhurst as HGS
 from .transformations import _SUN_DETILT_MATRIX
@@ -33,6 +34,7 @@ __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
            'get_sun_orientation', 'get_horizons_coord']
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def get_body_heliographic_stonyhurst(body, time='now', observer=None):
     """
     Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the location of a
@@ -43,8 +45,8 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
     ----------
     body : `str`
         The solar-system body for which to calculate positions
-    time : various
-        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
     observer : `~astropy.coordinates.SkyCoord`
         If None, the returned coordinate is the instantaneous or "true" location.
         If not None, the returned coordinate is the astrometric location (i.e., accounts for light
@@ -87,6 +89,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
     return body_hgs
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def get_earth(time='now'):
     """
     Return a `~astropy.coordinates.SkyCoord` for the location of the Earth at a specified time in
@@ -94,8 +97,8 @@ def get_earth(time='now'):
 
     Parameters
     ----------
-    time : various
-        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
 
     Returns
     -------
@@ -110,6 +113,7 @@ def get_earth(time='now'):
     return earth
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def get_horizons_coord(body, time='now', id_type='majorbody'):
     """
     Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
@@ -126,8 +130,8 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
         The solar-system body for which to calculate positions
     id_type : `str`
         If 'majorbody', search by name for planets or satellites.  If 'id', search by ID number.
-    time : various
-        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
 
     Returns
     -------
@@ -203,6 +207,7 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
 
 # The code beyond this point should be moved to sunpy.coordinates.sun after the deprecation period
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def _B0(time='now'):
     """
     Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the
@@ -210,8 +215,8 @@ def _B0(time='now'):
 
     Parameters
     ----------
-    time : various
-        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
 
     Returns
     -------
@@ -235,6 +240,7 @@ with warnings.catch_warnings():
         .represent_as(SphericalRepresentation).lon.to('deg')
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def _L0(time='now'):
     """
     Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the
@@ -249,8 +255,8 @@ def _L0(time='now'):
 
     Parameters
     ----------
-    time : various
-        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
 
     Returns
     -------
@@ -270,6 +276,7 @@ def _L0(time='now'):
     return Longitude(lon_obstime - _LON_FIRST_ROTATION - sidereal_lon)
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def _P(time='now'):
     """
     Return the position (P) angle for the Sun at a specified time, which is the angle between
@@ -278,8 +285,8 @@ def _P(time='now'):
 
     Parameters
     ----------
-    time : various
-        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
 
     Returns
     -------
@@ -294,14 +301,15 @@ def _P(time='now'):
     return _sun_north_angle_to_z(geocentric)
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def _earth_distance(time='now'):
     """
     Return the distance between the Sun and the Earth at a specified time.
 
     Parameters
     ----------
-    time : various
-        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
 
     Returns
     -------
@@ -311,6 +319,7 @@ def _earth_distance(time='now'):
     return get_earth(time).radius
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def _orientation(location, time='now'):
     """
     Return the orientation angle for the Sun from a specified Earth location and time.  The
@@ -321,8 +330,8 @@ def _orientation(location, time='now'):
     ----------
     location : `~astropy.coordinates.EarthLocation`
         Observer location on Earth
-    time : various
-        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
 
     Returns
     -------
