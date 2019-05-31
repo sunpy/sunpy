@@ -398,24 +398,11 @@ def print_params(t='now'):
     print('Carrington Rotation Number = {}'.format(carrington_rotation_number(t)))
 
 
-# The code for these functions should be moved in from sunpy.coordinates.ephemeris after the
-# deprecation period
+# The following functions belong to this module, but their code is still in the old location of
+# sunpy.coordinates.ephemeris.  That code should be moved here after the deprecation period.
 
-B0 = _B0
-B0.__module__ = __name__  # to be picked up by docs
-
-
-L0 = _L0
-L0.__module__ = __name__  # to be picked up by docs
-
-
-P = _P
-P.__module__ = __name__  # to be picked up by docs
-
-
-earth_distance = _earth_distance
-earth_distance.__module__ = __name__  # to be picked up by docs
-
-
-orientation = _orientation
-orientation.__module__ = __name__  # to be picked up by docs
+# Create functions that call the appropriate private functions in sunpy.coordinates.ephemeris
+_functions = ['B0', 'L0', 'P', 'earth_distance', 'orientation']
+for func in _functions:
+    vars()[func] = vars()['_' + func]
+    vars()[func].__module__ = __name__  # so that docs think that the function is local

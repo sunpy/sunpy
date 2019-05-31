@@ -381,22 +381,13 @@ def _sun_north_angle_to_z(frame):
     return Angle(angle)
 
 
-get_sun_B0 = deprecated('1.0', name='get_sun_B0',
-                        alternative='sunpy.coordinates.sun.B0')(_B0)
+# The following functions are moved in the API to sunpy.coordinates.sun and renamed
+_old_names = ['get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
+              'get_sun_orientation']
+_new_module = 'sunpy.coordinates.sun.'
+_new_names = ['B0', 'L0', 'P', 'earth_distance', 'orientation']
 
-
-get_sun_L0 = deprecated('1.0', name='get_sun_L0',
-                        alternative='sunpy.coordinates.sun.L0')(_L0)
-
-
-get_sun_P = deprecated('1.0', name='get_sun_P',
-                       alternative='sunpy.coordinates.sun.P')(_P)
-
-
-get_sunearth_distance = deprecated('1.0', name='get_sunearth_distance',
-                                   alternative='sunpy.coordinates.sun.earth_distance'
-                                  )(_earth_distance)
-
-
-get_sun_orientation = deprecated('1.0', name='get_sun_orientation',
-                                 alternative='sunpy.coordinates.sun.orientation')(_orientation)
+# Create a deprecation hook for each of the functions
+# Note that the code for each of these functions is still in this module as a private function
+for old, new in zip(_old_names, _new_names):
+    vars()[old] = deprecated('1.0', name=old, alternative=_new_module + new)(vars()['_' + new])
