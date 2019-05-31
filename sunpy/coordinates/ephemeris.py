@@ -29,6 +29,9 @@ from sunpy.time.time import _variables_for_parse_time_docstring
 from .frames import HeliographicStonyhurst as HGS
 from .transformations import _SUN_DETILT_MATRIX
 
+__author__ = "Albert Y. Shih"
+__email__ = "ayshih@gmail.com"
+
 __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
            'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
            'get_sun_orientation', 'get_horizons_coord']
