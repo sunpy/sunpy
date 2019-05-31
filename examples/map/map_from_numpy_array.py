@@ -39,7 +39,7 @@ header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
 
 ##############################################################################
 # Let's now create our map.
-manual_map = sunpy.map.Map((data, header))
+manual_map = sunpy.map.Map(data, header)
 
 ##############################################################################
 # Let's plot the result
