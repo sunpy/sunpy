@@ -1,6 +1,6 @@
 """
 ========================================
-Saving and Loading Coordinates with asdf
+Saving and loading coordinates with asdf
 ========================================
 
 In this example we are going to look at saving and loading collections of
@@ -75,7 +75,6 @@ def semi_circular_loop(length: u.m, theta0: u.deg=0*u.deg):
 
 ################################################################################
 # Use this function to generate a `~astropy.coordinates.SkyCoord` object.
-
 loop_coords = semi_circular_loop(500*u.Mm, 30*u.deg)
 print(loop_coords.shape)
 # print the first and last coordinate point
