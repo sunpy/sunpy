@@ -62,7 +62,7 @@ from sunpy.sun import constants
 from sunpy import timeseries
 from sunpy.time import parse_time
 from sunpy.util.net import check_download_file
-from sunpy.coordinates import get_sunearth_distance
+from sunpy.coordinates import sun
 from sunpy.util.config import get_and_create_download_dir
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
@@ -1268,7 +1268,7 @@ def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
     """
     if date is not None:
         date = parse_time(date)
-        xraylum = 4 * np.pi * get_sunearth_distance(date).to("m")**2 * flux
+        xraylum = 4 * np.pi * sun.earth_distance(date).to("m")**2 * flux
     else:
         xraylum = 4 * np.pi * constants.au.to("m")**2 * flux
     return xraylum

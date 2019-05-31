@@ -42,4 +42,4 @@ def test_rsun_missing():
     """Tests output if 'rsun' is missing"""
     euvi_no_rsun = Map(fitspath)
     euvi_no_rsun.meta['rsun'] = None
-    assert euvi_no_rsun.rsun_obs.value == sun.solar_semidiameter_angular_size(euvi.date).to('arcsec').value
+    assert euvi_no_rsun.rsun_obs.value == sun.angular_radius(euvi.date).to('arcsec').value
