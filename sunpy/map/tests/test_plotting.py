@@ -12,7 +12,6 @@ from astropy.coordinates import SkyCoord
 import matplotlib.pyplot as plt
 
 import sunpy
-import sunpy.sun
 import sunpy.map
 import sunpy.coordinates
 import sunpy.data.test
