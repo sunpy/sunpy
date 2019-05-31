@@ -17,8 +17,8 @@ from sunpy.data.sample import AIA_193_IMAGE
 
 ###############################################################################
 # We start with the sample data
+aiamap_mask = sunpy.map.Map(AIA_193_IMAGE)
 aiamap = sunpy.map.Map(AIA_193_IMAGE)
-aiamap_orig = sunpy.map.Map(AIA_193_IMAGE)
 
 ##############################################################################
 # First we make a mask, which tells us which regions are bright. We
@@ -31,7 +31,7 @@ mask = aiamap.data < aiamap.max() * 0.10
 # Mask is a `boolean` array. It can be used to modify the original map object
 # without modifying the data. Once this mask attribute is set, we can plot the
 # image again.
-aiamap.mask = mask
+aiamap_mask.mask = mask
 plt.figure()
 aiamap.plot()
 plt.colorbar()
@@ -66,7 +66,7 @@ labels, n = ndimage.label(aiamap2.data)
 # regions are present above the 5% of the maximum level.
 plt.figure()
 ax = plt.subplot(projection=aiamap)
-aiamap_orig.plot()
+aiamap.plot()
 plt.contour(labels)
 plt.figtext(0.3, 0.2, 'Number of regions = {}'.format(n), color='white')
 plt.show()
