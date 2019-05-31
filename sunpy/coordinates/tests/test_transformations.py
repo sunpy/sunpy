@@ -14,7 +14,8 @@ from astropy.time import Time
 
 from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
                                HeliographicCarrington, Heliocentric,
-                               get_sun_L0, get_earth)
+                               get_earth)
+from sunpy.coordinates import sun
 from sunpy.time import parse_time
 
 
@@ -157,7 +158,7 @@ def test_hgs_hgc_roundtrip():
     hgcout = hgsin.transform_to(HeliographicCarrington(obstime=obstime))
 
     assert_quantity_allclose(hgsin.lat, hgcout.lat)
-    assert_quantity_allclose(hgcout.lon, get_sun_L0(obstime))
+    assert_quantity_allclose(hgcout.lon, sun.L0(obstime))
 
     hgsout = hgcout.transform_to(HeliographicStonyhurst(obstime=obstime))
 

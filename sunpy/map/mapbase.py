@@ -23,7 +23,7 @@ import sunpy.cm
 from sunpy import config
 from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype, peek_show
 from sunpy.sun import constants
-from sunpy.sun import sun
+from sunpy.coordinates import sun
 from sunpy.time import parse_time, is_time
 from sunpy.image.transform import affine_transform
 from sunpy.image.resample import reshape_image_to_4d_superpixel
@@ -546,7 +546,7 @@ class GenericMap(NDData):
         if rsun_arcseconds is None:
             warnings.warn("Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
                           SunpyUserWarning)
-            rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).to('arcsec').value
+            rsun_arcseconds = sun.angular_radius(self.date).to('arcsec').value
 
         return u.Quantity(rsun_arcseconds, 'arcsec')
 
