@@ -18,8 +18,7 @@ from astropy.time import Time
 
 import sunpy.io
 from sunpy.time import TimeRange, parse_time
-from sunpy.coordinates.sun import solar_semidiameter_angular_size
-from sunpy.coordinates import get_sunearth_distance
+from sunpy.coordinates import sun
 
 
 __all__ = ['parse_observing_summary_hdulist', 'backprojection', 'parse_observing_summary_dbase_file']
@@ -323,9 +322,9 @@ def backprojection(calibrated_event_list, pixel_size: u.arcsec=(1., 1.) * u.arcs
         "CTYPE2": "HPLT-TAN",
         "HGLT_OBS": 0,
         "HGLN_OBS": 0,
-        "RSUN_OBS": solar_semidiameter_angular_size(time_range.center).value,
+        "RSUN_OBS": sun.angular_radius(time_range.center).value,
         "RSUN_REF": sunpy.sun.constants.radius.value,
-        "DSUN_OBS": get_sunearth_distance(time_range.center).value * sunpy.sun.constants.au.value
+        "DSUN_OBS": sun.earth_distance(time_range.center).value * sunpy.sun.constants.au.value
     }
 
     result_map = sunpy.map.Map(image, dict_header)

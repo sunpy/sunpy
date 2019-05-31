@@ -1,9 +1,12 @@
 """
 This module provides Sun-related parameters.
 """
+import warnings
+
 import numpy as np
 
 import astropy.units as u
+from astropy.time import Time
 from astropy.coordinates import Angle, Latitude, Longitude, SkyCoord
 # Versions of Astropy that do not have *MeanEcliptic frames have the same frames
 # with the misleading names *TrueEcliptic
@@ -19,20 +22,22 @@ from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
+from .ephemeris import get_earth, _B0, _L0, _P, _earth_distance, _orientation
 
 __all__ = [
-    "solar_semidiameter_angular_size", "position", "carrington_rotation_number",
+    "angular_radius", "sky_position", "carrington_rotation_number",
     "true_longitude", "apparent_longitude", "true_latitude", "apparent_latitude",
     "mean_obliquity_of_ecliptic", "true_rightascension", "true_declination",
     "true_obliquity_of_ecliptic", "apparent_rightascension", "apparent_declination",
-    "print_params"
+    "print_params",
+    "B0", "L0", "P", "earth_distance", "orientation"
 ]
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def solar_semidiameter_angular_size(t='now'):
+def angular_radius(t='now'):
     """
-    Return the angular size of the semi-diameter of the Sun as viewed from Earth.
+    Return the angular radius of the Sun as viewed from Earth.
 
     Parameters
     ----------
@@ -40,14 +45,12 @@ def solar_semidiameter_angular_size(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    # Import here to avoid a circular import
-    from sunpy.coordinates import get_sunearth_distance
-    solar_semidiameter_rad = constants.radius / get_sunearth_distance(t)
+    solar_semidiameter_rad = constants.radius / earth_distance(t)
     return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def position(t='now', equinox_of_date=True):
+def sky_position(t='now', equinox_of_date=True):
     """
     Returns the apparent position of the Sun (right ascension and declination) on the
     celestial sphere using the equatorial coordinate system, referred to the true equinox of date
@@ -378,13 +381,9 @@ def print_params(t='now'):
         A time (usually the start time) specified as a parse_time-compatible
         time string, number, or a datetime object.
     """
-    # Import here to avoid circular import
-    from sunpy.coordinates.ephemeris import (get_sun_L0, get_sun_B0,
-                                             get_sun_P, get_sunearth_distance)
-
     print('Solar Ephemeris for {} UTC\n'.format(parse_time(t).utc))
-    print('Distance = {}'.format(get_sunearth_distance(t)))
-    print('Semidiameter = {}'.format(solar_semidiameter_angular_size(t)))
+    print('Distance = {}'.format(earth_distance(t)))
+    print('Semidiameter = {}'.format(angular_radius(t)))
     print('True (long, lat) = ({}, {})'.format(true_longitude(t).to_string(),
                                                true_latitude(t).to_string()))
     print('Apparent (long, lat) = ({}, {})'.format(apparent_longitude(t).to_string(),
@@ -393,7 +392,17 @@ def print_params(t='now'):
                                              true_declination(t).to_string()))
     print('Apparent (RA, Dec) = ({}, {})'.format(apparent_rightascension(t).to_string(),
                                                  apparent_declination(t).to_string()))
-    print('Heliographic long. and lat of disk center = ({}, {})'.format(get_sun_L0(t).to_string(),
-                                                                        get_sun_B0(t).to_string()))
-    print('Position angle of north pole = {}'.format(get_sun_P(t)))
+    print('Heliographic long. and lat of disk center = ({}, {})'.format(L0(t).to_string(),
+                                                                        B0(t).to_string()))
+    print('Position angle of north pole = {}'.format(P(t)))
     print('Carrington Rotation Number = {}'.format(carrington_rotation_number(t)))
+
+
+# The code for these functions should be moved in from sunpy.coordinates.ephemeris after the
+# deprecation period
+
+B0 = _B0
+L0 = _L0
+P = _P
+earth_distance = _earth_distance
+orientation = _orientation

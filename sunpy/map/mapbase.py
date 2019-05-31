@@ -546,7 +546,7 @@ class GenericMap(NDData):
         if rsun_arcseconds is None:
             warnings.warn("Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
                           SunpyUserWarning)
-            rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).to('arcsec').value
+            rsun_arcseconds = sun.angular_radius(self.date).to('arcsec').value
 
         return u.Quantity(rsun_arcseconds, 'arcsec')
 
