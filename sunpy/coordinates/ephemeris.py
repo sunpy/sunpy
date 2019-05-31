@@ -114,8 +114,11 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     """
     Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
     solar-system body at a specified time.  This location is the instantaneous or "true" location,
-    and is not corrected for light travel time or observer motion.  This function requires the
-    Astroquery package to be installed and requires an Internet connection.
+    and is not corrected for light travel time or observer motion.
+
+    .. note::
+        This function requires the Astroquery package to be installed and
+        requires an Internet connection.
 
     Parameters
     ----------
