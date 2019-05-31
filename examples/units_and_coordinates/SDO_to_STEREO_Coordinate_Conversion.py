@@ -3,9 +3,8 @@
 AIA to STEREO Coordinate Conversion
 ===================================
 
-In this example we demonstrate how you can identify a point or region on the
-surface of the Sun in an AIA image and then convert that point to a point in a
-STEREO image.
+How to convert a point of a source on an AIA image and convert it
+to a position on a STEREO image.
 """
 import matplotlib.pyplot as plt
 
@@ -37,13 +36,7 @@ wave = a.Wavelength(30 * u.nm, 31 * u.nm)
 res = Fido.search(wave, aia | stereo)
 
 ###############################################################################
-# The results from VSO query:
-print(res)
-
-
-###############################################################################
 # Download the files:
-
 files = Fido.fetch(res)
 print(files)
 
@@ -58,12 +51,11 @@ maps = {m.detector: m.submap(SkyCoord([-1100, 1100]*u.arcsec,
 # Plot both maps
 fig = plt.figure(figsize=(10, 4))
 for i, m in enumerate(maps.values()):
-    ax = fig.add_subplot(1, 2, i+1, projection=m.wcs)
+    ax = fig.add_subplot(1, 2, i+1, projection=m)
     m.plot(axes=ax)
 
 ###############################################################################
 # We are now going to pick out a region around the south west corner:
-
 aia_width = 200 * u.arcsec
 aia_height = 250 * u.arcsec
 aia_bottom_left = SkyCoord([[-800, -300]] * u.arcsec,
@@ -92,7 +84,6 @@ subaia.plot()
 # create a `SkyCoord` object with the four corners of the box. When we create
 # this object, we use `Map.coordinate_frame` so that the location parameters of
 # SDO are correctly set.
-
 corners = ([aia_bottom_left.Tx, aia_bottom_left.Ty],
            [aia_bottom_left.Tx + aia_width, aia_bottom_left.Ty],
            [aia_bottom_left.Tx, aia_bottom_left.Ty + aia_height],
@@ -111,10 +102,10 @@ print(hpc_B)
 
 ###############################################################################
 # Now we can plot this box on both the AIA and EUVI images:
-fig = plt.figure(figsize=(10, 4))
+fig = plt.figure()
 for i, (m, coord) in enumerate(zip([maps['EUVI'], maps['AIA']],
                                    [hpc_B, hpc_aia])):
-    ax = fig.add_subplot(1, 2, i+1, projection=m.wcs)
+    ax = fig.add_subplot(1, 2, i+1, projection=m)
     m.plot(axes=ax)
 
     # coord[3] is the top-right corner coord[0] is the bottom-left corner.
@@ -127,13 +118,14 @@ for i, (m, coord) in enumerate(zip([maps['EUVI'], maps['AIA']],
 # We can now zoom in on the region in the EUVI image:
 subeuvi = maps['EUVI'].submap(hpc_B[0], hpc_B[3])
 fig = plt.figure()
+fig.add_subplot(111, projection=subeuvi)
 subeuvi.plot()
 
 ###############################################################################
 # Putting them together:
-fig = plt.figure(figsize=(15, 5))
+fig = plt.figure()
 for i, m in enumerate((subeuvi, subaia)):
-    ax = fig.add_subplot(1, 2, i+1, projection=m.wcs)
+    ax = fig.add_subplot(1, 2, i+1, projection=m)
     m.plot(axes=ax)
 
 plt.show()
