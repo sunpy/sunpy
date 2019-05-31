@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 class DownloaderBase(metaclass=ABCMeta):
     @abstractmethod
-    def download(self, url):
+    def download(self, url, path):
         """
         Downloads and returns the path
         """
@@ -16,5 +16,5 @@ class MockDownloader(DownloaderBase):
     def __init__(self):
         pass
 
-    def download(self, url):
+    def download(self, url, path):
         return "/tmp/lol"
