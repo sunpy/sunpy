@@ -101,7 +101,7 @@ print(hpc_B)
 
 ###############################################################################
 # Now we can plot this box on both the AIA and EUVI images:
-fig = plt.figure()
+fig = plt.figure(figsize=(10, 4))
 for i, (m, coord) in enumerate(zip([maps['EUVI'], maps['AIA']],
                                    [hpc_B, hpc_aia])):
     ax = fig.add_subplot(1, 2, i+1, projection=m)
