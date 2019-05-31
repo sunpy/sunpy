@@ -117,7 +117,7 @@ for i, (m, coord) in enumerate(zip([maps['EUVI'], maps['AIA']],
 # We can now zoom in on the region in the EUVI image:
 subeuvi = maps['EUVI'].submap(hpc_B[0], hpc_B[3])
 fig = plt.figure()
-fig.add_subplot(111, projection=subeuvi)
+plt.subplot(projection=subeuvi)
 subeuvi.plot()
 
 ###############################################################################
