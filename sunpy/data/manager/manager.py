@@ -9,6 +9,7 @@ class DataManager:
     """
 
     def __init__(self, downloader, storage):
+        # TODO: Folder prefix should be init argument
         self._downloader = downloader
         self._storage = storage
 
@@ -32,13 +33,16 @@ class DataManager:
         def decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                # skip hash check = down
-                # skip file name = down or replace
-                # check store
+                # TODO: Refractor into function(s)
                 replace = self._skip_file.get(name, None)
                 if replace:
-                    pass
+                    if replace.startswith('file://'):
+                        file_path = replace
+                    else:
+                        file_path, _ = self._download_and_hash([replace])
                 elif self._skip_hash_check:
+                    # TODO: This redownloads every time
+                    # Use cache instead
                     file_path, _ = self._download_and_hash(urls)
                 else:
                     details = self._storage.find_by_hash(sha_hash)
@@ -76,6 +80,7 @@ class DataManager:
         """
         try:
             self._skip_file[name] = uri
+            yield
         finally:
             _ = self._skip_file.pop(name, None)
 
@@ -124,6 +129,6 @@ class DataManager:
         path = self._downloader.download(urls[0])
 
         # TODO: Calculate the hash
-        shahash = 'asdf'
+        shahash = 'hash'
 
         return path, shahash
