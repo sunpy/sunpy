@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-==============================================
-Drawing AIA coordinates on a STEREO EUVI image
-==============================================
+=======================================
+Drawing AIA limb on a STEREO EUVI image
+=======================================
 
 In this example we use a STEREO-B and an SDO image to demonstrate how to
 overplot the limb as seen by AIA on an EUVI-B image. Then we overplot the AIA

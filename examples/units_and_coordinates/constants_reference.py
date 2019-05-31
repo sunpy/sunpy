@@ -15,6 +15,5 @@ from sunpy.sun import constants as con
 print(con.constants.keys())
 
 ##############################################################################
-# The following command will display all constants as well as their values
-# in an astropy `Table <https://docs.astropy.org/en/stable/table/index.html>`_
+# The following command will display all constants.
 print(con.print_all())
