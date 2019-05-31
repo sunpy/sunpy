@@ -24,6 +24,9 @@ from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 from .ephemeris import get_earth, _B0, _L0, _P, _earth_distance, _orientation
 
+__author__ = "Albert Y. Shih"
+__email__ = "ayshih@gmail.com"
+
 __all__ = [
     "angular_radius", "sky_position", "carrington_rotation_number",
     "true_longitude", "apparent_longitude", "true_latitude", "apparent_latitude",
