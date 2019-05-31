@@ -1,4 +1,4 @@
-Transition the `sunpy.net.vso.VSOClient` from using suds to zeep as the SOAP
+Transition the `sunpy.net.vso.VSOClient` from using suds to `zeep <https://python-zeep.readthedocs.io/en/master/>`__ as the SOAP
 library. This is a more actively maintained library, and should provide better
 support for the VSOs https endpoints. This change should have no effect on the
 public API of the `sunpy.net.vso.VSOClient`.
