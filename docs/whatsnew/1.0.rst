@@ -9,11 +9,16 @@ What's New in SunPy 1.0?
 Overview
 ========
 
-The SunPy project is pleased to announce the release of sunpy 1.0.
-A 1.0 release is considered a symbolic act and it signals that the sunpy library is mature enough in many areas.
-This maturity means that the existing API of the library should only change in extraordinary circumstances and can be relied upon in production environments.
-It did allow many underlying changes that we could have not done otherwise.
-Also stuart thought it was a good idea. 
+The SunPy project is pleased to announce the 1.0.0 release the sunpy package.
+This release is the result of over 14 months of work and marks a shift in the core library with the removal of a lot of legacy code and a focus on usability and stability.
+The headline changes in 1.0 are:
+
+* A complete transition of the whole code base to use `astropy.time.Time`, which was implemented by Vishnunarayan K I as part of Google Summer of Code 2018.
+* A rewrite of how all the clients in `sunpy.net` download files from the internet.
+  This means vastly improved progress bars, skipping downloads if files are present, and better visibility and retrying of download errors.
+* A rewrite of the differential rotation and image warping code to correctly account for observer location using the Astropy coordinate functionality.
+* Removal of many deprecated functions and submodules, we have used the 1.0 release as a chance to clean out SunPy reducing the number of lines of Python code in the project by almost 3,000!
+* The first release of SunPy to be Python 3 only, requiring Python 3.6+.  This is because Python 2 `will not be maintained after 2019 <https://python3statement.org/>`_.
 
 On this page, you can read about some of the big changes in this release:
 
@@ -23,16 +28,8 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-1.0-logging`
 * :ref:`whatsnew-1.0-diffrot`
 * :ref:`whatsnew-1.0-maputils`
+* :ref:`whatsnew-1.0-moved-config`
 * :ref:`whatsnew-1.0-renamed-removed`
-
-SunPy 1.0 brings these headline changes:
-
-* A complete transition of the whole code base to use ~astropy.time.Time, which was implemented by Vishnunarayan K I as part of Google Summer of Code 2018.
-* A rewrite of how all the clients in sunpy.net download files from the internet.
-  This means vastly improved progress bars, skipping downloads if files are present, and better visibility and retrying of download errors.
-* A rewrite of the differential rotation and image warping code to correctly account for observer location using the Astropy coordinate functionality.
-* Removal of many deprecated functions and submodules, we have used the 1.0 release as a chance to clean out SunPy reducing the number of lines of Python code in the project by almost 3,000!
-* The first release of SunPy to be Python 3 only, requiring Python 3.6+.  This is because Python 2 `will not be maintained after 2019 <https://python3statement.org/>`_.
 
 There have been numerous improvements to large parts of SunPy, notably in the content of SunPy's documentation, and the continuous integration testing of SunPy.
 SunPy 1.0 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
@@ -51,8 +48,8 @@ Supported versions of Python
 ============================
 
 SunPy 1.0 has dropped Python 2 support as Python 2 is nearing the end of its support cycle.
-To port your code to Python 3, there is some good advice `here <https://docs.python.org/3/howto/pyporting.html>`__.
-If you need Python 2 support, you use SunPy 0.9.X which will see bug fixes until 2020 but no new features.
+To port your code to Python 3, there is some good advice `here <https://docs.python.org/3/howto/pyporting.html>`__ and a good breakdown of the relevant changes in Python 3 on the `Python 3 for Scientists <https://python-3-for-scientists.readthedocs.io/en/latest/>`__ page.
+If you still need Python 2 support, SunPy 0.9.X will see bug fixes until 2020 but no new features.
 As a result, SunPy's minimum Python version has been raised to Python 3.6 and is routinely tested against Python 3.6 and 3.7.
 
 .. _whatsnew-1.0-time:
@@ -137,8 +134,20 @@ Improved file downloading capability
 ====================================
 
 The file download capability has been re-written to use the `parfive package <https://github.com/Cadair/parfive>`__.
-This brings parallel file downloading which will decrease the total download time.
-Furthermore, this brings the ability to re-download failed files and a very pretty progress bar.
+This brings much prettier and informative progress bars, better reporting of download errors and the ability to re-download failed files.
+
+.. image:: https://user-images.githubusercontent.com/1391051/50290236-ecf07b00-0462-11e9-80b2-9473c918802a.gif
+   :alt: Parfive progress bars in a Jupyter Notebook
+
+.. image:: https://user-images.githubusercontent.com/1391051/50290239-efeb6b80-0462-11e9-8b17-dfc05f8e2a57.gif
+   :alt: Parfive progress bars in a terminal
+
+
+It is possible to retry any downloads which fail with::
+
+  >>> files = Fido.fetch(results)  # Some downloads fail
+  >>> files = Fido.fetch(files)  # Retry the downloads which failed
+
 
 .. _whatsnew-1.0-logging:
 
@@ -157,6 +166,9 @@ Messages can have one of several levels:
 
 By default, only WARNING, ERROR, and INFO messages are displayed.
 
+See the :ref:`logger` documentation for instructions on how to control the verbosity of the logger.
+
+
 .. _whatsnew-1.0-diffrot:
 
 Improvements to differential rotation
@@ -167,19 +179,19 @@ For example, since the Earth moves, observers on the Earth must take in to accou
 
 - **Support for applying solar differential rotation to coordinates.**
 
-    Solar differential rotation of on-disk coordinates can be specified using either time or a new observer.
-    If time is specified, then the new observer is assumed to be located on the Earth::
+  Solar differential rotation of on-disk coordinates can be specified using either time or a new observer.
+  If time is specified, then the new observer is assumed to be located on the Earth::
 
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import Helioprojective
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
     >>> from sunpy.time import parse_time
+
     >>> start_time = '2010-09-10 12:34:56'
     >>> duration = 25*u.hour
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
     >>> solar_rotate_coordinate(c, time=duration)
-
     <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
         (-5.08888749e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (-363.04027419, 104.87807178, 1.499598e+08)>
@@ -191,6 +203,7 @@ For example, since the Earth moves, observers on the Earth must take in to accou
     >>> from sunpy.coordinates import Helioprojective
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
     >>> from sunpy.time import parse_time
+
     >>> start_time = '2010-06-10 12:34:56'
     >>> duration = 25*u.hour
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
@@ -199,15 +212,16 @@ For example, since the Earth moves, observers on the Earth must take in to accou
         (0., 0.58398742, 1.01539908)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (-359.11576773, 117.18020622, 1.51263627e+08)>
 
-    The user can also explicitly specify an observer at a different time and location in space.  The amount of solar
-    rotation applied depends on the time difference between the observation time of the`~astropy.coordinates.SkyCoord`
-    and the time of the observer::
+  The user can also explicitly specify an observer at a different time and location in space.  The amount of solar
+  rotation applied depends on the time difference between the observation time of the`~astropy.coordinates.SkyCoord`
+  and the time of the observer::
 
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
     >>> from sunpy.time import parse_time
+
     >>> start_time = parse_time('2010-06-10 12:34:56')
     >>> duration = 25*u.hour
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
@@ -219,36 +233,38 @@ For example, since the Earth moves, observers on the Earth must take in to accou
 
 - **Experimental support for applying solar differential rotation to maps.**
 
-    Applying solar differential rotation to maps also accounts for changing observer position.
-    This functionality is still experimental.
-    For example, to differentially rotate a map back 23 hours::
+  Applying solar differential rotation to maps also accounts for changing observer position.
+  This functionality is still experimental.
+  For example, to differentially rotate a map back 23 hours::
 
-    >>> import sunpy.map
-    >>> from sunpy.data.sample import AIA_171_IMAGE
-    >>> import astropy.units as u
-    >>> from sunpy.physics.differential_rotation import differential_rotate
-    >>> aia = sunpy.map.Map(AIA_171_IMAGE)
-    >>> differential_rotate(aia, time=-23*u.hour)
+  >>> import astropy.units as u
+  >>> import sunpy.map
+  >>> from sunpy.data.sample import AIA_171_IMAGE
+  >>> from sunpy.physics.differential_rotation import differential_rotate
 
-    `~sunpy.physics.differential_rotation.differential_rotate` also accepts a new observer keyword.
-    The amount of solar differential rotation is calculated using the time difference between the map date and observation time of the new observer.
-    For example::
+  >>> aia = sunpy.map.Map(AIA_171_IMAGE)
+  >>> differential_rotate(aia, time=-23*u.hour)
 
-    >>> import sunpy.map
-    >>> from sunpy.data.sample import AIA_171_IMAGE
-    >>> import astropy.units as u
-    >>> from sunpy.physics.differential_rotation import differential_rotate
-    >>> aia = sunpy.map.Map(AIA_171_IMAGE)
-    >>> new_observer = SkyCoord(lon=-15*u.deg, lat=-4*u.deg, radius=1*u.au, obstime=aia.date-34*u.hour, frame=HeliographicStonyhurst)
-    >>> differential_rotate(aia, observer=new_observer)
+  `~sunpy.physics.differential_rotation.differential_rotate` also accepts a new observer keyword.
+  The amount of solar differential rotation is calculated using the time difference between the map date and observation time of the new observer.
+  For example::
+
+  >>> import sunpy.map
+  >>> from sunpy.data.sample import AIA_171_IMAGE
+  >>> import astropy.units as u
+  >>> from sunpy.physics.differential_rotation import differential_rotate
+  >>> aia = sunpy.map.Map(AIA_171_IMAGE)
+  >>> new_observer = SkyCoord(lon=-15*u.deg, lat=-4*u.deg, radius=1*u.au, obstime=aia.date-34*u.hour, frame=HeliographicStonyhurst)
+  >>> differential_rotate(aia, observer=new_observer)
 
 .. _whatsnew-1.0-maputils:
 
 Map utility functions
 =====================
 
-A new submodule `~sunpy.map.maputils` provides a number utility functions that act on `sunpy.map.GenericMap` instances.
-For example::
+A set of new utility functions have been added to `sunpy.map` which act on `sunpy.map.GenericMap` instances.
+
+For example, getting the world coordinates for every pixel::
 
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE
@@ -263,6 +279,48 @@ For example::
     >>> coordinates.shape
     (1024, 1024)
 
+or generating a new FITS header for a custom map::
+
+
+    >>> import numpy as np
+    >>> import astropy.units as u
+    >>> from sunpy.coordinates import frames
+    >>> from astropy.coordinates import SkyCoord
+
+    >>> data = np.arange(0,100).reshape(10,10)
+    >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
+    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord)
+    >>> for key, value in header.items():
+    ...     print(f"{key}: {value}")
+    wcsaxes: 2
+    crpix1: 5.5
+    crpix2: 5.5
+    cdelt1: 1.0
+    cdelt2: 1.0
+    cunit1: arcsec
+    cunit2: arcsec
+    ctype1: HPLN-TAN
+    ctype2: HPLT-TAN
+    crval1: 0.0
+    crval2: 0.0
+    lonpole: 180.0
+    latpole: 0.0
+    date-obs: 2013-10-28T00:00:00.000
+    hgln_obs: 0.0
+    hglt_obs: 4.7711570596394
+    dsun_obs: 148644585949.49176
+    rsun_ref: 695700.0
+    rsun_obs: 965.3723815059902
+
+
+.. _whatsnew-1.0-moved-config:
+
+Config File Location Moved
+==========================
+
+If you have customised :ref:`customizing-with-sunpyrc-files` you will need to move it to the new config file location.
+Your old file should be the ``~/.sunpy/sunpyrc`` file and the new location can be found on your platform by running `sunpy.print_config`.
+
 .. _whatsnew-1.0-renamed-removed:
 
 Renamed/removed functionality
@@ -270,14 +328,17 @@ Renamed/removed functionality
 
 This is just some of the renamed or removed functionality.
 
-* ``sunpy.sun.sun`` functions have been re-implemented using Astropy for significantly improved accuracy. Some functions have been removed.
-* Renamed ``eccentricity_sunearth_orbit`` to ``eccentricity_sun_earth_orbit``.
+* ``sunpy.sun.sun`` functions have been re-implemented using Astropy for significantly improved accuracy and moved to `sunpy.coordinates.sun`.
 * Removed ``sunpy.time.julian_day``, ``sunpy.time.julian_centuries``, ``sunpy.time.day_of_year``, ``sunpy.time.break_time``, ``sunpy.time.get_day``.
-* Move the matplotlib animators from ``sunpy.visualisation.imageanimator`` and ``sunpy.visualization.mapcubeanimator`` to ``sunpy.visualization.animator``.
-* ``axis_ranges`` kwarg of ``sunpy.visualization.animator.ArrayAnimator``, ``sunpy.visualization.animator.ImageAnimator`` and ``sunpy.visualization.animator.LineAnimator`` now must be entered as ``None``, ``[min, max]`` or pixel edges of each array element.
+* Move the matplotlib animators from ``sunpy.visualisation.imageanimator`` and ``sunpy.visualization.mapcubeanimator`` to `sunpy.visualization.animator`.
+* ``axis_ranges`` kwarg of ``sunpy.visualization.animator.ArrayAnimator``,
+  ``sunpy.visualization.animator.ImageAnimator`` and
+  ``sunpy.visualization.animator.LineAnimator`` now must be entered as ``None``,
+  ``[min, max]`` or pixel edges of each array element.
 * The Helioviewer client has been switched to using the newer Helioviewer API. This has meant that we have changed some of the keywords that were passed into client’s methods.
 * Removed ``sunpy.net.jsoc.attrs.Time`` because it served the same purpose as ``sunpy.net.attrs.Time`` after the switch to ``astropy.time.Time``.
-* The deprecated ``sunpy.lightcurve`` (replaced by ``sunpy.timeseries``, ``sunpy.wcs`` and ``sunpy.spectra`` (replaced by ``radiospectra`` module) modules have now been removed.
+* The deprecated ``sunpy.lightcurve`` (replaced by `sunpy.timeseries`), ``sunpy.wcs`` and ``sunpy.spectra`` (replaced by `radiospectra` module) modules have now been removed.
+
 
 Full change log
 ===============
