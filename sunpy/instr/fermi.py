@@ -11,7 +11,7 @@ import astropy.units as u
 from astropy.time import TimeDelta
 from astropy.coordinates import Latitude, Longitude
 
-from sunpy import sun
+from sunpy.coordinates import sun
 from sunpy.time import TimeRange, parse_time
 from sunpy.io.fits import fits
 
@@ -103,8 +103,8 @@ def get_detector_sun_angles_for_time(time, file):
 
     # this gets the sun position with RA in hours in decimal format (e.g. 4.3).
     # DEC is already in degrees
-    sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(time),
-                            sun.sun.apparent_declination(time)]
+    sunpos_ra_not_in_deg = [sun.apparent_rightascension(time),
+                            sun.apparent_declination(time)]
     # now Sun position with RA in degrees
     sun_pos = [sunpos_ra_not_in_deg[0].to('deg'), sunpos_ra_not_in_deg[1]]
     # sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
@@ -147,8 +147,8 @@ def get_detector_sun_angles_for_date(date, file):
 
         # this gets the sun position with RA in hours in decimal format
         # (e.g. 4.3). DEC is already in degrees
-        sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(times[i]),
-                                sun.sun.apparent_declination(times[i])]
+        sunpos_ra_not_in_deg = [sun.apparent_rightascension(times[i]),
+                                sun.apparent_declination(times[i])]
         # now Sun position with RA in degrees
         sun_pos = [sunpos_ra_not_in_deg[0].to('deg'), sunpos_ra_not_in_deg[1]]
         # now get the angle between each detector and the Sun

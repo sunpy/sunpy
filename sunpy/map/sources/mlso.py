@@ -6,7 +6,7 @@ import astropy.units as u
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
-from sunpy.coordinates import get_sunearth_distance
+from sunpy.coordinates import sun
 
 __all__ = ['KCorMap']
 
@@ -39,7 +39,7 @@ class KCorMap(GenericMap):
         self.meta['detector'] = 'KCor'
         self.meta['waveunit'] = 'nanometer'
         # Since KCor is on Earth, no need to raise the warning in mapbase
-        self.meta['dsun_obs'] = (get_sunearth_distance(self.date)).to(u.m).value
+        self.meta['dsun_obs'] = (sun.earth_distance(self.date)).to(u.m).value
         self.meta['hgln_obs'] = 0.0
         self._nickname = self.detector
 
