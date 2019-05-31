@@ -14,7 +14,7 @@ to capture them, and to send them to a file.
 All messages provided by SunPy use this logging facility which is based
 on the Python `logging` module rather than print statements.
 
-Messages can have one of several levels
+Messages can have one of several levels, in increasing order of importance:
 
 * DEBUG: Detailed information, typically of interest only when diagnosing
   problems.
@@ -29,7 +29,7 @@ Messages can have one of several levels
 
 * CRITICAL: A serious error, indicating that the program itself may be unable to continue running.
 
-By default, only WARNING, ERROR, and INFO messages are displayed.
+By default, all messages except for DEBUG messages are displayed.
 
 Configuring the logging system
 ==============================
