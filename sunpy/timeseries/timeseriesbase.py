@@ -573,7 +573,10 @@ class GenericTimeSeries:
         `~numpy.ndarray`
             If the data is heterogeneous and contains booleans or objects, the result will be of ``dtype=object``.
         """
-        return self.data.to_numpy(**kwargs)
+        if hasattr(self.data, "to_numpy"):
+            return self.data.to_numpy(**kwargs)
+        else:
+            return self.data.values
 
     def __eq__(self, other):
         """

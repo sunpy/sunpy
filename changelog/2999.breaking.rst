@@ -1,1 +1,1 @@
-Removed `julian_day`, `julian_centuries`, `day_of_year`, `break_time`, `get_day`.
+Removed ``sunpy.time.julian_day``, ``sunpy.time.julian_centuries``, ``sunpy.time.day_of_year``, ``sunpy.time.break_time``, ``sunpy.time.get_day``.

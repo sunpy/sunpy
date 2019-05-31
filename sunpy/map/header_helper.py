@@ -32,7 +32,10 @@ def meta_keywords():
 
 @u.quantity_input
 def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
-                        scale: u.arcsec/u.pix = None, **kwargs):
+                        scale: u.arcsec/u.pix = None,
+                        rotation_angle: u.deg = None,
+                        rotation_matrix=None,
+                        **kwargs):
     """
     Function to create a FITS-WCS header from a coordinate object
     (`~astropy.coordinates.SkyCoord`) that is required to
@@ -52,6 +55,14 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
         Pixel scaling along x and y axis (i.e. the spatial scale of the pixels (dx, dy)). These are
         expected to be Cartestian ordered, i.e [dx, dy].
         Defaults to ``([1., 1.] arcsec/pixel)``.
+    rotation_angle : `~astropy.unit.Quantity`, optional
+        Coordinate system rotation angle, will be converted to a rotation
+        matrix and stored in the ``PCi_j`` matrix. Can not be specified with
+        ``rotation_matrix``.
+    rotation_matrix : `~numpy.ndarray` of dimensions 2x2, optional
+        Matrix describing the rotation required to align solar North with
+        the top of the image in FITS ``PCi_j`` convention. Can not be specified
+        with ``rotation_angle``.
     **kwargs:
         Additional arguments that will be put into the metadict header if they
         are in the list returned by `~sunpy.map.meta_keywords`. Additional
@@ -108,7 +119,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     if reference_pixel is None:
         reference_pixel = u.Quantity([(data.shape[1] + 1)/2.*u.pixel, (data.shape[0] + 1)/2.*u.pixel])
     if scale is None:
-        scale = u.Quantity([1.0*u.arcsec, 1.0*u.arcsec])
+        scale = [1., 1.] * (u.arcsec/u.pixel)
 
     meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lat.to_value(meta_wcs['cunit1']),
                                               coordinate.spherical.lon.to_value(meta_wcs['cunit2']))
@@ -116,8 +127,23 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel),
                                               reference_pixel[1].to_value(u.pixel))
 
-    meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0]*meta_wcs['cunit1']/u.pixel,
-                                              scale[1]*meta_wcs['cunit2']/u.pixel)
+    meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0].to_value(meta_wcs['cunit1']/u.pixel),
+                                              scale[1].to_value(meta_wcs['cunit2']/u.pixel))
+
+    if rotation_angle is not None and rotation_matrix is not None:
+        raise ValueError("Can not specify both rotation angle and rotation matrix.")
+
+    if rotation_angle is not None:
+        lam = meta_wcs['cdelt1'] / meta_wcs['cdelt2']
+        p = np.deg2rad(rotation_angle)
+
+        rotation_matrix = np.array([[np.cos(p), -1 * lam * np.sin(p)],
+                                    [1/lam * np.sin(p), np.cos(p)]])
+
+    if rotation_matrix is not None:
+        (meta_wcs['PC1_1'], meta_wcs['PC1_2'],
+         meta_wcs['PC2_1'], meta_wcs['PC2_2']) = (rotation_matrix[0, 0], rotation_matrix[0, 1],
+                                                  rotation_matrix[1, 0], rotation_matrix[1, 1])
 
     meta_dict = MetaDict(meta_wcs)
 
@@ -152,7 +178,7 @@ def _get_wcs_meta(coordinate):
 
     cunit1, cunit2 = skycoord_wcs.wcs.cunit
     coord_meta = dict(skycoord_wcs.to_header())
-    coord_meta['cunit1'], coord_meta['cunit2'] = cunit1, cunit2
+    coord_meta['cunit1'], coord_meta['cunit2'] = cunit1.to_string("fits"), cunit2.to_string("fits")
 
     return coord_meta
 

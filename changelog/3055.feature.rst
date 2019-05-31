@@ -1,1 +1,1 @@
-`get_body_heliographic_stonyhurst()` can now account for light travel time when computing the (apparent) body position, as long as the observer location is provided
+`sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst` can now account for light travel time when computing the (apparent) body position, as long as the observer location is provided.

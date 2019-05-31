@@ -1,0 +1,1 @@
+`sunpy.sun.sun` functions have been re-implemented using Astropy for significantly improved accuracy.  Some functions have been removed.
