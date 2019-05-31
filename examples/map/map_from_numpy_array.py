@@ -1,37 +1,48 @@
 # -*- coding: utf-8 -*-
 """
-=========================================
-Generating a Map From Data
-=========================================
+================================
+Generating a map from data array
+================================
 
 A simple demonstration of creating a map from a numpy array of data.
 """
-
-##############################################################################
-# Start by importing the necessary modules.
 import numpy as np
 import matplotlib.pyplot as plt
 
+import astropy.units as u
+from astropy.coordinates import SkyCoord
+
+from sunpy.map import header_helper
+from sunpy.coordinates import frames
 import sunpy.map
-import sunpy.data.sample
 
 ##############################################################################
-# SunPy Maps store 2D data in a numpy array and additional data in a metadata
-# dictionary giving information relating to the data and instrument.
-data = np.random.rand(20, 15)
-header = {'cunit1': 'arcsec', 'cunit2': 'arcsec'}
-manual_map = sunpy.map.Map((data, header))
+# Let's create some data
+data = np.arange(0, 100).reshape(10, 10)
 
 ##############################################################################
-# In general the attributes are populated using details in the metadata and in
-# this case there is no centre pixel or pixel size information given so SunPy
-# is defaulting to assuming each pixel is 1 arcsec.
-# This is in Helioprojective tangent projection in both longitude and latitude:
-print(manual_map.coordinate_system)
+# Next we need to create the metadata. This is made easier using the `~sunpy.map.header_helper`
+# function which will create a header object for you. First define the reference coordinate
+# which requires a time and an observer location.
+coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28 08:24', observer='earth', frame=frames.Helioprojective)
 
 ##############################################################################
-# You can quickly plot a map using the plot method:
+# Let's pass that into the helper function along with some parameters.
+# The reference pixel is the pixel is the one at the reference coordinate. The
+# scale sets the size of the pixels. You can also to set a number of other
+# metadata as well such as the instrument name and wavelength.
+header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
+                                                     reference_pixel=u.Quantity([0, 0]*u.pixel),
+                                                     scale=u.Quantity([2, 2]*u.arcsec/u.pixel),
+                                                     instrument='Test case', detector='UV detector',
+                                                     wavelength=1000, waveunit='angstrom')
+
+##############################################################################
+# Let's now create our map.
+manual_map = sunpy.map.Map(data, header)
+
+##############################################################################
+# Let's plot the result
 fig = plt.figure()
 manual_map.plot()
-
 plt.show()

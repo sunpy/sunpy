@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 """
 ========================
-Sample Data Set Overview
+Sample data set overview
 ========================
 
-An overview of the coordinated sample data set for the SOL-2011-06-07 event.
+An overview of the coordinated sample data set.
 """
 import matplotlib.pyplot as plt
 import astropy.units as u
@@ -14,13 +15,12 @@ import sunpy.data.sample as sample_data
 
 ###############################################################################
 # On 2011 June 7, various solar instruments observed a spectacular solar
-# eruptive event coming from NOAA AR 11226. The event included an M2.5 flare, a
-# filament eruption, a CME, and a global coronal EUV wave (IAU standard:
+# eruption from NOAA AR 11226. The event included an M2.5 flare, a
+# filament eruption, a coronal mass ejection, and a global coronal EUV wave (IAU standard:
 # SOL2011-06-07T06:24:00L045C112). This event was spectacular because it
 # features the ejection of a large amount of prominence material, much of which
-# fails to escape and falls back to the solar surface.
-# This example shows off our coordinated sample data set.
-# This event got a little bit of press coverage (e.g. `National Geographics
+# failed to escape and fell back to the solar surface.
+# This event received some press coverage (e.g. `National Geographics
 # <https://news.nationalgeographic.com/news/2011/06/110608-solar-flare-sun-science-space/>`_,
 # `Discover Magazine <http://blogs.discovermagazine.com/badastronomy/2011/06/07/the-sun-lets-loose-a-huge-explosion/>`_)
 # and the literature contains a number of a papers about it (e.g. `Li et al.
@@ -31,13 +31,16 @@ import sunpy.data.sample as sample_data
 # The following image of the flare is now fairly iconic.
 aia_cutout03_map = sunpy.map.Map(sample_data.AIA_193_CUTOUT03_IMAGE)
 fig = plt.figure()
+ax = fig.add_subplot(111, projection=aia_cutout03_map)
 aia_cutout03_map.plot()
+plt.show()
 
 ###############################################################################
 # Let's take a look at the GOES XRS data.
 goes = sunpy.timeseries.TimeSeries(sample_data.GOES_XRS_TIMESERIES)
 fig = plt.figure()
 goes.plot()
+plt.show()
 
 ###############################################################################
 # Next let's investigate the AIA full disk images that are available. Please
@@ -76,6 +79,7 @@ aia_1600_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_1600_map.draw_grid()
 
 fig.tight_layout(pad=6.50)
+plt.show()
 
 ###############################################################################
 # We also provide a series of AIA cutouts so that you can get a sense of the
@@ -103,17 +107,18 @@ ax = fig.add_subplot(515, projection=aia_cutout05_map)
 aia_cutout05_map.plot()
 
 fig.tight_layout(pad=5.50)
+plt.show()
 
 ###############################################################################
-# There are a number of other data sources, such as SWAP.
+# There are a number of other data sources available as well, such as SWAP.
 swap_map = sunpy.map.Map(sample_data.SWAP_LEVEL1_IMAGE)
 fig = plt.figure()
 swap_map.plot()
+plt.show()
 
 ###############################################################################
-# As well as RHESSI.
+# And also RHESSI.
 rhessi_map = sunpy.map.Map(sample_data.RHESSI_IMAGE)
 fig = plt.figure()
 rhessi_map.plot()
-
 plt.show()

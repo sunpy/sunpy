@@ -12,9 +12,6 @@ when comparing observations of features on the Sun over time.
 A good review can be found in Beck 1999 Solar Physics 191, 47–70.
 This example illustrates solar differential rotation.
 """
-
-##############################################################################
-# Start by importing the necessary modules.
 import numpy as np
 import matplotlib.pyplot as plt
 
