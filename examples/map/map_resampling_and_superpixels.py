@@ -1,63 +1,47 @@
 # -*- coding: utf-8 -*-
 """
-=========================================
-Map Resampling and Superpixels
-=========================================
+===============
+Resampling Maps
+===============
 
-In this example you will see how to resample a map using the resample method
-(which implements interpolation) and superpixels.
+How to resample a map using the resample method, which implements interpolation, or
+using superpixels, which combines pixels.
 """
-
-##############################################################################
-# Start by importing the necessary modules.
-import astropy.units as u
-
 import matplotlib.pyplot as plt
+
+import astropy.units as u
 
 import sunpy.map
 import sunpy.data.sample
 
-##############################################################################
-# Sunpy sample data contains a number of suitable maps, where the sunpy.data.sample.NAME
-# returns the location of the given FITS file.
+###############################################################################
+# We start with the sample data
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 ##############################################################################
-# This has a resolution of:
-print(aia_map.dimensions)
-
-##############################################################################
-# To find out more specifics about this map and the instrument used, check it's
-# metatdata:
-print(aia_map.meta)
-
-##############################################################################
 # To reduce the angular resolution of the map you can use the `~sunpy.map.GenericMap.resample` method,
-# specifying the dimensions as an Astropy Quantity in pixels:
-dimensions = u.Quantity([40, 40], u.pixel)
-aia_resampled_map = aia_map.resample(dimensions)
-
-fig = plt.figure()
-aia_resampled_map.plot()
-aia_resampled_map.draw_grid()
-aia_resampled_map.draw_limb()
-
-# Note that this uses linear interpolation, you can change this using the method
-# (‘neighbor’, ‘nearest’, ‘linear’ or ‘spline’) keyword argument option.
+# specifying the new dimensions in pixels. By default, this method uses linear interpolation
+# but this can be changed with the `method` argument (‘neighbor’, ‘nearest’, ‘linear’ or ‘spline’)
+new_dimensions = u.Quantity([40, 40], u.pixel)
+aia_resampled_map = aia_map.resample(new_dimensions)
 
 ##############################################################################
-# Similar to resampling you can use the `~sunpy.map.GenericMap.superpixel` method, this will reduce the
-# resolution of the image by combining the number of pixels (in each dimension)
-# in the dimensions argument into one single pixel.
-# This can be used to increase the signal to noise ratio.
-# For this the new dimensions must divide original image size exactly, for
-# example you can reduce the AIA map resolution by a factor of 16 using:
-dimensions = u.Quantity(aia_map.dimensions) / 16
-aia_superpixel_map = aia_map.superpixel(dimensions)
+# Let's plot the result.
+ax = plt.subplot(projection=aia_resampled_map)
+aia_resampled_map.plot()
+plt.show()
 
-fig = plt.figure()
+##############################################################################
+# Another way to resample is by using the `~sunpy.map.GenericMap.superpixel` method.
+# This can be used to increase the signal to noise ratio by reducing the
+# resolution of the image by combining pixels. This means that the new dimension
+# must divide the original size exactly.
+# For example you can reduce the AIA map resolution by a factor of 16.
+new_dimensions = u.Quantity(aia_map.dimensions) / 16
+aia_superpixel_map = aia_map.superpixel(new_dimensions)
+
+##############################################################################
+# Let's plot the result.
+ax = plt.subplot(projection=aia_superpixel_map)
 aia_superpixel_map.plot()
-aia_superpixel_map.draw_grid()
-aia_superpixel_map.draw_limb()
-
 plt.show()
