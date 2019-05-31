@@ -402,7 +402,20 @@ def print_params(t='now'):
 # deprecation period
 
 B0 = _B0
+B0.__module__ = __name__  # to be picked up by docs
+
+
 L0 = _L0
+L0.__module__ = __name__  # to be picked up by docs
+
+
 P = _P
+P.__module__ = __name__  # to be picked up by docs
+
+
 earth_distance = _earth_distance
+earth_distance.__module__ = __name__  # to be picked up by docs
+
+
 orientation = _orientation
+orientation.__module__ = __name__  # to be picked up by docs
