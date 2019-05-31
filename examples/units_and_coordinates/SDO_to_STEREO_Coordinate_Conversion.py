@@ -1,9 +1,9 @@
 """
 ===================================
-AIA to STEREO Coordinate Conversion
+AIA to STEREO coordinate conversion
 ===================================
 
-How to convert a point of a source on an AIA image and convert it
+How to convert a point of a source on an AIA image
 to a position on a STEREO image.
 """
 import matplotlib.pyplot as plt
@@ -21,7 +21,6 @@ from sunpy.net import Fido, attrs as a
 # The first step is to download some data, we are going to get an image from
 # early 2011 when the STEREO spacecraft were roughly 90 deg seperated from the
 # Earth.
-
 stereo = (a.vso.Source('STEREO_B') &
           a.Instrument('EUVI') &
           a.Time('2011-01-01', '2011-01-01T00:10:00'))
@@ -127,5 +126,4 @@ fig = plt.figure()
 for i, m in enumerate((subeuvi, subaia)):
     ax = fig.add_subplot(1, 2, i+1, projection=m)
     m.plot(axes=ax)
-
 plt.show()
