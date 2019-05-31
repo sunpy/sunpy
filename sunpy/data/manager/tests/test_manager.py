@@ -34,37 +34,60 @@ def manager(downloader, storage):
     return manager
 
 
-def test_basic(manager, storage, downloader):
+@pytest.fixture
+def data_function(manager):
     @manager.require('test_file', ['url1', 'url2'], 'hash')
-    def foo():
-        assert manager.get('test_file') == '/tmp/lol'
-    foo()
+    def foo(manager_tester= lambda x: 1):
+        manager_tester(manager)
+
+    return foo
+
+
+def test_basic(manager, storage, downloader, data_function):
+    data_function()
 
     assert downloader.times_called == 1
     assert len(storage._store) == 1
     assert storage._store[0]['file_path'] == '/tmp/lol'
 
 
-def test_cache(manager, storage, downloader):
-    @manager.require('test_file', ['url1', 'url2'], 'hash')
-    def foo():
-        assert manager.get('test_file') == '/tmp/lol'
-    foo()
-    foo()
+def test_cache(manager, storage, downloader, data_function):
+    """Test calling function multiple times does not redownload"""
+    data_function()
+    data_function()
 
     assert downloader.times_called == 1
     assert len(storage._store) == 1
     assert storage._store[0]['file_path'] == '/tmp/lol'
 
 
-def test_skip_all(manager, storage, downloader):
-    @manager.require('test_file', ['url1', 'url2'], 'hash')
-    def foo():
-        assert manager.get('test_file') == '/tmp/lol'
-    foo()
+def test_skip_all(manager, storage, downloader, data_function):
+    """Test skip_hash_check redownloads data"""
+    data_function()
     with manager.skip_hash_check():
-        foo()
+        data_function()
 
     assert downloader.times_called == 2
     assert len(storage._store) == 1
     assert storage._store[0]['file_path'] == '/tmp/lol'
+
+
+def test_replace_file(manager, storage, downloader, data_function):
+    """Test the replace_file functionality"""
+
+    def default_tester(manager):
+        """Function to test whether the file is /tmp/lol"""
+        assert manager.get('test_file') == '/tmp/lol'
+    def replace_file_tester(manager):
+        """Function to test whether the file is /tmp/lil"""
+        assert manager.get('test_file') == 'file://tmp/lil'
+
+    # Outside the context manager file is default
+    data_function(default_tester)
+
+    with manager.replace_file('test_file', 'file://tmp/lil'):
+        # Inside the file is replaced
+        data_function(replace_file_tester)
+
+    # Even after context manager call outside the file is default
+    data_function(default_tester)
