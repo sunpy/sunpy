@@ -1,10 +1,11 @@
+# coding: utf-8
 """
 =============================
 Drawing and using a Great Arc
 =============================
 
-This example shows you how to define and draw a great arc on an image of the
-Sun, and to extract intensity values along that arc from the image data.
+How to define and draw a great arc on an image of the
+Sun, and to extract intensity values along that arc.
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,11 +18,11 @@ from sunpy.coordinates.utils import GreatArc
 from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################
-# Make a map.
+# We start with the sample data
 m = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
-# Let's define the start and end co-ordinates of the arc on the Sun.
+# Let's define the start and end coordinates of the arc.
 start = SkyCoord(735 * u.arcsec, -471 * u.arcsec, frame=m.coordinate_frame)
 end = SkyCoord(-100 * u.arcsec, 800 * u.arcsec, frame=m.coordinate_frame)
 
