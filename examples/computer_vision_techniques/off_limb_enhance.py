@@ -80,7 +80,7 @@ scaled_map.plot_settings['norm'] = ImageNormalize(stretch=aia.plot_settings['nor
 ###############################################################################
 # Let's plot the results
 fig = plt.figure()
-ax = fig.add_subplot(111, projection=aia)
+ax = plt.subplot(projection=aia)
 scaled_map.plot()
 scaled_map.draw_limb()
 plt.show()
