@@ -23,6 +23,7 @@ import sunpy.map
 import sunpy.sun
 import sunpy.data.test
 import sunpy.coordinates
+from sunpy.coordinates import sun
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 
@@ -163,7 +164,7 @@ def test_detector(generic_map):
 
 def test_dsun(generic_map):
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
-        assert generic_map.dsun == sunpy.coordinates.get_sunearth_distance(generic_map.date).to(u.m)
+        assert generic_map.dsun == sun.earth_distance(generic_map.date).to(u.m)
 
 
 def test_rsun_meters(generic_map):
@@ -172,7 +173,7 @@ def test_rsun_meters(generic_map):
 
 def test_rsun_obs(generic_map):
     with pytest.warns(SunpyUserWarning, match='Missing metadata for solar radius'):
-        assert generic_map.rsun_obs == sunpy.sun.solar_semidiameter_angular_size(generic_map.date)
+        assert generic_map.rsun_obs == sun.angular_radius(generic_map.date)
 
 
 def test_coordinate_system(generic_map):
@@ -181,12 +182,12 @@ def test_coordinate_system(generic_map):
 
 def test_carrington_longitude(generic_map):
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
-        assert generic_map.carrington_longitude == sunpy.coordinates.get_sun_L0(generic_map.date)
+        assert generic_map.carrington_longitude == sun.L0(generic_map.date)
 
 
 def test_heliographic_latitude(generic_map):
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
-        assert generic_map.heliographic_latitude == sunpy.coordinates.get_sun_B0(generic_map.date)
+        assert generic_map.heliographic_latitude == sun.B0(generic_map.date)
 
 
 def test_heliographic_longitude(generic_map):
@@ -208,7 +209,8 @@ def test_coordinate_frame(aia171_test_map):
 
 
 def test_heliographic_longitude_crln(hmi_test_map):
-    assert hmi_test_map.heliographic_longitude == hmi_test_map.carrington_longitude - sunpy.coordinates.get_sun_L0(hmi_test_map.date)
+    assert hmi_test_map.heliographic_longitude == hmi_test_map.carrington_longitude - \
+                                                  sun.L0(hmi_test_map.date)
 
 
 def test_remove_observers(aia171_test_map):
