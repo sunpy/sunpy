@@ -1,15 +1,14 @@
 """
 ================
-Title of Example
+<Verbing> a thing
 ================
 
-This example <verb> <active tense> <does something>.
+How to <verb> <active tense> <does something>.
 
 The example uses <packages> to <do something> and <other package> to <do other
 thing>. Include links to referenced packages like this: `sunpy.io.fits` to
 show the sunpy.io.fits or like this `~sunpy.io.fits`to show just 'fits'
 """
-# Start by importing the necessary modules.
 import numpy as np
 import matplotlib.pyplot as plt
 
