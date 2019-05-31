@@ -183,9 +183,9 @@ Improvements to coordinates functionality
     <HeliographicStonyhurst Coordinate (obstime=2012-06-05T22:34:48.350): (lon, lat, radius) in (deg, deg, AU)
         (359.92355609, 0.02734159, 0.72602853)>
 
-  There is a new function `~sunpy.coordinates.ephemeris.get_horizons_coord` that queries `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`_ for the location of solar-system bodies.
+  There is a new function `~sunpy.coordinates.ephemeris.get_horizons_coord` that queries `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`__ for the location of solar-system bodies.
   JPL HORIZONS includes not only planets and other natural bodies in the solar system, but also major spacecraft.
-  This function requires the `Astroquery <https://astroquery.readthedocs.io/en/latest/>`_ package and an Internet connection.
+  This function requires the `Astroquery <https://astroquery.readthedocs.io/en/latest/>`__ package and an Internet connection.
 
 
   - Query the location of Venus
@@ -254,6 +254,7 @@ For example, since the Earth moves, observers on the Earth must take in to accou
     >>> from sunpy.coordinates import Helioprojective
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
     >>> from sunpy.time import parse_time
+
     >>> start_time = '2010-09-10 12:34:56'
     >>> duration = 25*u.hour
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
@@ -282,6 +283,7 @@ For example, since the Earth moves, observers on the Earth must take in to accou
     >>> from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
     >>> from sunpy.time import parse_time
+
     >>> start_time = parse_time('2010-06-10 12:34:56')
     >>> duration = 25*u.hour
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
@@ -309,9 +311,10 @@ For example, since the Earth moves, observers on the Earth must take in to accou
   The amount of solar differential rotation is calculated using the time difference between the map date and observation time of the new observer.
   For example::
 
+  >>> import astropy.units as u
   >>> import sunpy.map
   >>> from sunpy.data.sample import AIA_171_IMAGE
-  >>> import astropy.units as u
+
   >>> from sunpy.physics.differential_rotation import differential_rotate
   >>> aia = sunpy.map.Map(AIA_171_IMAGE)
   >>> new_observer = SkyCoord(lon=-15*u.deg, lat=-4*u.deg, radius=1*u.au, obstime=aia.date-34*u.hour, frame=HeliographicStonyhurst)
@@ -331,6 +334,7 @@ For example, getting the world coordinates for every pixel::
     >>> import astropy.units as u
     >>> from sunpy.physics.differential_rotation import differential_rotate
     >>> from sunpy.map import contains_full_disk, all_coordinates_from_map
+
     >>> aia = sunpy.map.Map(AIA_171_IMAGE)
     >>> contains_full_disk(aia)
     True
