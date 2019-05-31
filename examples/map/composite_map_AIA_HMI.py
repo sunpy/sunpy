@@ -4,47 +4,45 @@
 Creating a Composite map
 ========================
 
-In this example we make a composite map out of images provided by AIA and HMI.
-AIA images look at the solar corona at a given temperature while an HMI image will
-measure the line of sight magnetic field at the photospheric level.
+How to create a composite map and use it to overplot two maps to
+compare features.
 """
-
-# Start by importing the necessary modules.
 import matplotlib.pyplot as plt
+
+from astropy.coordinates import SkyCoord
+import astropy.units as u
+
 import sunpy.map
 import sunpy.data.sample
 
-##############################################################################
-# Sunpy's sample data contains a selection of data
-# which we will use for this example
-
+###############################################################################
+# We start with the sample data. HMI shows the line-of-sight magnetic field at
+# the photosphere while AIA 171 images show the resulting magnetic fields
+# filled with hot plasma above, in the corona. We want to see what coronal
+# features overlap with regions of strong line-of-sight magnetic fields.
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 hmi_map = sunpy.map.Map(sunpy.data.sample.HMI_LOS_IMAGE)
 
+bottom_left = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame=aia_map.coordinate_frame)
+top_right = SkyCoord(800 * u.arcsec, 800 * u.arcsec, frame=aia_map.coordinate_frame)
+aia_smap = aia_map.submap(bottom_left, top_right)
+hmi_smap = hmi_map.submap(bottom_left, top_right)
+
+
 ##############################################################################
-# Now we will create the composite map which is a set of images stacked upon
-# each other. To do this, we have to call `~sunpy.map.Map` with
-# an extra keyword.
+# Let's create a `~sunpy.map.CompositeMap` which includes both maps.
+comp_map = sunpy.map.Map(aia_smap, hmi_smap, composite=True)
 
-comp_map = sunpy.map.Map(aia_map, hmi_map, composite=True)
-
-##############################################################################
-# Now we want to see what coronal features overlap with regions of strong
-# line of sight magnetic field. So we need to set the contour levels of
-# our composite map using `sunpy.map.CompositeMap.set_levels`.
-
-# We want to contour the HMI map, which is the second image in our composite map.
-# Therefore the index is 1.
-# We will filter contours ranging from a few hundred to a thousand Gauss which
-# is the typical field associated to umbral regions of Active Regions.
+# Let's set the contours of the HMI map, the second image in our composite map
+# (therefore the index is 1), from a few hundred to a thousand Gauss which
+# is the typical field associated with umbral regions of active regions.
 comp_map.set_levels(index=1, levels=[-1000, -500, -250, 250, 500, 1000])
 
 ##############################################################################
 # Now let us look at the result. Notice that we can see the coronal structures
 # present on the AIA image and how they correspond to the line of sight
 # magnetic field.
-
 fig = plt.figure()
+ax = plt.subplot(projection=aia_smap)
 comp_map.plot()
-
 plt.show()
