@@ -217,7 +217,7 @@ def _B0(time='now'):
     """
     return Angle(get_earth(time).lat)
 
-    
+
 # Ignore warnings that result from going back in time to the first Carrington rotation
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", ErfaWarning)
@@ -391,7 +391,8 @@ get_sun_P = deprecated('1.0', name='get_sun_P',
 
 
 get_sunearth_distance = deprecated('1.0', name='get_sunearth_distance',
-                                   alternative='sunpy.coordinates.sun.earth_distance')(_earth_distance)
+                                   alternative='sunpy.coordinates.sun.earth_distance'
+                                  )(_earth_distance)
 
 
 get_sun_orientation = deprecated('1.0', name='get_sun_orientation',
