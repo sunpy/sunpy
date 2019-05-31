@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-========================================
-Drawing AIA Coordinates on STEREO Images
-========================================
+===========================================
+Drawing the AIA limb on a STEREO EUVI image
+===========================================
 
 In this example we use a STEREO-B and an SDO image to demonstrate how to
 overplot the limb as seen by AIA on an EUVI-B image. Then we overplot the AIA
 coordinate grid on the STEREO image.
 """
-
-##############################################################################
-# Start by importing the necessary modules.
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -18,16 +15,13 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.map
-import sunpy.coordinates
 import sunpy.coordinates.wcs_utils
 from sunpy.net import Fido, attrs as a
 
-
 ##############################################################################
 # The first step is to download some data, we are going to get an image from
-# early 2011 when the STEREO spacecraft were roughly 90 deg seperated from the
+# early 2011 when the STEREO spacecraft were roughly 90 deg separated from the
 # Earth.
-
 stereo = (a.vso.Source('STEREO_B') &
           a.Instrument('EUVI') &
           a.Time('2011-01-01', '2011-01-01T00:10:00'))
@@ -37,46 +31,37 @@ aia = (a.Instrument('AIA') &
        a.Time('2011-01-01', '2011-01-02'))
 
 wave = a.Wavelength(30 * u.nm, 31 * u.nm)
+result = Fido.search(wave, aia | stereo)
 
-
-res = Fido.search(wave, aia | stereo)
-
-
-##############################################################################
-# The results from VSO query:
-
-print(res)
-
+###############################################################################
+# Let's inspect the result
+print(result)
 
 ##############################################################################
-# Download the files:
-
-files = Fido.fetch(res)
-
+# and download the files
+downloaded_files = Fido.fetch(result)
+print(downloaded_files)
 
 ##############################################################################
-# Create a dictionary with the two maps, cropped down to full disk.
-
+# Let's create a dictionary with the two maps, which we crop to full disk.
 maps = {m.detector: m.submap(SkyCoord([-1100, 1100], [-1100, 1100],
                                       unit=u.arcsec, frame=m.coordinate_frame))
-        for m in sunpy.map.Map(files)}
-
+        for m in sunpy.map.Map(downloaded_files)}
 
 ##############################################################################
-# Calculate points on the limb in the AIA image for the half that can be seen
-# from STEREO.
+# Next, let's calculate points on the limb in the AIA image for the half that
+# can be seen from STEREO's point of view.
 
-r = maps['AIA'].rsun_obs - 1 * u.arcsec  # remove the one arcsec so it's on disk.
+r = maps['AIA'].rsun_obs - 1 * u.arcsec  # remove one arcsec so it's on disk.
 # Adjust the following range if you only want to plot on STEREO_A
-th = np.linspace(-180*u.deg, 0*u.deg)
+th = np.linspace(-180 * u.deg, 0 * u.deg)
 x = r * np.sin(th)
 y = r * np.cos(th)
-
 coords = SkyCoord(x, y, frame=maps['AIA'].coordinate_frame)
 
 
 ##############################################################################
-# Plot both maps
+# Now, let's plot both maps
 
 fig = plt.figure(figsize=(10, 4))
 ax1 = fig.add_subplot(1, 2, 1, projection=maps['AIA'])
@@ -89,7 +74,7 @@ ax2.plot_coord(coords, color='w')
 
 
 ##############################################################################
-# We can also plot the helioprojective coordinate grid as seen by SDO on the
+# Let's also plot the helioprojective coordinate grid as seen by SDO on the
 # STEREO image.
 
 fig = plt.figure()

@@ -36,7 +36,7 @@ sequence_array = map_sequence.as_array()
 # To create the new header we can use the stored meta information from the
 # ``map_sequence``.
 
-# This dictionary comphersion is extracting the three basic keywords we need
+# This dictionary comprehension is extracting the three basic keywords we need
 # to create a astropy.wcs.WCS header: 'CTYPE','CUNIT' and 'CDELT'
 # from the meta information stored in the 'map_sequence'.
 wcs_input_dict = {f'{key}{n+1}': map_sequence.all_meta()[0].get(f'{key}{n}')
