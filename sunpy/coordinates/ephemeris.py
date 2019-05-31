@@ -127,9 +127,12 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     Parameters
     ----------
     body : `str`
-        The solar-system body for which to calculate positions
+        The solar-system body for which to calculate positions.  One can also use the search form
+        linked below to find valid names or ID numbers.
     id_type : `str`
-        If 'majorbody', search by name for planets or satellites.  If 'id', search by ID number.
+        If 'majorbody', search by name for planets, satellites, or other major bodies.
+        If 'smallbody', search by name for asteroids or comets.
+        If 'id', search by ID number.
     time : {parse_time_types}
         Time to use in a parse_time-compatible format
 
@@ -147,6 +150,7 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     References
     ----------
     * `JPL HORIZONS <https://ssd.jpl.nasa.gov/?horizons>`_
+    * `JPL HORIZONS form to search bodies <https://ssd.jpl.nasa.gov/horizons.cgi?s_target=1#top>`_
     * `Astroquery <https://astroquery.readthedocs.io/en/latest/>`_
 
     Examples
