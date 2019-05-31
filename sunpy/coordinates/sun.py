@@ -1,5 +1,5 @@
 """
-This module provides Sun-related parameters.
+Sun-specific coordinate calculations
 """
 import warnings
 
@@ -42,8 +42,7 @@ def angular_radius(t='now'):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
     """
     solar_semidiameter_rad = constants.radius / earth_distance(t)
     return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
@@ -59,8 +58,7 @@ def sky_position(t='now', equinox_of_date=True):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
 
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
@@ -82,8 +80,7 @@ def carrington_rotation_number(t='now'):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
     """
     jd = parse_time(t).jd
     result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
@@ -99,8 +96,7 @@ def true_longitude(t='now'):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
     """
     time = parse_time(t)
 
@@ -122,8 +118,7 @@ def apparent_longitude(t='now'):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
 
     Notes
     -----
@@ -150,8 +145,7 @@ def true_latitude(t='now'):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
     """
     time = parse_time(t)
     sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
@@ -173,8 +167,7 @@ def apparent_latitude(t='now'):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
     """
     time = parse_time(t)
     sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
@@ -195,8 +188,7 @@ def mean_obliquity_of_ecliptic(t='now'):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
     """
     time = parse_time(t)
     jd1, jd2 = get_jd12(time, 'tt')
@@ -215,8 +207,7 @@ def true_rightascension(t='now', equinox_of_date=True):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
 
     equinox_of_date : `bool`
         If True, output is referred to the mean equinox of date.  Otherwise, output is referred to
@@ -252,8 +243,7 @@ def true_declination(t='now', equinox_of_date=True):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
 
     equinox_of_date : `bool`
         If True, output is referred to the mean equinox of date.  Otherwise, output is referred to
@@ -286,8 +276,7 @@ def true_obliquity_of_ecliptic(t='now'):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
 
     Notes
     -----
@@ -310,8 +299,7 @@ def apparent_rightascension(t='now', equinox_of_date=True):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
 
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
@@ -344,8 +332,7 @@ def apparent_declination(t='now', equinox_of_date=True):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
 
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
@@ -378,8 +365,7 @@ def print_params(t='now'):
     Parameters
     ----------
     t : {parse_time_types}
-        A time (usually the start time) specified as a parse_time-compatible
-        time string, number, or a datetime object.
+        Time to use in a parse-time-compatible format
     """
     print('Solar Ephemeris for {} UTC\n'.format(parse_time(t).utc))
     print('Distance = {}'.format(earth_distance(t)))
