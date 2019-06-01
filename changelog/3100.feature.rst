@@ -1,1 +1,0 @@
-Map plotting now accepts the optional keyword `clip_interval` for specifying a percentile interval for clipping.  For example, if the interval (5%, 99%) is specified, the bounds of the z axis are chosen such that the lowest 5% of pixels and the highest 1% of pixels are excluded.

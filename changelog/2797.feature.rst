@@ -1,4 +1,0 @@
-The download manager for `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloader.fetch>` has been replaced with
-`parfive <https://parfive.readthedocs.io/en/latest/>`__. This provides advanced
-progress bars, proper handling of overwriting and the ability to retry failed
-downloads.

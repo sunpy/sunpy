@@ -1,1 +1,0 @@
-Removed ``JSOCClient.check_request`` in favour of `drms.ExportRequest.status`

@@ -1,1 +1,0 @@
-Correctly extract observer location from MDI and EIT data

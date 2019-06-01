@@ -1,1 +1,0 @@
-Overhaul of the install intructions for the guide section of our documentation.
