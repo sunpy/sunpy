@@ -38,7 +38,7 @@ class DataManager:
                 replace = self._skip_file.get(name, None)
                 if replace:
                     if replace.startswith('file://'):
-                        file_path = replace
+                        file_path = replace[len('file://'):]
                     else:
                         file_path, _ = self._download_and_hash([replace])
                 elif self._skip_hash_check:
