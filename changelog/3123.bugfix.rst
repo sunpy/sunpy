@@ -1,1 +1,0 @@
-The `solar_rotate_coordinate` function returns a coordinate that accounts for the location of the new observer.

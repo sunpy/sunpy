@@ -1,3 +1,0 @@
-Make a correction to `sunpy.coordinates.wcs_utils.solar_wcs_frame_mapping` so
-that `astropy.wcs.WCS` objects are correctly converted to
-`sunpy.coordinates.frames` objects irrespective of the ordering of the axes.

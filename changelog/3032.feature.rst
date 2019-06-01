@@ -1,1 +1,0 @@
-Add timeseries support for EVE/ESP level 1 data in `sunpy.timeseries.sources.eve`

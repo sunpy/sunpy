@@ -1,1 +1,0 @@
-Removed ``database.query`` in favour of `sunpy.database.Database.search`

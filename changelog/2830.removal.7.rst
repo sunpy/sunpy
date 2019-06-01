@@ -1,1 +1,0 @@
-Removed ``GenericClient.query`` in favour of `sunpy.net.dataretriever.GenericClient.search`

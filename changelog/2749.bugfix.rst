@@ -1,1 +1,0 @@
-Add support for `~sunpy.map.sources.HMIMap` objects as input to `sunpy.instr.aia.aiaprep`.

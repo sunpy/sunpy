@@ -1,1 +1,0 @@
-Renamed ``sunpy.image.rescale`` to `sunpy.image.resample`.

@@ -1,2 +1,0 @@
-The deprecated ``sunpy.lightcurve``, ``sunpy.wcs`` and ``sunpy.spectra`` modules have now
-been removed.
