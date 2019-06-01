@@ -83,12 +83,12 @@ def test_replace_file(manager, storage, downloader, data_function):
 
     def replace_file_tester(manager):
         """Function to test whether the file is /tmp/lil"""
-        assert manager.get('test_file') == Path('file://tmp/lil')
+        assert manager.get('test_file') == Path('/tmp/lil')
 
     # Outside the context manager file is default
     data_function(default_tester)
 
-    with manager.replace_file('test_file', 'file://tmp/lil'):
+    with manager.replace_file('test_file', 'file:///tmp/lil'):
         # Inside the file is replaced
         data_function(replace_file_tester)
 
