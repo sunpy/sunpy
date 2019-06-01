@@ -2,6 +2,8 @@ from sunpy.data.manager.manager import DataManager
 from sunpy.data.manager.storage import InMemStorage
 from sunpy.data.manager.downloader import DownloaderBase
 
+from pathlib import Path
+
 import pytest
 
 
@@ -37,7 +39,7 @@ def manager(downloader, storage):
 @pytest.fixture
 def data_function(manager):
     @manager.require('test_file', ['url1', 'url2'], 'hash')
-    def foo(manager_tester= lambda x: 1):
+    def foo(manager_tester=lambda x: 1):
         manager_tester(manager)
 
     return foo
@@ -77,10 +79,11 @@ def test_replace_file(manager, storage, downloader, data_function):
 
     def default_tester(manager):
         """Function to test whether the file is /tmp/lol"""
-        assert manager.get('test_file') == '/tmp/lol'
+        assert manager.get('test_file') == Path('/tmp/lol')
+
     def replace_file_tester(manager):
         """Function to test whether the file is /tmp/lil"""
-        assert manager.get('test_file') == 'file://tmp/lil'
+        assert manager.get('test_file') == Path('file://tmp/lil')
 
     # Outside the context manager file is default
     data_function(default_tester)

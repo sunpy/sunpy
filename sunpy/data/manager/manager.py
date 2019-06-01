@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+import pathlib
 
 import functools
 
@@ -111,17 +112,15 @@ class DataManager:
 
         Returns
         -------
-        file: str
+        file: `pathlib.Path`
         Path of the file
 
         Raises
         ------
         KeyError
         If name is not in the cache
-
-        TODO: Return `Path` instead?
         """
-        return self._file_cache[name]
+        return pathlib.Path(self._file_cache[name])
 
     def _download_and_hash(self, urls):
         # TODO: Handle multiple urls
