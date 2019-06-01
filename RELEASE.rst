@@ -19,7 +19,7 @@ We will be continuing to release bug fixes to the 0.9.z series until the end of 
 We hope this gives you enough time to update your code and start enjoying all the improvements in SunPy 1.0.
 
 
-By the numbers this release of SunPy contains 1748 commits in 306 merged pull requests closing 549 issues from 46 people, 25 of which are first time contributors to SunPy.
+By the numbers this release of SunPy contains 1913 commits in 332 merged pull requests closing 582 issues from 46 people, 25 of which are first time contributors to SunPy.
 
 The people who have contributed to the code for this release are:
 
