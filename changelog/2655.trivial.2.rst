@@ -1,1 +1,0 @@
-Updated astropy_helpers to v3.0.2.

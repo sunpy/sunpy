@@ -1,2 +1,0 @@
-The function `sunpy.image.coalignment.get_correlation_shifts` now issues an error when the number of dimensions
-are not correct instead of a warning and returning None.

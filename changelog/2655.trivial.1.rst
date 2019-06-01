@@ -1,1 +1,0 @@
-Moved figure tests to Python 3.6.

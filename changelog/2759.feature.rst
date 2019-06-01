@@ -1,1 +1,0 @@
-`~sunpy.net.hek.HEKClient.search` now returns an `astropy.table.Table` instead of list of a `dict`.

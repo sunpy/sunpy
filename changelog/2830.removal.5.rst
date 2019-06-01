@@ -1,1 +1,0 @@
-Removed ``remove_lytaf_events_from_lightcurve`` in favour of `sunpy.instr.lyra.remove_lytaf_events_from_timeseries`
