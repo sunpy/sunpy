@@ -1,1 +1,0 @@
-Replace all use of the deprecated ``sunpy.cm.get_cmap`` with `matplotlib.pyplot.get_cmap` to prevent deprecation warnings being raised.

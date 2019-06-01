@@ -1,1 +1,0 @@
-Removed ``sunearth_distance`` in favour of ``get_sunearth_distance``

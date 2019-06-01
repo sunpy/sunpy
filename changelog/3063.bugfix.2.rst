@@ -1,1 +1,0 @@
-Correctly zero pad milliseconds in the `sunpy.util.scraper.Scraper` formatting to prevent errors when the millisecond value was less than 100.

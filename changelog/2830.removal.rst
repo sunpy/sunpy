@@ -1,1 +1,0 @@
-Removed ``MapCube`` in favour of `~sunpy.map.MapSequence`

@@ -1,1 +1,0 @@
-All of the functions in `sunpy.sun.sun` and all of the Sun-specific functions in `sunpy.coordinates.ephemeris` have been moved to the new module `sunpy.coordinates.sun`.

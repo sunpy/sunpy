@@ -1,1 +1,0 @@
-Renamed `eccentricity_sunearth_orbit` to `eccentricity_sun_earth_orbit`.

@@ -1,1 +1,0 @@
-`sunpy.instr.fermi.met_to_utc` now returns the correct utc time which takes into account the leap seconds that have passed.

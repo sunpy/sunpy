@@ -1,1 +1,0 @@
-Now any SunPyDeprecationWarnings will cause an error when using pytest.
