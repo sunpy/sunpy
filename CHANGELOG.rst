@@ -1,5 +1,5 @@
-Sunpy 1.0.0rc4 (2019-05-30)
-===========================
+Sunpy 1.0.0 (2019-06-01)
+========================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -33,18 +33,19 @@ Backwards Incompatible Changes
 - Changed `sunpy.sun.models.interior` and `sunpy.sun.models.evolution` from `pandas.DataFrame` to `astropy.table.QTable` (`#2936 <https://github.com/sunpy/sunpy/pull/2936>`__)
 - Minimum numpy version is now >=1.14.5 (`#2954 <https://github.com/sunpy/sunpy/pull/2954>`__)
 - Removed ``sunpy.time.julian_day``, ``sunpy.time.julian_centuries``, ``sunpy.time.day_of_year``, ``sunpy.time.break_time``, ``sunpy.time.get_day``. (`#2999 <https://github.com/sunpy/sunpy/pull/2999>`__)
-- Renamed `eccentricity_sunearth_orbit` to `eccentricity_sun_earth_orbit`. (`#3001 <https://github.com/sunpy/sunpy/pull/3001>`__)
 - Updated the solar values in `sunpy.sun.constants` to IAU 2015 values. (`#3001 <https://github.com/sunpy/sunpy/pull/3001>`__)
+- Renamed `eccentricity_sunearth_orbit` to `eccentricity_sun_earth_orbit`. (`#3001 <https://github.com/sunpy/sunpy/pull/3001>`__)
 - Renamed ``sunpy.image.rescale`` to `sunpy.image.resample`. (`#3044 <https://github.com/sunpy/sunpy/pull/3044>`__)
 - Remove the ``basic_plot`` keyword argument from
   `~sunpy.map.Map.GenericMap.peek`. An example has been added to the gallery
   showing how to make a plot like this. (`#3109 <https://github.com/sunpy/sunpy/pull/3109>`__)
+- `sunpy.map.GenericMap` will no longer use the key `solar_b0` as a value for heliographic latitude. (`#3115 <https://github.com/sunpy/sunpy/pull/3115>`__)
 - `sunpy.map.GenericMap` now checks for a complete observer location rather than
   individually defaulting coordinates (lat, lon, distance) to Earth position. If
   any one of the three coordinates is missing from the header the observer will
   be defaulted to Earth and a warning raised. (`#3115 <https://github.com/sunpy/sunpy/pull/3115>`__)
-- `sunpy.map.GenericMap` will no longer use the key `solar_b0` as a value for heliographic latitude. (`#3115 <https://github.com/sunpy/sunpy/pull/3115>`__)
 - `sunpy.sun.sun` functions have been re-implemented using Astropy for significantly improved accuracy.  Some functions have been removed. (`#3137 <https://github.com/sunpy/sunpy/pull/3137>`__)
+- All of the functions in `sunpy.sun.sun` and all of the Sun-specific functions in `sunpy.coordinates.ephemeris` have been moved to the new module `sunpy.coordinates.sun`. (`#3163 <https://github.com/sunpy/sunpy/pull/3163>`__)
 
 
 Deprecations and Removals
@@ -53,21 +54,21 @@ Deprecations and Removals
 - The deprecated ``sunpy.lightcurve``, ``sunpy.wcs`` and ``sunpy.spectra`` modules have now
   been removed. (`#2666 <https://github.com/sunpy/sunpy/pull/2666>`__)
 - ``sunpy.instr.rhessi.get_obssumm_dbase_file`` ``sunpy.instr.rhessi.get_obssum_filename``, ``sunpy.instr.rhessi.get_obssumm_file`` have been removed. `Fido <sunpy.net.fido_factory.UnifiedDownloader>` should be used to download these files. (`#2808 <https://github.com/sunpy/sunpy/pull/2808>`__)
-- Removed `Map.xrange` and `Map.yrange` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``sunpy.net.vso.InteractiveVSOClient`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``sunpy.net.attrs.Wave`` in favour of `a.Wavelength <~sunpy.net.vso.attrs.Wavelength>` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``sunearth_distance`` in favour of ``get_sunearth_distance`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``solar_north`` in favour of ``get_sun_P`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``heliographic_solar_center`` in favour of `~sunpy.coordinates.ephemeris.get_sun_L0` and `~sunpy.coordinates.ephemeris.get_sun_B0` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``sunpy.cm.get_cmap`` in favour of ``plt.get_cmap`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``database.download`` in favour of `sunpy.database.Database.fetch` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``database.query`` in favour of `sunpy.database.Database.search` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``remove_lytaf_events_from_lightcurve`` in favour of `sunpy.instr.lyra.remove_lytaf_events_from_timeseries` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``sunpy.map.GenericMap.pixel_to_data`` in favour of `sunpy.map.GenericMap.pixel_to_world` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``GenericClient.query`` in favour of `sunpy.net.dataretriever.GenericClient.search` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``GenericClient.get`` in favour of `sunpy.net.dataretriever.GenericClient.fetch`. This changes applies to the other clients as well. (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
-- Removed ``JSOCClient.check_request`` in favour of `drms.ExportRequest.status` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``sunearth_distance`` in favour of ``get_sunearth_distance`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``remove_lytaf_events_from_lightcurve`` in favour of `sunpy.instr.lyra.remove_lytaf_events_from_timeseries` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``sunpy.cm.get_cmap`` in favour of ``plt.get_cmap`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``database.query`` in favour of `sunpy.database.Database.search` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``sunpy.net.vso.InteractiveVSOClient`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - Removed ``MapCube`` in favour of `~sunpy.map.MapSequence` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``solar_north`` in favour of ``get_sun_P`` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``database.download`` in favour of `sunpy.database.Database.fetch` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``sunpy.map.GenericMap.pixel_to_data`` in favour of `sunpy.map.GenericMap.pixel_to_world` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``GenericClient.get`` in favour of `sunpy.net.dataretriever.GenericClient.fetch`. This changes applies to the other clients as well. (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed `Map.xrange` and `Map.yrange` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``sunpy.net.attrs.Wave`` in favour of `a.Wavelength <~sunpy.net.vso.attrs.Wavelength>` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
+- Removed ``JSOCClient.check_request`` in favour of `drms.ExportRequest.status` (`#2830 <https://github.com/sunpy/sunpy/pull/2830>`__)
 - `sunpy.net.vso.VSOClient.query_legacy` and `sunpy.net.vso.VSOClient.latest` have been deprecated as we strongly recommend people use `sunpy.net.Fido` for all queries. (`#2866 <https://github.com/sunpy/sunpy/pull/2866>`__)
 - The deprecated ``sunpy.physics.transforms`` module has been removed, it is
   replaced by `sunpy.physics.solar_rotation` and
@@ -109,9 +110,9 @@ Features
 - Provided access to the Helioviewer header information using `~sunpy.net.helioviewer.HelioviewerClient.get_jp2_header` function. (`#2904 <https://github.com/sunpy/sunpy/pull/2904>`__)
 - Add a new WSDL URL and port to support SunPy use of VSO instance at SDAC. (`#2912 <https://github.com/sunpy/sunpy/pull/2912>`__)
 - Add support for COSMO K-Coronograph (KCOR) FITS data. (`#2916 <https://github.com/sunpy/sunpy/pull/2916>`__)
+- Add logger messaging system based on `~astropy.logger.AstropyLogger`, cleaned up all warnings, removed all print statements. (`#2980 <https://github.com/sunpy/sunpy/pull/2980>`__)
 - The function `sunpy.image.coalignment.get_correlation_shifts` now issues an error when the number of dimensions
   are not correct instead of a warning and returning None. (`#2980 <https://github.com/sunpy/sunpy/pull/2980>`__)
-- Add logger messaging system based on `~astropy.logger.AstropyLogger`, cleaned up all warnings, removed all print statements. (`#2980 <https://github.com/sunpy/sunpy/pull/2980>`__)
 - The default location of the sunpy sample data has changed to be in the platform
   specific data directory as provided by `appdirs <https://github.com/ActiveState/appdirs>`__. (`#2993 <https://github.com/sunpy/sunpy/pull/2993>`__)
 - Add timeseries support for EVE/ESP level 1 data in `sunpy.timeseries.sources.eve` (`#3032 <https://github.com/sunpy/sunpy/pull/3032>`__)
@@ -163,8 +164,8 @@ Bug Fixes
 - Added back the FERMI GBM client to `sunpy.net.dataretriever.sources`. (`#2983 <https://github.com/sunpy/sunpy/pull/2983>`__)
 - Fix bug in `sunpy.net.hek` which raised and error if a search returned zero results, now returns an empty `sunpy.net.hek.HEKTable`. (`#3046 <https://github.com/sunpy/sunpy/pull/3046>`__)
 - `~sunpy.map.sources.AIAMap` now uses the provided HAE coordinates instead of the provided HGS coordinates to determine the observer location. (`#3056 <https://github.com/sunpy/sunpy/pull/3056>`__)
-- Fix `sunpy.util.scraper.Scraper` failing if a directory is not found on a remote server. (`#3063 <https://github.com/sunpy/sunpy/pull/3063>`__)
 - Correctly zero pad milliseconds in the `sunpy.util.scraper.Scraper` formatting to prevent errors when the millisecond value was less than 100. (`#3063 <https://github.com/sunpy/sunpy/pull/3063>`__)
+- Fix `sunpy.util.scraper.Scraper` failing if a directory is not found on a remote server. (`#3063 <https://github.com/sunpy/sunpy/pull/3063>`__)
 - Correctly extract observer location from MDI and EIT data (`#3067 <https://github.com/sunpy/sunpy/pull/3067>`__)
 - Fix HGS <> HCRS test due to Ecliptic frame changes in astropy 3.2 (`#3075 <https://github.com/sunpy/sunpy/pull/3075>`__)
 - Fixes bug when creating a timeseries from a URL and bug when creating a TimeSeries from  older GOES/XRS fits files. (`#3081 <https://github.com/sunpy/sunpy/pull/3081>`__)
@@ -207,8 +208,8 @@ Trivial/Internal Changes
 - We are now using `towncrier <https://github.com/hawkowl/towncrier>`__ to
   generate our changelogs. (`#2644 <https://github.com/sunpy/sunpy/pull/2644>`__)
 - Moved figure tests to Python 3.6. (`#2655 <https://github.com/sunpy/sunpy/pull/2655>`__)
-- Updated astropy_helpers to v3.0.2. (`#2655 <https://github.com/sunpy/sunpy/pull/2655>`__)
 - Removed old metaclass used for Map and TimeSeries as we have now moved to Python 3.6. (`#2655 <https://github.com/sunpy/sunpy/pull/2655>`__)
+- Updated astropy_helpers to v3.0.2. (`#2655 <https://github.com/sunpy/sunpy/pull/2655>`__)
 - When running image tests, a comparison HTML page is now generated to show
   the generated images and expected images. (`#2660 <https://github.com/sunpy/sunpy/pull/2660>`__)
 - Change to using pytest-cov for coverage report generation to enable support for parallel builds (`#2667 <https://github.com/sunpy/sunpy/pull/2667>`__)

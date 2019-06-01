@@ -1,45 +1,40 @@
+# -*- coding: utf-8 -*-
 """
-=================
-Searching the VSO
-=================
+======================================
+Searching and downloading from the VSO
+======================================
 
-A simple example showing how to download data from the VSO with Fido.
+How to download data from the VSO with Fido.
 """
-
-###############################################################################
-# Fido is the primary interface to search for and download data and
-# will search the VSO if appropriate. First import it and the search
-# attributes.
 import astropy.units as u
 from sunpy.net import Fido, attrs as a
 
 ###############################################################################
-# We could ask for all SOHO/EIT data between January 1st and 2nd, 2001.
-
+# `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` is the primary
+# interface to search for and download data and
+# will search the VSO when appropriate. The following example searches for all
+# SOHO/EIT images between the times defined below by defining
+# a timerange (`~sunpy.net.attrs.Time`) and
+# the instrument (`~sunpy.net.attrs.Instrument`).
 attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
 result = Fido.search(attrs_time, a.Instrument('eit'))
 
 ###############################################################################
-# Let's inspect the result
-
+# Let's inspect the results.
 print(result)
 
 ###############################################################################
-# Now lets download this query. If we don't provide a path it will download the
-# file into the sunpy data directory.
-
+# The following shows how to download the results. If we
+# don't provide a path it will download the file into the sunpy data directory.
+# The output provides the path of the downloaded files.
 downloaded_files = Fido.fetch(result)
-
-###############################################################################
-# You can check where the file was downloaded to.
-
 print(downloaded_files)
 
 ###############################################################################
 # More complicated queries can be constructed by using relational operators.
-# For example, say we are interested in both eit and mdi data.
-
-result = Fido.search(a.Time('2012/3/4', '2012/3/6'),
+# For example, it is possible to query two wavelengths at the same time with
+# the OR operator (|).
+result = Fido.search(a.Time('2012/03/04 00:00', '2012/03/04 00:02'),
                      a.Instrument('aia'),
                      a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))
 print(result)
