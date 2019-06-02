@@ -27,7 +27,7 @@ from sunpy.util.decorators import add_common_docstring, deprecated
 from sunpy.time.time import _variables_for_parse_time_docstring
 
 from .frames import HeliographicStonyhurst as HGS
-from .transformations import _SUN_DETILT_MATRIX
+from .transformations import _SUN_DETILT_MATRIX, _SOLAR_NORTH_POLE_HCRS
 
 __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"
@@ -233,18 +233,24 @@ def _B0(time='now'):
     return Angle(get_earth(time).lat)
 
 
-# Ignore warnings that result from going back in time to the first Carrington rotation
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", ErfaWarning)
+# Function returns a SkyCoord's longitude in the de-tilted frame (HCRS rotated so that the Sun's
+# rotation axis is aligned with the Z axis)
+def _detilt_lon(coord):
+    coord_detilt = coord.hcrs.cartesian.transform(_SUN_DETILT_MATRIX)
+    return coord_detilt.represent_as(SphericalRepresentation).lon.to('deg')
 
-    # Carrington rotation 1 starts late in the day on 1853 Nov 9
-    # according to Astronomical Algorithms (Meeus 1998, p.191)
-    _TIME_FIRST_ROTATION = Time('1853-11-09 21:36')
+# J2000.0 epoch
+_J2000 = Time('J2000.0', scale='tt')
 
-    # Longitude of Earth at Carrington rotation 1 in de-tilted HCRS (so that solar north pole is Z)
-    _LON_FIRST_ROTATION = \
-        get_earth(_TIME_FIRST_ROTATION).hcrs.cartesian.transform(_SUN_DETILT_MATRIX) \
-        .represent_as(SphericalRepresentation).lon.to('deg')
+# One of the two nodes of intersection between the ICRF equator and Sun's equator in HCRS
+_NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90*u.deg, 0*u.deg, frame='hcrs')
+
+# The longitude in the de-tilted frame of the Sun's prime meridian
+# Siedelmann et al. (2007) and earlier define the apparent longitude of the meridian as seen from
+# Earth as 84.10 degrees eastward from the above-defined node of intersection.
+# Siedelmann et al. (2007) and later also define the true longitude of the meridian (i.e., without
+# light travel time to Earth) as 84.176 degrees eastward, but the apparent longitude is needed.
+_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.10*u.deg)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -253,13 +259,6 @@ def _L0(time='now'):
     Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the
     Sun-disk center as seen from Earth.
 
-    .. warning::
-       Due to apparent disagreement between published references, the returned L0 may be inaccurate
-       by up to ~2 arcmin, which translates in the worst case to a shift of ~0.5 arcsec in
-       helioprojective coordinates for an observer at 1 AU.  Until this is resolved, be cautious
-       with analysis that depends critically on absolute (as opposed to relative) values of
-       Carrington longitude.
-
     Parameters
     ----------
     time : {parse_time_types}
@@ -267,20 +266,28 @@ def _L0(time='now'):
 
     Returns
     -------
-    out : `~astropy.coordinates.Longitude`
+    ~astropy.coordinates.Longitude`
         The Carrington longitude
+
+    Notes
+    -----
+    This longitude is calculated using the values from Siedelmann et al. (2007), with care taken to
+    use the longitude as seen from Earth (see that paper's Appendix).
+
+    References
+    ----------
+    * Siedelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates
+    and rotational elements: 2006" `(link) <http://dx.doi.org/10.1007/s10569-007-9072-y>`_
     """
     obstime = parse_time(time)
 
-    # Calculate the longitude due to the Sun's rotation relative to the stars
-    # A sidereal rotation is defined to be exactly 25.38 days
-    sidereal_lon = Longitude((obstime.jd - _TIME_FIRST_ROTATION.jd) / 25.38 * 360*u.deg)
+    # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
+    dlon_meridian = Longitude(_DLON_MERIDIAN + (obstime - _J2000) * 14.1844*u.deg/u.day)
 
-    # Calculate the longitude of the Earth in de-tilted HCRS
-    lon_obstime = get_earth(obstime).hcrs.cartesian.transform(_SUN_DETILT_MATRIX) \
-                  .represent_as(SphericalRepresentation).lon.to('deg')
+    # Calculate the de-tilt longitude of the Earth
+    dlon_earth = _detilt_lon(get_earth(obstime))
 
-    return Longitude(lon_obstime - _LON_FIRST_ROTATION - sidereal_lon)
+    return Longitude(dlon_earth - dlon_meridian)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
