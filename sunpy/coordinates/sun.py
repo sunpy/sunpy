@@ -75,19 +75,28 @@ def sky_position(t='now', equinox_of_date=True):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def carrington_rotation_number(t='now'):
     """
-    Return the Carrington Rotation number.
-
-    .. warning::
-        The accuracy of this function is under investigation.
+    Return the Carrington rotation number.
 
     Parameters
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     """
-    jd = parse_time(t).jd
-    result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
-    return result
+    time = parse_time(t)
+
+    # Estimate the Carrington rotation number by dividing the time that has elapsed since
+    # JD 2398167.4 (late in the day on 1853 Nov 9), see Astronomical Algorithms (Meeus 1998, p.191),
+    # by the mean synodic period (27.2753 days)
+    estimate = (time.tt.jd - 2398167.4) / 27.2753 + 1
+    estimate_int, estimate_frac = divmod(estimate, 1)
+
+    # Calculate the actual fractional rotation number
+    actual_frac = 1 - L0(time).to('deg').value / 360
+
+    # Calculate any adjustment to the integer rotation number due to wrapping
+    wrap_adjustment = np.around(estimate_frac - actual_frac)
+
+    return estimate_int + actual_frac + wrap_adjustment
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -384,7 +393,7 @@ def print_params(t='now'):
     print('Heliographic long. and lat of disk center = ({}, {})'.format(L0(t).to_string(),
                                                                         B0(t).to_string()))
     print('Position angle of north pole = {}'.format(P(t)))
-    print('Carrington Rotation Number = {}'.format(carrington_rotation_number(t)))
+    print('Carrington rotation number = {}'.format(carrington_rotation_number(t)))
 
 
 # The following functions belong to this module, but their code is still in the old location of
