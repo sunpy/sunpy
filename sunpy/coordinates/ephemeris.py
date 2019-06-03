@@ -239,13 +239,16 @@ def _detilt_lon(coord):
     coord_detilt = coord.hcrs.cartesian.transform(_SUN_DETILT_MATRIX)
     return coord_detilt.represent_as(SphericalRepresentation).lon.to('deg')
 
+
 # J2000.0 epoch
 _J2000 = Time('J2000.0', scale='tt')
+
 
 # One of the two nodes of intersection between the ICRF equator and Sun's equator in HCRS
 _NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90*u.deg, 0*u.deg, frame='hcrs')
 
-# The longitude in the de-tilted frame of the Sun's prime meridian
+
+# The longitude in the de-tilted frame of the Sun's prime meridian.
 # Siedelmann et al. (2007) and earlier define the apparent longitude of the meridian as seen from
 # Earth as 84.10 degrees eastward from the above-defined node of intersection.
 # Siedelmann et al. (2007) and later also define the true longitude of the meridian (i.e., without

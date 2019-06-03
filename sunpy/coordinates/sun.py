@@ -18,6 +18,7 @@ except ImportError:
 from astropy import _erfa as erfa
 from astropy.coordinates.builtin_frames.utils import get_jd12
 
+from sunpy import log
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
@@ -75,7 +76,9 @@ def sky_position(t='now', equinox_of_date=True):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def carrington_rotation_number(t='now'):
     """
-    Return the Carrington rotation number.
+    Return the Carrington rotation number.  Each whole rotation number marks when the Sun's prime
+    meridian coincides with the central meridian as seen from Earth, with the first rotation
+    starting on 1853 November 9.
 
     Parameters
     ----------
@@ -90,13 +93,18 @@ def carrington_rotation_number(t='now'):
     estimate = (time.tt.jd - 2398167.4) / 27.2753 + 1
     estimate_int, estimate_frac = divmod(estimate, 1)
 
-    # Calculate the actual fractional rotation number
+    # The fractional rotation number from the above estimate is inaccurate, so calculate the actual
+    # fractional rotation number from the longitude of the central meridian (L0)
     actual_frac = 1 - L0(time).to('deg').value / 360
 
     # Calculate any adjustment to the integer rotation number due to wrapping
     wrap_adjustment = np.around(estimate_frac - actual_frac)
 
-    return estimate_int + actual_frac + wrap_adjustment
+    actual = estimate_int + actual_frac + wrap_adjustment
+
+    log.debug(f"Carrington rotation number: estimate is {estimate}, actual is {actual}")
+
+    return actual
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
