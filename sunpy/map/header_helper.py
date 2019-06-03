@@ -124,8 +124,8 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lat.to_value(meta_wcs['cunit1']),
                                               coordinate.spherical.lon.to_value(meta_wcs['cunit2']))
 
-    meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel),
-                                              reference_pixel[1].to_value(u.pixel))
+    meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel) + 1,
+                                              reference_pixel[1].to_value(u.pixel) + 1)
 
     meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0].to_value(meta_wcs['cunit1']/u.pixel),
                                               scale[1].to_value(meta_wcs['cunit2']/u.pixel))
@@ -204,7 +204,7 @@ def _get_observer_meta(coordinate):
     coord_meta['hgln_obs'] = coordinate.observer.lon.to_value(u.deg)
     coord_meta['hglt_obs'] = coordinate.observer.lat.to_value(u.deg)
     coord_meta['dsun_obs'] = coordinate.observer.radius.to_value(u.m)
-    coord_meta['rsun_ref'] = coordinate.rsun.to_value()
+    coord_meta['rsun_ref'] = coordinate.rsun.to_value(u.m)
     coord_meta['rsun_obs'] = np.arctan(coordinate.rsun / coordinate.observer.radius).to_value(u.arcsec)
 
     return coord_meta
