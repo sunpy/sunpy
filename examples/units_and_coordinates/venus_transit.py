@@ -30,7 +30,7 @@ solar_system_ephemeris.set('jpl')
 ###############################################################################
 # Now we get the position of venus and convert it into the aia coordinates.
 venus = get_body_heliographic_stonyhurst('venus', aiamap.date, observer=aiamap.observer_coordinate)
-venus_hpc = venus.transform_to(frames.Helioprojective(observer=aiamap.observer_coordinate))
+venus_hpc = venus.transform_to(aiamap.coordinate_frame)
 
 ###############################################################################
 # Let's crop the image with Venus at it's center
