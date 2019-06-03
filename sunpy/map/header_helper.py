@@ -30,14 +30,13 @@ def meta_keywords():
     return _map_meta_keywords
 
 
-@u.quantity_input(reference_pixel=u.pix, scale=u.arcsec/u.pix,
-                  rotation_angle=u.deg, wavelength=u.angstrom, equivalencies=u.spectral(),
-                  exposure=u.s)
-def make_fitswcs_header(data, coordinate, reference_pixel=None,
-                        scale=None, rotation_angle=None,
+@u.quantity_input(equivalencies=u.spectral())
+def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
+                        scale: u.arcsec/u.pix = None,
+                        rotation_angle: u.deg = None,
                         rotation_matrix=None, instrument=None,
                         telescope=None, observatory=None,
-                        wavelength=None, exposure=None):
+                        wavelength: u.angstrom=None, exposure: u.s=None):
     """
     Function to create a FITS-WCS header from a coordinate object
     (`~astropy.coordinates.SkyCoord`) that is required to
@@ -222,7 +221,7 @@ def _get_instrument_meta(instrument, telescope, observatory, wavelength, exposur
         coord['obsrvtry'] = str(observatory)
     if wavelength is not None:
         coord['wavelnth'] = wavelength.to_value()
-        coord['waveunit'] = wavelength.unit.name
+        coord['waveunit'] = wavelength.unit.to_string("fits")
     if exposure is not None:
         coord['exptime'] = exposure.to_value(u.s)
 
