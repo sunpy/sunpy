@@ -4,7 +4,7 @@ from abc import ABCMeta, abstractmethod
 class StorageProviderBase(metaclass=ABCMeta):
     """Base class for remote data manager storage providers"""
     @abstractmethod
-    def find_by_hash(self, file_hash):
+    def find_by_key(self, key, value):
         """
         Returns the file details if hash found in storage.
         Returns `None` if hash not found.
@@ -41,8 +41,8 @@ class InMemStorage(StorageProviderBase):
     def store(self, details):
         self._store += [details]
 
-    def find_by_hash(self, file_hash):
+    def find_by_key(self, key, value):
         for i in self._store:
-            if i['file_hash'] == file_hash:
+            if i['file_hash'] == value:
                 return i
         return None
