@@ -63,7 +63,7 @@ The best way to do this is to create a new conda environment and install the git
     $ cd sunpy-git
     $ pip install --no-use-pep517 -e .[all,dev]
 
-For detailed installation instructions, see the `Newcomers guide`_ in the SunPy docs.
+For detailed installation instructions, see the `Newcomers' guide`_ in the SunPy docs.
 
 Usage
 =====
@@ -99,7 +99,7 @@ If you would like to get involved, start by joining the `SunPy mailing list`_ an
 Stop by our chat room `#sunpy:openastronomy.org`_ if you have any questions.
 Help is always welcome so let us know what you like to work on, or check out the `issues page`_ for the list of known outstanding items.
 
-For more information on contributing to SunPy, please read our `Newcomers guide`_.
+For more information on contributing to SunPy, please read our `Newcomers' guide`_.
 
 .. |Open Source Helpers| image:: https://www.codetriage.com/sunpy/sunpy/badges/users.svg
    :target: https://www.codetriage.com/sunpy/sunpy
@@ -108,7 +108,7 @@ For more information on contributing to SunPy, please read our `Newcomers guide`
 .. _Developers Guide: https://docs.sunpy.org/en/latest/dev_guide/index.html
 .. _`#sunpy:openastronomy.org`: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
 .. _issues page: https://github.com/sunpy/sunpy/issues
-.. _Newcomers guide: https://docs.sunpy.org/en/latest/dev_guide/newcomers.html
+.. _Newcomers' guide: https://docs.sunpy.org/en/latest/dev_guide/newcomers.html
 
 Code of Conduct
 ===============
