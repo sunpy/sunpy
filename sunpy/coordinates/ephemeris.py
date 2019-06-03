@@ -269,7 +269,7 @@ def _L0(time='now'):
 
     Returns
     -------
-    ~astropy.coordinates.Longitude`
+    `~astropy.coordinates.Longitude`
         The Carrington longitude
 
     Notes
@@ -280,7 +280,7 @@ def _L0(time='now'):
     References
     ----------
     * Siedelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates
-    and rotational elements: 2006" `(link) <http://dx.doi.org/10.1007/s10569-007-9072-y>`_
+      and rotational elements: 2006" `(link) <http://dx.doi.org/10.1007/s10569-007-9072-y>`_
     """
     obstime = parse_time(time)
 
