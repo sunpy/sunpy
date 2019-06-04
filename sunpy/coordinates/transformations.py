@@ -22,7 +22,8 @@ from astropy.coordinates import ICRS, HCRS, ConvertError, BaseCoordinateFrame, g
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
                                                 UnitSphericalRepresentation)
-from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
+from astropy.coordinates.transformations import (FunctionTransform, DynamicMatrixTransform,
+                                                 FunctionTransformWithFiniteDifference)
 from astropy.coordinates.matrix_utilities import matrix_product, rotation_matrix, matrix_transpose
 
 from sunpy.sun import constants
@@ -47,7 +48,7 @@ __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
 
 def _carrington_offset(obstime):
     """
-    Calculate the HG Longitude offest based on a time
+    Calculate the HG Longitude offset based on a time
     """
     if obstime is None:
         raise ValueError("To perform this transformation the coordinate"
@@ -75,40 +76,33 @@ def _observers_are_equal(obs_1, obs_2, string_ok=False):
 # =============================================================================
 
 
-@frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst,
-                                 HeliographicCarrington)
+@frame_transform_graph.transform(DynamicMatrixTransform,
+                                 HeliographicStonyhurst, HeliographicCarrington)
 def hgs_to_hgc(hgscoord, hgcframe):
     """
-    Transform from Heliographic Stonyhurst to Heliograpic Carrington.
+    Convert from Heliographic Stonyhurst to Heliographic Carrington.
     """
-    if hgcframe.obstime is None or np.any(hgcframe.obstime != hgscoord.obstime):
-        raise ValueError("Can not transform from Heliographic Stonyhurst to "
-                         "Heliographic Carrington, unless both frames have matching obstime.")
+    # Convert between HGS and HGC at the HGC observation time
+    rot2 = rotation_matrix(-_carrington_offset(hgcframe.obstime), 'z')
 
-    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.obstime).to(u.deg)
-    representation = SphericalRepresentation(c_lon, hgscoord.spherical.lat,
-                                             hgscoord.spherical.distance)
-    hgcframe = hgcframe.__class__(obstime=hgscoord.obstime)
+    if np.all(hgscoord.obstime == hgcframe.obstime):
+        return rot2
 
-    return hgcframe.realize_frame(representation)
+    else:
+        # If the observation times are not the same, convert between HGS frames
+        hgsframe = HeliographicStonyhurst(obstime=hgcframe.obstime)
+        rot1 = hgs_to_hgs(hgscoord, hgsframe)
+
+        return matrix_product(rot2, rot1)
 
 
-@frame_transform_graph.transform(FunctionTransform, HeliographicCarrington,
-                                 HeliographicStonyhurst)
+@frame_transform_graph.transform(DynamicMatrixTransform,
+                                 HeliographicCarrington, HeliographicStonyhurst)
 def hgc_to_hgs(hgccoord, hgsframe):
     """
-    Convert from Heliograpic Carrington to Heliographic Stonyhurst.
+    Convert from Heliographic Carrington to Heliographic Stonyhurst.
     """
-    if hgsframe.obstime is None or np.any(hgsframe.obstime != hgccoord.obstime):
-        raise ValueError("Can not transform from Heliographic Carrington to "
-                         "Heliographic Stonyhurst, unless both frames have matching obstime.")
-    obstime = hgsframe.obstime
-    s_lon = hgccoord.spherical.lon - _carrington_offset(obstime).to(
-        u.deg)
-    representation = SphericalRepresentation(s_lon, hgccoord.spherical.lat,
-                                             hgccoord.spherical.distance)
-
-    return hgsframe.realize_frame(representation)
+    return matrix_transpose(hgs_to_hgc(hgsframe, hgccoord))
 
 
 @frame_transform_graph.transform(FunctionTransform, Heliocentric,
@@ -352,7 +346,8 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
     return matrix_transpose(hcrs_to_hgs(hcrsframe, hgscoord))
 
 
-@frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, HeliographicStonyhurst)
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliographicStonyhurst, HeliographicStonyhurst)
 def hgs_to_hgs(from_coo, to_frame):
     """
     Convert between two Heliographic Stonyhurst frames.
@@ -360,10 +355,12 @@ def hgs_to_hgs(from_coo, to_frame):
     if np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
-        return from_coo.transform_to(HCRS).transform_to(to_frame)
+        return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).\
+               transform_to(HCRS(obstime=to_frame.obstime)).transform_to(to_frame)
 
 
-@frame_transform_graph.transform(FunctionTransform, HeliographicCarrington, HeliographicCarrington)
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliographicCarrington, HeliographicCarrington)
 def hgc_to_hgc(from_coo, to_frame):
     """
     Convert between two Heliographic Carrington frames.
