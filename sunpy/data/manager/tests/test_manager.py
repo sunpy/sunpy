@@ -1,6 +1,7 @@
 from sunpy.data.manager.manager import DataManager
 from sunpy.data.manager.storage import InMemStorage
 from sunpy.data.manager.downloader import DownloaderBase
+from sunpy.data.manager.cache import Cache
 
 from pathlib import Path
 
@@ -32,13 +33,13 @@ def storage():
 
 @pytest.fixture
 def manager(downloader, storage):
-    manager = DataManager(downloader, storage)
+    manager = DataManager(Cache(downloader, storage))
     return manager
 
 
 @pytest.fixture
 def data_function(manager):
-    @manager.require('test_file', ['url1', 'url2'], 'hash')
+    @manager.require('test_file', ['url1', 'url2'], 'asdf')
     def foo(manager_tester=lambda x: 1):
         manager_tester(manager)
 
