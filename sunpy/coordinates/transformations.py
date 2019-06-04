@@ -351,10 +351,25 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
 
 @frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, HeliographicStonyhurst)
 def hgs_to_hgs(from_coo, to_frame):
+    """
+    Convert between two Heliographic Stonyhurst frames.
+    """
     if np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HCRS).transform_to(to_frame)
+
+
+@frame_transform_graph.transform(FunctionTransform, HeliographicCarrington, HeliographicCarrington)
+def hgc_to_hgc(from_coo, to_frame):
+    """
+    Convert between two Heliographic Carrington frames.
+    """
+    if np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
+    else:
+        return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
+               transform_to(HeliographicStonyhurst(obstime=to_frame.obstime)).transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransform, Heliocentric, Heliocentric)
