@@ -3,6 +3,7 @@ This module provides general utility functions.
 """
 import os
 from itertools import chain, count
+import hashlib
 from collections import UserList
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
@@ -163,3 +164,34 @@ def dict_keys_same(list_of_dicts):
     for d in list_of_dicts:
         d.update({key: None for key in all_keys if key not in d})
     return list_of_dicts
+
+
+def hash_file(path):
+    """
+    Returns the SHA-1 hash of a file
+
+    Parameters
+    ----------
+    path: `str`
+    The path of the file to be hashed
+
+    Returns
+    -------
+    `str`
+    SHA-1 hash of the file
+
+    References
+    ----------
+    * https://stackoverflow.com/questions/22058048/hashing-a-file-in-python
+    """
+    BUF_SIZE = 65536
+    sha1 = hashlib.sha1()
+
+    with open(path, 'rb') as f:
+        while True:
+            data = f.read(BUF_SIZE)
+            if not data:
+                break
+            sha1.update(data)
+
+    return sha1.hexdigest()

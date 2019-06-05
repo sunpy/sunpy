@@ -12,6 +12,8 @@ class MockDownloader(DownloaderBase):
     """MockDownloader"""
 
     def __init__(self):
+        with open('/tmp/lol', 'w') as f:
+            f.write("a")
         self.times_called = 0
 
     def download(self, url):
@@ -39,7 +41,7 @@ def manager(downloader, storage):
 
 @pytest.fixture
 def data_function(manager):
-    @manager.require('test_file', ['url1', 'url2'], 'asdf')
+    @manager.require('test_file', ['url1', 'url2'], '86f7e437faa5a7fce15d1ddcb9eaeaea377667b8')
     def foo(manager_tester=lambda x: 1):
         manager_tester(manager)
 
