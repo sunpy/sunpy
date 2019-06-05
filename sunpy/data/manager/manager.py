@@ -46,6 +46,9 @@ class DataManager:
                 else:
                     details = self._cache.get_by_hash(sha_hash)
                     if not details:
+                        if self._cache_has_file(urls):
+                            # TODO: Better error and error message
+                            raise KeyError("Hash does not match")
                         file_path = self._cache.download(urls)
                     else:
                         file_path = details['file_path']
@@ -113,6 +116,12 @@ class DataManager:
         If name is not in the cache
         """
         return pathlib.Path(self._file_cache[name])
+
+    def _cache_has_file(self, urls):
+        for url in urls:
+            if self._cache._get_by_url(url):
+                return True
+        return False
 
     def _download_and_hash(self, urls):
         # TODO: Handle multiple urls
