@@ -43,6 +43,6 @@ class InMemStorage(StorageProviderBase):
 
     def find_by_key(self, key, value):
         for i in self._store:
-            if i['file_hash'] == value:
+            if i[key] == value:
                 return i
         return None

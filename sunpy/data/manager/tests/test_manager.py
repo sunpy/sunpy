@@ -97,3 +97,16 @@ def test_replace_file(manager, storage, downloader, data_function):
 
     # Even after context manager call outside the file is default
     data_function(default_tester)
+
+
+def test_wrong_hash_error(manager, storage):
+    storage._store.append({
+        'file_path': '/tmp/lol',
+        'file_hash': 'aa',
+        'url': 'url1'
+    })
+    @manager.require('test_file', ['url1', 'url2'], 'asdf')
+    def foo():
+        pass
+    with pytest.raises(KeyError):
+        foo()
