@@ -1,3 +1,6 @@
+from sunpy.util.util import hash_file
+
+
 class Cache:
     def __init__(self, downloader, storage):
         self._downloader = downloader
@@ -34,6 +37,6 @@ class Cache:
         path = self._downloader.download(urls[0])
 
         # TODO: Calculate the hash
-        shahash = 'asdf'
+        shahash = hash_file(path)
 
         return path, shahash, urls[0]
