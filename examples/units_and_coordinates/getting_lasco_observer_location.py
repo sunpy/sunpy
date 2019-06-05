@@ -8,6 +8,7 @@ How to get the correct location of SOHO using JPL HORIZONS
 and update the header.
 """
 # sphinx_gallery_thumbnail_number = 2
+import numpy as np
 import matplotlib.pyplot as plt
 
 import sunpy.map
@@ -27,7 +28,7 @@ lasco = sunpy.map.Map(f)
 print(lasco.observer_coordinate)
 
 ###############################################################################
-# To check that this worked let's get the location of mercury in this exposure
+# To check that this worked let's get the location of Mercury in this exposure
 # and show that it is in the correct location.
 mercury_wrong = get_body_heliographic_stonyhurst('mercury', lasco.date, observer=lasco.observer_coordinate)
 mercury_hpc_wrong = mercury_wrong.transform_to(lasco.coordinate_frame)
@@ -69,12 +70,12 @@ mercury = get_body_heliographic_stonyhurst('mercury', lasco.date, observer=lasco
 mercury_hpc = mercury.transform_to(lasco.coordinate_frame)
 
 ###############################################################################
-# The difference between the incorrect position and the right one is
-r = np.sqrt( (mercury_hpc.Tx - mercury_hpc_wrong.Tx) ** 2 + (mercury_hpc.Ty - mercury_hpc_wrong.Ty) ** 2)
+# The difference between the incorrect position and the right one is:
+r = np.sqrt((mercury_hpc.Tx - mercury_hpc_wrong.Tx) ** 2 + (mercury_hpc.Ty - mercury_hpc_wrong.Ty) ** 2)
 print(r)
 
 ##############################################################################
-# Let's plot the results
+# Let's plot the results.
 ax = plt.subplot(projection=lasco)
 
 # let's tweak the axis to show in degrees instead of arcsec
