@@ -10,8 +10,8 @@ thing>. Include links to referenced packages like this: `sunpy.io.fits` to
 show the sunpy.io.fits or like this `~sunpy.io.fits`to show just 'fits'
 """
 ###########################################################################
-# if you have multiple plots in your example, sphinx will use the first
-# one for the thumbnail image by default. You can set which plot is used as the
+# If you have multiple plots in your example, Sphinx will use the first
+# plot for the thumbnail by default. You can set which plot is used as the
 # thumbnail by adding the following comment to your file.
 # sphinx_gallery_thumbnail_number = 2
 
