@@ -399,7 +399,7 @@ def _make_sunpy_graph():
                  'heliographic_stonyhurst', 'heliographic_carrington',
                  'heliocentric', 'helioprojective',
                  'gcrs', 'precessedgeocentric', 'geocentrictrueecliptic', 'geocentricmeanecliptic',
-                 'cirs', 'altaz']
+                 'cirs', 'altaz', 'itrs']
 
     global frame_transform_graph
     backup_graph = deepcopy(frame_transform_graph)
@@ -443,7 +443,7 @@ def _add_astropy_node(graph):
     Add an 'Astropy' node that links to an ICRS node in the graph
     """
     class Astropy(BaseCoordinateFrame):
-        name = "other frames"
+        name = "REPLACE"
 
     @graph.transform(FunctionTransform, Astropy, ICRS)
     def fake_transform1():
@@ -464,14 +464,24 @@ def _tweak_graph(docstr):
                             '`astropy.coordinates` are accessible as well, but are hidden here.')
 
     # Change the Astropy node
-    output = output.replace('Astropy [shape=oval label="Astropy\\n`other frames`"]',
-                            'Astropy [shape=rectangle label="Astropy\'s\\nother frames"]')
+    output = output.replace('Astropy [shape=oval label="Astropy\\n`REPLACE`"]',
+                            'Astropy [shape=box3d style=filled fillcolor=lightcyan '
+                            'label="Other frames\\nin Astropy"]')
 
     # Change the Astropy<->ICRS links to black
     output = output.replace('ICRS -> Astropy[  color = "#783001" ]',
                             'ICRS -> Astropy[  color = "#000000" ]')
     output = output.replace('Astropy -> ICRS[  color = "#783001" ]',
                             'Astropy -> ICRS[  color = "#000000" ]')
+
+    # Change all the ovals to be filled
+    output = output.replace('shape=oval', 'style=filled fillcolor=lightcyan shape=oval')
+
+    # Change SunPy frames back to not filled
+    sunpy_frames = ['HeliographicStonyhurst', 'HeliographicCarrington',
+                    'Heliocentric', 'Helioprojective']
+    for frame in sunpy_frames:
+        output = output.replace(frame + ' [style=filled fillcolor=lightcyan ', frame + ' [')
 
     return output
 
