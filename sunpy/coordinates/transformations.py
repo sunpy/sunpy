@@ -455,13 +455,8 @@ def _add_astropy_node(graph):
 
 
 def _tweak_graph(docstr):
-    # Edit the diagram description
-    output = docstr.replace('all of the coordinate systems built into the\n`~astropy.coordinates` '
-                            'package',
-                            'the most common coordinate systems available via `sunpy.coordinates`')
-    output = output.replace('transformations between them.',
-                            'transformations between them.  The other astronomical frames in '
-                            '`astropy.coordinates` are accessible as well, but are hidden here.')
+    # Remove Astropy's diagram description
+    output = docstr[docstr.find('.. Wrap the graph'):]
 
     # Change the Astropy node
     output = output.replace('Astropy [shape=oval label="Astropy\\n`REPLACE`"]',
@@ -484,6 +479,3 @@ def _tweak_graph(docstr):
         output = output.replace(frame + ' [style=filled fillcolor=lightcyan ', frame + ' [')
 
     return output
-
-
-__doc__ += _make_sunpy_graph()
