@@ -21,12 +21,12 @@ jobs:
       displayName: brew install openjpeg
 
   - ${{ if contains(parameters.tox, 'conda') }}:
-    - task: CondaEnvironment@1
-      displayName: 'Create conda environment'
-      inputs:
-        createCustomEnvironment: True
-        environmentName: "test"
-        createOptions: python="3.6"
+    - bash: |
+        echo "##vso[task.prependpath]$CONDA/bin"
+        conda create --yes --quiet --name myEnvironment
+        source activate myEnvironment
+        conda install --yes --quiet --name myEnvironment python=3.6 pip
+      displayName: conda setup
 
   - task: UsePythonVersion@0
     inputs:
