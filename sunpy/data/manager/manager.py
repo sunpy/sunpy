@@ -53,7 +53,6 @@ class DataManager:
                     else:
                         file_path = details['file_path']
 
-                # TODO: handle name clashing
                 self._file_cache[name] = file_path
                 return func(*args, **kwargs)
             return wrapper
@@ -122,13 +121,3 @@ class DataManager:
             if self._cache._get_by_url(url):
                 return True
         return False
-
-    def _download_and_hash(self, urls):
-        # TODO: Handle multiple urls
-        # TODO: Calculate path here. Don't depened on subclasses of downloader to use unique path
-        path = self._downloader.download(urls[0])
-
-        # TODO: Calculate the hash
-        shahash = 'hash'
-
-        return path, shahash
