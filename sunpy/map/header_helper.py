@@ -49,8 +49,10 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
         Coordinate object to get meta information for map header.
     reference_pixel :`~astropy.units.Quantity` of size 2, optional
         Reference pixel along each axis. These are expected to be Cartestian ordered, i.e
-        the first index is the x axis, second index is the y axis.
-        Defaults to the center of data array, ``(data.shape[1] + 1)/2., (data.shape[0] + 1)/2.)``.
+        the first index is the x axis, second index is the y axis. Defaults to
+        the center of data array, ``(data.shape[1] + 1)/2., (data.shape[0] + 1)/2.)``,
+        this argument is zero indexed (Python convention) not 1 indexed (FITS
+        convention).
     scale : `~astropy.units.Quantity` of size 2, optional
         Pixel scaling along x and y axis (i.e. the spatial scale of the pixels (dx, dy)). These are
         expected to be Cartestian ordered, i.e [dx, dy].
