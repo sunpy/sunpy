@@ -432,6 +432,9 @@ def _make_sunpy_graph():
     # Restore the main transform graph
     frame_transform_graph = backup_graph
 
+    # Make adjustments to the graph
+    docstr = _tweak_graph(docstr)
+
     return docstr
 
 
@@ -449,6 +452,28 @@ def _add_astropy_node(graph):
     @graph.transform(FunctionTransform, ICRS, Astropy)
     def fake_transform2():
         pass
+
+
+def _tweak_graph(docstr):
+    # Edit the diagram description
+    output = docstr.replace('all of the coordinate systems built into the\n`~astropy.coordinates` '
+                            'package',
+                            'the most common coordinate systems available via `sunpy.coordinates`')
+    output = output.replace('transformations between them.',
+                            'transformations between them.  The other astronomical frames in '
+                            '`astropy.coordinates` are accessible as well, but are hidden here.')
+
+    # Change the Astropy node
+    output = output.replace('Astropy [shape=oval label="Astropy\\n`other frames`"]',
+                            'Astropy [shape=rectangle label="Astropy\'s\\nother frames"]')
+
+    # Change the Astropy<->ICRS links to black
+    output = output.replace('ICRS -> Astropy[  color = "#783001" ]',
+                            'ICRS -> Astropy[  color = "#000000" ]')
+    output = output.replace('Astropy -> ICRS[  color = "#783001" ]',
+                            'Astropy -> ICRS[  color = "#000000" ]')
+
+    return output
 
 
 __doc__ += _make_sunpy_graph()
