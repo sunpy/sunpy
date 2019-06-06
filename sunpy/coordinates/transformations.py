@@ -39,7 +39,8 @@ RSUN_METERS = constants.get('radius').si.to(u.m)
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
            'hpc_to_hpc',
-           'hcrs_to_hgs', 'hgs_to_hcrs', 'hcc_to_hcc']
+           'hcrs_to_hgs', 'hgs_to_hcrs',
+           'hgs_to_hgs', 'hgc_to_hgc', 'hcc_to_hcc']
 
 
 def _carrington_offset(obstime):
