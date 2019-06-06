@@ -13,6 +13,8 @@ This module contains the functions for converting one
   `~astropy.coordinates.SkyCoord` instances.
 
 """
+from copy import deepcopy
+
 import numpy as np
 
 import astropy.units as u
@@ -387,4 +389,48 @@ def hcc_to_hcc(hcccoord, hccframe):
 
     return hcccoord
 
-__doc__ += make_transform_graph_docs()
+
+def _make_sunpy_graph():
+    """
+    Culls down the full transformation graph for SunPy purposes and returns the string version
+    """
+    # Frames to keep in the transformation graph
+    keep_list = ['icrs', 'hcrs', 'heliocentrictrueecliptic', 'heliocentricmeanecliptic',
+                 'heliographic_stonyhurst', 'heliographic_carrington',
+                 'heliocentric', 'helioprojective',
+                 'gcrs', 'precessedgeocentric', 'geocentrictrueecliptic', 'geocentricmeanecliptic',
+                 'cirs', 'altaz']
+
+    global frame_transform_graph
+    backup_graph = deepcopy(frame_transform_graph)
+
+    small_graph = deepcopy(frame_transform_graph)
+    cull_list = [name for name in small_graph.get_names() if name not in keep_list]
+    cull_frames = [small_graph.lookup_name(name) for name in cull_list]
+
+    for frame in cull_frames:
+        # Remove the part of the graph where the unwanted frame is the source frame
+        if frame in small_graph._graph:
+            del small_graph._graph[frame]
+
+        # Remove all instances of the unwanted frame as the destination frame
+        for entry in small_graph._graph:
+            if frame in small_graph._graph[entry]:
+                del (small_graph._graph[entry])[frame]
+
+    # Clean up the node list
+    for name in cull_list:
+        small_graph._cached_names.pop(name)
+
+    # Overwrite the main transform graph
+    frame_transform_graph = small_graph
+
+    docstr = make_transform_graph_docs()
+
+    # Restore the main transform graph
+    frame_transform_graph = backup_graph
+
+    return docstr
+
+
+__doc__ += _make_sunpy_graph()
