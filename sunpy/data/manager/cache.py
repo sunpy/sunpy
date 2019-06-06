@@ -7,6 +7,16 @@ class Cache:
         self._storage = storage
 
     def download(self, urls, redownload=False):
+        """
+        Downloads the files from the urls
+
+        Parameters
+        ----------
+        urls: List
+        list of urls
+        redownload: `bool`
+        Whether to skip cache and redownload
+        """
         # TODO: Expiry time
         # XXX: Expiry time cache level or download level?
         if not redownload:
@@ -25,10 +35,27 @@ class Cache:
         return file_path
 
     def get_by_hash(self, sha_hash):
+        """
+        Returns the details which is matched by hash if present in cache
+
+        Parameters
+        ----------
+        sha_hash: `str`
+        SHA-1 hash of the file
+        """
         details = self._storage.find_by_key('file_hash', sha_hash)
         return details
 
     def _get_by_url(self, url):
+        """
+        Returns the details which is matched by url if present in cache
+
+        Parameters
+        ----------
+        url: `str`
+        URL of the file
+        """
+        # XXX: Make this public?
         details = self._storage.find_by_key('url', url)
         return details
 
@@ -36,7 +63,6 @@ class Cache:
         # TODO: Handle multiple urls
         path = self._downloader.download(urls[0])
 
-        # TODO: Calculate the hash
         shahash = hash_file(path)
 
         return path, shahash, urls[0]
