@@ -38,11 +38,12 @@ sun = get_body_heliographic_stonyhurst('sun', aiamap.date)
 # field of view but remember that it is also above the plane of this plot
 # by its declination.
 ax = plt.subplot(111, projection='polar')
-circle = plt.Circle((0.0, 0.0), 1.0, transform=ax.transProjectionAffine + ax.transAxes, color="green", alpha=0.4,
-                    label='Earth')
-plt.polar(sdo_gcrs.ra.to('rad'), sdo_gcrs.distance / R_earth, 'o', label=f'SDO {sdo_gcrs.dec:.2f}')
-plt.polar(sun.ra.to('rad').value * np.ones(2), [1, 10], '-', label='to Sun', color='black')
+circle = plt.Circle((0.0, 0.0), 1.0, transform=ax.transProjectionAffine + ax.transAxes, color="green", 
+                    alpha=0.4, label="Earth")
 ax.add_artist(circle)
+plt.text(0.48,0.5,"Earth", transform=ax.transAxes)
+plt.polar(sdo_gcrs.ra.to('rad'), sdo_gcrs.distance / R_earth, 'o', label=f'SDO {sdo_gcrs.dec:.2f}')
+plt.polar(sun.lon.to('rad').value * np.ones(2), [1, 10], '-', label='to Sun', color='black')
 plt.legend()
 plt.show()
 
