@@ -18,7 +18,7 @@ from copy import deepcopy
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import HCRS, ConvertError, BaseCoordinateFrame, get_body_barycentric
+from astropy.coordinates import ICRS, HCRS, ConvertError, BaseCoordinateFrame, get_body_barycentric
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
                                                 UnitSphericalRepresentation)
@@ -422,6 +422,8 @@ def _make_sunpy_graph():
     for name in cull_list:
         small_graph._cached_names.pop(name)
 
+    _add_astropy_node(small_graph)
+
     # Overwrite the main transform graph
     frame_transform_graph = small_graph
 
@@ -431,6 +433,22 @@ def _make_sunpy_graph():
     frame_transform_graph = backup_graph
 
     return docstr
+
+
+def _add_astropy_node(graph):
+    """
+    Add an 'Astropy' node that links to an ICRS node in the graph
+    """
+    class Astropy(BaseCoordinateFrame):
+        name = "other frames"
+
+    @graph.transform(FunctionTransform, Astropy, ICRS)
+    def fake_transform1():
+        pass
+
+    @graph.transform(FunctionTransform, ICRS, Astropy)
+    def fake_transform2():
+        pass
 
 
 __doc__ += _make_sunpy_graph()
