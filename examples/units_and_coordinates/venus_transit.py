@@ -24,8 +24,8 @@ aiamap = sunpy.map.Map(f)
 ###############################################################################
 # For this example, we require high precision ephemeris information. The built-in
 # ephemeris provided by astropy are not accurate enough. This requires ``jplephem``
-# to be installed.
-solar_system_ephemeris.set('jpl')
+# to be installed. This will also trigger a download of about ~10 MB.
+solar_system_ephemeris.set('de432s')
 
 ###############################################################################
 # Now we get the position of venus and convert it into the SDO/AIA coordinates.
@@ -33,7 +33,7 @@ venus = get_body_heliographic_stonyhurst('venus', aiamap.date, observer=aiamap.o
 venus_hpc = venus.transform_to(aiamap.coordinate_frame)
 
 ###############################################################################
-# Let's crop the image with Venus at it's center.
+# Let's crop the image with Venus at its center.
 fov = 100 * u.arcsec
 top_right = SkyCoord(venus_hpc.Tx + fov, venus_hpc.Ty + fov, frame=aiamap.coordinate_frame)
 bottom_left = SkyCoord(venus_hpc.Tx - fov, venus_hpc.Ty - fov, frame=aiamap.coordinate_frame)

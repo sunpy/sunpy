@@ -13,7 +13,8 @@ show the sunpy.io.fits or like this `~sunpy.io.fits`to show just 'fits'
 # If you have multiple plots in your example, Sphinx will use the first
 # plot for the thumbnail by default. You can set which plot is used as the
 # thumbnail by adding the following comment to your file.
-# sphinx_gallery_thumbnail_number = 2
+# ``#sphinx_gallery_thumbnail_number = X```
+# where ``X`` is the figure number you want (from 1).
 
 import numpy as np
 import matplotlib.pyplot as plt
