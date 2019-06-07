@@ -13,7 +13,13 @@ USER = os.path.expanduser('~')
 
 def test_is_writable_dir(tmpdir, tmp_path):
     assert _is_writable_dir(tmpdir)
-
+    tmp_file = tmpdir.join("hello.txt")
+    # Have to write to the file otherwise its seen as a directory(?!)
+    tmp_file.write("content")
+    # Checks directory with a file
+    assert _is_writable_dir(tmpdir)
+    # Checks a filepath instead of directory
+    assert not _is_writable_dir(tmp_file)
 
 def test_get_user_configdir(tmpdir, tmp_path, undo_config_dir_patch):
     # Default
