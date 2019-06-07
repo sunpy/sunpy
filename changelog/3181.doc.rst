@@ -1,1 +1,0 @@
-Added new gallery examples and cleaned up various gallery examples.

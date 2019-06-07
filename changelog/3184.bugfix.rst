@@ -1,2 +1,0 @@
-Fix the calculation of ``rsun_ref`` in `~sunpy.map.make_fitswcs_header` and and
-ensure that the default reference pixel is indexed from 1.

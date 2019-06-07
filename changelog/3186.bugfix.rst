@@ -1,1 +1,0 @@
-Fixed the missing transformation between two `~sunpy.coordinates.HeliographicCarrington` frames with different observation times.
