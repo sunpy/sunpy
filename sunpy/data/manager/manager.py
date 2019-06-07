@@ -47,13 +47,20 @@ class DataManager:
                 else:
                     details = self._cache.get_by_hash(sha_hash)
                     # breakpoint()
+                    # TODO: Better error and error message
                     err = KeyError("Hash does not match")
                     if not details:
+                        # In case we are matching by hash and file does not exist
+                        # That might mean the wrong hash is supplied to decorator
+                        # We match by urls to make sure that is not the case
+                        # XXX: Is this required? Would be useful if users want to
+                        # write functions using `data_manager` or if developers
+                        # are sleepy while writing the code
                         if self._cache_has_file(urls):
-                            # TODO: Better error and error message
                             raise err
                         file_path = self._cache.download(urls)
                     else:
+                        # This is to handle the case when the file is tampered on disk
                         if hash_file(details['file_path']) != details['file_hash']:
                             raise err
                         file_path = details['file_path']
