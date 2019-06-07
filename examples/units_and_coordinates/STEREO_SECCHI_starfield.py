@@ -29,21 +29,24 @@ cor2 = sunpy.map.Map(f)
 
 ###############################################################################
 # To efficiently search the star field we need to know what stars are near the
-# Sun as observed by STEREO. This can be found by find the difference vector
-# between the Sun and the location of STEREO.
-stereo = cor2.observer_coordinate.transform_to('icrs').cartesian
-sun = get_body_barycentric('sun', time=cor2.date)
-diff = sun - stereo
-search_coord = SkyCoord(diff, frame='icrs')
+# Sun as observed by STEREO. We need the vector that points from STEREO to the Sun.
+# By converting to HCRS we get the vector from the Sun to STEREO
+sun_to_stereo = cor2.observer_coordinate.transform_to('hcrs')
+
+###############################################################################
+# We next reflect the vector to get our search vector which points from STEREO
+# to the Sun
+stereo_to_sun = SkyCoord(ra=sun_to_stereo.ra + 180.*u.deg, dec=-sun_to_stereo.dec, distance=sun_to_stereo.distance,
+                         frame='hcrs')
 
 ###############################################################################
 # Let's look up bright stars using the Vizier search capability provided by
 # astroquery (note that this is not a required package of SunPy so you will likely
-# need to install it). We will search the GAIA2 star catalog and only stars with magnitude
+# need to install it). We will search the GAIA2 star catalog for stars with magnitude
 # brighter than 7.
 vv = Vizier(columns=['**'], row_limit=-1, column_filters={'Gmag': '<7'}, timeout=1200)
 vv.ROW_LIMIT = -1
-result = vv.query_region(search_coord, radius=4 * u.deg, catalog='I/345/gaia2')
+result = vv.query_region(stereo_to_sun, radius=4 * u.deg, catalog='I/345/gaia2')
 
 ###############################################################################
 # Let's see how many stars we've found.
