@@ -469,13 +469,15 @@ def _tweak_graph(docstr):
     output = output.replace('Astropy -> ICRS[  color = "#783001" ]',
                             'Astropy -> ICRS[  color = "#000000" ]')
 
-    # Change all the ovals to be filled
-    output = output.replace('shape=oval', 'style=filled fillcolor=lightcyan shape=oval')
+    # Set the nodes to be filled and cyan by default
+    output = output.replace('AstropyCoordinateTransformGraph {',
+                            'AstropyCoordinateTransformGraph {\n'
+                            '        node [style=filled fillcolor=lightcyan]')
 
-    # Change SunPy frames back to not filled
+    # Set the nodes for SunPy frames to be white
     sunpy_frames = ['HeliographicStonyhurst', 'HeliographicCarrington',
                     'Heliocentric', 'Helioprojective']
     for frame in sunpy_frames:
-        output = output.replace(frame + ' [style=filled fillcolor=lightcyan ', frame + ' [')
+        output = output.replace(frame + ' [', frame + ' [fillcolor=white ')
 
     return output
