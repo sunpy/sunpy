@@ -7,13 +7,15 @@ from pathlib import Path
 
 import pytest
 
+def write_to_test_file(contents):
+    with open('/tmp/lol', 'w') as f:
+        f.write(contents)
 
 class MockDownloader(DownloaderBase):
     """MockDownloader"""
 
     def __init__(self):
-        with open('/tmp/lol', 'w') as f:
-            f.write("a")
+        write_to_test_file("a")
         self.times_called = 0
 
     def download(self, url):
@@ -110,3 +112,15 @@ def test_wrong_hash_error(manager, storage):
         pass
     with pytest.raises(KeyError):
         foo()
+
+
+def test_file_changed(data_function):
+    # Download the file first
+    data_function()
+
+    # The file was then locally changed
+    write_to_test_file("asd")
+
+    # Now it should error
+    with pytest.raises(KeyError):
+        data_function()

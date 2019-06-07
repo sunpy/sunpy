@@ -1,7 +1,8 @@
-from contextlib import contextmanager
 import pathlib
-
 import functools
+from contextlib import contextmanager
+
+from sunpy.util.util import hash_file
 
 
 class DataManager:
@@ -45,12 +46,16 @@ class DataManager:
                     file_path = self._cache.download(urls, redownload=True)
                 else:
                     details = self._cache.get_by_hash(sha_hash)
+                    # breakpoint()
+                    err = KeyError("Hash does not match")
                     if not details:
                         if self._cache_has_file(urls):
                             # TODO: Better error and error message
-                            raise KeyError("Hash does not match")
+                            raise err
                         file_path = self._cache.download(urls)
                     else:
+                        if hash_file(details['file_path']) != details['file_hash']:
+                            raise err
                         file_path = details['file_path']
 
                 self._file_cache[name] = file_path
