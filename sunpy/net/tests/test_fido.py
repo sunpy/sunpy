@@ -137,6 +137,8 @@ def test_unified_response():
 
 
 def test_no_time_error():
+    # TODO: work out why this is failing sometimes.
+    from sunpy.net import attrs as a
     query = (a.Instrument('EVE'), a.Level(0))
     with pytest.raises(ValueError) as excinfo:
         Fido.search(*query)
