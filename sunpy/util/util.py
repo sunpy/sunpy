@@ -168,17 +168,17 @@ def dict_keys_same(list_of_dicts):
 
 def hash_file(path):
     """
-    Returns the SHA-1 hash of a file
+    Returns the SHA-1 hash of a file.
 
     Parameters
     ----------
     path: `str`
-    The path of the file to be hashed
+        The path of the file to be hashed.
 
     Returns
     -------
     `str`
-    SHA-1 hash of the file
+        SHA-1 hash of the file.
 
     References
     ----------

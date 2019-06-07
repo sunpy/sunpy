@@ -20,16 +20,18 @@ class DataManager:
         self._skip_file = {}  # Dict[str, str]
 
     def require(self, name, urls, sha_hash):
-        """decorator for doing stuff
+        """
+        Decorator for informing the data manager about the requirement of
+        a file by a function.
 
         Parameters
         ----------
-        name: str
-        The name to reference the file with
-        urls: list
-        List of urls to download the file from
-        sha_hash: str
-        Hash of file
+        name: `str`
+            The name to reference the file with.
+        urls: `list`
+            A list of urls to download the file from.
+        sha_hash: `str`
+            Hash of file.
         """
         def decorator(func):
             @functools.wraps(func)
@@ -46,7 +48,6 @@ class DataManager:
                     file_path = self._cache.download(urls, redownload=True)
                 else:
                     details = self._cache.get_by_hash(sha_hash)
-                    # breakpoint()
                     # TODO: Better error and error message
                     err = KeyError("Hash does not match")
                     if not details:
@@ -56,6 +57,8 @@ class DataManager:
                         # XXX: Is this required? Would be useful if users want to
                         # write functions using `data_manager` or if developers
                         # are sleepy while writing the code
+                        # TODO: Raise a warning
+                        # https://github.com/sunpy/sunpy/pull/3124#discussion_r291576259
                         if self._cache_has_file(urls):
                             raise err
                         file_path = self._cache.download(urls)
@@ -73,17 +76,18 @@ class DataManager:
 
     @contextmanager
     def replace_file(self, name, uri):
-        """Replaces the file by the name with the file provided by the url/path
+        """
+        Replaces the file by the name with the file provided by the url/path.
 
         TODO: Hash
 
         Parameters
         ----------
-        name: str
-        Name of the file provided in the `require` decorator
-        uri: str
-        URI of the file which replaces original file. One of `http`, `https`, `ftp`
-        or `file`
+        name: `str`
+            Name of the file provided in the `require` decorator.
+        uri: `str`
+            URI of the file which replaces original file. One of ``http``, ``https``, ``ftp``
+            or ``file``.
         """
         try:
             self._skip_file[name] = uri
@@ -98,8 +102,8 @@ class DataManager:
 
         Examples
         --------
-            with remote_data_manager.skip_hash_check():
-                myfunction()
+        >>> with remote_data_manager.skip_hash_check():
+        ...     myfunction()
         """
         try:
             self._skip_hash_check = True
@@ -108,23 +112,24 @@ class DataManager:
             self._skip_hash_check = False
 
     def get(self, name):
-        """get the file by name
+        """
+        Get the file by name.
 
         Parameters
         ----------
-        name: str
-        Name of the file given to the data manager, same as the one provided
-        in `~sunpy.data.manager.manager.DataManager.require`
+        name: `str`
+            Name of the file given to the data manager, same as the one provided
+            in `~sunpy.data.manager.manager.DataManager.require`.
 
         Returns
         -------
-        file: `pathlib.Path`
-        Path of the file
+        `pathlib.Path`
+            Path of the file.
 
         Raises
         ------
-        KeyError
-        If name is not in the cache
+        `KeyError`
+            If ``name`` is not in the cache.
         """
         return pathlib.Path(self._file_cache[name])
 
