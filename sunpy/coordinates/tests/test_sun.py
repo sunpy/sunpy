@@ -61,20 +61,21 @@ def test_apparent_latitude(t1, t2):
 
 def test_angular_radius():
     # Regression-only test
+    # The Astronomical Almanac publishes values, but I don't know what physical radius they use
     assert_quantity_allclose(sun.angular_radius("2012/11/11"), 968.871*u.arcsec, atol=1e-3*u.arcsec)
     assert_quantity_allclose(sun.angular_radius("2043/03/01"), 968.326*u.arcsec, atol=1e-3*u.arcsec)
     assert_quantity_allclose(sun.angular_radius("2001/07/21"), 944.039*u.arcsec, atol=1e-3*u.arcsec)
 
 
 def test_mean_obliquity_of_ecliptic(t1, t2):
-    # Validate against a published value from the Astronomical Almanac (1992, C1)
+    # Validate against a published value from the Astronomical Almanac (1992, B30)
     # Note that the publication date pre-dates the IAU 2006 definition of obliquity
-    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t1), 84384.82*u.arcsec,
-                             atol=0.05*u.arcsec)
+    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t1),
+                             Angle('23d26m24.519s') + 0.308*u.arcsec, atol=0.05*u.arcsec)
 
-    # Validate against a published value from the Astronomical Almanac (2013, C1)
-    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t2), 84375.098*u.arcsec,
-                             atol=0.005*u.arcsec)
+    # Validate against a published value from the Astronomical Almanac (2013, B61)
+    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t2),
+                             Angle('23d26m08.0875s') + 7.0153*u.arcsec, atol=0.00005*u.arcsec)
 
 
 def test_true_rightascension():
@@ -88,9 +89,9 @@ def test_true_rightascension_J2000(t1, t2):
     # Validate against JPL HORIZONS output
     # https://ssd.jpl.nasa.gov/horizons_batch.cgi?batch=1&TABLE_TYPE=OBSERVER&COMMAND=10&CENTER=500&QUANTITIES=1&ANG_FORMAT=HMS&EXTRA_PREC=YES&TIME_TYPE=TT&TLIST=2448908.5%0A2456460.5
     assert_quantity_allclose(sun.true_rightascension(t1, equinox_of_date=False),
-                             Angle('13h13m53.65s'), atol=0.005*u.arcsec)
+                             Angle('13h13m53.65s'), atol=Angle('0h0m0.005s'))
     assert_quantity_allclose(sun.true_rightascension(t2, equinox_of_date=False),
-                             Angle('05h41m40.32s'), atol=0.005*u.arcsec)
+                             Angle('05h41m40.32s'), atol=Angle('0h0m0.005s'))
 
 
 def test_true_declination():
@@ -110,30 +111,30 @@ def test_true_declination_J2000(t1, t2):
 
 
 def test_true_obliquity_of_ecliptic(t1, t2):
-    # Validate against a published value from the Astronomical Almanac (1992, C1+B30)
+    # Validate against a published value from the Astronomical Almanac (1992, B30)
     # Note that the publication date pre-dates the IAU 2006 definition of obliquity
-    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t1), (84384.82 - 0.308)*u.arcsec,
+    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t1), Angle('23d26m24.519s'),
                              atol=0.05*u.arcsec)
 
-    # Validate against a published value from the Astronomical Almanac (2013, C1+B61)
-    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t2), (84375.098 - 7.0153)*u.arcsec,
-                             atol=0.005*u.arcsec)
+    # Validate against a published value from the Astronomical Almanac (2013, B61)
+    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t2), Angle('23d26m08.0875'),
+                             atol=0.00005*u.arcsec)
 
 
 def test_apparent_rightascension(t1, t2):
     # Validate against a published value from the Astronomical Almanac (1992, C16)
     assert_quantity_allclose(sun.apparent_rightascension(t1), Angle('13h13m30.75s'),
-                             atol=0.005*u.arcsec)
+                             atol=Angle('0h0m0.005s'))
 
     # Validate against a published value from the Astronomical Almanac (2013, C12)
     assert_quantity_allclose(sun.apparent_rightascension(t2), Angle('5h42m28.88s'),
-                             atol=0.01*u.arcsec)  # slight disagreement with published precision
+                             atol=Angle('0h0m0.005s'))
 
 
 def test_apparent_rightascension_J2000(t1):
     # Regression-only test
     assert_quantity_allclose(sun.apparent_rightascension(t1, equinox_of_date=False),
-                             Angle('13h13m52.37s'), atol=0.005*u.arcsec)
+                             Angle('13h13m52.37s'), atol=Angle('0h0m0.005s'))
 
 
 def test_apparent_declination(t1, t2):
