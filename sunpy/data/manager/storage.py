@@ -2,22 +2,24 @@ from abc import ABCMeta, abstractmethod
 
 
 class StorageProviderBase(metaclass=ABCMeta):
-    """Base class for remote data manager storage providers"""
+    """
+    Base class for remote data manager storage providers
+    """
     @abstractmethod
     def find_by_key(self, key, value):
         """
-        Returns the file details if hash found in storage.
-        Returns `None` if hash not found.
+        Returns the file details if hash found in storage. Returns `None`
+        if hash not found.
 
         Parameters
         ----------
         file_hash: `str`
-        Hash of the file
+            Hash of the file.
 
         Returns
         -------
         `dict` or `None`
-        `dict` contains the details of the file. `None` if hash not found.
+            `dict` contains the details of the file. `None` if hash not found.
         """
         raise NotImplementedError
 
@@ -29,7 +31,7 @@ class StorageProviderBase(metaclass=ABCMeta):
         Parameters
         ----------
         details: `dict`
-        Details to be stored
+            Details to be stored.
         """
         raise NotImplementedError
 
