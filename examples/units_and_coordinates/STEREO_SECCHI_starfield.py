@@ -36,8 +36,7 @@ sun_to_stereo = cor2.observer_coordinate.transform_to('hcrs')
 ###############################################################################
 # We next reflect the vector to get our search vector which points from STEREO
 # to the Sun
-stereo_to_sun = SkyCoord(ra=sun_to_stereo.ra + 180.*u.deg, dec=-sun_to_stereo.dec, distance=sun_to_stereo.distance,
-                         frame='hcrs')
+stereo_to_sun = SkyCoord(-sun_to_stereo.data, obstime=sun_to_stereo.obstime, frame='hcrs')
 
 ###############################################################################
 # Let's look up bright stars using the Vizier search capability provided by
