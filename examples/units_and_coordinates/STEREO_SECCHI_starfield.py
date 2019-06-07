@@ -10,8 +10,8 @@ As a bonus, we also identify Mars.
 """
 import matplotlib.pyplot as plt
 
-# astroquery is not a dependency of SunPy so will likely need to be
-# installed.
+# astroquery is not a dependency of SunPy so will need to be
+# install this package separately.
 from astroquery.vizier import Vizier
 import astropy.units as u
 from astropy.coordinates import SkyCoord, get_body_barycentric
@@ -41,7 +41,6 @@ search_coord = SkyCoord(diff, frame='icrs')
 # astroquery (note that this is not a required package of SunPy so you will likely
 # need to install it). We will search the GAIA2 star catalog and only stars with magnitude
 # brighter than 7.
-# look up stars in a star catalog
 vv = Vizier(columns=['**'], row_limit=-1, column_filters={'Gmag': '<7'}, timeout=1200)
 vv.ROW_LIMIT = -1
 result = vv.query_region(search_coord, radius=4 * u.deg, catalog='I/345/gaia2')
@@ -62,7 +61,7 @@ for this_object in result[0]:
 
 ###############################################################################
 # One of the bright features is actually Mars so let's also get that coordinate.
-# get the location of Mars
+# get the location of Mars.
 mars = get_body_heliographic_stonyhurst('mars', cor2.date, observer=cor2.observer_coordinate)
 mars_hpc = mars.transform_to(frames.Helioprojective(observer=cor2.observer_coordinate))
 
@@ -78,9 +77,9 @@ lat.set_major_formatter('d.dd')
 cor2.plot(axes=ax, vmin=0, vmax=600)
 cor2.draw_limb()
 
-# plot the position of Mars 
+# plot the position of Mars
 ax.plot_coord(mars_hpc, 's', color='white', fillstyle='none', markersize=12, label='Mars')
-# Plot all of the stars.
+# Plot all of the stars
 for this_coord in hpc_coords:
     ax.plot_coord(this_coord, 'o', color='white', fillstyle='none')
 plt.legend()

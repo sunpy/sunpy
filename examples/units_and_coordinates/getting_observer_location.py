@@ -28,7 +28,7 @@ print(aiamap.observer_coordinate)
 # to Earth. SDO is a geosynchronous orbit with a semi-major axis of
 # 42,164.71 km and an inclination of 28.05 deg.
 # We will convert it to Geocentric Celestial Reference System (GCRS)
-# whose center is at the Earth's  center-of-mass.
+# whose center is at the Earth's center-of-mass.
 sdo_gcrs = aiamap.observer_coordinate.gcrs
 sun = get_body_heliographic_stonyhurst('sun', aiamap.date)
 
@@ -37,8 +37,8 @@ sun = get_body_heliographic_stonyhurst('sun', aiamap.date)
 # This looks like the Earth is in the way of SDO's
 # field of view but remember that it is also above the plane of this plot
 # by its declination.
-ax = plt.subplot(111, projection='polar')
-circle = plt.Circle((0.0, 0.0), 1.0, transform=ax.transProjectionAffine + ax.transAxes, color="green", 
+ax = plt.subplot(projection='polar')
+circle = plt.Circle((0.0, 0.0), 1.0, transform=ax.transProjectionAffine + ax.transAxes, color="green",
                     alpha=0.4, label="Earth")
 ax.add_artist(circle)
 plt.text(0.48,0.5,"Earth", transform=ax.transAxes)
@@ -46,4 +46,3 @@ plt.polar(sdo_gcrs.ra.to('rad'), sdo_gcrs.distance / R_earth, 'o', label=f'SDO {
 plt.polar(sun.lon.to('rad').value * np.ones(2), [1, 10], '-', label='to Sun', color='black')
 plt.legend()
 plt.show()
-
