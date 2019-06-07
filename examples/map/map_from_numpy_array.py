@@ -34,8 +34,8 @@ coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28 08:24', observer='e
 header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
                                                      reference_pixel=u.Quantity([0, 0]*u.pixel),
                                                      scale=u.Quantity([2, 2]*u.arcsec/u.pixel),
-                                                     instrument='Test case', detector='UV detector',
-                                                     wavelength=1000, waveunit='angstrom')
+                                                     telescope='Fake Telescope', instrument='UV detector',
+                                                     wavelength=1000*u.angstrom)
 
 ##############################################################################
 # Let's now create our map.
