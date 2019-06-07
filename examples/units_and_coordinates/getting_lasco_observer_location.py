@@ -35,10 +35,10 @@ mercury_hpc_wrong = mercury_wrong.transform_to(lasco.coordinate_frame)
 print(mercury_hpc_wrong)
 
 ##############################################################################
-# Let's plot how this looks with the incorrect observer information
+# Let's plot how this looks with the incorrect observer information.
 ax = plt.subplot(projection=lasco)
 
-# let's tweak the axis to show in degrees instead of arcsec
+# Let's tweak the axis to show in degrees instead of arcsec
 lon, lat = ax.coords
 lon.set_major_formatter('d.dd')
 lat.set_major_formatter('d.dd')
@@ -47,10 +47,10 @@ lasco.plot()
 plt.show()
 
 ###############################################################################
-# SOHO is actually a `halo orbit <https://en.wikipedia.org/wiki/Solar_and_Heliospheric_Observatory#Orbit>`_
+# SOHO is actually a `halo orbit <https://en.wikipedia.org/wiki/Solar_and_Heliospheric_Observatory#Orbit>`__
 # around the Sun–Earth L1 point, about 1 million km away from the Earth.
 # The following functions queries JPL HORIZONS which includes positions of major spacecraft.
-# This function requires the Astroquery package and an Internet connection.
+# This function requires the astroquery package and an internet connection.
 soho = get_horizons_coord('SOHO', lasco.date)
 
 ###############################################################################
@@ -59,7 +59,7 @@ soho = get_horizons_coord('SOHO', lasco.date)
 print(soho.transform_to('gcrs').distance.to('km'))
 
 ###############################################################################
-# Let's fix the header
+# Let's fix the header.
 lasco.meta['HGLN_OBS'] = soho.lon.to('deg').value
 lasco.meta['HGLT_OBS'] = soho.lat.to('deg').value
 lasco.meta['DSUN_OBS'] = soho.radius.to('m').value
@@ -78,11 +78,10 @@ print(r)
 # Let's plot the results.
 ax = plt.subplot(projection=lasco)
 
-# let's tweak the axis to show in degrees instead of arcsec
+# Let's tweak the axis to show in degrees instead of arcsec
 lon, lat = ax.coords
 lon.set_major_formatter('d.dd')
 lat.set_major_formatter('d.dd')
 ax.plot_coord(mercury_hpc, 's', color='white', fillstyle='none', markersize=12, label='Mercury')
 lasco.plot()
 plt.show()
-
