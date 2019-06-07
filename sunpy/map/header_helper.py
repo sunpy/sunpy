@@ -85,7 +85,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     >>> import sunpy.map
     >>> from sunpy.coordinates import frames
     >>> from astropy.coordinates import SkyCoord
-    >>> from astropy import units as u
+    >>> import astropy.units as u
     >>> import numpy as np
 
     >>> data = np.random.rand(1024, 1024)

@@ -2,7 +2,7 @@ import os
 import pytest
 
 import numpy as np
-from astropy import units as u
+import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import Longitude
 from astropy.tests.helper import assert_quantity_allclose

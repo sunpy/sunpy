@@ -3,7 +3,7 @@ from copy import deepcopy
 
 import numpy as np
 
-from astropy import units as u
+import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, get_body
 from astropy.time import TimeDelta
 

@@ -8,7 +8,7 @@ of the Sun as observed by SDO/AIA.
 """
 import matplotlib.pyplot as plt
 
-from astropy import units as u
+import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import solar_system_ephemeris
 from astropy.utils.data import download_file
@@ -23,7 +23,7 @@ aiamap = sunpy.map.Map(f)
 
 ###############################################################################
 # For this example, we require high precision ephemeris information. The built-in
-# ephemeris provided by astropy are not accurate enough. This requires jplephem
+# ephemeris provided by astropy are not accurate enough. This requires ``jplephem``
 # to be installed.
 solar_system_ephemeris.set('jpl')
 
@@ -41,7 +41,7 @@ smap = aiamap.submap(top_right, bottom_left)
 
 ###############################################################################
 # Let's plot the results.
-ax = plt.subplot(111, projection=smap)
+ax = plt.subplot(projection=smap)
 smap.plot()
 smap.draw_limb()
 ax.plot_coord(venus_hpc, 'x', color='white')
