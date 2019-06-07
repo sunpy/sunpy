@@ -48,30 +48,30 @@ Locate the section for your git remote in the ``.git/config`` file.
 It looks like this::
 
     [remote "upstream"]
-    url = git@github.com:sunpy/sunpy.git
-    fetch = +refs/heads/*:refs/remotes/origin/*
+            url = git@github.com:sunpy/sunpy.git
+            fetch = +refs/heads/*:refs/remotes/upstream/*
 
-Now add the line ``fetch = +refs/pull/*/head:refs/remotes/origin/pr/*`` to this section.
+Now add the line ``fetch = +refs/pull/*/head:refs/remotes/upstream/pr/*`` to this section.
 It ends up looking like this::
 
     [remote "upstream"]
-    url = git@github.com:sunpy/sunpy.git
-    fetch = +refs/heads/*:refs/remotes/origin/*
-    fetch = +refs/pull/*/head:refs/remotes/origin/pr/*
+            url = git@github.com:sunpy/sunpy.git
+            fetch = +refs/heads/*:refs/remotes/upstream/*
+            fetch = +refs/pull/*/head:refs/remotes/upstream/pr/*
 
 Now fetch all the pull requests::
 
-    $ git fetch origin
+    $ git fetch upstream
     From github.com:sunpy/sunpy
-    * [new ref]         refs/pull/1000/head -> origin/pr/1000
-    * [new ref]         refs/pull/1002/head -> origin/pr/1002
-    * [new ref]         refs/pull/1004/head -> origin/pr/1004
-    * [new ref]         refs/pull/1009/head -> origin/pr/1009
+    * [new ref]         refs/pull/1000/head -> upstream/pr/1000
+    * [new ref]         refs/pull/1002/head -> upstream/pr/1002
+    * [new ref]         refs/pull/1004/head -> upstream/pr/1004
+    * [new ref]         refs/pull/1009/head -> upstream/pr/1009
 
 To check out a particular pull request::
 
     $ git checkout pr/999
-    Branch pr/999 set up to track remote branch pr/999 from origin.
+    Branch pr/999 set up to track remote branch pr/999 from upstream.
     Switched to a new branch 'pr/999'
 
 When to remove or combine/squash commits
