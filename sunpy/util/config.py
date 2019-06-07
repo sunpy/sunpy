@@ -119,9 +119,13 @@ def _is_writable_dir(p):
     """
     Checks to see if a directory is writable.
     """
-    if not Path(p).exists():
-        Path(p).mkdir(parents=True)
-    return Path(p).is_dir() and os.access(p, os.W_OK)
+    # Worried about multiple threads creating the directory at the same time.
+    try:
+        Path(p).mkdir(parents=True, exist_ok=True)
+    except FileExistsError:  # raised if there's an existing file instead of a directory
+        return False
+    else:
+        return Path(p).is_dir() and os.access(p, os.W_OK)
 
 
 def _get_user_configdir():
