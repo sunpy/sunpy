@@ -480,4 +480,22 @@ def _tweak_graph(docstr):
     for frame in sunpy_frames:
         output = output.replace(frame + ' [', frame + ' [fillcolor=white ')
 
+    output = output.replace('<ul>\n\n',
+                            '<ul>\n\n' +
+                            _add_legend_row('SunPy frames', 'white') +
+                            _add_legend_row('Astropy frames', 'lightcyan'))
+
     return output
+
+
+def _add_legend_row(label, color):
+    row = '        <li style="list-style: none;">\n'\
+          '            <p style="font-size: 12px;line-height: 24px;font-weight: normal;'\
+          'color: #848484;padding: 0;margin: 0;">\n'\
+          '                <b>' + label + ':</b>\n'\
+          '                    <span class="dot" style="height: 20px;width: 40px;'\
+          'background-color: ' + color + ';border-radius: 50%;border: 1px solid black;'\
+          'display: inline-block;"></span>\n'\
+          '            </p>\n'\
+          '        </li>\n\n\n'
+    return row
