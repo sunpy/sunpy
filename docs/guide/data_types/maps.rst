@@ -146,8 +146,8 @@ An example of creating a header with these additional keywords::
     >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
     ...                                                      reference_pixel = u.Quantity([5, 5]*u.pixel),
     ...                                                      scale = u.Quantity([2, 2] *u.arcsec/u.pixel),
-    ...                                                      instrument = 'Test case', detector = 'UV detector',
-    ...                                                      wavelength = 1000, waveunit = 'angstrom')
+    ...                                                      telescope = 'Test case', instrument = 'UV detector',
+    ...                                                      wavelength = 1000*u.angstrom)
     >>> header  # doctest: +SKIP
     MetaDict([('wcsaxes', 2),
           ('crpix1', 5.0),
