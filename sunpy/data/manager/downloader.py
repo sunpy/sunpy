@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from parfive import Downloader
 
 
 class DownloaderBase(metaclass=ABCMeta):
@@ -10,11 +11,10 @@ class DownloaderBase(metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class MockDownloader(DownloaderBase):
-    """MockDownloader"""
-
+class ParfiveDownloader(DownloaderBase):
     def __init__(self):
-        pass
+        self.downloader = Downloader()
 
     def download(self, url, path):
-        return "/tmp/lol"
+        self.downloader.enqueue_file(url, path)
+        self.downloader.download()
