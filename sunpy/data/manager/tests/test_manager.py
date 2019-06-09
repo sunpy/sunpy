@@ -1,16 +1,19 @@
-from sunpy.data.manager.manager import DataManager
-from sunpy.data.manager.storage import InMemStorage
-from sunpy.data.manager.downloader import DownloaderBase
-from sunpy.data.manager.cache import Cache
-
+import shutil
+import tempfile
 from pathlib import Path
+from unittest import mock
 
 import pytest
 
+from sunpy.data.manager.cache import Cache
+from sunpy.data.manager.downloader import DownloaderBase
+from sunpy.data.manager.manager import DataManager
+from sunpy.data.manager.storage import InMemStorage
 
-def write_to_test_file(contents):
+
+def write_to_test_file(path, contents):
     # TODO: Use tempfile. here and other places.
-    with open('/tmp/test_file', 'w') as f:
+    with open(path, 'w') as f:
         f.write(contents)
 
 
@@ -20,12 +23,12 @@ class MockDownloader(DownloaderBase):
     """
 
     def __init__(self):
-        write_to_test_file("a")
         self.times_called = 0
 
-    def download(self, url):
+    def download(self, url, path):
+        write_to_test_file(path, "a")
         self.times_called += 1
-        return "/tmp/test_file"
+        return path
 
 
 @pytest.fixture
@@ -41,26 +44,31 @@ def storage():
 
 
 @pytest.fixture
-def manager(downloader, storage):
-    manager = DataManager(Cache(downloader, storage))
-    return manager
+def manager(downloader, storage, mocker):
+    tempdir = tempfile.mkdtemp()
+    manager = DataManager(Cache(downloader, storage, tempdir))
+    m = mock.Mock()
+    m.headers = {'Content-Disposition': 'test_file'}
+    mocker.patch('sunpy.data.manager.cache.urlopen', return_value=m)
+    yield manager
+    shutil.rmtree(tempdir)
 
 
 @pytest.fixture
 def data_function(manager):
-    @manager.require('test_file', ['url1', 'url2'], '86f7e437faa5a7fce15d1ddcb9eaeaea377667b8')
+    @manager.require('test_file', ['url1/test_file', 'url2'], '86f7e437faa5a7fce15d1ddcb9eaeaea377667b8')
     def foo(manager_tester=lambda x: 1):
         manager_tester(manager)
 
     return foo
 
 
-def test_basic(manager, storage, downloader, data_function):
+def test_basic(manager, storage, downloader, data_function, mocker):
     data_function()
 
     assert downloader.times_called == 1
     assert len(storage._store) == 1
-    assert storage._store[0]['file_path'] == '/tmp/test_file'
+    assert storage._store[0]['file_path'].endswith('test_file')
 
 
 def test_cache(manager, storage, downloader, data_function):
@@ -72,7 +80,7 @@ def test_cache(manager, storage, downloader, data_function):
 
     assert downloader.times_called == 1
     assert len(storage._store) == 1
-    assert storage._store[0]['file_path'] == '/tmp/test_file'
+    assert storage._store[0]['file_path'].endswith('test_file')
 
 
 def test_skip_all(manager, storage, downloader, data_function):
@@ -85,9 +93,10 @@ def test_skip_all(manager, storage, downloader, data_function):
 
     assert downloader.times_called == 2
     assert len(storage._store) == 1
-    assert storage._store[0]['file_path'] == '/tmp/test_file'
+    assert storage._store[0]['file_path'].endswith('test_file')
 
 
+@pytest.mark.skip
 def test_replace_file(manager, storage, downloader, data_function):
     """
     Test the replace_file functionality.
@@ -129,12 +138,14 @@ def test_wrong_hash_error(manager, storage):
         foo()
 
 
-def test_file_changed(data_function):
+def test_file_changed(data_function, storage):
     # Download the file first
     data_function()
 
+    file = storage._store[0]['file_path']
+
     # The file was then locally changed
-    write_to_test_file("asd")
+    write_to_test_file(file, "asd")
 
     # Now it should error
     with pytest.raises(KeyError):
