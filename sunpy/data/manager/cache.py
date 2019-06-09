@@ -1,15 +1,19 @@
-import os
 from urllib.request import urlopen
 
 from sunpy.util.util import hash_file, replacement_filename
-from sunpy.util.net import get_system_filename
-
+from sunpy.util.net import get_filename
 
 class Cache:
+    """
+    Cache handles caching.
+    """
+
     def __init__(self, downloader, storage, cache_dir):
         self._downloader = downloader
         self._storage = storage
         self._cache_dir = cache_dir
+        if not self._cache_dir.endswith('/'):
+            self._cache_dir += '/'
 
     def download(self, urls, redownload=False):
         """
@@ -78,10 +82,9 @@ class Cache:
         `str`, `str`, `str`
             Path, hash and URL of the file.
         """
-        path = self._cache_dir + ''
         # TODO: Handle multiple urls
         url = urls[0]
-        path = self._cache_dir + get_system_filename(urlopen(url), url)
+        path = self._cache_dir + get_filename(urlopen(url), url)
         path = replacement_filename(path)
         self._downloader.download(url, path)
 
