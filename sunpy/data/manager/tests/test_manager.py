@@ -1,69 +1,11 @@
-import shutil
-import tempfile
 from pathlib import Path
-from unittest import mock
 
 import pytest
 
-from sunpy.data.manager.cache import Cache
-from sunpy.data.manager.downloader import DownloaderBase
-from sunpy.data.manager.manager import DataManager
-from sunpy.data.manager.storage import InMemStorage
+from sunpy.data.manager.tests.mocks import write_to_test_file
 
 
-def write_to_test_file(path, contents):
-    # TODO: Use tempfile. here and other places.
-    with open(path, 'w') as f:
-        f.write(contents)
-
-
-class MockDownloader(DownloaderBase):
-    """
-    MockDownloader.
-    """
-
-    def __init__(self):
-        self.times_called = 0
-
-    def download(self, url, path):
-        write_to_test_file(path, "a")
-        self.times_called += 1
-        return path
-
-
-@pytest.fixture
-def downloader():
-    downloader = MockDownloader()
-    return downloader
-
-
-@pytest.fixture
-def storage():
-    storage = InMemStorage()
-    return storage
-
-
-@pytest.fixture
-def manager(downloader, storage, mocker):
-    tempdir = tempfile.mkdtemp()
-    manager = DataManager(Cache(downloader, storage, tempdir))
-    m = mock.Mock()
-    m.headers = {'Content-Disposition': 'test_file'}
-    mocker.patch('sunpy.data.manager.cache.urlopen', return_value=m)
-    yield manager
-    shutil.rmtree(tempdir)
-
-
-@pytest.fixture
-def data_function(manager):
-    @manager.require('test_file', ['url1/test_file', 'url2'], '86f7e437faa5a7fce15d1ddcb9eaeaea377667b8')
-    def foo(manager_tester=lambda x: 1):
-        manager_tester(manager)
-
-    return foo
-
-
-def test_basic(manager, storage, downloader, data_function, mocker):
+def test_basic(storage, downloader, data_function):
     data_function()
 
     assert downloader.times_called == 1
@@ -95,8 +37,6 @@ def test_skip_all(manager, storage, downloader, data_function):
     assert len(storage._store) == 1
     assert storage._store[0]['file_path'].endswith('test_file')
 
-
-@pytest.mark.skip
 def test_replace_file(manager, storage, downloader, data_function):
     """
     Test the replace_file functionality.
@@ -106,7 +46,7 @@ def test_replace_file(manager, storage, downloader, data_function):
         """
         Function to test whether the file is /tmp/test_file.
         """
-        assert manager.get('test_file') == Path('/tmp/test_file')
+        assert str(manager.get('test_file').absolute()).endswith('test_file')
 
     def replace_file_tester(manager):
         """
