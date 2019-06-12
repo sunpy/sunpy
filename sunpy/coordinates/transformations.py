@@ -25,11 +25,18 @@ from astropy.coordinates.representation import (CartesianRepresentation, Spheric
                                                 UnitSphericalRepresentation, CartesianDifferential)
 from astropy.coordinates.transformations import (FunctionTransform, AffineTransform,
                                                  FunctionTransformWithFiniteDifference)
-from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_transpose
+from astropy.coordinates.matrix_utilities import matrix_product, rotation_matrix, matrix_transpose
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the incorrect name HeliocentricTrueEcliptic
+try:
+    from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
 from sunpy.sun import constants
 
-from .frames import Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst
+from .frames import (Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst,
+                     HeliocentricEarthEcliptic)
 
 try:
     from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
@@ -44,7 +51,8 @@ __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
            'hpc_to_hpc',
            'hcrs_to_hgs', 'hgs_to_hcrs',
-           'hgs_to_hgs', 'hgc_to_hgc', 'hcc_to_hcc']
+           'hgs_to_hgs', 'hgc_to_hgc', 'hcc_to_hcc',
+           'hme_to_hee', 'hee_to_hme', 'hee_to_hee']
 
 
 def _observers_are_equal(obs_1, obs_2, string_ok=False):
@@ -289,7 +297,7 @@ def hpc_to_hpc(from_coo, to_frame):
     return hpc
 
 
-def _make_rotation_matrix_from_reprs(start_representation, end_representation):
+def _rotation_matrix_repr_to_repr(start_representation, end_representation):
     """
     Return the matrix for the direct rotation from one representation to a second representation.
     The representations need not be normalized first.
@@ -304,6 +312,37 @@ def _make_rotation_matrix_from_reprs(start_representation, end_representation):
     return matrix
 
 
+def _rotation_matrix_reprs_to_xz_about_z(representations):
+    """
+    Return one or more matrices for rotating one or more representations around the Z axis into the
+    XZ plane.
+    """
+    A = representations.to_cartesian()
+
+    # Zero out the Z components
+    # (The additional transpose operations are to handle both scalar and array inputs)
+    A_no_z = CartesianRepresentation((A.xyz.T * [1, 1, 0]).T)
+
+    # Rotate the resulting vector to the X axis
+    x_axis = CartesianRepresentation(1, 0, 0)
+    if A_no_z.isscalar:
+        matrix = _rotation_matrix_repr_to_repr(A_no_z, x_axis)
+    else:
+        matrix_list = [_rotation_matrix_repr_to_repr(vect, x_axis) for vect in A_no_z]
+        matrix = np.stack(matrix_list)
+
+    return matrix
+
+
+def _sun_earth_icrf(time):
+    """
+    Return the Sun-Earth vector for ICRF-based frames.
+    """
+    sun_pos_icrs = get_body_barycentric('sun', time)
+    earth_pos_icrs = get_body_barycentric('earth', time)
+    return earth_pos_icrs - sun_pos_icrs
+
+
 # The Sun's north pole is oriented RA=286.13 deg, dec=63.87 deg in ICRS, and thus HCRS as well
 # (See Archinal et al. 2011,
 #   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
@@ -312,8 +351,8 @@ _SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87
 
 
 # Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
-_SUN_DETILT_MATRIX = _make_rotation_matrix_from_reprs(_SOLAR_NORTH_POLE_HCRS,
-                                                      CartesianRepresentation(0, 0, 1))
+_SUN_DETILT_MATRIX = _rotation_matrix_repr_to_repr(_SOLAR_NORTH_POLE_HCRS,
+                                                   CartesianRepresentation(0, 0, 1))
 
 
 @frame_transform_graph.transform(AffineTransform, HCRS, HeliographicStonyhurst)
@@ -351,17 +390,8 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     # De-tilt the Sun-Earth vector to the frame with the Sun's rotation axis parallel to the Z axis
     sun_earth_detilt = sun_earth.transform(_SUN_DETILT_MATRIX)
 
-    # Remove the component of the Sun-Earth vector that is parallel to the Sun's north pole
-    # (The additional transpose operations are to handle both scalar and array obstime situations)
-    hgs_x_axis_detilt = CartesianRepresentation((sun_earth_detilt.xyz.T * [1, 1, 0]).T)
-
-    # The above vector, which is in the Sun's equatorial plane, is also the X axis of HGS
-    x_axis = CartesianRepresentation(1, 0, 0)
-    if hgsframe.obstime.isscalar:
-        rot_matrix = _make_rotation_matrix_from_reprs(hgs_x_axis_detilt, x_axis)
-    else:
-        rot_matrix_list = [_make_rotation_matrix_from_reprs(vect, x_axis) for vect in hgs_x_axis_detilt]
-        rot_matrix = np.stack(rot_matrix_list)
+    # Rotate the Sun-Earth vector about the Z axis so that it lies in the XZ plane
+    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun_earth_detilt)
 
     total_matrix = rot_matrix @ _SUN_DETILT_MATRIX
 
@@ -445,6 +475,60 @@ def hcc_to_hcc(from_coo, to_frame):
     return hgscoord.transform_to(to_frame)
 
 
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricMeanEcliptic, HeliocentricEarthEcliptic)
+def hme_to_hee(hmecoord, heeframe):
+    """
+    Convert from Heliocentric Mean Ecliptic to Heliocentric Earth Ecliptic
+    """
+    # Convert to the HME frame with mean equinox of date at the HEE obstime, through HCRS
+    int_frame = HeliocentricMeanEcliptic(obstime=heeframe.obstime, equinox=heeframe.obstime)
+    int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
+
+    # Get the Sun-Earth vector in the new HME frame
+    sun_earth = HCRS(_sun_earth_icrf(int_coord.obstime), obstime=int_coord.obstime)
+    sun_earth_hme = sun_earth.transform_to(int_coord).cartesian
+
+    # Rotate the Sun-Earth vector about the Z axis so that it lies in the XZ plane
+    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun_earth_hme)
+
+    newrepr = int_coord.cartesian.transform(rot_matrix)
+    return heeframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricEarthEcliptic, HeliocentricMeanEcliptic)
+def hee_to_hme(heecoord, hmeframe):
+    """
+    Convert from Heliocentric Earth Ecliptic to Heliocentric Mean Ecliptic
+    """
+    # Get the Sun-Earth vector in the HME frame with mean equinox of date
+    int_frame = HeliocentricMeanEcliptic(obstime=heecoord.obstime, equinox=heecoord.obstime)
+    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
+    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+
+    # Rotate the Sun-Earth vector about the Z axis so that it lies in the XZ plane
+    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun_earth_int)
+
+    # Reverse the rotation to convert from HEE to the HME frame with mean equinox of date
+    int_repr = heecoord.cartesian.transform(matrix_transpose(rot_matrix))
+    int_coord = int_frame.realize_frame(int_repr)
+
+    return int_coord.transform_to(HCRS).transform_to(hmeframe)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricEarthEcliptic, HeliocentricEarthEcliptic)
+def hee_to_hee(from_coo, to_frame):
+    """
+    Convert between two Heliocentric Earth Ecliptic frames.
+    """
+    if np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
+    else:
+        return from_coo.transform_to(HCRS).transform_to(to_frame)
+
+
 def _make_sunpy_graph():
     """
     Culls down the full transformation graph for SunPy purposes and returns the string version
@@ -453,6 +537,7 @@ def _make_sunpy_graph():
     keep_list = ['icrs', 'hcrs', 'heliocentrictrueecliptic', 'heliocentricmeanecliptic',
                  'heliographic_stonyhurst', 'heliographic_carrington',
                  'heliocentric', 'helioprojective',
+                 'heliocentricearthecliptic',
                  'gcrs', 'precessedgeocentric', 'geocentrictrueecliptic', 'geocentricmeanecliptic',
                  'cirs', 'altaz', 'itrs']
 
@@ -531,7 +616,8 @@ def _tweak_graph(docstr):
 
     # Set the nodes for SunPy frames to be white
     sunpy_frames = ['HeliographicStonyhurst', 'HeliographicCarrington',
-                    'Heliocentric', 'Helioprojective']
+                    'Heliocentric', 'Helioprojective',
+                    'HeliocentricEarthEcliptic']
     for frame in sunpy_frames:
         output = output.replace(frame + ' [', frame + ' [fillcolor=white ')
 

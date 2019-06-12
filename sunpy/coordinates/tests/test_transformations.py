@@ -19,6 +19,7 @@ from astropy.time import Time
 
 from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
                                HeliographicCarrington, Heliocentric,
+                               HeliocentricEarthEcliptic,
                                get_earth)
 from sunpy.coordinates import sun
 from sunpy.time import parse_time
@@ -509,3 +510,45 @@ def test_velocity_hgs_hgc():
     assert_quantity_allclose(new_vel.d_lon, -360*u.deg / (27.27253*u.day), rtol=1e-2)
     assert_quantity_allclose(new_vel.d_lat, 0*u.deg/u.s)
     assert_quantity_allclose(new_vel.d_distance, 0*u.km/u.s, atol=1e-7*u.km/u.s)
+
+
+def test_hme_hee_sunspice():
+    # Compare our HME->HEE transformation against SunSPICE
+    # "HAE" is equivalent to Astropy's Heliocentric Mean Ecliptic, and defaults to J2000.0
+    #
+    # IDL> coord = [1.d, 0.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HAE', 'HEE', /au, /degrees
+    # IDL> print, coord
+    #        1.0000000       110.01610       10.000300
+
+    old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliocentricMeanEcliptic(obstime='2019-06-01'))
+    new = old.transform_to(HeliocentricEarthEcliptic)
+
+    assert_quantity_allclose(new.lon, Longitude(110.01610*u.deg), atol=0.5*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 10.000300*u.deg, atol=0.5*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, old.distance)
+
+    # Transform from HAE precessed to the mean ecliptic of date instead of J2000.0
+    # IDL> coord = [1.d, 0.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HAE', 'HEE', /au, /degrees, /precess
+    # IDL> print, coord
+    #        1.0000000       109.74535       10.000070
+
+    old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliocentricMeanEcliptic(obstime='2019-06-01',
+                                                                             equinox='2019-06-01'))
+    new = old.transform_to(HeliocentricEarthEcliptic)
+
+    assert_quantity_allclose(new.lon, Longitude(109.74535*u.deg), atol=0.5*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 10.000070*u.deg, atol=0.5*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, old.distance)
+
+
+def test_hee_hee():
+    # Test HEE loopback transformation
+    obstime = Time('2001-01-01')
+    old = SkyCoord(90*u.deg, 10*u.deg, 1*u.AU, frame=HeliocentricEarthEcliptic(obstime=obstime))
+    new = old.transform_to(HeliocentricEarthEcliptic(obstime=obstime + 1*u.day))
+
+    assert_quantity_allclose(new.lon, old.lon - 1*u.deg, atol=0.1*u.deg)  # due to Earth motion
+    assert_quantity_allclose(new.lat, old.lat, atol=0.5*u.arcsec)
+    assert_quantity_allclose(new.distance, old.distance, rtol=1e-5)
