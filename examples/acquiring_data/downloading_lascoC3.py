@@ -30,7 +30,7 @@ print(result)
 # The following shows how to download the results. If we
 # don't provide a path it will download the file into the sunpy data directory.
 # The output provides the path of the downloaded files.
-downloaded_files = Fido.fetch(result[0])
+downloaded_files = Fido.fetch(result)
 print(downloaded_files)
 
 ###############################################################################

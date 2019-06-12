@@ -10,7 +10,7 @@ dependencies:
   - scipy
   - matplotlib
   - pandas
-  - astropy
+  - astropy=3.1
   - parfive
   - sqlalchemy
   - scikit-image
