@@ -19,7 +19,7 @@ from astropy.time import Time
 
 from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
                                HeliographicCarrington, Heliocentric,
-                               HeliocentricEarthEcliptic,
+                               HeliocentricEarthEcliptic, GeocentricSolarEcliptic,
                                get_earth)
 from sunpy.coordinates import sun
 from sunpy.time import parse_time
@@ -552,3 +552,33 @@ def test_hee_hee():
     assert_quantity_allclose(new.lon, old.lon - 1*u.deg, atol=0.1*u.deg)  # due to Earth motion
     assert_quantity_allclose(new.lat, old.lat, atol=0.5*u.arcsec)
     assert_quantity_allclose(new.distance, old.distance, rtol=1e-5)
+
+
+def test_hee_gse_sunspice():
+    # Compare our HEE->GSE transformation against SunSPICE
+    # Be aware that the GSE origin in SunSPICE is not quite at Earth center: the ecliptic longitude
+    #   is Earth's, but the ecliptic latitude is zero.  This is the reason for the discrepancies.
+    #
+    # IDL> coord = [0.7d, -20.d, 10.d]
+    # IDL> convert_sunspice_coord, '2019-06-01', coord, 'HEE', 'GSE', /au, /degrees
+    # IDL> print, coord
+    #       0.45215884       32.777377       15.594639
+
+    old = SkyCoord(-20*u.deg, 10*u.deg, 0.7*u.AU,
+                   frame=HeliocentricEarthEcliptic(obstime='2019-06-01'))
+    new = old.geocentricsolarecliptic
+
+    assert_quantity_allclose(new.lon, 32.777377*u.deg, atol=0.01*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 15.594639*u.deg, atol=2*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, 0.45215884*u.AU, rtol=1e-5)
+
+
+def test_gse_gse():
+    # Test GSE loopback transformation
+    old = SkyCoord(90*u.deg, 10*u.deg, 0.7*u.AU,
+                   frame=GeocentricSolarEcliptic(obstime='2001-01-01'))
+    new = old.transform_to(GeocentricSolarEcliptic)
+
+    assert_quantity_allclose(new.lon, old.lon)
+    assert_quantity_allclose(new.lat, old.lat)
+    assert_quantity_allclose(new.distance, old.distance)

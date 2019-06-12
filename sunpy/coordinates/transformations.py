@@ -36,7 +36,7 @@ except ImportError:
 from sunpy.sun import constants
 
 from .frames import (Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst,
-                     HeliocentricEarthEcliptic)
+                     HeliocentricEarthEcliptic, GeocentricSolarEcliptic)
 
 try:
     from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
@@ -52,7 +52,8 @@ __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hpc',
            'hcrs_to_hgs', 'hgs_to_hcrs',
            'hgs_to_hgs', 'hgc_to_hgc', 'hcc_to_hcc',
-           'hme_to_hee', 'hee_to_hme', 'hee_to_hee']
+           'hme_to_hee', 'hee_to_hme', 'hee_to_hee',
+           'hee_to_gse', 'gse_to_hee', 'gse_to_gse']
 
 
 def _observers_are_equal(obs_1, obs_2, string_ok=False):
@@ -529,6 +530,67 @@ def hee_to_hee(from_coo, to_frame):
         return from_coo.transform_to(HCRS).transform_to(to_frame)
 
 
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricEarthEcliptic, GeocentricSolarEcliptic)
+def hee_to_gse(heecoord, gseframe):
+    """
+    Convert from Heliocentric Earth Ecliptic to Geocentric Solar Ecliptic
+    """
+    # Use an intermediate frame of HEE at the GSE observation time
+    int_frame = HeliocentricEarthEcliptic(obstime=gseframe.obstime)
+    int_coord = heecoord.transform_to(int_frame)
+
+    # Get the Sun-Earth vector in the intermediate frame
+    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
+    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+
+    # Find the Earth-object vector in the intermediate frame
+    earth_object_int = int_coord.cartesian - sun_earth_int
+
+    # Flip the vector in X and Y, but leave Z untouched
+    # (The additional transpose operations are to handle both scalar and array inputs)
+    newrepr = CartesianRepresentation((earth_object_int.xyz.T * [-1, -1, 1]).T)
+
+    return gseframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricSolarEcliptic, HeliocentricEarthEcliptic)
+def gse_to_hee(gsecoord, heeframe):
+    """
+    Convert from Geocentric Solar Ecliptic to Heliocentric Earth Ecliptic
+    """
+    # Use an intermediate frame of HEE at the GSE observation time
+    int_frame = HeliocentricEarthEcliptic(obstime=gsecoord.obstime)
+
+    # Get the Sun-Earth vector in the intermediate frame
+    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
+    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+
+    # Find the Earth-object vector in the intermediate frame
+    # Flip the vector in X and Y, but leave Z untouched
+    # (The additional transpose operations are to handle both scalar and array inputs)
+    earth_object_int = CartesianRepresentation((gsecoord.cartesian.xyz.T * [-1, -1, 1]).T)
+
+    # Find the Sun-object vector in the intermediate frame
+    sun_object_int = sun_earth_int + earth_object_int
+    int_coord = int_frame.realize_frame(sun_object_int)
+
+    return int_coord.transform_to(heeframe)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricSolarEcliptic, GeocentricSolarEcliptic)
+def gse_to_gse(from_coo, to_frame):
+    """
+    Convert between two Geocentric Solar Ecliptic frames.
+    """
+    if np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
+    else:
+        return from_coo.transform_to(HeliocentricEarthEcliptic).transform_to(to_frame)
+
+
 def _make_sunpy_graph():
     """
     Culls down the full transformation graph for SunPy purposes and returns the string version
@@ -537,7 +599,7 @@ def _make_sunpy_graph():
     keep_list = ['icrs', 'hcrs', 'heliocentrictrueecliptic', 'heliocentricmeanecliptic',
                  'heliographic_stonyhurst', 'heliographic_carrington',
                  'heliocentric', 'helioprojective',
-                 'heliocentricearthecliptic',
+                 'heliocentricearthecliptic', 'geocentricsolarecliptic',
                  'gcrs', 'precessedgeocentric', 'geocentrictrueecliptic', 'geocentricmeanecliptic',
                  'cirs', 'altaz', 'itrs']
 
@@ -617,7 +679,7 @@ def _tweak_graph(docstr):
     # Set the nodes for SunPy frames to be white
     sunpy_frames = ['HeliographicStonyhurst', 'HeliographicCarrington',
                     'Heliocentric', 'Helioprojective',
-                    'HeliocentricEarthEcliptic']
+                    'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic']
     for frame in sunpy_frames:
         output = output.replace(frame + ' [', frame + ' [fillcolor=white ')
 
