@@ -480,6 +480,24 @@ def hcc_to_hcc(from_coo, to_frame):
     return hgscoord.transform_to(to_frame)
 
 
+def _rotation_matrix_hme_to_hee(hmeframe):
+    """
+    Return the rotation matrix from HME to HEE at the same observation time
+    """
+    # Get the Sun-Earth vector
+    sun_earth = HCRS(_sun_earth_icrf(hmeframe.obstime), obstime=hmeframe.obstime)
+    sun_earth_hme = sun_earth.transform_to(hmeframe).cartesian
+
+    # Rotate the Sun-Earth vector about the Z axis so that it lies in the XZ plane
+    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun_earth_hme)
+
+    # Tilt the rotated Sun-Earth vector so that it is aligned with the X axis
+    tilt_matrix = _rotation_matrix_repr_to_repr(sun_earth_hme.transform(rot_matrix),
+                                                CartesianRepresentation(1, 0, 0))
+
+    return matrix_product(tilt_matrix, rot_matrix)
+
+
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliocentricMeanEcliptic, HeliocentricEarthEcliptic)
 def hme_to_hee(hmecoord, heeframe):
@@ -490,14 +508,10 @@ def hme_to_hee(hmecoord, heeframe):
     int_frame = HeliocentricMeanEcliptic(obstime=heeframe.obstime, equinox=heeframe.obstime)
     int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
 
-    # Get the Sun-Earth vector in the new HME frame
-    sun_earth = HCRS(_sun_earth_icrf(int_coord.obstime), obstime=int_coord.obstime)
-    sun_earth_hme = sun_earth.transform_to(int_coord).cartesian
+    # Rotate the intermediate coord to the HEE frame
+    total_matrix = _rotation_matrix_hme_to_hee(int_frame)
+    newrepr = int_coord.cartesian.transform(total_matrix)
 
-    # Rotate the Sun-Earth vector about the Z axis so that it lies in the XZ plane
-    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun_earth_hme)
-
-    newrepr = int_coord.cartesian.transform(rot_matrix)
     return heeframe.realize_frame(newrepr)
 
 
@@ -507,18 +521,14 @@ def hee_to_hme(heecoord, hmeframe):
     """
     Convert from Heliocentric Earth Ecliptic to Heliocentric Mean Ecliptic
     """
-    # Get the Sun-Earth vector in the HME frame with mean equinox of date
     int_frame = HeliocentricMeanEcliptic(obstime=heecoord.obstime, equinox=heecoord.obstime)
-    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
-    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
 
-    # Rotate the Sun-Earth vector about the Z axis so that it lies in the XZ plane
-    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun_earth_int)
-
-    # Reverse the rotation to convert from HEE to the HME frame with mean equinox of date
-    int_repr = heecoord.cartesian.transform(matrix_transpose(rot_matrix))
+    # Rotate the HEE coord to the intermediate frame
+    total_matrix = matrix_transpose(_rotation_matrix_hme_to_hee(int_frame))
+    int_repr = heecoord.cartesian.transform(total_matrix)
     int_coord = int_frame.realize_frame(int_repr)
 
+    # Convert to the HME frame through HCRS
     return int_coord.transform_to(HCRS).transform_to(hmeframe)
 
 

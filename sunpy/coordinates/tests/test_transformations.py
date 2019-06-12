@@ -525,8 +525,8 @@ def test_hme_hee_sunspice():
     old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliocentricMeanEcliptic(obstime='2019-06-01'))
     new = old.transform_to(HeliocentricEarthEcliptic)
 
-    assert_quantity_allclose(new.lon, Longitude(110.01610*u.deg), atol=0.5*u.arcsec, rtol=0)
-    assert_quantity_allclose(new.lat, 10.000300*u.deg, atol=0.5*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lon, Longitude(110.01610*u.deg), atol=0.01*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 10.000300*u.deg, atol=0.01*u.arcsec, rtol=0)
     assert_quantity_allclose(new.distance, old.distance)
 
     # Transform from HAE precessed to the mean ecliptic of date instead of J2000.0
@@ -539,8 +539,8 @@ def test_hme_hee_sunspice():
                                                                              equinox='2019-06-01'))
     new = old.transform_to(HeliocentricEarthEcliptic)
 
-    assert_quantity_allclose(new.lon, Longitude(109.74535*u.deg), atol=0.5*u.arcsec, rtol=0)
-    assert_quantity_allclose(new.lat, 10.000070*u.deg, atol=0.5*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lon, Longitude(109.74535*u.deg), atol=0.05*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 10.000070*u.deg, atol=0.01*u.arcsec, rtol=0)
     assert_quantity_allclose(new.distance, old.distance)
 
 
@@ -548,6 +548,13 @@ def test_hee_hee():
     # Test HEE loopback transformation
     obstime = Time('2001-01-01')
     old = SkyCoord(90*u.deg, 10*u.deg, 1*u.AU, frame=HeliocentricEarthEcliptic(obstime=obstime))
+
+    new = old.transform_to(HeliocentricEarthEcliptic)
+
+    assert_quantity_allclose(new.lon, old.lon)
+    assert_quantity_allclose(new.lat, old.lat)
+    assert_quantity_allclose(new.distance, old.distance)
+
     new = old.transform_to(HeliocentricEarthEcliptic(obstime=obstime + 1*u.day))
 
     assert_quantity_allclose(new.lon, old.lon - 1*u.deg, atol=0.1*u.deg)  # due to Earth motion
@@ -557,8 +564,6 @@ def test_hee_hee():
 
 def test_hee_gse_sunspice():
     # Compare our HEE->GSE transformation against SunSPICE
-    # Be aware that the GSE origin in SunSPICE is not quite at Earth center: the ecliptic longitude
-    #   is Earth's, but the ecliptic latitude is zero.  This is the reason for the discrepancies.
     #
     # IDL> coord = [0.7d, -20.d, 10.d]
     # IDL> convert_sunspice_coord, '2019-06-01', coord, 'HEE', 'GSE', /au, /degrees
@@ -570,8 +575,8 @@ def test_hee_gse_sunspice():
     new = old.geocentricsolarecliptic
 
     assert_quantity_allclose(new.lon, 32.777377*u.deg, atol=0.01*u.arcsec, rtol=0)
-    assert_quantity_allclose(new.lat, 15.594639*u.deg, atol=2*u.arcsec, rtol=0)
-    assert_quantity_allclose(new.distance, 0.45215884*u.AU, rtol=1e-5)
+    assert_quantity_allclose(new.lat, 15.594639*u.deg, atol=0.01*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, 0.45215884*u.AU)
 
 
 def test_gse_gse():
@@ -620,7 +625,7 @@ def test_hme_hci_sunspice():
 def test_hci_hci():
     # Test HCI loopback transformation
     old = SkyCoord(90*u.deg, 10*u.deg, 0.7*u.AU, frame=HeliocentricInertial(obstime='2001-01-01'))
-    new = old.transform_to(HeliocentricInertial)
+    new = old.transform_to(HeliocentricMeanEcliptic).transform_to(HeliocentricInertial)
 
     assert_quantity_allclose(new.lon, old.lon)
     assert_quantity_allclose(new.lat, old.lat)
