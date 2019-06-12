@@ -302,18 +302,24 @@ def hpc_to_hpc(from_coo, to_frame):
     return hpc
 
 
-def _rotation_matrix_repr_to_repr(start_representation, end_representation):
+def _rotation_matrix_reprs_to_reprs(start_representation, end_representation):
     """
     Return the matrix for the direct rotation from one representation to a second representation.
-    The representations need not be normalized first.
+    The representations need not be normalized first, and can be arrays of representations.
     """
     A = start_representation.to_cartesian()
     B = end_representation.to_cartesian()
     rotation_axis = A.cross(B)
     rotation_angle = -np.arccos(A.dot(B) / (A.norm() * B.norm()))  # negation is required
 
-    # This line works around some input/output quirks of Astropy's rotation_matrix()
-    matrix = np.array(rotation_matrix(rotation_angle, rotation_axis.xyz.value.tolist()))
+    if rotation_angle.isscalar:
+        # This line works around some input/output quirks of Astropy's rotation_matrix()
+        matrix = np.array(rotation_matrix(rotation_angle, rotation_axis.xyz.value.tolist()))
+    else:
+        matrix_list = [np.array(rotation_matrix(angle, axis.xyz.value.tolist()))
+                       for angle, axis in zip(rotation_angle, rotation_axis)]
+        matrix = np.stack(matrix_list)
+
     return matrix
 
 
@@ -330,11 +336,7 @@ def _rotation_matrix_reprs_to_xz_about_z(representations):
 
     # Rotate the resulting vector to the X axis
     x_axis = CartesianRepresentation(1, 0, 0)
-    if A_no_z.isscalar:
-        matrix = _rotation_matrix_repr_to_repr(A_no_z, x_axis)
-    else:
-        matrix_list = [_rotation_matrix_repr_to_repr(vect, x_axis) for vect in A_no_z]
-        matrix = np.stack(matrix_list)
+    matrix = _rotation_matrix_reprs_to_reprs(A_no_z, x_axis)
 
     return matrix
 
@@ -356,8 +358,8 @@ _SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87
 
 
 # Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
-_SUN_DETILT_MATRIX = _rotation_matrix_repr_to_repr(_SOLAR_NORTH_POLE_HCRS,
-                                                   CartesianRepresentation(0, 0, 1))
+_SUN_DETILT_MATRIX = _rotation_matrix_reprs_to_reprs(_SOLAR_NORTH_POLE_HCRS,
+                                                     CartesianRepresentation(0, 0, 1))
 
 
 @frame_transform_graph.transform(AffineTransform, HCRS, HeliographicStonyhurst)
@@ -492,8 +494,8 @@ def _rotation_matrix_hme_to_hee(hmeframe):
     rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun_earth_hme)
 
     # Tilt the rotated Sun-Earth vector so that it is aligned with the X axis
-    tilt_matrix = _rotation_matrix_repr_to_repr(sun_earth_hme.transform(rot_matrix),
-                                                CartesianRepresentation(1, 0, 0))
+    tilt_matrix = _rotation_matrix_reprs_to_reprs(sun_earth_hme.transform(rot_matrix),
+                                                  CartesianRepresentation(1, 0, 0))
 
     return matrix_product(tilt_matrix, rot_matrix)
 
@@ -609,24 +611,25 @@ def _rotation_matrix_hme_to_hci(hmeframe):
     """
     Return the rotation matrix from HME to HCI at the same observation time
     """
+    z_axis = (CartesianRepresentation(0, 0, 1)*u.m)._apply('repeat', hmeframe.obstime.size)
+
     # Get the ecliptic pole and the solar rotation axis
-    ecliptic_pole = hmeframe.realize_frame(CartesianRepresentation(0, 0, 1)*u.m)
-    solar_rot_axis = HeliographicStonyhurst(CartesianRepresentation(0, 0, 1)*u.m,
-                                            obstime=hmeframe.obstime).transform_to(hmeframe)
+    ecliptic_pole = hmeframe.realize_frame(z_axis)
+    solar_rot_axis = HeliographicStonyhurst(z_axis, obstime=hmeframe.obstime).transform_to(hmeframe)
 
     # Align the solar rotation axis with the Z axis
-    detilt_matrix = _rotation_matrix_repr_to_repr(solar_rot_axis.cartesian,
-                                                  CartesianRepresentation(0, 0, 1))
+    detilt_matrix = _rotation_matrix_reprs_to_reprs(solar_rot_axis.cartesian,
+                                                    CartesianRepresentation(0, 0, 1))
     detilted_ecliptic_pole = ecliptic_pole.cartesian.transform(detilt_matrix)
 
     # Then align the de-tilted ecliptic pole with the Y axis, which aligns the solar ascending node
     # with the X axis
     rot_matrix = _rotation_matrix_reprs_to_xz_about_z(detilted_ecliptic_pole)
-    x_to_y_matrix = _rotation_matrix_repr_to_repr(CartesianRepresentation(1, 0, 0),
-                                                  CartesianRepresentation(0, 1, 0))
+    x_to_y_matrix = _rotation_matrix_reprs_to_reprs(CartesianRepresentation(1, 0, 0),
+                                                    CartesianRepresentation(0, 1, 0))
     rot_matrix = matrix_product(x_to_y_matrix, rot_matrix)
 
-    return matrix_product(rot_matrix, detilt_matrix)
+    return matrix_product(rot_matrix, detilt_matrix).squeeze()
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
