@@ -24,7 +24,8 @@ from sunpy.time.time import _variables_for_parse_time_docstring
 
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective',
-           'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic']
+           'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
+           'HeliocentricInertial']
 
 
 def _frame_parameters():
@@ -517,5 +518,31 @@ class GeocentricSolarEcliptic(SunPyBaseCoordinateFrame):
     Notes
     -----
     Aberration due to Earth motion is not included.
+    """
+    default_representation = SphericalRepresentation
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
+class HeliocentricInertial(SunPyBaseCoordinateFrame):
+    """
+    A coordinate or frame in the Heliocentric Inertial system.
+
+    - The origin is the center of the Sun
+    - The z-axis is aligned with the solar rotation axis
+    - The x-axis is aligned with the solar ascending node on the ecliptic (mean J2000.0)
+
+    Parameters
+    ----------
+    data: `~astropy.coordinates.BaseRepresentation` subclass instance
+        A representation object or ``None`` to have no data (or use the coordinate component
+        arguments, see below).
+    lon: `~astropy.coordinates.Angle`, optional
+        The longitude for this object (``lat`` must also be given and ``data`` must be None).
+    lat: `~astropy.coordinates.Angle`, optional
+        The latitude for this object (``lon`` must also be given and ``data`` must be None).
+    distance: `~astropy.units.Quantity` , optional
+        The distance for this object from the Sun’s center. (``data`` must be None).
+    obstime: {parse_time_types}
+        The date and time of the observation.
     """
     default_representation = SphericalRepresentation
