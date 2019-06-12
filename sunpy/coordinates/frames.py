@@ -472,8 +472,8 @@ class HeliocentricEarthEcliptic(SunPyBaseCoordinateFrame):
     A coordinate or frame in the Heliocentric Earth Ecliptic system.
 
     - The origin is the center of the Sun
-    - The z-axis is aligned with the mean ecliptic pole at the observation time
-    - The x-axis is aligned with the component of the Sun-Earth vector perpendicular to the z-axis
+    - The x-axis is aligned with the Sun-Earth vector
+    - The z-axis is aligned with the component of the mean ecliptic pole at the observation time
 
     Parameters
     ----------
@@ -498,8 +498,9 @@ class GeocentricSolarEcliptic(SunPyBaseCoordinateFrame):
     A coordinate or frame in the Geocentric Solar Ecliptic system.
 
     - The origin is the center of the Earth
-    - The z-axis is aligned with the mean ecliptic pole at the observation time
-    - The x-axis is aligned with the component of the Earth-Sun vector perpendicular to the z-axis
+    - The x-axis is aligned with the Earth-Sun vector
+    - The z-axis is aligned with the component of the mean ecliptic pole at the observation time
+      perpendicular to the x-axis
 
     Parameters
     ----------
