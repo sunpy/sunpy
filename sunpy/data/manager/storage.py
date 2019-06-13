@@ -77,10 +77,10 @@ class SqliteStorage(StorageProviderBase):
             self._setup()
 
     def _setup(self):
-        schema = ', '.join(self.COLOUMN_NAMES)
+        schema = ' text, '.join(self.COLOUMN_NAMES) + ' text'
         with self.connection(commit=True) as conn:
-            conn.execute(f'''CREATE TABLE {{self._table_name}}
-                             ({{schema}})''')
+            conn.execute(f'''CREATE TABLE {self._table_name}
+                             ({schema})''')
 
     @contextmanager
     def connection(self, commit=False):
@@ -103,12 +103,17 @@ class SqliteStorage(StorageProviderBase):
     def find_by_key(self, key, value):
         with self.connection() as conn:
             cursor = conn.cursor()
-            row = cursor.execute(f'''SELECT FROM {{self._table_name}}
-                                      WHERE ?=?''', key, value)
-            return row
+            cursor.execute(f'''SELECT * FROM {self._table_name}
+                                      WHERE {key}="{value}"''')
+            row = cursor.fetchone()
+            if row:
+                return dict(zip(self.COLOUMN_NAMES, row))
+            return None
 
     def store(self, details):
-        placeholder = '?,' * len(details.values())
-        with self.connection() as conn:
-            conn.execute(f'''INSERT INTO {{self._table_name}}
-                             VALUES ({{placeholder}})''', details.values())
+        values = [details[k] for k in self.COLOUMN_NAMES]
+        placeholder = '?,' * len(values)
+        placeholder = placeholder[:-1]
+        with self.connection(commit=True) as conn:
+            conn.execute(f'''INSERT INTO {self._table_name}
+                             VALUES ({placeholder})''', list(values))
