@@ -7,7 +7,7 @@ from mocks import MockDownloader
 
 from sunpy.data.manager.cache import Cache
 from sunpy.data.manager.manager import DataManager
-from sunpy.data.manager.storage import InMemStorage
+from sunpy.data.manager.storage import InMemStorage, SqliteStorage
 
 
 @pytest.fixture
@@ -19,6 +19,12 @@ def downloader():
 @pytest.fixture
 def storage():
     storage = InMemStorage()
+    return storage
+
+
+@pytest.fixture
+def sqlstorage():
+    storage = SqliteStorage('sunpy/data/manager/tests/test.db')
     return storage
 
 

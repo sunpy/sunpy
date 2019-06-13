@@ -23,6 +23,11 @@ class StorageProviderBase(metaclass=ABCMeta):
         -------
         `dict` or `None`
             `dict` contains the details of the file. `None` if hash not found.
+
+        Raises
+        ------
+        KeyError
+             KeyError is raised if key does not exist.
         """
         raise NotImplementedError
 
@@ -44,6 +49,7 @@ class InMemStorage(StorageProviderBase):
     InMemStorage provides a storage stored in memory
     as `dict`s
     """
+
     def __init__(self):
         self._store = []
 
@@ -55,7 +61,6 @@ class InMemStorage(StorageProviderBase):
             if i[key] == value:
                 return i
         return None
-
 
 
 class SqliteStorage(StorageProviderBase):
@@ -101,6 +106,8 @@ class SqliteStorage(StorageProviderBase):
             conn.close()
 
     def find_by_key(self, key, value):
+        if key not in self.COLOUMN_NAMES:
+            raise KeyError
         with self.connection() as conn:
             cursor = conn.cursor()
             cursor.execute(f'''SELECT * FROM {self._table_name}
