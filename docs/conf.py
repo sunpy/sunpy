@@ -266,7 +266,7 @@ if has_sphinx_gallery:
                                            (os.path.join('..', 'examples/computer_vision_techniques'))]),
         'gallery_dirs': path.joinpath('generated', 'gallery'),  # path to save gallery generated examples
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
-        'abort_on_example_error': True,
+        'abort_on_example_error': False,
         'plot_gallery': True
     }
 
