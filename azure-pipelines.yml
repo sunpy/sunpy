@@ -7,9 +7,9 @@ variables:
 jobs:
 - template: azure-templates.yml
   parameters:
-    name: Linux_37_offline
+    name: Linux_36_offline
     os: linux
-    tox: py37-offline -- -n=4
+    tox: py36-offline -- -n=4
 
 - template: azure-templates.yml
   parameters:
@@ -25,9 +25,9 @@ jobs:
 
 - template: azure-templates.yml
   parameters:
-    name: Linux_36_online
+    name: Linux_37_online
     os: linux
-    tox: py36-online -- -n=4
+    tox: py37-online -- -n=4
 
 - template: azure-templates.yml
   parameters:
@@ -35,12 +35,11 @@ jobs:
     os: linux
     tox: conda -- -n=4
 
-- ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
-  - template: azure-templates.yml
-    parameters:
-      name: Linux_37_astropydev
-      os: linux
-      tox: py37-astropydev -- -n=4
+- template: azure-templates.yml
+  parameters:
+    name: Linux_37_astropydev
+    os: linux
+    tox: py37-astropydev -- -n=4
 
 - ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
   - template: azure-templates.yml
