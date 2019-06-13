@@ -19,8 +19,8 @@ from sunpy.map.maputils import all_coordinates_from_map
 aia = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
-# A utility function easily gives us access to the coordinates of every pixels
-# in helioprojective coordinates. We can use that to create a new array which
+# A utility function gives us access to the helioprojective coordinate of each
+# pixels. We can use that to create a new array which
 # contains the normalized radial position for each pixel.
 hpc_coords = all_coordinates_from_map(aia)
 r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
