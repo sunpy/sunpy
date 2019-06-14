@@ -31,12 +31,17 @@ def meta_keywords():
 
 
 @u.quantity_input(equivalencies=u.spectral())
-def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
+def make_fitswcs_header(data, coordinate,
+                        reference_pixel: u.pix = None,
                         scale: u.arcsec/u.pix = None,
                         rotation_angle: u.deg = None,
-                        rotation_matrix=None, instrument=None,
-                        telescope=None, observatory=None,
-                        wavelength: u.angstrom=None, exposure: u.s=None):
+                        rotation_matrix=None,
+                        instrument=None,
+                        telescope=None,
+                        observatory=None,
+                        wavelength: u.angstrom=None,
+                        exposure: u.s=None,
+                        projection_code="TAN"):
     """
     Function to create a FITS-WCS header from a coordinate object
     (`~astropy.coordinates.SkyCoord`) that is required to
@@ -77,6 +82,8 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
         From this keyword, the meta keywords ``wavelnth`` and ``waveunit`` will be populated.
     exposure : `~u.Quantity`, optional
         Exposure time of the observation
+    projection_code : `str`, optional
+        The FITS standard projection code for the new header.
 
     Returns
     -------
@@ -110,7 +117,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     if isinstance(coordinate, frames.Heliocentric):
         raise ValueError("This function does not currently support heliocentric coordinates.")
 
-    meta_wcs = _get_wcs_meta(coordinate)
+    meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
     if hasattr(coordinate, "observer") and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
         meta_observer = get_observer_meta(coordinate.observer)
@@ -153,7 +160,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     return meta_dict
 
 
-def _get_wcs_meta(coordinate):
+def _get_wcs_meta(coordinate, projection_code):
     """
     Function to get WCS meta from the SkyCoord using
     `astropy.wcs.utils.celestial_frame_to_wcs`
@@ -173,7 +180,7 @@ def _get_wcs_meta(coordinate):
 
     coord_meta = {}
 
-    skycoord_wcs = astropy.wcs.utils.celestial_frame_to_wcs(coordinate)
+    skycoord_wcs = astropy.wcs.utils.celestial_frame_to_wcs(coordinate, projection_code)
 
     cunit1, cunit2 = skycoord_wcs.wcs.cunit
     coord_meta = dict(skycoord_wcs.to_header())
