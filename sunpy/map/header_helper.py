@@ -199,7 +199,6 @@ def get_observer_meta(observer, rsun: u.Mm):
     coordinate : ~`astropy.coordinates.BaseFrame`
         The coordinate of the observer, must be transformable to Heliographic
         Stonyhurst.
-
     rsun : `astropy.units.Quantity`
         The radius of the Sun.
 
