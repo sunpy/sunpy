@@ -30,12 +30,13 @@ def meta_keywords():
     return _map_meta_keywords
 
 
-@u.quantity_input
+@u.quantity_input(equivalencies=u.spectral())
 def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
                         scale: u.arcsec/u.pix = None,
                         rotation_angle: u.deg = None,
-                        rotation_matrix=None,
-                        **kwargs):
+                        rotation_matrix=None, instrument=None,
+                        telescope=None, observatory=None,
+                        wavelength: u.angstrom=None, exposure: u.s=None):
     """
     Function to create a FITS-WCS header from a coordinate object
     (`~astropy.coordinates.SkyCoord`) that is required to
@@ -49,8 +50,10 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
         Coordinate object to get meta information for map header.
     reference_pixel :`~astropy.units.Quantity` of size 2, optional
         Reference pixel along each axis. These are expected to be Cartestian ordered, i.e
-        the first index is the x axis, second index is the y axis.
-        Defaults to the center of data array, ``(data.shape[1] + 1)/2., (data.shape[0] + 1)/2.)``.
+        the first index is the x axis, second index is the y axis. Defaults to
+        the center of data array, ``(data.shape[1] - 1)/2., (data.shape[0] - 1)/2.)``,
+        this argument is zero indexed (Python convention) not 1 indexed (FITS
+        convention).
     scale : `~astropy.units.Quantity` of size 2, optional
         Pixel scaling along x and y axis (i.e. the spatial scale of the pixels (dx, dy)). These are
         expected to be Cartestian ordered, i.e [dx, dy].
@@ -63,17 +66,17 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
         Matrix describing the rotation required to align solar North with
         the top of the image in FITS ``PCi_j`` convention. Can not be specified
         with ``rotation_angle``.
-    **kwargs:
-        Additional arguments that will be put into the metadict header if they
-        are in the list returned by `~sunpy.map.meta_keywords`. Additional
-        keyword arguments for the instrument meta can also be given in the
-        following forms which will be translated to fits standard:
-
-        | ``instrument``
-        | ``telescope``
-        | ``observatory``
-        | ``wavelength``
-        | ``exposure``
+    instrument : `~str`, optional
+        Name of the instrument of the observation.
+    telescope : `~str`, optional
+        Name of the telescope of the observation.
+    observatory : `~str`, optional
+        Name of the observatory of the observation.
+    wavelength : `~u.Quantity`, optional
+        Wavelength of the observation as an astropy quanitity, e.g. 171*u.angstrom.
+        From this keyword, the meta keywords ``wavelnth`` and ``waveunit`` will be populated.
+    exposure : `~u.Quantity`, optional
+        Exposure time of the observation
 
     Returns
     -------
@@ -85,7 +88,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     >>> import sunpy.map
     >>> from sunpy.coordinates import frames
     >>> from astropy.coordinates import SkyCoord
-    >>> from astropy import units as u
+    >>> import astropy.units as u
     >>> import numpy as np
 
     >>> data = np.random.rand(1024, 1024)
@@ -113,7 +116,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
         meta_observer = _get_observer_meta(coordinate)
         meta_wcs.update(meta_observer)
 
-    meta_instrument = _get_instrument_meta(**kwargs)
+    meta_instrument = _get_instrument_meta(instrument, telescope, observatory, wavelength, exposure)
     meta_wcs.update(meta_instrument)
 
     if reference_pixel is None:
@@ -124,8 +127,8 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lat.to_value(meta_wcs['cunit1']),
                                               coordinate.spherical.lon.to_value(meta_wcs['cunit2']))
 
-    meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel),
-                                              reference_pixel[1].to_value(u.pixel))
+    meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel) + 1,
+                                              reference_pixel[1].to_value(u.pixel) + 1)
 
     meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0].to_value(meta_wcs['cunit1']/u.pixel),
                                               scale[1].to_value(meta_wcs['cunit2']/u.pixel))
@@ -146,10 +149,6 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
                                                   rotation_matrix[1, 0], rotation_matrix[1, 1])
 
     meta_dict = MetaDict(meta_wcs)
-
-    for key in kwargs:
-        if key in _map_meta_keywords:
-            meta_dict[key] = kwargs[key]
 
     return meta_dict
 
@@ -204,25 +203,29 @@ def _get_observer_meta(coordinate):
     coord_meta['hgln_obs'] = coordinate.observer.lon.to_value(u.deg)
     coord_meta['hglt_obs'] = coordinate.observer.lat.to_value(u.deg)
     coord_meta['dsun_obs'] = coordinate.observer.radius.to_value(u.m)
-    coord_meta['rsun_ref'] = coordinate.rsun.to_value()
+    coord_meta['rsun_ref'] = coordinate.rsun.to_value(u.m)
     coord_meta['rsun_obs'] = np.arctan(coordinate.rsun / coordinate.observer.radius).to_value(u.arcsec)
 
     return coord_meta
 
 
-def _get_instrument_meta(**kwargs):
+def _get_instrument_meta(instrument, telescope, observatory, wavelength, exposure):
     """
-    Function to correctly name keywords from kwargs
+    Function to correctly name keywords from keyword arguments
     """
     coord = {}
 
-    conversion = {'instrument': 'instrume', 'telescope': 'telescop',
-                  'observatory': 'obsrvtry', 'wavelength': 'wavelnth', 'exposure': 'exptime'}
-
-    kwargs_temp = kwargs.copy()
-    for key in kwargs_temp:
-        if key in conversion:
-            coord[conversion[key]] = kwargs.pop(key)
+    if instrument is not None:
+        coord['instrume'] = str(instrument)
+    if telescope is not None:
+        coord['telescop'] = str(telescope)
+    if observatory is not None:
+        coord['obsrvtry'] = str(observatory)
+    if wavelength is not None:
+        coord['wavelnth'] = wavelength.to_value()
+        coord['waveunit'] = wavelength.unit.to_string("fits")
+    if exposure is not None:
+        coord['exptime'] = exposure.to_value(u.s)
 
     return coord
 

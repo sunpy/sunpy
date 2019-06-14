@@ -1,2 +1,0 @@
-# This file is used on ReadTheDocs to build the
-# documentation and is separate of tox.ini and setup.cfg

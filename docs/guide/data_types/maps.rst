@@ -81,8 +81,8 @@ Here's an example of creating a header from some generic data and an `astropy.co
     >>> for key, value in header.items():
     ...     print(f"{key}: {value}")
     wcsaxes: 2
-    crpix1: 5.5
-    crpix2: 5.5
+    crpix1: 6.5
+    crpix2: 6.5
     cdelt1: 1.0
     cdelt2: 1.0
     cunit1: arcsec
@@ -97,7 +97,7 @@ Here's an example of creating a header from some generic data and an `astropy.co
     hgln_obs: 0.0
     hglt_obs: 4.7711570596394
     dsun_obs: 148644585949.49176
-    rsun_ref: 695700.0
+    rsun_ref: 695700000.0
     rsun_obs: 965.3723815059902
 
 
@@ -115,8 +115,8 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     >>> for key, value in header.items():
     ...     print(f"{key}: {value}")
     wcsaxes: 2
-    crpix1: 5.0
-    crpix2: 5.0
+    crpix1: 6.0
+    crpix2: 6.0
     cdelt1: 2.0
     cdelt2: 2.0
     cunit1: arcsec
@@ -131,7 +131,7 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     hgln_obs: 0.0
     hglt_obs: 4.7711570596394
     dsun_obs: 148644585949.49176
-    rsun_ref: 695700.0
+    rsun_ref: 695700000.0
     rsun_obs: 965.3723815059902
 
 As we can see, a list of WCS and observer meta information is contained within the generated headers,
@@ -146,8 +146,8 @@ An example of creating a header with these additional keywords::
     >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
     ...                                                      reference_pixel = u.Quantity([5, 5]*u.pixel),
     ...                                                      scale = u.Quantity([2, 2] *u.arcsec/u.pixel),
-    ...                                                      instrument = 'Test case', detector = 'UV detector',
-    ...                                                      wavelength = 1000, waveunit = 'angstrom')
+    ...                                                      telescope = 'Test case', instrument = 'UV detector',
+    ...                                                      wavelength = 1000*u.angstrom)
     >>> header  # doctest: +SKIP
     MetaDict([('wcsaxes', 2),
           ('crpix1', 5.0),

@@ -18,6 +18,7 @@ except ImportError:
 from astropy import _erfa as erfa
 from astropy.coordinates.builtin_frames.utils import get_jd12
 
+from sunpy import log
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
@@ -65,7 +66,7 @@ def sky_position(t='now', equinox_of_date=True):
 
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
-        the J2000.0 epoch.
+        the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     ra = apparent_rightascension(t, equinox_of_date=equinox_of_date)
     dec = apparent_declination(t, equinox_of_date=equinox_of_date)
@@ -75,19 +76,35 @@ def sky_position(t='now', equinox_of_date=True):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def carrington_rotation_number(t='now'):
     """
-    Return the Carrington Rotation number.
-
-    .. warning::
-        The accuracy of this function is under investigation.
+    Return the Carrington rotation number.  Each whole rotation number marks when the Sun's prime
+    meridian coincides with the central meridian as seen from Earth, with the first rotation
+    starting on 1853 November 9.
 
     Parameters
     ----------
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     """
-    jd = parse_time(t).jd
-    result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
-    return result
+    time = parse_time(t)
+
+    # Estimate the Carrington rotation number by dividing the time that has elapsed since
+    # JD 2398167.4 (late in the day on 1853 Nov 9), see Astronomical Algorithms (Meeus 1998, p.191),
+    # by the mean synodic period (27.2753 days)
+    estimate = (time.tt.jd - 2398167.4) / 27.2753 + 1
+    estimate_int, estimate_frac = divmod(estimate, 1)
+
+    # The fractional rotation number from the above estimate is inaccurate, so calculate the actual
+    # fractional rotation number from the longitude of the central meridian (L0)
+    actual_frac = 1 - L0(time).to('deg').value / 360
+
+    # Calculate any adjustment to the integer rotation number due to wrapping
+    wrap_adjustment = np.around(estimate_frac - actual_frac)
+
+    actual = estimate_int + actual_frac + wrap_adjustment
+
+    log.debug(f"Carrington rotation number: estimate is {estimate}, actual is {actual}")
+
+    return actual
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -214,7 +231,7 @@ def true_rightascension(t='now', equinox_of_date=True):
 
     equinox_of_date : `bool`
         If True, output is referred to the mean equinox of date.  Otherwise, output is referred to
-        the J2000.0 epoch.
+        the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
         # Mean equinox of date
@@ -250,7 +267,7 @@ def true_declination(t='now', equinox_of_date=True):
 
     equinox_of_date : `bool`
         If True, output is referred to the mean equinox of date.  Otherwise, output is referred to
-        the J2000.0 epoch.
+        the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
         # Mean equinox of date
@@ -306,7 +323,7 @@ def apparent_rightascension(t='now', equinox_of_date=True):
 
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
-        the J2000.0 epoch.
+        the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
         # True equinox of date
@@ -339,7 +356,7 @@ def apparent_declination(t='now', equinox_of_date=True):
 
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
-        the J2000.0 epoch.
+        the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
         # True equinox of date
@@ -384,7 +401,7 @@ def print_params(t='now'):
     print('Heliographic long. and lat of disk center = ({}, {})'.format(L0(t).to_string(),
                                                                         B0(t).to_string()))
     print('Position angle of north pole = {}'.format(P(t)))
-    print('Carrington Rotation Number = {}'.format(carrington_rotation_number(t)))
+    print('Carrington rotation number = {}'.format(carrington_rotation_number(t)))
 
 
 # The following functions belong to this module, but their code is still in the old location of

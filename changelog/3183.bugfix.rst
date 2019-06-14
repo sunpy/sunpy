@@ -1,0 +1,1 @@
+Updated `sunpy.map.header_helper.make_fitswcs_header` to be more strict on the inputs it accepts.
