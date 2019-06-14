@@ -15,6 +15,8 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
+from sunpy.map.maputils import all_coordinates_from_map
+
 # sphinx_gallery_thumbnail_number = 2
 
 ###############################################################################
@@ -22,14 +24,10 @@ from sunpy.data.sample import AIA_171_IMAGE
 aia = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
-# Next, we create arrays for all of the pixels in the map.
-x, y = np.meshgrid(*[np.arange(v.value) for v in aia.dimensions]) * u.pix
-
-###############################################################################
-# Next we convert all of the pixels coordinates to helioprojective
-# coordinates and create a new array which contains the normalized radial
-# position for each pixel.
-hpc_coords = aia.pixel_to_world(x, y)
+# A utility function gives us access to the helioprojective coordinate of each
+# pixels. We can use that to create a new array which
+# contains the normalized radial position for each pixel.
+hpc_coords = all_coordinates_from_map(aia)
 r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 
 ###############################################################################
@@ -81,6 +79,7 @@ scaled_map.plot_settings['norm'] = ImageNormalize(stretch=aia.plot_settings['nor
 # Let's plot the results
 fig = plt.figure()
 ax = plt.subplot(projection=aia)
-scaled_map.plot()
+scaled_map.plot(clip_interval=(5, 99.9)*u.percent)
 scaled_map.draw_limb()
+plt.colorbar()
 plt.show()
