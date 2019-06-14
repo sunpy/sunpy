@@ -1,5 +1,7 @@
 import pytest
 
+from numpy.testing import assert_allclose
+
 from astropy.coordinates import Angle, EarthLocation, SkyCoord
 from astropy.time import Time
 import astropy.units as u
@@ -59,20 +61,21 @@ def test_apparent_latitude(t1, t2):
 
 def test_angular_radius():
     # Regression-only test
+    # The Astronomical Almanac publishes values, but I don't know what physical radius they use
     assert_quantity_allclose(sun.angular_radius("2012/11/11"), 968.871*u.arcsec, atol=1e-3*u.arcsec)
     assert_quantity_allclose(sun.angular_radius("2043/03/01"), 968.326*u.arcsec, atol=1e-3*u.arcsec)
     assert_quantity_allclose(sun.angular_radius("2001/07/21"), 944.039*u.arcsec, atol=1e-3*u.arcsec)
 
 
 def test_mean_obliquity_of_ecliptic(t1, t2):
-    # Validate against a published value from the Astronomical Almanac (1992, C1)
+    # Validate against a published value from the Astronomical Almanac (1992, B30)
     # Note that the publication date pre-dates the IAU 2006 definition of obliquity
-    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t1), 84384.82*u.arcsec,
-                             atol=0.05*u.arcsec)
+    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t1),
+                             Angle('23d26m24.519s') + 0.308*u.arcsec, atol=0.05*u.arcsec)
 
-    # Validate against a published value from the Astronomical Almanac (2013, C1)
-    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t2), 84375.098*u.arcsec,
-                             atol=0.005*u.arcsec)
+    # Validate against a published value from the Astronomical Almanac (2013, B61)
+    assert_quantity_allclose(sun.mean_obliquity_of_ecliptic(t2),
+                             Angle('23d26m08.0875s') + 7.0153*u.arcsec, atol=0.00005*u.arcsec)
 
 
 def test_true_rightascension():
@@ -86,9 +89,9 @@ def test_true_rightascension_J2000(t1, t2):
     # Validate against JPL HORIZONS output
     # https://ssd.jpl.nasa.gov/horizons_batch.cgi?batch=1&TABLE_TYPE=OBSERVER&COMMAND=10&CENTER=500&QUANTITIES=1&ANG_FORMAT=HMS&EXTRA_PREC=YES&TIME_TYPE=TT&TLIST=2448908.5%0A2456460.5
     assert_quantity_allclose(sun.true_rightascension(t1, equinox_of_date=False),
-                             Angle('13h13m53.65s'), atol=0.005*u.arcsec)
+                             Angle('13h13m53.65s'), atol=Angle('0h0m0.005s'))
     assert_quantity_allclose(sun.true_rightascension(t2, equinox_of_date=False),
-                             Angle('05h41m40.32s'), atol=0.005*u.arcsec)
+                             Angle('05h41m40.32s'), atol=Angle('0h0m0.005s'))
 
 
 def test_true_declination():
@@ -108,30 +111,30 @@ def test_true_declination_J2000(t1, t2):
 
 
 def test_true_obliquity_of_ecliptic(t1, t2):
-    # Validate against a published value from the Astronomical Almanac (1992, C1+B30)
+    # Validate against a published value from the Astronomical Almanac (1992, B30)
     # Note that the publication date pre-dates the IAU 2006 definition of obliquity
-    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t1), (84384.82 - 0.308)*u.arcsec,
+    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t1), Angle('23d26m24.519s'),
                              atol=0.05*u.arcsec)
 
-    # Validate against a published value from the Astronomical Almanac (2013, C1+B61)
-    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t2), (84375.098 - 7.0153)*u.arcsec,
-                             atol=0.005*u.arcsec)
+    # Validate against a published value from the Astronomical Almanac (2013, B61)
+    assert_quantity_allclose(sun.true_obliquity_of_ecliptic(t2), Angle('23d26m08.0875'),
+                             atol=0.00005*u.arcsec)
 
 
 def test_apparent_rightascension(t1, t2):
     # Validate against a published value from the Astronomical Almanac (1992, C16)
     assert_quantity_allclose(sun.apparent_rightascension(t1), Angle('13h13m30.75s'),
-                             atol=0.005*u.arcsec)
+                             atol=Angle('0h0m0.005s'))
 
     # Validate against a published value from the Astronomical Almanac (2013, C12)
     assert_quantity_allclose(sun.apparent_rightascension(t2), Angle('5h42m28.88s'),
-                             atol=0.01*u.arcsec)  # slight disagreement with published precision
+                             atol=Angle('0h0m0.005s'))
 
 
 def test_apparent_rightascension_J2000(t1):
     # Regression-only test
     assert_quantity_allclose(sun.apparent_rightascension(t1, equinox_of_date=False),
-                             Angle('13h13m52.37s'), atol=0.005*u.arcsec)
+                             Angle('13h13m52.37s'), atol=Angle('0h0m0.005s'))
 
 
 def test_apparent_declination(t1, t2):
@@ -172,21 +175,21 @@ def test_B0():
 
 def test_B0_array_time():
     # Validate against published values from the Astronomical Almanac (2013)
-    sun_B0 = sun.B0(Time(['2013-04-01', '2013-12-01']))
+    sun_B0 = sun.B0(Time(['2013-04-01', '2013-12-01'], scale='tt'))
     assert_quantity_allclose(sun_B0[0], -6.54*u.deg, atol=5e-3*u.deg)
     assert_quantity_allclose(sun_B0[1], 0.88*u.deg, atol=5e-3*u.deg)
 
 
 def test_L0():
     # Validate against a published value from Astronomical Algorithms (Meeus 1998, p.191)
-    assert_quantity_allclose(sun.L0('1992-Oct-13'), 238.6317*u.deg, atol=5e-5*u.deg)
+    assert_quantity_allclose(sun.L0('1992-Oct-13'), 238.63*u.deg, atol=2e-2*u.deg)
 
 
 def test_L0_array_time():
     # Validate against published values from the Astronomical Almanac (2013)
-    sun_L0 = sun.L0(Time(['2013-04-01', '2013-12-01']))
-    assert_quantity_allclose(sun_L0[0], 221.44*u.deg, atol=3e-2*u.deg)
-    assert_quantity_allclose(sun_L0[1], 237.83*u.deg, atol=3e-2*u.deg)
+    sun_L0 = sun.L0(Time(['2013-04-01', '2013-12-01'], scale='tt'))
+    assert_quantity_allclose(sun_L0[0], 221.44*u.deg, atol=5e-3*u.deg)
+    assert_quantity_allclose(sun_L0[1], 237.83*u.deg, atol=5e-3*u.deg)
 
 
 def test_P():
@@ -196,7 +199,7 @@ def test_P():
 
 def test_P_array_time():
     # Validate against published values from the Astronomical Almanac (2013)
-    sun_P = sun.P(Time(['2013-04-01', '2013-12-01']))
+    sun_P = sun.P(Time(['2013-04-01', '2013-12-01'], scale='tt'))
     assert_quantity_allclose(sun_P[0], -26.15*u.deg, atol=1e-2*u.deg)
     assert_quantity_allclose(sun_P[1], 16.05*u.deg, atol=1e-2*u.deg)
 
@@ -208,9 +211,9 @@ def test_earth_distance():
 
 def test_earth_distance_array_time():
     # Validate against published values from the Astronomical Almanac (2013)
-    sunearth_distance = sun.earth_distance(Time(['2013-04-01', '2013-12-01']))
-    assert_quantity_allclose(sunearth_distance[0], 0.9992311*u.AU, atol=5e-7*u.AU)
-    assert_quantity_allclose(sunearth_distance[1], 0.9861362*u.AU, atol=5e-7*u.AU)
+    sunearth_distance = sun.earth_distance(Time(['2013-04-01', '2013-12-01'], scale='tt'))
+    assert_quantity_allclose(sunearth_distance[0], 0.9992311*u.AU, rtol=0, atol=5e-8*u.AU)
+    assert_quantity_allclose(sunearth_distance[1], 0.9861362*u.AU, rtol=0, atol=5e-8*u.AU)
 
 
 def test_orientation():
@@ -223,3 +226,26 @@ def test_orientation():
     # Check the Southern Hemisphere
     angle = sun.orientation(EarthLocation(lat=-40*u.deg, lon=-75*u.deg), '2017-02-18 13:00')
     assert_quantity_allclose(angle, -110.8*u.deg, atol=0.1*u.deg)
+
+
+# Validate against published values from the Astronomical Almanac (2013, C4)
+@pytest.mark.parametrize("date, day_fraction, rotation_number",
+                         [('2012-12-29', 0.49, 2132),
+                          ('2013-01-25', 0.83, 2133),
+                          ('2013-02-22', 0.17, 2134),
+                          ('2013-03-21', 0.49, 2135),
+                          ('2013-04-17', 0.78, 2136),
+                          ('2013-05-15', 0.02, 2137),
+                          ('2013-06-11', 0.22, 2138),
+                          ('2013-07-08', 0.42, 2139),
+                          ('2013-08-04', 0.63, 2140),
+                          ('2013-08-31', 0.87, 2141),
+                          ('2013-09-28', 0.14, 2142),
+                          ('2013-10-25', 0.43, 2143),
+                          ('2013-11-21', 0.73, 2144),
+                          ('2013-12-19', 0.05, 2145),
+                          ('2014-01-15', 0.38, 2146),
+                          ('2014-02-11', 0.73, 2147)])
+def test_carrington_rotation_number(date, day_fraction, rotation_number):
+    assert_allclose(sun.carrington_rotation_number(Time(date, scale='tt') + day_fraction*u.day),
+                    rotation_number, rtol=0, atol=2e-4)
