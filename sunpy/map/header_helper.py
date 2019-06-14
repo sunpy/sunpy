@@ -120,7 +120,7 @@ def make_fitswcs_header(data, coordinate,
     meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
     if hasattr(coordinate, "observer") and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
-        meta_observer = get_observer_meta(coordinate.observer)
+        meta_observer = get_observer_meta(coordinate.observer, coordinate.rsun)
         meta_wcs.update(meta_observer)
 
     meta_instrument = _get_instrument_meta(instrument, telescope, observatory, wavelength, exposure)
@@ -189,7 +189,8 @@ def _get_wcs_meta(coordinate, projection_code):
     return coord_meta
 
 
-def get_observer_meta(observer):
+@u.quantity_input
+def get_observer_meta(observer, rsun: u.Mm):
     """
     Function to get observer meta from coordinate frame.
 
@@ -198,6 +199,9 @@ def get_observer_meta(observer):
     coordinate : ~`astropy.coordinates.BaseFrame`
         The coordinate of the observer, must be transformable to Heliographic
         Stonyhurst.
+
+    rsun : `astropy.units.Quantity`
+        The radius of the Sun.
 
     Returns
     -------
@@ -208,14 +212,14 @@ def get_observer_meta(observer):
             * rsun_obs
             * rsun_ref
     """
-    observer = observer.transform_to("heliographic_stonyhurst")
+    observer = observer.transform_to(frames.HeliographicStonyhurst(obstime=observer.obstime))
     coord_meta = {}
 
     coord_meta['hgln_obs'] = observer.lon.to_value(u.deg)
     coord_meta['hglt_obs'] = observer.lat.to_value(u.deg)
     coord_meta['dsun_obs'] = observer.radius.to_value(u.m)
     coord_meta['rsun_ref'] = rsun.to_value(u.m)
-    coord_meta['rsun_obs'] = np.arctan(observer.rsun / observer.radius).to_value(u.arcsec)
+    coord_meta['rsun_obs'] = np.arctan(rsun / observer.radius).to_value(u.arcsec)
 
     return coord_meta
 
