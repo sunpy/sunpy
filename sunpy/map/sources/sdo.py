@@ -53,7 +53,7 @@ class AIAMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing info
-        self.meta['detector'] = self.meta.get('detector') or "AIA"
+        self.meta['detector'] = self.meta.get('detector', "AIA")
         self._nickname = self.detector
         self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
@@ -103,7 +103,7 @@ class HMIMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self.meta['detector'] = self.meta.get('detector') or "HMI"
+        self.meta['detector'] = self.meta.get('detector', "HMI")
         self._nickname = self.detector
 
     @property
