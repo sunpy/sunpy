@@ -19,11 +19,13 @@ BASEURL = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 
 class NoRHClient(GenericClient):
     """
-    Provides access to the Nobeyama Radioheliograph (NoRH) averaged correlation
-    time series data from the `ftp archive <ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/>`_
-    as hosted by the `NoRH Science Center <https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html>`.
+    Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation
+    time series data from the
+    `ftp archive <ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/>`_
+    as hosted by the
+    `NoRH Science Center <https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html>`.
 
-    Queries to NORH should specify either 17GHz or 34GHz as a Wavelength.
+    Queries to NoRH should specify either 17GHz or 34GHz as a Wavelength.
 
     Examples
     --------
