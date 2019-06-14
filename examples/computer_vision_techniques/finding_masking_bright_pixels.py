@@ -17,6 +17,7 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
+from sunpy.map.maputils import all_coordinates_from_map
 
 ###############################################################################
 # We start with the sample data.
@@ -37,16 +38,12 @@ ax.plot_coord(hpc_max, 'bx', color='white', marker='x', markersize=15)
 plt.show()
 
 ###############################################################################
-# Next, we create arrays for all of the pixels in the map.
-x, y = np.meshgrid(*[np.arange(v.value) for v in aia.dimensions]) * u.pixel
-
-###############################################################################
-# Now we can convert this to helioprojective coordinates and create a new
-# array which contains the normalized radial position for each pixel adjusted
-# for the position of the brightest pixel (using `hpc_max`) and then define a
-# new map.
-hpc_mask = aia.pixel_to_world(x, y)
-r_mask = np.sqrt((hpc_mask.Tx-hpc_max.Tx) ** 2 + (hpc_mask.Ty-hpc_max.Ty) ** 2) / aia.rsun_obs
+# A utility function gives us access to the helioprojective coordinate of each
+# pixels. We create a new array which contains the normalized radial position
+# for each pixel adjusted for the position of the brightest pixel
+# (using `hpc_max`) and then create a new map.
+hpc_coords = all_coordinates_from_map(aia)
+r_mask = np.sqrt((hpc_coords.Tx-hpc_max.Tx) ** 2 + (hpc_coords.Ty-hpc_max.Ty) ** 2) / aia.rsun_obs
 mask = ma.masked_less_equal(r_mask, 0.1)
 scaled_map = sunpy.map.Map(aia.data, aia.meta, mask=mask.mask)
 
