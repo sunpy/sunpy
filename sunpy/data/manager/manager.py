@@ -11,7 +11,6 @@ class DataManager:
     """
 
     def __init__(self, cache):
-        # TODO: Folder prefix should be init argument
         self._cache = cache
 
         self._file_cache = {}
@@ -31,7 +30,7 @@ class DataManager:
         urls: `list`
             A list of urls to download the file from.
         sha_hash: `str`
-            Hash of file.
+            SHA-1 hash of file.
         """
         def decorator(func):
             @functools.wraps(func)
