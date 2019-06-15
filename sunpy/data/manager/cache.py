@@ -3,6 +3,7 @@ from urllib.request import urlopen
 from sunpy.util.util import hash_file, replacement_filename
 from sunpy.util.net import get_filename
 
+
 class Cache:
     """
     Cache handles caching.
@@ -64,7 +65,6 @@ class Cache:
         url: `str`
             URL of the file.
         """
-        # XXX: Make this public?
         details = self._storage.find_by_key('url', url)
         return details
 

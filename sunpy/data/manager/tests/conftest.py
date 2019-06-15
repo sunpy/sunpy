@@ -1,5 +1,6 @@
 import shutil
 import tempfile
+import csv
 from unittest import mock
 
 import pytest
@@ -9,6 +10,7 @@ from sunpy.data.manager.cache import Cache
 from sunpy.data.manager.manager import DataManager
 from sunpy.data.manager.storage import InMemStorage, SqliteStorage
 
+DB_TESTDATA_FILE = 'sunpy/data/manager/tests/db_testdata.csv'
 
 @pytest.fixture
 def downloader():
@@ -24,7 +26,12 @@ def storage():
 
 @pytest.fixture
 def sqlstorage():
-    storage = SqliteStorage('sunpy/data/manager/tests/test.db')
+    temp = tempfile.mktemp(suffix='.db')
+    storage = SqliteStorage(temp)
+    with open(DB_TESTDATA_FILE) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            storage.store(row)
     return storage
 
 
