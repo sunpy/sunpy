@@ -13,8 +13,11 @@ class DownloaderBase(metaclass=ABCMeta):
 
 class ParfiveDownloader(DownloaderBase):
     def __init__(self):
-        self.downloader = Downloader()
+        pass
 
     def download(self, url, path):
-        self.downloader.enqueue_file(url, path)
-        self.downloader.download()
+        downloader = Downloader()
+        filename = path.split('/')[-1]
+        directory = path[:-len(filename)]
+        downloader.enqueue_file(url, directory, filename)
+        downloader.download()
