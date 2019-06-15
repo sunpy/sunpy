@@ -22,3 +22,14 @@ def test_find_by_key_fail(sqlstorage):
 def test_invalid_key(sqlstorage):
     with pytest.raises(KeyError):
         sqlstorage.find_by_key('key_not', 'hash_1')
+
+
+def test_insert(sqlstorage):
+    details = {
+        'file_hash': 'hash9',
+        'file_path': '/tmp/test_file9',
+        'url': 'http://example.com/test_file_9'
+    }
+    sqlstorage.store(details)
+    new_details = sqlstorage.find_by_key('file_hash', 'hash9')
+    assert details == new_details

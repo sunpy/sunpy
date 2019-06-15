@@ -1,0 +1,4 @@
+file_hash,file_path,url
+hash1,/tmp/test_file1,http://example.com/test_file_1
+hash2,/tmp/test_file2,http://example.com/test_file_2
+hash3,/tmp/test_file3,http://example.com/test_file_3
