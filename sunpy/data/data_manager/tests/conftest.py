@@ -6,11 +6,11 @@ from unittest import mock
 import pytest
 from mocks import MockDownloader
 
-from sunpy.data.manager.cache import Cache
-from sunpy.data.manager.manager import DataManager
-from sunpy.data.manager.storage import InMemStorage, SqliteStorage
+from sunpy.data.data_manager.cache import Cache
+from sunpy.data.data_manager.manager import DataManager
+from sunpy.data.data_manager.storage import InMemStorage, SqliteStorage
 
-DB_TESTDATA_FILE = 'sunpy/data/manager/tests/db_testdata.csv'
+DB_TESTDATA_FILE = 'sunpy/data/data_manager/tests/db_testdata.csv'
 
 @pytest.fixture
 def downloader():
@@ -41,7 +41,7 @@ def manager(downloader, storage, mocker):
     manager = DataManager(Cache(downloader, storage, tempdir))
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
-    mocker.patch('sunpy.data.manager.cache.urlopen', return_value=m)
+    mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
     yield manager
     shutil.rmtree(tempdir)
 
