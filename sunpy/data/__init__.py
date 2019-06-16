@@ -6,11 +6,4 @@ from sunpy.data.manager.manager import DataManager
 from sunpy.util.config import get_and_create_download_dir
 
 _download_dir = get_and_create_download_dir()
-manager = DataManager(
-    Cache(
-        ParfiveDownloader(),
-        SqliteStorage(_download_dir + '/data_manager.db'),
-        _download_dir
-    )
-)
-__all__ = ["download_sample_data", "manager"]
+__all__ = ["download_sample_data"]

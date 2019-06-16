@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from parfive import Downloader
+from pathlib import Path
 
 
 class DownloaderBase(metaclass=ABCMeta):
@@ -17,7 +18,8 @@ class ParfiveDownloader(DownloaderBase):
 
     def download(self, url, path):
         downloader = Downloader()
-        filename = path.split('/')[-1]
-        directory = path[:-len(filename)]
+        path = Path(path)
+        filename = path.name
+        directory = path.parent
         downloader.enqueue_file(url, directory, filename)
         downloader.download()

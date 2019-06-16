@@ -182,7 +182,7 @@ def hash_file(path):
 
     References
     ----------
-    * https://stackoverflow.com/questions/22058048/hashing-a-file-in-python
+    * https://stackoverflow.com/a/22058673
     """
     BUF_SIZE = 65536
     sha1 = hashlib.sha1()
