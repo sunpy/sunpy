@@ -10,7 +10,7 @@ def test_basic(storage, downloader, data_function):
 
     assert downloader.times_called == 1
     assert len(storage._store) == 1
-    assert storage._store[0]['file_path'].endswith('test_file')
+    assert storage._store[0]['file_path'].name == ('test_file')
 
 
 def test_cache(manager, storage, downloader, data_function):
@@ -22,7 +22,7 @@ def test_cache(manager, storage, downloader, data_function):
 
     assert downloader.times_called == 1
     assert len(storage._store) == 1
-    assert storage._store[0]['file_path'].endswith('test_file')
+    assert storage._store[0]['file_path'].name == ('test_file')
 
 
 def test_skip_all(manager, storage, downloader, data_function):
@@ -35,7 +35,7 @@ def test_skip_all(manager, storage, downloader, data_function):
 
     assert downloader.times_called == 2
     assert len(storage._store) == 1
-    assert storage._store[0]['file_path'].endswith('test_file')
+    assert storage._store[0]['file_path'].name == ('test_file')
 
 def test_replace_file(manager, storage, downloader, data_function):
     """
@@ -46,7 +46,7 @@ def test_replace_file(manager, storage, downloader, data_function):
         """
         Function to test whether the file is /tmp/test_file.
         """
-        assert str(manager.get('test_file').absolute()).endswith('test_file')
+        assert manager.get('test_file').name == ('test_file')
 
     def replace_file_tester(manager):
         """
