@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from sunpy.data.manager.tests.mocks import write_to_test_file
+from sunpy.data.data_manager.tests.mocks import write_to_test_file
 
 
 def test_basic(storage, downloader, data_function):
@@ -10,7 +10,7 @@ def test_basic(storage, downloader, data_function):
 
     assert downloader.times_called == 1
     assert len(storage._store) == 1
-    assert storage._store[0]['file_path'].name == ('test_file')
+    assert Path(storage._store[0]['file_path']).name == ('test_file')
 
 
 def test_cache(manager, storage, downloader, data_function):
@@ -22,7 +22,7 @@ def test_cache(manager, storage, downloader, data_function):
 
     assert downloader.times_called == 1
     assert len(storage._store) == 1
-    assert storage._store[0]['file_path'].name == ('test_file')
+    assert Path(storage._store[0]['file_path']).name == ('test_file')
 
 
 def test_skip_all(manager, storage, downloader, data_function):
@@ -35,7 +35,7 @@ def test_skip_all(manager, storage, downloader, data_function):
 
     assert downloader.times_called == 2
     assert len(storage._store) == 1
-    assert storage._store[0]['file_path'].name == ('test_file')
+    assert Path(storage._store[0]['file_path']).name == ('test_file')
 
 def test_replace_file(manager, storage, downloader, data_function):
     """

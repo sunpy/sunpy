@@ -118,7 +118,7 @@ class DataManager:
         ----------
         name: `str`
             Name of the file given to the data manager, same as the one provided
-            in `~sunpy.data.manager.manager.DataManager.require`.
+            in `~sunpy.data.data_manager.manager.DataManager.require`.
 
         Returns
         -------

@@ -1,4 +1,4 @@
-from sunpy.data.manager.downloader import DownloaderBase
+from sunpy.data.data_manager.downloader import DownloaderBase
 
 
 class MockDownloader(DownloaderBase):
