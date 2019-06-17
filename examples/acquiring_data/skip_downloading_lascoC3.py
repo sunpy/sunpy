@@ -44,6 +44,8 @@ header['CUNIT2'] = 'arcsec'
 
 ###############################################################################
 # With this fix we can load it into a map and plot the results.
+# Please note that there is no plot displayed below as this example is skipped
+# due to timeouts that can occur when you try to download LASCO C3 data.
 lascomap = sunpy.map.Map(data, header)
 fig = plt.figure()
 lascomap.plot()

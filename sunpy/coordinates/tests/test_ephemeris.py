@@ -84,4 +84,4 @@ def test_consistency_with_horizons(tmpdir):
     e1 = get_earth()
     with set_temp_cache(tmpdir):
         e2 = get_horizons_coord('Geocenter')
-    assert_quantity_allclose(e1.separation_3d(e2), 0*u.km, atol=25*u.km)
+    assert_quantity_allclose(e1.separation_3d(e2), 0*u.km, atol=35*u.km)
