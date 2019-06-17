@@ -1,8 +1,9 @@
-from urllib.request import urlopen
 from pathlib import Path
+from datetime import timedelta, datetime
+from urllib.request import urlopen
 
-from sunpy.util.util import hash_file, replacement_filename
 from sunpy.util.net import get_filename
+from sunpy.util.util import hash_file, replacement_filename
 
 
 class Cache:
@@ -10,10 +11,11 @@ class Cache:
     Cache handles caching.
     """
 
-    def __init__(self, downloader, storage, cache_dir):
+    def __init__(self, downloader, storage, cache_dir, expiry=timedelta(seconds=10)):
         self._downloader = downloader
         self._storage = storage
         self._cache_dir = Path(cache_dir)
+        self._expiry = expiry
 
     def download(self, urls, redownload=False):
         """
@@ -25,13 +27,21 @@ class Cache:
             A list of urls.
         redownload: `bool`
             Whether to skip cache and redownload.
+
+        Returns
+        -------
+        `pathlib.PosixPath`
+            Path to the downloaded file.
         """
         # TODO: Expiry time
         # XXX: Expiry time cache level or download level?
         if not redownload:
             details = self._get_by_url(urls[0])
             if details:
-                return details['file_path']
+                if datetime.now() - datetime.fromisoformat(details['time']) > self._expiry:
+                    self._storage.delete_by_key('url', details['url'])
+                else:
+                    return Path(details['file_path'])
 
         file_path, file_hash, url = self._download_and_hash(urls)
 
@@ -40,6 +50,7 @@ class Cache:
                 'file_hash': file_hash,
                 'file_path': str(file_path),
                 'url': url,
+                'time': datetime.now().isoformat(),
             })
         return file_path
 
