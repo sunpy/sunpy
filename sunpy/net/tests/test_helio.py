@@ -262,6 +262,7 @@ def client():
 
 
 @pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
 def test_get_table_names(client):
     tables = client.get_table_names()
     assert len(tables) == 126
