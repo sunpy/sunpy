@@ -15,6 +15,7 @@ from astropy.tests.helper import assert_quantity_allclose
 import sunpy.data.test
 import sunpy.map
 from sunpy.physics.solar_rotation import calculate_solar_rotate_shift, mapsequence_solar_derotate
+from sunpy.tests.helpers import skip_32bit
 
 
 @pytest.fixture
@@ -68,6 +69,7 @@ def test_calculate_solar_rotate_shift(aia171_test_mapsequence, known_displacemen
     assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index1['y'], rtol=5e-2, atol=1e-5)
 
 
+@skip_32bit
 def test_mapsequence_solar_derotate(aia171_test_mapsequence, aia171_test_submap):
     # Test that a mapsequence is returned when the clipping is False.
     tmc = mapsequence_solar_derotate(aia171_test_mapsequence, clip=False)
