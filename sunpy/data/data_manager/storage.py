@@ -16,13 +16,34 @@ class StorageProviderBase(metaclass=ABCMeta):
 
         Parameters
         ----------
-        file_hash: `str`
-            Hash of the file.
+        key: `str`
+            The key/coloumn name of the field.
+        value: `str`
+            The value associated with the key of the entry.
 
         Returns
         -------
         `dict` or `None`
             `dict` contains the details of the file. `None` if hash not found.
+
+        Raises
+        ------
+        KeyError
+             KeyError is raised if key does not exist.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete_by_key(self, key, value):
+        """
+        Deletes the matching entry from the store.
+
+        Parameters
+        ----------
+        key: `str`
+            The key/coloumn name of the field.
+        value: `str`
+            The value associated with the key of the entry.
 
         Raises
         ------
@@ -56,6 +77,11 @@ class InMemStorage(StorageProviderBase):
     def store(self, details):
         self._store += [details]
 
+    def delete_by_key(self, key, value):
+        for i in self._store:
+            if i[key] == value:
+                self._store.remove(i)
+
     def find_by_key(self, key, value):
         for i in self._store:
             if i[key] == value:
@@ -71,6 +97,7 @@ class SqliteStorage(StorageProviderBase):
         'file_hash',
         'file_path',
         'url',
+        'time',
     ]
 
     def __init__(self, path):
@@ -120,6 +147,14 @@ class SqliteStorage(StorageProviderBase):
             if row:
                 return dict(zip(self.COLOUMN_NAMES, row))
             return None
+
+    def delete_by_key(self, key, value):
+        if key not in self.COLOUMN_NAMES:
+            raise KeyError
+        with self.connection(commit=True) as conn:
+            cursor = conn.cursor()
+            cursor.execute(f'''DELETE FROM {self._table_name}
+                                      WHERE {key}="{value}"''')
 
     def store(self, details):
         values = [details[k] for k in self.COLOUMN_NAMES]
