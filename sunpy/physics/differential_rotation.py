@@ -579,9 +579,9 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         out_meta.pop(key)
 
     # Add a new HGS observer
-    out_meta['hglt_obs'] = new_observer.lat.value
-    out_meta['hgln_obs'] = new_observer.lon.value
-    out_meta['dsun_obs'] = new_observer.radius.to(u.m).value
+    out_meta['hglt_obs'] = new_observer.transform_to('heliographic_stonyhurst').lat.value
+    out_meta['hgln_obs'] = new_observer.transform_to('heliographic_stonyhurst').lon.value
+    out_meta['dsun_obs'] = new_observer.transform_to('heliographic_stonyhurst').radius.to(u.m).value
 
     if is_sub_full_disk:
         # Define a new reference pixel and the value at the reference pixel.
