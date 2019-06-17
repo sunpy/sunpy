@@ -389,7 +389,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
         warnings.simplefilter('ignore')
 
         # The time interval between the new observer time and the map observation time.
-        interval = (parse_time(new_observer.obstime) - parse_time(smap.date)).to(u.s)
+        interval = (parse_time(smap.date) - parse_time(new_observer.obstime)).to(u.s)
 
         # We need to get the input pixel coordinates into the OUTPUT HPC frame.
         # To save us having to construct a WCS etc, we do the transformation
@@ -579,9 +579,9 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         out_meta.pop(key)
 
     # Add a new HGS observer
-    out_meta['hglt_obs'] = new_observer.lat.value
-    out_meta['hgln_obs'] = new_observer.lon.value
-    out_meta['dsun_obs'] = new_observer.radius.to(u.m).value
+    out_meta['hglt_obs'] = new_observer.transform_to('heliographic_stonyhurst').lat.value
+    out_meta['hgln_obs'] = new_observer.transform_to('heliographic_stonyhurst').lon.value
+    out_meta['dsun_obs'] = new_observer.transform_to('heliographic_stonyhurst').radius.to(u.m).value
 
     if is_sub_full_disk:
         # Define a new reference pixel and the value at the reference pixel.
