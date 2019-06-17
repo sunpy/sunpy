@@ -90,16 +90,13 @@ jobs:
             apt-get update
             apt-get install -y libfreetype6 libfreetype6-dev libpng-dev tk pkg-config python3-pip git openssh-client
       - run:
-          name: Install dependencies one
+          name: Install dependencies
           # Cat here to suppress the progress bar
-          command: pip3 install cython numpy scipy astropy matplotlib asdf | cat
-      - run:
-          name: Install dependencies two
-          # Cat here to suppress the progress bar
-          command: pip3 install sqlalchemy scikit-image glymur drms zeep beautifulsoup4 requests python-dateutil pytest pytest-cov pytest-mock pytest-xdist hypothesis pytest-astropy pytest-rerunfailures parfive[ftp] | cat
+          # 3.1.2 here due to a test failure in physcs.
+          command: pip3 install tox | cat
       - run:
           name: Run tests
-          command: PYTHONHASHSEED=42 python3 setup.py test --parallel=4
+          command: PYTHONHASHSEED=42 tox -e py36-offline -- -n=4
     environment:
           MPLBACKEND: agg
           COLUMNS: 180

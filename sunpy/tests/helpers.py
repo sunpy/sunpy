@@ -11,7 +11,7 @@ from matplotlib.testing import compare
 
 from sunpy.tests import hash
 
-__all__ = ['skip_windows', 'skip_glymur', 'skip_ana',
+__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_32bit',
            'warnings_as_errors', 'asdf_entry_points']
 
 # SunPy's JPEG2000 capabilities rely on the glymur library.
@@ -34,9 +34,16 @@ except ImportError:
 else:
     SKIP_ANA = False
 
-skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows")
-skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported")
-skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available")
+import numpy.distutils.system_info as sysinfo
+if sysinfo.platform_bits == 64:
+    SKIP_32 = False
+else:
+    SKIP_32 = True
+
+skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows.")
+skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
+skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
+skip_32bit = pytest.mark.skipif(SKIP_32, reason="Fails on a 32 bit system.")
 
 
 # Skip if the SunPy ASDF entry points are missing.
