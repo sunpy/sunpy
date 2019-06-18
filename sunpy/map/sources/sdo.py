@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from astropy.coordinates import CartesianRepresentation, SkyCoord
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
-# with the incorrect name HeliocentricTrueEcliptic
+# with the misleading name HeliocentricTrueEcliptic
 try:
     from astropy.coordinates import HeliocentricMeanEcliptic
 except ImportError:
