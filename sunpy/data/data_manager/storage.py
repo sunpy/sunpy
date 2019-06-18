@@ -1,3 +1,8 @@
+"""
+storage module contains the abstract implementation of storage
+for `sunpy.data.data_manager.Cache` and a concrete implementation
+using sqlite.
+"""
 import os
 import sqlite3
 from abc import ABCMeta, abstractmethod
@@ -6,7 +11,7 @@ from contextlib import contextmanager
 
 class StorageProviderBase(metaclass=ABCMeta):
     """
-    Base class for remote data manager storage providers
+    Base class for remote data manager storage providers.
     """
     @abstractmethod
     def find_by_key(self, key, value):
@@ -68,7 +73,7 @@ class StorageProviderBase(metaclass=ABCMeta):
 class InMemStorage(StorageProviderBase):
     """
     InMemStorage provides a storage stored in memory
-    as `dict`s
+    as `dict`s.
     """
 
     def __init__(self):
@@ -92,6 +97,11 @@ class InMemStorage(StorageProviderBase):
 class SqliteStorage(StorageProviderBase):
     """
     SqliteStorage provides a sqlite backend for storage.
+
+    Parameters
+    ----------
+    path: `str`
+        Path to the database file.
     """
     COLOUMN_NAMES = [
         'file_hash',

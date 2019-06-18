@@ -8,6 +8,10 @@ from sunpy.util.util import hash_file
 class DataManager:
     """
     DataManager
+
+    Parameters
+    ----------
+    cache: `sunpy.data.data_manager.cache.Cache`
     """
 
     def __init__(self, cache):
@@ -35,7 +39,6 @@ class DataManager:
         def decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                # TODO: Refractor into function(s)
                 replace = self._skip_file.get(name, None)
                 if replace:
                     if replace.startswith('file://'):
@@ -43,11 +46,9 @@ class DataManager:
                     else:
                         file_path = self._cache.download([replace], redownload=True)
                 elif self._skip_hash_check:
-                    # XXX: Should this redownload every time
                     file_path = self._cache.download(urls, redownload=True)
                 else:
                     details = self._cache.get_by_hash(sha_hash)
-                    # TODO: Better error and error message
                     err = KeyError("Hash does not match")
                     if not details:
                         # In case we are matching by hash and file does not exist
