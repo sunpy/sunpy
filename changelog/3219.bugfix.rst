@@ -1,0 +1,3 @@
+Fix the behaviour of
+`sunpy.coordinates.frames.Helioprojective.calculate_distance` if the
+representation isn't Spherical.
