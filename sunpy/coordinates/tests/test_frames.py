@@ -153,6 +153,16 @@ def test_hpc_distance():
     assert_quantity_allclose(hpc2.distance, DSUN_METERS - RSUN_METERS)
 
 
+def test_hpc_distance_cartesian():
+    # Test detection of distance in other representations
+    hpc1 = Helioprojective(CartesianRepresentation(0 * u.km, 0 * u.km, 1 * u.Mm))
+
+    assert isinstance(hpc1, Helioprojective)
+    assert isinstance(hpc1._data, CartesianRepresentation)
+
+    assert hpc1.calculate_distance() is hpc1
+
+
 def test_hpc_distance_off_limb():
     hpc1 = Helioprojective(1500 * u.arcsec, 0 * u.arcsec,
                            observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
