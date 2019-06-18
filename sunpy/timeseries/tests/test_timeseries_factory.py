@@ -47,6 +47,7 @@ class TestTimeSeries(object):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
+
         ts_from_folder = sunpy.timeseries.TimeSeries(os.path.join(filepath, "eve"), source='EVE', concatenate=True)
         assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         # text the two methods get identical dataframes
@@ -94,12 +95,14 @@ class TestTimeSeries(object):
 
     def test_implicit_goes(self):
         # Test a GOES TimeSeries
-        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
+        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_implicit_goes_com(self):
         # Test a GOES TimeSeries
-        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com)
+        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_implicit_lyra(self):
@@ -123,7 +126,8 @@ class TestTimeSeries(object):
 
     def test_eve(self):
         # Test an EVE TimeSeries
-        ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
+        with pytest.warns(SunpyUserWarning, match='Unknown units for x_cool proxy'):
+            ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
         assert isinstance(ts_eve, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
     def test_esp(self):
@@ -144,12 +148,14 @@ class TestTimeSeries(object):
 
     def test_goes(self):
         # Test a GOES TimeSeries
-        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
+        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_goes_com(self):
         # Test a GOES TimeSeries
-        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
+        with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+            ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_lyra(self):
@@ -238,7 +244,6 @@ class TestTimeSeries(object):
         assert isinstance(ts_tuple, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
         assert ts_generic == ts_tuple
 
-
     def test_generic_construction_basic_omitted_details(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
@@ -283,7 +288,6 @@ class TestTimeSeries(object):
         assert ts_md == ts_di == ts_od
         assert ts_md.meta.metadata[0][2] == ts_di.meta.metadata[0][2] == ts_od.meta.metadata[0][2]
 
-
     def test_generic_construction_ts_list(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
@@ -296,8 +300,8 @@ class TestTimeSeries(object):
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
         units = OrderedDict([('intensity', u.W/u.m**2)])
         units2 = OrderedDict([('intensity', u.W/u.m**2)])
-        meta = MetaDict({'key':'value'})
-        meta2 = MetaDict({'key2':'value2'})
+        meta = MetaDict({'key': 'value'})
+        meta2 = MetaDict({'key2': 'value2'})
 
         # Create TS individually
         ts_1 = sunpy.timeseries.TimeSeries(data, meta, units)
