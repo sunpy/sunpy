@@ -172,7 +172,7 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     >>> get_horizons_coord('Venus barycenter', '2001-02-03 04:05:06')  # doctest: +REMOTE_DATA
     INFO: Obtained JPL HORIZONS location for Venus Barycenter (2) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000): (lon, lat, radius) in (deg, deg, AU)
-        (326.06844114, -1.64998481, 0.71915147)>
+        (-33.93155883, -1.64998481, 0.71915147)>
 
     Query the location of the SDO spacecraft
 
