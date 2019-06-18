@@ -6,6 +6,7 @@ from astropy.coordinates import Angle, EarthLocation, SkyCoord
 from astropy.time import Time
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.utils.exceptions import ErfaWarning
 
 from sunpy.coordinates import sun
 
@@ -63,7 +64,8 @@ def test_angular_radius():
     # Regression-only test
     # The Astronomical Almanac publishes values, but I don't know what physical radius they use
     assert_quantity_allclose(sun.angular_radius("2012/11/11"), 968.871*u.arcsec, atol=1e-3*u.arcsec)
-    assert_quantity_allclose(sun.angular_radius("2043/03/01"), 968.326*u.arcsec, atol=1e-3*u.arcsec)
+    with pytest.warns(ErfaWarning):
+        assert_quantity_allclose(sun.angular_radius("2043/03/01"), 968.326*u.arcsec, atol=1e-3*u.arcsec)
     assert_quantity_allclose(sun.angular_radius("2001/07/21"), 944.039*u.arcsec, atol=1e-3*u.arcsec)
 
 
@@ -81,7 +83,8 @@ def test_mean_obliquity_of_ecliptic(t1, t2):
 def test_true_rightascension():
     # Regression-only test
     assert_quantity_allclose(sun.true_rightascension("2012/11/11"), 226.548*u.deg, atol=1e-3*u.deg)
-    assert_quantity_allclose(sun.true_rightascension("2142/02/03"), 316.466*u.deg, atol=1e-3*u.deg)
+    with pytest.warns(ErfaWarning):
+        assert_quantity_allclose(sun.true_rightascension("2142/02/03"), 316.466*u.deg, atol=1e-3*u.deg)
     assert_quantity_allclose(sun.true_rightascension("2013/12/11"), 258.150*u.deg, atol=1e-3*u.deg)
 
 
@@ -97,7 +100,8 @@ def test_true_rightascension_J2000(t1, t2):
 def test_true_declination():
     # Regression-only test
     assert_quantity_allclose(sun.true_declination("2012/11/11"), -17.470*u.deg, atol=1e-3*u.deg)
-    assert_quantity_allclose(sun.true_declination("2245/12/01"), -21.717*u.deg, atol=1e-3*u.deg)
+    with pytest.warns(ErfaWarning):
+        assert_quantity_allclose(sun.true_declination("2245/12/01"), -21.717*u.deg, atol=1e-3*u.deg)
     assert_quantity_allclose(sun.true_declination("2014/05/27"), 21.245*u.deg, atol=1e-3*u.deg)
 
 
