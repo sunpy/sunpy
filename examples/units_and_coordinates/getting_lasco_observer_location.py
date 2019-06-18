@@ -11,12 +11,9 @@ This requires the intallation of the
 `astroquery <https://astroquery.readthedocs.io/en/latest/>`__
 package and an internet connection.
 `astroquery <https://astroquery.readthedocs.io/en/latest/>`__ can be installed ontop of
-the existing sunpy conda environemnt:
+the existing sunpy conda environemnt: conda install -c astropy astroquery
 """
-$ conda install -c astropy astroquery
 
-###############################################################################
-# Back in the python environment:
 # sphinx_gallery_thumbnail_number = 2
 import numpy as np
 import matplotlib.pyplot as plt
