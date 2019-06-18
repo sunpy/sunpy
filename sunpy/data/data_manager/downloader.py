@@ -1,18 +1,34 @@
 from abc import ABCMeta, abstractmethod
-from parfive import Downloader
 from pathlib import Path
+
+from parfive import Downloader
 
 
 class DownloaderBase(metaclass=ABCMeta):
+    """
+    Base class for remote data manager downloaders.
+    """
     @abstractmethod
     def download(self, url, path):
         """
-        Downloads and returns the path
+        Downloads a file.
+
+        Parameters
+        ----------
+        url: `str`
+            URL of the file to be downloaded.
+        path: `pathlib.Path` or `str`
+            Path where the file should be downloaded to.
         """
         raise NotImplementedError
 
 
 class ParfiveDownloader(DownloaderBase):
+    """
+    Concrete implementation of `~sunpy.data.data_manager.downloader.DownloaderBase`
+    using `parfive`.
+    """
+
     def __init__(self):
         pass
 

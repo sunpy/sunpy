@@ -1,21 +1,36 @@
+import os
 from pathlib import Path
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 from urllib.request import urlopen
 
 from sunpy.util.net import get_filename
 from sunpy.util.util import hash_file, replacement_filename
 
+from astropy.time import TimeDelta
+import astropy.units as u
+
 
 class Cache:
     """
     Cache handles caching.
+
+    Parameters
+    ----------
+    downloader: Implementaion of `~sunpy.data.data_manager.downloader.DownloaderBase`
+        Downloader object for downloading remote files.
+    storage: Implementaion of `~sunpy.data.data_manager.storage.StorageProviderBase`
+        Storage to store metadata about the files.
+    cache_dir: `str` or `pathlib.Path`
+        Directory where the downloaded files will be stored.
+    expiry: `astropy.units.quantity.Quantity`
+        The interval after which the cache is invalidated.
     """
 
-    def __init__(self, downloader, storage, cache_dir, expiry=timedelta(seconds=10)):
+    def __init__(self, downloader, storage, cache_dir, expiry=10*u.s):
         self._downloader = downloader
         self._storage = storage
         self._cache_dir = Path(cache_dir)
-        self._expiry = expiry
+        self._expiry = TimeDelta(expiry)
 
     def download(self, urls, redownload=False):
         """
@@ -33,12 +48,18 @@ class Cache:
         `pathlib.PosixPath`
             Path to the downloaded file.
         """
-        # TODO: Expiry time
-        # XXX: Expiry time cache level or download level?
+        # Program flow
+        # 1. If redownload: Don't check cache, don't put in cache. Download and return file path
+        # 2. If not redownload: Check cache,
+        #    i. If present in cache:
+        #        - If cache expired, remove entry from cache, download and add to cache
+        #        - If cache not expired, return path
+        #    ii. If not download, store in cache and return path
         if not redownload:
             details = self._get_by_url(urls[0])
             if details:
                 if datetime.now() - datetime.fromisoformat(details['time']) > self._expiry:
+                    os.remove(details['file_path'])
                     self._storage.delete_by_key('url', details['url'])
                 else:
                     return Path(details['file_path'])

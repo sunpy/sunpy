@@ -44,20 +44,20 @@ def test_replace_file(manager, storage, downloader, data_function):
 
     def default_tester(manager):
         """
-        Function to test whether the file is /tmp/test_file.
+        Function to test whether the file name is test_file.
         """
         assert manager.get('test_file').name == ('test_file')
 
     def replace_file_tester(manager):
         """
-        Function to test whether the file is /tmp/lil.
+        Function to test whether the file is /tmp/another_file.
         """
-        assert manager.get('test_file') == Path('/tmp/lil')
+        assert manager.get('test_file') == Path('/tmp/another_fiel')
 
     # Outside the context manager file is default
     data_function(default_tester)
 
-    with manager.replace_file('test_file', 'file:///tmp/lil'):
+    with manager.replace_file('test_file', 'file:///tmp/another_fiel'):
         # Inside the file is replaced
         data_function(replace_file_tester)
 
