@@ -13,7 +13,7 @@ Please add the following line within your methods, conclusion or acknowledgement
    *This research has made use of SunPy vX.Y (version citation), an open-source and free
    community-developed solar data analysis Python package (citation).*
 
-The citation should be to the `SunPy paper`_ and the version number should cite the `Zenodo DOI`_ for the version used in your work.
+The citation should be to the `SunPy paper`_ and the version number should cite the specific `Zenodo DOI`_ for the version used in your work.
 
 .. code:: bibtex
 
