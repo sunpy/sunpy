@@ -15,6 +15,7 @@ __all__ = ['load_config', 'print_config', 'CONFIG_DIR']
 dirs = AppDirs("sunpy", "sunpy")
 # Default one set by AppDirs
 CONFIG_DIR = dirs.user_config_dir
+CACHE_DIR = dirs.user_cache_dir
 
 
 def load_config():
@@ -45,9 +46,11 @@ def load_config():
     # Set the download_dir to be relative to the working_dir
     working_dir = Path(config.get('general', 'working_dir'))
     download_dir = Path(config.get('downloads', 'download_dir'))
+    remote_data_manager_dir = Path(config.get('downloads', 'remote_data_manager_dir'))
     sample_dir = config.get('downloads', 'sample_dir', fallback=dirs.user_data_dir)
     config.set('downloads', 'sample_dir', Path(sample_dir).expanduser().resolve().as_posix())
     config.set('downloads', 'download_dir', (working_dir / download_dir).expanduser().resolve().as_posix())
+    config.set('downloads', 'remote_data_manager_dir', (working_dir / remote_data_manager_dir).expanduser().resolve().as_posix())
 
     return config
 
