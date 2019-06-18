@@ -2,7 +2,8 @@
 Provides classes for creating mocked objects.
 """
 import io
-from collections import MutableMapping, defaultdict
+from collections import defaultdict
+from collections.abc import MutableMapping
 
 __all__ = ["MockObject", "MockHTTPResponse", "MockOpenTextFile"]
 
