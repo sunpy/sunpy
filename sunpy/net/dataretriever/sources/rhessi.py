@@ -41,7 +41,30 @@ def get_base_url():
 
 
 class RHESSIClient(GenericClient):
+    """
+    Provides access to the RHESSI observing summary time series data
+    from the `archive <https://hesperia.gsfc.nasa.gov/hessidata/>`__ or its mirrors.
 
+    Examples
+    --------
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('RHESSI'))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the RHESSIClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str6       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-01-01 00:00:00 2016-01-01 23:59:59 rhessi     rhessi        nan
+    2016-01-02 00:00:00 2016-01-02 23:59:59 rhessi     rhessi        nan
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     def get_observing_summary_filename(self, time_range):
         """
         Download the RHESSI observing summary data from one of the RHESSI

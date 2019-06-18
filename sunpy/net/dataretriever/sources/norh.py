@@ -18,7 +18,35 @@ BASEURL = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 
 
 class NoRHClient(GenericClient):
+    """
+    Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation
+    time series data from the
+    `ftp archive <ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/>`__
+    as hosted by the
+    `NoRH Science Center <https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html>`__.
 
+    Queries to NoRH should specify either 17GHz or 34GHz as a Wavelength.
+
+    Examples
+    --------
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('NoRH'), a.Wavelength(17*u.GHz))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the NoRHClient:
+         Start Time           End Time      Source Instrument   Wavelength
+           str19               str19         str4     str4        str14
+    ------------------- ------------------- ------ ---------- --------------
+    2016-01-01 00:00:00 2016-01-02 00:00:00   NAOJ       NORH 17000000.0 kHz
+    2016-01-02 00:00:00 2016-01-03 00:00:00   NAOJ       NORH 17000000.0 kHz
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns list of URLS corresponding to value of input timerange.

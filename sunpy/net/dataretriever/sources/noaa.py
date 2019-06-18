@@ -16,6 +16,31 @@ __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
 
 class NOAAIndicesClient(GenericClient):
+    """
+    Provides access to the NOAA solar cycle indices
+    from the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/weekly/>`__.
+
+    This is a fixed dataset so the result is independent of the time range.
+
+    Examples
+    --------
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('noaa-indices'))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    1 Results from the NOAAIndicesClient:
+         Start Time           End Time      Source  Instrument  Wavelength
+           str19               str19         str4     str12        str3
+    ------------------- ------------------- ------ ------------ ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00   sdic noaa-indices        nan
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     @staticmethod
     def _get_url_for_timerange(timerange, **kwargs):
         """
@@ -55,7 +80,32 @@ class NOAAIndicesClient(GenericClient):
 
 
 class NOAAPredictClient(GenericClient):
+    """
+    Provides access to the `NOAA SWPC <https://www.swpc.noaa.gov>`__
+    predicted sunspot Number and 10.7 cm radio flux values
+    from the `ftp archive <http://services.swpc.noaa.gov/text/>`__.
 
+    This is a fixed prediction so the result is independent of the time range.
+
+    Examples
+    --------
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('noaa-predict'))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    1 Results from the NOAAPredictClient:
+     Start Time           End Time      Source  Instrument  Wavelength
+       str19               str19         str4     str12        str3
+    ------------------- ------------------- ------ ------------ ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00   ises noaa-predict        nan
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     @staticmethod
     def _get_default_uri():
         """Return the url to download indices"""
@@ -99,6 +149,30 @@ class NOAAPredictClient(GenericClient):
 
 
 class SRSClient(GenericClient):
+    """
+    Provides access to the `NOAA SWPC <https://www.swpc.noaa.gov>`__
+    solar region summary data from the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/warehouse/>`__.
+
+    Examples
+    --------
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('SOON'))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the SRSClient:
+     Start Time           End Time        Source  Instrument Wavelength
+       str19               str19           str9      str4       str3
+    ------------------- ------------------- --------- ---------- ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
+    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
         result = list()
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
