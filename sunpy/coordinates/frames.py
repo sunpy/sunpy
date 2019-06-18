@@ -390,8 +390,8 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             now with a third coordinate.
         """
         # Skip if we already are 3D
-        if (isinstance(self._data, SphericalRepresentation) and
-                not (self.distance.unit is u.one and u.allclose(self.distance, 1*u.one))):
+        distance = self.spherical.distance
+        if not (distance.unit is u.one and u.allclose(distance, 1*u.one)):
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):
