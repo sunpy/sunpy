@@ -43,7 +43,7 @@ def get_base_url():
 class RHESSIClient(GenericClient):
     """
     Provides access to the RHESSI observing summary time series data
-    from the `archive <https://hesperia.gsfc.nasa.gov/hessidata/>_ or its mirrors.
+    from the `archive <https://hesperia.gsfc.nasa.gov/hessidata/>`__ or its mirrors.
 
     Examples
     --------
