@@ -6,7 +6,17 @@ Setting the correct position for SOHO in a LASCO C3 Map
 
 How to get the correct location of SOHO using JPL HORIZONS
 and update the header.
+
+This requires the intallation of the
+`astroquery <https://astroquery.readthedocs.io/en/latest/>`__
+package and an internet connection.
+`astroquery <https://astroquery.readthedocs.io/en/latest/>`__ can be installed ontop of
+the existing sunpy conda environemnt:
 """
+$ conda install -c astropy astroquery
+
+###############################################################################
+# Back in the python environment:
 # sphinx_gallery_thumbnail_number = 2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -50,7 +60,7 @@ plt.show()
 # SOHO is actually a `halo orbit <https://en.wikipedia.org/wiki/Solar_and_Heliospheric_Observatory#Orbit>`__
 # around the Sun–Earth L1 point, about 1 million km away from the Earth.
 # The following functions queries JPL HORIZONS which includes positions of major spacecraft.
-# This function requires the astroquery package and an internet connection.
+# This function requires an internet connection to fetch the ephemeris data.
 soho = get_horizons_coord('SOHO', lasco.date)
 
 ###############################################################################
