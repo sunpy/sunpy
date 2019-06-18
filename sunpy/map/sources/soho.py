@@ -13,7 +13,7 @@ from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
-# with the incorrect name HeliocentricTrueEcliptic
+# with the misleading name HeliocentricTrueEcliptic
 try:
     from astropy.coordinates import HeliocentricMeanEcliptic
 except ImportError:
