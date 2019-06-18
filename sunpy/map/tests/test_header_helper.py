@@ -118,3 +118,21 @@ def test_make_fits_header(map_data, hpc_test_header, hgc_test_header,
     # Check returned MetaDict will make a `sunpy.map.Map`
     map_test = sunpy.map.Map(map_data, header)
     assert isinstance(map_test, sunpy.map.mapbase.GenericMap)
+
+
+def test_HGS_CAR_header():
+    # This tests both non-HPC and non-TAN header generation.
+    new_data = np.empty((72, 144))
+    new_frame = SkyCoord(0*u.deg, 0*u.deg, obstime="2019-06-16", frame="heliographic_stonyhurst")
+    new_header = sunpy.map.make_fitswcs_header(new_data, new_frame,
+                                            scale=[2.5, 2.5]*u.deg/u.pix,
+                                            projection_code="CAR")
+
+    assert new_header['ctype1'] == "HGLN-CAR"
+    assert new_header['ctype2'] == "HGLT-CAR"
+    assert new_header['cunit1'] == "deg"
+    assert new_header['cunit2'] == "deg"
+
+    assert "hgln_obs" not in new_header
+    assert "hglt_obs" not in new_header
+    assert "dsun_obs" not in new_header
