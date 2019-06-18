@@ -6,9 +6,9 @@ __all__ = ['GBMClient']
 
 class GBMClient(GenericClient):
     """
-    This GBMClient is for the Gamma-Ray Burst Monitor (GBM) instrument
+    Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument
     aboard the Fermi satellite. Although GBMs primary objective is to
-    detect gamma-ray bursts, it provides high quailty high energy solar
+    detect gamma-ray bursts, it provides high quality high energy solar
     flare observations.
 
     The instrument consists of 12 Sodium Iodide (NaI) scintillation
