@@ -10,6 +10,7 @@ from astropy.time import TimeDelta
 from sunpy.coordinates import HeliographicStonyhurst, Helioprojective, Heliocentric
 from sunpy.map import (all_coordinates_from_map, contains_full_disk, coordinate_is_on_solar_disk,
                        is_all_off_disk, is_all_on_disk, map_edges, on_disk_bounding_coordinates)
+from sunpy.map.header_helper import get_observer_meta
 from sunpy.time import parse_time
 from sunpy.util import expand_list
 
@@ -579,9 +580,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         out_meta.pop(key)
 
     # Add a new HGS observer
-    out_meta['hglt_obs'] = new_observer.transform_to('heliographic_stonyhurst').lat.value
-    out_meta['hgln_obs'] = new_observer.transform_to('heliographic_stonyhurst').lon.value
-    out_meta['dsun_obs'] = new_observer.transform_to('heliographic_stonyhurst').radius.to(u.m).value
+    out_meta.update(get_observer_meta(new_observer, out_meta['rsun_ref']*u.m))
 
     if is_sub_full_disk:
         # Define a new reference pixel and the value at the reference pixel.
