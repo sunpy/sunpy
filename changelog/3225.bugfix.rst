@@ -1,0 +1,1 @@
+Fixed a bug where passing a time or time interval to the differential rotation function threw an error because the new observer was not in HGS.
