@@ -192,12 +192,13 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
         >>> _ = c.__exit__()
     """
     obstime = parse_time(time)
+    array_time = np.reshape(obstime, (-1,))  # Convert to an array, even if scalar
 
     # Import here so that astroquery is not a module-level dependency
     from astroquery.jplhorizons import Horizons
     query = Horizons(id=body, id_type=id_type,
                      location='500@10',      # Heliocentric (mean ecliptic)
-                     epochs=obstime.tdb.jd)  # Time must be provided in JD TDB
+                     epochs=array_time.tdb.jd.tolist())  # Time must be provided in JD TDB
     try:
         result = query.vectors()
     except Exception:  # Catch and re-raise all exceptions, and also provide query URL if generated
@@ -205,11 +206,20 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
             log.error(f"See the raw output from the JPL HORIZONS query at {query.uri}")
         raise
     log.info(f"Obtained JPL HORIZONS location for {result[0]['targetname']}")
+    log.debug(f"See the raw output from the JPL HORIZONS query at {query.uri}")
 
-    vector = CartesianRepresentation(result[0]['x', 'y', 'z'])*u.AU
+    # JPL HORIZONS results are sorted by observation time, so this sorting needs to be undone.
+    # Calling argsort() on an array returns the sequence of indices of the unsorted list to put the
+    # list in order.  Calling argsort() again on the output of argsort() reverses the mapping:
+    # the output is the sequence of indices of the sorted list to put that list back in the
+    # original unsorted order.
+    unsorted_indices = obstime.argsort().argsort()
+    result = result[unsorted_indices]
+
+    vector = CartesianRepresentation(result['x'], result['y'], result['z'])
     coord = SkyCoord(vector, frame=HeliocentricMeanEcliptic, obstime=obstime)
 
-    return coord.transform_to(HGS)
+    return coord.transform_to(HGS).reshape(obstime.shape)
 
 
 # The code beyond this point should be moved to sunpy.coordinates.sun after the deprecation period
