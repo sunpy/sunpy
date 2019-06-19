@@ -9,6 +9,7 @@ import os.path
 import sqlite3
 import datetime
 from warnings import warn
+from urllib.parse import urljoin
 
 import numpy as np
 import pandas
@@ -16,6 +17,7 @@ import pandas
 from astropy.io import fits
 from astropy.time import Time
 
+from sunpy.data import cache
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.config import get_and_create_download_dir
@@ -424,7 +426,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     # Check inputs
     # Check lytaf path
     if not lytaf_path:
-        lytaf_path = get_and_create_download_dir()
+        warn('laytaf_path is deprecated, has no effect and will be removed in a future release.')
     # Parse start_time and end_time
     start_time = parse_time(start_time)
     end_time = parse_time(end_time)
@@ -453,9 +455,9 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     for suffix in combine_files:
         # Check database files are present
         dbname = f"annotation_{suffix}.db"
-        check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
+        lytaf_path = cache.download(urljoin(LYTAF_REMOTE_PATH, dbname))
         # Open SQLITE3 annotation files
-        connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+        connection = sqlite3.connect(str(lytaf_path))
         # Create cursor to manipulate data in annotation file
         cursor = connection.cursor()
         # Check if lytaf file spans the start and end times defined by
@@ -477,10 +479,10 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
                 cursor.close()
                 connection.close()
                 # ...Download latest lytaf file...
-                check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path,
-                                    replace=True)
+                lytaf_path = cache.download(urljoin(LYTAF_REMOTE_PATH, dbname),
+                                            redownload=True)
                 # ...and open new version of lytaf database.
-                connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+                connection = sqlite3.connect(str(lytaf_path))
                 cursor = connection.cursor()
         # Select and extract the data from event table within file within
         # given time range

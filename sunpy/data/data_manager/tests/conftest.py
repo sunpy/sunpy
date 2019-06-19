@@ -12,6 +12,7 @@ from sunpy.data.data_manager.storage import InMemStorage, SqliteStorage
 
 DB_TESTDATA_FILE = 'sunpy/data/data_manager/tests/db_testdata.csv'
 
+
 @pytest.fixture
 def downloader():
     downloader = MockDownloader()

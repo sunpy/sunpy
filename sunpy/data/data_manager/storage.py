@@ -7,6 +7,7 @@ import os
 import sqlite3
 from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
+from pathlib import Path
 
 
 class StorageProviderBase(metaclass=ABCMeta):
@@ -111,10 +112,11 @@ class SqliteStorage(StorageProviderBase):
     ]
 
     def __init__(self, path):
-        self._db_path = path
+        self._db_path = Path(path)
         self._table_name = 'cache_storage'
 
-        if not os.path.exists(self._db_path):
+        self._db_path.parent.mkdir(parents=True, exist_ok=True)
+        if not self._db_path.exists():
             # setup database
             self._setup()
 
