@@ -38,8 +38,8 @@ class Cache:
 
         Parameters
         ----------
-        urls: `list`
-            A list of urls.
+        urls: `list` or `str`
+            A list of urls or a single url.
         redownload: `bool`
             Whether to skip cache and redownload.
 
@@ -48,6 +48,8 @@ class Cache:
         `pathlib.PosixPath`
             Path to the downloaded file.
         """
+        if isinstance(urls, str):
+            urls = [urls]
         # Program flow
         # 1. If redownload: Don't check cache, don't put in cache. Download and return file path
         # 2. If not redownload: Check cache,
