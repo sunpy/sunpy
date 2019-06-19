@@ -140,7 +140,7 @@ class SqliteStorage(StorageProviderBase):
         commit: `bool`
         Whether to commit after succesful execution of db command.
         """
-        conn = sqlite3.connect(self._db_path)
+        conn = sqlite3.connect(str(self._db_path))
         try:
             yield conn
             if commit:
