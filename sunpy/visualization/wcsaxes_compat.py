@@ -144,6 +144,12 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs)
     else:
         raise ValueError("grid_spacing must be a Quantity of length one or two.")
 
+    # Set the native coordinates to be bottom and left only so they don't share
+    # axes with the overlay.
+    c1, c2 = axes.coords
+    c1.set_ticks_position('bl')
+    c2.set_ticks_position('bl')
+
     overlay = axes.get_coords_overlay('heliographic_stonyhurst')
 
     lon = overlay[0]
@@ -161,8 +167,10 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs)
     grid_kw = {'color': 'white', 'zorder': 100, 'alpha': 0.5}
     grid_kw.update(kwargs)
 
-    lon.set_ticks(spacing=lon_space, color=grid_kw['color'])
-    lat.set_ticks(spacing=lat_space, color=grid_kw['color'])
+    # Don't plot white ticks by default (only if explicitly asked)
+    tick_color = grid_kw['color'] if 'color' in kwargs else 'k'
+    lon.set_ticks(spacing=lon_space, color=tick_color)
+    lat.set_ticks(spacing=lat_space, color=tick_color)
 
     overlay.grid(**grid_kw)
 
