@@ -61,7 +61,7 @@ The best way to do this is to create a new conda environment and install the git
     $ conda remove sunpy
     $ git clone https://github.com/sunpy/sunpy.git sunpy-git
     $ cd sunpy-git
-    $ pip install --no-use-pep517 -e .[all,dev]
+    $ pip install -e .[all,dev]
 
 For detailed installation instructions, see the `Newcomers' guide`_ in the SunPy docs.
 

@@ -71,7 +71,7 @@ jobs:
           name: Install SunPy
           command: |
             pip install --progress-bar off .[all,dev]
-            pip install --no-use-pep517 -e .[all,dev]
+            pip install -e .[all,dev]
             python setup.py develop
 
   32bit:
