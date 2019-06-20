@@ -1,0 +1,2 @@
+Fix the ticks on the default heliographic grid overlay so they are not white
+(and normally invisible) by default.
