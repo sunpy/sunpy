@@ -58,6 +58,26 @@ def tmp_config_dir(request):
 
 
 @pytest.fixture()
+def sunpy_cache():
+    """
+    Provide a way to add local files to the cache.
+    """
+    from types import MethodType
+    import sunpy.data
+    sunpy.data.cache._storage._store = []
+    def add(self, url, path):
+        self._storage.store({
+            'url': url,
+            'file_path': path,
+            'file_hash': 'none',  # hash doesn't matter
+        })
+    sunpy.data.cache.add = MethodType(add, sunpy.data.cache)
+    yield sunpy.data.cache
+    sunpy.data.cache._storage._store = []
+
+
+
+@pytest.fixture()
 def undo_config_dir_patch():
     """
     Provide a way for certain tests to not have the config dir.
@@ -129,3 +149,15 @@ def pytest_unconfigure(config):
 
 def pytest_sessionstart(session):
     warnings.simplefilter("error", SunpyDeprecationWarning)
+
+    import sunpy.data
+    from sunpy.data.data_manager.cache import Cache
+    from sunpy.data.data_manager.storage import InMemStorage
+    from sunpy.data.data_manager.downloader import ParfiveDownloader
+    cache_dir = tempfile.mkdtemp()
+    sunpy.data.cache = Cache(
+        ParfiveDownloader(),
+        InMemStorage(),
+        cache_dir,
+        None
+    )
