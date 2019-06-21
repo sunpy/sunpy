@@ -8,7 +8,7 @@ This module provides the `Fido
 `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
 
 """
-from collections import Sequence
+from collections.abc import Sequence
 
 from parfive import Downloader, Results
 
