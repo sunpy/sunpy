@@ -22,15 +22,16 @@ class Cache:
         Storage to store metadata about the files.
     cache_dir: `str` or `pathlib.Path`
         Directory where the downloaded files will be stored.
-    expiry: `astropy.units.quantity.Quantity`
-        The interval after which the cache is invalidated.
+    expiry: `astropy.units.quantity.Quantity` or `None`
+        The interval after which the cache is invalidated. If the expiry is `None`,
+        then the expiry is not checked (or the cache never expires).
     """
 
     def __init__(self, downloader, storage, cache_dir, expiry=10*u.s):
         self._downloader = downloader
         self._storage = storage
         self._cache_dir = Path(cache_dir)
-        self._expiry = TimeDelta(expiry)
+        self._expiry = expiry if expiry is None else TimeDelta(expiry)
 
     def download(self, urls, redownload=False):
         """
@@ -60,7 +61,8 @@ class Cache:
         if not redownload:
             details = self._get_by_url(urls[0])
             if details:
-                if datetime.now() - datetime.fromisoformat(details['time']) > self._expiry:
+                if self._expiry and \
+                   datetime.now() - datetime.fromisoformat(details['time']) > self._expiry:
                     os.remove(details['file_path'])
                     self._storage.delete_by_key('url', details['url'])
                 else:

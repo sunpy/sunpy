@@ -20,7 +20,7 @@ from astropy.time import Time
 from sunpy.data import cache
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring
+from sunpy.util.decorators import add_common_docstring, deprecated
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
@@ -589,7 +589,7 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
                        for event_type in event_types]
     return all_event_types
 
-
+@deprecated("1.1")
 def download_lytaf_database(lytaf_dir=''):
     """
     download latest Proba2 pointing database from Proba2 Science Center.
