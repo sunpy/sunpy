@@ -145,6 +145,7 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
 
 @pytest.fixture()
 def local_cache(sunpy_cache):
+    sunpy_cache = sunpy_cache('sunpy.instr.lyra.cache')
     sunpy_cache.add('http://proba2.oma.be/lyra/data/lytaf/annotation_lyra.db',
                     os.path.join(TEST_DATA_PATH, 'annotation_lyra.db'))
     sunpy_cache.add('http://proba2.oma.be/lyra/data/lytaf/annotation_manual.db',
