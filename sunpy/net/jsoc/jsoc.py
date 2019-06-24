@@ -3,7 +3,7 @@ import os
 import time
 import urllib
 import warnings
-from collections import Sequence
+from collections.abc import Sequence
 
 import drms
 import numpy as np
