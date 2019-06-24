@@ -150,6 +150,7 @@ def pytest_unconfigure(config):
 def pytest_sessionstart(session):
     warnings.simplefilter("error", SunpyDeprecationWarning)
 
+    from sunpy.data import cache
     import sunpy.data
     from sunpy.data.data_manager.cache import Cache
     from sunpy.data.data_manager.storage import InMemStorage
