@@ -40,25 +40,23 @@ class DataManager:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 replace = self._skip_file.get(name, None)
+                err = KeyError("Hash does not match")
                 if replace:
-                    if replace.startswith('file://'):
-                        file_path = replace[len('file://'):]
+                    if replace['uri'].startswith('file://'):
+                        file_path = replace['uri'][len('file://'):]
                     else:
-                        file_path = self._cache.download([replace], redownload=True)
+                        file_path, file_hash, _ = self._cache._download_and_hash(replace['uri'],
+                                                                                 redownload=True)
+                        if file_hash != replace['hash']:
+                            raise err
                 elif self._skip_hash_check:
                     file_path = self._cache.download(urls, redownload=True)
                 else:
                     details = self._cache.get_by_hash(sha_hash)
-                    err = KeyError("Hash does not match")
                     if not details:
                         # In case we are matching by hash and file does not exist
                         # That might mean the wrong hash is supplied to decorator
                         # We match by urls to make sure that is not the case
-                        # XXX: Is this required? Would be useful if users want to
-                        # write functions using `data_manager` or if developers
-                        # are sleepy while writing the code
-                        # TODO: Raise a warning
-                        # https://github.com/sunpy/sunpy/pull/3124#discussion_r291576259
                         if self._cache_has_file(urls):
                             raise err
                         file_path = self._cache.download(urls)
@@ -75,11 +73,9 @@ class DataManager:
         return decorator
 
     @contextmanager
-    def replace_file(self, name, uri):
+    def replace_file(self, name, uri, sha_hash=None):
         """
         Replaces the file by the name with the file provided by the url/path.
-
-        TODO: Hash
 
         Parameters
         ----------
@@ -88,9 +84,14 @@ class DataManager:
         uri: `str`
             URI of the file which replaces original file. One of ``http``, ``https``, ``ftp``
             or ``file``.
+        sha_hash: `str`, optional
+            SHA1 hash of the file to compared to after downloading.
         """
         try:
-            self._skip_file[name] = uri
+            self._skip_file[name] = {
+                'uri': uri,
+                'hash': sha_hash,
+            }
             yield
         finally:
             _ = self._skip_file.pop(name, None)
