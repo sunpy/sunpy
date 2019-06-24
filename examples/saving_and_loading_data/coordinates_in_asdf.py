@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 
 import asdf
 import astropy.units as u
-import astropy.constants as const
+from astropy.constants import iau2015 as const
 from astropy.coordinates import SkyCoord
 
 import sunpy.map
