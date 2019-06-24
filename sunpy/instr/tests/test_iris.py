@@ -3,6 +3,7 @@
 import os
 
 import numpy as np
+import pytest
 
 import sunpy.data.test
 import sunpy.map
@@ -10,8 +11,11 @@ import sunpy.map
 from sunpy.instr import iris
 
 
+from sunpy.util import SunpyUserWarning
+
+
 def test_SJI_to_sequence():
-    test_data = os.path.join(sunpy.data.test.rootdir,'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits')
+    test_data = os.path.join(sunpy.data.test.rootdir, 'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits')
     iris_cube = iris.SJI_to_sequence(test_data, start=0, stop=None, hdu=0)
 
     assert isinstance(iris_cube, sunpy.map.MapSequence)
@@ -21,10 +25,11 @@ def test_SJI_to_sequence():
 
 
 def test_iris_rot():
-    test_data = os.path.join(sunpy.data.test.rootdir,'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits')
+    test_data = os.path.join(sunpy.data.test.rootdir, 'iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits')
     iris_cube = iris.SJI_to_sequence(test_data, start=0, stop=None, hdu=0)
     irismap = iris_cube.maps[0]
-    irismap_rot = irismap.rotate()
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        irismap_rot = irismap.rotate()
 
     assert isinstance(irismap_rot, sunpy.map.sources.SJIMap)
 
