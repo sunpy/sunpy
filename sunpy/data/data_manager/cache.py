@@ -5,6 +5,7 @@ from urllib.request import urlopen
 
 from sunpy.util.net import get_filename
 from sunpy.util.util import hash_file, replacement_filename
+from sunpy.data.data_manager.downloader import DownloaderError
 
 from astropy.time import TimeDelta
 import astropy.units as u
@@ -117,12 +118,16 @@ class Cache:
         `str`, `str`, `str`
             Path, hash and URL of the file.
         """
-        # TODO: Handle multiple urls
-        url = urls[0]
-        path = self._cache_dir / get_filename(urlopen(url), url)
-        path = replacement_filename(path)
-        self._downloader.download(url, path)
+        def download():
+            url = urls[0]
+            path = self._cache_dir / get_filename(urlopen(url), url)
+            path = replacement_filename(path)
+            self._downloader.download(url, path)
+            shahash = hash_file(path)
+            return path, shahash, urls[0]
 
-        shahash = hash_file(path)
-
-        return path, shahash, urls[0]
+        while True:
+            try:
+                return download()
+            except DownloaderError:
+                continue
