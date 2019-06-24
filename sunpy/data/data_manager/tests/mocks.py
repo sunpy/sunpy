@@ -1,5 +1,6 @@
 from sunpy.data.data_manager.downloader import DownloaderBase
 
+MOCK_HASH = "86f7e437faa5a7fce15d1ddcb9eaeaea377667b8"
 
 class MockDownloader(DownloaderBase):
     """

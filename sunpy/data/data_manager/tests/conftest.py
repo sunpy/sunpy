@@ -35,6 +35,16 @@ def sqlstorage():
             storage.store(row)
     return storage
 
+@pytest.fixture
+def cache(downloader, storage, mocker):
+    tempdir = tempfile.mkdtemp()
+    m = mock.Mock()
+    m.headers = {'Content-Disposition': 'test_file'}
+    mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
+    cache = Cache(downloader, storage, tempdir)
+    yield cache
+    shutil.rmtree(tempdir)
+
 
 @pytest.fixture
 def manager(downloader, storage, mocker):
