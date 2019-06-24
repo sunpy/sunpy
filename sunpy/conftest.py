@@ -58,22 +58,32 @@ def tmp_config_dir(request):
 
 
 @pytest.fixture()
-def sunpy_cache():
+def sunpy_cache(mocker):
     """
     Provide a way to add local files to the cache.
     """
     from types import MethodType
-    import sunpy.data
-    sunpy.data.cache._storage._store = []
+    from sunpy.data.data_manager.cache import Cache
+    from sunpy.data.data_manager.storage import InMemStorage
+    from sunpy.data.data_manager.downloader import ParfiveDownloader
+    cache_dir = tempfile.mkdtemp()
+    cache = Cache(
+        ParfiveDownloader(),
+        InMemStorage(),
+        cache_dir,
+        None
+    )
     def add(self, url, path):
         self._storage.store({
             'url': url,
             'file_path': path,
             'file_hash': 'none',  # hash doesn't matter
         })
-    sunpy.data.cache.add = MethodType(add, sunpy.data.cache)
-    yield sunpy.data.cache
-    sunpy.data.cache._storage._store = []
+    cache.add = MethodType(add, cache)
+    def func(mocked):
+        mocker.patch(mocked, cache)
+        return cache
+    yield func
 
 
 
@@ -149,16 +159,3 @@ def pytest_unconfigure(config):
 
 def pytest_sessionstart(session):
     warnings.simplefilter("error", SunpyDeprecationWarning)
-
-    from sunpy.data import cache
-    import sunpy.data
-    from sunpy.data.data_manager.cache import Cache
-    from sunpy.data.data_manager.storage import InMemStorage
-    from sunpy.data.data_manager.downloader import ParfiveDownloader
-    cache_dir = tempfile.mkdtemp()
-    sunpy.data.cache = Cache(
-        ParfiveDownloader(),
-        InMemStorage(),
-        cache_dir,
-        None
-    )
