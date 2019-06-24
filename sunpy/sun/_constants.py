@@ -2,15 +2,6 @@
 This module provies a non-comprehensive collection of solar physical constants.
 """
 # TODO: Need better sources for some constants as well as error values.
-
-
-from distutils.version import LooseVersion
-
-import astropy
-if LooseVersion(astropy.__version__) >= LooseVersion("3.3.0"):
-    from astropy import physical_constants as astropy_physical_constants, astronomical_constants
-    astropy_physical_constants.set('codata2014')
-    astronomical_constants.set('iau2015')
 import astropy.constants.astropyconst20 as astrocon
 from astropy.constants import Constant
 

@@ -1,1 +1,0 @@
-The constants are fixed to CODATA 2014 and IAU 2015 definitions.
