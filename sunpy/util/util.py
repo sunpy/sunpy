@@ -2,10 +2,11 @@
 This module provides general utility functions.
 """
 import os
-from itertools import count
+from itertools import chain, count
 from collections import UserList
 
-__all__ = ['unique', 'replacement_filename', 'expand_list', 'expand_list_generator']
+__all__ = ['unique', 'replacement_filename', 'expand_list',
+           'expand_list_generator', 'dict_keys_same']
 
 
 def unique(itr, key=None):
@@ -131,3 +132,35 @@ def partial_key_match(key, dictionary):
     for k, v in dictionary.items():
         if all(k1 == k2 or k2 is None for k1, k2 in zip(k, key)):
             yield v
+
+
+def dict_keys_same(list_of_dicts):
+    """
+    Makes sure that a list of dictionaries all have the same keys.
+
+    If a key is missing, it will be added but with a value of None.
+
+    Parameters
+    ----------
+    list_of_dicts : `list` of `dict`
+          A list containing each dictonary to parse.
+
+    Returns
+    ------
+    `list`
+        The list with each dict updated.
+
+    References
+    ----------
+    * https://stackoverflow.com/questions/10482439/make-sure-all-dicts-in-a-list-have-the-same-keys
+
+    Examples
+    ----------
+    >>> l = [{'x': 42}, {'x': 23, 'y': 5}]
+    >>> dict_keys_same(l)
+        [{'x': 42, 'y': None}, {'x': 23, 'y': 5}]
+    """
+    all_keys = set(chain.from_iterable(list_of_dicts))
+    for d in list_of_dicts:
+        d.update({key: None for key in all_keys if key not in d})
+    return list_of_dicts

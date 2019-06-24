@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-
-#pylint: disable=W0613
-
 import pytest
 
-import sunpy
+from sunpy.time import parse_time
 from sunpy.net import hek
-from sunpy.net import attr
+from sunpy.net import attr, vso
 
 
 @pytest.fixture
@@ -28,6 +23,7 @@ def hek_client_creator():
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
     return hek_query
+
 
 def test_eventtype_collide():
     with pytest.raises(TypeError):
@@ -113,7 +109,7 @@ def test_hek_client():
 
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
-    assert type(hek_query) == sunpy.net.hek.hek.HEKTable
+    assert type(hek_query) == hek.hek.HEKTable
 
 
 @pytest.mark.remote_data
@@ -127,7 +123,7 @@ def test_hek_empty_search_result():
 
     h = hek.HEKClient()
     hek_query = h.search(hekTime, hekEvent)
-    assert type(hek_query) == sunpy.net.hek.hek.HEKTable
+    assert type(hek_query) == hek.hek.HEKTable
     assert len(hek_query) == 0
 
 
@@ -148,7 +144,7 @@ def test_get_voevent(hek_client_creator):
 def test_vso_time(hek_client_creator):
     hc = hek_client_creator
     ve = hc[0].vso_time
-    assert type(ve) == sunpy.net.vso.attrs.Time
+    assert type(ve) == vso.attrs.Time
 
 
 @pytest.mark.remote_data
@@ -156,7 +152,7 @@ def test_vso_instrument(hek_client_creator):
     hc = hek_client_creator
     try:
         vc = hc[1].vso_instrument
-        assert type(vc) == sunpy.net.vso.attrs.Instrument
+        assert type(vc) == vso.attrs.Instrument
     except ValueError:
         assert 1
 
@@ -166,3 +162,11 @@ def test_HEKRow_get(hek_client_creator):
     hc = hek_client_creator
     assert hc[0]['event_peaktime'] == hc[0].get('event_peaktime')
     assert hc[0].get('') is None
+
+
+@pytest.mark.remote_data
+def test_mixed_results_get():
+    # To check that the following bug is fixed:
+    # https://github.com/sunpy/sunpy/issues/3238
+    client = hek.HEKClient()
+    client.search(hek.attrs.Time(parse_time('2013/02/01 00:00:00'), parse_time('2013/02/01 23:30:00')), hek.attrs.FRM.Name == 'SPoCA')
