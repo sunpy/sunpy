@@ -19,8 +19,19 @@ class DownloaderBase(metaclass=ABCMeta):
             URL of the file to be downloaded.
         path: `pathlib.Path` or `str`
             Path where the file should be downloaded to.
+
+        Raises
+        ------
+        ``DownloaderError``
+            DownloaderError is raised when download errors.
         """
         raise NotImplementedError
+
+
+class DownloaderError(Exception):
+    """
+    Error to be raised when a download fails.
+    """
 
 
 class ParfiveDownloader(DownloaderBase):
@@ -38,4 +49,7 @@ class ParfiveDownloader(DownloaderBase):
         filename = path.name
         directory = path.parent
         downloader.enqueue_file(url, directory, filename)
-        downloader.download()
+        try:
+            downloader.download()
+        except Exception as e:
+            raise DownloaderError from e
