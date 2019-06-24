@@ -201,11 +201,12 @@ def test_remove_lytaf_events_1():
 def test_remove_lytaf_events_2():
     """Test _remove_lytaf_events() with no user artifacts found."""
     # Run _remove_lytaf_events
-    time_test, channels_test, artifacts_status_test = \
-        lyra._remove_lytaf_events(
-            TIME, channels=CHANNELS, artifacts="Offpoint",
-            return_artifacts=True, lytaf_path=TEST_DATA_PATH,
-            force_use_local_lytaf=True)
+    with pytest.warns(UserWarning, match='None of user supplied artifacts were found.'):
+        time_test, channels_test, artifacts_status_test = \
+            lyra._remove_lytaf_events(
+                TIME, channels=CHANNELS, artifacts="Offpoint",
+                return_artifacts=True, lytaf_path=TEST_DATA_PATH,
+                force_use_local_lytaf=True)
     # Generated expected result
     time_expected = TIME
     channels_expected = CHANNELS
@@ -230,17 +231,19 @@ def test_remove_lytaf_events_2():
     # supplied.
     # Case 1: channels kwarg is True
     # Run _remove_lytaf_events
-    time_test, channels_test = lyra._remove_lytaf_events(
-        TIME, channels=CHANNELS, artifacts=["Offpoint"],
-        lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
+    with pytest.warns(UserWarning, match='None of user supplied artifacts were found.'):
+        time_test, channels_test = lyra._remove_lytaf_events(
+            TIME, channels=CHANNELS, artifacts=["Offpoint"],
+            lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
     assert np.all(time_test == time_expected)
     assert (channels_test[0]).all() == (channels_expected[0]).all()
     assert (channels_test[1]).all() == (channels_expected[1]).all()
     # Case 2: channels kwarg is False
     # Run _remove_lytaf_events
-    time_test = lyra._remove_lytaf_events(
-        TIME, artifacts=["Offpoint"],
-        lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
+    with pytest.warns(UserWarning, match='None of user supplied artifacts were found.'):
+        time_test = lyra._remove_lytaf_events(
+            TIME, artifacts=["Offpoint"],
+            lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
     assert np.all(time_test == time_expected)
 
 
