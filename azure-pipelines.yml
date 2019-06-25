@@ -13,7 +13,7 @@ jobs:
 
 - template: azure-templates.yml
   parameters:
-    name: macOS_37_offline
+    name: Linux_37_offline
     os: macos
     tox: py37-offline -- -n=4
 
@@ -25,8 +25,8 @@ jobs:
 
 - template: azure-templates.yml
   parameters:
-    name: Linux_37_online
-    os: linux
+    name: macOS_37_online
+    os: macos
     tox: py37-online -- -n=4
 
 - template: azure-templates.yml
@@ -38,7 +38,7 @@ jobs:
 - template: azure-templates.yml
   parameters:
     name: Linux_37_astropydev
-    os: linux
+    os: macos
     tox: py37-astropydev -- -n=4
 
 - ${{ if eq(variables['Build.Reason'], 'Schedule') }}:

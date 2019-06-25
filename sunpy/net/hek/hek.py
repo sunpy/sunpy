@@ -17,7 +17,7 @@ from astropy.table import Table, Row, Column
 from astropy.time import Time
 
 from sunpy.net import attr
-from sunpy.util import unique
+from sunpy.util import dict_keys_same, unique
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
 from sunpy.util.xml import xml_to_dict
@@ -74,7 +74,7 @@ class HEKClient(object):
 
             if not result['overmax']:
                 if len(results) > 0:
-                    return HEKTable(results)
+                    return HEKTable(dict_keys_same(results))
                 else:
                     return HEKTable()
 
@@ -103,6 +103,7 @@ class HEKClient(object):
         """ Merge responses, removing duplicates. """
         return list(unique(chain.from_iterable(responses), _freeze))
 
+
 class HEKTable(Table):
     def __getitem__(self, item):
         table_item = super().__getitem__(item)
@@ -114,8 +115,10 @@ class HEKTable(Table):
 
         return table_item
 
+
 class HEKColumn(Column):
     pass
+
 
 class HEKRow(Row):
     """
