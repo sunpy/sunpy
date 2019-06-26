@@ -196,8 +196,26 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     return heliocframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, Heliocentric,
-                                 HeliographicStonyhurst)
+def _rotation_matrix_hcc_to_hgs(longitude, latitude):
+    # Returns the rotation matrix from HCC to HGS based on the observer longitude and latitude
+
+    # Permute the axes of HCC to match HGS Cartesian equivalent
+    #   HGS_X = HCC_Z
+    #   HGS_Y = HCC_X
+    #   HGS_Z = HCC_Y
+    axes_matrix = np.array([[0, 0, 1],
+                            [1, 0, 0],
+                            [0, 1, 0]])
+
+    # Rotate in latitude and longitude (sign difference because of direction difference)
+    lat_matrix = rotation_matrix(latitude, 'y')
+    lon_matrix = rotation_matrix(-longitude, 'z')
+
+    return matrix_product(matrix_product(lon_matrix, lat_matrix), axes_matrix)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 Heliocentric, HeliographicStonyhurst)
 def hcc_to_hgs(helioccoord, heliogframe):
     """
     Convert from Heliocentric Cartesian to Heliographic Stonyhurst.
@@ -207,67 +225,55 @@ def hcc_to_hgs(helioccoord, heliogframe):
                            "heliographic coordinates for observer '{}' "
                            "without `obstime` being specified.".format(helioccoord.observer))
 
-    x = helioccoord.x.to(u.m)
-    y = helioccoord.y.to(u.m)
-    z = helioccoord.z.to(u.m)
+    # Make sure the observer is in HGS
+    obs = helioccoord.observer.\
+          transform_to(HeliographicStonyhurst(obstime=helioccoord.observer.obstime))
 
-    l0_rad = helioccoord.observer.lon
-    b0_deg = helioccoord.observer.lat
+    total_matrix = _rotation_matrix_hcc_to_hgs(obs.lon, obs.lat)
 
-    cosb = np.cos(np.deg2rad(b0_deg))
-    sinb = np.sin(np.deg2rad(b0_deg))
+    # Transform from HCC to HGS at the HCC obstime
+    newrepr = helioccoord.cartesian.transform(total_matrix)
+    int_coord = HeliographicStonyhurst(newrepr, obstime=helioccoord.obstime)
 
-    hecr = np.sqrt(x**2 + y**2 + z**2)
-    hgln = np.arctan2(x, z * cosb - y * sinb) + l0_rad
-    hglt = np.arcsin((y * cosb + z * sinb) / hecr)
-
-    representation = SphericalRepresentation(
-        np.rad2deg(hgln), np.rad2deg(hglt), hecr.to(u.km))
-    return heliogframe.realize_frame(representation)
+    # Loopback transform HGS if there is a change in obstime
+    if np.any(helioccoord.obstime != heliogframe.obstime):
+        return _transform_obstime(int_coord, heliogframe)
+    else:
+        return int_coord
 
 
-@frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst,
-                                 Heliocentric)
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliographicStonyhurst, Heliocentric)
 def hgs_to_hcc(heliogcoord, heliocframe):
     """
     Convert from Heliographic Stonyhurst to Heliocentric Cartesian.
     """
-    hglon = heliogcoord.spherical.lon
-    hglat = heliogcoord.spherical.lat
-    r = heliogcoord.spherical.distance
-    if r.unit is u.one and u.allclose(r, 1*u.one):
-        r = np.ones_like(r)
-        r *= RSUN_METERS
-
     if not isinstance(heliocframe.observer, BaseCoordinateFrame):
         raise ConvertError("Cannot transform heliographic coordinates to "
                            "heliocentric coordinates for observer '{}' "
                            "without `obstime` being specified.".format(heliocframe.observer))
 
-    l0_rad = heliocframe.observer.lon.to(u.rad)
-    b0_deg = heliocframe.observer.lat
+    # Make sure the observer is in HGS
+    obs = heliocframe.observer.\
+          transform_to(HeliographicStonyhurst(obstime=heliocframe.observer.obstime))
 
-    lon = np.deg2rad(hglon)
-    lat = np.deg2rad(hglat)
+    # If HGS coord is only directional, place it on the surface of the Sun
+    r = heliogcoord.spherical.distance
+    if r.unit is u.one and u.allclose(r, 1*u.one):
+        int_repr = heliogcoord.spherical * RSUN_METERS
+        int_coord = heliogcoord.realize_frame(int_repr)
+    else:
+        int_coord = heliogcoord
 
-    cosb = np.cos(b0_deg.to(u.rad))
-    sinb = np.sin(b0_deg.to(u.rad))
+    # Loopback transform HGS if there is a change in obstime
+    if np.any(heliogcoord.obstime != heliocframe.obstime):
+        int_coord = _transform_obstime(int_coord, heliocframe.obstime)
 
-    lon = lon - l0_rad
+    total_matrix = matrix_transpose(_rotation_matrix_hcc_to_hgs(obs.lon, obs.lat))
 
-    cosx = np.cos(lon)
-    sinx = np.sin(lon)
-    cosy = np.cos(lat)
-    siny = np.sin(lat)
-
-    x = r * cosy * sinx
-    y = r * (siny * cosb - cosy * cosx * sinb)
-    zz = r * (siny * sinb + cosy * cosx * cosb)
-
-    representation = CartesianRepresentation(
-        x.to(u.km), y.to(u.km), zz.to(u.km))
-
-    return heliocframe.realize_frame(representation)
+    # Transform from HGS to HCC at the same obstime
+    newrepr = int_coord.cartesian.transform(total_matrix)
+    return heliocframe.realize_frame(newrepr)
 
 
 @frame_transform_graph.transform(FunctionTransform, Helioprojective,
@@ -290,7 +296,7 @@ def hpc_to_hpc(heliopcoord, heliopframe):
         raise ConvertError("Cannot transform between helioprojective frames "
                            "without `obstime` being specified for observer {}.".format(heliopcoord.observer))
 
-    hgs = heliopcoord.transform_to(HeliographicStonyhurst)
+    hgs = heliopcoord.transform_to(HeliographicStonyhurst(obstime=heliopframe.obstime))
     hgs.observer = heliopframe.observer
     hpc = hgs.transform_to(heliopframe)
 
@@ -416,19 +422,20 @@ def hgc_to_hgc(from_coo, to_frame):
                transform_to(to_frame)
 
 
-@frame_transform_graph.transform(FunctionTransform, Heliocentric, Heliocentric)
-def hcc_to_hcc(hcccoord, hccframe):
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 Heliocentric, Heliocentric)
+def hcc_to_hcc(from_coo, to_frame):
     """
-    Convert from  Heliocentric to Heliocentric
+    Convert between two Heliocentric frames.
     """
-    if _observers_are_equal(hcccoord.observer, hccframe.observer, string_ok=True):
-        return hccframe.realize_frame(hcccoord._data)
+    if _observers_are_equal(from_coo.observer, to_frame.observer, string_ok=True):
+        return to_frame.realize_frame(from_coo.data)
 
-    hgscoord = hcccoord.transform_to(HeliographicStonyhurst)
-    hgscoord.observer = hccframe.observer
-    hcccoord = hgscoord.transform_to(hccframe)
+    # Convert through HGS
+    hgscoord = from_coo.transform_to(HeliographicStonyhurst(obstime=to_frame.obstime))
+    hgscoord.observer = to_frame.observer
 
-    return hcccoord
+    return hgscoord.transform_to(to_frame)
 
 
 def _make_sunpy_graph():
