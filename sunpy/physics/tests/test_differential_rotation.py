@@ -330,3 +330,9 @@ def test_warp_sun_coordinates(all_on_disk_map):
     # We are passing in 500 pairs of (0,0) so all the output pixels should be the same
     np.testing.assert_almost_equal(xy2[:, 0], -2.08384686, decimal=2)
     np.testing.assert_almost_equal(xy2[:, 1], -0.23927568, decimal=2)
+
+
+@pytest.mark.array_compare
+def test_differential_rotation(aia171_test_map):
+    rot_map = differential_rotate(aia171_test_map, time=2*u.day)
+    return rot_map.data
