@@ -1,0 +1,2 @@
+Enable explicitly setting the observer of a coordinate frame to `'none'` if it
+is incorrect to default to Earth.
