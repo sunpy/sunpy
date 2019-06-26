@@ -300,8 +300,8 @@ def test_hgs_hgs():
     new = old.transform_to(HeliographicStonyhurst(obstime=obstime + 1*u.day))
 
     assert_quantity_allclose(new.lon, old.lon - 1*u.deg, atol=0.1*u.deg)  # due to Earth motion
-    assert_quantity_allclose(new.lat, old.lat)
-    assert_quantity_allclose(new.radius, old.radius)
+    assert_quantity_allclose(new.lat, old.lat, atol=1e-3*u.deg)
+    assert_quantity_allclose(new.radius, old.radius, atol=1e-5*u.AU)
 
 
 def test_hgc_hgc():
@@ -311,8 +311,8 @@ def test_hgc_hgc():
     new = old.transform_to(HeliographicCarrington(obstime=obstime + 1*u.day))
 
     assert_quantity_allclose(new.lon, old.lon - 14.1844*u.deg, atol=1e-4*u.deg)  # solar rotation
-    assert_quantity_allclose(new.lat, old.lat)
-    assert_quantity_allclose(new.radius, old.radius)
+    assert_quantity_allclose(new.lat, old.lat, atol=1e-4*u.deg)
+    assert_quantity_allclose(new.radius, old.radius, atol=1e-5*u.AU)
 
 
 def test_hgs_hcrs_sunspice():
