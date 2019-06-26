@@ -405,17 +405,20 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
                                      obstime=new_observer.obstime,
                                      observer=new_observer,
                                      frame=Helioprojective)
+
         heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
+        # Now transform the HGS coordinates to the obstime of the input map (to account for movement of Earth)
+        heliographic_coordinate = heliographic_coordinate.transform_to(HeliographicStonyhurst(obstime=smap.date))
 
         # Compute the differential rotation.
         drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
-        # Add in the differential rotation shift
-        rotated_coord = SkyCoord(heliographic_coordinate.lon + drot,
+        # The change in longitude is negative because we are mapping from the
+        # new coordinates to the old.
+        rotated_coord = SkyCoord(heliographic_coordinate.lon - drot,
                                  heliographic_coordinate.lat,
                                  heliographic_coordinate.radius,
-                                 obstime=new_observer.obstime,
-                                 observer=new_observer,
+                                 obstime=heliographic_coordinate.obstime,
                                  frame=HeliographicStonyhurst)
 
         # As seen from the map observer, which coordinates are on disk and which are behind the Sun.
