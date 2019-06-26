@@ -57,4 +57,4 @@ jobs:
 - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
   - template: publish-pypi.yml
     parameters:
-      dependsOn: [macOS_37_offline,Windows_36_offline,Linux_37_online,Linux_36_Conda_offline]
+      dependsOn: [Linux_37_offline,Windows_36_offline,macOS_37_online,Linux_36_Conda_offline]
