@@ -1,1 +1,0 @@
-Fixed a bug where the longitude of a coordinate would not wrap at the expected angle following a frame transformation.
