@@ -209,8 +209,8 @@ def test_coordinate_frame(aia171_test_map):
 
 
 def test_heliographic_longitude_crln(hmi_test_map):
-    assert hmi_test_map.heliographic_longitude == hmi_test_map.carrington_longitude - \
-                                                  sun.L0(hmi_test_map.date)
+    assert_quantity_allclose(hmi_test_map.heliographic_longitude,
+                             hmi_test_map.carrington_longitude - sun.L0(hmi_test_map.date))
 
 
 def test_remove_observers(aia171_test_map):
