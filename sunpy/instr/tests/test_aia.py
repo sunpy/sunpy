@@ -7,6 +7,8 @@ import sunpy.map
 import sunpy.data.test as test
 from sunpy.instr.aia import aiaprep
 
+from astropy.io.fits.verify import VerifyWarning
+
 # Define the original and prepped images first so they're available to all
 # functions
 
@@ -46,7 +48,9 @@ def test_filesave(prep_map):
     # Test that adjusted header values are still correct after saving the map
     # and reloading it.
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-    prep_map.save(afilename, overwrite=True)
+    with pytest.warns(
+            VerifyWarning, match="The 'BLANK' keyword is only applicable to integer data"):
+        prep_map.save(afilename, overwrite=True)
     load_map = sunpy.map.Map(afilename)
     # Check crpix values
     assert load_map.meta['crpix1'] == prep_map.data.shape[1] / 2.0 + 0.5

@@ -4,7 +4,9 @@ import pytest
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
 from astropy.coordinates import (SkyCoord, get_body_barycentric, Angle,
-                                 ConvertError)
+                                 ConvertError, Longitude, CartesianRepresentation)
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the misleading name HeliocentricTrueEcliptic
 try:
     from astropy.coordinates import HeliocentricMeanEcliptic
 except ImportError:
@@ -298,8 +300,8 @@ def test_hgs_hgs():
     new = old.transform_to(HeliographicStonyhurst(obstime=obstime + 1*u.day))
 
     assert_quantity_allclose(new.lon, old.lon - 1*u.deg, atol=0.1*u.deg)  # due to Earth motion
-    assert_quantity_allclose(new.lat, old.lat)
-    assert_quantity_allclose(new.radius, old.radius)
+    assert_quantity_allclose(new.lat, old.lat, atol=1e-3*u.deg)
+    assert_quantity_allclose(new.radius, old.radius, atol=1e-5*u.AU)
 
 
 def test_hgc_hgc():
@@ -309,5 +311,76 @@ def test_hgc_hgc():
     new = old.transform_to(HeliographicCarrington(obstime=obstime + 1*u.day))
 
     assert_quantity_allclose(new.lon, old.lon - 14.1844*u.deg, atol=1e-4*u.deg)  # solar rotation
+    assert_quantity_allclose(new.lat, old.lat, atol=1e-4*u.deg)
+    assert_quantity_allclose(new.radius, old.radius, atol=1e-5*u.AU)
+
+
+def test_hgs_hcrs_sunspice():
+    # Compare our HGS->HCRS transformation against SunSPICE by transforming beyond it
+    # "HEQ" is another name for HEEQ, which is equivalent to Heliographic Stonyhurst
+    # "HAE" is equivalent to Astropy's Heliocentric Mean Ecliptic, and defaults to J2000.0
+    #
+    # IDL> coord = [1.d, 0.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'HAE', /au, /degrees
+    # IDL> print, coord
+    #        1.0000000      -108.65371       10.642778
+
+    old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime='2019-06-01'))
+    new = old.transform_to(HeliocentricMeanEcliptic)
+
+    assert_quantity_allclose(new.lon, Longitude(-108.65371*u.deg), atol=0.1*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 10.642778*u.deg, atol=0.1*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, old.radius)
+
+    # Transform to HAE precessed to the mean ecliptic of date instead of J2000.0
+    # IDL> coord = [1.d, 0.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'HAE', /precess, /au, /degrees
+    # IDL> print, coord
+    #        1.0000000      -108.38240       10.640314
+
+    new = old.transform_to(HeliocentricMeanEcliptic(equinox='2019-06-01'))
+
+    assert_quantity_allclose(new.lon, Longitude(-108.38240*u.deg), atol=0.1*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 10.640314*u.deg, atol=0.1*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, old.radius)
+
+
+def test_hgs_hgc_sunspice():
+    # Compare our HGS->HGC transformation against SunSPICE
+    # "HEQ" is another name for HEEQ, which is equivalent to Heliographic Stonyhurst
+    # "Carrington" is offset by 0.076 degrees in longitude from our Heliographic Carrington (HGC)
+    #   because "Carrington" does not include light travel time to the observer, while our
+    #   HGC includes the light travel time to Earth (see Seidelmann et al. 2007).
+    #
+    # IDL> coord = [1.d, 0.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'Carrington', /au, /degrees
+    # IDL> print, coord
+    #        1.0000000       16.688242       10.000000
+
+    old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime='2019-06-01'))
+    new = old.heliographic_carrington
+
+    assert_quantity_allclose(new.lon, 16.688242*u.deg + 0.076*u.deg, atol=1e-2*u.arcsec, rtol=0)
     assert_quantity_allclose(new.lat, old.lat)
     assert_quantity_allclose(new.radius, old.radius)
+
+
+def test_hgs_hcc_sunspice():
+    # Compare our HGS->HCC transformation against SunSPICE
+    # "HEQ" is another name for HEEQ, which is equivalent to Heliographic Stonyhurst
+    # "HGRTN" is equivalent to our Heliocentric, but with the axes permuted
+    # SunSPICE, like us, assumes an Earth observer if not explicitly specified
+    #
+    # IDL> coord = [7d5, 8d5, 9d5]
+    # IDL> convert_sunspice_coord, '2019-06-01', coord, 'HEQ', 'HGRTN'
+    # Assuming Earth observation
+    # IDL> print, coord
+    #        688539.32       800000.00       908797.89
+
+    old = SkyCoord(CartesianRepresentation([7e5, 8e5, 9e5]*u.km),
+                   frame=HeliographicStonyhurst(obstime='2019-06-01'))
+    new = old.heliocentric
+
+    assert_quantity_allclose(new.x, 800000.00*u.km, atol=1e-2*u.km)
+    assert_quantity_allclose(new.y, 908797.89*u.km, atol=1e-2*u.km)
+    assert_quantity_allclose(new.z, 688539.32*u.km, atol=1e-2*u.km)

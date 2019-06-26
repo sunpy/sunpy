@@ -22,7 +22,8 @@ from astropy.coordinates import ICRS, HCRS, ConvertError, BaseCoordinateFrame, g
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
                                                 UnitSphericalRepresentation)
-from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
+from astropy.coordinates.transformations import (FunctionTransform, DynamicMatrixTransform,
+                                                 AffineTransform)
 from astropy.coordinates.matrix_utilities import matrix_product, rotation_matrix, matrix_transpose
 
 from sunpy.sun import constants
@@ -303,7 +304,7 @@ _SUN_DETILT_MATRIX = _make_rotation_matrix_from_reprs(_SOLAR_NORTH_POLE_HCRS,
                                                       CartesianRepresentation(0, 0, 1))
 
 
-@frame_transform_graph.transform(DynamicMatrixTransform, HCRS, HeliographicStonyhurst)
+@frame_transform_graph.transform(AffineTransform, HCRS, HeliographicStonyhurst)
 def hcrs_to_hgs(hcrscoord, hgsframe):
     """
     Convert from HCRS to Heliographic Stonyhurst (HGS).
@@ -341,15 +342,33 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
         rot_matrix_list = [_make_rotation_matrix_from_reprs(vect, x_axis) for vect in hgs_x_axis_detilt]
         rot_matrix = np.stack(rot_matrix_list)
 
-    return matrix_product(rot_matrix, _SUN_DETILT_MATRIX)
+    total_matrix = matrix_product(rot_matrix, _SUN_DETILT_MATRIX)
+
+    # All of the above is calculated for the HGS observation time
+    # If the HCRS observation time is different, calculate the translation in origin
+    if np.any(hcrscoord.obstime != hgsframe.obstime):
+        sun_pos_old_icrs = get_body_barycentric('sun', hcrscoord.obstime)
+        offset_icrf = sun_pos_icrs - sun_pos_old_icrs
+        offset = offset_icrf.transform(total_matrix)
+    else:
+        offset = CartesianRepresentation(0, 0, 0)*u.m
+
+    return total_matrix, offset
 
 
-@frame_transform_graph.transform(DynamicMatrixTransform, HeliographicStonyhurst, HCRS)
+@frame_transform_graph.transform(AffineTransform, HeliographicStonyhurst, HCRS)
 def hgs_to_hcrs(hgscoord, hcrsframe):
     """
     Convert from Heliographic Stonyhurst to HCRS.
     """
-    return matrix_transpose(hcrs_to_hgs(hcrsframe, hgscoord))
+    # Calculate the matrix and offset in the HCRS->HGS direction
+    total_matrix, offset = hcrs_to_hgs(hcrsframe, hgscoord)
+
+    # Invert the transformation to get the HGS->HCRS transformation
+    reverse_matrix = matrix_transpose(total_matrix)
+    reverse_offset = (-offset).transform(reverse_matrix)
+
+    return reverse_matrix, reverse_offset
 
 
 @frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, HeliographicStonyhurst)

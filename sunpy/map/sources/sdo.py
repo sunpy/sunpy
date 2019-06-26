@@ -1,14 +1,10 @@
 """SDO Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121
-
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
 
 import matplotlib.pyplot as plt
 
 from astropy.coordinates import CartesianRepresentation, SkyCoord
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
-# with the incorrect name HeliocentricTrueEcliptic
+# with the misleading name HeliocentricTrueEcliptic
 try:
     from astropy.coordinates import HeliocentricMeanEcliptic
 except ImportError:
@@ -57,7 +53,7 @@ class AIAMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing info
-        self.meta['detector'] = "AIA"
+        self.meta['detector'] = self.meta.get('detector', "AIA")
         self._nickname = self.detector
         self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
@@ -77,7 +73,7 @@ class AIAMap(GenericMap):
         """
         Returns the observatory.
         """
-        return self.meta['telescop'].split('/')[0]
+        return self.meta.get('telescop', '').split('/')[0]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -107,9 +103,7 @@ class HMIMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self.meta['detector'] = "HMI"
-#        self.meta['instrme'] = "HMI"
-#        self.meta['obsrvtry'] = "SDO"
+        self.meta['detector'] = self.meta.get('detector', "HMI")
         self._nickname = self.detector
 
     @property
@@ -117,14 +111,14 @@ class HMIMap(GenericMap):
         """
         Returns the measurement type.
         """
-        return self.meta['content'].split(" ")[0].lower()
+        return self.meta.get('content', '').split(" ")[0].lower()
 
     @property
     def observatory(self):
         """
         Returns the observatory.
         """
-        return self.meta['telescop'].split('/')[0]
+        return self.meta.get('telescop', '').split('/')[0]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

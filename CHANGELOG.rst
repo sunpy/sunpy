@@ -1,3 +1,35 @@
+Sunpy v1.0.2 (2019-06-26)
+=========================
+
+Bug Fixes
+---------
+
+- `sunpy.map.sources.AIAMap` and `sunpy.map.sources.HMIMap` will no longer assume
+  the existance of certain header keys. (`#3217 <https://github.com/sunpy/sunpy/pull/3217>`__)
+- `sunpy.map.make_fitswcs_header` now supports specifying the map projection
+  rather than defaulting to ``TAN``. (`#3218 <https://github.com/sunpy/sunpy/pull/3218>`__)
+- Fix the behaviour of
+  `sunpy.coordinates.frames.Helioprojective.calculate_distance` if the
+  representation isn't Spherical. (`#3219 <https://github.com/sunpy/sunpy/pull/3219>`__)
+- Fixed a bug where the longitude of a coordinate would not wrap at the expected angle following a frame transformation. (`#3223 <https://github.com/sunpy/sunpy/pull/3223>`__)
+- Fixed a bug where passing a time or time interval to the differential rotation function threw an error because the new observer was not in HGS. (`#3225 <https://github.com/sunpy/sunpy/pull/3225>`__)
+- Fixed bug where `~sunpy.coordinates.ephemeris.get_horizons_coord` was unable to accept `~astropy.time.Time` arrays as input. (`#3227 <https://github.com/sunpy/sunpy/pull/3227>`__)
+- Fix the ticks on the default heliographic grid overlay so they are not white
+  (and normally invisible) by default. (`#3235 <https://github.com/sunpy/sunpy/pull/3235>`__)
+- Fixed a bug with `sunpy.net.hek.HEKClient` when the results returned were a mixed dataset. (`#3240 <https://github.com/sunpy/sunpy/pull/3240>`__)
+- Fix `sunpy.physics.differential_rotation.differential_rotate` to rotate in the
+  correct direction and to account for the rotation of the heliographic
+  coordinate frame with time. (`#3245 <https://github.com/sunpy/sunpy/pull/3245>`__)
+- Fixed a bug with the handling of changing observation times for transformations between `~astropy.coordinates.HCRS` and `~sunpy.coordinates.frames.HeliographicStonyhurst`, which also indirectly affected other transformations when changing observation times. (`#3246 <https://github.com/sunpy/sunpy/pull/3246>`__)
+
+
+Improved Documentation
+----------------------
+
+- Cleaned and expanded upon the docstrings for each Fido Client. (`#3220 <https://github.com/sunpy/sunpy/pull/3220>`__)
+- Added clarifying hyperlinks to the gallery example `getting_lasco_observer_location` to link to `astroquery` docs page. (`#3228 <https://github.com/sunpy/sunpy/pull/3228>`__)
+
+
 Sunpy v1.0.1 (2019-06-07)
 =========================
 

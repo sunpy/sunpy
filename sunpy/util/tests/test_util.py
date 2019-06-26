@@ -57,3 +57,8 @@ def test_expand_list_generator():
 def test_partial_key_match():
     test_dict = {('a', 'b', 'c'): (1, 2, 3), ('a', 'b', 'd'): (4, 5, 6), ('e', 'f', 'g'): (8, 7, 9)}
     assert list(util.partial_key_match(('a', None, 'c'), test_dict))[0] == test_dict[('a', 'b', 'c')]
+
+
+def test_dict_keys_same():
+    dicts = [{'x': 42}, {'x': 23, 'y': 5}]
+    assert util.dict_keys_same(dicts) == [{'y': None, 'x': 42}, {'y': 5, 'x': 23}]

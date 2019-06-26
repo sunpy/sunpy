@@ -23,12 +23,30 @@ __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
 
 class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     """
-    Inject a nice way of representing the object which the coordinate represents.
+    * Defines a default longitude wrap angle of 180 degrees, which can be overridden by the class
+      variable `_wrap_angle`.
+    * Inject a nice way of representing the object which the coordinate represents.
     """
+    _wrap_angle = 180*u.deg
 
     def __init__(self, *args, **kwargs):
         self.object_name = None
+
+        # If wrap_longitude=False is passed in, do not impose a specific wrap angle for the frame
+        if not kwargs.pop('wrap_longitude', True):
+            self._wrap_angle = None
+
         return super().__init__(*args, **kwargs)
+
+    def represent_as(self, base, s='base', in_frame_units=False):
+        """
+        If a frame wrap angle is set, use that wrap angle for any spherical representations.
+        """
+        data = super().represent_as(base, s, in_frame_units=in_frame_units)
+        if self._wrap_angle is not None and \
+           isinstance(data, (UnitSphericalRepresentation, SphericalRepresentation)):
+            data.lon.wrap_angle = self._wrap_angle
+        return data
 
     def __str__(self):
         """
@@ -127,17 +145,14 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
 
     obstime = TimeFrameAttributeSunPy()
 
-    _default_wrap_angle = 180*u.deg
-
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation_type', None)
-        wrap = kwargs.pop('wrap_longitude', True)
 
         if ('radius' in kwargs and kwargs['radius'].unit is u.one and
                 u.allclose(kwargs['radius'], 1*u.one)):
             kwargs['radius'] = _RSUN.to(u.km)
 
-        super(HeliographicStonyhurst, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Make 3D if specified as 2D
         # If representation was explicitly passed, do not change the rep.
@@ -149,9 +164,6 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
                 self._data = SphericalRepresentation(lat=self._data.lat,
                                                      lon=self._data.lon,
                                                      distance=distance)
-
-        if wrap and isinstance(self._data, (UnitSphericalRepresentation, SphericalRepresentation)):
-            self._data.lon.wrap_angle = self._default_wrap_angle
 
 
 class HeliographicCarrington(HeliographicStonyhurst):
@@ -207,7 +219,6 @@ class HeliographicCarrington(HeliographicStonyhurst):
     name = "heliographic_carrington"
     default_representation = SphericalRepresentation
 
-
     frame_specific_representation_info = {
         SphericalRepresentation: [RepresentationMapping(reprname='lon',
                                                         framename='lon',
@@ -227,11 +238,11 @@ class HeliographicCarrington(HeliographicStonyhurst):
                                                             defaultunit=u.deg)],
     }
 
-    _default_wrap_angle = 360*u.deg
+    _wrap_angle = 360*u.deg
     obstime = TimeFrameAttributeSunPy()
 
 
-class Heliocentric(BaseCoordinateFrame):
+class Heliocentric(SunPyBaseCoordinateFrame):
     """
     A coordinate or frame in the Heliocentric system.
 
@@ -365,15 +376,6 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     obstime = TimeFrameAttributeSunPy()
     rsun = Attribute(default=_RSUN.to(u.km))
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
-    _default_wrap_angle = 180*u.deg
-
-    def __init__(self, *args, **kwargs):
-        wrap = kwargs.pop('wrap_longitude', True)
-
-        BaseCoordinateFrame.__init__(self, *args, **kwargs)
-
-        if wrap and isinstance(self._data, (UnitSphericalRepresentation, SphericalRepresentation)):
-            self._data.lon.wrap_angle = self._default_wrap_angle
 
     def calculate_distance(self):
         """
@@ -390,8 +392,8 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             now with a third coordinate.
         """
         # Skip if we already are 3D
-        if (isinstance(self._data, SphericalRepresentation) and
-                not (self.distance.unit is u.one and u.allclose(self.distance, 1*u.one))):
+        distance = self.spherical.distance
+        if not (distance.unit is u.one and u.allclose(distance, 1*u.one)):
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):

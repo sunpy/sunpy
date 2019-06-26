@@ -10,24 +10,19 @@ import numpy as np
 import numpy.ma as ma
 import matplotlib.pyplot as plt
 
-import astropy.units as u
-
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
+from sunpy.map.maputils import all_coordinates_from_map
 
 ###############################################################################
 # We start with the sample data
 aia = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
-# Next, we create arrays for all of the pixels in the map.
-x, y = np.meshgrid(*[np.arange(v.value) for v in aia.dimensions]) * u.pixel
-
-###############################################################################
-# Next we can convert all of the pixels coordinates to helioprojective
-# coordinates and create a new array which contains the normalized radial
-# position for each pixel.
-hpc_coords = aia.pixel_to_world(x, y)
+# A utility function gives us access to the helioprojective coordinate of each
+# pixels. We can use that to create a new array which
+# contains the normalized radial position for each pixel.
+hpc_coords = all_coordinates_from_map(aia)
 r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 
 ###############################################################################

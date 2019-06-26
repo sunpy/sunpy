@@ -31,12 +31,17 @@ def meta_keywords():
 
 
 @u.quantity_input(equivalencies=u.spectral())
-def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
+def make_fitswcs_header(data, coordinate,
+                        reference_pixel: u.pix = None,
                         scale: u.arcsec/u.pix = None,
                         rotation_angle: u.deg = None,
-                        rotation_matrix=None, instrument=None,
-                        telescope=None, observatory=None,
-                        wavelength: u.angstrom=None, exposure: u.s=None):
+                        rotation_matrix=None,
+                        instrument=None,
+                        telescope=None,
+                        observatory=None,
+                        wavelength: u.angstrom=None,
+                        exposure: u.s=None,
+                        projection_code="TAN"):
     """
     Function to create a FITS-WCS header from a coordinate object
     (`~astropy.coordinates.SkyCoord`) that is required to
@@ -77,6 +82,8 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
         From this keyword, the meta keywords ``wavelnth`` and ``waveunit`` will be populated.
     exposure : `~u.Quantity`, optional
         Exposure time of the observation
+    projection_code : `str`, optional
+        The FITS standard projection code for the new header.
 
     Returns
     -------
@@ -110,10 +117,10 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     if isinstance(coordinate, frames.Heliocentric):
         raise ValueError("This function does not currently support heliocentric coordinates.")
 
-    meta_wcs = _get_wcs_meta(coordinate)
+    meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
     if hasattr(coordinate, "observer") and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
-        meta_observer = _get_observer_meta(coordinate)
+        meta_observer = get_observer_meta(coordinate.observer, coordinate.rsun)
         meta_wcs.update(meta_observer)
 
     meta_instrument = _get_instrument_meta(instrument, telescope, observatory, wavelength, exposure)
@@ -153,7 +160,7 @@ def make_fitswcs_header(data, coordinate, reference_pixel: u.pix = None,
     return meta_dict
 
 
-def _get_wcs_meta(coordinate):
+def _get_wcs_meta(coordinate, projection_code):
     """
     Function to get WCS meta from the SkyCoord using
     `astropy.wcs.utils.celestial_frame_to_wcs`
@@ -173,7 +180,7 @@ def _get_wcs_meta(coordinate):
 
     coord_meta = {}
 
-    skycoord_wcs = astropy.wcs.utils.celestial_frame_to_wcs(coordinate)
+    skycoord_wcs = astropy.wcs.utils.celestial_frame_to_wcs(coordinate, projection_code)
 
     cunit1, cunit2 = skycoord_wcs.wcs.cunit
     coord_meta = dict(skycoord_wcs.to_header())
@@ -182,13 +189,18 @@ def _get_wcs_meta(coordinate):
     return coord_meta
 
 
-def _get_observer_meta(coordinate):
+@u.quantity_input
+def get_observer_meta(observer, rsun: u.Mm):
     """
     Function to get observer meta from coordinate frame.
 
     Parameters
     ----------
     coordinate : ~`astropy.coordinates.BaseFrame`
+        The coordinate of the observer, must be transformable to Heliographic
+        Stonyhurst.
+    rsun : `astropy.units.Quantity`
+        The radius of the Sun.
 
     Returns
     -------
@@ -197,14 +209,16 @@ def _get_observer_meta(coordinate):
             * hgln_obs, hglt_obs
             * dsun_obs
             * rsun_obs
+            * rsun_ref
     """
+    observer = observer.transform_to(frames.HeliographicStonyhurst(obstime=observer.obstime))
     coord_meta = {}
 
-    coord_meta['hgln_obs'] = coordinate.observer.lon.to_value(u.deg)
-    coord_meta['hglt_obs'] = coordinate.observer.lat.to_value(u.deg)
-    coord_meta['dsun_obs'] = coordinate.observer.radius.to_value(u.m)
-    coord_meta['rsun_ref'] = coordinate.rsun.to_value(u.m)
-    coord_meta['rsun_obs'] = np.arctan(coordinate.rsun / coordinate.observer.radius).to_value(u.arcsec)
+    coord_meta['hgln_obs'] = observer.lon.to_value(u.deg)
+    coord_meta['hglt_obs'] = observer.lat.to_value(u.deg)
+    coord_meta['dsun_obs'] = observer.radius.to_value(u.m)
+    coord_meta['rsun_ref'] = rsun.to_value(u.m)
+    coord_meta['rsun_obs'] = np.arctan(rsun / observer.radius).to_value(u.arcsec)
 
     return coord_meta
 

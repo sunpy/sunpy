@@ -262,6 +262,8 @@ def client():
 
 
 @pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
+@pytest.mark.skip(reason="crashes under threaded tests")
 def test_get_table_names(client):
     tables = client.get_table_names()
     assert len(tables) == 126
@@ -271,6 +273,7 @@ def test_get_table_names(client):
 
 
 @pytest.mark.remote_data
+@pytest.mark.skip(reason="crashes under threaded tests")
 def test_select_table(client, monkeypatch):
     monkeypatch.setattr('builtins.input', lambda x: "11")
     assert isinstance(client.select_table(), bytes)
@@ -280,6 +283,7 @@ def test_select_table(client, monkeypatch):
 
 @pytest.mark.remote_data
 @pytest.mark.flaky(reruns=5)
+@pytest.mark.skip(reason="crashes under threaded tests")
 def test_time_query(client):
     start = '2005/01/03'
     end = '2005/12/03'

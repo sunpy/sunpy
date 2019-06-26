@@ -1,19 +1,32 @@
 variables:
-  Agent.Source.Git.ShallowFetchDepth: 1
   CI_NAME: Azure Pipelines
   CI_BUILD_ID: $(Build.BuildId)
   CI_BUILD_URL: "https://dev.azure.com/sunpy/sunpy/_build/results?buildId=$(Build.BuildId)"
+  CIBW_BUILD: cp36-* cp37-*
+  CIBW_SKIP: "*-win32 *-manylinux1_i686"
+  CIBW_TEST_COMMAND: pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy
+  CIBW_TEST_REQUIRES: sqlalchemy scikit-image glymur beautifulsoup4 drms python-dateutil zeep tqdm asdf hypothesis pytest-astropy pytest-mock
+
+trigger:
+  branches:
+    include:
+    - '*'
+  tags:
+    include:
+    - 'v*'
+    exclude:
+    - '*dev*'
+    - '*pre*'
+    - '*post*'
+pr:
+  branches:
+    include:
+    - '*'
 
 jobs:
 - template: azure-templates.yml
   parameters:
-    name: Linux_36_offline
-    os: linux
-    tox: py36-offline -- -n=4
-
-- template: azure-templates.yml
-  parameters:
-    name: macOS_37_offline
+    name: Linux_37_offline
     os: macos
     tox: py37-offline -- -n=4
 
@@ -25,8 +38,8 @@ jobs:
 
 - template: azure-templates.yml
   parameters:
-    name: Linux_37_online
-    os: linux
+    name: macOS_37_online
+    os: macos
     tox: py37-online -- -n=4
 
 - template: azure-templates.yml
@@ -38,12 +51,10 @@ jobs:
 - template: azure-templates.yml
   parameters:
     name: Linux_37_astropydev
-    os: linux
+    os: macos
     tox: py37-astropydev -- -n=4
 
-- ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
-  - template: azure-templates.yml
+- ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
+  - template: publish-pypi.yml
     parameters:
-      name: Linux_37_numpydev
-      os: linux
-      tox: py37-numpydev -- -n=4
+      dependsOn: [macOS_37_offline,Windows_36_offline,Linux_37_online,Linux_36_Conda_offline]

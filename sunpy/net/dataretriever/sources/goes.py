@@ -21,6 +21,31 @@ __all__ = ['XRSClient']
 
 
 class XRSClient(GenericClient):
+    """
+    Provides access to the GOES XRS fits files
+    `archive <https://umbra.nascom.nasa.gov/goes/fits/>`__ hosted
+    by the `Solar Data Analysis Center <https://umbra.nascom.nasa.gov/index.html/>`__.
+
+    Examples
+    --------
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('XRS'))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the XRSClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str4     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-01-01 00:00:00 2016-01-01 23:59:59   nasa       goes        nan
+    2016-01-02 00:00:00 2016-01-02 23:59:59   nasa       goes        nan
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     def _get_goes_sat_num(self, date):
         """
         Determines the satellite number for a given date.

@@ -66,7 +66,7 @@ def sky_position(t='now', equinox_of_date=True):
 
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
-        the J2000.0 epoch.
+        the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     ra = apparent_rightascension(t, equinox_of_date=equinox_of_date)
     dec = apparent_declination(t, equinox_of_date=equinox_of_date)
@@ -231,7 +231,7 @@ def true_rightascension(t='now', equinox_of_date=True):
 
     equinox_of_date : `bool`
         If True, output is referred to the mean equinox of date.  Otherwise, output is referred to
-        the J2000.0 epoch.
+        the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
         # Mean equinox of date
@@ -267,7 +267,7 @@ def true_declination(t='now', equinox_of_date=True):
 
     equinox_of_date : `bool`
         If True, output is referred to the mean equinox of date.  Otherwise, output is referred to
-        the J2000.0 epoch.
+        the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
         # Mean equinox of date
@@ -323,7 +323,7 @@ def apparent_rightascension(t='now', equinox_of_date=True):
 
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
-        the J2000.0 epoch.
+        the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
         # True equinox of date
@@ -356,7 +356,7 @@ def apparent_declination(t='now', equinox_of_date=True):
 
     equinox_of_date : `bool`
         If True, output is referred to the true equinox of date.  Otherwise, output is referred to
-        the J2000.0 epoch.
+        the J2000.0 epoch (ICRF orientation, not dynamical orientation).
     """
     if equinox_of_date:
         # True equinox of date
