@@ -405,8 +405,9 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
                                      obstime=new_observer.obstime,
                                      observer=new_observer,
                                      frame=Helioprojective)
+
         heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
-        # Now transform the HGS coordinates to the obstime of the input map
+        # Now transform the HGS coordinates to the obstime of the input map (to account for movement of Earth)
         heliographic_coordinate = heliographic_coordinate.transform_to(HeliographicStonyhurst(obstime=smap.date))
 
         # Compute the differential rotation.
