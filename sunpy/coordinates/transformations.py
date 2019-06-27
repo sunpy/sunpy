@@ -18,13 +18,13 @@ from copy import deepcopy
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import ICRS, HCRS, ConvertError, SkyCoord, get_body_barycentric
-from astropy.coordinates.baseframe import BaseCoordinateFrame, frame_transform_graph
+from astropy.coordinates import ICRS, HCRS, ConvertError, BaseCoordinateFrame, get_body_barycentric
+from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
                                                 UnitSphericalRepresentation)
 from astropy.coordinates.transformations import (FunctionTransform, AffineTransform,
                                                  FunctionTransformWithFiniteDifference)
-from astropy.coordinates.matrix_utilities import matrix_product, rotation_matrix, matrix_transpose
+from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_transpose
 
 from sunpy.sun import constants
 
@@ -65,24 +65,20 @@ def _observers_are_equal(obs_1, obs_2, string_ok=False):
 
 def _transform_obstime(frame, obstime):
     """
-    Transform a frame to a new obstime using the appropriate loopback transformation
+    Transform a frame to a new obstime using the appropriate loopback transformation.
+    If the new obstime is None, no transformation is performed.
+    If the frame's obstime is None, the frame is copied with the new obstime.
     """
-    if frame.obstime is None:
-        raise ValueError("To perform this transformation the coordinate"
-                         " Frame needs an obstime Attribute")
-
     # If obstime is None or the obstime matches, nothing needs to be done
     if obstime is None or np.all(frame.obstime == obstime):
         return frame
 
-    if isinstance(frame, BaseCoordinateFrame):
-        frame_class = frame.__class__
-    else:  # Assume that it is like SkyCoord and contains the frame
-        frame_class = frame.frame.__class__
-
     # Transform to the new obstime using the appropriate loopback transformation
-    new_frame = frame_class(obstime=obstime)
-    return frame.transform_to(new_frame)
+    new_frame = frame.replicate(obstime=obstime)
+    if frame.obstime is not None:
+        return frame.transform_to(new_frame)
+    else:
+        return new_frame
 
 
 def _rotation_matrix_hgs_to_hgc(obstime):
@@ -156,13 +152,14 @@ def hcc_to_hpc(helioccoord, heliopframe):
     int_coord = helioccoord.transform_to(int_frame)
 
     # Shift the origin from the Sun to the observer
-    distance = SkyCoord(int_coord.observer).heliographic_stonyhurst.radius
+    distance = int_coord.observer.radius
     newrepr = int_coord.cartesian - CartesianRepresentation(0*u.m, 0*u.m, distance)
 
     # Permute/swap axes from HCC to HPC equivalent Cartesian
     newrepr = newrepr.transform(_matrix_hcc_to_hpc())
 
-    return heliopframe.realize_frame(newrepr)
+    # Explicitly represent as spherical because external code (e.g., wcsaxes) expects it
+    return heliopframe.realize_frame(newrepr.represent_as(SphericalRepresentation))
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -182,7 +179,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     newrepr = heliopcoord.cartesian.transform(matrix_transpose(_matrix_hcc_to_hpc()))
 
     # Shift the origin from the observer to the Sun
-    distance = SkyCoord(heliocframe.observer).heliographic_stonyhurst.radius
+    distance = heliocframe.observer.radius
     newrepr += CartesianRepresentation(0*u.m, 0*u.m, distance)
 
     # Complete the conversion of HPC to HCC at the obstime and observer of the HPC coord
@@ -207,7 +204,7 @@ def _rotation_matrix_hcc_to_hgs(longitude, latitude):
     lat_matrix = rotation_matrix(latitude, 'y')
     lon_matrix = rotation_matrix(-longitude, 'z')
 
-    return matrix_product(matrix_product(lon_matrix, lat_matrix), axes_matrix)
+    return lon_matrix @ lat_matrix @ axes_matrix
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -221,21 +218,14 @@ def hcc_to_hgs(helioccoord, heliogframe):
                            "heliographic coordinates for observer '{}' "
                            "without `obstime` being specified.".format(helioccoord.observer))
 
-    # Make sure the observer is in HGS
-    obs = helioccoord.observer.\
-          transform_to(HeliographicStonyhurst(obstime=helioccoord.observer.obstime))
-
-    total_matrix = _rotation_matrix_hcc_to_hgs(obs.lon, obs.lat)
+    total_matrix = _rotation_matrix_hcc_to_hgs(helioccoord.observer.lon, helioccoord.observer.lat)
 
     # Transform from HCC to HGS at the HCC obstime
     newrepr = helioccoord.cartesian.transform(total_matrix)
     int_coord = HeliographicStonyhurst(newrepr, obstime=helioccoord.obstime)
 
     # Loopback transform HGS if there is a change in obstime
-    if np.any(helioccoord.obstime != heliogframe.obstime):
-        return _transform_obstime(int_coord, heliogframe)
-    else:
-        return int_coord
+    return _transform_obstime(int_coord, heliogframe.obstime)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -249,23 +239,11 @@ def hgs_to_hcc(heliogcoord, heliocframe):
                            "heliocentric coordinates for observer '{}' "
                            "without `obstime` being specified.".format(heliocframe.observer))
 
-    # Make sure the observer is in HGS
-    obs = heliocframe.observer.\
-          transform_to(HeliographicStonyhurst(obstime=heliocframe.observer.obstime))
-
-    # If HGS coord is only directional, place it on the surface of the Sun
-    r = heliogcoord.spherical.distance
-    if r.unit is u.one and u.allclose(r, 1*u.one):
-        int_repr = heliogcoord.spherical * RSUN_METERS
-        int_coord = heliogcoord.realize_frame(int_repr)
-    else:
-        int_coord = heliogcoord
-
     # Loopback transform HGS if there is a change in obstime
-    if np.any(heliogcoord.obstime != heliocframe.obstime):
-        int_coord = _transform_obstime(int_coord, heliocframe.obstime)
+    int_coord = _transform_obstime(heliogcoord, heliocframe.obstime)
 
-    total_matrix = matrix_transpose(_rotation_matrix_hcc_to_hgs(obs.lon, obs.lat))
+    total_matrix = matrix_transpose(_rotation_matrix_hcc_to_hgs(heliocframe.observer.lon,
+                                                                heliocframe.observer.lat))
 
     # Transform from HGS to HCC at the same obstime
     newrepr = int_coord.cartesian.transform(total_matrix)
@@ -364,7 +342,7 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
         rot_matrix_list = [_make_rotation_matrix_from_reprs(vect, x_axis) for vect in hgs_x_axis_detilt]
         rot_matrix = np.stack(rot_matrix_list)
 
-    total_matrix = matrix_product(rot_matrix, _SUN_DETILT_MATRIX)
+    total_matrix = rot_matrix @ _SUN_DETILT_MATRIX
 
     # All of the above is calculated for the HGS observation time
     # If the HCRS observation time is different, calculate the translation in origin

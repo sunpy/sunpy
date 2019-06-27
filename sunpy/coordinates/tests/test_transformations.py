@@ -156,11 +156,11 @@ def test_hgs_hcrs():
 def test_hgs_hgc_roundtrip():
     obstime = "2011-01-01"
 
-    hgsin = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, obstime=obstime)
+    hgsin = HeliographicStonyhurst(lat=10*u.deg, lon=20*u.deg, obstime=obstime)
     hgcout = hgsin.transform_to(HeliographicCarrington(obstime=obstime))
 
     assert_quantity_allclose(hgsin.lat, hgcout.lat)
-    assert_quantity_allclose(hgcout.lon, sun.L0(obstime))
+    assert_quantity_allclose(hgsin.lon + sun.L0(obstime), hgcout.lon)
 
     hgsout = hgcout.transform_to(HeliographicStonyhurst(obstime=obstime))
 
