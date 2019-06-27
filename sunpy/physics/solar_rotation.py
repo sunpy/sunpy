@@ -64,6 +64,10 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
 
     # Calculate the rotations and the shifts
     for i, m in enumerate(mc):
+        # Skip the reference layer
+        if i == layer_index:
+            continue
+
         # Calculate the rotation of the center of the map 'm' at its
         # observation time to the observation time of the reference layer
         # indicated by "layer_index".
