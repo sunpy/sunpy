@@ -18,10 +18,11 @@ from copy import deepcopy
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import ICRS, HCRS, ConvertError, BaseCoordinateFrame, get_body_barycentric
+from astropy.coordinates import (ICRS, HCRS, ConvertError, BaseCoordinateFrame,
+                                 get_body_barycentric, get_body_barycentric_posvel)
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
-                                                UnitSphericalRepresentation)
+                                                UnitSphericalRepresentation, CartesianDifferential)
 from astropy.coordinates.transformations import (FunctionTransform, AffineTransform,
                                                  FunctionTransformWithFiniteDifference)
 from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_transpose
@@ -321,10 +322,19 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
         raise ValueError("To perform this transformation the coordinate"
                          " Frame needs an obstime Attribute")
 
+    # Check whether differentials are involved on either end
+    has_differentials = ((hcrscoord._data is not None and hcrscoord.data.differentials) or
+                         (hgsframe._data is not None and hgsframe.data.differentials))
+
     # Determine the Sun-Earth vector in ICRS
     # Since HCRS is ICRS with an origin shift, this is also the Sun-Earth vector in HCRS
-    sun_pos_icrs = get_body_barycentric('sun', hgsframe.obstime)
-    earth_pos_icrs = get_body_barycentric('earth', hgsframe.obstime)
+    # If differentials exist, also obtain Sun and Earth velocities
+    if has_differentials:
+        sun_pos_icrs, sun_vel = get_body_barycentric_posvel('sun', hgsframe.obstime)
+        earth_pos_icrs, earth_vel = get_body_barycentric_posvel('earth', hgsframe.obstime)
+    else:
+        sun_pos_icrs = get_body_barycentric('sun', hgsframe.obstime)
+        earth_pos_icrs = get_body_barycentric('earth', hgsframe.obstime)
     sun_earth = earth_pos_icrs - sun_pos_icrs
 
     # De-tilt the Sun-Earth vector to the frame with the Sun's rotation axis parallel to the Z axis
@@ -349,10 +359,15 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     if np.any(hcrscoord.obstime != hgsframe.obstime):
         sun_pos_old_icrs = get_body_barycentric('sun', hcrscoord.obstime)
         offset_icrf = sun_pos_icrs - sun_pos_old_icrs
-        offset = offset_icrf.transform(total_matrix)
     else:
-        offset = CartesianRepresentation(0, 0, 0)*u.m
+        offset_icrf = sun_pos_icrs * 0  # preserves obstime shape
 
+    # Add velocity if needed (at the HGS observation time)
+    if has_differentials:
+        vel_icrf = (sun_vel - earth_vel).represent_as(CartesianDifferential)
+        offset_icrf = offset_icrf.with_differentials(vel_icrf)
+
+    offset = offset_icrf.transform(total_matrix)
     return total_matrix, offset
 
 
@@ -366,7 +381,14 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
 
     # Invert the transformation to get the HGS->HCRS transformation
     reverse_matrix = matrix_transpose(total_matrix)
-    reverse_offset = (-offset).transform(reverse_matrix)
+    # If differentials exist, properly negate the velocity
+    if offset.differentials:
+        pos = -offset.without_differentials()
+        vel = -offset.differentials['s']
+        offset = pos.with_differentials(vel)
+    else:
+        offset = -offset
+    reverse_offset = offset.transform(reverse_matrix)
 
     return reverse_matrix, reverse_offset
 
