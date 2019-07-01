@@ -57,33 +57,30 @@ def test_get_earth():
 
 
 @pytest.mark.remote_data
-def test_get_horizons_coord(tmpdir):
+def test_get_horizons_coord():
     # get_horizons_coord() depends on astroquery
     astroquery = pytest.importorskip("astroquery")
 
     # Validate against published values from the Astronomical Almanac (2013)
-    with set_temp_cache(tmpdir):
-        e1 = get_horizons_coord('Geocenter', '2013-Jan-01')
+    e1 = get_horizons_coord('Geocenter', '2013-Jan-01')
     assert_quantity_allclose(e1.lon, 0*u.deg, atol=5e-6*u.deg)
     assert_quantity_allclose(e1.lat, -3.03*u.deg, atol=5e-3*u.deg)
     assert_quantity_allclose(e1.radius, 0.9832947*u.AU, atol=5e-7*u.AU)
 
-    with set_temp_cache(tmpdir):
-        e2 = get_horizons_coord('Geocenter', '2013-Sep-01')
+    e2 = get_horizons_coord('Geocenter', '2013-Sep-01')
     assert_quantity_allclose(e1.lon, 0*u.deg, atol=5e-6*u.deg)
     assert_quantity_allclose(e2.lat, 7.19*u.deg, atol=5e-3*u.deg)
     assert_quantity_allclose(e2.radius, 1.0092561*u.AU, atol=5e-7*u.AU)
 
 
 @pytest.mark.remote_data
-def test_get_horizons_coord_array_time(tmpdir):
+def test_get_horizons_coord_array_time():
     # get_horizons_coord() depends on astroquery
     astroquery = pytest.importorskip("astroquery")
 
     # Validate against published values from the Astronomical Almanac (2013, C8-C13)
     array_time = Time(['2013-05-01', '2013-06-01', '2013-04-01', '2013-03-01'])
-    with set_temp_cache(tmpdir):
-        e = get_horizons_coord('Geocenter', array_time)
+    e = get_horizons_coord('Geocenter', array_time)
 
     assert_quantity_allclose(e[0].lon, 0*u.deg, atol=5e-6*u.deg)
     assert_quantity_allclose(e[0].lat, -4.17*u.deg, atol=5e-3*u.deg)
@@ -103,13 +100,12 @@ def test_get_horizons_coord_array_time(tmpdir):
 
 
 @pytest.mark.remote_data
-def test_consistency_with_horizons(tmpdir):
+def test_consistency_with_horizons():
     # get_horizons_coord() depends on astroquery
     astroquery = pytest.importorskip("astroquery")
 
     # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
     now = parse_time('now')
     e1 = get_earth(now)
-    with set_temp_cache(tmpdir):
-        e2 = get_horizons_coord('Geocenter', now)
+    e2 = get_horizons_coord('Geocenter', now)
     assert_quantity_allclose(e1.separation_3d(e2), 0*u.km, atol=35*u.km)
