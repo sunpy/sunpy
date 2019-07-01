@@ -35,4 +35,4 @@ dependencies:
     - jplephem
     - astroquery
     - jupytext
-    - .
+    - ..
