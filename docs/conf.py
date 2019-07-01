@@ -267,7 +267,14 @@ if has_sphinx_gallery:
         'gallery_dirs': path.joinpath('generated', 'gallery'),  # path to save gallery generated examples
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
         'abort_on_example_error': False,
-        'plot_gallery': True
+        'plot_gallery': True,
+        'binder': {
+            'org': 'StanczakDominik',
+            'repo': 'sunpy',
+            'branch': 'binder-jupytext',
+            'binderhub_url': 'https://mybinder.org',
+        }
+
     }
 
 
