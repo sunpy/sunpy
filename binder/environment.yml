@@ -1,0 +1,38 @@
+name: sunpy
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pip
+  - openjpeg
+  - jsonschema=2.6.0
+  - numpy
+  - scipy
+  - matplotlib
+  - pandas
+  - astropy
+  - parfive
+  - sqlalchemy
+  - scikit-image
+  - glymur
+  - beautifulsoup4
+  - drms
+  - python-dateutil
+  - zeep
+  - tqdm
+  - asdf
+  - hypothesis
+  - pytest-astropy
+  - pytest-cov
+  - pytest-mock
+  - ruamel.yaml
+  - sphinx
+  - sphinx-astropy
+  - sphinx-gallery
+  - towncrier
+  - pip:
+    - sunpy-sphinx-theme
+    - jplephem
+    - astroquery
+    - jupytext
+    - ..        # current repo; allows jupyter to import sunpy
