@@ -16,6 +16,8 @@
    :target: https://zenodo.org/badge/latestdoi/2165383
 .. |Powered by NumFOCUS| image:: https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A
    :target: https://numfocus.org
+.. |Binder| image:: https://mybinder.org/badge_logo.svg
+   :target: https://mybinder.org/v2/gh/sunpy/sunpy/master?filepath=examples
 
 SunPy is an open-source Python library for Solar Physics data analysis and visualization.
 Our homepage `SunPy`_ has more information about the project.
