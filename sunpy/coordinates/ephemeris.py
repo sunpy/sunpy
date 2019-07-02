@@ -158,13 +158,6 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
 
     Examples
     --------
-    .. Run these tests with a temp cache dir
-    .. testsetup::
-        >>> from astropy.config.paths import set_temp_cache
-        >>> import tempfile
-        >>> c = set_temp_cache(tempfile.mkdtemp())
-        >>> _ = c.__enter__()
-
     >>> from sunpy.coordinates import get_horizons_coord
 
     Query the location of Venus
@@ -187,9 +180,6 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     INFO: Obtained JPL HORIZONS location for SOHO (spacecraft) (-21) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=2004-05-06T11:22:33.000): (lon, lat, radius) in (deg, deg, AU)
         (0.2523461, -3.55863351, 0.99923086)>
-
-    .. testcleanup::
-        >>> _ = c.__exit__()
     """
     obstime = parse_time(time)
     array_time = np.reshape(obstime, (-1,))  # Convert to an array, even if scalar
