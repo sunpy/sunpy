@@ -358,7 +358,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         A representation object. If specified, other parameters must
         be in keyword form. Defaults to SphericalRepresentation, the 
         spherical coordinate system.
-    Tx: `~astropy.coordinates.Angle`  or `~astropy.units.Quantity`
+    Tx: `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
         X-axis coordinate. Optional if representation is specified.
     Ty: `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
         Y-axis coordinate. Optional if representation is specified.
