@@ -249,6 +249,44 @@ github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 
 # -- Options for the Sphinx gallery -------------------------------------------
 if has_sphinx_gallery:
+
+    import sphinx_gallery.binder
+    def patched_gen_binder_rst(fpath, binder_conf, gallery_conf):
+        """Generate the RST + link for the Binder badge.
+        Parameters
+        ----------
+        fpath: str
+            The path to the `.py` file for which a Binder badge will be generated.
+        binder_conf: dict or None
+            If a dictionary it must have the following keys:
+            'binderhub_url'
+                The URL of the BinderHub instance that's running a Binder service.
+            'org'
+                The GitHub organization to which the documentation will be pushed.
+            'repo'
+                The GitHub repository to which the documentation will be pushed.
+            'branch'
+                The Git branch on which the documentation exists (e.g., gh-pages).
+            'dependencies'
+                A list of paths to dependency files that match the Binderspec.
+        Returns
+        -------
+        rst : str
+            The reStructuredText for the Binder badge that links to this file.
+        """
+        binder_conf = sphinx_gallery.binder.check_binder_conf(binder_conf)
+        binder_url = sphinx_gallery.binder.gen_binder_url(fpath, binder_conf, gallery_conf)
+        binder_url = binder_url.replace(gallery_conf['gallery_dirs'] + os.path.sep, "").replace("ipynb", "py")
+
+        rst = (
+            "\n"
+            "  .. container:: binder-badge\n\n"
+            "    .. image:: https://mybinder.org/badge_logo.svg\n"
+            "      :target: {}\n"
+            "      :width: 150 px\n").format(binder_url)
+        return rst
+    sphinx_gallery.binder.gen_binder_rst = patched_gen_binder_rst
+
     extensions += ["sphinx_gallery.gen_gallery"]
     path = pathlib.Path.cwd()
     example_dir = path.parent.joinpath('examples')
@@ -264,10 +302,18 @@ if has_sphinx_gallery:
                                            (os.path.join('..', 'examples/plotting')),
                                            (os.path.join('..', 'examples/saving_and_loading_data')),
                                            (os.path.join('..', 'examples/computer_vision_techniques'))]),
-        'gallery_dirs': path.joinpath('generated', 'gallery'),  # path to save gallery generated examples
+        'gallery_dirs': 'generated/gallery',
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
         'abort_on_example_error': False,
-        'plot_gallery': True
+        'plot_gallery': True,
+        'binder': {
+            'org': 'StanczakDominik',
+            'repo': 'sunpy',
+            'branch': 'binder-jupytext',
+            'binderhub_url': 'https://mybinder.org',
+            'dependencies': ['../binder/environment.yml'],
+            'notebooks_dir': 'examples',
+        }
     }
 
 
