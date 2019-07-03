@@ -66,8 +66,8 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     In a cartesian representation this is also known as the Heliocentric
     Earth Equatorial (HEEQ) system. This frame has its origin at the solar
     centre and the north pole above the solar north pole, and the zero line on
-    longitude pointing towards the Earth. If the representation parameter 
-    is entered, the positional parameters for the coordinate frame 
+    longitude pointing towards the Earth. If the representation parameter
+    is entered, the positional parameters for the coordinate frame
     (lon, lat, radius) do not need to be entered.
 
     A new instance can be created using the following signatures
@@ -80,18 +80,18 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     Parameters
     ----------
     representation : `~astropy.coordinates.BaseRepresentation` or `None`
-        A representation object or None to have no data. Defaults to 
+        A representation object or None to have no data. Defaults to
         SphericalRepresentation, the spherical coordinate system.
     lon : `~astropy.coordinates.Angle`, optional
         The longitude for this object (``lat`` must also be given and
-        ``representation`` must be None). Optional if representation 
+        ``representation`` must be None). Optional if representation
         is specified.
     lat : `~astropy.coordinates.Angle`, optional
         The latitude for this object (``lon`` must also be given and
-        ``representation`` must be None). Optional if representation 
+        ``representation`` must be None). Optional if representation
         is specified.
     radius : `~astropy.units.Quantity`, optional
-        This quantity holds the radial distance. Defaults to the solar 
+        This quantity holds the radial distance. Defaults to the solar
         radius. Optional if representation is specified.
     x : `~astropy.units.Quantity`, optional
         x coordinate.
@@ -121,12 +121,12 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     >>> sc
     <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
         (-10., 2., 695700.)>
-    >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km), 
-                      obstime="2011/01/05T00:00:50", 
+    >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
+                      obstime="2011/01/05T00:00:50",
                       frame="heliographic_stonyhurst")
     >>> sc
     <SkyCoord (HeliographicStonyhurst: obstime=2011-01-05T00:00:50.000): (lon, lat, radius) in (deg, deg, km)
-        (90., 2.54480438, 45.04442252)>
+    (90., 2.54480438, 45.04442252)>
 
     Notes
     -----
@@ -191,26 +191,26 @@ class HeliographicCarrington(HeliographicStonyhurst):
 
     This frame differs from the Stonyhurst version in the definition of the
     longitude, which is defined using the time-dependent offset described
-    above. If the representation parameter is entered, the positional 
-    parameters for the coordinate frame (lon, lat, radius) do not need to be 
+    above. If the representation parameter is entered, the positional
+    parameters for the coordinate frame (lon, lat, radius) do not need to be
     entered.
 
     Parameters
     ----------
     representation: `~astropy.coordinates.BaseRepresentation` or None.
         A representation object. If specified, other parameters must
-        be in keyword form. Defaults to SphericalRepresentation, the 
+        be in keyword form. Defaults to SphericalRepresentation, the
         spherical coordinate system.
     lon: `Angle` object.
         The longitude for this object (``lat`` must also be given and
-        ``representation`` must be None). Optional if representation 
+        ``representation`` must be None). Optional if representation
         is specified.
     lat: `Angle` object.
         The latitude for this object (``lon`` must also be given and
-        ``representation`` must be None). Optional if representation 
+        ``representation`` must be None). Optional if representation
         is specified..
     radius: `astropy.units.Quantity` object, optional, must be keyword.
-        This quantity holds the radial distance. Defaults to the solar radius. 
+        This quantity holds the radial distance. Defaults to the solar radius.
         Optional if representation is specified.
     obstime: SunPy Time
         The date and time of the observation, used to convert to Heliographic
@@ -234,8 +234,8 @@ class HeliographicCarrington(HeliographicStonyhurst):
     <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:45.000): (lon, lat, radius) in (deg, deg, km)
         [(1., 4., 5.), (2., 5., 6.), (3., 6., 7.)]>
 
-    >>> sc = SkyCoord(CylindricalRepresentation(0*u.km, 45*u.deg, 2*u.km), 
-    ...               obstime="2011/01/05T00:00:50", 
+    >>> sc = SkyCoord(CylindricalRepresentation(0*u.km, 45*u.deg, 2*u.km),
+    ...               obstime="2011/01/05T00:00:50",
     ...               frame="heliographic_carrington")
     >>> sc
     <SkyCoord (HeliographicCarrington: obstime=2011-01-05T00:00:50.000): (lon, lat, radius) in (deg, deg, km)
@@ -281,7 +281,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     This frame may either be specified in Cartesian or cylindrical
     representation. Cylindrical representation replaces (x, y) with (rho, psi)
     where rho is the impact parameter and psi is the position angle in degrees.
-    If the representation parameter is entered, the positional parameters 
+    If the representation parameter is entered, the positional parameters
     for the coordinate frame (x, y, z) do not need to be entered.
     Parameters
     ----------
@@ -291,13 +291,13 @@ class Heliocentric(SunPyBaseCoordinateFrame):
         be None. Defaults to CartesianRepresentation, the Cartesian
         coordinate system.
     x: `Quantity` object.
-        X-axis coordinate, optional, must be keyword. Optional if 
+        X-axis coordinate, optional, must be keyword. Optional if
         representation is specified.
     y: `Quantity` object.
-        Y-axis coordinate, optional, must be keyword. Optional if 
+        Y-axis coordinate, optional, must be keyword. Optional if
         representation is specified.
     z: `Quantity` object. Shared by both representations.
-        Z-axis coordinate, optional, must be keyword. Optional if 
+        Z-axis coordinate, optional, must be keyword. Optional if
         representation is specified.
     observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`, optional
         The coordinate of the observer in the solar system. Defaults to the
@@ -324,8 +324,8 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     >>> sc
     <SkyCoord (Heliocentric: obstime=2011-01-01T00:00:54.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in (km, m, cm)
         [(1., 3., 5.), (2., 4., 6.)]>
-    
-    >>> sc = SkyCoord(CylindricalRepresentation(0*u.km, 45*u.deg, 2*u.km), 
+
+    >>> sc = SkyCoord(CylindricalRepresentation(0*u.km, 45*u.deg, 2*u.km),
     ...               obstime="2011/01/05T00:00:50", frame="heliocentric")
     >>> sc
     <SkyCoord (Heliocentric: obstime=2011-01-05T00:00:50.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in km
@@ -348,15 +348,15 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
     This is a projective coordinate system centered around the observer.
     It is a full spherical coordinate system with position given as longitude
-    theta_x and latitude theta_y. If the representation parameter is entered, 
-    the positional parameters for the coordinate frame (Tx, Ty, distance) 
+    theta_x and latitude theta_y. If the representation parameter is entered,
+    the positional parameters for the coordinate frame (Tx, Ty, distance)
     do not need to be entered.
 
     Parameters
     ----------
     representation: `~astropy.coordinates.BaseRepresentation` or None.
         A representation object. If specified, other parameters must
-        be in keyword form. Defaults to SphericalRepresentation, the 
+        be in keyword form. Defaults to SphericalRepresentation, the
         spherical coordinate system.
     Tx: `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
         X-axis coordinate. Optional if representation is specified.
