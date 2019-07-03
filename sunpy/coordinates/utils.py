@@ -99,7 +99,7 @@ class GreatArc(object):
         self.default_points = self._points_handler(points)
 
         # Units of the start point
-        self.distance_unit = self.start.transform_to(frames.Heliocentric).cartesian.xyz.unit
+        self.distance_unit = u.km
 
         # Co-ordinate frame
         self.start_frame = self.start.frame
