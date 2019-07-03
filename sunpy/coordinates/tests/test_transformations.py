@@ -4,7 +4,9 @@ import pytest
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
 from astropy.coordinates import (SkyCoord, get_body_barycentric, Angle,
-                                 ConvertError, Longitude, CartesianRepresentation)
+                                 ConvertError, Longitude, CartesianRepresentation,
+                                 get_body_barycentric_posvel,
+                                 CartesianDifferential, SphericalDifferential)
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
 # with the misleading name HeliocentricTrueEcliptic
 try:
@@ -156,11 +158,11 @@ def test_hgs_hcrs():
 def test_hgs_hgc_roundtrip():
     obstime = "2011-01-01"
 
-    hgsin = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, obstime=obstime)
+    hgsin = HeliographicStonyhurst(lat=10*u.deg, lon=20*u.deg, obstime=obstime)
     hgcout = hgsin.transform_to(HeliographicCarrington(obstime=obstime))
 
     assert_quantity_allclose(hgsin.lat, hgcout.lat)
-    assert_quantity_allclose(hgcout.lon, sun.L0(obstime))
+    assert_quantity_allclose(hgsin.lon + sun.L0(obstime), hgcout.lon)
 
     hgsout = hgcout.transform_to(HeliographicStonyhurst(obstime=obstime))
 
@@ -384,3 +386,41 @@ def test_hgs_hcc_sunspice():
     assert_quantity_allclose(new.x, 800000.00*u.km, atol=1e-2*u.km)
     assert_quantity_allclose(new.y, 908797.89*u.km, atol=1e-2*u.km)
     assert_quantity_allclose(new.z, 688539.32*u.km, atol=1e-2*u.km)
+
+
+def test_velocity_hcrs_hgs():
+    # Obtain the position/velocity of Earth in ICRS
+    obstime = Time(['2019-01-01', '2019-04-01', '2019-07-01', '2019-10-01'])
+    pos, vel = get_body_barycentric_posvel('earth', obstime)
+    loc = pos.with_differentials(vel.represent_as(CartesianDifferential))
+    earth = SkyCoord(loc, frame='icrs', obstime=obstime)
+
+    # The velocity of Earth in HGS should be very close to zero.  The velocity in the HGS Y
+    # direction is slightly further away from zero because there is true latitudinal motion.
+    new = earth.heliographic_stonyhurst
+    assert_quantity_allclose(new.velocity.d_x, 0*u.km/u.s, atol=1e-15*u.km/u.s)
+    assert_quantity_allclose(new.velocity.d_y, 0*u.km/u.s, atol=1e-14*u.km/u.s)
+    assert_quantity_allclose(new.velocity.d_x, 0*u.km/u.s, atol=1e-15*u.km/u.s)
+
+    # Test the loopback to ICRS
+    newer = new.icrs
+    assert_quantity_allclose(newer.velocity.d_x, vel.x)
+    assert_quantity_allclose(newer.velocity.d_y, vel.y)
+    assert_quantity_allclose(newer.velocity.d_z, vel.z)
+
+
+def test_velocity_hgs_hgc():
+    # Construct a simple HGS coordinate with zero velocity
+    obstime = Time(['2019-01-01', '2019-04-01', '2019-07-01', '2019-10-01'])
+    pos = CartesianRepresentation(1, 0, 0)*u.AU
+    vel = CartesianDifferential(0, 0, 0)*u.km/u.s
+    loc = (pos.with_differentials(vel))._apply('repeat', obstime.size)
+    coord = SkyCoord(HeliographicStonyhurst(loc, obstime=obstime))
+
+    # The induced velocity in HGC should be entirely longitudinal, and approximately equal to one
+    # full rotation every mean synodic period (27.2753 days)
+    new = coord.heliographic_carrington
+    new_vel = new.data.differentials['s'].represent_as(SphericalDifferential, new.data)
+    assert_quantity_allclose(new_vel.d_lon, -360*u.deg / (27.27253*u.day), rtol=1e-2)
+    assert_quantity_allclose(new_vel.d_lat, 0*u.deg/u.s)
+    assert_quantity_allclose(new_vel.d_distance, 0*u.km/u.s, atol=1e-7*u.km/u.s)

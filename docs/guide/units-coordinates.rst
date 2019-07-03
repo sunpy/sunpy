@@ -189,8 +189,8 @@ one observer to a coordinate seen by another::
 
   >>> hpc1.transform_to(frames.Helioprojective(observer="venus",
   ...                                          obstime="2017-07-26"))
-  <SkyCoord (Helioprojective: obstime=2017-07-26T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'venus'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-      (-1285.47497992, 106.20918654, 1.0831774e+08)>
+  <SkyCoord (Helioprojective: obstime=2017-07-26T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'venus'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+      (-1285.47497992, 106.20918654, 0.72405937)>
 
 
 Using Coordinates with SunPy Map

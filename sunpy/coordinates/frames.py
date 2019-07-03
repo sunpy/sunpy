@@ -148,22 +148,24 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation_type', None)
 
-        if ('radius' in kwargs and kwargs['radius'].unit is u.one and
-                u.allclose(kwargs['radius'], 1*u.one)):
-            kwargs['radius'] = _RSUN.to(u.km)
-
         super().__init__(*args, **kwargs)
 
         # Make 3D if specified as 2D
         # If representation was explicitly passed, do not change the rep.
         if not _rep_kwarg:
-            # If we were passed a 3D rep extract the distance, otherwise
-            # calculate it from _RSUN.
             if isinstance(self._data, UnitSphericalRepresentation):
-                distance = _RSUN.to(u.km)
-                self._data = SphericalRepresentation(lat=self._data.lat,
-                                                     lon=self._data.lon,
-                                                     distance=distance)
+                self._data = self.spherical
+
+    def represent_as(self, base, s='base', in_frame_units=False):
+        """
+        Unless the requested representation is UnitSphericalRepresentation, scale a coordinate with
+        dimensionless length so that it has the length of the solar radius.
+        """
+        data = super().represent_as(base, s, in_frame_units=in_frame_units)
+        if not isinstance(data, UnitSphericalRepresentation) and \
+           data.norm().unit is u.one and u.allclose(data.norm(), 1*u.one):
+            data *= _RSUN.to(u.km)
+        return data
 
 
 class HeliographicCarrington(HeliographicStonyhurst):
