@@ -436,8 +436,24 @@ def test_walker_create_vso_instrument(vso_session):
                              observation_time_end=datetime(2011, 9, 20, 2, 27, 40),
                              instrument=u'RHESSI', wavemin=0.4132806579880238,
                              wavemax=7.293188082141598e-05)]
+    # Filename changed
+    expected_3 = [
+        tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
+                             physobs=u'intensity',
+                             fileid=u'/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
+                             observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
+                             observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
+                             instrument=u'RHESSI', wavemin=0.4132806579880238,
+                             wavemax=7.293188082141598e-05),
+        tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
+                             physobs=u'intensity',
+                             fileid=u'/hessidata/2011/09/20/hsi_20110920_010920_001.fits',
+                             observation_time_start=datetime(2011, 9, 20, 1, 9, 20),
+                             observation_time_end=datetime(2011, 9, 20, 2, 27, 40),
+                             instrument=u'RHESSI', wavemin=0.4132806579880238,
+                             wavemax=7.293188082141598e-05)]
     assert len(entries) == len(expected)
-    assert entries in [expected, expected_2]
+    assert entries in [expected, expected_2, expected_3]
 
 
 @pytest.mark.remote_data
@@ -466,6 +482,14 @@ def test_walker_create_time(vso_session):
         [tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
                               physobs=u'intensity',
                               fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
+                              observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
+                              observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
+                              instrument=u'RHESSI', wavemin=0.4132806579880238,
+                              wavemax=7.293188082141598e-05)],
+        # Filename changed
+        [tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
+                              physobs=u'intensity',
+                              fileid=u'/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
                               observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
                               observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
                               instrument=u'RHESSI', wavemin=0.4132806579880238,
