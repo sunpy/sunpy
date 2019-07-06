@@ -33,7 +33,32 @@ We backtick each type in the documentation strings so that they are interlinked 
 SunPy Specific Rules
 --------------------
 
-* For all rst files, we enforce a one sentenace per line rule and ignore the line length.
+* For **all** RST files, we enforce a one sentenace per line rule and ignore the line length.
+
+* For our core datatypes we want to reference them in docstrings as the following:
+
+.. code-block:: python
+
+    """
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        A SunPy map.
+    """
+
+* For linking to our Factory classes (``Map``, ``Timeseries``, ``Fido``) you have to do:
+
+.. code-block:: python
+
+    `Map <sunpy.map.map_factory.MapFactory>`
+    `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`
+    `TimeSeries <sunpy.timeseries.timeseries_factory.TimeSeriesFactory>`
+
+* We want to try and enforce standards on docstring length and style using `docformatter <https://pypi.org/project/docformatter/>`__:
+
+.. code-block:: bash
+
+    $ docformatter -r -i  --pre-summary-newline --make-summary-multi-line
 
 Sphinx
 ======
