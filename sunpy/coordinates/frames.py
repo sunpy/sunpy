@@ -17,10 +17,15 @@ from sunpy.sun.constants import radius as _RSUN
 
 from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
 
+from sunpy.util.decorators import add_common_docstring
+
+from sunpy.time.time import _variables_for_parse_time_docstring
+
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective']
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     """
     * Defines a default longitude wrap angle of 180 degrees, which can be overridden by the class
@@ -59,6 +64,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
             return super().__str__()
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     """
     A coordinate or frame in the Stonyhurst Heliographic system.
@@ -90,7 +96,7 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     radius : `~astropy.units.Quantity`, optional
         This quantity holds the radial distance. Defaults to the solar
         radius. Not needed if ``data`` is given.
-    obstime: `~sunpy.time.Time`
+    obstime : {parse_time_types}
         The date and time of the observation.
 
     Examples
@@ -169,6 +175,7 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
         return data
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 class HeliographicCarrington(HeliographicStonyhurst):
     """
     A coordinate or frame in the Carrington Heliographic system.
@@ -199,7 +206,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
     radius : `astropy.units.Quantity` object, optional, must be keyword.
         This quantity holds the radial distance. Defaults to the solar radius.
         Not needed if ``data`` is given.
-    obstime : SunPy Time
+    obstime : {parse_time_types}
         The date and time of the observation.
 
     Examples
@@ -254,6 +261,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
     obstime = TimeFrameAttributeSunPy()
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 class Heliocentric(SunPyBaseCoordinateFrame):
     """
     A coordinate or frame in the Heliocentric system.
@@ -288,7 +296,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     observer : `~sunpy.coordinates.frames.HeliographicStonyhurst`, optional
         The coordinate of the observer in the solar system. Defaults to the
         Earth.
-    obstime : SunPy Time
+    obstime : {parse_time_types}
         The date and time of the observation.
 
     Examples
@@ -328,6 +336,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 class Helioprojective(SunPyBaseCoordinateFrame):
     """
     A coordinate or frame in the Helioprojective (Cartesian) system.
@@ -350,7 +359,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     distance : `~astropy.units.Quantity`
         The radial distance from the observer to the coordinate point.
         Not needed if ``data`` is given.
-    obstime : SunPy Time
+    obstime : {parse_time_types}
         The date and time of the observation.
     observer : `~sunpy.coordinates.frames.HeliographicStonyhurst`, str
         The coordinate of the observer in the solar system. If you supply a string,
