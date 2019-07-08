@@ -118,8 +118,8 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
         (-10., 2., 695700.)>
     >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
-                      obstime="2011/01/05T00:00:50",
-                      frame="heliographic_stonyhurst")
+    ...               obstime="2011/01/05T00:00:50",
+    ...               frame="heliographic_stonyhurst")
     >>> sc
     <SkyCoord (HeliographicStonyhurst: obstime=2011-01-05T00:00:50.000): (lon, lat, radius) in (deg, deg, km)
     (90., 2.54480438, 45.04442252)>
@@ -385,9 +385,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     >>> sc
     <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
         (0., 0.)>
-    >>> sc = sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
-                      obstime="2011/01/05T00:00:50",
-                      frame="helioprojective")
+    >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
+    ...               obstime="2011/01/05T00:00:50",
+    ...               frame="helioprojective")
     >>> sc
     <SkyCoord (Helioprojective: obstime=2011-01-05T00:00:50.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (324000., 9161.29576733, 45.04442252)>
