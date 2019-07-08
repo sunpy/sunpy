@@ -275,6 +275,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     This frame may either be specified in Cartesian or cylindrical
     representation. Cylindrical representation replaces (x, y) with (rho, psi)
     where rho is the impact parameter and psi is the position angle in degrees.
+    
     If the ``data`` parameter is given, the positional parameters
     for the coordinate frame (x, y, z) do not need to be given.
     Parameters
