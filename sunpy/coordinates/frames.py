@@ -90,15 +90,8 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     radius : `~astropy.units.Quantity`, optional
         This quantity holds the radial distance. Defaults to the solar
         radius. Not needed if ``data`` is given.
-    x : `~astropy.units.Quantity`, optional
-        x coordinate.
-    y : `~astropy.units.Quantity`, optional
-        y coordinate.
-    z : `~astropy.units.Quantity`, optional
-        z coordinate.
     obstime: `~sunpy.time.Time`
-        The date and time of the observation, used to convert to Heliographic
-        Carrington coordinates.
+        The date and time of the observation.
 
     Examples
     --------
@@ -207,8 +200,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
         This quantity holds the radial distance. Defaults to the solar radius.
         Not needed if ``data`` is given.
     obstime : SunPy Time
-        The date and time of the observation, used to convert to Heliographic
-        Carrington coordinates.
+        The date and time of the observation.
 
     Examples
     --------
@@ -228,12 +220,12 @@ class HeliographicCarrington(HeliographicStonyhurst):
     <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:45.000): (lon, lat, radius) in (deg, deg, km)
         [(1., 4., 5.), (2., 5., 6.), (3., 6., 7.)]>
 
-    >>> sc = SkyCoord(CylindricalRepresentation(0*u.km, 45*u.deg, 2*u.km),
+    >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
     ...               obstime="2011/01/05T00:00:50",
     ...               frame="heliographic_carrington")
     >>> sc
     <SkyCoord (HeliographicCarrington: obstime=2011-01-05T00:00:50.000): (lon, lat, radius) in (deg, deg, km)
-        (0., 90., 2.)>
+        (90., 2.54480438, 45.04442252)>
     """
 
     name = "heliographic_carrington"
@@ -297,8 +289,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
         The coordinate of the observer in the solar system. Defaults to the
         Earth.
     obstime : SunPy Time
-        The date and time of the observation, used to convert to Heliographic
-        Carrington coordinates.
+        The date and time of the observation.
 
     Examples
     --------
@@ -319,11 +310,12 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     <SkyCoord (Heliocentric: obstime=2011-01-01T00:00:54.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in (km, m, cm)
         [(1., 3., 5.), (2., 4., 6.)]>
 
-    >>> sc = SkyCoord(CylindricalRepresentation(0*u.km, 45*u.deg, 2*u.km),
-    ...               obstime="2011/01/05T00:00:50", frame="heliocentric")
+    >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
+    ...               obstime="2011/01/05T00:00:50",
+    ...               frame="heliocentric")
     >>> sc
     <SkyCoord (Heliocentric: obstime=2011-01-05T00:00:50.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in km
-        (0., 0., 2.)>
+        (0., 45., 2.)>
     """
 
     default_representation = CartesianRepresentation
@@ -352,15 +344,14 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         A representation object. If specified, other parameters must
         be in keyword form.
     Tx : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
-        X-axis coordinate. Not needed if ``data`` is given.
+        Theta_x coordinate. Not needed if ``data`` is given.
     Ty : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
-        Y-axis coordinate. Not needed if ``data`` is given.
+        Theta_y coordinate. Not needed if ``data`` is given.
     distance : `~astropy.units.Quantity`
         The radial distance from the observer to the coordinate point.
         Not needed if ``data`` is given.
     obstime : SunPy Time
-        The date and time of the observation, used to convert to Heliographic
-        Carrington coordinates.
+        The date and time of the observation.
     observer : `~sunpy.coordinates.frames.HeliographicStonyhurst`, str
         The coordinate of the observer in the solar system. If you supply a string,
         it must be a solar system body that can be parsed by
@@ -385,10 +376,12 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     >>> sc
     <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
         (0., 0.)>
-    >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 0*u.km, 0*u.km), obstime="2010/01/01T00:00:00", frame="helioprojective")
+    >>> sc = sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
+                      obstime="2011/01/05T00:00:50",
+                      frame="helioprojective")
     >>> sc
-    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-        (0., 0., 0.)>
+    <SkyCoord (Helioprojective: obstime=2011-01-05T00:00:50.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (324000., 9161.29576733, 45.04442252)>
     """
 
     default_representation = SphericalRepresentation
