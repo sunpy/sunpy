@@ -33,7 +33,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
         One of:
 
-        | ``howard`` : Use values from Howard et al. 1990
+        | ``howard`` : Use values from Howard et al. (1990)
         | ``snodgrass`` : Use values from Snodgrass et. al. (1983)
         | ``allen`` : Use values from Allen's Astrophysical Quantities, and simpler equation.
 
