@@ -1,1 +1,1 @@
-Added more details to docstrings in coordinates.frames
+Added more details to docstrings in `sunpy.coordinates.frames`.
