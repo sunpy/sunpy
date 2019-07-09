@@ -278,6 +278,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     
     If the ``data`` parameter is given, the positional parameters
     for the coordinate frame (x, y, z) do not need to be given.
+
     Parameters
     ----------
     data : `~astropy.coordinates.BaseRepresentation` or None.
