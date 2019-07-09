@@ -59,7 +59,7 @@ def manager(downloader, storage, mocker):
 
 @pytest.fixture
 def data_function(manager):
-    @manager.require('test_file', ['url1/test_file', 'url2'], '86f7e437faa5a7fce15d1ddcb9eaeaea377667b8')
+    @manager.require('test_file', ['url1/test_file', 'url2'], mocks.MOCK_HASH)
     def foo(manager_tester=lambda x: 1):
         manager_tester(manager)
 

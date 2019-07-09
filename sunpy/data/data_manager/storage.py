@@ -17,8 +17,8 @@ class StorageProviderBase(metaclass=ABCMeta):
     @abstractmethod
     def find_by_key(self, key, value):
         """
-        Returns the file details if hash found in storage. Returns `None`
-        if hash not found.
+        Returns the file details if value coresponding to the key
+        found in storage. Returns `None` if hash not found.
 
         Parameters
         ----------
@@ -34,7 +34,7 @@ class StorageProviderBase(metaclass=ABCMeta):
 
         Raises
         ------
-        KeyError
+        ``KeyError``
              KeyError is raised if key does not exist.
         """
         raise NotImplementedError
@@ -53,7 +53,7 @@ class StorageProviderBase(metaclass=ABCMeta):
 
         Raises
         ------
-        KeyError
+        ``KeyError``
              KeyError is raised if key does not exist.
         """
         raise NotImplementedError
