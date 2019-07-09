@@ -1,5 +1,6 @@
 from sunpy.data.data_manager.downloader import DownloaderBase
 
+# This is the hash of file containing just the character 'a'
 MOCK_HASH = "86f7e437faa5a7fce15d1ddcb9eaeaea377667b8"
 
 class MockDownloader(DownloaderBase):
@@ -17,6 +18,5 @@ class MockDownloader(DownloaderBase):
 
 
 def write_to_test_file(path, contents):
-    # TODO: Use tempfile. here and other places.
     with open(path, 'w') as f:
         f.write(contents)

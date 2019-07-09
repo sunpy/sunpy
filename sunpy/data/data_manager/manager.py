@@ -82,8 +82,8 @@ class DataManager:
         name: `str`
             Name of the file provided in the `require` decorator.
         uri: `str`
-            URI of the file which replaces original file. One of ``http``, ``https``, ``ftp``
-            or ``file``.
+            URI of the file which replaces original file. Scheme should be
+            one of ``http``, ``https``, ``ftp`` or ``file``.
         sha_hash: `str`, optional
             SHA1 hash of the file to compared to after downloading.
         """
