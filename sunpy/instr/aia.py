@@ -54,7 +54,7 @@ def aiaprep(aiamap):
         scale = 0.6 * u.arcsec  # pragma: no cover # can't test this because it needs a full res image
     scale_factor = aiamap.scale[0] / scale
 
-    tempmap = aiamap.rotate(recenter=True, scale=scale_factor.value, missing=aiamap.min())
+    tempmap = aiamap.rotate(recenter=True, scale=scale_factor.value, missing=0.0)
 
     # extract center from padded aiamap.rotate output
     # crpix1 and crpix2 will be equal (recenter=True), as aiaprep does not work with submaps
