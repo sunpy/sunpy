@@ -47,9 +47,8 @@ class DataManager:
                     if replace['uri'].startswith('file://'):
                         file_path = replace['uri'][len('file://'):]
                     else:
-                        file_path, file_hash, _ = self._cache._download_and_hash(replace['uri'],
-                                                                                 redownload=True)
-                        if file_hash != replace['hash']:
+                        file_path, file_hash, _ = self._cache._download_and_hash([replace['uri']])
+                        if replace['hash'] and file_hash != replace['hash']:
                             raise err
                 elif self._skip_hash_check:
                     file_path = self._cache.download(urls, redownload=True)
