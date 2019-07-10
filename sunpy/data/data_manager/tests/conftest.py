@@ -4,7 +4,7 @@ import csv
 from unittest import mock
 
 import pytest
-from mocks import MockDownloader
+from sunpy.data.data_manager.tests import mocks
 
 from sunpy.data.data_manager.cache import Cache
 from sunpy.data.data_manager.manager import DataManager
@@ -15,7 +15,7 @@ DB_TESTDATA_FILE = 'sunpy/data/data_manager/tests/db_testdata.csv'
 
 @pytest.fixture
 def downloader():
-    downloader = MockDownloader()
+    downloader = mocks.MockDownloader()
     return downloader
 
 

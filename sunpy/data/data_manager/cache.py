@@ -1,14 +1,15 @@
 import os
 from pathlib import Path
 from datetime import datetime, timedelta
+from warnings import warn
 from urllib.request import urlopen
 
+import astropy.units as u
+from astropy.time import TimeDelta
+
+from sunpy.data.data_manager.downloader import DownloaderError
 from sunpy.util.net import get_filename
 from sunpy.util.util import hash_file, replacement_filename
-from sunpy.data.data_manager.downloader import DownloaderError
-
-from astropy.time import TimeDelta
-import astropy.units as u
 
 
 class Cache:
@@ -60,7 +61,11 @@ class Cache:
         #        - If cache not expired, return path
         #    ii. If not download, store in cache and return path
         if not redownload:
-            details = self._get_by_url(urls[0])
+            details = None
+            for url in urls:
+                details = self._get_by_url(url)
+                if details:
+                    break
             if details:
                 if self._expiry and \
                    datetime.now() - datetime.fromisoformat(details['time']) > self._expiry:
@@ -118,16 +123,17 @@ class Cache:
         `str`, `str`, `str`
             Path, hash and URL of the file.
         """
-        def download():
-            url = urls[0]
+        def download(url):
             path = self._cache_dir / get_filename(urlopen(url), url)
             path = replacement_filename(path)
             self._downloader.download(url, path)
             shahash = hash_file(path)
-            return path, shahash, urls[0]
+            return path, shahash, url
 
-        while True:
+        for url in urls:
             try:
-                return download()
-            except DownloaderError:
-                continue
+                return download(url)
+            except Exception as e:
+                warn(e)
+        else:
+            raise RuntimeError("Download failed")
