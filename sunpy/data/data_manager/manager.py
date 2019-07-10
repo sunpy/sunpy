@@ -31,11 +31,13 @@ class DataManager:
         ----------
         name: `str`
             The name to reference the file with.
-        urls: `list`
+        urls: `list` or `str`
             A list of urls to download the file from.
         sha_hash: `str`
             SHA-1 hash of file.
         """
+        if isinstance(urls, str):
+            urls = [urls]
         def decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
