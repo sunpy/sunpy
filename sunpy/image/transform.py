@@ -10,11 +10,20 @@ from sunpy.util.exceptions import SunpyUserWarning
 
 try:
     import skimage.transform
-    scikit_image_not_found = False
 except ImportError:
     warnings.warn("scikit-image could not be imported. Image rotation will use scipy",
                   ImportWarning)
-    scikit_image_not_found = True
+    SCIKIT_IMAGE_NOT_FOUND = True
+else:
+    SCIKIT_IMAGE_NOT_FOUND = False
+
+
+try:
+    import dask
+except ImportError:
+    DASK_FOUND = False
+else:
+    DASK_FOUND = True
 
 
 __all__ = ['affine_transform']
@@ -101,13 +110,24 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     displacement = np.dot(rmatrix, rot_center)
     shift = image_center - displacement
 
-    if use_scipy or scikit_image_not_found:
+    # Dask version does not bring array into memory
+    use_dask = DASK_FOUND and isinstance(image, dask.array.Array)
+    nan_to_num_func = dask.array.nan_to_num if use_dask else np.nan_to_num
+
+    if use_scipy or SCIKIT_IMAGE_NOT_FOUND:
         if np.any(np.isnan(image)):
             warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
         # Transform the image using the scipy affine transform
-        rotated_image = scipy.ndimage.interpolation.affine_transform(
-                np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
-                mode='constant', cval=missing).T
+        if use_dask:
+            delayed_rotated_image = dask.delayed(scipy.ndimage.interpolation)(
+                nan_to_num_func(image).T, rmatrix, offset=shift, order=order,
+                mode='constant', cval=missing)
+            rotated_image = dask.array.from_delayed(delayed_rotated_image, dtype=image.dtype,
+                                                    shape=image.shape).T
+        else:
+            rotated_image = scipy.ndimage.interpolation.affine_transform(
+                    nan_to_num_func(image).T, rmatrix, offset=shift, order=order,
+                    mode='constant', cval=missing).T
     else:
         # Make the rotation matrix 3x3 to include translation of the image
         skmatrix = np.zeros((3, 3))
@@ -124,9 +144,16 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             adjusted_image = image.copy()
         if np.any(np.isnan(adjusted_image)) and order >= 4:
             warnings.warn("Setting NaNs to 0 for higher-order scikit-image rotation.", SunpyUserWarning)
-            adjusted_image = np.nan_to_num(adjusted_image)
+            adjusted_image = nan_to_num_func(adjusted_image)
 
-        rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
-                                               mode='constant', cval=missing)
+        if use_dask:
+            delayed_rotated_image = dask.delayed(skimage.transform.warp)(
+                adjusted_image, tform, order=order, mode='constant', cval=missing)
+            rotated_image = dask.array.from_delayed(delayed_rotated_image,
+                                                    dtype=adjusted_image.dtype,
+                                                    shape=adjusted_image.shape)
+        else:
+            rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
+                                                   mode='constant', cval=missing)
 
     return rotated_image
