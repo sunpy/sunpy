@@ -34,6 +34,13 @@ from sunpy.util.exceptions import SunpyUserWarning
 
 from astropy.nddata import NDData
 
+try:
+    import dask.array
+except ImportError:
+    DASK_FOUND = False
+else:
+    DASK_FOUND = True
+
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
@@ -1079,10 +1086,14 @@ class GenericMap(NDData):
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
 
-        new_data = np.pad(self.data,
-                          ((pad_y, pad_y), (pad_x, pad_x)),
-                          mode='constant',
-                          constant_values=(missing, missing))
+        if DASK_FOUND and isinstance(self.data, dask.array.Array):
+            pad_func = dask.array.pad
+        else:
+            pad_func = np.pad
+        new_data = pad_func(self.data,
+                            ((pad_y, pad_y), (pad_x, pad_x)),
+                            mode='constant',
+                            constant_values=(missing, missing))
         new_meta['crpix1'] += pad_x
         new_meta['crpix2'] += pad_y
 
