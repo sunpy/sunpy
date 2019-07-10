@@ -1,0 +1,1 @@
+Add new `sunpy.data.manager` and `sunpy.data.cache` for dealing with remote data in a sensible way.
