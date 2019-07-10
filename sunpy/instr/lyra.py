@@ -109,7 +109,7 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
         ...        lyrats, artifacts=["LAR"], return_artifacts=True)  # doctest: +REMOTE_DATA
     """
     # Check that input argument is of correct type
-    if not lytaf_path:
+    if lytaf_path:
         warn('laytaf_path is deprecated, has no effect and will be removed in a future release.', SunpyDeprecationWarning)
     # Remove artifacts from time series
     data_columns = ts.data.columns
@@ -239,7 +239,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +SKIP
     """
     # Check inputs
-    if not lytaf_path:
+    if lytaf_path:
         warn('laytaf_path is deprecated, has no effect and will be removed in a future release.', SunpyDeprecationWarning)
     if channels and type(channels) is not list:
         raise TypeError("channels must be None or a list of numpy arrays "
@@ -424,7 +424,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     """
     # Check inputs
     # Check lytaf path
-    if not lytaf_path:
+    if lytaf_path:
         warn('laytaf_path is deprecated, has no effect and will be removed in a future release.', SunpyDeprecationWarning)
     # Parse start_time and end_time
     start_time = parse_time(start_time)
@@ -561,7 +561,7 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
         List of all events types in all lytaf databases.
     """
     # Set lytaf_path is not done by user
-    if not lytaf_path:
+    if lytaf_path:
         warn('laytaf_path is deprecated, has no effect and will be removed in a future release.', SunpyDeprecationWarning)
     suffixes = ["lyra", "manual", "ppt", "science"]
     all_event_types = []
