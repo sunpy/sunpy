@@ -345,7 +345,6 @@ def test_get_lytaf_events(local_cache):
     # are incorrectly input.
     with pytest.raises(ValueError):
         lytaf_test = lyra.get_lytaf_events("2008-01-01", "2014-01-01",
-                                           lytaf_path="test_data",
                                            combine_files=["gigo"],
                                            force_use_local_lytaf=True)
 
