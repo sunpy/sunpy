@@ -119,7 +119,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
         # Transform the image using the scipy affine transform
         if use_dask:
-            delayed_rotated_image = dask.delayed(scipy.ndimage.interpolation)(
+            delayed_rotated_image = dask.delayed(scipy.ndimage.interpolation.affine_transform)(
                 nan_to_num_func(image).T, rmatrix, offset=shift, order=order,
                 mode='constant', cval=missing)
             rotated_image = dask.array.from_delayed(delayed_rotated_image, dtype=image.dtype,
