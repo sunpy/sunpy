@@ -18,7 +18,6 @@ from sunpy.sun.constants import radius as _RSUN
 from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
 
 from sunpy.util.decorators import add_common_docstring
-
 from sunpy.time.time import _variables_for_parse_time_docstring
 
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
@@ -69,15 +68,16 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     """
     A coordinate or frame in the Stonyhurst Heliographic system.
 
-    In a cartesian representation this is also known as the Heliocentric
+    In a Cartesian representation this is also known as the Heliocentric
     Earth Equatorial (HEEQ) system. This frame has its origin at the solar
-    centre and the north pole above the solar north pole, and the zero line on
+    center and the north pole above the solar north pole, and the zero line on
     longitude pointing towards the Earth. If the ``data`` parameter
     is given, the positional parameters for the coordinate frame
-    (lon, lat, radius) do not need to be given.
+    (``lon``, ``lat``, ``radius``) do not need to be given.
 
     A new instance can be created using the following signatures
-    (note that all the arguments must be supplied as keywords)::
+    (note that ``obstime`` and ``representation_type`` must be supplied as
+    keywords)::
 
         HeliographicStonyhurst(lon, lat, obstime)
         HeliographicStonyhurst(lon, lat, radius, obstime)
@@ -87,14 +87,14 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     ----------
     data : `~astropy.coordinates.BaseRepresentation` or `None`
         A representation object or None to have no data.
-    lon : `~astropy.coordinates.Angle`, optional
+    lon : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`, optional
         The longitude for this object (``lat`` must also be given and
         ``data`` must be None). Not needed if ``data`` is given.
-    lat : `~astropy.coordinates.Angle`, optional
+    lat : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`, optional
         The latitude for this object (``lon`` must also be given and
         ``data`` must be None). Not needed if ``data`` is given.
     radius : `~astropy.units.Quantity`, optional
-        This quantity holds the radial distance. Defaults to the solar
+        The radial distance for this object. Defaults to the solar
         radius. Not needed if ``data`` is given.
     obstime : {parse_time_types}
         The date and time of the observation.
@@ -182,29 +182,26 @@ class HeliographicCarrington(HeliographicStonyhurst):
 
     - The origin is the centre of the Sun
     - The z-axis is aligned with the Sun's north pole
-    - The x and y axes rotate with a period of 25.38 days. The line of zero
-      longitude passed through the disk centre as seen from Earth at
-      21:36 on 9th Nov 1853.
+    - The x and y axes rotate with a period of 25.38 days.
 
     This frame differs from the Stonyhurst version in the definition of the
     longitude, which is defined using the time-dependent offset described
     above. If the ``data`` parameter is given, the positional
-    parameters for the coordinate frame (lon, lat, radius) do not need to be
+    parameters for the coordinate frame (``lon``, ``lat``, ``radius``) do not need to be
     given.
 
     Parameters
     ----------
-    data : `~astropy.coordinates.BaseRepresentation` or None.
-        A representation object. If specified, other parameters must
-        be in keyword form.
-    lon : `Angle` object.
+    data : `~astropy.coordinates.BaseRepresentation` or None
+        A representation object or None to have no data.
+    lon : `~astropy.coordinates.Angle`, optional
         The longitude for this object (``lat`` must also be given and
         ``data`` must be None). Not needed if ``data`` is given.
-    lat : `Angle` object.
+    lat : `~astropy.coordinates.Angle`, optional
         The latitude for this object (``lon`` must also be given and
         ``data`` must be None). Not needed if ``data`` is given.
-    radius : `astropy.units.Quantity` object, optional, must be keyword.
-        This quantity holds the radial distance. Defaults to the solar radius.
+    radius : `~astropy.units.Quantity`, optional
+        The radial distance for this object. Defaults to the solar radius.
         Not needed if ``data`` is given.
     obstime : {parse_time_types}
         The date and time of the observation.
@@ -273,30 +270,39 @@ class Heliocentric(SunPyBaseCoordinateFrame):
       Sun's north pole.
 
     This frame may either be specified in Cartesian or cylindrical
-    representation. Cylindrical representation replaces (x, y) with (rho, psi)
-    where rho is the impact parameter and psi is the position angle in degrees.
-    
+    representation. Cylindrical representation replaces (``x``, ``y``) with (``rho``, ``psi``)
+    where ``rho`` is the impact parameter and ``psi`` is the position angle.
+    ``psi`` is measured relative to the west limb, rather than solar north, so is shifted
+    by 90 degrees compared to the convention of the Heliocentric Radial system.
     If the ``data`` parameter is given, the positional parameters
-    for the coordinate frame (x, y, z) do not need to be given.
+    for the coordinate frame (``x``, ``y``, ``z``) do not need to be given.
+
+    A new instance can be created using the following signatures
+    (note that ``obstime`` and ``representation_type`` must be supplied as
+    keywords)::
+
+        Heliocentric(x, y, obstime)
+        Heliocentric(x, y, z, obstime)
+        Heliocentric(rho, psi, z, obstime, representation_type='cylindrical')
 
     Parameters
     ----------
-    data : `~astropy.coordinates.BaseRepresentation` or None.
+    data : `~astropy.coordinates.BaseRepresentation` or None
         A representation object. If specified, other parameters must
         be in keyword form and if x, y and z are specified, it must
         be None.
-    x : `Quantity` object.
-        X-axis coordinate, optional, must be keyword. Not needed if
-        ``data`` is given.
-    y : `Quantity` object.
-        Y-axis coordinate, optional, must be keyword. Not needed if
-        ''data'' is given.
-    z : `Quantity` object. Shared by both representations.
-        Z-axis coordinate, optional, must be keyword. Not needed if
-        ``data`` is given.
-    observer : `~sunpy.coordinates.frames.HeliographicStonyhurst`, optional
-        The coordinate of the observer in the solar system. Defaults to the
-        Earth.
+    x : `~astropy.units.Quantity`, optional
+        X-axis coordinate. Not needed if ``data`` is given.
+    y : `~astropy.units.Quantity`, optional
+        Y-axis coordinate. Not needed if ''data'' is given.
+    z : `~astropy.units.Quantity`, optional
+        Z-axis coordinate. Not needed if ``data`` is given.
+    observer : `~sunpy.coordinates.frames.HeliographicStonyhurst`, str
+        The coordinate of the observer in the solar system. If you 
+        supply a string, it must be a solar system body that can be
+        parsed by `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`. 
+        Defaults to the Earth.
+
     obstime : {parse_time_types}
         The date and time of the observation.
 
@@ -350,7 +356,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
 
     Parameters
     ----------
-    data : `~astropy.coordinates.BaseRepresentation` or None.
+    data : `~astropy.coordinates.BaseRepresentation` or None
         A representation object. If specified, other parameters must
         be in keyword form.
     Tx : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
