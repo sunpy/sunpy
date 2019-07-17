@@ -2,8 +2,6 @@
 """
 Test Generic Map
 """
-from __future__ import absolute_import
-
 import os
 import pytest
 
@@ -14,7 +12,6 @@ from astropy.coordinates import SkyCoord
 import matplotlib.pyplot as plt
 
 import sunpy
-import sunpy.sun
 import sunpy.map
 import sunpy.coordinates
 import sunpy.data.test
@@ -49,13 +46,13 @@ def test_plot_aia171(aia171_test_map):
 
 
 @figure_test
-def test_peek_aia171(aia171_test_map):
-    aia171_test_map.peek()
+def test_plot_aia171_clip(aia171_test_map):
+    aia171_test_map.plot(clip_interval=(5., 99.)*u.percent)
 
 
 @figure_test
-def test_peek_basic_plot_aia171(aia171_test_map):
-    aia171_test_map.peek(basic_plot=True)
+def test_peek_aia171(aia171_test_map):
+    aia171_test_map.peek()
 
 
 @figure_test

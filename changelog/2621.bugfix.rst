@@ -1,2 +1,0 @@
-Fix the bug that prevented VSO queries for HMI data from downloading file
-without speicifying `a.Physobs`.

@@ -7,7 +7,7 @@ We have old closed pull requests that might provide useful code or ideas that di
 
 <!-- We have several automatic features that run when a pull request is open.
 They can appear daunting but do not worry about them!
-We have a brief explanation of them in the documentation, http://docs.sunpy.org/en/latest/dev_guide/pr_review_procedure.html#continuous-integration. -->
+We have a brief explanation of them in the documentation, https://docs.sunpy.org/en/latest/dev_guide/pr_review_procedure.html#continuous-integration. -->
 
 ### Description
 <!-- Provide a general description of what your pull request does. -->

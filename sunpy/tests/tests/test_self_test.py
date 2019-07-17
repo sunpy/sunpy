@@ -1,11 +1,12 @@
 import imp
 import os.path
+import warnings
 
 import pytest
 
 import sunpy
 import sunpy.tests.runner
-
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 root_dir = os.path.dirname(os.path.abspath(sunpy.__file__))
 
@@ -13,9 +14,11 @@ root_dir = os.path.dirname(os.path.abspath(sunpy.__file__))
 def test_import_runner():
     """
     When running the tests with setup.py, the test runner class is imported by
-    setup.py before coverage is watching. To ensure that the coverage for
-    sunpy/tests/runner.py is correctly measured we force the interpreter to
-    reload it here while coverage is watching.
+    setup.py before coverage is watching.
+
+    To ensure that the coverage for sunpy/tests/runner.py is correctly
+    measured we force the interpreter to reload it here while coverage
+    is watching.
     """
     imp.reload(sunpy.tests.runner)
 
@@ -26,9 +29,9 @@ def test_main_nonexisting_module():
 
 
 def test_main_stdlib_module():
-    """This test makes sure that the module is really searched within the
-    sunpy package.
-
+    """
+    This test makes sure that the module is really searched within the sunpy
+    package.
     """
     with pytest.raises(ValueError):
         sunpy.self_test(package='random')
@@ -127,3 +130,9 @@ def test_main_coverage_report_html(monkeypatch):
                      os.path.join(root_dir, 'tests', 'coveragerc'),
                      os.path.join('sunpy', 'tests', 'coveragerc'),
                      '--cov-report']
+
+
+def test_warnings():
+    # Ensure that our warning trickery dosen't stop pytest.warns working
+    with pytest.warns(SunpyDeprecationWarning):
+        warnings.warn("Hello", SunpyDeprecationWarning)

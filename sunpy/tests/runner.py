@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 import os
 
 from astropy.tests.runner import TestRunner, keyword
@@ -10,7 +8,6 @@ class SunPyTestRunner(TestRunner):
     A runner for SunPy tests, it modifies the arguments to the astropy runner
     to maintain a similar but more SunPy focused CLI.
     """
-
     # Disable certain astropy flags
     @keyword()
     def remote_data(self, remote_data, kwargs):
@@ -20,7 +17,7 @@ class SunPyTestRunner(TestRunner):
     @keyword(priority=10)
     def package(self, package, kwargs):
         """
-        package : str, optional
+        package : `str`, optional
             The name of a specific package to test, e.g. 'map' or 'net.vso'.
             If nothing is specified all default SunPy tests are run.
         """
@@ -30,7 +27,7 @@ class SunPyTestRunner(TestRunner):
     @keyword(False, priority=3)
     def online(self, online, kwargs):
         """
-        online : bool, optional
+        online : `bool`, optional
             Enable the online tests if `True` or disable them if `False`.
         """
         if online:
@@ -41,7 +38,7 @@ class SunPyTestRunner(TestRunner):
     @keyword(False, priority=2)
     def online_only(self, online_only, kwargs):
         """
-        online_only: bool, optional
+        online_only: `bool`, optional
             If `True` only online tests are run.
         """
         r = []
@@ -55,7 +52,7 @@ class SunPyTestRunner(TestRunner):
     @keyword(False)
     def figure(self, figure, kwargs):
         """
-        figure : bool, optional
+        figure : `bool`, optional
             Enable the figure tests.
         """
         if not figure and not kwargs['figure_only']:
@@ -66,7 +63,7 @@ class SunPyTestRunner(TestRunner):
     @keyword(False)
     def figure_only(self, figure, kwargs):
         """
-        figure_only : bool, optional
+        figure_only : `bool`, optional
             Only run the figure tests.
         """
         if figure:
@@ -77,9 +74,15 @@ class SunPyTestRunner(TestRunner):
     @keyword()
     def figure_dir(self, figure_dir, kwargs):
         """
-        figure_tests : str, optional
+        figure_tests : `str`, optional
             Set the output directory for figure test images and hashes.
         """
+        # If our test path is outside of our base dir (docs) then we have to
+        # skip sending --figure_dir as we will not have hit the conftest.py
+        # file.
+        if kwargs['test_path'] and self.base_path not in kwargs['test_path']:
+            return []
+
         if figure_dir:
             return ['--figure_dir', figure_dir]
 
@@ -89,7 +92,7 @@ class SunPyTestRunner(TestRunner):
     @keyword()
     def plugins(self, plugins, kwargs):
         """
-        plugins : list, optional
+        plugins : `list`, optional
             Plugins to be passed to ``pytest.main`` in the ``plugins`` keyword
             argument.
         """
@@ -115,3 +118,13 @@ class SunPyTestRunner(TestRunner):
             return ['--cov-report'] + a
 
         return []
+
+    @keyword()
+    def docs_path(self, docs_path, kwargs):
+        """
+        Ignore the docs directory if we have set test_path.
+        """
+        if kwargs['test_path']:
+            return []
+        else:
+            return super().docs_path(docs_path, kwargs)

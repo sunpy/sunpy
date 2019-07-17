@@ -19,9 +19,9 @@ This creates an roi called result for the specific time range. Querying the newl
     >>> result
     SunPy Region-of-interest (ROI) object
     -------------------------------------
-    Source:         LYRA LYTAF
-    Start time:     2011-02-15T04:34:09
-    End time:       2011-02-15T04:48:21
-    Event description:  UV occult.
+    Source:            LYRA LYTAF
+    Start time:        2011-02-15 04:34:09.000
+    End time:          2011-02-15 04:48:21.000
+    Event description: UV occult.
 
 Check out the code reference for the time range object for more information.

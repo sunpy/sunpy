@@ -3,14 +3,13 @@
 This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.
 """
-from __future__ import absolute_import, print_function
-
+import urllib
 import xml.etree.ElementTree as EL
-from bs4 import BeautifulSoup
 from contextlib import closing
 
+from bs4 import BeautifulSoup
+
 from sunpy.net.helio import registry_links as RL
-from sunpy.extern.six.moves import urllib
 
 __all__ = ['webservice_parser', 'endpoint_parser', 'wsdl_retriever']
 
@@ -218,17 +217,20 @@ def wsdl_retriever(service='HEC'):
         this function to take a while to return. Timeout duration can be
         controlled through the LINK_TIMEOUT value
     """
+    def fail(): raise ValueError("No online HELIO servers can be found.")
     service_links = webservice_parser(service=service)
     wsdl = None
     wsdl_links = None
     if service_links is None:
-        return None
+        fail()
     for link in service_links:
         wsdl_links = taverna_parser(link)
     if wsdl_links is None:
-        return None
+        fail()
     for end_point in wsdl_links:
         if end_point is not None and link_test(end_point) is not None:
             wsdl = end_point
             break
+    if wsdl is None:
+        fail()
     return wsdl

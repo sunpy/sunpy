@@ -1,7 +1,7 @@
 """
-=============
-LineAnimator
-=============
+===========================
+How to use the LineAnimator
+===========================
 
 This example shows off some ways in which you can use the
 LineAnimator object to animate line plots.
@@ -25,11 +25,21 @@ plot_axis0 = 1
 slider_axis0 = 0
 
 ###############################################################################
-# Define value along x axis which drift with time.  To do this, define
-# xdata to be the same shape as the data where each row/column
-# (depending on axis to be animated) represents the x-axis values for
-# a single frame of the animations.
-xdata = np.tile(np.linspace(0, 100, data_shape0[plot_axis0]), (data_shape0[slider_axis0], 1))
+# Let's customize the values along the x-axis.  To do this, we must define the
+# edges of the pixels/bins being plotted along the x-axis.  This requires us to
+# supply an array, say xdata, of length equal to data.shape[plot_axis_index]+1.
+# In this example, the data has a shape of (10, 20) and let's say we are
+# iterating through the 0th axis and plotting the 1st axis,
+# i.e. plot_axis_index=1.  Therefore we need to define an xdata array of length
+# 21.
+# This will give the same customized x-axis values for each frame of the
+# animation. However, what if we want the x-axis values to change as we
+# animate through the other dimensions of the cube?  To do this we supply a
+# (10, 21) xdata where each row (i.e. xdata[i, :]) gives the pixel/bin edges
+# along the x-axis for the of the i-th frame of the animation.  Note that this
+# API extends in the same way to higher dimension.  In our 2D case here though,
+# we can define our non-constant x-axis values like so:
+xdata = np.tile(np.linspace(0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
 
 ###############################################################################
 # Generate animation object with variable x-axis data.

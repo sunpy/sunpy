@@ -1,0 +1,2 @@
+`sunpy.map.sources.AIAMap` and `sunpy.map.sources.HMIMap` will no longer assume
+the existance of certain header keys.

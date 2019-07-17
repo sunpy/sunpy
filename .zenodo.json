@@ -1,0 +1,131 @@
+{
+    "description": "The community-developed, free and open-source solar data analysis environment for Python.",
+    "license": "BSD-2-Clause",
+    "title": "SunPy",
+    "upload_type": "software",
+    "creators": [
+        {
+            "affiliation": "1 - University of Sheffield. 2 - National Solar Observatory / DKIST. 3 - Aperio Software",
+            "name": "Stuart J. Mumford",
+            "orcid": "0000-0003-4217-4642"
+        },
+        {
+            "affiliation": "NASA Goddard Space Flight Center",
+            "name": "Steven Christe",
+            "orcid": "0000-0001-6127-795X"
+        },
+        {
+            "affiliation": "University of Leicester",
+            "name": "Nabil Freij",
+            "orcid": "0000-0002-6253-082X"
+        },
+        {
+            "affiliation": "@google",
+            "name": "Florian Mayer"
+        },
+        {
+            "affiliation": "National Institutes of Health",
+            "name": "Keith Hughitt"
+        },
+        {
+            "affiliation": "1 - NASA Goddard Space Flight Center. 2 - Catholic University of America",
+            "name": "Daniel F. Ryan"
+        },
+        {
+            "name": "Simon Liedtke"
+        },
+        {
+            "affiliation": "NASA Goddard Space Flight Center",
+            "name": "Albert Y. Shih",
+            "orcid": "0000-0001-6874-2594"
+        },
+        {
+            "affiliation": "University College London",
+            "name": "David Pérez-Suárez",
+            "orcid": "0000-0003-0784-6909"
+        },
+        {
+            "name": "Pritish Chakraborty"
+        },
+        {
+            "affiliation": "IIT Indore",
+            "name": "Vishnunarayan K I"
+        },
+        {
+            "name": "Andrew R. Inglis"
+        },
+        {
+            "affiliation": "IIIT Hyderabad",
+            "name": "Punyaslok Pattnaik"
+        },
+        {
+            "affiliation": "DIRAC Institute, Department of Astronomy, University of Washington",
+            "name": "Brigitta M. Sipőcz",
+            "orcid": "0000-0002-3713-6337"
+        },
+        {
+            "name": "Rishabh Sharma"
+        },
+        {
+            "name": "Drew Leonard",
+            "affiliation": "Aperio Software",
+            "orcid": "0000-0001-5270-7487"
+        },
+        {
+            "affiliation": "Virginia Tech",
+            "name": "Russell J. Hewett",
+            "orcid": "0000-0001-8944-4705"
+        },
+        {
+            "name": "Alex-Ian-Hamilton"
+        },
+        {
+            "affiliation": "Imperial College London",
+            "name": "David Stansby",
+            "orcid": "0000-0002-1365-1908"
+        },
+        {
+            "affiliation": "International Insititute of Information Technology Bhubaneswar",
+            "name": "Asish Panda"
+        },
+        {
+            "name": "Matt Earnshaw",
+            "orcid": "0000-0001-8236-2811"
+        },
+        {
+            "affiliation": "@kossiitkgp",
+            "name": "Nitin Choudhary"
+        },
+        {
+            "name": "Ankit Kumar"
+        },
+        {
+            "affiliation": "NASA Goddard Space Flight Center",
+            "name": "Laura Hayes",
+            "orcid": "0000-0002-6835-2390"
+        },
+        {
+            "affiliation": "IIEST Shibpur",
+            "orcid": "0000-0002-7068-2866",
+            "name": "Prateek Chanda"
+        },
+        {
+            "name": "Md Akramul Haque"
+        },
+        {
+            "name": "Sudarshan Konge"
+        },
+        {
+            "name": "mdmueller"
+        },
+        {
+            "affiliation": "1 - NASA Goddard Space Flight Center. 2 - Catholic University of America",
+            "orcid": "0000-0001-9874-1429",
+            "name": "Michael Kirk"
+        },
+        {
+            "name": "haathi"
+        }
+    ],
+    "access_right": "open"
+}

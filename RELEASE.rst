@@ -1,58 +1,73 @@
-The SunPy project is happy to announce the release of SunPy 0.9.0.
+The SunPy project is happy to announce the release of SunPy 1.0.0!
 
-SunPy v0.9.0 contains 807 commits in 147 merged pull requests closing 310
-issues from 31 people, 19 of which are first time contributors to SunPy.
+This release has been in development for 14 months, it is a large change from the 0.x series of SunPy releases with a lot of old functionality removed and some exciting new features.
 
-This release introduces a rewritten JSOC client and various other improvements
-to the library.  This release will be the last in the 0.x series of releases,
-with the next release planned to be v1.0.  This release will be the last major
-version to support Python 2, and will also be the last version to include
-``sunpy.spectra``, ``sunpy.lightcurve`` and ``sunpy.wcs``, all of which were
-deprecated in 0.8.
+The major highlights of this release are:
 
-We will be supporting bug fixes to the 0.9 release until the end of life of
-Python 2, which is 1st Jan 2020.
+  - A complete transition of the whole code base to use `~astropy.time.Time`, which was implemented by Vishnunarayan K I as part of Google Summer of Code 2018.
+  - A rewrite of how all the clients in `sunpy.net` download files from the internet. This means vastly improved progress bars, skipping downloads if files are present, and better visibility and retrying of download errors.
+  - A rewrite of the differential rotation and image warping code to correctly account for observer location using the Astropy coordinate functionality.
+  - Removal of many deprecated functions and submodules, we have used the 1.0 release as a chance to clean out SunPy reducing the number of lines of Python code in the project by almost 3,000!
+  - The first release of SunPy to be Python 3 only, requiring Python 3.6+.
+
+See `What's New in SunPy 1.0 <https://docs.sunpy.org/en/stable/whatsnew/1.0.html>`__ for more details and the `Full Changelog <https://docs.sunpy.org/en/stable/whatsnew/changelog.html>`__ for the full list of over 150 changes in SunPy 1.0.
 
 
-The people who have contributed to the code for this release are::
+This release includes many breaking changes and may require your code to be updated to support it.
+We hope you see the value in having the extra features these changes enabled and a code base that is easier to maintain.
+We will be continuing to release bug fixes to the 0.9.z series until the end of 2019.
+We hope this gives you enough time to update your code and start enjoying all the improvements in SunPy 1.0.
 
-    Nabil Freij
-    Stuart Mumford
-    Nitin Choudhary
-    David Stansby  *
-    Prateek Chanda
-    Jack Ireland
-    Daniel Ryan
-    Himanshu  *
-    Yash Jain  *
-    James Paul Mason  *
-    Michael Charlton
-    Vishnunarayan K I.  *
-    Swapnil Sharma  *
+
+By the numbers this release of SunPy contains 1913 commits in 332 merged pull requests closing 582 issues from 46 people, 25 of which are first time contributors to SunPy.
+
+The people who have contributed to the code for this release are:
+
+    Abhigyan Bose  *
+    Airmansmith97  *
     Albert Y. Shih
-    David Pérez-Suárez
-    Shresth Verma  *
-    Sanjeev Dubey  *
-    Brigitta Sipocz
+    Andre Chicrala  *
+    Andrew Hill  *
+    Andrew Inglis
     Andrew Leonard
-    Nick Murphy  *
+    Arthur Eigenbrot  *
+    Bernhard M. Wiedemann  *
+    Brandon Stone  *
+    Brigitta Sipocz
+    Daniel D'Avella
+    Daniel Ryan
+    David Pérez-Suárez
+    David Stansby
+    Deepankar Sharma  *
+    Emmanuel Arias  *
+    Harsh Mathur  *
+    Jack Ireland
+    Jacob  *
+    Jai Ram Rideout  *
+    Larry Manley
+    Laura Hayes  *
+    Manas Mangaonkar  *
+    Matthew Mendero  *
+    Md Akramul Haque  *
+    Michael S Kirk
+    Mickaël Schoentgen  *
+    Monica Bobra  *
+    Nabil Freij
+    Naman9639  *
+    Prateek Chanda
+    Punyaslok Pattnaik
+    Reid Gomillion  *
+    Sarthak Jain  *
     Shane Maloney
-    Carlos Molina  *
-    Yash Kothari  *
-    Dang Trung Kien  *
-    Gulshan Mittal  *
-    Rajasekhar Reddy Mekala  *
-    S Shashank  *
-    Tannmay Yadav  *
-    Will Barnes  *
-    Yudhik Agrawal  *
-    codetriage-readme-bot  *
+    Shresth Verma
+    Sourav Ghosh  *
+    Steven Christe
+    Stuart Mumford
+    Vishnunarayan K I.
+    Will Barnes
+    Yash Jain
+    Yash Krishan  *
+    Yash Sharma  *
+    jamescalixto  *
 
-Where a \* indicates their first contribution to SunPy.
-
-In addition to the contributions to the core SunPy library, we would like to
-thank Kolja Glogowski for his help with the JSOC project, and welcome his
-package 'drms' as a SunPy affiliated package, which is now powering our JSOC
-client.  Finally, we would like to thank David Pérez-Suárez and Brigitta Sipocz,
-who are leading the GSOC process for OpenAstronomy, which is of massive benefit
-to the SunPy community.
+Where a * indicates their first contribution to SunPy.

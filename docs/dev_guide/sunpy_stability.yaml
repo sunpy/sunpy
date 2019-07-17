@@ -1,15 +1,15 @@
 cm:
   status: mature
-  comments: Should see minor change in 1.0.
+  comments: Only forwards compatible changes expected.
 coordinates:
-  status: dev
-  comments: Should be stable, but more features are being added that might require backwards incompatible changes.
+  status: stable
+  comments: Should be stable, with additions and small changes expected.
 data:
   status: mature
-  comments: Should see no change in 1.0.
+  comments: Should see no major changes.
 database:
   status: dev
-  comments: Undergoing activate changes with each major release.
+  comments: Undergoing changes with each major release.
 image:
   status: dev
   comments:
@@ -17,14 +17,14 @@ instr:
   status: dev
   comments:
 io:
-  status: stable
-  comments: Should see no changes in 1.0 release.
+  status: mature
+  comments: Should see no major changes.
 map:
-  status: stable
-  comments: Stable in 0.9, mature in 1.0.
+  status: mature
+  comments: Any future changes should largely maintain backwards compatibility.
 net:
   status: stable
-  comments: We intend to maintain backwards compatibility post 0.9.
+  comments: Any future changes should largely maintain backwards compatibility.
 physics:
   status: dev
   comments:
@@ -32,14 +32,14 @@ roi:
   status: planned
   comments: There is very little functionality.
 sun:
-  status: pendingdep
-  comments: Certainly in for a large refactor pre-1.0.
-time:
   status: dev
-  comments: Will see major changes in 1.0.
+  comments: Sub-module `constants` is stable.  Sub-module `models` will likely have major changes.  Sub-module `sun` is deprecated in 1.0 and will be removed in 2.0.
+time:
+  status: stable
+  comments: Any future changes should largely maintain backwards compatibility.
 timeseries:
   status: stable
-  comments: No plans to change what we currently have but only add to it.
+  comments: Any future changes should largely maintain backwards compatibility.
 visualization:
   status: stable
-  comments: No plans to change what we currently have but only add to it.
+  comments: Any future changes should largely maintain backwards compatibility.

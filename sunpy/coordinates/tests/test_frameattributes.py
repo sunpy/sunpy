@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import datetime
-
 import pytest
 
 import astropy.units as u
@@ -61,7 +59,7 @@ def test_on_frame(input):
 
 
 def test_non_string():
-    output = datetime.datetime.now()
+    output = parse_time('now')
 
     hpc1 = Helioprojective(obstime=output)
 
@@ -176,11 +174,11 @@ def test_default_observer_transform_hcc():
     center = frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, obstime="2017-07-11 15:00")
     hpc = center.transform_to(frames.Heliocentric(obstime="2017-07-11 15:00"))
 
-    assert_quantity_allclose(hpc.y, -48471.1283979 * u.km)
+    assert_quantity_allclose(hpc.y, -48484.509203 * u.km)
 
 
 def test_default_observer_transform_hpc():
     center = frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, obstime="2017-07-11 15:00")
     hpc = center.transform_to(frames.Helioprojective(obstime="2017-07-11 15:00"))
 
-    assert_quantity_allclose(hpc.Ty, -66.04425197 * u.arcsec)
+    assert_quantity_allclose(hpc.Ty, -66.062568 * u.arcsec)

@@ -1,11 +1,10 @@
-from __future__ import absolute_import, division, print_function
+import numpy as np
+import pytest
+import skimage.data as images
+from skimage import transform as tf
 
 from sunpy.image.transform import affine_transform
-import numpy as np
-from skimage import transform as tf
-import skimage.data as images
-import pytest
-from sunpy.extern.six.moves import range, zip
+from sunpy.util import SunpyUserWarning
 
 # Define test image first so it's accessible to all functions.
 original = images.camera().astype('float')
@@ -108,40 +107,41 @@ def test_scale(scale_factor):
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
     # Check a scaled image against the expected outcome
-    newim = tf.rescale(original/original.max(), scale_factor, order=4,
-                       mode='constant') * original.max()
+    newim = tf.rescale(original / original.max(), scale_factor, order=4,
+                       mode='constant', multichannel=False, anti_aliasing=False) * original.max()
     # Old width and new center of image
-    w = original.shape[0]/2.0 - 0.5
-    new_c = (newim.shape[0]/2.0) - 0.5
+    w = original.shape[0] / 2.0 - 0.5
+    new_c = (newim.shape[0] / 2.0) - 0.5
     expected = np.zeros(original.shape)
-    upper = int(w+new_c+1)
+    upper = int(w + new_c + 1)
     if scale_factor > 1:
-        lower = int(new_c-w)
+        lower = int(new_c - w)
         expected = newim[lower:upper, lower:upper]
     else:
-        lower = int(w-new_c)
+        lower = int(w - new_c)
         expected[lower:upper, lower:upper] = newim
     scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor)
     compare_results(expected, scale)
 
 
 @pytest.mark.parametrize("angle, dx, dy, scale_factor", [(90, -100, 50, 0.25),
-                                                          (-90, 50, -100, 0.75),
-                                                          (180, 100, 50, 1.5)])
+                                                         (-90, 50, -100, 0.75),
+                                                         (180, 100, 50, 1.5)])
 def test_all(angle, dx, dy, scale_factor):
     """
     Tests to make sure that combinations of scaling, shifting and rotation
     produce the expected output.
     """
-    k = int(angle/90)
+    k = int(angle / 90)
     angle = np.radians(angle)
-    image_center = np.array(original.shape)/2.0 - 0.5
+    image_center = np.array(original.shape) / 2.0 - 0.5
 
     # Check a shifted, rotated and scaled shape against expected outcome
-    c = np.cos(angle); s = np.sin(angle)
+    c = np.cos(angle)
+    s = np.sin(angle)
     rmatrix = np.array([[c, -s], [s, c]])
-    scale = tf.rescale(original/original.max(), scale_factor, order=4,
-                       mode='constant') * original.max()
+    scale = tf.rescale(original / original.max(), scale_factor, order=4,
+                       mode='constant', multichannel=False, anti_aliasing=False) * original.max()
     new = np.zeros(original.shape)
 
     # Old width and new center of image
@@ -190,7 +190,7 @@ def test_all(angle, dx, dy, scale_factor):
 
 def test_flat(identity):
     # Test that a flat array can be rotated using scikit-image
-    in_arr = np.array([[100]])
+    in_arr = np.array([[100]], dtype=np.float64)
     out_arr = affine_transform(in_arr, rmatrix=identity)
     assert np.allclose(in_arr, out_arr, rtol=rtol)
 
@@ -205,19 +205,22 @@ def test_nan_skimage_low(identity):
 def test_nan_skimage_high(identity):
     # Test replacement of NaN values for scikit-image rotation with order >=4
     in_arr = np.array([[np.nan]])
-    out_arr = affine_transform(in_arr, rmatrix=identity, order=4)
+    with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for higher-order scikit-image rotation.'):
+        out_arr = affine_transform(in_arr, rmatrix=identity, order=4)
     assert not np.all(np.isnan(out_arr))
 
 
 def test_nan_scipy(identity):
     # Test replacement of NaN values for scipy rotation
     in_arr = np.array([[np.nan]])
-    out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True)
+    with pytest.warns(SunpyUserWarning, match='Setting NaNs to 0 for SciPy rotation.'):
+        out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True)
     assert not np.all(np.isnan(out_arr))
 
 
 def test_int(identity):
     # Test casting of integer array to float array
     in_arr = np.array([[100]], dtype=int)
-    out_arr = affine_transform(in_arr, rmatrix=identity)
-    assert np.issubdtype(out_arr.dtype, np.float)
+    with pytest.warns(SunpyUserWarning, match='Input data has been cast to float64.'):
+        out_arr = affine_transform(in_arr, rmatrix=identity)
+    assert np.issubdtype(out_arr.dtype, np.floating)

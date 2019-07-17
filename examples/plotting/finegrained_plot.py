@@ -1,13 +1,10 @@
 """
-===============================
-Fine grained Plotting Features
-===============================
+=====================================
+Fine grained Plotting Features of Map
+=====================================
 
-An example to show control over various plotting features.
+How to control various plotting features of map.
 """
-###############################################################################
-# Import the necessary modules for plotting.
-
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 import matplotlib.pyplot as plt
@@ -27,7 +24,7 @@ bottom_left = SkyCoord(-400*u.arcsec, -900*u.arcsec, frame=aiamap.coordinate_fra
 top_right = SkyCoord(800*u.arcsec, 700*u.arcsec, frame=aiamap.coordinate_frame)
 aiamap_sub = aiamap.submap(bottom_left, top_right)
 
-title_obsdate = '{:%Y-%b-%d %H:%M:%S}'.format(aiamap_sub.date)
+title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
 
 ###############################################################################
 # The SunPy map peek method shows a helioprojective  grid by default.
@@ -36,7 +33,7 @@ title_obsdate = '{:%Y-%b-%d %H:%M:%S}'.format(aiamap_sub.date)
 # times we want more control over the Stonyhurst type. The example below illustrates
 # some aspects of how a map plot can be altered as desired. For more information
 # regarding the axis and grid settings, go to `Ticks, tick labels and grid lines
-# <http://docs.astropy.org/en/stable/visualization/wcsaxes/ticks_labels_grid.html>`_ in astropy.
+# <https://docs.astropy.org/en/stable/visualization/wcsaxes/ticks_labels_grid.html>`_ in astropy.
 
 fig = plt.figure(figsize=(6, 6))
 ax = plt.subplot(projection=aiamap_sub)
@@ -68,7 +65,7 @@ tx, ty = ax.coords
 # Use integer coordinates for either axis.
 tx.set_major_formatter('s')
 ty.set_major_formatter('s')
-ax.set_title('AIA 171 $\AA$ {}'.format(title_obsdate))
+ax.set_title(r'AIA 171 $\AA$ {}'.format(title_obsdate))
 ax.set_ylabel('Helioprojective Latitude [arcsec]')
 ax.set_xlabel('Helioprojective Longitude [arcsec]')
 plt.colorbar(fraction=0.045, pad=0.03, label='DN', ax=ax)

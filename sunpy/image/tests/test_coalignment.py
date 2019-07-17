@@ -1,25 +1,20 @@
-from __future__ import absolute_import, division, print_function
-# Author: Jack Ireland, Steven Christe
-#
-# Testing functions for a mapsequence coalignment functionality.  This
-# functionality relies on the scikit-image function "match_template".
-#
+import os
 
 import numpy as np
-from astropy import units as u
+import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift as sp_shift
-from sunpy.map import Map, MapCube, MapSequence
-import pytest
-import os
+
+import astropy.units as u
+
 import sunpy.data.test
-from sunpy.image.coalignment import parabolic_turning_point, \
-    repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
-    calculate_clipping, get_correlation_shifts, find_best_match_location, \
-    match_template_to_layer, clip_edges, \
-    calculate_match_template_shift, mapcube_coalign_by_match_template,\
-    mapsequence_coalign_by_match_template, apply_shifts
-from sunpy.extern.six.moves import range
+from sunpy.image.coalignment import (_default_fmap_function, _lower_clip, _upper_clip, apply_shifts,
+                                     calculate_clipping, calculate_match_template_shift, clip_edges,
+                                     find_best_match_location, get_correlation_shifts,
+                                     mapsequence_coalign_by_match_template, match_template_to_layer,
+                                     parabolic_turning_point, repair_image_nonfinite)
+from sunpy.map import Map, MapSequence
+
 
 @pytest.fixture
 def aia171_test_clipping():
@@ -111,13 +106,12 @@ def test_get_correlation_shifts():
 
     # Input array is too big in either direction
     test_array = np.zeros((4, 3))
-    y_test, x_test = get_correlation_shifts(test_array)
-    assert(y_test is None)
-    assert(x_test is None)
+    with pytest.raises(ValueError):
+        get_correlation_shifts(test_array)
+
     test_array = np.zeros((3, 4))
-    y_test, x_test = get_correlation_shifts(test_array)
-    assert(y_test is None)
-    assert(x_test is None)
+    with pytest.raises(ValueError):
+        get_correlation_shifts(test_array)
 
 
 def test_find_best_match_location(aia171_test_map_layer, aia171_test_template,
@@ -129,10 +123,10 @@ def test_find_best_match_location(aia171_test_map_layer, aia171_test_template,
 
 
 def test_lower_clip(aia171_test_clipping):
-    assert(_lower_clip(aia171_test_clipping) == 2.0)
     # No element is less than zero
     test_array = np.asarray([1.1, 0.1, 3.0])
     assert(_lower_clip(test_array) == 0)
+    assert(_lower_clip(aia171_test_clipping) == 2.0)
 
 
 def test_upper_clip(aia171_test_clipping):
@@ -157,7 +151,7 @@ def test_clip_edges():
 
 
 def test__default_fmap_function():
-    assert(_default_fmap_function([1,2,3]).dtype == np.float64(1).dtype)
+    assert(_default_fmap_function([1, 2, 3]).dtype == np.float64(1).dtype)
 
 #
 # The following tests test functions that have mapsequences as inputs
@@ -197,7 +191,7 @@ def test_calculate_match_template_shift(aia171_test_mc,
     # Test to see if the code can recover the displacements.
     test_displacements = calculate_match_template_shift(aia171_test_mc)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
-    assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0 )
+    assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
 
     # Test setting the template as a ndarray
     template_ndarray = aia171_test_map_layer[ny // 4: 3 * ny // 4, nx // 4: 3 * nx // 4]
@@ -214,11 +208,11 @@ def test_calculate_match_template_shift(aia171_test_mc,
     # Test setting the template as something other than a ndarray and a
     # GenericMap.  This should throw a ValueError.
     with pytest.raises(ValueError):
-        dummy_return_value = calculate_match_template_shift(aia171_test_mc, template='broken')
+        calculate_match_template_shift(aia171_test_mc, template='broken')
 
 
 def test_mapsequence_coalign_by_match_template(aia171_test_mc,
-                                           aia171_test_map_layer_shape):
+                                               aia171_test_map_layer_shape):
     # Define these local variables to make the code more readable
     ny = aia171_test_map_layer_shape[0]
     nx = aia171_test_map_layer_shape[1]
@@ -270,6 +264,7 @@ def test_mapsequence_coalign_by_match_template(aia171_test_mc,
                             test_displacements[s][im] / m.scale[i_s],
                             rtol=5e-2, atol=0)
 
+
 def test_apply_shifts(aia171_test_map):
     # take two copies of the AIA image and create a test mapsequence.
     mc = Map([aia171_test_map, aia171_test_map], sequence=True)
@@ -282,11 +277,11 @@ def test_apply_shifts(aia171_test_map):
     # Test to see if the code can detect the fact that the input shifts are not
     # astropy quantities
     with pytest.raises(TypeError):
-        tested = apply_shifts(mc, numerical_displacements["y"], astropy_displacements["x"])
+        apply_shifts(mc, numerical_displacements["y"], astropy_displacements["x"])
     with pytest.raises(TypeError):
-        tested = apply_shifts(mc, astropy_displacements["y"], numerical_displacements["x"])
+        apply_shifts(mc, astropy_displacements["y"], numerical_displacements["x"])
     with pytest.raises(TypeError):
-        tested = apply_shifts(mc, numerical_displacements["y"], numerical_displacements["x"])
+        apply_shifts(mc, numerical_displacements["y"], numerical_displacements["x"])
 
     # Test returning with no extra options - the code returns a mapsequence only
     test_output = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])

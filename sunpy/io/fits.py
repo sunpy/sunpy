@@ -1,64 +1,55 @@
 """
-FITS File Reader
+This module provides a FITS file reader.
 
 Notes
 -----
-FITS
-    [1] FITS files allow comments to be attached to every value in the header.
-    This is implemented in this module as a KEYCOMMENTS dictionary in the
-    sunpy header. To add a comment to the file on write, add a comment to this
-    dictionary with the same name as a key in the header (upcased).
 
-    [2] Due to the way `~astropy.io.fits` works with images the header dictionary may
-    differ depending on whether is accessed before or after the fits[0].data
-    is requested. If the header is read before the data then the original
-    header will be returned. If the header is read after the data has been
-    accessed then the data will have been scaled and a modified header
-    reflecting these changes will be returned: BITPIX may differ and
-    BSCALE and B_ZERO may be dropped in the modified version.
+1. FITS files allow comments to be attached to every value in the header.
+   This is implemented in this module as a KEYCOMMENTS dictionary in the
+   sunpy header. To add a comment to the file on write, add a comment to this
+   dictionary with the same name as a key in the header (upcased).
 
-    [3] The verify('fix') call attempts to handle violations of the FITS
-    standard. For example, nan values will be converted to "nan" strings.
-    Attempting to cast a pyfits header to a dictionary while it contains
-    invalid header tags will result in an error so verifying it early on
-    makes the header easier to work with later.
+2. Due to the way `~astropy.io.fits` works with images, the header dictionary may
+   differ depending on whether is accessed before or after the fits[0].data
+   is requested. If the header is read before the data then the original
+   header will be returned. If the header is read after the data has been
+   accessed then the data will have been scaled and a modified header
+   reflecting these changes will be returned: BITPIX may differ and
+   BSCALE and B_ZERO may be dropped in the modified version.
 
-References
-----------
-| https://stackoverflow.com/questions/456672/class-factory-in-python
+3. The verify('silentfix+warn') call attempts to handle violations of the FITS
+   standard. For example, ``nan`` values will be converted to "nan" strings.
+   Attempting to cast a `astropy.io.fits.Header` to a dictionary while it contains
+   invalid header tags will result in an error so verifying it early on
+   makes the header easier to work with later.
 """
-from __future__ import absolute_import, division, print_function
 import os
 import re
 import sys
 import warnings
 import traceback
-import itertools
 import collections
 
 from astropy.io import fits
 
 from sunpy.io.header import FileHeader
-from sunpy.extern.six.moves import zip
+from sunpy.util.exceptions import SunpyUserWarning
 
-__all__ = ['read', 'get_header', 'write', 'extract_waveunit']
-
-__author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
-__email__ = "keith.hughitt@nasa.gov"
+__all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit']
 
 HDPair = collections.namedtuple('HDPair', ['data', 'header'])
 
 
 def read(filepath, hdus=None, memmap=None, **kwargs):
     """
-    Read a fits file
+    Read a fits file.
 
     Parameters
     ----------
     filepath : `str`
-        The fits file to be read
+        The fits file to be read.
     hdu: `int` or iterable
-        The HDU indexes to read from the file
+        The HDU indexes to read from the file.
 
     Returns
     -------
@@ -69,8 +60,9 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
     -----
     This routine reads all the HDU's in a fits file and returns a list of the
     data and a FileHeader instance for each one.
+
     Also all comments in the original file are concatenated into a single
-    'comment' key in the returned FileHeader.
+    "comment" key in the returned FileHeader.
     """
     with fits.open(filepath, ignore_blank=True, memmap=memmap) as hdulist:
         if hdus is not None:
@@ -93,7 +85,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
                     message += line
                     message += '\n'
                 message += repr(e)
-                warnings.warn(message, Warning, stacklevel=2)
+                warnings.warn(message, SunpyUserWarning)
 
     return pairs
 
@@ -102,17 +94,17 @@ def get_header(afile):
     """
     Read a fits file and return just the headers for all HDU's. In each header,
     the key WAVEUNIT denotes the wavelength unit which is used to describe the
-    value of the key WAVELNTH.
+    value of the key "WAVELNTH".
 
     Parameters
     ----------
-    afile : `str` or fits.HDUList
+    afile : `str` or `astropy.io.fits.HDUList`
         The file to be read, or HDUList to process.
 
     Returns
     -------
     headers : `list`
-        A list of FileHeader headers.
+        A list of `sunpy.io.helper.FileHeader` headers.
     """
     if isinstance(afile, fits.HDUList):
         hdulist = afile
@@ -123,7 +115,7 @@ def get_header(afile):
         close = True
 
     try:
-        headers= []
+        headers = []
         for hdu in hdulist:
             try:
                 comment = "".join(hdu.header['COMMENT']).strip()
@@ -142,7 +134,7 @@ def get_header(afile):
             keydict = {}
             for card in hdu.header.cards:
                 if card.comment != '':
-                    keydict.update({card.keyword:card.comment})
+                    keydict.update({card.keyword: card.comment})
             header['KEYCOMMENTS'] = keydict
             header['WAVEUNIT'] = extract_waveunit(header)
 
@@ -153,25 +145,51 @@ def get_header(afile):
     return headers
 
 
-def write(fname, data, header, **kwargs):
+def write(fname, data, header, hdu_type=None, **kwargs):
     """
     Take a data header pair and write a FITS file.
 
     Parameters
     ----------
     fname : `str`
-        File name, with extension
-
+        File name, with extension.
     data : `numpy.ndarray`
-        n-dimensional data array
-
+        n-dimensional data array.
     header : `dict`
-        A header dictionary
+        A header dictionary.
+    hdu_type: `None` or `~astropy.io.fits.CompImageHDU`
+        `None` will return a normal FITS files.
+        `~astropy.io.fits.CompImageHDU` will rice compress the FITS file.
     """
     # Copy header so the one in memory is left alone while changing it for
     # write.
     header = header.copy()
 
+    fits_header = header_to_fits(header)
+
+    if isinstance(fname, str):
+        fname = os.path.expanduser(fname)
+
+    fitskwargs = {'output_verify': 'fix'}
+    fitskwargs.update(kwargs)
+
+    if not hdu_type:
+        hdu_type = fits.PrimaryHDU
+
+    hdu = hdu_type(data=data, header=fits_header)
+
+    if not isinstance(hdu, fits.PrimaryHDU):
+        hdul = fits.HDUList([fits.PrimaryHDU(), hdu])
+    else:
+        hdul = fits.HDUList([hdu])
+
+    hdul.writeto(fname, **fitskwargs)
+
+
+def header_to_fits(header):
+    """
+    Convert a header dict to a `~astropy.fits.Header`.
+    """
     # The comments need to be added to the header separately from the normal
     # kwargs. Find and deal with them:
     fits_header = fits.Header()
@@ -180,11 +198,11 @@ def write(fname, data, header, **kwargs):
 
     for k, v in header.items():
         if isinstance(v, fits.header._HeaderCommentaryCards):
-            if k == 'comments':
+            if k.upper() == 'COMMENT':
                 comments = str(v).split('\n')
                 for com in comments:
-                    fits_header.add_comments(com)
-            elif k == 'history':
+                    fits_header.add_comment(com)
+            elif k.upper() == 'HISTORY':
                 hists = str(v).split('\n')
                 for hist in hists:
                     fits_header.add_history(hist)
@@ -200,24 +218,21 @@ def write(fname, data, header, **kwargs):
             if k in fits_header:
                 fits_header.comments[k] = v
     elif key_comments:
+
         raise TypeError("KEYCOMMENTS must be a dictionary")
 
-    if isinstance(fname, str):
-        fname = os.path.expanduser(fname)
-
-    fitskwargs = {'output_verify': 'fix'}
-    fitskwargs.update(kwargs)
-    fits.writeto(fname, data, header=fits_header, **fitskwargs)
+    return fits_header
 
 
 def extract_waveunit(header):
-    """Attempt to read the wavelength unit from a given FITS header.
+    """
+    Attempt to read the wavelength unit from a given FITS header.
 
     Parameters
     ----------
-    header : FileHeader
-        One :class:`sunpy.io.header.FileHeader` instance which was created by
-        reading a FITS file. :func:`sunpy.io.fits.get_header` returns a list of
+    header : `sunpy.io.header.FileHeader`
+        One `~sunpy.io.header.FileHeader` instance which was created by
+        reading a FITS file. For example, `sunpy.io.fits.get_header` returns a list of
         such instances.
 
     Returns
@@ -229,14 +244,13 @@ def extract_waveunit(header):
     --------
     The goal of this function is to return a string that can be used in
     conjunction with the astropy.units module so that the return value can be
-    directly passed to ``astropy.units.Unit``::
+    directly passed to `astropy.units.Unit`.
 
-        >>> import astropy.units
-        >>> header = {'WAVEUNIT': 'Angstrom', 'KEYCOMMENTS': {}}
-        >>> waveunit = extract_waveunit(header)
-        >>> if waveunit is not None:
-        ...     unit = astropy.units.Unit(waveunit)
-
+    >>> import astropy.units
+    >>> header = {'WAVEUNIT': 'Angstrom', 'KEYCOMMENTS': {}}
+    >>> waveunit = extract_waveunit(header)
+    >>> if waveunit is not None:
+    ...     unit = astropy.units.Unit(waveunit)
     """
     # algorithm: try the following procedures in the following order and return
     # as soon as a waveunit could be detected
@@ -286,5 +300,5 @@ def extract_waveunit(header):
                 waveunit = m.group(1)
                 break
     if waveunit == '':
-        return None # To fix problems associated with HMI FITS.
+        return None  # To fix problems associated with HMI FITS.
     return waveunit

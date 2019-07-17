@@ -134,14 +134,16 @@ operator would::
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     <BLANKLINE>
-    2 Results from the RHESSIClient:
+    3 Results from the RHESSIClient:
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str6       str3
     ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan
+    2012-03-04 00:00:00 2012-03-04 23:59:59 rhessi     rhessi        nan
+    2012-03-05 00:00:00 2012-03-05 23:59:59 rhessi     rhessi        nan
+    2012-03-06 00:00:00 2012-03-06 23:59:59 rhessi     rhessi        nan
     <BLANKLINE>
     <BLANKLINE>
+
 
 Indexing search results
 -----------------------
@@ -213,8 +215,8 @@ download them via `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.f
 
     >>> downloaded_files = Fido.fetch(results)  # doctest: +SKIP
 
-This downloads the files to the location set in you sunpy config
-file.  It also returns a list ``downloaded_files``, of absolute file paths
+This downloads the files to the location set in you sunpy config file. It also
+returns a `parfive.Results` object ``downloaded_files``, of absolute file paths
 of where the files have been downloaded to.
 
 You can also specify the path to which you want the data downloaded::
@@ -226,12 +228,32 @@ This downloads the query results into the directory
 filename ``{file}`` obtained from the client, and appended with the suffix
 ``.fits``. You can also use other properties of the returned query
 to define the path where the data is saved.  For example, to save the
-data to a subdirectory named after the instrument, use
+data to a subdirectory named after the instrument, use::
 
     >>> downloaded_files = Fido.fetch(results, path='./{instrument}/{file}.fits')  # doctest: +SKIP
 
 You can see the list of options that can be specified in path for all the files
 to be downloaded with ``results.response_block_properties``.
+
+Retrying Downloads
+^^^^^^^^^^^^^^^^^^
+
+If any files failed to download, the progress bar will show an incomplete number
+of files (i.e. 100/150) and the `parfive.Results` object will contain a list of
+the URLs that failed to transfer and the error associated with them. This can be
+accessed with the ``.errors`` attribute or by printing the `~parfive.Results`
+object::
+
+    >>> print(downloaded_files.errors)  # doctest: +SKIP
+
+The transfer can be retried by passing the `parfive.Results` object back to
+`Fido.fetch <sunpy.net.fido_factory.unifieddownloaderfactory.fetch>`::
+
+    >>> downloaded_files = Fido.fetch(downloaded_files)  # doctest: +SKIP
+
+doing this will append any newly downloaded file names to the list and replace
+the ``.errors`` list with any errors that occurred during the second attempt.
+
 
 .. _VSO: https://sdac.virtualsolar.org/cgi/search
 .. _JSOC: http://jsoc.stanford.edu/

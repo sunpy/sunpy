@@ -1,12 +1,15 @@
 """SDO Map subclass definitions"""
-from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
-
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
 
 import matplotlib.pyplot as plt
 
+from astropy.coordinates import CartesianRepresentation, SkyCoord
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the misleading name HeliocentricTrueEcliptic
+try:
+    from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize
 from astropy.visualization import AsinhStretch
 
@@ -29,10 +32,17 @@ class AIAMap(GenericMap):
     211 A (Fe XIV), 304 A (He II), 335 A (Fe XVI). One telescope observes
     in the visible 1600 A (C IV) and the nearby continuun (1700 A).
 
+    Notes
+    -----
+    Observer location: The standard AIA FITS header provides the spacecraft location in multiple
+    coordinate systems, including Heliocentric Aries Ecliptic (HAE) and Heliographic Stonyhurst
+    (HGS).  SunPy uses the provided HAE coordinates due to accuracy concerns with the provided
+    HGS coordinates, but other software packages may make different choices.
+
     References
     ----------
     * `SDO Mission Page <https://sdo.gsfc.nasa.gov/>`_
-    * `Instrument Page <http://aia.lmsal.com>`_
+    * `Instrument Page <https://aia.lmsal.com>`_
     * `Fits Header keywords <http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf>`_
     * `Analysis Guide <https://www.lmsal.com/sdodocs/doc/dcur/SDOD0060.zip/zip/entry/>`_
     * `Instrument Paper <https://doi.org/10.1007/s11207-011-9776-8>`_
@@ -40,21 +50,30 @@ class AIAMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing info
-        self.meta['detector'] = "AIA"
+        self.meta['detector'] = self.meta.get('detector', "AIA")
         self._nickname = self.detector
         self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
+
+    @property
+    def _supported_observer_coordinates(self):
+        return [(('haex_obs', 'haey_obs', 'haez_obs'), {'x': self.meta.get('haex_obs'),
+                                                        'y': self.meta.get('haey_obs'),
+                                                        'z': self.meta.get('haez_obs'),
+                                                        'unit': u.m,
+                                                        'representation_type': CartesianRepresentation,
+                                                        'frame': HeliocentricMeanEcliptic})
+        ] + super()._supported_observer_coordinates
 
     @property
     def observatory(self):
         """
         Returns the observatory.
         """
-        return self.meta['telescop'].split('/')[0]
+        return self.meta.get('telescop', '').split('/')[0]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -84,9 +103,7 @@ class HMIMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self.meta['detector'] = "HMI"
-#        self.meta['instrme'] = "HMI"
-#        self.meta['obsrvtry'] = "SDO"
+        self.meta['detector'] = self.meta.get('detector', "HMI")
         self._nickname = self.detector
 
     @property
@@ -94,14 +111,14 @@ class HMIMap(GenericMap):
         """
         Returns the measurement type.
         """
-        return self.meta['content'].split(" ")[0].lower()
+        return self.meta.get('content', '').split(" ")[0].lower()
 
     @property
     def observatory(self):
         """
         Returns the observatory.
         """
-        return self.meta['telescop'].split('/')[0]
+        return self.meta.get('telescop', '').split('/')[0]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

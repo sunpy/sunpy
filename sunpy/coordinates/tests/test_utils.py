@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 import pytest
 
 import numpy as np
@@ -7,7 +5,7 @@ import numpy as np
 from astropy.coordinates import SkyCoord
 import astropy.units as u
 
-from sunpy.sun import sun
+from sunpy.coordinates import sun
 import sunpy.map
 import sunpy.data.test
 from sunpy.coordinates import frames
@@ -45,20 +43,20 @@ def test_great_arc_calculable(start, end):
 # initialization of the GreatArc object.
 @pytest.mark.parametrize("points_requested, points_expected, first_point, last_point, last_inner_angle, last_distance",
                          # Test default
-                         [(None, 100, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981272686),
+                         [(None, 100, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981299),
                           # Test int as an option
-                          (3, 3, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981272686),
+                          (3, 3, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981299),
                           # Test equally spaced monotonically increasing numpy
                           # array
-                          (np.linspace(0, 1, 43), 43, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981272686),
+                          (np.linspace(0, 1, 43), 43, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981299),
                           # Test unequally spaced monotonically increasing numpy
                           # array
-                          (np.asarray([0.1, 0.2, 0.6, 0.67, 0.99]), 5, (604.68091703, -468.64217597), (-88.83212616, 792.76284375), 1.84967446, 1287373.426146),
+                          (np.asarray([0.1, 0.2, 0.6, 0.67, 0.99]), 5, (604.68091703, -468.64217597), (-88.83212616, 792.76284375), 1.84967446, 1287373.4261486),
                           # Test unequally spaced monotonically decreasing numpy
                           # array
                           (np.asarray([0.93, 0.78, 0.3, 0.001]), 4, (-21.28208654, 743.58866798), (600.1512768 , -598.78376614), 0.00186836, 1300.37719813),
                           # Test numpy array that increases and decreases
-                          (np.asarray([0.94, 0.73, 0.8, 0.21]), 4, (-32.5852606 , 752.45507707), (585.45829119, -305.26965043), 0.39235519, 273079.21160673)])
+                          (np.asarray([0.94, 0.73, 0.8, 0.21]), 4, (-32.5852606 , 752.45507707), (585.45829119, -305.26965043), 0.39235519, 273079.2116073)])
 def test_great_arc_coordinates(points_requested, points_expected, first_point,
                                last_point, last_inner_angle, last_distance):
 
@@ -83,14 +81,14 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
     assert gc.center.y == 0 * u.km
     assert gc.center.z == 0 * u.km
 
-    np.testing.assert_almost_equal(gc.start_cartesian, np.asarray([428721.09135385, -428722.90519236, 341776.09102756]))
-    np.testing.assert_almost_equal(gc.end_cartesian, np.asarray([-71429.52293813, 571439.07124801, 390859.57978693]))
+    np.testing.assert_almost_equal(gc.start_cartesian, np.asarray([428721.0913539, -428722.9051924, 341776.0910214]))
+    np.testing.assert_almost_equal(gc.end_cartesian, np.asarray([-71429.5229381, 571439.071248, 390859.5797815]))
     np.testing.assert_almost_equal(gc.center_cartesian, np.asarray([0, 0, 0]))
 
-    np.testing.assert_almost_equal(gc.v1, np.asarray([428721.09135385, -428722.90519236, 341776.09102756]))
-    np.testing.assert_almost_equal(gc._r, 696000.00000451738)
-    np.testing.assert_almost_equal(gc.v2, np.asarray([-71429.52293813, 571439.07124801, 390859.57978693]))
-    np.testing.assert_almost_equal(gc.v3, np.asarray([56761.62657985, 466230.70058902, 513637.08158833]))
+    np.testing.assert_almost_equal(gc.v1, np.asarray([428721.0913539, -428722.9051924, 341776.0910214]))
+    np.testing.assert_almost_equal(gc._r, 696000.000001501)
+    np.testing.assert_almost_equal(gc.v2, np.asarray([-71429.5229381, 571439.071248, 390859.5797815]))
+    np.testing.assert_almost_equal(gc.v3, np.asarray([56761.6265851, 466230.7005856, 513637.0815867]))
 
     # Inner angle
     assert gc.inner_angle.unit == u.rad
@@ -98,11 +96,11 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
 
     # Distance
     assert gc.distance.unit == u.km
-    np.testing.assert_almost_equal(gc.distance.value, 1300377.1981272686)
+    np.testing.assert_almost_equal(gc.distance.value, 1300377.1981298963)
 
     # Radius of the sphere
     assert gc.radius.unit == u.km
-    np.testing.assert_almost_equal(gc.radius.value, 696000.0000045174)
+    np.testing.assert_almost_equal(gc.radius.value, 696000.000001501)
 
     # Test the calculation of the SkyCoords
     # Coordinates method

@@ -1,0 +1,49 @@
+variables:
+  Agent.Source.Git.ShallowFetchDepth: 1
+  CI_NAME: Azure Pipelines
+  CI_BUILD_ID: $(Build.BuildId)
+  CI_BUILD_URL: "https://dev.azure.com/sunpy/sunpy/_build/results?buildId=$(Build.BuildId)"
+
+jobs:
+- template: azure-templates.yml
+  parameters:
+    name: Linux_36_offline
+    os: linux
+    tox: py36-offline -- -n=4
+
+- template: azure-templates.yml
+  parameters:
+    name: macOS_37_offline
+    os: macos
+    tox: py37-offline -- -n=4
+
+- template: azure-templates.yml
+  parameters:
+    name: Windows_36_offline
+    os: windows
+    tox: py36-offline -- -n=4
+
+- template: azure-templates.yml
+  parameters:
+    name: Linux_37_online
+    os: linux
+    tox: py37-online -- -n=4
+
+- template: azure-templates.yml
+  parameters:
+    name: Linux_36_Conda_offline
+    os: linux
+    tox: conda -- -n=4
+
+- template: azure-templates.yml
+  parameters:
+    name: Linux_37_astropydev
+    os: linux
+    tox: py37-astropydev -- -n=4
+
+- ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
+  - template: azure-templates.yml
+    parameters:
+      name: Linux_37_numpydev
+      os: linux
+      tox: py37-numpydev -- -n=4

@@ -2,8 +2,7 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-import datetime
-from sunpy.extern.six.moves.urllib.parse import urljoin
+from urllib.parse import urljoin
 
 from ..client import GenericClient
 
@@ -11,6 +10,30 @@ __all__ = ['LYRAClient']
 
 
 class LYRAClient(GenericClient):
+    """
+    Provides access to the LYRA/Proba2 data `archive <http://proba2.oma.be/lyra/data/bsd/>`__
+    hosted by the `PROBA2 Science Center <http://proba2.oma.be>`__.
+
+    Examples
+    --------
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('LYRA'))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the LYRAClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00 Proba2       lyra        nan
+    2016-01-01 00:00:00 2016-01-02 00:00:00 Proba2       lyra        nan
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns list of URLS corresponding to value of input timerange.
@@ -37,15 +60,16 @@ class LYRAClient(GenericClient):
 
         Parameters
         ----------
-        date : Python datetime object
+        date : `astropy.time.Time`, `~datetime.datetime`, `~datetime.date`
 
         Returns
         -------
-        string
+        str
             The URL for the corresponding date.
         """
 
-        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(date, kwargs.get('level', 2))
+        filename = "lyra_{0}-000000_lev{1:d}_std.fits".format(
+            date.strftime('%Y%m%d'), kwargs.get('level', 2))
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urljoin(date.strftime('%Y/%m/%d/'), filename)
 

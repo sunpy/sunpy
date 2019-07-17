@@ -1,5 +1,6 @@
+********
 Licenses
-========
+********
 
 This directory holds license and credit information for works sunpy is derived from or distributes.
 

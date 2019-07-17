@@ -7,7 +7,7 @@ functions in other places.
 
 .. automodapi:: sunpy.image
 
-.. automodapi:: sunpy.image.rescale
+.. automodapi:: sunpy.image.resample
     :headings: ".#"
 
 .. automodapi:: sunpy.image.transform

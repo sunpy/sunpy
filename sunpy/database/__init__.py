@@ -23,8 +23,6 @@ The database package exports the following classes and exceptions:
         - disable_undo
 """
 
-from __future__ import absolute_import
-
 from sunpy.database.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError, disable_undo, split_database

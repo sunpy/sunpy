@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from ..mocks import MockObject, MockOpenTextFile, MockHTTPResponse
+from sunpy.tests.mocks import MockHTTPResponse, MockObject, MockOpenTextFile
 
 
 @pytest.fixture
@@ -13,8 +13,8 @@ def mocked_mockobject():
 
 def test_MockObject_illegal_kwargs(mocked_mockobject):
     """
-    Any attempt to use a kwarg which has the same name as an attribute/method of the
-    underlying object or datastore will raise a ValueError.
+    Any attempt to use a kwarg which has the same name as an attribute/method
+    of the underlying object or datastore will raise a ValueError.
     """
     with pytest.raises(ValueError):
         MockObject(records=[], values=1)
@@ -32,8 +32,8 @@ def test_MockObject_illegal_kwargs(mocked_mockobject):
 
 def test_MockObject_attr(mocked_mockobject):
     """
-    builtin hasattr & getattr functions, these don't work on dictionaries
-    but they do on classes.
+    builtin hasattr & getattr functions, these don't work on dictionaries but
+    they do on classes.
     """
     assert hasattr(mocked_mockobject, 'records') is True
     assert hasattr(mocked_mockobject, 'cost') is False
@@ -60,8 +60,8 @@ def test_MockObject_get(mocked_mockobject):
 
 def test_MockObject_set_get(mocked_mockobject):
     """
-    Setting attributes in `MockObject` using bracket notation *not*
-    dot notation.
+    Setting attributes in `MockObject` using bracket notation *not* dot
+    notation.
     """
 
     # Only change the value of existing & new items using 'bracket' notation
@@ -82,14 +82,14 @@ def test_MockObject_set_get(mocked_mockobject):
 
 def test_MockObject_len():
     """
-    Testing `MockObject.__len__`
+    Testing ``MockObject.__len__``.
     """
     assert len(MockObject(responses=['a', 'b', 'c', 'd'], requests=(1, 2, 3))) == 2
 
 
 def test_MockObject_del(mocked_mockobject):
     """
-    Ensure `MockObject.__delitem__` is *not* implemented.
+    Ensure ``MockObject.__delitem__`` is **not** implemented.
     """
     with pytest.raises(NotImplementedError):
         del mocked_mockobject['records']
@@ -97,14 +97,14 @@ def test_MockObject_del(mocked_mockobject):
 
 def test_MockObject_iter(mocked_mockobject):
     """
-    Test `MockObject.__iter__`
+    Test ``MockObject.__iter__``.
     """
     assert list(iter(mocked_mockobject)) == ['records']
 
 
 def test_repr_MockObject():
     """
-    Test `MockObject.__repr__`
+    Test ``MockObject.__repr__``.
     """
     empty = MockObject()
 
@@ -165,7 +165,7 @@ def test_write_only_mode_MockOpenTextFile():
 
 def test_read_and_write_MockOpenTextFile():
     """
-    Reading & wrtiting to a file with read/write access.
+    Reading & writing to a file with read/write access.
     """
     rd_wr = MockOpenTextFile(mode='r+')
 
@@ -188,7 +188,7 @@ def test_read_and_write_MockOpenTextFile():
 
 def test_repr_MockOpenTextFile():
     """
-    Test `MockOpenTextFile.__repr__`
+    Test ``MockOpenTextFile.__repr__``.
     """
     mo_p = re.compile((r"^(?P<_><)sunpy\.tests\.mocks\.MockOpenTextFile file \'a\' "
                        "mode \'r\' at 0x[0-9A-Fa-f]+L?(?(_)>|)$"))

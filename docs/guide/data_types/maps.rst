@@ -37,18 +37,146 @@ may vary. SunPy can also create maps from the jpg2000 files from
 
 Creating Custom Maps
 --------------------
-It is also possible to create maps using custom data (e.g. from a simulation).
-To do this you need to provide `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`
-with both the data array as well as some basic meta information. If no header is
-given then some default values are assumed. Here is a simple example::
+It is also possible to create maps using custom data (e.g. from a simulation or an observation
+from a data source that is not explicitly supported in SunPy.) To do this you need to provide
+`sunpy.map.Map <sunpy.map.map_factory.MapFactory>` with both the data array as well as appropriate
+meta information. The meta information is important as it informs the `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`
+of the correct coordinate information associated with the data array. The meta information should be provided to
+`sunpy.map.Map <sunpy.map.map_factory.MapFactory>` in the form of a header as a `dict` or `MetaDict <sunpy.util.MetaDict>`.
+
+The keys that are required for the header information follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_. SunPy now provides a map header helper function to assist the user in creating a header that contains the correct meta information
+to generate a `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`.
+
+The helper functionality includes a `meta_keywords <sunpy.map.header_helper.meta_keywords>` function
+that will return a `dict` of all the current meta keywords and their descriptions currently used by
+`sunpy.map.Map <sunpy.map.map_factory.MapFactory>` to make a map::
+
+    >>> from sunpy.map import header_helper
+
+    >>> header_helper.meta_keywords() # doctest: +SKIP
+    {'cunit1': 'Units of the coordinate increments along naxis1 e.g. arcsec **required',
+     'cunit2': 'Units of the coordinate increments along naxis2 e.g. arcsec **required',
+     'crval1': 'Coordinate value at reference point on naxis1 **required'
+     ...
+
+The `header_helper <sunpy.map.header_helper>` functionality also includes a utility function
+`make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` that will return a header with the
+appropiate FITS keywords once the map data array and an `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames`
+is passed. The `astropy.coordinates.SkyCoord` is defined by the user, and contains information on the reference frame,
+reference coordinate and observer location. The function returns a `sunpy.utils.MetaDict <sunpy.utils.MetaDict>`.
+The `astropy.coordinates.SkyCoord` or `sunpy.coordinates.frames` must contain an observation time.
+
+The `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` function also takes optional keywords arguments including ``reference_pixel`` and ``scale`` which describe the pixel coordinate at the reference coordinate (defined by the `~astropy.coordinate.SkyCoord`) and the spatial scale of the pixels, respectively. If neither of these are given their values default to the center of the data array and 1 arcsec, respectively.
+
+Here's an example of creating a header from some generic data and an `astropy.coordinate.SkyCoord`::
 
     >>> import numpy as np
+    >>> import astropy.units as u
+    >>> from sunpy.coordinates import frames
+    >>> from astropy.coordinates import SkyCoord
 
     >>> data = np.arange(0,100).reshape(10,10)
-    >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
-    >>> my_map = sunpy.map.Map(data, header)
+    >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
+    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord)
+    >>> for key, value in header.items():
+    ...     print(f"{key}: {value}")
+    wcsaxes: 2
+    crpix1: 6.5
+    crpix2: 6.5
+    cdelt1: 1.0
+    cdelt2: 1.0
+    cunit1: arcsec
+    cunit2: arcsec
+    ctype1: HPLN-TAN
+    ctype2: HPLT-TAN
+    crval1: 0.0
+    crval2: 0.0
+    lonpole: 180.0
+    latpole: 0.0
+    date-obs: 2013-10-28T00:00:00.000
+    hgln_obs: 0.0
+    hglt_obs: 4.7711570596394
+    dsun_obs: 148644585949.49176
+    rsun_ref: 695700000.0
+    rsun_obs: 965.3723815059902
 
-The keys in the header follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_.
+
+From this we can see now that the function returned a `sunpy.utils.MetaDict` that populated
+the standard FITS keywords with information provided by the passed `astropy.coordinates.SkyCoord`,
+and the data array. Since the ``reference_pixel`` and keywords were not passed in the example above, the
+values of ``crpix`` and ``cdelt`` were set to the default values.
+
+These keywords can be passed to the function in the form of an `astropy.units.Quanity` with associated units.
+Here's another example of passing ``reference_pixel`` and ``scale`` to the function::
+
+    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
+    ...                                                      reference_pixel=u.Quantity([5, 5]*u.pixel),
+    ...                                                      scale=u.Quantity([2, 2] *u.arcsec/u.pixel))
+    >>> for key, value in header.items():
+    ...     print(f"{key}: {value}")
+    wcsaxes: 2
+    crpix1: 6.0
+    crpix2: 6.0
+    cdelt1: 2.0
+    cdelt2: 2.0
+    cunit1: arcsec
+    cunit2: arcsec
+    ctype1: HPLN-TAN
+    ctype2: HPLT-TAN
+    crval1: 0.0
+    crval2: 0.0
+    lonpole: 180.0
+    latpole: 0.0
+    date-obs: 2013-10-28T00:00:00.000
+    hgln_obs: 0.0
+    hglt_obs: 4.7711570596394
+    dsun_obs: 148644585949.49176
+    rsun_ref: 695700000.0
+    rsun_obs: 965.3723815059902
+
+As we can see, a list of WCS and observer meta information is contained within the generated headers,
+however we may want to include other meta information including the observatory name, the wavelength and
+waveunit of the observation. Any of the keywords listed in `header_helper.meta_keywords` can be passed
+to the `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` and will then populate the returned MetaDict header.
+Furthermore, the following observation keywords can be passed to the `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>`
+function and will be translated to the FITS standard: ``observtory``, ``instrument``,``telescope``, ``wavelength``, ``exposure``.
+
+An example of creating a header with these additional keywords::
+
+    >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
+    ...                                                      reference_pixel = u.Quantity([5, 5]*u.pixel),
+    ...                                                      scale = u.Quantity([2, 2] *u.arcsec/u.pixel),
+    ...                                                      telescope = 'Test case', instrument = 'UV detector',
+    ...                                                      wavelength = 1000*u.angstrom)
+    >>> header  # doctest: +SKIP
+    MetaDict([('wcsaxes', 2),
+          ('crpix1', 5.0),
+          ('crpix2', 5.0),
+          ('cdelt1', <Quantity 2. arcsec2 / pix2>),
+          ('cdelt2', <Quantity 2. arcsec2 / pix2>),
+          ('cunit1', Unit("arcsec")),
+          ('cunit2', Unit("arcsec")),
+          ('ctype1', 'HPLN-TAN'),
+          ('ctype2', 'HPLT-TAN'),
+          ('crval1', 0.0),
+          ('crval2', 0.0),
+          ('lonpole', 180.0),
+          ('latpole', 0.0),
+          ('date-obs', '2013-10-28T00:00:00.000'),
+          ('hgln_obs', 0.0),
+          ('hglt_obs', 4.7711570596394015),
+          ('dsun_obs', 148644585949.4918),
+          ('rsun_ref', 695700.0),
+          ('rsun_obs', 965.3723815059902),
+          ('instrume', 'Test case'),
+          ('wavelnth', 1000),
+          ('detector', 'UV detector'),
+          ('waveunit', 'angstrom')])
+
+From these header MetaDict's that are generated, we can now create a custom map::
+
+    >>> my_map = sunpy.map.Map(data, header) # doctest: +SKIP
+    >>> my_map.peek() # doctest: +SKIP
 
 Inspecting maps
 ---------------
@@ -59,39 +187,40 @@ your map simply type::
     >>> my_map  # doctest: +REMOTE_DATA
     SunPy Map
     ---------
-    Observatory:         SDO
-    Instrument:      AIA 3
-    Detector:        AIA
-    Measurement:         171.0 Angstrom
-    Wavelength:      171.0 Angstrom
-    Observation Date:    2011-06-07 06:33:02
-    Exposure Time:       0.234256 s
-    Dimension:       [1024. 1024.] pix
-    Coordinate System:   helioprojective
-    Scale:           [2.402792 2.402792] arcsec / pix
-    Reference Pixel:     [512.5 512.5] pix
-    Reference Coord:     [3.22309951 1.38578135] arcsec
-    <BLANKLINE>
-    array([[ -96.,    7.,   -2., ..., -128., -128., -128.],
-           [ -97.,   -5.,    0., ...,  -99., -104., -128.],
-           [ -94.,    1.,   -4., ...,   -5.,  -38., -128.],
-           ...,
-           [-128., -128., -128., ..., -128., -128., -128.],
-           [-128., -128., -128., ..., -128., -128., -128.],
-           [-128., -128., -128., ..., -128., -128., -128.]], dtype=float32)
-
+    Observatory:		 SDO
+    Instrument:		 AIA 3
+    Detector:		 AIA
+    Measurement:		 171.0 Angstrom
+    Wavelength:		 171.0 Angstrom
+    Observation Date:	 2011-06-07 06:33:02
+    Exposure Time:		 0.234256 s
+    Dimension:		 [1024. 1024.] pix
+    Coordinate System:	 helioprojective
+    Scale:			 [2.402792 2.402792] arcsec / pix
+    Reference Pixel:	 [512.5 512.5] pix
+    Reference Coord:	 [3.22309951 1.38578135] arcsec
+    array([[ -95.92475  ,    7.076416 ,   -1.9656711, ..., -127.96519  ,
+            -127.96519  , -127.96519  ],
+           [ -96.97533  ,   -5.1167884,    0.       , ...,  -98.924576 ,
+            -104.04137  , -127.919716 ],
+           [ -93.99607  ,    1.0189276,   -4.0757103, ...,   -5.094638 ,
+             -37.95505  , -127.87541  ],
+            ...,
+           [-128.01454  , -128.01454  , -128.01454  , ..., -128.01454  ,
+            -128.01454  , -128.01454  ],
+           [-127.899666 , -127.899666 , -127.899666 , ..., -127.899666 ,
+            -127.899666 , -127.899666 ],
+           [-128.03072  , -128.03072  , -128.03072  , ..., -128.03072  ,
+            -128.03072  , -128.03072  ]], dtype=float32)
 
 This will show a representation of the data as well as some of its associated
 attributes. A number of other attributes are also available, for example the
 `~sunpy.map.GenericMap.date`, `~sunpy.map.GenericMap.exposure_time`,
-`~sunpy.map.GenericMap.center`, `~sunpy.map.GenericMap.xrange`,
-`~sunpy.map.GenericMap.yrange` and others (see `~sunpy.map.GenericMap`)::
+`~sunpy.map.GenericMap.center` and others (see `~sunpy.map.GenericMap`)::
 
-    >>> map_date = my_map.date
-    >>> map_exptime = my_map.exposure_time
-    >>> map_center = my_map.center
-    >>> map_xrange = my_map.xrange
-    >>> map_yrange = my_map.yrange
+    >>> map_date = my_map.date  # doctest: +REMOTE_DATA
+    >>> map_exptime = my_map.exposure_time  # doctest: +REMOTE_DATA
+    >>> map_center = my_map.center  # doctest: +REMOTE_DATA
 
 To get a list of all of the attributes check the documentation by typing::
 
@@ -103,7 +232,7 @@ please refer to :ref:`units-coordinates-sunpy` for more details.
 
 The meta data for the map is accessed by ::
 
-    >>> header = my_map.meta
+    >>> header = my_map.meta  # doctest: +REMOTE_DATA
 
 This references the meta data dictionary with the header information as read
 from the source file.
@@ -116,9 +245,9 @@ NumPy `~numpy.ndarray`, so for example, to get
 the 0th element in the array ::
 
     >>> my_map.data[0, 0]  # doctest: +REMOTE_DATA
-    -96.0
+    -95.92475
     >>> my_map.data[0][0]  # doctest: +REMOTE_DATA
-    -96.0
+    -95.92475
 
 One important fact to remember is that the first
 index is for the y direction while the second index is for the x direction.
@@ -132,7 +261,7 @@ the SunPyGenericMap object ::
     >>> my_map.dimensions  # doctest: +REMOTE_DATA
     PixelPair(x=<Quantity 1024. pix>, y=<Quantity 1024. pix>)
     >>> my_map.dtype  # doctest: +REMOTE_DATA
-    dtype('>f4')
+    dtype('float32')
 
 Here the dimensions attribute is similar to the `~numpy.ndarray.shape`
 attribute, however returning an `~astropy.units.quantity.Quantity`.
@@ -140,8 +269,8 @@ attribute, however returning an `~astropy.units.quantity.Quantity`.
 If you'd like to use the data in a SunPy `~sunpy.map.GenericMap` object
 elsewhere, you can use either of the following::
 
-    >>> var = my_map.data
-    >>> var = my_map.data.copy()
+    >>> var = my_map.data  # doctest: +REMOTE_DATA
+    >>> var = my_map.data.copy()  # doctest: +REMOTE_DATA
 
 Python makes use of pointers so if you want to alter the data and keep the
 original data in the map intact make sure to copy it.
@@ -150,17 +279,17 @@ Some basic statistical functions on the data array are also passed through to Ma
 objects::
 
     >>> my_map.min()  # doctest: +REMOTE_DATA
-    -128.0
+    -129.78036
     >>> my_map.max()  # doctest: +REMOTE_DATA
-    192131.0
+    192130.17
     >>> my_map.mean()  # doctest: +REMOTE_DATA
-    427.0214
+    427.02252
 
 but you can also access all the other `~numpy.ndarray` functions and attributes
 but accessing the data array directly. For example::
 
     >>> my_map.data.std()  # doctest: +REMOTE_DATA
-    826.40955
+    826.41016
 
 Plotting
 --------
@@ -249,12 +378,12 @@ long as it recognizes the instrument. To see what colormaps are available::
     dict_keys(['sdoaia94', 'sdoaia131', 'sdoaia171', 'sdoaia193', 'sdoaia211',
     'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700', 'sdoaia4500',
     'sohoeit171', 'sohoeit195', 'sohoeit284', 'sohoeit304', 'soholasco2',
-    'soholasco3', 'stereocor1', 'stereocor2', 'stereohi1', 'stereohi2',
-    'rhessi', 'yohkohsxtal', 'yohkohsxtwh', 'hinodexrt', 'hinodesotintensity',
-    'trace171', 'trace195', 'trace284', 'trace1216', 'trace1550', 'trace1600',
-    'trace1700', 'traceWL', 'hmimag', 'irissji1330', 'irissji1400',
-    'irissji1600', 'irissji2796', 'irissji2832', 'irissji5000', 'irissjiFUV',
-    'irissjiNUV', 'irissjiSJI_NUV'])
+    'soholasco3', 'sswidlsoholasco2', 'sswidlsoholasco3', 'stereocor1',
+    'stereocor2', 'stereohi1', 'stereohi2', 'rhessi', 'yohkohsxtal',
+    'yohkohsxtwh', 'hinodexrt', 'hinodesotintensity', 'trace171', 'trace195',
+    'trace284', 'trace1216', 'trace1550', 'trace1600', 'trace1700', 'traceWL',
+    'hmimag', 'irissji1330', 'irissji1400', 'irissji1600', 'irissji2796',
+    'irissji2832', 'irissji5000', 'irissjiFUV', 'irissjiNUV', 'irissjiSJI_NUV', 'kcor'])
 
 The SunPy colormaps are registered with matplotlib so you can grab them like
 you would any other colormap::
@@ -304,7 +433,7 @@ data from minimum to maximum is displayed as best as possible for most cases.
 This means that it is never necessary to touch the data such as applying a function
 such sqrt or log to the data to make your plot look good.
 There are many normalizations available from matplotlib such as `~matplotlib.colors.Lognorm`. Other
-`more exotic normalizations <http://docs.astropy.org/en/stable/visualization/index.html>`_ are also
+`more exotic normalizations <https://docs.astropy.org/en/stable/visualization/index.html>`_ are also
 made available from Astropy.  Just like the colormap the default normalization
 can be changed through the plot_settings dictionary or directly for the individual
 plot by passing a keyword argument. The following example shows the difference between
@@ -369,10 +498,10 @@ normalization.
     import matplotlib.pyplot as plt
     import sunpy.data.sample
     smap = sunpy.map.Map(sunpy.data.sample.AIA_193_CUTOUT01_IMAGE)
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-1100, 0, txt, color='white')
     smap.plot()
     plt.colorbar()
@@ -427,10 +556,10 @@ addition of an associated boolean array which holds the mask.
     smap = sunpy.map.Map('/Users/schriste/Desktop/sunpy_test_img/XRT20141211_184221.9.fits')
     fig = plt.figure()
     smap.plot()
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     plt.colorbar()
     plt.show()
@@ -463,10 +592,10 @@ addition of an associated boolean array which holds the mask.
     cmap = smap.plot_settings['cmap']
     cmap.set_bad('blue', 1.0)
     smap.data = numpy.ma.masked_greater(smap.data, smap.mean() + 3 *smap.std())
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     norm = colors.Normalize()
     smap.plot(norm = norm)
@@ -487,10 +616,10 @@ addition of an associated boolean array which holds the mask.
     cmap.set_bad('blue', 1.0)
     smap.data = numpy.ma.masked_greater(smap.data, smap.mean() + 3 *smap.std())
     smap.data.mask[0:250,:] = False
-    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
-                                                                      max=int(smap.max()),
-                                                                      mean=int(smap.mean()),
-                                                                      std=int(smap.std()))
+    txt = r"min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                       max=int(smap.max()),
+                                                                       mean=int(smap.mean()),
+                                                                       std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     norm = colors.Normalize()
     smap.plot(norm = norm)
@@ -544,32 +673,32 @@ a list of the methods available for a map type::
 
 and check out the methods section!
 
-Mapcubes
---------
-A `~sunpy.map.MapCube` is an ordered list of maps.  By default, the maps are ordered by
-their observation date, from earlier maps to later maps. A `~sunpy.map.MapCube` can be
+MapSequences
+------------
+A `~sunpy.map.MapSequence` is an ordered list of maps.  By default, the maps are ordered by
+their observation date, from earlier maps to later maps. A `~sunpy.map.MapSequence` can be
 created by supplying multiple existing maps::
 
     >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)  # doctest: +REMOTE_DATA
-    >>> mc = sunpy.map.Map([map1, map2], cube=True)  # doctest: +REMOTE_DATA
+    >>> mc = sunpy.map.Map([map1, map2], sequence=True)  # doctest: +REMOTE_DATA
 
 or by providing a directory full of image files::
 
-    >>> mc = sunpy.map.Map('path/to/my/files/*.fits', cube=True)   #  doctest: +SKIP
+    >>> mc = sunpy.map.Map('path/to/my/files/*.fits', sequence=True)   #  doctest: +SKIP
 
-The earliest map in the mapcube can be accessed by simply indexing the maps
+The earliest map in the MapSequence can be accessed by simply indexing the maps
 list::
 
     >>> mc.maps[0]   # doctest: +SKIP
 
-Mapcubes can hold maps that have different shapes.  To test if all the
-maps in a `~sunpy.map.MapCube` have the same shape::
+MapSequences can hold maps that have different shapes.  To test if all the
+maps in a `~sunpy.map.MapSequence` have the same shape::
 
     >>> mc.all_maps_same_shape()  # doctest: +REMOTE_DATA
     True
 
-It is often useful to return the image data in a `~sunpy.map.MapCube` as a single
+It is often useful to return the image data in a `~sunpy.map.MapSequence` as a single
 three dimensional Numpy `~numpy.ndarray`::
 
     >>> mc.as_array()   # doctest: +SKIP
@@ -577,10 +706,10 @@ three dimensional Numpy `~numpy.ndarray`::
 Note that an array is returned only if all the maps have the same
 shape.  If this is not true, an error (ValueError) is returned.  If all the
 maps have nx pixels in the x-direction, and ny pixels in the y-direction,
-and there are n maps in the mapcube, the `~numpy.ndarray` array that is
-returned has shape (ny, nx, n).  The data of the first map in the `~sunpy.map.MapCube`
+and there are n maps in the MapSequence, the `~numpy.ndarray` array that is
+returned has shape (ny, nx, n).  The data of the first map in the `~sunpy.map.MapSequence`
 appears in the `~numpy.ndarray` in position ``[:, :, 0]``, the data of second map in
-position ``[:, :, 1]``, and so on.  The order of maps in the `~sunpy.map.MapCube` is
+position ``[:, :, 1]``, and so on.  The order of maps in the `~sunpy.map.MapSequence` is
 reproduced in the returned `~numpy.ndarray`.
 
 The meta data from each map can be obtained using::
@@ -588,10 +717,10 @@ The meta data from each map can be obtained using::
     >>> mc.all_meta()   # doctest: +SKIP
 
 This returns a list of map meta objects that have the same order as
-the maps in the `~sunpy.map.MapCube`.
+the maps in the `~sunpy.map.MapSequence`.
 
-Coalignment of Mapcubes
------------------------
+Coalignment of MapSequences
+---------------------------
 A typical data preparation step when dealing with time series of images is to
 coalign images taken at different times so that features in different images
 remain in the same place.  A common approach to this problem is
@@ -601,38 +730,38 @@ where the template is in your image.  The images are then shifted to the
 location of the best match.  This aligns your images to the position of the
 features in your representative template.
 
-SunPy provides a function to coalign the maps inside the `~sunpy.map.MapCube`.
+SunPy provides a function to coalign the maps inside the `~sunpy.map.MapSequence`.
 The implementation of this functionality requires the installation of the
 scikit-image library, a commonly used image processing library.
-To coalign a `~sunpy.map.MapCube`, simply import
-the function and apply it to your `~sunpy.map.MapCube`::
+To coalign a `~sunpy.map.MapSequence`, simply import
+the function and apply it to your `~sunpy.map.MapSequence`::
 
-    >>> from sunpy.image.coalignment import mapcube_coalign_by_match_template
-    >>> coaligned = mapcube_coalign_by_match_template(mc)  # doctest: +REMOTE_DATA
+    >>> from sunpy.image.coalignment import mapsequence_coalign_by_match_template
+    >>> coaligned = mapsequence_coalign_by_match_template(mc)  # doctest: +REMOTE_DATA
 
-This will return a new `~sunpy.map.MapCube`, coaligned to a template extracted from the
-center of the first map in the `~sunpy.map.MapCube`, with the map dimensions clipped as
+This will return a new `~sunpy.map.MapSequence`, coaligned to a template extracted from the
+center of the first map in the `~sunpy.map.MapSequence`, with the map dimensions clipped as
 required.  The coalignment algorithm provides many more options for handling
-the coalignment of `~sunpy.map.MapCube` type::
+the coalignment of `~sunpy.map.MapSequence` type::
 
-    >>> help(mapcube_coalign_by_match_template)   # doctest: +SKIP
+    >>> help(mapsequence_coalign_by_match_template)   # doctest: +SKIP
 
 for a full list of options and functionality.
 
 If you just want to calculate the shifts required to compensate for solar
-rotation relative to the first map in the `~sunpy.map.MapCube` without applying them, use::
+rotation relative to the first map in the `~sunpy.map.MapSequence` without applying them, use::
 
     >>> from sunpy.image.coalignment import calculate_match_template_shift
     >>> shifts = calculate_match_template_shift(mc)  # doctest: +REMOTE_DATA
 
-This is the function used to calculate the shifts in `~sunpy.map.MapCube` coalignment
+This is the function used to calculate the shifts in `~sunpy.map.MapSequence` coalignment
 function above.  Please see `~sunpy.image.coalignment.calculate_match_template_shift` to learn more about its features.
 Shifts calculated using calculate_match_template_shift can be passed directly
 to the coalignment function.
 
 
-Compensating for solar rotation in Mapcubes
--------------------------------------------
+Compensating for solar rotation in MapSequences
+-----------------------------------------------
 Often a set of solar image data consists of fixing the pointing of a
 field of view for some time and observing.  Features on the Sun will
 rotate according to the Sun's rotation.
@@ -644,29 +773,29 @@ the rotation of the Sun.  The Sun rotates differentially, depending on
 latitude, with features at the equator moving faster than features at
 the poles.
 
-SunPy provides a function to shift images in `~sunpy.map.MapCube` following solar
+SunPy provides a function to shift images in `~sunpy.map.MapSequence` following solar
 rotation.  This function shifts an image according to the solar
 differential rotation calculated at the latitude of the center of the
 field of view.  The image is not *differentially* rotated.  This
 function is useful for de-rotating images when the effects of
-differential rotation in the `~sunpy.map.MapCube` can be ignored (for example, if
+differential rotation in the `~sunpy.map.MapSequence` can be ignored (for example, if
 the spatial extent of the image is small, or when the duration of the
-`~sunpy.map.MapCube` is small; deciding on what 'small' means depends on your
+`~sunpy.map.MapSequence` is small; deciding on what 'small' means depends on your
 application).
 
-To apply this form of solar derotation to a `~sunpy.map.MapCube`, simply import the
-function and apply it to your `~sunpy.map.MapCube`::
+To apply this form of solar derotation to a `~sunpy.map.MapSequence`, simply import the
+function and apply it to your `~sunpy.map.MapSequence`::
 
-    >>> from sunpy.physics.transforms.solar_rotation import mapcube_solar_derotate
-    >>> derotated = mapcube_solar_derotate(mc)  # doctest: +REMOTE_DATA
+    >>> from sunpy.physics.solar_rotation import mapsequence_solar_derotate
+    >>> derotated = mapsequence_solar_derotate(mc)  # doctest: +REMOTE_DATA
 
-For more info see `~sunpy.physics.transforms.solar_rotation.mapcube_solar_derotate`.
+For more info see `~sunpy.physics.solar_rotation.mapsequence_solar_derotate`.
 
 If you just want to calculate the shifts required to compensate for solar
-rotation relative to the first map in the `~sunpy.map.MapCube` without applying them, use::
+rotation relative to the first map in the `~sunpy.map.MapSequence` without applying them, use::
 
-    >>> from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift
+    >>> from sunpy.physics.solar_rotation import calculate_solar_rotate_shift
     >>> shifts = calculate_solar_rotate_shift(mc)  # doctest: +REMOTE_DATA
 
-Please consult the docstring of the `~sunpy.image.coalignment.mapcube_coalign_by_match_template` function in order to learn about
+Please consult the docstring of the `~sunpy.image.coalignment.mapsequence_coalign_by_match_template` function in order to learn about
 the features of this function.

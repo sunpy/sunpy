@@ -2,34 +2,37 @@
 """
 Test Generic Map
 """
-from __future__ import absolute_import
-
 import os
-import pytest
-import datetime
-import warnings
 import tempfile
+import warnings
 
 import numpy as np
-
-import astropy.wcs
-from astropy.io import fits
-import astropy.units as u
-from astropy.tests.helper import assert_quantity_allclose
-from astropy.visualization import wcsaxes
-from astropy.coordinates import SkyCoord
+import pytest
 import matplotlib.pyplot as plt
 
-import sunpy
-import sunpy.sun
-import sunpy.map
-import sunpy.coordinates
-import sunpy.data.test
-from sunpy.time import parse_time
+import astropy.wcs
+import astropy.units as u
+from astropy.io import fits
+from astropy.time import Time
+from astropy.coordinates import SkyCoord
+from astropy.tests.helper import assert_quantity_allclose
+from astropy.visualization import wcsaxes
 
-from sunpy.extern import six
+import sunpy
+import sunpy.map
+import sunpy.sun
+import sunpy.data.test
+import sunpy.coordinates
+from sunpy.coordinates import sun
+from sunpy.time import parse_time
+from sunpy.util import SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
+
+
+@pytest.fixture
+def hmi_test_map():
+    return sunpy.map.Map(os.path.join(testpath, "resampled_hmi.fits"))
 
 
 @pytest.fixture
@@ -134,7 +137,7 @@ def test_std(generic_map):
 # TODO: Test the header keyword extraction
 # ==============================================================================
 def test_name(generic_map):
-    assert isinstance(generic_map.name, six.string_types)
+    assert isinstance(generic_map.name, str)
 
 
 def test_nickname(generic_map):
@@ -148,7 +151,7 @@ def test_nickname_set(generic_map):
 
 
 def test_date(generic_map):
-    assert isinstance(generic_map.date, datetime.datetime)
+    assert isinstance(generic_map.date, Time)
 
 
 def test_date_aia(aia171_test_map):
@@ -160,7 +163,8 @@ def test_detector(generic_map):
 
 
 def test_dsun(generic_map):
-    assert generic_map.dsun == sunpy.coordinates.get_sunearth_distance(generic_map.date).to(u.m)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
+        assert generic_map.dsun == sun.earth_distance(generic_map.date).to(u.m)
 
 
 def test_rsun_meters(generic_map):
@@ -168,7 +172,8 @@ def test_rsun_meters(generic_map):
 
 
 def test_rsun_obs(generic_map):
-    assert generic_map.rsun_obs == sunpy.sun.solar_semidiameter_angular_size(generic_map.date)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for solar radius'):
+        assert generic_map.rsun_obs == sun.angular_radius(generic_map.date)
 
 
 def test_coordinate_system(generic_map):
@@ -176,15 +181,18 @@ def test_coordinate_system(generic_map):
 
 
 def test_carrington_longitude(generic_map):
-    assert generic_map.carrington_longitude == sunpy.coordinates.get_sun_L0(generic_map.date)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
+        assert generic_map.carrington_longitude == sun.L0(generic_map.date)
 
 
 def test_heliographic_latitude(generic_map):
-    assert generic_map.heliographic_latitude == sunpy.coordinates.get_sun_B0(generic_map.date)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
+        assert generic_map.heliographic_latitude == sun.B0(generic_map.date)
 
 
 def test_heliographic_longitude(generic_map):
-    assert generic_map.heliographic_longitude == 0.
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
+        assert generic_map.heliographic_longitude == 0.
 
 
 def test_units(generic_map):
@@ -198,6 +206,18 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.observer.lon == aia171_test_map.observer_coordinate.frame.lon
     assert frame.observer.radius == aia171_test_map.observer_coordinate.frame.radius
     assert frame.obstime == aia171_test_map.date
+
+
+def test_heliographic_longitude_crln(hmi_test_map):
+    assert hmi_test_map.heliographic_longitude == hmi_test_map.carrington_longitude - \
+                                                  sun.L0(hmi_test_map.date)
+
+
+def test_remove_observers(aia171_test_map):
+    aia171_test_map._remove_existing_observer_location()
+    with pytest.warns(SunpyUserWarning,
+                      match='Missing metadata for observer: assuming Earth-based observer.*'):
+        aia171_test_map.observer_coordinate
 
 
 # ==============================================================================
@@ -227,7 +247,9 @@ def test_rotation_matrix_cd_cdelt():
         'CD2_1': 10,
         'CD2_2': 0,
         'NAXIS1': 6,
-        'NAXIS2': 6
+        'NAXIS2': 6,
+        'CUNIT1': 'arcsec',
+        'CUNIT2': 'arcsec'
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1.], [1., 0]]))
@@ -247,7 +269,9 @@ def test_rotation_matrix_cd_cdelt_square():
         'CD2_1': 10,
         'CD2_2': 0,
         'NAXIS1': 6,
-        'NAXIS2': 6
+        'NAXIS2': 6,
+        'CUNIT1': 'arcsec',
+        'CUNIT2': 'arcsec'
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1], [1., 0]]))
@@ -258,25 +282,6 @@ def test_swap_cd():
     np.testing.assert_allclose(amap.rotation_matrix, np.array([[1., 0], [0, 1.]]))
 
 
-def test_data_range(generic_map):
-    """Make sure xrange and yrange work"""
-    assert_quantity_allclose(
-        (generic_map.xrange[1] - generic_map.xrange[0]).to(u.arcsec).value,
-        generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
-    )
-    assert_quantity_allclose(
-        (generic_map.yrange[1] - generic_map.yrange[0]).to(u.arcsec).value,
-        generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
-    )
-
-    # the weird unit-de-unit thing here is to work around and inconsistency in
-    # the way np.average works with astropy 1.3 and 2.0dev
-    assert_quantity_allclose(np.average(u.Quantity(generic_map.xrange).value) * u.arcsec,
-                             generic_map.center.Tx)
-    assert_quantity_allclose(np.average(u.Quantity(generic_map.yrange).value) * u.arcsec,
-                             generic_map.center.Ty)
-
-
 def test_world_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is internally
     consistent"""
@@ -285,15 +290,26 @@ def test_world_to_pixel(generic_map):
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
 
 
-def test_save(generic_map):
+def test_save(aia171_test_map, generic_map):
     """Tests the map save function"""
-    aiamap = aia171_test_map()
+    aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-    aiamap.save(afilename, filetype='fits', clobber=True)
+    aiamap.save(afilename, filetype='fits', overwrite=True)
     loaded_save = sunpy.map.Map(afilename)
     assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
     assert loaded_save.meta == aiamap.meta
     assert_quantity_allclose(loaded_save.data, aiamap.data)
+
+
+def test_save_compressed(aia171_test_map, generic_map):
+    """Tests the map save function"""
+    aiamap = aia171_test_map
+    afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+    aiamap.save(afilename, filetype='fits', hdu_type=fits.CompImageHDU, overwrite=True)
+    loaded_save = sunpy.map.Map(afilename)
+    # We expect that round tripping to CompImageHDU will change the header and
+    # the data a little.
+    assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
 
 
 def test_default_shift():
@@ -311,7 +327,9 @@ def test_default_shift():
         'CD2_1': 10,
         'CD2_2': 0,
         'NAXIS1': 6,
-        'NAXIS2': 6
+        'NAXIS2': 6,
+        'CUNIT1': 'arcsec',
+        'CUNIT2': 'arcsec',
     }
     cd_map = sunpy.map.Map((data, header))
     assert cd_map.shifted_value[0].value == 0
@@ -599,8 +617,8 @@ def test_validate_meta(generic_map):
             'waveunit': 'ANGSTROM'
         }
         bad_map = sunpy.map.Map((generic_map.data, bad_header))
-        for count, meta_property in enumerate(('cunit1', 'cunit2', 'waveunit')):
-            assert meta_property.upper() in str(w[count].message)
+
+    assert 'waveunit'.upper() in str(w[0].message)
 
 
 # Heliographic Map Tests
@@ -671,7 +689,10 @@ def test_more_than_two_dimensions():
     bad_data = np.random.rand(4, 4, 3, 5)
     hdr = fits.Header()
     hdr['TELESCOP'] = 'XXX'
-    bad_map = sunpy.map.Map(bad_data, hdr)
+    hdr['cunit1'] = 'arcsec'
+    hdr['cunit2'] = 'arcsec'
+    with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
+        bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim is 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
@@ -680,7 +701,14 @@ def test_more_than_two_dimensions():
 def test_missing_metadata_warnings():
     # Checks that warnings for missing metadata are only raised once
     with pytest.warns(Warning) as record:
-        array_map = sunpy.map.Map(np.random.rand(20, 15), {})
+        header = {}
+        header['cunit1'] = 'arcsec'
+        header['cunit2'] = 'arcsec'
+        array_map = sunpy.map.Map(np.random.rand(20, 15), header)
         array_map.peek()
-    # There should be 4 warnings for missing metadata
-    assert len([w for w in record if 'Missing metadata' in str(w)]) == 4
+    # There should be 2 warnings for missing metadata (obstime and observer location)
+    assert len([w for w in record if w.category is SunpyUserWarning]) == 2
+
+
+def test_fits_header(aia171_test_map):
+    assert isinstance(aia171_test_map.fits_header, fits.Header)

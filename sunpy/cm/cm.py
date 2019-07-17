@@ -1,18 +1,15 @@
 """
 This module provides a set of colormaps specific for solar data.
 """
-from __future__ import absolute_import, division, print_function
-
 from copy import deepcopy
 
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.cm as mplcm
+import matplotlib.pyplot as plt
+import numpy as np
 
 from sunpy.cm import color_tables as ct
-from sunpy.util import deprecated
 
-__all__ = ['get_cmap', 'show_colormaps', 'cmlist']
+__all__ = ['show_colormaps', 'cmlist']
 
 sdoaia94 = ct.aia_color_table(94)
 sdoaia131 = ct.aia_color_table(131)
@@ -74,6 +71,9 @@ traceWL = ct.trace_color_table('WL')
 
 hmimag = ct.hmi_mag_color_table()
 
+kcor = deepcopy(mplcm.get_cmap("gist_gray"))
+kcor.name = 'MLSO KCor'
+
 cmlist = {
           'goes-rsuvi94': goesrsuvi94,
           'goes-rsuvi131': goesrsuvi131,
@@ -125,7 +125,8 @@ cmlist = {
           'irissji5000': ct.iris_sji_color_table('5000'),
           'irissjiFUV': ct.iris_sji_color_table('FUV'),
           'irissjiNUV': ct.iris_sji_color_table('NUV'),
-          'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV')
+          'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
+          'kcor': kcor
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
@@ -133,44 +134,9 @@ for name, cmap in cmlist.items():
     mplcm.register_cmap(name=name, cmap=cmap)
 
 
-@deprecated("0.9",
-            "'sunpy.cm.get_cmap' is dprecated, use 'plt.get_cmap' from Matplotlib "
-            "to load the colormaps instead.",
-            alternative='plt.get_cmap')
-def get_cmap(name):
-    """
-    Get a colormap.
-
-    Parameters
-    ----------
-    name : string
-        The name of a color map.
-
-    Returns
-    -------
-    value : matplotlib colormap
-
-    See Also
-    --------
-
-    Examples
-    --------
-    >>> import sunpy.cm as cm
-    >>> colormap = cm.get_cmap(name = 'sdoaia94')
-
-    References
-    ----------
-    | https://matplotlib.org/api/cm_api.html
-
-    """
-    if name in cmlist:
-        return cmlist.get(name)
-    else:
-        raise ValueError("Colormap {name!s} is not recognized".format(name=name))
-
-
 def show_colormaps(search=None):
-    """Displays a plot of the custom color maps supported in SunPy.
+    """
+    Displays a plot of the custom color maps supported in SunPy.
 
     Parameters
     ----------
@@ -191,7 +157,6 @@ def show_colormaps(search=None):
 
     References
     ----------
-
     """
 
     if search is not None:
@@ -203,16 +168,15 @@ def show_colormaps(search=None):
 
     nmaps = len(maps) + 1
 
-    a = np.linspace(0, 1, 256).reshape(1, -1)  # pylint: disable=E1103
+    a = np.linspace(0, 1, 256).reshape(1, -1)
     a = np.vstack((a, a))
 
-    fig = plt.figure(figsize=(5, 10),dpi=64)
+    fig = plt.figure(figsize=(7, 10), dpi=128)
     fig.subplots_adjust(top=0.99, bottom=0.01, left=0.2, right=0.99)
     for i, name in enumerate(maps):
         ax = plt.subplot(nmaps, 1, i + 1)
         plt.axis("off")
-        plt.imshow(a, aspect='auto', cmap=get_cmap(name), origin='lower')
+        plt.imshow(a, aspect='auto', cmap=name, origin='lower')
         pos = list(ax.get_position().bounds)
-        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
-                 horizontalalignment='right')
+        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10, horizontalalignment='right')
     plt.show()

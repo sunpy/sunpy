@@ -12,16 +12,14 @@ when comparing observations of features on the Sun over time.
 A good review can be found in Beck 1999 Solar Physics 191, 47–70.
 This example illustrates solar differential rotation.
 """
-
-##############################################################################
-# Start by importing the necessary modules.
-from datetime import timedelta
+# sphinx_gallery_thumbnail_number = 2
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.time import TimeDelta
 
 import sunpy.map
 import sunpy.data.sample
@@ -58,7 +56,7 @@ hpc_x = np.zeros_like(hpc_y)
 ##############################################################################
 # Let's define how many days in the future we want to rotate to
 
-dt = timedelta(days=4)
+dt = TimeDelta(4*u.day)
 future_date = aia_map.date + dt
 
 ##############################################################################
@@ -67,12 +65,12 @@ future_date = aia_map.date + dt
 fig = plt.figure()
 ax = plt.subplot(projection=aia_map)
 aia_map.plot()
-ax.set_title('The effect of {0} days of differential rotation'.format(dt.days))
+ax.set_title('The effect of {0} days of differential rotation'.format(dt.to(u.day).value))
 aia_map.draw_grid()
 
 for this_hpc_x, this_hpc_y in zip(hpc_x, hpc_y):
     start_coord = SkyCoord(this_hpc_x, this_hpc_y, frame=aia_map.coordinate_frame)
-    rotated_coord = solar_rotate_coordinate(start_coord, future_date)
+    rotated_coord = solar_rotate_coordinate(start_coord, time=future_date)
     coord = SkyCoord([start_coord.Tx, rotated_coord.Tx],
                      [start_coord.Ty, rotated_coord.Ty],
                      frame=aia_map.coordinate_frame)

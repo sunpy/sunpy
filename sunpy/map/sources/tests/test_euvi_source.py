@@ -8,6 +8,7 @@ import glob
 
 from sunpy.map.sources.stereo import EUVIMap
 from sunpy.map import Map
+from sunpy.coordinates import sun
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
@@ -32,3 +33,13 @@ def test_measurement():
 def test_observatory():
     """Tests the observatory property of the EUVIMap object."""
     assert euvi.observatory == "STEREO A"
+
+def test_rsun_obs():
+    """Tests the rsun_obs property"""
+    assert euvi.rsun_obs.value == euvi.meta['rsun']
+
+def test_rsun_missing():
+    """Tests output if 'rsun' is missing"""
+    euvi_no_rsun = Map(fitspath)
+    euvi_no_rsun.meta['rsun'] = None
+    assert euvi_no_rsun.rsun_obs.value == sun.angular_radius(euvi.date).to('arcsec').value

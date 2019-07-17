@@ -1,37 +1,52 @@
 # Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
 # This module was developed under funding provided by
 # Google Summer of Code 2014
-
-
-from ..client import GenericClient
-import datetime
-import os
 import tarfile
-from functools import partial
+import pathlib
 from collections import OrderedDict
 
-import sunpy
-from sunpy.util import replacement_filename, deprecated
-from sunpy.net.dataretriever.client import simple_path
+from parfive import Downloader
 
-from sunpy.net.download import Downloader, Results
+import astropy.units as u
+from astropy.time import Time, TimeDelta
 
+from ..client import GenericClient
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
 
 class NOAAIndicesClient(GenericClient):
+    """
+    Provides access to the NOAA solar cycle indices
+    from the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/weekly/>`__.
 
+    This is a fixed dataset so the result is independent of the time range.
+
+    Examples
+    --------
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('noaa-indices'))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    1 Results from the NOAAIndicesClient:
+         Start Time           End Time      Source  Instrument  Wavelength
+           str19               str19         str4     str12        str3
+    ------------------- ------------------- ------ ------------ ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00   sdic noaa-indices        nan
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     @staticmethod
-    def _get_default_uri():
-        """Return the url to download indices"""
-        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
-
-    def _get_url_for_timerange(self, timerange, **kwargs):
+    def _get_url_for_timerange(timerange, **kwargs):
         """
         Helper function:
         """
-        return NOAAIndicesClient._get_default_uri()
+        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
 
     def _makeimap(self):
         """
@@ -65,7 +80,32 @@ class NOAAIndicesClient(GenericClient):
 
 
 class NOAAPredictClient(GenericClient):
+    """
+    Provides access to the `NOAA SWPC <https://www.swpc.noaa.gov>`__
+    predicted sunspot Number and 10.7 cm radio flux values
+    from the `ftp archive <http://services.swpc.noaa.gov/text/>`__.
 
+    This is a fixed prediction so the result is independent of the time range.
+
+    Examples
+    --------
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('noaa-predict'))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    1 Results from the NOAAPredictClient:
+     Start Time           End Time      Source  Instrument  Wavelength
+       str19               str19         str4     str12        str3
+    ------------------- ------------------- ------ ------------ ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00   ises noaa-predict        nan
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     @staticmethod
     def _get_default_uri():
         """Return the url to download indices"""
@@ -109,30 +149,45 @@ class NOAAPredictClient(GenericClient):
 
 
 class SRSClient(GenericClient):
+    """
+    Provides access to the `NOAA SWPC <https://www.swpc.noaa.gov>`__
+    solar region summary data from the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/warehouse/>`__.
 
-    @staticmethod
-    def _get_default_uri():
-        today = datetime.datetime.utcnow()
-        return [('ftp://ftp.swpc.noaa.gov/pub/warehouse/',
-                 '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt').format(date=today)]
+    Examples
+    --------
 
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('SOON'))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the SRSClient:
+     Start Time           End Time        Source  Instrument Wavelength
+       str19               str19           str9      str4       str3
+    ------------------- ------------------- --------- ---------- ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
+    2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
-
-        if not timerange:
-            return SRSClient._get_default_uri()
         result = list()
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
-        total_days = (timerange.end - timerange.start).days + 1
+        total_days = int(timerange.days.value) + 1
         all_dates = timerange.split(total_days)
-        today_year = datetime.datetime.utcnow().year
+        today_year = Time.now().strftime('%Y')
         for day in all_dates:
-            if today_year == day.end.year:
-                suffix = '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt'
+            if today_year == day.end.strftime('%Y'):
+                suffix = '{0}/SRS/{1}SRS.txt'.format(
+                    day.end.strftime('%Y'), day.end.strftime('%Y%m%d'))
             else:
-                suffix = '{date:%Y}/{date:%Y}_SRS.tar.gz'
-            url = base_url + suffix.format(date=day.end)
+                suffix = '{0}/{1}_SRS.tar.gz'.format(
+                    day.end.strftime('%Y'), day.end.strftime('%Y'))
+            url = base_url + suffix
             result.append(url)
-
         return result
 
     def fetch(self, qres, path=None, error_callback=None, **kwargs):
@@ -158,13 +213,13 @@ class SRSClient(GenericClient):
             name = url.split('/')[-1]
 
             # temporary fix !!! coz All QRBs have same start_time values
-            day = qre.time.start.date() + datetime.timedelta(days=i)
+            day = Time(qre.time.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
 
             if name not in filenames:
                 filenames.append(name)
 
             if name.endswith('.gz'):
-                local_filenames.append('{date:%Y%m%d}SRS.txt'.format(date=day))
+                local_filenames.append('{}SRS.txt'.format(day.strftime('%Y%m%d')))
             else:
                 local_filenames.append(name)
 
@@ -174,67 +229,49 @@ class SRSClient(GenericClient):
         # Those files that will be present after get returns
         local_paths = self._get_full_filenames(qres, local_filenames, path)
 
-        res = Results(lambda x: None, 0, lambda map_: self._link(map_))
-
         # remove duplicate urls. This will make paths and urls to have same number of elements.
         # OrderedDict is required to maintain ordering because it will be zipped with paths later
-
         urls = list(OrderedDict.fromkeys(urls))
 
-        dobj = Downloader(max_conn=len(urls), max_total=len(urls))
+        dobj = Downloader(max_conn=5)
 
-        # We cast to list here in list(zip... to force execution of
-        # res.require([x]) at the start of the loop.
-        for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                                     urls), paths)):
-            dobj.download(aurl, fname, ncall, error_callback)
+        for aurl, fname in zip(urls, paths):
+            dobj.enqueue_file(aurl, filename=fname)
 
-        res.wait()
+        paths = dobj.download()
 
-        res2 = Results(lambda x: None, 0)
-
+        outfiles = []
         for fname, srs_filename in zip(local_paths, local_filenames):
 
-            fname = fname.args[0]
-            name = fname.split('/')[-1]
+            name = fname.name
 
             past_year = False
             for i, fname2 in enumerate(paths):
+                fname2 = pathlib.Path(fname2)
 
-                fname2 = fname2.args[0]
-
-                if fname2.endswith('.txt'):
+                if fname2.name.endswith('.txt'):
                     continue
 
-                year = fname2.split('/')[-1]
-                year = year.split('_SRS')[0]
+                year = fname2.name.split('_SRS')[0]
 
                 if year in name:
                     TarFile = tarfile.open(fname2)
-                    filepath = fname.rpartition('/')[0]
+                    filepath = fname.parent
                     member = TarFile.getmember('SRS/' + srs_filename)
                     member.name = name
                     TarFile.extract(member, path=filepath)
                     TarFile.close()
 
-                    callback = res2.require([fname])
-                    callback({'path': fname})
+                    outfiles.append(fname)
 
                     past_year = True
                     break
 
             if past_year is False:
-                callback = res2.require([fname])
-                callback({'path': fname})
+                outfiles.append(fname)
 
-        return res2
-
-    @deprecated('0.8', alternative='NOAAPredictClient.fetch')
-    def get(self, qres, path=None, error_callback=None, **kwargs):
-        """
-        See `~sunpy.net.dataretriever.sources.noaa.NOAAPredictClient.fetch`
-        """
-        return self.fetch(qres, path=path, error_callback=error_callback, **kwargs)
+        paths.data = list(map(str, outfiles))
+        return paths
 
     def _makeimap(self):
         self.map_['source'] = 'swpc'
@@ -256,10 +293,8 @@ class SRSClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr = ["Time", "Instrument"]
-        chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == "Instrument" and\
-               str(x.value).lower() in ["soon", "srs_table"]:
+            if (x.__class__.__name__ == "Instrument" and
+                str(x.value).lower() in ["soon", "srs_table"]):
                 return True
         return False

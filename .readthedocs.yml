@@ -1,8 +1,11 @@
-build:
-  image: latest
+version: 2
+
+# We have to use conda since we need openjpeg support
+conda:
+  environment: .rtd-environment.yml
 
 python:
-  version: 3.6
-  setup_py_install: true
-
-requirements_file: requirements/docs.txt
+   version: 3.7
+   install:
+      - method: setuptools
+        path: .

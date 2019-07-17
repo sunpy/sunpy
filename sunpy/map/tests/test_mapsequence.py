@@ -2,8 +2,6 @@
 """
 Test mapsequence functionality
 """
-from __future__ import absolute_import
-
 import numpy as np
 import astropy.units as u
 import sunpy

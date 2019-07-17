@@ -1,123 +1,80 @@
-language: generic
-
-os:
-    - linux
-
-stage: Initial tests
-
-# Setting sudo to false opts in to Travis-CI container-based builds.
+language: python
+group: travis_latest
+dist: xenial
+os: linux
 sudo: false
 
-branches:
-  except:
-    - /^auto-backport-of-pr-[0-9]+$/
-
-# The apt packages below are needed but can no longer be installed with
-# sudo apt-get.
-addons:
-    apt:
-        packages:
-            - libatlas-dev
-            - liblapack-dev
-            - gfortran
-            - graphviz
-            - texlive-latex-extra
-            - dvipng
-
-# Configure the build environment. Global variables are defined for all configurations.
 env:
-    global:
-        - COLUMNS=180
-        - PYTHON_VERSION=3.6
-        - PREVIOUS_NUMPY=1.14.5
-        - NUMPY_VERSION='stable'
-        - ASTROPY_VERSION='stable'
-        - MAIN_CMD='python setup.py'
-        - SETUP_CMD='test --coverage'
-        - CONDA_CHANNELS='sunpy'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib pytest==3.6 mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas pytest-astropy suds-jurko glymur pytest-xdist dask drms sphinx-astropy pytest-cov hypothesis'
-        - PIP_DEPENDENCIES='pytest-rerunfailures sunpy-sphinx-theme pytest-sugar'
-        - EVENT_TYPE='push pull_request cron'
-        - MPLBACKEND='agg'
-        - JOB='test'
+  global:
+    - TOX_ARG=''
 
-stages:
-   # Do the install jobs and one offline test, it will not proceed if any fail
-   - name: Initial tests
-   # Cron only tests
-   - name: Cron tests
-     if: type = cron
-   # Do the rest of the tests
-   - name: Comprehensive tests
+name: "Cron jobs"
+if: type = cron
 
 matrix:
+  fast_finish: true
+  include:
+    - os: osx
+      language: generic
+      name: "macOS 3.7 (py37-offline)"
+      python: "3.7"
+      env: TOX_ENV='py37-offline'
 
-    # Don't wait for allowed failures
-    fast_finish: true
+    - name: "3.6 offline (py36-offline)"
+      python: "3.6"
+      env: TOX_ENV='py36-offline'
 
-    include:
-         # We order the jobs, in terms of the maintainers mood
-         # Order of tests run in build stages
-         - python: 3.6
-           stage: Initial tests
+    - name: "3.7 online (py37-online)"
+      python: "3.7"
+      env:
+        - TOX_ENV='py37-online'
+        - TOX_ARG='-- -n=4'
 
-         # We order the jobs, in terms of the maintainers mood
-         # Order of tests run in build stages
-         - python: 3.7
-           stage: Initial tests
-           env: PYTHON_VERSION=3.7
+    - name: "Figure tests (figure)"
+      env:
+        - TOX_ENV='figure'
 
-        # Comprehensive tests below this line
-        # We run --online here because --online-only skips the doctests
-         - python: 3.7
-           stage: Comprehensive tests
-           env: SETUP_CMD="test --online --coverage --parallel 8" PYTHON_VERSION=3.7
+    - name: "AstroPy dev (py37-astropydev)"
+      python: "3.7"
+      env:
+        - TOX_ENV='py37-astropydev'
+      addons:
+        apt:
+          packages:
+            - httpie
 
-        # Cron tests below this line
-         - os: osx
-           stage: Cron tests
-           language: generic
-           env: PYTHON_VERSION=3.6
+    - name: "NumPy dev (py37-numpydev)"
+      python: "3.7"
+      addons:
+        apt:
+          packages:
+            - gfortran
+            - libatlas-dev
+            - libatlas-base-dev
+      env: TOX_ENV='py37-numpydev'
 
-         - python: 3.6
-           stage: Cron tests
-           env: ASTROPY_VERSION='dev'
+  allow_failures:
+    - name: "3.7 online (py37-online)"
+      python: "3.7"
+      env:
+        - TOX_ENV='py37-online'
+        - TOX_ARG='-- -n=4'
 
-         - python: 3.6
-           stage: Cron tests
-           env: NUMPY_VERSION='dev'
-
-         - python: 3.6
-           stage: Cron tests
-           env: SETUP_CMD='test --figure-only' ASTROPY_VERSION='dev'
-                CONDA_DEPENDENCIES='astropy'
-
-         - python: 3.6
-           stage: Cron tests
-           # Pip Upstream checks
-           env: SETUP_CMD='test' CONDA_DEPENDENCIES='' PIP_DEPENDENCIES='' JOB='pip'
-
-install:
-    - git clone --depth 1 git://github.com/astropy/ci-helpers.git
-    - source ci-helpers/travis/setup_conda.sh
-
-before_script:
-    # Download the sample data for the online builds only.
-    - if [[ $SETUP_CMD == *online-only* ]] || [[ $SETUP_CMD == *remote-data* ]]; then python -m "sunpy.data.sample"; fi
-    - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_py36.yml; source activate sunpy-figure-tests-3.6; python -m "sunpy.data.sample"; fi
-    - if [[ $JOB == *pip* ]]; then pip install .[all]; fi
+before_install:
+  - git clone --depth 1 git://github.com/astropy/ci-helpers.git
+  # We do not want to create the test env
+  - echo "" > ci-helpers/travis/setup_dependencies_common.sh
+  - source ci-helpers/travis/setup_conda.sh
+  - pip install tox
+  - if [[ $TOX_ENV == *figure* ]]; then pip install tox-conda; fi
 
 script:
-    - $MAIN_CMD $SETUP_CMD
+  - tox -e $TOX_ENV $TOX_ARG
+  - pip install --upgrade codecov
+  - codecov
 
-after_success:
-    - if [[ $SETUP_CMD = *"cov"* ]]; then pip install codecov; codecov; fi
-
-# Notify the IRC channel of build status
-notifications:
-  webhooks:
-    urls:
-      - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MENhZGFpciUzQW1hdHJpeC5vcmcvJTIxTWVSZEZwRW9uTG9Dd2hvSGVUJTNBbWF0cml4Lm9yZw"
-    on_success: change  # always|never|change
-    on_failure: always
-    on_start: never
+after_failure:
+  # Send a nice matrix notification if the Astropy-dev job fails
+  - NOTIF_TEXT='Build '$TRAVIS_BUILD_NUMBER' (Astropy-dev) Failed:'$TRAVIS_BUILD_WEB_URL
+  - AVATAR_URL='https://s3-eu-west-1.amazonaws.com/cadair.com/Tessa-pride.png'
+  - if [[ -n "$NOTIFURL" && $TOX_ENV == *astropydev* ]]; then http --verify=no POST $NOTIFURL displayName="Travis Bot" avatarUrl="$AVATAR_URL" text="$NOTIF_TEXT"; fi

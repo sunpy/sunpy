@@ -43,11 +43,12 @@ def aiaprep(aiamap):
     """
 
     if not isinstance(aiamap, (AIAMap, HMIMap)):
-        raise ValueError("Input must be an AIAMap")
+        raise ValueError("Input must be an AIAMap or HMIMap.")
 
     # Target scale is 0.6 arcsec/pixel, but this needs to be adjusted if the map
     # has already been rescaled.
-    if (aiamap.scale[0] / 0.6).round() != 1.0 * u.arcsec and aiamap.data.shape != (4096, 4096):
+    if ((aiamap.scale[0] / 0.6).round() != 1.0 * u.arcsec / u.pix
+            and aiamap.data.shape != (4096, 4096)):
         scale = (aiamap.scale[0] / 0.6).round() * 0.6 * u.arcsec
     else:
         scale = 0.6 * u.arcsec  # pragma: no cover # can't test this because it needs a full res image
@@ -64,5 +65,6 @@ def aiaprep(aiamap):
 
     newmap.meta['r_sun'] = newmap.meta['rsun_obs'] / newmap.meta['cdelt1']
     newmap.meta['lvl_num'] = 1.5
+    newmap.meta['bitpix'] = -64
 
     return newmap

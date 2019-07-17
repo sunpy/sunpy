@@ -2,15 +2,14 @@
 
 .. _whatsnew-0.8:
 
-**************************
+************************
 What's New in SunPy 0.8?
-**************************
+************************
 
 Overview
 ========
 
-SunPy 0.8 is a major release that adds significant new functionality since
-the 0.7.x series of releases.
+SunPy 0.8 is a major release that adds significant new functionality since the 0.7.x series of releases.
 
 On this page, you can read about some of the big changes in this release:
 
@@ -21,8 +20,7 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-0.8-differential_rotation`
 * :ref:`whatsnew-0.8-renamed-removed`
 
-In addition to these major changes, SunPy 0.8 includes a large number of
-smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+In addition to these major changes, SunPy 0.8 includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
 By the numbers:
 
@@ -39,18 +37,14 @@ Supported versions of Python
 
 SunPy is tested against Python 2.7, 3.5 and 3.6.  SunPy no longer supports Python 3.4.
 
-
 .. _whatsnew-0.8-fido:
 
 New data downloading interface
 ==============================
 
-The new package Fido is the primary interface to search for and download
-observational data. Fido is a unified interface for searching and fetching solar
-physics data irrespective of the underlying client or webservice through which
-the data is obtained, e.g. VSO, JSOC, etc. It therefore supplies a single, easy
-and consistent way to obtain most forms of solar physics data. It unifies data
-search and download from multiple sources such as the VSO and non-VSO sources::
+The new package Fido is the primary interface to search for and download observational data.
+Fido is a unified interface for searching and fetching solar physics data irrespective of the underlying client or webservice through which the data is obtained, e.g. VSO, JSOC, etc.
+It therefore supplies a single, easy and consistent way to obtain most forms of solar physics data. It unifies data search and download from multiple sources such as the VSO and non-VSO sources::
 
     >>> from sunpy.net import Fido, attrs as a
 
@@ -93,13 +87,11 @@ which returns a set of filepaths to the data.
 New coordinate package
 ======================
 
-The SunPy coordinates package describes locations in physical space, and
-coordinate frames. It provides a way to transform coordinates from one frame
-like helioprojective to another such as heliographic.
+The SunPy coordinates package describes locations in physical space, and coordinate frames. It provides a way to transform coordinates from one frame like helioprojective to another such as heliographic.
 
 Coordinates can be defined very simply::
 
-    >>> from astropy import units as u
+    >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import frames
     >>> a = SkyCoord(200*u.arcsec, 300*u.arcsec, frame=frames.Helioprojective)
@@ -112,8 +104,7 @@ Coordinates can be defined very simply::
         (-20., -56.,  695508.)>
 
 
-The coordinate ``a`` is in the helioprojective coordinate system, and the
-coordinate ``b`` is in the heliographic Stonyhurst system.
+The coordinate ``a`` is in the helioprojective coordinate system, and the coordinate ``b`` is in the heliographic Stonyhurst system.
 
 Maps can also be used to define coordinate frames::
 
@@ -126,15 +117,14 @@ Maps can also be used to define coordinate frames::
         ( 0.,  0.048591,   1.51846026e+11)>): (Tx, Ty) in arcsec
         (-45.,  600.)>
 
-The coordinate ``c`` is now defined with respect to the coordinate frame derived
-from the map. The observer attribute::
+The coordinate ``c`` is now defined with respect to the coordinate frame derived from the map.
+The observer attribute::
 
     >>> c.observer
     <HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
         ( 0.,  0.048591,   1.51846026e+11)>
 
 defines the location from which the coordinate was observed.
-
 
 Transformation between solar physics coordinate systems
 -------------------------------------------------------
@@ -172,9 +162,8 @@ Major solar system bodies can be used to specify observer locations in SkyCoord:
 New timeseries data object
 ==========================
 
-The TimeSeries object is used to represent columns of time-ordered scalar values,
-and is source-aware, just like the Map object.  This object supersedes the LightCurve object,
-which is now deprecated in 0.8.
+The TimeSeries object is used to represent columns of time-ordered scalar values, and is source-aware, just like the Map object.
+This object supersedes the LightCurve object, which is now deprecated in 0.8.
 
 The TimeSeries object can be instantiated by passing in a file::
 
@@ -227,8 +216,7 @@ and the data can be accessed as a pandas dataframe using::
     2011-06-07 23:59:55.584999  1.000000e-09  1.624800e-07
     2011-06-07 23:59:57.631999  1.000000e-09  1.598500e-07
 
-Data sources that do not provide FITS files need to have a ``source`` keyword to help
-with the identification and interpretation of the data::
+Data sources that do not provide FITS files need to have a ``source`` keyword to help with the identification and interpretation of the data::
 
     >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')
 
@@ -237,33 +225,19 @@ with the identification and interpretation of the data::
 Differential rotation of maps
 =============================
 
-Maps can now be transformed using solar differential rates.
-
-.. plot::
-    :include-source:
-
-    import astropy.units as u
-    import sunpy.map
-    import sunpy.data.sample
-    from sunpy.physics.differential_rotation import diffrot_map
-    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    dr_map = diffrot_map(aia_map, dt=-4*u.day)
-
-
+Maps can now be transformed using solar differential rates using ``from sunpy.physics.differential_rotation import diffrot_map``.
 
 .. _whatsnew-0.8-renamed-removed:
 
 Renamed/removed functionality
 =============================
 
-Several sub-packages have been moved or removed, and these are described in the
-following sections.
+Several sub-packages have been moved or removed, and these are described in the following sections.
 
 sunpy.lightcurve
 ----------------
 
-The package ``sunpy.lightcurve`` has been deprecated in favor of `~sunpy.timeseries`,
-and will be removed in a future version of SunPy.
+The package ``sunpy.lightcurve`` has been deprecated in favor of `~sunpy.timeseries`, and will be removed in a future version of SunPy.
 
 sunpy.physics.transforms
 ------------------------
@@ -278,5 +252,4 @@ should now be imported with ``from sunpy.net.helioviewer import HelioviewerClien
 Full change log
 ===============
 
-To see a detailed list of all changes in version v0.8, including changes in
-API, please see the :ref:`changelog`.
+To see a detailed list of all changes in version v0.8, including changes in API, please see the :ref:`changelog`.

@@ -4,7 +4,6 @@ Source type-dependencies.
 Helioviewer JPEG2000 files have stretched images compared to the FITS data.
 
 """
-from __future__ import absolute_import, print_function, division
 from astropy.visualization import LinearStretch
 # pylint: disable=W0221,W0222,E1121
 

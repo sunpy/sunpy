@@ -1,0 +1,2 @@
+`sunpy.map.make_fitswcs_header` now supports specifying the map projection
+rather than defaulting to ``TAN``.

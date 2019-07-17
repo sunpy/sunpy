@@ -5,10 +5,10 @@ Finding Local Peaks in Solar Data
 
 Detecting intensity peaks in solar images can be useful, for example as
 a simple flare identification mechanism. This example illustrates detection
-of those areas where there is a spike in solar intensity.
+of areas where there is a spike in solar intensity.
 We use the `~skimage.feature.peak_local_max` function in the scikit-image library
 to find those regions in the map data where the intensity values form a local maxima.
-Finally we plot those peaks in the original AIA plot.
+Then we plot those peaks in the original AIA plot.
 """
 
 import numpy as np
@@ -20,6 +20,7 @@ from skimage.feature import peak_local_max
 
 import sunpy.map
 from sunpy.data.sample import AIA_193_IMAGE
+from sunpy.map.maputils import all_pixel_indices_from_map
 
 ###############################################################################
 # We will first create a Map using some sample data and display it.
@@ -31,14 +32,10 @@ plt.colorbar()
 
 
 ###############################################################################
-# Before we find regions of local maxima, we need to create some variables that
-# store pixel coordinates for the 2D SDO/AIA data we are using.
+# Before we find regions of local maxima, we need to create some variables to
+# store pixel values for the 2D SDO/AIA data we are using.
 # These variables are used for plotting in 3D later on.
-
-x = np.arange(aiamap.data.shape[0])
-y = np.arange(aiamap.data.shape[1])
-X, Y = np.meshgrid(x, y)
-
+X, Y = all_pixel_indices_from_map(aiamap)
 
 #######################################################################################
 # We will only consider peaks within the AIA data that have minimum intensity

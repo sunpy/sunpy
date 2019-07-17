@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import, division, print_function
-
-import datetime
+from datetime import timedelta
 
 import pytest
+
 import astropy.units as u
+from astropy.time import Time, TimeDelta
 
 import sunpy.time
-from sunpy.extern.six.moves import zip
+from sunpy.time import is_time_equal
 
 tbegin_str = '2012/1/1'
 tfin_str = '2012/1/2'
@@ -22,7 +20,8 @@ delta = end - start
 @pytest.mark.parametrize("inputs", [
     (tbegin_str, tfin_str),
     (tbegin_str, dt),
-    (tbegin_str, datetime.timedelta(days=1))
+    (tbegin_str, TimeDelta(1*u.day)),
+    (tbegin_str, timedelta(days=1))
 ])
 def test_timerange_inputs(inputs):
     timerange = sunpy.time.TimeRange(*inputs)
@@ -33,10 +32,6 @@ def test_timerange_inputs(inputs):
 
 
 def test_timerange_invalid_range():
-    """
-    TimeRange can expect a range of two times. if this is not the case then
-    raise an exception
-    """
     lower = '2016/01/04 09:30'
     mid = '2016/06/04 09:30'
     upper = '2017/03/04 09:30'
@@ -49,9 +44,6 @@ def test_timerange_invalid_range():
 
 
 def test_equals():
-    """
-    Test the __eq__ operator
-    """
     lower = '2016/01/04T09:30:00.000'
     upper = '2016/06/04T09:30:00.000'
     upper_plus_one_msec = '2016/06/04T09:30:00.001'
@@ -66,8 +58,8 @@ def test_equals():
 
     assert tr == tr_diff_format
 
-    lower_dt = datetime.datetime(year=2016, month=1, day=4, hour=9, minute=30, second=0)
-    upper_dt = datetime.datetime(year=2016, month=6, day=4, hour=9, minute=30, second=0)
+    lower_dt = Time('2016-01-04T09:30:00.000')
+    upper_dt = Time('2016-06-04T09:30:00.000')
     tr_datetime = sunpy.time.TimeRange(lower_dt, upper_dt)
 
     assert tr == tr_datetime
@@ -82,9 +74,6 @@ def test_equals():
 
 
 def test_not_equals():
-    """
-    Test __ne__ operator
-    """
     a_st = '2016/01/04T09:30:00.000'
     a_et = '2016/06/04T09:30:00.000'
 
@@ -108,15 +97,14 @@ def test_not_equals():
 def test_get_dates():
     lower = '2016/01/04 09:30'
     lower_plus_one_day = '2016/01/05 09:30'
-    upper = '2016/06/04 09:30'
 
     single_day = sunpy.time.TimeRange((lower, lower))
 
-    assert single_day.get_dates() == [datetime.date(2016, 1, 4)]
+    assert single_day.get_dates() == [Time('2016-1-4')]
 
     two_days = sunpy.time.TimeRange((lower, lower_plus_one_day))
 
-    assert two_days.get_dates() == [datetime.date(2016, 1, 4), datetime.date(2016, 1, 5)]
+    assert two_days.get_dates() == [Time('2016-1-4'), Time('2016-1-5')]
 
     one_year = sunpy.time.TimeRange('2017/01/01', '2017-12-31')
     assert len(one_year.get_dates()) == 365
@@ -128,7 +116,8 @@ def test_get_dates():
 @pytest.mark.parametrize("ainput", [
     (tbegin_str, tfin_str),
     (tbegin_str, dt),
-    (tbegin_str, datetime.timedelta(days=1)),
+    (tbegin_str, TimeDelta(1*u.day)),
+    (tbegin_str, timedelta(days=1)),
     (sunpy.time.TimeRange(tbegin_str, tfin_str))
     ])
 def test_timerange_input(ainput):
@@ -145,8 +134,6 @@ def test_timerange_input(ainput):
     (tfin_str, tbegin_str)
     ])
 def test_start_lessthan_end(ainput):
-    """Test that the start and end time for a timerange is always in the
-    right order"""
     timerange = sunpy.time.TimeRange(ainput)
     t1 = timerange.start
     t2 = timerange.end
@@ -161,8 +148,7 @@ def timerange_a():
 
 
 def test_center(timerange_a):
-    assert timerange_a.center == datetime.datetime(year=2012, day=1, month=1,
-                                                   hour=12)
+    assert is_time_equal(timerange_a.center, Time('2012-1-1T12:00:00'))
 
 
 def test_split(timerange_a):
@@ -170,7 +156,7 @@ def test_split(timerange_a):
               sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/2T00:00:00')]
     split = timerange_a.split(n=2)
     # Doing direct comparisons seem to not work
-    assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(split, expect)])
+    assert all([is_time_equal(wi.start, ex.start) and is_time_equal(wi.end, ex.end) for wi, ex in zip(split, expect)])
 
 
 def test_split_n_0_error(timerange_a):
@@ -191,18 +177,22 @@ def test_window(timerange_a):
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
-    assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
+    assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
-def test_window_timedelta(timerange_a):
+@pytest.mark.parametrize("td1,td2", [
+    (TimeDelta(12*u.hour), TimeDelta(10*u.second)),
+    (timedelta(hours=12), timedelta(seconds=10))
+])
+def test_window_timedelta(timerange_a, td1, td2):
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    window = timerange.window(datetime.timedelta(hours=12), datetime.timedelta(seconds=10))
+    window = timerange.window(td1, td2)
     expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'),
               sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
-    assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
+    assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
 def test_days(timerange_a):
@@ -257,9 +247,9 @@ def test_extend():
 
 
 def test_contains(timerange_a):
-    before = datetime.datetime(year=1990, month=1, day=1)
-    after = datetime.datetime(year=2022, month=1, day=1)
-    between = datetime.datetime(year=2014, month=5, day=4)
+    before = Time('1990-1-1')
+    after = Time('2022-1-1')
+    between = Time('2014-5-4')
     timerange = sunpy.time.TimeRange('2014/05/03 12:00', '2014/05/05 21:00')
     assert between in timerange
     assert before not in timerange

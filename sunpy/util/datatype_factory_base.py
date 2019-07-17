@@ -1,49 +1,49 @@
-from __future__ import absolute_import, division, print_function
-
+"""
+This module provides the base registration factory used for all SunPy data/net
+factories.
+"""
 import inspect
 
+__all__ = ["BasicRegistrationFactory", "NoMatchError",
+           "MultipleMatchError", "ValidationFunctionError"]
 
-class BasicRegistrationFactory(object):
+
+class BasicRegistrationFactory:
     """
     Generalized registerable factory type.
 
     Widgets (classes) can be registered with an instance of this class.
-    Arguments to the factory's `__call__` method are then passed to a function
+    Arguments to the factory's ``__call__`` method are then passed to a function
     specified by the registered factory, which validates the input and returns
     a instance of the class that best matches the inputs.
 
     Attributes
     ----------
-
-    registry : dict
-        Dictionary mapping classes (key) to function (value) which validates
-        input.
-
-    default_widget_type : type
-        Class of the default widget.  Defaults to None.
-
-    validation_functions : list of strings
+    registry : `dict`
+        Dictionary mapping classes (key) to function (value) which validates input.
+    default_widget_type : `type`
+        Class of the default widget.
+    validation_functions : `list` of `str`
         List of function names that are valid validation functions.
 
     Parameters
     ----------
-
-    default_widget_type : type, optional
-
-    additional_validation_functions : list of strings, optional
+    default_widget_type : `type`, optional
+        Class of the default widget. Defaults to `None`.
+    additional_validation_functions : `list` of `str`, optional
         List of strings corresponding to additional validation function names.
+        Defaults to `list`.
+    registry : `dict`, optional
+        Dictionary mapping classes (key) to function (value) which validates input.
+        Defaults to `None`.
 
     Notes
     -----
-
     * A valid validation function must be a classmethod of the registered widget
-      and it must return True or False.
-
+      and it must return a `bool`.
     """
-
     def __init__(self, default_widget_type=None,
                  additional_validation_functions=[], registry=None):
-
         if registry is None:
             self.registry = dict()
         else:
@@ -55,19 +55,20 @@ class BasicRegistrationFactory(object):
                                      additional_validation_functions)
 
     def __call__(self, *args, **kwargs):
-        """ Method for running the factory.
+        """
+        Method for running the factory.
 
         Arguments args and kwargs are passed through to the validation
         function and to the constructor for the final type.
         """
-
         # Any preprocessing and massaging of inputs can happen here
 
         return self._check_registered_widget(*args, **kwargs)
 
     def _check_registered_widget(self, *args, **kwargs):
-        """ Implementation of a basic check to see if arguments match a widget."""
-
+        """
+        Implementation of a basic check to see if arguments match a widget.
+        """
         candidate_widget_types = list()
 
         for key in self.registry:
@@ -94,44 +95,36 @@ class BasicRegistrationFactory(object):
         return WidgetType(*args, **kwargs)
 
     def register(self, WidgetType, validation_function=None, is_default=False):
-        """ Register a widget with the factory.
+        """
+        Register a widget with the factory.
 
-        If `validation_function` is not specified, tests `WidgetType` for
-        existence of any function in in the list `self.validation_functions`,
-        which is a list of strings which must be callable class attribute
+        If ``validation_function`` is not specified, tests ``WidgetType`` for
+        existence of any function in in the list ``self.validation_functions``,
+        which is a list of strings which must be callable class attribute.
 
         Parameters
         ----------
-
-        WidgetType : type
+        WidgetType : `type`
             Widget to register.
-
-        validation_function : function, optional
+        validation_function : `function`, optional
             Function to validate against.  Defaults to None, which indicates
-            that a classmethod in validation_functions is used.
-
-        is_default : bool, optional
-            Sets WidgetType to be the default widget.
-
+            that a classmethod in validation_functions is used. Defaults to `None`.
+        is_default : `bool`, optional
+            Sets WidgetType to be the default widget. Defaults to `False`.
         """
         if is_default:
             self.default_widget_type = WidgetType
-
         elif validation_function is not None:
             if not callable(validation_function):
                 raise AttributeError("Keyword argument 'validation_function' must be callable.")
-
             self.registry[WidgetType] = validation_function
-
         else:
             found = False
             for vfunc_str in self.validation_functions:
                 if hasattr(WidgetType, vfunc_str):
                     vfunc = getattr(WidgetType, vfunc_str)
-
                     # check if classmethod: stackoverflow #19227724
                     _classmethod = inspect.ismethod(vfunc) and vfunc.__self__ is WidgetType
-
                     if _classmethod:
                         self.registry[WidgetType] = vfunc
                         found = True
@@ -139,23 +132,30 @@ class BasicRegistrationFactory(object):
                     else:
                         raise ValidationFunctionError("{0}.{1} must be a classmethod."
                                                       .format(WidgetType.__name__, vfunc_str))
-
             if not found:
                 raise ValidationFunctionError("No proper validation function for class {0} "
                                               "found.".format(WidgetType.__name__))
 
     def unregister(self, WidgetType):
-        """ Remove a widget from the factory's registry."""
+        """
+        Remove a widget from the factory's registry.
+        """
         self.registry.pop(WidgetType)
 
 
 class NoMatchError(Exception):
-    """Exception for when no candidate class is found."""
+    """
+    Exception for when no candidate class is found.
+    """
 
 
 class MultipleMatchError(Exception):
-    """Exception for when too many candidate classes are found."""
+    """
+    Exception for when too many candidate classes are found.
+    """
 
 
 class ValidationFunctionError(AttributeError):
-    """Exception for when no candidate class is found."""
+    """
+    Exception for when no candidate class is found.
+    """

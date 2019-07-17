@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import, division, print_function
-
-import pytest
 import sys
 
-from sunpy.util.multimethod import MultiMethod, FAIL, WARN, TypeWarning
+import pytest
+
+from sunpy.util.multimethod import FAIL, WARN, MultiMethod, TypeWarning
 
 
 def test_super():
@@ -23,7 +20,7 @@ def test_super():
         return 'String'
 
     # Suppress pep8 warning "F811 redefinition of unused 'foo' ..."
-    @mm.add_dec(String, str)  # noqa
+    @mm.add_dec(String, str)
     def foo(foo, bar):
         return 'Fancy', mm.super(super(String, foo), bar)
 

@@ -52,18 +52,17 @@ import os.path
 import datetime
 from itertools import dropwhile
 
-import pandas
 import numpy as np
 import astropy.units as u
+from astropy.time import TimeDelta
 from scipy import interpolate
 from scipy.integrate import trapz, cumtrapz
 
-from sunpy import sun
-from sunpy.net import hek
+from sunpy.sun import constants
 from sunpy import timeseries
 from sunpy.time import parse_time
 from sunpy.util.net import check_download_file
-from sunpy.coordinates import get_sunearth_distance
+from sunpy.coordinates import sun
 from sunpy.util.config import get_and_create_download_dir
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
@@ -101,11 +100,14 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     timerange : `sunpy.time.TimeRange`
         The time range to download the event list for.
 
-    goes_class_filter: (optional) string
+    goes_class_filter: (optional) str
         A string specifying a minimum GOES class for inclusion in the list,
         e.g. 'M1', 'X2'.
 
     """
+    # Importing hek here to avoid calling code that relies on optional dependencies.
+    from sunpy.net import hek
+
     # use HEK module to search for GOES events
     client = hek.HEKClient()
     event_type = 'FL'
@@ -133,7 +135,7 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 
     for r in result:
         goes_event = {
-            'event_date': parse_time(r['event_starttime']).date().strftime(
+            'event_date': parse_time(r['event_starttime']).strftime(
                 '%Y-%m-%d'),
             'start_time': parse_time(r['event_starttime']),
             'peak_time': parse_time(r['event_peaktime']),
@@ -228,25 +230,31 @@ def calculate_temperature_em(goests, abundances="coronal",
     >>> from sunpy.instr.goes import calculate_temperature_em
     >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
     >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
-    >>> goests.data  # doctest: +REMOTE_DATA
-                                        xrsa          xrsb
-    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
-    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
-    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
-    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07
-    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07
-    ...
-
+    >>> goests.data[0:10]  # doctest: +REMOTE_DATA
+                                           xrsa          xrsb
+    2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999896  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:06.104999900  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:08.151999950  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:10.201999903  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:12.248999953  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:14.298999906  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:16.344999909  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:18.391999960  1.000000e-09  1.834600e-07
     >>> goests_new = calculate_temperature_em(goests)  # doctest: +REMOTE_DATA
-    >>> goests_new.data  # doctest: +REMOTE_DATA
-                                        xrsa          xrsb  temperature            em
-    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07     3.503510  2.190626e+48
-    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07     3.534262  2.055847e+48
-    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48
-    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07     3.550100  1.990333e+48
-    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48
-    ...
-
+    >>> goests_new.data[0:10]  # doctest: +REMOTE_DATA
+                                           xrsa          xrsb  temperature            em
+    2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07     3.503510  2.190626e+48
+    2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07     3.534262  2.055847e+48
+    2011-06-07 00:00:04.058999896  1.000000e-09  1.860900e-07     3.518700  2.122771e+48
+    2011-06-07 00:00:06.104999900  1.000000e-09  1.808400e-07     3.550100  1.990333e+48
+    2011-06-07 00:00:08.151999950  1.000000e-09  1.860900e-07     3.518700  2.122771e+48
+    2011-06-07 00:00:10.201999903  1.000000e-09  1.808400e-07     3.550100  1.990333e+48
+    2011-06-07 00:00:12.248999953  1.000000e-09  1.860900e-07     3.518700  2.122771e+48
+    2011-06-07 00:00:14.298999906  1.000000e-09  1.834600e-07     3.534262  2.055847e+48
+    2011-06-07 00:00:16.344999909  1.000000e-09  1.808400e-07     3.550100  1.990333e+48
+    2011-06-07 00:00:18.391999960  1.000000e-09  1.834600e-07     3.534262  2.055847e+48
     """
     # Check that input argument is of correct type
     if not isinstance(goests, timeseries.XRSTimeSeries):
@@ -294,7 +302,7 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
         correct calibration of data.
         Default=8
 
-    date : `datetime.datetime` or `str`
+    date : `astropy.time.Time` or `str`
         Date when observations made.  Important for correctcalibration.
         Default=today
 
@@ -310,7 +318,7 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
         launch of new GOES satellites since these files were last downloaded.
         Default=False
 
-    download_dir : (optional) string
+    download_dir : (optional) str
         The directory to download the GOES temperature and emission measure
         data files to.
         Default=SunPy default download directory
@@ -359,8 +367,8 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     --------
     >>> from sunpy.instr.goes import _goes_chianti_tem
     >>> from astropy.units import Quantity
-    >>> longflux = Quantity([7e-6, 7e-6], unit="W/m/m")
-    >>> shortflux = Quantity([7e-7, 7e-7], unit="W/m/m")
+    >>> longflux = Quantity([7e-6, 7e-6], unit="W/m**2")
+    >>> shortflux = Quantity([7e-7, 7e-7], unit="W/m**2")
     >>> temp, em = _goes_chianti_tem(longflux, shortflux, satellite=15,
     ...                              date='2014-04-16',
     ...                              abundances="coronal")  # doctest: +REMOTE_DATA
@@ -388,7 +396,7 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     # PREPARE DATA
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
-    if date < datetime.datetime(1983, 6, 28) and satellite == 6:
+    if date < parse_time((1983, 6, 28)) and satellite == 6:
         longflux_corrected = longflux*(4.43/5.32)
     else:
         longflux_corrected = longflux
@@ -456,7 +464,7 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
         of new GOES satellites since these files were last downloaded.
         Default=False
 
-    download_dir : (optional) string
+    download_dir : (optional) str
         The directory to download the GOES temperature data file to.
         Default=SunPy default download directory
 
@@ -803,27 +811,31 @@ def calculate_radiative_loss_rate(goests, force_download=False,
     >>> from sunpy.instr.goes import calculate_radiative_loss_rate
     >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
     >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
-    >>> goests.data  # doctest: +REMOTE_DATA
-                                        xrsa          xrsb
-    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
-    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
-    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
-    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07
-    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07
-    2011-06-07 00:00:10.201999  1.000000e-09  1.808400e-07
-    ...
-
+    >>> goests.data[0:10]  # doctest: +REMOTE_DATA
+                                           xrsa          xrsb
+    2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999896  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:06.104999900  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:08.151999950  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:10.201999903  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:12.248999953  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:14.298999906  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:16.344999909  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:18.391999960  1.000000e-09  1.834600e-07
     >>> goests_new = calculate_radiative_loss_rate(goests)  # doctest: +REMOTE_DATA
-    >>> goests_new.data   # doctest:  +REMOTE_DATA
-                                        xrsa          xrsb  temperature            em  rad_loss_rate
-    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07     3.503510  2.190626e+48   1.781001e+19
-    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07     3.534262  2.055847e+48   1.660031e+19
-    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48   1.719931e+19
-    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07     3.550100  1.990333e+48   1.601718e+19
-    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07     3.518700  2.122771e+48   1.719931e+19
-    2011-06-07 00:00:10.201999  1.000000e-09  1.808400e-07     3.550100  1.990333e+48   1.601718e+19
-    ...
-
+    >>> goests_new.data[0:10]   # doctest:  +REMOTE_DATA
+                                           xrsa          xrsb  temperature            em  rad_loss_rate
+    2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07     3.503510  2.190626e+48   1.781001e+19
+    2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07     3.534262  2.055847e+48   1.660031e+19
+    2011-06-07 00:00:04.058999896  1.000000e-09  1.860900e-07     3.518700  2.122771e+48   1.719931e+19
+    2011-06-07 00:00:06.104999900  1.000000e-09  1.808400e-07     3.550100  1.990333e+48   1.601718e+19
+    2011-06-07 00:00:08.151999950  1.000000e-09  1.860900e-07     3.518700  2.122771e+48   1.719931e+19
+    2011-06-07 00:00:10.201999903  1.000000e-09  1.808400e-07     3.550100  1.990333e+48   1.601718e+19
+    2011-06-07 00:00:12.248999953  1.000000e-09  1.860900e-07     3.518700  2.122771e+48   1.719931e+19
+    2011-06-07 00:00:14.298999906  1.000000e-09  1.834600e-07     3.534262  2.055847e+48   1.660031e+19
+    2011-06-07 00:00:16.344999909  1.000000e-09  1.808400e-07     3.550100  1.990333e+48   1.601718e+19
+    2011-06-07 00:00:18.391999960  1.000000e-09  1.834600e-07     3.534262  2.055847e+48   1.660031e+19
     """
     if not download_dir:
         download_dir = get_and_create_download_dir()
@@ -883,7 +895,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         at the same times corresponding to the temperatures in temp.
         Must be same length as temp.  Units=[cm**-3]
 
-    obstime : (optional) array-like of `datetime.datetime` objects
+    obstime : (optional) array-like of `~sunpy.time.parse_time` parsable objects
         Array of measurement times to which temperature and
         emission measure values correspond.  Must be same length
         as temp and em.  If this keyword is set, the integrated
@@ -896,7 +908,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         launch of new GOES satellites.
         Default=False
 
-    download_dir : (optional) string
+    download_dir : (optional) str
         The directory to download the GOES radiative loss data file to.
         Default=SunPy default download directory
 
@@ -991,23 +1003,14 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         if len(obstime) != n:
             raise IOError("obstime must have same number of elements as "
                           "temp and em.")
-        if type(obstime) == pandas.DatetimeIndex:
-            obstime = obstime.to_pydatetime
-        if any(type(obst) == str for obst in obstime):
-            parse_time(obstime)
-        if not all(type(obst) == datetime.datetime for obst in obstime):
-            raise TypeError("obstime must be an array-like whose elements are"
-                            " convertible to datetime objects.")
+
+        obstime = parse_time(obstime)
+
         # Check elements in obstime in chronological order
-        chrono_check = obstime-np.roll(obstime, 1)
-        chrono_check = chrono_check[1:]
-        if not all(chrono_check > datetime.timedelta(0)):
-            raise ValueError(
-                "Elements of obstime must be in chronological order.")
+        _assert_chrono_order(obstime)
         # Next, get measurement times in seconds from time of first
         # measurement.
-        obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
-                                    for ot in obstime], dtype="float64")
+        obstime_seconds = (obstime - obstime[0]).sec
         # Finally, integrate using trapezoid rule
         rad_loss_int = trapz(rad_loss.value, obstime_seconds)
         rad_loss_int = u.Quantity(rad_loss_int, unit=rad_loss.unit*u.s)
@@ -1061,26 +1064,31 @@ def calculate_xray_luminosity(goests):
     >>> from sunpy.instr.goes import calculate_xray_luminosity
     >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
     >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
-    >>> goests.data  # doctest: +REMOTE_DATA
-                                        xrsa          xrsb
-    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
-    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
-    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
-    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07
-    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07
-    ...
-
-
+    >>> goests.data[0:10]  # doctest: +REMOTE_DATA
+                                           xrsa          xrsb
+    2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999896  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:06.104999900  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:08.151999950  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:10.201999903  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:12.248999953  1.000000e-09  1.860900e-07
+    2011-06-07 00:00:14.298999906  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:16.344999909  1.000000e-09  1.808400e-07
+    2011-06-07 00:00:18.391999960  1.000000e-09  1.834600e-07
     >>> goests_new = calculate_xray_luminosity(goests)  # doctest: +REMOTE_DATA
-    >>> goests_new.data   # doctest:  +REMOTE_DATA
-                                        xrsa          xrsb  luminosity_xrsa  luminosity_xrsb
-    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07     2.896209e+14     5.465435e+16
-    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07     2.896209e+14     5.313384e+16
-    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07     2.896209e+14     5.389555e+16
-    2011-06-07 00:00:06.104999  1.000000e-09  1.808400e-07     2.896209e+14     5.237503e+16
-    2011-06-07 00:00:08.151999  1.000000e-09  1.860900e-07     2.896209e+14     5.389555e+16
-    ...
-
+    >>> goests_new.data[0:10]   # doctest:  +REMOTE_DATA
+                                           xrsa          xrsb  luminosity_xrsa  luminosity_xrsb
+    2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07     2.896209e+14     5.465435e+16
+    2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07     2.896209e+14     5.313384e+16
+    2011-06-07 00:00:04.058999896  1.000000e-09  1.860900e-07     2.896209e+14     5.389555e+16
+    2011-06-07 00:00:06.104999900  1.000000e-09  1.808400e-07     2.896209e+14     5.237503e+16
+    2011-06-07 00:00:08.151999950  1.000000e-09  1.860900e-07     2.896209e+14     5.389555e+16
+    2011-06-07 00:00:10.201999903  1.000000e-09  1.808400e-07     2.896209e+14     5.237503e+16
+    2011-06-07 00:00:12.248999953  1.000000e-09  1.860900e-07     2.896209e+14     5.389555e+16
+    2011-06-07 00:00:14.298999906  1.000000e-09  1.834600e-07     2.896209e+14     5.313384e+16
+    2011-06-07 00:00:16.344999909  1.000000e-09  1.808400e-07     2.896209e+14     5.237503e+16
+    2011-06-07 00:00:18.391999960  1.000000e-09  1.834600e-07     2.896209e+14     5.313384e+16
     """
     # Check that input argument is of correct type
     if not isinstance(goests, timeseries.XRSTimeSeries):
@@ -1122,12 +1130,12 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         Array containing the observed GOES/XRS short channel flux.
         Units=[W/m**2]
 
-    obstime : (optional) array-like of `datetime.datetime` objects
+    obstime : (optional) array-like of `~sunpy.time.parse_time` parsable objects
         Measurement times corresponding to each flux measurement.
         Assumes each pair of 0.5-4 and 1-8 angstrom flux measurements
         were taken simultaneously.
 
-    date : (optional) `datetime.datetime` object or valid date string.
+    date : (optional) `astropy.time.Time` object or valid date string.
         Date at which measurements were taken.  This is used to
         calculate the Sun-Earth distance.
         Default=None implies Sun-Earth distance is set to 1AU.
@@ -1155,16 +1163,16 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     Examples
     --------
     >>> from sunpy.instr.goes import _goes_lx
-    >>> from datetime import datetime
+    >>> from astropy.time import Time
     >>> from astropy.units.quantity import Quantity
     >>> longflux = Quantity([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6], unit='W/m**2')
     >>> shortflux = Quantity([7e-7,7e-7,7e-7,7e-7,7e-7,7e-7], unit='W/m**2')
-    >>> obstime = np.array([datetime(2014,1,1,0,0,0),
-    ...                     datetime(2014,1,1,0,0,2),
-    ...                     datetime(2014,1,1,0,0,4),
-    ...                     datetime(2014,1,1,0,0,6),
-    ...                     datetime(2014,1,1,0,0,8),
-    ...                     datetime(2014,1,1,0,0,10),], dtype=object)
+    >>> obstime = Time(['2014-1-1T0:0:0',
+    ...                 '2014-1-1T0:0:2',
+    ...                 '2014-1-1T0:0:4',
+    ...                 '2014-1-1T0:0:6',
+    ...                 '2014-1-1T0:0:8',
+    ...                 '2014-1-1T0:0:10'])
     >>> lx_out = _goes_lx(longflux, shortflux, obstime)  # doctest: +REMOTE_DATA
     >>> lx_out["longlum"]  # doctest: +REMOTE_DATA
     <Quantity [1.96860565e+18, 1.96860565e+18, 1.96860565e+18, 1.96860565e+18,
@@ -1190,23 +1198,16 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         if not len(longflux) == len(shortflux) == len(obstime):
             raise ValueError("longflux, shortflux, and obstime must all have "
                              "same number of elements.")
-        if type(obstime) == pandas.DatetimeIndex:
-            obstime = obstime.to_pydatetime
-        if any(type(obst) == str for obst in obstime):
-            parse_time(obstime)
-        if not all(type(obst) == datetime.datetime for obst in obstime):
-            raise TypeError("obstime must be an array-like whose elements are"
-                            " convertible to datetime objects.")
+
+        obstime = parse_time(obstime)
+
         # Check elements in obstime in chronological order
-        chrono_check = obstime-np.roll(obstime, 1)
-        chrono_check = chrono_check[1:]
-        if not all(chrono_check > datetime.timedelta(0)):
-            raise ValueError(
-                "Elements of obstime must be in chronological order.")
+        _assert_chrono_order(obstime)
+
         # Next, get measurement times in seconds from time of first
         # measurement.
-        obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
-                                    for ot in obstime], dtype="float64")
+        obstime_seconds = (obstime - obstime[0]).sec
+
         # Finally, integrate using trapezoid rule
         longlum_int = trapz(longlum.value, obstime_seconds)
         longlum_int = u.Quantity(longlum_int, unit=longlum.unit*u.s)
@@ -1245,7 +1246,7 @@ def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
     flux : `~astropy.units.Quantity`
        Containing the observed solar flux.  Units=[W/m**2]
 
-    date : (optional) `datetime.datetime` object or valid date string
+    date : (optional) `astropy.time.Time` object or valid date str
         Used to calculate a more accurate Sun-Earth distance based on
         Earth's orbit at that date.  If date is None, Sun-Earth
         distance is set to 1AU.
@@ -1267,9 +1268,9 @@ def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
     """
     if date is not None:
         date = parse_time(date)
-        xraylum = 4 * np.pi * get_sunearth_distance(date).to("m")**2 * flux
+        xraylum = 4 * np.pi * sun.earth_distance(date).to("m")**2 * flux
     else:
-        xraylum = 4 * np.pi * sun.constants.au.to("m")**2 * flux
+        xraylum = 4 * np.pi * constants.au.to("m")**2 * flux
     return xraylum
 
 
@@ -1369,3 +1370,11 @@ def flux_to_flareclass(goesflux: u.watt/u.m**2):
         str_class = conversion_dict.get(u.Quantity(10 ** decade, "W/m**2"))
     goes_subclass = 10 ** -decade * goesflux.to('W/m**2').value
     return "{0}{1:.3g}".format(str_class, goes_subclass)
+
+
+def _assert_chrono_order(obstime):
+    chrono_check = np.array(obstime) - np.roll(obstime, 1)
+    chrono_check = chrono_check[1:]
+    if not all(val > TimeDelta(0*u.day) for val in chrono_check):
+        raise ValueError(
+            "Elements of obstime must be in chronological order.")

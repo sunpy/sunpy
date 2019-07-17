@@ -3,8 +3,6 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-from __future__ import absolute_import
-
 import fnmatch
 
 from sqlalchemy import create_engine

@@ -1,5 +1,4 @@
 """RHESSI Map subclass definitions"""
-from __future__ import absolute_import, print_function, division
 #pylint: disable=W0221,W0222,E1121
 
 __author__ = "Steven Christe"
@@ -39,6 +38,9 @@ class RHESSIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        # Assume pixel units are arcesc if not given
+        header['cunit1'] = header.get('cunit1', 'arcsec')
+        header['cunit2'] = header.get('cunit2', 'arcsec')
 
         GenericMap.__init__(self, data, header, **kwargs)
 

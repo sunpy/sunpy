@@ -1,13 +1,14 @@
 """
-This module implements SRS File Reader.
+This module implements a SRS File Reader.
 """
 import datetime
 from collections import OrderedDict
 
 import numpy as np
-from astropy.table import QTable, MaskedColumn, Column, vstack
+
 import astropy.io.ascii
 import astropy.units as u
+from astropy.table import Column, MaskedColumn, QTable, vstack
 
 __all__ = ['read_srs']
 
@@ -27,7 +28,6 @@ def read_srs(filepath):
     table : `astropy.table.QTable`
         Table containing a stacked table from all the tables in the SRS file.
         The header information is stored in the ``.meta`` attribute.
-
     """
     with open(filepath) as srs:
         file_lines = srs.readlines()
@@ -40,7 +40,7 @@ def read_srs(filepath):
 def make_table(header, section_lines):
     """
     From the seperated section lines and the header, clean up the data and
-    convert to a QTable.
+    convert to a `~astropy.table.QTable`.
     """
     meta_data = get_meta_data(header)
 
@@ -122,7 +122,7 @@ def split_lines(file_lines):
     """
     Given all the lines in the file split based on the three sections and
     return the lines for the header and a list of lines for each section that
-    is not 'None'
+    is not 'None'.
     """
     section_lines = []
     for i, line in enumerate(file_lines):
@@ -181,7 +181,7 @@ def get_meta_data(header):
 
 def parse_longitude(value):
     """
-    Parse longitude in the form 'W10' or 'E10'
+    Parse longitude in the form "W10" or "E10".
     """
     lonsign = {'W': 1, 'E': -1}
     if "W" in value or "E" in value:
@@ -190,7 +190,7 @@ def parse_longitude(value):
 
 def parse_latitude(value):
     """
-    Parse latitude in the form 'S10' or 'N10'
+    Parse latitude in the form "S10" or "N10".
     """
     latsign = {'N': 1, 'S': -1}
     if "N" in value or "S" in value:
@@ -199,7 +199,7 @@ def parse_latitude(value):
 
 def parse_location(column):
     """
-    Given a column of location data in the form 'S10E10' convert to two columns
+    Given a column of location data in the form "S10E10" convert to two columns
     of angles.
     """
     latitude = MaskedColumn(name="Latitude", unit=u.deg)
@@ -219,8 +219,8 @@ def parse_location(column):
 
 def parse_lat_col(column, latitude_column):
     """
-    Given an input column of Latitudes in the form 'S10' parse them and add
-    them to an existing column of Latitudes.
+    Given an input column of "latitudes" in the form "S10" parse them and add
+    them to an existing column of "latitudes".
     """
     for i, loc in enumerate(column):
         if loc:

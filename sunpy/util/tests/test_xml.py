@@ -1,8 +1,5 @@
-from __future__ import absolute_import, division, print_function
-
+from xml.dom.minidom import Document, parseString
 from xml.parsers.expat import ExpatError
-from xml.dom.minidom import Document
-from xml.dom.minidom import parseString
 
 import pytest
 
@@ -11,7 +8,7 @@ from sunpy.util import xml
 
 def test_xml_to_dict1():
     """
-    should return dict of xml string
+    should return dict of xml string.
     """
     source_xml = "<outer>\
           <inner1>one</inner1>\
@@ -26,8 +23,8 @@ def test_xml_to_dict1():
 
 def test_xml_to_dict2():
     """
-    should return dict of xml string
-    and if a tag is duplicated it takes the last one.
+    should return dict of xml string and if a tag is duplicated it takes the
+    last one.
     """
     source_xml = "<outer>\
                     <inner1>one-one</inner1>\
@@ -44,8 +41,8 @@ def test_xml_to_dict2():
 
 def test_xml_to_dict3():
     """
-    should return dict of xml string
-    with empty value if there are no inner elements
+    should return dict of xml string with empty value if there are no inner
+    elements.
     """
     source_xml = "<outer/>"
 
@@ -57,8 +54,8 @@ def test_xml_to_dict3():
 
 def test_xml_to_dict4():
     """
-    should return dict of xml string
-    with empty value if there are no inner elements
+    should return dict of xml string with empty value if there are no inner
+    elements.
     """
     source_xml = "<outer></outer>"
 
@@ -70,8 +67,7 @@ def test_xml_to_dict4():
 
 def test_xml_to_dict5():
     """
-    should return dict of xml string
-    with 2 layer nesting
+    should return dict of xml string with 2 layer nesting.
     """
     source_xml = "<outer>\
                     <mid1>\
@@ -90,8 +86,8 @@ def test_xml_to_dict5():
 
 def test_xml_to_dict6():
     """
-    should return dict of xml string
-    with 2 layer nesting and if a tag is duplicated it takes the last one.
+    should return dict of xml string with 2 layer nesting and if a tag is
+    duplicated it takes the last one.
     """
     source_xml = "<outer>\
                     <mid>\
@@ -110,28 +106,28 @@ def test_xml_to_dict6():
 
 def test_xml_to_dict7():
     """
-    should raise TypeError when passed None
+    should raise TypeError when passed None.
     """
     assert pytest.raises(TypeError, xml.xml_to_dict, None)
 
 
 def test_xml_to_dict8():
     """
-    should raise TypeError when passed non string
+    should raise TypeError when passed non string.
     """
     assert pytest.raises(TypeError, xml.xml_to_dict, 9)
 
 
 def test_xml_to_dict9():
     """
-    should raise ExpatError when passed empty string
+    should raise ExpatError when passed empty string.
     """
     assert pytest.raises(ExpatError, xml.xml_to_dict, "")
 
 
 def test_xml_to_dict10():
     """
-    should raise ExpatError when passed space
+    should raise ExpatError when passed space.
     """
     assert pytest.raises(ExpatError, xml.xml_to_dict, " ")
 
@@ -155,7 +151,7 @@ def test_get_node_text2():
 
 def test_get_node_text3():
     """
-    should return node text
+    should return node text.
     """
     node = parseString("<outer>one</outer>")
     text_node = node.childNodes[0]
@@ -165,21 +161,21 @@ def test_get_node_text3():
 
 def test_get_node_text4():
     """
-     should raise AttributeError when sent None
+    should raise AttributeError when sent None.
     """
     assert pytest.raises(AttributeError, xml.get_node_text, None)
 
 
 def test_get_node_text5():
     """
-     should raise AttributeError when sent wrong type
+    should raise AttributeError when sent wrong type.
     """
     assert pytest.raises(AttributeError, xml.get_node_text, "wrong type")
 
 
 def test_node_to_dict1():
     """
-    should return dict of node
+    should return dict of node.
     """
 
     doc = Document()
@@ -205,7 +201,7 @@ def test_node_to_dict1():
 
 def test_node_to_dict2():
     """
-    should return dict of node double nested
+    should return dict of node double nested.
     """
 
     doc = Document()
@@ -236,7 +232,7 @@ def test_node_to_dict2():
 
 def test_node_to_dict3():
     """
-    should return empty dict when sent empty doc
+    should return empty dict when sent empty doc.
     """
     expected_dict = {}
     xml_dict = xml.node_to_dict(Document())
@@ -246,22 +242,22 @@ def test_node_to_dict3():
 
 def test_node_to_dict4():
     """
-    should raise AttributeError when sent wrong type
+    should raise AttributeError when sent wrong type.
     """
     assert pytest.raises(AttributeError, xml.node_to_dict, 9)
 
 
 def test_node_to_dict5():
     """
-    should raise AttributeError when sent None
+    should raise AttributeError when sent None.
     """
     assert pytest.raises(AttributeError, xml.node_to_dict, None)
 
 
 def test_with_multiple_children_in_list():
     """
-    Setting the 'multiple' attribute of parent node should put child nodes
-    in a list.
+    Setting the 'multiple' attribute of parent node should put child nodes in a
+    list.
     """
     def getChild(lst_of_children, key, value):
         for child in lst_of_children:

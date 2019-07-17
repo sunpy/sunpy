@@ -1,43 +1,29 @@
-from __future__ import absolute_import, division, print_function
-
+import csv
+import copy
+import urllib
 import os.path
+import sqlite3
 import datetime
 from warnings import warn
-import copy
-import csv
-import sqlite3
 
 import numpy as np
-from astropy.io import fits
 import pandas
+
+from astropy.io import fits
+from astropy.time import Time
 
 from sunpy.time import parse_time
 from sunpy.util.net import check_download_file
 from sunpy.util.config import get_and_create_download_dir
-from sunpy.util.decorators import deprecated
-
-from sunpy.extern.six.moves import urllib
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
 
-__all__ = ['remove_lytaf_events_from_lightcurve',
-           'remove_lytaf_events_from_timeseries',
+__all__ = ['remove_lytaf_events_from_timeseries',
            'get_lytaf_events',
            'get_lytaf_event_types',
            'download_lytaf_database',
            'split_series_using_lytaf']
-
-
-@deprecated('v0.8',
-            message="""``remove_lytaf_events_from_lightcurve`` is deprecated as of SunPy v0.8 due to
-            the deprecation of ``LightCurve`` in favour of ``TimeSeries``. You should use
-            ``remove_lytaf_events_from_timeseries`` instead.""",
-            name="remove_lytaf_events_from_lightcurve",
-            alternative="remove_lytaf_events_from_timeseries"
-            )
-def remove_lytaf_events_from_lightcurve(lc, **kwargs):
-    return remove_lytaf_events_from_timeseries(lc, **kwargs)
 
 
 def remove_lytaf_events_from_timeseries(ts, artifacts=None,
@@ -157,7 +143,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
 
     Parameters
     ----------
-    time : `numpy.ndarray` of `datetime.datetime`
+    time : `numpy.ndarray` of `astropy.time.Time`
         Gives the times of the timeseries.
 
     channels : `list` of `numpy.array` convertible to float64.
@@ -204,7 +190,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
 
     Returns
     -------
-    clean_time : `numpy.ndarray` of `datetime.datetime`
+    clean_time : `numpy.ndarray` of `astropy.time.Time`
         time array with artifact periods removed.
 
     clean_channels : `list` ndarrays/array-likes convertible to float64
@@ -233,18 +219,18 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     Example
     -------
     Sample data for example
-        >>> from datetime import datetime, timedelta
+        >>> from sunpy.time import parse_time
         >>> from sunpy.instr.lyra import _remove_lytaf_events
 
-        >>> time = np.array([datetime(2013, 2, 1)+timedelta(minutes=i)
-        ...                 for i in range(120)])
+        >>> time = parse_time(np.arange('2005-02-01T00:00:00', '2005-02-01T02:00:00',
+        ...                   dtype='datetime64[m]'))
         >>> channel_1 = np.zeros(len(time))+0.4
         >>> channel_2 = np.zeros(len(time))+0.1
 
     Remove LARs (Large Angle Rotations) from time series.
 
         >>> time_clean, channels_clean = _remove_lytaf_events(
-        ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +REMOTE_DATA
+        ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +SKIP
 
     """
     # Check inputs
@@ -266,7 +252,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
             print(all_lytaf_event_types)
             raise ValueError("{0} is not a valid artifact type. See above.".format(artifact))
     # Define outputs
-    clean_time = np.array([parse_time(t) for t in time])
+    clean_time = parse_time(time)
     clean_channels = copy.deepcopy(channels)
     artifacts_not_found = []
     # Get LYTAF file for given time range
@@ -298,8 +284,8 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         bad_indices = np.empty(0, dtype="int64")
         all_indices = np.arange(len(time))
         for index in artifact_indices:
-            bad_period = np.logical_and(time >= lytaf["begin_time"][index],
-                                        time <= lytaf["end_time"][index])
+            bad_period = np.logical_and(time >= lytaf["begin_time"][index].datetime,
+                                        time <= lytaf["end_time"][index].datetime)
             bad_indices = np.append(bad_indices, all_indices[bad_period])
         clean_time = np.delete(clean_time, bad_indices)
         if channels:
@@ -314,7 +300,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
                            "not_found": artifacts_not_found}
     # Output FITS file if fits kwarg is set
     if fitsfile:
-        # Create time array of time strings rather than datetime objects
+        # Create time array of time strings rather than Time objects
         # and verify filecolumns have been correctly input.  If None,
         # generate generic filecolumns (see docstring of function called
         # below.
@@ -334,7 +320,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         tbhdulist.writeto(fitsfile)
     # Output csv file if csv kwarg is set.
     if csvfile:
-        # Create time array of time strings rather than datetime objects
+        # Create time array of time strings rather than Time objects
         # and verify filecolumns have been correctly input.  If None,
         # generate generic filecolumns (see docstring of function called
         # below.
@@ -378,10 +364,10 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
 
     Parameters
     ----------
-    start_time : `datetime.datetime` or `str`
+    start_time : `astropy.time.Time` or `str`
         Start time of period for which annotation file is required.
 
-    end_time : `datetime.datetime` or `str`
+    end_time : `astropy.time.Time` or `str`
         End time of period for which annotation file is required.
 
     lytaf_path : `str`
@@ -429,14 +415,14 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     --------
     Get all events in the LYTAF files for January 2014
         >>> from sunpy.instr.lyra import get_lytaf_events
-        >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')  # doctest: +REMOTE_DATA
+        >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')  # doctest: +SKIP
 
     """
     # Check inputs
     # Check lytaf path
     if not lytaf_path:
         lytaf_path = get_and_create_download_dir()
-    # Check start_time and end_time is a date string or datetime object
+    # Parse start_time and end_time
     start_time = parse_time(start_time)
     end_time = parse_time(end_time)
     # Check combine_files contains correct inputs
@@ -449,8 +435,8 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     combine_files.sort()
     # Convert input times to UNIX timestamp format since this is the
     # time format in the annotation files
-    start_time_uts = (start_time - datetime.datetime(1970, 1, 1)).total_seconds()
-    end_time_uts = (end_time - datetime.datetime(1970, 1, 1)).total_seconds()
+    start_time_uts = (start_time - Time('1970-1-1')).sec
+    end_time_uts = (end_time - Time('1970-1-1')).sec
 
     # Define numpy record array which will hold the information from
     # the annotation file.
@@ -515,10 +501,14 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
         for event_row in event_rows:
             id_index = eventType_id.index(event_row[4])
             lytaf = np.append(lytaf,
-                              np.array((datetime.datetime.utcfromtimestamp(event_row[0]),
-                                        datetime.datetime.utcfromtimestamp(event_row[1]),
-                                        datetime.datetime.utcfromtimestamp(event_row[2]),
-                                        datetime.datetime.utcfromtimestamp(event_row[3]),
+                              np.array((Time(datetime.datetime.utcfromtimestamp(event_row[0]),
+                                        format='datetime'),
+                                        Time(datetime.datetime.utcfromtimestamp(event_row[1]),
+                                        format='datetime'),
+                                        Time(datetime.datetime.utcfromtimestamp(event_row[2]),
+                                        format='datetime'),
+                                        Time(datetime.datetime.utcfromtimestamp(event_row[3]),
+                                        format='datetime'),
                                         eventType_type[id_index],
                                         eventType_definition[id_index]), dtype=lytaf.dtype))
         # Close file
@@ -630,10 +620,8 @@ def split_series_using_lytaf(timearray, data, lytaf):
     mask = np.ones(n)
     el = len(lytaf)
 
-    # make the input time array a list of datetime objects
-    datetime_array = []
-    for tim in timearray:
-        datetime_array.append(parse_time(tim))
+    # make the input time array a list of Time objects
+    time_array = [parse_time(tim) for tim in timearray]
 
     # scan through each entry retrieved from the LYTAF database
     for j in range(0, el):
@@ -642,8 +630,8 @@ def split_series_using_lytaf(timearray, data, lytaf):
         end_dt = lytaf['end_time'][j]
 
         # find the start and end indices for each event
-        start_ind = np.searchsorted(datetime_array, start_dt)
-        end_ind = np.searchsorted(datetime_array, end_dt)
+        start_ind = np.searchsorted(time_array, start_dt)
+        end_ind = np.searchsorted(time_array, end_dt)
 
         # append the mask to mark event as 'bad'
         mask[start_ind:end_ind] = 0
@@ -656,7 +644,7 @@ def split_series_using_lytaf(timearray, data, lytaf):
     if len(disc) == 0:
         print('No events found within time series interval. '
               'Returning original series.')
-        return [{'subtimes': datetime_array, 'subdata': data}]
+        return [{'subtimes': time_array, 'subdata': data}]
 
     # -1 in diffmask means went from good data to bad
     # +1 means went from bad data to good
@@ -676,12 +664,12 @@ def split_series_using_lytaf(timearray, data, lytaf):
 
         if h == limit-1:
             # can't index h+1 here. Go to end of series
-            subtimes = datetime_array[disc[h]:-1]
+            subtimes = time_array[disc[h]:-1]
             subdata = data[disc[h]:-1]
             subseries = {'subtimes': subtimes, 'subdata': subdata}
             split_series.append(subseries)
         else:
-            subtimes = datetime_array[disc[h]:disc[h+1]]
+            subtimes = time_array[disc[h]:disc[h+1]]
             subdata = data[disc[h]:disc[h+1]]
             subseries = {'subtimes': subtimes, 'subdata': subdata}
             split_series.append(subseries)
@@ -728,7 +716,7 @@ def _prep_columns(time, channels=None, filecolumns=None):
     Checks and prepares data to be written out to a file.
 
     Firstly, this function converts the elements of time, whose entries are
-    assumed to be datetime objects, to time strings.  Secondly, it checks
+    assumed to be `astropy.time.Time` or `np.ndarray` objects, to time strings.  Secondly, it checks
     whether the number of elements in an input list of column names,
     filecolumns, is equal to the number of arrays in the list, channels.
     If not, a ValueError is raised.  If however filecolumns equals None, a
@@ -737,8 +725,11 @@ def _prep_columns(time, channels=None, filecolumns=None):
     (assuming 0-indexed counting).
 
     """
-    # Convert time which contains datetime objects to time strings.
-    string_time = np.array([t.strftime("%Y-%m-%dT%H:%M:%S.%f") for t in time])
+    # Convert np.array or Time objects to time strings.
+    time = parse_time(time)
+    time.precision = 9
+    string_time = np.array(time.isot)
+
     # If filenames is given...
     if filecolumns:
         # ...check all the elements are strings...

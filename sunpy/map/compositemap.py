@@ -2,20 +2,17 @@
 
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
-from __future__ import absolute_import, print_function, division
-
 import numpy as np
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.visualization import axis_labels_from_ctype
+from sunpy.visualization import axis_labels_from_ctype, peek_show
 
 from sunpy.util import expand_list
-from sunpy.extern import six
-from sunpy.extern.six.moves import range
 
 __all__ = ['CompositeMap']
 
@@ -335,8 +332,8 @@ class CompositeMap(object):
 
         return self._maps[index].draw_limb(axes=axes, **kwargs)
 
-    @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg, **kwargs):
+    @u.quantity_input
+    def draw_grid(self, index=None, axes=None, grid_spacing: u.deg=20*u.deg, **kwargs):
         """Draws a grid over the surface of the Sun.
 
         Parameters
@@ -458,9 +455,13 @@ class CompositeMap(object):
         plt.sci(ret[0])
         return ret
 
+    @peek_show
     def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
              draw_grid=False, **matplot_args):
-        """Displays the map in a new figure.
+        """
+        Displays a graphical overview of the data in this object for user evaluation.
+        For the creation of plots, users should instead use the `~sunpy.map.CompositeMap.plot`
+        method and Matplotlib's pyplot framework.
 
         Parameters
         ----------
@@ -508,12 +509,12 @@ class CompositeMap(object):
             if draw_grid:
                 self.draw_grid(axes=axes)
 
-        elif isinstance(draw_grid, six.integer_types + (float,)):
+        elif isinstance(draw_grid, (int, float)):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
 
-        figure.show()
+        return figure
 
 
 class OutOfRangeAlphaValue(ValueError):

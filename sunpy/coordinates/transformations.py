@@ -13,19 +13,19 @@ This module contains the functions for converting one
   `~astropy.coordinates.SkyCoord` instances.
 
 """
-from __future__ import division, absolute_import
+from copy import deepcopy
 
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import HCRS, ConvertError, BaseCoordinateFrame, get_body_barycentric
+from astropy.coordinates import ICRS, HCRS, ConvertError, BaseCoordinateFrame, get_body_barycentric
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
                                                 UnitSphericalRepresentation)
 from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
 from astropy.coordinates.matrix_utilities import matrix_product, rotation_matrix, matrix_transpose
 
-from sunpy.sun import sun
+from sunpy.sun import constants
 
 from .frames import Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst
 
@@ -36,12 +36,13 @@ except ImportError:
     make_transform_graph_docs = lambda: _make_transform_graph_docs(frame_transform_graph)
 
 
-RSUN_METERS = sun.constants.get('radius').si.to(u.m)
+RSUN_METERS = constants.get('radius').si.to(u.m)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
            'hpc_to_hpc',
-           'hcrs_to_hgs', 'hgs_to_hcrs', 'hcc_to_hcc']
+           'hcrs_to_hgs', 'hgs_to_hcrs',
+           'hgs_to_hgs', 'hgc_to_hgc', 'hcc_to_hcc']
 
 
 def _carrington_offset(obstime):
@@ -53,8 +54,8 @@ def _carrington_offset(obstime):
                          " Frame needs a obstime Attribute")
 
     # Import here to avoid a circular import
-    from .ephemeris import get_sun_L0
-    return get_sun_L0(obstime)
+    from .sun import L0
+    return L0(obstime)
 
 
 def _observers_are_equal(obs_1, obs_2, string_ok=False):
@@ -353,10 +354,25 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
 
 @frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, HeliographicStonyhurst)
 def hgs_to_hgs(from_coo, to_frame):
+    """
+    Convert between two Heliographic Stonyhurst frames.
+    """
     if np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HCRS).transform_to(to_frame)
+
+
+@frame_transform_graph.transform(FunctionTransform, HeliographicCarrington, HeliographicCarrington)
+def hgc_to_hgc(from_coo, to_frame):
+    """
+    Convert between two Heliographic Carrington frames.
+    """
+    if np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
+    else:
+        return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
+               transform_to(HeliographicStonyhurst(obstime=to_frame.obstime)).transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransform, Heliocentric, Heliocentric)
@@ -373,4 +389,113 @@ def hcc_to_hcc(hcccoord, hccframe):
 
     return hcccoord
 
-__doc__ += make_transform_graph_docs()
+
+def _make_sunpy_graph():
+    """
+    Culls down the full transformation graph for SunPy purposes and returns the string version
+    """
+    # Frames to keep in the transformation graph
+    keep_list = ['icrs', 'hcrs', 'heliocentrictrueecliptic', 'heliocentricmeanecliptic',
+                 'heliographic_stonyhurst', 'heliographic_carrington',
+                 'heliocentric', 'helioprojective',
+                 'gcrs', 'precessedgeocentric', 'geocentrictrueecliptic', 'geocentricmeanecliptic',
+                 'cirs', 'altaz', 'itrs']
+
+    global frame_transform_graph
+    backup_graph = deepcopy(frame_transform_graph)
+
+    small_graph = deepcopy(frame_transform_graph)
+    cull_list = [name for name in small_graph.get_names() if name not in keep_list]
+    cull_frames = [small_graph.lookup_name(name) for name in cull_list]
+
+    for frame in cull_frames:
+        # Remove the part of the graph where the unwanted frame is the source frame
+        if frame in small_graph._graph:
+            del small_graph._graph[frame]
+
+        # Remove all instances of the unwanted frame as the destination frame
+        for entry in small_graph._graph:
+            if frame in small_graph._graph[entry]:
+                del (small_graph._graph[entry])[frame]
+
+    # Clean up the node list
+    for name in cull_list:
+        small_graph._cached_names.pop(name)
+
+    _add_astropy_node(small_graph)
+
+    # Overwrite the main transform graph
+    frame_transform_graph = small_graph
+
+    docstr = make_transform_graph_docs()
+
+    # Restore the main transform graph
+    frame_transform_graph = backup_graph
+
+    # Make adjustments to the graph
+    docstr = _tweak_graph(docstr)
+
+    return docstr
+
+
+def _add_astropy_node(graph):
+    """
+    Add an 'Astropy' node that links to an ICRS node in the graph
+    """
+    class Astropy(BaseCoordinateFrame):
+        name = "REPLACE"
+
+    @graph.transform(FunctionTransform, Astropy, ICRS)
+    def fake_transform1():
+        pass
+
+    @graph.transform(FunctionTransform, ICRS, Astropy)
+    def fake_transform2():
+        pass
+
+
+def _tweak_graph(docstr):
+    # Remove Astropy's diagram description
+    output = docstr[docstr.find('.. Wrap the graph'):]
+
+    # Change the Astropy node
+    output = output.replace('Astropy [shape=oval label="Astropy\\n`REPLACE`"]',
+                            'Astropy [shape=box3d style=filled fillcolor=lightcyan '
+                            'label="Other frames\\nin Astropy"]')
+
+    # Change the Astropy<->ICRS links to black
+    output = output.replace('ICRS -> Astropy[  color = "#783001" ]',
+                            'ICRS -> Astropy[  color = "#000000" ]')
+    output = output.replace('Astropy -> ICRS[  color = "#783001" ]',
+                            'Astropy -> ICRS[  color = "#000000" ]')
+
+    # Set the nodes to be filled and cyan by default
+    output = output.replace('AstropyCoordinateTransformGraph {',
+                            'AstropyCoordinateTransformGraph {\n'
+                            '        node [style=filled fillcolor=lightcyan]')
+
+    # Set the nodes for SunPy frames to be white
+    sunpy_frames = ['HeliographicStonyhurst', 'HeliographicCarrington',
+                    'Heliocentric', 'Helioprojective']
+    for frame in sunpy_frames:
+        output = output.replace(frame + ' [', frame + ' [fillcolor=white ')
+
+    output = output.replace('<ul>\n\n',
+                            '<ul>\n\n' +
+                            _add_legend_row('SunPy frames', 'white') +
+                            _add_legend_row('Astropy frames', 'lightcyan'))
+
+    return output
+
+
+def _add_legend_row(label, color):
+    row = '        <li style="list-style: none;">\n'\
+          '            <p style="font-size: 12px;line-height: 24px;font-weight: normal;'\
+          'color: #848484;padding: 0;margin: 0;">\n'\
+          '                <b>' + label + ':</b>\n'\
+          '                    <span class="dot" style="height: 20px;width: 40px;'\
+          'background-color: ' + color + ';border-radius: 50%;border: 1px solid black;'\
+          'display: inline-block;"></span>\n'\
+          '            </p>\n'\
+          '        </li>\n\n\n'
+    return row

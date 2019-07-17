@@ -1,1 +1,0 @@
-Add contribution guidelines for the sunpy example gallery.

@@ -1,16 +1,9 @@
 """
-Fundamental Solar Physical Constants
-------------------------------------
-These constants are taken from various sources. The structure of this module is heavily
-based on if not directly copied from the SciPy constants module but contains Solar
-Physical constants.
+This module provides fundamental solar physical constants.
 """
-
-from __future__ import absolute_import, division, print_function
 from astropy.table import Table
-from sunpy.extern.six import iteritems
 
-from sunpy.sun import _constants as _con  # pylint: disable=E0611
+from sunpy.sun import _constants as _con
 
 __all__ = [
     'get', 'find', 'print_all', 'spectral_classification', 'au', 'mass', 'equatorial_radius',
@@ -28,71 +21,65 @@ def get(key):
 
     Parameters
     ----------
-    key : Python string or unicode
-        Key in dictionary in `constants`
+    key : `str`
+        Key in dictionary in ``constants``.
 
     Returns
     -------
-    constant :  `~astropy.units.Constant`
+    constant : `~astropy.units.Constant`
 
     See Also
     --------
-    _constants : Contains the description of `constants`, which, as a
-        dictionary literal object, does not itself possess a docstring.
+    `sunpy.sun.constants`
+        Contains the description of ``constants``, which, as a dictionary literal object, does not itself possess a docstring.
 
     Examples
     --------
     >>> from sunpy.sun import constants
     >>> constants.get('mass')
-    <<class 'astropy.constants.iau2012.IAU2012'> name='Solar mass' value=1.9891e+30 uncertainty=5e+25 unit='kg' reference="Allen's Astrophysical Quantities 4th Ed.">
+    <<class 'astropy.constants.iau2015.IAU2015'> name='Solar mass' value=1.9884754153381438e+30 uncertainty=9.236140093538353e+25 unit='kg' reference='IAU 2015 Resolution B 3 + CODATA 2014'>
     """
     return constants[key]
 
 
 def find(sub=None):
     """
-    Return list of constants keys containing a given string
+    Return list of constants keys containing a given string.
 
     Parameters
     ----------
-    sub : str, unicode
-        Sub-string to search keys for.  By default, return all keys.
+    sub : `str`, optional
+        Sub-string to search keys for. By default set to `None` and returns all keys.
 
     Returns
     -------
-    keys : None or list
+    `None`, `list`
+        The matching keys.
 
     See Also
     --------
-    _constants : Contains the description of `constants`, which, as a
-        dictionary literal object, does not itself possess a docstring.
-
+    `sunpy.sun.constants`
+        Contains the description of ``constants``, which, as a dictionary literal object, does not itself possess a docstring.
     """
     if sub is None:
         result = list(constants.keys())
     else:
-        result = [key for key in constants \
-                 if sub.lower() in key.lower()]
+        result = [key for key in constants if sub.lower() in key.lower()]
 
     result.sort()
     return result
 
 
-def print_all(key=None):
+def print_all():
     """
     Provides a table of the complete list of constants.
 
-    Parameters
-    ----------
-    key : Python string or unicode
-        Key in dictionary `constants`
-
     Returns
     -------
-    table : `astropy.table.Table`
+    `astropy.table.Table`
     """
     data_rows = []
-    for key, this_constant in iteritems(constants):
+    for key, this_constant in constants.items():
         data_rows.append([
             key, this_constant.name, this_constant.value, this_constant.uncertainty,
             str(this_constant.unit), this_constant.reference
@@ -102,11 +89,23 @@ def print_all(key=None):
     return t
 
 
+# Add a list of constants to the docs
+_lines = [
+    'The following constants are available:\n',
+    '====================== ============== ================ =================================',
+    '         Name              Value            Unit                 Description',
+    '====================== ============== ================ =================================',
+]
+for key, const in constants.items():
+    _lines.append('{0:^22} {1:^14.9g} {2:^16} {3}'.format(
+        key, const.value, const._unit_string, const.name))
+_lines.append(_lines[1])
+if __doc__ is not None:
+    __doc__ += '\n'.join(_lines)
+
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
-
 au = astronomical_unit = get('mean distance')
-
 # The following variables from _gets are brought out by making them
 # accessible through a call such as sun.volume
 mass = get('mass')
@@ -119,8 +118,6 @@ effective_temperature = get('effective temperature')
 luminosity = get('luminosity')
 mass_conversion_rate = get('mass conversion rate')
 escape_velocity = get('escape velocity')
-
 sfu = get('solar flux unit')
-
 # Observable parameters
 average_angular_size = get('average angular size')

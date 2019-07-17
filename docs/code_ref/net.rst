@@ -17,6 +17,7 @@ Fido ~`sunpy.net.fido_factory.UnifiedDownloaderFactory` can be used like so::
 
 .. automodapi:: sunpy.net.fido_factory
 
+
 Dataretriever
 -------------
 
@@ -65,3 +66,15 @@ HELIO
 
 .. automodapi:: sunpy.net.helio.hec
     :headings: #~
+
+Helioviewer
+-----------
+
+.. automodapi:: sunpy.net.helioviewer
+    :headings: ^#
+
+Attr
+----
+
+.. automodapi:: sunpy.net.attr
+   :no-heading:

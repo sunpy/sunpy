@@ -1,12 +1,11 @@
-from __future__ import absolute_import
+import urllib
 
+from unittest import mock
 import pytest
-import mock
 
-from sunpy.net.helio import hec
-from sunpy.net.helio.parser import (endpoint_parser, link_test, taverna_parser, webservice_parser,
-                                    wsdl_retriever)
-from sunpy.extern.six.moves import urllib
+from sunpy.net.helio.parser import (link_test, taverna_parser, wsdl_retriever,
+                                    endpoint_parser, webservice_parser)
+from sunpy.net.helio.hec import HECClient
 
 
 def wsdl_endpoints():
@@ -63,30 +62,6 @@ def hec_urls():
     '''
 
 
-def test_suds_unwrapper():
-    suds_output = """<?xml version="1.0" encoding="UTF-8"?>
-    <S:Envelope ..... >
-       <S:Body>
-          <helio:queryResponse ... >
-             <VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
-                <RESOURCE>
-                ...
-                </RESOURCE>
-             </VOTABLE>
-          </helio:queryResponse>
-       </S:Body>
-    </S:Envelope>
-    """
-    expected_output = """<?xml version="1.0" encoding="UTF-8"?>
-<VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
-                <RESOURCE>
-                ...
-                </RESOURCE>
-             </VOTABLE>
-"""
-    assert hec.suds_unwrapper(suds_output) == expected_output
-
-
 @pytest.mark.remote_data
 def test_webservice_parser():
     result = webservice_parser()
@@ -112,8 +87,6 @@ def wsdl_urls():
             'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService?wsdl',
             'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_1?wsdl',
             'http://helio.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0b?wsdl')
-
-# Test `sunpy.net.helio.parser.webservice_parser(...)`
 
 
 @mock.patch('sunpy.net.helio.parser.link_test', return_value=None)
@@ -142,8 +115,6 @@ def test_webservice_parser_get_links(mock_link_test):
     assert 'http://helio.uk/hec/HelioLongQueryService' in hec_links
     assert 'http://hec.eu/helio_hec/HelioLongQueryService' in hec_links
 
-# Test `sunpy.net.helio.parser.endpoint_parser(...)`
-
 
 @mock.patch('sunpy.net.helio.parser.link_test', return_value=None)
 def test_endpoint_parser_no_content(mock_link_test):
@@ -166,8 +137,6 @@ def test_endpoint_parser_get_links(mock_link_test):
     assert 'http://helio.org/hec/HS1_0b?wsdl' in endpoints
     assert 'http://helio.org/hec/HLQS?wsdl' in endpoints
     assert 'http://helio.org/hec/HLQS1_0?wsdl' in endpoints
-
-# `sunpy.net.helio.parser.taverna_parser(...)`
 
 
 @mock.patch('sunpy.net.helio.parser.endpoint_parser', return_value=None)
@@ -197,15 +166,14 @@ def test_taverna_parser_get_taverna_links(mock_endpoint_parser):
     assert 'http://www.helio.uk/Taverna/hec?wsdl' in taverna_links
     assert 'http://www.abc.ord/HelioTavernaService?wsdl' in taverna_links
 
-# Test `sunpy.net.helio.parser.wsdl_retriever(...)`
-
 
 @mock.patch('sunpy.net.helio.parser.webservice_parser', return_value=None)
 def test_wsdl_retriever_no_content(mock_endpoint_parser):
     """
-    No links found? Return None
+    No links found? Raise ValueError
     """
-    assert wsdl_retriever() is None
+    with pytest.raises(ValueError):
+        wsdl_retriever()
 
 
 @mock.patch('sunpy.net.helio.parser.webservice_parser', return_value=wsdl_urls())
@@ -222,11 +190,21 @@ def test_wsdl_retriever_get_link(mock_link_test, mock_taverna_parser, mock_webse
 @mock.patch('sunpy.net.helio.parser.taverna_parser', return_value=None)
 def test_wsdl_retriever_no_taverna_urls(mock_taverna_parser, mock_webservice_parser):
     """
-    Unable to find any valid Taverna URLs? Return None
+    Unable to find any valid Taverna URLs? Raise ValueError
     """
-    assert wsdl_retriever() is None
+    with pytest.raises(ValueError):
+        wsdl_retriever()
 
-# Test `sunpy.net.helio.parser.link_test(...)`
+
+@mock.patch('sunpy.net.helio.parser.link_test', return_value=None)
+@mock.patch('sunpy.net.helio.parser.webservice_parser', return_value=wsdl_urls())
+@mock.patch('sunpy.net.helio.parser.taverna_parser', return_value=some_taverna_urls())
+def test_wsdl_retriever_wsdl(mock_taverna_parser, mock_webservice_parser, mock_link_test):
+    """
+    Unable to find any valid Taverna URLs? Raise ValueError
+    """
+    with pytest.raises(ValueError):
+        wsdl_retriever()
 
 
 @mock.patch('sunpy.net.helio.parser.urllib.request.urlopen')
@@ -274,3 +252,38 @@ def test_link_test_on_urlerror(mock_link_test):
     returns `None`
     """
     link_test('') is None
+
+
+@pytest.mark.remote_data
+@pytest.fixture
+def client():
+    link = 'http://helio.mssl.ucl.ac.uk:80/helio_hec/HelioTavernaService?wsdl'
+    return HECClient(link)
+
+
+@pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
+def test_get_table_names(client):
+    tables = client.get_table_names()
+    assert len(tables) == 126
+    table = tables[0][0]
+    assert isinstance(table, bytes)
+    assert table == b'timed_see_flare'
+
+
+@pytest.mark.remote_data
+def test_select_table(client, monkeypatch):
+    monkeypatch.setattr('builtins.input', lambda x: "11")
+    assert isinstance(client.select_table(), bytes)
+    monkeypatch.setattr('builtins.input', lambda x: "e")
+    assert client.select_table() is None
+
+
+@pytest.mark.remote_data
+@pytest.mark.flaky(reruns=5)
+def test_time_query(client):
+    start = '2005/01/03'
+    end = '2005/12/03'
+    table_name = b'rhessi_hxr_flare'
+    res = client.time_query(start, end, table=table_name, max_records=10)
+    assert len(res.array) == 10

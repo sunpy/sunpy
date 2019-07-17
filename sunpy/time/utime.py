@@ -1,17 +1,18 @@
-from __future__ import absolute_import
-
-from astropy.time.formats import erfa, TimeFromEpoch
+"""
+This module provies "UTime" support.
+"""
+from astropy.time.formats import TimeFromEpoch, erfa
 
 __all__ = ['TimeUTime']
 
 
 class TimeUTime(TimeFromEpoch):
     """
-    Seconds from 1979-01-01 00:00:00 UTC. Same as Unix time
-    but this starts 9 years later.
+    Seconds from 1979-01-01 00:00:00 UTC.
 
-    This time format is included for historical reasons. Some
-    people in solar physics prefer using this epoch.
+    Same as Unix time but this starts 9 years later.
+    This time format is included for historical reasons.
+    Some people in solar physics prefer using this epoch.
 
     Examples
     --------

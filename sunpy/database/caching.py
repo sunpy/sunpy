@@ -3,18 +3,14 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-from __future__ import absolute_import
-
 from abc import ABCMeta, abstractmethod, abstractproperty
-from collections import MutableMapping, OrderedDict, Counter
-
-from sunpy.extern import six
+from collections import OrderedDict, Counter
+from collections.abc import MutableMapping
 
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 
 
-@six.add_metaclass(ABCMeta)
-class BaseCache(object):
+class BaseCache(object, metaclass=ABCMeta):
     """
     BaseCache is a class that saves and operates on an OrderedDict. It has a
     certain capacity, stored in the attribute `maxsize`. Whether this
@@ -126,7 +122,7 @@ class BaseCache(object):
             yield value
 
     def iteritems(self):  # pragma: no cover
-        for key, value in six.iteritems(self._dict):
+        for key, value in self._dict.items():
             yield key, value
 
     def update(self, *args, **kwds):  # pragma: no cover
@@ -180,7 +176,7 @@ class LRUCache(BaseCache):
         tuple.
 
         """
-        return six.next(self.iteritems())
+        return next(self.iteritems())
 
     def remove(self):
         """Remove the least recently used item."""
@@ -233,7 +229,7 @@ class LFUCache(BaseCache):
         """
         min_ = float('inf')
         lfu_key = None
-        for k, v in six.iteritems(self.usage_counter):
+        for k, v in self.usage_counter.items():
             if v < min_:
                 min_ = v
                 lfu_key = k

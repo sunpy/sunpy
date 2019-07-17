@@ -1,5 +1,4 @@
 """TRACE Map subclass definitions"""
-from __future__ import absolute_import, division, absolute_import
 #pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Jack Ireland"
@@ -49,6 +48,9 @@ class TRACEMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
+        # Assume pixel units are arcesc if not given
+        header['cunit1'] = header.get('cunit1', 'arcsec')
+        header['cunit2'] = header.get('cunit2', 'arcsec')
 
         GenericMap.__init__(self, data, header, **kwargs)
 

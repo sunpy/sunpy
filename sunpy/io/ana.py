@@ -1,31 +1,22 @@
 """
-ANA File Reader
+This module provides an ANA file Reader.
+
+This is a modified version of `pyana <https://github.com/tvwerkhoven/pyana>`__.
 
 .. warning::
-    The reading and writing of ana file is not supported under Windows.
-    The C extensions are not built on Windows.
 
-Notes
------
-ANA is a script that allows people to access compressed ana files.
-It accesses a C library, based on Michiel van Noort's
-IDL DLM library 'f0' which contains a cleaned up version of the original
-anarw routines.
-
-Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
-Copyright (c) 2009--2011 Tim van Werkhoven.
+    The reading and writing of ana files is not supported under Windows.
 """
-from __future__ import absolute_import, division, print_function
-
 import os
 import collections
 
+from sunpy.io.header import FileHeader
+
 try:
     from sunpy.io import _pyana
-except ImportError:  # pragma: no cover
-    _pyana = None  # pragma: no cover
+except ImportError:
+    _pyana = None
 
-from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
 
@@ -41,7 +32,7 @@ def read(filename, debug=False, **kwargs):
     ----------
     filename : `str`
         Name of file to be read.
-    debug : `bool` (optional)
+    debug : `bool`, optional
         Prints verbose debug information.
 
     Returns
@@ -51,14 +42,13 @@ def read(filename, debug=False, **kwargs):
 
     Examples
     --------
-    >>> data = sunpy.io.ana.read(filename)   # doctest: +SKIP
-
+    >>> data = sunpy.io.ana.read(filename)  # doctest: +SKIP
     """
     if not os.path.isfile(filename):
         raise IOError("File does not exist!")
 
     if _pyana is None:
-        raise ImportError("C extension for ANA is missing, please rebuild") # pragma: no cover
+        raise ImportError("C extension for ANA is missing, please rebuild.")
 
     data = _pyana.fzread(filename, debug)
     return [HDPair(data['data'], FileHeader(data['header']))]
@@ -74,7 +64,7 @@ def get_header(filename, debug=False):
     ----------
     filename : `str`
         Name of file to be read.
-    debug : `bool` (optional)
+    debug : `bool`, optional
         Prints verbose debug information.
 
     Returns
@@ -84,31 +74,32 @@ def get_header(filename, debug=False):
 
     Examples
     --------
-    >>> header = sunpy.io.ana.get_header(filename)   # doctest: +SKIP
+    >>> header = sunpy.io.ana.get_header(filename)  # doctest: +SKIP
     """
     if _pyana is None:
-        raise ImportError("C extension for ANA is missing, please rebuild")# pragma: no cover
+        raise ImportError("C extension for ANA is missing, please rebuild")
 
     data = _pyana.fzread(filename, debug)
     return [FileHeader(data['header'])]
 
-def write(filename, data, comments=False, compress=1, debug=False):
+
+def write(filename, data, comments=False, compress=True, debug=False):
     """
-    Saves a 2D numpy array as an ANA file and returns the bytes written or NULL
+    Saves a 2D `numpy.array` as an ANA file and returns the bytes written or
+    ``NULL``.
 
     Parameters
     ----------
     filename : `str`
         Name of file to be created.
     data : `numpy.ndarray`
-        Name of data to be stored.
+        The data to be stored.
     comments : `~sunpy.io.header.FileHeader`, optional
         The comments to be stored as a header.
-    compress : `int`, optional
-        To compress the data or not.
-        1 is to compress, 0 is uncompressed
+    compress : `bool`, optional
+        Compress the data with `True` (the default).
     debug : `bool`, optional
-        Prints verbose debug information.
+        Prints verbose debug information, defaults to `False`.
 
     Returns
     -------
@@ -117,12 +108,12 @@ def write(filename, data, comments=False, compress=1, debug=False):
 
     Examples
     --------
-    >>> written = sunpy.io.ana.write(filename, data, comments=Falsem, compress=1)   # doctest: +SKIP
+    >>> written = sunpy.io.ana.write(filename, data, comments=False, compress=True)  # doctest: +SKIP
     """
     if _pyana is None:
-        raise ImportError("C extension for ANA is missing, please rebuild")# pragma: no cover
+        raise ImportError("C extension for ANA is missing, please rebuild")
 
     if comments:
-        return _pyana.fzwrite(filename, data, compress, comments, debug)
+        return _pyana.fzwrite(filename, data, int(compress), comments, debug)
     else:
-        return _pyana.fzwrite(filename, data, compress, '', debug)
+        return _pyana.fzwrite(filename, data, int(compress), '', debug)

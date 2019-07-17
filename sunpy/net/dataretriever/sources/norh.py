@@ -2,7 +2,8 @@
 #  This Module was developed under funding provided by
 #  Google Summer of Code 2014
 
-import datetime
+
+from astropy.time import TimeDelta
 import astropy.units as u
 
 from sunpy.time import TimeRange
@@ -17,7 +18,35 @@ BASEURL = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 
 
 class NoRHClient(GenericClient):
+    """
+    Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation
+    time series data from the
+    `ftp archive <ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/>`__
+    as hosted by the
+    `NoRH Science Center <https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html>`__.
 
+    Queries to NoRH should specify either 17GHz or 34GHz as a Wavelength.
+
+    Examples
+    --------
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+    ...                       a.Instrument('NoRH'), a.Wavelength(17*u.GHz))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the NoRHClient:
+         Start Time           End Time      Source Instrument   Wavelength
+           str19               str19         str4     str4        str14
+    ------------------- ------------------- ------ ---------- --------------
+    2016-01-01 00:00:00 2016-01-02 00:00:00   NAOJ       NORH 17000000.0 kHz
+    2016-01-02 00:00:00 2016-01-03 00:00:00   NAOJ       NORH 17000000.0 kHz
+    <BLANKLINE>
+    <BLANKLINE>
+
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns list of URLS corresponding to value of input timerange.
@@ -37,7 +66,7 @@ class NoRHClient(GenericClient):
         # does not get passed to VSO and spit out garbage.
         if 'wavelength' not in kwargs.keys() or not kwargs['wavelength']:
             raise ValueError("Queries to NORH should specify either 17GHz or 34GHz as a Wavelength."
-                             "see http://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
+                             "see https://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
         else:
             wavelength = kwargs['wavelength']
 
@@ -53,13 +82,13 @@ class NoRHClient(GenericClient):
             freq = 'tca'
         else:
             raise ValueError("NORH Data can be downloaded for 17GHz or 34GHz,"
-                             " see http://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
+                             " see https://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
 
         # If start of time range is before 00:00, converted to such, so
         # files of the requested time ranger are included.
         # This is done because the archive contains daily files.
-        if timerange.start.time() != datetime.time(0, 0):
-            timerange = TimeRange('{:%Y-%m-%d}'.format(timerange.start),
+        if timerange.start.strftime('%M-%S') != '00-00':
+            timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'),
                                   timerange.end)
 
         norh = Scraper(BASEURL, freq=freq)
@@ -76,7 +105,7 @@ class NoRHClient(GenericClient):
         for url in urls:
             t0 = crawler._extractDateURL(url)
             # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + datetime.timedelta(days=1)))
+            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
         return times
 
     def _makeimap(self):

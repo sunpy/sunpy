@@ -11,6 +11,7 @@ import tempfile
 import pytest
 import numpy as np
 from astropy.io import fits
+from astropy.wcs import WCS
 
 import sunpy
 import sunpy.map
@@ -24,15 +25,11 @@ a_fname = a_list_of_many[0]
 AIA_171_IMAGE = os.path.join(filepath, 'aia_171_level1.fits')
 RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
 
+
 #==============================================================================
 # Map Factory Tests
 #==============================================================================
 class TestMap(object):
-    def test_mapcube(self):
-        #Test making a MapCube
-        cube = sunpy.map.Map(a_list_of_many, cube=True)
-        assert isinstance(cube, sunpy.map.MapCube)
-    
     def test_mapsequence(self):
         #Test making a MapSequence
         sequence = sunpy.map.Map(a_list_of_many, sequence=True)
@@ -45,42 +42,63 @@ class TestMap(object):
         assert isinstance(comp, sunpy.map.CompositeMap)
 
     def test_patterns(self):
-        ## Test different Map pattern matching ##
+        # Test different Map pattern matching
+
         # File name
         eitmap = sunpy.map.Map(a_fname)
         assert isinstance(eitmap, sunpy.map.GenericMap)
+
         # Directory
         maps = sunpy.map.Map(os.path.join(filepath, "EIT"))
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+
         # Glob
         maps = sunpy.map.Map(os.path.join(filepath, "EIT", "*"))
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+
         # Already a Map
         amap = sunpy.map.Map(maps[0])
         assert isinstance(amap, sunpy.map.GenericMap)
+
         # A list of filenames
         maps = sunpy.map.Map(a_list_of_many)
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+
         # Data-header pair in a tuple
         pair_map = sunpy.map.Map((amap.data, amap.meta))
         assert isinstance(pair_map, sunpy.map.GenericMap)
+
         # Data-header pair not in a tuple
         pair_map = sunpy.map.Map(amap.data, amap.meta)
         assert isinstance(pair_map, sunpy.map.GenericMap)
+
+        # Data-wcs object pair in tuple
+        pair_map = sunpy.map.Map((amap.data, WCS(AIA_171_IMAGE)))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+
+        # Data-wcs object pair not in a tuple
+        pair_map = sunpy.map.Map(amap.data, WCS(AIA_171_IMAGE))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+
         # Data-header from FITS
         with fits.open(a_fname) as hdul:
             data = hdul[0].data
             header = hdul[0].header
         pair_map = sunpy.map.Map((data, header))
         assert isinstance(pair_map, sunpy.map.GenericMap)
+        pair_map, pair_map = sunpy.map.Map(((data, header), (data, header)))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
-        #Custom Map
-        data = np.arange(0,100).reshape(10,10)
-        header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
+
+        # Custom Map
+        data = np.arange(0, 100).reshape(10, 10)
+        header = {'cdelt1': 10, 'cdelt2': 10,
+                  'telescop': 'sunpy',
+                  'cunit1': 'arcsec', 'cunit2': 'arcsec'}
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
@@ -112,7 +130,7 @@ class TestMap(object):
         #Test save out
         eitmap = sunpy.map.Map(a_fname)
         afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-        eitmap.save(afilename, filetype='fits', clobber=True)
+        eitmap.save(afilename, filetype='fits', overwrite=True)
         backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)
 

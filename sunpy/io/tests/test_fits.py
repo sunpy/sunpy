@@ -1,11 +1,16 @@
-import sunpy.io.fits
-from sunpy.io.fits import get_header, extract_waveunit
+import os
+from collections import OrderedDict
+
+import pytest
+
+import astropy.io.fits as fits
+from astropy.utils.exceptions import AstropyUserWarning
 
 import sunpy.data.test
-import os
-
+import sunpy.io.fits
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
-from sunpy.extern.six.moves import range
+from sunpy.io.fits import extract_waveunit, get_header
+from sunpy.util import MetaDict
 
 testpath = sunpy.data.test.rootdir
 
@@ -55,19 +60,22 @@ def test_extract_waveunit_from_waveunit_key():
 
 def test_extract_waveunit_minus9():
     # value of WAVEUNIT is -9
-    waveunit = extract_waveunit(get_header(MEDN_IMAGE)[0])
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        waveunit = extract_waveunit(get_header(MEDN_IMAGE)[0])
     assert waveunit == 'nm'
 
 
 def test_extract_waveunit_minus10():
     # value of WAVEUNIT is -10
-    waveunit = extract_waveunit(get_header(MQ_IMAGE)[0])
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        waveunit = extract_waveunit(get_header(MQ_IMAGE)[0])
     assert waveunit == 'angstrom'
 
 
 def test_extract_waveunit_waveunitcomment():
     # comment of WAVEUNIT is: "in meters"
-    waveunit = extract_waveunit(get_header(NA_IMAGE)[0])
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        waveunit = extract_waveunit(get_header(NA_IMAGE)[0])
     assert waveunit == 'm'
 
 
@@ -79,7 +87,8 @@ def test_extract_waveunit_wavelnthcomment_brackets():
 
 def test_extract_waveunit_wavelnthcomment_parentheses():
     # WAVELNTH comment is: "Observed wavelength (nm)"
-    waveunit = extract_waveunit(get_header(SVSM_IMAGE)[0])
+    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+        waveunit = extract_waveunit(get_header(SVSM_IMAGE)[0])
     assert waveunit == 'nm'
 
 
@@ -96,3 +105,22 @@ def test_extra_comment_write(tmpdir):
     outfile = tmpdir / "test.fits"
     sunpy.io.fits.write(str(outfile), data, header)
     assert outfile.exists()
+
+
+def test_simple_write_compressed(tmpdir):
+    data, header = sunpy.io.fits.read(AIA_171_IMAGE)[0]
+    outfile = tmpdir / "test.fits"
+    sunpy.io.fits.write(str(outfile), data, header, hdu_type=fits.CompImageHDU)
+    assert outfile.exists()
+    with fits.open(str(outfile)) as hdul:
+        assert len(hdul) == 2
+        assert isinstance(hdul[1], fits.CompImageHDU)
+
+
+def test_write_with_metadict_header_astropy(tmpdir):
+    fits_file = fits.open(AIA_171_IMAGE)
+    data, header = fits_file[0].data, fits_file[0].header
+    meta_header = MetaDict(OrderedDict(header))
+    temp_file = tmpdir / "temp.fits"
+    sunpy.io.fits.write(str(temp_file), data, meta_header)
+    assert temp_file.exists()

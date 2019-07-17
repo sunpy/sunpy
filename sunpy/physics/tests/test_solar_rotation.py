@@ -15,6 +15,7 @@ from astropy.tests.helper import assert_quantity_allclose
 import sunpy.data.test
 import sunpy.map
 from sunpy.physics.solar_rotation import calculate_solar_rotate_shift, mapsequence_solar_derotate
+from sunpy.tests.helpers import skip_32bit
 
 
 @pytest.fixture
@@ -43,15 +44,15 @@ def aia171_test_mapsequence(aia171_test_submap):
 # Known displacements for these mapsequence layers when the layer index is set to 0
 @pytest.fixture
 def known_displacements_layer_index0():
-    return {'x': np.asarray([-0.146552, -9.927367, -19.729643]),
-            'y': np.asarray([-0.18597, 0.064922, 0.303616])}
+    return {'x': np.asarray([1.136868e-13, -1.048550e+01, -2.099555e+01]),
+            'y': np.asarray([1.136868e-13, 2.685361e-01, 5.230608e-01])}
 
 
 # Known displacements for these mapsequence layers when the layer index is set to 1
 @pytest.fixture
 def known_displacements_layer_index1():
-    return {'x': np.asarray([9.611735, -0.146552, -9.927367]),
-            'y': np.asarray([-0.449032, -0.18597, 0.064922])}
+    return {'x': np.asarray([1.045963e+01, 8.526513e-14, -1.048549e+01]),
+            'y': np.asarray([-2.825134e-01, 1.136868e-13, 2.685360e-01])}
 
 
 def test_calculate_solar_rotate_shift(aia171_test_mapsequence, known_displacements_layer_index0, known_displacements_layer_index1):
@@ -62,10 +63,13 @@ def test_calculate_solar_rotate_shift(aia171_test_mapsequence, known_displacemen
 
     # Test that the rotation relative to a nonzero layer_index works
     test_output = calculate_solar_rotate_shift(aia171_test_mapsequence, layer_index=1)
+    print(test_output['x'].to('arcsec').value)
+    print(test_output['y'].to('arcsec').value)
     assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index1['x'], rtol=5e-2, atol=1e-5)
     assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index1['y'], rtol=5e-2, atol=1e-5)
 
 
+@skip_32bit
 def test_mapsequence_solar_derotate(aia171_test_mapsequence, aia171_test_submap):
     # Test that a mapsequence is returned when the clipping is False.
     tmc = mapsequence_solar_derotate(aia171_test_mapsequence, clip=False)
@@ -80,7 +84,7 @@ def test_mapsequence_solar_derotate(aia171_test_mapsequence, aia171_test_submap)
     assert(isinstance(tmc, sunpy.map.MapSequence))
 
     # Test that the shape of data is correct when clipped
-    clipped_shape = (24, 19)
+    clipped_shape = (25, 18)
     for m in tmc:
         assert(m.data.shape == clipped_shape)
 

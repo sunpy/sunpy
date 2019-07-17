@@ -1,15 +1,10 @@
 """SunPy Maps"""
-from __future__ import absolute_import
+from sunpy.map.mapbase import GenericMap  # isort:skip
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
-
-from sunpy.map.mapbase import GenericMap
-
-from . mapcube import MapCube
-from . mapsequence import MapSequence
-from . compositemap import CompositeMap
-
-from sunpy.map.map_factory import Map
 from sunpy.map import sources
+from sunpy.map.header_helper import *
+from sunpy.map.map_factory import Map
+from sunpy.map.maputils import *
+
+from .compositemap import CompositeMap
+from .mapsequence import MapSequence

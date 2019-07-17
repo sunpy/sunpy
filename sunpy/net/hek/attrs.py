@@ -17,13 +17,8 @@ As with the VSO query, you can use the fundamental logic operators AND and OR
 to construct queries of almost arbitrary complexity. Note that complex queries
 result in multiple requests to the server which might make them less efficient.
 """
-from __future__ import absolute_import
-
-from datetime import datetime
 from sunpy.net import attr
 from sunpy.time import parse_time
-
-from sunpy.extern import six
 
 
 # Ugly hack for the deprecated apply decorator, this needs to be cleaned up
@@ -81,7 +76,7 @@ class _ListAttr(attr.Attr):
         return vars(self) == vars(other)
 
     def __hash__(self):
-        return hash(tuple(six.itervalues(vars(self))))
+        return hash(tuple(vars(self).items()))
 
 
 class EventType(attr.Attr):
@@ -116,11 +111,11 @@ class Time(attr.Attr):
         return vars(self) == vars(other)
 
     def __hash__(self):
-        return hash(tuple(six.itervalues(vars(self))))
+        return hash(tuple(vars(self).items()))
 
     @classmethod
     def dt(cls, start, end):
-        return cls(datetime(*start), datetime(*end))
+        return cls(parse_time(start), parse_time(end))
 
 
 # pylint: disable=R0913
@@ -144,7 +139,7 @@ class SpatialRegion(attr.Attr):
         return vars(self) == vars(other)
 
     def __hash__(self):
-        return hash(tuple(six.itervalues(vars(self))))
+        return hash(tuple(vars(self).items()))
 
 
 class Contains(attr.Attr):
@@ -161,7 +156,7 @@ class Contains(attr.Attr):
         return vars(self) == vars(other)
 
     def __hash__(self):
-        return hash(tuple(six.itervalues(vars(self))))
+        return hash(tuple(vars(self).items()))
 
 
 class _ComparisonParamAttrWrapper(object):

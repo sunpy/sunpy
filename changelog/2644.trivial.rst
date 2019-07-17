@@ -1,2 +1,0 @@
-We are now using `towncrier <https://github.com/hawkowl/towncrier>`__ to
-generate our changelogs.

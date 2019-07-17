@@ -1,56 +1,271 @@
 .. _testing:
 
-Testing
-=======
+******************
+Testing Guidelines
+******************
 
-This is a brief tutorial on how to write and run SunPy unit tests. SunPy makes use
-of the great package `pytest <http://pytest.org>` for all of its testing needs.
+This section describes the testing framework and format standards for tests in SunPy.
+Here we have heavily adapted the `Astropy version <https://docs.astropy.org/en/latest/development/testguide.html>`_, and **it is worth reading that link.**
 
-Writing a unit test
--------------------
+Testing Framework
+=================
 
-Consider a simple module `stuff.py` that contains the simple function shown
-below.::
+The testing framework used by SunPy is the `pytest`_ framework, accessed through the ``pytest`` command.
 
-   def double(x):
-       return 2 * x
+.. _pytest: https://pytest.org/en/latest/
 
-We can write a test case for this function by defining a new function
-containing the test (or tests) we want to perform. Suppose we want to check
-that the correct behaviour occurs when we pass a value of 5 to `double()`. We
-would write the test function like this: ::
+.. note::
 
-  def test_answer():
-      assert double(5) == 10
+    The ``pytest`` project was formerly called ``py.test``, and you may
+    see the two spellings used interchangeably.
 
-There are two things to note here. Firstly, names of test cases should always
-begin with `test_`. This is because `pytest` searches for test cases named this
-way. Secondly, we use `assert` to assert our expectation of what the result of
-the test should be. In this example, the test returns true and so the test
-passes.
+Testing Dependencies
+---------------------
 
-The example given above is one in which the function and test reside in the
-same module. In SunPy, functions and tests are separated and the latter can be
-found in the `tests` directory within the directory containing the module.
-The convention is to have one test module per module, with the names for
-the test modules being the same as those for the modules prefixed with
-`test_`. For example, the modules `xml.py` and `multimethod.py` in `sunpy/util`
-have corresponding test modules `test_xml.py` and `test_multimethod.py` in
-`sunpy/util/tests`.
+Since the testing dependencies are not actually required to install or use SunPy, they are not included in "install_requires" in "setup.cfg".
 
-There are some tests for functions and methods in SunPy that require a
-working connection to the internet. pytest is configured in a way that it
-iterates over all tests that have been marked as `pytest.mark.remote_data` and checks if
-there is an established connection to the internet. If there is none, the
-test is skipped, otherwise it is run. Marking tests is pretty
-straightforward in pytest: use the decorator ``@pytest.mark.remote_data`` to
-mark a test function as needing an internet connection.
+Developers who want to run the test suite will need to install the testing packages using pip::
 
-Writing a unit test for a figure
---------------------------------
+    $ pip intall -e .[tests]
 
-You can write SunPy unit tests that test the generation of matplotlib figures
-by adding the decorator `sunpy.tests.helpers.figure_test`.
+If you want to see the current test dependencies, you check "extras_require" in "setup.cfg".
+
+Running Tests
+-------------
+
+There are currently three different ways to invoke the SunPy tests.
+Each method uses the widely-used ``pytest`` framework and are detailed below.
+
+``python setup.py test``
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+SunPy provides a ``test`` setup command, invoked by running ``python setup.py test`` while in the
+package root directory.
+Run ``python setup.py test --help`` to see the options to the test command.
+
+Note also that this test runner actually installs SunPy into a temporary directory and uses that for running the tests.
+This means that tests of things like entry points or data file paths should act just like they would once SunPy is installed.
+The other two approaches described below do **not** do this, and hence may give different results when ran.
+Hence, if you're running the tests because you've modified code that might be impacted by this, the ``python setup.py test`` approach is the recommended method.
+
+It is possible to run only the tests for a particular subpackage or set of subpackages.
+For example, to run only the "map" tests from the commandline::
+
+    $ python setup.py test -P map
+
+Or, to run only the "map" and "timeseries" tests::
+
+    $ python setup.py test -P map,timeseries
+
+You can also specify a single file to test from the commandline::
+
+    $ python setup.py test -t sunpy/map/tests/test_mapbase.py
+
+When the ``-t`` option is given a relative path, it is relative to  installed root of sunpy.
+When ``-t`` is given a relative path to a documentation ``.rst`` file to test, it is relative to the root of the documentation, i.e. the ``docs`` directory in the source tree.
+For example::
+
+    $ python setup.py test -t guide/index.rst
+
+Since ``python setup.py test`` wraps the ``pytest`` framework, you may want to pass options to the ``pytest`` command itself::
+
+    $ python setup.py test --args <pytest arg here>
+
+``pytest``
+^^^^^^^^^^
+
+The test suite can be run directly from the native ``pytest`` command.
+In this case, it is important for developers to be aware that they must manually rebuild any extensions by running ``python setup.py build_ext`` before testing.
+
+As shown for ``python setup.py test`` above, you can do the same for ``pytest``::
+
+    $ pytest sunpy/map/tests/test_mapbase.py
+
+If a test errors, you can use ``pdb`` to create a debugging session at test fail::
+
+    $ pytest --pdb
+
+``tox``
+^^^^^^^^
+
+The third method is to use `tox`_, which is a generic virtualenv management and test command line tool.
+We have several environments within our "tox.ini" file and you can list them::
+
+    $ tox -l
+
+Then you can run any of them doing::
+
+    $ tox -e <name of env>
+
+This will create a test environment in ".tox" and build, install SunPy and runs the entire test suite.
+This is the method that our continuous integration uses.
+
+.. _tox: https://tox.readthedocs.io/en/latest/
+
+Test coverage reports
+---------------------
+
+SunPy can use `pytest-cov`_  generate test coverage reports and settings are stored in ``setup.cfg``.
+This plugin can be installed using `pip`_::
+
+    $ pip install pytest-cov
+
+To generate a test coverage report, use::
+
+    $ python setup.py test --coverage
+
+or::
+
+    $ pytest --cov ./sunpy
+
+This will print to the terminal a report of line coverage of our test suite.
+If you want to create a report in html, you can run::
+
+    $ pytest --cov-report xml:cov.xml --cov ./sunpy
+    $ coverage html
+
+.. _pytest-cov: https://pypi.org/project/pytest-cov/
+
+Running tests in parallel
+-------------------------
+
+It is possible to speed up SunPy's tests using the `pytest-xdist`_ plugin.
+This plugin can be installed using `pip`_::
+
+    pip install pytest-xdist
+
+Once installed, tests can be run in parallel using the ``--parallel`` commandline option.
+For example, to use 4 processes::
+
+    $ python setup.py test --parallel=4
+
+or::
+
+    $ pytest -n 4 ./sunpy
+
+or::
+
+    $ tox -e <name of environment> -- -n=4
+
+.. _pytest-xdist: https://pypi.python.org/pypi/pytest-xdist
+.. _pip: https://pypi.org/project/pip/
+
+Writing tests
+=============
+
+``pytest`` has the following `test discovery rules <https://pytest.org/en/latest/goodpractices.html#conventions-for-python-test-discovery>`_::
+
+ * ``test_*.py`` or ``*_test.py`` files
+ * ``Test`` prefixed classes (without an ``__init__`` method)
+ * ``test_`` prefixed functions and methods
+
+We use the first one for our test files, ``test_*.py`` and we suggest that developers follow this.
+
+A rule of thumb for unit testing is to have at least one unit test per public function.
+
+Simple example
+--------------
+
+The following example shows a simple function and a test to test this
+function::
+
+    def func(x):
+        """Add one to the argument."""
+        return x + 1
+
+    def test_answer():
+        """Check the return value of func() for an example argument."""
+        assert func(3) == 5
+
+If we place this in a ``test.py`` file and then run::
+
+    $ pytest test.py
+
+The result is::
+
+    ============================= test session starts ==============================
+    python: platform darwin -- Python 3.6.0 -- pytest-3.2.0
+    test object 1: /Users/username/tmp/test.py
+
+    test.py F
+
+    =================================== FAILURES ===================================
+    _________________________________ test_answer __________________________________
+
+        def test_answer():
+    >       assert func(3) == 5
+    E       assert 4 == 5
+    E        +  where 4 = func(3)
+
+    test.py:5: AssertionError
+    =========================== 1 failed in 0.07 seconds ===========================
+
+Sometimes the output from the test suite will have ``xfail`` meaning a test has passed although it has been marked as ``@pytest.mark.xfail``), or ``skipped`` meaing a test that has been skipped due to not meeting some condition (online and figure tests are the most common).
+
+You need to use the option ``-rs`` for skipped tests and ``-rx`` for xfailed tests, respectively.
+Or use ``-rxs`` for detailed information on both skipped and xfailed tests.
+
+Where to put tests
+------------------
+
+Each package should include a suite of unit tests, covering as many of the public methods/functions as possible.
+These tests should be included inside each package, e.g::
+
+    sunpy/map/tests/
+
+"tests" directories should contain an ``__init__.py`` file so that the tests can be imported.
+
+Online Tests
+------------
+
+There are some tests for functions and methods in SunPy that require a working connection to the internet.
+``pytest`` is configured in a way that it iterates over all tests that have been marked as ``pytest.mark.remote_data`` and checks if there is an established connection to the internet.
+If there is none, the test is skipped, otherwise it is run.
+
+Marking tests is pretty straightforward, use the decorator ``@pytest.mark.remote_data`` to mark a test function as needing an internet connection::
+
+    @pytest.mark.remote_data
+    def func(x):
+        """Add one to the argument."""
+        return x + 1
+
+By default, no online tests are selected and so to run the online tests you have to::
+
+    $ python setup.py test --online
+
+or::
+
+    $ pytest --remote-data=any
+
+Tests that create files
+-----------------------
+
+Tests may often be run from directories where users do not have write permissions so tests which create files should always do so in temporary directories.
+This can be done with the `pytest tmpdir function argument <https://pytest.org/en/latest/tmpdir.html>`_ or with Python's built-in `tempfile module
+<https://docs.python.org/3/library/tempfile.html#module-tempfile>`_.
+
+Tests that use test data
+------------------------
+
+We store test data in "sunpy/data/test" as long as it is less than about 100 kB.
+These data should always be accessed via the :func:`sunpy.data.test.get_test_filepath` and :func:`sunpy.data.test.test_data_filenames` functions.
+This way you can use them when you create a test.
+
+You can also use our sample data but this will have to be marked as an online test (see above)::
+
+    import sunpy.data.sample
+
+    @pytest.mark.remote_data
+    def func():
+        """Returns the file path for the sample data."""
+        return sunpy.data.sample.AIA_131_IMAGE
+
+Generally we do not run the tests on our sample data, so only do this if you have a valid reason.
+
+Figure unit tests
+-----------------
+
+You can write SunPy unit tests that test the generation of matplotlib figures by adding the decorator `sunpy.tests.helpers.figure_test`.
 Here is a simple example: ::
 
     import matplotlib.pyplot as plt
@@ -60,118 +275,51 @@ Here is a simple example: ::
     def test_simple_plot():
         plt.plot([0,1])
 
-The current figure at the end of the unit test, or an explicitly returned
-figure, has its hash compared against an established hash library (more on
-this below).  If the hashes do not match, the figure has changed, and thus
-the test is considered to have failed.
+The current figure at the end of the unit test, or an explicitly returned figure, has its hash compared against an established hash library (more on this below).
+If the hashes do not match, the figure has changed, and thus the test is considered to have failed.
 
-All such tests are automatically marked with the pytest mark
-`pytest.mark.figure`.  See the next section for how to use marks.
+You will need to update the library of figure hashes after you create a new figure test or after a figure has intentionally changed due to code improvement.
+The file is located at "sunpy/tests/figure_tests_env_py36.json".
 
-You will need to update the library of figure hashes after you create a new
-figure test or after a figure has intentionally changed due to code improvement.
-After you have confirmed that any conflicting hashes are associated with desired
-changes in figures, copy the hash-library file listed at the end of the test
-report to `sunpy/tests/`.  Be forewarned that the hash library will likely need
-to be updated for multiple versions of Python.
+Furthermore, to run the figure tests, you need to have the same Python version as the figure environment.
+Otherwise, the tests will be skipped.
+Since the hashes are checked, we test figures against a fixed set of packages and the best way to check this is to use tox::
 
-Running unit tests
-------------------
+    $ tox -e figure
 
-To find and run all the SunPy unit tests, simply run ::
+To run the figure tests otherwise you can::
 
-  py.test
+    $ python setup.py test --figure-only
 
-from the root of the SunPy tree (i.e. the directory containing `INSTALL.TXT`,
-`sunpy`, `doc`, etc.). This will produce a lot of output and you'll probably
-want to run only selected test modules at a time. This is done by specifying
-the module on the command line, e.g.::
+or::
 
- py.test sunpy/util/tests/test_xml.py
+    $ pytest -m "figure"
 
-for the tests for `sunpy.util.xml`.
+These will only run the figure tests and nothing else.
 
-To run only tests that been marked with a specific pytest mark using the
-decorator ``@pytest.mark.MARK`` (see the section *Writing a unit test*), use the
-following command (where ``MARK`` is the name of the mark)::
+If you have a Python environment that matches the base Python version used in the figure environment, these tests will run and probably fail.
+To avoid running the tests::
 
-  py.test -k MARK
+    $ pytest -m "not figure"
 
-To exclude (i.e. skip all tests with a certain mark, use the following
-code (where ``MARK`` is the name of the mark)::
-
-  py.test -k-MARK
-
-Note that pytest is configured to skip all tests with the mark `pytest.mark.remote_data` if
-there is no connection to the internet. This cannot be circumvented, i.e.
-pytest cannot be forced to run a test with the mark `pytest.mark.remote_data` if there is no
-working internet connection (rename the mark to something else to call the test
-function anyway).
-
-To get more information about skipped and xfailed tests (xfail means a
-test has passed although it has been marked as ``@pytest.mark.xfail``),
-you need to use the option ``-rs`` for skipped tests and ``-rx`` for
-xfailed tests, respectively. Or use ``-rxs`` for detailed information on
-both skipped and xfailed tests.
-
-
-When to write unit tests
-------------------------
-
-A rule of thumb for unit testing is to have at least one unit test per public
-function.
-
+The output (regardless if via ``tox`` or ``pytest``) of these figure tests will be in a "figure_test_images" folder within your work folder.
+For example, "<local clone location>/figure_test_images" which is ignored by git.
 
 Writing Doctests
 ----------------
 
-Code examples in the documentation will also be run as tests, this helps to
-validate that the documentation is accurate and upto date. SunPy uses the same
-doctest system as astropy, so for information on writing doctests see
-:ref:`astropy:doctests` in the astropy documentation.
+Code examples in the documentation will also be run as tests and this helps to validate that the documentation is accurate and up to date.
+SunPy uses the same system as Astropy, so for information on writing doctests see the astropy `documentation <https://docs.astropy.org/en/latest/development/testguide.html#writing-doctests>`_.
 
+You do not have to do anything extra in order to run any documentation tests.
+Within our ``setup.cfg`` file we have set default options for ``pytest``, such that you only need to run::
 
+    $ pytest <file to test>
 
-Testing Your Code Before Committing
------------------------------------
-
-When you commit your changes and make a Pull Request to the main SunPy repo on
-GitHub, your code will be tested by Travis CI to make sure that all the tests
-pass and the documentation builds without any warnings. Before you commit your
-code you should check that this is the case. There is a helper script in
-`sunpy/tools/pre-commit.sh` that is designed to run these tests automatically
-every time you run `git commit` to install it copy the file from
-`sunpy/tools/pre-commit.sh` to `sunpy/.git/hooks/pre-commit`, you should also
-check the script to make sure that it is configured properly for your system.
-
-Continuous Integration
-----------------------
-
-SunPy makes use of the `Travis CI service <https://travis-ci.org/sunpy/sunpy>`_.
-This service builds a version of SunPy and runs all the tests. It also integrates
-with GitHub and will report the test results on any Pull Request when they are
-submitted and when they are updated.
-
-The Travis CI server not only builds SunPy from source, but currently it builds all
-of SunPy's dependencies from source as well using pip, all of this behaviour is
-specified in the .travis.yml file in the root of the SunPy repo.
-
-New Functionality
------------------
-
-For SunPy, we would encourage all developers to thoroughly `cover <https://en.wikipedia.org/wiki/Code_coverage>`_
-their code by writing unit tests for each new function created.
-
-Developers who want to take an aggressive approach to reducing bugs may even
-wish to consider adopting a practice such as Test Drive Development (TDD)
-whereby unit tests are written before any actual code is written. The tests
-begin by failing, and then as they code is developed the user re-runs the
-tests until all of them are passing.
+to run any documentation test.
 
 Bugs discovered
 ---------------
 
-In addition to writing unit tests new functionality, it is also a good practice
-to write a unit test each time a bug is found, and submit the unit test along
-with the fix for the problem. This way we can ensure that the bug does not
-re-emerge at a later time.
+In addition to writing unit tests new functionality, it is also a good practice to write a unit test each time a bug is found, and submit the unit test along with the fix for the problem.
+This way we can ensure that the bug does not re-emerge at a later time.

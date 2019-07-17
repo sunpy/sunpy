@@ -1,10 +1,10 @@
-"""SunPy test data files"""
-from __future__ import absolute_import
-
+"""
+This package contains all of SunPy's test data.
+"""
 import os
+import re
 import glob
 import fnmatch
-import re
 
 from astropy.utils.data import get_pkg_data_filename
 
@@ -14,7 +14,6 @@ __all__ = ['rootdir', 'file_list', 'get_test_filepath', 'test_data_filenames']
 
 rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "test")
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
-
 
 
 def get_test_filepath(filename, **kwargs):
@@ -31,17 +30,10 @@ def get_test_filepath(filename, **kwargs):
     filepath : `str`
         The full path to the file.
 
-    See Also
-    --------
-
-    astropy.utils.data.get_pkg_data_filename : Get package data filename
-
     Notes
     -----
-
     This is a wrapper around `astropy.utils.data.get_pkg_data_filename` which
     sets the ``package`` kwarg to be 'sunpy.data.test`.
-
     """
     return get_pkg_data_filename(filename, package="sunpy.data.test", **kwargs)
 
@@ -54,9 +46,8 @@ def test_data_filenames():
 
     Return
     ------
-    get_all_test_filepath : `list`
+    `list`
         The name of all test files in ``data/test`` directory.
-
     """
     test_data_filenames_list = []
     excludes = ['*.pyc', '*'+os.path.sep+'__*__', '*.py']

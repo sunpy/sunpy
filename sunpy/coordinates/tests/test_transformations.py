@@ -3,13 +3,21 @@ import pytest
 
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
-from astropy.coordinates import (SkyCoord, get_body_barycentric, HeliocentricTrueEcliptic, Angle,
-                                 ConvertError)
+from astropy.coordinates import (SkyCoord, get_body_barycentric, Angle,
+                                 ConvertError, Longitude, CartesianRepresentation)
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the misleading name HeliocentricTrueEcliptic
+try:
+    from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+
 from astropy.time import Time
 
 from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
                                HeliographicCarrington, Heliocentric,
-                               get_sun_L0, get_earth)
+                               get_earth)
+from sunpy.coordinates import sun
 from sunpy.time import parse_time
 
 
@@ -70,7 +78,9 @@ def test_hpc_hpc_sc():
 
     hpc_new = sc_in.transform_to(hpc_out)
 
-    assert hpc_new.observer == hpc_out.observer
+    assert hpc_new.observer.lat == hpc_out.observer.lat
+    assert hpc_new.observer.lon == hpc_out.observer.lon
+    assert hpc_new.observer.radius == hpc_out.observer.radius
 
 
 def test_hpc_hpc_null():
@@ -87,14 +97,15 @@ def test_hpc_hpc_null():
 
 def test_hcrs_hgs():
     # Get the current Earth location in HCRS
-    now = Time(parse_time('now'))
-    earth_hcrs = SkyCoord(get_body_barycentric('earth', now), frame='icrs', obstime=now).hcrs
+    adate = parse_time('2015/05/01 01:13:00')
+    earth_hcrs = SkyCoord(get_body_barycentric('earth', adate), frame='icrs', obstime=adate).hcrs
 
     # Convert from HCRS to HGS
     earth_hgs = earth_hcrs.transform_to(HeliographicStonyhurst)
 
     # The HGS longitude of the Earth should be zero within numerical error
-    assert quantity_allclose(earth_hgs.lon, 0*u.deg, atol=1e-12*u.deg)
+    # Due to an issue with wrapping at +-360, we shift it to pass the test.
+    assert quantity_allclose((earth_hgs.lon+1*u.deg) % (360*u.deg), 1*u.deg, atol=1e-12*u.deg)
 
     # The HGS latitude and radius should be within valid ranges
     assert quantity_allclose(earth_hgs.lat, 0*u.deg, atol=7.3*u.deg)
@@ -124,22 +135,22 @@ def test_hcrs_hgs_array_obstime():
 
 def test_hgs_hcrs():
     # This test checks the HGS->HCRS transformation by transforming from HGS to
-    # HeliocentricTrueEcliptic (HTE).  It will fail if there are errors in Astropy's
-    # HCRS->ICRS or ICRS->HTE transformations.
+    # HeliocentricMeanEcliptic (HME).  It will fail if there are errors in Astropy's
+    # HCRS->ICRS or ICRS->HME transformations.
 
     # Use published HGS coordinates in the Astronomical Almanac (2013), pages C6-C7
     obstime = Time('2013-01-28')
     earth_hgs = SkyCoord(0*u.deg, -5.73*u.deg, 0.9848139*u.AU, frame=HeliographicStonyhurst,
                          obstime=obstime)
 
-    # Transform to HTE at observation-time equinox
-    earth_hte = earth_hgs.transform_to(HeliocentricTrueEcliptic(equinox=obstime))
+    # Transform to HME at observation-time equinox
+    earth_hme = earth_hgs.transform_to(HeliocentricMeanEcliptic(equinox=obstime))
 
     # Validate against published values from the Astronomical Almanac (2013), page C6 per page E2
     # The dominant source of inaccuracy is the limited precision of the published B0 used above
-    assert quantity_allclose(earth_hte.lon, Angle('308d13m30.51s') - 180*u.deg, atol=5*u.arcsec)
-    assert quantity_allclose(earth_hte.lat, -Angle('-0.27s'), atol=10*u.arcsec)
-    assert quantity_allclose(earth_hte.distance, 0.9848139*u.AU, atol=5e-7*u.AU)
+    assert quantity_allclose(earth_hme.lon, Angle('308d13m30.51s') - 180*u.deg, atol=5*u.arcsec)
+    assert quantity_allclose(earth_hme.lat, -Angle('-0.27s'), atol=10*u.arcsec)
+    assert quantity_allclose(earth_hme.distance, 0.9848139*u.AU, atol=5e-7*u.AU)
 
 
 def test_hgs_hgc_roundtrip():
@@ -149,7 +160,7 @@ def test_hgs_hgc_roundtrip():
     hgcout = hgsin.transform_to(HeliographicCarrington(obstime=obstime))
 
     assert_quantity_allclose(hgsin.lat, hgcout.lat)
-    assert_quantity_allclose(hgcout.lon, get_sun_L0(obstime))
+    assert_quantity_allclose(hgcout.lon, sun.L0(obstime))
 
     hgsout = hgcout.transform_to(HeliographicStonyhurst(obstime=obstime))
 
@@ -165,9 +176,9 @@ def test_hgs_cartesian_rep_to_hpc():
     obstime = "2011-01-01"
     hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
                              frame=HeliographicStonyhurst(obstime=obstime),
-                             representation='cartesian')
+                             representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
-    hgscoord_sph.representation = 'spherical'
+    hgscoord_sph.representation_type = 'spherical'
     hpccoord_cart = hgscoord_cart.transform_to(Helioprojective(obstime=obstime))
     hpccoord_sph = hgscoord_sph.transform_to(Helioprojective(obstime=obstime))
     assert_quantity_allclose(hpccoord_cart.Tx, hpccoord_sph.Tx)
@@ -183,9 +194,9 @@ def test_hgs_cartesian_rep_to_hcc():
     obstime = "2011-01-01"
     hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
                              frame=HeliographicStonyhurst(obstime=obstime),
-                             representation='cartesian')
+                             representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
-    hgscoord_sph.representation = 'spherical'
+    hgscoord_sph.representation_type = 'spherical'
     hcccoord_cart = hgscoord_cart.transform_to(Heliocentric(obstime=obstime))
     hcccoord_sph = hgscoord_sph.transform_to(Heliocentric(obstime=obstime))
     assert_quantity_allclose(hcccoord_cart.x, hcccoord_sph.x)
@@ -201,9 +212,9 @@ def test_hgs_cartesian_rep_to_hgc():
     obstime = "2011-01-01"
     hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
                              frame=HeliographicStonyhurst(obstime=obstime),
-                             representation='cartesian')
+                             representation_type='cartesian')
     hgscoord_sph = hgscoord_cart.copy()
-    hgscoord_sph.representation = 'spherical'
+    hgscoord_sph.representation_type = 'spherical'
     # HGC
     hgccoord_cart = hgscoord_cart.transform_to(HeliographicCarrington(obstime=obstime))
     hgccoord_sph = hgscoord_sph.transform_to(HeliographicCarrington(obstime=obstime))
@@ -230,22 +241,25 @@ def test_hcc_to_hpc_different_observer():
     assert_quantity_allclose(hpccoord_out.Ty, hpccoord_expected.Ty)
     assert_quantity_allclose(hpccoord_out.distance, hpccoord_expected.distance)
 
+
 def test_hpc_to_hcc_different_observer():
     # This test checks transformation HPC->HCC in the case where the HCC and HPC frames are
     # defined by different observers.
 
+    rsun = 1*u.m
     D0 = 1*u.km
     L0 = 1*u.deg
     observer_1 = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
     observer_2 = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=D0)
     hcc_frame = Heliocentric(observer=observer_1)
-    hpc_frame = Helioprojective(observer=observer_2)
+    hpc_frame = Helioprojective(observer=observer_2, rsun=rsun)
     hpccoord = SkyCoord(Tx=0*u.arcsec, Ty=0*u.arcsec, frame=hpc_frame)
     hcccoord_out = hpccoord.transform_to(hcc_frame)
     hcccoord_expected = hpccoord.transform_to(HeliographicStonyhurst).transform_to(hcc_frame)
     assert_quantity_allclose(hcccoord_out.x, hcccoord_expected.x)
     assert_quantity_allclose(hcccoord_out.y, hcccoord_expected.y)
     assert_quantity_allclose(hcccoord_out.z, hcccoord_expected.z)
+
 
 def test_hcc_to_hpc_same_observer():
     # This test checks transformation HCC->HPC in the case of same observer
@@ -254,7 +268,7 @@ def test_hcc_to_hpc_same_observer():
     D0 = 1*u.km
     observer = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
     hcc_frame = Heliocentric(observer=observer)
-    hpc_frame = Helioprojective(observer=observer)
+    hpc_frame = Helioprojective(observer=observer, rsun=rsun)
     hcccoord = SkyCoord(x=rsun, y=rsun, z=rsun, frame=hcc_frame)
     hpccoord_out = hcccoord.transform_to(hpc_frame)
     hpccoord_expected = hcccoord.transform_to(HeliographicStonyhurst).transform_to(hpc_frame)
@@ -262,16 +276,111 @@ def test_hcc_to_hpc_same_observer():
     assert_quantity_allclose(hpccoord_out.Ty, hpccoord_expected.Ty)
     assert_quantity_allclose(hpccoord_out.distance, hpccoord_expected.distance)
 
+
 def test_hpc_to_hcc_same_observer():
     # This test checks transformation HPC->HCC in the case of same observer
 
+    rsun = 1*u.m
     D0 = 1 * u.km
     observer = HeliographicStonyhurst(lat=0 * u.deg, lon=0 * u.deg, radius=D0)
     hcc_frame = Heliocentric(observer=observer)
-    hpc_frame = Helioprojective(observer=observer)
+    hpc_frame = Helioprojective(observer=observer, rsun=rsun)
     hpccoord = SkyCoord(Tx=0 * u.arcsec, Ty=0 * u.arcsec, frame=hpc_frame)
     hcccoord_out = hpccoord.transform_to(hcc_frame)
     hcccoord_expected = hpccoord.transform_to(HeliographicStonyhurst).transform_to(hcc_frame)
     assert_quantity_allclose(hcccoord_out.x, hcccoord_expected.x)
     assert_quantity_allclose(hcccoord_out.y, hcccoord_expected.y)
     assert_quantity_allclose(hcccoord_out.z, hcccoord_expected.z)
+
+
+def test_hgs_hgs():
+    # Test HGS loopback transformation
+    obstime = Time('2001-01-01')
+    old = SkyCoord(90*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime=obstime))
+    new = old.transform_to(HeliographicStonyhurst(obstime=obstime + 1*u.day))
+
+    assert_quantity_allclose(new.lon, old.lon - 1*u.deg, atol=0.1*u.deg)  # due to Earth motion
+    assert_quantity_allclose(new.lat, old.lat)
+    assert_quantity_allclose(new.radius, old.radius)
+
+
+def test_hgc_hgc():
+    # Test HGC loopback transformation
+    obstime = Time('2001-01-01')
+    old = SkyCoord(90*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicCarrington(obstime=obstime))
+    new = old.transform_to(HeliographicCarrington(obstime=obstime + 1*u.day))
+
+    assert_quantity_allclose(new.lon, old.lon - 14.1844*u.deg, atol=1e-4*u.deg)  # solar rotation
+    assert_quantity_allclose(new.lat, old.lat)
+    assert_quantity_allclose(new.radius, old.radius)
+
+
+def test_hgs_hcrs_sunspice():
+    # Compare our HGS->HCRS transformation against SunSPICE by transforming beyond it
+    # "HEQ" is another name for HEEQ, which is equivalent to Heliographic Stonyhurst
+    # "HAE" is equivalent to Astropy's Heliocentric Mean Ecliptic, and defaults to J2000.0
+    #
+    # IDL> coord = [1.d, 0.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'HAE', /au, /degrees
+    # IDL> print, coord
+    #        1.0000000      -108.65371       10.642778
+
+    old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime='2019-06-01'))
+    new = old.transform_to(HeliocentricMeanEcliptic)
+
+    assert_quantity_allclose(new.lon, Longitude(-108.65371*u.deg), atol=0.1*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 10.642778*u.deg, atol=0.1*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, old.radius)
+
+    # Transform to HAE precessed to the mean ecliptic of date instead of J2000.0
+    # IDL> coord = [1.d, 0.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'HAE', /precess, /au, /degrees
+    # IDL> print, coord
+    #        1.0000000      -108.38240       10.640314
+
+    new = old.transform_to(HeliocentricMeanEcliptic(equinox='2019-06-01'))
+
+    assert_quantity_allclose(new.lon, Longitude(-108.38240*u.deg), atol=0.1*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 10.640314*u.deg, atol=0.1*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, old.radius)
+
+
+def test_hgs_hgc_sunspice():
+    # Compare our HGS->HGC transformation against SunSPICE
+    # "HEQ" is another name for HEEQ, which is equivalent to Heliographic Stonyhurst
+    # "Carrington" is offset by 0.076 degrees in longitude from our Heliographic Carrington (HGC)
+    #   because "Carrington" does not include light travel time to the observer, while our
+    #   HGC includes the light travel time to Earth (see Seidelmann et al. 2007).
+    #
+    # IDL> coord = [1.d, 0.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'Carrington', /au, /degrees
+    # IDL> print, coord
+    #        1.0000000       16.688242       10.000000
+
+    old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime='2019-06-01'))
+    new = old.heliographic_carrington
+
+    assert_quantity_allclose(new.lon, 16.688242*u.deg + 0.076*u.deg, atol=1e-2*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, old.lat)
+    assert_quantity_allclose(new.radius, old.radius)
+
+
+def test_hgs_hcc_sunspice():
+    # Compare our HGS->HCC transformation against SunSPICE
+    # "HEQ" is another name for HEEQ, which is equivalent to Heliographic Stonyhurst
+    # "HGRTN" is equivalent to our Heliocentric, but with the axes permuted
+    # SunSPICE, like us, assumes an Earth observer if not explicitly specified
+    #
+    # IDL> coord = [7d5, 8d5, 9d5]
+    # IDL> convert_sunspice_coord, '2019-06-01', coord, 'HEQ', 'HGRTN'
+    # Assuming Earth observation
+    # IDL> print, coord
+    #        688539.32       800000.00       908797.89
+
+    old = SkyCoord(CartesianRepresentation([7e5, 8e5, 9e5]*u.km),
+                   frame=HeliographicStonyhurst(obstime='2019-06-01'))
+    new = old.heliocentric
+
+    assert_quantity_allclose(new.x, 800000.00*u.km, atol=1e-2*u.km)
+    assert_quantity_allclose(new.y, 908797.89*u.km, atol=1e-2*u.km)
+    assert_quantity_allclose(new.z, 688539.32*u.km, atol=1e-2*u.km)

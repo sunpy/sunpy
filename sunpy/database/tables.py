@@ -2,32 +2,40 @@
 #
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
-from __future__ import absolute_import, print_function
-
-from time import strptime, mktime
-from datetime import datetime
-import fnmatch
 import os
+import fnmatch
+from datetime import datetime
 
-from astropy.units import Unit, nm, equivalencies, quantity
-import astropy.table
-from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
-    Table, ForeignKey
+import numpy as np
+from sqlalchemy import Float, Table, Column, String, Boolean, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-import numpy as np
 
-from sunpy.time import parse_time, TimeRange
-from sunpy.io import fits, file_tools as sunpy_filetools
-from sunpy.util import print_table
-from sunpy.extern.six.moves import map
-from sunpy.extern import six
-import sunpy.net
+import astropy.table
+from astropy.time import Time
+from astropy.units import Unit, nm, quantity, equivalencies
 
+
+import sunpy
 from sunpy import config
-
+from sunpy.time import parse_time
+from sunpy.io.header import FileHeader
+from sunpy.io import fits, file_tools as sunpy_filetools
 
 TIME_FORMAT = config.get("general", "time_format")
+
+DEFAULT_HEADER = FileHeader([('SIMPLE', True),
+            ('BITPIX', 8),
+            ('NAXIS', 0),
+            ('EXTEND', True),
+            ('COMMENT', ''),
+            ('HISTORY', ''),
+            ('KEYCOMMENTS',
+            {'SIMPLE': 'conforms to FITS standard',
+            'BITPIX': 'array data type',
+            'NAXIS': 'number of array dimensions'}),
+            ('WAVEUNIT', None)])
+
 
 __all__ = [
     'WaveunitNotFoundError', 'WaveunitNotConvertibleError', 'JSONDump',
@@ -71,11 +79,6 @@ class WaveunitNotConvertibleError(Exception):
         return (
             'the waveunit {0!r} cannot be converted to an '
             'astropy.units.Unit instance'.format(self.waveunit))
-
-
-# TODO: move this function outside this package (sunpy.util? sunpy.time?)
-def timestamp2datetime(format, string):
-    return datetime.fromtimestamp(mktime(strptime(string, format)))
 
 
 class JSONDump(Base):
@@ -198,14 +201,14 @@ class DatabaseEntry(Base):
     id : int
         A unique ID number. By default it is None, but automatically set to the
         maximum number plus one when this entry is added to the database.
-    source : string
+    source : str
         The source is the name of an observatory or the name of a network of
         observatories.
-    provider : string
+    provider : str
         The name of the server which provides the retrieved data.
-    physobs : string
+    physobs : str
         A physical observable identifier used by VSO.
-    fileid : string
+    fileid : str
         The file ID is a string defined by the data provider that should point
         to a specific data product. The association of fileid to the specific
         data may change sometime, if the fileid always points to the latest
@@ -214,7 +217,7 @@ class DatabaseEntry(Base):
         The date and time when the observation of the data started.
     observation_time_end : datetime
         The date and time when the observation of the data ended.
-    instrument : string
+    instrument : str
         The instrument which was used to observe the data.
     size : float
         The size of the data in kilobytes.
@@ -227,7 +230,7 @@ class DatabaseEntry(Base):
     hdu_index : int
         This value provides a list of all available HDUs and in what
         files they are located.
-    path : string
+    path : str
         A local file path where the according FITS file is saved.
     download_time : datetime
         The date and time when the files connected to a query have been
@@ -290,27 +293,27 @@ class DatabaseEntry(Base):
         ...     vso.attrs.Instrument('eit'))  # doctest: +REMOTE_DATA
         >>> entry = DatabaseEntry._from_query_result_block(qr[0])  # doctest: +REMOTE_DATA
         >>> entry.source  # doctest: +REMOTE_DATA
-        SOHO
+        'SOHO'
         >>> entry.provider  # doctest: +REMOTE_DATA
-        SDAC
+        'SDAC'
         >>> entry.physobs  # doctest: +REMOTE_DATA
         'intensity'
         >>> entry.fileid  # doctest: +REMOTE_DATA
-        /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042
+        '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042'
         >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
         (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
         >>> entry.instrument  # doctest: +REMOTE_DATA
-        EIT
+        'EIT'
         >>> entry.size  # doctest: +REMOTE_DATA
         2059.0
         >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
         (19.5, 19.5)
 
         """
-        time_start = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.start)
+        time_start = datetime.strptime(qr_block.time.start, '%Y%m%d%H%M%S')
         if not qr_block.time.end:
             qr_block.time.end = qr_block.time.start
-        time_end = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.end)
+        time_end = datetime.strptime(qr_block.time.end, '%Y%m%d%H%M%S')
         wave = qr_block.wave
         unit = None
         if wave.waveunit is None:
@@ -376,8 +379,8 @@ class DatabaseEntry(Base):
         if physobs is not None:
             physobs = str(physobs)
         instrument = getattr(sr_block, 'instrument', None)
-        time_start = sr_block.time.start
-        time_end = sr_block.time.end
+        time_start = sr_block.time.start.datetime
+        time_end = sr_block.time.end.datetime
 
         wavelengths = getattr(sr_block, 'wave', None)
         wavelength_temp = {}
@@ -518,17 +521,17 @@ def entries_from_query_result(qr, default_waveunit=None):
     >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
     >>> entry = next(entries)  # doctest: +REMOTE_DATA
     >>> entry.source  # doctest: +REMOTE_DATA
-    SOHO
+    'SOHO'
     >>> entry.provider  # doctest: +REMOTE_DATA
-    SDAC
+    'SDAC'
     >>> entry.physobs  # doctest: +REMOTE_DATA
     'intensity'
     >>> entry.fileid  # doctest: +REMOTE_DATA
-    /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042
+    '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042'
     >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
     (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
     >>> entry.instrument  # doctest: +REMOTE_DATA
-    EIT
+    'EIT'
     >>> entry.size  # doctest: +REMOTE_DATA
     2059.0
     >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
@@ -596,7 +599,9 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
 
 
 def entries_from_file(file, default_waveunit=None,
-                      time_string_parse_format=None):
+                      time_string_parse_format=''):
+    # Note: time_string_parse_format='' so that None won't be passed to Time.strptime
+    # (which would make strptime freak out, if I remember correctly).
     """Use the headers of a FITS file to generate an iterator of
     :class:`sunpy.database.tables.DatabaseEntry` instances. Gathered
     information will be saved in the attribute `fits_header_entries`. If the
@@ -620,7 +625,7 @@ def entries_from_file(file, default_waveunit=None,
 
     time_string_parse_format : str, optional
         Fallback timestamp format which will be passed to
-        `~datetime.datetime.strftime` if `sunpy.time.parse_time` is unable to
+        `~astropy.time.Time.strptime` if `sunpy.time.parse_time` is unable to
         automatically read the `date-obs` metadata.
 
     Raises
@@ -654,20 +659,27 @@ def entries_from_file(file, default_waveunit=None,
 
     """
     headers = fits.get_header(file)
-    if isinstance(file, (str, six.text_type)):
+
+    # This just checks for blank default headers
+    # due to compression.
+    for header in headers:
+        if header == DEFAULT_HEADER:
+            headers.remove(header)
+
+    if isinstance(file, str):
         filename = file
     else:
         filename = getattr(file, 'name', None)
     for header in headers:
         entry = DatabaseEntry(path=filename)
-        for key, value in six.iteritems(header):
+        for key, value in header.items():
             # Yes, it is possible to have an empty key in a FITS file.
             # Example: sunpy.data.sample.EIT_195_IMAGE
             # Don't ask me why this could be a good idea.
             if key == '':
                 value = str(value)
             elif key == 'KEYCOMMENTS':
-                for k, v in six.iteritems(value):
+                for k, v in value.items():
                     entry.fits_key_comments.append(FitsKeyComment(k, v))
                 continue
             entry.fits_header_entries.append(FitsHeaderEntry(key, value))
@@ -694,15 +706,17 @@ def entries_from_file(file, default_waveunit=None,
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
-                entry.observation_time_end = parse_time(
-                    value,
-                    _time_string_parse_format=time_string_parse_format
-                )
+                try:
+                    dt = parse_time(value).datetime
+                except ValueError:
+                    dt = Time.strptime(value, time_string_parse_format).datetime
+                entry.observation_time_end = dt
             elif key in ('DATE-OBS', 'DATE_OBS'):
-                entry.observation_time_start = parse_time(
-                    value,
-                    _time_string_parse_format=time_string_parse_format
-                )
+                try:
+                    dt = parse_time(value).datetime
+                except ValueError:
+                    dt = Time.strptime(value, time_string_parse_format).datetime
+                entry.observation_time_start = dt
         yield entry
 
 
@@ -716,7 +730,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
     Parameters
     ----------
-    fitsdir : string
+    fitsdir : str
         The directory where to look for FITS files.
 
     recursive : bool, optional
@@ -737,7 +751,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
     time_string_parse_format : str, optional
         Fallback timestamp format which will be passed to
-        `~datetime.datetime.strftime` if `sunpy.time.parse_time` is unable to
+        `~astropy.time.Time.strptime` if `sunpy.time.parse_time` is unable to
         automatically read the `date-obs` metadata.
 
     Returns
@@ -760,7 +774,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):
-        filename_paths = (os.path.join(dirpath, name) for name in filenames)
+        filename_paths = (os.path.join(dirpath, name) for name in sorted(filenames))
         for path in fnmatch.filter(filename_paths, pattern):
             try:
                 filetype = sunpy_filetools._detect_filetype(path)

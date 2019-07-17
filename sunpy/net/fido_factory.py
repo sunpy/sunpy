@@ -8,23 +8,22 @@ This module provides the `Fido
 `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
 
 """
-# This module was initially developed under funding provided by Google Summer
-# of Code 2014
-from __future__ import print_function, absolute_import
-from collections import Sequence
+from collections.abc import Sequence
+
+from parfive import Downloader, Results
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 
-from sunpy.net.dataretriever.clients import CLIENTS
+from sunpy.net.base_client import BaseClient
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.vso import VSOClient, QueryResponse as vsoQueryResponse
 
 from sunpy.net import attr
 from sunpy.net import attrs as a
 
-__all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory', 'DownloadResponse']
+__all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
 
 
 class UnifiedResponse(Sequence):
@@ -206,34 +205,6 @@ class UnifiedResponse(Sequence):
         return ret
 
 
-class DownloadResponse(list):
-    """
-    Object returned by clients servicing the query.
-    """
-
-    def __init__(self, lst):
-        super(DownloadResponse, self).__init__(lst)
-
-    def wait(self, progress=True):
-        """
-        Waits for all files to download completely and then return.
-
-        Parameters
-        ----------
-        progress : `bool`
-            if true, display a progress bar.
-
-        Returns
-        -------
-        List of file paths to which files have been downloaded.
-        """
-        filelist = []
-        for resobj in self:
-            filelist.extend(resobj.wait(progress=progress))
-
-        return filelist
-
-
 """
 Construct a simple AttrWalker to split up searches into blocks of attrs being
 'anded' with AttrAnd.
@@ -271,7 +242,7 @@ def _create_or(walker, query, factory):
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
     """
-    sunpy.net.Fido(\*args, \*\*kwargs)
+    sunpy.net.Fido(\\*args, \\*\\*kwargs)
 
     Search and Download data from a variety of supported sources.
     """
@@ -321,13 +292,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         ie. query is now of form A & B or ((A & B) | (C & D))
         This helps in modularising query into parts and handling each of the
         parts individually.
-        """
+        """  # noqa
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 
-    # Python 3: this line should be like this
-    # def fetch(self, *query_results, wait=True, progress=True, **kwargs):
-    def fetch(self, *query_results, **kwargs):
+    def fetch(self, *query_results, path=None, max_conn=5, progress=True,
+              overwrite=False, downloader=None, **kwargs):
         """
         Download the records represented by
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
@@ -337,36 +307,88 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query_results : `sunpy.net.fido_factory.UnifiedResponse`
             Container returned by query method, or multiple.
 
-        wait : `bool`
-            fetch will wait until the download is complete before returning.
+        path : `str`
+            The directory to retrieve the files into. Can refer to any fields
+            in `UnifiedResponse.response_block_properties` via string formatting,
+            moreover the file-name of the file downloaded can be referred to as file,
+            e.g. "{source}/{instrument}/{time.start}/{file}".
 
-        progress : `bool`
-            Show a progress bar while the download is running.
+        max_conn : `int`, optional
+            The number of parallel download slots.
+
+        progress : `bool`, optional
+            If `True` show a progress bar showing how many of the total files
+            have been downloaded. If `False`, no progress bars will be shown at all.
+
+        overwrite : `bool` or `str`, optional
+            Determine how to handle downloading if a file already exists with the
+            same name. If `False` the file download will be skipped and the path
+            returned to the existing file, if `True` the file will be downloaded
+            and the existing file will be overwritten, if `'unique'` the filename
+            will be modified to be unique.
+
+        downloader : `parfive.Downloader`, optional
+            The download manager to use. If specified the ``max_conn``,
+            ``progress`` and ``overwrite`` arguments are ignored.
 
         Returns
         -------
-        `sunpy.net.fido_factory.DownloadResponse`
+        `parfive.Results`
 
-        Example
+        Examples
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
-        >>> downresp = Fido.fetch(unifresp)  # doctest: +SKIP
-        >>> file_paths = downresp.wait()  # doctest: +SKIP
+        >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
+
+        If any downloads fail, they can be retried by passing the `parfive.Results` object back into ``fetch``.
+
+        >>> filepaths = Fido.fetch(filepaths)  # doctest: +SKIP
+
         """
-        wait = kwargs.pop("wait", True)
-        progress = kwargs.pop("progress", True)
+
+        if "wait" in kwargs:
+            raise ValueError("wait is not a valid keyword argument to Fido.fetch.")
+
+        if downloader is None:
+            downloader = Downloader(max_conn=max_conn, progress=progress, overwrite=overwrite)
+        elif not isinstance(downloader, Downloader):
+            raise TypeError("The downloader argument must be a parfive.Downloader object.")
+
+        # Handle retrying failed downloads
+        retries = [isinstance(arg, Results) for arg in query_results]
+        if all(retries):
+            results = Results()
+            for retry in query_results:
+                dr = downloader.retry(retry)
+                results.data += dr.data
+                results._errors += dr._errors
+            return results
+        elif any(retries):
+            raise TypeError("If any arguments to fetch are "
+                            "`parfive.Results` objects, all arguments must be.")
+
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                reslist.append(block.client.fetch(block, **kwargs))
+                reslist.append(block.client.fetch(block, path=path,
+                                                  downloader=downloader,
+                                                  wait=False, **kwargs))
 
-        results = DownloadResponse(reslist)
+        results = downloader.download()
+        # Combine the results objects from all the clients into one Results
+        # object.
+        for result in reslist:
+            if result is None:
+                continue
+            if not isinstance(result, Results):
+                raise TypeError(
+                    "If wait is False a client must return a parfive.Downloader and either None"
+                    " or a parfive.Results object.")
+            results.data += result.data
+            results._errors += result.errors
 
-        if wait:
-            return results.wait(progress=progress)
-        else:
-            return results
+        return results
 
     def __call__(self, *args, **kwargs):
         raise TypeError("'{}' object is not callable".format(self.__class__.__name__))
@@ -419,4 +441,4 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
 
 Fido = UnifiedDownloaderFactory(
-    registry=CLIENTS, additional_validation_functions=['_can_handle_query'])
+    registry=BaseClient._registry, additional_validation_functions=['_can_handle_query'])

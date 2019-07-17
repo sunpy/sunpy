@@ -1,37 +1,36 @@
-# -*- coding: utf-8 -*-
-"""NOAA Solar Cycle TimeSeries subclass definitions."""
-from __future__ import absolute_import
-
+"""
+This module provies NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
+"""
 from collections import OrderedDict
-import datetime
-from matplotlib import pyplot as plt
-from pandas.io.parsers import read_csv
+
 import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from pandas.io.parsers import read_csv
+
+import astropy.units as u
+from astropy.time import Time
 
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
-
-from astropy import units as u
+from sunpy.visualization import peek_show
 
 __all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries']
 
 
 class NOAAIndicesTimeSeries(GenericTimeSeries):
-    """NOAA Solar Cycle monthly indices.
+    """
+    NOAA Solar Cycle monthly indices.
 
-    Solar activity is measured by a number of different values. The NOAA Solar
-    Weather Prediction Center (SWPC) publishes the following indices. All of
-    these indices are also provided as a 13-month running smoothed value.
+    Solar activity is measured by a number of different values.
+    The NOAA Solar Weather Prediction Center (SWPC) publishes the following indices.
+    All of these indices are also provided as a 13-month running smoothed value.
 
-    * The SWO sunspot number is issued by the NOAA Space Weather
-      Prediction Center (SWPC)
+    * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
     * The RI sunspot number is the official International Sunspot Number and is
-      issued by the `Solar Influence Data Analysis Center (SDIC)
-      <http://sidc.oma.be>`_ in Brussels, Belgium.
+      issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
     * The ratio between the SWO and RI indices.
-    * Radio flux at 10.7 cm is produced by
-      `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the
-      units are in sfu.
+    * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
     * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
     Examples
@@ -49,12 +48,13 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
     * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
     """
-
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaaindices'
 
-    def peek(self, type='sunspot SWO', **plot_args):
-        """Plots NOAA Indices as a function of time. An example is shown below.
+    @peek_show
+    def peek(self, type='sunspot SWO'):
+        """
+        Plots NOAA Indices as a function of time. An example is shown below.
 
         .. plot::
 
@@ -65,11 +65,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
         Parameters
         ----------
-        type : `str`
-            The type of plot required.
-
-        **plot_args : `dict`
-            Any additional plot arguments that should be used when plotting.
+        type : `str`, optional
+            The type of plot required. Defaults to "sunspot SWO".
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -105,11 +102,17 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes.xaxis.grid(True, 'major')
         axes.legend()
 
-        figure.show()
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):
-        """Parses an NOAA indices csv file"""
+        """
+        Parses an NOAA indices csv file.
+
+        Parameters
+        ----------
+        filepath : `str`
+            The path to the file you want to parse.
         """
         header = []
         with open(filepath, 'r') as fp:
@@ -118,31 +121,17 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             while line.startswith((":", "#")):
                 header += line
                 line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
-            data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
+            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth',
+                      'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
+            data = read_csv(fp, delim_whitespace=True, names=fields,
+                            comment='#', dtype={'yyyy': np.str, 'mm': np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
-            data['time']=timeindex
+            timeindex = Time.strptime([x + y for x, y in zip(data['yyyy'], data['mm'])], '%Y%m')
+            timeindex.precision = 9
+            data['time'] = timeindex.isot.astype('datetime64')
             data = data.set_index('time')
-            data = data.drop('mm',1)
-            data = data.drop('yyyy',1)
-            return data, {'comments': header}
-        """
-        header = []
-        with open(filepath, 'r') as fp:
-            line = fp.readline()
-            # Read header at top of file
-            while line.startswith((":", "#")):
-                header += line
-                line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
-            data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
-            data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
-            data['time']=timeindex
-            data = data.set_index('time')
-            data = data.drop('mm',1)
-            data = data.drop('yyyy',1)
+            data = data.drop('mm', 1)
+            data = data.drop('yyyy', 1)
 
             # Add the units data
             units = OrderedDict([('sunspot SWO', u.dimensionless_unscaled),
@@ -154,21 +143,22 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
                                  ('radio flux smooth', u.W/u.m**2),
                                  ('geomagnetic ap', u.dimensionless_unscaled),
                                  ('geomagnetic smooth', u.dimensionless_unscaled)])
-            # Todo: check units
-            # Todo: fix header/meta, it's returning rubbish.
+            # TODO: check units
+            # TODO: fix header/meta, it's returning rubbish.
             return data, MetaDict({'comments': header}), units
-
-
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to an NOAA indices timeseries"""
+        """
+        Determines if header corresponds to an NOAA indices timeseries.
+        """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)
 
 
 class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
-    """NOAA Solar Cycle Predicted Progression
+    """
+    NOAA Solar Cycle Predicted Progression.
 
     The predictions are updated monthly and are produced by ISES. Observed
     values are initially the preliminary values which are replaced with the
@@ -194,14 +184,16 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     * `Predicted solar indices <http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt>`_
     * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
     * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
-
     """
 
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'noaapredictindices'
 
+    @peek_show
     def peek(self, **plot_args):
-        """Plots predicted NOAA Indices as a function of time. An example is shown below.
+        """
+        Plots predicted NOAA Indices as a function of time. An example is shown
+        below.
 
         .. plot::
 
@@ -234,11 +226,19 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes.xaxis.grid(True, 'major')
         axes.legend()
 
-        figure.show()
+        return figure
+
 
     @staticmethod
     def _parse_file(filepath):
-        """Parses an NOAA indices csv file"""
+        """
+        Parses an NOAA indices csv file.
+
+        Parameters
+        ----------
+        filepath : `str`
+            The path to the file you want to parse.
+        """
         header = ''
         with open(filepath, 'r') as fp:
             line = fp.readline()
@@ -246,14 +246,19 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             while line.startswith((":", "#")):
                 header += line
                 line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high', 'radio flux', 'radio flux low', 'radio flux high')
-            data = read_csv(filepath, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
+            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high',
+                      'radio flux', 'radio flux low', 'radio flux high')
+            data = read_csv(filepath, delim_whitespace=True, names=fields,
+                            comment='#', skiprows=2, dtype={'yyyy': np.str, 'mm': np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
-            data['time']=timeindex
+
+            timeindex = Time.strptime([x + y for x, y in zip(data['yyyy'], data['mm'])], '%Y%m')
+            timeindex.precision = 9
+            data['time'] = timeindex.isot.astype('datetime64')
+
             data = data.set_index('time')
-            data = data.drop('mm',1)
-            data = data.drop('yyyy',1)
+            data = data.drop('mm', 1)
+            data = data.drop('yyyy', 1)
 
             # Add the units data
             units = OrderedDict([('sunspot', u.dimensionless_unscaled),
@@ -267,6 +272,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to an NOAA predict indices timeseries"""
+        """
+        Determines if header corresponds to an NOAA predict indices
+        `~sunpy.timeseries.TimeSeries`.
+        """
         if kwargs.get('source', ''):
             return kwargs.get('source', '').lower().startswith(cls._source)

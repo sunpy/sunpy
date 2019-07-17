@@ -123,7 +123,6 @@ plots can be built by combining SunPy with matplotlib.
     aia.plot()
     aia.draw_limb()
     aia.draw_grid()
-    aia.draw_limb()
     plt.colorbar()
 
     plt.show()
@@ -148,11 +147,11 @@ a short bit of code to get you started: ::
 
     # the solar radius
     >>> print(con.radius)
-      Name   = Solar radius
-      Value  = 695508000.0
-      Uncertainty  = 26000.0
+      Name   = Nominal solar radius
+      Value  = 695700000.0
+      Uncertainty  = 0.0
       Unit  = m
-      Reference = Allen's Astrophysical Quantities 4th Ed.
+      Reference = IAU 2015 Resolution B 3
 
 Not all constants have a shortcut assigned to them (as above). The rest of the constants
 are stored in a dictionary. The following code grabs the dictionary and gets all of the
@@ -183,32 +182,32 @@ Quantities and units are powerful tools for keeping track of variables with
 physical meaning and make it straightforward to convert the same physical
 quantity into different units. To learn more about the capabilities of
 quantities and units, consult :ref:`units-coordinates-sunpy` or
-`the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__.
+`the astropy tutorial <http://learn.astropy.org/Quantities.html>`__.
 
 To demonstrate this, let's look at the solar radius constant. This is a physical quantity
 that can be expressed in length units ::
 
     >>> from sunpy.sun import constants as con
     >>> con.radius
-    <<class 'astropy.constants.iau2012.IAU2012'> name='Solar radius' value=695508000.0 uncertainty=26000.0 unit='m' reference="Allen's Astrophysical Quantities 4th Ed.">
+    <<class 'astropy.constants.iau2015.IAU2015'> name='Nominal solar radius' value=695700000.0 uncertainty=0.0 unit='m' reference='IAU 2015 Resolution B 3'>
 
 shows the solar radius in units of meters.  The same physical quantity can be expressed in different units instead using the `.to()` method::
 
     >>> con.radius.to('km')
-    <Quantity 695508. km>
+    <Quantity 695700. km>
 
 or equivalently::
 
     >>> import astropy.units as u
     >>> con.radius.to(u.km)
-    <Quantity 695508. km>
+    <Quantity 695700. km>
 
 If, as is sometimes the case, you need just the raw value or the unit from a quantity, you can access these individually
 with the `value` and `unit` attributes, respectively::
 
     >>> r = con.radius.to(u.km)
     >>> r.value
-    695508.0
+    695700.0
     >>> r.unit
     Unit("km")
 
@@ -250,8 +249,8 @@ or you can convert the output::
 
 
 This is an extremely brief summary of the powerful capbilities of Astropy units.  To find out more, see
-the `the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__ and
-`documentation <http://docs.astropy.org/en/stable/units/index.html>`__
+the `the astropy tutorial <http://learn.astropy.org/Quantities.html>`__ and
+`documentation <https://docs.astropy.org/en/stable/units/index.html>`__
 
 
 Working with Times
@@ -264,21 +263,19 @@ and times. Here is a short example: ::
 
     # parsing a standard time strings
     >>> sunpy.time.parse_time('2004/02/05 12:00')
-    datetime.datetime(2004, 2, 5, 12, 0)
+    <Time object: scale='utc' format='isot' value=2004-02-05T12:00:00.000>
 
-    # This returns a datetime object. All SunPy functions which require
+    # This returns a astropy.time.Time object. All SunPy functions which require
     # time as an input sanitize the input using parse_time.
-    >>> sunpy.time.day_of_year('2004-Jul-05 12:00:02')
-    187.50002314814816
 
     # the julian day
-    >>> sunpy.time.julian_day((2010,4,30))
+    >>> sunpy.time.parse_time((2010,4,30)).jd
     2455316.5
 
     # TimeRange objects are useful for representing ranges of time
     >>> time_range = sunpy.time.TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     >>> time_range.center
-    datetime.datetime(2010, 3, 4, 0, 15)
+    <Time object: scale='utc' format='isot' value=2010-03-04T00:15:00.000>
 
 For more information about working with time in SunPy checkout the :doc:`time guide <time>`.
 

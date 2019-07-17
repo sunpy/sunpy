@@ -15,21 +15,15 @@ AND-expression, if you still attempt to do so it is called a collision.
 For a quick example think about how the system should handle
 Instrument('aia') & Instrument('eit').
 """
-from __future__ import absolute_import
+import collections
 
-from datetime import datetime
-
-from astropy import units as u
+import astropy.units as u
 
 from sunpy.time import TimeRange as _TimeRange
-from sunpy.net.attr import (
-    Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
-)
+from sunpy.net.attr import (Attr, AttrWalker, AttrAnd,
+                            AttrOr, DummyAttr, ValueAttr, SimpleAttr)
 from sunpy.util.multimethod import MultiMethod
-from sunpy.util.decorators import deprecated
 from sunpy.time import parse_time
-from sunpy.extern.six import iteritems
-from sunpy.extern import six
 
 __all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
@@ -70,22 +64,6 @@ class _Range(object):
         return self.min <= other.min and self.max >= other.max
 
 
-class _VSOSimpleAttr(Attr):
-    """ A _SimpleAttr is an attribute that is not composite, i.e. that only
-    has a single value, such as, e.g., Instrument('eit'). """
-    def __init__(self, value):
-        Attr.__init__(self)
-
-        self.value = value
-
-    def collides(self, other):
-        return isinstance(other, self.__class__)
-
-    def __repr__(self):
-        return "<{cname!s}({val!r})>".format(
-            cname=self.__class__.__name__, val=self.value)
-
-
 class Wavelength(Attr, _Range):
     def __init__(self, wavemin, wavemax=None):
         """
@@ -107,7 +85,7 @@ class Wavelength(Attr, _Range):
         units is valid input.
         """
 
-        if not wavemax:
+        if wavemax is None:
             wavemax = wavemin
 
         if not all(isinstance(var, u.Quantity) for var in [wavemin, wavemax]):
@@ -142,14 +120,6 @@ class Wavelength(Attr, _Range):
         return "<Wavelength({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
                                                             self.max.value,
                                                             self.unit)
-
-
-@deprecated("0.8", message="Wave has been renamed Wavelength",
-            alternative="sunpy.net.vso.attrs.wavelength")
-class Wave(Wavelength):
-    """
-    Wavelength search attribute. See `sunpy.net.vso.attrs.Wavelength`.
-    """
 
 
 class Time(Attr, _Range):
@@ -188,6 +158,15 @@ class Time(Attr, _Range):
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
 
+    def __hash__(self):
+        if not (isinstance(self.start, collections.Hashable) and
+                isinstance(self.end, collections.Hashable)):
+            # The hash is the hash of the start and end time
+            return hash((self.start.jd1, self.start.jd2, self.start.scale,
+                         self.end.jd1, self.end.jd2, self.end.scale))
+        else:
+            return super().__hash__()
+
     def collides(self, other):
         return isinstance(other, self.__class__)
 
@@ -213,7 +192,7 @@ class Extent(Attr):
     """
     # pylint: disable=R0913
     def __init__(self, x, y, width, length, atype):
-        Attr.__init__(self)
+        super().__init__()
 
         self.x = x
         self.y = y
@@ -225,30 +204,30 @@ class Extent(Attr):
         return isinstance(other, self.__class__)
 
 
-class Provider(_VSOSimpleAttr):
+class Provider(SimpleAttr):
     """
     Specifies the VSO data provider to search for data for.
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
     More information about each source may be found within in the VSO Registry.
     For a list of sources see
-    http://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
+    https://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
     """
     pass
 
 
-class Source(_VSOSimpleAttr):
+class Source(SimpleAttr):
     """
     Data sources that VSO can search on.
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
@@ -256,44 +235,44 @@ class Source(_VSOSimpleAttr):
     User Interface programmers should note that some names may be encoded as
     UTF-8. Please note that 'Source' is used internally by VSO to represent
     what the VSO Data Model refers to as 'Observatory'.  For a list of sources
-    see http://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
+    see https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
     """
     pass
 
 
-class Instrument(_VSOSimpleAttr):
+class Instrument(SimpleAttr):
     """
     Specifies the Instrument name for the search.
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
     More information about each instrument supported by the VSO may be found
     within the VSO Registry. For a list of instruments see
-    http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
+    https://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
     def __init__(self, value):
-        if not isinstance(value, six.string_types):
+        if not isinstance(value, str):
             raise ValueError("Instrument names must be strings")
 
         super(Instrument, self).__init__(value)
 
 
-class Detector(_VSOSimpleAttr):
+class Detector(SimpleAttr):
     """
     The detector from which the data comes from.
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
     For a list of values understood by the VSO see
-    http://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
+    https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
 
     References
     ----------
@@ -302,31 +281,31 @@ class Detector(_VSOSimpleAttr):
     pass
 
 
-class Physobs(_VSOSimpleAttr):
+class Physobs(SimpleAttr):
     """
     Specifies the physical observable the VSO can search for.
 
     Parameters
     ----------
-    value : string
+    value : str
 
     Notes
     -----
     More information about each instrument may be found within the VSO
     Registry.  For a list of physical observables see
-    http://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
+    https://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
     """
     pass
 
 
-class Level(_VSOSimpleAttr):
+class Level(SimpleAttr):
     """
     Specifies the data processing level to search for.  The data processing
     level is specified by the instrument PI.  May not work with all archives.
 
     Parameters
     ----------
-    value : float or string
+    value : float or str
 
         The value can be entered in of three ways:
 
@@ -339,7 +318,7 @@ class Level(_VSOSimpleAttr):
     pass
 
 
-class Pixels(_VSOSimpleAttr):
+class Pixels(SimpleAttr):
     """
     Pixels are (currently) limited to a single dimension (and only implemented
     for SDO data)  We hope to change this in the future to support TRACE,
@@ -352,13 +331,13 @@ class Pixels(_VSOSimpleAttr):
     pass
 
 
-class Resolution(_VSOSimpleAttr):
+class Resolution(SimpleAttr):
     """
     Resolution level of the data.
 
     Parameters
     ----------
-    value : float or string
+    value : float or str
 
         The value can be entered in of three ways:
 
@@ -380,13 +359,13 @@ class Resolution(_VSOSimpleAttr):
     pass
 
 
-class PScale(_VSOSimpleAttr):
+class PScale(SimpleAttr):
     """
     Pixel Scale (PSCALE) is in arc seconds.
 
     Parameters
     ----------
-    value : float or string
+    value : float or str
 
         The value can be entered in of three ways:
 
@@ -405,7 +384,7 @@ class PScale(_VSOSimpleAttr):
     pass
 
 
-class Sample(_VSOSimpleAttr):
+class Sample(SimpleAttr):
     """
     Time interval for data sampling.
 
@@ -414,13 +393,13 @@ class Sample(_VSOSimpleAttr):
     value : `astropy.units.Quantity`
         A sampling rate convertible to seconds.
     """
-    @u.quantity_input(value=u.s)
-    def __init__(self, value):
+    @u.quantity_input
+    def __init__(self, value: u.s):
         super(Sample, self).__init__(value)
         self.value = value.to(u.s).value
 
 
-class Quicklook(_VSOSimpleAttr):
+class Quicklook(SimpleAttr):
     """
     Retrieve 'quicklook' data if available.
 
@@ -447,13 +426,13 @@ class Quicklook(_VSOSimpleAttr):
             self.value = 0
 
 
-class Filter(_VSOSimpleAttr):
+class Filter(SimpleAttr):
     """
     This attribute is a placeholder for the future.
 
     Parameters
     ----------
-    value : string
+    value : str
 
     """
     pass
@@ -473,23 +452,31 @@ walker = AttrWalker()
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """ Implementation detail. """
-    value = api.factory.create('QueryRequestBlock')
+    api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
+    value = api.get_type('VSO:QueryRequestBlock')()
     wlk.apply(root, api, value)
     return [value]
 
 
 @walker.add_applier(ValueAttr)
 # pylint: disable=E0102,C0103,W0613
-def _apply(wlk, root, api, queryblock):
+def _apply(wlk, root, api, block):
     """ Implementation detail. """
-    for k, v in iteritems(root.attrs):
-        lst = k[-1]
-        rest = k[:-1]
+    for k, v in root.attrs.items():
+        name = k[0]
+        subkey = k[1:]
 
-        block = queryblock
-        for elem in rest:
-            block = block[elem]
-        block[lst] = v
+        if subkey:
+            if len(subkey) != 1:
+                raise ValueError("Can't parse double nested ValueAttr")
+            subkey = subkey[0]
+
+            if block[name]:
+                block[name].update({subkey: v})
+            else:
+                block[name] = {subkey: v}
+        else:
+            block[name] = v
 
 
 @walker.add_applier(AttrAnd)
@@ -516,7 +503,7 @@ def _create(wlk, root, api):
 # attrs member.
 walker.add_converter(Extent)(
     lambda x: ValueAttr(
-        dict((('extent', k), v) for k, v in iteritems(vars(x)))
+        dict((('extent', k), v) for k, v in vars(x).items())
     )
 )
 
@@ -529,7 +516,7 @@ walker.add_converter(Time)(
     })
 )
 
-walker.add_converter(_VSOSimpleAttr)(
+walker.add_converter(SimpleAttr)(
     lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
 )
 
@@ -537,7 +524,7 @@ walker.add_converter(Wavelength)(
     lambda x: ValueAttr({
             ('wave', 'wavemin'): x.min.value,
             ('wave', 'wavemax'): x.max.value,
-            ('wave', 'waveunit'): x.unit,
+            ('wave', 'waveunit'): x.unit.name,
     })
 )
 
@@ -574,7 +561,7 @@ def _(attr, results):
 
 
 # Filter out items by comparing attributes.
-@filter_results.add_dec(_VSOSimpleAttr)
+@filter_results.add_dec(SimpleAttr)
 def _(attr, results):
     attrname = attr.__class__.__name__.lower()
     return set(
@@ -613,11 +600,11 @@ def _(attr, results):
         if
         it.time.end is not None
         and
-        attr.min <= datetime.strptime(it.time.end, TIMEFORMAT)
+        attr.min <= Time.strptime(it.time.end, TIMEFORMAT)
         and
         it.time.start is not None
         and
-        attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
+        attr.max >= Time.strptime(it.time.start, TIMEFORMAT)
     )
 
 

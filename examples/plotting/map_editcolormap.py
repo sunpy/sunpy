@@ -1,37 +1,35 @@
+# coding: utf-8
 """
-=======================================
-Editing Map Colormaps and Normalization
-=======================================
+===============================================
+Editing the colormap and normalization of a Map
+===============================================
 
-A simple example to show how to edit the display of a map
+How to edit the display of a map.
 """
-import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
 
-
 ###############################################################################
-# We first create the Map using the sample data.
-
+# We start with the sample data
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
-# Now lets replace the colormap which sets the colors as well as the
-# normalization which sets how data values are translated to colors
-
+# All plot settings for a map are stored in the `plot_settings` attribute.
+# How a Map is displayed is determined by its colormap, which sets the colors
+# , and the normalization, which sets how data values are translated to colors.
+# Lets replace the colormap and normalization.
 aiamap.plot_settings['cmap'] = plt.get_cmap('Greys_r')
 aiamap.plot_settings['norm'] = colors.LogNorm(100, aiamap.max())
 
 ###############################################################################
-# You can find more colormaps in matplotlib
-# (https://matplotlib.org/examples/color/colormaps_reference.html) or look at
-# the sunpy colormaps in `sunpy.cm` For more normalizations check out
-# `matplotlib.colors.Normalize` or astropy provides additional norms in
-# `astropy.visualization`
-
+# To see all of the colormaps SunPy provides see `sunpy.cm`.
+# Matplotlib provides a number of `colormaps <https://matplotlib.org/examples/color/colormaps_reference.html>`_
+# and `normalizations <https://matplotlib.org/users/colormapnorms.html>`_.
+# For more advanced normalizations see `astropy.visualization`.
+ax = plt.subplot(projection=aiamap)
 aiamap.plot()
 plt.colorbar()
 plt.show()

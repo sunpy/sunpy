@@ -1,5 +1,4 @@
 """STEREO Map subclass definitions"""
-from __future__ import absolute_import, print_function, division
 #pylint: disable=W0221,W0222,E1121
 
 __author__ = "Keith Hughitt"
@@ -10,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
+import astropy.units as u
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
@@ -55,6 +55,22 @@ class EUVIMap(GenericMap):
         https://sohowww.nascom.nasa.gov/solarsoft/stereo/secchi/doc/FITS_keywords.pdf
         """
         return self.meta.get('rsun', None)
+
+    @property
+    def rsun_obs(self):
+        """
+        Radius of the sun in arcseconds as a quantity.
+
+        References
+        ----------
+        https://sohowww.nascom.nasa.gov/solarsoft/stereo/secchi/doc/FITS_keywords.pdf
+        """
+        rsun_arcseconds = self.meta.get('rsun', None)
+
+        if rsun_arcseconds is None:
+            rsun_arcseconds = super().rsun_obs
+
+        return u.Quantity(rsun_arcseconds, 'arcsec')
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

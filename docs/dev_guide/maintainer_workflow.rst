@@ -1,27 +1,155 @@
 .. _maintainer-workflow:
 
+************************
 Workflow for Maintainers
-========================
+************************
 
-This page is for maintainers those of us who merge our own or other peoples' changes into the upstream repository.
+This page is for maintainers who can merge our own or other peoples' changes into the upstream repository.
 
-Being as how you're a maintainer, you are completely on top of the basic stuff in :ref:`version_control`.
+Seeing as how you're a maintainer, you should be completely on top of the basic git workflow in :ref:`newcomers` and Astropy's `git workflow`_.
 
-Integrating changes
--------------------
+.. _git workflow: https://docs.astropy.org/en/stable/development/workflow/development_workflow.html#development-workflow
+
+Integrating changes via the web interface (recommended)
+=======================================================
 
 Whenever possible, merge pull requests automatically via the pull request manager on GitHub.
 Merging should only be done manually if there is a really good reason to do this!
 
-Please try to make sure that pull requests do not contain a messy history with merges, etc.
-If this is the case, then you have two options.
-To use the rebase merge on Github or to follow the manual instructions, and make sure the fork is rebased to tidy the history before committing.
-The second option should only be used on complex pull requests.
+Make sure that pull requests do not contain a messy history with merges, etc.
+If this is the case, then follow the manual instructions, and make sure the fork is rebased to tidy the history before committing.
+
+Integrating changes manually
+============================
+
+First, check out the "sunpy" repository.
+Being a maintainer, you've got read-write access.
+
+It's good to have your upstream remote have a scary name, to remind you that it's a read-write remote::
+
+    $ git remote add upstream-rw git@github.com:sunpy/sunpy.git
+    $ git fetch upstream-rw
+
+Let's say you have some changes that need to go into trunk (``upstream-rw/master``).
+
+The changes are in some branch that you are currently on.
+For example, you are looking at someone's changes like this::
+
+    $ git remote add someone git://github.com/someone/sunpy.git
+    $ git fetch someone
+    $ git branch cool-feature --track someone/cool-feature
+    $ git checkout cool-feature
+
+So now you are on the branch with the changes to be incorporated upstream.
+The rest of this section assumes you are on this branch.
+
+If you prefer not to add remotes, you can make git fetch all pull requests opened to Sunpy.
+Locate the section for your git remote in the ``.git/config`` file.
+It looks like this::
+
+    [remote "upstream"]
+            url = git@github.com:sunpy/sunpy.git
+            fetch = +refs/heads/*:refs/remotes/upstream/*
+
+Now add the line ``fetch = +refs/pull/*/head:refs/remotes/upstream/pr/*`` to this section.
+It ends up looking like this::
+
+    [remote "upstream"]
+            url = git@github.com:sunpy/sunpy.git
+            fetch = +refs/heads/*:refs/remotes/upstream/*
+            fetch = +refs/pull/*/head:refs/remotes/upstream/pr/*
+
+Now fetch all the pull requests::
+
+    $ git fetch upstream
+    From github.com:sunpy/sunpy
+    * [new ref]         refs/pull/1000/head -> upstream/pr/1000
+    * [new ref]         refs/pull/1002/head -> upstream/pr/1002
+    * [new ref]         refs/pull/1004/head -> upstream/pr/1004
+    * [new ref]         refs/pull/1009/head -> upstream/pr/1009
+
+To check out a particular pull request::
+
+    $ git checkout pr/999
+    Branch pr/999 set up to track remote branch pr/999 from upstream.
+    Switched to a new branch 'pr/999'
+
+When to remove or combine/squash commits
+----------------------------------------
+
+In all cases, be mindful of maintaining a welcoming environment and be helpful with advice, especially for new contributors.
+It is expected that a maintainer would offer to help a contributor who is a novice git user do any squashing that that maintainer asks for, or do the squash themselves by directly pushing to the PR branch.
+
+Pull requests **must** be rebased and at least partially squashed (but not necessarily squashed to a single commit) if large (approximately >10KB) non-source code files (e.g. images, data files, etc.) are added and then removed or modified in the PR commit history (The squashing should remove all but the last addition of the file to not use extra space in the repository).
+
+Combining/squashing commits is **encouraged** when the number of commits is excessive for the changes made.
+The definition of "excessive" is subjective, but in general one should attempt to have individual commits be units of change, and not include reversions.
+As a concrete example, for a change affecting < 50 lines of source code and including a changelog entry, more than a two commits would be excessive.
+For a larger pull request adding significant functionality, however, more commits may well be appropriate.
+
+As another guideline, squashing should remove extraneous information but should not be used to remove useful information for how a PR was developed.
+For example, 4 commits that are testing changes and have a commit message of just "debug" should be squashed.
+But a series of commit messages that are "Implemented feature X", "added test for feature X", "fixed bugs revealed by tests for feature X" are useful information and should not be squashed away without reason.
+
+When squashing, extra care should be taken to keep authorship credit to all individuals who provided substantial contribution to the given PR, e.g. only squash commits made by the same author.
+
+When to rebase
+--------------
+
+Pull requests **must** be rebased (but not necessarily squashed to a single commit) if at least one of the following conditions is met:
+
+* There are conflicts with master
+* There are merge commits from upstream/master in the PR commit history (merge commits from PRs to the user's fork are fine)
+* There are commit messages include offensive language or violate the code of conduct (in this case the rebase must also edit the commit messages)
+
+A few commits
+-------------
+
+If there are only a few commits, consider rebasing to upstream::
+
+    # Fetch upstream changes
+    $ git fetch upstream-rw
+
+    # Rebase
+    $ git rebase upstream-rw/master
+
+A long series of commits
+------------------------
+
+If there are a longer series of related commits, consider a merge instead::
+
+    $ git fetch upstream-rw
+    $ git merge --no-ff upstream-rw/master
+
+Note the ``--no-ff`` above.
+This forces git to make a merge commit, rather than doing a fast-forward, so that these set of commits branch off trunk then rejoin the main history with a merge, rather than appearing to have been made directly on top of trunk.
+
+Check the history
+-----------------
+
+Now, in either case, you should check that the history is sensible and you have the right commits::
+
+    $ git log --oneline --graph
+    $ git log -p upstream-rw/master..
+
+The first line above just shows the history in a compact way, with a text representation of the history graph.
+The second line shows the log of commits excluding those that can be reached from trunk (``upstream-rw/master``), and including those that can be reached from current HEAD (implied with the ``..`` at the end).
+So, it shows the commits unique to this branch compared to trunk.
+The ``-p`` option shows the diff for these commits in patch form.
+
+Push to open pull request
+-------------------------
+
+Now you need to push the changes you have made to the code to the open pull request::
+
+    $ git push git@github.com:<username>/sunpy.git HEAD:<name of branch>
+
+You might have to add ``--force`` if you rebased instead of adding new commits.
 
 Using Milestones and Labels
 ===========================
 
-These guidelines are adapted from `similar guidelines <http://docs.astropy.org/en/stable/development/workflow/maintainer_workflow.html#using-milestones-and-labels>`_ followed by Astropy:
+These guidelines are adapted from `guidelines`_ followed by astropy:
 
 * All open pull requests should have a milestone.
 
@@ -29,79 +157,39 @@ These guidelines are adapted from `similar guidelines <http://docs.astropy.org/e
 
 * In general there should be the following open milestones:
 
-  * The next bug fix releases for any still-supported version lines; for example if 0.4 is in development and
-    0.2.x and 0.3.x are still supported there should be milestones for the next 0.2.x and 0.3.x releases.
+  * The next bug fix releases for any still-supported version lines; for example if 0.4 is in development and 0.2.x and 0.3.x are still supported there should be milestones for the next 0.2.x and 0.3.x releases.
 
-  * The next X.Y release, i.e. the next minor release; this is generally the next release that all development in
-    master is aimed toward.
+  * The next X.Y release, i.e. the next minor release; this is generally the next release that all development in master is aimed toward.
 
-  * The next X.Y release +1; for example if 0.3 is the next release, there should also be a milestone for 0.4 for
-    issues that are important, but that we know won't be resolved in the next release.
+  * The next X.Y release +1; for example if 0.3 is the next release, there should also be a milestone for 0.4 for issues that are important, but that we know won't be resolved in the next release.
 
-* When in doubt about which milestone to use for an issue, use the next minor release, it can always be moved once
-  it's been more closely reviewed prior to release.
+* When in doubt about which milestone to use for an issue, use the next minor release, it can always be moved once it's been more closely reviewed prior to release.
 
-* Issues that require fixing in the mainline, but that also are confirmed to apply to supported stable version lines
-  should be marked with a ``Affects Release`` label and the corresponding supported stable version label ``v0.4.x``.
+* Issues that require fixing in master, but that also are confirmed to apply to supported stable version lines should be marked with a "Affects Release" label and the corresponding supported stable version label "v0.4.x".
+
+.. _guidelines: :https://docs.astropy.org/en/stable/development/workflow/maintainer_workflow.html#using-milestones-and-labels
 
 Using Projects
 ==============
 
-Projects allow us to layout current pull requests and issues in a manner that enables a more `meta` view regarding major releases.
+Projects allow us to layout current pull requests and issues in a manner that enables a more "meta" view regarding major releases.
 We categorize pull requests and issues into several levels of priorities and whether these can be classed as blockers before a release can be attempted.
 Further we can add general notes that someone deems important for a release.
 
 Updating and Maintaining the Changelog
 ======================================
 
-The SunPy "changelog" is kept in the file ``CHANGELOG.rst`` at the root of the repository.
-As the filename extension suggests this is a reStructured Text file.
-The purpose of this file is to give a technical, but still user (and developer) oriented overview of what changes were made to Sunpy between each public release.
-The idea is that it's a little more to the point and easier to follow than trying to read through full git log.
-It lists all new features added between versions, so that a user can easily find out from reading the changelog when a feature was added.
-Likewise it lists any features or APIs that were changed (and how they were changed) or removed.
-It also lists all bug fixes.
-Affiliated packages are encouraged to maintain a similar changelog.
+The changelog will be read by users, so this description should be aimed at SunPy users instead of describing internal changes which are only relevant to the developers.
 
-Adding to the changelog
------------------------
+The current changelog is kept in the file "CHANGELOG.rst" at the root of the repository.
+We use `towncrier`_ to update our changelog.
+This is built and embedded into our documentation and instructions are in "sunpy/changelog/README.rst".
 
-We want to support a single method that one may take to adding a new entry to the changelog.
-It should be said that *all* additions to the changelog should be made first in the 'master' branch.
-This is because every release of Sunpy includes a copy of the changelog, and it should list all the changes in every prior version of Sunpy.
-For example, when Sunpy v0.3.0 is released, in addition to the changes new to that version the changelog should have all the changes from every v0.2.x version (and earlier) released up to that point.
+.. _towncrier: https://pypi.org/project/towncrier/
 
-We want to support one approach for including a changelog entry for a new feature or bug fix:
+Releasing SunPy
+===============
 
-* Include the changelog update in the same pull request as the change.
-  That is, assuming this change is being made in a pull request it can include an accurate changelog update along with it.
+We have a `step by step checklist`_ on the SunPy Wiki on how to release SunPy.
 
-  Pro: An addition to the changelog is just like any other documentation update, and should be part of any atomic change to the software.
-  It can be pulled into master along with the rest of the change.
-
-  Con: If many pull requests also include changelog updates, they can quickly conflict with each other and require rebasing.
-  This is not difficult to resolve if the only conflict is in the changelog, but it can still be trouble especially for new contributors.
-
-As any SunPy maintainer can push to any or all pull requests, this can be done as the last commit to to a pull request with a `[ci skip]` message once the pull request is ready to merge.
-
-Changelog format
-----------------
-
-The exact formatting of the changelog content is a bit loose for now (though it might become stricter if we want to develop more tools around the
-changelog).
-The format can be mostly inferred by looking at previous versions.
-Each release gets its own heading (using the ``=`` heading marker) with the version and release date.
-Releases still under development have ``(unreleased)`` as there is no release date yet.
-
-There are two subheadings (using the ``-`` marker): "New Features" and "Bug Fixes".
-In case of other changes, "Other Changes and Additions" can be added (but is not default), mostly a catch-all for miscellaneous changes, though there's no reason not to make up additional sub-headings if it seems appropriate.
-
-The actual texts of the changelog entries are typically just one to three sentences, they should be easy to glance over.
-Most entries end with a reference to an issue/pull request number in square brackets.
-
-A single changelog entry may also reference multiple small changes.
-For example::
-
-  - Minor documentation fixes and restructuring. [#935, #967, #978, #1004, #1028, #1047]
-
-Beyond that, the best advice for updating the changelog is just to look at existing entries for previous releases and copy the format.
+.. _step by step checklist: https://github.com/sunpy/sunpy/wiki/Home%3A-Release-Checklist

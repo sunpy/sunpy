@@ -1,71 +1,67 @@
 """
-This module provides routines for the coalignment of images and mapsequences.
+This module provides routines for the coalignment of images and
+`~sunpy.map.mapsequences`.
 
 Currently this module provides image coalignment by template matching.
 Which is partially inspired by the SSWIDL routine
-`tr_get_disp.pro <http://www.heliodocs.com/php/xdoc_print.php?file=$SSW/trace/idl/util/tr_get_disp.pro>`_.
+`tr_get_disp.pro <http://www.heliodocs.com/php/xdoc_print.php?file=$SSW/trace/idl/util/tr_get_disp.pro>`__.
 
 In this implementation, the template matching is handled via the scikit-image
-routine :func:`skimage.feature.match_template`.
+routine `skimage.feature.match_template`.
 
 References
 ----------
-Template matching algorithm:
-
- * http://scribblethink.org/Work/nvisionInterface/nip.html
- * J.P. Lewis, Fast Template Matching, Vision Interface 95, Canadian Image
+* http://scribblethink.org/Work/nvisionInterface/nip.html
+* J.P. Lewis, Fast Template Matching, Vision Interface 95, Canadian Image
    Processing and Pattern Recognition Society, Quebec City, Canada, May 15-19,
    1995, p. 120-123 http://www.scribblethink.org/Work/nvisionInterface/vi95_lewis.pdf.
 """
-from __future__ import absolute_import, division, print_function
+from copy import deepcopy
 
 import numpy as np
 from scipy.ndimage.interpolation import shift
-from copy import deepcopy
-from astropy import units as u
-# Image co-registration by matching templates
 from skimage.feature import match_template
 
-# SunPy imports
-import sunpy.map
-from sunpy.util import deprecated
-from sunpy.map.mapbase import GenericMap
+import astropy.units as u
 
-__author__ = 'J. Ireland'
+import sunpy.map
+from sunpy.map.mapbase import GenericMap
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
            'repair_image_nonfinite', 'apply_shifts',
-           'mapcube_coalign_by_match_template',
            'mapsequence_coalign_by_match_template',
            'calculate_match_template_shift']
 
 
 def _default_fmap_function(data):
     """
-    This function ensures that the data are floats.  It is the default data
-    manipulation function for the coalignment method.
+    This function ensures that the data are floats.
+
+    It is the default data manipulation function for the coalignment
+    method.
     """
     return np.float64(data)
 
 
 def calculate_shift(this_layer, template):
-    """Calculates the pixel shift required to put the template in the "best"
+    """
+    Calculates the pixel shift required to put the template in the "best"
     position on a layer.
 
     Parameters
     ----------
-    this_layer : `~numpy.ndarray`
-        A numpy array of size (ny, nx), where the first two dimensions are
+    this_layer : `numpy.ndarray`
+        A numpy array of size ``(ny, nx)``, where the first two dimensions are
         spatial dimensions.
-    template : `~numpy.ndarray`
-        A numpy array of size (N, M) where N < ny and M < nx.
+    template : `numpy.ndarray`
+        A numpy array of size ``(N, M)`` where ``N < ny`` and ``M < nx``.
 
     Returns
     -------
-    shifts : tuple
-        Pixel shifts (yshift, xshift) relative to the offset of the template
+    `tuple`
+        Pixel shifts ``(yshift, xshift)`` relative to the offset of the template
         to the input array.
     """
     # Repair any NANs, Infs, etc in the layer and the template
@@ -79,32 +75,29 @@ def calculate_shift(this_layer, template):
     return find_best_match_location(corr)
 
 
-#
-# Remove the edges of a datacube
-#
-@u.quantity_input(yclips=u.pix, xclips=u.pix)
-def clip_edges(data, yclips, xclips):
+@u.quantity_input
+def clip_edges(data, yclips: u.pix, xclips: u.pix):
     """
-    Clips off the y and x edges of a 2d array according to a list of pixel
-    values.  This function is useful for removing data at the edge of
-    2d images that may be affected by shifts from solar de-rotation and
-    layer co-registration, leaving an image unaffected by edge effects.
+    Clips off the "y" and "x" edges of a 2D array according to a list of pixel
+    values. This function is useful for removing data at the edge of 2d images
+    that may be affected by shifts from solar de- rotation and layer co-
+    registration, leaving an image unaffected by edge effects.
 
     Parameters
     ----------
     data : `numpy.ndarray`
-        A numpy array of shape (ny, nx).
+        A numpy array of shape ``(ny, nx)``.
     yclips : `astropy.units.Quantity`
-        The amount to clip in the y-direction of the data.  Has units of
+        The amount to clip in the y-direction of the data. Has units of
         pixels, and values should be whole non-negative numbers.
     xclips : `astropy.units.Quantity`
-        The amount to clip in the x-direction of the data.  Has units of
+        The amount to clip in the x-direction of the data. Has units of
         pixels, and values should be whole non-negative numbers.
 
     Returns
     -------
-    image : `numpy.ndarray`
-        A 2d image with edges clipped off according to yclips and xclips
+    `numpy.ndarray`
+        A 2D image with edges clipped off according to ``yclips`` and ``xclips``
         arrays.
     """
     ny = data.shape[0]
@@ -115,14 +108,10 @@ def clip_edges(data, yclips, xclips):
                 int(xclips[0].value): nx - int(xclips[1].value)]
 
 
-#
-# Return the upper and lower clipping values for the y and x directions an
-# input set of pixel shifts y and x
-#
-@u.quantity_input(y=u.pix, x=u.pix)
-def calculate_clipping(y, x):
+@u.quantity_input
+def calculate_clipping(y: u.pix, x: u.pix):
     """
-    Return the upper and lower clipping values for the y and x directions.
+    Return the upper and lower clipping values for the "y" and "x" directions.
 
     Parameters
     ----------
@@ -133,28 +122,25 @@ def calculate_clipping(y, x):
 
     Returns
     -------
-    clipping : tuple
-        The tuple is of the form ([y0, y1], [x0, x1]).
+    `tuple`
+        The tuple is of the form ``([y0, y1], [x0, x1])``.
         The number of (integer) pixels that need to be clipped off at each
         edge in an image. The first element in the tuple is a list that gives
-        the number of pixels to clip in the y-direction.  The first element in
+        the number of pixels to clip in the y-direction. The first element in
         that list is the number of rows to clip at the lower edge of the image
-        in y.  The clipped image has "clipping[0][0]" rows removed from its
-        lower edge when compared to the original image.  The second element in
+        in y. The clipped image has "clipping[0][0]" rows removed from its
+        lower edge when compared to the original image. The second element in
         that list is the number of rows to clip at the upper edge of the image
-        in y.  The clipped image has "clipping[0][1]" rows removed from its
-        upper edge when compared to the original image.  The second element in
+        in y. The clipped image has "clipping[0][1]" rows removed from its
+        upper edge when compared to the original image. The second element in
         the "clipping" tuple applies similarly to the x-direction (image
-        columns).  The parameters y0, y1, x0, x1 have the type
+        columns). The parameters ``y0, y1, x0, x1`` have the type
         `~astropy.units.Quantity`.
     """
     return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix,
             [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
 
 
-#
-# Helper functions for clipping edges
-#
 def _upper_clip(z):
     """
     Find smallest integer bigger than all the positive entries in the input
@@ -182,19 +168,18 @@ def _lower_clip(z):
 def match_template_to_layer(layer, template):
     """
     Calculate the correlation array that describes how well the template
-    matches the layer. All inputs are assumed to be numpy arrays.  This
-    function requires the "match_template" function in scikit image.
+    matches the layer. All inputs are assumed to be numpy arrays.
 
     Parameters
     ----------
-    layer : `~numpy.ndarray`
-        A numpy array of size (ny, nx).
-    template : `~numpy.ndarray`
-        A numpy array of size (N, M) where N < ny and M < nx.
+    layer : `numpy.ndarray`
+        A numpy array of size ``(ny, nx)``.
+    template : `numpy.ndarray`
+        A numpy array of size ``(N, M)`` where ``N < ny`` and ``M < nx``.
 
     Returns
     -------
-    correlationarray : `~numpy.ndarray`
+    `numpy.ndarray`
         A correlation array between the layer and the template.
         The values in the array range between 0 and 1.
     """
@@ -203,18 +188,18 @@ def match_template_to_layer(layer, template):
 
 def find_best_match_location(corr):
     """
-    Calculate an estimate of the location of the peak of the correlation
-    result in image pixels.
+    Calculate an estimate of the location of the peak of the correlation result
+    in image pixels.
 
     Parameters
     ----------
-    corr : `~numpy.ndarray`
-        A 2-d correlation array.
+    corr : `numpy.ndarray`
+        A 2D correlation array.
 
     Returns
     -------
-    shift : `~astropy.units.Quantity`
-        The shift amounts (y, x) in image pixels.  Subpixel values are
+    `~astropy.units.Quantity`
+        The shift amounts ``(y, x)`` in image pixels. Subpixel values are
         possible.
     """
     # Get the index of the maximum in the correlation function
@@ -222,43 +207,41 @@ def find_best_match_location(corr):
     cor_max_x, cor_max_y = ij[::-1]
 
     # Get the correlation function around the maximum
-    array_around_maximum = corr[np.max([0, cor_max_y - 1]): np.min([cor_max_y + 2, corr.shape[0] - 1]),
-                                  np.max([0, cor_max_x - 1]): np.min([cor_max_x + 2, corr.shape[1] - 1])]
-    y_shift_relative_to_maximum, x_shift_relative_to_maximum = \
-    get_correlation_shifts(array_around_maximum)
+    array_maximum = corr[np.max([0, cor_max_y - 1]): np.min([cor_max_y + 2, corr.shape[0] - 1]),
+                         np.max([0, cor_max_x - 1]): np.min([cor_max_x + 2, corr.shape[1] - 1])]
+    y_shift_maximum, x_shift_maximum = get_correlation_shifts(array_maximum)
 
     # Get shift relative to correlation array
-    y_shift_relative_to_correlation_array = y_shift_relative_to_maximum + cor_max_y * u.pix
-    x_shift_relative_to_correlation_array = x_shift_relative_to_maximum + cor_max_x * u.pix
+    y_shift_correlation_array = y_shift_maximum + cor_max_y * u.pix
+    x_shift_correlation_array = x_shift_maximum + cor_max_x * u.pix
 
-    return y_shift_relative_to_correlation_array, x_shift_relative_to_correlation_array
+    return y_shift_correlation_array, x_shift_correlation_array
 
 
 def get_correlation_shifts(array):
     """
-    Estimate the location of the maximum of a fit to the input array.  The
-    estimation in the x and y directions are done separately. The location
+    Estimate the location of the maximum of a fit to the input array. The
+    estimation in the "x" and "y" directions are done separately. The location
     estimates can be used to implement subpixel shifts between two different
     images.
 
     Parameters
     ----------
-    array : `~numpy.ndarray`
-        An array with at least one dimension that has three elements.  The
-        input array is at most a 3 x 3 array of correlation values calculated
+    array : `numpy.ndarray`
+        An array with at least one dimension that has three elements. The
+        input array is at most a 3x3 array of correlation values calculated
         by matching a template to an image.
 
     Returns
     -------
-    peakloc : `~astropy.units.Quantity`
-        The (y, x) location of the peak of a parabolic fit, in image pixels.
+    `~astropy.units.Quantity`
+        The ``(y, x)`` location of the peak of a parabolic fit, in image pixels.
     """
     # Check input shape
     ny = array.shape[0]
     nx = array.shape[1]
     if nx > 3 or ny > 3:
-        print('Input array is too big in at least one dimension. Returning Nones')
-        return None, None
+        raise ValueError("Input array dimension should not be greater than 3 in any dimension.")
 
     # Find where the maximum of the input array is
     ij = np.unravel_index(np.argmax(array), array.shape)
@@ -283,21 +266,21 @@ def get_correlation_shifts(array):
 def parabolic_turning_point(y):
     """
     Find the location of the turning point for a parabola
-    y(x) = ax^2 + bx + c, given input values y(-1), y(0), y(1).
-    The maximum is located at x0 = -b / 2a .  Assumes
+    ``y(x) = ax^2 + bx + c``, given input values ``y(-1), y(0), y(1)``.
+    The maximum is located at ``x0 = -b / 2a``. Assumes
     that the input array represents an equally spaced sampling at the
-    locations y(-1), y(0) and y(1).
+    locations ``y(-1), y(0) and y(1)``.
 
     Parameters
     ----------
-    y : `~numpy.ndarray`
-        A one dimensional numpy array of shape 3 with entries that sample the
-        parabola at -1, 0, and 1.
+    y : `numpy.ndarray`
+        A one dimensional numpy array of shape "3" with entries that sample the
+        parabola at "-1", "0", and "1".
 
     Returns
     -------
-    location : float
-        A digit, the location of the parabola maximum.
+    `float`
+        A float, the location of the parabola maximum.
     """
     numerator = -0.5 * y.dot([-1, 0, 1])
     denominator = y.dot([1, -2, 1])
@@ -306,22 +289,22 @@ def parabolic_turning_point(y):
 
 def repair_image_nonfinite(image):
     """
-    Return a new image in which all the nonfinite entries of the original
-    image have been replaced by the local mean.
+    Return a new image in which all the nonfinite entries of the original image
+    have been replaced by the local mean.
 
     Parameters
     ----------
-    image : `~numpy.ndarray`
-        A two-dimensional `~numpy.ndarray`.
+    image : `numpy.ndarray`
+        A two-dimensional `numpy.ndarray`.
 
     Returns
     -------
-    repaired_image : `~numpy.ndarray`
-        A two-dimensional `~numpy.ndarray` of the same shape as the input
-        that has all the non-finite entries replaced by a local mean.  The
-        algorithm repairs one non-finite entry at every pass.  At each pass,
+    `numpy.ndarray`
+        A two-dimensional `numpy.ndarray` of the same shape as the input
+        that has all the non-finite entries replaced by a local mean. The
+        algorithm repairs one non-finite entry at every pass. At each pass,
         the next non-finite value is replaced by the mean of its finite
-        valued nearest neighbours.
+        valued nearest neighbors.
     """
     repaired_image = deepcopy(image)
     nx = repaired_image.shape[1]
@@ -353,8 +336,8 @@ def repair_image_nonfinite(image):
     return repaired_image
 
 
-@u.quantity_input(yshift=u.pix, xshift=u.pix)
-def apply_shifts(mc, yshift, xshift, clip=True, **kwargs):
+@u.quantity_input
+def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
     """
     Apply a set of pixel shifts to a `~sunpy.map.MapSequence`, and return a new
     `~sunpy.map.MapSequence`.
@@ -362,26 +345,25 @@ def apply_shifts(mc, yshift, xshift, clip=True, **kwargs):
     Parameters
     ----------
     mc : `sunpy.map.MapSequence`
-        A `~sunpy.map.MapSequence` of shape (ny, nx, nt), where nt is the number of
-        layers in the `~sunpy.map.MapSequence`.  'ny' is the number of pixels in the
-        y direction, 'nx' is the number of pixels in the 'x' direction.
-
-    yshift : `~astropy.units.Quantity` instance
+        A `~sunpy.map.MapSequence` of shape ``(ny, nx, nt)``, where ``nt`` is the number of
+        layers in the `~sunpy.map.MapSequence`. ``ny`` is the number of pixels in the
+        "y" direction, ``nx`` is the number of pixels in the "x" direction.
+    yshift : `~astropy.units.Quantity`
         An array of pixel shifts in the y-direction for an image.
-
-    xshift : `~astropy.units.Quantity` instance
+    xshift : `~astropy.units.Quantity`
         An array of pixel shifts in the x-direction for an image.
-
-    clip : bool
-        If True, then clip off x, y edges of the maps in the sequence that are
+    clip : `bool`, optional
+        If `True` (default), then clip off "x", "y" edges of the maps in the sequence that are
         potentially affected by edges effects.
 
+    Notes
+    -----
     All other keywords are passed to `scipy.ndimage.interpolation.shift`.
 
     Returns
     -------
-    newmapsequence : `sunpy.map.MapSequence`
-        A `~sunpy.map.MapSequence` of the same shape as the input.  All layers in
+    `sunpy.map.MapSequence`
+        A `~sunpy.map.MapSequence` of the same shape as the input. All layers in
         the `~sunpy.map.MapSequence` have been shifted according the input shifts.
     """
     # New mapsequence will be constructed from this list
@@ -428,32 +410,27 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     Parameters
     ----------
     mc : `sunpy.map.MapSequence`
-        A `~sunpy.map.MapSequence` of shape (ny, nx, nt), where nt is the number of
+        A `~sunpy.map.MapSequence` of shape ``(ny, nx, nt)``, where ``nt`` is the number of
         layers in the `~sunpy.map.MapSequence`.
-
-    template : {None | `~sunpy.map.Map` | `~numpy.ndarray`}
-        The template used in the matching.  If an `~numpy.ndarray` is passed,
-        the `~numpy.ndarray` has to have two dimensions.
-
-    layer_index : int
+    template : {`None` | `~sunpy.map.Map` | `numpy.ndarray`}, optional
+        The template used in the matching. If an ~numpy.ndarray` is passed,
+        the `numpy.ndarray` has to have two dimensions.
+    layer_index : `int`,  optional
         The template is assumed to refer to the map in the `~sunpy.map.MapSequence`
-        indexed by the value of "layer_index".  Displacements of all maps in the
-        `~sunpy.map.MapSequence` are assumed to be relative to this layer.  The
+        indexed by the value of "layer_index". Displacements of all maps in the
+        `~sunpy.map.MapSequence` are assumed to be relative to this layer. The
         displacements of the template relative to this layer are therefore
-        (0, 0).
-
-    func : function
+        ``(0, 0)``.
+    func : function, optional
         A function which is applied to the data values before the coalignment
-        method is applied.  This can be useful in coalignment, because it is
+        method is applied. This can be useful in coalignment, because it is
         sometimes better to co-align on a function of the data rather than the
-        data itself.  The calculated shifts are applied to the original data.
+        data itself. The calculated shifts are applied to the original data.
         Examples of useful functions to consider for EUV images are the
-        logarithm or the square root.  The function is of the form
-        func = F(data).  The default function ensures that the data are
+        logarithm or the square root. The function is of the form
+        ``func = F(data)``. The default function ensures that the data are
         floats.
-
     """
-
     # Size of the data
     ny = mc.maps[layer_index].data.shape[0]
     nx = mc.maps[layer_index].data.shape[1]
@@ -506,123 +483,47 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
 
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
-@deprecated('0.9.1', alternative='mapsequence_coalign_by_match_template')
-def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
-                                      func=_default_fmap_function, clip=True,
-                                      shift=None, **kwargs):
-    """
-    Co-register the layers in a `~sunpy.map.MapCube` according to a template
-    taken from that `~sunpy.map.MapCube`.
-
-    When using this functionality, it is a good idea to check that the shifts
-    that were applied to were reasonable and expected. One way of checking this
-    is to animate the original `~sunpy.map.MapCube`, animate the coaligned
-    `~sunpy.map.MapCube`, and compare the differences you see to the calculated
-    shifts.
-
-
-    Parameters
-    ----------
-    mc : `sunpy.map.MapCube`
-        A `~sunpy.map.MapCube` of shape (ny, nx, nt), where nt is the number of
-        layers in the `~sunpy.map.MapCube`.
-    template : {None | sunpy.map.Map | `~numpy.ndarray`}
-        The template used in the matching.  If an `~numpy.ndarray` is passed,
-        the `~numpy.ndarray` has to have two dimensions.
-    layer_index : int
-        The template is assumed to refer to the map in the `~sunpy.map.MapCube`
-        indexed by the value of "layer_index".  Displacements of all maps in the
-        `~sunpy.map.MapCube` are assumed to be relative to this layer.  The
-        displacements of the template relative to this layer are therefore
-        (0, 0).
-    func : function
-        A function which is applied to the data values before the coalignment
-        method is applied.  This can be useful in coalignment, because it is
-        sometimes better to co-align on a function of the data rather than the
-        data itself.  The calculated shifts are applied to the original data.
-        Examples of useful functions to consider for EUV images are the
-        logarithm or the square root.  The function is of the form
-        func = F(data).  The default function ensures that the data are
-        floats.
-    clip : bool
-        If True, then clip off x, y edges in the datacube that are potentially
-        affected by edges effects.
-    shift : dict
-        A dictionary with two keys, 'x' and 'y'.  Key 'x' is an astropy
-        quantities array of corresponding to the amount of shift in the
-        x-direction (in arcseconds, assuming the helio-projective
-        Cartesian co-ordinate system) that is applied to the input
-        `~sunpy.map.MapCube`.  Key 'y' is an `~astropy.units.Quantity` array
-        corresponding to the amount of shift in the y-direction (in arcseconds,
-        assuming the helio-projective Cartesian co-ordinate system) that is
-        applied to the input `~sunpy.map.MapCube`. The number of elements in
-        each array must be the same as the number of maps in the
-        `~sunpy.map.MapCube`.  If a shift is passed in to the function, that
-        shift is applied to the input `~sunpy.map.MapCube` and the template
-        matching algorithm is not used.
-
-    The remaining keyword arguments are sent to `sunpy.image.coalignment.apply_shifts`.
-
-    Returns
-    -------
-    output : `sunpy.map.MapCube`
-        A `~sunpy.map.MapCube` that has co-aligned by matching the template.
-    Examples
-    --------
-    >>> from sunpy.image.coalignment import mapcube_coalign_by_match_template as mc_coalign
-
-    >>> coaligned_mc = mc_coalign(mc)   # doctest: +SKIP
-    >>> coaligned_mc = mc_coalign(mc, layer_index=-1)   # doctest: +SKIP
-    >>> coaligned_mc = mc_coalign(mc, clip=False)   # doctest: +SKIP
-    >>> coaligned_mc = mc_coalign(mc, template=sunpy_map)   # doctest: +SKIP
-    >>> coaligned_mc = mc_coalign(mc, template=two_dimensional_ndarray)   # doctest: +SKIP
-    >>> coaligned_mc = mc_coalign(mc, func=np.log)   # doctest: +SKIP
-    """
-    return mapsequence_coalign_by_match_template(mc, template, layer_index,
-                                                 func, clip, shift, **kwargs)
-
 
 # Coalignment by matching a template
 def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
                                           func=_default_fmap_function, clip=True,
                                           shift=None, **kwargs):
     """
-    Co-register the layers in a `~sunpy.map.MapSequence` according to a template
-    taken from that `~sunpy.map.MapSequence`.  This method REQUIRES that
-    scikit-image be installed. When using this functionality, it is a good idea
-    to check that the shifts that were applied to were reasonable and expected.
-    One way of checking this is to animate the original `~sunpy.map.MapSequence`,
-    animate the coaligned `~sunpy.map.MapSequence`, and compare the differences you
-    see to the calculated shifts.
-
+    Co-register the layers in a `~sunpy.map.MapSequence` according to a
+    template taken from that `~sunpy.map.MapSequence`. This method REQUIRES
+    that scikit-image be installed. When using this functionality, it is a good
+    idea to check that the shifts that were applied to were reasonable and
+    expected. One way of checking this is to animate the original
+    `~sunpy.map.MapSequence`, animate the coaligned `~sunpy.map.MapSequence`,
+    and compare the differences you see to the calculated shifts.
 
     Parameters
     ----------
     mc : `sunpy.map.MapSequence`
-        A `~sunpy.map.MapSequence` of shape (ny, nx, nt), where nt is the number of
+        A `~sunpy.map.MapSequence` of shape ``(ny, nx, nt)``, where ``nt`` is the number of
         layers in the `~sunpy.map.MapSequence`.
-    template : {None | sunpy.map.Map | `~numpy.ndarray`}
-        The template used in the matching.  If an `~numpy.ndarray` is passed,
-        the `~numpy.ndarray` has to have two dimensions.
-    layer_index : int
+    template : {None | sunpy.map.Map | `numpy.ndarray`}, optional
+        The template used in the matching. If an `numpy.ndarray` is passed,
+        the `numpy.ndarray` has to have two dimensions.
+    layer_index : `int`, optional
         The template is assumed to refer to the map in the `~sunpy.map.MapSequence`
-        indexed by the value of "layer_index".  Displacements of all maps in the
-        `~sunpy.map.MapSequence` are assumed to be relative to this layer.  The
+        indexed by the value of ``layer_index``. Displacements of all maps in the
+        `~sunpy.map.MapSequence` are assumed to be relative to this layer. The
         displacements of the template relative to this layer are therefore
-        (0, 0).
-    func : function
+        ``(0, 0)``.
+    func : function, optional
         A function which is applied to the data values before the coalignment
-        method is applied.  This can be useful in coalignment, because it is
+        method is applied. This can be useful in coalignment, because it is
         sometimes better to co-align on a function of the data rather than the
-        data itself.  The calculated shifts are applied to the original data.
+        data itself. The calculated shifts are applied to the original data.
         Examples of useful functions to consider for EUV images are the
-        logarithm or the square root.  The function is of the form
-        func = F(data).  The default function ensures that the data are
+        logarithm or the square root. The function is of the form
+        ``func = F(data)``. The default function ensures that the data are
         floats.
-    clip : bool
+    clip : bool, optional
         If True, then clip off x, y edges of the maps in the sequence that are
         potentially affected by edges effects.
-    shift : dict
+    shift : dict, optional
         A dictionary with two keys, 'x' and 'y'.  Key 'x' is an astropy
         quantities array of corresponding to the amount of shift in the
         x-direction (in arcseconds, assuming the helio-projective
@@ -636,17 +537,18 @@ def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
         shift is applied to the input `~sunpy.map.MapSequence` and the template
         matching algorithm is not used.
 
+    Notes
+    -----
     The remaining keyword arguments are sent to `sunpy.image.coalignment.apply_shifts`.
 
     Returns
     -------
-    output : `sunpy.map.MapSequence`
+    `sunpy.map.MapSequence`
         A `~sunpy.map.MapSequence` that has co-aligned by matching the template.
 
     Examples
     --------
     >>> from sunpy.image.coalignment import mapsequence_coalign_by_match_template as mc_coalign
-
     >>> coaligned_mc = mc_coalign(mc)   # doctest: +SKIP
     >>> coaligned_mc = mc_coalign(mc, layer_index=-1)   # doctest: +SKIP
     >>> coaligned_mc = mc_coalign(mc, clip=False)   # doctest: +SKIP
@@ -654,7 +556,6 @@ def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
     >>> coaligned_mc = mc_coalign(mc, template=two_dimensional_ndarray)   # doctest: +SKIP
     >>> coaligned_mc = mc_coalign(mc, func=np.log)   # doctest: +SKIP
     """
-
     # Number of maps
     nt = len(mc.maps)
 

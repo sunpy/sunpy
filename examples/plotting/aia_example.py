@@ -1,9 +1,9 @@
 """
-================
-AIA Plot Example
-================
+==============
+Plotting a map
+==============
 
-This is a very simple way to plot a sample AIA image.
+How to create a plot of a map.
 """
 import matplotlib.pyplot as plt
 
@@ -11,12 +11,16 @@ import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################
-# We now create the Map using the sample data.
-
+# We start with the sample data
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
-###############################################################################
-# Now we do a quick plot.
-
-aiamap.peek()
+##############################################################################
+# Let's plot the result. Setting the projection is necessary to ensure that
+# pixels can be converted accurately to coordinates values.
+plt.figure()
+ax = plt.subplot(projection=aiamap)
+aiamap.plot()
+aiamap.draw_limb()
+aiamap.draw_grid()
 plt.show()
+

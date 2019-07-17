@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import numpy as np
 
 from sunpy.map import GenericMap
@@ -33,12 +31,15 @@ class SJIMap(GenericMap):
 
     References
     ----------
-    * `IRIS Mission Page <http://iris.lmsal.com>`_
+    * `IRIS Mission Page <https://iris.lmsal.com>`_
     * `IRIS Analysis Guide <https://iris.lmsal.com/itn26/itn26.pdf>`_
     * `IRIS Instrument Paper <https://doi.org/10.1007/s11207-014-0485-y>`_
     """
 
     def __init__(self, data, header, **kwargs):
+        # Assume pixel units are arcesc if not given
+        header['cunit1'] = header.get('cunit1', 'arcsec')
+        header['cunit2'] = header.get('cunit2', 'arcsec')
         GenericMap.__init__(self, data, header, **kwargs)
 
         self.meta['detector'] = "SJI"

@@ -1,3 +1,9 @@
+.. The tests in the module are very fragile to change in ordering of VSO
+   results. In their current form they are very hard to maintain.
+
+.. Skip all doctests here until the database locked error is fixed.
+.. doctest-skip-all
+
 .. _database_guide:
 
 --------------------------
@@ -10,7 +16,7 @@ via the :mod:`sunpy.net` package) onto a local or remote database. The
 database may be a single file located on a local hard drive (if a SQLite
 database is used) or a local or remote database server (see the SQLAlchemy
 documentation for a `list of supported databases
-<http://docs.sqlalchemy.org/en/latest/dialects/index.html>`_)
+<https://docs.sqlalchemy.org/en/latest/dialects/index.html>`_)
 This makes it possible to fetch required data from the local database
 instead of downloading it again from a remote server.
 
@@ -177,9 +183,9 @@ In section 3, more advanced formats of the slicing syntax are introduced.
     >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
     (datetime.datetime(2011, 6, 7, 6, 33, 2, 770000), None)
     >>> len(entry.fits_header_entries)  # doctest: +REMOTE_DATA
-    191
+    194
     >>> for fits_header_entry in entry.fits_header_entries[:10]:
-    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))  # doctest: +REMOTE_DATA
+    ...     print('{entry.key}\n    {entry.value}'.format(entry=fits_header_entry))  # doctest: +REMOTE_DATA
     SIMPLE
         True
     BITPIX
@@ -190,26 +196,35 @@ In section 3, more advanced formats of the slicing syntax are introduced.
         1024
     NAXIS2
         1024
+    PCOUNT
+        0
+    GCOUNT
+        1
+    XTENSION
+        BINTABLE
     BLD_VERS
         V5R12X
     LVL_NUM
         1.5
-    T_REC
-        2011-06-07T06:33:03Z
-    TRECSTEP
-        1.0
-    TRECEPOC
-        1977.01.01_00:00:00_TAI
 
     >>> for fits_key_comment in entry.fits_key_comments:
-    ...     print('{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment))  # doctest: +REMOTE_DATA
+    ...     print('{comment.key}\n    {comment.value}'.format(comment=fits_key_comment))  # doctest: +REMOTE_DATA
     SIMPLE
         conforms to FITS standard
     BITPIX
         array data type
     NAXIS
         number of array dimensions
-
+    NAXIS1
+        width of table in bytes
+    NAXIS2
+        number of rows in table
+    PCOUNT
+        number of group parameters
+    GCOUNT
+        number of groups
+    XTENSION
+        binary table extension
 
 2.2 Adding entries from a directory of FITS files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -228,7 +243,7 @@ in the directory ``sampledata_dir``
     >>> database.add_from_dir(sampledata_dir, ignore_already_added=True,
     ...                       time_string_parse_format="%d/%m/%Y")  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
-    58
+    59
 
 2.3 Adding entries using the VSO interface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -244,6 +259,22 @@ sections.
 
     >>> from sunpy.net import vso
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
+
+.. testsetup:: *
+   >>> from unittest.mock import Mock, patch
+   >>> from sunpy.tests.mocks import MockObject
+   >>> class MockQR:
+   ...    def __init__(self, start_time, instrument, wavelength):
+   ...        end_time = '{}{}'.format(start_time[:-1], int(start_time[-1]) + 1)
+   ...        self.time = MockObject(start=start_time, end=end_time)
+   ...        self.instrument = instrument
+   ...        self.wave = MockObject(wavemin=wavelength, wavemax=wavelength, waveunit='nm')
+   >>> with patch.object(vso.VSOClient, '__init__', lambda x: None):
+   ...    vso.VSOClient().search = Mock(return_value=[MockQR(f"2011050800000{t}", 'AIA', w) for
+   ...                                   t, w in zip([0,0,2,3], [17.1, 21.1, 9.4, 33.5])])
+
+After initialising the VSO client:
+
     >>> qr = client.search(
     ...     vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
@@ -251,7 +282,7 @@ sections.
     4
     >>> database.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
-    62
+    63
 
 2.3.2 "Clever" Fetching
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -260,11 +291,18 @@ The method :meth:`Database.fetch` checks if the given query has already been
 used once to add entries to the database. Otherwise, the query is used to
 download and add new data. The :meth:`Database.fetch` method also accepts an
 optional keyword argument ``path`` which is passed as-is to
-:meth:`sunpy.net.vso.VSOClient.get` and determines the value of the ``path``
+:meth:`sunpy.net.vso.VSOClient.fetch` and determines the value of the ``path``
 attribute of each entry.
 
 Note that the number of entries that will be added depends on the total number
 of FITS headers, **not** the number of records in the query.
+
+.. testsetup:: *
+   >>> qr1 = [MockQR(f"2012080500000{t}", 'AIA', w) for t,w in zip([1, 1, 2, 2], [9.4, 9.4, 33.5, 33.5])]
+   >>> qr2 = [MockQR(f"2013080500000{t}", 'AIA', w) for t,w in zip([1, 1, 2, 2], [9.4, 9.4, 33.5, 33.5])]
+   >>> produce_results = [qr1, None, qr2, None]
+   >>> add_data = lambda x: database.add_from_vso_query_result(x) if x else None
+   >>> database.fetch = Mock(side_effect=map(add_data, produce_results))
 
 In the next code snippet new data is downloaded as this query
 has not been downloaded before.
@@ -273,7 +311,7 @@ has not been downloaded before.
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
-    66
+    67
 
 Any more identical fetch calls don't add any new entries to the database
 because they have already been downloaded.
@@ -282,7 +320,7 @@ because they have already been downloaded.
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
-    66
+    67
 
 However, this different fetch call downloads new files because there is a
 new date range whose files have not been downloaded yet.
@@ -291,7 +329,7 @@ new date range whose files have not been downloaded yet.
     ...     vso.attrs.Time('2013-08-05', '2013-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
-    70
+    71
 
 The caching also ensures that when queries have some results in
 common, files for the common results will not be downloaded again. In the
@@ -302,7 +340,7 @@ downloaded. This means no new files are downloaded.
     ...     vso.attrs.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
-    70
+    71
 
 2.4 Adding entries manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -319,7 +357,7 @@ values as keyword arguments to :class:`tables.DatabaseEntry` as follows:
     >>> entry in database
     True
     >>> len(database) # doctest: +REMOTE_DATA
-    71
+    72
 
 Note that the `in` operator only works as expected after the
 :meth:`Database.commit` method has been called!
@@ -358,18 +396,18 @@ cannot be found or is not set.
       9    2011-06-07 06:33:07 ...               19.3               19.3
      10    2011-06-07 06:39:31 ...               19.3               19.3
     ...                    ... ...                ...                ...
-     61    2011-05-08 00:00:02 ...                9.4                9.4
-     62    2011-05-08 00:00:03 ...               33.5               33.5
-     63    2012-08-05 00:00:01 ...                9.4                9.4
+     62    2011-05-08 00:00:02 ...                9.4                9.4
+     63    2011-05-08 00:00:03 ...               33.5               33.5
      64    2012-08-05 00:00:01 ...                9.4                9.4
-     65    2012-08-05 00:00:02 ...               33.5               33.5
+     65    2012-08-05 00:00:01 ...                9.4                9.4
      66    2012-08-05 00:00:02 ...               33.5               33.5
-     67    2013-08-05 00:00:01 ...                9.4                9.4
+     67    2012-08-05 00:00:02 ...               33.5               33.5
      68    2013-08-05 00:00:01 ...                9.4                9.4
-     69    2013-08-05 00:00:02 ...               33.5               33.5
+     69    2013-08-05 00:00:01 ...                9.4                9.4
      70    2013-08-05 00:00:02 ...               33.5               33.5
-     71                    N/A ...               25.0                N/A
-    Length = 71 rows
+     71    2013-08-05 00:00:02 ...               33.5               33.5
+     72                    N/A ...               25.0                N/A
+    Length = 72 rows
 
 The index operator can be used to access certain single database entries like
 ``database[5]``  to get the 5th entry or  ``database[-2]``
@@ -384,11 +422,11 @@ for more information.
      id observation_time_start observation_time_end instrument wavemin wavemax
     --- ---------------------- -------------------- ---------- ------- -------
      10    2011-06-07 06:39:31                  N/A      AIA_2    19.3    19.3
-     20                    N/A                  N/A        N/A     N/A     N/A
-     30    2011-06-06 23:59:55  2011-06-08 00:00:05        GBM     N/A     N/A
+     20    2011-06-06 23:59:55  2011-06-08 00:00:05        GBM     N/A     N/A
+     30                    N/A                  N/A        N/A     N/A     N/A
      40                    N/A                  N/A        N/A     N/A     N/A
      50                    N/A                  N/A        N/A     N/A     N/A
-     60    2011-05-08 00:00:00  2011-05-08 00:00:01        AIA    21.1    21.1
+     60    2011-05-08 00:00:00  2011-05-08 00:00:01        AIA    17.1    17.1
      70    2013-08-05 00:00:02  2013-08-05 00:00:03        AIA    33.5    33.5
 
 4. Removing entries
@@ -407,7 +445,7 @@ method to remove those where there is no time set:
     ...         database.remove(database_entry)
     ...
     >>> len(database) # doctest: +REMOTE_DATA
-    38
+    39
     >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
     ...                        'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
@@ -424,19 +462,18 @@ method to remove those where there is no time set:
       9    2011-06-07 06:33:07 ...               19.3               19.3
      10    2011-06-07 06:39:31 ...               19.3               19.3
     ...                    ... ...                ...                ...
-     60    2011-05-08 00:00:00 ...               21.1               21.1
-     61    2011-05-08 00:00:02 ...                9.4                9.4
-     62    2011-05-08 00:00:03 ...               33.5               33.5
-     63    2012-08-05 00:00:01 ...                9.4                9.4
+     61    2011-05-08 00:00:00 ...               21.1               21.1
+     62    2011-05-08 00:00:02 ...                9.4                9.4
+     63    2011-05-08 00:00:03 ...               33.5               33.5
      64    2012-08-05 00:00:01 ...                9.4                9.4
-     65    2012-08-05 00:00:02 ...               33.5               33.5
+     65    2012-08-05 00:00:01 ...                9.4                9.4
      66    2012-08-05 00:00:02 ...               33.5               33.5
-     67    2013-08-05 00:00:01 ...                9.4                9.4
+     67    2012-08-05 00:00:02 ...               33.5               33.5
      68    2013-08-05 00:00:01 ...                9.4                9.4
-     69    2013-08-05 00:00:02 ...               33.5               33.5
+     69    2013-08-05 00:00:01 ...                9.4                9.4
      70    2013-08-05 00:00:02 ...               33.5               33.5
-    Length = 38 rows
-
+     71    2013-08-05 00:00:02 ...               33.5               33.5
+    Length = 39 rows
 
 5. Editing entries
 ------------------
@@ -454,17 +491,18 @@ all values that have a wavelength of 20nm or higher:
     ...     filter(lambda entry: entry.starred, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
     ...      'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
-     id observation_time_start observation_time_end instrument wavemin wavemax
-    --- ---------------------- -------------------- ---------- ------- -------
-      4    2011-06-07 06:33:02                  N/A      AIA_2    21.1    21.1
-      5    2011-06-07 06:33:03                  N/A      AIA_1    33.5    33.5
-      7    2011-06-07 06:33:05                  N/A      AIA_3   160.0   160.0
-     60    2011-05-08 00:00:00  2011-05-08 00:00:01        AIA    21.1    21.1
-     62    2011-05-08 00:00:03  2011-05-08 00:00:04        AIA    33.5    33.5
-     65    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
-     66    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
-     69    2013-08-05 00:00:02  2013-08-05 00:00:03        AIA    33.5    33.5
-     70    2013-08-05 00:00:02  2013-08-05 00:00:03        AIA    33.5    33.5
+     id observation_time_start ...      wavemin           wavemax
+    --- ---------------------- ... ----------------- -----------------
+      4    2011-06-07 06:33:02 ...              21.1              21.1
+      5    2011-06-07 06:33:03 ...              33.5              33.5
+      7    2011-06-07 06:33:05 ...             160.0             160.0
+     16    2011-06-07 06:32:11 ... 617.3000000000001 617.3000000000001
+     61    2011-05-08 00:00:00 ...              21.1              21.1
+     63    2011-05-08 00:00:03 ...              33.5              33.5
+     66    2012-08-05 00:00:02 ...              33.5              33.5
+     67    2012-08-05 00:00:02 ...              33.5              33.5
+     70    2013-08-05 00:00:02 ...              33.5              33.5
+     71    2013-08-05 00:00:02 ...              33.5              33.5
 
 To remove the star from these entries, the :meth:`Database.unstar` method
 works the same way.
@@ -489,11 +527,11 @@ year:
     ...      'instrument', 'wavemin', 'wavemax']))  # doctest: +REMOTE_DATA
      id observation_time_start observation_time_end instrument wavemin wavemax
     --- ---------------------- -------------------- ---------- ------- -------
-     22    2014-04-09 06:00:12                  N/A      AIA_3    17.1    17.1
-     59    2011-05-08 00:00:00  2011-05-08 00:00:01        AIA    17.1    17.1
-     60    2011-05-08 00:00:00  2011-05-08 00:00:01        AIA    21.1    21.1
-     61    2011-05-08 00:00:02  2011-05-08 00:00:03        AIA     9.4     9.4
-     62    2011-05-08 00:00:03  2011-05-08 00:00:04        AIA    33.5    33.5
+     17    2014-04-09 06:00:12                  N/A      AIA_3    17.1    17.1
+     60    2011-05-08 00:00:00  2011-05-08 00:00:01        AIA    17.1    17.1
+     61    2011-05-08 00:00:00  2011-05-08 00:00:01        AIA    21.1    21.1
+     62    2011-05-08 00:00:02  2011-05-08 00:00:03        AIA     9.4     9.4
+     63    2011-05-08 00:00:03  2011-05-08 00:00:04        AIA    33.5    33.5
 
 5.3 Manually changing attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -524,18 +562,18 @@ observation time (because it's possible, not because it is accurate!):
       9    2011-06-07 06:33:07 ...               19.3               19.3
      10    2011-06-07 06:39:31 ...               19.3               19.3
     ...                    ... ...                ...                ...
-     60    2011-05-08 00:00:00 ...               21.1               21.1
-     61    2011-05-08 00:00:02 ...                9.4                9.4
-     62    2011-05-08 00:00:03 ...               33.5               33.5
-     63    2012-08-05 00:00:01 ...                9.4                9.4
+     61    2011-05-08 00:00:00 ...               21.1               21.1
+     62    2011-05-08 00:00:02 ...                9.4                9.4
+     63    2011-05-08 00:00:03 ...               33.5               33.5
      64    2012-08-05 00:00:01 ...                9.4                9.4
-     65    2012-08-05 00:00:02 ...               33.5               33.5
+     65    2012-08-05 00:00:01 ...                9.4                9.4
      66    2012-08-05 00:00:02 ...               33.5               33.5
-     67    2013-08-05 00:00:01 ...                9.4                9.4
+     67    2012-08-05 00:00:02 ...               33.5               33.5
      68    2013-08-05 00:00:01 ...                9.4                9.4
-     69    2013-08-05 00:00:02 ...               33.5               33.5
+     69    2013-08-05 00:00:01 ...                9.4                9.4
      70    2013-08-05 00:00:02 ...               33.5               33.5
-    Length = 38 rows
+     71    2013-08-05 00:00:02 ...               33.5               33.5
+    Length = 39 rows
 
 It is possible to use
 ``database_entry.observation_time_end = database_entry.observation_time_start``",
@@ -579,18 +617,18 @@ the entries with no end of observation time are back.
       9    2011-06-07 06:33:07  2011-06-07 06:33:07 ...    N/A      No
      10    2011-06-07 06:39:31  2011-06-07 06:39:31 ...    N/A      No
     ...                    ...                  ... ...    ...     ...
-     60    2011-05-08 00:00:00  2011-05-08 00:00:01 ... spring     Yes
-     61    2011-05-08 00:00:02  2011-05-08 00:00:03 ... spring      No
-     62    2011-05-08 00:00:03  2011-05-08 00:00:04 ... spring     Yes
-     63    2012-08-05 00:00:01  2012-08-05 00:00:02 ...    N/A      No
+     61    2011-05-08 00:00:00  2011-05-08 00:00:01 ... spring     Yes
+     62    2011-05-08 00:00:02  2011-05-08 00:00:03 ... spring      No
+     63    2011-05-08 00:00:03  2011-05-08 00:00:04 ... spring     Yes
      64    2012-08-05 00:00:01  2012-08-05 00:00:02 ...    N/A      No
-     65    2012-08-05 00:00:02  2012-08-05 00:00:03 ...    N/A     Yes
+     65    2012-08-05 00:00:01  2012-08-05 00:00:02 ...    N/A      No
      66    2012-08-05 00:00:02  2012-08-05 00:00:03 ...    N/A     Yes
-     67    2013-08-05 00:00:01  2013-08-05 00:00:02 ...    N/A      No
+     67    2012-08-05 00:00:02  2012-08-05 00:00:03 ...    N/A     Yes
      68    2013-08-05 00:00:01  2013-08-05 00:00:02 ...    N/A      No
-     69    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    N/A     Yes
+     69    2013-08-05 00:00:01  2013-08-05 00:00:02 ...    N/A      No
      70    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    N/A     Yes
-    Length = 38 rows
+     71    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    N/A     Yes
+    Length = 39 rows
 
 The :meth:`~Database.redo` method reverts the last n operations that have been
 undone. If not that many operations can be redone (i.e. any number greater than
@@ -617,18 +655,18 @@ stored end of observation time.
       9    2011-06-07 06:33:07  2011-06-07 06:33:07 ...    N/A      No
      10    2011-06-07 06:39:31  2011-06-07 06:39:31 ...    N/A      No
     ...                    ...                  ... ...    ...     ...
-     60    2011-05-08 00:00:00  2011-05-08 00:00:01 ... spring     Yes
-     61    2011-05-08 00:00:02  2011-05-08 00:00:03 ... spring      No
-     62    2011-05-08 00:00:03  2011-05-08 00:00:04 ... spring     Yes
-     63    2012-08-05 00:00:01  2012-08-05 00:00:02 ...    N/A      No
+     61    2011-05-08 00:00:00  2011-05-08 00:00:01 ... spring     Yes
+     62    2011-05-08 00:00:02  2011-05-08 00:00:03 ... spring      No
+     63    2011-05-08 00:00:03  2011-05-08 00:00:04 ... spring     Yes
      64    2012-08-05 00:00:01  2012-08-05 00:00:02 ...    N/A      No
-     65    2012-08-05 00:00:02  2012-08-05 00:00:03 ...    N/A     Yes
+     65    2012-08-05 00:00:01  2012-08-05 00:00:02 ...    N/A      No
      66    2012-08-05 00:00:02  2012-08-05 00:00:03 ...    N/A     Yes
-     67    2013-08-05 00:00:01  2013-08-05 00:00:02 ...    N/A      No
+     67    2012-08-05 00:00:02  2012-08-05 00:00:03 ...    N/A     Yes
      68    2013-08-05 00:00:01  2013-08-05 00:00:02 ...    N/A      No
-     69    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    N/A     Yes
+     69    2013-08-05 00:00:01  2013-08-05 00:00:02 ...    N/A      No
      70    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    N/A     Yes
-    Length = 38 rows
+     71    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    N/A     Yes
+    Length = 39 rows
 
 7. Querying the database
 ------------------------
@@ -660,10 +698,10 @@ The following query returns the data that was added in section 2.3.2:
     ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end instrument wavemin wavemax
     --- ---------------------- -------------------- ---------- ------- -------
-     63    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
      64    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
-     65    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
+     65    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
      66    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
+     67    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
 
 .. NOTE the following code does not actually work. There seems to be a bug
     in sunpy.util.unit_conversion.to_angstrom (this is called by the
@@ -675,7 +713,7 @@ raised. This also means that there is no default unit that is
 used by the class. To know how you can specify a detail using astropy
 check `astropy.units`.
 
-    >>> from astropy import units as u
+    >>> import astropy.units as u
     >>> print(display_entries(
     ...     database.search(vso.attrs.Wavelength(1.0*u.nm, 2.0*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end',
@@ -687,12 +725,12 @@ check `astropy.units`.
      11    2011-06-07 06:45:55 ...               19.3               19.3
      12    2011-06-07 06:52:19 ...               19.3               19.3
      13    2011-06-07 06:58:43 ...               19.3               19.3
-     14    2011-06-07 20:37:52 ...               19.5               19.5
+     17    2014-04-09 06:00:12 ...               17.1               17.1
+     18    2011-06-07 20:37:52 ...               19.5               19.5
       2    2011-06-07 06:33:01 ... 13.100000000000001 13.100000000000001
-     21    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
-     22    2014-04-09 06:00:12 ...               17.1               17.1
       3    2011-06-07 06:33:02 ...               17.1               17.1
-     59    2011-05-08 00:00:00 ...               17.1               17.1
+     58    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
+     60    2011-05-08 00:00:00 ...               17.1               17.1
       8    2011-06-07 06:33:07 ...               19.3               19.3
       9    2011-06-07 06:33:07 ...               19.3               19.3
 
@@ -717,20 +755,21 @@ with the value 'Angstrom':
     ...     database.search(dbattrs.Tag('spring') | dbattrs.Starred(), ~dbattrs.FitsHeaderEntry('WAVEUNIT', 'Angstrom')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
     ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True))   # doctest:  +REMOTE_DATA
-     id observation_time_start observation_time_end ... wavemax  tags  starred
-    --- ---------------------- -------------------- ... ------- ------ -------
-     22    2014-04-09 06:00:12                  N/A ...    17.1 spring      No
-      4    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    21.1    N/A     Yes
-      5    2011-06-07 06:33:03  2011-06-07 06:33:03 ...    33.5    N/A     Yes
-     59    2011-05-08 00:00:00  2011-05-08 00:00:01 ...    17.1 spring      No
-     60    2011-05-08 00:00:00  2011-05-08 00:00:01 ...    21.1 spring     Yes
-     61    2011-05-08 00:00:02  2011-05-08 00:00:03 ...     9.4 spring      No
-     62    2011-05-08 00:00:03  2011-05-08 00:00:04 ...    33.5 spring     Yes
-     65    2012-08-05 00:00:02  2012-08-05 00:00:03 ...    33.5    N/A     Yes
-     66    2012-08-05 00:00:02  2012-08-05 00:00:03 ...    33.5    N/A     Yes
-     69    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    33.5    N/A     Yes
-      7    2011-06-07 06:33:05  2011-06-07 06:33:05 ...   160.0    N/A     Yes
-     70    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    33.5    N/A     Yes
+     id observation_time_start observation_time_end ...  tags  starred
+    --- ---------------------- -------------------- ... ------ -------
+     16    2011-06-07 06:32:11  2011-06-07 06:32:11 ...    N/A     Yes
+     17    2014-04-09 06:00:12  2014-04-09 06:00:12 ... spring      No
+      4    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    N/A     Yes
+      5    2011-06-07 06:33:03  2011-06-07 06:33:03 ...    N/A     Yes
+     60    2011-05-08 00:00:00  2011-05-08 00:00:01 ... spring      No
+     61    2011-05-08 00:00:00  2011-05-08 00:00:01 ... spring     Yes
+     62    2011-05-08 00:00:02  2011-05-08 00:00:03 ... spring      No
+     63    2011-05-08 00:00:03  2011-05-08 00:00:04 ... spring     Yes
+     66    2012-08-05 00:00:02  2012-08-05 00:00:03 ...    N/A     Yes
+     67    2012-08-05 00:00:02  2012-08-05 00:00:03 ...    N/A     Yes
+      7    2011-06-07 06:33:05  2011-06-07 06:33:05 ...    N/A     Yes
+     70    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    N/A     Yes
+     71    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    N/A     Yes
 
 
 8. Caching
@@ -754,14 +793,14 @@ to 10 and therefore removes the 5 entries that been used least recently.
     ...     ['id', 'observation_time_start', 'observation_time_end',
     ...      'instrument', 'wavemin', 'wavemax']))   # doctest:  +REMOTE_DATA
      id observation_time_start ...      wavemin            wavemax
-     --- ---------------------- ... ------------------ ------------------
-      8    2011-06-07 06:33:07 ...               19.3               19.3
+    --- ---------------------- ... ------------------ ------------------
       9    2011-06-07 06:33:07 ...               19.3               19.3
      10    2011-06-07 06:39:31 ...               19.3               19.3
      11    2011-06-07 06:45:55 ...               19.3               19.3
      12    2011-06-07 06:52:19 ...               19.3               19.3
      13    2011-06-07 06:58:43 ...               19.3               19.3
-     14    2011-06-07 20:37:52 ...               19.5               19.5
-     21    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
-     22    2014-04-09 06:00:12 ...               17.1               17.1
-     58    2011-06-06 00:00:00 ...                N/A                N/A
+     16    2011-06-07 06:32:11 ...  617.3000000000001  617.3000000000001
+     17    2014-04-09 06:00:12 ...               17.1               17.1
+     18    2011-06-07 20:37:52 ...               19.5               19.5
+     58    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
+     59    2011-06-06 00:00:00 ...                N/A                N/A

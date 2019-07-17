@@ -1,1 +1,0 @@
-Support passing Python file objects to `sunpy.io.fits.write`.

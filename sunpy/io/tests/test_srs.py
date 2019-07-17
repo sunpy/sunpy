@@ -1,16 +1,13 @@
-"""
-This module implements tests for SRS Reader.
-"""
 import os
 
 import pytest
-import numpy as np
+
 import astropy.units as u
-from astropy.table import Table, Column, MaskedColumn
+from astropy.table import Column, MaskedColumn, Table
 from astropy.tests.helper import assert_quantity_allclose
 
-from sunpy.io.special import srs
 import sunpy.data.test
+from sunpy.io.special import srs
 
 testpath = sunpy.data.test.rootdir
 

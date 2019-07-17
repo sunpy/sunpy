@@ -1,7 +1,8 @@
-from __future__ import absolute_import, division, print_function
-import re
+"""
+This module provides a generic file reader.
+"""
 import os
-import collections
+import re
 
 try:
     from . import fits
@@ -36,8 +37,9 @@ class Readers(dict):
     def __getitem__(self, key):
         val = dict.__getitem__(self, key)
         if val is None:
-            raise ReaderError("The Reader sunpy.io.{key!s} is not available, ".format(key=key) +
-                              "please check that you have the required dependencies installed.")
+            raise ReaderError((f"The Reader sunpy.io.{key} is not available, "
+                               "please check that you have the required dependencies "
+                               "installed."))
         return val
 
 
@@ -56,13 +58,11 @@ def read_file(filepath, filetype=None, **kwargs):
     Parameters
     ----------
     filepath : `str`
-        The file to be read
-
-    filetype : `str`
+        The file to be read.
+    filetype : `str`, optional
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits', 'ana')
-
-    memmap : bool
+    memmap : `bool`, optional
         Should memory mapping be used, i.e. keep data on disk rather than in RAM.
         This is currently only supported by the FITS reader.
 
@@ -93,23 +93,20 @@ def read_file_header(filepath, filetype=None, **kwargs):
     """
     Reads the header from a given file.
 
-    This should always return a instance of io.header.FileHeader
+    This should always return a instance of `~sunpy.io.header.FileHeader`.
 
     Parameters
     ----------
-
     filepath : `str`
         The file from which the header is to be read.
-
     filetype : `str`
         Supported reader or extension to manually specify the filetype.
-        Supported readers are ('jp2', 'fits')
+        Supported readers are ('jp2', 'fits').
 
     Returns
     -------
-
     headers : `list`
-        A list of headers
+        A list of headers.
     """
     # Use the explicitly passed filetype
     if filetype is not None:
@@ -133,15 +130,12 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     ----------
     fname : `str`
         Filename of file to save.
-
     data : `numpy.ndarray`
         Data to save to a fits file.
-
     header : `collections.OrderedDict`
         Meta data to save with the data.
-
-    filetype : `str`
-        {'auto', 'fits', 'jp2'} Filetype to save if auto fname extension will
+    filetype : `str`, {'auto', 'fits', 'jp2'}, optional
+        Filetype to save if ``auto`` the  filename extension will
         be detected, else specify a supported file extension.
 
     Notes
@@ -155,7 +149,6 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
         for extension, readername in _known_extensions.items():
             if fname.endswith(extension):
                 return _readers[readername].write(fname, data, header, **kwargs)
-
     else:
         for extension, readername in _known_extensions.items():
             if filetype in extension:
@@ -167,7 +160,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
 
 def _detect_filetype(filepath):
     """
-    Attempts to determine the type of data contained in a file.  This is only
+    Attempts to determine the type of data contained in a file. This is only
     used for reading because it opens the file to check the data.
 
     Parameters
@@ -209,7 +202,7 @@ def _detect_filetype(filepath):
     #
     # Checks for one of two signatures found at beginning of all JP2 files.
     # Adapted from ExifTool
-    # [1] http://www.sno.phy.queensu.ca/~phil/exiftool/
+    # [1] https://www.sno.phy.queensu.ca/~phil/exiftool/
     # [2] http://www.hlevkin.com/Standards/fcd15444-2.pdf
     # [3] http://www.hlevkin.com/Standards/fcd15444-1.pdf
     jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
@@ -225,14 +218,18 @@ def _detect_filetype(filepath):
 
 
 class UnrecognizedFileTypeError(IOError):
-    """Exception to raise when an unknown file type is encountered"""
-    pass
+    """
+    Exception to raise when an unknown file type is encountered.
+    """
 
 
 class ReaderError(ImportError):
-    """Exception to raise when an unknown file type is encountered"""
-    pass
+    """
+    Exception to raise when a reader errors.
+    """
 
 
 class InvalidJPEG2000FileExtension(IOError):
-    pass
+    """
+    Exception to raise when an invalid JPEG2000 file type is encountered.
+    """
