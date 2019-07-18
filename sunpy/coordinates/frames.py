@@ -281,7 +281,6 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     (note that ``obstime`` and ``representation_type`` must be supplied as
     keywords)::
 
-        Heliocentric(x, y, obstime)
         Heliocentric(x, y, z, obstime)
         Heliocentric(rho, psi, z, obstime, representation_type='cylindrical')
 
@@ -351,7 +350,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     This is a projective coordinate system centered around the observer.
     It is a full spherical coordinate system with position given as longitude
     theta_x and latitude theta_y. If the ``data`` parameter is given,
-    the positional parameters for the coordinate frame (Tx, Ty, distance)
+    the positional parameters for the coordinate frame (``Tx``, ``Ty``, ``distance``)
     do not need to be given.
 
     Parameters
