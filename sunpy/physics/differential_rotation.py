@@ -33,8 +33,8 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
         One of:
 
-        | ``howard`` : Use values for small magnetic features from Howard et al.
-        | ``snodgrass`` : Use Values from Snodgrass et. al
+        | ``howard`` : Use values from Howard et al. (1990)
+        | ``snodgrass`` : Use values from Snodgrass et. al. (1983)
         | ``allen`` : Use values from Allen's Astrophysical Quantities, and simpler equation.
 
     frame_time : `str`
@@ -49,8 +49,8 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     ----------
 
     * `IDL code equivalent <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro>`__
-    * `Howard rotation <http://adsabs.harvard.edu/abs/1990SoPh..130..295H>`__
-    * `A review of rotation parameters (including Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
+    * `Solar surface velocity fields determined from small magnetic features (Howard et al. 1990) <https://doi.org/10.1007/BF00156795>`__
+    * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
 
     Examples
     --------
