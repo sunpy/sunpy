@@ -1,3 +1,4 @@
+name: $(BuildDefinitionName)_$(Date:yyyyMMdd)$(Rev:.rr)
 variables:
   CI_NAME: Azure Pipelines
   CI_BUILD_ID: $(Build.BuildId)
@@ -7,10 +8,15 @@ variables:
   CIBW_TEST_COMMAND: pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy
   CIBW_TEST_REQUIRES: sqlalchemy scikit-image glymur beautifulsoup4 drms python-dateutil zeep tqdm asdf hypothesis pytest-astropy pytest-mock
 
+resources:
+  repositories:
+  - repository: sunpy
+    type: github
+    endpoint: sunpyorg
+    name: sunpy/azure-pipelines-template
+    ref: master
+
 trigger:
-  branches:
-    include:
-    - '*'
   tags:
     include:
     - 'v*'
@@ -18,43 +24,39 @@ trigger:
     - '*dev*'
     - '*pre*'
     - '*post*'
-pr:
-  branches:
-    include:
-    - '*'
 
 jobs:
-- template: azure-templates.yml
+- template: run-tox-env.yml@sunpy
   parameters:
     name: Linux_37_offline
     os: macos
     tox: py37-offline -- -n=4
 
-- template: azure-templates.yml
+- template: run-tox-env.yml@sunpy
   parameters:
     name: Windows_36_offline
     os: windows
     tox: py36-offline -- -n=4
 
-- template: azure-templates.yml
+- template: run-tox-env.yml@sunpy
   parameters:
     name: macOS_37_online
     os: macos
     tox: py37-online -- -n=4
 
-- template: azure-templates.yml
+- template: run-tox-env.yml@sunpy
   parameters:
     name: Linux_36_Conda_offline
     os: linux
     tox: conda -- -n=4
 
-- template: azure-templates.yml
+- template: run-tox-env.yml@sunpy
   parameters:
     name: Linux_37_astropydev
     os: macos
     tox: py37-astropydev -- -n=4
 
 - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
-  - template: publish-pypi.yml
+  - template: publish-pypi.yml@sunpy
     parameters:
       dependsOn: [Linux_37_offline,Windows_36_offline,macOS_37_online,Linux_36_Conda_offline]
