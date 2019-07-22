@@ -1,6 +1,6 @@
 import matplotlib as mpl
 
-from astropy.wcs.wcsapi.sliced_low_level_wcs import SlicedLowLevelWCS
+from astropy.wcs.wcsapi import BaseLowLevelWCS
 import astropy.wcs
 
 from sunpy.visualization.animator.base import ArrayAnimator
@@ -160,7 +160,7 @@ class ImageAnimatorWCS(ImageAnimator):
     """
     def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
                  axis_ranges=None, **kwargs):
-        if not isinstance(wcs, (astropy.wcs.WCS, SlicedLowLevelWCS)):
+        if not isinstance(wcs, (astropy.wcs.WCS, BaseLowLevelWCS)):
             raise ValueError("wcs data should be provided.")
         if wcs.pixel_n_dim is not data.ndim:
             raise ValueError("Dimensions of data and wcs not matching")
