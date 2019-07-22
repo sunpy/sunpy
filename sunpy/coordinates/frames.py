@@ -301,7 +301,6 @@ class Heliocentric(SunPyBaseCoordinateFrame):
         supply a string, it must be a solar system body that can be
         parsed by `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`. 
         Defaults to the Earth.
-
     obstime : {parse_time_types}
         The date and time of the observation.
 
