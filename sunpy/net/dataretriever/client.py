@@ -22,7 +22,7 @@ TIME_FORMAT = config.get("general", "time_format")
 __all__ = ['QueryResponse', 'GenericClient']
 
 
-class QueryResponseBlock(object):
+class QueryResponseBlock:
     """
     Represents url, source along with other information
     """
@@ -58,7 +58,7 @@ class QueryResponse(list):
     """
 
     def __init__(self, lst):
-        super(QueryResponse, self).__init__(lst)
+        super().__init__(lst)
 
     @classmethod
     def create(cls, amap, lst, time=None):

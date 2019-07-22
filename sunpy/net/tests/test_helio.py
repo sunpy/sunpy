@@ -213,7 +213,7 @@ def test_link_test(mock_urlopen):
     Read from an open, 'mocked', URL.
     """
 
-    class MockFile(object):
+    class MockFile:
 
         def __init__(self, content):
             self.content = content

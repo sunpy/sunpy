@@ -29,7 +29,7 @@ RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
 #==============================================================================
 # Map Factory Tests
 #==============================================================================
-class TestMap(object):
+class TestMap:
     def test_mapsequence(self):
         #Test making a MapSequence
         sequence = sunpy.map.Map(a_list_of_many, sequence=True)

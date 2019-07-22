@@ -45,7 +45,7 @@ def read(filename, debug=False, **kwargs):
     >>> data = sunpy.io.ana.read(filename)  # doctest: +SKIP
     """
     if not os.path.isfile(filename):
-        raise IOError("File does not exist!")
+        raise OSError("File does not exist!")
 
     if _pyana is None:
         raise ImportError("C extension for ANA is missing, please rebuild.")

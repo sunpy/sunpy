@@ -91,7 +91,7 @@ class LYRATimeSeries(GenericTimeSeries):
                 name = lyranames[names][i]
             else:
                 name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel("{name} \n (W/m**2)".format(name=name), fontsize=9.5)
+            axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
 
         axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0],TIME_FORMAT))
         axes[-1].set_xlabel("Time")
@@ -139,7 +139,7 @@ class LYRATimeSeries(GenericTimeSeries):
             times = start + TimeDelta(td*u.minute)
         else:
             raise ValueError("Time unit in LYRA fits file not recognised.  "
-                             "Value = {0}".format(hdulist[1].header['TUNIT1']))
+                             "Value = {}".format(hdulist[1].header['TUNIT1']))
 
         # Rest of columns are the data
         table = {}

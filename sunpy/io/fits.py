@@ -80,7 +80,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
             try:
                 pairs.append(HDPair(hdu.data, header))
             except (KeyError, ValueError) as e:
-                message = "Error when reading HDU {}. Skipping.\n".format(i)
+                message = f"Error when reading HDU {i}. Skipping.\n"
                 for line in traceback.format_tb(sys.exc_info()[2]):
                     message += line
                     message += '\n'

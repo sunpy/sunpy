@@ -68,7 +68,7 @@ class LYRAClient(GenericClient):
             The URL for the corresponding date.
         """
 
-        filename = "lyra_{0}-000000_lev{1:d}_std.fits".format(
+        filename = "lyra_{}-000000_lev{:d}_std.fits".format(
             date.strftime('%Y%m%d'), kwargs.get('level', 2))
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urljoin(date.strftime('%Y/%m/%d/'), filename)

@@ -563,7 +563,7 @@ def test_add_column_from_quantity(eve_test_ts, add_column_from_quantity_ts,
         column_quantity)
     # Test the full list of columns are pressent
     assert set(add_column_from_quantity_ts.data.columns) == set(
-        eve_test_ts.data.columns) | set(['quantity_added'])
+        eve_test_ts.data.columns) | {'quantity_added'}
 
 
 @pytest.fixture
@@ -581,7 +581,7 @@ def test_add_column_from_array(eve_test_ts, add_column_from_array_ts,
 
     # Test the full list of columns are pressent
     assert set(add_column_from_array_ts.data.columns) == set(
-        eve_test_ts.data.columns) | set(['array_added'])
+        eve_test_ts.data.columns) | {'array_added'}
 
 
 def test_add_column_from_array_no_units(eve_test_ts, column_quantity):

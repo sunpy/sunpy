@@ -27,7 +27,7 @@ class NoSuchEntryError(Exception):
 
     def __str__(self):  # pragma: no cover
         return (
-            'the database entry {0!r} cannot be removed because it '
+            'the database entry {!r} cannot be removed because it '
             'is not stored in the database'.format(self.database_entry))
 
 
@@ -126,7 +126,7 @@ class AddEntry(DatabaseOperation):
             make_transient(self.database_entry)
 
     def __repr__(self):
-        return '<{0}(session {1!r}, entry id {2})>'.format(
+        return '<{}(session {!r}, entry id {})>'.format(
             self.__class__.__name__, self.session, self.database_entry.id)
 
 
@@ -154,7 +154,7 @@ class RemoveEntry(DatabaseOperation):
         self.session.add(self.entry)
 
     def __repr__(self):
-        return '<{0}(session {1!r}, entry {2!r})>'.format(
+        return '<{}(session {!r}, entry {!r})>'.format(
             self.__class__.__name__, self.session, self.entry)
 
 
@@ -185,7 +185,7 @@ class EditEntry(DatabaseOperation):
             setattr(self.database_entry, k, v)
 
     def __repr__(self):
-        return '<EditEntry(kwargs {0!r}, entry id {1})>'.format(
+        return '<EditEntry(kwargs {!r}, entry id {})>'.format(
             self.kwargs, self.database_entry.id)
 
 
@@ -218,7 +218,7 @@ class AddTag(DatabaseOperation):
                 pass
 
     def __repr__(self):
-        return "<AddTag(tag '{0}', session {1!r}, entry id {2})>".format(
+        return "<AddTag(tag '{}', session {!r}, entry id {})>".format(
             self.tag, self.session, self.database_entry.id)
 
 
@@ -268,11 +268,11 @@ class RemoveTag(DatabaseOperation):
                 self.database_entry.tags.append(self.tag)
 
     def __repr__(self):
-        return "<RemoveTag(tag '{0}', session {1!r}, entry id {2})>".format(
+        return "<RemoveTag(tag '{}', session {!r}, entry id {})>".format(
             self.tag, self.session, self.database_entry.id)
 
 
-class CommandManager(object):
+class CommandManager:
     """The CommandManager saves all executed and reverted commands to act as an
     undo-redo-manager. All executed commands are saved in the list attribute
     ``undo_commands`` and all undone commands are saved in the list attribute
