@@ -116,8 +116,8 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
     # artifact-free time series.
     ts_new = copy.deepcopy(ts)
     ts_new.data = pandas.DataFrame(
-        index=time, data=dict((col, channels[i])
-                              for i, col in enumerate(data_columns)))
+        index=time, data={col: channels[i]
+                              for i, col in enumerate(data_columns)})
     if return_artifacts:
         return ts_new, artifact_status
     else:
@@ -250,7 +250,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     for artifact in artifacts:
         if artifact not in all_lytaf_event_types:
             print(all_lytaf_event_types)
-            raise ValueError("{0} is not a valid artifact type. See above.".format(artifact))
+            raise ValueError(f"{artifact} is not a valid artifact type. See above.")
     # Define outputs
     clean_time = parse_time(time)
     clean_channels = copy.deepcopy(channels)
@@ -449,7 +449,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     # Access annotation files
     for suffix in combine_files:
         # Check database files are present
-        dbname = "annotation_{0}.db".format(suffix)
+        dbname = f"annotation_{suffix}.db"
         check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
         # Open SQLITE3 annotation files
         connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
@@ -483,8 +483,8 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
         # given time range
         cursor.execute("select insertion_time, begin_time, reference_time, "
                        "end_time, eventType_id from event where end_time >= "
-                       "{0} and begin_time <= "
-                       "{1}".format(start_time_uts, end_time_uts))
+                       "{} and begin_time <= "
+                       "{}".format(start_time_uts, end_time_uts))
         event_rows = cursor.fetchall()
         # Select and extract the event types from eventType table
         cursor.row_factory = sqlite3.Row
@@ -565,7 +565,7 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     if print_event_types:
         print("\nLYTAF Event Types\n-----------------\n")
     for suffix in suffixes:
-        dbname = "annotation_{0}.db".format(suffix)
+        dbname = f"annotation_{suffix}.db"
         # Check database file exists, else download it.
         check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
         # Open SQLITE3 LYTAF files
@@ -576,7 +576,7 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
         event_types = cursor.fetchall()
         all_event_types.append(event_types)
         if print_event_types:
-            print("----------------\n{0} database\n----------------"
+            print("----------------\n{} database\n----------------"
                   .format(suffix))
             for event_type in event_types:
                 print(str(event_type[0]))
@@ -751,7 +751,7 @@ def _prep_columns(time, channels=None, filecolumns=None):
     # is the number of arrays in channels (assuming 0-indexed counting).
     else:
         if channels:
-            filecolumns = ["channel{0}".format(fluxnum)
+            filecolumns = [f"channel{fluxnum}"
                            for fluxnum in range(len(channels))]
             filecolumns.insert(0, "time")
         else:

@@ -19,7 +19,7 @@ SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(['source', 'provider', 'physobs',
 SUPPORTED_NONVSO_ATTRS = frozenset(['starred'])
 
 
-class _BooleanAttr(object):
+class _BooleanAttr:
     def __init__(self, value, make):
         self.value = bool(value)
         self.make = make
@@ -53,13 +53,13 @@ class _BooleanAttr(object):
         return isinstance(other, self.make) and self.value == other.value
 
     def __hash__(self):
-        return super(_BooleanAttr, self).__hash__()
+        return super().__hash__()
 
     def collides(self, other):  # pragma: no cover
         return False
 
     def __repr__(self):
-        return '<{0}{1}()>'.format(
+        return '<{}{}()>'.format(
             '~' if not self.value else '', self.__class__.__name__)
 
 
@@ -82,7 +82,7 @@ class Tag(Attr):
         return False
 
     def __repr__(self):
-        return '<{0}Tag({1!r})>'.format(
+        return '<{}Tag({!r})>'.format(
             '~' if self.inverted else '', self.tagname)
 
 
@@ -100,7 +100,7 @@ class Path(Attr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return '<{0}Path({1!r})>'.format(
+        return '<{}Path({!r})>'.format(
             '~' if self.inverted else '', self.value)
 
 
@@ -122,7 +122,7 @@ class DownloadTime(Attr, vso_attrs._Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return '<{0}DownloadTime({1!r}, {2!r})>'.format(
+        return '<{}DownloadTime({!r}, {!r})>'.format(
             '~' if self.inverted else '', self.start, self.end)
 
 
@@ -141,7 +141,7 @@ class FitsHeaderEntry(Attr):
         return False
 
     def __repr__(self):
-        return '<{0}FitsHeaderEntry({1!r}, {2!r})>'.format(
+        return '<{}FitsHeaderEntry({!r}, {!r})>'.format(
             '~' if self.inverted else '', self.key, self.value)
 
 
@@ -217,7 +217,7 @@ def _create(wlk, root, session):
                 DatabaseEntry.observation_time_end > start))
         else:
             if typ.lower() not in SUPPORTED_SIMPLE_VSO_ATTRS.union(SUPPORTED_NONVSO_ATTRS):
-                raise NotImplementedError("The attribute {0!r} is not yet supported to query a database.".format(typ))
+                raise NotImplementedError(f"The attribute {typ!r} is not yet supported to query a database.")
             query = query.filter_by(**{typ: value})
     return query.all()
 

@@ -133,9 +133,9 @@ def _check_type(datatype, **kwargs):
     checks is datatype is either "CSPEC" or "CTIME".
     """
     if not isinstance(datatype, str):
-        raise ValueError('{} is not str - either cspec or ctime'.format(datatype))
+        raise ValueError(f'{datatype} is not str - either cspec or ctime')
 
     if datatype.lower() != 'cspec' and datatype.lower() != 'ctime':
-        raise ValueError('{} not value datatype - either cspec or ctime'.format(datatype))
+        raise ValueError(f'{datatype} not value datatype - either cspec or ctime')
     else:
         return datatype.lower()

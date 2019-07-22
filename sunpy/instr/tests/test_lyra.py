@@ -307,16 +307,16 @@ def test_get_lytaf_events():
                 datetime.datetime.utcfromtimestamp(1368583080),
                 datetime.datetime.utcfromtimestamp(1371050025),
                 datetime.datetime.utcfromtimestamp(1371167100)]
-    event_type = [u"LAR", u"UV occ.", u"Vis LED on", u"M Flare", u"UV LED on",
-                  u"X Flare", u"Off-limb event", u"Unexplained feature"]
-    event_description = [u"Large Angle Rotation.",
-                         u"Occultation in the UV spectrum.",
-                         u"Visual LED is turned on.",
-                         u"M class solar flare.",
-                         u"UV LED is turned on.",
-                         u"X class solar flare.",
-                         u"Off-limb event in SWAP.",
-                         u"Unexplained feature."]
+    event_type = ["LAR", "UV occ.", "Vis LED on", "M Flare", "UV LED on",
+                  "X Flare", "Off-limb event", "Unexplained feature"]
+    event_description = ["Large Angle Rotation.",
+                         "Occultation in the UV spectrum.",
+                         "Visual LED is turned on.",
+                         "M class solar flare.",
+                         "UV LED is turned on.",
+                         "X class solar flare.",
+                         "Off-limb event in SWAP.",
+                         "Unexplained feature."]
     lytaf_expected = np.empty((8,), dtype=[("insertion_time", object),
                                            ("begin_time", object),
                                            ("reference_time", object),

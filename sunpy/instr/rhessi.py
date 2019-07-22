@@ -160,7 +160,7 @@ def uncompress_countrate(compressed_countrate):
     # Ensure uncompressed counts are between 0 and 255
     if (compressed_countrate.min() < 0) or (compressed_countrate.max() > 255):
         raise ValueError(
-            'Exepected uncompressed counts {} to in range 0-255'.format(compressed_countrate))
+            f'Exepected uncompressed counts {compressed_countrate} to in range 0-255')
 
     # TODO Must be a better way than creating entire lookup table on each call
     ll = np.arange(0, 16, 1)
@@ -354,9 +354,9 @@ def _build_energy_bands(label, bands):
     matched = unit_pattern.match(label)
 
     if matched is None:
-        raise ValueError("Unable to find energy unit in '{0}' "
-                         "using REGEX '{1}'".format(label, unit_pattern.pattern))
+        raise ValueError("Unable to find energy unit in '{}' "
+                         "using REGEX '{}'".format(label, unit_pattern.pattern))
 
     unit = matched.group('UNIT').strip()
 
-    return ['{energy_band} {unit}'.format(energy_band=band, unit=unit) for band in bands]
+    return [f'{band} {unit}' for band in bands]

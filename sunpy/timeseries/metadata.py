@@ -14,7 +14,7 @@ from sunpy.util.metadata import MetaDict
 __all__ = ["TimeSeriesMetaData"]
 
 
-class TimeSeriesMetaData(object):
+class TimeSeriesMetaData:
     """
     Used to store metadata for `~sunpy.timeseries.TimeSeries` that enables
     multiple `sunpy.timeseries.TimeSeries` metadata to be concatenated in an

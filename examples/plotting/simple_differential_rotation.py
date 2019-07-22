@@ -37,7 +37,7 @@ rotation_period = [360 * u.deg / this_rate for this_rate in rotation_rate]
 fig = plt.figure()
 plt.plot(np.sin(latitudes), [this_period.value for this_period in rotation_period])
 plt.ylim(38, 24)
-plt.ylabel('Rotation Period [{0}]'.format(rotation_period[0].unit))
+plt.ylabel('Rotation Period [{}]'.format(rotation_period[0].unit))
 plt.xlabel('Sin(Latitude)')
 plt.title('Solar Differential Rotation Rate')
 
@@ -65,7 +65,7 @@ future_date = aia_map.date + dt
 fig = plt.figure()
 ax = plt.subplot(projection=aia_map)
 aia_map.plot()
-ax.set_title('The effect of {0} days of differential rotation'.format(dt.to(u.day).value))
+ax.set_title('The effect of {} days of differential rotation'.format(dt.to(u.day).value))
 aia_map.draw_grid()
 
 for this_hpc_x, this_hpc_y in zip(hpc_x, hpc_y):

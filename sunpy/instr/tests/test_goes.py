@@ -291,7 +291,7 @@ def test_calc_rad_loss_errors():
         rad_loss_test = goes._calc_rad_loss(temp_toolong, em, obstime)
     with pytest.raises(ValueError):
         rad_loss_test = goes._calc_rad_loss(temp_outofrange, em, obstime)
-    with pytest.raises(IOError):
+    with pytest.raises(OSError):
         rad_loss_test = goes._calc_rad_loss(temp, em, obstime_toolong)
     with pytest.raises(ValueError):
         lx_test = goes._calc_rad_loss(temp, em, obstime_notdatetime)

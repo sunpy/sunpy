@@ -64,7 +64,7 @@ def test_get_base_url_on_urlerror(mock_urlopen):
     """
     If all tested URLs raise `URLError`, then raise an `IOError`
     """
-    with pytest.raises(IOError):
+    with pytest.raises(OSError):
         rhessi.get_base_url()
 
 
@@ -73,7 +73,7 @@ def test_get_base_url_on_timeout(mock_urlopen):
     """
     If all tested data servers timeout, then raise an `IOError`
     """
-    with pytest.raises(IOError):
+    with pytest.raises(OSError):
         rhessi.get_base_url()
 
 

@@ -41,7 +41,7 @@ class EntryNotFoundError(Exception):
         self.entry_id = entry_id
 
     def __str__(self):  # pragma: no cover
-        return 'an entry with the ID {0:d} does not exist'.format(
+        return 'an entry with the ID {:d} does not exist'.format(
             self.entry_id)
 
 
@@ -56,7 +56,7 @@ class EntryAlreadyAddedError(Exception):
 
     def __str__(self):  # pragma: no cover
         return (
-            'the entry {0!r} was already added '
+            'the entry {!r} was already added '
             'to the database'.format(self.database_entry))
 
 
@@ -72,7 +72,7 @@ class EntryAlreadyStarredError(Exception):
 
     def __str__(self):  # pragma: no cover
         return (
-            'the entry {0!r} is already marked '
+            'the entry {!r} is already marked '
             'as starred'.format(self.database_entry))
 
 
@@ -87,7 +87,7 @@ class EntryAlreadyUnstarredError(Exception):
 
     def __str__(self):  # pragma: no cover
         return (
-            'the entry {0!r} is already not marked '
+            'the entry {!r} is already not marked '
             'as starred'.format(self.database_entry))
 
 
@@ -101,7 +101,7 @@ class NoSuchTagError(Exception):
         self.tag_name = tag_name
 
     def __str__(self):  # pragma: no cover
-        return 'the tag {0!r} is not saved in the database'.format(
+        return 'the tag {!r} is not saved in the database'.format(
             self.tag_name)
 
 
@@ -195,7 +195,7 @@ def disable_undo(database):
     database._enable_history = True
 
 
-class Database(object):
+class Database:
     """
     Database(url[, CacheClass[, cache_size[, default_waveunit]]])
 
@@ -386,7 +386,7 @@ class Database(object):
 
         if kwargs:
             k, v = kwargs.popitem()
-            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+            raise TypeError(f'unexpected keyword argument {k!r}')
 
         if client is None:
             client = VSOClient()
@@ -597,7 +597,7 @@ class Database(object):
         sortby = kwargs.pop('sortby', 'observation_time_start')
         if kwargs:
             k, v = kwargs.popitem()
-            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+            raise TypeError(f'unexpected keyword argument {k!r}')
 
         db_entries = walker.create(and_(*query), self.session)
 

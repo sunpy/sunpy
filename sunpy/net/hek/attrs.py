@@ -91,7 +91,7 @@ class EventType(attr.Attr):
         if isinstance(other, EventType):
             return EventType(self.item + ',' + other.item)
         else:
-            return super(EventType, self).__or__(other)
+            return super().__or__(other)
 
 
 # XXX: XOR
@@ -159,7 +159,7 @@ class Contains(attr.Attr):
         return hash(tuple(vars(self).items()))
 
 
-class _ComparisonParamAttrWrapper(object):
+class _ComparisonParamAttrWrapper:
     def __init__(self, name):
         self.name = name
 
@@ -250,9 +250,9 @@ def _a(wlk, root, state, dct):
         state[_ParamAttr] = 0
 
     nid = state[_ParamAttr]
-    dct['param{num:d}'.format(num=nid)] = root.name
-    dct['op{num:d}'.format(num=nid)] = root.op
-    dct['value{num:d}'.format(num=nid)] = root.value
+    dct[f'param{nid:d}'] = root.name
+    dct[f'op{nid:d}'] = root.op
+    dct[f'value{nid:d}'] = root.value
     state[_ParamAttr] += 1
     return dct
 
@@ -441,7 +441,7 @@ class TO(EventType):
         EventType.__init__(self, 'to')
 
 @apply
-class Wave(object):
+class Wave:
     DisplMaxAmpl = _StringParamAttrWrapper('WaveDisplMaxAmpl')
     DisplMinAmpl = _StringParamAttrWrapper('WaveDisplMinAmpl')
     DisplUnit = _StringParamAttrWrapper('WaveDisplUnit')
@@ -453,7 +453,7 @@ class Wave(object):
 
 
 @apply
-class Veloc(object):
+class Veloc:
     MaxAmpl = _StringParamAttrWrapper('VelocMaxAmpl')
     MaxPower = _StringParamAttrWrapper('VelocMaxPower')
     MaxPowerUncert = _StringParamAttrWrapper('VelocMaxPowerUncert')
@@ -462,7 +462,7 @@ class Veloc(object):
 
 
 @apply
-class Freq(object):
+class Freq:
     MaxRange = _StringParamAttrWrapper('FreqMaxRange')
     MinRange = _StringParamAttrWrapper('FreqMinRange')
     PeakPower = _StringParamAttrWrapper('FreqPeakPower')
@@ -470,14 +470,14 @@ class Freq(object):
 
 
 @apply
-class Intens(object):
+class Intens:
     MaxAmpl = _StringParamAttrWrapper('IntensMaxAmpl')
     MinAmpl = _StringParamAttrWrapper('IntensMinAmpl')
     Unit = _StringParamAttrWrapper('IntensUnit')
 
 
 @apply
-class Area(object):
+class Area:
     AtDiskCenter = _StringParamAttrWrapper('Area_AtDiskCenter')
     AtDiskCenterUncert = _StringParamAttrWrapper('Area_AtDiskCenterUncert')
     Raw = _StringParamAttrWrapper('Area_Raw')
@@ -486,7 +486,7 @@ class Area(object):
 
 
 @apply
-class BoundBox(object):
+class BoundBox:
     C1LL = _StringParamAttrWrapper('BoundBox_C1LL')
     C1UR = _StringParamAttrWrapper('BoundBox_C1UR')
     C2LL = _StringParamAttrWrapper('BoundBox_C2LL')
@@ -494,7 +494,7 @@ class BoundBox(object):
 
 
 @apply
-class Bound(object):
+class Bound:
     ox_C1LL = _StringParamAttrWrapper('BoundBox_C1LL')
     ox_C1UR = _StringParamAttrWrapper('BoundBox_C1UR')
     ox_C2LL = _StringParamAttrWrapper('BoundBox_C2LL')
@@ -505,7 +505,7 @@ class Bound(object):
 
 
 @apply
-class OBS(object):
+class OBS:
     ChannelID = _StringParamAttrWrapper('OBS_ChannelID')
     DataPrepURL = _StringParamAttrWrapper('OBS_DataPrepURL')
     FirstProcessingDate = _StringParamAttrWrapper('OBS_FirstProcessingDate')
@@ -520,7 +520,7 @@ class OBS(object):
 
 
 @apply
-class Skel(object):
+class Skel:
     Curvature = _StringParamAttrWrapper('Skel_Curvature')
     Nsteps = _StringParamAttrWrapper('Skel_Nsteps')
     StartC1 = _StringParamAttrWrapper('Skel_StartC1')
@@ -528,7 +528,7 @@ class Skel(object):
 
 
 @apply
-class FRM(object):
+class FRM:
     Contact = _StringParamAttrWrapper('FRM_Contact')
     HumanFlag = _StringParamAttrWrapper('FRM_HumanFlag')
     Identifier = _StringParamAttrWrapper('FRM_Identifier')
@@ -541,7 +541,7 @@ class FRM(object):
 
 
 @apply
-class Event(object):
+class Event:
     C1Error = _StringParamAttrWrapper('Event_C1Error')
     C2Error = _StringParamAttrWrapper('Event_C2Error')
     ClippedSpatial = _StringParamAttrWrapper('Event_ClippedSpatial')
@@ -561,7 +561,7 @@ class Event(object):
 
 
 @apply
-class Outflow(object):
+class Outflow:
     Length = _StringParamAttrWrapper('Outflow_Length')
     LengthUnit = _StringParamAttrWrapper('Outflow_LengthUnit')
     OpeningAngle = _StringParamAttrWrapper('Outflow_OpeningAngle')
@@ -573,7 +573,7 @@ class Outflow(object):
 
 
 @apply
-class Misc(object):
+class Misc:
     KB_Archivist = _StringParamAttrWrapper('KB_Archivist')
     MaxMagFieldStrength = _StringParamAttrWrapper('MaxMagFieldStrength')
     MaxMagFieldStrengthUnit = _StringParamAttrWrapper('MaxMagFieldStrengthUnit')

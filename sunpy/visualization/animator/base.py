@@ -300,7 +300,7 @@ class BaseFuncAnimator:
                 nx1 = -3
             locator = self.divider.new_locator(nx=0, ny=x, nx1=nx1)
             self.sliders[-1].set_axes_locator(locator)
-            sframe = widgets.Slider(self.sliders[-1], "{slide:d}".format(slide=i),
+            sframe = widgets.Slider(self.sliders[-1], f"{i:d}",
                                     self.slider_ranges[i][0],
                                     self.slider_ranges[i][-1]-1,
                                     valinit=self.slider_ranges[i][0],
@@ -555,7 +555,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
 
         Must exist here but be defined in subclass.
         """
-        raise NotImplementedError("Must be defined and used by subclasses of {0}.".format(self.__class__))
+        raise NotImplementedError(f"Must be defined and used by subclasses of {self.__class__}.")
 
     @abc.abstractmethod
     def update_plot(self, val, artist, slider):
@@ -568,7 +568,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         ax_ind = self.slider_axes[slider.slider_ind]
         # Update slider label to reflect real world values in axis_ranges.
         label = self.axis_ranges[ax_ind][ind]
-        slider.valtext.set_text("{0}".format(label))
+        slider.valtext.set_text(f"{label}")
 
 
 def edges_to_centers_nd(axis_range, edges_axis):

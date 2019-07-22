@@ -42,7 +42,7 @@ def votable_handler(xml_table):
     return votable
 
 
-class HECClient(object):
+class HECClient:
     """
     A client class used to interface with and query HELIO webservices.
     """

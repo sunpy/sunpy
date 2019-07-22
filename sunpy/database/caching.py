@@ -10,7 +10,7 @@ from collections.abc import MutableMapping
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 
 
-class BaseCache(object, metaclass=ABCMeta):
+class BaseCache(metaclass=ABCMeta):
     """
     BaseCache is a class that saves and operates on an OrderedDict. It has a
     certain capacity, stored in the attribute `maxsize`. Whether this
@@ -95,12 +95,10 @@ class BaseCache(object, metaclass=ABCMeta):
         return len(self._dict)
 
     def __iter__(self):
-        for key in self._dict.__iter__():
-            yield key
+        yield from self._dict.__iter__()
 
     def __reversed__(self):  # pragma: no cover
-        for key in self._dict.__reversed__():
-            yield key
+        yield from self._dict.__reversed__()
 
     def clear(self):  # pragma: no cover
         return self._dict.clear()
@@ -118,12 +116,10 @@ class BaseCache(object, metaclass=ABCMeta):
         return iter(self._dict.keys())
 
     def itervalues(self):  # pragma: no cover
-        for value in self._dict.values():
-            yield value
+        yield from self._dict.values()
 
     def iteritems(self):  # pragma: no cover
-        for key, value in self._dict.items():
-            yield key, value
+        yield from self._dict.items()
 
     def update(self, *args, **kwds):  # pragma: no cover
         self._dict.update(*args, **kwds)
@@ -163,7 +159,7 @@ class BaseCache(object, metaclass=ABCMeta):
         return OrderedDict.fromkeys(iterable, value)
 
     def __repr__(self):  # pragma: no cover
-        return '{0}({1!r})'.format(self.__class__.__name__, dict(self._dict))
+        return '{}({!r})'.format(self.__class__.__name__, dict(self._dict))
 
 
 class LRUCache(BaseCache):
