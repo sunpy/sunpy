@@ -524,6 +524,13 @@ def _tweak_graph(docstr):
     for frame in sunpy_frames:
         output = output.replace(frame + ' [', frame + ' [fillcolor=white ')
 
+    # Set the rank direction to be left->right (as opposed to top->bottom)
+    # Force nodes for ICRS, HCRS, and "Other frames in Astropy" to be at the same rank
+    output = output.replace('        overlap=false',
+                            '        overlap=false\n'
+                            '        rankdir=LR\n'
+                            '        {rank=same; ICRS; HCRS; Astropy}')
+
     output = output.replace('<ul>\n\n',
                             '<ul>\n\n' +
                             _add_legend_row('SunPy frames', 'white') +
