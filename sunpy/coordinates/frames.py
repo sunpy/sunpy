@@ -297,9 +297,9 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     z : `~astropy.units.Quantity`, optional
         Z-axis coordinate. Not needed if ``data`` is given.
     observer : `~sunpy.coordinates.frames.HeliographicStonyhurst`, str
-        The coordinate of the observer in the solar system. If you 
+        The coordinate of the observer in the solar system. If you
         supply a string, it must be a solar system body that can be
-        parsed by `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`. 
+        parsed by `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`.
         Defaults to the Earth.
     obstime : {parse_time_types}
         The date and time of the observation.
