@@ -12,7 +12,7 @@ from sunpy.coordinates import frames
 __all__ = ['GreatArc']
 
 
-class GreatArc(object):
+class GreatArc:
     """
     Calculate the properties of a great arc at user-specified points between a
     start and end point on a sphere.

@@ -42,7 +42,7 @@ a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 # =============================================================================
 
 
-class TestTimeSeries(object):
+class TestTimeSeries:
     def test_factory_concatenate_same_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)

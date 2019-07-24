@@ -102,7 +102,7 @@ class AttrMeta(type):
         pad_name = max(len(elm) for elm in name)
         pad_long = max(len(elm) for elm in name_long)
         pad_desc = max(len(elm) for elm in desc)
-        fmt = "%-{}s | %-{}s | %-{}s".format(pad_name, pad_long, pad_desc)
+        fmt = f"%-{pad_name}s | %-{pad_long}s | %-{pad_desc}s"
         lines = [fmt % elm for elm in zip(name, name_long, desc)]
         lines.insert(1, '-' * (pad_name + 1) + '+' + '-' * (pad_long + 2) + '+' + '-' * (pad_desc + 1))
         return "\n".join(lines)
@@ -201,8 +201,8 @@ class Attr(metaclass=AttrMeta):
                         cls._attr_registry[key][1].append(pair[0])
                         cls._attr_registry[key][2].append(pair[1])
             else:
-                raise ValueError((f"Invalid input value: {value} for key: {repr(key)}. "
-                                  "The value is not iterable or just a string."))
+                raise ValueError(f"Invalid input value: {value} for key: {repr(key)}. "
+                                  "The value is not iterable or just a string.")
 
 
 class DummyAttr(Attr):
@@ -279,7 +279,7 @@ class AttrAnd(Attr):
     __rand__ = __and__
 
     def __repr__(self):
-        return "<AttrAnd({att!r})>".format(att=self.attrs)
+        return f"<AttrAnd({self.attrs!r})>"
 
     def __eq__(self, other):
         if not isinstance(other, AttrAnd):
@@ -330,7 +330,7 @@ class AttrOr(Attr):
         return False
 
     def __repr__(self):
-        return "<AttrOr({att!r})>".format(att=self.attrs)
+        return f"<AttrOr({self.attrs!r})>"
 
     def __eq__(self, other):
         if not isinstance(other, AttrOr):
@@ -350,7 +350,7 @@ class ValueAttr(Attr):
         self.attrs = attrs
 
     def __repr__(self):
-        return "<ValueAttr({att!r})>".format(att=self.attrs)
+        return f"<ValueAttr({self.attrs!r})>"
 
     def __hash__(self):
         return hash(frozenset(self.attrs.items()))
@@ -366,7 +366,7 @@ class ValueAttr(Attr):
         return any(k in other.attrs for k in self.attrs)
 
 
-class AttrWalker(object):
+class AttrWalker:
     def __init__(self):
         self.applymm = MultiMethod(lambda *a, **kw: (a[1], ))
         self.createmm = MultiMethod(lambda *a, **kw: (a[1], ))

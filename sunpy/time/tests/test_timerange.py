@@ -166,7 +166,7 @@ def test_split_n_0_error(timerange_a):
 
 def test_input_error(timerange_a):
     with pytest.raises(ValueError):
-        sunpy.time.TimeRange((tbegin_str))
+        sunpy.time.TimeRange(tbegin_str)
 
 
 def test_window(timerange_a):

@@ -175,7 +175,7 @@ class GenericMap(NDData):
             warnings.warn("This file contains more than 2 dimensions. "
                           "Data will be truncated to the first two dimensions.", SunpyUserWarning)
 
-        super(GenericMap, self).__init__(data, meta=header, **kwargs)
+        super().__init__(data, meta=header, **kwargs)
 
         # Correct possibly missing meta keywords
         self._fix_date()
@@ -1036,9 +1036,9 @@ class GenericMap(NDData):
                 equivalent = angle.unit.is_equivalent(u.deg)
 
                 if not equivalent:
-                    raise u.UnitsError("Argument '{0}' to function '{1}'"
+                    raise u.UnitsError("Argument '{}' to function '{}'"
                                        " must be in units convertable to"
-                                       " '{2}'.".format('angle', 'rotate',
+                                       " '{}'.".format('angle', 'rotate',
                                                         u.deg.to_string()))
 
             # Either there is no .unit or no .is_equivalent
@@ -1047,7 +1047,7 @@ class GenericMap(NDData):
                     error_msg = "a 'unit' attribute without an 'is_equivalent' method"
                 else:
                     error_msg = "no 'unit' attribute"
-                raise TypeError("Argument '{0}' to function '{1}' has {2}. "
+                raise TypeError("Argument '{}' to function '{}' has {}. "
                                 "You may want to pass in an astropy Quantity instead."
                                 .format('angle', 'rotate', error_msg))
 

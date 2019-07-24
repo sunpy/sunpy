@@ -663,12 +663,12 @@ class JSOCClient(BaseClient):
         if segment:
             if isinstance(segment, list):
                 segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
-            segment = '{{{segment}}}'.format(segment=segment)
+            segment = f'{{{segment}}}'
 
         # Extract and format sample
         sample = kwargs.get('sample', '')
         if sample:
-            sample = '@{}s'.format(sample)
+            sample = f'@{sample}s'
 
         # Populate primekeys dict with Time and Wavelength values
         if start_time and end_time:
@@ -699,7 +699,7 @@ class JSOCClient(BaseClient):
                 raise ValueError(error_message)
 
             if match:
-                timestr = '{0}'.format(primekey.pop(list(match)[0], ''))
+                timestr = '{}'.format(primekey.pop(list(match)[0], ''))
             else:
                 timestr = ''
 
@@ -709,7 +709,7 @@ class JSOCClient(BaseClient):
                     wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
                     wavelength = str(wavelength)
                 else:
-                    wavelength = '{0}'.format(int(np.ceil(wavelength.to(u.AA).value)))
+                    wavelength = '{}'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
             else:
                 # This is executed when wavelength has been passed both through PrimeKey()
@@ -721,7 +721,7 @@ class JSOCClient(BaseClient):
 
         else:
             # This is executed when wavelength has been passed through PrimeKey().
-            wavelength = '{0}'.format(primekey.pop('WAVELNTH', ''))
+            wavelength = '{}'.format(primekey.pop('WAVELNTH', ''))
 
         # Populate primekey dict with formatted Time and Wavlength.
         if timestr:
@@ -738,9 +738,9 @@ class JSOCClient(BaseClient):
             # The loop is iterating over the list of prime-keys existing for the given series.
             if len(primekey) > 0:
                 if pkeys_isTime[pkey]:
-                    pkstr += '[{0}]'.format(primekey.pop('TIME', ''))
+                    pkstr += '[{}]'.format(primekey.pop('TIME', ''))
                 else:
-                    pkstr += '[{0}]'.format(primekey.pop(pkey, ''))
+                    pkstr += '[{}]'.format(primekey.pop(pkey, ''))
             else:
                 break
                 # break because we can skip adding {} at the end of pkstr, if the primekey

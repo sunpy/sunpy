@@ -4,7 +4,7 @@ from astropy.coordinates import SkyOffsetFrame, SphericalRepresentation, UnitSph
 __all__ = ['NorthOffsetFrame']
 
 
-class NorthOffsetFrame(object):
+class NorthOffsetFrame:
     """
     A frame which is relative to some position and another frame. Based on
     `astropy.coordinates.SkyOffsetFrame`
