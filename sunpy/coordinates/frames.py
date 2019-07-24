@@ -24,7 +24,6 @@ __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective']
 
 
-@add_common_docstring(**_variables_for_parse_time_docstring())
 class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     """
     * Defines a default longitude wrap angle of 180 degrees, which can be overridden by the class
