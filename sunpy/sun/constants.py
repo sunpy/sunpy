@@ -97,7 +97,7 @@ _lines = [
     '====================== ============== ================ =================================',
 ]
 for key, const in constants.items():
-    _lines.append('{0:^22} {1:^14.9g} {2:^16} {3}'.format(
+    _lines.append('{:^22} {:^14.9g} {:^16} {}'.format(
         key, const.value, const._unit_string, const.name))
 _lines.append(_lines[1])
 if __doc__ is not None:

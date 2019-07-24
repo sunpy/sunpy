@@ -144,7 +144,7 @@ def test_init_with_illegal_arg():
     Ensure attempt to initialise with a nonsensical data structure is rejected.
     """
     with pytest.raises(TypeError):
-        MetaDict(set(('a', 'b', 'c', 'd')))
+        MetaDict({'a', 'b', 'c', 'd'})
 
 
 # Test individual methods

@@ -41,7 +41,7 @@ __email__ = "stuart@mumford.me.uk"
 try:
     from sunpy.database.tables import DatabaseEntry
 except ImportError:
-    class DatabaseEntry(object):
+    class DatabaseEntry:
         pass
 
 __all__ = ['Map', 'MapFactory']
@@ -329,7 +329,7 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({0})."
+            raise MultipleMatchError("Too many candidate types identified ({})."
                                      "Specify enough keywords to guarantee unique type"
                                      "identification.".format(n_matches))
 

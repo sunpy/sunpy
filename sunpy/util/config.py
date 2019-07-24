@@ -109,7 +109,7 @@ def print_config():
 
     print("\nCONFIGURATION:")
     for section in sunpy.config.sections():
-        print("  [{0}]".format(section))
+        print(f"  [{section}]")
         for option in sunpy.config.options(section):
             print("  {} = {}".format(option, sunpy.config.get(section, option)))
         print("")

@@ -181,10 +181,10 @@ class SRSClient(GenericClient):
         today_year = Time.now().strftime('%Y')
         for day in all_dates:
             if today_year == day.end.strftime('%Y'):
-                suffix = '{0}/SRS/{1}SRS.txt'.format(
+                suffix = '{}/SRS/{}SRS.txt'.format(
                     day.end.strftime('%Y'), day.end.strftime('%Y%m%d'))
             else:
-                suffix = '{0}/{1}_SRS.tar.gz'.format(
+                suffix = '{}/{}_SRS.tar.gz'.format(
                     day.end.strftime('%Y'), day.end.strftime('%Y'))
             url = base_url + suffix
             result.append(url)

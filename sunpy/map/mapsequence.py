@@ -18,7 +18,7 @@ from sunpy.util import expand_list
 __all__ = ['MapSequence']
 
 
-class MapSequence(object):
+class MapSequence:
     """
     MapSequence
 

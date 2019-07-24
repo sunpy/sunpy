@@ -102,10 +102,10 @@ def test_wcs(aia171_test_map):
     assert all(
         wcs.wcs.crval ==
         [aia171_test_map._reference_longitude.value, aia171_test_map._reference_latitude.value])
-    assert set(wcs.wcs.ctype) == set(
-        [aia171_test_map.coordinate_system.axis1, aia171_test_map.coordinate_system.axis2])
+    assert set(wcs.wcs.ctype) == {
+        aia171_test_map.coordinate_system.axis1, aia171_test_map.coordinate_system.axis2}
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
-    assert set(wcs.wcs.cunit) == set([u.Unit(a) for a in aia171_test_map.spatial_units])
+    assert set(wcs.wcs.cunit) == {u.Unit(a) for a in aia171_test_map.spatial_units}
 
 
 def test_dtype(generic_map):
@@ -694,7 +694,7 @@ def test_more_than_two_dimensions():
     with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions.'):
         bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
-    assert bad_map.ndim is 2
+    assert bad_map.ndim == 2
     assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
 
 

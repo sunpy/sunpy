@@ -31,7 +31,7 @@ freq, spectra = signal.periodogram(ts.data[x_ray], fs=0.25)
 ###############################################################################
 # Let's plot the results
 plt.semilogy(freq, spectra)
-plt.title('Power Spectrum of {}'.format(x_ray))
+plt.title(f'Power Spectrum of {x_ray}')
 plt.ylabel('Power Spectral Density [{:LaTeX}]'.format(ts.units[x_ray] ** 2 / u.Hz))
 plt.xlabel('Frequency [Hz]')
 plt.show()

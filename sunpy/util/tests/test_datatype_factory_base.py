@@ -4,7 +4,7 @@ from sunpy.util.datatype_factory_base import (BasicRegistrationFactory, Multiple
                                               NoMatchError, ValidationFunctionError)
 
 
-class BaseWidget(object):
+class BaseWidget:
     def __init__(self, *args, **kwargs):
         pass
 
@@ -59,7 +59,7 @@ class MissingClassMethodDifferentValidationWidget(BaseWidget):
         return kwargs.get('style') == 'missing-different'
 
 
-class TestBasicRegistrationFactory(object):
+class TestBasicRegistrationFactory:
 
     def test_default_factory(self):
 

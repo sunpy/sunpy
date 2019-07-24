@@ -21,8 +21,8 @@ class UnsupportedPythonError(Exception):
     pass
 
 
-if sys.version_info < tuple((int(val) for val in __minimum_python_version__.split('.'))):
-    raise UnsupportedPythonError("sunpy does not support Python < {}".format(__minimum_python_version__))
+if sys.version_info < tuple(int(val) for val in __minimum_python_version__.split('.')):
+    raise UnsupportedPythonError(f"sunpy does not support Python < {__minimum_python_version__}")
 
 # this indicates whether or not we are in the package's setup.py
 try:

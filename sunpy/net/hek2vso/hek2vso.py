@@ -104,7 +104,7 @@ def vso_attribute_parse(phrase):
     return query
 
 
-class H2VClient(object):
+class H2VClient:
     """
     Class to handle HEK to VSO translations
 

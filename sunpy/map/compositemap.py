@@ -20,7 +20,7 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 
-class CompositeMap(object):
+class CompositeMap:
     """
     CompositeMap(map1 [,map2,..])
 

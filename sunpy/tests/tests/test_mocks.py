@@ -128,7 +128,7 @@ def test_read_only_mode_MockOpenTextFile():
         read_only.write('')
 
     assert read_only.read() == content
-    assert read_only.readlines() == ['{0}{1}'.format(line, new_line)
+    assert read_only.readlines() == [f'{line}{new_line}'
                                      for line in content.split(new_line)]
     read_only.close()
 
@@ -190,8 +190,8 @@ def test_repr_MockOpenTextFile():
     """
     Test ``MockOpenTextFile.__repr__``.
     """
-    mo_p = re.compile((r"^(?P<_><)sunpy\.tests\.mocks\.MockOpenTextFile file \'a\' "
-                       "mode \'r\' at 0x[0-9A-Fa-f]+L?(?(_)>|)$"))
+    mo_p = re.compile(r"^(?P<_><)sunpy\.tests\.mocks\.MockOpenTextFile file \'a\' "
+                       "mode \'r\' at 0x[0-9A-Fa-f]+L?(?(_)>|)$")
 
     assert mo_p.match(repr(MockOpenTextFile('a', 'r'))) is not None
 
