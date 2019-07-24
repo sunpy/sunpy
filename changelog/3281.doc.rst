@@ -1,0 +1,1 @@
+Add link to maintainer list in `~sunpy.docs.dev_guide.stability.rst`
