@@ -75,7 +75,7 @@ class Notify(SimpleAttr):
     """
 
     def __init__(self, value):
-        super(Notify, self).__init__(value)
+        super().__init__(value)
         if value.find('@') == -1:
             raise ValueError("Notify attribute must contain an '@' symbol "
                              "to be a valid email address")

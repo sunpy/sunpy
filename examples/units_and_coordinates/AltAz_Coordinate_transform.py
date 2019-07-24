@@ -25,7 +25,7 @@ Fort_Sumner = EarthLocation(lat=34.4900*u.deg, lon=-104.221800*u.deg, height=40*
 # Now lets convert this to a local measurement of Altitude and Azimuth.
 frame_altaz = AltAz(obstime=Time(obstime), location=Fort_Sumner)
 sun_altaz = c.transform_to(frame_altaz)
-print('Altitude is {0} and Azimuth is {1}'.format(sun_altaz.T.alt, sun_altaz.T.az))
+print(f'Altitude is {sun_altaz.T.alt} and Azimuth is {sun_altaz.T.az}')
 
 ######################################################################################
 # Next let's check this calculation by converting it back to helioprojective.
@@ -35,4 +35,4 @@ print('Altitude is {0} and Azimuth is {1}'.format(sun_altaz.T.alt, sun_altaz.T.a
 distance = sun.earth_distance(obstime)
 b = SkyCoord(az=sun_altaz.T.az, alt=sun_altaz.T.alt, distance=distance, frame=frame_altaz)
 sun_helio = b.transform_to(frames.Helioprojective)
-print('The helioprojective point is {0}, {1}'.format(sun_helio.T.Tx, sun_helio.T.Ty))
+print(f'The helioprojective point is {sun_helio.T.Tx}, {sun_helio.T.Ty}')

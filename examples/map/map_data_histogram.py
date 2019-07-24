@@ -47,7 +47,7 @@ plt.axvline(aia_smap.data.mean(),
 one_sigma = np.array([aia_smap.data.mean() - aia_smap.data.std(),
                       aia_smap.data.mean() + aia_smap.data.std()])
 plt.axvspan(one_sigma[0], one_sigma[1], alpha=0.3, color='green',
-            label='mean +/- std = [{0:.2f}, {1:.2f}]'.format(
+            label='mean +/- std = [{:.2f}, {:.2f}]'.format(
             one_sigma[0], one_sigma[1]))
 plt.axvline(one_sigma[0], color='green')
 plt.axvline(one_sigma[1], color='red')

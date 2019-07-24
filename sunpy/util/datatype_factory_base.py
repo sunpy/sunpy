@@ -85,7 +85,7 @@ class BasicRegistrationFactory:
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({0})."
+            raise MultipleMatchError("Too many candidate types identified ({})."
                                      "Specify enough keywords to guarantee unique type "
                                      "identification.".format(n_matches))
 
@@ -130,10 +130,10 @@ class BasicRegistrationFactory:
                         found = True
                         break
                     else:
-                        raise ValidationFunctionError("{0}.{1} must be a classmethod."
+                        raise ValidationFunctionError("{}.{} must be a classmethod."
                                                       .format(WidgetType.__name__, vfunc_str))
             if not found:
-                raise ValidationFunctionError("No proper validation function for class {0} "
+                raise ValidationFunctionError("No proper validation function for class {} "
                                               "found.".format(WidgetType.__name__))
 
     def unregister(self, WidgetType):

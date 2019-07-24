@@ -123,8 +123,8 @@ def pytest_unconfigure(config):
         generate_figure_webpage(new_hash_library)
         turn_off_internet()
 
-        print('All images from image tests can be found in {0}'.format(figure_base_dir.resolve()))
-        print("The corresponding hash library is {0}".format(hashfile.resolve()))
+        print('All images from image tests can be found in {}'.format(figure_base_dir.resolve()))
+        print("The corresponding hash library is {}".format(hashfile.resolve()))
 
 
 def pytest_sessionstart(session):

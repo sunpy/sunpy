@@ -159,9 +159,9 @@ rst_epilog = """
 """
 
 # -- Project information ------------------------------------------------------
-project = u'SunPy'
-author = u'The SunPy Community'
-copyright = u'{}, {}'.format(datetime.datetime.now().year, author)
+project = 'SunPy'
+author = 'The SunPy Community'
+copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 
 try:
     from sunpy_sphinx_theme.conf import *
@@ -215,12 +215,12 @@ html_context['to_be_indexed'] = ['stable', 'latest']
 # -- Options for LaTeX output --------------------------------------------------
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
-latex_documents = [('index', project + '.tex', project + u' Documentation', author, 'manual')]
+latex_documents = [('index', project + '.tex', project + ' Documentation', author, 'manual')]
 
 # -- Options for manual page output --------------------------------------------
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [('index', project.lower(), project + u' Documentation', [author], 1)]
+man_pages = [('index', project.lower(), project + ' Documentation', [author], 1)]
 
 # -- Swap to Napoleon ---------------------------------------------------------
 # Remove numpydoc
@@ -239,7 +239,7 @@ extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphin
 # "version" configuration parameter
 edit_on_github_project = "sunpy/sunpy"
 if 'dev' not in release:
-    edit_on_github_branch = "{}".format(version)
+    edit_on_github_branch = f"{version}"
 else:
     edit_on_github_branch = "master"
 edit_on_github_source_root = ""

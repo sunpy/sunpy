@@ -287,7 +287,7 @@ def parse_time(time_string, *, format=None, **kwargs):
 
       {parse_time_formats}
     """
-    if time_string is 'now':
+    if isinstance(time_string, str) and time_string == 'now':
         rt = Time.now()
     else:
         rt = convert_time(time_string, format=format, **kwargs)

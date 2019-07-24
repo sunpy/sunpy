@@ -43,7 +43,7 @@ class Field(ValueAttr):
         })
 
 
-class _Range(object):
+class _Range:
     def __init__(self, min_, max_, create):
         self.min = min_
         self.max = max_
@@ -105,7 +105,7 @@ class Wavelength(Attr, _Range):
             else:
                 unit = None
         if unit is None:
-            raise u.UnitsError("This unit is not convertable to any of {}".format(supported_units))
+            raise u.UnitsError(f"This unit is not convertable to any of {supported_units}")
 
         self.min, self.max = sorted([wavemin.to(unit), wavemax.to(unit)])
         self.unit = unit
@@ -117,7 +117,7 @@ class Wavelength(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<Wavelength({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
+        return "<Wavelength({!r}, {!r}, '{!s}')>".format(self.min.value,
                                                             self.max.value,
                                                             self.unit)
 
@@ -258,7 +258,7 @@ class Instrument(SimpleAttr):
         if not isinstance(value, str):
             raise ValueError("Instrument names must be strings")
 
-        super(Instrument, self).__init__(value)
+        super().__init__(value)
 
 
 class Detector(SimpleAttr):
@@ -395,7 +395,7 @@ class Sample(SimpleAttr):
     """
     @u.quantity_input
     def __init__(self, value: u.s):
-        super(Sample, self).__init__(value)
+        super().__init__(value)
         self.value = value.to(u.s).value
 
 
@@ -419,7 +419,7 @@ class Quicklook(SimpleAttr):
     Documentation in SSWIDL routine vso_search.pro.
     """
     def __init__(self, value):
-        super(Quicklook, self).__init__(value)
+        super().__init__(value)
         if self.value:
             self.value = 1
         else:
@@ -503,7 +503,7 @@ def _create(wlk, root, api):
 # attrs member.
 walker.add_converter(Extent)(
     lambda x: ValueAttr(
-        dict((('extent', k), v) for k, v in vars(x).items())
+        {('extent', k): v for k, v in vars(x).items()}
     )
 )
 
@@ -564,12 +564,12 @@ def _(attr, results):
 @filter_results.add_dec(SimpleAttr)
 def _(attr, results):
     attrname = attr.__class__.__name__.lower()
-    return set(
+    return {
         item for item in results
         # Some servers seem to omit some fields. No way to filter there.
         if not hasattr(item, attrname) or
         getattr(item, attrname).lower() == attr.value.lower()
-    )
+    }
 
 
 # The dummy attribute does not filter at all.
@@ -580,7 +580,7 @@ def _(attr, results):
 
 @filter_results.add_dec(Wavelength)
 def _(attr, results):
-    return set(
+    return {
         it for it in results
         if
         it.wave.wavemax is not None
@@ -590,12 +590,12 @@ def _(attr, results):
         it.wave.wavemin is not None
         and
         attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral())
-    )
+    }
 
 
 @filter_results.add_dec(Time)
 def _(attr, results):
-    return set(
+    return {
         it for it in results
         if
         it.time.end is not None
@@ -605,15 +605,15 @@ def _(attr, results):
         it.time.start is not None
         and
         attr.max >= Time.strptime(it.time.start, TIMEFORMAT)
-    )
+    }
 
 
 @filter_results.add_dec(Extent)
 def _(attr, results):
-    return set(
+    return {
         it for it in results
         if
         it.extent.type is not None
         and
         it.extent.type.lower() == attr.type.lower()
-    )
+    }

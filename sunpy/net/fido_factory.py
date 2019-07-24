@@ -185,7 +185,7 @@ class UnifiedResponse(Sequence):
         return ret
 
     def __repr__(self):
-        ret = super(UnifiedResponse, self).__repr__()
+        ret = super().__repr__()
         ret += '\n' + str(self)
 
         return ret
@@ -391,7 +391,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return results
 
     def __call__(self, *args, **kwargs):
-        raise TypeError("'{}' object is not callable".format(self.__class__.__name__))
+        raise TypeError(f"'{self.__class__.__name__}' object is not callable")
 
     def _check_registered_widgets(self, *args):
         """Factory helper function"""

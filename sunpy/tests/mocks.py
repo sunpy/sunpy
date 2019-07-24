@@ -74,7 +74,7 @@ class MockObject(MutableMapping):
         self._datastore[name] = value
 
     def __delitem__(self, name):
-        raise NotImplementedError("'del' operation for {0} "
+        raise NotImplementedError("'del' operation for {} "
                                   "not supported".format(self.__class__.__name__))
 
     def __iter__(self):
@@ -115,7 +115,7 @@ class MockHTTPResponse(MockObject):
     'text/html'
     """
     def __init__(self, *args, **kwargs):
-        super(MockHTTPResponse, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.setdefault('url', '')
 
@@ -171,7 +171,7 @@ class MockOpenTextFile(MockObject):
         if 'mode' not in kwargs:
             kwargs['mode'] = 'r'
 
-        super(MockOpenTextFile, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.setdefault('file', 'N/A')
         self['name'] = self['file']
         self.setdefault('closed', False)
@@ -198,7 +198,7 @@ class MockOpenTextFile(MockObject):
         # Documentation recommends using '\n' as the line terminator when reading/writing text
         # files. See `os.linesep` in https://docs.python.org/3/library/os.html
         new_line = '\n'
-        return ['{0}{1}'.format(line, new_line) for line in self.data.split(new_line)]
+        return [f'{line}{new_line}' for line in self.data.split(new_line)]
 
     def readable(self):
         if self.closed:

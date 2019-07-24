@@ -80,12 +80,12 @@ def figure_test(test_function):
     @wraps(test_function)
     def wrapper(*args, **kwargs):
         if not os.path.exists(hash.HASH_LIBRARY_FILE):
-            pytest.xfail('Could not find a figure hash library at {}'.format(hash.HASH_LIBRARY_FILE))
+            pytest.xfail(f'Could not find a figure hash library at {hash.HASH_LIBRARY_FILE}')
         # figure_base_dir is a pytest fixture defined on use.
         if figure_base_dir is None:
             pytest.xfail("No directory to save figures to found")
 
-        name = "{0}.{1}".format(test_function.__module__,
+        name = "{}.{}".format(test_function.__module__,
                                 test_function.__name__)
         # Run the test function and get the figure
         plt.figure()
@@ -95,7 +95,7 @@ def figure_test(test_function):
 
         # Save the image that was generated
         figure_base_dir.mkdir(exist_ok=True)
-        result_image_loc = figure_base_dir / '{}.png'.format(name)
+        result_image_loc = figure_base_dir / f'{name}.png'
         plt.savefig(str(result_image_loc))
         plt.close()
 
@@ -106,7 +106,7 @@ def figure_test(test_function):
 
         new_hash_library[name] = figure_hash
         if name not in hash.hash_library:
-            pytest.fail("Hash not present: {0}".format(name))
+            pytest.fail(f"Hash not present: {name}")
 
         if hash.hash_library[name] != figure_hash:
             raise RuntimeError('Figure hash does not match expected hash.\n'
@@ -200,9 +200,9 @@ def _generate_fig_html(fname):
 
     html_block = ('<tr>'
                   '<td>{}\n'.format(generated_image.stem) +
-                  '<td><img src="{}"></td>\n'.format(baseline_image.name) +
-                  '<td><img src="{}"></td>\n'.format(diff_image.name) +
-                  '<td><img src="{}"></td>\n'.format(generated_image.name) +
+                  f'<td><img src="{baseline_image.name}"></td>\n' +
+                  f'<td><img src="{diff_image.name}"></td>\n' +
+                  f'<td><img src="{generated_image.name}"></td>\n' +
                   '</tr>\n\n')
     return html_block
 
