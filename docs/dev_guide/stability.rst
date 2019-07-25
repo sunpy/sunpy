@@ -3,7 +3,7 @@ Current status of sub-packages
 
 SunPy has in variations in stability across sub-packages.
 This document summarizes the current status of the SunPy sub-packages, so that users understand where they might expect changes in future, and which sub-packages they can safely use for production code.
-For help or to discuss specific sub-packages, refer to the `maintainer list <https://sunpy.org/team#maintainer-list>`_ to find who to contact.
+For help or to discuss specific sub-packages, refer to the `maintainer list <https://sunpy.org/team#maintainer-list>`__ to find who to contact.
 
 The classification is as follows:
 
