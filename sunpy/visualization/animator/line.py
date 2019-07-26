@@ -100,8 +100,8 @@ class LineAnimator(ArrayAnimator):
         else:
             # If the shape of the array is a 1D array, get the centers about axis=0
             if len(np.asarray(axis_ranges[self.plot_axis_index]).shape) == 1:
-                self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]),
-                                             0)
+                self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]), 0)
+
             # Else calculate the centers across the plot_axis_index
             # Note that we expect the axis_ranges[plot_axis_index] to be of same shape as of data
             # i.e. axis_ranges[plot_axis_index].shape == data.shape
