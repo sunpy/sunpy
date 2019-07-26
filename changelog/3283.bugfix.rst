@@ -1,0 +1,1 @@
+Shifted the axis for calculation of ``edges_to_centers_nd`` about ``0`` for 1D array
