@@ -25,7 +25,7 @@ from sunpy.time.time import _variables_for_parse_time_docstring
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective',
            'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
-           'HeliocentricInertial']
+           'HeliocentricInertial', 'GeocentricEarthEquatorial']
 
 
 def _frame_parameters():
@@ -545,5 +545,37 @@ class HeliocentricInertial(SunPyBaseCoordinateFrame):
         The distance for this object from the Sun’s center. (``data`` must be None).
     obstime: {parse_time_types}
         The date and time of the observation.
+    """
+    default_representation = SphericalRepresentation
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
+class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
+    """
+    A coordinate or frame in the Geocentric Earth Equatorial (GEI) system.
+
+    - The origin is the center of the Earth
+    - The z-axis is aligned with the Earth's rotation axis
+    - The x-axis is aligned with the vernal equinox (mean J2000.0)
+
+    Parameters
+    ----------
+    data: `~astropy.coordinates.BaseRepresentation` subclass instance
+        A representation object or ``None`` to have no data (or use the coordinate component
+        arguments, see below).
+    lon: `~astropy.coordinates.Angle`, optional, must be keyword
+        The longitude for this object (``lat`` must also be given and
+        ``representation`` must be None).
+    lat: `~astropy.coordinates.Angle`, optional, must be keyword
+        The latitude for this object (``lon`` must also be given and
+        ``representation`` must be None).
+    distance: `~astropy.units.Quantity` , optional, must be keyword
+        The distance for this object from the Earth’s center. (``representation`` must be None).
+    obstime: {parse_time_types}
+        The date and time of the observation.
+
+    Notes
+    -----
+    Aberration due to Earth motion is not included.
     """
     default_representation = SphericalRepresentation

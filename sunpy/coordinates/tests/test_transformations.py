@@ -20,7 +20,7 @@ from astropy.time import Time
 from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
                                HeliographicCarrington, Heliocentric,
                                HeliocentricEarthEcliptic, GeocentricSolarEcliptic,
-                               HeliocentricInertial,
+                               HeliocentricInertial, GeocentricEarthEquatorial,
                                get_earth)
 from sunpy.coordinates import sun
 from sunpy.time import parse_time
@@ -626,6 +626,49 @@ def test_hci_hci():
     # Test HCI loopback transformation
     old = SkyCoord(90*u.deg, 10*u.deg, 0.7*u.AU, frame=HeliocentricInertial(obstime='2001-01-01'))
     new = old.transform_to(HeliocentricMeanEcliptic).transform_to(HeliocentricInertial)
+
+    assert_quantity_allclose(new.lon, old.lon)
+    assert_quantity_allclose(new.lat, old.lat)
+    assert_quantity_allclose(new.distance, old.distance)
+
+
+def test_hme_gei_sunspice():
+    # Compare our HME->GEI transformation against SunSPICE
+    # "HAE" is equivalent to Astropy's Heliocentric Mean Ecliptic, and defaults to J2000.0
+    #
+    # IDL> coord = [1.d, 120.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HAE', 'GEI', /au, /degrees
+    # IDL> print, coord
+    #        1.8197210       95.230617       28.830109
+
+    old = SkyCoord(120*u.deg, 10*u.deg, 1*u.AU,
+                   frame=HeliocentricMeanEcliptic(obstime='2019-06-01'))
+    new = old.transform_to(GeocentricEarthEquatorial)
+
+    assert_quantity_allclose(new.lon, Longitude(95.230617*u.deg), atol=0.01*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 28.830109*u.deg, atol=0.05*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, 1.8197210*u.AU)
+
+    # Transform from HAE precessed to the mean ecliptic of date instead of J2000.0
+    # IDL> coord = [1.d, 120.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HAE', 'GEI', /au, /degrees, /precess
+    # IDL> print, coord
+    #        1.8217103       95.079030       28.827750
+
+    old = SkyCoord(120*u.deg, 10*u.deg, 1*u.AU,
+                   frame=HeliocentricMeanEcliptic(obstime='2019-06-01', equinox='2019-06-01'))
+    new = old.transform_to(GeocentricEarthEquatorial)
+
+    assert_quantity_allclose(new.lon, Longitude(95.079030*u.deg), atol=0.05*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.lat, 28.827750*u.deg, atol=0.05*u.arcsec, rtol=0)
+    assert_quantity_allclose(new.distance, 1.8217103*u.AU)
+
+
+def test_gei_gei():
+    # Test GEI loopback transformation
+    old = SkyCoord(90*u.deg, 10*u.deg, 0.7*u.AU,
+                   frame=GeocentricEarthEquatorial(obstime='2001-01-01'))
+    new = old.transform_to(GeocentricEarthEquatorial)
 
     assert_quantity_allclose(new.lon, old.lon)
     assert_quantity_allclose(new.lat, old.lat)

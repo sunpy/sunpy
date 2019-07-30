@@ -32,12 +32,15 @@ try:
     from astropy.coordinates import HeliocentricMeanEcliptic
 except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+from astropy._erfa import obl06
+from astropy.coordinates.builtin_frames.utils import get_jd12
 from astropy.time import Time
 
 from sunpy.sun import constants
 
 from .frames import (Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst,
-                     HeliocentricEarthEcliptic, GeocentricSolarEcliptic, HeliocentricInertial)
+                     HeliocentricEarthEcliptic, GeocentricSolarEcliptic, HeliocentricInertial,
+                     GeocentricEarthEquatorial)
 
 try:
     from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
@@ -49,6 +52,7 @@ except ImportError:
 RSUN_METERS = constants.get('radius').si.to(u.m)
 
 _J2000 = Time('J2000.0', scale='tt')
+_OBLIQUITY_J2000 = obl06(*get_jd12(_J2000, 'tt'))*u.radian
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
@@ -57,7 +61,8 @@ __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hgs_to_hgs', 'hgc_to_hgc', 'hcc_to_hcc',
            'hme_to_hee', 'hee_to_hme', 'hee_to_hee',
            'hee_to_gse', 'gse_to_hee', 'gse_to_gse',
-           'hme_to_hci', 'hci_to_hme', 'hci_to_hci']
+           'hme_to_hci', 'hci_to_hme', 'hci_to_hci',
+           'hme_to_gei', 'gei_to_hme', 'gei_to_gei']
 
 
 def _observers_are_equal(obs_1, obs_2, string_ok=False):
@@ -679,6 +684,65 @@ def hci_to_hci(from_coo, to_frame):
         return from_coo.transform_to(HCRS).transform_to(to_frame)
 
 
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricMeanEcliptic, GeocentricEarthEquatorial)
+def hme_to_gei(hmecoord, geiframe):
+    """
+    Convert from Heliocentric Mean Ecliptic to Geocentric Earth Equatorial
+    """
+    # Use an intermediate frame of HME at the GEI observation time, through HCRS
+    int_frame = HeliocentricMeanEcliptic(obstime=geiframe.obstime, equinox=_J2000)
+    int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
+
+    # Get the Sun-Earth vector in the intermediate frame
+    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
+    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+
+    # Find the Earth-object vector in the intermediate frame
+    earth_object_int = int_coord.cartesian - sun_earth_int
+
+    # Rotate from ecliptic to Earth equatorial
+    newrepr = earth_object_int.transform(rotation_matrix(-_OBLIQUITY_J2000, 'x'))
+
+    return geiframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricEarthEquatorial, HeliocentricMeanEcliptic)
+def gei_to_hme(geicoord, hmeframe):
+    """
+    Convert from Geocentric Earth Equatorial to Heliocentric Mean Ecliptic
+    """
+    # Use an intermediate frame of HME at the GEI observation time
+    int_frame = HeliocentricMeanEcliptic(obstime=geicoord.obstime, equinox=_J2000)
+
+    # Get the Sun-Earth vector in the intermediate frame
+    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
+    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+
+    # Rotate from Earth equatorial to ecliptic
+    earth_object_int = gsecoord.transform(rotation_matrix(_OBLIQUITY_J2000, 'x'))
+
+    # Find the Sun-object vector in the intermediate frame
+    sun_object_int = sun_earth_int + earth_object_int
+    int_coord = int_frame.realize_frame(sun_object_int)
+
+    # Convert to the final frame through HCRS
+    return int_coord.transform_to(HCRS).transform_to(hmeframe)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricEarthEquatorial, GeocentricEarthEquatorial)
+def gei_to_gei(from_coo, to_frame):
+    """
+    Convert between two Geocentric Earth Equatorial frames.
+    """
+    if np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
+    else:
+        return from_coo.transform_to(HCRS).transform_to(to_frame)
+
+
 def _make_sunpy_graph():
     """
     Culls down the full transformation graph for SunPy purposes and returns the string version
@@ -688,7 +752,7 @@ def _make_sunpy_graph():
                  'heliographic_stonyhurst', 'heliographic_carrington',
                  'heliocentric', 'helioprojective',
                  'heliocentricearthecliptic', 'geocentricsolarecliptic',
-                 'heliocentricinertial',
+                 'heliocentricinertial', 'geocentricearthequatorial',
                  'gcrs', 'precessedgeocentric', 'geocentrictrueecliptic', 'geocentricmeanecliptic',
                  'cirs', 'altaz', 'itrs']
 
@@ -769,7 +833,7 @@ def _tweak_graph(docstr):
     sunpy_frames = ['HeliographicStonyhurst', 'HeliographicCarrington',
                     'Heliocentric', 'Helioprojective',
                     'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
-                    'HeliocentricInertial']
+                    'HeliocentricInertial', 'GeocentricEarthEquatorial']
     for frame in sunpy_frames:
         output = output.replace(frame + ' [', frame + ' [fillcolor=white ')
 
