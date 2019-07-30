@@ -96,7 +96,8 @@ class LineAnimator(ArrayAnimator):
         if axis_ranges is None or axis_ranges[self.plot_axis_index] is None:
             self.xdata = np.arange(data.shape[self.plot_axis_index])
         # Else derive the xdata as the centers of the pixel/bin edges
-        # supplied by the user for the plotted axis.
+        # supplied by the user about the plotted axis. Currently we expect the
+        # axis_ranges[plot_axis_index] to be an array of pixel_edges.
         else:
             # If the shape of the array is a 1D array, get the centers about axis=0
             if np.asarray(axis_ranges[self.plot_axis_index]).ndim == 1:
@@ -106,8 +107,7 @@ class LineAnimator(ArrayAnimator):
             # Note that we expect the axis_ranges[plot_axis_index] to be of same shape as of data
             # i.e. axis_ranges[plot_axis_index].shape == data.shape
             else:
-                self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]),
-                                             plot_axis_index)
+                self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]), plot_axis_index)
         if ylim is None:
             ylim = (data.min(), data.max())
         if xlim is None:
