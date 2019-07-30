@@ -102,7 +102,7 @@ class LineAnimator(ArrayAnimator):
                 self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]), 0)
 
             # Else derive the xdata as pixel centers from the pixel edges supplied by the user in axis_ranges[plot_axis_index]
-            # about axis=plot_axis_index
+            # along axis=plot_axis_index
             else:
                 self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]), plot_axis_index)
         if ylim is None:
