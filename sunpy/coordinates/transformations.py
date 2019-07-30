@@ -34,13 +34,12 @@ except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 from astropy._erfa import obl06
 from astropy.coordinates.builtin_frames.utils import get_jd12
-from astropy.time import Time
 
 from sunpy.sun import constants
 
 from .frames import (Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst,
                      HeliocentricEarthEcliptic, GeocentricSolarEcliptic, HeliocentricInertial,
-                     GeocentricEarthEquatorial)
+                     GeocentricEarthEquatorial, _J2000)
 
 try:
     from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
@@ -50,9 +49,6 @@ except ImportError:
 
 
 RSUN_METERS = constants.get('radius').si.to(u.m)
-
-_J2000 = Time('J2000.0', scale='tt')
-_OBLIQUITY_J2000 = obl06(*get_jd12(_J2000, 'tt'))*u.radian
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
@@ -684,6 +680,13 @@ def hci_to_hci(from_coo, to_frame):
         return from_coo.transform_to(HCRS).transform_to(to_frame)
 
 
+def _rotation_matrix_obliquity(time):
+    """
+    Return the rotation matrix from Earth equatorial to ecliptic coordinates
+    """
+    return rotation_matrix(obl06(*get_jd12(time, 'tt'))*u.radian, 'x')
+
+
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliocentricMeanEcliptic, GeocentricEarthEquatorial)
 def hme_to_gei(hmecoord, geiframe):
@@ -691,7 +694,7 @@ def hme_to_gei(hmecoord, geiframe):
     Convert from Heliocentric Mean Ecliptic to Geocentric Earth Equatorial
     """
     # Use an intermediate frame of HME at the GEI observation time, through HCRS
-    int_frame = HeliocentricMeanEcliptic(obstime=geiframe.obstime, equinox=_J2000)
+    int_frame = HeliocentricMeanEcliptic(obstime=geiframe.obstime, equinox=geiframe.equinox)
     int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
 
     # Get the Sun-Earth vector in the intermediate frame
@@ -702,7 +705,8 @@ def hme_to_gei(hmecoord, geiframe):
     earth_object_int = int_coord.cartesian - sun_earth_int
 
     # Rotate from ecliptic to Earth equatorial
-    newrepr = earth_object_int.transform(rotation_matrix(-_OBLIQUITY_J2000, 'x'))
+    rot_matrix = matrix_transpose(_rotation_matrix_obliquity(int_frame.equinox))
+    newrepr = earth_object_int.transform(rot_matrix)
 
     return geiframe.realize_frame(newrepr)
 
@@ -714,14 +718,15 @@ def gei_to_hme(geicoord, hmeframe):
     Convert from Geocentric Earth Equatorial to Heliocentric Mean Ecliptic
     """
     # Use an intermediate frame of HME at the GEI observation time
-    int_frame = HeliocentricMeanEcliptic(obstime=geicoord.obstime, equinox=_J2000)
+    int_frame = HeliocentricMeanEcliptic(obstime=geicoord.obstime, equinox=geicoord.equinox)
 
     # Get the Sun-Earth vector in the intermediate frame
     sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
     sun_earth_int = sun_earth.transform_to(int_frame).cartesian
 
     # Rotate from Earth equatorial to ecliptic
-    earth_object_int = gsecoord.transform(rotation_matrix(_OBLIQUITY_J2000, 'x'))
+    rot_matrix = _rotation_matrix_obliquity(int_frame.equinox)
+    earth_object_int = geicoord.cartesian.transform(rot_matrix)
 
     # Find the Sun-object vector in the intermediate frame
     sun_object_int = sun_earth_int + earth_object_int
@@ -737,7 +742,7 @@ def gei_to_gei(from_coo, to_frame):
     """
     Convert between two Geocentric Earth Equatorial frames.
     """
-    if np.all(from_coo.obstime == to_frame.obstime):
+    if np.all((from_coo.equinox == to_frame.equinox) and (from_coo.obstime == to_frame.obstime)):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HCRS).transform_to(to_frame)

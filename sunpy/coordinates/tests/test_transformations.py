@@ -23,6 +23,7 @@ from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
                                HeliocentricInertial, GeocentricEarthEquatorial,
                                get_earth)
 from sunpy.coordinates import sun
+from sunpy.coordinates.frames import _J2000
 from sunpy.time import parse_time
 
 
@@ -657,7 +658,7 @@ def test_hme_gei_sunspice():
 
     old = SkyCoord(120*u.deg, 10*u.deg, 1*u.AU,
                    frame=HeliocentricMeanEcliptic(obstime='2019-06-01', equinox='2019-06-01'))
-    new = old.transform_to(GeocentricEarthEquatorial)
+    new = old.transform_to(GeocentricEarthEquatorial(equinox=_J2000))
 
     assert_quantity_allclose(new.lon, Longitude(95.079030*u.deg), atol=0.05*u.arcsec, rtol=0)
     assert_quantity_allclose(new.lat, 28.827750*u.deg, atol=0.05*u.arcsec, rtol=0)
@@ -665,11 +666,12 @@ def test_hme_gei_sunspice():
 
 
 def test_gei_gei():
-    # Test GEI loopback transformation
-    old = SkyCoord(90*u.deg, 10*u.deg, 0.7*u.AU,
-                   frame=GeocentricEarthEquatorial(obstime='2001-01-01'))
-    new = old.transform_to(GeocentricEarthEquatorial)
+    # Test GEI loopback transformation using the 2017 revision to Franz & Harper 2002
+    t = Time('1996-08-28 16:46:00', 'tt')
+    gei_j2000 = CartesianRepresentation([-5.7840451, -4.1082375, 1.9146822] * (6378.14*u.km))
+    gei_d = CartesianRepresentation([-5.7864918, -4.1039136, 1.9165612] * (6378.14*u.km))
 
-    assert_quantity_allclose(new.lon, old.lon)
-    assert_quantity_allclose(new.lat, old.lat)
-    assert_quantity_allclose(new.distance, old.distance)
+    old = SkyCoord(gei_j2000, frame=GeocentricEarthEquatorial(obstime=t))
+    new = old.transform_to(GeocentricEarthEquatorial(equinox=t, obstime=t)).cartesian
+
+    assert_quantity_allclose(new.xyz, gei_d.xyz)
