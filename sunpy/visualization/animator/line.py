@@ -95,16 +95,18 @@ class LineAnimator(ArrayAnimator):
             axis_ranges = None
         if axis_ranges is None or axis_ranges[self.plot_axis_index] is None:
             self.xdata = np.arange(data.shape[self.plot_axis_index])
-        # Else derive the xdata as pixel centers from the pixel edges supplied by the user in axis_ranges[plot_axis_index]
+        # Else derive the xdata as pixel centers from the pixel edges supplied by
+        # the user in axis_ranges[plot_axis_index]
         else:
             # If the shape of the array is a 1D array, get the centers about axis=0
             if np.asarray(axis_ranges[self.plot_axis_index]).ndim == 1:
                 self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]), 0)
 
-            # Else derive the xdata as pixel centers from the pixel edges supplied by the user in axis_ranges[plot_axis_index]
-            # along axis=plot_axis_index
+            # Else derive the xdata as pixel centers from the pixel edges supplied by
+            # the user in axis_ranges[plot_axis_index] along axis=plot_axis_index
             else:
-                self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]), plot_axis_index)
+                self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]),
+                                                 plot_axis_index)
         if ylim is None:
             ylim = (data.min(), data.max())
         if xlim is None:
