@@ -536,17 +536,19 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         for i in self.slider_axes:
             if axis_ranges[i] is None:
                 axis_ranges[i] = np.arange(data_shape[i])
-            elif len(axis_ranges[i]) == 2:
-                axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
-                                             data_shape[i]+1)
-                axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
-            elif axis_ranges[i].ndim == 1 and len(axis_ranges[i]) == data_shape[i]+1:
-                # If array of individual pixel edges supplied, convert to pixel centers.
-                axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]), 0)
-            elif axis_ranges[i].ndim == ndim and axis_ranges[i].shape[i] == data_shape[i]+1:
-                axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]), i)
             else:
-                raise ValueError(incompatible_axis_ranges_error_message(i))
+                axis_ranges[i] = np.array(axis_ranges[i])
+                if len(axis_ranges[i]) == 2:
+                    axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
+                                                data_shape[i]+1)
+                    axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
+                elif axis_ranges[i].ndim == 1 and len(axis_ranges[i]) == data_shape[i]+1:
+                    # If array of individual pixel edges supplied, convert to pixel centers.
+                    axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]), 0)
+                elif axis_ranges[i].ndim == ndim and axis_ranges[i].shape[i] == data_shape[i]+1:
+                    axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]), i)
+                else:
+                    raise ValueError(incompatible_axis_ranges_error_message(i))
 
         return axis_ranges, extent
 
