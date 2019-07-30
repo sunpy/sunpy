@@ -12,6 +12,7 @@ from astropy.coordinates.baseframe import BaseCoordinateFrame, RepresentationMap
 from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
                                                 CylindricalRepresentation,
                                                 UnitSphericalRepresentation)
+from astropy.time import Time
 
 from sunpy.sun.constants import radius as _RSUN
 from sunpy.util.decorators import add_common_docstring
@@ -21,6 +22,8 @@ from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribut
 
 from sunpy.util.decorators import add_common_docstring
 from sunpy.time.time import _variables_for_parse_time_docstring
+
+_J2000 = Time('J2000.0', scale='tt')
 
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective',
@@ -556,7 +559,7 @@ class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
 
     - The origin is the center of the Earth
     - The z-axis is aligned with the Earth's rotation axis
-    - The x-axis is aligned with the vernal equinox (mean J2000.0)
+    - The x-axis is aligned with the mean (not true) vernal equinox
 
     Parameters
     ----------
@@ -571,6 +574,8 @@ class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
         ``representation`` must be None).
     distance: `~astropy.units.Quantity` , optional, must be keyword
         The distance for this object from the Earth’s center. (``representation`` must be None).
+    equinox: {parse_time_types}
+        The date for the mean vernal equinox.  Defaults to the J2000.0 equinox.
     obstime: {parse_time_types}
         The date and time of the observation.
 
@@ -579,3 +584,5 @@ class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
     Aberration due to Earth motion is not included.
     """
     default_representation = SphericalRepresentation
+
+    equinox = TimeFrameAttributeSunPy(default=_J2000)
