@@ -1,1 +1,1 @@
-Shifted the axis for calculation of ``edges_to_centers_nd`` about ``0`` for 1D array
+Stop crash when ``LineAnimator`` ``axes_ranges`` entry given as ``1D`` array when data is ``>1D``, i.e. as an independent axis.
