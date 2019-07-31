@@ -1,4 +1,5 @@
 import os
+import warnings
 
 import numpy as np
 import pytest
@@ -12,8 +13,9 @@ from sunpy.image.coalignment import (_default_fmap_function, _lower_clip, _upper
                                      calculate_clipping, calculate_match_template_shift, clip_edges,
                                      find_best_match_location, get_correlation_shifts,
                                      mapsequence_coalign_by_match_template, match_template_to_layer,
-                                     parabolic_turning_point, repair_image_nonfinite)
+                                     parabolic_turning_point, check_for_nonfinite_entries)
 from sunpy.map import Map, MapSequence
+from sunpy.util import SunpyUserWarning
 
 
 @pytest.fixture
@@ -63,14 +65,36 @@ def test_parabolic_turning_point():
     assert(parabolic_turning_point(np.asarray([6.0, 2.0, 0.0])) == 1.5)
 
 
-def test_repair_image_nonfinite():
+def test_check_for_nonfinite_entries():
+    with pytest.warns(None) as warning_list:
+        a = np.zeros((3, 3))
+        b = np.ones((3, 3))
+        check_for_nonfinite_entries(a, b)
+
+    assert len(warning_list) == 0
+
     for i in range(0, 9):
         for non_number in [np.nan, np.inf]:
             a = np.ones(9)
             a[i] = non_number
             b = a.reshape(3, 3)
-            c = repair_image_nonfinite(b)
-            assert(np.isfinite(c).all())
+
+            with pytest.warns(SunpyUserWarning,
+                match='The layer image has noninfinite entries.') as warning_list:
+                check_for_nonfinite_entries(b, np.ones((3, 3)))
+
+            assert len(warning_list) == 1
+
+            with pytest.warns(SunpyUserWarning,
+                match='The template image has noninfinite entries.') as warning_list:
+                check_for_nonfinite_entries(np.ones((3, 3)), b)
+
+            assert len(warning_list) == 1
+
+            with pytest.warns(None) as warning_list:
+                check_for_nonfinite_entries(b, b)
+
+            assert len(warning_list) == 2
 
 
 def test_match_template_to_layer(aia171_test_map_layer,
