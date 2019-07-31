@@ -17,6 +17,7 @@ References
    1995, p. 120-123 http://www.scribblethink.org/Work/nvisionInterface/vi95_lewis.pdf.
 """
 from copy import deepcopy
+import warnings
 
 import numpy as np
 from scipy.ndimage.interpolation import shift
@@ -26,11 +27,12 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.map.mapbase import GenericMap
+from sunpy.util import SunpyUserWarning
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
-           'repair_image_nonfinite', 'apply_shifts',
+           'check_for_nonfinite_entries', 'apply_shifts',
            'mapsequence_coalign_by_match_template',
            'calculate_match_template_shift']
 
@@ -64,9 +66,8 @@ def calculate_shift(this_layer, template):
         Pixel shifts ``(yshift, xshift)`` relative to the offset of the template
         to the input array.
     """
-    # Repair any NANs, Infs, etc in the layer and the template
-    this_layer = repair_image_nonfinite(this_layer)
-    template = repair_image_nonfinite(template)
+    # Warn user if any NANs, Infs, etc are present in the layer or the template
+    check_for_nonfinite_entries(this_layer, template)
 
     # Calculate the correlation array matching the template to this layer
     corr = match_template_to_layer(this_layer, template)
@@ -287,53 +288,26 @@ def parabolic_turning_point(y):
     return numerator / denominator
 
 
-def repair_image_nonfinite(image):
+def check_for_nonfinite_entries(layer_image, template_image):
     """
-    Return a new image in which all the nonfinite entries of the original image
-    have been replaced by the local mean.
+    Issue a warning if there is any nonfinite entry in the layer or template images.
 
     Parameters
     ----------
-    image : `numpy.ndarray`
+    layer_image : `numpy.ndarray`
         A two-dimensional `numpy.ndarray`.
-
-    Returns
-    -------
-    `numpy.ndarray`
-        A two-dimensional `numpy.ndarray` of the same shape as the input
-        that has all the non-finite entries replaced by a local mean. The
-        algorithm repairs one non-finite entry at every pass. At each pass,
-        the next non-finite value is replaced by the mean of its finite
-        valued nearest neighbors.
+    template_image : `numpy.ndarray`
+        A two-dimensional `numpy.ndarray`.
     """
-    repaired_image = deepcopy(image)
-    nx = repaired_image.shape[1]
-    ny = repaired_image.shape[0]
-    bad_index = np.where(np.logical_not(np.isfinite(repaired_image)))
-    while bad_index[0].size != 0:
-        by = bad_index[0][0]
-        bx = bad_index[1][0]
 
-        # x locations taking in to account the boundary
-        x = bx
-        if bx == 0:
-            x = 1
-        if bx == nx - 1:
-            x = nx - 2
+    bad_index_layer = np.where(np.logical_not(np.isfinite(layer_image)))
+    bad_index_template = np.where(np.logical_not(np.isfinite(template_image)))
 
-        # y locations taking in to account the boundary
-        y = by
-        if by == 0:
-            y = 1
-        if by == ny - 1:
-            y = ny - 2
+    if bad_index_layer[0].size != 0:
+        warnings.warn("The layer image has noninfinite entries.", SunpyUserWarning)
 
-        # Get the sub array around the bad index, and find the local mean
-        # ignoring nans
-        subarray = repaired_image[y - 1: y + 2, x - 1: x + 2]
-        repaired_image[by, bx] = np.mean(subarray[np.isfinite(subarray)])
-        bad_index = np.where(np.logical_not(np.isfinite(repaired_image)))
-    return repaired_image
+    if bad_index_template[0].size != 0:
+        warnings.warn("The template image has noninfinite entries.", SunpyUserWarning)
 
 
 @u.quantity_input
