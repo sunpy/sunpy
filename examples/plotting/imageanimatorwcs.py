@@ -45,7 +45,7 @@ wcs_input_dict = {f'{key}{n+1}': map_sequence.all_meta()[0].get(f'{key}{n}')
 # Now we need to get the time difference between the two observations.
 t0, t1 = map(parse_time, [k['date-obs'] for k in map_sequence.all_meta()])
 time_diff = (t1 - t0).to(u.s)
-wcs_input_dict.update({'CTYPE1': 'Time', 'CUNIT1': time_diff.unit.name, 'CDELT1': time_diff.value})
+wcs_input_dict.update({'CTYPE1': 'TIME', 'CUNIT1': time_diff.unit.name, 'CDELT1': time_diff.value})
 
 # We can now just pass this into astropy.wcs.WCS to create our WCS header.
 wcs = astropy.wcs.WCS(wcs_input_dict)
@@ -77,7 +77,7 @@ wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1
 # of ``wcs_anim`` allows us to set various properties.
 # We assign them to a easy to remember variable name.
 # Note the order of assignment out from ``wcs_anim.axes.coords``.
-time, solar_y, solar_x = wcs_anim.axes.coords
+solar_y, solar_x = wcs_anim.axes.coords
 
 # Now we can label the X and Y axes.
 solar_x.set_axislabel('Solar X (arsec)')
