@@ -27,13 +27,13 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.map.mapbase import GenericMap
-from sunpy.util import SunpyUserWarning
+from sunpy.util import (SunpyUserWarning, SunpyDeprecationWarning)
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
-           'check_for_nonfinite_entries', 'apply_shifts',
-           'mapsequence_coalign_by_match_template',
+           'repair_image_nonfinite', 'check_for_nonfinite_entries',
+           'apply_shifts', 'mapsequence_coalign_by_match_template',
            'calculate_match_template_shift']
 
 
@@ -300,10 +300,60 @@ def check_for_nonfinite_entries(layer_image, template_image):
         A two-dimensional `numpy.ndarray`.
     """
     if not np.all(np.isfinite(layer_image)):
-        warnings.warn("The layer image has noninfinite entries.", SunpyUserWarning)
+        warnings.warn('The layer image has noninfinite entries.', SunpyUserWarning)
 
     if not np.all(np.isfinite(template_image)):
-        warnings.warn("The template image has noninfinite entries.", SunpyUserWarning)
+        warnings.warn('The template image has noninfinite entries.', SunpyUserWarning)
+
+
+def repair_image_nonfinite(image):
+    """
+    Return a new image in which all the nonfinite entries of the original image
+    have been replaced by the local mean.
+
+    Parameters
+    ----------
+    image : `numpy.ndarray`
+        A two-dimensional `numpy.ndarray`.
+
+    Returns
+    -------
+    `numpy.ndarray`
+        A two-dimensional `numpy.ndarray` of the same shape as the input
+        that has all the non-finite entries replaced by a local mean. The
+        algorithm repairs one non-finite entry at every pass. At each pass,
+        the next non-finite value is replaced by the mean of its finite
+        valued nearest neighbors.
+    """
+    warnings.warn('This function has been deprecated.', SunpyDeprecationWarning)
+    repaired_image = deepcopy(image)
+    nx = repaired_image.shape[1]
+    ny = repaired_image.shape[0]
+    bad_index = np.where(np.logical_not(np.isfinite(repaired_image)))
+    while bad_index[0].size != 0:
+        by = bad_index[0][0]
+        bx = bad_index[1][0]
+
+        # x locations taking in to account the boundary
+        x = bx
+        if bx == 0:
+            x = 1
+        if bx == nx - 1:
+            x = nx - 2
+
+        # y locations taking in to account the boundary
+        y = by
+        if by == 0:
+            y = 1
+        if by == ny - 1:
+            y = ny - 2
+
+        # Get the sub array around the bad index, and find the local mean
+        # ignoring nans
+        subarray = repaired_image[y - 1: y + 2, x - 1: x + 2]
+        repaired_image[by, bx] = np.mean(subarray[np.isfinite(subarray)])
+        bad_index = np.where(np.logical_not(np.isfinite(repaired_image)))
+    return repaired_image
 
 
 @u.quantity_input
