@@ -299,14 +299,10 @@ def check_for_nonfinite_entries(layer_image, template_image):
     template_image : `numpy.ndarray`
         A two-dimensional `numpy.ndarray`.
     """
-
-    bad_index_layer = np.where(np.logical_not(np.isfinite(layer_image)))
-    bad_index_template = np.where(np.logical_not(np.isfinite(template_image)))
-
-    if bad_index_layer[0].size != 0:
+    if not np.all(np.isfinite(layer_image)):
         warnings.warn("The layer image has noninfinite entries.", SunpyUserWarning)
 
-    if bad_index_template[0].size != 0:
+    if not np.all(np.isfinite(template_image)):
         warnings.warn("The template image has noninfinite entries.", SunpyUserWarning)
 
 
