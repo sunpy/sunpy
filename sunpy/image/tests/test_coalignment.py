@@ -13,9 +13,10 @@ from sunpy.image.coalignment import (_default_fmap_function, _lower_clip, _upper
                                      calculate_clipping, calculate_match_template_shift, clip_edges,
                                      find_best_match_location, get_correlation_shifts,
                                      mapsequence_coalign_by_match_template, match_template_to_layer,
-                                     parabolic_turning_point, check_for_nonfinite_entries)
+                                     parabolic_turning_point, check_for_nonfinite_entries,
+                                     repair_image_nonfinite)
 from sunpy.map import Map, MapSequence
-from sunpy.util import SunpyUserWarning
+from sunpy.util import (SunpyUserWarning, SunpyDeprecationWarning)
 
 
 @pytest.fixture
@@ -63,6 +64,18 @@ def aia171_test_template_shape(aia171_test_template):
 
 def test_parabolic_turning_point():
     assert(parabolic_turning_point(np.asarray([6.0, 2.0, 0.0])) == 1.5)
+
+
+def test_repair_image_nonfinite():
+    for i in range(0, 9):
+        for non_number in [np.nan, np.inf]:
+            a = np.ones(9)
+            a[i] = non_number
+            b = a.reshape(3, 3)
+            with pytest.warns(SunpyDeprecationWarning, match='This function has been deprecated.'):
+                c = repair_image_nonfinite(b)
+
+            assert(np.isfinite(c).all())
 
 
 def test_check_for_nonfinite_entries():
