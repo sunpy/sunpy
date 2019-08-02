@@ -19,8 +19,11 @@ __all__ = ['SUVIMap']
 class SUVIMap(GenericMap):
     """SUVI Image Map.
 
-    The GOES-R Series Solar Ultraviolet Imager (SUVI)....(description of the
-    instrument).
+    The Solar Ultraviolet Imager is a telescope that monitors the sun in the
+    extreme ultraviolet wavelength range. By observing the sun, SUVI is able
+    to compile full disk solar images around the clock. It replaces the GOES
+    Solar X-ray Imager (SXI) instrument and represents a change in both
+    spectral coverage and spatial resolution over SXI.
 
     SUVI color tables are the same as the AIA color tables for the same
     wavelength with exceptions of SUVI 195 and 284 (which has no direct
@@ -29,12 +32,12 @@ class SUVIMap(GenericMap):
 
     References
     ----------
-    * `SUVI Mission Page <https://sdo.gsfc.nasa.gov/>`_
+    * `SUVI Instrument Page <https://www.goes-r.gov/spacesegment/suvi.html>`_
     """
 
     def __init__(self, data, header, **kwargs):
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         # Fill in some missing info
         self.meta['detector'] = "SUVI"
