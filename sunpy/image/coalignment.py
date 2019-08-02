@@ -27,7 +27,7 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.map.mapbase import GenericMap
-from sunpy.util import (SunpyUserWarning, SunpyDeprecationWarning)
+from sunpy.util import (SunpyUserWarning, deprecated)
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
@@ -306,6 +306,7 @@ def check_for_nonfinite_entries(layer_image, template_image):
         warnings.warn('The template image has noninfinite entries.', SunpyUserWarning)
 
 
+@deprecated("1.1")
 def repair_image_nonfinite(image):
     """
     Return a new image in which all the nonfinite entries of the original image
@@ -325,7 +326,6 @@ def repair_image_nonfinite(image):
         the next non-finite value is replaced by the mean of its finite
         valued nearest neighbors.
     """
-    warnings.warn('This function has been deprecated.', SunpyDeprecationWarning)
     repaired_image = deepcopy(image)
     nx = repaired_image.shape[1]
     ny = repaired_image.shape[0]

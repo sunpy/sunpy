@@ -72,7 +72,7 @@ def test_repair_image_nonfinite():
             a = np.ones(9)
             a[i] = non_number
             b = a.reshape(3, 3)
-            with pytest.warns(SunpyDeprecationWarning, match='This function has been deprecated.'):
+            with pytest.warns(SunpyDeprecationWarning):
                 c = repair_image_nonfinite(b)
 
             assert(np.isfinite(c).all())
