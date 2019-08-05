@@ -42,7 +42,13 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
         if not kwargs.pop('wrap_longitude', True):
             self._wrap_angle = None
 
-        return super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+
+        # If obstime is specified, treat the default observer (Earth) as explicitly set
+        if self.obstime is not None and self.is_frame_attr_default('observer'):
+            self._attr_names_with_defaults.remove('observer')
+
+        return
 
     def represent_as(self, base, s='base', in_frame_units=False):
         """
