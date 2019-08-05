@@ -331,6 +331,59 @@ def test_hgc_hgc():
     assert_quantity_allclose(new.radius, old.radius, atol=1e-5*u.AU)
 
 
+def test_hcc_hcc():
+    # Test same observer and changing obstime
+    observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-02-01')
+    from_hcc = Heliocentric(0.2*u.AU, 0.3*u.AU, 0.4*u.AU, observer=observer, obstime='2001-01-01')
+    to_hcc = from_hcc.transform_to(Heliocentric(observer=observer, obstime='2001-03-31'))
+
+    # Since the observer is the same, the coordinates should be nearly the same but not exactly
+    # equal due to motion of the origin (the Sun)
+    assert np.all(from_hcc.cartesian.xyz != to_hcc.cartesian.xyz)
+    assert_quantity_allclose(from_hcc.cartesian.xyz, to_hcc.cartesian.xyz, rtol=2e-3)
+
+    # Test changing observer and same obstime
+    observer1 = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-01-01')
+    observer2 = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-03-31')
+    from_hcc = Heliocentric(0.2*u.AU, 0.3*u.AU, 0.4*u.AU, observer=observer1, obstime='2001-02-01')
+    to_hcc = from_hcc.transform_to(Heliocentric(observer=observer2, obstime='2001-02-01'))
+
+    # This change in observer is approximately a 90-degree rotation about the Y axis
+    assert_quantity_allclose(to_hcc.x, -from_hcc.z, rtol=2e-3)
+    assert_quantity_allclose(to_hcc.y, from_hcc.y, rtol=2e-3)
+    assert_quantity_allclose(to_hcc.z, from_hcc.x, rtol=2e-3)
+
+
+def test_hcc_hgs_observer_mismatch():
+    # Test whether the transformation gives the same answer regardless of what obstime the observer
+    # coordinate is represented in
+    observer1 = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-01-01')
+    observer2 = observer1.transform_to(HeliographicStonyhurst(obstime='2001-03-31'))
+
+    hcc1 = Heliocentric(0.2*u.AU, 0.3*u.AU, 0.4*u.AU, observer=observer1, obstime=observer1.obstime)
+    hgs1 = hcc1.transform_to(HeliographicStonyhurst(obstime=hcc1.obstime))
+
+    hcc2 = Heliocentric(0.2*u.AU, 0.3*u.AU, 0.4*u.AU, observer=observer2, obstime=observer1.obstime)
+    hgs2 = hcc2.transform_to(HeliographicStonyhurst(obstime=hcc2.obstime))
+
+    assert_quantity_allclose(hgs1.lon, hgs2.lon)
+    assert_quantity_allclose(hgs1.lat, hgs2.lat)
+    assert_quantity_allclose(hgs1.radius, hgs2.radius)
+
+
+def test_hgs_hcc_observer_mismatch():
+    # Test whether the transformation gives the same answer regardless of what obstime the observer
+    # coordinate is represented in
+    observer1 = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-01-01')
+    observer2 = observer1.transform_to(HeliographicStonyhurst(obstime='2001-03-31'))
+
+    hgs = HeliographicStonyhurst(20*u.deg, 40*u.deg, 0.5*u.AU, obstime=observer1.obstime)
+    hcc1 = hgs.transform_to(Heliocentric(observer=observer1, obstime=hgs.obstime))
+    hcc2 = hgs.transform_to(Heliocentric(observer=observer2, obstime=hgs.obstime))
+
+    assert_quantity_allclose(hcc1.cartesian.xyz, hcc2.cartesian.xyz)
+
+
 def test_hgs_hcrs_sunspice():
     # Compare our HGS->HCRS transformation against SunSPICE by transforming beyond it
     # "HEQ" is another name for HEEQ, which is equivalent to Heliographic Stonyhurst
@@ -400,6 +453,23 @@ def test_hgs_hcc_sunspice():
     assert_quantity_allclose(new.x, 800000.00*u.km, atol=1e-2*u.km)
     assert_quantity_allclose(new.y, 908797.89*u.km, atol=1e-2*u.km)
     assert_quantity_allclose(new.z, 688539.32*u.km, atol=1e-2*u.km)
+
+
+def test_hpc_hgs_implicit_hcc():
+    # An HPC->HGS transformation should give the same answer whether the transformation step
+    #   through HCC is implicit or explicit
+    start = SkyCoord(0*u.arcsec, 0*u.arcsec, 0.5*u.AU,
+                     frame=Helioprojective(obstime='2019-06-01', observer='earth'))
+    frame = HeliographicStonyhurst(obstime='2019-12-01')
+
+    implicit = start.transform_to(frame)
+    explicit1 = start.transform_to(Heliocentric(obstime=start.obstime, observer='earth')).\
+                      transform_to(frame)
+    explicit2 = start.transform_to(Heliocentric(obstime=frame.obstime, observer='earth')).\
+                      transform_to(frame)
+
+    assert_quantity_allclose(implicit.separation_3d(explicit1), 0*u.AU, atol=1e-10*u.AU)
+    assert_quantity_allclose(implicit.separation_3d(explicit2), 0*u.AU, atol=1e-10*u.AU)
 
 
 @pytest.mark.skipif(astropy.__version__ < '3.2.0', reason="Not supported by Astropy <3.2")

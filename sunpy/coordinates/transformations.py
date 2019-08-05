@@ -56,7 +56,8 @@ def _observers_are_equal(obs_1, obs_2, string_ok=False):
                          "Cannot compare two observers {} and {}.".format(obs_1, obs_2))
     return (u.allclose(obs_1.lat, obs_2.lat) and
             u.allclose(obs_1.lon, obs_2.lon) and
-            u.allclose(obs_1.radius, obs_2.radius))
+            u.allclose(obs_1.radius, obs_2.radius) and
+            obs_1.obstime == obs_2.obstime)
 
 
 # =============================================================================
@@ -219,7 +220,11 @@ def hcc_to_hgs(helioccoord, heliogframe):
                            "heliographic coordinates for observer '{}' "
                            "without `obstime` being specified.".format(helioccoord.observer))
 
-    total_matrix = _rotation_matrix_hcc_to_hgs(helioccoord.observer.lon, helioccoord.observer.lat)
+    # Transform the HCC observer (in HGS) to the HCC obstime in case it's different
+    hcc_observer_at_hcc_obstime = _transform_obstime(helioccoord.observer, helioccoord.obstime)
+
+    total_matrix = _rotation_matrix_hcc_to_hgs(hcc_observer_at_hcc_obstime.lon,
+                                               hcc_observer_at_hcc_obstime.lat)
 
     # Transform from HCC to HGS at the HCC obstime
     newrepr = helioccoord.cartesian.transform(total_matrix)
@@ -243,8 +248,11 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     # Loopback transform HGS if there is a change in obstime
     int_coord = _transform_obstime(heliogcoord, heliocframe.obstime)
 
-    total_matrix = matrix_transpose(_rotation_matrix_hcc_to_hgs(heliocframe.observer.lon,
-                                                                heliocframe.observer.lat))
+    # Transform the HCC observer (in HGS) to the HCC obstime in case it's different
+    hcc_observer_at_hcc_obstime = _transform_obstime(heliocframe.observer, heliocframe.obstime)
+
+    total_matrix = matrix_transpose(_rotation_matrix_hcc_to_hgs(hcc_observer_at_hcc_obstime.lon,
+                                                                hcc_observer_at_hcc_obstime.lat))
 
     # Transform from HGS to HCC at the same obstime
     newrepr = int_coord.cartesian.transform(total_matrix)
@@ -253,27 +261,24 @@ def hgs_to_hcc(heliogcoord, heliocframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  Helioprojective, Helioprojective)
-def hpc_to_hpc(heliopcoord, heliopframe):
+def hpc_to_hpc(from_coo, to_frame):
     """
     This converts from HPC to HPC, with different observer location parameters.
     It does this by transforming through HGS.
     """
-    if (heliopcoord.observer == heliopframe.observer or
-        (u.allclose(heliopcoord.observer.lat, heliopframe.observer.lat) and
-         u.allclose(heliopcoord.observer.lon, heliopframe.observer.lon) and
-         u.allclose(heliopcoord.observer.radius, heliopframe.observer.radius))):
-        return heliopframe.realize_frame(heliopcoord._data)
+    if _observers_are_equal(from_coo.observer, to_frame.observer, string_ok=True) and \
+       np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
 
-    if not isinstance(heliopframe.observer, BaseCoordinateFrame):
+    if not isinstance(to_frame.observer, BaseCoordinateFrame):
         raise ConvertError("Cannot transform between helioprojective frames "
-                           "without `obstime` being specified for observer {}.".format(heliopframe.observer))
-    if not isinstance(heliopcoord.observer, BaseCoordinateFrame):
+                           "without `obstime` being specified for observer {}.".format(to_frame.observer))
+    if not isinstance(from_coo.observer, BaseCoordinateFrame):
         raise ConvertError("Cannot transform between helioprojective frames "
-                           "without `obstime` being specified for observer {}.".format(heliopcoord.observer))
+                           "without `obstime` being specified for observer {}.".format(from_coo.observer))
 
-    hgs = heliopcoord.transform_to(HeliographicStonyhurst(obstime=heliopframe.obstime))
-    hgs.observer = heliopframe.observer
-    hpc = hgs.transform_to(heliopframe)
+    hgs = from_coo.transform_to(HeliographicStonyhurst(obstime=to_frame.obstime))
+    hpc = hgs.transform_to(to_frame)
 
     return hpc
 
@@ -424,12 +429,12 @@ def hcc_to_hcc(from_coo, to_frame):
     """
     Convert between two Heliocentric frames.
     """
-    if _observers_are_equal(from_coo.observer, to_frame.observer, string_ok=True):
+    if _observers_are_equal(from_coo.observer, to_frame.observer, string_ok=True) and \
+       np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
 
     # Convert through HGS
     hgscoord = from_coo.transform_to(HeliographicStonyhurst(obstime=to_frame.obstime))
-    hgscoord.observer = to_frame.observer
 
     return hgscoord.transform_to(to_frame)
 
