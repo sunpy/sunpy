@@ -296,6 +296,19 @@ def test_hpc_to_hcc_same_observer():
     assert_quantity_allclose(hcccoord_out.z, hcccoord_expected.z)
 
 
+def test_hpc_hcc_different_observer_radius():
+    # Tests HPC->HCC with a change in observer at different distances from the Sun
+    observer1 = HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU)
+    hpc = Helioprojective(0*u.arcsec, 0*u.arcsec, 0.5*u.AU, observer=observer1)
+
+    observer2 = HeliographicStonyhurst(90*u.deg, 0*u.deg, 0.75*u.AU)
+    hcc = hpc.transform_to(Heliocentric(observer=observer2))
+
+    assert_quantity_allclose(hcc.x, -0.5*u.AU)
+    assert_quantity_allclose(hcc.y, 0*u.AU, atol=1e-10*u.AU)
+    assert_quantity_allclose(hcc.z, 0*u.AU, atol=1e-10*u.AU)
+
+
 def test_hgs_hgs():
     # Test HGS loopback transformation
     obstime = Time('2001-01-01')
