@@ -180,7 +180,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     newrepr = heliopcoord.cartesian.transform(matrix_transpose(_matrix_hcc_to_hpc()))
 
     # Shift the origin from the observer to the Sun
-    distance = heliocframe.observer.radius
+    distance = heliopcoord.observer.radius
     newrepr += CartesianRepresentation(0*u.m, 0*u.m, distance)
 
     # Complete the conversion of HPC to HCC at the obstime and observer of the HPC coord
