@@ -375,7 +375,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                                                   downloader=downloader,
                                                   wait=False, **kwargs))
 
-        results = downloader.download()
+        results = Results()
         # Combine the results objects from all the clients into one Results
         # object.
         for result in reslist:
