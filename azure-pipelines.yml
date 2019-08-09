@@ -29,8 +29,14 @@ jobs:
 - template: run-tox-env.yml@sunpy
   parameters:
     name: Linux_37_offline
-    os: macos
+    os: linux
     tox: py37-offline -- -n=4
+
+- template: run-tox-env.yml@sunpy
+  parameters:
+    name: Linux_36_offline_astropy31
+    os: linux
+    tox: py36-astropy31 -- -n=4
 
 - template: run-tox-env.yml@sunpy
   parameters:
@@ -53,7 +59,7 @@ jobs:
 - template: run-tox-env.yml@sunpy
   parameters:
     name: Linux_37_astropydev
-    os: macos
+    os: linux
     tox: py37-astropydev -- -n=4
 
 - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
