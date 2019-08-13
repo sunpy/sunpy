@@ -4,6 +4,11 @@ dist: xenial
 os: linux
 sudo: false
 
+addons:
+  apt:
+    packages:
+      - libopenjp2-7
+
 env:
   global:
     - TOX_ARG=''
@@ -28,7 +33,7 @@ matrix:
       python: "3.7"
       env:
         - TOX_ENV='py37-online'
-        - TOX_ARG='-- -n=4'
+        - TOX_ARG='-- -n=4 --reruns 1 --timeout=60'
 
     - name: "Figure tests (figure)"
       env:
@@ -58,7 +63,7 @@ matrix:
       python: "3.7"
       env:
         - TOX_ENV='py37-online'
-        - TOX_ARG='-- -n=4'
+        - TOX_ARG='-- -n=4 --reruns 1 --timeout=60'
 
 before_install:
   - git clone --depth 1 git://github.com/astropy/ci-helpers.git
