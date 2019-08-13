@@ -29,32 +29,45 @@ jobs:
 - template: run-tox-env.yml@sunpy
   parameters:
     name: Linux_37_offline
-    os: macos
+    os: linux
     tox: py37-offline -- -n=4
+    jpeg: True
+
+- template: run-tox-env.yml@sunpy
+  parameters:
+    name: Linux_36_offline_astropy31
+    os: linux
+    tox: py36-astropy31 -- -n=4
+    jpeg: True
 
 - template: run-tox-env.yml@sunpy
   parameters:
     name: Windows_36_offline
     os: windows
     tox: py36-offline -- -n=4
+    jpeg: True
+
 
 - template: run-tox-env.yml@sunpy
   parameters:
     name: macOS_37_online
     os: macos
     tox: py37-online -- -n=4
+    jpeg: True
 
 - template: run-tox-env.yml@sunpy
   parameters:
     name: Linux_36_Conda_offline
     os: linux
     tox: conda -- -n=4
+    jpeg: True
 
 - template: run-tox-env.yml@sunpy
   parameters:
     name: Linux_37_astropydev
-    os: macos
+    os: linux
     tox: py37-astropydev -- -n=4
+    jpeg: True
 
 - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
   - template: publish-pypi.yml@sunpy
