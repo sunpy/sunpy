@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+import astropy
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
 from astropy.coordinates import (SkyCoord, get_body_barycentric, Angle,
@@ -388,6 +389,7 @@ def test_hgs_hcc_sunspice():
     assert_quantity_allclose(new.z, 688539.32*u.km, atol=1e-2*u.km)
 
 
+@pytest.mark.skipif(astropy.__version__ < '3.2.0', reason="Not supported by Astropy <3.2")
 def test_velocity_hcrs_hgs():
     # Obtain the position/velocity of Earth in ICRS
     obstime = Time(['2019-01-01', '2019-04-01', '2019-07-01', '2019-10-01'])

@@ -77,6 +77,7 @@ wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1
 # of ``wcs_anim`` allows us to set various properties.
 # We assign them to a easy to remember variable name.
 # Note the order of assignment out from ``wcs_anim.axes.coords``.
+
 time, solar_y, solar_x = wcs_anim.axes.coords
 
 # Now we can label the X and Y axes.
