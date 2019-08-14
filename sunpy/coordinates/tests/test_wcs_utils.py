@@ -3,6 +3,7 @@
 import numpy as np
 
 import sunpy.map
+from astropy.coordinates import BaseCoordinateFrame
 from astropy.wcs import WCS
 
 from sunpy.coordinates.frames import Helioprojective, Heliocentric, HeliographicStonyhurst, HeliographicCarrington
@@ -156,3 +157,9 @@ def test_hcc_frame_to_wcs():
     assert isinstance(result_wcs, WCS)
 
     assert result_wcs.wcs.ctype[0] == 'SOLX'
+
+
+def test_non_sunpy_frame_to_wcs():
+    # For a non-SunPy frame, our mapping should return None
+    frame = BaseCoordinateFrame()
+    assert solar_frame_to_wcs_mapping(frame) is None

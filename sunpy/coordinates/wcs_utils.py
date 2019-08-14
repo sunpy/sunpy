@@ -3,7 +3,8 @@ import astropy.wcs.utils
 from astropy.wcs import WCSSUB_CELESTIAL
 from astropy.wcs import WCS
 
-from .frames import BaseCoordinateFrame, Helioprojective, Heliocentric, HeliographicStonyhurst, HeliographicCarrington
+from .frames import (SunPyBaseCoordinateFrame, Helioprojective, Heliocentric,
+                     HeliographicStonyhurst, HeliographicCarrington)
 
 __all__ = ['solar_wcs_frame_mapping', 'solar_frame_to_wcs_mapping']
 
@@ -60,7 +61,7 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
     if hasattr(frame, 'observer'):
         wcs.heliographic_observer = frame.observer
 
-    if isinstance(frame, BaseCoordinateFrame):
+    if isinstance(frame, SunPyBaseCoordinateFrame):
 
         wcs.wcs.dateobs = frame.obstime.utc.isot
         if isinstance(frame, Helioprojective):
