@@ -1,6 +1,7 @@
 """SUVI Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
+
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
@@ -13,44 +14,52 @@ from astropy.visualization import AsinhStretch
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
-__all__ = ['SUVIMap']
+__all__ = ["SUVIMap"]
 
 
 class SUVIMap(GenericMap):
     """SUVI Image Map.
 
-    The Solar Ultraviolet Imager (SUVI) is a normal-incidence Cassegrain telescope
-    that shares considerable design heritage with the Atmospheric Imaging Assembly
-    (AIA). SUVI images the Sun in six EUV wavelengths: 9.4, 13.1, 17.1, 19.5,
-    28.4, and 30.4 nm. The instrument consists of the main imaging telescope, a
-    Guide Telescope (GT) and a Camera Electronics Box (CEB) mechanically integrated
-    to the telescope, and a SUVI Electronics Box (SEB). The SEB provides power and
-    data interfaces to the spacecraft. The optical chain in the telescope consists
-    of thin film entrance filters (metals vapor deposited on a supporting metallic
-    mesh), multi-layer coated primary and secondary mirrors, a set of thin film
-    analysis filters in two filter wheels near the focal plane, and a charge-coupled
-    device (CCD) detector. The CCD consists of 1280 x 1280 pixels with a plate
-    scale of 2.5 arcsec and together with the optical system provides a nominal
-    53 arcminute square field of view (FOV) from the geostationary orbit. An
-    aperture selector with a 60 degree  opening and two multi-segmented mirrors
-    enable the imaging in any of the six wavelengths in a single telescope body.
-    A nominal 4-minute cadence provides for the observation of the Sun in all
-    wavelengths while meeting large dynamic range requirements on single- and
-    multi-spectral images. The GT provides Sun-pointing knowledge. In the nominal
-    Sun-pointing case, the spacecraft control system uses the GT data to control the
-    line-of-sight (LOS) to the Sun.
+    The Solar Ultraviolet Imager (SUVI) is a normal-incidence Cassegrain EUV
+    telescope onboard the latest of the Geostationary Operational Environmental
+    Satellite (GOES) missions (GOES-16, formerly known as GOES-R).
+    It is similar to Atmospheric Imaging Assembly (AIA). It operates in
+    geostationary orbit above the Americas at 75.2 degree W. It's primary
+    purpose is to support NOAA's goal to characterize solar features and detect
+    events that lead to space weather. It uses a filter wheel to image the Sun
+    in six EUV wavelength corresponding to known coronal emission lines:
+
+    - 9.4 nm (FeXVIII)
+    - 13.1 nm (FeXXI)
+    - 17.1 nm (FeIX/X)
+    - 19.5 nm (FeXII)
+    - 28.4 nm (FeXV)
+    - 30.4 nm (HeII)
+
+    The focal plane consists of a CCD detector with 1280 x 1280 pixels. The
+    plate scale is 2.5 arcsec per pixel. The field of view is therefore almost
+    twice the size of the Sun (53 arcmin) and extends out to 1.6 solar radii in
+    the horizontal direction and 2.3 solar radii in the diagonal. It provides
+    observations in each wavelength at multiple exposure times every 4 minutes.
+
+    It began operating on ???.
 
     Notes
     -----
-    SUVI color tables are the same as the AIA color tables for the same
-    wavelength with exceptions of SUVI 195 and 284 (which has no direct
-    equivalent obviously).  SUVI 195 and 284 images use the AIA 193 & 335 color
-    tables respectively.
+    SUVI uses the same color tables as AIA for the matching wavelengths.
+    SUVI 195 and 284 images use the AIA 193 & 335 color tables respectively.
 
     References
     ----------
+    * `GOES-R Mission<https://www.goes-r.gov>`_
     * `SUVI Instrument Page <https://www.goes-r.gov/spacesegment/suvi.html>`_
-    * `Instrument description <https://doi.org/10.3847/2041-8213/aaa28e>`_
+    * `GOES-16 on wikipedia <https://en.wikipedia.org/wiki/GOES-16>`_
+    * `Instrument paper: Coronal Imaging with the Solar UltraViolet Image <http://doi.org/10.1007/s11207-019-1411-0>`_
+    * `User's Guide <https://www.goes-r.gov/users/docs/PUG-L1b-vol3.pdf>`_
+    * `Level 1b Readme <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/suvi-l1b-fe094/ReadMe.pdf>`_
+    * `Data archive <https://www.ngdc.noaa.gov/stp/satellite/goes-r.html>`_,
+      `Level 1b data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/>`_,
+      `Level 2 data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/>`_
     """
 
     def __init__(self, data, header, **kwargs):
@@ -58,20 +67,24 @@ class SUVIMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing info
-        self.meta['detector'] = "SUVI"
-        self.meta['telescop'] = "GOES-R"
+        self.meta["detector"] = "SUVI"
+        self.meta["telescop"] = "GOES-R"
         self._nickname = self.detector
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
+        self.plot_settings["cmap"] = plt.get_cmap(self._get_cmap_name())
+        self.plot_settings["norm"] = ImageNormalize(
+            stretch=source_stretch(self.meta, AsinhStretch(0.01))
+        )
 
     @property
     def observatory(self):
         """
         Returns the observatory.
         """
-        return self.meta['telescop'].split('/')[0]
+        return self.meta["telescop"].split("/")[0]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an AIA image"""
-        return header.get('instrume', '').startswith('GOES-R Series Solar Ultraviolet Imager')
+        return header.get("instrume", "").startswith(
+            "GOES-R Series Solar Ultraviolet Imager"
+        )
