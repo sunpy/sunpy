@@ -50,7 +50,7 @@ class SUVIMap(GenericMap):
     References
     ----------
     * `SUVI Instrument Page <https://www.goes-r.gov/spacesegment/suvi.html>`_
-    * `Coronal Imaging with the Solar UltraViolet Image <http://doi.org/10.1007/s11207-019-1411-0>`_
+    * `Instrument description <https://doi.org/10.3847/2041-8213/aaa28e>`_
     """
 
     def __init__(self, data, header, **kwargs):
