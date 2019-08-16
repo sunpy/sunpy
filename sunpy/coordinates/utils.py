@@ -7,7 +7,8 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.coordinates import frames
+from sunpy.coordinates import Heliocentric
+
 
 __all__ = ['GreatArc']
 
@@ -80,11 +81,18 @@ class GreatArc:
     """
 
     def __init__(self, start, end, center=None, points=None):
+
+        # Observer
+        self.observer = start.observer
+
+        # Co-ordinate frame of the starting point
+        self.start_frame = start.frame
+
         # Start point of the great arc
-        self.start = start
+        self.start = start.transform_to(Heliocentric)
 
         # End point of the great arc
-        self.end = end
+        self.end = end.transform_to(Heliocentric(observer=self.observer))
 
         # Parameterized location of points between the start and the end of the
         # great arc.
@@ -99,27 +107,22 @@ class GreatArc:
         self.default_points = self._points_handler(points)
 
         # Units of the start point
-        self.distance_unit = u.km
-
-        # Co-ordinate frame
-        self.start_frame = self.start.frame
-
-        # Observation time
-        self.obstime = self.start.obstime
-
-        # Observer
-        self.observer = self.start.observer
+        self.distance_unit = self.start.cartesian.xyz.unit
 
         # Set the center of the sphere
         if center is None:
             self.center = SkyCoord(0 * self.distance_unit,
                                    0 * self.distance_unit,
-                                   0 * self.distance_unit, frame=frames.Heliocentric)
+                                   0 * self.distance_unit,
+                                   frame=Heliocentric,
+                                   observer=self.observer)
+        else:
+            self.center = center.transform_to(Heliocentric(observer=self.observer))
 
         # Convert the start, end and center points to their Cartesian values
-        self.start_cartesian = self.start.transform_to(frames.Heliocentric).cartesian.xyz.to(self.distance_unit).value
-        self.end_cartesian = self.end.transform_to(frames.Heliocentric).cartesian.xyz.to(self.distance_unit).value
-        self.center_cartesian = self.center.transform_to(frames.Heliocentric).cartesian.xyz.to(self.distance_unit).value
+        self.start_cartesian = self.start.cartesian.xyz.to(self.distance_unit).value
+        self.end_cartesian = self.end.cartesian.xyz.to(self.distance_unit).value
+        self.center_cartesian = self.center.cartesian.xyz.to(self.distance_unit).value
 
         # Great arc properties calculation
         # Vector from center to first point
@@ -252,6 +255,4 @@ class GreatArc:
         return SkyCoord(great_arc_points_cartesian[:, 0],
                         great_arc_points_cartesian[:, 1],
                         great_arc_points_cartesian[:, 2],
-                        frame=frames.Heliocentric,
-                        obstime=self.obstime,
-                        observer=self.observer).transform_to(self.start_frame)
+                        frame=Heliocentric, observer=self.observer).transform_to(self.start_frame)
