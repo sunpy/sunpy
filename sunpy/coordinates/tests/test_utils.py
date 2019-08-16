@@ -60,7 +60,7 @@ def test_great_arc_calculable(start, end):
 def test_great_arc_coordinates(points_requested, points_expected, first_point,
                                last_point, last_inner_angle, last_distance):
 
-    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits')))
+    m = sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits'))
     coordinate_frame = m.coordinate_frame
     a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
     b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
@@ -129,7 +129,7 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
                                     np.asarray([0.3, 1.1, 0.6, 0.7]),
                                     'strings_not_permitted'])
 def test_great_arc_wrongly_formatted_points(points):
-    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits')))
+    m = sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits'))
     coordinate_frame = m.coordinate_frame
     a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
     b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
@@ -152,7 +152,7 @@ def test_great_arc_wrongly_formatted_points(points):
 # Test that the great arc code properly differentiates between the default
 # points and the requested points
 def test_great_arc_points_differentiates():
-    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits')))
+    m = sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits'))
     coordinate_frame = m.coordinate_frame
     a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
     b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
@@ -163,3 +163,38 @@ def test_great_arc_points_differentiates():
     assert len(coordinates) == 10 and len(gc.coordinates()) == 100
     assert len(inner_angles) == 11 and len(gc.inner_angles()) == 100
     assert len(distances) == 12 and len(gc.distances()) == 100
+
+
+# Test that the great arc code properly understands different observers
+# for the start and end points
+def test_great_arc_different_observer():
+    ma = sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits'))
+    a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=ma.coordinate_frame)
+
+    observer = SkyCoord(-10.0*u.deg, 83*u.deg, radius=0.9*u.au, frame=frames.HeliographicStonyhurst, obstime=ma.date)
+    b = SkyCoord(400*u.arcsec, 600*u.arcsec, observer=observer, frame=frames.Helioprojective)
+
+    # Test that the input observers are indeed different
+    assert a.observer.lon != b.observer.lon
+    assert a.observer.lat != b.observer.lat
+    assert a.observer.radius != b.observer.radius
+
+    # Create the great arc
+    gc = GreatArc(a, b)
+
+    # The start and end points stored internally are Heliocentric
+    start = gc.start
+    assert isinstance(start.observer, frames.Heliocentric)
+    end = gc.end
+    assert isinstance(end.observer, frames.Heliocentric)
+
+    # The start and end points stored internally have the same observer
+    assert start.observer.x == end.observer.x
+    assert start.observer.y == end.observer.y
+    assert start.observer.z == end.observer.z
+
+    # The start point stored internally has the Heliocentric coordinates of the initial coordinate passed in.
+    a2h = a.transform_to(frames.Heliocentric)
+    assert start.x == a2h.x
+    assert start.y == a2h.y
+    assert start.z == a2h.z
