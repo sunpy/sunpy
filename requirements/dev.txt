@@ -5,7 +5,7 @@
 
 hypothesis
 mock
-pytest
+pytest<5.1
 pytest-cov
 pytest-mock
 pytest-rerunfailures

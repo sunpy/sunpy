@@ -203,7 +203,7 @@ made by SSW Latest Events with the following command:
 
     >>> result = client.search( hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type),hek.attrs.FRM.Name != 'SSW Latest Events')  # doctest: +REMOTE_DATA
     >>> len(result)  # doctest: +REMOTE_DATA
-    17
+    19
 
 We are using Python's comparison operators to filter the returns from
 the HEK client.  Other comparisons are possible.  For example, let's
