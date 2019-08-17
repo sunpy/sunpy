@@ -17,14 +17,8 @@ branches:
 addons:
     apt:
         packages:
-            - libatlas-dev
-            - liblapack-dev
-            - libopenjpeg-dev
-            - libopenjpeg2
-            - gfortran
+            - libopenjpeg5
             - graphviz
-            - texlive-latex-extra
-            - dvipng
 
 # Configure the build environment. Global variables are defined for all configurations.
 env:
@@ -60,6 +54,9 @@ matrix:
            env: SETUP_CMD='test'
 
          - python: 3.6
+           env: SETUP_CMD='test'
+
+         - python: 3.7
            env: SETUP_CMD='test'
 
         # Comprehensive tests below this line
