@@ -1,0 +1,1 @@
+Delay import of sunpy.map into the read method of the asdf Tag.
