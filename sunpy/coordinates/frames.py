@@ -26,10 +26,13 @@ __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
 
 class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     """
-    * Defines a default longitude wrap angle of 180 degrees, which can be overridden by the class
-      variable `_wrap_angle`.
+    * Defines the frame attribute ``obstime`` for observation time.
+    * Defines a default longitude wrap angle of 180 degrees, which can be overridden via the class
+      variable ``_wrap_angle``.
     * Inject a nice way of representing the object which the coordinate represents.
     """
+    obstime = TimeFrameAttributeSunPy()
+
     _wrap_angle = 180*u.deg
 
     def __init__(self, *args, **kwargs):
@@ -149,8 +152,6 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
                                                         framename='z')]
     }
 
-    obstime = TimeFrameAttributeSunPy()
-
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation_type', None)
 
@@ -230,31 +231,8 @@ class HeliographicCarrington(HeliographicStonyhurst):
     <SkyCoord (HeliographicCarrington: obstime=2011-01-05T00:00:50.000): (lon, lat, radius) in (deg, deg, km)
         (90., 2.54480438, 45.04442252)>
     """
-
     name = "heliographic_carrington"
-    default_representation = SphericalRepresentation
-
-    frame_specific_representation_info = {
-        SphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                        framename='lon',
-                                                        defaultunit=u.deg),
-                                  RepresentationMapping(reprname='lat',
-                                                        framename='lat',
-                                                        defaultunit=u.deg),
-                                  RepresentationMapping(reprname='distance',
-                                                        framename='radius',
-                                                        defaultunit=None)],
-
-        UnitSphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                            framename='lon',
-                                                            defaultunit=u.deg),
-                                      RepresentationMapping(reprname='lat',
-                                                            framename='lat',
-                                                            defaultunit=u.deg)],
-    }
-
     _wrap_angle = 360*u.deg
-    obstime = TimeFrameAttributeSunPy()
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -329,14 +307,12 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     <SkyCoord (Heliocentric: obstime=2011-01-05T00:00:50.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in km
         (5., 8.66025404, 10.)>
     """
-
     default_representation = CartesianRepresentation
 
-    _frame_specific_representation_info = {
+    frame_specific_representation_info = {
         CylindricalRepresentation: [RepresentationMapping('phi', 'psi', u.deg)]
     }
 
-    obstime = TimeFrameAttributeSunPy()
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
 
 
@@ -396,7 +372,6 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     <SkyCoord (Helioprojective: obstime=2011-01-05T00:00:50.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         (137.87948623, -275.75878762, 1.00000112)>
     """
-
     default_representation = SphericalRepresentation
 
     frame_specific_representation_info = {
@@ -418,7 +393,6 @@ class Helioprojective(SunPyBaseCoordinateFrame):
                                                             defaultunit=u.arcsec)],
     }
 
-    obstime = TimeFrameAttributeSunPy()
     rsun = Attribute(default=_RSUN.to(u.km))
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
 
