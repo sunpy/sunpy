@@ -8,6 +8,8 @@ __email__ = "jack.ireland@nasa.gov"
 
 import matplotlib.pyplot as plt
 
+from astropy.coordinates import CartesianRepresentation
+import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize
 from astropy.visualization import AsinhStretch
 
@@ -49,6 +51,12 @@ class SUVIMap(GenericMap):
     SUVI uses the same color tables as AIA for the matching wavelengths.
     SUVI 195 and 284 images use the AIA 193 & 335 color tables respectively.
 
+    Observer location: We use the ECEF coordinates provided in the FITS header for the spacecraft
+    location even when coordinates in other frames are provided due to accuracy concerns over the
+    coordinate transformations used in the SUVI data pipeline.  There could still be a small
+    discrepancy because the definition of the ECEF frame used by SUVI may not exactly match the
+    definition of the ITRS frame used by SunPy to interpret the header values.
+
     References
     ----------
     * `GOES-R Mission<https://www.goes-r.gov>`_
@@ -74,6 +82,16 @@ class SUVIMap(GenericMap):
         self.plot_settings["norm"] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01))
         )
+
+    @property
+    def _supported_observer_coordinates(self):
+        return [(('obsgeo-x', 'obsgeo-y', 'obsgeo-z'), {'x': self.meta.get('obsgeo-x'),
+                                                        'y': self.meta.get('obsgeo-y'),
+                                                        'z': self.meta.get('obsgeo-z'),
+                                                        'unit': u.m,
+                                                        'representation_type': CartesianRepresentation,
+                                                        'frame': "itrs"})
+        ] + super()._supported_observer_coordinates
 
     @property
     def observatory(self):
