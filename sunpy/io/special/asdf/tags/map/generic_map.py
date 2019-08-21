@@ -3,7 +3,6 @@ import numpy as np
 import astropy.units as u
 from asdf.yamlutil import custom_tree_to_tagged_tree
 
-import sunpy.map
 from sunpy.io.special.asdf.types import SunPyType
 
 __all__ = ['GenericMapType']
@@ -17,6 +16,7 @@ class GenericMapType(SunPyType):
 
     @classmethod
     def from_tree(cls, node, ctx):
+        import sunpy.map
         # Use the factory here to get the correct subclass back
         out_map = sunpy.map.Map(np.asarray(node['data']), node['meta'])
         out_map.shift(*node['shift'])
