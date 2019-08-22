@@ -1,1 +1,1 @@
-Fix parfive using the same loop once it's closed once.
+VSO client `fetch` should not download when `wait` keyword argument is specified.

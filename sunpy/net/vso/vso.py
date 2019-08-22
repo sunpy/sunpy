@@ -617,9 +617,7 @@ class VSOClient(BaseClient):
 
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
-            if not wait:
-                return Results()
-            return downloader.download()
+            return downloader.download() if wait else Results()
         # Adding the site parameter to the info
         info = {}
         if site is not None:
