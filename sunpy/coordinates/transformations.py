@@ -149,8 +149,11 @@ def hcc_to_hpc(helioccoord, heliopframe):
     """
     Convert from Heliocentric Cartesian to Helioprojective Cartesian.
     """
+    # Transform the HPC observer (in HGS) to the HPC obstime in case it's different
+    observer = _transform_obstime(heliopframe.observer, heliopframe.obstime)
+
     # Loopback transform HCC coord to obstime and observer of HPC frame
-    int_frame = Heliocentric(obstime=heliopframe.obstime, observer=heliopframe.observer)
+    int_frame = Heliocentric(obstime=heliopframe.obstime, observer=observer)
     int_coord = helioccoord.transform_to(int_frame)
 
     # Shift the origin from the Sun to the observer
@@ -180,12 +183,15 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     # Permute/swap axes from HPC equivalent Cartesian to HCC
     newrepr = heliopcoord.cartesian.transform(matrix_transpose(_matrix_hcc_to_hpc()))
 
+    # Transform the HPC observer (in HGS) to the HPC obstime in case it's different
+    observer = _transform_obstime(heliopcoord.observer, heliopcoord.obstime)
+
     # Shift the origin from the observer to the Sun
-    distance = heliopcoord.observer.radius
+    distance = observer.radius
     newrepr += CartesianRepresentation(0*u.m, 0*u.m, distance)
 
     # Complete the conversion of HPC to HCC at the obstime and observer of the HPC coord
-    int_coord = Heliocentric(newrepr, obstime=heliopcoord.obstime, observer=heliopcoord.observer)
+    int_coord = Heliocentric(newrepr, obstime=heliopcoord.obstime, observer=observer)
 
     # Loopback transform HCC as needed
     return int_coord.transform_to(heliocframe)
