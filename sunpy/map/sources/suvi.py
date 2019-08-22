@@ -42,7 +42,8 @@ class SUVIMap(GenericMap):
     the horizontal direction and 2.3 solar radii in the diagonal. It provides
     observations in each wavelength at multiple exposure times every 4 minutes.
 
-    It began operating on ???.
+    GOES-16 was launched on November 16, 2016, and became operational as NOAA's
+    GOES East on December 18, 2017, replacing GOES-13.
 
     Notes
     -----
@@ -53,13 +54,13 @@ class SUVIMap(GenericMap):
     ----------
     * `GOES-R Mission<https://www.goes-r.gov>`_
     * `SUVI Instrument Page <https://www.goes-r.gov/spacesegment/suvi.html>`_
-    * `GOES-16 on wikipedia <https://en.wikipedia.org/wiki/GOES-16>`_
-    * `Recommend instrument description article <https://doi.org/10.3847/2041-8213/aaa28e>`_
+    * `GOES-16 on Wikipedia <https://en.wikipedia.org/wiki/GOES-16>`_
+    * `Recommended instrument description article <https://doi.org/10.3847/2041-8213/aaa28e>`_
     * `User's Guide <https://www.goes-r.gov/users/docs/PUG-L1b-vol3.pdf>`_
     * `Level 1b Readme <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/suvi-l1b-fe094/ReadMe.pdf>`_
-    * `Data archive <https://www.ngdc.noaa.gov/stp/satellite/goes-r.html>`_,
-      `Level 1b data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/>`_,
-      `Level 2 data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/>`_
+    * `Data archive <https://www.ngdc.noaa.gov/stp/satellite/goes-r.html>`_
+    * `Level 1b data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l1b/>`_
+    * `Level 2 data <https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/>`_
     """
 
     def __init__(self, data, header, **kwargs):
