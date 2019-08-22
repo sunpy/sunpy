@@ -19,7 +19,7 @@ from sunpy.util.util import partial_key_match
 __all__ = ['HelioviewerClient']
 
 
-class HelioviewerClient(object):
+class HelioviewerClient:
     """Helioviewer.org Client"""
     def __init__(self, url="https://api.helioviewer.org/"):
         """
