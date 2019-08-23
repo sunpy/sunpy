@@ -1,4 +1,5 @@
 import astropy.units as u
+import sys
 
 from sunpy import config
 from sunpy.data._sample import download_sample_data
@@ -17,11 +18,24 @@ manager = DataManager(
     )
 )
 
-cache = Cache(
-    ParfiveDownloader(),
-    SqliteStorage(CACHE_DIR + '/cache.db'),
-    CACHE_DIR,
-    expiry=int(config.get('downloads', 'cache_expiry')) * u.day
-)
+
+if 'pytest' in sys.modules:
+    from sunpy.data.data_manager.storage import InMemStorage
+    import tempfile
+    cache_dir = tempfile.mkdtemp()
+    cache = Cache(
+        ParfiveDownloader(),
+        InMemStorage(),
+        cache_dir,
+        None
+    )
+    manager = DataManager(cache)
+else:
+    cache = Cache(
+        ParfiveDownloader(),
+        SqliteStorage(CACHE_DIR + '/cache.db'),
+        CACHE_DIR,
+        expiry=int(config.get('downloads', 'cache_expiry')) * u.day
+    )
 
 __all__ = ["download_sample_data", "manager", "cache"]
