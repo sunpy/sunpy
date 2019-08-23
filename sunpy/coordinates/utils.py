@@ -104,6 +104,9 @@ class GreatArc:
         # Co-ordinate frame
         self.start_frame = self.start.frame
 
+        # Observation time
+        self.obstime = self.start.obstime
+
         # Observer
         self.observer = self.start.observer
 
@@ -249,4 +252,6 @@ class GreatArc:
         return SkyCoord(great_arc_points_cartesian[:, 0],
                         great_arc_points_cartesian[:, 1],
                         great_arc_points_cartesian[:, 2],
-                        frame=frames.Heliocentric, observer=self.observer).transform_to(self.start_frame)
+                        frame=frames.Heliocentric,
+                        obstime=self.obstime,
+                        observer=self.observer).transform_to(self.start_frame)
