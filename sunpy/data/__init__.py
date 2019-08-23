@@ -10,13 +10,6 @@ from sunpy.data.data_manager.storage import SqliteStorage
 from sunpy.util.config import CACHE_DIR
 
 _download_dir = config.get('downloads', 'remote_data_manager_dir')
-manager = DataManager(
-    Cache(
-        ParfiveDownloader(),
-        SqliteStorage(_download_dir + '/data_manager.db'),
-        _download_dir
-    )
-)
 
 
 if 'pytest' in sys.modules:
@@ -31,6 +24,13 @@ if 'pytest' in sys.modules:
     )
     manager = DataManager(cache)
 else:
+    manager = DataManager(
+        Cache(
+            ParfiveDownloader(),
+            SqliteStorage(_download_dir + '/data_manager.db'),
+            _download_dir
+        )
+    )
     cache = Cache(
         ParfiveDownloader(),
         SqliteStorage(CACHE_DIR + '/cache.db'),

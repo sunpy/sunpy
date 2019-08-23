@@ -61,6 +61,8 @@ class DataManager:
                         if self._cache_has_file(urls):
                             raise err
                         file_path = self._cache.download(urls)
+                        if hash_file(file_path) != sha_hash:
+                            raise err
                     else:
                         # This is to handle the case when the file is tampered on disk
                         if hash_file(details['file_path']) != details['file_hash']:
