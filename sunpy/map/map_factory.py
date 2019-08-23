@@ -227,7 +227,7 @@ class MapFactory(BasicRegistrationFactory):
             # URL
             elif isinstance(arg, str) and _is_url(arg):
                 url = arg
-                path = cache.download(url)
+                path = str(cache.download(url).absolute())
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
