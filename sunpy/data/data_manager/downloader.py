@@ -22,7 +22,7 @@ class DownloaderBase(metaclass=ABCMeta):
 
         Raises
         ------
-        ``DownloaderError``
+        `DownloaderError`
             DownloaderError is raised when download errors.
         """
         raise NotImplementedError

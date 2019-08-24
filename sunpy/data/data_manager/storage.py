@@ -1,5 +1,5 @@
 """
-storage module contains the abstract implementation of storage
+Storage module contains the abstract implementation of storage
 for `sunpy.data.data_manager.Cache` and a concrete implementation
 using sqlite.
 """
@@ -73,8 +73,7 @@ class StorageProviderBase(metaclass=ABCMeta):
 
 class InMemStorage(StorageProviderBase):
     """
-    InMemStorage provides a storage stored in memory
-    as `dict`s.
+    This provides a storage stored in memory.
     """
 
     def __init__(self):
@@ -97,7 +96,7 @@ class InMemStorage(StorageProviderBase):
 
 class SqliteStorage(StorageProviderBase):
     """
-    SqliteStorage provides a sqlite backend for storage.
+    This provides a sqlite backend for storage.
 
     Parameters
     ----------
@@ -133,12 +132,12 @@ class SqliteStorage(StorageProviderBase):
     @contextmanager
     def connection(self, commit=False):
         """
-        A contextmanger which provides an easy way to handle db connections.
+        A context manager which provides an easy way to handle db connections.
 
         Parameters
         ----------
         commit: `bool`
-        Whether to commit after succesful execution of db command.
+            Whether to commit after succesful execution of db command.
         """
         conn = sqlite3.connect(str(self._db_path))
         try:
