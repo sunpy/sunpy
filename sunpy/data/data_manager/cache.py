@@ -10,23 +10,24 @@ from astropy.time import TimeDelta
 from sunpy.data.data_manager.downloader import DownloaderError
 from sunpy.util.net import get_filename
 from sunpy.util.util import hash_file, replacement_filename
+from sunpy.util.exceptions import SunpyUserWarning
 
 
 class Cache:
     """
-    Cache handles caching.
+    Cache provides a way to download and cache files.
 
     Parameters
     ----------
-    downloader: Implementaion of `~sunpy.data.data_manager.downloader.DownloaderBase`
+    downloader: Implementation of `~sunpy.data.data_manager.downloader.DownloaderBase`
         Downloader object for downloading remote files.
-    storage: Implementaion of `~sunpy.data.data_manager.storage.StorageProviderBase`
+    storage: Implementation of `~sunpy.data.data_manager.storage.StorageProviderBase`
         Storage to store metadata about the files.
     cache_dir: `str` or `pathlib.Path`
         Directory where the downloaded files will be stored.
-    expiry: `astropy.units.quantity.Quantity` or `None`
+    expiry: `astropy.units.quantity.Quantity` or `None`, optional
         The interval after which the cache is invalidated. If the expiry is `None`,
-        then the expiry is not checked (or the cache never expires).
+        then the expiry is not checked (or the cache never expires). Defaults to 10 seconds.
     """
 
     def __init__(self, downloader, storage, cache_dir, expiry=10*u.s):
@@ -134,6 +135,6 @@ class Cache:
             try:
                 return download(url)
             except Exception as e:
-                warn(e)
+                warn(e, SunpyUserWarning)
         else:
             raise RuntimeError("Download failed")

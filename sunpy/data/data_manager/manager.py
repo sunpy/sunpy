@@ -7,11 +7,12 @@ from sunpy.util.util import hash_file
 
 class DataManager:
     """
-    DataManager
+    This class provides a remote data manager for managing remote files.
 
     Parameters
     ----------
     cache: `sunpy.data.data_manager.cache.Cache`
+        Cache object to be used by `~sunpy.data.data_manager.manager.DataManager`.
     """
 
     def __init__(self, cache):

@@ -60,7 +60,8 @@ def tmp_config_dir(request):
 @pytest.fixture()
 def sunpy_cache(mocker):
     """
-    Provide a way to add local files to the cache.
+    Provide a way to add local files to the cache. This can be useful when mocking
+    remote requests.
     """
     from types import MethodType
     from sunpy.data.data_manager.cache import Cache
@@ -84,7 +85,6 @@ def sunpy_cache(mocker):
         mocker.patch(mocked, cache)
         return cache
     yield func
-
 
 
 @pytest.fixture()
