@@ -24,7 +24,7 @@ def test_function():
 
 
 ##############################################################################
-# To access the downloaded file inside the function, you can use `sunpy.data.manager.get` function
+# To access the downloaded file inside the function, you can use `~sunpy.data.data_manager.manager.DataManager.get` function.
 # `manager.get` returns a `pathlib.Path` object.
 
 @manager.require('test_file',
