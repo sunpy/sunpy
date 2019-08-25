@@ -12,7 +12,7 @@ resources:
   repositories:
   - repository: sunpy
     type: github
-    endpoint: sunpyorg
+    endpoint: sunpy
     name: sunpy/azure-pipelines-template
     ref: master
 
