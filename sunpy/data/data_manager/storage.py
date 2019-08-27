@@ -127,13 +127,9 @@ class SqliteStorage(StorageProviderBase):
 
     def _setup(self):
         schema = ' text, '.join(self.COLUMN_NAMES) + ' text'
-        try:
-            with self.connection(commit=True) as conn:
-                conn.execute(f'''CREATE TABLE {self._table_name}
-                                ({schema})''')
-        except sqlite3.OperationalError:
-            # Race condition
-            pass
+        with self.connection(commit=True) as conn:
+            conn.execute(f'''CREATE TABLE {self._table_name}
+                            ({schema})''')
 
     @contextmanager
     def connection(self, commit=False):
