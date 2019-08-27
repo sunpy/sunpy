@@ -4,19 +4,20 @@
 
 import os
 from urllib.parse import urlsplit
-
-from itertools import compress
+from datetime import timedelta
+import warnings
 
 from astropy.time import TimeDelta
 from astropy.time import Time
 import astropy.units as u
 
-
-from datetime import timedelta
 from sunpy.time import parse_time, TimeRange
-from ..client import GenericClient
 from sunpy import config
 from sunpy.util.scraper import Scraper
+from ..client import GenericClient
+from sunpy import log
+from sunpy.util.exceptions import SunpyUserWarning
+
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -208,6 +209,10 @@ class SUVIClient(GenericClient):
         """
         base_url = "https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{goes_number}/"
 
+        supported_levels = ("2", "1b")
+        supported_wavelengths = u.Quantity([94, 131, 171, 195, 284, 304], 'Angstrom')
+        minimum_supported_satellitenumber = 16
+
         if "wavelength" not in kwargs.keys() or not kwargs["wavelength"]:
             raise ValueError("Queries must specify a wavelength.")
         else:
@@ -218,11 +223,20 @@ class SUVIClient(GenericClient):
             satellitenumber = int(kwargs["satellitenumber"])
         else:
             satellitenumber = 16
+            log.info(f'No satellite number provided so assuming GOES-{satellitenumber}.')
 
         if "level" in kwargs.keys():
             level = str(kwargs["level"])
         else:
             level = "2"
+            log.info(f"No data level provided so assuming level {level}.")
+
+        if level not in supported_levels:
+            warnings.warn(f"Level not supported. Supported are f{supported_levels}.", SunpyUserWarning)
+        if wavelength not in supported_levels:
+            warnings.warn(f"Wavelength not supported. Supported are f{supported_wavelengths}.", SunpyUserWarning)
+        if satellitenumber <= minimum_supported_satellitenumber:
+            warnings.warn(f"Satellite number not supported. Supported are >{minimum_supported_satellitenumber}.", SunpyUserWarning)
 
         if str(level) == "2":
             search_pattern = base_url + 'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g16_s%Y%m%dT%H%M%SZ_.*\.fits'
@@ -247,7 +261,7 @@ class SUVIClient(GenericClient):
 
         @classmethod
         def _can_handle_query(cls, *query):
-                    """
+        """
         Answers whether client can service the query.
 
         Parameters
@@ -259,14 +273,20 @@ class SUVIClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chk_var = 0
+        required = {a.Time, a.Instrument}
+        optional = {a.Wavelength, a.SatelliteNumber, a.Level}
+        all_attrs = {type(x) for x in query}
+
+        ops = all_attrs - required
+        # If ops is empty or equal to optional we are ok, otherwise we don't
+        # match
+        if ops and ops != optional:
+            return False
+
+        # if we get this far we have either Instrument and Time
+        # or Instrument, Time and Wavelength
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'suvi':
-                chk_var += 1
-            elif x.__class__.__name__ == 'Level' and str(x.value) in ("2", "1b"):
-                chk_var += 1
-            elif x.__class__.__name__ == 'SatelliteNumber' and x.value >= 16:
-                chk_var += 1
-        if chk_var == 3:
-            return True
+            if isinstance(x, a.Instrument) and x.value.lower() == 'suvi':
+                return True
+
         return False
