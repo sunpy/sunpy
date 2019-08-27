@@ -57,36 +57,51 @@ class Cache:
         if isinstance(urls, str):
             urls = [urls]
         # Program flow
-        # 1. If redownload: Don't check cache, don't put in cache. Download and return file path
+        # 1. If redownload: Download, update cache and return file path
         # 2. If not redownload: Check cache,
         #    i. If present in cache:
         #        - If cache expired, remove entry from cache, download and add to cache
         #        - If cache not expired, return path
         #    ii. If not download, store in cache and return path
-        if not redownload:
-            details = None
-            for url in urls:
-                details = self._get_by_url(url)
-                if details:
-                    break
+        details = None
+        for url in urls:
+            details = self._get_by_url(url)
             if details:
-                if self._expiry and \
-                   datetime.now() - datetime.fromisoformat(details['time']) > self._expiry:
-                    os.remove(details['file_path'])
-                    self._storage.delete_by_key('url', details['url'])
-                else:
-                    return Path(details['file_path'])
+                break
+        if details:
+            if redownload or self._has_expired(details):
+                # if file is in cache and it has to be redownloaded or the cache has expired
+                # then remove the file and delete the details from the storage
+                os.remove(details['file_path'])
+                self._storage.delete_by_key('url', details['url'])
+            else:
+                return Path(details['file_path'])
 
         file_path, file_hash, url = self._download_and_hash(urls)
 
-        if not redownload:
-            self._storage.store({
-                'file_hash': file_hash,
-                'file_path': str(file_path),
-                'url': url,
-                'time': datetime.now().isoformat(),
-            })
+        self._storage.store({
+            'file_hash': file_hash,
+            'file_path': str(file_path),
+            'url': url,
+            'time': datetime.now().isoformat(),
+        })
         return file_path
+
+    def _has_expired(self, details):
+        """
+        Whether the url corresponding to details in cache has expired or not.
+
+        Parameters
+        ----------
+        details: `dict`
+            Details detched from cache.
+
+        Returns
+        -------
+        `bool`
+            Whether the url has expired or not.
+        """
+        return self._expiry and datetime.now() - datetime.fromisoformat(details['time']) > self._expiry
 
     def get_by_hash(self, sha_hash):
         """
