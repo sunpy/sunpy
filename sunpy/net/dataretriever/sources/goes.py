@@ -16,35 +16,11 @@ from datetime import timedelta
 from sunpy.time import parse_time, TimeRange
 from ..client import GenericClient
 from sunpy import config
+from sunpy.util.scraper import Scraper
 
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ["XRSClient", "SUVIClient"]
-
-import urllib.request
-import requests
-from bs4 import BeautifulSoup
-
-def url_is_alive(url):
-    """
-    Checks that a given URL is reachable.
-    :param url: A URL
-    :rtype: bool
-    """
-    request = urllib.request.Request(url)
-    request.get_method = lambda: 'HEAD'
-
-    try:
-        urllib.request.urlopen(request)
-        return True
-    except urllib.request.HTTPError:
-        return False
-
-
-def list_files(url, ext=''):
-    page = requests.get(url).text
-    soup = BeautifulSoup(page, 'html.parser')
-    return [url + '' + node.get('href') for node in soup.find_all('a') if node.get('href').endswith(ext)]
 
 
 class XRSClient(GenericClient):
@@ -239,74 +215,52 @@ class SUVIClient(GenericClient):
         wavelength = wavelength.to(u.Angstrom, equivalencies=u.spectral())
 
         if "level" in kwargs:
-            level = kwargs["level"]
+            level = str(kwargs["level"])
         else:
-            level = "l2"
+            level = "2"
 
-        if level == "l2":
-            base_url += f'l2/data/suvi-{level}-ci{int(wavelength.to("Angstrom").value):03}/'
+        if str(level) == "2":
+            search_pattern = base_url + 'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g16_s%Y%m%dT%H%M%SZ_.*\.fits'
+        elif str(level) == "1b":
+            if wavelength in u.Quantity([131, 171, 195, 284], 'Angstrom'):
+                search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave:03}_G16_s%Y%j%H%M%S.*\.fits.gz'
+            elif wavelength == 304 * u.Angstrom:
+                search_pattern = base_url + 'l{level}/suvi-l{level}-he{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-He{wave_minus1:03}_G16_s%Y%j%H%M%S.*\.fits.gz'
+            elif wavelength == 94 * u.Angstrom:
+                search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G16_s%Y%j%H%M%S.*\.fits.gz'
         else:
-            raise NotImplementedError('Level 1b not implemented.')
-            #if wavelength.to("Angstrom").value != 304:
-            #    base_url += f'l1b/suvi-{level}-fe{int(wavelength.to("Angstrom").value):03}/'
-            #else:
-            #    base_url += f'l1b/suvi-{level}-he{int(wavelength.to("Angstrom").value):03}/'
+            return []
+        wave = int(wavelength.to('angstrom').value)
 
-        start_time = Time(timerange.start.strftime("%Y-%m-%d"))
-        # make sure we are counting a day even if only a part of it is in the query range.
-        day_range = TimeRange(
-            timerange.start.strftime("%Y-%m-%d"),
-            timerange.end.strftime("%Y-%m-%d")
-        )
-        total_days = int(day_range.days.value) + 1
-        result = list()
-
-        # Iterate over each day
-        for day in range(total_days):
-            # It is okay to convert to datetime here as the start_time is a date
-            # hence we don't necesserily gain anything.
-            # This is necessary because when adding a day to a Time, we may
-            # end up with the same day if the day is a leap second day
-            date = start_time.datetime + timedelta(days=day)
-
-            url = base_url + date.strftime("%Y/%m/%d/")
-
-            if level == 'l2':
-                file_list = list_files(url, ext='fits')
-                tr_list = [suvi_level2_filename_to_timeranges(this_url) for this_url in file_list]
-
-            good_files_index = [(this_tr.start > timerange.start) & (this_tr.end < timerange.end) for this_tr in tr_list]
-            result.extend(compress(file_list, good_files_index))
-        return result
+        if search_pattern.count('wave_minus1'):
+            scraper = Scraper(search_pattern, level=level, wave=wave, wave_minus1=wave-1)
+        else:
+            scraper = Scraper(search_pattern, level=level, wave=wave)
+        print(scraper.now)
+        return scraper.filelist(timerange)
 
         @classmethod
         def _can_handle_query(cls, *query):
-            """
-            Answers whether client can service the query.
+                    """
+        Answers whether client can service the query.
 
-            Parameters
-            ----------
-            query : list of query objects
+        Parameters
+        ----------
+        query : list of query objects
 
-            Returns
-            -------
-            boolean
-                answer as to whether client can service the query
-            """
-            chkattr = ["Time", "Wavelength", "Instrument"]
-            chklist = [x.__class__.__name__ in chkattr for x in query]
-            for x in query:
-                if x.__class__.__name__ == 'Instrument' and x.value.lower() in
-                    ("suvi", "goes"):
-                    chk_var += 1
-                elif x.__class__.__name__ == 'Level' and x.value == 0:
-                    chk_var += 1
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
+        """
+        chk_var = 0
+        for x in query:
+            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'suvi':
+                chk_var += 1
 
-                    return all(chklist)
-            return False
+            elif x.__class__.__name__ == 'Level' and x.value == 2:
+                chk_var += 1
 
-def suvi_level2_filename_to_timeranges(url):
-    f = os.path.basename(url)
-    start_time = parse_time(f[22:37])
-    end_time = parse_time(f[40:55])
-    return TimeRange(start_time, end_time)
+        if chk_var == 2:
+            return True
+        return False
