@@ -7,8 +7,8 @@ Remote Files
 Remote Data Manager
 ===================
 
-There are functions which require files to be downloaded from the internet before they are executed. If the files are changed on the remote
-server or if they are tampered with after the file is downloaded, the function may return erraneous results.
+There are functions which require files to be downloaded from the internet before they are executed.
+If the files are changed on the remote server or if they are tampered with after the file is downloaded, the function may return erraneous results.
 
 Remote Data Manager provides the developers a way to download the files easily and ensure that the files are intact when they are used.
 
@@ -21,10 +21,10 @@ The manager has to be imported before it is used::
 
 
 
-`sunpy.data.data_manager.manager.DataManager.require` is a decorator which is used to inform the data manager that the function requires a file for it's execution.
-`sunpy.data.data_manager.manager.DataManager.get` function is used to access the file inside the function.
-Suppose a function requires a file with url 'http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt' which has a SHA1 hash of
-'0f56b28dd53a99556254e66ba2c0401d567d0e94'. The following example will show how this function can be implemented.::
+`~sunpy.data.data_manager.manager.DataManager.require` is a decorator which is used to inform the data manager that the function requires a file for it's execution.
+`~sunpy.data.data_manager.manager.DataManager.get` function is used to access the file inside the function.
+Suppose a function requires a file with url 'http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt' which has a SHA1 hash of '0f56b28dd53a99556254e66ba2c0401d567d0e94'.
+The following example will show how this function can be implemented.::
 
 
     @manager.require('test_file',
@@ -45,7 +45,7 @@ The expiry of the cache is configured by the user.
 Usage
 -----
 
-The following example shows how cache can be used.::
+The following example shows how cache can be used::
 
     from sunpy.data import cache
 

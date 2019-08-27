@@ -4,6 +4,8 @@ from contextlib import contextmanager
 
 from sunpy.util.util import hash_file
 
+__all__ = ['DataManager']
+
 
 class DataManager:
     """

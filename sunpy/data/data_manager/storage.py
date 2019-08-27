@@ -9,6 +9,12 @@ from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
 from pathlib import Path
 
+__all__ = [
+    'StorageProviderBase',
+    'SqliteStorage',
+    'InMemStorage',
+]
+
 
 class StorageProviderBase(metaclass=ABCMeta):
     """
@@ -23,7 +29,7 @@ class StorageProviderBase(metaclass=ABCMeta):
         Parameters
         ----------
         key: `str`
-            The key/coloumn name of the field.
+            The key/column name of the field.
         value: `str`
             The value associated with the key of the entry.
 
@@ -47,7 +53,7 @@ class StorageProviderBase(metaclass=ABCMeta):
         Parameters
         ----------
         key: `str`
-            The key/coloumn name of the field.
+            The key/column name of the field.
         value: `str`
             The value associated with the key of the entry.
 
@@ -103,7 +109,7 @@ class SqliteStorage(StorageProviderBase):
     path: `str`
         Path to the database file.
     """
-    COLOUMN_NAMES = [
+    COLUMN_NAMES = [
         'file_hash',
         'file_path',
         'url',
@@ -120,7 +126,7 @@ class SqliteStorage(StorageProviderBase):
             self._setup()
 
     def _setup(self):
-        schema = ' text, '.join(self.COLOUMN_NAMES) + ' text'
+        schema = ' text, '.join(self.COLUMN_NAMES) + ' text'
         try:
             with self.connection(commit=True) as conn:
                 conn.execute(f'''CREATE TABLE {self._table_name}
@@ -148,7 +154,7 @@ class SqliteStorage(StorageProviderBase):
             conn.close()
 
     def find_by_key(self, key, value):
-        if key not in self.COLOUMN_NAMES:
+        if key not in self.COLUMN_NAMES:
             raise KeyError
         with self.connection() as conn:
             cursor = conn.cursor()
@@ -156,11 +162,11 @@ class SqliteStorage(StorageProviderBase):
                                       WHERE {key}="{value}"''')
             row = cursor.fetchone()
             if row:
-                return dict(zip(self.COLOUMN_NAMES, row))
+                return dict(zip(self.COLUMN_NAMES, row))
             return None
 
     def delete_by_key(self, key, value):
-        if key not in self.COLOUMN_NAMES:
+        if key not in self.COLUMN_NAMES:
             raise KeyError
         with self.connection(commit=True) as conn:
             cursor = conn.cursor()
@@ -168,7 +174,7 @@ class SqliteStorage(StorageProviderBase):
                                       WHERE {key}="{value}"''')
 
     def store(self, details):
-        values = [details[k] for k in self.COLOUMN_NAMES]
+        values = [details[k] for k in self.COLUMN_NAMES]
         placeholder = '?,' * len(values)
         placeholder = placeholder[:-1]
         with self.connection(commit=True) as conn:
