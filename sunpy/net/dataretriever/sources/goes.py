@@ -236,7 +236,6 @@ class SUVIClient(GenericClient):
             scraper = Scraper(search_pattern, level=level, wave=wave, wave_minus1=wave-1)
         else:
             scraper = Scraper(search_pattern, level=level, wave=wave)
-        print(scraper.now)
         return scraper.filelist(timerange)
 
         @classmethod
