@@ -425,10 +425,10 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     return temp, em
 
 
-@manager.require('FILE_TEMP_COR',
+@manager.require('file_temp_cor',
                  [urljoin(GOES_REMOTE_PATH, FILE_TEMP_COR)],
                  'e455eca2e0d8356e67aaab4685b7933af4ac8dbc')
-@manager.require('FILE_TEMP_PHO',
+@manager.require('file_temp_pho',
                  [urljoin(GOES_REMOTE_PATH, FILE_TEMP_PHO)],
                  'fd80aeed37d8e05f87f38cab5009e4b7032bbbe1')
 @u.quantity_input
@@ -527,9 +527,9 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
     if abundances == "coronal":
-        data_file = manager.get('FILE_TEMP_COR')
+        data_file = manager.get('file_temp_cor')
     elif abundances == "photospheric":
-        data_file = manager.get('FILE_TEMP_PHO')
+        data_file = manager.get('file_temp_pho')
     else:
         raise ValueError("abundances must be a string equalling "
                          "'coronal' or 'photospheric'.")
@@ -569,10 +569,10 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     return temp
 
 
-@manager.require('FILE_EM_COR',
+@manager.require('file_em_cor',
                  [urljoin(GOES_REMOTE_PATH, FILE_EM_COR)],
                  'a7f5e41210ab112330dc19c95123cf26921098dc')
-@manager.require('FILE_EM_PHO',
+@manager.require('file_em_pho',
                  [urljoin(GOES_REMOTE_PATH, FILE_EM_PHO)],
                  '95128a5337f9d4150b9daa36f871d077b6312c2e')
 @u.quantity_input
@@ -682,9 +682,9 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
     if abundances == "coronal":
-        data_file = manager.get('FILE_EM_COR')
+        data_file = manager.get('file_em_cor')
     elif abundances == "photospheric":
-        data_file = manager.get('FILE_EM_PHO')
+        data_file = manager.get('file_em_pho')
     else:
         raise ValueError("abundances must be a string equalling "
                          "'coronal' or 'photospheric'.")
@@ -861,7 +861,7 @@ def calculate_radiative_loss_rate(goests, force_download=False,
     return ts_new
 
 
-@manager.require('FILE_RAD_COR',
+@manager.require('file_rad_cor',
                  [urljoin(GOES_REMOTE_PATH, FILE_RAD_COR)],
                  '09ee4a63f93307e6163e797d2122ce465b5f9a31')
 @u.quantity_input
@@ -962,7 +962,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
 
     # Read data from csv file into lists, being sure to skip commented
     # lines beginning with "#"
-    with open(manager.get('FILE_RAD_COR'), "r") as csvfile:
+    with open(manager.get('file_rad_cor'), "r") as csvfile:
         startline = csvfile.readlines()[7:]
         csvreader = csv.reader(startline, delimiter=" ")
         for row in csvreader:

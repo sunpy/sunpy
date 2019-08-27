@@ -8,9 +8,11 @@ import astropy.units as u
 from astropy.time import TimeDelta
 
 from sunpy.data.data_manager.downloader import DownloaderError
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import get_filename
 from sunpy.util.util import hash_file, replacement_filename
-from sunpy.util.exceptions import SunpyUserWarning
+
+__all__ = ['Cache']
 
 
 class Cache:

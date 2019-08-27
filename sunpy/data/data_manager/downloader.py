@@ -3,6 +3,8 @@ from pathlib import Path
 
 from parfive import Downloader
 
+__all__ = ['DownloaderBase', 'DownloaderError', 'ParfiveDownloader']
+
 
 class DownloaderBase(metaclass=ABCMeta):
     """

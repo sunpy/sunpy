@@ -110,7 +110,7 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
     """
     # Check that input argument is of correct type
     if lytaf_path:
-        warn('laytaf_path is deprecated, has no effect and will be removed in a future release.', SunpyDeprecationWarning)
+        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
     # Remove artifacts from time series
     data_columns = ts.data.columns
     time, channels, artifact_status = _remove_lytaf_events(
@@ -240,7 +240,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     """
     # Check inputs
     if lytaf_path:
-        warn('laytaf_path is deprecated, has no effect and will be removed in a future release.', SunpyDeprecationWarning)
+        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
     if channels and type(channels) is not list:
         raise TypeError("channels must be None or a list of numpy arrays "
                         "of dtype 'float64'.")
@@ -425,7 +425,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     # Check inputs
     # Check lytaf path
     if lytaf_path:
-        warn('laytaf_path is deprecated, has no effect and will be removed in a future release.', SunpyDeprecationWarning)
+        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
     # Parse start_time and end_time
     start_time = parse_time(start_time)
     end_time = parse_time(end_time)
@@ -562,7 +562,7 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     """
     # Set lytaf_path is not done by user
     if lytaf_path:
-        warn('laytaf_path is deprecated, has no effect and will be removed in a future release.', SunpyDeprecationWarning)
+        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
     suffixes = ["lyra", "manual", "ppt", "science"]
     all_event_types = []
     # For each database file extract the event types and print them.

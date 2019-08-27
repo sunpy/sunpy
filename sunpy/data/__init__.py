@@ -1,5 +1,6 @@
-import astropy.units as u
 import sys
+
+import astropy.units as u
 
 from sunpy import config
 from sunpy.data._sample import download_sample_data
@@ -13,6 +14,9 @@ _download_dir = config.get('downloads', 'remote_data_manager_dir')
 
 
 if 'pytest' in sys.modules:
+    # sunpy executed with pytest
+    # this will replace the real cache with a mock cache
+    # this is needed for tests
     from sunpy.data.data_manager.storage import InMemStorage
     import tempfile
     cache_dir = tempfile.mkdtemp()
