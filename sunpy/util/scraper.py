@@ -116,7 +116,7 @@ class Scraper:
             pattern = pattern.replace(k, v)
         matches = re.match(pattern, url)
         if matches:
-            return matches.end() == matches.endpos == len(self.now)
+            return matches.end() == matches.endpos
         return False
 
     def _extractDateURL(self, url):
