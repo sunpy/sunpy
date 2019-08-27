@@ -204,9 +204,9 @@ class SUVIClient(GenericClient):
 
         Note
         ----
-        This is level 1b data is not implemented.
+        SUVI data does not exist for GOES satellite < 16.
         """
-        base_url = "https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/"
+        base_url = "https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{goes_number}/"
 
         if "wavelength" not in kwargs.keys() or not kwargs["wavelength"]:
             raise ValueError("Queries must specify a wavelength.")
@@ -214,7 +214,12 @@ class SUVIClient(GenericClient):
             wavelength = kwargs["wavelength"]
         wavelength = wavelength.to(u.Angstrom, equivalencies=u.spectral())
 
-        if "level" in kwargs:
+        if "satellitenumber" in kwargs.keys():
+            satellitenumber = int(kwargs["satellitenumber"])
+        else:
+            satellitenumber = 16
+
+        if "level" in kwargs.keys():
             level = str(kwargs["level"])
         else:
             level = "2"
@@ -233,9 +238,11 @@ class SUVIClient(GenericClient):
         wave = int(wavelength.to('angstrom').value)
 
         if search_pattern.count('wave_minus1'):
-            scraper = Scraper(search_pattern, level=level, wave=wave, wave_minus1=wave-1)
+            scraper = Scraper(search_pattern, level=level, wave=wave,
+                              goes_number=satellitenumber, wave_minus1=wave-1)
         else:
-            scraper = Scraper(search_pattern, level=level, wave=wave)
+            scraper = Scraper(search_pattern, level=level, wave=wave,
+                              goes_number=satellitenumber)
         return scraper.filelist(timerange)
 
         @classmethod
@@ -256,10 +263,10 @@ class SUVIClient(GenericClient):
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'suvi':
                 chk_var += 1
-
-            elif x.__class__.__name__ == 'Level' and x.value == 2:
+            elif x.__class__.__name__ == 'Level' and str(x.value) in ("2", "1b"):
                 chk_var += 1
-
-        if chk_var == 2:
+            elif x.__class__.__name__ == 'SatelliteNumber' and x.value >= 16:
+                chk_var += 1
+        if chk_var == 3:
             return True
         return False
