@@ -73,7 +73,7 @@ class NoRHClient(GenericClient):
         # If wavelength is a single value GenericClient will have made it a
         # Quantity in the kwargs.
         if not isinstance(wavelength, u.Quantity):
-            raise ValueError("Wavelength to NORH must be one value not {}.".format(wavelength))
+            raise ValueError(f"Wavelength to NORH must be one value not {wavelength}.")
 
         wavelength = wavelength.to(u.GHz, equivalencies=u.spectral())
         if wavelength == 34 * u.GHz:

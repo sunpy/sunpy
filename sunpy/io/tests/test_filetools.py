@@ -17,7 +17,7 @@ AIA_171_IMAGE = os.path.join(testpath, 'aia_171_level1.fits')
 # =============================================================================
 # Test, read, get_header and write through the file independent layer
 # =============================================================================
-class TestFiletools(object):
+class TestFiletools:
 
     def test_read_file_fits(self):
         # Test read FITS
@@ -40,7 +40,7 @@ class TestFiletools(object):
     def test_read_file_fits_gzip(self):
         # Test read gzipped fits file
         for fits_extension in [".fts", ".fit", ".fits"]:
-            pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir, "gzip_test{ext}.gz".format(ext=fits_extension)))
+            pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir, f"gzip_test{fits_extension}.gz"))
             assert isinstance(pair, list)
             assert len(pair) == 1
             assert len(pair[0]) == 2

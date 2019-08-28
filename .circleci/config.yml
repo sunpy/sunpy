@@ -11,30 +11,24 @@ merge-check: &merge-check
       git checkout -qf pr/$CIRCLE_PR_NUMBER/merge
     fi
 
+permission-run: &permission-run
+  name: Fix permssions for installing
+  command: |
+    sudo chown -R circleci:circleci /usr/local/bin
+    sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+    sudo chown -R circleci:circleci /usr/local/share/
+
 apt-run: &apt-install
   name: Install apt packages
   command: |
     apt update
     apt install -y graphviz build-essential libopenjp2-7
 
-tox-install: &tox-install
-  name: Install Tox
+sudo-apt-run: &sudo-apt-install
+  name: Install apt packages
   command: |
-    pip install tox
-
-tox-conda-install: &tox-conda-install
-  name: Install Tox-Conda
-  command: |
-    pip install tox-conda
-
-image-run: &image-tests
-  name: Run image tests
-  environment:
-    MPLBACKEND: Agg
-  command: |
-    tox -e figure
-    pip install codecov
-    codecov
+    sudo apt update
+    sudo apt install -y graphviz build-essential libopenjp2-7 git
 
 version: 2
 jobs:
@@ -56,31 +50,41 @@ jobs:
       - run: *merge-check
       - run: python setup.py egg_info
 
-  pip-install:
+  twine-check:
     docker:
-      - image: continuumio/miniconda3
+      - image: circleci/python:3.7
     steps:
       - checkout
       - run: *skip-check
       - run: *merge-check
-      - run: *apt-install
-      - run:
-          name: Update pip
-          command: pip install -U pip
-      - run:
-          name: Install SunPy
-          command: |
-            pip install --progress-bar off .[all,dev]
-            pip install --no-use-pep517 -e .[all,dev]
-            python setup.py develop
+      - run: *permission-run
+      - run: python setup.py sdist
+      - run: python -m pip install -U --user --force-reinstall twine
+      - run: python -m twine check dist/*
+
+  pip-install:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run: *skip-check
+      - run: *merge-check
+      - run: *permission-run
+      - run: *sudo-apt-install
+      - run: pip install -U pip
+      - run: pip install --progress-bar off .[all,dev]
+      - run: pip install -e .[all,dev]
+      - run: python setup.py develop
 
   32bit:
     docker:
       - image: i386/ubuntu:latest
+    environment:
+          MPLBACKEND: agg
+          COLUMNS: 180
     steps:
       - restore_cache:
           keys: sample-data-v1
-
       - checkout
       - run: *skip-check
       - run:
@@ -89,17 +93,8 @@ jobs:
             export DEBIAN_FRONTEND="noninteractive"
             apt-get update
             apt-get install -y libfreetype6 libfreetype6-dev libpng-dev tk pkg-config python3-pip git openssh-client
-      - run:
-          name: Install dependencies
-          # Cat here to suppress the progress bar
-          # 3.1.2 here due to a test failure in physcs.
-          command: pip3 install tox | cat
-      - run:
-          name: Run tests
-          command: PYTHONHASHSEED=42 tox -e py36-offline -- -n=4
-    environment:
-          MPLBACKEND: agg
-          COLUMNS: 180
+      - run: pip3 install tox | cat
+      - run: PYTHONHASHSEED=42 tox -e py36-offline -- -n=4
 
   figure-tests-36:
     docker:
@@ -109,9 +104,9 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: *tox-install
-      - run: *tox-conda-install
-      - run: *image-tests
+      - run: pip install -U tox tox-conda codecov
+      - run: tox -e figure
+      - run: codecov
       - store_artifacts:
           path: figure_test_images
       - run:
@@ -120,24 +115,22 @@ jobs:
 
   html-docs:
     docker:
-      - image: continuumio/miniconda3
+      - image: circleci/python:3.7
     steps:
       - restore_cache:
           keys: sample-data-v1
-
       - checkout
       - run: *skip-check
       - run: *merge-check
-      - run: *apt-install
-      - run: *tox-install
+      - run: *permission-run
+      - run: *sudo-apt-install
+      - run: pip install -U tox
       - run: tox -e build_docs
       - store_artifacts:
           path: docs/_build/html
-
       - run:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/docs/_build/html/index.html"; echo $DOCS_URL
-
       - save_cache:
           key: sample-data-v1
           paths:
@@ -150,6 +143,10 @@ workflows:
     jobs:
       - egg-info-36
       - egg-info-37
+
+  twine-check:
+    jobs:
+      - twine-check
 
   pip-install:
     jobs:

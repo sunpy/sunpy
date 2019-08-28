@@ -12,7 +12,7 @@ from sunpy.coordinates import frames
 __all__ = ['GreatArc']
 
 
-class GreatArc(object):
+class GreatArc:
     """
     Calculate the properties of a great arc at user-specified points between a
     start and end point on a sphere.
@@ -99,10 +99,13 @@ class GreatArc(object):
         self.default_points = self._points_handler(points)
 
         # Units of the start point
-        self.distance_unit = self.start.transform_to(frames.Heliocentric).cartesian.xyz.unit
+        self.distance_unit = u.km
 
         # Co-ordinate frame
         self.start_frame = self.start.frame
+
+        # Observation time
+        self.obstime = self.start.obstime
 
         # Observer
         self.observer = self.start.observer
@@ -249,4 +252,6 @@ class GreatArc(object):
         return SkyCoord(great_arc_points_cartesian[:, 0],
                         great_arc_points_cartesian[:, 1],
                         great_arc_points_cartesian[:, 2],
-                        frame=frames.Heliocentric, observer=self.observer).transform_to(self.start_frame)
+                        frame=frames.Heliocentric,
+                        obstime=self.obstime,
+                        observer=self.observer).transform_to(self.start_frame)

@@ -25,7 +25,7 @@ TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
                     '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'}
 
 
-class Scraper(object):
+class Scraper:
     """
     A Scraper to scrap web data archives based on dates.
 
@@ -168,13 +168,13 @@ class Scraper(object):
         for p, r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
             if p == 'e':
                 continue
-            regexp = r'\{}'.format(r) if not r.startswith('[') else r
-            pattern = '%{}'.format(p)
+            regexp = fr'\{r}' if not r.startswith('[') else r
+            pattern = f'%{p}'
             date_part = re.search(regexp, date_together)
             date_together = date_together[:date_part.start()] \
                 + date_together[date_part.end():]
             if pattern not in final_pattern:
-                final_pattern.append('%{}'.format(p))
+                final_pattern.append(f'%{p}')
                 final_date.append(date_part.group())
         return Time.strptime(' '.join(final_date),
                              ' '.join(final_pattern))

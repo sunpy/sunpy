@@ -37,7 +37,7 @@ def get_base_url():
         except (URLError, socket.timeout):
             pass
 
-    raise IOError('Unable to find an online HESSI server from {0}'.format(data_servers))
+    raise OSError(f'Unable to find an online HESSI server from {data_servers}')
 
 
 class RHESSIClient(GenericClient):

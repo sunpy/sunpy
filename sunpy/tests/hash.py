@@ -8,14 +8,14 @@ import matplotlib.pyplot as plt
 
 __all__ = ["hash_figure", "verify_figure_hash"]
 
-HASH_LIBRARY_NAME = 'figure_hashes_py{0}{1}.json'.format(version_info.major, version_info.minor)
+HASH_LIBRARY_NAME = f'figure_hashes_py{version_info.major}{version_info.minor}.json'
 HASH_LIBRARY_FILE = os.path.join(os.path.dirname(__file__), HASH_LIBRARY_NAME)
 
 # Load the hash library if it exists
 try:
     with open(HASH_LIBRARY_FILE) as infile:
         hash_library = json.load(infile)
-except IOError:
+except OSError:
     hash_library = {}
 
 

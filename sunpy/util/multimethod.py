@@ -54,7 +54,7 @@ class MultiMethod:
             attempting to override an existing definition.
         """
         if override not in (SILENT, WARN, FAIL):
-            raise ValueError("Invalid value '{0}' for override.".format(override))
+            raise ValueError(f"Invalid value '{override}' for override.")
 
         overriden = False
         if override != SILENT:
@@ -64,7 +64,7 @@ class MultiMethod:
         if overriden and override == FAIL:
             raise TypeError
         elif overriden and override == WARN:
-            warn('Definition ({0}) overrides prior definition ({1}).'.format(_fmt_t(types),
+            warn('Definition ({}) overrides prior definition ({}).'.format(_fmt_t(types),
                                                                              _fmt_t(signature)),
                  TypeWarning, stacklevel=3)
 
@@ -99,7 +99,7 @@ class MultiMethod:
             if all(issubclass(ty, sig) for ty, sig in zip(types, signature)):
                 self.cache[types] = fun
                 return fun(*args, **kwargs)
-        raise TypeError('{0!r}'.format(types))
+        raise TypeError(f'{types!r}')
 
     # XXX: Other Python implementations.
     def super(self, *args, **kwargs):

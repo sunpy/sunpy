@@ -104,7 +104,7 @@ def test_save_path(tmpdir):
     files = Fido.fetch(qr, path=str(tmpdir / "{instrument}" / "{level}"))
     for f in files:
         assert str(tmpdir) in f
-        assert "eve{}0".format(os.path.sep) in f
+        assert f"eve{os.path.sep}0" in f
 
 
 @pytest.mark.remote_data
@@ -118,7 +118,7 @@ def test_save_path_pathlib(tmpdir):
     files = Fido.fetch(qr, path=path)
     for f in files:
         assert target_dir.strpath in f
-        assert "eve{}0".format(os.path.sep) in f
+        assert f"eve{os.path.sep}0" in f
 
 
 """

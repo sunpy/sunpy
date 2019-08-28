@@ -37,9 +37,9 @@ class Readers(dict):
     def __getitem__(self, key):
         val = dict.__getitem__(self, key)
         if val is None:
-            raise ReaderError((f"The Reader sunpy.io.{key} is not available, "
+            raise ReaderError(f"The Reader sunpy.io.{key} is not available, "
                                "please check that you have the required dependencies "
-                               "installed."))
+                               "installed.")
         return val
 
 
@@ -194,7 +194,7 @@ def _detect_filetype(filepath):
         return 'fits'
 
     # Check for "KEY_WORD  =" at beginning of file
-    match = re.match(r"[A-Z0-9_]{0,8} *=".encode('ascii'), first80)
+    match = re.match(br"[A-Z0-9_]{0,8} *=", first80)
     if match is not None:
         return 'fits'
 
@@ -217,7 +217,7 @@ def _detect_filetype(filepath):
                                     "supported by SunPy.")
 
 
-class UnrecognizedFileTypeError(IOError):
+class UnrecognizedFileTypeError(OSError):
     """
     Exception to raise when an unknown file type is encountered.
     """
@@ -229,7 +229,7 @@ class ReaderError(ImportError):
     """
 
 
-class InvalidJPEG2000FileExtension(IOError):
+class InvalidJPEG2000FileExtension(OSError):
     """
     Exception to raise when an invalid JPEG2000 file type is encountered.
     """

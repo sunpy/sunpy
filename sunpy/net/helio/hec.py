@@ -42,7 +42,7 @@ def votable_handler(xml_table):
     return votable
 
 
-class HECClient(object):
+class HECClient:
     """
     A client class used to interface with and query HELIO webservices.
     """
@@ -103,8 +103,7 @@ class HECClient(object):
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
         >>> start = '2005/01/03'
         >>> end = '2005/12/03'
-        >>> temp = hc.time_query(start, end, max_records=10)   # doctest: +REMOTE_DATA +SKIP
-
+        >>> temp = hc.time_query(start, end, max_records=10)  # doctest: +REMOTE_DATA +SKIP
         """
         while table is None:
             table = self.select_table()
@@ -133,13 +132,12 @@ class HECClient(object):
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> print(hc.get_table_names())   # doctest: +REMOTE_DATA
+        >>> print(hc.get_table_names())  # doctest: +REMOTE_DATA +SKIP
         [(b'timed_see_flare',) (b'hi_event',) (b'yohkoh_flare_list',)
          (b'wind_mfi_bs_crossing_time',) (b'seeds_soho',) (b'seeds_stb',)
          ...
          (b'rhessi_hxr_flare',) (b'cactus_soho_flow',) (b'cactus_soho_cme',)
          (b'stereob_het_sep',)]
-
         """
         results = self.hec_client.service.getTableNames()
         tables = votable_handler(etree.tostring(results))

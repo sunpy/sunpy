@@ -7,6 +7,9 @@ import tempfile
 
 import pytest
 
+import astropy
+import astropy.config.paths
+
 import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
 from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
@@ -41,9 +44,17 @@ def tmp_config_dir(request):
     """
     Globally set the default config for all tests.
     """
+    tmpdir = tempfile.TemporaryDirectory()
+
     os.environ["SUNPY_CONFIGDIR"] = str(pathlib.Path(__file__).parent / "data")
+    astropy.config.paths.set_temp_config._temp_path = str(tmpdir.name)
+    astropy.config.paths.set_temp_cache._temp_path = str(tmpdir.name)
+
     yield
+
     del os.environ["SUNPY_CONFIGDIR"]
+    astropy.config.paths.set_temp_config._temp_path = None
+    astropy.config.paths.set_temp_cache._temp_path = None
 
 
 @pytest.fixture()
@@ -112,8 +123,8 @@ def pytest_unconfigure(config):
         generate_figure_webpage(new_hash_library)
         turn_off_internet()
 
-        print('All images from image tests can be found in {0}'.format(figure_base_dir.resolve()))
-        print("The corresponding hash library is {0}".format(hashfile.resolve()))
+        print('All images from image tests can be found in {}'.format(figure_base_dir.resolve()))
+        print("The corresponding hash library is {}".format(hashfile.resolve()))
 
 
 def pytest_sessionstart(session):

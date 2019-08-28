@@ -160,7 +160,7 @@ This will make submitting changes easier in the long term for you:
     $ conda remove sunpy
     $ git clone https://github.com/sunpy/sunpy.git sunpy-git
     $ cd sunpy-git
-    $ pip install --no-use-pep517 -e .[all, dev]
+    $ pip install -e .[all,dev]
 
 Now you have the latest version of SunPy installed and are ready to work on it using your favorite editor!
 Ideally, when you start making changes you want to create a git branch:
