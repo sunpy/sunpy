@@ -31,18 +31,14 @@ import pathlib
 import datetime
 from distutils.version import LooseVersion
 
-from sphinx import __version__
-SPHINX_LT_17 = LooseVersion(__version__) < LooseVersion('1.7')
-
 # -- Convert Sphinx Warnings to output to stdout not stderr---------------------
-if not SPHINX_LT_17:
-    import logging
-    from sphinx.util.logging import NAMESPACE, WarningStreamHandler, SafeEncodingWriter
+import logging
+from sphinx.util.logging import NAMESPACE, WarningStreamHandler, SafeEncodingWriter
 
-    sphinxlogger = logging.getLogger(NAMESPACE)
-    handlers = sphinxlogger.handlers
-    warninghandler = list(filter(lambda x: isinstance(x, WarningStreamHandler), handlers))[0]
-    warninghandler.stream = SafeEncodingWriter(stream=sys.stdout)
+sphinxlogger = logging.getLogger(NAMESPACE)
+handlers = sphinxlogger.handlers
+warninghandler = list(filter(lambda x: isinstance(x, WarningStreamHandler), handlers))[0]
+warninghandler.stream = SafeEncodingWriter(stream=sys.stdout)
 
 # -- Import Base config from sphinx-astropy ------------------------------------
 try:
@@ -119,7 +115,7 @@ import sunpy.data.sample
 # -- General configuration ----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '1.6'
+needs_sphinx = '2.0'
 
 # To perform a Sphinx version check that needs to be more specific than
 # major.minor, call `check_sphinx_version("x.y.z")` here.
@@ -279,10 +275,10 @@ try:
     from sunpy.util.towncrier import generate_changelog_for_docs
     if is_development:
         generate_changelog_for_docs("../", target_file)
-except Exception:
-    # If we can't generate it, we need to make sure it exists or else sphinx
-    # will complain.
-    open(target_file, 'a').close()
+except Exception as e:
+    print(f"Failed to add changelog to docs with error {e}.")
+# Make sure the file exists or else sphinx will complain.
+open(target_file, 'a').close()
 
 
 def setup(app):
