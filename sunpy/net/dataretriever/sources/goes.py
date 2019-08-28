@@ -210,11 +210,8 @@ class SUVIClient(GenericClient):
         """
         base_url = "https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{goes_number}/"
 
-        supported_levels = ("2", "1b")
-        supported_waves = [94, 131, 171, 195, 284, 304]
-        minimum_supported_satellitenumber = 16
-
         if not kwargs.get("wavelength", None):
+            # should never reach here if called by dataretriever
             raise ValueError("Queries must specify a wavelength.")
         else:
             wavelength = kwargs["wavelength"]
@@ -222,22 +219,11 @@ class SUVIClient(GenericClient):
         wavelength = wavelength.to(u.Angstrom, equivalencies=u.spectral())
         wave = int(wavelength.to_value('angstrom'))
 
+        # these are optional requirements so if not provided assume defaults
         satellitenumber = int(kwargs.get("satellitenumber", 16))
-        if "satellitenumber" not in kwargs.keys():
-            log.info(f'No satellite number provided so assuming GOES-{satellitenumber}.')
+        level = str(kwargs.get("level", "2"))  # cast to string because it may be provided as number
 
-        level = str(kwargs.get("level", "2"))
-        if "level" not in kwargs.keys():
-            log.info(f"No data level provided so assuming level {level}.")
-
-        if level not in supported_levels:
-            warnings.warn(f"Level not supported. Supported are f{supported_levels}.", SunpyUserWarning)
-        if wave not in supported_waves:
-            warnings.warn(f"Wavelength {wavelength} not supported. Supported are {supported_waves * u.Angstrom}.", SunpyUserWarning)
-        if satellitenumber < minimum_supported_satellitenumber:
-            warnings.warn(f"Satellite number not supported. Supported are >{minimum_supported_satellitenumber}.", SunpyUserWarning)
-
-        if str(level) == "2":
+        if level == "2":
             search_pattern = base_url + 'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g16_s%Y%m%dT%H%M%SZ_.*\.fits'
         elif level == "1b":
             if wave in [131, 171, 195, 284]:
@@ -246,7 +232,7 @@ class SUVIClient(GenericClient):
                 search_pattern = base_url + 'l{level}/suvi-l{level}-he{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-He{wave_minus1:03}_G16_s%Y%j%H%M%S.*\.fits.gz'
             elif wave == 94:
                 search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G16_s%Y%j%H%M%S.*\.fits.gz'
-        else:
+        else:  # should never reach here if called by dataretriever
             return []
 
         if search_pattern.count('wave_minus1'):
@@ -281,8 +267,12 @@ class SUVIClient(GenericClient):
         `bool`
             answer as to whether client can service the query
         """
-        required = {a.Time, a.Instrument}
-        optional = {a.Wavelength} #, a.SatelliteNumber, a.Level}
+        supported_levels = ("2", "1b")
+        supported_waves = [94, 131, 171, 195, 284, 304]
+        minimum_supported_satellitenumber = 16
+
+        required = {a.Time, a.Instrument, a.Wavelength}
+        optional = {} #, a.SatelliteNumber, a.Level}
         all_attrs = {type(x) for x in query}
 
         ops = all_attrs - required
@@ -293,8 +283,17 @@ class SUVIClient(GenericClient):
 
         # if we get this far we have either Instrument and Time
         # or Instrument, Time and Wavelength
+        check_var_count = 0
         for x in query:
             if isinstance(x, a.Instrument) and x.value.lower() == 'suvi':
-                return True
+                check_var_count += 1
+            if isinstance(a, a.Wavelength) and int(x.value.to_value('Angstrom')) is in supported_waves:
+                check_var_count += 1
 
-        return False
+            # how to check if level is appropriate, what is the appropriate attr?
+            # how to check if the satellite number is appropriate, what is the appropriate attr?
+
+        if check_var_count == 2:
+            return True
+        else
+            return False
