@@ -213,7 +213,7 @@ class SUVIClient(GenericClient):
         supported_wavelengths = u.Quantity([94, 131, 171, 195, 284, 304], 'Angstrom')
         minimum_supported_satellitenumber = 16
 
-        if "wavelength" not in kwargs.keys() or not kwargs["wavelength"]:
+        if not kwargs.get("wavelength", None):
             raise ValueError("Queries must specify a wavelength.")
         else:
             wavelength = kwargs["wavelength"]
