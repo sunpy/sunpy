@@ -219,7 +219,7 @@ class SUVIClient(GenericClient):
             wavelength = kwargs["wavelength"]
         wavelength = wavelength.to(u.Angstrom, equivalencies=u.spectral())
 
-        if "satellitenumber" in kwargs.keys():
+satellitenumber = int(kwargs.get("satellitenumber", 16))
             satellitenumber = int(kwargs["satellitenumber"])
         else:
             satellitenumber = 16
