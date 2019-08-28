@@ -270,7 +270,7 @@ satellitenumber = int(kwargs.get("satellitenumber", 16))
 
         Returns
         -------
-        boolean
+        `bool`
             answer as to whether client can service the query
         """
         required = {a.Time, a.Instrument}
