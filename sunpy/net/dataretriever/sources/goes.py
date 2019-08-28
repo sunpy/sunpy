@@ -192,6 +192,38 @@ class XRSClient(GenericClient):
 
 
 class SUVIClient(GenericClient):
+
+    def _get_goes_sat_num(self, date):
+        """
+        Determines the best satellite number for a given date.
+
+        Parameters
+        ----------
+
+        date : `astropy.time.Time`
+            The date to determine which satellite is active.
+        """
+
+        # GOES-17 is operational but currently does not provide Level 2 data
+        # GOES-16 start date is based on the availability of regular level 1b data
+
+        suvi_operational = {
+            16: TimeRange("2018-06-01", parse_time("now")),
+        }
+
+        results = []
+        for sat_num in suvi_operational:
+            if date in suvi_operational[sat_num]:
+                # if true then the satellite with sat_num is available
+                results.append(sat_num)
+
+        if results:
+            # Return the newest satellite
+            return max(results)
+        else:
+            # if no satellites were found then raise an exception
+            raise ValueError(f"No operational SUVI instrument on {date.strftime(TIME_FORMAT)}")
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns a URL to the SUVI data for the specified time range.
@@ -209,39 +241,45 @@ class SUVIClient(GenericClient):
 
         """
         base_url = "https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{goes_number}/"
-
-        if not kwargs.get("wavelength", None):
-            # should never reach here if called by dataretriever
-            raise ValueError("Queries must specify a wavelength.")
-        else:
-            wavelength = kwargs["wavelength"]
-
-        wavelength = wavelength.to(u.Angstrom, equivalencies=u.spectral())
-        wave = int(wavelength.to_value('angstrom'))
+        supported_waves = [94, 131, 171, 195, 284, 304]
+        supported_levels = ("2", "1b")
 
         # these are optional requirements so if not provided assume defaults
-        satellitenumber = int(kwargs.get("satellitenumber", 16))
-        level = str(kwargs.get("level", "2"))  # cast to string because it may be provided as number
-
-        if level == "2":
-            search_pattern = base_url + 'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g16_s%Y%m%dT%H%M%SZ_.*\.fits'
-        elif level == "1b":
-            if wave in [131, 171, 195, 284]:
-                search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave:03}_G16_s%Y%j%H%M%S.*\.fits.gz'
-            elif wave == 304:
-                search_pattern = base_url + 'l{level}/suvi-l{level}-he{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-He{wave_minus1:03}_G16_s%Y%j%H%M%S.*\.fits.gz'
-            elif wave == 94:
-                search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G16_s%Y%j%H%M%S.*\.fits.gz'
-        else:  # should never reach here if called by dataretriever
-            return []
-
-        if search_pattern.count('wave_minus1'):
-            scraper = Scraper(search_pattern, level=level, wave=wave,
-                              goes_number=satellitenumber, wave_minus1=wave-1)
+        # if wavelength is not provided assuming all of them
+        if "wavelength" in kwargs.keys():
+            wavelength = [kwargs.get("wavelength")]
         else:
-            scraper = Scraper(search_pattern, level=level, wave=wave,
-                              goes_number=satellitenumber)
-        return scraper.filelist(timerange)
+            wavelength = supported_waves * u.Angstrom
+        # check that the input wavelength can be converted to angstrom
+        waves = [int(this_wave.to_value('angstrom', equivalencies=u.spectral())) for this_wave in wavelength]
+        # use the given satellite number or choose the best one
+        satellitenumber = int(kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start)))
+        # default to the highest level of data
+        level = str(kwargs.get("level", "2"))  # make string in case the input is a number
+
+        if level not in supported_levels:
+            raise ValueError(f"Level {leve} is not supported.")
+
+        results = []
+        for this_wave in waves:
+            if level == "2":
+                search_pattern = base_url + 'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g{goes_number}_s%Y%m%dT%H%M%SZ_.*\.fits'
+            elif level == "1b":
+                if this_wave in [131, 171, 195, 284]:
+                    search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                elif this_wave == 304:
+                    search_pattern = base_url + 'l{level}/suvi-l{level}-he{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-He{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                elif this_wave == 94:
+                    search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+
+            if search_pattern.count('wave_minus1'):
+                scraper = Scraper(search_pattern, level=level, wave=this_wave,
+                                  goes_number=satellitenumber, wave_minus1=this_wave-1)
+            else:
+                scraper = Scraper(search_pattern, level=level, wave=this_wave,
+                                  goes_number=satellitenumber)
+            results.extend(scraper.filelist(timerange))
+        return results
 
     def _makeimap(self):
         """
@@ -267,12 +305,9 @@ class SUVIClient(GenericClient):
         `bool`
             answer as to whether client can service the query
         """
-        supported_levels = ("2", "1b")
-        supported_waves = [94, 131, 171, 195, 284, 304]
-        minimum_supported_satellitenumber = 16
 
-        required = {a.Time, a.Instrument, a.Wavelength}
-        optional = {} #, a.SatelliteNumber, a.Level}
+        required = {a.Time, a.Instrument}
+        optional = {a.Wavelength} #, a.SatelliteNumber, a.Level}
         all_attrs = {type(x) for x in query}
 
         ops = all_attrs - required
@@ -287,13 +322,8 @@ class SUVIClient(GenericClient):
         for x in query:
             if isinstance(x, a.Instrument) and x.value.lower() == 'suvi':
                 check_var_count += 1
-            if isinstance(a, a.Wavelength) and int(x.value.to_value('Angstrom')) is in supported_waves:
-                check_var_count += 1
 
-            # how to check if level is appropriate, what is the appropriate attr?
-            # how to check if the satellite number is appropriate, what is the appropriate attr?
-
-        if check_var_count == 2:
+        if check_var_count == 1:
             return True
-        else
+        else:
             return False
