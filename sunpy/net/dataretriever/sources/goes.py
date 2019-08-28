@@ -240,7 +240,7 @@ satellitenumber = int(kwargs.get("satellitenumber", 16))
 
         if str(level) == "2":
             search_pattern = base_url + 'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g16_s%Y%m%dT%H%M%SZ_.*\.fits'
-        elif str(level) == "1b":
+        elif level == "1b":
             if wavelength in u.Quantity([131, 171, 195, 284], 'Angstrom'):
                 search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave:03}_G16_s%Y%j%H%M%S.*\.fits.gz'
             elif wavelength == 304 * u.Angstrom:
