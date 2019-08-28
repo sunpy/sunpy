@@ -225,7 +225,7 @@ satellitenumber = int(kwargs.get("satellitenumber", 16))
             satellitenumber = 16
             log.info(f'No satellite number provided so assuming GOES-{satellitenumber}.')
 
-        if "level" in kwargs.keys():
+level = str(kwargs.get("level", "2"))
             level = str(kwargs["level"])
         else:
             level = "2"
