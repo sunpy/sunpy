@@ -266,7 +266,8 @@ satellitenumber = int(kwargs.get("satellitenumber", 16))
 
         Parameters
         ----------
-        query : list of query objects
+        query : `tuple`
+            All specified query objects
 
         Returns
         -------
