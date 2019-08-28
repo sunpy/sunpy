@@ -249,7 +249,7 @@ satellitenumber = int(kwargs.get("satellitenumber", 16))
                 search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G16_s%Y%j%H%M%S.*\.fits.gz'
         else:
             return []
-        wave = int(wavelength.to('angstrom').value)
+        wave = int(wavelength.to_value('angstrom'))
 
         if search_pattern.count('wave_minus1'):
             scraper = Scraper(search_pattern, level=level, wave=wave,
