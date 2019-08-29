@@ -258,7 +258,7 @@ class SUVIClient(GenericClient):
         level = str(kwargs.get("level", "2"))  # make string in case the input is a number
 
         if level not in supported_levels:
-            raise ValueError(f"Level {leve} is not supported.")
+            raise ValueError(f"Level {level} is not supported.")
 
         results = []
         for this_wave in waves:
@@ -307,13 +307,12 @@ class SUVIClient(GenericClient):
         """
 
         required = {a.Time, a.Instrument}
-        optional = {a.Wavelength} #, a.SatelliteNumber, a.Level}
+        optional = {a.Wavelength, a.Level} #, a.SatelliteNumber, a.Level}
         all_attrs = {type(x) for x in query}
 
         ops = all_attrs - required
-        # If ops is empty or equal to optional we are ok, otherwise we don't
-        # match
-        if ops and ops != optional:
+        # check to ensure that all optional requirements are in approved optional list
+        if ops and not all(elem in optional for elem in ops):
             return False
 
         # if we get this far we have either Instrument and Time
