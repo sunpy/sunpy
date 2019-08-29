@@ -60,7 +60,7 @@ class SUVIMap(GenericMap):
 
     References
     ----------
-    * `GOES-R Mission<https://www.goes-r.gov>`_
+    * `GOES-R Mission <https://www.goes-r.gov>`_
     * `SUVI Instrument Page <https://www.goes-r.gov/spacesegment/suvi.html>`_
     * `GOES-16 on Wikipedia <https://en.wikipedia.org/wiki/GOES-16>`_
     * `Recommended instrument description article <https://doi.org/10.3847/2041-8213/aaa28e>`_
