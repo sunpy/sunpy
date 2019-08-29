@@ -13,7 +13,6 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.net.tests.strategies import goes_time
 from sunpy.time import parse_time, is_time_equal
-from hypothesis import given
 from sunpy.net.tests.strategies import time_attr
 
 
@@ -133,35 +132,6 @@ def test_time_for_url(LCClient, time):
     assert all([tr == t2 for t2 in times])
 
 
-sclient = goes.SUVIClient()
-
-
-@pytest.mark.remote_data
-@pytest.mark.parametrize("timerange,url_start,url_end",
-                         [(TimeRange('2019/05/13 00:00', '2019/05/13 01:00'),
-                          'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/suvi-l2-ci171/2019/05/13/dr_suvi-l2-ci171_g16_s20190513T000000Z_e20190513T000400Z_v1-0-0.fits',
-                           'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/suvi-l2-ci171/2019/05/13/dr_suvi-l2-ci171_g16_s20190513T005600Z_e20190513T010000Z_v1-0-0.fits'),
-                          (TimeRange('2019/05/13 00:00', '2019/05/13 00:00'),
-                           'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/suvi-l2-ci171/2019/06/11/dr_suvi-l2-ci171_g16_s20190611T000000Z_e20190611T000400Z_v1-0-0.fits',
-                           'https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/suvi-l2-ci171/2019/06/11/dr_suvi-l2-ci171_g16_s20190611T000800Z_e20190611T001200Z_v1-0-0.fits')])
-def test_get_url_for_time_range(timerange, url_start, url_end):
-    urls = sclient._get_url_for_timerange(timerange, wavelength=171 * u.Angstrom, level=2)
-    assert isinstance(urls, list)
-    assert urls[0] == url_start
-    assert urls[-1] == url_end
-
-
-@given(time_attr())
-def test_can_handle_query(time):
-    ans1 = sclient._can_handle_query(time, a.Instrument('suvi'))
-    assert ans1 is True
-    ans2 = sclient._can_handle_query(time, a.Instrument('suvi'),
-                                      a.Wavelength(131 * u.Angstrom))
-    assert ans2 is True
-
-    ans4 = sclient._can_handle_query(time)
-    assert ans4 is False
-
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument", [
@@ -174,25 +144,3 @@ def test_query(time, instrument):
     assert qr1.time_range().start == time.start
     assert qr1.time_range().end == time.end
 
-
-@pytest.mark.remote_data
-@pytest.mark.parametrize("time,instrument", [
-    (a.Time('2019/05/13 00:00', '2019/05/13 01:00'), a.Instrument('suvi')),
-])
-def test_get(time, instrument):
-    qr1 = sclient.search(time, instrument)
-    download_list = sclient.fetch(qr1)
-    assert len(download_list) == len(qr1)
-
-
-@pytest.mark.remote_data
-@pytest.mark.parametrize(
-    'query',
-    [(a.Time('2019/05/13 00:00', '2019/05/13 01:00') & a.Instrument('suvi') & a.Wavelength(195 * u.Angstrom))])
-def test_fido(query):
-    qr = Fido.search(query)
-    client = qr.get_response(0).client
-    assert isinstance(qr, UnifiedResponse)
-    assert type(client) == type(sclient)
-    response = Fido.fetch(qr)
-    assert len(response) == qr._numfile
