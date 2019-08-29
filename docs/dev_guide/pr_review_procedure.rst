@@ -68,8 +68,7 @@ The membership of this group is at the discretion of the Lead Developer, but sha
 This group has `subgroups <https://github.com/orgs/sunpy/teams/sunpy-maintainers/teams>`__ for each section of the repository that has `maintainers <https://sunpy.org/team#maintainer-list>`__.
 The members of these groups will automatically be requested to review all PRs which change files in that subpackage.
 
-In general commit rights (and maintainer status) will be rescinded if more than three months passes without any activity on the SunPy repositories.
-This is still at the discretion of the lead developer and informing them you are taking a break would almost certainly lead to maintaining membership of the groups.
+Membership of the SunPy Maintainers group will be reviewed every six months, people who have not been active for this time may have their membership suspended until they return.
 
 
 SunPy Developers
