@@ -24,9 +24,9 @@ Review Process
 
 Before the "merge" button is clicked the following criteria must be met:
 
-* All the continuous integration pass unless there is a known issue.
+* All the continuous integration must pass unless there is a known issue.
 
-* At least two members (not the author of the PR) of the "sunpy-developers" group have approved the PR.
+* At least two members (not the author of the PR) of the "sunpy-developers" group must have approved the PR, one should be a subpackage maintainer.
 
 * All comments posted on the thread must be resolved.
 
@@ -68,7 +68,6 @@ The membership of this group is at the discretion of the Lead Developer, but sha
 This group has `subgroups <https://github.com/orgs/sunpy/teams/sunpy-maintainers/teams>`__ for each section of the repository that has `maintainers <https://sunpy.org/team#maintainer-list>`__.
 The members of these groups will automatically be requested to review all PRs which change files in that subpackage.
 
-Membership of the SunPy Maintainers group will be reviewed every six months, people who have not been active for this time may have their membership suspended until they return.
 
 
 SunPy Developers
