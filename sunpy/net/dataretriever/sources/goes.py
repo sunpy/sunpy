@@ -19,7 +19,6 @@ from sunpy import log
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.net import attrs as a
 
-
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ["XRSClient", "SUVIClient"]
@@ -243,10 +242,13 @@ class SUVIClient(GenericClient):
         base_url = "https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{goes_number}/"
         supported_waves = [94, 131, 171, 195, 284, 304]
         supported_levels = ("2", "1b")
+        min_satellite_number = 16  # when SUVI was first included
 
         # these are optional requirements so if not provided assume defaults
         # if wavelength is not provided assuming all of them
         if "wavelength" in kwargs.keys():
+            if int(kwargs.get("wavelength").to_value('Angstrom')) not in supported_waves:
+                raise ValueError(f"Wavelength {wavelength[0]} not supported.")
             wavelength = [kwargs.get("wavelength")]
         else:
             wavelength = supported_waves * u.Angstrom
@@ -254,6 +256,8 @@ class SUVIClient(GenericClient):
         waves = [int(this_wave.to_value('angstrom', equivalencies=u.spectral())) for this_wave in wavelength]
         # use the given satellite number or choose the best one
         satellitenumber = int(kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start)))
+        if satellitenumber < 16:
+            raise ValueError(f"Satellite number {satellitenumber} not supported.")
         # default to the highest level of data
         level = str(kwargs.get("level", "2"))  # make string in case the input is a number
 
@@ -307,11 +311,11 @@ class SUVIClient(GenericClient):
         """
 
         required = {a.Time, a.Instrument}
-        optional = {a.Wavelength, a.Level} #, a.SatelliteNumber, a.Level}
+        optional = {a.Wavelength, a.Level, a.goes.SatelliteNumber}
         all_attrs = {type(x) for x in query}
 
         ops = all_attrs - required
-        # check to ensure that all optional requirements are in approved optional list
+        # check to ensure that all optional requirements are in approved list
         if ops and not all(elem in optional for elem in ops):
             return False
 
