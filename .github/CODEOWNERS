@@ -1,0 +1,45 @@
+sunpy/cm/                         @sunpy/cm
+docs/code_ref/cm.rst              @sunpy/cm
+
+sunpy/coordiantes/                @sunpy/coordinates
+docs/code_ref/coordinates.rst     @sunpy/coordinates
+
+sunpy/database/                   @sunpy/database
+docs/code_ref/database.rst        @sunpy/database
+
+sunpy/image/                      @sunpy/image
+docs/code_ref/image.rst           @sunpy/image
+
+sunpy/instr/                      @sunpy/instr
+docs/code_ref/instr.rst           @sunpy/instr
+
+sunpy/io/                         @sunpy/io
+docs/code_ref/io.rst              @sunpy/io
+
+sunpy/map/                        @sunpy/map
+docs/code_ref/map.rst             @sunpy/map
+
+sunpy/net/                        @sunpy/net
+docs/code_ref/net.rst             @sunpy/net
+
+sunpy/physics/                    @sunpy/physics
+docs/code_ref/physics.rst         @sunpy/physics
+
+sunpy/roi/                        @sunpy/roi
+docs/code_ref/roi.rst             @sunpy/roi
+
+sunpy/sun/                        @sunpy/sun
+docs/code_ref/sun.rst             @sunpy/sun
+
+sunpy/time/                       @sunpy/time
+docs/code_ref/time.rst            @sunpy/time
+
+sunpy/timeseries/                 @sunpy/timeseries
+docs/code_ref/timeseries.rst      @sunpy/timeseries
+
+sunpy/visualization/              @sunpy/visualization
+docs/code_ref/visualization.rst   @sunpy/visualization
+
+docs/guide            @sunpy/documentation/user
+docs/dev_guide        @sunpy/documentation/developer
+examples/             @sunpy/documentation/gallery
