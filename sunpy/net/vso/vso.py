@@ -76,8 +76,7 @@ def iter_records(response):
     for prov_item in response.provideritem:
         if not hasattr(prov_item, 'record') or not prov_item.record:
             continue
-        for record_item in prov_item.record.recorditem:
-            yield record_item
+        yield from prov_item.record.recorditem
 
 
 def iter_errors(response):
@@ -272,7 +271,7 @@ class VSOClient(BaseClient):
         """
         Create a new SOAP object.
         """
-        obj = self.api.get_type("VSO:{}".format(atype))
+        obj = self.api.get_type(f"VSO:{atype}")
         return obj(**kwargs)
 
     def search(self, *query):
@@ -343,10 +342,10 @@ class VSOClient(BaseClient):
                     continue
                 if provideritem.provider not in providers:
                     providers[provider] = provideritem
-                    fileids |= set(
+                    fileids |= {
                         record_item.fileid
                         for record_item in provideritem.record.recorditem
-                    )
+                    }
                 else:
                     for record_item in provideritem.record.recorditem:
                         if record_item.fileid not in fileids:
@@ -516,10 +515,10 @@ class VSOClient(BaseClient):
                         block = block[elem]
                     except KeyError:
                         raise ValueError(
-                            "Unexpected argument {key!s}.".format(key=key))
+                            f"Unexpected argument {key!s}.")
                 if lst in block and block[lst]:
                     raise ValueError(
-                        "Got multiple values for {k!s}.".format(k=k))
+                        f"Got multiple values for {k!s}.")
                 block[lst] = v
 
         return QueryResponse.create(VSOQueryResponse(
@@ -618,7 +617,7 @@ class VSOClient(BaseClient):
 
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
-            return downloader.download()
+            return downloader.download() if wait else Results()
         # Adding the site parameter to the info
         info = {}
         if site is not None:
@@ -663,8 +662,8 @@ class VSOClient(BaseClient):
             methods = self.method_order + ['URL']
 
         return self.create_getdatarequest(
-            dict((k, [x.fileid for x in v])
-                 for k, v in self.by_provider(response).items()),
+            {k: [x.fileid for x in v]
+                 for k, v in self.by_provider(response).items()},
             methods, info
         )
 
@@ -814,9 +813,9 @@ class VSOClient(BaseClient):
         corresponding to records in the response.
         """
 
-        return dict(
-            (record.fileid, record) for record in response
-        )
+        return {
+            record.fileid: record for record in response
+        }
 
     # pylint: disable=W0613
     def multiple_choices(self, choices, response):

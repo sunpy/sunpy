@@ -19,7 +19,7 @@ from sunpy.util.util import partial_key_match
 __all__ = ['HelioviewerClient']
 
 
-class HelioviewerClient(object):
+class HelioviewerClient:
     """Helioviewer.org Client"""
     def __init__(self, url="https://api.helioviewer.org/"):
         """
@@ -128,7 +128,7 @@ class HelioviewerClient(object):
 
         return response
 
-    def download_jp2(self, date, observatory=None, instrument=None, detector=None,
+    def download_jp2(self, date, progress=True, observatory=None, instrument=None, detector=None,
                      measurement=None, source_id=None, directory=None, overwrite=False):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
@@ -145,6 +145,10 @@ class HelioviewerClient(object):
         ----------
         date : `astropy.time.Time`, `str`
             A string or `~astropy.time.Time` object for the desired date of the image
+        progress : `bool`
+            Defaults to True.
+            If set to False, disables progress bars seen on terminal when
+            downloading files.
         observatory : `str`
             Observatory name
         instrument : `str`
@@ -158,7 +162,7 @@ class HelioviewerClient(object):
             This can be used directly instead of using the previous parameters.
         directory : `str`
             Directory to download JPEG 2000 image to.
-        overwrite : bool
+        overwrite : `bool`
             Defaults to False.
             If set to True, will overwrite any files with the same name.
 
@@ -188,7 +192,7 @@ class HelioviewerClient(object):
             "sourceId": source_id,
         }
 
-        return self._get_file(params, directory=directory, overwrite=overwrite)
+        return self._get_file(params, progress=progress, directory=directory, overwrite=overwrite)
 
     def get_jp2_header(self, date, observatory=None, instrument=None, detector=None, measurement=None, jp2_id=None):
         """
@@ -249,7 +253,7 @@ class HelioviewerClient(object):
         responses = responses.read().decode('utf-8')
         return xml_to_dict(responses)['meta']
 
-    def download_png(self, date, image_scale, layers,
+    def download_png(self, date, image_scale, layers, progress=True,
                      directory=None, overwrite=False, watermark=False,
                      events="", event_labels=False,
                      scale=False, scale_type="earth", scale_x=0, scale_y=0,
@@ -291,6 +295,10 @@ class HelioviewerClient(object):
             Each layer string is comma-separated with either:
             "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]".
             Multiple layers are: "[layer1],[layer2],[layer3]".
+        progress : `bool`, optional
+            Defaults to True.
+            If set to False, disables progress bars seen on terminal when
+            downloading files.
         events : `str`, optional
             Defaults to an  empty string to indicate no feature/event annotations.
             List feature/event types and FRMs to use to annoate the image.
@@ -390,7 +398,7 @@ class HelioviewerClient(object):
                      "y1": y1, "y2": y2}
         params.update(adict)
 
-        return self._get_file(params, directory=directory, overwrite=overwrite)
+        return self._get_file(params, progress=progress, directory=directory, overwrite=overwrite)
 
     def is_online(self):
         """Returns True if Helioviewer is online and available."""
@@ -407,14 +415,14 @@ class HelioviewerClient(object):
         response = self._request(params)
         return json.load(reader(response))
 
-    def _get_file(self, params, directory=None, overwrite=False):
+    def _get_file(self, params, progress=True, directory=None, overwrite=False):
         """Downloads a file and return the filepath to that file."""
         if directory is None:
             directory = Path(sunpy.config.get('downloads', 'download_dir'))
         else:
             directory = Path(directory).expanduser().absolute()
 
-        downloader = parfive.Downloader(overwrite=overwrite)
+        downloader = parfive.Downloader(progress=progress, overwrite=overwrite)
 
         url = urllib.parse.urljoin(self._api,
                                    "?" + urllib.parse.urlencode(params))

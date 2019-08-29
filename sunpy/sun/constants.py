@@ -36,7 +36,7 @@ def get(key):
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.get('mass')  # doctest: +SKIP
+    >>> constants.get('mass')
     <<class 'astropy.constants.iau2015.IAU2015'> name='Solar mass' value=1.9884754153381438e+30 uncertainty=9.236140093538353e+25 unit='kg' reference='IAU 2015 Resolution B 3 + CODATA 2014'>
     """
     return constants[key]
@@ -97,7 +97,7 @@ _lines = [
     '====================== ============== ================ =================================',
 ]
 for key, const in constants.items():
-    _lines.append('{0:^22} {1:^14.9g} {2:^16} {3}'.format(
+    _lines.append('{:^22} {:^14.9g} {:^16} {}'.format(
         key, const.value, const._unit_string, const.name))
 _lines.append(_lines[1])
 if __doc__ is not None:

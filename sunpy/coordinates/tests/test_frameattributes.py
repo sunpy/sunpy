@@ -96,7 +96,7 @@ def test_coord_get():
 
     # Test default (instance=None)
     obs = Helioprojective.observer
-    assert obs is "earth"
+    assert obs == "earth"
 
     # Test get
     obstime = "2013-04-01"
@@ -138,10 +138,10 @@ def test_coord_get():
 
 def test_default_hcc_observer():
     h = frames.Heliocentric()
-    assert h.observer is "earth"
+    assert h.observer == "earth"
 
     h = frames.Heliocentric(observer="mars")
-    assert h.observer is "mars"
+    assert h.observer == "mars"
 
 
 def test_obstime_hack():
@@ -149,7 +149,7 @@ def test_obstime_hack():
     Test that the obstime can be updated in place, this is used in the transform pipeline.
     """
     h = frames.Heliocentric()
-    assert h.observer is "earth"
+    assert h.observer == "earth"
 
     obstime = "2011-01-01"
     h._obstime = obstime

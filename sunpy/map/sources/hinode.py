@@ -70,7 +70,7 @@ class XRTMap(GenericMap):
     def measurement(self):
         fw1 = self.meta.get('EC_FW1_').replace("_", " ")
         fw2 = self.meta.get('EC_FW2_').replace("_", " ")
-        return "{0}-{1}".format(fw1, fw2)
+        return f"{fw1}-{fw2}"
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

@@ -69,7 +69,7 @@ def generate_changelog_for_docs(directory, output_filename=None):
 
     top_line = config["title_format"].format(
         name=project_name, version=project_version, project_date=project_date)
-    top_line += u"\n" + (config["underlines"][0] * len(top_line)) + u"\n"
+    top_line += "\n" + (config["underlines"][0] * len(top_line)) + "\n"
 
     print("Writing to newsfile...")
     start_line = config["start_line"]

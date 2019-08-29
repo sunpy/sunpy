@@ -65,13 +65,13 @@ class TimeFrameAttributeSunPy(TimeAttribute):
             try:
                 out = Time(parse_time(value))
             except Exception as err:
-                raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
+                raise ValueError(f'Invalid time input {self.name}={value!r}\n{err}')
             converted = True
         else:
             try:
                 out = Time(value)
             except Exception as err:
-                raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
+                raise ValueError(f'Invalid time input {self.name}={value!r}\n{err}')
             converted = True
 
         return out, converted
@@ -103,7 +103,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
         if isinstance(value, str):
             return value, False
         else:
-            return super(ObserverCoordinateAttribute, self).convert_input(value)
+            return super().convert_input(value)
 
     def _convert_string_to_coord(self, out, obstime):
         """
@@ -143,4 +143,4 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
                 else:
                     return observer
 
-        return super(ObserverCoordinateAttribute, self).__get__(instance, frame_cls=frame_cls)
+        return super().__get__(instance, frame_cls=frame_cls)

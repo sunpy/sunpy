@@ -52,7 +52,7 @@ def download_weekly_pointing_file(date):
     weekdiff = time_diff.to(u.day).value // 7
     week = weekdiff + base_week
     # weekstr = ('%03.0f' % week)
-    weekstr = '{:03.0f}'.format(week)
+    weekstr = f'{week:03.0f}'
 
     # construct the full url for the weekly pointing file
     full_fname = fbasename + weekstr + '_p202_v001.fits'

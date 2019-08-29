@@ -33,7 +33,7 @@ class MetaDict(OrderedDict):
                 raise TypeError("Can not create a MetaDict from this type input")
             args[0] = tags
 
-        super(MetaDict, self).__init__(*args)
+        super().__init__(*args)
 
     def __contains__(self, key):
         """

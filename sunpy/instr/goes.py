@@ -82,7 +82,7 @@ try:
     HOST = socket.gethostbyname_ex('hesperia.gsfc.nasa.gov')[0]
 except socket.gaierror:
     HOST = ''
-GOES_REMOTE_PATH = "http://{0}/ssw/gen/idl/synoptic/goes/".format(HOST)
+GOES_REMOTE_PATH = f"http://{HOST}/ssw/gen/idl/synoptic/goes/"
 # Define variables for file names
 FILE_TEMP_COR = "goes_chianti_temp_cor.csv"
 FILE_TEMP_PHO = "goes_chianti_temp_pho.csv"
@@ -545,7 +545,7 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     modelratio = []
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
-    label = "ratioGOES{0}".format(satellite)
+    label = f"ratioGOES{satellite}"
     # Read data representing appropriate temperature--flux ratio
     # relationship depending on satellite number and assumed abundances.
     with open(os.path.join(get_and_create_download_dir(), data_file), "r") as csvfile:
@@ -708,7 +708,7 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     modelflux = []
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
-    label = "longfluxGOES{0}".format(satellite)
+    label = f"longfluxGOES{satellite}"
 
     # Read data representing appropriate temperature--long flux
     # relationship depending on satellite number and assumed abundances.
@@ -726,7 +726,7 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
        np.max(log10_temp) > np.max(modeltemp) or \
        np.isnan(np.min(log10_temp)):
         raise ValueError("All values in temp must be within the range "
-                         "{0} - {1} MK.".format(np.min(10**modeltemp),
+                         "{} - {} MK.".format(np.min(10**modeltemp),
                                                 np.max(10**modeltemp)))
 
     # Perform spline fit to model data
@@ -985,7 +985,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
     if temp.value.min() < modeltemp.min() or \
     temp.value.max() > modeltemp.max():
         raise ValueError("All values in temp must be within the range " +
-                         "{0} - {1} MK.".format(np.min(modeltemp/1e6),
+                         "{} - {} MK.".format(np.min(modeltemp/1e6),
                                                 np.max(modeltemp/1e6)))
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
@@ -1001,7 +1001,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         # correct type.
         n = len(temp)
         if len(obstime) != n:
-            raise IOError("obstime must have same number of elements as "
+            raise OSError("obstime must have same number of elements as "
                           "temp and em.")
 
         obstime = parse_time(obstime)
@@ -1369,7 +1369,7 @@ def flux_to_flareclass(goesflux: u.watt/u.m**2):
     else:
         str_class = conversion_dict.get(u.Quantity(10 ** decade, "W/m**2"))
     goes_subclass = 10 ** -decade * goesflux.to('W/m**2').value
-    return "{0}{1:.3g}".format(str_class, goes_subclass)
+    return f"{str_class}{goes_subclass:.3g}"
 
 
 def _assert_chrono_order(obstime):

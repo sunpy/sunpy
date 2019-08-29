@@ -2,7 +2,7 @@
 This module provies a non-comprehensive collection of solar physical constants.
 """
 # TODO: Need better sources for some constants as well as error values.
-import astropy.constants as astrocon
+import astropy.constants.astropyconst20 as astrocon
 from astropy.constants import Constant
 
 __all__ = ['physical_constants']

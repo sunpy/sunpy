@@ -92,8 +92,7 @@ def expand_list(inp):
 def expand_list_generator(inp):
     for item in inp:
         if isinstance(item, (tuple, list, UserList)):
-            for nested_item in expand_list_generator(item):
-                yield nested_item
+            yield from expand_list_generator(item)
         else:
             yield item
 

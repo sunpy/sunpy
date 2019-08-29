@@ -387,7 +387,7 @@ def test_unstar_undo(database):
 
 def test_add_many(database):
     assert len(database) == 0
-    database.add_many((DatabaseEntry() for _ in range(5)))
+    database.add_many(DatabaseEntry() for _ in range(5))
     assert len(database) == 5
     database.undo()
     with pytest.raises(EmptyCommandStackError):
