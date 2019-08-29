@@ -47,10 +47,6 @@ Currently we have a variety of services that respond or activate on an opened pu
 
 * `CodeCov <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage.
 
-This one is ran daily and does not affect pull requests:
-
-* `Travis <https://travis-ci.org/sunpy/sunpy>`_: Runs our test suite against developer versions of Astropy and NumPy.
-
 SunPy GitHub Groups
 ===================
 
@@ -68,6 +64,13 @@ SunPy Maintainers
 
 This is the group of people who have push access to the main SunPy repository.
 The membership of this group is at the discretion of the Lead Developer, but shall generally be made up of people who have demonstrated themselves to be trust worthy and active contributors to the project.
+
+This group has `subgroups <https://github.com/orgs/sunpy/teams/sunpy-maintainers/teams>`__ for each section of the repository that has `maintainers <https://sunpy.org/team#maintainer-list>`__.
+The members of these groups will automatically be requested to review all PRs which change files in that subpackage.
+
+In general commit rights (and maintainer status) will be rescinded if more than three months passes without any activity on the SunPy repositories.
+This is still at the discretion of the lead developer and informing them you are taking a break would almost certainly lead to maintaining membership of the groups.
+
 
 SunPy Developers
 ----------------
