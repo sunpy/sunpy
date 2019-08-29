@@ -12,16 +12,23 @@ from astropy.coordinates.baseframe import BaseCoordinateFrame, RepresentationMap
 from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
                                                 CylindricalRepresentation,
                                                 UnitSphericalRepresentation)
+from astropy.time import Time
 
 from sunpy.sun.constants import radius as _RSUN
+from sunpy.util.decorators import add_common_docstring
+from sunpy.time.time import _variables_for_parse_time_docstring
 
 from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
 
 from sunpy.util.decorators import add_common_docstring
 from sunpy.time.time import _variables_for_parse_time_docstring
 
+_J2000 = Time('J2000.0', scale='tt')
+
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
-           'Heliocentric', 'Helioprojective']
+           'Heliocentric', 'Helioprojective',
+           'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
+           'HeliocentricInertial', 'GeocentricEarthEquatorial']
 
 
 def _frame_parameters():
@@ -58,6 +65,12 @@ def _frame_parameters():
     ret['radius'] = ("radius : `~astropy.units.Quantity`, optional\n"
                      "        The radial distance coordinate from Sun center for this object.\n"
                      "        Defaults to the radius of the Sun. Not needed if ``data`` is given.")
+    ret['distance_sun'] = ("distance : `~astropy.units.Quantity`, optional\n"
+                           "        The distance coordinate from Sun center for this object.\n"
+                           "        Not needed if ``data`` is given.")
+    ret['distance_earth'] = ("distance : `~astropy.units.Quantity`, optional\n"
+                             "        The distance coordinate from Earth center for this object.\n"
+                             "        Not needed if ``data`` is given.")
     ret['xyz'] = ("x : `~astropy.units.Quantity`, optional\n"
                   "        X-axis coordinate for this object. Not needed if ``data`` is given.\n"
                   "    y : `~astropy.units.Quantity`, optional\n"
@@ -69,6 +82,9 @@ def _frame_parameters():
                        "        it must be a solar system body that can be parsed by\n"
                        "        `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`\n"
                        "        at the time ``obstime``. Defaults to Earth center.")
+    ret['equinox'] = (f"equinox : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
+                      "        The date for the mean vernal equinox.\n"
+                      "        Defaults to the J2000.0 equinox.")
 
     return ret
 
@@ -460,3 +476,100 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         return self.realize_frame(SphericalRepresentation(lon=lon,
                                                           lat=lat,
                                                           distance=d))
+
+
+@add_common_docstring(**_frame_parameters())
+class HeliocentricEarthEcliptic(SunPyBaseCoordinateFrame):
+    """
+    A coordinate or frame in the Heliocentric Earth Ecliptic (HEE) system.
+
+    - The origin is the center of the Sun.
+    - The X-axis (0 degrees longitude and 0 degrees latitude) is aligned with the Sun-Earth line.
+    - The Z-axis (+90 degrees latitude) is aligned with the component perpendicular to the X-axis
+      of the mean ecliptic pole at the observation time.
+
+    Parameters
+    ----------
+    {data}
+    {lonlat}
+    {distance_sun}
+    {common}
+    """
+    default_representation = SphericalRepresentation
+
+
+@add_common_docstring(**_frame_parameters())
+class GeocentricSolarEcliptic(SunPyBaseCoordinateFrame):
+    """
+    A coordinate or frame in the Geocentric Solar Ecliptic (GSE) system.
+
+    - The origin is the center of the Earth.
+    - The X-axis (0 degrees longitude and 0 degrees latitude) is aligned with the Earth-Sun line.
+    - The Z-axis (+90 degrees latitude) is aligned with the component perpendicular to the X-axis
+      of the mean ecliptic pole at the observation time.
+
+    Parameters
+    ----------
+    {data}
+    {lonlat}
+    {distance_earth}
+    {common}
+
+    Notes
+    -----
+    Aberration due to Earth motion is not included.
+    """
+    default_representation = SphericalRepresentation
+
+
+@add_common_docstring(**_frame_parameters())
+class HeliocentricInertial(SunPyBaseCoordinateFrame):
+    """
+    A coordinate or frame in the Heliocentric Inertial (HCI) system.
+
+    - The origin is the center of the Sun.
+    - The Z-axis (+90 degrees latitude) is aligned with the Sun's north pole.
+    - The X-axis (0 degrees longitude and 0 degrees latitude) is aligned with the solar ascending
+      node on the ecliptic (mean J2000.0).
+
+    Parameters
+    ----------
+    {data}
+    {lonlat}
+    {distance_sun}
+    {common}
+
+    Notes
+    -----
+    The solar ascending node on the ecliptic lies on the intersection of the solar equatorial
+    plane with the ecliptic plane, not on the intersection of the celestial equatorial plane with
+    the ecliptic plane.
+    """
+    default_representation = SphericalRepresentation
+
+
+@add_common_docstring(**_frame_parameters())
+class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
+    """
+    A coordinate or frame in the Geocentric Earth Equatorial (GEI) system.
+
+    - The origin is the center of the Earth.
+    - The Z-axis (+90 degrees latitude) is aligned with the Earth's north pole.
+    - The X-axis (0 degrees longitude and 0 degrees latitude) is aligned with the mean (not true)
+      vernal equinox.
+
+    Parameters
+    ----------
+    {data}
+    {lonlat}
+    {distance_earth}
+    {equinox}
+    {common}
+
+    Notes
+    -----
+    Aberration due to Earth motion is not included.
+    """
+    default_representation = SphericalRepresentation
+
+    equinox = TimeFrameAttributeSunPy(default=_J2000)
