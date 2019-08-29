@@ -12,7 +12,7 @@ from sunpy.map import Map
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "test_suvi_image.fits"))
+fitspath = glob.glob(os.path.join(path, "dr_suvi-l2-ci195_g16_s20190403T093200Z_e20190403T093600Z_v1-0-0_rebinned.fits"))
 
 
 @pytest.fixture()
