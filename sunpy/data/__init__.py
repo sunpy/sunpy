@@ -13,7 +13,7 @@ from sunpy.util.config import CACHE_DIR
 _download_dir = config.get('downloads', 'remote_data_manager_dir')
 
 
-if 'pytest' in sys.modules:
+if hasattr(sys, '_called_from_test'):
     # sunpy executed with pytest
     # this will replace the real cache with a mock cache
     # this is needed for tests
