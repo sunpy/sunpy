@@ -1,0 +1,2 @@
+Log all VSO XML requests and responses to the SunPy logger at the ``DEBUG``
+level.
