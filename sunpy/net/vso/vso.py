@@ -91,9 +91,18 @@ def check_connection(url):
     try:
         return urlopen(url).getcode() == 200
     except (socket.error, socket.timeout, HTTPError, URLError) as e:
-        warnings.warn(f"Connection failed with error {e}. Retrying with different url and port.",
+        warnings.warn(f"Connection to {url} failed with error {e}. Retrying with different url and port.",
                       SunpyUserWarning)
         return None
+
+
+def get_online_vso_url():
+    """
+    Return the first VSO url and port combination that is online.
+    """
+    for mirror in DEFAULT_URL_PORT:
+        if check_connection(mirror['url']):
+            return mirror
 
 
 def build_client(url=None, port_name=None, **kwargs):
@@ -118,6 +127,8 @@ def build_client(url=None, port_name=None, **kwargs):
     """
     if url is None and port_name is None:
         mirror = get_online_vso_url()
+        if mirror is None:
+            raise ConnectionError("No online VSO mirrors could be found.")
         url = mirror['url']
         port_name = mirror['port']
     elif url and port_name:
@@ -132,15 +143,6 @@ def build_client(url=None, port_name=None, **kwargs):
     client = zeep.Client(url, port_name=port_name, **kwargs)
     client.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
     return client
-
-
-def get_online_vso_url():
-    """
-    Return the first VSO url and port combination that is online.
-    """
-    for mirror in DEFAULT_URL_PORT:
-        if check_connection(mirror['url']):
-            return mirror
 
 
 class QueryResponse(list):
