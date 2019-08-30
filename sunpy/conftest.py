@@ -130,7 +130,19 @@ def pytest_runtest_setup(item):
             pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
 
 
+def pytest_configure(config):
+    """
+    Used to detect if code is being run as a test or not
+    From: https://docs.pytest.org/en/5.1.1/example/simple.html#detect-if-running-from-within-a-pytest-run
+    """
+    import sys
+    sys._called_from_test = True
+
+
 def pytest_unconfigure(config):
+    # tear down for setup in pytest configure
+    import sys
+    del sys._called_from_test
 
     # If at least one figure test has been run, print result image directory
     if len(new_hash_library) > 0:
