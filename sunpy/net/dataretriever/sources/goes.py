@@ -248,7 +248,7 @@ class SUVIClient(GenericClient):
         # if wavelength is not provided assuming all of them
         if "wavelength" in kwargs.keys():
             if int(kwargs.get("wavelength").to_value('Angstrom')) not in supported_waves:
-                raise ValueError(f"Wavelength {wavelength[0]} not supported.")
+                raise ValueError(f"Wavelength {kwargs.get('wavelength')} not supported.")
             wavelength = [kwargs.get("wavelength")]
         else:
             wavelength = supported_waves * u.Angstrom
