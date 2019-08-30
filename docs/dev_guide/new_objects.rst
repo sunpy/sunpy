@@ -4,31 +4,6 @@
 Creating new SunPy Subclasses (Maps, TimeSeries)
 ************************************************
 
-Documenting new data sources
-----------------------------
-Each subclass of `~sunpy.map.GenericMap` or `~sunpy.timeseries.TimeSeries` must provide a detailed docstring providing an overview of the data source that the object represents.
-In order to maintain consistency and completeness, the following information must be provided by a data source docstring, if available, and preferably in the following order:
-
-* the name of the mission and instrument and the institution that built it
-* short description of the instrument (e.g. Cassegrain reflector, Wolter-1 grazing incidence x-ray, coronagraph) including the type of detector
-* description of the platform (e.g. satellite in 28 deg inclined orbit, a telescope on the summit of Mauna Kea in Hawaii)
-* description of the primary purpose or science goals of the instrument.
-* list of all wavelength(s) or passbands in appropriate units
-* description of the emission processes which dominate in those passbands
-* appropriate measurement properties such as field of view, angular resolution, time resolution
-* description of the operational concept (e.g. operates 24/7, observes from 7 am to 5 pm UT) including mention of unusual operations scenarios (e.g. calibration seasons, eclipse seasons)
-* the start and end of the data set
-
-In addition, a reference section must be provided with links to the following resources, if available,
-
-* the mission web page
-* the instrument web page
-* relevant wikipedia page(s)
-* relevant user guide(s)
-* the mission paper and instrument paper
-* information to interpret metadata keywords such as FITS header reference
-* the data archive
-
 Writing a new Instrument Map Class
 ==================================
 
@@ -42,7 +17,7 @@ Any subclass of `~sunpy.map.GenericMap` which defines a method named `~sunpy.map
 The ``is_datasource_for`` method is used by the `Map <sunpy.map.map_factory.MapFactory>` factory to check if a file should use a particular instrument Map class.
 This function can run any test it needs to determine this.
 For example, it might check the value of the ``INSTRUMENT`` key in the metadata dictionary.
-The following example shows how this works.
+The following example shows how this works and includes a sample doc string that is compatible with the :ref:`Docs Guidelines for Data Sources`.
 
 .. code-block:: python
 
