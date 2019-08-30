@@ -3,21 +3,20 @@
 # Google Summer of Code 2014
 
 import os
-from urllib.parse import urlsplit
-from datetime import timedelta
 import warnings
+from datetime import timedelta
+from urllib.parse import urlsplit
 
-from astropy.time import TimeDelta
-from astropy.time import Time
 import astropy.units as u
+from astropy.time import Time, TimeDelta
 
-from sunpy.time import parse_time, TimeRange
-from sunpy import config
-from sunpy.util.scraper import Scraper
-from ..client import GenericClient
-from sunpy import log
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy import config, log
 from sunpy.net import attrs as a
+from sunpy.time import TimeRange, parse_time
+from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.scraper import Scraper
+
+from ..client import GenericClient
 
 TIME_FORMAT = config.get("general", "time_format")
 
