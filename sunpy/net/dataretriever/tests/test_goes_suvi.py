@@ -159,3 +159,35 @@ def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_
                                               level='1b')
     assert isinstance(urls, list)
     assert len(urls) == expected_num_files
+
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize("start, end ,wave, expected_num_files",
+                         [('2019/05/25 00:50', '2019/05/25 00:54', 94, 6),
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 131, 3),
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 171, 2),
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 195, 7),
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 284, 2),
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 304, 4)]
+                         )
+def test_fido_onewave_level1b(start, end, wave, expected_num_files):
+    result = Fido.search(a.Time(start, end), a.Instrument('suvi'),
+                         a.Wavelength(wave * u.Angstrom), a.Level('1b'))
+    assert result.file_num == expected_num_files
+
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize("start, end, wave1, wave2, expected_num_files",
+                         [('2019/05/25 00:50', '2019/05/25 00:54', 1, 100, 6),
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 150, 9),
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 180, 11),
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 200, 18),
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 300, 20),
+                          ('2019/05/25 00:50', '2019/05/25 00:54', 1, 310, 24)]
+                         )
+def test_fido_waverange_level1b(start, end, wave1, wave2, expected_num_files):
+    """check that we get all wavelengths if no wavelength is given"""
+    result = Fido.search(a.Time(start, end), a.Instrument('suvi'),
+                         a.Wavelength(wave1 * u.Angstrom, wave2 * u.Angstrom),
+                         a.Level('1b'))
+    assert result.file_num == expected_num_files
