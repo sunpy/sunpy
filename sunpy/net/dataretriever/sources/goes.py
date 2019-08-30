@@ -3,8 +3,8 @@
 # Google Summer of Code 2014
 
 import os
-import warnings
 from datetime import timedelta
+from itertools import compress
 from urllib.parse import urlsplit
 
 import astropy.units as u
@@ -13,7 +13,6 @@ from astropy.time import Time, TimeDelta
 from sunpy import config, log
 from sunpy.net import attrs as a
 from sunpy.time import TimeRange, parse_time
-from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.scraper import Scraper
 
 from ..client import GenericClient
@@ -241,15 +240,24 @@ class SUVIClient(GenericClient):
         base_url = "https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{goes_number}/"
         supported_waves = [94, 131, 171, 195, 284, 304]
         supported_levels = ("2", "1b")
-        min_satellite_number = 16  # when SUVI was first included
 
         # these are optional requirements so if not provided assume defaults
         # if wavelength is not provided assuming all of them
         if "wavelength" in kwargs.keys():
-            if int(kwargs.get("wavelength").to_value('Angstrom')) not in supported_waves:
-                raise ValueError(f"Wavelength {kwargs.get('wavelength')} not supported.")
-            wavelength = [kwargs.get("wavelength")]
-        else:
+            wavelength_input = kwargs.get("wavelength")
+            if isinstance(wavelength_input, u.Quantity):  # not a range
+                if int(wavelength_input.to_value('Angstrom')) not in supported_waves:
+                    raise ValueError(f"Wavelength {kwargs.get('wavelength')} not supported.")
+                else:
+                    wavelength = [kwargs.get("wavelength")]
+            else:  #  _Range was provided
+                compress_index = [wavelength_input.wavemin <= this_wave <= wavelength_input.wavemax for this_wave in (supported_waves * u.Angstrom)]
+                if not any(compress_index):
+                    raise ValueError(
+                        f"Wavelength {wavelength_input} not supported.")
+                else:
+                    wavelength = list(compress(supported_waves, compress_index)) * u.Angstrom
+        else:  # no wavelength provided return all of them
             wavelength = supported_waves * u.Angstrom
         # check that the input wavelength can be converted to angstrom
         waves = [int(this_wave.to_value('angstrom', equivalencies=u.spectral())) for this_wave in wavelength]
