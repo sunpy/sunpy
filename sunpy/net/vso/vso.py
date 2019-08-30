@@ -31,6 +31,8 @@ from sunpy.net.base_client import BaseClient
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 
+from .zeep_plugins import SunPyLoggingZeepPlugin
+
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
@@ -94,19 +96,51 @@ def check_connection(url):
         return None
 
 
-def get_online_vso_url(api, url, port):
-    if isinstance(api, zeep.client.Client):
-        return api
+def build_client(url=None, port_name=None, **kwargs):
+    """
+    Construct a `zeep.Client` object to connect to VSO.
 
-    if url and check_connection(url):
-        api = zeep.Client(url, port)
-        return api
+    Parameters
+    ----------
+    url : `str`
+        The URL to connect to.
 
+    port_name : `str`
+        The "port" to use.
+
+    kwargs : `dict`
+        All extra keyword arguments are passed to `zeep.Client`.
+
+    Returns
+    -------
+
+    `zeep.Client`
+    """
+    if url is None and port_name is None:
+        mirror = get_online_vso_url()
+        url = mirror['url']
+        port_name = mirror['port']
+    elif url and port_name:
+        if not check_connection(url):
+            raise ConnectionError(f"Can't connect to url {url}")
+    else:
+        raise ValueError("Both url and port_name must be specified if either is.")
+
+    if "plugins" not in kwargs:
+        kwargs["plugins"] = [SunPyLoggingZeepPlugin()]
+
+    client = zeep.Client(url, port_name=port_name, **kwargs)
+    client.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
+    return client
+
+
+def get_online_vso_url():
+    """
+    Return the first VSO url and port combination that is online.
+    """
     for mirror in DEFAULT_URL_PORT:
         if check_connection(mirror['url']):
-            api = zeep.Client(mirror['url'], port_name=mirror['port'])
-            api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
-            return api
+            return mirror
 
 
 class QueryResponse(list):
@@ -255,16 +289,30 @@ class UnknownStatus(Exception):
 
 
 class VSOClient(BaseClient):
+    """
+    VSO Client
 
-    """ Main VSO Client. """
+    Parameters
+    ----------
+    url : `str`, optional
+        The VSO url to use. If not specified will use the first online known URL.
+
+    port : `str`, optional
+        The VSO port name to use. If not specified will use the first online known URL.
+
+    api : `zeep.Client`, optional
+        The `zeep.Client` instance to use for interacting with the VSO. If not
+        specified one will be created.
+    """
     method_order = [
         'URL-FILE_Rice', 'URL-FILE', 'URL-packaged', 'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR',
     ]
 
     def __init__(self, url=None, port=None, api=None):
-        api = get_online_vso_url(api, url, port)
-        if api is None:
-            raise ConnectionError("Cannot find an online VSO mirror.")
+        if not isinstance(api, zeep.Client):
+            api = build_client(url, port)
+            if api is None:
+                raise ConnectionError("Cannot find an online VSO mirror.")
         self.api = api
 
     def make(self, atype, **kwargs):
