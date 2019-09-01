@@ -32,8 +32,20 @@ def test_great_arc_calculable(start, end):
                  observer=frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
     gc = GreatArc(c, d)
 
-    assert gc.start == c
-    assert gc.end == d
+    assert gc.start.x == c.transform_to(frames.Heliocentric).x
+    assert gc.start.y == c.transform_to(frames.Heliocentric).y
+    assert gc.start.z == c.transform_to(frames.Heliocentric).z
+    assert gc.start.observer.lat == 0*u.deg
+    assert gc.start.observer.lon == 0*u.deg
+    assert gc.start.observer.radius == 1 * u.AU
+
+    assert gc.end.x == d.transform_to(frames.Heliocentric(observer=c.observer)).x
+    assert gc.end.y == d.transform_to(frames.Heliocentric(observer=c.observer)).y
+    assert gc.end.z == d.transform_to(frames.Heliocentric(observer=c.observer)).z
+    assert gc.end.observer.lat == 0*u.deg
+    assert gc.end.observer.lon == 0*u.deg
+    assert gc.end.observer.radius == 1 * u.AU
+
     np.testing.assert_almost_equal(gc.inner_angle.to('deg').value, 45.0)
     np.testing.assert_almost_equal(gc.radius.to('km').value, sun.constants.radius.to('km').value)
     np.testing.assert_almost_equal(gc.distance.to('km').value, sun.constants.radius.to('km').value * 2 * np.pi/8, decimal=1)
@@ -73,8 +85,12 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
     assert isinstance(gc, GreatArc)
 
     # Test the properties of the GreatArc object
-    assert gc.start == a
-    assert gc.end == b
+    assert gc.start.x == a.transform_to(frames.Heliocentric).x
+    assert gc.start.y == a.transform_to(frames.Heliocentric).y
+    assert gc.start.z == a.transform_to(frames.Heliocentric).z
+    assert gc.end.x == b.transform_to(frames.Heliocentric(observer=a.observer)).x
+    assert gc.end.y == b.transform_to(frames.Heliocentric(observer=a.observer)).y
+    assert gc.end.z == b.transform_to(frames.Heliocentric(observer=a.observer)).z
     assert gc.distance_unit == u.km
     assert gc.observer == a.observer
     assert gc.center.x == 0 * u.km
@@ -184,17 +200,23 @@ def test_great_arc_different_observer():
 
     # The start and end points stored internally are Heliocentric
     start = gc.start
-    assert isinstance(start.observer, frames.Heliocentric)
+    assert isinstance(start.frame, frames.Heliocentric)
     end = gc.end
-    assert isinstance(end.observer, frames.Heliocentric)
+    assert isinstance(end.frame, frames.Heliocentric)
 
     # The start and end points stored internally have the same observer
-    assert start.observer.x == end.observer.x
-    assert start.observer.y == end.observer.y
-    assert start.observer.z == end.observer.z
+    assert start.observer.lon == end.observer.lon
+    assert start.observer.lat == end.observer.lat
+    assert start.observer.radius == end.observer.radius
 
     # The start point stored internally has the Heliocentric coordinates of the initial coordinate passed in.
     a2h = a.transform_to(frames.Heliocentric)
     assert start.x == a2h.x
     assert start.y == a2h.y
     assert start.z == a2h.z
+
+    # The end point stored internally has the Heliocentric coordinates of the initial coordinate passed in.
+    b2h = b.transform_to(frames.Heliocentric(observer=ma.observer_coordinate))
+    assert end.x == b2h.x
+    assert end.y == b2h.y
+    assert end.z == b2h.z
