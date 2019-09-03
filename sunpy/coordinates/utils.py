@@ -18,6 +18,9 @@ class GreatArc:
     Calculate the properties of a great arc at user-specified points between a
     start and end point on a sphere.
 
+    The coordinates of the great arc are returned with the observation time
+    and coordinate frame of the starting point of the arc.
+
     Parameters
     ----------
     start : `~astropy.coordinates.SkyCoord`
@@ -87,6 +90,9 @@ class GreatArc:
 
         # Co-ordinate frame of the starting point
         self.start_frame = start.frame
+
+        # Observation time
+        self.obstime = start.obstime
 
         # Start point of the great arc
         self.start = start.transform_to(Heliocentric)
@@ -255,4 +261,5 @@ class GreatArc:
         return SkyCoord(great_arc_points_cartesian[:, 0],
                         great_arc_points_cartesian[:, 1],
                         great_arc_points_cartesian[:, 2],
+                        obstime=self.obstime,
                         frame=Heliocentric, observer=self.observer).transform_to(self.start_frame)
