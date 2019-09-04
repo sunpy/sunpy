@@ -8,7 +8,7 @@ from parfive import Results
 from sunpy.time import TimeRange, parse_time
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
-from sunpy.net.vso.vso import VSOClient, get_online_vso_url
+from sunpy.net.vso.vso import VSOClient, get_online_vso_url, build_client
 from sunpy.net.vso import QueryResponse
 from sunpy.net import attr
 from sunpy.tests.mocks import MockObject
@@ -443,7 +443,7 @@ def test_get_online_vso_url(mock_urlopen):
     """
     No wsdl links returned valid HTTP response? Return None
     """
-    assert get_online_vso_url(None, None, None) is None
+    assert get_online_vso_url() is None
 
 
 @mock.patch('sunpy.net.vso.vso.get_online_vso_url', return_value=None)
@@ -453,3 +453,14 @@ def test_VSOClient(mock_vso_url):
     """
     with pytest.raises(ConnectionError):
         VSOClient()
+
+
+@mock.patch('sunpy.net.vso.vso.check_connection', return_value=None)
+def test_build_client(mock_vso_url):
+    with pytest.raises(ConnectionError):
+        build_client(url="http://notathing.com/", port_name="spam")
+
+
+def test_build_client_params():
+    with pytest.raises(ValueError):
+        build_client(url="http://notathing.com/")
