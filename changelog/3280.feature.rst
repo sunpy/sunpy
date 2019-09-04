@@ -1,0 +1,1 @@
+Add ability to disable progressbars when dowloading files using `sunpy.net.helioviewer.py` and edited docstrings to mention this feature.
