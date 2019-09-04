@@ -201,5 +201,5 @@ def test_query(suvi_client, start, end, expected_num_files):
     qr1 = suvi_client.search(a.Time(start, end), a.Instrument('suvi'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == expected_num_files
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
+    assert qr1.time_range().start == parse_time(start)
+    assert qr1.time_range().end == parse_time(end)
