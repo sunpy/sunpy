@@ -191,3 +191,15 @@ def test_fido_waverange_level1b(start, end, wave1, wave2, expected_num_files):
                          a.Wavelength(wave1 * u.Angstrom, wave2 * u.Angstrom),
                          a.Level('1b'))
     assert result.file_num == expected_num_files
+
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize("start, end, expected_num_files",
+                         [('2019/05/25 00:50', '2019/05/25 00:52', 6)]
+                         )
+def test_query(suvi_client, time, instrument, expected_num_files):
+    qr1 = suvi_client.search(time, instrument)
+    assert isinstance(qr1, QueryResponse)
+    assert len(qr1) == expected_num_files
+    assert qr1.time_range().start == time.start
+    assert qr1.time_range().end == time.end
