@@ -1,7 +1,7 @@
 sunpy/cm/                         @sunpy/cm
 docs/code_ref/cm.rst              @sunpy/cm
 
-sunpy/coordiantes/                @sunpy/coordinates
+sunpy/coordinates/                @sunpy/coordinates
 docs/code_ref/coordinates.rst     @sunpy/coordinates
 
 sunpy/database/                   @sunpy/database
