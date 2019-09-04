@@ -3,6 +3,7 @@
 import pytest
 from unittest import mock
 import astropy.units as u
+from parfive import Results
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.net import vso
@@ -266,6 +267,31 @@ def test_path(client, tmpdir):
     # practical way to determine what it should be in this test, so we just
     # put it here.
     assert "aia_lev1_171a_2011_06_07t06_33_02_77z_image_lev1.fits" in files[0]
+
+
+@pytest.mark.remote_data
+def test_no_download(client):
+    """
+    Test for https://github.com/sunpy/sunpy/issues/3292
+    """
+    class MockDownloader:
+        download_called = False
+
+        def __init__(self):
+            pass
+
+        def download(self, *args, **kwargs):
+            download_called = True
+
+    # this should fail
+    stereo = (va.Detector('STEREO_B') &
+              va.Instrument('EUVI') &
+              va.Time('1900-01-01', '1900-01-01T00:10:00'))
+    qr = client.search(stereo)
+    downloader = MockDownloader()
+    res = client.fetch(qr, wait=False, downloader=downloader)
+    assert downloader.download_called is False
+    assert res == Results()
 
 
 def test_non_str_instrument():

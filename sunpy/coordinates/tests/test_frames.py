@@ -213,6 +213,15 @@ def test_wrapping_off():
     assert_quantity_allclose(hpc1.Tx.wrap_angle, 360*u.deg)
 
 
+def test_hpc_default_observer():
+    # Observer is considered default if it hasn't been specified *and* if obstime isn't specified
+    hpc = Helioprojective(0*u.arcsec, 0*u.arcsec)
+    assert hpc.is_frame_attr_default('observer')
+
+    hpc = Helioprojective(0*u.arcsec, 0*u.arcsec, obstime='2019-06-01')
+    assert not hpc.is_frame_attr_default('observer')
+
+
 # ==============================================================================
 # ## Heliographic Tests
 # ==============================================================================
@@ -367,6 +376,16 @@ def test_create_hcc_3d(args, kwargs):
     assert hcc.x.unit is u.km
     assert hcc.y.unit is u.km
     assert hcc.z.unit is u.km
+
+
+def test_hcc_default_observer():
+    # Observer is considered default if it hasn't been specified *and* if obstime isn't specified
+    hcc = Heliocentric(0*u.AU, 0*u.AU, 0*u.AU)
+    assert hcc.is_frame_attr_default('observer')
+
+    hcc = Heliocentric(0*u.AU, 0*u.AU, 0*u.AU, obstime='2019-06-01')
+    assert not hcc.is_frame_attr_default('observer')
+
 
 # ==============================================================================
 # SkyCoord Tests
