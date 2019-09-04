@@ -131,16 +131,3 @@ def test_time_for_url(LCClient, time):
 
     assert all([tr == t2 for t2 in times])
 
-
-
-@pytest.mark.remote_data
-@pytest.mark.parametrize("time,instrument", [
-    (a.Time('2019/05/13 00:00', '2019/05/13 00:10'), a.Instrument('suvi')),
-])
-def test_query(time, instrument):
-    qr1 = sclient.search(time, instrument)
-    assert isinstance(qr1, QueryResponse)
-    assert len(qr1) == 3
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
-

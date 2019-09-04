@@ -197,8 +197,8 @@ def test_fido_waverange_level1b(start, end, wave1, wave2, expected_num_files):
 @pytest.mark.parametrize("start, end, expected_num_files",
                          [('2019/05/25 00:50', '2019/05/25 00:52', 6)]
                          )
-def test_query(suvi_client, time, instrument, expected_num_files):
-    qr1 = suvi_client.search(time, instrument)
+def test_query(suvi_client, start, end, expected_num_files):
+    qr1 = suvi_client.search(a.Time(start, end), a.Instrument('suvi'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == expected_num_files
     assert qr1.time_range().start == time.start
