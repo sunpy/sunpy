@@ -230,7 +230,7 @@ class SUVIClient(GenericClient):
             Time range for which data is to be downloaded.
         level : `str`
             The level of the data.
-        wavelength :
+        wavelength : `astropy.units.Quantity` or `tuple`
             Wavelength band.
         satellitenumber : `int`
             GOES satellite number. Must be >= 16.
