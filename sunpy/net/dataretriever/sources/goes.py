@@ -314,7 +314,7 @@ class SUVIClient(GenericClient):
         Returns
         -------
         `bool`
-            answer as to whether client can service the query
+            answer as to whether client can service the query.
         """
 
         required = {a.Time, a.Instrument}
