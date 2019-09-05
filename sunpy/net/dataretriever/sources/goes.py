@@ -196,7 +196,7 @@ class SUVIClient(GenericClient):
 
         Parameters
         ----------
-        date : `astropy.time.Time`
+        date : {parse_time_types}
             The date to determine which satellite is active.
         """
 
