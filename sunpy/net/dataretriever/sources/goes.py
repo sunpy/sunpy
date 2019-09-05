@@ -233,7 +233,7 @@ class SUVIClient(GenericClient):
             The level of the data.
         wavelength :
             Wavelength band.
-        satellitenumber : int
+        satellitenumber : `int`
             GOES satellite number. Must be >= 16.
 
         """
