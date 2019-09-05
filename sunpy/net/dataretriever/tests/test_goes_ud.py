@@ -13,7 +13,6 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.net.tests.strategies import goes_time
 from sunpy.time import parse_time, is_time_equal
-from sunpy.net.tests.strategies import time_attr
 
 
 @pytest.fixture

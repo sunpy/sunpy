@@ -1,1 +1,1 @@
-Adds support for searching and downloading SUVI data
+Adds support for searching and downloading SUVI data.

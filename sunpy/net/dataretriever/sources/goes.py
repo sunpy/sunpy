@@ -196,7 +196,6 @@ class SUVIClient(GenericClient):
 
         Parameters
         ----------
-
         date : `astropy.time.Time`
             The date to determine which satellite is active.
         """
@@ -227,9 +226,9 @@ class SUVIClient(GenericClient):
 
         Parameters
         ----------
-        timerange: sunpy.time.TimeRange
-            time range for which data is to be downloaded.
-        level : str
+        timerange: `sunpy.time.TimeRange`
+            Time range for which data is to be downloaded.
+        level : `str`
             The level of the data.
         wavelength :
             Wavelength band.
