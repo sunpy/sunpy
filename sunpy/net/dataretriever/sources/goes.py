@@ -309,7 +309,7 @@ class SUVIClient(GenericClient):
         Parameters
         ----------
         query : `tuple`
-            All specified query objects
+            All specified query objects.
 
         Returns
         -------
