@@ -1,21 +1,18 @@
-import pytest
-from hypothesis import given, example, settings
 import tempfile
 from unittest import mock
 
-from astropy.time import TimeDelta
+import pytest
+from hypothesis import given
+
 import astropy.units as u
 
-from sunpy.time.timerange import TimeRange
-from sunpy.net.attrs import Time, Instrument
-from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.goes as goes
-from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-from sunpy.time import parse_time
-from hypothesis import given
+from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.tests.strategies import time_attr
+from sunpy.time import parse_time
+from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture
@@ -28,16 +25,18 @@ def test_can_handle_query(suvi_client, time):
     ans1 = suvi_client._can_handle_query(time, a.Instrument('suvi'))
     assert ans1 is True
     ans2 = suvi_client._can_handle_query(time, a.Instrument('suvi'),
-                                     a.Wavelength(131 * u.Angstrom))
+                                         a.Wavelength(131 * u.Angstrom))
     assert ans2 is True
     ans3 = suvi_client._can_handle_query(time, a.Instrument('suvi'),
-                                     a.Wavelength(131 * u.Angstrom), a.Level(2))
+                                         a.Wavelength(131 * u.Angstrom),
+                                         a.Level(2))
     assert ans3 is True
     ans4 = suvi_client._can_handle_query(time)
     assert ans4 is False
     ans5 = suvi_client._can_handle_query(time, a.Instrument('aia'))
     assert ans5 is False
-    ans6 = suvi_client._can_handle_query(time, a.Instrument('suvi'), a.goes.SatelliteNumber(16))
+    ans6 = suvi_client._can_handle_query(time, a.Instrument('suvi'),
+                                         a.goes.SatelliteNumber(16))
     assert ans6 is True
 
 
