@@ -14,6 +14,8 @@ from sunpy import config, log
 from sunpy.net import attrs as a
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.scraper import Scraper
+from sunpy.time.time import _variables_for_parse_time_docstring
+from sunpy.util.decorators import add_common_docstring
 
 from ..client import GenericClient
 
@@ -190,6 +192,7 @@ class XRSClient(GenericClient):
 
 class SUVIClient(GenericClient):
 
+    @add_common_docstring(**_variables_for_parse_time_docstring())
     def _get_goes_sat_num(self, date):
         """
         Determines the best satellite number for a given date.
@@ -198,11 +201,16 @@ class SUVIClient(GenericClient):
         ----------
         date : {parse_time_types}
             The date to determine which satellite is active.
+
+        Note
+        ----
+        At the time this function was written.
+        GOES-17 is operational but currently does not provide Level 2 data therefore it is never returned.
+        The GOES-16 start date is based on the availability of regular level 1b data.
         """
 
         # GOES-17 is operational but currently does not provide Level 2 data
         # GOES-16 start date is based on the availability of regular level 1b data
-
         suvi_operational = {
             16: TimeRange("2018-06-01", parse_time("now")),
         }
