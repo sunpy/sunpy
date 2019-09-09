@@ -11,13 +11,13 @@ from sunpy.map.sources.suvi import SUVIMap
 from sunpy.map import Map
 import sunpy.data.test
 
-path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "dr_suvi-l2-ci195_g16_s20190403T093200Z_e20190403T093600Z_v1-0-0_rebinned.fits"))
-
 
 @pytest.fixture()
 def suvi():
     """Creates an SUVIMap from a FITS file."""
+    path = sunpy.data.test.rootdir
+    fitspath = glob.glob(
+        os.path.join(path, "dr_suvi-l2-ci195_g16_s20190403T093200Z_e20190403T093600Z_v1-0-0_rebinned.fits"))
     return Map(fitspath)
 
 
