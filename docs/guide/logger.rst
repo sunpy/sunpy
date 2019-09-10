@@ -50,7 +50,7 @@ or also by::
 
 The threshold level for messages can be set with::
 
-    >>> log.setLevel('DEBUG')
+    >>> log.setLevel('DEBUG')  #doctest: +SKIP
 
 This will display DEBUG and all messages with that level and above. If you'd like to see the fewest
 relevant messages you'd set the logging level to WARNING or above.
