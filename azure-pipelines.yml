@@ -17,6 +17,9 @@ resources:
     ref: master
 
 trigger:
+  branches:
+    include:
+    - '*'
   tags:
     include:
     - 'v*'
