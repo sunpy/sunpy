@@ -336,7 +336,7 @@ def nai_detector_radecs(detectors, scx, scz, time):
     calculates the "RA/DEC" for each NaI detector given spacecraft "z" and "x"
     "RA/DEC" positions.
 
-    This routine is based on code found in GTBURST, originally written by
+    This routine is based on code found in `GTBURST <https://fermi.gsfc.nasa.gov/ssc/data/analysis/scitools/gtburst.html>`__, originally written by
     Dr Giacamo Vianello for the Fermi Science Tools.
 
     Parameters
