@@ -99,7 +99,7 @@ def lyra_ts():
 @pytest.mark.remote_data
 def test_remove_lytaf_events_from_timeseries(lyra_ts):
     """
-    Test if artefacts are correctly removed from a TimeSeries.
+    Test if artifact are correctly removed from a TimeSeries.
     """
     # Check correct errors are raised due to bad input
     with pytest.raises(AttributeError):

@@ -163,7 +163,7 @@ def calculate_temperature_em(goests, abundances="coronal",
     corresponding volume emission measure of the solar soft X-ray
     emitting plasma observed by the GOES/XRS. This is done using the
     observed flux ratio of the short (0.5-4 angstrom) to long (1-8 angstrom)
-    channels. The results are returned in a new TimeSeries object which
+    channels. The results are returned in a new `~sunpy.timeseries.TimeSeries` object which
     contains metadata and flux data of the input TimeSeries object in
     addition to the newly found temperature and emission measure values.
 
@@ -204,7 +204,7 @@ def calculate_temperature_em(goests, abundances="coronal",
     isothermal plasma, the ionization equilibria of
     [2]_, and a constant density of 10**10 cm**-3.
     (See [1]_ for justification of this last assumption.)
-    This function is based on "goes_chianti_tem.pro" in SolarSoft
+    This function is based on "goes_chianti_tem.pro" in SolarSoftWare
     written in IDL by Stephen White.
 
     Recent fluxes released to the public are scaled to be consistent

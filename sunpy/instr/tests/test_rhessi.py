@@ -61,7 +61,7 @@ def test_parse_obssum_dbase_file():
 
 def test_parse_observing_summary_dbase_file():
     """
-    Test that we get the observing summary dbase file with the content we
+    Test that we get the observing summary database file with the content we
     expect.
     """
     obssum = rhessi.parse_observing_summary_dbase_file(get_test_filepath("hsi_obssumm_filedb_201104.txt"))
