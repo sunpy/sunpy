@@ -148,7 +148,7 @@ class ImageAnimatorWCS(ImageAnimator):
         The unit of Y axis.
     axis_ranges: `list`, optional
         Defaults to `None` and array indices will be used for all axes.
-        The `list` should contain one element for each axis of the `numpy.ndarray`.
+        The `list` should contain one element for each axis of the input data array.
         For the image axes a ``[min, max]`` pair should be specified which will be
         passed to `matplotlib.pyplot.imshow` as an extent.
         For the slider axes a ``[min, max]`` pair can be specified or an array the
