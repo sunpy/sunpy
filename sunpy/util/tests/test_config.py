@@ -1,6 +1,6 @@
 import io
 import os
-import sys
+from contextlib import redirect_stdout
 from pathlib import Path
 
 from sunpy import config
@@ -20,6 +20,7 @@ def test_is_writable_dir(tmpdir, tmp_path):
     assert _is_writable_dir(tmpdir)
     # Checks a filepath instead of directory
     assert not _is_writable_dir(tmp_file)
+
 
 def test_get_user_configdir(tmpdir, tmp_path, undo_config_dir_patch):
     # Default
@@ -43,15 +44,10 @@ def test_get_user_configdir(tmpdir, tmp_path, undo_config_dir_patch):
     del os.environ["SUNPY_CONFIGDIR"]
 
 
-def test_print_config_files(undo_download_dir_patch):
-    # TODO: Tidy this up.
-    stdout = sys.stdout
-    out = io.StringIO()
-    sys.stdout = out
-    print_config()
-    sys.stdout = stdout
-    out.seek(0)
-    printed = out.read()
+def test_print_config_files(tmpdir, tmp_path, undo_download_dir_patch):
+    with io.StringIO() as buf, redirect_stdout(buf):
+        print_config()
+        printed = buf.getvalue()
     assert "time_format = %Y-%m-%d %H:%M:%S" in printed
     assert _find_config_files()[0] in printed
     assert get_and_create_download_dir() in printed

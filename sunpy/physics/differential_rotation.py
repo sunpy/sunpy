@@ -33,8 +33,8 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
         One of:
 
-        | ``howard`` : Use values for small magnetic features from Howard et al.
-        | ``snodgrass`` : Use Values from Snodgrass et. al
+        | ``howard`` : Use values from Howard et al. (1990)
+        | ``snodgrass`` : Use values from Snodgrass et. al. (1983)
         | ``allen`` : Use values from Allen's Astrophysical Quantities, and simpler equation.
 
     frame_time : `str`
@@ -49,8 +49,8 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     ----------
 
     * `IDL code equivalent <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro>`__
-    * `Howard rotation <http://adsabs.harvard.edu/abs/1990SoPh..130..295H>`__
-    * `A review of rotation parameters (including Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
+    * `Solar surface velocity fields determined from small magnetic features (Howard et al. 1990) <https://doi.org/10.1007/BF00156795>`__
+    * `A comparison of differential rotation measurements (Beck 2000, includes Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
 
     Examples
     --------
@@ -82,8 +82,8 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
                   }
 
     if rot_type not in ['howard', 'allen', 'snodgrass']:
-        raise ValueError(("rot_type must equal one of "
-                          "{{ {} }}".format(" | ".join(rot_params.keys()))))
+        raise ValueError("rot_type must equal one of "
+                          "{{ {} }}".format(" | ".join(rot_params.keys())))
 
     A, B, C = rot_params[rot_type]
 
@@ -223,13 +223,13 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time, frame=Helioprojective)
     >>> solar_rotate_coordinate(c, time=end_time)
     <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
-        (-5.08888749e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-        (-363.04027419, 104.87807178, 1.499598e+08)>
+        (9.40248797e-16, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        (-363.04027419, 104.87807178, 1.00241935)>
     >>> new_observer = get_body("earth", end_time)
     >>> solar_rotate_coordinate(c, observer=new_observer)
     <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
-        (-5.08888749e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-        (-363.04027419, 104.87807178, 1.499598e+08)>
+        (-5.08888749e-14, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+        (-363.04027419, 104.87807178, 1.00241935)>
     """
     # Check the input and create the new observer
     new_observer = _get_new_observer(coordinate.obstime, observer, time)
@@ -405,17 +405,20 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
                                      obstime=new_observer.obstime,
                                      observer=new_observer,
                                      frame=Helioprojective)
+
         heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
+        # Now transform the HGS coordinates to the obstime of the input map (to account for movement of Earth)
+        heliographic_coordinate = heliographic_coordinate.transform_to(HeliographicStonyhurst(obstime=smap.date))
 
         # Compute the differential rotation.
         drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
-        # Add in the differential rotation shift
-        rotated_coord = SkyCoord(heliographic_coordinate.lon + drot,
+        # The change in longitude is negative because we are mapping from the
+        # new coordinates to the old.
+        rotated_coord = SkyCoord(heliographic_coordinate.lon - drot,
                                  heliographic_coordinate.lat,
                                  heliographic_coordinate.radius,
-                                 obstime=new_observer.obstime,
-                                 observer=new_observer,
+                                 obstime=heliographic_coordinate.obstime,
                                  frame=HeliographicStonyhurst)
 
         # As seen from the map observer, which coordinates are on disk and which are behind the Sun.

@@ -62,7 +62,7 @@ class WaveunitNotFoundError(Exception):
         self.obj = obj
 
     def __str__(self):  # pragma: no cover
-        return 'the wavelength unit cannot be found in {0}'.format(self.obj) + \
+        return f'the wavelength unit cannot be found in {self.obj}' + \
                ' and default_waveunit not specified when opening the database'
 
 
@@ -77,7 +77,7 @@ class WaveunitNotConvertibleError(Exception):
 
     def __str__(self):  # pragma: no cover
         return (
-            'the waveunit {0!r} cannot be converted to an '
+            'the waveunit {!r} cannot be converted to an '
             'astropy.units.Unit instance'.format(self.waveunit))
 
 
@@ -99,7 +99,7 @@ class JSONDump(Base):
         return self.dump
 
     def __repr__(self):  # pragma: no cover
-        return '<{0}(dump {1!r})>'.format(self.__class__.__name__, self.dump)
+        return f'<{self.__class__.__name__}(dump {self.dump!r})>'
 
 
 class FitsHeaderEntry(Base):
@@ -121,13 +121,13 @@ class FitsHeaderEntry(Base):
             self.value == other.value)
 
     def __hash__(self):
-        return super(FitsHeaderEntry, self).__hash__()
+        return super().__hash__()
 
     def __ne__(self, other):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return '<{0}(id {1}, key {2!r}, value {3!r})>'.format(
+        return '<{}(id {}, key {!r}, value {!r})>'.format(
             self.__class__.__name__, self.id, self.key, self.value)
 
 
@@ -150,17 +150,17 @@ class FitsKeyComment(Base):
             self.value == other.value)
 
     def __lt__(self, other):
-        return ('{0}, {1}'.format(self.key, self.value) <
-                '{0}, {1}'.format(other.key, other.value))
+        return (f'{self.key}, {self.value}' <
+                f'{other.key}, {other.value}')
 
     def __hash__(self):
-        return super(FitsKeyComment, self).__hash__()
+        return super().__hash__()
 
     def __ne__(self, other):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return '<{0}(id {1}, key {2!r}, value {3!r})>'.format(
+        return '<{}(id {}, key {!r}, value {!r})>'.format(
             self.__class__.__name__, self.id, self.key, self.value)
 
 
@@ -176,7 +176,7 @@ class Tag(Base):
         return self.name == other.name
 
     def __hash__(self):
-        return super(Tag, self).__hash__()
+        return super().__hash__()
 
     def __ne__(self, other):
         return not (self == other)
@@ -185,7 +185,7 @@ class Tag(Base):
         return self.name
 
     def __repr__(self):  # pragma: no cover
-        return '<{0}(name {1!r})>'.format(self.__class__.__name__, self.name)
+        return f'<{self.__class__.__name__}(name {self.name!r})>'
 
 
 class DatabaseEntry(Base):
@@ -475,7 +475,7 @@ class DatabaseEntry(Base):
         return True
 
     def __hash__(self):
-        return super(DatabaseEntry, self).__hash__()
+        return super().__hash__()
 
     def __ne__(self, other):  # pragma: no cover
         return not (self == other)
@@ -486,11 +486,11 @@ class DatabaseEntry(Base):
             'observation_time_start', 'observation_time_end', 'instrument',
             'size', 'wavemin', 'wavemax', 'path', 'download_time', 'starred',
             'fits_header_entries', 'tags']
-        ret = '<{0}('.format(self.__class__.__name__)
+        ret = f'<{self.__class__.__name__}('
         for attr in attrs:
             value = getattr(self, attr, None)
             if value:
-                ret += '{0} {1!r}, '.format(attr, value)
+                ret += f'{attr} {value!r}, '
         ret = ret.rstrip(', ')
         ret += ')>'
         return ret

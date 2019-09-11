@@ -35,7 +35,7 @@ class EUVIMap(GenericMap):
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)
-        self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
+        self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = plt.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
         self.meta['waveunit'] = 'Angstrom'
@@ -101,7 +101,7 @@ class CORMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
+        self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = plt.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
@@ -145,7 +145,7 @@ class HIMap(GenericMap):
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)
-        self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
+        self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = plt.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
 

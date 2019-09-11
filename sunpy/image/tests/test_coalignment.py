@@ -66,7 +66,7 @@ def test_parabolic_turning_point():
 def test_repair_image_nonfinite():
     for i in range(0, 9):
         for non_number in [np.nan, np.inf]:
-            a = np.ones((9))
+            a = np.ones(9)
             a[i] = non_number
             b = a.reshape(3, 3)
             c = repair_image_nonfinite(b)

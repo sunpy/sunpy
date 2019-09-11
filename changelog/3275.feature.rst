@@ -1,0 +1,1 @@
+- Support APE14 for ``ImageAnimatorWCS`` in SunPy's visualization module

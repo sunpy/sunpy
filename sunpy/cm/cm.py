@@ -162,7 +162,7 @@ def show_colormaps(search=None):
     if search is not None:
         maps = sorted({k: v for (k, v) in cmlist.items() if k.lower().count(search.lower())})
         if len(maps) == 0:
-            raise KeyError('No color maps found for search term "{:s}"'.format(search))
+            raise KeyError(f'No color maps found for search term "{search:s}"')
     else:
         maps = sorted(cmlist)
 

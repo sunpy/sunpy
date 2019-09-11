@@ -42,14 +42,14 @@ def axis_labels_from_ctype(ctype, unit):
     """
     ctype_short = ctype[:4]
 
-    labels = {'HGLN': 'Heliographic Longitude [{}]'.format(unit),
-              'CRLN': 'Carrington Longitude [{}]'.format(unit),
-              'HPLN': 'Helioprojective Longitude (Solar-X) [{}]'.format(unit),
-              'SOLX': 'Heliocentric X [{}]'.format(unit),
+    labels = {'HGLN': f'Heliographic Longitude [{unit}]',
+              'CRLN': f'Carrington Longitude [{unit}]',
+              'HPLN': f'Helioprojective Longitude (Solar-X) [{unit}]',
+              'SOLX': f'Heliocentric X [{unit}]',
 
-              'HGLT': 'Latitude [{}]'.format(unit),
-              'CRLT': 'Latitude [{}]'.format(unit),
-              'HPLT': 'Helioprojective Latitude (Solar-Y) [{}]'.format(unit),
-              'SOLY': 'Heliocentric Y [{}]'.format(unit)}
+              'HGLT': f'Latitude [{unit}]',
+              'CRLT': f'Latitude [{unit}]',
+              'HPLT': f'Helioprojective Latitude (Solar-Y) [{unit}]',
+              'SOLY': f'Heliocentric Y [{unit}]'}
 
-    return labels.get(ctype_short, "{} [{}]".format(ctype, unit))
+    return labels.get(ctype_short, f"{ctype} [{unit}]")

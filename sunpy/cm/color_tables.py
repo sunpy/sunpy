@@ -968,7 +968,7 @@ def trace_color_table(measurement):
     cdict = create_cdict(r, g, b)
 
     # Return the color table
-    return colors.LinearSegmentedColormap('TRACE {:s}'.format(measurement), cdict)
+    return colors.LinearSegmentedColormap(f'TRACE {measurement:s}', cdict)
 
 
 def sot_color_table(measurement):
@@ -989,7 +989,7 @@ def sot_color_table(measurement):
             "intensity")
 
     cdict = create_cdict(r, g, b)
-    return colors.LinearSegmentedColormap( 'Hinode SOT {:s}'.format(measurement), cdict)
+    return colors.LinearSegmentedColormap( f'Hinode SOT {measurement:s}', cdict)
 
 
 def iris_sji_color_table(measurement, aialike=False):
@@ -1049,7 +1049,7 @@ def iris_sji_color_table(measurement, aialike=False):
     # Now create the color dictionary in the correct format
     cdict = create_cdict(r, g, b)
     # Return the color table
-    return colors.LinearSegmentedColormap('IRIS SJI {:s}'.format(measurement),
+    return colors.LinearSegmentedColormap(f'IRIS SJI {measurement:s}',
                                           cdict)
 
 
@@ -1277,8 +1277,8 @@ def create_cdict(r, g, b):
     """
     i = np.linspace(0, 1, r0.size)
 
-    cdict = dict((name, list(zip(i, el / 255.0, el / 255.0)))
-                 for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')])
+    cdict = {name: list(zip(i, el / 255.0, el / 255.0))
+                 for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')]}
     return cdict
 
 

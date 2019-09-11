@@ -16,7 +16,7 @@ def test_xml_to_dict1():
         </outer>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {u'outer': {u'inner2': u'two', u'inner1': u'one'}}
+    expected_dict = {'outer': {'inner2': 'two', 'inner1': 'one'}}
 
     assert xml_dict == expected_dict
 
@@ -34,7 +34,7 @@ def test_xml_to_dict2():
                  </outer>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {u'outer': {u'inner2': u'two-two', u'inner1': u'one-two'}}
+    expected_dict = {'outer': {'inner2': 'two-two', 'inner1': 'one-two'}}
 
     assert xml_dict == expected_dict
 
@@ -47,7 +47,7 @@ def test_xml_to_dict3():
     source_xml = "<outer/>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {u'outer': ''}
+    expected_dict = {'outer': ''}
 
     assert xml_dict == expected_dict
 
@@ -60,7 +60,7 @@ def test_xml_to_dict4():
     source_xml = "<outer></outer>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {u'outer': ''}
+    expected_dict = {'outer': ''}
 
     assert xml_dict == expected_dict
 
@@ -79,7 +79,7 @@ def test_xml_to_dict5():
                  </outer>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {u'outer': {u'mid2': {u'inner2': u'two-one'}, u'mid1': {u'inner1': u'one-one'}}}
+    expected_dict = {'outer': {'mid2': {'inner2': 'two-one'}, 'mid1': {'inner1': 'one-one'}}}
 
     assert xml_dict == expected_dict
 
@@ -99,7 +99,7 @@ def test_xml_to_dict6():
                  </outer>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {u'outer': {u'mid': {u'inner2': u'two-one'}}}
+    expected_dict = {'outer': {'mid': {'inner2': 'two-one'}}}
 
     assert xml_dict == expected_dict
 
@@ -264,7 +264,7 @@ def test_with_multiple_children_in_list():
             if child[key] == value:
                 return child
 
-        raise ValueError("No children with key {0} set to {1} found.".format(key, value))
+        raise ValueError(f"No children with key {key} set to {value} found.")
 
     source = '''<?xml version="1.0" encoding="UTF-8"?>
                 <Config>

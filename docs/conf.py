@@ -29,20 +29,6 @@ import os
 import sys
 import pathlib
 import datetime
-from distutils.version import LooseVersion
-
-from sphinx import __version__
-SPHINX_LT_17 = LooseVersion(__version__) < LooseVersion('1.7')
-
-# -- Convert Sphinx Warnings to output to stdout not stderr---------------------
-if not SPHINX_LT_17:
-    import logging
-    from sphinx.util.logging import NAMESPACE, WarningStreamHandler, SafeEncodingWriter
-
-    sphinxlogger = logging.getLogger(NAMESPACE)
-    handlers = sphinxlogger.handlers
-    warninghandler = list(filter(lambda x: isinstance(x, WarningStreamHandler), handlers))[0]
-    warninghandler.stream = SafeEncodingWriter(stream=sys.stdout)
 
 # -- Import Base config from sphinx-astropy ------------------------------------
 try:
@@ -119,7 +105,7 @@ import sunpy.data.sample
 # -- General configuration ----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '1.6'
+needs_sphinx = '2.0'
 
 # To perform a Sphinx version check that needs to be more specific than
 # major.minor, call `check_sphinx_version("x.y.z")` here.
@@ -159,9 +145,9 @@ rst_epilog = """
 """
 
 # -- Project information ------------------------------------------------------
-project = u'SunPy'
-author = u'The SunPy Community'
-copyright = u'{}, {}'.format(datetime.datetime.now().year, author)
+project = 'SunPy'
+author = 'The SunPy Community'
+copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 
 try:
     from sunpy_sphinx_theme.conf import *
@@ -215,12 +201,12 @@ html_context['to_be_indexed'] = ['stable', 'latest']
 # -- Options for LaTeX output --------------------------------------------------
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
-latex_documents = [('index', project + '.tex', project + u' Documentation', author, 'manual')]
+latex_documents = [('index', project + '.tex', project + ' Documentation', author, 'manual')]
 
 # -- Options for manual page output --------------------------------------------
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [('index', project.lower(), project + u' Documentation', [author], 1)]
+man_pages = [('index', project.lower(), project + ' Documentation', [author], 1)]
 
 # -- Swap to Napoleon ---------------------------------------------------------
 # Remove numpydoc
@@ -239,7 +225,7 @@ extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphin
 # "version" configuration parameter
 edit_on_github_project = "sunpy/sunpy"
 if 'dev' not in release:
-    edit_on_github_branch = "{}".format(version)
+    edit_on_github_branch = f"{version}"
 else:
     edit_on_github_branch = "master"
 edit_on_github_source_root = ""
@@ -279,10 +265,10 @@ try:
     from sunpy.util.towncrier import generate_changelog_for_docs
     if is_development:
         generate_changelog_for_docs("../", target_file)
-except Exception:
-    # If we can't generate it, we need to make sure it exists or else sphinx
-    # will complain.
-    open(target_file, 'a').close()
+except Exception as e:
+    print(f"Failed to add changelog to docs with error {e}.")
+# Make sure the file exists or else sphinx will complain.
+open(target_file, 'a').close()
 
 
 def setup(app):

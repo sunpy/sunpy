@@ -12,12 +12,12 @@ All code must be documented and we follow these style conventions described here
 * `numpydoc <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_
 * `astropy <https://docs.astropy.org/en/latest/development/docrules.html>`_
 
-We recommend having a read of these and unless stated overwise, we stick to these standards.
+We recommend familiarizing yourself with these references.
 
 Differences
 -----------
 
-The current differences we have is as follows:
+The current differences we have are as follows:
 
 We backtick each type in the documentation strings so that they are interlinked by our documentation builder:
 
@@ -33,7 +33,61 @@ We backtick each type in the documentation strings so that they are interlinked 
 SunPy Specific Rules
 --------------------
 
-* For all rst files, we enforce a one sentenace per line rule and ignore the line length.
+* For **all** RST files, we enforce a one sentence per line rule and ignore the line length.
+
+* Core datatypes are referenced as follows:
+
+.. code-block:: python
+
+    """
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        A SunPy map.
+    """
+
+* The Factory classes (``Map``, ``Timeseries``, ``Fido``) are referenced as follows:
+
+.. code-block:: python
+
+    `Map <sunpy.map.map_factory.MapFactory>`
+    `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`
+    `TimeSeries <sunpy.timeseries.timeseries_factory.TimeSeriesFactory>`
+
+* Standards on docstring length and style are enforced using `docformatter <https://pypi.org/project/docformatter/>`__:
+
+.. code-block:: bash
+
+    $ docformatter -r -i  --pre-summary-newline --make-summary-multi-line
+
+.. _Docs Guidelines for Data Sources:
+
+Documenting Data Sources
+----------------------------
+Subclasses of `~sunpy.map.GenericMap` or `~sunpy.timeseries.TimeSeries` must provide a detailed docstring providing an overview of the data source that the object represents.
+In order to maintain consistency and completeness, the following information must be provided by a data source docstring, if available, and preferably in the following order:
+
+* the name of the mission and instrument and the institution that built it
+* short description of the instrument (e.g. Cassegrain reflector, Wolter-1 grazing incidence x-ray, coronagraph) including the type of detector
+* description of the platform (e.g. satellite in 28 deg inclined orbit, a telescope on the summit of Mauna Kea in Hawaii)
+* description of the primary purpose or science goals of the instrument.
+* list of all wavelength(s) or passbands in appropriate units
+* description of the emission processes which dominate in those passbands
+* appropriate measurement properties such as field of view, angular resolution, time resolution
+* description of the operational concept (e.g. operates 24/7, observes from 7 am to 5 pm UT) including mention of unusual operations scenarios (e.g. calibration seasons, eclipse seasons)
+* the start and end of the data set
+
+In addition, a reference section must be provided with links to the following resources, if available,
+
+* the mission web page
+* the instrument web page
+* relevant wikipedia page(s)
+* relevant user guide(s)
+* the mission paper and instrument paper
+* information to interpret metadata keywords such as FITS header reference
+* the data archive
+
+An example docstring can be found in the :ref:`Writing a new Instrument Map Class guide<new_maps_ts_etc>`.
 
 Sphinx
 ======
@@ -69,7 +123,7 @@ For more information on how to use Sphinx, consult the `Sphinx documentation <ht
 Trouble-shooting
 ----------------
 
-Sphinx can be very particular about formatting, and the warnings and errors outputted aren't always obvious.
+Sphinx can be very particular about formatting, and the warnings and errors aren't always obvious.
 
 Below are some commonly-encountered warning/error messages along with a human-readable translation:
 

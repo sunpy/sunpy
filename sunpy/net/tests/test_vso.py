@@ -3,11 +3,12 @@
 import pytest
 from unittest import mock
 import astropy.units as u
+from parfive import Results
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
-from sunpy.net.vso.vso import VSOClient, get_online_vso_url
+from sunpy.net.vso.vso import VSOClient, get_online_vso_url, build_client
 from sunpy.net.vso import QueryResponse
 from sunpy.net import attr
 from sunpy.tests.mocks import MockObject
@@ -186,7 +187,7 @@ def test_wave_toangstrom():
     with pytest.raises(u.UnitsError) as excinfo:
         va.Wavelength(10 * u.g, 23 * u.g)
     assert ('This unit is not convertable to any of [Unit("Angstrom"), Unit("kHz"), '
-            'Unit("keV")]' in str(excinfo))
+            'Unit("keV")]' in str(excinfo.value))
 
 
 def test_time_xor():
@@ -266,6 +267,31 @@ def test_path(client, tmpdir):
     # practical way to determine what it should be in this test, so we just
     # put it here.
     assert "aia_lev1_171a_2011_06_07t06_33_02_77z_image_lev1.fits" in files[0]
+
+
+@pytest.mark.remote_data
+def test_no_download(client):
+    """
+    Test for https://github.com/sunpy/sunpy/issues/3292
+    """
+    class MockDownloader:
+        download_called = False
+
+        def __init__(self):
+            pass
+
+        def download(self, *args, **kwargs):
+            download_called = True
+
+    # this should fail
+    stereo = (va.Detector('STEREO_B') &
+              va.Instrument('EUVI') &
+              va.Time('1900-01-01', '1900-01-01T00:10:00'))
+    qr = client.search(stereo)
+    downloader = MockDownloader()
+    res = client.fetch(qr, wait=False, downloader=downloader)
+    assert downloader.download_called is False
+    assert res == Results()
 
 
 def test_non_str_instrument():
@@ -417,7 +443,7 @@ def test_get_online_vso_url(mock_urlopen):
     """
     No wsdl links returned valid HTTP response? Return None
     """
-    assert get_online_vso_url(None, None, None) is None
+    assert get_online_vso_url() is None
 
 
 @mock.patch('sunpy.net.vso.vso.get_online_vso_url', return_value=None)
@@ -427,3 +453,14 @@ def test_VSOClient(mock_vso_url):
     """
     with pytest.raises(ConnectionError):
         VSOClient()
+
+
+@mock.patch('sunpy.net.vso.vso.check_connection', return_value=None)
+def test_build_client(mock_vso_url):
+    with pytest.raises(ConnectionError):
+        build_client(url="http://notathing.com/", port_name="spam")
+
+
+def test_build_client_params():
+    with pytest.raises(ValueError):
+        build_client(url="http://notathing.com/")

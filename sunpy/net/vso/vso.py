@@ -31,6 +31,8 @@ from sunpy.net.base_client import BaseClient
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 
+from .zeep_plugins import SunPyLoggingZeepPlugin
+
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
@@ -76,8 +78,7 @@ def iter_records(response):
     for prov_item in response.provideritem:
         if not hasattr(prov_item, 'record') or not prov_item.record:
             continue
-        for record_item in prov_item.record.recorditem:
-            yield record_item
+        yield from prov_item.record.recorditem
 
 
 def iter_errors(response):
@@ -90,24 +91,58 @@ def check_connection(url):
     try:
         return urlopen(url).getcode() == 200
     except (socket.error, socket.timeout, HTTPError, URLError) as e:
-        warnings.warn(f"Connection failed with error {e}. Retrying with different url and port.",
+        warnings.warn(f"Connection to {url} failed with error {e}. Retrying with different url and port.",
                       SunpyUserWarning)
         return None
 
 
-def get_online_vso_url(api, url, port):
-    if isinstance(api, zeep.client.Client):
-        return api
-
-    if url and check_connection(url):
-        api = zeep.Client(url, port)
-        return api
-
+def get_online_vso_url():
+    """
+    Return the first VSO url and port combination that is online.
+    """
     for mirror in DEFAULT_URL_PORT:
         if check_connection(mirror['url']):
-            api = zeep.Client(mirror['url'], port_name=mirror['port'])
-            api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
-            return api
+            return mirror
+
+
+def build_client(url=None, port_name=None, **kwargs):
+    """
+    Construct a `zeep.Client` object to connect to VSO.
+
+    Parameters
+    ----------
+    url : `str`
+        The URL to connect to.
+
+    port_name : `str`
+        The "port" to use.
+
+    kwargs : `dict`
+        All extra keyword arguments are passed to `zeep.Client`.
+
+    Returns
+    -------
+
+    `zeep.Client`
+    """
+    if url is None and port_name is None:
+        mirror = get_online_vso_url()
+        if mirror is None:
+            raise ConnectionError("No online VSO mirrors could be found.")
+        url = mirror['url']
+        port_name = mirror['port']
+    elif url and port_name:
+        if not check_connection(url):
+            raise ConnectionError(f"Can't connect to url {url}")
+    else:
+        raise ValueError("Both url and port_name must be specified if either is.")
+
+    if "plugins" not in kwargs:
+        kwargs["plugins"] = [SunPyLoggingZeepPlugin()]
+
+    client = zeep.Client(url, port_name=port_name, **kwargs)
+    client.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
+    return client
 
 
 class QueryResponse(list):
@@ -256,23 +291,37 @@ class UnknownStatus(Exception):
 
 
 class VSOClient(BaseClient):
+    """
+    VSO Client
 
-    """ Main VSO Client. """
+    Parameters
+    ----------
+    url : `str`, optional
+        The VSO url to use. If not specified will use the first online known URL.
+
+    port : `str`, optional
+        The VSO port name to use. If not specified will use the first online known URL.
+
+    api : `zeep.Client`, optional
+        The `zeep.Client` instance to use for interacting with the VSO. If not
+        specified one will be created.
+    """
     method_order = [
         'URL-FILE_Rice', 'URL-FILE', 'URL-packaged', 'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR',
     ]
 
     def __init__(self, url=None, port=None, api=None):
-        api = get_online_vso_url(api, url, port)
-        if api is None:
-            raise ConnectionError("Cannot find an online VSO mirror.")
+        if not isinstance(api, zeep.Client):
+            api = build_client(url, port)
+            if api is None:
+                raise ConnectionError("Cannot find an online VSO mirror.")
         self.api = api
 
     def make(self, atype, **kwargs):
         """
         Create a new SOAP object.
         """
-        obj = self.api.get_type("VSO:{}".format(atype))
+        obj = self.api.get_type(f"VSO:{atype}")
         return obj(**kwargs)
 
     def search(self, *query):
@@ -343,10 +392,10 @@ class VSOClient(BaseClient):
                     continue
                 if provideritem.provider not in providers:
                     providers[provider] = provideritem
-                    fileids |= set(
+                    fileids |= {
                         record_item.fileid
                         for record_item in provideritem.record.recorditem
-                    )
+                    }
                 else:
                     for record_item in provideritem.record.recorditem:
                         if record_item.fileid not in fileids:
@@ -516,10 +565,10 @@ class VSOClient(BaseClient):
                         block = block[elem]
                     except KeyError:
                         raise ValueError(
-                            "Unexpected argument {key!s}.".format(key=key))
+                            f"Unexpected argument {key!s}.")
                 if lst in block and block[lst]:
                     raise ValueError(
-                        "Got multiple values for {k!s}.".format(k=k))
+                        f"Got multiple values for {k!s}.")
                 block[lst] = v
 
         return QueryResponse.create(VSOQueryResponse(
@@ -618,7 +667,7 @@ class VSOClient(BaseClient):
 
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
-            return downloader.download()
+            return downloader.download() if wait else Results()
         # Adding the site parameter to the info
         info = {}
         if site is not None:
@@ -663,8 +712,8 @@ class VSOClient(BaseClient):
             methods = self.method_order + ['URL']
 
         return self.create_getdatarequest(
-            dict((k, [x.fileid for x in v])
-                 for k, v in self.by_provider(response).items()),
+            {k: [x.fileid for x in v]
+                 for k, v in self.by_provider(response).items()},
             methods, info
         )
 
@@ -814,9 +863,9 @@ class VSOClient(BaseClient):
         corresponding to records in the response.
         """
 
-        return dict(
-            (record.fileid, record) for record in response
-        )
+        return {
+            record.fileid: record for record in response
+        }
 
     # pylint: disable=W0613
     def multiple_choices(self, choices, response):

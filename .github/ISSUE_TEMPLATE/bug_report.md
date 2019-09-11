@@ -36,5 +36,6 @@ If not please go ahead and open an issue! -->
 <!-- It is sunpy.util.system_info(), this is optional but strongly recommended. -->
 
   - SunPy Version:
+  - Astropy Version:
   - Python Version:
   - OS information:

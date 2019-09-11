@@ -24,9 +24,9 @@ Review Process
 
 Before the "merge" button is clicked the following criteria must be met:
 
-* All the continuous integration pass unless there is a known issue.
+* All the continuous integration must pass unless there is a known issue.
 
-* At least two members (not the author of the PR) of the "sunpy-developers" group have approved the PR.
+* At least two members (not the author of the PR) of the "sunpy-developers" group must have approved the PR, one should be a relevant subpackage maintainer.
 
 * All comments posted on the thread must be resolved.
 
@@ -47,10 +47,6 @@ Currently we have a variety of services that respond or activate on an opened pu
 
 * `CodeCov <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage.
 
-This one is ran daily and does not affect pull requests:
-
-* `Travis <https://travis-ci.org/sunpy/sunpy>`_: Runs our test suite against developer versions of Astropy and NumPy.
-
 SunPy GitHub Groups
 ===================
 
@@ -68,6 +64,11 @@ SunPy Maintainers
 
 This is the group of people who have push access to the main SunPy repository.
 The membership of this group is at the discretion of the Lead Developer, but shall generally be made up of people who have demonstrated themselves to be trust worthy and active contributors to the project.
+
+This group has `subgroups <https://github.com/orgs/sunpy/teams/sunpy-maintainers/teams>`__ for each section of the repository that has `maintainers <https://sunpy.org/team#maintainer-list>`__.
+The members of these groups will automatically be requested to review all PRs which change files in that subpackage.
+
+
 
 SunPy Developers
 ----------------
