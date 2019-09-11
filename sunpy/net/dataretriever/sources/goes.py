@@ -199,6 +199,7 @@ class SUVIClient(GenericClient):
     Level-2 data products are a weighted average of level-1b product files and therefore provide higher imaging dynamic range than individual images.
     The exposure time of level 1b range from 1 s to 0.005 s.
     SUVI supports the following wavelengths; 94, 131, 171, 195, 284, 304 angstrom.
+    If no wavelength is specified, images from all wavelengths are returned.
 
     Note
     ----
