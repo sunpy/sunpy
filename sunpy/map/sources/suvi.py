@@ -58,6 +58,8 @@ class SUVIMap(GenericMap):
     discrepancy because the definition of the ECEF frame used by SUVI may not exactly match the
     definition of the ITRS frame used by SunPy to interpret the header values.
 
+    Note that some Level 1b files cannot be loaded due to errors in the header.
+
     References
     ----------
     * `GOES-R Mission <https://www.goes-r.gov>`_
