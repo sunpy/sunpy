@@ -25,11 +25,21 @@ from astropy.coordinates.representation import (CartesianRepresentation, Spheric
                                                 UnitSphericalRepresentation, CartesianDifferential)
 from astropy.coordinates.transformations import (FunctionTransform, AffineTransform,
                                                  FunctionTransformWithFiniteDifference)
-from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_transpose
+from astropy.coordinates.matrix_utilities import matrix_product, rotation_matrix, matrix_transpose
+# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
+# with the incorrect name HeliocentricTrueEcliptic
+try:
+    from astropy.coordinates import HeliocentricMeanEcliptic
+except ImportError:
+    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+from astropy._erfa import obl06
+from astropy.coordinates.builtin_frames.utils import get_jd12
 
 from sunpy.sun import constants
 
-from .frames import Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst
+from .frames import (Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst,
+                     HeliocentricEarthEcliptic, GeocentricSolarEcliptic, HeliocentricInertial,
+                     GeocentricEarthEquatorial, _J2000)
 
 try:
     from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
@@ -44,7 +54,11 @@ __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
            'hpc_to_hpc',
            'hcrs_to_hgs', 'hgs_to_hcrs',
-           'hgs_to_hgs', 'hgc_to_hgc', 'hcc_to_hcc']
+           'hgs_to_hgs', 'hgc_to_hgc', 'hcc_to_hcc',
+           'hme_to_hee', 'hee_to_hme', 'hee_to_hee',
+           'hee_to_gse', 'gse_to_hee', 'gse_to_gse',
+           'hgs_to_hci', 'hci_to_hgs', 'hci_to_hci',
+           'hme_to_gei', 'gei_to_hme', 'gei_to_gei']
 
 
 def _observers_are_equal(obs_1, obs_2, string_ok=False):
@@ -289,19 +303,52 @@ def hpc_to_hpc(from_coo, to_frame):
     return hpc
 
 
-def _make_rotation_matrix_from_reprs(start_representation, end_representation):
+def _rotation_matrix_reprs_to_reprs(start_representation, end_representation):
     """
     Return the matrix for the direct rotation from one representation to a second representation.
-    The representations need not be normalized first.
+    The representations need not be normalized first, and can be arrays of representations.
     """
     A = start_representation.to_cartesian()
     B = end_representation.to_cartesian()
     rotation_axis = A.cross(B)
     rotation_angle = -np.arccos(A.dot(B) / (A.norm() * B.norm()))  # negation is required
 
-    # This line works around some input/output quirks of Astropy's rotation_matrix()
-    matrix = np.array(rotation_matrix(rotation_angle, rotation_axis.xyz.value.tolist()))
+    if rotation_angle.isscalar:
+        # This line works around some input/output quirks of Astropy's rotation_matrix()
+        matrix = np.array(rotation_matrix(rotation_angle, rotation_axis.xyz.value.tolist()))
+    else:
+        matrix_list = [np.array(rotation_matrix(angle, axis.xyz.value.tolist()))
+                       for angle, axis in zip(rotation_angle, rotation_axis)]
+        matrix = np.stack(matrix_list)
+
     return matrix
+
+
+def _rotation_matrix_reprs_to_xz_about_z(representations):
+    """
+    Return one or more matrices for rotating one or more representations around the Z axis into the
+    XZ plane.
+    """
+    A = representations.to_cartesian()
+
+    # Zero out the Z components
+    # (The additional transpose operations are to handle both scalar and array inputs)
+    A_no_z = CartesianRepresentation((A.xyz.T * [1, 1, 0]).T)
+
+    # Rotate the resulting vector to the X axis
+    x_axis = CartesianRepresentation(1, 0, 0)
+    matrix = _rotation_matrix_reprs_to_reprs(A_no_z, x_axis)
+
+    return matrix
+
+
+def _sun_earth_icrf(time):
+    """
+    Return the Sun-Earth vector for ICRF-based frames.
+    """
+    sun_pos_icrs = get_body_barycentric('sun', time)
+    earth_pos_icrs = get_body_barycentric('earth', time)
+    return earth_pos_icrs - sun_pos_icrs
 
 
 # The Sun's north pole is oriented RA=286.13 deg, dec=63.87 deg in ICRS, and thus HCRS as well
@@ -312,8 +359,8 @@ _SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87
 
 
 # Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
-_SUN_DETILT_MATRIX = _make_rotation_matrix_from_reprs(_SOLAR_NORTH_POLE_HCRS,
-                                                      CartesianRepresentation(0, 0, 1))
+_SUN_DETILT_MATRIX = _rotation_matrix_reprs_to_reprs(_SOLAR_NORTH_POLE_HCRS,
+                                                     CartesianRepresentation(0, 0, 1))
 
 
 @frame_transform_graph.transform(AffineTransform, HCRS, HeliographicStonyhurst)
@@ -351,17 +398,8 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     # De-tilt the Sun-Earth vector to the frame with the Sun's rotation axis parallel to the Z axis
     sun_earth_detilt = sun_earth.transform(_SUN_DETILT_MATRIX)
 
-    # Remove the component of the Sun-Earth vector that is parallel to the Sun's north pole
-    # (The additional transpose operations are to handle both scalar and array obstime situations)
-    hgs_x_axis_detilt = CartesianRepresentation((sun_earth_detilt.xyz.T * [1, 1, 0]).T)
-
-    # The above vector, which is in the Sun's equatorial plane, is also the X axis of HGS
-    x_axis = CartesianRepresentation(1, 0, 0)
-    if hgsframe.obstime.isscalar:
-        rot_matrix = _make_rotation_matrix_from_reprs(hgs_x_axis_detilt, x_axis)
-    else:
-        rot_matrix_list = [_make_rotation_matrix_from_reprs(vect, x_axis) for vect in hgs_x_axis_detilt]
-        rot_matrix = np.stack(rot_matrix_list)
+    # Rotate the Sun-Earth vector about the Z axis so that it lies in the XZ plane
+    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun_earth_detilt)
 
     total_matrix = rot_matrix @ _SUN_DETILT_MATRIX
 
@@ -445,6 +483,264 @@ def hcc_to_hcc(from_coo, to_frame):
     return hgscoord.transform_to(to_frame)
 
 
+def _rotation_matrix_hme_to_hee(hmeframe):
+    """
+    Return the rotation matrix from HME to HEE at the same observation time
+    """
+    # Get the Sun-Earth vector
+    sun_earth = HCRS(_sun_earth_icrf(hmeframe.obstime), obstime=hmeframe.obstime)
+    sun_earth_hme = sun_earth.transform_to(hmeframe).cartesian
+
+    # Rotate the Sun-Earth vector about the Z axis so that it lies in the XZ plane
+    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(sun_earth_hme)
+
+    # Tilt the rotated Sun-Earth vector so that it is aligned with the X axis
+    tilt_matrix = _rotation_matrix_reprs_to_reprs(sun_earth_hme.transform(rot_matrix),
+                                                  CartesianRepresentation(1, 0, 0))
+
+    return matrix_product(tilt_matrix, rot_matrix)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricMeanEcliptic, HeliocentricEarthEcliptic)
+def hme_to_hee(hmecoord, heeframe):
+    """
+    Convert from Heliocentric Mean Ecliptic to Heliocentric Earth Ecliptic
+    """
+    # Convert to the HME frame with mean equinox of date at the HEE obstime, through HCRS
+    int_frame = HeliocentricMeanEcliptic(obstime=heeframe.obstime, equinox=heeframe.obstime)
+    int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
+
+    # Rotate the intermediate coord to the HEE frame
+    total_matrix = _rotation_matrix_hme_to_hee(int_frame)
+    newrepr = int_coord.cartesian.transform(total_matrix)
+
+    return heeframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricEarthEcliptic, HeliocentricMeanEcliptic)
+def hee_to_hme(heecoord, hmeframe):
+    """
+    Convert from Heliocentric Earth Ecliptic to Heliocentric Mean Ecliptic
+    """
+    int_frame = HeliocentricMeanEcliptic(obstime=heecoord.obstime, equinox=heecoord.obstime)
+
+    # Rotate the HEE coord to the intermediate frame
+    total_matrix = matrix_transpose(_rotation_matrix_hme_to_hee(int_frame))
+    int_repr = heecoord.cartesian.transform(total_matrix)
+    int_coord = int_frame.realize_frame(int_repr)
+
+    # Convert to the HME frame through HCRS
+    return int_coord.transform_to(HCRS).transform_to(hmeframe)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricEarthEcliptic, HeliocentricEarthEcliptic)
+def hee_to_hee(from_coo, to_frame):
+    """
+    Convert between two Heliocentric Earth Ecliptic frames.
+    """
+    if np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
+    else:
+        return from_coo.transform_to(HCRS).transform_to(to_frame)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricEarthEcliptic, GeocentricSolarEcliptic)
+def hee_to_gse(heecoord, gseframe):
+    """
+    Convert from Heliocentric Earth Ecliptic to Geocentric Solar Ecliptic
+    """
+    # Use an intermediate frame of HEE at the GSE observation time
+    int_frame = HeliocentricEarthEcliptic(obstime=gseframe.obstime)
+    int_coord = heecoord.transform_to(int_frame)
+
+    # Get the Sun-Earth vector in the intermediate frame
+    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
+    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+
+    # Find the Earth-object vector in the intermediate frame
+    earth_object_int = int_coord.cartesian - sun_earth_int
+
+    # Flip the vector in X and Y, but leave Z untouched
+    # (The additional transpose operations are to handle both scalar and array inputs)
+    newrepr = CartesianRepresentation((earth_object_int.xyz.T * [-1, -1, 1]).T)
+
+    return gseframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricSolarEcliptic, HeliocentricEarthEcliptic)
+def gse_to_hee(gsecoord, heeframe):
+    """
+    Convert from Geocentric Solar Ecliptic to Heliocentric Earth Ecliptic
+    """
+    # Use an intermediate frame of HEE at the GSE observation time
+    int_frame = HeliocentricEarthEcliptic(obstime=gsecoord.obstime)
+
+    # Get the Sun-Earth vector in the intermediate frame
+    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
+    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+
+    # Find the Earth-object vector in the intermediate frame
+    # Flip the vector in X and Y, but leave Z untouched
+    # (The additional transpose operations are to handle both scalar and array inputs)
+    earth_object_int = CartesianRepresentation((gsecoord.cartesian.xyz.T * [-1, -1, 1]).T)
+
+    # Find the Sun-object vector in the intermediate frame
+    sun_object_int = sun_earth_int + earth_object_int
+    int_coord = int_frame.realize_frame(sun_object_int)
+
+    return int_coord.transform_to(heeframe)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricSolarEcliptic, GeocentricSolarEcliptic)
+def gse_to_gse(from_coo, to_frame):
+    """
+    Convert between two Geocentric Solar Ecliptic frames.
+    """
+    if np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
+    else:
+        return from_coo.transform_to(HeliocentricEarthEcliptic).transform_to(to_frame)
+
+
+def _rotation_matrix_hgs_to_hci(obstime):
+    """
+    Return the rotation matrix from HGS to HCI at the same observation time
+    """
+    z_axis = CartesianRepresentation(0, 0, 1)*u.m
+    if not obstime.isscalar:
+        z_axis = z_axis._apply('repeat', obstime.size)
+
+    # Get the ecliptic pole in HGS
+    ecliptic_pole = HeliocentricMeanEcliptic(z_axis, obstime=obstime, equinox=_J2000)
+    ecliptic_pole_hgs = ecliptic_pole.transform_to(HeliographicStonyhurst(obstime=obstime))
+
+    # Rotate the ecliptic pole to the -YZ plane, which aligns the solar ascending node with the X
+    # axis
+    rot_matrix = _rotation_matrix_reprs_to_xz_about_z(ecliptic_pole_hgs.cartesian)
+    xz_to_yz_matrix = rotation_matrix(-90*u.deg, 'z')
+
+    return xz_to_yz_matrix @ rot_matrix
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliographicStonyhurst, HeliocentricInertial)
+def hgs_to_hci(hgscoord, hciframe):
+    """
+    Convert from Heliographic Stonyhurst to Heliocentric Inertial
+    """
+    # First transform the HGS coord to the HCI obstime
+    int_coord = _transform_obstime(hgscoord, hciframe.obstime)
+
+    # Rotate from HGS to HCI
+    total_matrix = _rotation_matrix_hgs_to_hci(hciframe.obstime)
+    newrepr = int_coord.cartesian.transform(total_matrix)
+
+    return hciframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricInertial, HeliographicStonyhurst)
+def hci_to_hgs(hcicoord, hgsframe):
+    """
+    Convert from Heliocentric Inertial to Heliographic Stonyhurst
+    """
+    # First transform the HCI coord to the HGS obstime
+    int_coord = _transform_obstime(hcicoord, hgsframe.obstime)
+
+    # Rotate from HCI to HGS
+    total_matrix = matrix_transpose(_rotation_matrix_hgs_to_hci(hgsframe.obstime))
+    newrepr = int_coord.cartesian.transform(total_matrix)
+
+    return hgsframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricInertial, HeliocentricInertial)
+def hci_to_hci(from_coo, to_frame):
+    """
+    Convert between two Heliocentric Inertial frames.
+    """
+    if np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
+    else:
+        return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
+               transform_to(to_frame)
+
+
+def _rotation_matrix_obliquity(time):
+    """
+    Return the rotation matrix from Earth equatorial to ecliptic coordinates
+    """
+    return rotation_matrix(obl06(*get_jd12(time, 'tt'))*u.radian, 'x')
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 HeliocentricMeanEcliptic, GeocentricEarthEquatorial)
+def hme_to_gei(hmecoord, geiframe):
+    """
+    Convert from Heliocentric Mean Ecliptic to Geocentric Earth Equatorial
+    """
+    # Use an intermediate frame of HME at the GEI observation time, through HCRS
+    int_frame = HeliocentricMeanEcliptic(obstime=geiframe.obstime, equinox=geiframe.equinox)
+    int_coord = hmecoord.transform_to(HCRS).transform_to(int_frame)
+
+    # Get the Sun-Earth vector in the intermediate frame
+    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
+    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+
+    # Find the Earth-object vector in the intermediate frame
+    earth_object_int = int_coord.cartesian - sun_earth_int
+
+    # Rotate from ecliptic to Earth equatorial
+    rot_matrix = matrix_transpose(_rotation_matrix_obliquity(int_frame.equinox))
+    newrepr = earth_object_int.transform(rot_matrix)
+
+    return geiframe.realize_frame(newrepr)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricEarthEquatorial, HeliocentricMeanEcliptic)
+def gei_to_hme(geicoord, hmeframe):
+    """
+    Convert from Geocentric Earth Equatorial to Heliocentric Mean Ecliptic
+    """
+    # Use an intermediate frame of HME at the GEI observation time
+    int_frame = HeliocentricMeanEcliptic(obstime=geicoord.obstime, equinox=geicoord.equinox)
+
+    # Get the Sun-Earth vector in the intermediate frame
+    sun_earth = HCRS(_sun_earth_icrf(int_frame.obstime), obstime=int_frame.obstime)
+    sun_earth_int = sun_earth.transform_to(int_frame).cartesian
+
+    # Rotate from Earth equatorial to ecliptic
+    rot_matrix = _rotation_matrix_obliquity(int_frame.equinox)
+    earth_object_int = geicoord.cartesian.transform(rot_matrix)
+
+    # Find the Sun-object vector in the intermediate frame
+    sun_object_int = sun_earth_int + earth_object_int
+    int_coord = int_frame.realize_frame(sun_object_int)
+
+    # Convert to the final frame through HCRS
+    return int_coord.transform_to(HCRS).transform_to(hmeframe)
+
+
+@frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
+                                 GeocentricEarthEquatorial, GeocentricEarthEquatorial)
+def gei_to_gei(from_coo, to_frame):
+    """
+    Convert between two Geocentric Earth Equatorial frames.
+    """
+    if np.all((from_coo.equinox == to_frame.equinox) and (from_coo.obstime == to_frame.obstime)):
+        return to_frame.realize_frame(from_coo.data)
+    else:
+        return from_coo.transform_to(HCRS).transform_to(to_frame)
+
+
 def _make_sunpy_graph():
     """
     Culls down the full transformation graph for SunPy purposes and returns the string version
@@ -453,6 +749,8 @@ def _make_sunpy_graph():
     keep_list = ['icrs', 'hcrs', 'heliocentrictrueecliptic', 'heliocentricmeanecliptic',
                  'heliographic_stonyhurst', 'heliographic_carrington',
                  'heliocentric', 'helioprojective',
+                 'heliocentricearthecliptic', 'geocentricsolarecliptic',
+                 'heliocentricinertial', 'geocentricearthequatorial',
                  'gcrs', 'precessedgeocentric', 'geocentrictrueecliptic', 'geocentricmeanecliptic',
                  'cirs', 'altaz', 'itrs']
 
@@ -531,7 +829,9 @@ def _tweak_graph(docstr):
 
     # Set the nodes for SunPy frames to be white
     sunpy_frames = ['HeliographicStonyhurst', 'HeliographicCarrington',
-                    'Heliocentric', 'Helioprojective']
+                    'Heliocentric', 'Helioprojective',
+                    'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
+                    'HeliocentricInertial', 'GeocentricEarthEquatorial']
     for frame in sunpy_frames:
         output = output.replace(frame + ' [', frame + ' [fillcolor=white ')
 

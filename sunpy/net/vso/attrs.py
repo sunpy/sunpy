@@ -396,7 +396,7 @@ class Sample(SimpleAttr):
     @u.quantity_input
     def __init__(self, value: u.s):
         super().__init__(value)
-        self.value = value.to(u.s).value
+        self.value = value.to_value(u.s)
 
 
 class Quicklook(SimpleAttr):
