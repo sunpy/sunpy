@@ -138,15 +138,15 @@ class ImageAnimatorWCS(ImageAnimator):
     ----------
     data: `numpy.ndarray`
         The data to be visualized.
-    wcs : `astropy.wcs.wcsapi.BaseLowLevelWCS`
+    wcs : `~astropy.wcs.wcsapi.BaseLowLevelWCS`
         The WCS object describing the physical coordinates of the data.
     image_axes: `list`, optional
         A list of the axes order that make up the image.
-    unit_x_axis: `astropy.units.Unit`
+    unit_x_axis: `astropy.units.Unit`, optional
         The unit of X axis.
-    unit_y_axis: `astropy.units.Unit`
+    unit_y_axis: `astropy.units.Unit`, optional
         The unit of Y axis.
-    axis_ranges: `list` of physical coordinates for the `numpy.ndarray`, optional
+    axis_ranges: `list`, optional
         Defaults to `None` and array indices will be used for all axes.
         The `list` should contain one element for each axis of the `numpy.ndarray`.
         For the image axes a ``[min, max]`` pair should be specified which will be
@@ -158,7 +158,7 @@ class ImageAnimatorWCS(ImageAnimator):
     -----
     Extra keywords are passed to `~sunpy.visualization.animator.ArrayAnimator`.
     """
-    def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
+    def __init__(self, data, wcs, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
                  axis_ranges=None, **kwargs):
         if not isinstance(wcs, BaseLowLevelWCS):
             raise ValueError("A WCS object should be provided that implements the astropy WCS API.")
