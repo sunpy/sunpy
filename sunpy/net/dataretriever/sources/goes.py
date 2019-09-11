@@ -191,6 +191,20 @@ class XRSClient(GenericClient):
 
 
 class SUVIClient(GenericClient):
+    """
+    Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
+    SUVI data are hosted by NOAA at the following url https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/
+    The SUVI instrument was first included on GOES-16.
+    It produces level-1b as well as level-2 data products.
+    Level-2 data products are a weighted average of level-1b product files and therefore provide higher imaging dynamic range than individual images.
+    The exposure time of level 1b range from 1 s to 0.005 s.
+    SUVI supports the following wavelengths; 94, 131, 171, 195, 284, 304 angstrom.
+
+    Note
+    ----
+    At the time this was written, the GOES-16 began providing regular level-1b data on 2018-06-01.
+    Also, GOES-17 is operational but currently does not provide Level-2 data.
+    """
 
     @add_common_docstring(**_variables_for_parse_time_docstring())
     def _get_goes_sat_num(self, date):
