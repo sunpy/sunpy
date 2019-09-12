@@ -3,7 +3,7 @@
 # Google Summer of Code 2014
 
 import os
-from datetime import timedelta
+from datetime import timedelta, datetime
 from itertools import compress
 from urllib.parse import urlsplit
 
@@ -242,6 +242,21 @@ class SUVIClient(GenericClient):
         else:
             # if no satellites were found then raise an exception
             raise ValueError(f"No operational SUVI instrument on {date.strftime(TIME_FORMAT)}")
+
+    def _get_time_for_url(self, urls):
+        these_timeranges = []
+
+        for this_url in urls:
+            if this_url.count('/l2/') > 0:  # this is a level 2 data file
+                start_time = parse_time(os.path.basename(this_url).split('_s')[2].split('Z')[0])
+                end_time = parse_time(os.path.basename(this_url).split('_e')[1].split('Z')[0])
+                these_timeranges.append(TimeRange(start_time, end_time))
+            if this_url.count('/l1b/') > 0:  # this is a level 1b data file
+                start_time = datetime.strptime(os.path.basename(this_url).split('_s')[1].split('_e')[0][:-1], '%Y%j%H%M%S')
+                end_time = datetime.strptime(os.path.basename(this_url).split('_e')[1].split('_c')[0][:-1], '%Y%j%H%M%S')
+                these_timeranges.append(TimeRange(start_time, end_time))
+        return these_timeranges
+
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
