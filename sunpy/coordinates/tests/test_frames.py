@@ -394,6 +394,8 @@ def test_hcc_default_observer():
 
 two_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec], {}),
+    ([[0, 1, 2, 3], [5, 6, 7, 8]], {'unit': u.deg}),
+    ([0 * u.deg, 0 * u.arcsec], {'representation_type': SphericalRepresentation}),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], {}),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], {}),
     ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1*u.one)], {}),
@@ -419,7 +421,7 @@ def test_skycoord_hpc(args, kwargs):
 @pytest.mark.parametrize("args, kwargs", two_D_parameters)
 def test_skycoord_hgs(args, kwargs):
     """
-    Test that when instantiating a HPC frame with SkyCoord correctly replaces
+    Test that when instantiating a HGS frame with SkyCoord correctly replaces
     distance.
 
     Note: We only need to test HGS here not HGC as they share the same
@@ -427,6 +429,9 @@ def test_skycoord_hgs(args, kwargs):
     """
 
     RSUN_METERS = sun.constants.get('radius').si
-    sc = SkyCoord(*args, **kwargs, frame="heliographic_stonyhurst", obstime="2011-01-01T00:00:00")
+    sc = SkyCoord(*args, **kwargs, frame=HeliographicStonyhurst(obstime="2011-01-01T00:00:00"))
 
+    # Check that we have upgraded the data to Spherical
+    assert isinstance(sc.frame._data, SphericalRepresentation)
+    # Check the value is correct
     assert_quantity_allclose(sc.radius, RSUN_METERS)
