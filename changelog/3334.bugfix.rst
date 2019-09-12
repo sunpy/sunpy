@@ -1,0 +1,1 @@
+GreatArc now accounts for the start and end points of the arc having different observers.
