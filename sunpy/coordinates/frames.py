@@ -221,8 +221,10 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
         super().__init__(*args, **kwargs)
 
         # Make 3D if specified as 2D
-        # If representation was explicitly passed, do not change the rep.
-        if not _rep_kwarg:
+        # If representation was explicitly passed, do not change the rep, unless
+        # it's specified as SphericalRepresentation, in which case we should
+        # upgrade it to that rep if we only have UnitSphericalRepresentation
+        if not _rep_kwarg or _rep_kwarg is SphericalRepresentation:
             if isinstance(self._data, UnitSphericalRepresentation):
                 self._data = self.spherical
 
