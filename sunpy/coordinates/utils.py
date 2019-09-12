@@ -98,7 +98,7 @@ class GreatArc:
         self.start = start.transform_to(Heliocentric)
 
         # End point of the great arc
-        self.end = end.transform_to(Heliocentric(observer=self.observer))
+        self.end = end.transform_to(self.start_frame).transform_to(Heliocentric)
 
         # Parameterized location of points between the start and the end of the
         # great arc.
@@ -120,10 +120,11 @@ class GreatArc:
             self.center = SkyCoord(0 * self.distance_unit,
                                    0 * self.distance_unit,
                                    0 * self.distance_unit,
-                                   frame=Heliocentric,
-                                   observer=self.observer)
+                                   obstime=self.obstime,
+                                   observer=self.observer,
+                                   frame=Heliocentric)
         else:
-            self.center = center.transform_to(Heliocentric(observer=self.observer))
+            self.center = center.transform_to(self.start_frame).transform_to(Heliocentric)
 
         # Convert the start, end and center points to their Cartesian values
         self.start_cartesian = self.start.cartesian.xyz.to(self.distance_unit).value
@@ -262,4 +263,5 @@ class GreatArc:
                         great_arc_points_cartesian[:, 1],
                         great_arc_points_cartesian[:, 2],
                         obstime=self.obstime,
-                        frame=Heliocentric, observer=self.observer).transform_to(self.start_frame)
+                        observer=self.observer,
+                        frame=Heliocentric).transform_to(self.start_frame)
