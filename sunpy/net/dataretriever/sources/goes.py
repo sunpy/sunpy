@@ -193,18 +193,22 @@ class XRSClient(GenericClient):
 class SUVIClient(GenericClient):
     """
     Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
-    SUVI data are hosted by NOAA at the following url https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/
-    The SUVI instrument was first included on GOES-16.
-    It produces level-1b as well as level-2 data products.
-    Level-2 data products are a weighted average of level-1b product files and therefore provide higher imaging dynamic range than individual images.
-    The exposure time of level 1b range from 1 s to 0.005 s.
-    SUVI supports the following wavelengths; 94, 131, 171, 195, 284, 304 angstrom.
-    If no wavelength is specified, images from all wavelengths are returned.
+
+    SUVI data are provided by NOAA at the following url
+    https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/
+    The SUVI instrument was first included on GOES-16. It produces level-1b as
+    well as level-2 data products. Level-2 data products are a weighted average
+    of level-1b product files and therefore provide higher imaging dynamic
+    range than individual images. The exposure time of level 1b images range
+    from 1 s to 0.005 s. SUVI supports the following wavelengths;
+    94, 131, 171, 195, 284, 304 angstrom. If no wavelength is specified, images
+    from all wavelengths are returned.
 
     Note
     ----
-    At the time this was written, the GOES-16 began providing regular level-1b data on 2018-06-01.
-    Also, GOES-17 is operational but currently does not provide Level-2 data.
+    GOES-16 began providing regular level-1b data on 2018-06-01.  At the time
+    of writing, SUVI on GOES-17 is operational but currently does not provide
+    Level-2 data.
     """
 
     @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -260,19 +264,18 @@ class SUVIClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        Returns a URL to the SUVI data for the specified time range.
+        Returns urls to the SUVI data for the specified time range.
 
         Parameters
         ----------
         timerange: `sunpy.time.TimeRange`
             Time range for which data is to be downloaded.
-        level : `str`
-            The level of the data.
-        wavelength : `astropy.units.Quantity` or `tuple`
-            Wavelength band.
-        satellitenumber : `int`
-            GOES satellite number. Must be >= 16.
-
+        level : `str`, optional
+            The level of the data. Possible values are 1b and 2 (default).
+        wavelength : `astropy.units.Quantity` or `tuple`, optional
+            Wavelength band. If not given, all wavelengths are returned.
+        satellitenumber : `int`, optional
+            GOES satellite number. Must be >= 16. Default is 16.
         """
         base_url = "https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes{goes_number}/"
         supported_waves = [94, 131, 171, 195, 284, 304]
