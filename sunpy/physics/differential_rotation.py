@@ -110,8 +110,8 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type="howard", frame_time="side
 
 def _get_new_observer(initial_obstime, observer, time):
     """
-    Helper function that interprets the possible ways of specifying the
-    input to the solar coordinate rotation function.
+    Helper function that interprets the possible ways of specifying the input
+    to the solar coordinate rotation function.
 
     If the "observer" argument is not `None`, it is used to specify the location
     of the new observer in space and time.
@@ -177,9 +177,9 @@ def _get_new_observer(initial_obstime, observer, time):
 
 def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwargs):
     """
-    Given a coordinate on the Sun, calculate where that coordinate maps to
-    as seen by a new observer at some later or earlier time, given that
-    the input coordinate rotates according to the solar rotation profile.
+    Given a coordinate on the Sun, calculate where that coordinate maps to as
+    seen by a new observer at some later or earlier time, given that the input
+    coordinate rotates according to the solar rotation profile.
 
     The amount of solar rotation is based on the amount of time between the
     observation time of the input coordinate and the observation time of the
@@ -349,8 +349,8 @@ def _get_extreme_position(coords, axis, operator=np.nanmax):
 
 def _get_bounding_coordinates(coords):
     """
-    Helper function that returns the bottom left and top right coordinates
-    that define a bounding box enclosing the passed in coordinates.
+    Helper function that returns the bottom left and top right coordinates that
+    define a bounding box enclosing the passed in coordinates.
 
     Parameters
     ----------

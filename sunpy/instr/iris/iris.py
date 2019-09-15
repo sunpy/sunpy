@@ -1,5 +1,5 @@
 """
-Some very beta tools for IRIS
+Some very beta tools for IRIS.
 """
 
 import sunpy.io
@@ -11,7 +11,7 @@ __all__ = ["SJI_to_sequence"]
 
 def SJI_to_sequence(filename, start=0, stop=None, hdu=0):
     """
-    Read a SJI file and return a MapSequence
+    Read a SJI file and return a MapSequence.
 
     .. warning::
         This function is a very early beta and is not stable. Further work is

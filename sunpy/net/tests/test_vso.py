@@ -38,7 +38,8 @@ class MockQRRecord:
 
 class MockQRResponse:
     """
-    Used to test `sunpy.net.vso.vso.iter_records` and `sunpy.net.vso.vso.iter_errors`
+    Used to test `sunpy.net.vso.vso.iter_records` and
+    `sunpy.net.vso.vso.iter_errors`
 
     >>> res = MockQRResponse(items=[1, 2, 3, [4, 5]], errors=['no-connection'])  # doctest: +SKIP
     >>> res.provideritem[1].record.recorditem  # doctest: +SKIP
@@ -241,7 +242,9 @@ def test_err_dummyattr_apply():
 
 
 def test_wave_repr():
-    """Tests the __repr__ method of class vso.attrs.Wave"""
+    """
+    Tests the __repr__ method of class vso.attrs.Wave.
+    """
     wav = vso.attrs.Wavelength(12 * u.AA, 16 * u.AA)
     moarwav = vso.attrs.Wavelength(15 * u.AA, 12 * u.AA)
     assert repr(wav) == "<Wavelength(12.0, 16.0, 'Angstrom')>"
@@ -285,7 +288,7 @@ def test_path(client, tmpdir):
 @pytest.mark.remote_data
 def test_no_download(client):
     """
-    Test for https://github.com/sunpy/sunpy/issues/3292
+    Test for https://github.com/sunpy/sunpy/issues/3292.
     """
 
     class MockDownloader:
@@ -380,8 +383,8 @@ def test_QueryResponse_build_table_defaults():
 
 def test_QueryResponse_build_table_with_extent_type():
     """
-    When explcitley suppling an 'Extent' only the 'type' is stored
-    in the built table.
+    When explcitley suppling an 'Extent' only the 'type' is stored in the built
+    table.
     """
     e_type = va.Extent(x=1.0, y=2.5, width=37, length=129.2, atype="CORONA")
 
@@ -395,7 +398,7 @@ def test_QueryResponse_build_table_with_extent_type():
 
 def test_QueryResponse_build_table_with_no_start_time():
     """
-    Only the 'end' time set, no 'start' time
+    Only the 'end' time set, no 'start' time.
     """
     a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
@@ -417,7 +420,7 @@ def test_QueryResponse_build_table_with_no_start_time():
 
 def test_QueryResponse_build_table_with_no_end_time():
     """
-    Only the 'start' time is set, no 'end' time
+    Only the 'start' time is set, no 'end' time.
     """
     a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
@@ -438,7 +441,7 @@ def test_QueryResponse_build_table_with_no_end_time():
 @pytest.mark.remote_data
 def test_vso_hmi(client, tmpdir):
     """
-    This is a regression test for https://github.com/sunpy/sunpy/issues/2284
+    This is a regression test for https://github.com/sunpy/sunpy/issues/2284.
     """
     res = client.search(
         va.Time("2017-09-02 23:52:00", "2017-09-02 23:54:00"),
@@ -463,7 +466,9 @@ def test_vso_hmi(client, tmpdir):
 @mock.patch("sunpy.net.vso.vso.check_connection", return_value=None)
 def test_get_online_vso_url(mock_urlopen):
     """
-    No wsdl links returned valid HTTP response? Return None
+    No wsdl links returned valid HTTP response?
+
+    Return None
     """
     assert get_online_vso_url() is None
 
@@ -471,7 +476,9 @@ def test_get_online_vso_url(mock_urlopen):
 @mock.patch("sunpy.net.vso.vso.get_online_vso_url", return_value=None)
 def test_VSOClient(mock_vso_url):
     """
-    Unable to find any valid VSO mirror? Raise ConnectionError
+    Unable to find any valid VSO mirror?
+
+    Raise ConnectionError
     """
     with pytest.raises(ConnectionError):
         VSOClient()

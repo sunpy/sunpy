@@ -29,9 +29,9 @@ __emails__ = ["liedtke.simon@googlemail.com", "rajul09@gmail.com"]
 
 
 class EntryNotFoundError(Exception):
-    """This exception is raised if a database entry cannot be found by its
-    unique ID.
-
+    """
+    This exception is raised if a database entry cannot be found by its unique
+    ID.
     """
 
     def __init__(self, entry_id):
@@ -42,9 +42,9 @@ class EntryNotFoundError(Exception):
 
 
 class EntryAlreadyAddedError(Exception):
-    """This exception is raised if a database entry is attempted to be added to
+    """
+    This exception is raised if a database entry is attempted to be added to
     the database although it was already saved in it.
-
     """
 
     def __init__(self, database_entry):
@@ -55,10 +55,10 @@ class EntryAlreadyAddedError(Exception):
 
 
 class EntryAlreadyStarredError(Exception):
-    """This exception is raised if a database entry is marked as starred
-    using :meth:`Database.star` although it was already starred before this
+    """
+    This exception is raised if a database entry is marked as starred using
+    :meth:`Database.star` although it was already starred before this
     operation.
-
     """
 
     def __init__(self, database_entry):
@@ -69,9 +69,9 @@ class EntryAlreadyStarredError(Exception):
 
 
 class EntryAlreadyUnstarredError(Exception):
-    """This exception is raised if the star mark from a database entry is
+    """
+    This exception is raised if the star mark from a database entry is
     attempted to be removed although the entry is not starred.
-
     """
 
     def __init__(self, database_entry):
@@ -82,9 +82,9 @@ class EntryAlreadyUnstarredError(Exception):
 
 
 class NoSuchTagError(Exception):
-    """This exception is raised if a tag cannot be found in a database by its
+    """
+    This exception is raised if a tag cannot be found in a database by its
     name.
-
     """
 
     def __init__(self, tag_name):
@@ -95,9 +95,9 @@ class NoSuchTagError(Exception):
 
 
 class TagAlreadyAssignedError(Exception):
-    """This exception is raised if it is attempted to assign a tag to a
-    database entry but the database entry already has this tag assigned.
-
+    """
+    This exception is raised if it is attempted to assign a tag to a database
+    entry but the database entry already has this tag assigned.
     """
 
     def __init__(self, database_entry, tag_name):
@@ -111,9 +111,9 @@ class TagAlreadyAssignedError(Exception):
 
 def split_database(source_database, destination_database, *query_string):
     """
-    Queries the source database with the query string, and moves the
-    matched entries to the destination database. When this function is
-    called, the `~sunpy.database.Database.undo` feature is disabled for both databases.
+    Queries the source database with the query string, and moves the matched
+    entries to the destination database. When this function is called, the
+    `~sunpy.database.Database.undo` feature is disabled for both databases.
 
     Parameters
     ----------
@@ -163,9 +163,10 @@ def split_database(source_database, destination_database, *query_string):
 
 @contextmanager
 def disable_undo(database):
-    """A context manager to disable saving the used commands in the undo
-    history. This may be useful when it's important to save memory because a
-    big number of entries in the undo history may occupy a lot of memory space.
+    """
+    A context manager to disable saving the used commands in the undo history.
+    This may be useful when it's important to save memory because a big number
+    of entries in the undo history may occupy a lot of memory space.
 
     Examples
     --------
@@ -316,7 +317,9 @@ class Database:
 
     @property
     def url(self):
-        """The sqlalchemy url of the database instance"""
+        """
+        The sqlalchemy url of the database instance.
+        """
         return str(self._engine.url)
 
     @property
@@ -328,15 +331,16 @@ class Database:
         return self._cache.maxsize
 
     def set_cache_size(self, cache_size):
-        """Set a new value for the maximum number of database entries in the
+        """
+        Set a new value for the maximum number of database entries in the
         cache. Use the value ``float('inf')`` to disable caching. If the new
         cache is smaller than the previous one and cannot contain all the
         entries anymore, entries are removed from the cache until the number of
         entries equals the cache size. Which entries are removed depends on the
         implementation of the cache (e.g.
+
         :class:`sunpy.database.caching.LRUCache`,
         :class:`sunpy.database.caching.LFUCache`).
-
         """
         cmds = CompositeOperation()
         # remove items from the cache if the given argument is lower than the
@@ -356,18 +360,20 @@ class Database:
             self._command_manager.do(cmds)
 
     def _create_tables(self, checkfirst=True):
-        """Initialise the database by creating all necessary tables. If
-        ``checkfirst`` is True, already existing tables are not attempted to be
-        created.
+        """
+        Initialise the database by creating all necessary tables.
 
+        If ``checkfirst`` is True, already existing tables are not
+        attempted to be created.
         """
         metadata = tables.Base.metadata
         metadata.create_all(self._engine, checkfirst=checkfirst)
 
     def commit(self):
-        """Flush pending changes and commit the current transaction. This is a
-        shortcut for :meth:`session.commit()`.
+        """
+        Flush pending changes and commit the current transaction.
 
+        This is a shortcut for :meth:`session.commit()`.
         """
         self.session.commit()
 
@@ -554,9 +560,9 @@ class Database:
 
     def search(self, *query, **kwargs):
         """
-        search(*query[, sortby])
-        Send the given query to the database and return a list of
-        database entries that satisfy all of the given attributes.
+        search(*query[, sortby]) Send the given query to the database and
+        return a list of database entries that satisfy all of the given
+        attributes.
 
         Apart from the attributes supported by the VSO interface, the following
         attributes are supported:
@@ -598,7 +604,6 @@ class Database:
         with the tag 'foo' or 'bar' (or both).
 
         >>> database.search(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))   # doctest: +SKIP
-
         """
         if not query:
             raise TypeError("at least one attribute required")
@@ -619,9 +624,10 @@ class Database:
 
     def get_entry_by_id(self, entry_id):
         """
-        Get a database entry by its unique ID number. If an entry with the
-        given ID does not exist, :exc:`sunpy.database.EntryNotFoundError` is
-        raised.
+        Get a database entry by its unique ID number.
+
+        If an entry with the given ID does not exist,
+        :exc:`sunpy.database.EntryNotFoundError` is raised.
         """
         try:
             return self._cache[entry_id]
@@ -633,9 +639,10 @@ class Database:
         return self.session.query(tables.Tag).all()
 
     def get_tag(self, tag_name):
-        """Get the tag which has the given name. If no such tag exists,
-        :exc:`sunpy.database.NoSuchTagError` is raised.
+        """
+        Get the tag which has the given name. If no such tag exists,
 
+        :exc:`sunpy.database.NoSuchTagError` is raised.
         """
         for tag in self.tags:
             if tag_name == tag.name:
@@ -643,7 +650,8 @@ class Database:
         raise NoSuchTagError(tag_name)
 
     def tag(self, database_entry, *tags):
-        """Assign the given database entry the given tags.
+        """
+        Assign the given database entry the given tags.
 
         Raises
         ------
@@ -653,7 +661,6 @@ class Database:
         sunpy.database.TagAlreadyAssignedError
             If at least one of the given tags is already assigned to the given
             database entry.
-
         """
         if not tags:
             raise TypeError("at least one tag must be given")
@@ -677,7 +684,8 @@ class Database:
             self._command_manager.do(cmds)
 
     def remove_tag(self, database_entry, tag_name):
-        """Remove the given tag from the database entry. If the tag is not
+        """
+        Remove the given tag from the database entry. If the tag is not
         connected to any entry after this operation, the tag itself is removed
         from the database as well.
 
@@ -685,7 +693,6 @@ class Database:
         ------
         sunpy.database.NoSuchTagError
             If the tag is not connected to the given entry.
-
         """
         tag = self.get_tag(tag_name)
         cmds = CompositeOperation()
@@ -726,8 +733,9 @@ class Database:
         self.edit(database_entry, starred=False)
 
     def add_many(self, database_entries, ignore_already_added=False):
-        """Add a row of database entries "at once". If this method is used,
-        only one entry is saved in the undo history.
+        """
+        Add a row of database entries "at once". If this method is used, only
+        one entry is saved in the undo history.
 
         Parameters
         ----------
@@ -736,7 +744,6 @@ class Database:
 
         ignore_already_added : bool, optional
             See Database.add
-
         """
         cmds = CompositeOperation()
         for database_entry in database_entries:
@@ -758,7 +765,8 @@ class Database:
             self._command_manager.do(cmds)
 
     def add(self, database_entry, ignore_already_added=False):
-        """Add the given database entry to the database table.
+        """
+        Add the given database entry to the database table.
 
         Parameters
         ----------
@@ -770,7 +778,6 @@ class Database:
             result in a :exc:`sunpy.database.EntryAlreadyAddedError`.
             Otherwise, a new entry will be added and there will be duplicates
             in the database.
-
         """
         if database_entry in self and not ignore_already_added:
             raise EntryAlreadyAddedError(database_entry)
@@ -785,7 +792,8 @@ class Database:
             self._cache[database_entry.id] = database_entry
 
     def add_from_hek_query_result(self, query_result, ignore_already_added=False):
-        """Add database entries from a HEK query result.
+        """
+        Add database entries from a HEK query result.
 
         Parameters
         ----------
@@ -794,7 +802,6 @@ class Database:
 
         ignore_already_added : bool
             See :meth:`sunpy.database.Database.add`.
-
         """
         vso_qr = itertools.chain.from_iterable(H2VClient().translate_and_query(query_result))
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
@@ -808,8 +815,9 @@ class Database:
         ignore_already_added=False,
         overwrite=False,
     ):
-        """download(query_result, client=sunpy.net.vso.VSOClient(),
-        path=None, progress=False, ignore_already_added=False)
+        """
+        download(query_result, client=sunpy.net.vso.VSOClient(), path=None,
+        progress=False, ignore_already_added=False)
 
         Add new database entries from a VSO query result and download the
         corresponding data files. See :meth:`sunpy.database.Database.download`
@@ -824,7 +832,6 @@ class Database:
 
         ignore_already_added : bool
             See :meth:`sunpy.database.Database.add`.
-
         """
         if not query_result:
             return
@@ -835,7 +842,8 @@ class Database:
         )
 
     def add_from_vso_query_result(self, query_result, ignore_already_added=False):
-        """Generate database entries from a VSO query result and add all the
+        """
+        Generate database entries from a VSO query result and add all the
         generated entries to this database.
 
         Parameters
@@ -846,7 +854,6 @@ class Database:
 
         ignore_already_added : bool
             See :meth:`sunpy.database.Database.add`.
-
         """
         self.add_many(
             tables.entries_from_query_result(query_result, self.default_waveunit),
@@ -868,7 +875,6 @@ class Database:
 
         ignore_already_added : `bool`
             See :meth:`sunpy.database.Database.add`.
-
         """
         self.add_many(
             tables.entries_from_fido_search_result(search_result, self.default_waveunit),
@@ -883,9 +889,10 @@ class Database:
         ignore_already_added=False,
         time_string_parse_format=None,
     ):
-        """Search the given directory for FITS files and use their FITS headers
-        to add new entries to the database. Note that one entry in the database
-        is assigned to a list of FITS headers, so not the number of FITS headers
+        """
+        Search the given directory for FITS files and use their FITS headers to
+        add new entries to the database. Note that one entry in the database is
+        assigned to a list of FITS headers, so not the number of FITS headers
         but the number of FITS files which have been read determine the number
         of database entries that will be added. FITS files are detected by
         reading the content of each file, the `pattern` argument may be used to
@@ -916,7 +923,6 @@ class Database:
             Fallback timestamp format which will be passed to
             `~astropy.time.Time.strptime` if `sunpy.time.parse_time` is unable to
             automatically read the `date-obs` metadata.
-
         """
         cmds = CompositeOperation()
         entries = tables.entries_from_dir(
@@ -939,7 +945,8 @@ class Database:
             self._command_manager.do(cmds)
 
     def add_from_file(self, file, ignore_already_added=False):
-        """Generate as many database entries as there are FITS headers in the
+        """
+        Generate as many database entries as there are FITS headers in the
         given file and add them to the database.
 
         Parameters
@@ -951,16 +958,16 @@ class Database:
 
         ignore_already_added : bool, optional
             See :meth:`sunpy.database.Database.add`.
-
         """
         self.add_many(tables.entries_from_file(file, self.default_waveunit), ignore_already_added)
 
     def edit(self, database_entry, **kwargs):
-        """Change the given database entry so that it interprets the passed
-        key-value pairs as new values where the keys represent the attributes
-        of this entry. If no keywords arguments are given, :exc:`ValueError` is
-        raised.
+        """
+        Change the given database entry so that it interprets the passed key-
+        value pairs as new values where the keys represent the attributes of
+        this entry.
 
+        If no keywords arguments are given, :exc:`ValueError` is raised.
         """
         cmd = commands.EditEntry(database_entry, **kwargs)
         if self._enable_history:
@@ -970,7 +977,8 @@ class Database:
         self._cache[database_entry.id] = database_entry
 
     def remove_many(self, database_entries):
-        """Remove a row of database entries "at once". If this method is used,
+        """
+        Remove a row of database entries "at once". If this method is used,
         only one entry is saved in the undo history.
 
         Parameters
@@ -994,7 +1002,9 @@ class Database:
             self._command_manager.do(cmds)
 
     def remove(self, database_entry):
-        """Remove the given database entry from the database table."""
+        """
+        Remove the given database entry from the database table.
+        """
         remove_entry_cmd = commands.RemoveEntry(self.session, database_entry)
         if self._enable_history:
             self._command_manager.do(remove_entry_cmd)
@@ -1009,9 +1019,10 @@ class Database:
             pass
 
     def clear(self):
-        """Remove all entries from the database. This operation can be undone
-        using the :meth:`undo` method.
+        """
+        Remove all entries from the database.
 
+        This operation can be undone using the :meth:`undo` method.
         """
         cmds = CompositeOperation()
         for entry in self:
@@ -1038,7 +1049,8 @@ class Database:
             cmds()
 
     def clear_histories(self):
-        """Clears all entries from the undo and redo history.
+        """
+        Clears all entries from the undo and redo history.
 
         See Also
         --------
@@ -1047,22 +1059,22 @@ class Database:
         self._command_manager.clear_histories()  # pragma: no cover
 
     def undo(self, n=1):
-        """undo the last n commands.
+        """
+        undo the last n commands.
 
         See Also
         --------
         :meth:`sunpy.database.commands.CommandManager.undo`
-
         """
         self._command_manager.undo(n)  # pragma: no cover
 
     def redo(self, n=1):
-        """redo the last n commands.
+        """
+        redo the last n commands.
 
         See Also
         --------
         :meth:`sunpy.database.commands.CommandManager.redo`
-
         """
         self._command_manager.redo(n)  # pragma: no cover
 
@@ -1099,19 +1111,23 @@ class Database:
         raise IndexError
 
     def __contains__(self, database_entry):
-        """Return True if the given database_entry entry is saved in the
-        database, False otherwise.
-
+        """
+        Return True if the given database_entry entry is saved in the database,
+        False otherwise.
         """
         (ret,), = self.session.query(exists().where(tables.DatabaseEntry.id == database_entry.id))
         return ret
 
     def __iter__(self):
-        """iterate over all database entries that have been saved."""
+        """
+        iterate over all database entries that have been saved.
+        """
         return iter(self.session.query(tables.DatabaseEntry))
 
     def __len__(self):
-        """Get the number of rows in the table."""
+        """
+        Get the number of rows in the table.
+        """
         return self.session.query(tables.DatabaseEntry).count()
 
     def __repr__(self):

@@ -101,7 +101,6 @@ def remove_lytaf_events_from_timeseries(
     To also retrieve information on the artifacts during that day:
         >>> ts_nolars, artifact_status = remove_lytaf_events_from_timeseries(
         ...        lyrats, artifacts=["LAR"], return_artifacts=True)  # doctest: +REMOTE_DATA
-
     """
     # Check that input argument is of correct type
     if not lytaf_path:
@@ -242,7 +241,6 @@ def _remove_lytaf_events(
 
         >>> time_clean, channels_clean = _remove_lytaf_events(
         ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +SKIP
-
     """
     # Check inputs
     if not lytaf_path:
@@ -433,7 +431,6 @@ def get_lytaf_events(
     Get all events in the LYTAF files for January 2014
         >>> from sunpy.instr.lyra import get_lytaf_events
         >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')  # doctest: +SKIP
-
     """
     # Check inputs
     # Check lytaf path
@@ -564,7 +561,8 @@ def get_lytaf_events(
 
 
 def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
-    """Prints the different event types in the each of the LYTAF databases.
+    """
+    Prints the different event types in the each of the LYTAF databases.
 
     Parameters
     ----------
@@ -579,7 +577,6 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     -------
     all_event_types : `list`
         List of all events types in all lytaf databases.
-
     """
     # Set lytaf_path is not done by user
     if not lytaf_path:
@@ -613,7 +610,9 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
 
 
 def download_lytaf_database(lytaf_dir=""):
-    """download latest Proba2 pointing database from Proba2 Science Center"""
+    """
+    download latest Proba2 pointing database from Proba2 Science Center.
+    """
     url = "http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db"
     destination = os.path.join(lytaf_dir, "annotation_ppt.db")
     urllib.request.urlretrieve(url, destination)
@@ -739,15 +738,15 @@ def _prep_columns(time, channels=None, filecolumns=None):
     """
     Checks and prepares data to be written out to a file.
 
-    Firstly, this function converts the elements of time, whose entries are
-    assumed to be `astropy.time.Time` or `np.ndarray` objects, to time strings.  Secondly, it checks
-    whether the number of elements in an input list of column names,
-    filecolumns, is equal to the number of arrays in the list, channels.
-    If not, a ValueError is raised.  If however filecolumns equals None, a
-    filenames list is generated equal to ["time", "channel0", "channel1",...,
-    "channelN"] where N is the number of arrays in the list, channels
-    (assuming 0-indexed counting).
-
+    Firstly, this function converts the elements of time, whose entries
+    are assumed to be `astropy.time.Time` or `np.ndarray` objects, to
+    time strings.  Secondly, it checks whether the number of elements in
+    an input list of column names, filecolumns, is equal to the number
+    of arrays in the list, channels. If not, a ValueError is raised.  If
+    however filecolumns equals None, a filenames list is generated equal
+    to ["time", "channel0", "channel1",..., "channelN"] where N is the
+    number of arrays in the list, channels (assuming 0-indexed
+    counting).
     """
     # Convert np.array or Time objects to time strings.
     time = parse_time(time)

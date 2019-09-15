@@ -20,8 +20,9 @@ BASEURL = (
 
 class EVEClient(GenericClient):
     """
-    Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data
-    as hosted by `LASP <http://lasp.colorado.edu/home/eve/data/data-access/>`_.
+    Provides access to Level 0C Extreme ultraviolet Variability Experiment
+    (EVE) data as hosted by `LASP <http://lasp.colorado.edu/home/eve/data/data-
+    access/>`_.
 
     To use this client you must request Level 0 data.
 
@@ -43,7 +44,6 @@ class EVEClient(GenericClient):
     2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve        nan
     <BLANKLINE>
     <BLANKLINE>
-
     """
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -59,7 +59,6 @@ class EVEClient(GenericClient):
         -------
         urls : list
             list of URLs corresponding to the requested time range
-
         """
         # If start of time range is before 00:00, converted to such, so
         # files of the requested time ranger are included.

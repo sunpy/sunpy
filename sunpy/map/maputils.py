@@ -1,5 +1,6 @@
 """
-This submodule provides utility functions to act on `sunpy.map.GenericMap` instances.
+This submodule provides utility functions to act on `sunpy.map.GenericMap`
+instances.
 """
 from itertools import chain, product
 
@@ -189,7 +190,8 @@ def coordinate_is_on_solar_disk(coordinates):
 
 def is_all_off_disk(smap):
     """
-    Checks if none of the coordinates in the `~sunpy.map.GenericMap` are on the solar disk.
+    Checks if none of the coordinates in the `~sunpy.map.GenericMap` are on the
+    solar disk.
 
     The check is performed by calculating the angle of every pixel from
     the center of the Sun. If they are all greater than the angular
@@ -218,7 +220,8 @@ def is_all_off_disk(smap):
 
 def is_all_on_disk(smap):
     """
-    Checks if all of the coordinates in the `~sunpy.map.GenericMap` are on the solar disk.
+    Checks if all of the coordinates in the `~sunpy.map.GenericMap` are on the
+    solar disk.
 
     The check is performed by calculating the angle of every pixel from
     the center of the Sun. If they are all less than the angular
@@ -274,7 +277,8 @@ def contains_limb(smap):
 def on_disk_bounding_coordinates(smap):
     """
     Returns the the bottom left and top right coordinates of the smallest
-    rectangular region that contains all the on disk coordinates of the input map.
+    rectangular region that contains all the on disk coordinates of the input
+    map.
 
     Parameters
     ----------

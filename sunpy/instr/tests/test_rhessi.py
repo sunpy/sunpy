@@ -20,8 +20,10 @@ from sunpy.time import is_time_equal, parse_time
 @pytest.fixture
 def cross_month_timerange():
     """
-    Time range which crosses a month boundary. Dbase files are monthly
-    therefore this is to make sure that two dbase files are returned.
+    Time range which crosses a month boundary.
+
+    Dbase files are monthly therefore this is to make sure that two
+    dbase files are returned.
     """
     return sunpy.time.TimeRange(("2016/01/25", "2016/02/05"))
 
@@ -63,8 +65,8 @@ def test_parse_obssum_dbase_file():
 
 def test_parse_observing_summary_dbase_file():
     """
-    Test that we get the observing summary dbase file with the content
-    we expect.
+    Test that we get the observing summary dbase file with the content we
+    expect.
     """
     obssum = rhessi.parse_observing_summary_dbase_file(
         get_test_filepath("hsi_obssumm_filedb_201104.txt")
@@ -136,8 +138,8 @@ def hessi_data():
 
 def test_parse_observing_summary_dbase_file_mock():
     """
-    Ensure that all required data are extracted from the RHESSI
-    observing summary database file mocked in `hessi_data()`
+    Ensure that all required data are extracted from the RHESSI observing
+    summary database file mocked in `hessi_data()`
     """
     # We need to mock this test differently for <= 3.7.0 and below.
     if LooseVersion(platform.python_version()) <= LooseVersion("3.7.0"):
@@ -176,7 +178,9 @@ def test_parse_observing_summary_dbase_file_mock():
 
 @pytest.fixture
 def raw_bands():
-    """The RHESSI summary data standard energy bands."""
+    """
+    The RHESSI summary data standard energy bands.
+    """
     return [
         "3 - 6",
         "6 - 12",
@@ -192,8 +196,7 @@ def raw_bands():
 
 def test_build_energy_bands_no_match(raw_bands):
     """
-    If an energy unit cannot be found in the `label` then raise
-    a `ValueError`
+    If an energy unit cannot be found in the `label` then raise a `ValueError`
     """
     with pytest.raises(ValueError):
         rhessi._build_energy_bands(label="Energy bands GHz", bands=raw_bands)

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-    Provides programs to process and analyze RHESSI data.
+Provides programs to process and analyze RHESSI data.
 
-    .. warning:: This module is in development.
-
+.. warning:: This module is in development.
 """
 
 import re
@@ -44,9 +43,8 @@ lc_linecolors = ("black", "pink", "green", "blue", "brown", "red", "navy", "oran
 
 def parse_observing_summary_dbase_file(filename):
     """
-    Parse the RHESSI observing summary database file. This file lists the
-    name of observing summary files for specific time ranges along with other
-    info
+    Parse the RHESSI observing summary database file. This file lists the name
+    of observing summary files for specific time ranges along with other info.
 
     Parameters
     ----------
@@ -69,7 +67,6 @@ def parse_observing_summary_dbase_file(filename):
 
     .. note::
         This API is currently limited to providing data from whole days only.
-
     """
     # An example dbase file can be found at:
     # https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
@@ -122,7 +119,6 @@ def parse_observing_summary_hdulist(hdulist):
     -------
     out : `dict`
         Returns a dictionary.
-
     """
     header = hdulist[0].header
 
@@ -160,8 +156,9 @@ def parse_observing_summary_hdulist(hdulist):
 
 
 def uncompress_countrate(compressed_countrate):
-    """Convert the compressed count rate inside of observing summary file from
-    a compressed byte to a true count rate
+    """
+    Convert the compressed count rate inside of observing summary file from a
+    compressed byte to a true count rate.
 
     Parameters
     ----------
@@ -190,7 +187,8 @@ def uncompress_countrate(compressed_countrate):
 
 
 def hsi_linecolors():
-    """Define discrete colors to use for RHESSI plots
+    """
+    Define discrete colors to use for RHESSI plots.
 
     Parameters
     ----------
@@ -209,9 +207,8 @@ def hsi_linecolors():
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1.0, 1.0), image_dim=(64, 64)):
     """
-    Given a stacked calibrated event list fits file create a back
-    projection image for an individual detectors. This function is used by
-    backprojection.
+    Given a stacked calibrated event list fits file create a back projection
+    image for an individual detectors. This function is used by backprojection.
 
     Parameters
     ----------
@@ -232,7 +229,6 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.0, 1.0), image
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-
     """
     # info_parameters = fits[2]
     # detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
@@ -275,8 +271,8 @@ def backprojection(
     image_dim: u.pix = (64, 64) * u.pix,
 ):
     """
-    Given a stacked calibrated event list fits file create a back
-    projection image.
+    Given a stacked calibrated event list fits file create a back projection
+    image.
 
     .. warning:: The image is not in the right orientation!
 
@@ -302,7 +298,6 @@ def backprojection(
     >>> import sunpy.instr.rhessi as rhessi
     >>> map = rhessi.backprojection(sunpy.data.sample.RHESSI_EVENT_LIST)   # doctest: +SKIP
     >>> map.peek()   # doctest: +SKIP
-
     """
     # import sunpy.map in here so that net and timeseries don't end up importing map
     import sunpy.map

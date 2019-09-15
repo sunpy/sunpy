@@ -48,7 +48,9 @@ def vso_client():
 
 @pytest.mark.remote_data
 def test_translate_results_to_query(hek_client):
-    """Make sure that conversion of HEK results to VSO queries is accurate"""
+    """
+    Make sure that conversion of HEK results to VSO queries is accurate.
+    """
     h = hek_client
     hek_query = h.search(hekTime, hekEvent)
     vso_query = hek2vso.translate_results_to_query(hek_query)
@@ -63,7 +65,9 @@ def test_translate_results_to_query(hek_client):
 
 @pytest.mark.remote_data
 def test_vso_attribute_parse(hek_client):
-    """Make sure that Parsing of VSO attributes from HEK queries is accurate"""
+    """
+    Make sure that Parsing of VSO attributes from HEK queries is accurate.
+    """
     h = hek_client
     hek_query = h.search(hekTime, hekEvent)
     vso_query = hek2vso.vso_attribute_parse(hek_query[0])

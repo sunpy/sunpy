@@ -15,8 +15,9 @@ from sunpy.net.helio.parser import (
 
 def wsdl_endpoints():
     """
-    Slightly simplified form of the content on http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService
-    Intentionally contains duplicate URLs
+    Slightly simplified form of the content on
+    http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService Intentionally contains
+    duplicate URLs.
     """
     return """
     <html><body><table>
@@ -35,7 +36,7 @@ def wsdl_endpoints():
 
 def hec_urls():
     """
-    intentionally contains duplicate 'accessURL' elements
+    intentionally contains duplicate 'accessURL' elements.
     """
     return """
     <ri:Resource xmlns:ri="http://www.ivoa.net/xml/RegistryInterface/v1.0"
@@ -75,7 +76,7 @@ def test_webservice_parser():
 
 def some_taverna_urls():
     """
-    Some valid `Taverna` links, duplicates intentional
+    Some valid `Taverna` links, duplicates intentional.
     """
     return (
         "http://www.helio.uk/Taverna/hec?wsdl",
@@ -101,7 +102,9 @@ def wsdl_urls():
 @mock.patch("sunpy.net.helio.parser.link_test", return_value=None)
 def test_webservice_parser_no_content(mock_link_test):
     """
-    No content from supplied URL? Return None
+    No content from supplied URL?
+
+    Return None
     """
     assert webservice_parser("http://www.google.com") is None
 
@@ -110,8 +113,10 @@ def test_webservice_parser_no_content(mock_link_test):
 def test_webservice_parser_get_links(mock_link_test):
     """
     The `sunpy.net.helio.parser.link_test` returns an XML fragment with
-    embedded `accessURL` elements. Ensure that all the `accessURL` are
-    extracted and duplicates discarded.
+    embedded `accessURL` elements.
+
+    Ensure that all the `accessURL` are extracted and duplicates
+    discarded.
     """
     hec_links = webservice_parser("http://www.google.com")
 
@@ -128,7 +133,9 @@ def test_webservice_parser_get_links(mock_link_test):
 @mock.patch("sunpy.net.helio.parser.link_test", return_value=None)
 def test_endpoint_parser_no_content(mock_link_test):
     """
-    No content from the supplied URL? Return None
+    No content from the supplied URL?
+
+    Return None
     """
     assert endpoint_parser("http://example.com") is None
 
@@ -137,6 +144,7 @@ def test_endpoint_parser_no_content(mock_link_test):
 def test_endpoint_parser_get_links(mock_link_test):
     """
     Get all the WSDL endpoints listed on the page of the supplied URL.
+
     Ensure duplicates are removed.
     """
     endpoints = endpoint_parser("http://www.google.com")
@@ -151,7 +159,9 @@ def test_endpoint_parser_get_links(mock_link_test):
 @mock.patch("sunpy.net.helio.parser.endpoint_parser", return_value=None)
 def test_taverna_parser_no_content(mock_endpoint_parser):
     """
-    No links at all? Return None
+    No links at all?
+
+    Return None
     """
     assert taverna_parser("http://example.com") is None
 
@@ -159,7 +169,9 @@ def test_taverna_parser_no_content(mock_endpoint_parser):
 @mock.patch("sunpy.net.helio.parser.endpoint_parser", return_value=["http://try.the.pub/hec"])
 def test_taverna_parser_no_taverna_links(mock_endpoint_parser):
     """
-    There are some URLs but none of them Taverna URLs. Return `None`
+    There are some URLs but none of them Taverna URLs.
+
+    Return `None`
     """
     assert taverna_parser("http://www.google.com") is None
 
@@ -167,7 +179,7 @@ def test_taverna_parser_no_taverna_links(mock_endpoint_parser):
 @mock.patch("sunpy.net.helio.parser.endpoint_parser", return_value=some_taverna_urls())
 def test_taverna_parser_get_taverna_links(mock_endpoint_parser):
     """
-    Retrieve all the Taverna URLs
+    Retrieve all the Taverna URLs.
     """
     taverna_links = taverna_parser("http://www.google.com")
     assert len(taverna_links) == 2
@@ -179,7 +191,9 @@ def test_taverna_parser_get_taverna_links(mock_endpoint_parser):
 @mock.patch("sunpy.net.helio.parser.webservice_parser", return_value=None)
 def test_wsdl_retriever_no_content(mock_endpoint_parser):
     """
-    No links found? Raise ValueError
+    No links found?
+
+    Raise ValueError
     """
     with pytest.raises(ValueError):
         wsdl_retriever()
@@ -190,7 +204,7 @@ def test_wsdl_retriever_no_content(mock_endpoint_parser):
 @mock.patch("sunpy.net.helio.parser.link_test", return_value="some text read")
 def test_wsdl_retriever_get_link(mock_link_test, mock_taverna_parser, mock_webservice_parser):
     """
-    Get a Taverna link
+    Get a Taverna link.
     """
     assert wsdl_retriever() == "http://www.helio.uk/Taverna/hec?wsdl"
 
@@ -199,7 +213,9 @@ def test_wsdl_retriever_get_link(mock_link_test, mock_taverna_parser, mock_webse
 @mock.patch("sunpy.net.helio.parser.taverna_parser", return_value=None)
 def test_wsdl_retriever_no_taverna_urls(mock_taverna_parser, mock_webservice_parser):
     """
-    Unable to find any valid Taverna URLs? Raise ValueError
+    Unable to find any valid Taverna URLs?
+
+    Raise ValueError
     """
     with pytest.raises(ValueError):
         wsdl_retriever()
@@ -210,7 +226,9 @@ def test_wsdl_retriever_no_taverna_urls(mock_taverna_parser, mock_webservice_par
 @mock.patch("sunpy.net.helio.parser.taverna_parser", return_value=some_taverna_urls())
 def test_wsdl_retriever_wsdl(mock_taverna_parser, mock_webservice_parser, mock_link_test):
     """
-    Unable to find any valid Taverna URLs? Raise ValueError
+    Unable to find any valid Taverna URLs?
+
+    Raise ValueError
     """
     with pytest.raises(ValueError):
         wsdl_retriever()
@@ -248,8 +266,7 @@ def test_link_test(mock_urlopen):
 @mock.patch("sunpy.net.helio.parser.link_test", side_effect=ValueError)
 def test_link_test_on_valueerror(mock_link_test):
     """
-    If `link_test` internally raises `ValueError`, ensure it
-    returns `None`
+    If `link_test` internally raises `ValueError`, ensure it returns `None`
     """
     link_test("") is None
 
@@ -257,8 +274,7 @@ def test_link_test_on_valueerror(mock_link_test):
 @mock.patch("sunpy.net.helio.parser.link_test", side_effect=urllib.error.URLError)
 def test_link_test_on_urlerror(mock_link_test):
     """
-    If `link_test` internally raises `URLError`, ensure it
-    returns `None`
+    If `link_test` internally raises `URLError`, ensure it returns `None`
     """
     link_test("") is None
 

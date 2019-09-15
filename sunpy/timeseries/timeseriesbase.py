@@ -404,9 +404,10 @@ class GenericTimeSeries:
     @peek_show
     def peek(self, **kwargs):
         """
-        Displays a graphical overview of the data in this object for user evaluation.
-        For the creation of plots, users should instead use the
-        `~sunpy.timeseries.GenericTimeSeries.plot` method and Matplotlib's pyplot framework.
+        Displays a graphical overview of the data in this object for user
+        evaluation. For the creation of plots, users should instead use the
+        `~sunpy.timeseries.GenericTimeSeries.plot` method and Matplotlib's
+        pyplot framework.
 
         Parameters
         ----------

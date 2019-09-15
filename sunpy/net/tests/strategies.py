@@ -30,7 +30,7 @@ def Times(draw, max_value, min_value):
 def TimeDelta(draw):
     """
     Timedelta strategy that limits the maximum timedelta to being positive and
-    abs max is about 10 weeks + 10 days + 10 hours + 10 minutes + a bit
+    abs max is about 10 weeks + 10 days + 10 hours + 10 minutes + a bit.
     """
     st.sampled_from(["weeks", "days", "hours", "minutes", "seconds"])
     values = st.floats(min_value=1, max_value=10)
@@ -63,8 +63,8 @@ def offline_instruments():
 
 def online_instruments():
     """
-    Returns a strategy for any instrument that does need the internet to do
-    a query.
+    Returns a strategy for any instrument that does need the internet to do a
+    query.
     """
     online_instr = ["eve", "rhessi", "norh"]
     online_instr = st.builds(a.Instrument, st.sampled_from(online_instr))

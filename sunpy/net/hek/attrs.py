@@ -9,13 +9,15 @@
 # ALL CHANGES WILL BE LOST THE NEXT TIME IT IS GENERATED FROM THE TEMPLATE.
 
 """
-Attributes that can be used to construct HEK queries. They are different to
-the VSO ones in that a lot of them are wrappers that conveniently expose
-the comparisons by overloading Python operators. So, e.g., you are able
-to say AR & AR.NumSpots < 5 to find all active regions with less than 5 spots.
-As with the VSO query, you can use the fundamental logic operators AND and OR
-to construct queries of almost arbitrary complexity. Note that complex queries
-result in multiple requests to the server which might make them less efficient.
+Attributes that can be used to construct HEK queries.
+
+They are different to the VSO ones in that a lot of them are wrappers
+that conveniently expose the comparisons by overloading Python
+operators. So, e.g., you are able to say AR & AR.NumSpots < 5 to find
+all active regions with less than 5 spots. As with the VSO query, you
+can use the fundamental logic operators AND and OR to construct queries
+of almost arbitrary complexity. Note that complex queries result in
+multiple requests to the server which might make them less efficient.
 """
 from sunpy.net import attr
 from sunpy.time import parse_time
@@ -27,9 +29,13 @@ def apply(f):
 
 
 class _ParamAttr(attr.Attr):
-    """ A _ParamAttr is used to represent equality or inequality checks
-    for certain parameters. It stores the attribute's name, the operator to
-    compare with, and the value to compare to. """
+    """
+    A _ParamAttr is used to represent equality or inequality checks for certain
+    parameters.
+
+    It stores the attribute's name, the operator to compare with, and
+    the value to compare to.
+    """
 
     def __init__(self, name, op, value):
         attr.Attr.__init__(self)
@@ -59,9 +65,12 @@ class _BoolParamAttr(_ParamAttr):
 
 
 class _ListAttr(attr.Attr):
-    """ A _ListAttr is used when the server expects a list of things with
-    the name (GET parameter name) key. By adding the _ListAttr to the query,
-    item is added to that list. """
+    """
+    A _ListAttr is used when the server expects a list of things with the name
+    (GET parameter name) key.
+
+    By adding the _ListAttr to the query, item is added to that list.
+    """
 
     def __init__(self, key, item):
         attr.Attr.__init__(self)
@@ -98,7 +107,9 @@ class EventType(attr.Attr):
 
 # XXX: XOR
 class Time(attr.Attr):
-    """ Restrict query to time range between start and end. """
+    """
+    Restrict query to time range between start and end.
+    """
 
     def __init__(self, start, end):
         attr.Attr.__init__(self)

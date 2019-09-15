@@ -1,5 +1,7 @@
-"""Test cases for SOHO Map subclasses.
-This particular test file pertains to MDIMap.
+"""
+Test cases for SOHO Map subclasses. This particular test file pertains to
+MDIMap.
+
 @Author: Pritish C. (VaticanCameos)
 """
 
@@ -25,24 +27,33 @@ def mdi():
 
 # MDI Tests
 def test_fitstoMDI(mdi):
-    """Tests the creation of MDIMap using FITS."""
+    """
+    Tests the creation of MDIMap using FITS.
+    """
     assert isinstance(mdi, MDIMap)
 
 
 def test_is_datasource_for(mdi):
-    """Test the is_datasource_for method of MDIMap.
-    Note that header data to be provided as an argument
-    can be a MetaDict object."""
+    """
+    Test the is_datasource_for method of MDIMap.
+
+    Note that header data to be provided as an argument can be a
+    MetaDict object.
+    """
     assert mdi.is_datasource_for(mdi.data, mdi.meta)
 
 
 def test_observatory(mdi):
-    """Tests the observatory property of the MDIMap object."""
+    """
+    Tests the observatory property of the MDIMap object.
+    """
     assert mdi.observatory == "SOHO"
 
 
 def test_measurement(mdi):
-    """Tests the measurement property of the MDIMap object."""
+    """
+    Tests the measurement property of the MDIMap object.
+    """
     assert mdi.measurement == "continuum"
 
 

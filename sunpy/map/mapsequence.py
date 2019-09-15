@@ -1,4 +1,6 @@
-"""A Python MapSequence Object"""
+"""
+A Python MapSequence Object.
+"""
 # pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 from copy import deepcopy
@@ -19,7 +21,7 @@ __all__ = ["MapSequence"]
 
 class MapSequence:
     """
-    MapSequence
+    MapSequence.
 
     A series of Maps in a single object.
 
@@ -49,7 +51,9 @@ class MapSequence:
     """
 
     def __init__(self, *args, sortby="date", derotate=False, **kwargs):
-        """Creates a new Map instance"""
+        """
+        Creates a new Map instance.
+        """
 
         self.maps = expand_list(args)
 
@@ -68,9 +72,13 @@ class MapSequence:
             self._derotate()
 
     def __getitem__(self, key):
-        """Overriding indexing operation.  If the key results in a single map,
-        then a map object is returned.  This allows functions like enumerate to
-        work.  Otherwise, a mapsequence is returned."""
+        """
+        Overriding indexing operation.
+
+        If the key results in a single map, then a map object is
+        returned.  This allows functions like enumerate to work.
+        Otherwise, a mapsequence is returned.
+        """
 
         if isinstance(self.maps[key], GenericMap):
             return self.maps[key]
@@ -78,7 +86,9 @@ class MapSequence:
             return MapSequence(self.maps[key])
 
     def __len__(self):
-        """Return the number of maps in a mapsequence."""
+        """
+        Return the number of maps in a mapsequence.
+        """
         return len(self.maps)
 
     # Sorting methods
@@ -87,14 +97,16 @@ class MapSequence:
         return lambda m: m.date  # maps.sort(key=attrgetter('date'))
 
     def _derotate(self):
-        """Derotates the layers in the MapSequence"""
+        """
+        Derotates the layers in the MapSequence.
+        """
 
     def plot(
         self, axes=None, resample=None, annotate=True, interval=200, plot_function=None, **kwargs
     ):
         """
         A animation plotting routine that animates each element in the
-        MapSequence
+        MapSequence.
 
         Parameters
         ----------
@@ -153,7 +165,6 @@ class MapSequence:
         >>> sequence = Map(files, sequence=True)   # doctest: +SKIP
         >>> ani = sequence.peek(plot_function=myplot)   # doctest: +SKIP
         >>> plt.show()   # doctest: +SKIP
-
         """
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.maps[0].wcs)
@@ -226,7 +237,7 @@ class MapSequence:
     def peek(self, resample=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
-        MapSequence
+        MapSequence.
 
         Parameters
         ----------
@@ -320,15 +331,17 @@ class MapSequence:
 
     def as_array(self):
         """
-        If all the map shapes are the same, their image data is rendered
-        into the appropriate numpy object.  If none of the maps have masks,
-        then the data is returned as a (ny, nx, nt) ndarray.  If all the maps
-        have masks, then the data is returned as a (ny, nx, nt) masked array
-        with all the masks copied from each map.  If only some of the maps
-        have masked then the data is returned as a (ny, nx, nt) masked array,
-        with masks copied from maps as appropriately; maps that do not have a
-        mask are supplied with a mask that is full of False entries.
-        If all the map shapes are not the same, a ValueError is thrown.
+        If all the map shapes are the same, their image data is rendered into
+        the appropriate numpy object.
+
+        If none of the maps have masks, then the data is returned as a
+        (ny, nx, nt) ndarray.  If all the maps have masks, then the data
+        is returned as a (ny, nx, nt) masked array with all the masks
+        copied from each map.  If only some of the maps have masked then
+        the data is returned as a (ny, nx, nt) masked array, with masks
+        copied from maps as appropriately; maps that do not have a mask
+        are supplied with a mask that is full of False entries. If all
+        the map shapes are not the same, a ValueError is thrown.
         """
         if self.all_maps_same_shape():
             data = np.swapaxes(

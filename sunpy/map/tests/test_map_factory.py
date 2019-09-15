@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jun 21 15:05:09 2013
+Created on Fri Jun 21 15:05:09 2013.
 
 @author: stuart
 """

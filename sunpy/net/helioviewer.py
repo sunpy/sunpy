@@ -20,7 +20,9 @@ __all__ = ["HelioviewerClient"]
 
 
 class HelioviewerClient:
-    """Helioviewer.org Client"""
+    """
+    Helioviewer.org Client.
+    """
 
     def __init__(self, url="https://api.helioviewer.org/"):
         """
@@ -62,7 +64,8 @@ class HelioviewerClient:
 
     def get_data_sources(self):
         """
-        Return a hierarchical dictionary of the available datasources on helioviewer.org.
+        Return a hierarchical dictionary of the available datasources on
+        helioviewer.org.
 
         This uses ``getDataSources`` from the Helioviewer API.
 
@@ -85,6 +88,7 @@ class HelioviewerClient:
     ):
         """
         Finds the closest image available for the specified source and date.
+
         **This does not download any file.**
 
         This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`_ from the Helioviewer API.
@@ -151,11 +155,12 @@ class HelioviewerClient:
         overwrite=False,
     ):
         """
-        Downloads the JPEG 2000 that most closely matches the specified time and
-        data source.
-        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-        can then be used to get required information.
-        This uses `getJP2Image <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+        Downloads the JPEG 2000 that most closely matches the specified time
+        and data source. We can use `observatory` and `measurement` or
+        `instrument` and `measurement` to get the value for source ID which can
+        then be used to get required information. This uses `getJP2Image
+        <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer
+        API.
 
         .. note::
             We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
@@ -214,11 +219,13 @@ class HelioviewerClient:
         self, date, observatory=None, instrument=None, detector=None, measurement=None, jp2_id=None
     ):
         """
-        Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section
-        of Helioviewer-specific metadata.
-        We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
-        can then be used to get required information.
-        This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer API.
+        Get the XML header embedded in a JPEG2000 image. Includes the FITS
+        header as well as a section of Helioviewer-specific metadata. We can
+        use `observatory` and `measurement` or `instrument` and `measurement`
+        to get the value for source ID which can then be used to get required
+        information. This uses `getJP2Header
+        <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer
+        API.
 
         .. note::
             We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
@@ -295,8 +302,8 @@ class HelioviewerClient:
         y2=None,
     ):
         """
-        Downloads the PNG that most closely matches the specified time and
-        data source.
+        Downloads the PNG that most closely matches the specified time and data
+        source.
 
         This function is different to `~sunpy.net.helioviewer.HelioviewerClient.download_jp2`.
         Here you get PNG images and return more complex images.
@@ -434,7 +441,9 @@ class HelioviewerClient:
         return self._get_file(params, progress=progress, directory=directory, overwrite=overwrite)
 
     def is_online(self):
-        """Returns True if Helioviewer is online and available."""
+        """
+        Returns True if Helioviewer is online and available.
+        """
         try:
             self.get_data_sources()
         except urllib.error.URLError:
@@ -443,13 +452,17 @@ class HelioviewerClient:
         return True
 
     def _get_json(self, params):
-        """Returns a JSON result as a string."""
+        """
+        Returns a JSON result as a string.
+        """
         reader = codecs.getreader("utf-8")
         response = self._request(params)
         return json.load(reader(response))
 
     def _get_file(self, params, progress=True, directory=None, overwrite=False):
-        """Downloads a file and return the filepath to that file."""
+        """
+        Downloads a file and return the filepath to that file.
+        """
         if directory is None:
             directory = Path(sunpy.config.get("downloads", "download_dir"))
         else:
@@ -484,7 +497,9 @@ class HelioviewerClient:
         return response
 
     def _format_date(self, date):
-        """Formats a date for Helioviewer API requests"""
+        """
+        Formats a date for Helioviewer API requests.
+        """
         return parse_time(date).isot + "Z"
 
     def _get_source_id(self, key):

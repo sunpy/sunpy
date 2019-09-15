@@ -1,8 +1,8 @@
 """
 Common solar physics coordinate systems.
 
-This submodule implements various solar physics coordinate frames for use with
-the `astropy.coordinates` module.
+This submodule implements various solar physics coordinate frames for
+use with the `astropy.coordinates` module.
 """
 import numpy as np
 
@@ -39,7 +39,8 @@ __all__ = [
 
 def _frame_parameters():
     """
-    Returns formatting dictionary to use with add_common_docstring to populate frame docstrings
+    Returns formatting dictionary to use with add_common_docstring to populate
+    frame docstrings.
     """
     ret = {}
 
@@ -142,7 +143,8 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
 
     def represent_as(self, base, s="base", in_frame_units=False):
         """
-        If a frame wrap angle is set, use that wrap angle for any spherical representations.
+        If a frame wrap angle is set, use that wrap angle for any spherical
+        representations.
         """
         data = super().represent_as(base, s, in_frame_units=in_frame_units)
         if self._wrap_angle is not None and isinstance(
@@ -250,8 +252,9 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
 
     def represent_as(self, base, s="base", in_frame_units=False):
         """
-        Unless the requested representation is UnitSphericalRepresentation, scale a coordinate with
-        dimensionless length so that it has the length of the solar radius.
+        Unless the requested representation is UnitSphericalRepresentation,
+        scale a coordinate with dimensionless length so that it has the length
+        of the solar radius.
         """
         data = super().represent_as(base, s, in_frame_units=in_frame_units)
         if (
@@ -386,7 +389,8 @@ class Heliocentric(SunPyBaseCoordinateFrame):
 @add_common_docstring(**_frame_parameters())
 class Helioprojective(SunPyBaseCoordinateFrame):
     """
-    A coordinate or frame in the Helioprojective Cartesian (HPC) system, which is observer-based.
+    A coordinate or frame in the Helioprojective Cartesian (HPC) system, which
+    is observer-based.
 
     - The origin is the location of the observer.
     - ``theta_x`` is the angle relative to the plane containing the Sun-observer line and the Sun's

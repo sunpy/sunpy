@@ -484,7 +484,9 @@ def test_goes_lx_obstime():
 
 
 def test_flux_to_classletter():
-    """Test converting fluxes into a class letter"""
+    """
+    Test converting fluxes into a class letter.
+    """
     fluxes = Quantity(10 ** (-np.arange(9, 2.0, -1)), "W/m**2")
     classesletter = ["A", "A", "B", "C", "M", "X", "X"]
     calculated_classesletter = [goes.flux_to_flareclass(f)[0] for f in fluxes]

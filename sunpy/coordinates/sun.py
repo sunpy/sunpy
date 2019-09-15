@@ -1,5 +1,5 @@
 """
-Sun-specific coordinate calculations
+Sun-specific coordinate calculations.
 """
 
 import numpy as np
@@ -69,9 +69,10 @@ def angular_radius(t="now"):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def sky_position(t="now", equinox_of_date=True):
     """
-    Returns the apparent position of the Sun (right ascension and declination) on the
-    celestial sphere using the equatorial coordinate system, referred to the true equinox of date
-    (as default).  Corrections for nutation and aberration (for Earth motion) are included.
+    Returns the apparent position of the Sun (right ascension and declination)
+    on the celestial sphere using the equatorial coordinate system, referred to
+    the true equinox of date (as default).  Corrections for nutation and
+    aberration (for Earth motion) are included.
 
     Parameters
     ----------
@@ -90,9 +91,9 @@ def sky_position(t="now", equinox_of_date=True):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def carrington_rotation_number(t="now"):
     """
-    Return the Carrington rotation number.  Each whole rotation number marks when the Sun's prime
-    meridian coincides with the central meridian as seen from Earth, with the first rotation
-    starting on 1853 November 9.
+    Return the Carrington rotation number.  Each whole rotation number marks
+    when the Sun's prime meridian coincides with the central meridian as seen
+    from Earth, with the first rotation starting on 1853 November 9.
 
     Parameters
     ----------
@@ -124,8 +125,8 @@ def carrington_rotation_number(t="now"):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_longitude(t="now"):
     """
-    Returns the Sun's true geometric longitude, referred to the mean equinox of date.  No
-    corrections for nutation or aberration are included.
+    Returns the Sun's true geometric longitude, referred to the mean equinox of
+    date.  No corrections for nutation or aberration are included.
 
     Parameters
     ----------
@@ -146,8 +147,8 @@ def true_longitude(t="now"):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def apparent_longitude(t="now"):
     """
-    Returns the Sun's apparent longitude, referred to the true equinox of date.  Corrections for
-    nutation and aberration (for Earth motion) are included.
+    Returns the Sun's apparent longitude, referred to the true equinox of date.
+    Corrections for nutation and aberration (for Earth motion) are included.
 
     Parameters
     ----------
@@ -173,8 +174,8 @@ def apparent_longitude(t="now"):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_latitude(t="now"):
     """
-    Returns the Sun's true geometric latitude, referred to the mean equinox of date.  No
-    corrections for nutation or aberration are included.
+    Returns the Sun's true geometric latitude, referred to the mean equinox of
+    date.  No corrections for nutation or aberration are included.
 
     Parameters
     ----------
@@ -195,8 +196,8 @@ def true_latitude(t="now"):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def apparent_latitude(t="now"):
     """
-    Returns the Sun's apparent latitude, referred to the true equinox of date.  Corrections for
-    nutation and aberration (for Earth motion) are included.
+    Returns the Sun's apparent latitude, referred to the true equinox of date.
+    Corrections for nutation and aberration (for Earth motion) are included.
 
     Parameters
     ----------
@@ -216,8 +217,8 @@ def apparent_latitude(t="now"):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def mean_obliquity_of_ecliptic(t="now"):
     """
-    Returns the mean obliquity of the ecliptic, using the IAU 2006 definition.  No correction for
-    nutation is included.
+    Returns the mean obliquity of the ecliptic, using the IAU 2006 definition.
+    No correction for nutation is included.
 
     Parameters
     ----------
@@ -233,9 +234,10 @@ def mean_obliquity_of_ecliptic(t="now"):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_rightascension(t="now", equinox_of_date=True):
     """
-    Returns the Sun's true geometric right ascension relative to Earth, referred to the mean equinox
-    of date (as default).  No corrections for nutation or aberration are included.  The correction
-    due to light travel time would be negligible, so the output is also the astrometric right
+    Returns the Sun's true geometric right ascension relative to Earth,
+    referred to the mean equinox of date (as default).  No corrections for
+    nutation or aberration are included.  The correction due to light travel
+    time would be negligible, so the output is also the astrometric right
     ascension.
 
     Parameters
@@ -270,9 +272,10 @@ def true_rightascension(t="now", equinox_of_date=True):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_declination(t="now", equinox_of_date=True):
     """
-    Returns the Sun's true geometric declination relative to Earth, referred to the mean equinox
-    of date (as default).  No corrections for nutation or aberration are included.  The correction
-    due to light travel time would be negligible, so the output is also the astrometric declination.
+    Returns the Sun's true geometric declination relative to Earth, referred to
+    the mean equinox of date (as default).  No corrections for nutation or
+    aberration are included.  The correction due to light travel time would be
+    negligible, so the output is also the astrometric declination.
 
     Parameters
     ----------
@@ -304,8 +307,8 @@ def true_declination(t="now", equinox_of_date=True):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def true_obliquity_of_ecliptic(t="now"):
     """
-    Returns the true obliquity of the ecliptic, using the IAU 2006 definition.  Correction for
-    nutation is included.
+    Returns the true obliquity of the ecliptic, using the IAU 2006 definition.
+    Correction for nutation is included.
 
     Parameters
     ----------
@@ -327,8 +330,9 @@ def true_obliquity_of_ecliptic(t="now"):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def apparent_rightascension(t="now", equinox_of_date=True):
     """
-    Returns the Sun's apparent right ascension relative to Earth, referred to the true equinox
-    of date (as default).  Corrections for nutation or aberration (for Earth motion) are included.
+    Returns the Sun's apparent right ascension relative to Earth, referred to
+    the true equinox of date (as default).  Corrections for nutation or
+    aberration (for Earth motion) are included.
 
     Parameters
     ----------
@@ -360,8 +364,9 @@ def apparent_rightascension(t="now", equinox_of_date=True):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def apparent_declination(t="now", equinox_of_date=True):
     """
-    Returns the Sun's apparent declination relative to Earth, referred to the true equinox
-    of date (as default).  Corrections for nutation or aberration (for Earth motion) are included.
+    Returns the Sun's apparent declination relative to Earth, referred to the
+    true equinox of date (as default).  Corrections for nutation or aberration
+    (for Earth motion) are included.
 
     Parameters
     ----------
@@ -391,10 +396,10 @@ def apparent_declination(t="now", equinox_of_date=True):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def print_params(t="now"):
     """
-    Print out a summary of solar ephemeris. 'True' values are true geometric values referred to the
-    mean equinox of date, with no corrections for nutation or aberration.  'Apparent' values are
-    referred to the true equinox of date, with corrections for nutation and aberration (for Earth
-    motion).
+    Print out a summary of solar ephemeris. 'True' values are true geometric
+    values referred to the mean equinox of date, with no corrections for
+    nutation or aberration.  'Apparent' values are referred to the true equinox
+    of date, with corrections for nutation and aberration (for Earth motion).
 
     Parameters
     ----------

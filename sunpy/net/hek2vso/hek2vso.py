@@ -7,8 +7,8 @@
 # pylint: disable=W0142
 
 """
-This module translates the results of a HEK query into a VSO query
-and returns the results from the VSO query to the user.
+This module translates the results of a HEK query into a VSO query and returns
+the results from the VSO query to the user.
 """
 
 import sys
@@ -107,7 +107,7 @@ def vso_attribute_parse(phrase):
 
 class H2VClient:
     """
-    Class to handle HEK to VSO translations
+    Class to handle HEK to VSO translations.
 
     Though the single step functions exists outside this class where
     translation is also possible, this class provides a framework where
@@ -130,7 +130,7 @@ class H2VClient:
 
     def full_query(self, client_query, limit=None, progress=False):
         """
-        An encompassing method that takes a HEK query and returns a VSO result
+        An encompassing method that takes a HEK query and returns a VSO result.
 
         Takes a list containing a HEK style query, passes it to a HEKClient
         instance, translates it, queries the VSO webservice, then returns

@@ -3,7 +3,8 @@
 # Copyright (c) 2005-2010 ActiveState Software Inc.
 # Copyright (c) 2013 Eddy Petrișor
 
-"""Utilities for determining application-specific dirs.
+"""
+Utilities for determining application-specific dirs.
 
 See <https://github.com/ActiveState/appdirs> for details and usage.
 """
@@ -410,7 +411,9 @@ def user_log_dir(appname=None, appauthor=None, version=None, opinion=True):
 
 
 class AppDirs:
-    """Convenience wrapper for getting application dirs."""
+    """
+    Convenience wrapper for getting application dirs.
+    """
 
     def __init__(self, appname=None, appauthor=None, version=None, roaming=False, multipath=False):
         self.appname = appname
@@ -460,9 +463,11 @@ class AppDirs:
 
 
 def _get_win_folder_from_registry(csidl_name):
-    """This is a fallback technique at best. I'm not sure if using the
-    registry for this guarantees us the correct answer for all CSIDL_*
-    names.
+    """
+    This is a fallback technique at best.
+
+    I'm not sure if using the registry for this guarantees us the
+    correct answer for all CSIDL_* names.
     """
     if PY3:
         import winreg as _winreg

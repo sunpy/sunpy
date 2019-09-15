@@ -42,7 +42,6 @@ References
 
 .. [Ref1] Hanser, F.A., & Sellers, F.B. 1996, Proc. SPIE, 2812, 344
 .. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI: `10.1051/0004-6361/200911712 <https://doi.org/10.1051/0004-6361/200911712>`__
-
 """
 
 import csv
@@ -111,7 +110,6 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     goes_class_filter: (optional) str
         A string specifying a minimum GOES class for inclusion in the list,
         e.g. 'M1', 'X2'.
-
     """
     # Importing hek here to avoid calling code that relies on optional dependencies.
     from sunpy.net import hek
@@ -162,7 +160,8 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 
 def calculate_temperature_em(goests, abundances="coronal", download=False, download_dir=None):
     """
-    Calculates temperature and emission measure from a `~sunpy.timeseries.XRSTimeSeries`.
+    Calculates temperature and emission measure from a
+    `~sunpy.timeseries.XRSTimeSeries`.
 
     This function calculates the isothermal temperature and
     corresponding volume emission measure of the solar soft X-ray
@@ -397,7 +396,6 @@ def _goes_chianti_tem(
     <Quantity [11.28295376, 11.28295376] MK>
     >>> em  # doctest: +REMOTE_DATA
     <Quantity [4.78577516e+48, 4.78577516e+48] 1 / cm3>
-
     """
     if not download_dir:
         download_dir = get_and_create_download_dir()
@@ -542,7 +540,6 @@ def _goes_get_chianti_temp(
     ...                               abundances="coronal")  # doctest: +REMOTE_DATA
     >>> temp  # doctest: +REMOTE_DATA
     <Quantity [12.27557778, 12.27557778] MK>
-
     """
     if not download_dir:
         download_dir = get_and_create_download_dir()
@@ -699,7 +696,6 @@ def _goes_get_chianti_em(
     ...                           abundances="coronal")  # doctest: +REMOTE_DATA
     >>> em  # doctest: +REMOTE_DATA
     <Quantity [3.45200672e+48, 3.45200672e+48] 1 / cm3>
-
     """
     if not download_dir:
         download_dir = get_and_create_download_dir()
@@ -1214,7 +1210,6 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     <Quantity 1.96860565e+19 s W>
     >>> lx_out["shortlum_int"]  # doctest: +REMOTE_DATA
     <Quantity 1.96860565e+18 s W>
-
     """
     # Calculate X-ray luminosities
     longlum = _calc_xraylum(longflux, date=date)
@@ -1298,7 +1293,6 @@ def _calc_xraylum(flux: u.W / u.m / u.m, date=None):
     >>> xraylum = _calc_xraylum(flux, date="2014-04-21")  # doctest: +REMOTE_DATA
     >>> xraylum  # doctest: +REMOTE_DATA
     <Quantity [1.98751663e+18, 1.98751663e+18] W>
-
     """
     if date is not None:
         date = parse_time(date)

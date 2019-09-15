@@ -120,8 +120,10 @@ class MapFactory(BasicRegistrationFactory):
     """  # noqa
 
     def _read_file(self, fname, **kwargs):
-        """ Read in a file name and return the list of (data, meta) pairs in
-            that file. """
+        """
+        Read in a file name and return the list of (data, meta) pairs in that
+        file.
+        """
 
         # File gets read here.  This needs to be generic enough to seamlessly
         # call a fits file or a jpeg2k file, etc
@@ -153,6 +155,7 @@ class MapFactory(BasicRegistrationFactory):
         """
         Parses an args list for data-header pairs.  args can contain any
         mixture of the following entries:
+
         * tuples of data,header
         * data, header not in a tuple
         * data, wcs object in a tuple
@@ -171,7 +174,6 @@ class MapFactory(BasicRegistrationFactory):
                          'file4',
                          'directory1',
                          '*.fits')
-
         """
 
         data_header_pairs = list()
@@ -242,9 +244,10 @@ class MapFactory(BasicRegistrationFactory):
         return data_header_pairs, already_maps
 
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
-        """ Method for running the factory. Takes arbitrary arguments and
-        keyword arguments and passes them to a sequence of pre-registered types
-        to determine which is the correct Map-type to build.
+        """
+        Method for running the factory. Takes arbitrary arguments and keyword
+        arguments and passes them to a sequence of pre-registered types to
+        determine which is the correct Map-type to build.
 
         Arguments args and kwargs are passed through to the validation
         function and to the constructor for the final type.  For Map types,
@@ -348,21 +351,22 @@ def _is_url(arg):
 
 
 class InvalidMapInput(ValueError):
-    """Exception to raise when input variable is not a Map instance and does
-    not point to a valid Map input file."""
-
+    """
+    Exception to raise when input variable is not a Map instance and does not
+    point to a valid Map input file.
+    """
 
 
 class InvalidMapType(ValueError):
-    """Exception to raise when an invalid type of map is requested with Map
     """
-
+    Exception to raise when an invalid type of map is requested with Map.
+    """
 
 
 class NoMapsFound(ValueError):
-    """Exception to raise when input does not point to any valid maps or files
     """
-
+    Exception to raise when input does not point to any valid maps or files.
+    """
 
 
 Map = MapFactory(

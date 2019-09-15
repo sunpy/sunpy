@@ -15,17 +15,15 @@ class Series(SimpleAttr):
     """
 
 
-
 class Keys(SimpleAttr):
     """
     Keys choose which keywords to fetch while making a query request.
     """
 
 
-
 class PrimeKey(Attr):
     """
-    Prime Keys
+    Prime Keys.
     """
 
     def __init__(self, label, value):
@@ -44,8 +42,8 @@ class PrimeKey(Attr):
 
 class Segment(Attr):
     """
-    Segments choose which files to download when there are more than
-    one present for each record e.g. 'image'.
+    Segments choose which files to download when there are more than one
+    present for each record e.g. 'image'.
     """
 
     def __init__(self, value):
@@ -61,16 +59,17 @@ class Segment(Attr):
 
 class Protocol(SimpleAttr):
     """
-    The type of download to request one of
-    ("FITS", "JPEG", "MPG", "MP4", or "as-is").
+    The type of download to request one of ("FITS", "JPEG", "MPG", "MP4", or
+    "as-is").
+
     Only FITS is supported, the others will require extra keywords.
     """
 
 
-
 class Notify(SimpleAttr):
     """
-    An email address to get a notification to when JSOC has staged your request.
+    An email address to get a notification to when JSOC has staged your
+    request.
     """
 
     def __init__(self, value):

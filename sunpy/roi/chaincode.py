@@ -3,7 +3,6 @@ This module implements a function to understand chaincodes from HELIO.
 """
 import numpy as np
 
-
 __all__ = ["Chaincode"]
 
 

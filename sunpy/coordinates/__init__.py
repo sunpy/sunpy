@@ -14,7 +14,6 @@ for converting other coordinates to them using attribute-style access).
 The frames colored in cyan are implemented in `astropy.coordinates`, and there
 are other astronomical frames that can be transformed to that are not shown
 below.  See the documentation for `astropy.coordinates` for more information.
-
 """
 
 from . import sun, transformations

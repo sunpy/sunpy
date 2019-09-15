@@ -17,16 +17,16 @@ __all__ = [
 
 
 class EmptyCommandStackError(Exception):
-    """This exception is raised if it is attempted to pop from a command stack
+    """
+    This exception is raised if it is attempted to pop from a command stack
     even though it is empty.
-
     """
 
 
 class NoSuchEntryError(Exception):
-    """This exception is raised if it is attempted to remove an entry even
-    though it does not exist in the database.
-
+    """
+    This exception is raised if it is attempted to remove an entry even though
+    it does not exist in the database.
     """
 
     def __init__(self, database_entry):
@@ -40,9 +40,9 @@ class NoSuchEntryError(Exception):
 
 
 class NonRemovableTagError(Exception):
-    """This exception is raised if it is attempted to remove a tag from a
-    database entry even though it is not saved in this entry.
-
+    """
+    This exception is raised if it is attempted to remove a tag from a database
+    entry even though it is not saved in this entry.
     """
 
     def __init__(self, database_entry, tag):
@@ -55,13 +55,15 @@ class NonRemovableTagError(Exception):
 
 
 class DatabaseOperation(ABC):
-    """This is the abstract main class for all database operations. To
-    implement a new operation, inherit from this class and override the methods
-    __call__ and undo. Both these methods get no parameters (except for self of
-    course). The undo method is expected to do the exact opposite of the
-    __call__ method, so that calling __call__ *and* undo multiple times in a
-    row must not have any side-effects. This is not checked in any way, though.
+    """
+    This is the abstract main class for all database operations.
 
+    To implement a new operation, inherit from this class and override
+    the methods __call__ and undo. Both these methods get no parameters
+    (except for self of course). The undo method is expected to do the
+    exact opposite of the __call__ method, so that calling __call__
+    *and* undo multiple times in a row must not have any side-effects.
+    This is not checked in any way, though.
     """
 
     @abstractmethod
@@ -109,10 +111,12 @@ class CompositeOperation(DatabaseOperation):
 
 
 class AddEntry(DatabaseOperation):
-    """Add a new database entry to this session. It is not checked whether an
-    equivalent entry is already saved in the session; this has to be checked by
-    the caller. The ``undo`` method removes the entry from the session again.
+    """
+    Add a new database entry to this session.
 
+    It is not checked whether an equivalent entry is already saved in
+    the session; this has to be checked by the caller. The ``undo``
+    method removes the entry from the session again.
     """
 
     def __init__(self, session, database_entry):
@@ -145,11 +149,12 @@ class AddEntry(DatabaseOperation):
 
 
 class RemoveEntry(DatabaseOperation):
-    """Remove the given database entry from the session. If it cannot be
-    removed, because it is not stored in the session,
+    """
+    Remove the given database entry from the session. If it cannot be removed,
+    because it is not stored in the session,
+
     :exc:`sunpy.database.NoSuchEntryError` is raised. The ``undo`` method puts
     the database entry back into the session object.
-
     """
 
     def __init__(self, session, entry):
@@ -175,12 +180,14 @@ class RemoveEntry(DatabaseOperation):
 
 
 class EditEntry(DatabaseOperation):
-    """Change the properties of the database entry. The given keyword arguments
+    """
+    Change the properties of the database entry.
+
+    The given keyword arguments
     are used to set the attributes of the entry. The keys represent the
     attribute name and the values represent the new value of this attribute.
     Example: ``EditEntry(entry, foo='bar')`` will set the attribute ``foo`` of
     ``entry`` to the value ``'bar'``.
-
     """
 
     def __init__(self, database_entry, **kwargs):
@@ -240,11 +247,12 @@ class AddTag(DatabaseOperation):
 
 
 class RemoveTag(DatabaseOperation):
-    """Remove the tag from the given database entry. If the tag cannot be
-    removed from the database entry because it is not assigned to the entry,
+    """
+    Remove the tag from the given database entry. If the tag cannot be removed
+    from the database entry because it is not assigned to the entry,
+
     :exc:`sunpy.database.NonRemovableTagError` is raised. The ``undo`` method
     puts the removed tag back into the tag list of the database entry.
-
     """
 
     def __init__(self, session, database_entry, tag):
@@ -292,13 +300,16 @@ class RemoveTag(DatabaseOperation):
 
 
 class CommandManager:
-    """The CommandManager saves all executed and reverted commands to act as an
-    undo-redo-manager. All executed commands are saved in the list attribute
-    ``undo_commands`` and all undone commands are saved in the list attribute
-    ``redo_commands``. It is not recommended to alter these stacks directly;
-    instead, use the methods ``push_undo_command``, ``pop_undo_command``,
-    ``push_redo_command``, and ``pop_redo_command``, respectively.
+    """
+    The CommandManager saves all executed and reverted commands to act as an
+    undo-redo-manager.
 
+    All executed commands are saved in the list attribute
+    ``undo_commands`` and all undone commands are saved in the list
+    attribute ``redo_commands``. It is not recommended to alter these
+    stacks directly; instead, use the methods ``push_undo_command``,
+    ``pop_undo_command``, ``push_redo_command``, and
+    ``pop_redo_command``, respectively.
     """
 
     def __init__(self):
@@ -306,22 +317,27 @@ class CommandManager:
         self.redo_commands = []
 
     def clear_histories(self):
-        """Clears all entries from the undo and redo history. If one or
-        both of the histories are already empty, no exception is raised.
+        """
+        Clears all entries from the undo and redo history.
 
+        If one or both of the histories are already empty, no exception
+        is raised.
         """
         del self.undo_commands[:]
         del self.redo_commands[:]
 
     def push_undo_command(self, command):
-        """Push the given command to the undo command stack."""
+        """
+        Push the given command to the undo command stack.
+        """
         self.undo_commands.append(command)
 
     def pop_undo_command(self):
-        """Remove the last command from the undo command stack and return it.
-        If the command stack is empty,
-        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
+        """
+        Remove the last command from the undo command stack and return it. If
+        the command stack is empty,
 
+        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
         """
         try:
             last_undo_command = self.undo_commands.pop()
@@ -330,14 +346,17 @@ class CommandManager:
         return last_undo_command
 
     def push_redo_command(self, command):
-        """Push the given command to the redo command stack."""
+        """
+        Push the given command to the redo command stack.
+        """
         self.redo_commands.append(command)
 
     def pop_redo_command(self):
-        """Remove the last command from the redo command stack and return it.
-        If the command stack is empty,
-        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
+        """
+        Remove the last command from the redo command stack and return it. If
+        the command stack is empty,
 
+        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
         """
         try:
             last_redo_command = self.redo_commands.pop()
@@ -346,11 +365,13 @@ class CommandManager:
         return last_redo_command
 
     def do(self, command):
-        """Execute the given command (a subclass of DatabaseOperation).
-        Exceptions raised from the command are not caught. The passed argument
-        may also be an iterable of commands. In this case, every command of the
-        iterable is executed and only one entry is saved in the undo history.
+        """
+        Execute the given command (a subclass of DatabaseOperation).
 
+        Exceptions raised from the command are not caught. The passed
+        argument may also be an iterable of commands. In this case,
+        every command of the iterable is executed and only one entry is
+        saved in the undo history.
         """
         command()
         self.push_undo_command(command)
@@ -358,11 +379,12 @@ class CommandManager:
         self.redo_commands[:] = []
 
     def undo(self, n=1):
-        """Undo the last n commands. The default is to undo only the last
-        command. If there is no command that can be undone because n is too big
-        or because no command has been executed yet,
-        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
+        """
+        Undo the last n commands. The default is to undo only the last command.
+        If there is no command that can be undone because n is too big or
+        because no command has been executed yet,
 
+        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
         """
         for _ in range(n):
             command = self.pop_undo_command()
@@ -370,12 +392,13 @@ class CommandManager:
             self.push_redo_command(command)
 
     def redo(self, n=1):
-        """Redo the last n commands which have been undone using the undo
-        method. The default is to redo only the last command which has been
-        undone using the undo method. If there is no command that can be redone
+        """
+        Redo the last n commands which have been undone using the undo method.
+        The default is to redo only the last command which has been undone
+        using the undo method. If there is no command that can be redone
         because n is too big or because no command has been undone yet,
-        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
+        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
         """
         for _ in range(n):
             command = self.pop_redo_command()

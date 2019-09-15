@@ -1,4 +1,6 @@
-"""TRACE Map subclass definitions"""
+"""
+TRACE Map subclass definitions.
+"""
 # pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Jack Ireland"
@@ -16,7 +18,8 @@ __all__ = ["TRACEMap"]
 
 
 class TRACEMap(GenericMap):
-    """TRACE Image Map
+    """
+    TRACE Image Map.
 
     The Transition Region and Coronal Explorer was a
     NASA Small Explorer (SMEX) mission to image the
@@ -66,7 +69,9 @@ class TRACEMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an TRACE image"""
+        """
+        Determines if header corresponds to an TRACE image.
+        """
         return header.get("instrume") == "TRACE"
 
     @property
