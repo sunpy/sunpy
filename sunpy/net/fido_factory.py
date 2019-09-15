@@ -1,9 +1,7 @@
 """
-This module provides the `Fido.
-
-<sunpy.net.fido_factory.UnifiedDownloaderFactory>` instance of
-`sunpy.net.fido_factory.UnifiedDownloaderFactory` it also provides the
-`~sunpy.net.fido_factory.UnifiedResponse` class which
+This module provides the `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`
+instance of `sunpy.net.fido_factory.UnifiedDownloaderFactory`
+it also provides the `~sunpy.net.fido_factory.UnifiedResponse` class which
 `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>` returns and the
 `~sunpy.net.fido_factory.DownloadResponse` class that is returned by
 `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
@@ -300,7 +298,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         ie. query is now of form A & B or ((A & B) | (C & D))
         This helps in modularising query into parts and handling each of the
         parts individually.
-        """  # noqa
+        """
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 

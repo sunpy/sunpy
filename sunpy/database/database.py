@@ -219,15 +219,12 @@ class Database:
         A SQLAlchemy session object. This may be used for advanced queries and
         advanced manipulations and should only be used by people who are
         experienced with SQLAlchemy.
-
     cache_size: int
         The maximum number of database entries. This attribute is read-only. To
         change this value, use the method
         :meth:`sunpy.database.Database.set_cache_size`.
-
     tags : list of sunpy.database.Tag objects
         A list of all saved tags in database. This attribute is read-only.
-
     default_waveunit : str
         See "Parameters" section.
 
@@ -556,7 +553,9 @@ class Database:
 
     def search(self, *query, **kwargs):
         """
-        search(*query[, sortby]) Send the given query to the database and
+        search(*query[, sortby])
+
+        Send the given query to the database and
         return a list of database entries that satisfy all of the given
         attributes.
 
@@ -812,9 +811,6 @@ class Database:
         overwrite=False,
     ):
         """
-        download(query_result, client=sunpy.net.vso.VSOClient(), path=None,
-        progress=False, ignore_already_added=False)
-
         Add new database entries from a VSO query result and download the
         corresponding data files. See :meth:`sunpy.database.Database.download`
         for information about the caching mechanism used and about the

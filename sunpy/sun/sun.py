@@ -1,6 +1,8 @@
 """
-.. deprecated:: 1.0 This module is deprecated and may be removed in a future
-version. Use sunpy.coordinates.sun instead.
+.. deprecated:: 1.0
+
+    This module is deprecated and may be removed in a future
+    version. Use sunpy.coordinates.sun instead.
 
 This module provides Sun-related parameters.
 """

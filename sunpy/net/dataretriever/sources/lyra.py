@@ -11,10 +11,9 @@ __all__ = ["LYRAClient"]
 
 class LYRAClient(GenericClient):
     """
-    Provides access to the LYRA/Proba2 data `archive.
-
-    <http://proba2.oma.be/lyra/data/bsd/>`__ hosted by the `PROBA2 Science
-    Center <http://proba2.oma.be>`__.
+    Provides access to the LYRA/Proba2 data
+    `archive <http://proba2.oma.be/lyra/data/bsd/>`__ hosted by the
+    `PROBA2 Science Center <http://proba2.oma.be>`__.
 
     Examples
     --------

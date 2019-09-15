@@ -21,8 +21,8 @@ BASEURL = (
 class EVEClient(GenericClient):
     """
     Provides access to Level 0C Extreme ultraviolet Variability Experiment
-    (EVE) data as hosted by `LASP <http://lasp.colorado.edu/home/eve/data/data-
-    access/>`_.
+    (EVE) data as hosted by
+    `LASP <http://lasp.colorado.edu/home/eve/data/data-access/>`__.
 
     To use this client you must request Level 0 data.
 

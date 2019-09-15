@@ -91,7 +91,7 @@ class HelioviewerClient:
 
         **This does not download any file.**
 
-        This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`_ from the Helioviewer API.
+        This uses `getClosestImage <https://api.helioviewer.org/docs/v2/#OfficialClients>`__ from the Helioviewer API.
 
         .. note::
             We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
@@ -158,10 +158,9 @@ class HelioviewerClient:
         Downloads the JPEG 2000 that most closely matches the specified time
         and data source. We can use `observatory` and `measurement` or
         `instrument` and `measurement` to get the value for source ID which can
-        then be used to get required information. This uses `getJP2Image.
-
-        <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer
-        API.
+        then be used to get required information.
+        This uses `getJP2Image <https://api.helioviewer.org/docs/v2/#JPEG2000>`_
+        from the Helioviewer API.
 
         .. note::
             We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
@@ -224,10 +223,9 @@ class HelioviewerClient:
         header as well as a section of Helioviewer-specific metadata. We can
         use `observatory` and `measurement` or `instrument` and `measurement`
         to get the value for source ID which can then be used to get required
-        information. This uses `getJP2Header.
-
-        <https://api.helioviewer.org/docs/v2/#JPEG2000>`_ from the Helioviewer
-        API.
+        information.
+        This uses `getJP2Header <https://api.helioviewer.org/docs/v2/#JPEG2000>`__
+        from the Helioviewer API.
 
         .. note::
             We can use `observatory` and `measurement` or `instrument` and `measurement` to get the value for source ID which
@@ -319,7 +317,7 @@ class HelioviewerClient:
         See https://api.helioviewer.org/docs/v2/#appendix_coordinates for more information about
         what coordinates values you can pass into this function.
 
-        This uses `takeScreenshot <https://api.helioviewer.org/docs/v2/#Screenshots>`_ from the Helioviewer API.
+        This uses `takeScreenshot <https://api.helioviewer.org/docs/v2/#Screenshots>`__ from the Helioviewer API.
 
         .. note::
 

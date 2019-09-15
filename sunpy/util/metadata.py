@@ -9,9 +9,8 @@ __all__ = ["MetaDict"]
 
 class MetaDict(OrderedDict):
     """
-    A class to hold metadata associated with a `sunpy.map.Map.
-
-    <sunpy.map.map_factory.MapFactory.__call__>` derivative.
+    A class to hold metadata associated with a
+    `sunpy.map.Map <sunpy.map.map_factory.MapFactory.__call__>` derivative.
 
     This class handles everything in lower case. This allows case
     insensitive indexing.
