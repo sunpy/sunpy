@@ -7,13 +7,20 @@ import matplotlib.backend_bases as mback
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-import astropy.wcs
+
 import astropy.units as u
+import astropy.wcs
 
 import sunpy.data.test
-from sunpy.time import parse_time
 from sunpy.tests.helpers import figure_test
-from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, ImageAnimatorWCS, base
+from sunpy.time import parse_time
+from sunpy.visualization.animator import (
+    ArrayAnimator,
+    BaseFuncAnimator,
+    ImageAnimatorWCS,
+    LineAnimator,
+    base,
+)
 
 
 class FuncAnimatorTest(BaseFuncAnimator):

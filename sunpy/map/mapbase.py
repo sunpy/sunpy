@@ -2,37 +2,35 @@
 Map is a generic Map class from which all other Map classes inherit from.
 """
 import copy
+import textwrap
 import warnings
 from collections import namedtuple
-import textwrap
 
-import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import patches, cm, colors
+import numpy as np
+from matplotlib import cm, colors, patches
 
-import astropy.wcs
 import astropy.units as u
+import astropy.wcs
+from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
+from astropy.nddata import NDData
 from astropy.visualization import AsymmetricPercentileInterval
 from astropy.visualization.wcsaxes import WCSAxes
-from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
-import sunpy.io as io
+import sunpy.cm
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
-import sunpy.cm
+import sunpy.io as io
 from sunpy import config
-from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype, peek_show
-from sunpy.sun import constants
-from sunpy.coordinates import sun
-from sunpy.time import parse_time, is_time
-from sunpy.image.transform import affine_transform
-from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.coordinates import get_earth, sun
 from sunpy.image.resample import resample as sunpy_image_resample
-from sunpy.coordinates import get_earth
+from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.image.transform import affine_transform
+from sunpy.sun import constants
+from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
 from sunpy.util.exceptions import SunpyUserWarning
-
-from astropy.nddata import NDData
+from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')

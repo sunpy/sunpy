@@ -1,19 +1,18 @@
-import tempfile
 import os.path
-import pytest
 import datetime
+import tempfile
 
 import numpy as np
 import pandas
+import pytest
 
-from astropy.time import TimeDelta
 import astropy.units as u
+from astropy.time import TimeDelta
 
-from sunpy.data.test import rootdir
-from sunpy.time import parse_time, is_time_equal
 from sunpy import timeseries
+from sunpy.data.test import rootdir
 from sunpy.instr import lyra
-
+from sunpy.time import is_time_equal, parse_time
 
 # Define location for test LYTAF database files
 TEST_DATA_PATH = rootdir

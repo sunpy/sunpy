@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
 
-
 __all__ = ['RHESSIMap']
 
 

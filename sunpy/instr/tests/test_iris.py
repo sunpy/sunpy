@@ -7,10 +7,7 @@ import pytest
 
 import sunpy.data.test
 import sunpy.map
-
 from sunpy.instr import iris
-
-
 from sunpy.util import SunpyUserWarning
 
 

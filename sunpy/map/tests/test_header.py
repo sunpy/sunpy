@@ -2,6 +2,7 @@
 
 from sunpy.util.metadata import MetaDict
 
+
 #==============================================================================
 # Test, read, get_header and write through the file independent layer
 #==============================================================================

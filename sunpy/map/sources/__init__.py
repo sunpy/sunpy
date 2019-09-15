@@ -8,26 +8,15 @@ __all__ = ['XRTMap', 'SOTMap', 'SWAPMap', 'RHESSIMap', 'AIAMap', 'HMIMap',
            'EITMap', 'LASCOMap', 'MDIMap', 'EUVIMap', 'CORMap', 'HIMap',
            'SXTMap', 'SJIMap', 'TRACEMap', 'KCorMap', 'source_stretch']
 
-from .. map_factory import Map
-
-from .hinode import XRTMap, SOTMap
-
-from .proba2 import SWAPMap
-
-from .rhessi import RHESSIMap
-
-from .sdo import AIAMap, HMIMap
-
-from .soho import EITMap, LASCOMap, MDIMap
-
-from .stereo import EUVIMap, CORMap, HIMap
-
-from .yohkoh import SXTMap
-
+from ..map_factory import Map
+from .hinode import SOTMap, XRTMap
 from .iris import SJIMap
-
-from .trace import TRACEMap
-
 from .mlso import KCorMap
-
-from .source_type import source_stretch, from_helioviewer_project
+from .proba2 import SWAPMap
+from .rhessi import RHESSIMap
+from .sdo import AIAMap, HMIMap
+from .soho import EITMap, LASCOMap, MDIMap
+from .source_type import from_helioviewer_project, source_stretch
+from .stereo import CORMap, EUVIMap, HIMap
+from .trace import TRACEMap
+from .yohkoh import SXTMap

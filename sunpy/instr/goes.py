@@ -53,17 +53,18 @@ import datetime
 from itertools import dropwhile
 
 import numpy as np
+from scipy import interpolate
+from scipy.integrate import cumtrapz, trapz
+
 import astropy.units as u
 from astropy.time import TimeDelta
-from scipy import interpolate
-from scipy.integrate import trapz, cumtrapz
 
-from sunpy.sun import constants
 from sunpy import timeseries
-from sunpy.time import parse_time
-from sunpy.util.net import check_download_file
 from sunpy.coordinates import sun
+from sunpy.sun import constants
+from sunpy.time import parse_time
 from sunpy.util.config import get_and_create_download_dir
+from sunpy.util.net import check_download_file
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
                         'M': u.Quantity(1e-5, "W/m^2"),

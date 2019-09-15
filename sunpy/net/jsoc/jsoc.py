@@ -8,15 +8,16 @@ from collections.abc import Sequence
 import drms
 import numpy as np
 import pandas as pd
-import astropy.units as u
-import astropy.time
-import astropy.table
-from astropy.utils.misc import isiterable
 from parfive import Downloader, Results
 
+import astropy.table
+import astropy.time
+import astropy.units as u
+from astropy.utils.misc import isiterable
+
 from sunpy import config
-from sunpy.net.base_client import BaseClient
 from sunpy.net.attr import and_
+from sunpy.net.base_client import BaseClient
 from sunpy.net.jsoc.attrs import walker
 from sunpy.util.exceptions import SunpyUserWarning
 

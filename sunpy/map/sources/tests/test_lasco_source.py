@@ -6,9 +6,9 @@ This particular test file pertains to LASCOMap.
 import os
 import glob
 
-from sunpy.map.sources.soho import LASCOMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.soho import LASCOMap
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "lasco_c2_25299383_s.fts"))

@@ -1,7 +1,7 @@
 import matplotlib as mpl
 
-from astropy.wcs.wcsapi import BaseLowLevelWCS
 import astropy.wcs
+from astropy.wcs.wcsapi import BaseLowLevelWCS
 
 from sunpy.visualization.animator.base import ArrayAnimator
 

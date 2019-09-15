@@ -4,12 +4,12 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
+import astropy.units as u
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
-import astropy.units as u
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch

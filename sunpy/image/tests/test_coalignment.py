@@ -8,11 +8,21 @@ from scipy.ndimage.interpolation import shift as sp_shift
 import astropy.units as u
 
 import sunpy.data.test
-from sunpy.image.coalignment import (_default_fmap_function, _lower_clip, _upper_clip, apply_shifts,
-                                     calculate_clipping, calculate_match_template_shift, clip_edges,
-                                     find_best_match_location, get_correlation_shifts,
-                                     mapsequence_coalign_by_match_template, match_template_to_layer,
-                                     parabolic_turning_point, repair_image_nonfinite)
+from sunpy.image.coalignment import (
+    _default_fmap_function,
+    _lower_clip,
+    _upper_clip,
+    apply_shifts,
+    calculate_clipping,
+    calculate_match_template_shift,
+    clip_edges,
+    find_best_match_location,
+    get_correlation_shifts,
+    mapsequence_coalign_by_match_template,
+    match_template_to_layer,
+    parabolic_turning_point,
+    repair_image_nonfinite,
+)
 from sunpy.map import Map, MapSequence
 
 

@@ -1,11 +1,16 @@
 import urllib
-
 from unittest import mock
+
 import pytest
 
-from sunpy.net.helio.parser import (link_test, taverna_parser, wsdl_retriever,
-                                    endpoint_parser, webservice_parser)
 from sunpy.net.helio.hec import HECClient
+from sunpy.net.helio.parser import (
+    endpoint_parser,
+    link_test,
+    taverna_parser,
+    webservice_parser,
+    wsdl_retriever,
+)
 
 
 def wsdl_endpoints():

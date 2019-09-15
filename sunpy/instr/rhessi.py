@@ -12,14 +12,11 @@ import csv
 import numpy as np
 
 import astropy.units as u
-from astropy.time import TimeDelta
-from astropy.time import Time
-
+from astropy.time import Time, TimeDelta
 
 import sunpy.io
-from sunpy.time import TimeRange, parse_time
 from sunpy.coordinates import sun
-
+from sunpy.time import TimeRange, parse_time
 
 __all__ = ['parse_observing_summary_hdulist', 'backprojection', 'parse_observing_summary_dbase_file']
 

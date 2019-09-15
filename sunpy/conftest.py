@@ -1,9 +1,9 @@
 import os
 import json
 import pathlib
+import tempfile
 import warnings
 import importlib
-import tempfile
 
 import pytest
 
@@ -12,7 +12,7 @@ import astropy.config.paths
 
 import sunpy.tests.helpers
 from sunpy.tests.hash import HASH_LIBRARY_NAME
-from sunpy.tests.helpers import new_hash_library, generate_figure_webpage
+from sunpy.tests.helpers import generate_figure_webpage, new_hash_library
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
 # Force MPL to use non-gui backends for testing.

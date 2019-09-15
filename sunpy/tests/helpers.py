@@ -2,10 +2,11 @@ import os
 import urllib
 import platform
 import warnings
-import pkg_resources
 from functools import wraps
 
 import matplotlib.pyplot as plt
+import numpy.distutils.system_info as sysinfo
+import pkg_resources
 import pytest
 from matplotlib.testing import compare
 
@@ -34,7 +35,6 @@ except ImportError:
 else:
     SKIP_ANA = False
 
-import numpy.distutils.system_info as sysinfo
 if sysinfo.platform_bits == 64:
     SKIP_32 = False
 else:

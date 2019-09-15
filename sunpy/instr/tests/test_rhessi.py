@@ -4,17 +4,17 @@ Unit tests for `sunpy.instr.rhessi`
 """
 import platform
 import textwrap
+from unittest import mock
 from distutils.version import LooseVersion
 
-from unittest import mock
 import numpy as np
 import pytest
 
+import sunpy.instr.rhessi as rhessi
 import sunpy.io
 import sunpy.map
 from sunpy.data.test import get_test_filepath
-import sunpy.instr.rhessi as rhessi
-from sunpy.time import parse_time, is_time_equal
+from sunpy.time import is_time_equal, parse_time
 
 
 @pytest.fixture

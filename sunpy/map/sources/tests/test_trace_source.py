@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-from sunpy.map.sources.trace import TRACEMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.trace import TRACEMap
 
 path = sunpy.data.test.rootdir
 fitspath = os.path.join(path, "tsi20010130_025823_a2.fits")

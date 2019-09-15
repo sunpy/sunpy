@@ -6,14 +6,30 @@ import datetime
 import warnings
 
 import numpy as np
+
 import astropy.units as u
-from astropy.time import Time
-from astropy.coordinates import (SkyCoord, Angle, Longitude,
-                                 ICRS, PrecessedGeocentric, AltAz,
-                                 get_body_barycentric)
-from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 from astropy._erfa.core import ErfaWarning
 from astropy.constants import c as speed_of_light
+from astropy.coordinates import (
+    ICRS,
+    AltAz,
+    Angle,
+    Longitude,
+    PrecessedGeocentric,
+    SkyCoord,
+    get_body_barycentric,
+)
+from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
+from astropy.time import Time
+
+from sunpy import log
+from sunpy.time import parse_time
+from sunpy.time.time import _variables_for_parse_time_docstring
+from sunpy.util.decorators import add_common_docstring, deprecated
+
+from .frames import HeliographicStonyhurst as HGS
+from .transformations import _SOLAR_NORTH_POLE_HCRS, _SUN_DETILT_MATRIX
+
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
 # with the misleading name HeliocentricTrueEcliptic
 try:
@@ -21,13 +37,7 @@ try:
 except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
-from sunpy.time import parse_time
-from sunpy import log
-from sunpy.util.decorators import add_common_docstring, deprecated
-from sunpy.time.time import _variables_for_parse_time_docstring
 
-from .frames import HeliographicStonyhurst as HGS
-from .transformations import _SUN_DETILT_MATRIX, _SOLAR_NORTH_POLE_HCRS
 
 __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"

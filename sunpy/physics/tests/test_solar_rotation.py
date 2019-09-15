@@ -4,12 +4,12 @@
 import os
 from copy import deepcopy
 
-import pytest
 import numpy as np
+import pytest
 from numpy.testing import assert_allclose
 
-from astropy.coordinates import SkyCoord
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy.data.test

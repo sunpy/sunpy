@@ -1,4 +1,5 @@
 from sunpy.util.scraper import Scraper
+
 from ..client import GenericClient
 
 __all__ = ['GBMClient']

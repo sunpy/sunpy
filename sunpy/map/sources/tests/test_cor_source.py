@@ -6,9 +6,9 @@ This particular test file pertains to CORMap.
 import os
 import glob
 
-from sunpy.map.sources.stereo import CORMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.stereo import CORMap
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "cor1_20090615_000500_s4c1A.fts"))

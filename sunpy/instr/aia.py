@@ -3,6 +3,7 @@
 Provides processing routines for data captured with the AIA instrument on SDO.
 """
 import numpy as np
+
 import astropy.units as u
 
 from sunpy.map.sources.sdo import AIAMap, HMIMap

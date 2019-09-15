@@ -2,17 +2,17 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 import socket
-import posixpath
 from datetime import datetime
 from urllib.error import URLError
 from urllib.request import urlopen, urlretrieve
 
-from dateutil.rrule import rrule, MONTHLY
+import posixpath
+from dateutil.rrule import MONTHLY, rrule
 
 import astropy.units as u
 
-from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
+from sunpy.time import TimeRange, parse_time
 
 from ..client import GenericClient
 

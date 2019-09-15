@@ -6,10 +6,10 @@ This particular test file pertains to EUVIMap.
 import os
 import glob
 
-from sunpy.map.sources.stereo import EUVIMap
-from sunpy.map import Map
-from sunpy.coordinates import sun
 import sunpy.data.test
+from sunpy.coordinates import sun
+from sunpy.map import Map
+from sunpy.map.sources.stereo import EUVIMap
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "euvi_20090615_000900_n4euA_s.fts"))

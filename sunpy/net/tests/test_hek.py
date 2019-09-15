@@ -1,8 +1,7 @@
 import pytest
 
+from sunpy.net import attr, hek, vso
 from sunpy.time import parse_time
-from sunpy.net import hek
-from sunpy.net import attr, vso
 
 
 @pytest.fixture

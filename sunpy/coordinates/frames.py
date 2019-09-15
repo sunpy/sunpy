@@ -9,19 +9,19 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import Attribute, ConvertError
 from astropy.coordinates.baseframe import BaseCoordinateFrame, RepresentationMapping
-from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
-                                                CylindricalRepresentation,
-                                                UnitSphericalRepresentation)
+from astropy.coordinates.representation import (
+    CartesianRepresentation,
+    CylindricalRepresentation,
+    SphericalRepresentation,
+    UnitSphericalRepresentation,
+)
 from astropy.time import Time
 
 from sunpy.sun.constants import radius as _RSUN
-from sunpy.util.decorators import add_common_docstring
 from sunpy.time.time import _variables_for_parse_time_docstring
-
-from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
-
 from sunpy.util.decorators import add_common_docstring
-from sunpy.time.time import _variables_for_parse_time_docstring
+
+from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 
 _J2000 = Time('J2000.0', scale='tt')
 

@@ -12,13 +12,13 @@ and returns the results from the VSO query to the user.
 """
 
 import sys
-from astropy import units
-from astropy.table import Table
 
 from tqdm import tqdm
 
-from sunpy.net import hek
-from sunpy.net import vso
+from astropy import units
+from astropy.table import Table
+
+from sunpy.net import hek, vso
 
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'

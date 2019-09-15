@@ -2,17 +2,15 @@
 
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
-import numpy as np
-
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.visualization import axis_labels_from_ctype, peek_show
-
 from sunpy.util import expand_list
+from sunpy.visualization import axis_labels_from_ctype, peek_show
 
 __all__ = ['CompositeMap']
 

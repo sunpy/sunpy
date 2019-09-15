@@ -3,27 +3,35 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-from collections.abc import Hashable
-from datetime import datetime
-
-import pytest
 import os
+from datetime import datetime
+from collections.abc import Hashable
+
+import numpy as np
+import pytest
 
 import astropy.units as u
 from astropy import conf
 from astropy.utils.exceptions import AstropyUserWarning
 
-import numpy as np
-
-from sunpy.database import Database
-from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
-    DatabaseEntry, entries_from_query_result, entries_from_dir,\
-    entries_from_file, _create_display_table, WaveunitNotFoundError, \
-    entries_from_fido_search_result
-from sunpy.net import vso, Fido, attrs as net_attrs
 from sunpy.data.test import rootdir as testdir
-from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
-
+from sunpy.data.test.waveunit import MQ_IMAGE, waveunitdir
+from sunpy.database import Database
+from sunpy.database.tables import (
+    DatabaseEntry,
+    FitsHeaderEntry,
+    FitsKeyComment,
+    Tag,
+    WaveunitNotFoundError,
+    _create_display_table,
+    entries_from_dir,
+    entries_from_fido_search_result,
+    entries_from_file,
+    entries_from_query_result,
+)
+from sunpy.net import Fido
+from sunpy.net import attrs as net_attrs
+from sunpy.net import vso
 
 RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
 EIT_195_IMAGE = os.path.join(testdir, 'EIT/efz20040301.000010_s.fits')

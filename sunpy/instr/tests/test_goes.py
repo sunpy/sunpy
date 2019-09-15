@@ -1,20 +1,19 @@
 import copy
-import pytest
 
 import numpy as np
-from astropy.units.quantity import Quantity
-from astropy.tests.helper import assert_quantity_allclose
-from numpy.testing import assert_array_equal, assert_almost_equal
+import pytest
+from numpy.testing import assert_almost_equal, assert_array_equal
 from pandas.util.testing import assert_frame_equal
 
 import astropy.units as u
-
-from sunpy.time import TimeRange, parse_time, is_time_equal
-from sunpy import timeseries
-from sunpy.instr import goes
-from sunpy.data.test import get_test_filepath
-
+from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
+from astropy.units.quantity import Quantity
+
+from sunpy import timeseries
+from sunpy.data.test import get_test_filepath
+from sunpy.instr import goes
+from sunpy.time import TimeRange, is_time_equal, parse_time
 
 # Define input variables to be used in test functions for
 # _goes_chianti_tem.

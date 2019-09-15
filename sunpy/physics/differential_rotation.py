@@ -7,9 +7,16 @@ import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, get_body
 from astropy.time import TimeDelta
 
-from sunpy.coordinates import HeliographicStonyhurst, Helioprojective, Heliocentric
-from sunpy.map import (all_coordinates_from_map, contains_full_disk, coordinate_is_on_solar_disk,
-                       is_all_off_disk, is_all_on_disk, map_edges, on_disk_bounding_coordinates)
+from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, Helioprojective
+from sunpy.map import (
+    all_coordinates_from_map,
+    contains_full_disk,
+    coordinate_is_on_solar_disk,
+    is_all_off_disk,
+    is_all_on_disk,
+    map_edges,
+    on_disk_bounding_coordinates,
+)
 from sunpy.map.header_helper import get_observer_meta
 from sunpy.time import parse_time
 from sunpy.util import expand_list

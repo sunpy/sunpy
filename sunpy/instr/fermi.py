@@ -4,16 +4,16 @@ import urllib
 import tempfile
 from collections import OrderedDict
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
-from astropy.time import TimeDelta
 from astropy.coordinates import Latitude, Longitude
+from astropy.time import TimeDelta
 
 from sunpy.coordinates import sun
-from sunpy.time import TimeRange, parse_time
 from sunpy.io.fits import fits
+from sunpy.time import TimeRange, parse_time
 
 __all__ = ['download_weekly_pointing_file', 'get_detector_sun_angles_for_time',
            'get_detector_sun_angles_for_date', 'plot_detector_sun_angles',

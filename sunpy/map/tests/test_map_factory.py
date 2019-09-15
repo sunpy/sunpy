@@ -8,15 +8,15 @@ import os
 import glob
 import tempfile
 
-import pytest
 import numpy as np
+import pytest
+
 from astropy.io import fits
 from astropy.wcs import WCS
 
 import sunpy
-import sunpy.map
 import sunpy.data.test
-
+import sunpy.map
 
 filepath = sunpy.data.test.rootdir
 a_list_of_many = glob.glob(os.path.join(filepath, "EIT", "*"))

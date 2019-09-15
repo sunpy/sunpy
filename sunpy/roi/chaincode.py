@@ -2,6 +2,7 @@
 This module implements a function to understand chaincodes from HELIO.
 """
 import numpy as np
+
 from sunpy import log
 
 __all__ = ["Chaincode"]

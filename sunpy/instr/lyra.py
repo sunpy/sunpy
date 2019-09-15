@@ -13,8 +13,8 @@ from astropy.io import fits
 from astropy.time import Time
 
 from sunpy.time import parse_time
-from sunpy.util.net import check_download_file
 from sunpy.util.config import get_and_create_download_dir
+from sunpy.util.net import check_download_file
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 

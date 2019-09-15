@@ -17,12 +17,10 @@ below.  See the documentation for `astropy.coordinates` for more information.
 
 """
 
+from . import sun, transformations
+from .ephemeris import *
 from .frames import *
 from .offset_frame import *
-from . import transformations
-from .ephemeris import *
-from . import sun
-
 from .wcs_utils import *
 
 __doc__ += transformations._make_sunpy_graph()

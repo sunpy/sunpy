@@ -3,8 +3,8 @@ Some very beta tools for IRIS
 """
 
 import sunpy.io
-import sunpy.time
 import sunpy.map
+import sunpy.time
 
 __all__ = ['SJI_to_sequence']
 
