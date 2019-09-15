@@ -12,14 +12,21 @@ from urllib.request import urlopen
 
 from sunpy.util import replacement_filename
 
-__all__ = ['slugify', 'get_content_disposition', 'get_filename', 'get_system_filename',
-           'download_file', 'download_fileobj', 'check_download_file']
+__all__ = [
+    "slugify",
+    "get_content_disposition",
+    "get_filename",
+    "get_system_filename",
+    "download_file",
+    "download_fileobj",
+    "check_download_file",
+]
 
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
 
-def slugify(text, delim='_'):
+def slugify(text, delim="_"):
     """
     Slugify given unicode text.
 
@@ -35,15 +42,14 @@ def slugify(text, delim='_'):
     `str` :
         The slugify `str` name.
     """
-    text = normalize('NFKD', text)
+    text = normalize("NFKD", text)
 
-    period = '.'
+    period = "."
 
     name_and_extension = text.rsplit(period, 1)
     name = name_and_extension[0]
 
-    name = str(delim).join(
-        filter(None, (word for word in _punct_re.split(name.lower()))))
+    name = str(delim).join(filter(None, (word for word in _punct_re.split(name.lower()))))
 
     if len(name_and_extension) == 2:
         extension = name_and_extension[1]
@@ -69,10 +75,10 @@ def get_content_disposition(content_disposition):
         The content disposition filename.
     """
     parser = FeedParser()
-    parser.feed('Content-Disposition: ' + content_disposition)
+    parser.feed("Content-Disposition: " + content_disposition)
     name = parser.close().get_filename()
     if name and not isinstance(name, str):
-        name = name.decode('latin1', 'ignore')
+        name = name.decode("latin1", "ignore")
     return name
 
 
@@ -95,7 +101,7 @@ def get_filename(sock, url):
         The filename.
     """
     name = None
-    cd = sock.headers.get('Content-Disposition', None)
+    cd = sock.headers.get("Content-Disposition", None)
     if cd is not None:
         try:
             name = get_content_disposition(cd)
@@ -104,7 +110,7 @@ def get_filename(sock, url):
 
     if not name:
         parsed = urlparse(url)
-        name = parsed.path.rstrip('/').rsplit('/', 1)[-1]
+        name = parsed.path.rstrip("/").rsplit("/", 1)[-1]
     return str(name)
 
 
@@ -132,10 +138,10 @@ def get_system_filename(sock, url, default="file"):
     name = get_filename(sock, url)
     if not name:
         name = str(default)
-    return name.encode(sys.getfilesystemencoding(), 'ignore')
+    return name.encode(sys.getfilesystemencoding(), "ignore")
 
 
-def download_fileobj(opn, directory, url='', default="file", overwrite=False):
+def download_fileobj(opn, directory, url="", default="file", overwrite=False):
     """
     Download a file from a url into a directory.
 
@@ -161,10 +167,10 @@ def download_fileobj(opn, directory, url='', default="file", overwrite=False):
         The file path for the downloaded file.
     """
     filename = get_system_filename(opn, url, default)
-    path = os.path.join(directory, filename.decode('utf-8'))
+    path = os.path.join(directory, filename.decode("utf-8"))
     if overwrite and os.path.exists(path):
         path = replacement_filename(path)
-    with open(path, 'wb') as fd:
+    with open(path, "wb") as fd:
         shutil.copyfileobj(opn, fd)
     return path
 
@@ -234,5 +240,6 @@ def check_download_file(filename, remotepath, download_dir, remotename=None, rep
         if not isinstance(remotename, str):
             remotename = filename
 
-        download_file(urljoin(remotepath, remotename),
-                      download_dir, default=filename, overwrite=replace)
+        download_file(
+            urljoin(remotepath, remotename), download_dir, default=filename, overwrite=replace
+        )

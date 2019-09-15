@@ -13,16 +13,25 @@ from bs4 import BeautifulSoup
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
-__all__ = ['Scraper']
+__all__ = ["Scraper"]
 
 # regular expressions to convert datetime format
 # added `%e` as for milliseconds `%f/1000`
-TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
-                    '%b': '[A-Z][a-z]{2}', '%B': r'\W', '%m': r'\d{2}',
-                    '%d': r'\d{2}', '%j': r'\d{3}',
-                    '%H': r'\d{2}', '%I': r'\d{2}',
-                    '%M': r'\d{2}',
-                    '%S': r'\d{2}', '%e': r'\d{3}', '%f': r'\d{6}'}
+TIME_CONVERSIONS = {
+    "%Y": r"\d{4}",
+    "%y": r"\d{2}",
+    "%b": "[A-Z][a-z]{2}",
+    "%B": r"\W",
+    "%m": r"\d{2}",
+    "%d": r"\d{2}",
+    "%j": r"\d{3}",
+    "%H": r"\d{2}",
+    "%I": r"\d{2}",
+    "%M": r"\d{2}",
+    "%S": r"\d{2}",
+    "%e": r"\d{3}",
+    "%f": r"\d{6}",
+}
 
 
 class Scraper:
@@ -60,19 +69,22 @@ class Scraper:
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
+
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
-        milliseconds = re.search(r'\%e', self.pattern)
+        milliseconds = re.search(r"\%e", self.pattern)
         if not milliseconds:
             self.now = datetime.datetime.now().strftime(self.pattern)
         else:
             now = datetime.datetime.now()
-            milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime('{start}{milli:03d}{end}'.format(
-                start=self.pattern[0:milliseconds.start()],
-                milli=milliseconds_,
-                end=self.pattern[milliseconds.end():]
-            ))
+            milliseconds_ = int(now.microsecond / 1000.0)
+            self.now = now.strftime(
+                "{start}{milli:03d}{end}".format(
+                    start=self.pattern[0 : milliseconds.start()],
+                    milli=milliseconds_,
+                    end=self.pattern[milliseconds.end() :],
+                )
+            )
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
@@ -93,7 +105,7 @@ class Scraper:
             Notice that these directories may not exist in the archive.
         """
         # find directory structure - without file names
-        directorypattern = os.path.dirname(self.pattern) + '/'
+        directorypattern = os.path.dirname(self.pattern) + "/"
         # TODO what if there's not slashes?
         rangedelta = timerange.dt
         timestep = self._smallerPattern(directorypattern)
@@ -101,10 +113,12 @@ class Scraper:
             return [directorypattern]
         else:
             # Number of elements in the time range (including end)
-            n_steps = rangedelta.sec/timestep.sec
+            n_steps = rangedelta.sec / timestep.sec
             TotalTimeElements = int(round(n_steps)) + 1
-            directories = [(timerange.start + n * timestep).strftime(directorypattern)
-                           for n in range(TotalTimeElements)]  # TODO if date <= endate
+            directories = [
+                (timerange.start + n * timestep).strftime(directorypattern)
+                for n in range(TotalTimeElements)
+            ]  # TODO if date <= endate
             return directories
 
     def _URL_followsPattern(self, url):
@@ -128,14 +142,13 @@ class Scraper:
 
         def url_to_list(txt):
             # Substitutes '.' and '_' for '/'.
-            return re.sub(r'\.|_', '/', txt).split('/')
+            return re.sub(r"\.|_", "/", txt).split("/")
 
         # create a list of all the blocks in times - assuming they are all
         # separated with either '.', '_' or '/'.
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
-        time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
-                      '%H', '%I', '%M', '%S', '%e', '%f']
+        time_order = ["%Y", "%y", "%b", "%B", "%m", "%d", "%j", "%H", "%I", "%M", "%S", "%e", "%f"]
         final_date = []
         final_pattern = []
         # Find in directory and filename
@@ -143,20 +156,20 @@ class Scraper:
             time_formats = [x for x in time_order if x in pattern_elem]
             if len(time_formats) > 0:
                 # Find whether there's text that should not be here
-                toremove = re.split('%.', pattern_elem)
+                toremove = re.split("%.", pattern_elem)
                 if len(toremove) > 0:
                     for bit in toremove:
-                        if bit != '':
-                            url_elem = url_elem.replace(bit, '', 1)
-                            pattern_elem = pattern_elem.replace(bit, '', 1)
+                        if bit != "":
+                            url_elem = url_elem.replace(bit, "", 1)
+                            pattern_elem = pattern_elem.replace(bit, "", 1)
                 final_date.append(url_elem)
                 final_pattern.append(pattern_elem)
                 for time_bit in time_formats:
                     time_order.remove(time_bit)
         # Find and remove repeated elements eg: %Y in ['%Y', '%Y%m%d']
         # Make all as single strings
-        date_together = ''.join(final_date)
-        pattern_together = ''.join(final_pattern)
+        date_together = "".join(final_date)
+        pattern_together = "".join(final_pattern)
         re_together = pattern_together
         for k, v in TIME_CONVERSIONS.items():
             re_together = re_together.replace(k, v)
@@ -164,20 +177,18 @@ class Scraper:
         # Lists to contain the unique elements of the date and the pattern
         final_date = list()
         final_pattern = list()
-        re_together = re_together.replace('[A-Z]', '\\[A-Z]')
-        for p, r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
-            if p == 'e':
+        re_together = re_together.replace("[A-Z]", "\\[A-Z]")
+        for p, r in zip(pattern_together.split("%")[1:], re_together.split("\\")[1:]):
+            if p == "e":
                 continue
-            regexp = fr'\{r}' if not r.startswith('[') else r
-            pattern = f'%{p}'
+            regexp = fr"\{r}" if not r.startswith("[") else r
+            pattern = f"%{p}"
             date_part = re.search(regexp, date_together)
-            date_together = date_together[:date_part.start()] \
-                + date_together[date_part.end():]
+            date_together = date_together[: date_part.start()] + date_together[date_part.end() :]
             if pattern not in final_pattern:
-                final_pattern.append(f'%{p}')
+                final_pattern.append(f"%{p}")
                 final_date.append(date_part.group())
-        return Time.strptime(' '.join(final_date),
-                             ' '.join(final_pattern))
+        return Time.strptime(" ".join(final_date), " ".join(final_pattern))
 
     def filelist(self, timerange):
         """
@@ -228,12 +239,11 @@ class Scraper:
                     soup = BeautifulSoup(opn, "html.parser")
                     for link in soup.find_all("a"):
                         href = link.get("href")
-                        if href.endswith(self.pattern.split('.')[-1]):
+                        if href.endswith(self.pattern.split(".")[-1]):
                             fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
-                                if (datehref >= timerange.start and
-                                        datehref <= timerange.end):
+                                if datehref >= timerange.start and datehref <= timerange.end:
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
@@ -249,9 +259,9 @@ class Scraper:
     def _ftpfileslist(self, timerange):
         directories = self.range(timerange)
         filesurls = list()
-        domain = directories[0].find('//')
-        domain_slash = directories[0].find('/', 6)  # TODO: Use also urlsplit from pr #1807
-        ftpurl = directories[0][domain + 2:domain_slash]
+        domain = directories[0].find("//")
+        domain_slash = directories[0].find("/", 6)  # TODO: Use also urlsplit from pr #1807
+        ftpurl = directories[0][domain + 2 : domain_slash]
         with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
             for directory in directories:
                 ftp.cwd(directory[domain_slash:])
@@ -259,10 +269,9 @@ class Scraper:
                     fullpath = directory + file_i
                     if self._URL_followsPattern(fullpath):
                         datehref = self._extractDateURL(fullpath)
-                        if (datehref >= timerange.start and
-                                datehref <= timerange.end):
+                        if datehref >= timerange.start and datehref <= timerange.end:
                             filesurls.append(fullpath)
-        filesurls = ['ftp://anonymous:data@sunpy.org@' + url[domain + 2:] for url in filesurls]
+        filesurls = ["ftp://anonymous:data@sunpy.org@" + url[domain + 2 :] for url in filesurls]
         return filesurls
 
     def _smallerPattern(self, directoryPattern):
@@ -271,17 +280,17 @@ class Scraper:
         """
         try:
             if "%S" in directoryPattern:
-                return TimeDelta(1*u.second)
+                return TimeDelta(1 * u.second)
             elif "%M" in directoryPattern:
-                return TimeDelta(1*u.minute)
+                return TimeDelta(1 * u.minute)
             elif any(hour in directoryPattern for hour in ["%H", "%I"]):
-                return TimeDelta(1*u.hour)
+                return TimeDelta(1 * u.hour)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
-                return TimeDelta(1*u.day)
+                return TimeDelta(1 * u.day)
             elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
-                return TimeDelta(31*u.day)
+                return TimeDelta(31 * u.day)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
-                return TimeDelta(365*u.day)
+                return TimeDelta(365 * u.day)
             else:
                 return None
         except Exception:

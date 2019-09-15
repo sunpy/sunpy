@@ -17,7 +17,7 @@ from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
-__all__ = ['RHESSISummaryTimeSeries']
+__all__ = ["RHESSISummaryTimeSeries"]
 
 
 class RHESSISummaryTimeSeries(GenericTimeSeries):
@@ -59,7 +59,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     """
 
     # Class attribute used to specify the source class of the TimeSeries.
-    _source = 'rhessi'
+    _source = "rhessi"
 
     @peek_show
     def peek(self, title="RHESSI Observing Summary Count Rate"):
@@ -87,23 +87,23 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         lc_linecolors = rhessi.hsi_linecolors()
 
         for lc_color, (item, frame) in zip(lc_linecolors, self.data.items()):
-            axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2, color=lc_color)
+            axes.plot_date(self.data.index, frame.values, "-", label=item, lw=2, color=lc_color)
 
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
         axes.set_title(title)
-        axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
+        axes.set_ylabel("Count Rate s$^{-1}$ detector$^{-1}$")
 
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
+        axes.yaxis.grid(True, "major")
+        axes.xaxis.grid(False, "major")
         axes.legend()
 
         # TODO: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%H:%M')
+        formatter = matplotlib.dates.DateFormatter("%H:%M")
         axes.xaxis.set_major_formatter(formatter)
 
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
+        axes.fmt_xdata = matplotlib.dates.DateFormatter("%H:%M")
         figure.autofmt_xdate()
 
         return figure
@@ -133,19 +133,23 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         """
         header, d = rhessi.parse_observing_summary_hdulist(hdulist)
         # The time of dict `d` is astropy.time, but dataframe can only take datetime
-        d['time'] = d['time'].datetime
+        d["time"] = d["time"].datetime
         header = MetaDict(OrderedDict(header))
-        data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
+        data = DataFrame(d["data"], columns=d["labels"], index=d["time"])
         # Add the units data
-        units = OrderedDict([('3 - 6 keV', u.ct / u.s / u.Unit('detector')),
-                             ('6 - 12 keV', u.ct / u.s / u.Unit('detector')),
-                             ('12 - 25 keV', u.ct / u.s / u.Unit('detector')),
-                             ('25 - 50 keV', u.ct / u.s / u.Unit('detector')),
-                             ('50 - 100 keV', u.ct / u.s / u.Unit('detector')),
-                             ('100 - 300 keV', u.ct / u.s / u.Unit('detector')),
-                             ('300 - 800 keV', u.ct / u.s / u.Unit('detector')),
-                             ('800 - 7000 keV', u.ct / u.s / u.Unit('detector')),
-                             ('7000 - 20000 keV', u.ct / u.s / u.Unit('detector'))])
+        units = OrderedDict(
+            [
+                ("3 - 6 keV", u.ct / u.s / u.Unit("detector")),
+                ("6 - 12 keV", u.ct / u.s / u.Unit("detector")),
+                ("12 - 25 keV", u.ct / u.s / u.Unit("detector")),
+                ("25 - 50 keV", u.ct / u.s / u.Unit("detector")),
+                ("50 - 100 keV", u.ct / u.s / u.Unit("detector")),
+                ("100 - 300 keV", u.ct / u.s / u.Unit("detector")),
+                ("300 - 800 keV", u.ct / u.s / u.Unit("detector")),
+                ("800 - 7000 keV", u.ct / u.s / u.Unit("detector")),
+                ("7000 - 20000 keV", u.ct / u.s / u.Unit("detector")),
+            ]
+        )
         # Todo: check units used. https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
         return data, header, units
 
@@ -156,9 +160,9 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         `~sunpy.timeseries.TimeSeries`.
         """
         # Check if source is explicitly assigned
-        if 'source' in kwargs.keys():
-            if kwargs.get('source', ''):
-                return kwargs.get('source', '').lower().startswith(cls._source)
+        if "source" in kwargs.keys():
+            if kwargs.get("source", ""):
+                return kwargs.get("source", "").lower().startswith(cls._source)
         # Check if HDU defines the source instrument
-        if 'meta' in kwargs.keys():
-            return kwargs['meta'].get('telescop', '').startswith('HESSI')
+        if "meta" in kwargs.keys():
+            return kwargs["meta"].get("telescop", "").startswith("HESSI")

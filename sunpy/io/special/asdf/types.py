@@ -1,15 +1,16 @@
 from asdf.types import CustomType
 
-__all__ = ['SunPyType']
+__all__ = ["SunPyType"]
 
 
 class SunPyType(CustomType):
     """
     Base class for asdf tags defined in SunPy.
     """
-    organization = 'sunpy.org'
-    standard = 'sunpy'
-    version = '1.0.0'
+
+    organization = "sunpy.org"
+    standard = "sunpy"
+    version = "1.0.0"
 
     _tags = set()
 

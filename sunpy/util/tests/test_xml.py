@@ -16,7 +16,7 @@ def test_xml_to_dict1():
         </outer>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {'outer': {'inner2': 'two', 'inner1': 'one'}}
+    expected_dict = {"outer": {"inner2": "two", "inner1": "one"}}
 
     assert xml_dict == expected_dict
 
@@ -34,7 +34,7 @@ def test_xml_to_dict2():
                  </outer>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {'outer': {'inner2': 'two-two', 'inner1': 'one-two'}}
+    expected_dict = {"outer": {"inner2": "two-two", "inner1": "one-two"}}
 
     assert xml_dict == expected_dict
 
@@ -47,7 +47,7 @@ def test_xml_to_dict3():
     source_xml = "<outer/>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {'outer': ''}
+    expected_dict = {"outer": ""}
 
     assert xml_dict == expected_dict
 
@@ -60,7 +60,7 @@ def test_xml_to_dict4():
     source_xml = "<outer></outer>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {'outer': ''}
+    expected_dict = {"outer": ""}
 
     assert xml_dict == expected_dict
 
@@ -79,7 +79,7 @@ def test_xml_to_dict5():
                  </outer>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {'outer': {'mid2': {'inner2': 'two-one'}, 'mid1': {'inner1': 'one-one'}}}
+    expected_dict = {"outer": {"mid2": {"inner2": "two-one"}, "mid1": {"inner1": "one-one"}}}
 
     assert xml_dict == expected_dict
 
@@ -99,7 +99,7 @@ def test_xml_to_dict6():
                  </outer>"
 
     xml_dict = xml.xml_to_dict(source_xml)
-    expected_dict = {'outer': {'mid': {'inner2': 'two-one'}}}
+    expected_dict = {"outer": {"mid": {"inner2": "two-one"}}}
 
     assert xml_dict == expected_dict
 
@@ -193,7 +193,7 @@ def test_node_to_dict1():
     inner1.appendChild(inner1_text)
     inner2.appendChild(inner2_text)
 
-    expected_dict = {'outer': {'inner2': 'two', 'inner1': 'one'}}
+    expected_dict = {"outer": {"inner2": "two", "inner1": "one"}}
     xml_dict = xml.node_to_dict(doc)
 
     assert xml_dict == expected_dict
@@ -224,7 +224,7 @@ def test_node_to_dict2():
     inner1.appendChild(inner1_text)
     inner2.appendChild(inner2_text)
 
-    expected_dict = {'outer': {'mid2': {'inner2': 'two'}, 'mid1': {'inner1': 'one'}}}
+    expected_dict = {"outer": {"mid2": {"inner2": "two"}, "mid1": {"inner1": "one"}}}
     xml_dict = xml.node_to_dict(doc)
 
     assert xml_dict == expected_dict
@@ -259,6 +259,7 @@ def test_with_multiple_children_in_list():
     Setting the 'multiple' attribute of parent node should put child nodes in a
     list.
     """
+
     def getChild(lst_of_children, key, value):
         for child in lst_of_children:
             if child[key] == value:
@@ -266,7 +267,7 @@ def test_with_multiple_children_in_list():
 
         raise ValueError(f"No children with key {key} set to {value} found.")
 
-    source = '''<?xml version="1.0" encoding="UTF-8"?>
+    source = """<?xml version="1.0" encoding="UTF-8"?>
                 <Config>
                     <Name>With multiple children</Name>
                     <Children multiple="true">
@@ -279,31 +280,37 @@ def test_with_multiple_children_in_list():
                         <Value>Value 2</Value>
                       </Child>
                     </Children>
-                </Config>'''
+                </Config>"""
 
-    expected = {'Config': {'Children': [{'Name': 'First Child', 'Value': 'Value 1'},
-                                        {'Name': 'Second Child', 'Value': 'Value 2'}],
-                           'Name': 'With multiple children'}}
+    expected = {
+        "Config": {
+            "Children": [
+                {"Name": "First Child", "Value": "Value 1"},
+                {"Name": "Second Child", "Value": "Value 2"},
+            ],
+            "Name": "With multiple children",
+        }
+    }
 
     actual = xml.xml_to_dict(source)
 
-    assert len(expected['Config']) == len(actual['Config'])
-    assert expected['Config']['Name'] == actual['Config']['Name']
+    assert len(expected["Config"]) == len(actual["Config"])
+    assert expected["Config"]["Name"] == actual["Config"]["Name"]
 
-    assert len(actual['Config']['Children']) == 2
+    assert len(actual["Config"]["Children"]) == 2
 
     # As the child dictionaries are in lists we cannot be certain what order
     # they are in. Test individualy.
 
-    expected_children = expected['Config']['Children']
-    actual_children = actual['Config']['Children']
+    expected_children = expected["Config"]["Children"]
+    actual_children = actual["Config"]["Children"]
 
-    expected_first_child = getChild(expected_children, key='Name', value='First Child')
-    actual_first_child = getChild(actual_children, key='Name', value='First Child')
+    expected_first_child = getChild(expected_children, key="Name", value="First Child")
+    actual_first_child = getChild(actual_children, key="Name", value="First Child")
 
     assert expected_first_child == actual_first_child
 
-    expected_second_child = getChild(expected_children, key='Name', value='Second Child')
-    actual_second_child = getChild(actual_children, key='Name', value='Second Child')
+    expected_second_child = getChild(expected_children, key="Name", value="Second Child")
+    actual_second_child = getChild(actual_children, key="Name", value="Second Child")
 
     assert expected_second_child == actual_second_child

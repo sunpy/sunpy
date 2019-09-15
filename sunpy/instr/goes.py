@@ -66,23 +66,30 @@ from sunpy.time import parse_time
 from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.net import check_download_file
 
-GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
-                        'M': u.Quantity(1e-5, "W/m^2"),
-                        'C': u.Quantity(1e-6, "W/m^2"),
-                        'B': u.Quantity(1e-7, "W/m^2"),
-                        'A': u.Quantity(1e-8, "W/m^2")}
+GOES_CONVERSION_DICT = {
+    "X": u.Quantity(1e-4, "W/m^2"),
+    "M": u.Quantity(1e-5, "W/m^2"),
+    "C": u.Quantity(1e-6, "W/m^2"),
+    "B": u.Quantity(1e-7, "W/m^2"),
+    "A": u.Quantity(1e-8, "W/m^2"),
+}
 
-__all__ = ['get_goes_event_list', 'calculate_temperature_em',
-           'calculate_radiative_loss_rate', 'calculate_xray_luminosity', 'flux_to_flareclass',
-           'flareclass_to_flux']
+__all__ = [
+    "get_goes_event_list",
+    "calculate_temperature_em",
+    "calculate_radiative_loss_rate",
+    "calculate_xray_luminosity",
+    "flux_to_flareclass",
+    "flareclass_to_flux",
+]
 
 try:
     # Check required data files are present in user's default download dir
     # Define location where GOES data files are stored.
     # Manually resolve the hostname
-    HOST = socket.gethostbyname_ex('hesperia.gsfc.nasa.gov')[0]
+    HOST = socket.gethostbyname_ex("hesperia.gsfc.nasa.gov")[0]
 except socket.gaierror:
-    HOST = ''
+    HOST = ""
 GOES_REMOTE_PATH = f"http://{HOST}/ssw/gen/idl/synoptic/goes/"
 # Define variables for file names
 FILE_TEMP_COR = "goes_chianti_temp_cor.csv"
@@ -111,21 +118,25 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 
     # use HEK module to search for GOES events
     client = hek.HEKClient()
-    event_type = 'FL'
+    event_type = "FL"
     tstart = timerange.start
     tend = timerange.end
 
     # query the HEK for a list of events detected by the GOES instrument
     # between tstart and tend (using a GOES-class filter)
     if goes_class_filter:
-        result = client.search(hek.attrs.Time(tstart, tend),
-                               hek.attrs.EventType(event_type),
-                               hek.attrs.FL.GOESCls > goes_class_filter,
-                               hek.attrs.OBS.Observatory == 'GOES')
+        result = client.search(
+            hek.attrs.Time(tstart, tend),
+            hek.attrs.EventType(event_type),
+            hek.attrs.FL.GOESCls > goes_class_filter,
+            hek.attrs.OBS.Observatory == "GOES",
+        )
     else:
-        result = client.search(hek.attrs.Time(tstart, tend),
-                               hek.attrs.EventType(event_type),
-                               hek.attrs.OBS.Observatory == 'GOES')
+        result = client.search(
+            hek.attrs.Time(tstart, tend),
+            hek.attrs.EventType(event_type),
+            hek.attrs.OBS.Observatory == "GOES",
+        )
 
     # want to condense the results of the query into a more manageable
     # dictionary
@@ -136,22 +147,20 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 
     for r in result:
         goes_event = {
-            'event_date': parse_time(r['event_starttime']).strftime(
-                '%Y-%m-%d'),
-            'start_time': parse_time(r['event_starttime']),
-            'peak_time': parse_time(r['event_peaktime']),
-            'end_time': parse_time(r['event_endtime']),
-            'goes_class': str(r['fl_goescls']),
-            'goes_location': (r['event_coord1'], r['event_coord2']),
-            'noaa_active_region': r['ar_noaanum']
-            }
+            "event_date": parse_time(r["event_starttime"]).strftime("%Y-%m-%d"),
+            "start_time": parse_time(r["event_starttime"]),
+            "peak_time": parse_time(r["event_peaktime"]),
+            "end_time": parse_time(r["event_endtime"]),
+            "goes_class": str(r["fl_goescls"]),
+            "goes_location": (r["event_coord1"], r["event_coord2"]),
+            "noaa_active_region": r["ar_noaanum"],
+        }
         goes_event_list.append(goes_event)
 
     return goes_event_list
 
 
-def calculate_temperature_em(goests, abundances="coronal",
-                             download=False, download_dir=None):
+def calculate_temperature_em(goests, abundances="coronal", download=False, download_dir=None):
     """
     Calculates temperature and emission measure from a `~sunpy.timeseries.XRSTimeSeries`.
 
@@ -269,11 +278,16 @@ def calculate_temperature_em(goests, abundances="coronal",
         goests.quantity("xrsa"),
         satellite=goests.meta.metas[0]["TELESCOP"].split()[1],
         date=goests.data.index[0],
-        abundances=abundances, download=download, download_dir=download_dir)
+        abundances=abundances,
+        download=download,
+        download_dir=download_dir,
+    )
 
-    ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
-                                      data=copy.deepcopy(goests.data),
-                                      units=copy.deepcopy(goests.units))
+    ts_new = timeseries.XRSTimeSeries(
+        meta=copy.deepcopy(goests.meta),
+        data=copy.deepcopy(goests.data),
+        units=copy.deepcopy(goests.units),
+    )
     ts_new = ts_new.add_column("temperature", temp)
     ts_new = ts_new.add_column("em", em)
 
@@ -281,9 +295,15 @@ def calculate_temperature_em(goests, abundances="coronal",
 
 
 @u.quantity_input
-def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8,
-                      date=datetime.datetime.today(), abundances="coronal",
-                      download=False, download_dir=None):
+def _goes_chianti_tem(
+    longflux: u.W / u.m / u.m,
+    shortflux: u.W / u.m / u.m,
+    satellite=8,
+    date=datetime.datetime.today(),
+    abundances="coronal",
+    download=False,
+    download_dir=None,
+):
     """
     Calculates temperature and emission measure from GOES/XRS data.
 
@@ -382,23 +402,21 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     if not download_dir:
         download_dir = get_and_create_download_dir()
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
-    longflux = longflux.to(u.W/u.m/u.m)
-    shortflux = shortflux.to(u.W/u.m/u.m)
+    longflux = longflux.to(u.W / u.m / u.m)
+    shortflux = shortflux.to(u.W / u.m / u.m)
     satellite = int(satellite)
     if satellite < 1:
-        raise ValueError("satellite must be the number of a "
-                         "valid GOES satellite (>1).")
+        raise ValueError("satellite must be the number of a " "valid GOES satellite (>1).")
     date = parse_time(date)
     # Check flux arrays are of same length.
     if len(longflux) != len(shortflux):
-        raise ValueError(
-            "longflux and shortflux must have same number of elements.")
+        raise ValueError("longflux and shortflux must have same number of elements.")
 
     # PREPARE DATA
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
     if date < parse_time((1983, 6, 28)) and satellite == 6:
-        longflux_corrected = longflux*(4.43/5.32)
+        longflux_corrected = longflux * (4.43 / 5.32)
     else:
         longflux_corrected = longflux
     # Un-scale fluxes if GOES satellite is after 7.  See 2nd paragraph
@@ -413,23 +431,34 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     # See Notes section in docstring above.
     index = np.logical_or(
         shortflux_corrected < u.Quantity(1e-10, unit="W/m**2"),
-        longflux_corrected < u.Quantity(3e-8, unit="W/m**2"))
+        longflux_corrected < u.Quantity(3e-8, unit="W/m**2"),
+    )
     fluxratio = shortflux_corrected / longflux_corrected
     fluxratio.value[index] = u.Quantity(0.003, unit="W/m**2")
 
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
-    temp = _goes_get_chianti_temp(fluxratio, satellite=satellite,
-                                  abundances=abundances, download=download,
-                                  download_dir=download_dir)
-    em = _goes_get_chianti_em(longflux_corrected, temp, satellite=satellite,
-                              abundances=abundances, download=download,
-                              download_dir=download_dir)
+    temp = _goes_get_chianti_temp(
+        fluxratio,
+        satellite=satellite,
+        abundances=abundances,
+        download=download,
+        download_dir=download_dir,
+    )
+    em = _goes_get_chianti_em(
+        longflux_corrected,
+        temp,
+        satellite=satellite,
+        abundances=abundances,
+        download=download,
+        download_dir=download_dir,
+    )
     return temp, em
 
 
 @u.quantity_input
-def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
-                           download=False, download_dir=None):
+def _goes_get_chianti_temp(
+    fluxratio: u.one, satellite=8, abundances="coronal", download=False, download_dir=None
+):
     """
     Calculates temperature from GOES flux ratio.
 
@@ -519,17 +548,14 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
         download_dir = get_and_create_download_dir()
     # If download kwarg is True, or required data files cannot be
     # found locally, download required data files.
-    check_download_file(FILE_TEMP_COR, GOES_REMOTE_PATH, download_dir,
-                        replace=download)
-    check_download_file(FILE_TEMP_PHO, GOES_REMOTE_PATH, download_dir,
-                        replace=download)
+    check_download_file(FILE_TEMP_COR, GOES_REMOTE_PATH, download_dir, replace=download)
+    check_download_file(FILE_TEMP_PHO, GOES_REMOTE_PATH, download_dir, replace=download)
 
     # check inputs are correct
     fluxratio = fluxratio.decompose()
     int(satellite)
     if satellite < 1:
-        raise ValueError("satellite must be the number of a "
-                         "valid GOES satellite (>1).")
+        raise ValueError("satellite must be the number of a " "valid GOES satellite (>1).")
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
     if abundances == "coronal":
@@ -537,8 +563,7 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     elif abundances == "photospheric":
         data_file = FILE_TEMP_PHO
     else:
-        raise ValueError("abundances must be a string equalling "
-                         "'coronal' or 'photospheric'.")
+        raise ValueError("abundances must be a string equalling " "'coronal' or 'photospheric'.")
 
     # Initialize lists to hold model data of flux ratio - temperature
     # relationship read in from csv file
@@ -559,26 +584,30 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     modelratio = np.asarray(modelratio)
 
     # Ensure input values of flux ratio are within limits of model table
-    if np.min(fluxratio) < np.min(modelratio) or \
-       np.max(fluxratio) > np.max(modelratio):
+    if np.min(fluxratio) < np.min(modelratio) or np.max(fluxratio) > np.max(modelratio):
         raise ValueError(
-            "For GOES {0}, all values in fluxratio input must be within " +
-            "the range {1} - {2}.".format(satellite, np.min(modelratio),
-                                          np.max(modelratio)))
+            "For GOES {0}, all values in fluxratio input must be within "
+            + "the range {1} - {2}.".format(satellite, np.min(modelratio), np.max(modelratio))
+        )
 
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modelratio, modeltemp, s=0)
-    temp = 10.**interpolate.splev(fluxratio.value, spline, der=0)
-    temp = u.Quantity(temp, unit='MK')
+    temp = 10.0 ** interpolate.splev(fluxratio.value, spline, der=0)
+    temp = u.Quantity(temp, unit="MK")
 
     return temp
 
 
 @u.quantity_input
-def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
-                         abundances="coronal", download=False,
-                         download_dir=None):
+def _goes_get_chianti_em(
+    longflux: u.W / u.m / u.m,
+    temp: u.MK,
+    satellite=8,
+    abundances="coronal",
+    download=False,
+    download_dir=None,
+):
     """
     Calculates emission measure from GOES 1-8A flux and temperature.
 
@@ -676,19 +705,16 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
         download_dir = get_and_create_download_dir()
     # If download kwarg is True, or required data files cannot be
     # found locally, download required data files.
-    check_download_file(FILE_EM_COR, GOES_REMOTE_PATH, download_dir,
-                        replace=download)
-    check_download_file(FILE_EM_PHO, GOES_REMOTE_PATH, download_dir,
-                        replace=download)
+    check_download_file(FILE_EM_COR, GOES_REMOTE_PATH, download_dir, replace=download)
+    check_download_file(FILE_EM_PHO, GOES_REMOTE_PATH, download_dir, replace=download)
 
     # Check inputs are of correct type
-    longflux = longflux.to(u.W/u.m**2)
+    longflux = longflux.to(u.W / u.m ** 2)
     temp = temp.to(u.MK)
     log10_temp = np.log10(temp.value)
     int(satellite)
     if satellite < 1:
-        raise ValueError("satellite must be the number of a "
-                         "valid GOES satellite (>1).")
+        raise ValueError("satellite must be the number of a " "valid GOES satellite (>1).")
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
     if abundances == "coronal":
@@ -696,16 +722,14 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     elif abundances == "photospheric":
         data_file = FILE_EM_PHO
     else:
-        raise ValueError("abundances must be a string equalling "
-                         "'coronal' or 'photospheric'.")
+        raise ValueError("abundances must be a string equalling " "'coronal' or 'photospheric'.")
     # check input arrays are of same length
     if len(longflux) != len(temp):
-        raise ValueError("longflux and temp must have same number of "
-                         "elements.")
+        raise ValueError("longflux and temp must have same number of " "elements.")
 
     # Initialize lists to hold model data of temperature - long channel
     # flux relationship read in from csv file.
-    modeltemp = []   # modelled temperature is in log_10 space in units of MK
+    modeltemp = []  # modelled temperature is in log_10 space in units of MK
     modelflux = []
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
@@ -723,24 +747,26 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     modelflux = np.asarray(modelflux)
 
     # Ensure input values of flux ratio are within limits of model table
-    if np.min(log10_temp) < np.min(modeltemp) or \
-       np.max(log10_temp) > np.max(modeltemp) or \
-       np.isnan(np.min(log10_temp)):
-        raise ValueError("All values in temp must be within the range "
-                         "{} - {} MK.".format(np.min(10**modeltemp),
-                                                np.max(10**modeltemp)))
+    if (
+        np.min(log10_temp) < np.min(modeltemp)
+        or np.max(log10_temp) > np.max(modeltemp)
+        or np.isnan(np.min(log10_temp))
+    ):
+        raise ValueError(
+            "All values in temp must be within the range "
+            "{} - {} MK.".format(np.min(10 ** modeltemp), np.max(10 ** modeltemp))
+        )
 
     # Perform spline fit to model data
     spline = interpolate.splrep(modeltemp, modelflux, s=0)
     denom = interpolate.splev(log10_temp, spline, der=0)
-    em = longflux.value/denom * 1e55
-    em = u.Quantity(em, unit='cm**(-3)')
+    em = longflux.value / denom * 1e55
+    em = u.Quantity(em, unit="cm**(-3)")
 
     return em
 
 
-def calculate_radiative_loss_rate(goests, force_download=False,
-                                  download_dir=None):
+def calculate_radiative_loss_rate(goests, force_download=False, download_dir=None):
     """
     Calculates radiative loss rate from GOES observations.
 
@@ -848,32 +874,34 @@ def calculate_radiative_loss_rate(goests, force_download=False,
     # object and change type to that required by _calc_rad_loss().
     # If LightCurve object does not contain temperature and
     # emission measure, calculate using calculate_temperature_em()
-    if 'temperature' in goests.columns and 'em' in goests.columns:
+    if "temperature" in goests.columns and "em" in goests.columns:
         # Use copy.deepcopy for replicating meta and data so that input
         # lightcurve is not altered.
-        ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
-                                          data=copy.deepcopy(goests.data),
-                                          units=copy.deepcopy(goests.units))
+        ts_new = timeseries.XRSTimeSeries(
+            meta=copy.deepcopy(goests.meta),
+            data=copy.deepcopy(goests.data),
+            units=copy.deepcopy(goests.units),
+        )
     else:
         ts_new = calculate_temperature_em(goests)
-    temp = u.Quantity(np.asarray(ts_new.data.temperature, dtype=np.float64),
-                      unit=u.MK)
-    em = u.Quantity(np.asarray(ts_new.data.em, dtype=np.float64),
-                    unit=u.cm**(-3))
+    temp = u.Quantity(np.asarray(ts_new.data.temperature, dtype=np.float64), unit=u.MK)
+    em = u.Quantity(np.asarray(ts_new.data.em, dtype=np.float64), unit=u.cm ** (-3))
 
     # Find radiative loss rate with _calc_rad_loss()
-    rad_loss_out = _calc_rad_loss(temp, em, force_download=force_download,
-                                  download_dir=download_dir)
+    rad_loss_out = _calc_rad_loss(
+        temp, em, force_download=force_download, download_dir=download_dir
+    )
 
     # Enter results into new version of GOES LightCurve Object
-    ts_new = ts_new.add_column("rad_loss_rate", rad_loss_out['rad_loss_rate'].to("W"))
+    ts_new = ts_new.add_column("rad_loss_rate", rad_loss_out["rad_loss_rate"].to("W"))
 
     return ts_new
 
 
 @u.quantity_input
-def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
-                   download_dir=None):
+def _calc_rad_loss(
+    temp: u.MK, em: u.cm ** -3, obstime=None, force_download=False, download_dir=None
+):
     """
     Finds radiative loss rate of coronal plasma over all wavelengths.
 
@@ -958,23 +986,21 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         download_dir = get_and_create_download_dir()
     # Check inputs are correct
     temp = temp.to(u.K)
-    em = em.to(1/u.cm**3)
+    em = em.to(1 / u.cm ** 3)
     if len(temp) != len(em):
         raise ValueError("temp and em must all have same number of elements.")
     # If force_download kwarg is True, or required data files cannot be
     # found locally, download required data files.
-    check_download_file(FILE_RAD_COR, GOES_REMOTE_PATH, download_dir,
-                        replace=force_download)
+    check_download_file(FILE_RAD_COR, GOES_REMOTE_PATH, download_dir, replace=force_download)
 
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
-    modeltemp = []    # modelled temperature is in log_10 space in units of MK
+    modeltemp = []  # modelled temperature is in log_10 space in units of MK
     model_loss_rate = []
 
     # Read data from csv file into lists, being sure to skip commented
     # lines beginning with "#"
-    with open(os.path.join(get_and_create_download_dir(), FILE_RAD_COR),
-              "r") as csvfile:
+    with open(os.path.join(get_and_create_download_dir(), FILE_RAD_COR), "r") as csvfile:
         startline = csvfile.readlines()[7:]
         csvreader = csv.reader(startline, delimiter=" ")
         for row in csvreader:
@@ -983,17 +1009,17 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
     modeltemp = np.asarray(modeltemp)
     model_loss_rate = np.asarray(model_loss_rate)
     # Ensure input values of flux ratio are within limits of model table
-    if temp.value.min() < modeltemp.min() or \
-    temp.value.max() > modeltemp.max():
-        raise ValueError("All values in temp must be within the range " +
-                         "{} - {} MK.".format(np.min(modeltemp/1e6),
-                                                np.max(modeltemp/1e6)))
+    if temp.value.min() < modeltemp.min() or temp.value.max() > modeltemp.max():
+        raise ValueError(
+            "All values in temp must be within the range "
+            + "{} - {} MK.".format(np.min(modeltemp / 1e6), np.max(modeltemp / 1e6))
+        )
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)
     rad_loss = em.value * interpolate.splev(temp.value, spline, der=0)
-    rad_loss = u.Quantity(rad_loss, unit='erg/s')
-    rad_loss = rad_loss.to(u.J/u.s)
+    rad_loss = u.Quantity(rad_loss, unit="erg/s")
+    rad_loss = rad_loss.to(u.J / u.s)
 
     # If obstime keyword giving measurement times is set, calculate
     # radiative losses integrated over time.
@@ -1002,8 +1028,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         # correct type.
         n = len(temp)
         if len(obstime) != n:
-            raise OSError("obstime must have same number of elements as "
-                          "temp and em.")
+            raise OSError("obstime must have same number of elements as " "temp and em.")
 
         obstime = parse_time(obstime)
 
@@ -1014,15 +1039,17 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         obstime_seconds = (obstime - obstime[0]).sec
         # Finally, integrate using trapezoid rule
         rad_loss_int = trapz(rad_loss.value, obstime_seconds)
-        rad_loss_int = u.Quantity(rad_loss_int, unit=rad_loss.unit*u.s)
+        rad_loss_int = u.Quantity(rad_loss_int, unit=rad_loss.unit * u.s)
         # Calculate cumulative radiated energy in each GOES channel as
         # a function of time.
         rad_loss_cumul = cumtrapz(rad_loss, obstime_seconds)
-        rad_loss_cumul = u.Quantity(rad_loss_cumul, unit=rad_loss.unit*u.s)
+        rad_loss_cumul = u.Quantity(rad_loss_cumul, unit=rad_loss.unit * u.s)
         # Enter results into output dictionary.
-        rad_loss_out = {"rad_loss_rate": rad_loss,
-                        "rad_loss_cumul": rad_loss_cumul,
-                        "rad_loss_int": rad_loss_int}
+        rad_loss_out = {
+            "rad_loss_rate": rad_loss,
+            "rad_loss_cumul": rad_loss_cumul,
+            "rad_loss_int": rad_loss_int,
+        }
     else:
         rad_loss_out = {"rad_loss_rate": rad_loss}
 
@@ -1095,15 +1122,17 @@ def calculate_xray_luminosity(goests):
     if not isinstance(goests, timeseries.XRSTimeSeries):
         raise TypeError("goeslc must be a XRSTimeSeries object.")
     # Find temperature and emission measure with _goes_chianti_tem
-    lx_out = _goes_lx(goests.quantity("xrsb"),
-                      goests.quantity("xrsa"),
-                      date=str(goests.data.index[0]))
+    lx_out = _goes_lx(
+        goests.quantity("xrsb"), goests.quantity("xrsa"), date=str(goests.data.index[0])
+    )
     # Enter results into new version of GOES LightCurve Object
     # Use copy.deepcopy for replicating meta and data so that input
     # lightcurve is not altered.
-    ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
-                                      data=copy.deepcopy(goests.data),
-                                      units=copy.deepcopy(goests.units))
+    ts_new = timeseries.XRSTimeSeries(
+        meta=copy.deepcopy(goests.meta),
+        data=copy.deepcopy(goests.data),
+        units=copy.deepcopy(goests.units),
+    )
     ts_new = ts_new.add_column("luminosity_xrsa", lx_out["shortlum"].to("W"))
     ts_new = ts_new.add_column("luminosity_xrsb", lx_out["longlum"].to("W"))
 
@@ -1197,8 +1226,9 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         # First ensure longflux, shortflux, and obstime are all of
         # equal length and obstime is of correct type.
         if not len(longflux) == len(shortflux) == len(obstime):
-            raise ValueError("longflux, shortflux, and obstime must all have "
-                             "same number of elements.")
+            raise ValueError(
+                "longflux, shortflux, and obstime must all have " "same number of elements."
+            )
 
         obstime = parse_time(obstime)
 
@@ -1211,20 +1241,23 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
 
         # Finally, integrate using trapezoid rule
         longlum_int = trapz(longlum.value, obstime_seconds)
-        longlum_int = u.Quantity(longlum_int, unit=longlum.unit*u.s)
+        longlum_int = u.Quantity(longlum_int, unit=longlum.unit * u.s)
         shortlum_int = trapz(shortlum.value, obstime_seconds)
-        shortlum_int = u.Quantity(shortlum_int, unit=shortlum.unit*u.s)
+        shortlum_int = u.Quantity(shortlum_int, unit=shortlum.unit * u.s)
         # Calculate cumulative radiated energy in each GOES channel as
         # a function of time.
         longlum_cumul = cumtrapz(longlum.value, obstime_seconds)
-        longlum_cumul = u.Quantity(longlum_cumul, unit=longlum.unit*u.s)
+        longlum_cumul = u.Quantity(longlum_cumul, unit=longlum.unit * u.s)
         shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
-        shortlum_cumul = u.Quantity(shortlum_cumul,
-                                    unit=shortlum.unit*u.s)
-        lx_out = {"longlum": longlum, "shortlum": shortlum,
-                  "longlum_cumul": longlum_cumul,
-                  "shortlum_cumul": shortlum_cumul,
-                  "longlum_int": longlum_int, "shortlum_int": shortlum_int}
+        shortlum_cumul = u.Quantity(shortlum_cumul, unit=shortlum.unit * u.s)
+        lx_out = {
+            "longlum": longlum,
+            "shortlum": shortlum,
+            "longlum_cumul": longlum_cumul,
+            "shortlum_cumul": shortlum_cumul,
+            "longlum_int": longlum_int,
+            "shortlum_int": shortlum_int,
+        }
     else:
         lx_out = {"longlum": longlum, "shortlum": shortlum}
 
@@ -1232,7 +1265,7 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
 
 
 @u.quantity_input
-def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
+def _calc_xraylum(flux: u.W / u.m / u.m, date=None):
     """
     Calculates solar luminosity based on observed flux observed at 1AU.
 
@@ -1269,9 +1302,9 @@ def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
     """
     if date is not None:
         date = parse_time(date)
-        xraylum = 4 * np.pi * sun.earth_distance(date).to("m")**2 * flux
+        xraylum = 4 * np.pi * sun.earth_distance(date).to("m") ** 2 * flux
     else:
-        xraylum = 4 * np.pi * constants.au.to("m")**2 * flux
+        xraylum = 4 * np.pi * constants.au.to("m") ** 2 * flux
     return xraylum
 
 
@@ -1304,7 +1337,7 @@ def flareclass_to_flux(flareclass):
     >>> flareclass_to_flux('X2.4')
     <Quantity 0.00024 W / m2>
     """
-    if not isinstance(flareclass, type('str')):
+    if not isinstance(flareclass, type("str")):
         raise TypeError("Input must be a string")
     # TODO should probably make sure the string is in the expected format.
 
@@ -1315,7 +1348,7 @@ def flareclass_to_flux(flareclass):
 
 
 @u.quantity_input
-def flux_to_flareclass(goesflux: u.watt/u.m**2):
+def flux_to_flareclass(goesflux: u.watt / u.m ** 2):
     """
     Converts X-ray flux into the corresponding GOES flare class.
 
@@ -1358,7 +1391,7 @@ def flux_to_flareclass(goesflux: u.watt/u.m**2):
     if goesflux.value < 0:
         raise ValueError("Flux cannot be negative")
 
-    decade = np.floor(np.log10(goesflux.to('W/m**2').value))
+    decade = np.floor(np.log10(goesflux.to("W/m**2").value))
     # invert the conversion dictionary
     conversion_dict = {v: k for k, v in GOES_CONVERSION_DICT.items()}
     if decade < -8:
@@ -1369,13 +1402,12 @@ def flux_to_flareclass(goesflux: u.watt/u.m**2):
         decade = -4
     else:
         str_class = conversion_dict.get(u.Quantity(10 ** decade, "W/m**2"))
-    goes_subclass = 10 ** -decade * goesflux.to('W/m**2').value
+    goes_subclass = 10 ** -decade * goesflux.to("W/m**2").value
     return f"{str_class}{goes_subclass:.3g}"
 
 
 def _assert_chrono_order(obstime):
     chrono_check = np.array(obstime) - np.roll(obstime, 1)
     chrono_check = chrono_check[1:]
-    if not all(val > TimeDelta(0*u.day) for val in chrono_check):
-        raise ValueError(
-            "Elements of obstime must be in chronological order.")
+    if not all(val > TimeDelta(0 * u.day) for val in chrono_check):
+        raise ValueError("Elements of obstime must be in chronological order.")

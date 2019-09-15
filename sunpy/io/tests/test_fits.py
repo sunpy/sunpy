@@ -14,10 +14,10 @@ from sunpy.util import MetaDict
 
 testpath = sunpy.data.test.rootdir
 
-RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
-EIT_195_IMAGE = os.path.join(testpath, 'EIT/efz20040301.000010_s.fits')
-AIA_171_IMAGE = os.path.join(testpath, 'aia_171_level1.fits')
-SWAP_LEVEL1_IMAGE = os.path.join(testpath, 'SWAP/resampled1_swap.fits')
+RHESSI_IMAGE = os.path.join(testpath, "hsi_image_20101016_191218.fits")
+EIT_195_IMAGE = os.path.join(testpath, "EIT/efz20040301.000010_s.fits")
+AIA_171_IMAGE = os.path.join(testpath, "aia_171_level1.fits")
+SWAP_LEVEL1_IMAGE = os.path.join(testpath, "SWAP/resampled1_swap.fits")
 
 
 def read_hdus():
@@ -55,41 +55,41 @@ def test_missing_waveunit_in_wavelnth_comment():
 def test_extract_waveunit_from_waveunit_key():
     # the key WAVEUNIT can be accessed and returned directly
     waveunit = extract_waveunit(get_header(AIA_171_IMAGE)[0])
-    assert waveunit == 'angstrom'
+    assert waveunit == "angstrom"
 
 
 def test_extract_waveunit_minus9():
     # value of WAVEUNIT is -9
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+    with pytest.warns(AstropyUserWarning, match="File may have been truncated"):
         waveunit = extract_waveunit(get_header(MEDN_IMAGE)[0])
-    assert waveunit == 'nm'
+    assert waveunit == "nm"
 
 
 def test_extract_waveunit_minus10():
     # value of WAVEUNIT is -10
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+    with pytest.warns(AstropyUserWarning, match="File may have been truncated"):
         waveunit = extract_waveunit(get_header(MQ_IMAGE)[0])
-    assert waveunit == 'angstrom'
+    assert waveunit == "angstrom"
 
 
 def test_extract_waveunit_waveunitcomment():
     # comment of WAVEUNIT is: "in meters"
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+    with pytest.warns(AstropyUserWarning, match="File may have been truncated"):
         waveunit = extract_waveunit(get_header(NA_IMAGE)[0])
-    assert waveunit == 'm'
+    assert waveunit == "m"
 
 
 def test_extract_waveunit_wavelnthcomment_brackets():
     # WAVELNTH comment is: "[Angstrom] bandpass peak response"
     waveunit = extract_waveunit(get_header(SWAP_LEVEL1_IMAGE)[0])
-    assert waveunit == 'angstrom'
+    assert waveunit == "angstrom"
 
 
 def test_extract_waveunit_wavelnthcomment_parentheses():
     # WAVELNTH comment is: "Observed wavelength (nm)"
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+    with pytest.warns(AstropyUserWarning, match="File may have been truncated"):
         waveunit = extract_waveunit(get_header(SVSM_IMAGE)[0])
-    assert waveunit == 'nm'
+    assert waveunit == "nm"
 
 
 def test_simple_write(tmpdir):

@@ -7,6 +7,7 @@ try:
     # register pandas datetime converter with matplotlib
     # This is to work around the change in pandas-dev/pandas#17710
     import pandas.plotting._converter
+
     pandas.plotting._converter.register()
 except ImportError:
     pass

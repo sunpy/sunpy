@@ -11,7 +11,7 @@ from astropy.io.votable.table import parse_single_table
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
 
-__all__ = ['HECClient']
+__all__ = ["HECClient"]
 
 
 def votable_handler(xml_table):
@@ -109,10 +109,9 @@ class HECClient:
             table = self.select_table()
         start_time = parse_time(start_time)
         end_time = parse_time(end_time)
-        results = self.hec_client.service.TimeQuery(STARTTIME=start_time.isot,
-                                                    ENDTIME=end_time.isot,
-                                                    FROM=table,
-                                                    MAXRECORDS=max_records)
+        results = self.hec_client.service.TimeQuery(
+            STARTTIME=start_time.isot, ENDTIME=end_time.isot, FROM=table, MAXRECORDS=max_records
+        )
         results = votable_handler(etree.tostring(results))
         return results
 
@@ -168,11 +167,12 @@ class HECClient:
         table_list = [t[0] for t in tables if len(t[0]) > 0]
         table_list.sort()
         for index, table in enumerate(table_list):
-            print(f'{index + 1} - {table.decode()}')
+            print(f"{index + 1} - {table.decode()}")
 
         while True:
-            user_input = input(f"\nPlease enter a table number between 1 and {len(table_list)} "
-                               "('e' to exit): ")
+            user_input = input(
+                f"\nPlease enter a table number between 1 and {len(table_list)} " "('e' to exit): "
+            )
             if user_input.lower() == "e" or user_input.lower() == "exit":
                 return None
             if user_input.isdigit() and 1 <= int(user_input) <= len(table_list):

@@ -38,17 +38,23 @@ except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
 
-
 __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"
 
-__all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
-           'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
-           'get_sun_orientation', 'get_horizons_coord']
+__all__ = [
+    "get_body_heliographic_stonyhurst",
+    "get_earth",
+    "get_sun_B0",
+    "get_sun_L0",
+    "get_sun_P",
+    "get_sunearth_distance",
+    "get_sun_orientation",
+    "get_horizons_coord",
+]
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def get_body_heliographic_stonyhurst(body, time='now', observer=None):
+def get_body_heliographic_stonyhurst(body, time="now", observer=None):
     """
     Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the location of a
     solar-system body at a specified time.  The location can be corrected for light travel time
@@ -84,18 +90,20 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
         observer_icrs = SkyCoord(observer).icrs.cartesian
 
         # This implementation is modeled after Astropy's `_get_apparent_body_position`
-        light_travel_time = 0.*u.s
+        light_travel_time = 0.0 * u.s
         emitted_time = obstime
-        delta_light_travel_time = 1.*u.s  # placeholder value
-        while np.any(np.fabs(delta_light_travel_time) > 1.0e-8*u.s):
+        delta_light_travel_time = 1.0 * u.s  # placeholder value
+        while np.any(np.fabs(delta_light_travel_time) > 1.0e-8 * u.s):
             body_icrs = get_body_barycentric(body, emitted_time)
             distance = (body_icrs - observer_icrs).norm()
             delta_light_travel_time = light_travel_time - distance / speed_of_light
             light_travel_time = distance / speed_of_light
             emitted_time = obstime - light_travel_time
 
-        log.info(f"Apparent body location accounts for {light_travel_time.to('s').value:.2f}"
-                  " seconds of light travel time")
+        log.info(
+            f"Apparent body location accounts for {light_travel_time.to('s').value:.2f}"
+            " seconds of light travel time"
+        )
 
     body_hgs = ICRS(body_icrs).transform_to(HGS(obstime=obstime))
 
@@ -103,7 +111,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def get_earth(time='now'):
+def get_earth(time="now"):
     """
     Return a `~astropy.coordinates.SkyCoord` for the location of the Earth at a specified time in
     the `~sunpy.coordinates.frames.HeliographicStonyhurst` frame.  The longitude will be 0 by definition.
@@ -118,16 +126,16 @@ def get_earth(time='now'):
     out : `~astropy.coordinates.SkyCoord`
         Location of the Earth in the `~sunpy.coordinates.frames.HeliographicStonyhurst` frame
     """
-    earth = get_body_heliographic_stonyhurst('earth', time=time)
+    earth = get_body_heliographic_stonyhurst("earth", time=time)
 
     # Explicitly set the longitude to 0
-    earth = SkyCoord(0*u.deg, earth.lat, earth.radius, frame=earth)
+    earth = SkyCoord(0 * u.deg, earth.lat, earth.radius, frame=earth)
 
     return earth
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def get_horizons_coord(body, time='now', id_type='majorbody'):
+def get_horizons_coord(body, time="now", id_type="majorbody"):
     """
     Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
     solar-system body at a specified time.  This location is the instantaneous or "true" location,
@@ -196,9 +204,13 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
 
     # Import here so that astroquery is not a module-level dependency
     from astroquery.jplhorizons import Horizons
-    query = Horizons(id=body, id_type=id_type,
-                     location='500@10',      # Heliocentric (mean ecliptic)
-                     epochs=array_time.tdb.jd.tolist())  # Time must be provided in JD TDB
+
+    query = Horizons(
+        id=body,
+        id_type=id_type,
+        location="500@10",  # Heliocentric (mean ecliptic)
+        epochs=array_time.tdb.jd.tolist(),
+    )  # Time must be provided in JD TDB
     try:
         result = query.vectors()
     except Exception:  # Catch and re-raise all exceptions, and also provide query URL if generated
@@ -216,7 +228,7 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     unsorted_indices = obstime.argsort().argsort()
     result = result[unsorted_indices]
 
-    vector = CartesianRepresentation(result['x'], result['y'], result['z'])
+    vector = CartesianRepresentation(result["x"], result["y"], result["z"])
     coord = SkyCoord(vector, frame=HeliocentricMeanEcliptic, obstime=obstime)
 
     return coord.transform_to(HGS).reshape(obstime.shape)
@@ -224,8 +236,9 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
 
 # The code beyond this point should be moved to sunpy.coordinates.sun after the deprecation period
 
+
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def _B0(time='now'):
+def _B0(time="now"):
     """
     Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the
     Sun-disk center as seen from Earth.  The range of B0 is +/-7.23 degrees.
@@ -247,15 +260,15 @@ def _B0(time='now'):
 # rotation axis is aligned with the Z axis)
 def _detilt_lon(coord):
     coord_detilt = coord.hcrs.cartesian.transform(_SUN_DETILT_MATRIX)
-    return coord_detilt.represent_as(SphericalRepresentation).lon.to('deg')
+    return coord_detilt.represent_as(SphericalRepresentation).lon.to("deg")
 
 
 # J2000.0 epoch
-_J2000 = Time('J2000.0', scale='tt')
+_J2000 = Time("J2000.0", scale="tt")
 
 
 # One of the two nodes of intersection between the ICRF equator and Sun's equator in HCRS
-_NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90*u.deg, 0*u.deg, frame='hcrs')
+_NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90 * u.deg, 0 * u.deg, frame="hcrs")
 
 
 # The longitude in the de-tilted frame of the Sun's prime meridian.
@@ -263,11 +276,11 @@ _NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90*u.deg, 0*u.deg, frame='hcrs')
 # Earth as 84.10 degrees eastward from the above-defined node of intersection.
 # Siedelmann et al. (2007) and later also define the true longitude of the meridian (i.e., without
 # light travel time to Earth) as 84.176 degrees eastward, but the apparent longitude is needed.
-_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.10*u.deg)
+_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.10 * u.deg)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def _L0(time='now'):
+def _L0(time="now"):
     """
     Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the
     Sun-disk center as seen from Earth.
@@ -295,7 +308,7 @@ def _L0(time='now'):
     obstime = parse_time(time)
 
     # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
-    dlon_meridian = Longitude(_DLON_MERIDIAN + (obstime - _J2000) * 14.1844*u.deg/u.day)
+    dlon_meridian = Longitude(_DLON_MERIDIAN + (obstime - _J2000) * 14.1844 * u.deg / u.day)
 
     # Calculate the de-tilt longitude of the Earth
     dlon_earth = _detilt_lon(get_earth(obstime))
@@ -304,7 +317,7 @@ def _L0(time='now'):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def _P(time='now'):
+def _P(time="now"):
     """
     Return the position (P) angle for the Sun at a specified time, which is the angle between
     geocentric north and solar north as seen from Earth, measured eastward from geocentric north.
@@ -329,7 +342,7 @@ def _P(time='now'):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def _earth_distance(time='now'):
+def _earth_distance(time="now"):
     """
     Return the distance between the Sun and the Earth at a specified time.
 
@@ -347,7 +360,7 @@ def _earth_distance(time='now'):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def _orientation(location, time='now'):
+def _orientation(location, time="now"):
     """
     Return the orientation angle for the Sun from a specified Earth location and time.  The
     orientation angle is the angle between local zenith and solar north, measured eastward from
@@ -379,18 +392,20 @@ def _sun_north_angle_to_z(frame):
     and observation time.
     """
     # Find the Sun center in HGS at the frame's observation time(s)
-    sun_center_repr = SphericalRepresentation(0*u.deg, 0*u.deg, 0*u.km)
+    sun_center_repr = SphericalRepresentation(0 * u.deg, 0 * u.deg, 0 * u.km)
     # The representation is repeated for as many times as are in obstime prior to transformation
-    sun_center = SkyCoord(sun_center_repr._apply('repeat', frame.obstime.size),
-                          frame=HGS, obstime=frame.obstime)
+    sun_center = SkyCoord(
+        sun_center_repr._apply("repeat", frame.obstime.size), frame=HGS, obstime=frame.obstime
+    )
 
     # Find the Sun north in HGS at the frame's observation time(s)
     # Only a rough value of the solar radius is needed here because, after the cross product,
     #   only the direction from the Sun center to the Sun north pole matters
-    sun_north_repr = SphericalRepresentation(0*u.deg, 90*u.deg, 690000*u.km)
+    sun_north_repr = SphericalRepresentation(0 * u.deg, 90 * u.deg, 690000 * u.km)
     # The representation is repeated for as many times as are in obstime prior to transformation
-    sun_north = SkyCoord(sun_north_repr._apply('repeat', frame.obstime.size),
-                         frame=HGS, obstime=frame.obstime)
+    sun_north = SkyCoord(
+        sun_north_repr._apply("repeat", frame.obstime.size), frame=HGS, obstime=frame.obstime
+    )
 
     # Find the Sun center and Sun north in the frame's coordinate system
     sky_normal = sun_center.transform_to(frame).data.to_cartesian()
@@ -408,7 +423,7 @@ def _sun_north_angle_to_z(frame):
     # Calculate the signed angle between the two projected vectors
     cos_theta = sun_north_in_sky.dot(z_in_sky)
     sin_theta = sun_north_in_sky.cross(z_in_sky).dot(sky_normal)
-    angle = np.arctan2(sin_theta, cos_theta).to('deg')
+    angle = np.arctan2(sin_theta, cos_theta).to("deg")
 
     # If there is only one time, this function's output should be scalar rather than array
     if angle.size == 1:
@@ -418,12 +433,17 @@ def _sun_north_angle_to_z(frame):
 
 
 # The following functions are moved in the API to sunpy.coordinates.sun and renamed
-_old_names = ['get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
-              'get_sun_orientation']
-_new_module = 'sunpy.coordinates.sun.'
-_new_names = ['B0', 'L0', 'P', 'earth_distance', 'orientation']
+_old_names = [
+    "get_sun_B0",
+    "get_sun_L0",
+    "get_sun_P",
+    "get_sunearth_distance",
+    "get_sun_orientation",
+]
+_new_module = "sunpy.coordinates.sun."
+_new_names = ["B0", "L0", "P", "earth_distance", "orientation"]
 
 # Create a deprecation hook for each of the functions
 # Note that the code for each of these functions is still in this module as a private function
 for old, new in zip(_old_names, _new_names):
-    vars()[old] = deprecated('1.0', name=old, alternative=_new_module + new)(vars()['_' + new])
+    vars()[old] = deprecated("1.0", name=old, alternative=_new_module + new)(vars()["_" + new])

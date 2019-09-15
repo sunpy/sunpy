@@ -28,8 +28,7 @@ from sunpy.util.multimethod import MultiMethod
 _ATTR_TUPLE = namedtuple("attr", "name name_long desc")
 _REGEX = re.compile(r"^[\d]([^\d].*)?$")
 
-__all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'AttrAnd',
-           'AttrOr', 'ValueAttr', 'and_', 'or_']
+__all__ = ["Attr", "DummyAttr", "SimpleAttr", "AttrAnd", "AttrOr", "ValueAttr", "and_", "or_"]
 
 
 def make_tuple():
@@ -49,8 +48,7 @@ def strtonum(value):
         return value
     if not 0 <= value < 10:
         return str(value)
-    return ('zero', 'one', 'two', 'three', 'four', 'five', 'six',
-            'seven', 'eight', 'nine')[value]
+    return ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")[value]
 
 
 class AttrMeta(type):
@@ -83,7 +81,7 @@ class AttrMeta(type):
             # We return Attr(name_long) to create the Attr requested.
             return self(registry.name_long[names.index(item)])
         else:
-            raise AttributeError(f'This attribute, {item} is not defined, please register it.')
+            raise AttributeError(f"This attribute, {item} is not defined, please register it.")
 
     def __dir__(self):
         """
@@ -96,20 +94,23 @@ class AttrMeta(type):
         """
         This enables the "pretty" printing of Attrs.
         """
-        name = ['Attribute Name'] + self._attr_registry[self].name
-        name_long = ['Full Name'] + self._attr_registry[self].name_long
-        desc = ['Description'] + self._attr_registry[self].desc
+        name = ["Attribute Name"] + self._attr_registry[self].name
+        name_long = ["Full Name"] + self._attr_registry[self].name_long
+        desc = ["Description"] + self._attr_registry[self].desc
         pad_name = max(len(elm) for elm in name)
         pad_long = max(len(elm) for elm in name_long)
         pad_desc = max(len(elm) for elm in desc)
         fmt = f"%-{pad_name}s | %-{pad_long}s | %-{pad_desc}s"
         lines = [fmt % elm for elm in zip(name, name_long, desc)]
-        lines.insert(1, '-' * (pad_name + 1) + '+' + '-' * (pad_long + 2) + '+' + '-' * (pad_desc + 1))
+        lines.insert(
+            1, "-" * (pad_name + 1) + "+" + "-" * (pad_long + 2) + "+" + "-" * (pad_desc + 1)
+        )
         return "\n".join(lines)
 
 
 class Attr(metaclass=AttrMeta):
     """This is the base for all attributes."""
+
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
@@ -182,14 +183,14 @@ class Attr(metaclass=AttrMeta):
             if isiterable(value) and not isinstance(value, str):
                 for pair in value:
                     if len(pair) != 2:
-                        raise ValueError(f'Invalid length (!=2) for values: {value}.')
+                        raise ValueError(f"Invalid length (!=2) for values: {value}.")
                     else:
                         # Sanitize name, we remove all special characters and make it all lower case
-                        name = ''.join(char for char in pair[0] if char.isalnum()).lower()
+                        name = "".join(char for char in pair[0] if char.isalnum()).lower()
                         if keyword.iskeyword(name):
                             # Attribute name has been appended with `_`
                             # to make it a valid identifier since its a python keyword.
-                            name = name + '_'
+                            name = name + "_"
                         if not name.isidentifier():
                             # This should account for names with one number first.
                             # We match for single digits at the start only.
@@ -201,8 +202,10 @@ class Attr(metaclass=AttrMeta):
                         cls._attr_registry[key][1].append(pair[0])
                         cls._attr_registry[key][2].append(pair[1])
             else:
-                raise ValueError(f"Invalid input value: {value} for key: {repr(key)}. "
-                                  "The value is not iterable or just a string.")
+                raise ValueError(
+                    f"Invalid input value: {value} for key: {repr(key)}. "
+                    "The value is not iterable or just a string."
+                )
 
 
 class DummyAttr(Attr):
@@ -221,6 +224,7 @@ class DummyAttr(Attr):
        for from, to in times:
            attr |= Time(from, to)
     """
+
     def __and__(self, other):
         return other
 
@@ -249,6 +253,7 @@ class SimpleAttr(Attr):
     value : `object`
        The value for the attribute to hold.
     """
+
     def __init__(self, value):
         Attr.__init__(self)
         self.value = value
@@ -257,12 +262,12 @@ class SimpleAttr(Attr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<{cname!s}({val!r})>".format(
-            cname=self.__class__.__name__, val=self.value)
+        return "<{cname!s}({val!r})>".format(cname=self.__class__.__name__, val=self.value)
 
 
 class AttrAnd(Attr):
     """ Attribute representing attributes ANDed together. """
+
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -295,6 +300,7 @@ class AttrAnd(Attr):
 
 class AttrOr(Attr):
     """ Attribute representing attributes ORed together. """
+
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -368,29 +374,32 @@ class ValueAttr(Attr):
 
 class AttrWalker:
     def __init__(self):
-        self.applymm = MultiMethod(lambda *a, **kw: (a[1], ))
-        self.createmm = MultiMethod(lambda *a, **kw: (a[1], ))
+        self.applymm = MultiMethod(lambda *a, **kw: (a[1],))
+        self.createmm = MultiMethod(lambda *a, **kw: (a[1],))
 
     def add_creator(self, *types):
         def _dec(fun):
             for type_ in types:
-                self.createmm.add(fun, (type_, ))
+                self.createmm.add(fun, (type_,))
             return fun
+
         return _dec
 
     def add_applier(self, *types):
         def _dec(fun):
             for type_ in types:
-                self.applymm.add(fun, (type_, ))
+                self.applymm.add(fun, (type_,))
             return fun
+
         return _dec
 
     def add_converter(self, *types):
         def _dec(fun):
             for type_ in types:
-                self.applymm.add(self.cv_apply(fun), (type_, ))
-                self.createmm.add(self.cv_create(fun), (type_, ))
+                self.applymm.add(self.cv_apply(fun), (type_,))
+                self.createmm.add(self.cv_create(fun), (type_,))
             return fun
+
         return _dec
 
     def cv_apply(self, fun):
@@ -398,6 +407,7 @@ class AttrWalker:
             args = list(args)
             args[1] = fun(args[1])
             return self.applymm(*args, **kwargs)
+
         return _fun
 
     def cv_create(self, fun):
@@ -405,6 +415,7 @@ class AttrWalker:
             args = list(args)
             args[1] = fun(args[1])
             return self.createmm(*args, **kwargs)
+
         return _fun
 
     def create(self, *args, **kwargs):

@@ -16,14 +16,15 @@ from sunpy.time import TimeRange, parse_time
 
 from ..client import GenericClient
 
-__all__ = ['RHESSIClient']
+__all__ = ["RHESSIClient"]
 
-data_servers = ('https://hesperia.gsfc.nasa.gov/hessidata/',
-                'http://hessi.ssl.berkeley.edu/hessidata/',
-                'http://soleil.i4ds.ch/hessidata/')
+data_servers = (
+    "https://hesperia.gsfc.nasa.gov/hessidata/",
+    "http://hessi.ssl.berkeley.edu/hessidata/",
+    "http://soleil.i4ds.ch/hessidata/",
+)
 
-lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
-                 'navy', 'orange', 'green')
+lc_linecolors = ("black", "pink", "green", "blue", "brown", "red", "navy", "orange", "green")
 
 
 def get_base_url():
@@ -37,7 +38,7 @@ def get_base_url():
         except (URLError, socket.timeout):
             pass
 
-    raise OSError(f'Unable to find an online HESSI server from {data_servers}')
+    raise OSError(f"Unable to find an online HESSI server from {data_servers}")
 
 
 class RHESSIClient(GenericClient):
@@ -65,6 +66,7 @@ class RHESSIClient(GenericClient):
     <BLANKLINE>
 
     """
+
     def get_observing_summary_filename(self, time_range):
         """
         Download the RHESSI observing summary data from one of the RHESSI
@@ -89,13 +91,17 @@ class RHESSIClient(GenericClient):
         """
         dt = TimeRange(time_range)
         # remove time from dates
-        dt = TimeRange(dt.start.strftime('%Y-%m-%d'), dt.end.strftime('%Y-%m-%d'))
+        dt = TimeRange(dt.start.strftime("%Y-%m-%d"), dt.end.strftime("%Y-%m-%d"))
 
         filenames = []
 
-        diff_months = (dt.end.datetime.year - dt.start.datetime.year) * 12 + dt.end.datetime.month - dt.start.datetime.month
+        diff_months = (
+            (dt.end.datetime.year - dt.start.datetime.year) * 12
+            + dt.end.datetime.month
+            - dt.start.datetime.month
+        )
         first_month = datetime(dt.start.datetime.year, dt.start.datetime.month, 1)
-        month_list = rrule(MONTHLY, dtstart=first_month, count=diff_months+1)
+        month_list = rrule(MONTHLY, dtstart=first_month, count=diff_months + 1)
 
         # need to download and inspect the dbase file to determine the filename
         # for the observing summary data
@@ -103,11 +109,21 @@ class RHESSIClient(GenericClient):
         for this_month in month_list:
             dbase_file_name, hdrs = self.get_observing_summary_dbase_file(this_month)
             dbase_dat = rhessi.parse_observing_summary_dbase_file(dbase_file_name)
-            this_month_obssumm_filenames = dbase_dat.get('filename')
-            daily_filenames_dates = [datetime.strptime(d[0:20], 'hsi_obssumm_%Y%m%d') for d in this_month_obssumm_filenames]
+            this_month_obssumm_filenames = dbase_dat.get("filename")
+            daily_filenames_dates = [
+                datetime.strptime(d[0:20], "hsi_obssumm_%Y%m%d")
+                for d in this_month_obssumm_filenames
+            ]
             for i, this_date in enumerate(daily_filenames_dates):
                 if dt.start <= this_date <= dt.end:
-                    filenames.append(posixpath.join(get_base_url(), 'metadata', 'catalog', this_month_obssumm_filenames[i] + 's'))
+                    filenames.append(
+                        posixpath.join(
+                            get_base_url(),
+                            "metadata",
+                            "catalog",
+                            this_month_obssumm_filenames[i] + "s",
+                        )
+                    )
 
         return filenames
 
@@ -147,7 +163,7 @@ class RHESSIClient(GenericClient):
         if _time < parse_time("2002/02/01"):
             raise ValueError("RHESSI summary files are not available before 2002-02-01")
 
-        url = posixpath.join(get_base_url(), 'dbase', _time.strftime("hsi_obssumm_filedb_%Y%m.txt"))
+        url = posixpath.join(get_base_url(), "dbase", _time.strftime("hsi_obssumm_filedb_%Y%m.txt"))
         return urlretrieve(url)
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -162,18 +178,19 @@ class RHESSIClient(GenericClient):
         return self.get_observing_summary_filename(timerange)
 
     def _get_time_for_url(self, urls):
-        ts = [datetime.strptime(url.split("hsi_obssumm_")[1].split("_")[0],
-                                "%Y%m%d") for url in urls]
-        return [TimeRange(t, (1*u.day-1*u.ms)) for t in ts]
+        ts = [
+            datetime.strptime(url.split("hsi_obssumm_")[1].split("_")[0], "%Y%m%d") for url in urls
+        ]
+        return [TimeRange(t, (1 * u.day - 1 * u.ms)) for t in ts]
 
     def _makeimap(self):
         """
         Helper Function:used to hold information about source.
         """
-        self.map_['source'] = 'rhessi'
-        self.map_['instrument'] = 'rhessi'
-        self.map_['physobs'] = 'irradiance'
-        self.map_['provider'] = 'nasa'
+        self.map_["source"] = "rhessi"
+        self.map_["instrument"] = "rhessi"
+        self.map_["physobs"] = "irradiance"
+        self.map_["provider"] = "nasa"
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -189,9 +206,9 @@ class RHESSIClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr = ['Time', 'Instrument']
+        chkattr = ["Time", "Instrument"]
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'rhessi':
+            if x.__class__.__name__ == "Instrument" and x.value.lower() == "rhessi":
                 return all(chklist)
         return False

@@ -5,7 +5,7 @@ from functools import wraps
 
 import matplotlib.pyplot as plt
 
-__all__ = ['peek_show', "axis_labels_from_ctype"]
+__all__ = ["peek_show", "axis_labels_from_ctype"]
 
 
 def peek_show(func):
@@ -16,6 +16,7 @@ def peek_show(func):
     attempt to show it in the correct way. This decorator will not return the
     figure to the user.
     """
+
     @wraps(func)
     def show_figure(*args, **kwargs):
         _ = func(*args, **kwargs)
@@ -42,14 +43,15 @@ def axis_labels_from_ctype(ctype, unit):
     """
     ctype_short = ctype[:4]
 
-    labels = {'HGLN': f'Heliographic Longitude [{unit}]',
-              'CRLN': f'Carrington Longitude [{unit}]',
-              'HPLN': f'Helioprojective Longitude (Solar-X) [{unit}]',
-              'SOLX': f'Heliocentric X [{unit}]',
-
-              'HGLT': f'Latitude [{unit}]',
-              'CRLT': f'Latitude [{unit}]',
-              'HPLT': f'Helioprojective Latitude (Solar-Y) [{unit}]',
-              'SOLY': f'Heliocentric Y [{unit}]'}
+    labels = {
+        "HGLN": f"Heliographic Longitude [{unit}]",
+        "CRLN": f"Carrington Longitude [{unit}]",
+        "HPLN": f"Helioprojective Longitude (Solar-X) [{unit}]",
+        "SOLX": f"Heliocentric X [{unit}]",
+        "HGLT": f"Latitude [{unit}]",
+        "CRLT": f"Latitude [{unit}]",
+        "HPLT": f"Helioprojective Latitude (Solar-Y) [{unit}]",
+        "SOLY": f"Heliocentric Y [{unit}]",
+    }
 
     return labels.get(ctype_short, f"{ctype} [{unit}]")

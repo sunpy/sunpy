@@ -11,7 +11,7 @@ from .frames import (
     SunPyBaseCoordinateFrame,
 )
 
-__all__ = ['solar_wcs_frame_mapping', 'solar_frame_to_wcs_mapping']
+__all__ = ["solar_wcs_frame_mapping", "solar_frame_to_wcs_mapping"]
 
 
 def solar_wcs_frame_mapping(wcs):
@@ -24,12 +24,12 @@ def solar_wcs_frame_mapping(wcs):
 
     # SunPy Map adds 'heliographic_observer' and 'rsun' attributes to the WCS
     # object. We check for them here, and default to None.
-    if hasattr(wcs, 'heliographic_observer'):
+    if hasattr(wcs, "heliographic_observer"):
         observer = wcs.heliographic_observer
     else:
         observer = None
 
-    if hasattr(wcs, 'rsun'):
+    if hasattr(wcs, "rsun"):
         rsun = wcs.rsun
     else:
         rsun = None
@@ -37,20 +37,20 @@ def solar_wcs_frame_mapping(wcs):
     # Truncate the ctype to the first four letters
     ctypes = {c[:4] for c in wcs.wcs.ctype}
 
-    if {'HPLN', 'HPLT'} <= ctypes:
+    if {"HPLN", "HPLT"} <= ctypes:
         return Helioprojective(obstime=dateobs, observer=observer, rsun=rsun)
 
-    if {'HGLN', 'HGLT'} <= ctypes:
+    if {"HGLN", "HGLT"} <= ctypes:
         return HeliographicStonyhurst(obstime=dateobs)
 
-    if {'CRLN', 'CRLT'} <= ctypes:
+    if {"CRLN", "CRLT"} <= ctypes:
         return HeliographicCarrington(obstime=dateobs)
 
-    if {'SOLX', 'SOLY'} <= ctypes:
+    if {"SOLX", "SOLY"} <= ctypes:
         return Heliocentric(obstime=dateobs, observer=observer)
 
 
-def solar_frame_to_wcs_mapping(frame, projection='TAN'):
+def solar_frame_to_wcs_mapping(frame, projection="TAN"):
     """
     For a given frame, this function returns the corresponding WCS object.
     It registers the WCS coordinates types from their associated frame in the
@@ -58,12 +58,12 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
     """
     wcs = WCS(naxis=2)
 
-    if hasattr(frame, 'rsun'):
+    if hasattr(frame, "rsun"):
         wcs.rsun = frame.rsun
     else:
         wcs.rsun = None
 
-    if hasattr(frame, 'observer') and isinstance(frame.observer, BaseCoordinateFrame):
+    if hasattr(frame, "observer") and isinstance(frame.observer, BaseCoordinateFrame):
         wcs.heliographic_observer = frame.observer
     else:
         wcs.heliographic_observer = None
@@ -74,21 +74,21 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
             wcs.wcs.dateobs = frame.obstime.utc.isot
 
         if isinstance(frame, Helioprojective):
-            xcoord = 'HPLN' + '-' + projection
-            ycoord = 'HPLT' + '-' + projection
-            wcs.wcs.cunit = ['arcsec', 'arcsec']
+            xcoord = "HPLN" + "-" + projection
+            ycoord = "HPLT" + "-" + projection
+            wcs.wcs.cunit = ["arcsec", "arcsec"]
         elif isinstance(frame, Heliocentric):
-            xcoord = 'SOLX'
-            ycoord = 'SOLY'
-            wcs.wcs.cunit = ['deg', 'deg']
+            xcoord = "SOLX"
+            ycoord = "SOLY"
+            wcs.wcs.cunit = ["deg", "deg"]
         elif isinstance(frame, HeliographicCarrington):
-            xcoord = 'CRLN' + '-' + projection
-            ycoord = 'CRLT' + '-' + projection
-            wcs.wcs.cunit = ['deg', 'deg']
+            xcoord = "CRLN" + "-" + projection
+            ycoord = "CRLT" + "-" + projection
+            wcs.wcs.cunit = ["deg", "deg"]
         elif isinstance(frame, HeliographicStonyhurst):
-            xcoord = 'HGLN' + '-' + projection
-            ycoord = 'HGLT' + '-' + projection
-            wcs.wcs.cunit = ['deg', 'deg']
+            xcoord = "HGLN" + "-" + projection
+            ycoord = "HGLT" + "-" + projection
+            wcs.wcs.cunit = ["deg", "deg"]
 
     else:
         return None
@@ -96,6 +96,7 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
     wcs.wcs.ctype = [xcoord, ycoord]
 
     return wcs
+
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
 astropy.wcs.utils.FRAME_WCS_MAPPINGS.append([solar_frame_to_wcs_mapping])

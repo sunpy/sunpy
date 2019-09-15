@@ -17,7 +17,7 @@ from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
-__all__ = ['GBMSummaryTimeSeries']
+__all__ = ["GBMSummaryTimeSeries"]
 
 
 class GBMSummaryTimeSeries(GenericTimeSeries):
@@ -57,8 +57,9 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`_
     * `GBM Instrument Papers <https://gammaray.nsstc.nasa.gov/gbm/publications/instrument_journal_gbm.html>`_
     """
+
     # Class attribute used to specify the source class of the TimeSeries.
-    _source = 'gbmsummary'
+    _source = "gbmsummary"
 
     @peek_show
     def peek(self):
@@ -83,11 +84,9 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
             axes.plot(self.data.index, self.data[d], label=d)
 
         axes.set_yscale("log")
-        axes.set_title('Fermi GBM Summary data ' + str(self.meta.get(
-            'DETNAM').values()))
-        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(
-            '%Y-%m-%d %H:%M:%S UT'))
-        axes.set_ylabel('Counts/s/keV')
+        axes.set_title("Fermi GBM Summary data " + str(self.meta.get("DETNAM").values()))
+        axes.set_xlabel("Start time: " + self.data.index[0].strftime("%Y-%m-%d %H:%M:%S UT"))
+        axes.set_ylabel("Counts/s/keV")
         axes.legend()
         figure.autofmt_xdate()
 
@@ -130,18 +129,32 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         summary_counts = _bin_data_for_summary(energy_bins, count_data)
 
         # get the time information in datetime format with the correct MET adjustment
-        gbm_times = Time([fermi.met_to_utc(t) for t in count_data['time']])
+        gbm_times = Time([fermi.met_to_utc(t) for t in count_data["time"]])
         gbm_times.precision = 9
-        gbm_times = gbm_times.isot.astype('datetime64')
+        gbm_times = gbm_times.isot.astype("datetime64")
 
-        column_labels = ['4-15 keV', '15-25 keV', '25-50 keV', '50-100 keV',
-                         '100-300 keV', '300-800 keV', '800-2000 keV']
+        column_labels = [
+            "4-15 keV",
+            "15-25 keV",
+            "25-50 keV",
+            "50-100 keV",
+            "100-300 keV",
+            "300-800 keV",
+            "800-2000 keV",
+        ]
 
         # Add the units data
-        units = OrderedDict([('4-15 keV', u.ct / u.s / u.keV), ('15-25 keV', u.ct / u.s / u.keV),
-                             ('25-50 keV', u.ct / u.s / u.keV), ('50-100 keV', u.ct / u.s / u.keV),
-                             ('100-300 keV', u.ct / u.s / u.keV), ('300-800 keV', u.ct / u.s / u.keV),
-                             ('800-2000 keV', u.ct / u.s / u.keV)])
+        units = OrderedDict(
+            [
+                ("4-15 keV", u.ct / u.s / u.keV),
+                ("15-25 keV", u.ct / u.s / u.keV),
+                ("25-50 keV", u.ct / u.s / u.keV),
+                ("50-100 keV", u.ct / u.s / u.keV),
+                ("100-300 keV", u.ct / u.s / u.keV),
+                ("300-800 keV", u.ct / u.s / u.keV),
+                ("800-2000 keV", u.ct / u.s / u.keV),
+            ]
+        )
         return pd.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header, units
 
     @classmethod
@@ -151,12 +164,12 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         `~sunpy.timeseries.TimeSeries`.
         """
         # Check if source is explicitly assigned
-        if 'source' in kwargs.keys():
-            if kwargs.get('source', ''):
-                return kwargs.get('source', '').lower().startswith(cls._source)
+        if "source" in kwargs.keys():
+            if kwargs.get("source", ""):
+                return kwargs.get("source", "").lower().startswith(cls._source)
         # Check if HDU defines the source instrument
-        if 'meta' in kwargs.keys():
-            return kwargs['meta'].get('INSTRUME', '').startswith('GBM')
+        if "meta" in kwargs.keys():
+            return kwargs["meta"].get("INSTRUME", "").startswith("GBM")
 
 
 def _bin_data_for_summary(energy_bins, count_data):
@@ -184,17 +197,19 @@ def _bin_data_for_summary(energy_bins, count_data):
     ebands = [4, 15, 25, 50, 100, 300, 800, 2000]
     indices = []
     for e in ebands:
-        indices.append(np.searchsorted(energy_bins['e_max'], e))
+        indices.append(np.searchsorted(energy_bins["e_max"], e))
 
     summary_counts = []
-    for i in range(0, len(count_data['counts'])):
+    for i in range(0, len(count_data["counts"])):
         counts_in_bands = []
         for j in range(1, len(ebands)):
             counts_in_bands.append(
-                np.sum(count_data['counts'][i][indices[j - 1]:indices[j]]) /
-                (count_data['exposure'][i] *
-                 (energy_bins['e_max'][indices[j]] -
-                  energy_bins['e_min'][indices[j - 1]])))
+                np.sum(count_data["counts"][i][indices[j - 1] : indices[j]])
+                / (
+                    count_data["exposure"][i]
+                    * (energy_bins["e_max"][indices[j]] - energy_bins["e_min"][indices[j - 1]])
+                )
+            )
 
         summary_counts.append(counts_in_bands)
 
@@ -210,12 +225,11 @@ def _parse_detector(detector):
     detector : `str`
         The detector name to check.
     """
-    oklist = ['n0', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9',
-              'n10', 'n11']
+    oklist = ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "n10", "n11"]
     altlist = [str(i) for i in range(12)]
     if detector in oklist:
         return detector
     elif detector in altlist:
-        return 'n' + detector
+        return "n" + detector
     else:
-        raise ValueError('Detector string could not be interpreted')
+        raise ValueError("Detector string could not be interpreted")

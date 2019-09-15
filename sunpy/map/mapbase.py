@@ -18,6 +18,7 @@ from astropy.visualization import AsymmetricPercentileInterval
 from astropy.visualization.wcsaxes import WCSAxes
 
 import sunpy.cm
+
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
 import sunpy.io as io
@@ -33,10 +34,10 @@ from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 TIME_FORMAT = config.get("general", "time_format")
-PixelPair = namedtuple('PixelPair', 'x y')
-SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
+PixelPair = namedtuple("PixelPair", "x y")
+SpatialPair = namedtuple("SpatialPair", "axis1 axis2")
 
-__all__ = ['GenericMap']
+__all__ = ["GenericMap"]
 
 
 class MapMetaValidationError(AttributeError):
@@ -155,7 +156,7 @@ class GenericMap(NDData):
         This is then passed into the Map Factory so we can register them.
         """
         super().__init_subclass__(**kwargs)
-        if hasattr(cls, 'is_datasource_for'):
+        if hasattr(cls, "is_datasource_for"):
             cls._registry[cls] = cls.is_datasource_for
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
@@ -166,12 +167,15 @@ class GenericMap(NDData):
             # We create a slice that removes all but the 'last' two
             # dimensions. (Note dimensions in ndarray are in reverse order)
 
-            new_2d_slice = [0]*(ndim-2)
+            new_2d_slice = [0] * (ndim - 2)
             new_2d_slice.extend([slice(None), slice(None)])
             data = data[tuple(new_2d_slice)]
             # Warn the user that the data has been truncated
-            warnings.warn("This file contains more than 2 dimensions. "
-                          "Data will be truncated to the first two dimensions.", SunpyUserWarning)
+            warnings.warn(
+                "This file contains more than 2 dimensions. "
+                "Data will be truncated to the first two dimensions.",
+                SunpyUserWarning,
+            )
 
         super().__init__(data, meta=header, **kwargs)
 
@@ -200,22 +204,25 @@ class GenericMap(NDData):
             norm = colors.Normalize()
 
         # Visualization attributes
-        self.plot_settings = {'cmap': cm.gray,
-                              'norm': norm,
-                              'interpolation': 'nearest',
-                              'origin': 'lower'
-                              }
+        self.plot_settings = {
+            "cmap": cm.gray,
+            "norm": norm,
+            "interpolation": "nearest",
+            "origin": "lower",
+        }
         if plot_settings:
             self.plot_settings.update(plot_settings)
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
         raise NotImplementedError(
-            "The ability to index Map by physical"
-            " coordinate is not yet implemented.")
+            "The ability to index Map by physical" " coordinate is not yet implemented."
+        )
 
     def __repr__(self):
-        return textwrap.dedent("""\
+        return (
+            textwrap.dedent(
+                """\
                    SunPy Map
                    ---------
                    Observatory:\t\t {obs}
@@ -230,17 +237,26 @@ class GenericMap(NDData):
                    Scale:\t\t\t {scale}
                    Reference Pixel:\t {refpix}
                    Reference Coord:\t {refcoord}
-                   """).format(obs=self.observatory, inst=self.instrument, det=self.detector,
-                               meas=self.measurement, wave=self.wavelength,
-                               date=self.date.strftime(TIME_FORMAT),
-                               dt=self.exposure_time,
-                               dim=u.Quantity(self.dimensions),
-                               scale=u.Quantity(self.scale),
-                               coord=self.coordinate_frame,
-                               refpix=u.Quantity(self.reference_pixel),
-                               refcoord=u.Quantity((self.reference_coordinate.data.lon,
-                                                    self.reference_coordinate.data.lat)),
-                               tmf=TIME_FORMAT) + self.data.__repr__()
+                   """
+            ).format(
+                obs=self.observatory,
+                inst=self.instrument,
+                det=self.detector,
+                meas=self.measurement,
+                wave=self.wavelength,
+                date=self.date.strftime(TIME_FORMAT),
+                dt=self.exposure_time,
+                dim=u.Quantity(self.dimensions),
+                scale=u.Quantity(self.scale),
+                coord=self.coordinate_frame,
+                refpix=u.Quantity(self.reference_pixel),
+                refcoord=u.Quantity(
+                    (self.reference_coordinate.data.lon, self.reference_coordinate.data.lat)
+                ),
+                tmf=TIME_FORMAT,
+            )
+            + self.data.__repr__()
+        )
 
     @classmethod
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
@@ -281,10 +297,10 @@ class GenericMap(NDData):
         # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
         # 449, 791.
         if w2.wcs.ctype[0].lower() in ("solar-x", "solar_x"):
-            w2.wcs.ctype[0] = 'HPLN-TAN'
+            w2.wcs.ctype[0] = "HPLN-TAN"
 
         if w2.wcs.ctype[1].lower() in ("solar-y", "solar_y"):
-            w2.wcs.ctype[1] = 'HPLT-TAN'
+            w2.wcs.ctype[1] = "HPLT-TAN"
 
         return w2
 
@@ -316,7 +332,7 @@ class GenericMap(NDData):
         """
         # This code is reused from Astropy
 
-        return WCSAxes, {'wcs': self.wcs}
+        return WCSAxes, {"wcs": self.wcs}
 
     # Some numpy extraction
     @property
@@ -324,7 +340,7 @@ class GenericMap(NDData):
         """
         The dimensions of the array (x axis first, y axis second).
         """
-        return PixelPair(*u.Quantity(np.flipud(self.data.shape), 'pixel'))
+        return PixelPair(*u.Quantity(np.flipud(self.data.shape), "pixel"))
 
     @property
     def dtype(self):
@@ -338,7 +354,7 @@ class GenericMap(NDData):
         """
         The number of pixels in the array of the map.
         """
-        return u.Quantity(self.data.size, 'pixel')
+        return u.Quantity(self.data.size, "pixel")
 
     @property
     def ndim(self):
@@ -371,13 +387,12 @@ class GenericMap(NDData):
         """
         return self.data.max(*args, **kwargs)
 
-# #### Keyword attribute and other attribute definitions #### #
+    # #### Keyword attribute and other attribute definitions #### #
 
     def _base_name(self):
         """Abstract the shared bit between name and latex_name"""
         return "{nickname} {{measurement}} {date}".format(
-            nickname=self.nickname,
-            date=parse_time(self.date).strftime(TIME_FORMAT)
+            nickname=self.nickname, date=parse_time(self.date).strftime(TIME_FORMAT)
         )
 
     @property
@@ -406,35 +421,36 @@ class GenericMap(NDData):
     @property
     def date(self):
         """Image observation time."""
-        time = self.meta.get('date-obs', None)
+        time = self.meta.get("date-obs", None)
         if time is None:
             if self._default_time is None:
-                warnings.warn("Missing metadata for observation time: setting observation time to current time.",
-                              SunpyUserWarning)
-                self._default_time = parse_time('now')
+                warnings.warn(
+                    "Missing metadata for observation time: setting observation time to current time.",
+                    SunpyUserWarning,
+                )
+                self._default_time = parse_time("now")
             time = self._default_time
         return parse_time(time)
 
     @property
     def detector(self):
         """Detector name."""
-        return self.meta.get('detector', "")
+        return self.meta.get("detector", "")
 
     @property
     def exposure_time(self):
         """Exposure time of the image in seconds."""
-        return self.meta.get('exptime', 0.0) * u.s
+        return self.meta.get("exptime", 0.0) * u.s
 
     @property
     def instrument(self):
         """Instrument name."""
-        return self.meta.get('instrume', "").replace("_", " ")
+        return self.meta.get("instrume", "").replace("_", " ")
 
     @property
     def measurement(self):
         """Measurement name, defaults to the wavelength of image."""
-        return u.Quantity(self.meta.get('wavelnth', 0),
-                          self.waveunit)
+        return u.Quantity(self.meta.get("wavelnth", 0), self.waveunit)
 
     @property
     def waveunit(self):
@@ -447,28 +463,26 @@ class GenericMap(NDData):
     @property
     def wavelength(self):
         """Wavelength of the observation."""
-        return u.Quantity(self.meta.get('wavelnth', 0),
-                          self.waveunit)
+        return u.Quantity(self.meta.get("wavelnth", 0), self.waveunit)
 
     @property
     def observatory(self):
         """Observatory or Telescope name."""
-        return self.meta.get('obsrvtry',
-                             self.meta.get('telescop', "")).replace("_", " ")
+        return self.meta.get("obsrvtry", self.meta.get("telescop", "")).replace("_", " ")
 
     @property
     def processing_level(self):
         """
         Returns the FITS processing level if present.
         """
-        return self.meta.get('lvl_num', None)
+        return self.meta.get("lvl_num", None)
 
     @property
     def bottom_left_coord(self):
         """
         The physical coordinate for the bottom left [0,0] pixel.
         """
-        return self.pixel_to_world(0*u.pix, 0*u.pix)
+        return self.pixel_to_world(0 * u.pix, 0 * u.pix)
 
     @property
     def top_right_coord(self):
@@ -482,7 +496,7 @@ class GenericMap(NDData):
         """
         Return a coordinate object for the center pixel of the array.
         """
-        center = u.Quantity(self.dimensions) / 2.
+        center = u.Quantity(self.dimensions) / 2.0
         return self.pixel_to_world(*center)
 
     @property
@@ -515,44 +529,45 @@ class GenericMap(NDData):
         new_meta = self.meta.copy()
 
         # Update crvals
-        new_meta['crval1'] = ((self.meta['crval1'] *
-                               self.spatial_units[0] + axis1).to(self.spatial_units[0])).value
-        new_meta['crval2'] = ((self.meta['crval2'] *
-                               self.spatial_units[1] + axis2).to(self.spatial_units[1])).value
+        new_meta["crval1"] = (
+            (self.meta["crval1"] * self.spatial_units[0] + axis1).to(self.spatial_units[0])
+        ).value
+        new_meta["crval2"] = (
+            (self.meta["crval2"] * self.spatial_units[1] + axis2).to(self.spatial_units[1])
+        ).value
 
         # Create new map with the modification
         new_map = self._new_instance(self.data, new_meta, self.plot_settings)
 
-        new_map._shift = SpatialPair(self.shifted_value[0] + axis1,
-                                     self.shifted_value[1] + axis2)
+        new_map._shift = SpatialPair(self.shifted_value[0] + axis1, self.shifted_value[1] + axis2)
 
         return new_map
 
     @property
     def rsun_meters(self):
         """Radius of the sun in meters."""
-        return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
+        return u.Quantity(self.meta.get("rsun_ref", constants.radius), "meter")
 
     @property
     def rsun_obs(self):
         """Radius of the Sun."""
-        rsun_arcseconds = self.meta.get('rsun_obs',
-                                        self.meta.get('solar_r',
-                                                      self.meta.get('radius',
-                                                                    None)))
+        rsun_arcseconds = self.meta.get(
+            "rsun_obs", self.meta.get("solar_r", self.meta.get("radius", None))
+        )
 
         if rsun_arcseconds is None:
-            warnings.warn("Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
-                          SunpyUserWarning)
-            rsun_arcseconds = sun.angular_radius(self.date).to('arcsec').value
+            warnings.warn(
+                "Missing metadata for solar radius: assuming photospheric limb as seen from Earth.",
+                SunpyUserWarning,
+            )
+            rsun_arcseconds = sun.angular_radius(self.date).to("arcsec").value
 
-        return u.Quantity(rsun_arcseconds, 'arcsec')
+        return u.Quantity(rsun_arcseconds, "arcsec")
 
     @property
     def coordinate_system(self):
         """Coordinate system used for x and y axes (ctype1/2)."""
-        return SpatialPair(self.meta.get('ctype1', 'HPLN-   '),
-                           self.meta.get('ctype2', 'HPLT-   '))
+        return SpatialPair(self.meta.get("ctype1", "HPLN-   "), self.meta.get("ctype2", "HPLT-   "))
 
     @property
     def _supported_observer_coordinates(self):
@@ -564,16 +579,28 @@ class GenericMap(NDData):
         to be in the header to use this coordinate system and the second is the
         kwargs to SkyCoord.
         """
-        return [(('hgln_obs', 'hglt_obs', 'dsun_obs'), {'lon': self.meta.get('hgln_obs'),
-                                                        'lat': self.meta.get('hglt_obs'),
-                                                        'radius': self.meta.get('dsun_obs'),
-                                                        'unit': (u.deg, u.deg, u.m),
-                                                        'frame': "heliographic_stonyhurst"}),
-                (('crln_obs', 'crlt_obs', 'dsun_obs'), {'lon': self.meta.get('crln_obs'),
-                                                        'lat': self.meta.get('crlt_obs'),
-                                                        'radius': self.meta.get('dsun_obs'),
-                                                        'unit': (u.deg, u.deg, u.m),
-                                                        'frame': "heliographic_carrington"}),]
+        return [
+            (
+                ("hgln_obs", "hglt_obs", "dsun_obs"),
+                {
+                    "lon": self.meta.get("hgln_obs"),
+                    "lat": self.meta.get("hglt_obs"),
+                    "radius": self.meta.get("dsun_obs"),
+                    "unit": (u.deg, u.deg, u.m),
+                    "frame": "heliographic_stonyhurst",
+                },
+            ),
+            (
+                ("crln_obs", "crlt_obs", "dsun_obs"),
+                {
+                    "lon": self.meta.get("crln_obs"),
+                    "lat": self.meta.get("crlt_obs"),
+                    "radius": self.meta.get("dsun_obs"),
+                    "unit": (u.deg, u.deg, u.m),
+                    "frame": "heliographic_carrington",
+                },
+            ),
+        ]
 
     def _remove_existing_observer_location(self):
         """
@@ -593,9 +620,11 @@ class GenericMap(NDData):
                 return SkyCoord(obstime=self.date, **kwargs).heliographic_stonyhurst
 
         all_keys = [str(e[0]) for e in self._supported_observer_coordinates]
-        all_keys = '\n'.join(all_keys)
-        warning_message = ("Missing metadata for observer: assuming Earth-based observer."
-                           "The following sets of keys were checked:\n" + all_keys)
+        all_keys = "\n".join(all_keys)
+        warning_message = (
+            "Missing metadata for observer: assuming Earth-based observer."
+            "The following sets of keys were checked:\n" + all_keys
+        )
         warnings.warn(warning_message, SunpyUserWarning)
 
         return get_earth(self.date)
@@ -623,7 +652,7 @@ class GenericMap(NDData):
     @property
     def dsun(self):
         """The observer distance from the Sun."""
-        return self.observer_coordinate.radius.to('m')
+        return self.observer_coordinate.radius.to("m")
 
     @property
     def _reference_longitude(self):
@@ -631,27 +660,27 @@ class GenericMap(NDData):
         FITS-WCS compatible longitude. Used in self.wcs and
         self.reference_coordinate.
         """
-        return self.meta.get('crval1', 0.) * self.spatial_units[0]
+        return self.meta.get("crval1", 0.0) * self.spatial_units[0]
 
     @property
     def _reference_latitude(self):
-        return self.meta.get('crval2', 0.) * self.spatial_units[1]
+        return self.meta.get("crval2", 0.0) * self.spatial_units[1]
 
     @property
     def reference_coordinate(self):
         """Reference point WCS axes in data units (i.e. crval1, crval2). This value
         includes a shift if one is set."""
-        return SkyCoord(self._reference_longitude,
-                        self._reference_latitude,
-                        frame=self.coordinate_frame)
+        return SkyCoord(
+            self._reference_longitude, self._reference_latitude, frame=self.coordinate_frame
+        )
 
     @property
     def reference_pixel(self):
         """Reference point axes in pixels (i.e. crpix1, crpix2)."""
-        return PixelPair(self.meta.get('crpix1',
-                                       (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
-                         self.meta.get('crpix2',
-                                       (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
+        return PixelPair(
+            self.meta.get("crpix1", (self.meta.get("naxis1") + 1) / 2.0) * u.pixel,
+            self.meta.get("crpix2", (self.meta.get("naxis2") + 1) / 2.0) * u.pixel,
+        )
 
     @property
     def scale(self):
@@ -660,16 +689,17 @@ class GenericMap(NDData):
         (i.e. cdelt1, cdelt2).
         """
         # TODO: Fix this if only CDi_j matrix is provided
-        return SpatialPair(self.meta.get('cdelt1', 1.) * self.spatial_units[0] / u.pixel,
-                           self.meta.get('cdelt2', 1.) * self.spatial_units[1] / u.pixel)
+        return SpatialPair(
+            self.meta.get("cdelt1", 1.0) * self.spatial_units[0] / u.pixel,
+            self.meta.get("cdelt2", 1.0) * self.spatial_units[1] / u.pixel,
+        )
 
     @property
     def spatial_units(self):
         """
         Image coordinate units along the x and y axes (i.e. cunit1, cunit2).
         """
-        return SpatialPair(u.Unit(self.meta.get('cunit1')),
-                           u.Unit(self.meta.get('cunit2')))
+        return SpatialPair(u.Unit(self.meta.get("cunit1")), u.Unit(self.meta.get("cunit2")))
 
     @property
     def rotation_matrix(self):
@@ -677,13 +707,15 @@ class GenericMap(NDData):
         Matrix describing the rotation required to align solar North with
         the top of the image.
         """
-        if 'PC1_1' in self.meta:
-            return np.array([[self.meta['PC1_1'], self.meta['PC1_2']],
-                             [self.meta['PC2_1'], self.meta['PC2_2']]])
+        if "PC1_1" in self.meta:
+            return np.array(
+                [[self.meta["PC1_1"], self.meta["PC1_2"]], [self.meta["PC2_1"], self.meta["PC2_2"]]]
+            )
 
-        elif 'CD1_1' in self.meta:
-            cd = np.array([[self.meta['CD1_1'], self.meta['CD1_2']],
-                           [self.meta['CD2_1'], self.meta['CD2_2']]])
+        elif "CD1_1" in self.meta:
+            cd = np.array(
+                [[self.meta["CD1_1"], self.meta["CD1_2"]], [self.meta["CD2_1"], self.meta["CD2_2"]]]
+            )
 
             cdelt = u.Quantity(self.scale).value
 
@@ -700,10 +732,9 @@ class GenericMap(NDData):
         conversion.
         """
         lam = self.scale[0] / self.scale[1]
-        p = np.deg2rad(self.meta.get('CROTA2', 0))
+        p = np.deg2rad(self.meta.get("CROTA2", 0))
 
-        return np.array([[np.cos(p), -1 * lam * np.sin(p)],
-                         [1/lam * np.sin(p), np.cos(p)]])
+        return np.array([[np.cos(p), -1 * lam * np.sin(p)], [1 / lam * np.sin(p), np.cos(p)]])
 
     @property
     def fits_header(self):
@@ -712,23 +743,23 @@ class GenericMap(NDData):
         """
         return sunpy.io.fits.header_to_fits(self.meta)
 
-# #### Miscellaneous #### #
+    # #### Miscellaneous #### #
 
     def _fix_date(self):
         # Check commonly used but non-standard FITS keyword for observation
         # time and correct the keyword if we can. Keep updating old one for
         # backwards compatibility.
-        if is_time(self.meta.get('date_obs', None)):
-            self.meta['date-obs'] = self.meta['date_obs']
+        if is_time(self.meta.get("date_obs", None)):
+            self.meta["date-obs"] = self.meta["date_obs"]
 
     def _fix_naxis(self):
         # If naxis is not specified, get it from the array shape
-        if 'naxis1' not in self.meta:
-            self.meta['naxis1'] = self.data.shape[1]
-        if 'naxis2' not in self.meta:
-            self.meta['naxis2'] = self.data.shape[0]
-        if 'naxis' not in self.meta:
-            self.meta['naxis'] = self.ndim
+        if "naxis1" not in self.meta:
+            self.meta["naxis1"] = self.data.shape[1]
+        if "naxis2" not in self.meta:
+            self.meta["naxis2"] = self.data.shape[0]
+        if "naxis" not in self.meta:
+            self.meta["naxis"] = self.ndim
 
     def _fix_bitpix(self):
         # Bit-depth
@@ -739,14 +770,15 @@ class GenericMap(NDData):
         # -32    IEEE single precision floating point
         # -64    IEEE double precision floating point
         #
-        if 'bitpix' not in self.meta:
+        if "bitpix" not in self.meta:
             float_fac = -1 if self.dtype.kind == "f" else 1
-            self.meta['bitpix'] = float_fac * 8 * self.dtype.itemsize
+            self.meta["bitpix"] = float_fac * 8 * self.dtype.itemsize
 
     def _get_cmap_name(self):
         """Build the default color map name."""
-        cmap_string = (self.observatory + self.detector +
-                       str(int(self.wavelength.to('angstrom').value)))
+        cmap_string = (
+            self.observatory + self.detector + str(int(self.wavelength.to("angstrom").value))
+        )
         return cmap_string.lower()
 
     def _validate_meta(self):
@@ -762,31 +794,37 @@ class GenericMap(NDData):
             CUNIT1, CUNIT2, WAVEUNIT
 
         """
-        msg = ('Image coordinate units for axis {} not present in metadata.')
+        msg = "Image coordinate units for axis {} not present in metadata."
         err_message = []
         for i in [1, 2]:
-            if self.meta.get(f'cunit{i}') is None:
+            if self.meta.get(f"cunit{i}") is None:
                 err_message.append(msg.format(i, i))
 
         if err_message:
             err_message.append(
-                'See https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for '
-                'instructions on how to add missing metadata.')
-            raise MapMetaValidationError('\n'.join(err_message))
+                "See https://docs.sunpy.org/en/stable/code_ref/map.html#fixing-map-metadata` for "
+                "instructions on how to add missing metadata."
+            )
+            raise MapMetaValidationError("\n".join(err_message))
 
-        for meta_property in ('waveunit', ):
-            if (self.meta.get(meta_property) and
-                u.Unit(self.meta.get(meta_property),
-                       parse_strict='silent').physical_type == 'unknown'):
+        for meta_property in ("waveunit",):
+            if (
+                self.meta.get(meta_property)
+                and u.Unit(self.meta.get(meta_property), parse_strict="silent").physical_type
+                == "unknown"
+            ):
                 warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
 
-        if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
-            self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
-            warnings.warn("SunPy Map does not support three dimensional data "
-                          "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.",
-                          SunpyUserWarning)
+        if self.coordinate_system[0].startswith(("SOLX", "SOLY")) or self.coordinate_system[
+            1
+        ].startswith(("SOLX", "SOLY")):
+            warnings.warn(
+                "SunPy Map does not support three dimensional data "
+                "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.",
+                SunpyUserWarning,
+            )
 
-# #### Data conversion routines #### #
+    # #### Data conversion routines #### #
     def world_to_pixel(self, coordinate, origin=0):
         """
         Convert a world (data) coordinate to a pixel coordinate by using
@@ -811,9 +849,10 @@ class GenericMap(NDData):
         y : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE2 axis.
         """
-        if not isinstance(coordinate, (SkyCoord,
-                                       astropy.coordinates.BaseCoordinateFrame)):
-            raise ValueError("world_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
+        if not isinstance(coordinate, (SkyCoord, astropy.coordinates.BaseCoordinateFrame)):
+            raise ValueError(
+                "world_to_pixel takes a Astropy coordinate frame or SkyCoord instance."
+            )
 
         native_frame = coordinate.transform_to(self.coordinate_frame)
         lon, lat = u.Quantity(self._get_lon_lat(native_frame)).to(u.deg)
@@ -863,9 +902,9 @@ class GenericMap(NDData):
 
         return SkyCoord(x, y, frame=self.coordinate_frame)
 
-# #### I/O routines #### #
+    # #### I/O routines #### #
 
-    def save(self, filepath, filetype='auto', **kwargs):
+    def save(self, filepath, filetype="auto", **kwargs):
         """Saves the SunPy Map object to a file.
 
         Currently SunPy can only save files in the FITS format. In the future
@@ -885,13 +924,12 @@ class GenericMap(NDData):
             `None` will return a normal FITS files.
             `~fits.CompImageHDU` will rice compress the FITS file.
         """
-        io.write_file(filepath, self.data, self.meta, filetype=filetype,
-                      **kwargs)
+        io.write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
 
-# #### Image processing routines #### #
+    # #### Image processing routines #### #
 
     @u.quantity_input
-    def resample(self, dimensions: u.pixel, method='linear'):
+    def resample(self, dimensions: u.pixel, method="linear"):
         """Returns a new Map that has been resampled up or down
 
         Arbitrary resampling of the Map to new dimension sizes.
@@ -930,8 +968,7 @@ class GenericMap(NDData):
         #   coordinates in a Map are at pixel centers
 
         # Make a copy of the original data and perform resample
-        new_data = sunpy_image_resample(self.data.copy().T, dimensions,
-                                        method, center=True)
+        new_data = sunpy_image_resample(self.data.copy().T, dimensions, method, center=True)
         new_data = new_data.T
 
         scale_factor_x = float(self.dimensions[0] / dimensions[0])
@@ -941,25 +978,33 @@ class GenericMap(NDData):
         new_meta = self.meta.copy()
 
         # Update metadata
-        new_meta['cdelt1'] *= scale_factor_x
-        new_meta['cdelt2'] *= scale_factor_y
-        if 'CD1_1' in new_meta:
-            new_meta['CD1_1'] *= scale_factor_x
-            new_meta['CD2_1'] *= scale_factor_x
-            new_meta['CD1_2'] *= scale_factor_y
-            new_meta['CD2_2'] *= scale_factor_y
-        new_meta['crpix1'] = (dimensions[0].value + 1) / 2.
-        new_meta['crpix2'] = (dimensions[1].value + 1) / 2.
+        new_meta["cdelt1"] *= scale_factor_x
+        new_meta["cdelt2"] *= scale_factor_y
+        if "CD1_1" in new_meta:
+            new_meta["CD1_1"] *= scale_factor_x
+            new_meta["CD2_1"] *= scale_factor_x
+            new_meta["CD1_2"] *= scale_factor_y
+            new_meta["CD2_2"] *= scale_factor_y
+        new_meta["crpix1"] = (dimensions[0].value + 1) / 2.0
+        new_meta["crpix2"] = (dimensions[1].value + 1) / 2.0
         lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.value
-        new_meta['crval2'] = lat.value
+        new_meta["crval1"] = lon.value
+        new_meta["crval2"] = lat.value
 
         # Create new map instance
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
-    def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=0.0, use_scipy=False):
+    def rotate(
+        self,
+        angle=None,
+        rmatrix=None,
+        order=4,
+        scale=1.0,
+        recenter=False,
+        missing=0.0,
+        use_scipy=False,
+    ):
         """
         Returns a new rotated and rescaled map.
 
@@ -1034,10 +1079,11 @@ class GenericMap(NDData):
                 equivalent = angle.unit.is_equivalent(u.deg)
 
                 if not equivalent:
-                    raise u.UnitsError("Argument '{}' to function '{}'"
-                                       " must be in units convertable to"
-                                       " '{}'.".format('angle', 'rotate',
-                                                        u.deg.to_string()))
+                    raise u.UnitsError(
+                        "Argument '{}' to function '{}'"
+                        " must be in units convertable to"
+                        " '{}'.".format("angle", "rotate", u.deg.to_string())
+                    )
 
             # Either there is no .unit or no .is_equivalent
             except AttributeError:
@@ -1045,9 +1091,12 @@ class GenericMap(NDData):
                     error_msg = "a 'unit' attribute without an 'is_equivalent' method"
                 else:
                     error_msg = "no 'unit' attribute"
-                raise TypeError("Argument '{}' to function '{}' has {}. "
-                                "You may want to pass in an astropy Quantity instead."
-                                .format('angle', 'rotate', error_msg))
+                raise TypeError(
+                    "Argument '{}' to function '{}' has {}. "
+                    "You may want to pass in an astropy Quantity instead.".format(
+                        "angle", "rotate", error_msg
+                    )
+                )
 
         # Interpolation parameter sanity
         if order not in range(6):
@@ -1064,12 +1113,12 @@ class GenericMap(NDData):
             # Calculate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
-            rmatrix = np.array([[c, -s],
-                                [s, c]])
+            rmatrix = np.array([[c, -s], [s, c]])
 
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((self.data.shape @ rmatrix,
-                                          self.data.shape @ rmatrix.T))), axis=0)
+        extent = np.max(
+            np.abs(np.vstack((self.data.shape @ rmatrix, self.data.shape @ rmatrix.T))), axis=0
+        )
 
         # Calculate the needed padding or unpadding
         diff = np.asarray(np.ceil((extent - self.data.shape) / 2), dtype=int).ravel()
@@ -1077,12 +1126,14 @@ class GenericMap(NDData):
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
 
-        new_data = np.pad(self.data,
-                          ((pad_y, pad_y), (pad_x, pad_x)),
-                          mode='constant',
-                          constant_values=(missing, missing))
-        new_meta['crpix1'] += pad_x
-        new_meta['crpix2'] += pad_y
+        new_data = np.pad(
+            self.data,
+            ((pad_y, pad_y), (pad_x, pad_x)),
+            mode="constant",
+            constant_values=(missing, missing),
+        )
+        new_meta["crpix1"] += pad_x
+        new_meta["crpix2"] += pad_y
 
         # All of the following pixel calculations use a pixel origin of 0
 
@@ -1092,8 +1143,9 @@ class GenericMap(NDData):
         temp_map = self._new_instance(new_data, new_meta, self.plot_settings)
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
-        pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate,
-                                                                   origin=0)).value
+        pixel_rotation_center = u.Quantity(
+            temp_map.world_to_pixel(self.reference_coordinate, origin=0)
+        ).value
         del temp_map
 
         if recenter:
@@ -1102,60 +1154,65 @@ class GenericMap(NDData):
             pixel_center = pixel_array_center
 
         # Apply the rotation to the image data
-        new_data = affine_transform(new_data.T,
-                                    np.asarray(rmatrix),
-                                    order=order, scale=scale,
-                                    image_center=np.flipud(pixel_center),
-                                    recenter=recenter, missing=missing,
-                                    use_scipy=use_scipy).T
+        new_data = affine_transform(
+            new_data.T,
+            np.asarray(rmatrix),
+            order=order,
+            scale=scale,
+            image_center=np.flipud(pixel_center),
+            recenter=recenter,
+            missing=missing,
+            use_scipy=use_scipy,
+        ).T
 
         if recenter:
             new_reference_pixel = pixel_array_center
         else:
             # Calculate new pixel coordinates for the rotation center
-            new_reference_pixel = pixel_center + np.dot(rmatrix,
-                                                        pixel_rotation_center - pixel_center)
+            new_reference_pixel = pixel_center + np.dot(
+                rmatrix, pixel_rotation_center - pixel_center
+            )
             new_reference_pixel = np.array(new_reference_pixel).ravel()
 
         # Define the new reference_pixel
-        new_meta['crval1'] = rotation_center[0].value
-        new_meta['crval2'] = rotation_center[1].value
-        new_meta['crpix1'] = new_reference_pixel[0] + 1  # FITS pixel origin is 1
-        new_meta['crpix2'] = new_reference_pixel[1] + 1  # FITS pixel origin is 1
+        new_meta["crval1"] = rotation_center[0].value
+        new_meta["crval2"] = rotation_center[1].value
+        new_meta["crpix1"] = new_reference_pixel[0] + 1  # FITS pixel origin is 1
+        new_meta["crpix2"] = new_reference_pixel[1] + 1  # FITS pixel origin is 1
 
         # Unpad the array if necessary
         unpad_x = -np.min((diff[1], 0))
         if unpad_x > 0:
             new_data = new_data[:, unpad_x:-unpad_x]
-            new_meta['crpix1'] -= unpad_x
+            new_meta["crpix1"] -= unpad_x
         unpad_y = -np.min((diff[0], 0))
         if unpad_y > 0:
             new_data = new_data[unpad_y:-unpad_y, :]
-            new_meta['crpix2'] -= unpad_y
+            new_meta["crpix2"] -= unpad_y
 
         # Calculate the new rotation matrix to store in the header by
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
         pc_C = np.dot(self.rotation_matrix, np.linalg.inv(rmatrix))
-        new_meta['PC1_1'] = pc_C[0, 0]
-        new_meta['PC1_2'] = pc_C[0, 1]
-        new_meta['PC2_1'] = pc_C[1, 0]
-        new_meta['PC2_2'] = pc_C[1, 1]
+        new_meta["PC1_1"] = pc_C[0, 0]
+        new_meta["PC1_2"] = pc_C[0, 1]
+        new_meta["PC2_1"] = pc_C[1, 0]
+        new_meta["PC2_2"] = pc_C[1, 1]
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
-            new_meta['cdelt1'] = (self.scale[0] / scale).value
-            new_meta['cdelt2'] = (self.scale[1] / scale).value
+            new_meta["cdelt1"] = (self.scale[0] / scale).value
+            new_meta["cdelt2"] = (self.scale[1] / scale).value
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
-        new_meta.pop('CROTA1', None)
-        new_meta.pop('CROTA2', None)
+        new_meta.pop("CROTA1", None)
+        new_meta.pop("CROTA2", None)
         # Remove CDi_j header
-        new_meta.pop('CD1_1', None)
-        new_meta.pop('CD1_2', None)
-        new_meta.pop('CD2_1', None)
-        new_meta.pop('CD2_2', None)
+        new_meta.pop("CD1_1", None)
+        new_meta.pop("CD1_2", None)
+        new_meta.pop("CD2_1", None)
+        new_meta.pop("CD2_2", None)
 
         # Create new map with the modification
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
@@ -1249,11 +1306,14 @@ class GenericMap(NDData):
                 -3.9313421 ]], dtype=float32)
         """
 
-        if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
-                                    astropy.coordinates.BaseCoordinateFrame)):
+        if isinstance(
+            bottom_left, (astropy.coordinates.SkyCoord, astropy.coordinates.BaseCoordinateFrame)
+        ):
             if not top_right:
                 if bottom_left.shape[0] != 2:
-                    raise ValueError("If top_right is not specified bottom_left must have length two.")
+                    raise ValueError(
+                        "If top_right is not specified bottom_left must have length two."
+                    )
                 else:
                     lon, lat = self._get_lon_lat(bottom_left)
                     top_right = u.Quantity([lon[1], lat[1]])
@@ -1278,13 +1338,19 @@ class GenericMap(NDData):
             y_pixels[0] = np.ceil(y_pixels[0])
             y_pixels[1] = np.floor(y_pixels[1] + 1)
 
-        elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
-              isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
+        elif (
+            isinstance(bottom_left, u.Quantity)
+            and bottom_left.unit.is_equivalent(u.pix)
+            and isinstance(top_right, u.Quantity)
+            and top_right.unit.is_equivalent(u.pix)
+        ):
             x_pixels = u.Quantity([bottom_left[0], top_right[0]]).value
             y_pixels = u.Quantity([top_right[1], bottom_left[1]]).value
 
         else:
-            raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
+            raise ValueError(
+                "Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels."
+            )
 
         # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
@@ -1308,10 +1374,10 @@ class GenericMap(NDData):
 
         # Make a copy of the header with updated centering information
         new_meta = self.meta.copy()
-        new_meta['crpix1'] = self.reference_pixel.x.value - x_pixels[0]
-        new_meta['crpix2'] = self.reference_pixel.y.value - y_pixels[0]
-        new_meta['naxis1'] = new_data.shape[1]
-        new_meta['naxis2'] = new_data.shape[0]
+        new_meta["crpix1"] = self.reference_pixel.x.value - x_pixels[0]
+        new_meta["crpix2"] = self.reference_pixel.y.value - y_pixels[0]
+        new_meta["naxis1"] = new_data.shape[1]
+        new_meta["naxis2"] = new_data.shape[0]
 
         # Create new map instance
         if self.mask is not None:
@@ -1324,7 +1390,7 @@ class GenericMap(NDData):
         return new_map
 
     @u.quantity_input
-    def superpixel(self, dimensions: u.pixel, offset: u.pixel=(0, 0)*u.pixel, func=np.sum):
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0) * u.pixel, func=np.sum):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
@@ -1368,13 +1434,17 @@ class GenericMap(NDData):
         # Make a copy of the original data, perform reshaping, and apply the
         # function.
         if self.mask is not None:
-            reshaped = reshape_image_to_4d_superpixel(np.ma.array(self.data.copy(), mask=self.mask),
-                                                      [dimensions.value[1], dimensions.value[0]],
-                                                      [offset.value[1], offset.value[0]])
+            reshaped = reshape_image_to_4d_superpixel(
+                np.ma.array(self.data.copy(), mask=self.mask),
+                [dimensions.value[1], dimensions.value[0]],
+                [offset.value[1], offset.value[0]],
+            )
         else:
-            reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
-                                                      [dimensions.value[1], dimensions.value[0]],
-                                                      [offset.value[1], offset.value[0]])
+            reshaped = reshape_image_to_4d_superpixel(
+                self.data.copy(),
+                [dimensions.value[1], dimensions.value[0]],
+                [offset.value[1], offset.value[0]],
+            )
         new_array = func(func(reshaped, axis=3), axis=1)
 
         # Update image scale and number of pixels
@@ -1386,18 +1456,24 @@ class GenericMap(NDData):
         new_ny = new_array.shape[0]
 
         # Update metadata
-        new_meta['cdelt1'] = (dimensions[0] * self.scale[0]).value
-        new_meta['cdelt2'] = (dimensions[1] * self.scale[1]).value
-        if 'CD1_1' in new_meta:
-            new_meta['CD1_1'] *= dimensions[0].value
-            new_meta['CD2_1'] *= dimensions[0].value
-            new_meta['CD1_2'] *= dimensions[1].value
-            new_meta['CD2_2'] *= dimensions[1].value
-        new_meta['crpix1'] = (new_nx + 1) / 2.
-        new_meta['crpix2'] = (new_ny + 1) / 2.
+        new_meta["cdelt1"] = (dimensions[0] * self.scale[0]).value
+        new_meta["cdelt2"] = (dimensions[1] * self.scale[1]).value
+        if "CD1_1" in new_meta:
+            new_meta["CD1_1"] *= dimensions[0].value
+            new_meta["CD2_1"] *= dimensions[0].value
+            new_meta["CD1_2"] *= dimensions[1].value
+            new_meta["CD2_2"] *= dimensions[1].value
+        new_meta["crpix1"] = (new_nx + 1) / 2.0
+        new_meta["crpix2"] = (new_ny + 1) / 2.0
         lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5*(offset[0]*self.scale[0]).to(self.spatial_units[0]).value
-        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5*(offset[1]*self.scale[1]).to(self.spatial_units[1]).value
+        new_meta["crval1"] = (
+            lon.to(self.spatial_units[0]).value
+            + 0.5 * (offset[0] * self.scale[0]).to(self.spatial_units[0]).value
+        )
+        new_meta["crval2"] = (
+            lat.to(self.spatial_units[1]).value
+            + 0.5 * (offset[1] * self.scale[1]).to(self.spatial_units[1]).value
+        )
 
         # Create new map instance
         if self.mask is not None:
@@ -1411,10 +1487,10 @@ class GenericMap(NDData):
         new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
         return new_map
 
-# #### Visualization #### #
+    # #### Visualization #### #
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing: u.deg = 15 * u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1445,9 +1521,9 @@ class GenericMap(NDData):
             axes = wcsaxes_compat.gca_wcs(self.wcs)
         if not wcsaxes_compat.is_wcsaxes(axes):
             raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
-        return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
-                                                           grid_spacing=grid_spacing,
-                                                           **kwargs)
+        return wcsaxes_compat.wcsaxes_heliographic_overlay(
+            axes, grid_spacing=grid_spacing, **kwargs
+        )
 
     def draw_limb(self, axes=None, **kwargs):
         """
@@ -1477,12 +1553,13 @@ class GenericMap(NDData):
             radius = self.rsun_obs.to(u.deg).value
         else:
             radius = self.rsun_obs.value
-        c_kw = {'radius': radius,
-                'fill': False,
-                'color': 'white',
-                'zorder': 100,
-                'transform': transform
-                }
+        c_kw = {
+            "radius": radius,
+            "fill": False,
+            "color": "white",
+            "zorder": 100,
+            "transform": transform,
+        }
         c_kw.update(kwargs)
 
         circ = patches.Circle([0, 0], **c_kw)
@@ -1535,15 +1612,16 @@ class GenericMap(NDData):
             axes_unit = self.spatial_units[0]
 
         coord = bottom_left.transform_to(self.coordinate_frame)
-        bottom_left = u.Quantity((coord.data.lon, coord.data.lat),
-                                 unit=axes_unit).value
+        bottom_left = u.Quantity((coord.data.lon, coord.data.lat), unit=axes_unit).value
 
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
 
-        kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
-                  'color': 'white',
-                  'fill': False}
+        kwergs = {
+            "transform": wcsaxes_compat.get_world_transform(axes),
+            "color": "white",
+            "fill": False,
+        }
         kwergs.update(kwargs)
 
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
@@ -1585,13 +1663,13 @@ class GenericMap(NDData):
         # TODO: allow for use of direct input of contours but requires units of
         # map flux which is not yet implemented
 
-        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(),
-                          **contour_args)
+        cs = axes.contour(
+            self.data, 0.01 * levels.to("percent").value * self.data.max(), **contour_args
+        )
         return cs
 
     @peek_show
-    def peek(self, draw_limb=False, draw_grid=False,
-             colorbar=True, **matplot_args):
+    def peek(self, draw_limb=False, draw_grid=False, colorbar=True, **matplot_args):
         """
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the `~sunpy.map.GenericMap.plot`
@@ -1638,8 +1716,9 @@ class GenericMap(NDData):
         return figure
 
     @u.quantity_input
-    def plot(self, annotate=True, axes=None, title=True,
-             clip_interval: u.percent = None, **imshow_kwargs):
+    def plot(
+        self, annotate=True, axes=None, title=True, clip_interval: u.percent = None, **imshow_kwargs
+    ):
         """
         Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
@@ -1682,19 +1761,23 @@ class GenericMap(NDData):
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         if not wcsaxes_compat.is_wcsaxes(axes):
-            warnings.warn("WCSAxes not being used as the axes object for this plot."
-                          " Plots may have unexpected behaviour. To fix this pass "
-                          "'projection=map' when creating the axes",
-                          SunpyUserWarning)
+            warnings.warn(
+                "WCSAxes not being used as the axes object for this plot."
+                " Plots may have unexpected behaviour. To fix this pass "
+                "'projection=map' when creating the axes",
+                SunpyUserWarning,
+            )
             # Check if the image is properly oriented
             if not np.array_equal(self.rotation_matrix, np.identity(2)):
-                warnings.warn("The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
-                              SunpyUserWarning)
+                warnings.warn(
+                    "The axes of this map are not aligned to the pixel grid. Plot axes may be incorrect.",
+                    SunpyUserWarning,
+                )
 
         # Normal plot
         imshow_args = copy.deepcopy(self.plot_settings)
-        if 'title' in imshow_args:
-            plot_settings_title = imshow_args.pop('title')
+        if "title" in imshow_args:
+            plot_settings_title = imshow_args.pop("title")
         else:
             plot_settings_title = self.latex_name
 
@@ -1705,28 +1788,30 @@ class GenericMap(NDData):
             if title:
                 axes.set_title(title)
 
-            axes.set_xlabel(axis_labels_from_ctype(self.coordinate_system[0],
-                                                   self.spatial_units[0]))
-            axes.set_ylabel(axis_labels_from_ctype(self.coordinate_system[1],
-                                                   self.spatial_units[1]))
+            axes.set_xlabel(
+                axis_labels_from_ctype(self.coordinate_system[0], self.spatial_units[0])
+            )
+            axes.set_ylabel(
+                axis_labels_from_ctype(self.coordinate_system[1], self.spatial_units[1])
+            )
 
         if not wcsaxes_compat.is_wcsaxes(axes):
             bl = self._get_lon_lat(self.bottom_left_coord)
             tr = self._get_lon_lat(self.top_right_coord)
             x_range = list(u.Quantity([bl[0], tr[0]]).to(self.spatial_units[0]).value)
             y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units[1]).value)
-            imshow_args.update({'extent': x_range + y_range})
+            imshow_args.update({"extent": x_range + y_range})
         imshow_args.update(imshow_kwargs)
 
         if clip_interval is not None:
             if len(clip_interval) == 2:
-                clip_percentages = clip_interval.to('%').value
+                clip_percentages = clip_interval.to("%").value
                 vmin, vmax = AsymmetricPercentileInterval(*clip_percentages).get_limits(self.data)
             else:
                 raise ValueError("Clip percentile interval must be specified as two numbers.")
 
-            imshow_args['vmin'] = vmin
-            imshow_args['vmax'] = vmax
+            imshow_args["vmin"] = vmin
+            imshow_args["vmax"] = vmax
 
         if self.mask is None:
             ret = axes.imshow(self.data, **imshow_args)
@@ -1746,4 +1831,5 @@ class GenericMap(NDData):
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
+
     pass

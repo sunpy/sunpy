@@ -1,7 +1,7 @@
 import astropy.units as u
 from astropy.coordinates import SkyOffsetFrame, SphericalRepresentation, UnitSphericalRepresentation
 
-__all__ = ['NorthOffsetFrame']
+__all__ = ["NorthOffsetFrame"]
 
 
 class NorthOffsetFrame:
@@ -75,10 +75,10 @@ class NorthOffsetFrame:
     """
 
     def __new__(cls, *args, **kwargs):
-        origin_frame = kwargs.pop('north', None)
+        origin_frame = kwargs.pop("north", None)
         if origin_frame is None:
             raise TypeError("Can't initialize an NorthOffsetFrame without origin= keyword.")
-        if hasattr(origin_frame, 'frame'):
+        if hasattr(origin_frame, "frame"):
             origin_frame = origin_frame.frame
 
         if not isinstance(origin_frame.data, SphericalRepresentation):
@@ -88,25 +88,22 @@ class NorthOffsetFrame:
 
         lon = rep.lon
         lat = rep.lat
-        if lat > 0*u.deg:
-            lat = lat - 90*u.deg
+        if lat > 0 * u.deg:
+            lat = lat - 90 * u.deg
             rotation = None
         else:
-            lon = lon - 180*u.deg
-            lat = -90*u.deg - lat
-            rotation = 180*u.deg
+            lon = lon - 180 * u.deg
+            lat = -90 * u.deg - lat
+            rotation = 180 * u.deg
 
         if isinstance(origin_frame.data, UnitSphericalRepresentation):
-            new_rep = origin_frame.representation_type(lon=lon,
-                                                       lat=lat)
+            new_rep = origin_frame.representation_type(lon=lon, lat=lat)
 
         else:
-            new_rep = origin_frame.representation_type(lon=lon,
-                                                       lat=lat,
-                                                       distance=rep.distance)
+            new_rep = origin_frame.representation_type(lon=lon, lat=lat, distance=rep.distance)
 
         new_origin = origin_frame.realize_frame(new_rep)
-        kwargs['origin'] = new_origin
-        kwargs['rotation'] = rotation
+        kwargs["origin"] = new_origin
+        kwargs["rotation"] = rotation
 
         return SkyOffsetFrame(*args, **kwargs)

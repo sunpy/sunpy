@@ -1,5 +1,5 @@
 """PROBA2 Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
 
-__all__ = ['SWAPMap']
+__all__ = ["SWAPMap"]
 
 
 class SWAPMap(GenericMap):
@@ -34,14 +34,14 @@ class SWAPMap(GenericMap):
 
         # It needs to be verified that these must actually be set and
         # are not already in the header.
-        self.meta['detector'] = "SWAP"
-#        self.meta['instrme'] = "SWAP"
-        self.meta['obsrvtry'] = "PROBA2"
+        self.meta["detector"] = "SWAP"
+        #        self.meta['instrme'] = "SWAP"
+        self.meta["obsrvtry"] = "PROBA2"
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = plt.get_cmap(name='sdoaia171')
+        self.plot_settings["cmap"] = plt.get_cmap(name="sdoaia171")
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an SWAP image"""
-        return header.get('instrume') == 'SWAP'
+        return header.get("instrume") == "SWAP"

@@ -5,7 +5,7 @@ from astropy.wcs.wcsapi import BaseLowLevelWCS
 
 from sunpy.visualization.animator.base import ArrayAnimator
 
-__all__ = ['ImageAnimator', 'ImageAnimatorWCS']
+__all__ = ["ImageAnimator", "ImageAnimatorWCS"]
 
 
 class ImageAnimator(ArrayAnimator):
@@ -41,13 +41,14 @@ class ImageAnimator(ArrayAnimator):
     -----
     Extra keywords are passed to `~sunpy.visualization.animator.ArrayAnimator`.
     """
+
     def __init__(self, data, image_axes=[-2, -1], axis_ranges=None, **kwargs):
         # Check that number of axes is 2.
         if len(image_axes) != 2:
             raise ValueError("There can only be two spatial axes")
         # Define number of slider axes.
         self.naxis = data.ndim
-        self.num_sliders = self.naxis-2
+        self.num_sliders = self.naxis - 2
         # Define marker to determine if plot axes values are supplied via array of
         # pixel values or min max pair. This will determine the type of image produced
         # and hence how to plot and update it.
@@ -70,8 +71,7 @@ class ImageAnimator(ArrayAnimator):
             extent.append(self.axis_ranges[i][0])
             extent.append(self.axis_ranges[i][-1])
 
-        imshow_args = {'interpolation': 'nearest',
-                       'origin': 'lower'}
+        imshow_args = {"interpolation": "nearest", "origin": "lower"}
         imshow_args.update(self.imshow_kwargs)
 
         # If value along an axis is set with an array, generate a NonUniformImage
@@ -84,14 +84,16 @@ class ImageAnimator(ArrayAnimator):
             # Initialize a NonUniformImage with the relevant data and axis values and
             # add the image to the axes.
             im = mpl.image.NonUniformImage(ax, **imshow_args)
-            im.set_data(self.axis_ranges[self.image_axes[0]], self.axis_ranges[self.image_axes[1]], data)
+            im.set_data(
+                self.axis_ranges[self.image_axes[0]], self.axis_ranges[self.image_axes[1]], data
+            )
             ax.add_image(im)
             # Define the xlim and ylim from the pixel edges.
             ax.set_xlim(self.extent[0], self.extent[1])
             ax.set_ylim(self.extent[2], self.extent[3])
         else:
             # Else produce a more basic plot with regular axes.
-            imshow_args.update({'extent': extent})
+            imshow_args.update({"extent": extent})
             im = ax.imshow(self.data[self.frame_index], **imshow_args)
         if self.if_colorbar:
             self._add_colorbar(im)
@@ -111,8 +113,9 @@ class ImageAnimator(ArrayAnimator):
                     data = self.data[self.frame_index].transpose()
                 else:
                     data = self.data[self.frame_index]
-                im.set_data(self.axis_ranges[self.image_axes[0]],
-                            self.axis_ranges[self.image_axes[1]], data)
+                im.set_data(
+                    self.axis_ranges[self.image_axes[0]], self.axis_ranges[self.image_axes[1]], data
+                )
             else:
                 im.set_array(self.data[self.frame_index])
             slider.cval = val
@@ -158,24 +161,34 @@ class ImageAnimatorWCS(ImageAnimator):
     -----
     Extra keywords are passed to `~sunpy.visualization.animator.ArrayAnimator`.
     """
-    def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
-                 axis_ranges=None, **kwargs):
+
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        image_axes=[-1, -2],
+        unit_x_axis=None,
+        unit_y_axis=None,
+        axis_ranges=None,
+        **kwargs
+    ):
         if not isinstance(wcs, (astropy.wcs.WCS, BaseLowLevelWCS)):
             raise ValueError("wcs data should be provided.")
         if wcs.pixel_n_dim is not data.ndim:
             raise ValueError("Dimensions of data and wcs not matching")
         self.wcs = wcs
         list_slices_wcsaxes = [0 for i in range(self.wcs.pixel_n_dim)]
-        list_slices_wcsaxes[image_axes[0]] = 'x'
-        list_slices_wcsaxes[image_axes[1]] = 'y'
+        list_slices_wcsaxes[image_axes[0]] = "x"
+        list_slices_wcsaxes[image_axes[1]] = "y"
         self.slices_wcsaxes = list_slices_wcsaxes[::-1]
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
         super().__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def _get_main_axes(self):
-        axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
-                                 slices=self.slices_wcsaxes)
+        axes = self.fig.add_axes(
+            [0.1, 0.1, 0.8, 0.8], projection=self.wcs, slices=self.slices_wcsaxes
+        )
         self._set_unit_in_axis(axes)
         return axes
 
@@ -193,9 +206,7 @@ class ImageAnimatorWCS(ImageAnimator):
         """
         Sets up a plot of initial image.
         """
-        imshow_args = {'interpolation': 'nearest',
-                       'origin': 'lower',
-                       }
+        imshow_args = {"interpolation": "nearest", "origin": "lower"}
         imshow_args.update(self.imshow_kwargs)
         im = ax.imshow(self.data[self.frame_index], **imshow_args)
         if self.if_colorbar:
@@ -210,7 +221,7 @@ class ImageAnimatorWCS(ImageAnimator):
         ax_ind = self.slider_axes[slider.slider_ind]
         self.frame_slice[ax_ind] = ind
         list_slices_wcsaxes = list(self.slices_wcsaxes)
-        list_slices_wcsaxes[self.wcs.pixel_n_dim-ax_ind-1] = val
+        list_slices_wcsaxes[self.wcs.pixel_n_dim - ax_ind - 1] = val
         self.slices_wcsaxes = list_slices_wcsaxes
         if val != slider.cval:
             self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)

@@ -4,8 +4,12 @@ factories.
 """
 import inspect
 
-__all__ = ["BasicRegistrationFactory", "NoMatchError",
-           "MultipleMatchError", "ValidationFunctionError"]
+__all__ = [
+    "BasicRegistrationFactory",
+    "NoMatchError",
+    "MultipleMatchError",
+    "ValidationFunctionError",
+]
 
 
 class BasicRegistrationFactory:
@@ -42,8 +46,8 @@ class BasicRegistrationFactory:
     * A valid validation function must be a classmethod of the registered widget
       and it must return a `bool`.
     """
-    def __init__(self, default_widget_type=None,
-                 additional_validation_functions=[], registry=None):
+
+    def __init__(self, default_widget_type=None, additional_validation_functions=[], registry=None):
         if registry is None:
             self.registry = dict()
         else:
@@ -51,8 +55,9 @@ class BasicRegistrationFactory:
 
         self.default_widget_type = default_widget_type
 
-        self.validation_functions = (['_factory_validation_function'] +
-                                     additional_validation_functions)
+        self.validation_functions = [
+            "_factory_validation_function"
+        ] + additional_validation_functions
 
     def __call__(self, *args, **kwargs):
         """
@@ -85,9 +90,11 @@ class BasicRegistrationFactory:
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({})."
-                                     "Specify enough keywords to guarantee unique type "
-                                     "identification.".format(n_matches))
+            raise MultipleMatchError(
+                "Too many candidate types identified ({})."
+                "Specify enough keywords to guarantee unique type "
+                "identification.".format(n_matches)
+            )
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
@@ -130,11 +137,14 @@ class BasicRegistrationFactory:
                         found = True
                         break
                     else:
-                        raise ValidationFunctionError("{}.{} must be a classmethod."
-                                                      .format(WidgetType.__name__, vfunc_str))
+                        raise ValidationFunctionError(
+                            "{}.{} must be a classmethod.".format(WidgetType.__name__, vfunc_str)
+                        )
             if not found:
-                raise ValidationFunctionError("No proper validation function for class {} "
-                                              "found.".format(WidgetType.__name__))
+                raise ValidationFunctionError(
+                    "No proper validation function for class {} "
+                    "found.".format(WidgetType.__name__)
+                )
 
     def unregister(self, WidgetType):
         """

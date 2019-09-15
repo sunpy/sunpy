@@ -19,7 +19,7 @@ irismap = Map(fitspath)
 # IRIS Tests
 def test_fitstoIRIS():
     """Tests the creation of SJIMap using FITS."""
-    assert (isinstance(irismap, SJIMap))
+    assert isinstance(irismap, SJIMap)
 
 
 def test_is_datasource_for():

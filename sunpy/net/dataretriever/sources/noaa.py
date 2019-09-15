@@ -12,7 +12,7 @@ from astropy.time import Time, TimeDelta
 
 from ..client import GenericClient
 
-__all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
+__all__ = ["NOAAIndicesClient", "NOAAPredictClient", "SRSClient"]
 
 
 class NOAAIndicesClient(GenericClient):
@@ -41,6 +41,7 @@ class NOAAIndicesClient(GenericClient):
     <BLANKLINE>
 
     """
+
     @staticmethod
     def _get_url_for_timerange(timerange, **kwargs):
         """
@@ -52,10 +53,10 @@ class NOAAIndicesClient(GenericClient):
         """
         Helper Function:used to hold information about source.
         """
-        self.map_['source'] = 'sdic'
-        self.map_['instrument'] = 'noaa-indices'
-        self.map_['physobs'] = 'sunspot number'
-        self.map_['provider'] = 'swpc'
+        self.map_["source"] = "sdic"
+        self.map_["instrument"] = "noaa-indices"
+        self.map_["physobs"] = "sunspot number"
+        self.map_["provider"] = "swpc"
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -71,10 +72,10 @@ class NOAAIndicesClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr = ['Time', 'Instrument']
+        chkattr = ["Time", "Instrument"]
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'noaa-indices':
+            if x.__class__.__name__ == "Instrument" and x.value == "noaa-indices":
                 return all(chklist)
         return False
 
@@ -106,6 +107,7 @@ class NOAAPredictClient(GenericClient):
     <BLANKLINE>
 
     """
+
     @staticmethod
     def _get_default_uri():
         """Return the url to download indices"""
@@ -121,10 +123,10 @@ class NOAAPredictClient(GenericClient):
         """
         Helper Function:used to hold information about source.
         """
-        self.map_['source'] = 'ises'
-        self.map_['instrument'] = 'noaa-predict'
-        self.map_['physobs'] = 'sunspot number'
-        self.map_['provider'] = 'swpc'
+        self.map_["source"] = "ises"
+        self.map_["instrument"] = "noaa-predict"
+        self.map_["physobs"] = "sunspot number"
+        self.map_["provider"] = "swpc"
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -140,10 +142,10 @@ class NOAAPredictClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr = ['Time', 'Instrument']
+        chkattr = ["Time", "Instrument"]
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'noaa-predict':
+            if x.__class__.__name__ == "Instrument" and x.value.lower() == "noaa-predict":
                 return all(chklist)
         return False
 
@@ -173,19 +175,20 @@ class SRSClient(GenericClient):
     <BLANKLINE>
 
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         result = list()
-        base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
+        base_url = "ftp://ftp.swpc.noaa.gov/pub/warehouse/"
         total_days = int(timerange.days.value) + 1
         all_dates = timerange.split(total_days)
-        today_year = Time.now().strftime('%Y')
+        today_year = Time.now().strftime("%Y")
         for day in all_dates:
-            if today_year == day.end.strftime('%Y'):
-                suffix = '{}/SRS/{}SRS.txt'.format(
-                    day.end.strftime('%Y'), day.end.strftime('%Y%m%d'))
+            if today_year == day.end.strftime("%Y"):
+                suffix = "{}/SRS/{}SRS.txt".format(
+                    day.end.strftime("%Y"), day.end.strftime("%Y%m%d")
+                )
             else:
-                suffix = '{}/{}_SRS.tar.gz'.format(
-                    day.end.strftime('%Y'), day.end.strftime('%Y'))
+                suffix = "{}/{}_SRS.tar.gz".format(day.end.strftime("%Y"), day.end.strftime("%Y"))
             url = base_url + suffix
             result.append(url)
         return result
@@ -210,16 +213,16 @@ class SRSClient(GenericClient):
         local_filenames = []
 
         for i, [url, qre] in enumerate(zip(urls, qres)):
-            name = url.split('/')[-1]
+            name = url.split("/")[-1]
 
             # temporary fix !!! coz All QRBs have same start_time values
-            day = Time(qre.time.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
+            day = Time(qre.time.start.strftime("%Y-%m-%d")) + TimeDelta(i * u.day)
 
             if name not in filenames:
                 filenames.append(name)
 
-            if name.endswith('.gz'):
-                local_filenames.append('{}SRS.txt'.format(day.strftime('%Y%m%d')))
+            if name.endswith(".gz"):
+                local_filenames.append("{}SRS.txt".format(day.strftime("%Y%m%d")))
             else:
                 local_filenames.append(name)
 
@@ -249,15 +252,15 @@ class SRSClient(GenericClient):
             for i, fname2 in enumerate(paths):
                 fname2 = pathlib.Path(fname2)
 
-                if fname2.name.endswith('.txt'):
+                if fname2.name.endswith(".txt"):
                     continue
 
-                year = fname2.name.split('_SRS')[0]
+                year = fname2.name.split("_SRS")[0]
 
                 if year in name:
                     TarFile = tarfile.open(fname2)
                     filepath = fname.parent
-                    member = TarFile.getmember('SRS/' + srs_filename)
+                    member = TarFile.getmember("SRS/" + srs_filename)
                     member.name = name
                     TarFile.extract(member, path=filepath)
                     TarFile.close()
@@ -274,10 +277,10 @@ class SRSClient(GenericClient):
         return paths
 
     def _makeimap(self):
-        self.map_['source'] = 'swpc'
-        self.map_['instrument'] = 'SOON'
-        self.map_['physobs'] = 'SRS'
-        self.map_['source'] = 'NOAA/USAF'
+        self.map_["source"] = "swpc"
+        self.map_["instrument"] = "SOON"
+        self.map_["physobs"] = "SRS"
+        self.map_["source"] = "NOAA/USAF"
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -294,7 +297,9 @@ class SRSClient(GenericClient):
             answer as to whether client can service the query
         """
         for x in query:
-            if (x.__class__.__name__ == "Instrument" and
-                str(x.value).lower() in ["soon", "srs_table"]):
+            if x.__class__.__name__ == "Instrument" and str(x.value).lower() in [
+                "soon",
+                "srs_table",
+            ]:
                 return True
         return False

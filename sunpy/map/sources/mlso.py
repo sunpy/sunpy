@@ -8,7 +8,7 @@ from sunpy.coordinates import sun
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
-__all__ = ['KCorMap']
+__all__ = ["KCorMap"]
 
 
 class KCorMap(GenericMap):
@@ -35,23 +35,25 @@ class KCorMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing info
-        self.meta['observatory'] = 'MLSO'
-        self.meta['detector'] = 'KCor'
-        self.meta['waveunit'] = 'nanometer'
+        self.meta["observatory"] = "MLSO"
+        self.meta["detector"] = "KCor"
+        self.meta["waveunit"] = "nanometer"
         # Since KCor is on Earth, no need to raise the warning in mapbase
-        self.meta['dsun_obs'] = (sun.earth_distance(self.date)).to(u.m).value
-        self.meta['hgln_obs'] = 0.0
+        self.meta["dsun_obs"] = (sun.earth_distance(self.date)).to(u.m).value
+        self.meta["hgln_obs"] = 0.0
         self._nickname = self.detector
 
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
+        self.plot_settings["cmap"] = plt.get_cmap(self._get_cmap_name())
+        self.plot_settings["norm"] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.25))
+        )
         # Negative value pixels can appear that lead to ugly looking images.
         # This can be fixed by setting the lower limit of the normalization.
-        self.plot_settings['norm'].vmin = 0.0
+        self.plot_settings["norm"].vmin = 0.0
 
     def _get_cmap_name(self):
         """Build the default color map name."""
-        cmap_string = self.meta['detector']
+        cmap_string = self.meta["detector"]
         return cmap_string.lower()
 
     @property
@@ -59,9 +61,9 @@ class KCorMap(GenericMap):
         """
         Returns the observatory.
         """
-        return self.meta['observatory']
+        return self.meta["observatory"]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to a COSMO image"""
-        return header.get('instrume') == 'COSMO K-Coronagraph'
+        return header.get("instrume") == "COSMO K-Coronagraph"

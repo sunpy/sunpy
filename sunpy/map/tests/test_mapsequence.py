@@ -35,8 +35,7 @@ def masked_aia_map(aia_map):
     aia_map_data = aia_map.data
     aia_map_mask = np.zeros_like(aia_map_data)
     aia_map_mask[0:2, 0:3] = True
-    return sunpy.map.Map(np.ma.masked_array(aia_map_data, mask=aia_map_mask),
-                         aia_map.meta)
+    return sunpy.map.Map(np.ma.masked_array(aia_map_data, mask=aia_map_mask), aia_map.meta)
 
 
 @pytest.fixture
@@ -63,7 +62,7 @@ def mapsequence_all_the_same_some_have_masks(aia_map, masked_aia_map):
 def mapsequence_different(aia_map):
     """ Mapsequence allows that the size of the image data in each map be
     different.  This mapsequence contains such maps."""
-    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4)*u.pix)], sequence=True)
+    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4) * u.pix)], sequence=True)
 
 
 def test_all_maps_same_shape(mapsequence_all_the_same, mapsequence_different):
@@ -72,20 +71,23 @@ def test_all_maps_same_shape(mapsequence_all_the_same, mapsequence_different):
     assert not mapsequence_different.all_maps_same_shape()
 
 
-def test_at_least_one_map_has_mask(mapsequence_all_the_same,
-                                   mapsequence_all_the_same_all_have_masks,
-                                   mapsequence_all_the_same_some_have_masks
-                                   ):
+def test_at_least_one_map_has_mask(
+    mapsequence_all_the_same,
+    mapsequence_all_the_same_all_have_masks,
+    mapsequence_all_the_same_some_have_masks,
+):
     """ Test that we can detect the presence of at least one masked map."""
     assert not mapsequence_all_the_same.at_least_one_map_has_mask()
     assert mapsequence_all_the_same_all_have_masks.at_least_one_map_has_mask()
     assert mapsequence_all_the_same_some_have_masks.at_least_one_map_has_mask()
 
 
-def test_as_array(mapsequence_all_the_same,
-                  mapsequence_different,
-                  mapsequence_all_the_same_all_have_masks,
-                  mapsequence_all_the_same_some_have_masks):
+def test_as_array(
+    mapsequence_all_the_same,
+    mapsequence_different,
+    mapsequence_all_the_same_all_have_masks,
+    mapsequence_all_the_same_some_have_masks,
+):
     """Make sure the data in the mapsequence returns correctly, when all the
     maps have the same shape.  When they don't have the same shape, make
     sure an error is raised."""
@@ -147,4 +149,6 @@ def test_all_meta(mapsequence_all_the_same):
     meta = mapsequence_all_the_same.all_meta()
     assert len(meta) == 2
     assert np.all(np.asarray([isinstance(h, MetaDict) for h in meta]))
-    assert np.all(np.asarray([meta[i] == mapsequence_all_the_same[i].meta for i in range(0, len(meta))]))
+    assert np.all(
+        np.asarray([meta[i] == mapsequence_all_the_same[i].meta for i in range(0, len(meta))])
+    )

@@ -22,7 +22,7 @@ from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
 # define and register a new unit, needed for RHESSI
-det = u.def_unit('detector')
+det = u.def_unit("detector")
 u.add_enabled_units([det])
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -71,6 +71,7 @@ class GenericTimeSeries:
     ----------
     * `Pandas Documentation <https://pandas.pydata.org/pandas-docs/stable/>`_
     """
+
     # Class attribute used to specify the source class of the TimeSeries.
     _source = None
     _registry = dict()
@@ -87,7 +88,7 @@ class GenericTimeSeries:
         then passed into the TimeSeries Factory so we can register them.
         """
         super().__init_subclass__(**kwargs)
-        if hasattr(cls, 'is_datasource_for'):
+        if hasattr(cls, "is_datasource_for"):
             cls._registry[cls] = cls.is_datasource_for
 
     # kwargs are not used here but are passed in for sources.
@@ -118,7 +119,7 @@ class GenericTimeSeries:
         # self._validate_meta()
         # self._validate_units()
 
-# #### Attribute definitions #### #
+    # #### Attribute definitions #### #
 
     @property
     def source(self):
@@ -151,7 +152,7 @@ class GenericTimeSeries:
         else:
             return None
 
-# #### Data Access, Selection and Organisation Methods #### #
+    # #### Data Access, Selection and Organisation Methods #### #
 
     def quantity(self, colname, **kwargs):
         """
@@ -229,9 +230,11 @@ class GenericTimeSeries:
         `~sunpy.timeseries.TimeSeries`
             A new `~sunpy.timeseries.TimeSeries` in ascending chronological order.
         """
-        return GenericTimeSeries(self.data.sort_index(**kwargs),
-                                 TimeSeriesMetaData(copy.copy(self.meta.metadata)),
-                                 copy.copy(self.units))
+        return GenericTimeSeries(
+            self.data.sort_index(**kwargs),
+            TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+            copy.copy(self.units),
+        )
 
     def truncate(self, a, b=None, int=None):
         """
@@ -309,9 +312,11 @@ class GenericTimeSeries:
         data = self.data[[column_name]].dropna()
 
         # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeries(data.sort_index(),
-                                   TimeSeriesMetaData(copy.copy(self.meta.metadata)),
-                                   copy.copy(self.units))
+        object = GenericTimeSeries(
+            data.sort_index(),
+            TimeSeriesMetaData(copy.copy(self.meta.metadata)),
+            copy.copy(self.units),
+        )
         object._sanitize_metadata()
         object._sanitize_units()
         return object
@@ -349,7 +354,7 @@ class GenericTimeSeries:
             raise TypeError("TimeSeries classes must match if specified.")
 
         # Concatenate the metadata and data
-        kwargs['sort'] = kwargs.pop('sort', False)
+        kwargs["sort"] = kwargs.pop("sort", False)
         meta = self.meta.concatenate(otherts.meta)
         data = pd.concat([self.data.copy(), otherts.data], **kwargs)
 
@@ -370,7 +375,7 @@ class GenericTimeSeries:
         object._sanitize_units()
         return object
 
-# #### Plotting Methods #### #
+    # #### Plotting Methods #### #
 
     def plot(self, axes=None, **plot_args):
         """
@@ -428,10 +433,12 @@ class GenericTimeSeries:
         """
         # Check we have a valid TS
         if len(self.data) == 0:
-            raise ValueError("The timeseries can't be plotted as it has no data present. "
-                             "(len(self.data) == 0)")
+            raise ValueError(
+                "The timeseries can't be plotted as it has no data present. "
+                "(len(self.data) == 0)"
+            )
 
-# #### Miscellaneous #### #
+    # #### Miscellaneous #### #
 
     def _validate_meta(self):
         """
@@ -443,12 +450,14 @@ class GenericTimeSeries:
         specific validation should be handled in the relevant file in
         the "sunpy.timeseries.sources".
         """
-        warnings.simplefilter('always', Warning)
+        warnings.simplefilter("always", Warning)
 
-        for meta_property in ('cunit1', 'cunit2', 'waveunit'):
-            if (self.meta.get(meta_property) and
-                u.Unit(self.meta.get(meta_property),
-                       parse_strict='silent').physical_type == 'unknown'):
+        for meta_property in ("cunit1", "cunit2", "waveunit"):
+            if (
+                self.meta.get(meta_property)
+                and u.Unit(self.meta.get(meta_property), parse_strict="silent").physical_type
+                == "unknown"
+            ):
 
                 warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
 
@@ -462,7 +471,7 @@ class GenericTimeSeries:
         specific validation should be handled in the relevant file in
         the "sunpy.timeseries.sources".
         """
-        warnings.simplefilter('always', Warning)
+        warnings.simplefilter("always", Warning)
 
         result = True
         for key in units:
@@ -483,7 +492,7 @@ class GenericTimeSeries:
         * Add unitless entries for columns with no units defined.
         * Re-arrange the order of the dictionary to match the columns.
         """
-        warnings.simplefilter('always', Warning)
+        warnings.simplefilter("always", Warning)
 
         # Populate unspecified units:
         for column in set(self.data.columns.tolist()) - set(self.units.keys()):
@@ -510,7 +519,7 @@ class GenericTimeSeries:
         * Remove column references in the metadata that don't match to a column in the data.
         * Remove metadata entries that have no columns matching the data.
         """
-        warnings.simplefilter('always', Warning)
+        warnings.simplefilter("always", Warning)
 
         # Truncate the metadata
         self.meta._truncate(self.time_range)
@@ -519,7 +528,7 @@ class GenericTimeSeries:
         redundant_cols = list(set(self.meta.columns) - set(self.columns))
         self.meta._remove_columns(redundant_cols)
 
-# #### Export/Output Methods #### #
+    # #### Export/Output Methods #### #
 
     def to_table(self, **kwargs):
         """
@@ -537,7 +546,7 @@ class GenericTimeSeries:
         table = Table.from_pandas(self.data)
 
         # Get index column and add to table.
-        index_col = Column(self.data.index.values, name='date')
+        index_col = Column(self.data.index.values, name="date")
         table.add_column(index_col, index=0)
 
         # Add in units.
@@ -594,9 +603,11 @@ class GenericTimeSeries:
         """
         match = True
         if isinstance(other, type(self)):
-            if ((not self.data.equals(other.data)) or
-                    (self.meta != other.meta) or
-                    (self.units != other.units)):
+            if (
+                (not self.data.equals(other.data))
+                or (self.meta != other.meta)
+                or (self.units != other.units)
+            ):
                 match = False
         else:
             match = False

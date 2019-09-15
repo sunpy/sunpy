@@ -12,8 +12,14 @@ from matplotlib.testing import compare
 
 from sunpy.tests import hash
 
-__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_32bit',
-           'warnings_as_errors', 'asdf_entry_points']
+__all__ = [
+    "skip_windows",
+    "skip_glymur",
+    "skip_ana",
+    "skip_32bit",
+    "warnings_as_errors",
+    "asdf_entry_points",
+]
 
 # SunPy's JPEG2000 capabilities rely on the glymur library.
 # First we check to make sure that glymur imports correctly before proceeding.
@@ -40,20 +46,22 @@ if sysinfo.platform_bits == 64:
 else:
     SKIP_32 = True
 
-skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows.")
+skip_windows = pytest.mark.skipif(platform.system() == "Windows", reason="Windows.")
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported.")
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available.")
 skip_32bit = pytest.mark.skipif(SKIP_32, reason="Fails on a 32 bit system.")
 
 
 # Skip if the SunPy ASDF entry points are missing.
-asdf_entry_points = pytest.mark.skipif(not list(pkg_resources.iter_entry_points('asdf_extensions', 'sunpy')),
-                                       reason="No SunPy ASDF entry points.")
+asdf_entry_points = pytest.mark.skipif(
+    not list(pkg_resources.iter_entry_points("asdf_extensions", "sunpy")),
+    reason="No SunPy ASDF entry points.",
+)
 
 
 @pytest.fixture
 def warnings_as_errors(request):
-    warnings.simplefilter('error')
+    warnings.simplefilter("error")
 
     request.addfinalizer(lambda *args: warnings.resetwarnings())
 
@@ -76,17 +84,17 @@ def figure_test(test_function):
     def test_simple_plot():
         plt.plot([0,1])
     """
+
     @pytest.mark.figure
     @wraps(test_function)
     def wrapper(*args, **kwargs):
         if not os.path.exists(hash.HASH_LIBRARY_FILE):
-            pytest.xfail(f'Could not find a figure hash library at {hash.HASH_LIBRARY_FILE}')
+            pytest.xfail(f"Could not find a figure hash library at {hash.HASH_LIBRARY_FILE}")
         # figure_base_dir is a pytest fixture defined on use.
         if figure_base_dir is None:
             pytest.xfail("No directory to save figures to found")
 
-        name = "{}.{}".format(test_function.__module__,
-                                test_function.__name__)
+        name = "{}.{}".format(test_function.__module__, test_function.__name__)
         # Run the test function and get the figure
         plt.figure()
         fig = test_function(*args, **kwargs)
@@ -95,7 +103,7 @@ def figure_test(test_function):
 
         # Save the image that was generated
         figure_base_dir.mkdir(exist_ok=True)
-        result_image_loc = figure_base_dir / f'{name}.png'
+        result_image_loc = figure_base_dir / f"{name}.png"
         plt.savefig(str(result_image_loc))
         plt.close()
 
@@ -109,8 +117,10 @@ def figure_test(test_function):
             pytest.fail(f"Hash not present: {name}")
 
         if hash.hash_library[name] != figure_hash:
-            raise RuntimeError('Figure hash does not match expected hash.\n'
-                               'New image generated and placed at {}'.format(result_image_loc))
+            raise RuntimeError(
+                "Figure hash does not match expected hash.\n"
+                "New image generated and placed at {}".format(result_image_loc)
+            )
 
     return wrapper
 
@@ -144,17 +154,14 @@ def _patch_coverage(testdir, sourcedir):  # pragma: no cover
     # Lovingly borrowed from astropy (see licences directory)
     lines = cov.data._lines
     for key in list(lines.keys()):
-        new_path = os.path.relpath(
-            os.path.realpath(key),
-            os.path.realpath(testdir))
-        new_path = os.path.abspath(
-            os.path.join(sourcedir, new_path))
+        new_path = os.path.relpath(os.path.realpath(key), os.path.realpath(testdir))
+        new_path = os.path.abspath(os.path.join(sourcedir, new_path))
         lines[new_path] = lines.pop(key)
 
     cov.save()
 
 
-html_intro = '''
+html_intro = """
 <!DOCTYPE html>
 <html>
 <head>
@@ -175,16 +182,16 @@ table, th, td {
     <th>Diff</th>
     <th>New image</th>
   </tr>
-'''
+"""
 
 
 def _generate_fig_html(fname):
-    generated_image = figure_base_dir / (fname + '.png')
+    generated_image = figure_base_dir / (fname + ".png")
 
     # Download baseline image
-    baseline_url = 'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/figures/'
+    baseline_url = "https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/figures/"
     baseline_image_url = baseline_url + generated_image.name
-    baseline_image = figure_base_dir / (generated_image.stem + '_baseline' + generated_image.suffix)
+    baseline_image = figure_base_dir / (generated_image.stem + "_baseline" + generated_image.suffix)
     baseline_image_exists = baseline_image.exists()
     if not baseline_image_exists:
         try:
@@ -194,25 +201,27 @@ def _generate_fig_html(fname):
             pass
 
     # Create diff between baseline and generated image
-    diff_image = figure_base_dir / (generated_image.stem + '_diff' + generated_image.suffix)
+    diff_image = figure_base_dir / (generated_image.stem + "_diff" + generated_image.suffix)
     if baseline_image_exists:
         compare.save_diff_image(str(baseline_image), str(generated_image), str(diff_image))
 
-    html_block = ('<tr>'
-                  '<td>{}\n'.format(generated_image.stem) +
-                  f'<td><img src="{baseline_image.name}"></td>\n' +
-                  f'<td><img src="{diff_image.name}"></td>\n' +
-                  f'<td><img src="{generated_image.name}"></td>\n' +
-                  '</tr>\n\n')
+    html_block = (
+        "<tr>"
+        "<td>{}\n".format(generated_image.stem)
+        + f'<td><img src="{baseline_image.name}"></td>\n'
+        + f'<td><img src="{diff_image.name}"></td>\n'
+        + f'<td><img src="{generated_image.name}"></td>\n'
+        + "</tr>\n\n"
+    )
     return html_block
 
 
 def generate_figure_webpage(hash_library):
-    html_file = figure_base_dir / 'fig_comparison.html'
-    with open(html_file, 'w') as f:
+    html_file = figure_base_dir / "fig_comparison.html"
+    with open(html_file, "w") as f:
         f.write(html_intro)
         for fname in hash_library:
             f.write(_generate_fig_html(fname))
-        f.write('</table>')
-        f.write('</body>')
-        f.write('</html>')
+        f.write("</table>")
+        f.write("</body>")
+        f.write("</html>")

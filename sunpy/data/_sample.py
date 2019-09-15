@@ -9,8 +9,8 @@ from sunpy.util.config import get_and_create_sample_dir
 from sunpy.util.exceptions import SunpyUserWarning
 
 _base_urls = (
-    'http://data.sunpy.org/sunpy/v1/',
-    'https://github.com/sunpy/sample-data/raw/master/sunpy/v1/',
+    "http://data.sunpy.org/sunpy/v1/",
+    "https://github.com/sunpy/sample-data/raw/master/sunpy/v1/",
 )
 
 # Shortcut requirements:
@@ -53,7 +53,7 @@ _sample_files = {
     "NOAAINDICES_TIMESERIES": "swpc_solar_cycle_indices.txt",
     "NOAAPREDICT_TIMESERIES": "predicted-sunspot-radio-flux.txt",
     "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
-    "NORH_TIMESERIES": "tca110607.fits"
+    "NORH_TIMESERIES": "tca110607.fits",
 }
 
 # Reverse the dict because we want to use it backwards, but it is nicer to
@@ -82,12 +82,12 @@ def download_sample_data(overwrite=False):
     already_downloaded = []
     for file_name in _sample_files.keys():
         url = urljoin(first_url, file_name)
-        fname = sampledata_dir/file_name
+        fname = sampledata_dir / file_name
         # We have to avoid calling download if we already have all the files.
         if fname.exists() and not overwrite:
             already_downloaded.append(fname)
         else:
-            dl.enqueue_file(url, filename=sampledata_dir/file_name)
+            dl.enqueue_file(url, filename=sampledata_dir / file_name)
 
     if dl.queued_downloads:
         results = dl.download()
@@ -102,9 +102,7 @@ def download_sample_data(overwrite=False):
             file_name = Path(err.url).name
             # Overwrite the parfive error to change the url to a mirror
             new_url = urljoin(retry_url, file_name)
-            results._errors[i] = _error(err.filepath_partial,
-                                        new_url,
-                                        err.exception)
+            results._errors[i] = _error(err.filepath_partial, new_url, err.exception)
 
         results = dl.retry(results)
 

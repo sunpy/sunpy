@@ -23,12 +23,18 @@ from sunpy.util.decorators import add_common_docstring
 
 from .frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
 
-_J2000 = Time('J2000.0', scale='tt')
+_J2000 = Time("J2000.0", scale="tt")
 
-__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
-           'Heliocentric', 'Helioprojective',
-           'HeliocentricEarthEcliptic', 'GeocentricSolarEcliptic',
-           'HeliocentricInertial', 'GeocentricEarthEquatorial']
+__all__ = [
+    "HeliographicStonyhurst",
+    "HeliographicCarrington",
+    "Heliocentric",
+    "Helioprojective",
+    "HeliocentricEarthEcliptic",
+    "GeocentricSolarEcliptic",
+    "HeliocentricInertial",
+    "GeocentricEarthEquatorial",
+]
 
 
 def _frame_parameters():
@@ -38,53 +44,71 @@ def _frame_parameters():
     ret = {}
 
     # Each text block is missing the first indent because it already exists in the frame docstring
-    ret['data'] = ("data : `~astropy.coordinates.BaseRepresentation` or ``None``\n"
-                   "        A representation object or ``None`` to have no data\n"
-                   "        (or use the coordinate component arguments, see below).")
-    ret['common'] = (f"obstime : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
-                     "        The time of the observation.  This is used to determine the\n"
-                     "        position of solar-system bodies (e.g., the Sun and the Earth) as\n"
-                     "        needed to define the origin and orientation of the frame.\n"
-                     "    representation_type : `~astropy.coordinates.BaseRepresentation`, str, optional\n"
-                     "        A representation class or string name of a representation class.\n"
-                     "        This may change the valid coordinate component arguments from the\n"
-                     "        defaults (see above). For example, passing\n"
-                     "        ``representation_type='cartesian'`` will make the frame expect\n"
-                     "        Cartesian coordinate component arguments (typically, ``x``, ``y``,\n"
-                     "        and ``z``).\n"
-                     "    copy : bool, optional\n"
-                     "        If `True` (default), make copies of the input coordinate arrays.")
-    ret['lonlat'] = ("lon : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`, optional\n"
-                     "        The longitude coordinate for this object (``lat`` must also be\n"
-                     "        given and ``data`` must be ``None``).\n"
-                     "        Not needed if ``data`` is given.\n"
-                     "    lat : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`, optional\n"
-                     "        The latitude coordinate for this object (``lon`` must also be\n"
-                     "        given and ``data`` must be ``None``).\n"
-                     "        Not needed if ``data`` is given.")
-    ret['radius'] = ("radius : `~astropy.units.Quantity`, optional\n"
-                     "        The radial distance coordinate from Sun center for this object.\n"
-                     "        Defaults to the radius of the Sun. Not needed if ``data`` is given.")
-    ret['distance_sun'] = ("distance : `~astropy.units.Quantity`, optional\n"
-                           "        The distance coordinate from Sun center for this object.\n"
-                           "        Not needed if ``data`` is given.")
-    ret['distance_earth'] = ("distance : `~astropy.units.Quantity`, optional\n"
-                             "        The distance coordinate from Earth center for this object.\n"
-                             "        Not needed if ``data`` is given.")
-    ret['xyz'] = ("x : `~astropy.units.Quantity`, optional\n"
-                  "        X-axis coordinate for this object. Not needed if ``data`` is given.\n"
-                  "    y : `~astropy.units.Quantity`, optional\n"
-                  "        Y-axis coordinate for this object. Not needed if ``data`` is given.\n"
-                  "    z : `~astropy.units.Quantity`, optional\n"
-                  "        Z-axis coordinate for this object. Not needed if ``data`` is given.")
-    ret['observer'] = ("observer : `~sunpy.coordinates.frames.HeliographicStonyhurst`, str\n"
-                       "        The location of the observer. If a string is provided,\n"
-                       "        it must be a solar system body that can be parsed by\n"
-                       "        `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`\n"
-                       "        at the time ``obstime``. Defaults to Earth center.")
-    ret['equinox'] = (f"equinox : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
-                      "        The date for the mean vernal equinox.\n"
-                      "        Defaults to the J2000.0 equinox.")
+    ret["data"] = (
+        "data : `~astropy.coordinates.BaseRepresentation` or ``None``\n"
+        "        A representation object or ``None`` to have no data\n"
+        "        (or use the coordinate component arguments, see below)."
+    )
+    ret["common"] = (
+        f"obstime : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
+        "        The time of the observation.  This is used to determine the\n"
+        "        position of solar-system bodies (e.g., the Sun and the Earth) as\n"
+        "        needed to define the origin and orientation of the frame.\n"
+        "    representation_type : `~astropy.coordinates.BaseRepresentation`, str, optional\n"
+        "        A representation class or string name of a representation class.\n"
+        "        This may change the valid coordinate component arguments from the\n"
+        "        defaults (see above). For example, passing\n"
+        "        ``representation_type='cartesian'`` will make the frame expect\n"
+        "        Cartesian coordinate component arguments (typically, ``x``, ``y``,\n"
+        "        and ``z``).\n"
+        "    copy : bool, optional\n"
+        "        If `True` (default), make copies of the input coordinate arrays."
+    )
+    ret["lonlat"] = (
+        "lon : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`, optional\n"
+        "        The longitude coordinate for this object (``lat`` must also be\n"
+        "        given and ``data`` must be ``None``).\n"
+        "        Not needed if ``data`` is given.\n"
+        "    lat : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`, optional\n"
+        "        The latitude coordinate for this object (``lon`` must also be\n"
+        "        given and ``data`` must be ``None``).\n"
+        "        Not needed if ``data`` is given."
+    )
+    ret["radius"] = (
+        "radius : `~astropy.units.Quantity`, optional\n"
+        "        The radial distance coordinate from Sun center for this object.\n"
+        "        Defaults to the radius of the Sun. Not needed if ``data`` is given."
+    )
+    ret["distance_sun"] = (
+        "distance : `~astropy.units.Quantity`, optional\n"
+        "        The distance coordinate from Sun center for this object.\n"
+        "        Not needed if ``data`` is given."
+    )
+    ret["distance_earth"] = (
+        "distance : `~astropy.units.Quantity`, optional\n"
+        "        The distance coordinate from Earth center for this object.\n"
+        "        Not needed if ``data`` is given."
+    )
+    ret["xyz"] = (
+        "x : `~astropy.units.Quantity`, optional\n"
+        "        X-axis coordinate for this object. Not needed if ``data`` is given.\n"
+        "    y : `~astropy.units.Quantity`, optional\n"
+        "        Y-axis coordinate for this object. Not needed if ``data`` is given.\n"
+        "    z : `~astropy.units.Quantity`, optional\n"
+        "        Z-axis coordinate for this object. Not needed if ``data`` is given."
+    )
+    ret["observer"] = (
+        "observer : `~sunpy.coordinates.frames.HeliographicStonyhurst`, str\n"
+        "        The location of the observer. If a string is provided,\n"
+        "        it must be a solar system body that can be parsed by\n"
+        "        `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`\n"
+        "        at the time ``obstime``. Defaults to Earth center."
+    )
+    ret["equinox"] = (
+        f"equinox : {_variables_for_parse_time_docstring()['parse_time_types']}\n"
+        "        The date for the mean vernal equinox.\n"
+        "        Defaults to the J2000.0 equinox."
+    )
 
     return ret
 
@@ -96,32 +120,34 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
       variable ``_wrap_angle``.
     * Inject a nice way of representing the object which the coordinate represents.
     """
+
     obstime = TimeFrameAttributeSunPy()
 
-    _wrap_angle = 180*u.deg
+    _wrap_angle = 180 * u.deg
 
     def __init__(self, *args, **kwargs):
         self.object_name = None
 
         # If wrap_longitude=False is passed in, do not impose a specific wrap angle for the frame
-        if not kwargs.pop('wrap_longitude', True):
+        if not kwargs.pop("wrap_longitude", True):
             self._wrap_angle = None
 
         super().__init__(*args, **kwargs)
 
         # If obstime is specified, treat the default observer (Earth) as explicitly set
-        if self.obstime is not None and self.is_frame_attr_default('observer'):
-            self._attr_names_with_defaults.remove('observer')
+        if self.obstime is not None and self.is_frame_attr_default("observer"):
+            self._attr_names_with_defaults.remove("observer")
 
         return
 
-    def represent_as(self, base, s='base', in_frame_units=False):
+    def represent_as(self, base, s="base", in_frame_units=False):
         """
         If a frame wrap angle is set, use that wrap angle for any spherical representations.
         """
         data = super().represent_as(base, s, in_frame_units=in_frame_units)
-        if self._wrap_angle is not None and \
-           isinstance(data, (UnitSphericalRepresentation, SphericalRepresentation)):
+        if self._wrap_angle is not None and isinstance(
+            data, (UnitSphericalRepresentation, SphericalRepresentation)
+        ):
             data.lon.wrap_angle = self._wrap_angle
         return data
 
@@ -194,29 +220,25 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     This frame will always be converted a 3D frame where the radius defaults to
     ``rsun``.
     """
+
     name = "heliographic_stonyhurst"
     default_representation = SphericalRepresentation
 
     frame_specific_representation_info = {
-        SphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                        framename='lon',
-                                                        defaultunit=u.deg),
-                                  RepresentationMapping(reprname='lat',
-                                                        framename='lat',
-                                                        defaultunit=u.deg),
-                                  RepresentationMapping(reprname='distance',
-                                                        framename='radius',
-                                                        defaultunit=None)],
-        CartesianRepresentation: [RepresentationMapping(reprname='x',
-                                                        framename='x'),
-                                  RepresentationMapping(reprname='y',
-                                                        framename='y'),
-                                  RepresentationMapping(reprname='z',
-                                                        framename='z')]
+        SphericalRepresentation: [
+            RepresentationMapping(reprname="lon", framename="lon", defaultunit=u.deg),
+            RepresentationMapping(reprname="lat", framename="lat", defaultunit=u.deg),
+            RepresentationMapping(reprname="distance", framename="radius", defaultunit=None),
+        ],
+        CartesianRepresentation: [
+            RepresentationMapping(reprname="x", framename="x"),
+            RepresentationMapping(reprname="y", framename="y"),
+            RepresentationMapping(reprname="z", framename="z"),
+        ],
     }
 
     def __init__(self, *args, **kwargs):
-        _rep_kwarg = kwargs.get('representation_type', None)
+        _rep_kwarg = kwargs.get("representation_type", None)
 
         super().__init__(*args, **kwargs)
 
@@ -226,14 +248,17 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
             if isinstance(self._data, UnitSphericalRepresentation):
                 self._data = self.spherical
 
-    def represent_as(self, base, s='base', in_frame_units=False):
+    def represent_as(self, base, s="base", in_frame_units=False):
         """
         Unless the requested representation is UnitSphericalRepresentation, scale a coordinate with
         dimensionless length so that it has the length of the solar radius.
         """
         data = super().represent_as(base, s, in_frame_units=in_frame_units)
-        if not isinstance(data, UnitSphericalRepresentation) and \
-           data.norm().unit is u.one and u.allclose(data.norm(), 1*u.one):
+        if (
+            not isinstance(data, UnitSphericalRepresentation)
+            and data.norm().unit is u.one
+            and u.allclose(data.norm(), 1 * u.one)
+        ):
             data *= _RSUN.to(u.km)
         return data
 
@@ -287,8 +312,9 @@ class HeliographicCarrington(HeliographicStonyhurst):
     <SkyCoord (HeliographicCarrington: obstime=2011-01-05T00:00:50.000): (lon, lat, radius) in (deg, deg, km)
         (90., 2.54480438, 45.04442252)>
     """
+
     name = "heliographic_carrington"
-    _wrap_angle = 360*u.deg
+    _wrap_angle = 360 * u.deg
 
 
 @add_common_docstring(**_frame_parameters())
@@ -347,10 +373,11 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     <SkyCoord (Heliocentric: obstime=2011-01-05T00:00:50.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in km
         (5., 8.66025404, 10.)>
     """
+
     default_representation = CartesianRepresentation
 
     frame_specific_representation_info = {
-        CylindricalRepresentation: [RepresentationMapping('phi', 'psi', u.deg)]
+        CylindricalRepresentation: [RepresentationMapping("phi", "psi", u.deg)]
     }
 
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
@@ -416,25 +443,19 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     <SkyCoord (Helioprojective: obstime=2011-01-05T00:00:50.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         (137.87948623, -275.75878762, 1.00000112)>
     """
+
     default_representation = SphericalRepresentation
 
     frame_specific_representation_info = {
-        SphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                        framename='Tx',
-                                                        defaultunit=u.arcsec),
-                                  RepresentationMapping(reprname='lat',
-                                                        framename='Ty',
-                                                        defaultunit=u.arcsec),
-                                  RepresentationMapping(reprname='distance',
-                                                        framename='distance',
-                                                        defaultunit=None)],
-
-        UnitSphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                            framename='Tx',
-                                                            defaultunit=u.arcsec),
-                                      RepresentationMapping(reprname='lat',
-                                                            framename='Ty',
-                                                            defaultunit=u.arcsec)],
+        SphericalRepresentation: [
+            RepresentationMapping(reprname="lon", framename="Tx", defaultunit=u.arcsec),
+            RepresentationMapping(reprname="lat", framename="Ty", defaultunit=u.arcsec),
+            RepresentationMapping(reprname="distance", framename="distance", defaultunit=None),
+        ],
+        UnitSphericalRepresentation: [
+            RepresentationMapping(reprname="lon", framename="Tx", defaultunit=u.arcsec),
+            RepresentationMapping(reprname="lat", framename="Ty", defaultunit=u.arcsec),
+        ],
     }
 
     rsun = Attribute(default=_RSUN.to(u.km))
@@ -456,26 +477,26 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         """
         # Skip if we already are 3D
         distance = self.spherical.distance
-        if not (distance.unit is u.one and u.allclose(distance, 1*u.one)):
+        if not (distance.unit is u.one and u.allclose(distance, 1 * u.one)):
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):
-            raise ConvertError("Cannot calculate distance to the solar disk "
-                               "for observer '{}' "
-                               "without `obstime` being specified.".format(self.observer))
+            raise ConvertError(
+                "Cannot calculate distance to the solar disk "
+                "for observer '{}' "
+                "without `obstime` being specified.".format(self.observer)
+            )
 
         rep = self.represent_as(UnitSphericalRepresentation)
         lat, lon = rep.lat, rep.lon
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
-        c = self.observer.radius**2 - self.rsun**2
+        c = self.observer.radius ** 2 - self.rsun ** 2
         b = -2 * self.observer.radius * np.cos(alpha)
         # Ingore sqrt of NaNs
-        with np.errstate(invalid='ignore'):
-            d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
+        with np.errstate(invalid="ignore"):
+            d = ((-1 * b) - np.sqrt(b ** 2 - 4 * c)) / 2
 
-        return self.realize_frame(SphericalRepresentation(lon=lon,
-                                                          lat=lat,
-                                                          distance=d))
+        return self.realize_frame(SphericalRepresentation(lon=lon, lat=lat, distance=d))
 
 
 @add_common_docstring(**_frame_parameters())
@@ -495,6 +516,7 @@ class HeliocentricEarthEcliptic(SunPyBaseCoordinateFrame):
     {distance_sun}
     {common}
     """
+
     default_representation = SphericalRepresentation
 
 
@@ -519,6 +541,7 @@ class GeocentricSolarEcliptic(SunPyBaseCoordinateFrame):
     -----
     Aberration due to Earth motion is not included.
     """
+
     default_representation = SphericalRepresentation
 
 
@@ -545,6 +568,7 @@ class HeliocentricInertial(SunPyBaseCoordinateFrame):
     plane with the ecliptic plane, not on the intersection of the celestial equatorial plane with
     the ecliptic plane.
     """
+
     default_representation = SphericalRepresentation
 
 
@@ -570,6 +594,7 @@ class GeocentricEarthEquatorial(SunPyBaseCoordinateFrame):
     -----
     Aberration due to Earth motion is not included.
     """
+
     default_representation = SphericalRepresentation
 
     equinox = TimeFrameAttributeSunPy(default=_J2000)

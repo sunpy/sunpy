@@ -9,7 +9,7 @@ import numpy as np
 
 from sunpy.cm import color_tables as ct
 
-__all__ = ['show_colormaps', 'cmlist']
+__all__ = ["show_colormaps", "cmlist"]
 
 sdoaia94 = ct.aia_color_table(94)
 sdoaia131 = ct.aia_color_table(131)
@@ -32,9 +32,9 @@ sohoeit304 = ct.eit_color_table(304)
 # because the SSWIDL color scaling for LASCO level 0.5 and 1.0 is highly
 # compressed and does not display the data well.
 soholasco2 = deepcopy(mplcm.get_cmap("gist_heat"))
-soholasco2.name = 'SOHO LASCO C2'
+soholasco2.name = "SOHO LASCO C2"
 soholasco3 = deepcopy(mplcm.get_cmap("bone"))
-soholasco3.name = 'SOHO LASCO C3'
+soholasco3.name = "SOHO LASCO C3"
 
 # These are the SSWIDL color tables.
 sswidlsoholasco2 = ct.sswidl_lasco_color_table(2)
@@ -46,73 +46,73 @@ stereocor2 = ct.cor_color_table(2)
 stereohi1 = ct.stereo_hi_color_table(1)
 stereohi2 = ct.stereo_hi_color_table(2)
 
-yohkohsxtal = ct.sxt_color_table('al')
-yohkohsxtwh = ct.sxt_color_table('wh')
+yohkohsxtal = ct.sxt_color_table("al")
+yohkohsxtwh = ct.sxt_color_table("wh")
 
 hinodexrt = ct.xrt_color_table()
-hinodesotintensity = ct.sot_color_table('intensity')
+hinodesotintensity = ct.sot_color_table("intensity")
 
-trace171 = ct.trace_color_table('171')
-trace195 = ct.trace_color_table('195')
-trace284 = ct.trace_color_table('284')
-trace1216 = ct.trace_color_table('1216')
-trace1550 = ct.trace_color_table('1550')
-trace1600 = ct.trace_color_table('1600')
-trace1700 = ct.trace_color_table('1700')
-traceWL = ct.trace_color_table('WL')
+trace171 = ct.trace_color_table("171")
+trace195 = ct.trace_color_table("195")
+trace284 = ct.trace_color_table("284")
+trace1216 = ct.trace_color_table("1216")
+trace1550 = ct.trace_color_table("1550")
+trace1600 = ct.trace_color_table("1600")
+trace1700 = ct.trace_color_table("1700")
+traceWL = ct.trace_color_table("WL")
 
 hmimag = ct.hmi_mag_color_table()
 
 kcor = deepcopy(mplcm.get_cmap("gist_gray"))
-kcor.name = 'MLSO KCor'
+kcor.name = "MLSO KCor"
 
 cmlist = {
-    'sdoaia94': sdoaia94,
-    'sdoaia131': sdoaia131,
-    'sdoaia171': sdoaia171,
-    'sdoaia193': sdoaia193,
-    'sdoaia211': sdoaia211,
-    'sdoaia304': sdoaia304,
-    'sdoaia335': sdoaia335,
-    'sdoaia1600': sdoaia1600,
-    'sdoaia1700': sdoaia1700,
-    'sdoaia4500': sdoaia4500,
-    'sohoeit171': sohoeit171,
-    'sohoeit195': sohoeit195,
-    'sohoeit284': sohoeit284,
-    'sohoeit304': sohoeit304,
-    'soholasco2': soholasco2,
-    'soholasco3': soholasco3,
-    'sswidlsoholasco2': sswidlsoholasco2,
-    'sswidlsoholasco3': sswidlsoholasco3,
-    'stereocor1': stereocor1,
-    'stereocor2': stereocor2,
-    'stereohi1': stereohi1,
-    'stereohi2': stereohi2,
-    'rhessi': mplcm.jet,
-    'yohkohsxtal': yohkohsxtal,
-    'yohkohsxtwh': yohkohsxtwh,
-    'hinodexrt': hinodexrt,
-    'hinodesotintensity': hinodesotintensity,
-    'trace171': trace171,
-    'trace195': trace195,
-    'trace284': trace284,
-    'trace1216': trace1216,
-    'trace1550': trace1550,
-    'trace1600': trace1600,
-    'trace1700': trace1700,
-    'traceWL': traceWL,
-    'hmimag': hmimag,
-    'irissji1330': ct.iris_sji_color_table('1330'),
-    'irissji1400': ct.iris_sji_color_table('1400'),
-    'irissji1600': ct.iris_sji_color_table('1600'),
-    'irissji2796': ct.iris_sji_color_table('2796'),
-    'irissji2832': ct.iris_sji_color_table('2832'),
-    'irissji5000': ct.iris_sji_color_table('5000'),
-    'irissjiFUV': ct.iris_sji_color_table('FUV'),
-    'irissjiNUV': ct.iris_sji_color_table('NUV'),
-    'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
-    'kcor': kcor
+    "sdoaia94": sdoaia94,
+    "sdoaia131": sdoaia131,
+    "sdoaia171": sdoaia171,
+    "sdoaia193": sdoaia193,
+    "sdoaia211": sdoaia211,
+    "sdoaia304": sdoaia304,
+    "sdoaia335": sdoaia335,
+    "sdoaia1600": sdoaia1600,
+    "sdoaia1700": sdoaia1700,
+    "sdoaia4500": sdoaia4500,
+    "sohoeit171": sohoeit171,
+    "sohoeit195": sohoeit195,
+    "sohoeit284": sohoeit284,
+    "sohoeit304": sohoeit304,
+    "soholasco2": soholasco2,
+    "soholasco3": soholasco3,
+    "sswidlsoholasco2": sswidlsoholasco2,
+    "sswidlsoholasco3": sswidlsoholasco3,
+    "stereocor1": stereocor1,
+    "stereocor2": stereocor2,
+    "stereohi1": stereohi1,
+    "stereohi2": stereohi2,
+    "rhessi": mplcm.jet,
+    "yohkohsxtal": yohkohsxtal,
+    "yohkohsxtwh": yohkohsxtwh,
+    "hinodexrt": hinodexrt,
+    "hinodesotintensity": hinodesotintensity,
+    "trace171": trace171,
+    "trace195": trace195,
+    "trace284": trace284,
+    "trace1216": trace1216,
+    "trace1550": trace1550,
+    "trace1600": trace1600,
+    "trace1700": trace1700,
+    "traceWL": traceWL,
+    "hmimag": hmimag,
+    "irissji1330": ct.iris_sji_color_table("1330"),
+    "irissji1400": ct.iris_sji_color_table("1400"),
+    "irissji1600": ct.iris_sji_color_table("1600"),
+    "irissji2796": ct.iris_sji_color_table("2796"),
+    "irissji2832": ct.iris_sji_color_table("2832"),
+    "irissji5000": ct.iris_sji_color_table("5000"),
+    "irissjiFUV": ct.iris_sji_color_table("FUV"),
+    "irissjiNUV": ct.iris_sji_color_table("NUV"),
+    "irissjiSJI_NUV": ct.iris_sji_color_table("SJI_NUV"),
+    "kcor": kcor,
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
@@ -162,7 +162,7 @@ def show_colormaps(search=None):
     for i, name in enumerate(maps):
         ax = plt.subplot(nmaps, 1, i + 1)
         plt.axis("off")
-        plt.imshow(a, aspect='auto', cmap=name, origin='lower')
+        plt.imshow(a, aspect="auto", cmap=name, origin="lower")
         pos = list(ax.get_position().bounds)
-        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10, horizontalalignment='right')
+        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10, horizontalalignment="right")
     plt.show()

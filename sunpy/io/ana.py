@@ -18,9 +18,9 @@ except ImportError:
     _pyana = None
 
 
-__all__ = ['read', 'get_header', 'write']
+__all__ = ["read", "get_header", "write"]
 
-HDPair = collections.namedtuple('HDPair', ['data', 'header'])
+HDPair = collections.namedtuple("HDPair", ["data", "header"])
 
 
 def read(filename, debug=False, **kwargs):
@@ -51,7 +51,7 @@ def read(filename, debug=False, **kwargs):
         raise ImportError("C extension for ANA is missing, please rebuild.")
 
     data = _pyana.fzread(filename, debug)
-    return [HDPair(data['data'], FileHeader(data['header']))]
+    return [HDPair(data["data"], FileHeader(data["header"]))]
 
 
 def get_header(filename, debug=False):
@@ -80,7 +80,7 @@ def get_header(filename, debug=False):
         raise ImportError("C extension for ANA is missing, please rebuild")
 
     data = _pyana.fzread(filename, debug)
-    return [FileHeader(data['header'])]
+    return [FileHeader(data["header"])]
 
 
 def write(filename, data, comments=False, compress=True, debug=False):
@@ -116,4 +116,4 @@ def write(filename, data, comments=False, compress=True, debug=False):
     if comments:
         return _pyana.fzwrite(filename, data, int(compress), comments, debug)
     else:
-        return _pyana.fzwrite(filename, data, int(compress), '', debug)
+        return _pyana.fzwrite(filename, data, int(compress), "", debug)

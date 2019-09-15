@@ -20,7 +20,7 @@ except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
 
-__all__ = ['EITMap', 'LASCOMap', 'MDIMap']
+__all__ = ["EITMap", "LASCOMap", "MDIMap"]
 
 
 class EITMap(GenericMap):
@@ -44,15 +44,16 @@ class EITMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        header["cunit1"] = header.get("cunit1", "arcsec")
+        header["cunit2"] = header.get("cunit2", "arcsec")
 
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)))
+        self.plot_settings["cmap"] = plt.get_cmap(self._get_cmap_name())
+        self.plot_settings["norm"] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.5))
+        )
 
     @property
     def detector(self):
@@ -67,22 +68,28 @@ class EITMap(GenericMap):
         """
         Returns the solar radius as measured by EIT in arcseconds.
         """
-        return u.Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
+        return u.Quantity(self.meta["solar_r"] * self.meta["cdelt1"], "arcsec")
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('hec_x', 'hec_y', 'hec_z'), {'x': self.meta.get('hec_x'),
-                                               'y': self.meta.get('hec_y'),
-                                               'z': self.meta.get('hec_z'),
-                                               'unit': u.km,
-                                               'representation_type': CartesianRepresentation,
-                                               'frame': HeliocentricMeanEcliptic})
+        return [
+            (
+                ("hec_x", "hec_y", "hec_z"),
+                {
+                    "x": self.meta.get("hec_x"),
+                    "y": self.meta.get("hec_y"),
+                    "z": self.meta.get("hec_z"),
+                    "unit": u.km,
+                    "representation_type": CartesianRepresentation,
+                    "frame": HeliocentricMeanEcliptic,
+                },
+            )
         ] + super()._supported_observer_coordinates
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EIT image"""
-        return header.get('instrume') == 'EIT'
+        return header.get("instrume") == "EIT"
 
 
 class LASCOMap(GenericMap):
@@ -106,30 +113,28 @@ class LASCOMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
 
-        header['cunit1'] = header['cunit1'].lower()
-        header['cunit2'] = header['cunit2'].lower()
+        header["cunit1"] = header["cunit1"].lower()
+        header["cunit2"] = header["cunit2"].lower()
 
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing or broken info
         # Test if change has already been applied
-        if 'T' not in self.meta['date-obs']:
-            datestr = "{date}T{time}".format(date=self.meta.get('date-obs',
-                                                                self.meta.get('date_obs')
-                                                                ),
-                                             time=self.meta.get('time-obs',
-                                                                self.meta.get('time_obs')
-                                                                )
-                                             )
-            self.meta['date-obs'] = datestr
+        if "T" not in self.meta["date-obs"]:
+            datestr = "{date}T{time}".format(
+                date=self.meta.get("date-obs", self.meta.get("date_obs")),
+                time=self.meta.get("time-obs", self.meta.get("time_obs")),
+            )
+            self.meta["date-obs"] = datestr
 
         # If non-standard Keyword is present, correct it too, for compatibility.
-        if 'date_obs' in self.meta:
-            self.meta['date_obs'] = self.meta['date-obs']
+        if "date_obs" in self.meta:
+            self.meta["date_obs"] = self.meta["date-obs"]
         self._nickname = self.instrument + "-" + self.detector
-        self.plot_settings['cmap'] = plt.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
-        self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)))
+        self.plot_settings["cmap"] = plt.get_cmap("soholasco{det!s}".format(det=self.detector[1]))
+        self.plot_settings["norm"] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.5))
+        )
 
     @property
     def measurement(self):
@@ -142,7 +147,7 @@ class LASCOMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an LASCO image."""
-        return header.get('instrume') == 'LASCO'
+        return header.get("instrume") == "LASCO"
 
 
 class MDIMap(GenericMap):
@@ -172,8 +177,8 @@ class MDIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        header["cunit1"] = header.get("cunit1", "arcsec")
+        header["cunit2"] = header.get("cunit2", "arcsec")
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing or broken info
@@ -181,17 +186,23 @@ class MDIMap(GenericMap):
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)
         if abs(vmin) > abs(vmax):
-            self.plot_settings['norm'] = colors.Normalize(-vmin, vmin)
+            self.plot_settings["norm"] = colors.Normalize(-vmin, vmin)
         else:
-            self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
+            self.plot_settings["norm"] = colors.Normalize(-vmax, vmax)
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('obs_l0', 'obs_b0', 'obs_dist'), {'lon': self.meta.get('obs_l0'),
-                                                    'lat': self.meta.get('obs_b0'),
-                                                    'radius': self.meta.get('obs_dist'),
-                                                    'unit': (u.deg, u.deg, u.AU),
-                                                    'frame': "heliographic_carrington"}),
+        return [
+            (
+                ("obs_l0", "obs_b0", "obs_dist"),
+                {
+                    "lon": self.meta.get("obs_l0"),
+                    "lat": self.meta.get("obs_b0"),
+                    "radius": self.meta.get("obs_dist"),
+                    "unit": (u.deg, u.deg, u.AU),
+                    "frame": "heliographic_carrington",
+                },
+            )
         ] + super()._supported_observer_coordinates
 
     @property
@@ -207,9 +218,9 @@ class MDIMap(GenericMap):
         """
         Returns the type of data in the map.
         """
-        return "magnetogram" if self.meta.get('dpc_obsr', " ").find('Mag') != -1 else "continuum"
+        return "magnetogram" if self.meta.get("dpc_obsr", " ").find("Mag") != -1 else "continuum"
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an MDI image"""
-        return header.get('instrume') == 'MDI' or header.get('camera') == 'MDI'
+        return header.get("instrume") == "MDI" or header.get("camera") == "MDI"

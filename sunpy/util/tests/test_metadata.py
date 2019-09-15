@@ -24,6 +24,7 @@ def check_insertion_order(metadict_inst, expected):
 
     The keys case is ignored.
     """
+
     def normalise_keys(lst_pairs):
         return [key.lower() for key, _ in lst_pairs]
 
@@ -69,18 +70,17 @@ def pairs_to_dict(lst_of_pairs):
 
 @pytest.fixture
 def sea_locations():
-    return [['labrador', 'americas'],
-            ['Norwegian', 'Europe'],
-            ['BALTIC', 'europe'],
-            ['LaPteV', 'arctic']]
+    return [
+        ["labrador", "americas"],
+        ["Norwegian", "Europe"],
+        ["BALTIC", "europe"],
+        ["LaPteV", "arctic"],
+    ]
 
 
 @pytest.fixture
 def atomic_weights():
-    return [['hydrogen', 1],
-            ['chromium', 24],
-            ['mercury', 80],
-            ['iridium', 77]]
+    return [["hydrogen", 1], ["chromium", 24], ["mercury", 80], ["iridium", 77]]
 
 
 @pytest.fixture
@@ -144,7 +144,7 @@ def test_init_with_illegal_arg():
     Ensure attempt to initialise with a nonsensical data structure is rejected.
     """
     with pytest.raises(TypeError):
-        MetaDict({'a', 'b', 'c', 'd'})
+        MetaDict({"a", "b", "c", "d"})
 
 
 # Test individual methods
@@ -154,19 +154,19 @@ def test_membership(seas_metadict):
     """
     Test `MetaDict.__contains__(...)`
     """
-    assert 'labrador' in seas_metadict
-    assert 'pechora' not in seas_metadict
+    assert "labrador" in seas_metadict
+    assert "pechora" not in seas_metadict
 
 
 def test_getitem(seas_metadict):
     """
     Test `MetaDict.__getitem__(...)`
     """
-    assert seas_metadict['Norwegian'] == 'Europe'
-    assert seas_metadict['BALTIC'] != 'arctic'
+    assert seas_metadict["Norwegian"] == "Europe"
+    assert seas_metadict["BALTIC"] != "arctic"
 
     with pytest.raises(KeyError):
-        seas_metadict['key-not-exists']
+        seas_metadict["key-not-exists"]
 
 
 def test_setitem_existing_entry(seas_metadict):
@@ -174,10 +174,10 @@ def test_setitem_existing_entry(seas_metadict):
     Test `MetaDict.__setitem__(...)` on an existing entry.
     """
     len_before = len(seas_metadict)
-    seas_metadict['NORWEGIAN'] = 'Scandinavia'
+    seas_metadict["NORWEGIAN"] = "Scandinavia"
     assert len(seas_metadict) == len_before
 
-    assert seas_metadict['NORWEGIAN'] == 'Scandinavia'
+    assert seas_metadict["NORWEGIAN"] == "Scandinavia"
 
 
 def test_setitem_new_entry(seas_metadict):
@@ -187,33 +187,33 @@ def test_setitem_new_entry(seas_metadict):
     Add a new entry
     """
     len_before = len(seas_metadict)
-    seas_metadict['Irish'] = 'N.Europe'
+    seas_metadict["Irish"] = "N.Europe"
     assert len(seas_metadict) == len_before + 1
 
-    assert seas_metadict['Irish'] == 'N.Europe'
+    assert seas_metadict["Irish"] == "N.Europe"
 
 
 def test_get(seas_metadict):
     """
     Test `MetaDict.get(...)`
     """
-    assert seas_metadict.get('BALTIC') == 'europe'
-    assert seas_metadict.get('atlantic') is None
+    assert seas_metadict.get("BALTIC") == "europe"
+    assert seas_metadict.get("atlantic") is None
 
-    default_value = 'Unknown'
-    assert seas_metadict.get('sargasso', default=default_value) == default_value
+    default_value = "Unknown"
+    assert seas_metadict.get("sargasso", default=default_value) == default_value
 
 
 def test_setdefault(seas_metadict):
     """
     Test `MetaDict.setdefault(...)`
     """
-    seas_metadict.setdefault('poseidon', 'NOT-FOUND')
-    assert seas_metadict.get('poseidon') == 'NOT-FOUND'
-    assert seas_metadict['poseidon'] == 'NOT-FOUND'
+    seas_metadict.setdefault("poseidon", "NOT-FOUND")
+    assert seas_metadict.get("poseidon") == "NOT-FOUND"
+    assert seas_metadict["poseidon"] == "NOT-FOUND"
 
     # Should only impact key 'poseidon'
-    assert seas_metadict.get('Wandel') is None
+    assert seas_metadict.get("Wandel") is None
 
 
 def test_has_key(seas_metadict):
@@ -221,8 +221,8 @@ def test_has_key(seas_metadict):
     Test `MetaDict.has_key(...)`
     """
     # MetaDict explicitly supports the 'has_key()' method
-    assert seas_metadict.has_key('LaPteV') is True  # noqa
-    assert seas_metadict.has_key('Beaufort') is False  # noqa
+    assert seas_metadict.has_key("LaPteV") is True  # noqa
+    assert seas_metadict.has_key("Beaufort") is False  # noqa
 
 
 def test_pop(seas_metadict):
@@ -231,15 +231,15 @@ def test_pop(seas_metadict):
     """
     # Nothing to 'pop', nothing should change
     len_before = len(seas_metadict)
-    seas_metadict.pop('kara') is None
+    seas_metadict.pop("kara") is None
     assert len(seas_metadict) == len_before
 
     # Nothing to 'pop', nothing should change but, we should get the default value
-    default_value = 'not-recognized'
-    assert seas_metadict.pop('lincoln', default=default_value) == default_value
+    default_value = "not-recognized"
+    assert seas_metadict.pop("lincoln", default=default_value) == default_value
     assert len(seas_metadict) == len_before
 
-    assert seas_metadict.pop('baltic') == 'europe'
+    assert seas_metadict.pop("baltic") == "europe"
     assert len(seas_metadict) == len_before - 1
 
 
@@ -266,10 +266,7 @@ def seas_and_atomic_weights():
     """
     A mixture of key/value data from `seas` & `atomic_weights`
     """
-    return [['norwegian', 'NORWAY'],
-            ['Chromium', 24],
-            ['laptev', 'russia'],
-            ['Iridium', 77]]
+    return [["norwegian", "NORWAY"], ["Chromium", 24], ["laptev", "russia"], ["Iridium", 77]]
 
 
 @pytest.fixture
@@ -278,12 +275,14 @@ def combined_seas_atomic():
     The expected result of a `MetaDict` initailsed with `sea_locations` and
     then updated with `seas_and_atomic_weights`
     """
-    return [['labrador', 'americas'],
-            ['Norwegian', 'NORWAY'],
-            ['BALTIC', 'europe'],
-            ['LaPteV', 'russia'],
-            ['Chromium', 24],
-            ['Iridium', 77]]
+    return [
+        ["labrador", "americas"],
+        ["Norwegian", "NORWAY"],
+        ["BALTIC", "europe"],
+        ["LaPteV", "russia"],
+        ["Chromium", 24],
+        ["Iridium", 77],
+    ]
 
 
 def test_update_with_like_keys(seas_metadict, seas_and_atomic_weights, combined_seas_atomic):
@@ -337,34 +336,34 @@ def test_key_case_insensitivity(seas_metadict):
     """
 
     # membership
-    assert 'laptev' in seas_metadict
-    assert 'LAPTEV' in seas_metadict
+    assert "laptev" in seas_metadict
+    assert "LAPTEV" in seas_metadict
 
     # get
-    assert seas_metadict['norwegian'] == 'Europe'
-    assert seas_metadict['NORWEGIAN'] == 'Europe'
+    assert seas_metadict["norwegian"] == "Europe"
+    assert seas_metadict["NORWEGIAN"] == "Europe"
 
-    assert seas_metadict.get('labrador') == 'americas'
-    assert seas_metadict.get('labRAdor') == 'americas'
+    assert seas_metadict.get("labrador") == "americas"
+    assert seas_metadict.get("labRAdor") == "americas"
 
     # MetaDict explicitly supports the 'has_key()' method
-    assert seas_metadict.has_key('BALTIC')  # noqa
-    assert seas_metadict.has_key('balTIC')  # noqa
+    assert seas_metadict.has_key("BALTIC")  # noqa
+    assert seas_metadict.has_key("balTIC")  # noqa
 
     # This key already exists. It should *not* take on the default value
-    seas_metadict.setdefault('norwEgiaN', default='Sweden')
-    assert seas_metadict['norwEgiaN'] == 'Europe'
-    assert seas_metadict['Norwegian'] == 'Europe'
-    assert seas_metadict.get('norwEgiaN') == 'Europe'
+    seas_metadict.setdefault("norwEgiaN", default="Sweden")
+    assert seas_metadict["norwEgiaN"] == "Europe"
+    assert seas_metadict["Norwegian"] == "Europe"
+    assert seas_metadict.get("norwEgiaN") == "Europe"
 
     # setting, existing entry
-    seas_metadict['LaPteV'] = 'japan'
-    assert seas_metadict['LaPteV'] == 'japan'
-    assert seas_metadict['LAPTEV'] == 'japan'
-    assert seas_metadict.get('LApTEV') == 'japan'
+    seas_metadict["LaPteV"] = "japan"
+    assert seas_metadict["LaPteV"] == "japan"
+    assert seas_metadict["LAPTEV"] == "japan"
+    assert seas_metadict.get("LApTEV") == "japan"
 
     # setting, new entry
-    seas_metadict['bering'] = 'Russia'
-    assert seas_metadict['bering'] == 'Russia'
-    assert seas_metadict['BeRinG'] == 'Russia'
-    assert seas_metadict.get('BERING') == 'Russia'
+    seas_metadict["bering"] = "Russia"
+    assert seas_metadict["bering"] == "Russia"
+    assert seas_metadict["BeRinG"] == "Russia"
+    assert seas_metadict.get("BERING") == "Russia"

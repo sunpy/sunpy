@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import Counter, OrderedDict
 from collections.abc import MutableMapping
 
-__all__ = ['BaseCache', 'LRUCache', 'LFUCache']
+__all__ = ["BaseCache", "LRUCache", "LFUCache"]
 
 
 class BaseCache(metaclass=ABCMeta):
@@ -21,7 +21,7 @@ class BaseCache(metaclass=ABCMeta):
     as an item from the cache is removed.
     """
 
-    def __init__(self, maxsize=float('inf')):
+    def __init__(self, maxsize=float("inf")):
         self.maxsize = maxsize
         self._dict = OrderedDict()
 
@@ -159,13 +159,14 @@ class BaseCache(metaclass=ABCMeta):
         return OrderedDict.fromkeys(iterable, value)
 
     def __repr__(self):  # pragma: no cover
-        return '{}({!r})'.format(self.__class__.__name__, dict(self._dict))
+        return "{}({!r})".format(self.__class__.__name__, dict(self._dict))
 
 
 class LRUCache(BaseCache):
     """
     LRUCache
     """
+
     @property
     def to_be_removed(self):
         """Return the least recently used key and its corresponding value as a
@@ -213,7 +214,8 @@ class LFUCache(BaseCache):
     """
     LFUCache
     """
-    def __init__(self, maxsize=float('inf')):
+
+    def __init__(self, maxsize=float("inf")):
         self.usage_counter = Counter()
         BaseCache.__init__(self, maxsize)
 
@@ -223,7 +225,7 @@ class LFUCache(BaseCache):
         corresponding value as a tuple.
 
         """
-        min_ = float('inf')
+        min_ = float("inf")
         lfu_key = None
         for k, v in self.usage_counter.items():
             if v < min_:

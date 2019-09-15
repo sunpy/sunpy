@@ -35,12 +35,12 @@ from .zeep_plugins import SunPyLoggingZeepPlugin
 
 TIME_FORMAT = config.get("general", "time_format")
 
-DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
-                     'port': 'nsoVSOi'},
-                    {'url': 'https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl',
-                     'port': 'sdacVSOi'}]
+DEFAULT_URL_PORT = [
+    {"url": "http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl", "port": "nsoVSOi"},
+    {"url": "https://sdac.virtualsolar.org/API/VSOi_rpc_literal.wsdl", "port": "sdacVSOi"},
+]
 
-RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
+RANGE = re.compile(r"(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?")
 
 
 # TODO: Name
@@ -48,6 +48,7 @@ class NoData(Exception):
 
     """ Risen for callbacks of VSOClient that are unable to supply
     information for the request. """
+
     pass
 
 
@@ -55,35 +56,37 @@ class _Str(str):
 
     """ Subclass of string that contains a meta attribute for the
     record_item associated with the file. """
+
     pass
 
 
 # ----------------------------------------
 
+
 def _parse_waverange(string):
     min_, max_, unit = RANGE.match(string).groups()[::2]
     return {
-        'wave_wavemin': min_,
-        'wave_wavemax': min_ if max_ is None else max_,
-        'wave_waveunit': 'Angstrom' if unit is None else unit,
+        "wave_wavemin": min_,
+        "wave_wavemax": min_ if max_ is None else max_,
+        "wave_waveunit": "Angstrom" if unit is None else unit,
     }
 
 
 def _parse_date(string):
-    start, end = string.split(' - ')
-    return {'time_start': start.strip(), 'time_end': end.strip()}
+    start, end = string.split(" - ")
+    return {"time_start": start.strip(), "time_end": end.strip()}
 
 
 def iter_records(response):
     for prov_item in response.provideritem:
-        if not hasattr(prov_item, 'record') or not prov_item.record:
+        if not hasattr(prov_item, "record") or not prov_item.record:
             continue
         yield from prov_item.record.recorditem
 
 
 def iter_errors(response):
     for prov_item in response.provideritem:
-        if not hasattr(prov_item, 'record') or not prov_item.record:
+        if not hasattr(prov_item, "record") or not prov_item.record:
             yield prov_item
 
 
@@ -91,8 +94,10 @@ def check_connection(url):
     try:
         return urlopen(url).getcode() == 200
     except (socket.error, socket.timeout, HTTPError, URLError) as e:
-        warnings.warn(f"Connection to {url} failed with error {e}. Retrying with different url and port.",
-                      SunpyUserWarning)
+        warnings.warn(
+            f"Connection to {url} failed with error {e}. Retrying with different url and port.",
+            SunpyUserWarning,
+        )
         return None
 
 
@@ -101,7 +106,7 @@ def get_online_vso_url():
     Return the first VSO url and port combination that is online.
     """
     for mirror in DEFAULT_URL_PORT:
-        if check_connection(mirror['url']):
+        if check_connection(mirror["url"]):
             return mirror
 
 
@@ -129,8 +134,8 @@ def build_client(url=None, port_name=None, **kwargs):
         mirror = get_online_vso_url()
         if mirror is None:
             raise ConnectionError("No online VSO mirrors could be found.")
-        url = mirror['url']
-        port_name = mirror['port']
+        url = mirror["url"]
+        port_name = mirror["port"]
     elif url and port_name:
         if not check_connection(url):
             raise ConnectionError(f"Can't connect to url {url}")
@@ -141,7 +146,7 @@ def build_client(url=None, port_name=None, **kwargs):
         kwargs["plugins"] = [SunPyLoggingZeepPlugin()]
 
     client = zeep.Client(url, port_name=port_name, **kwargs)
-    client.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
+    client.set_ns_prefix("VSO", "http://virtualsolar.org/VSO/VSOi")
     return client
 
 
@@ -160,9 +165,7 @@ class QueryResponse(list):
         """ Furtherly reduce the query response by matching it against
         another query, e.g. response.search(attrs.Instrument('aia')). """
         query = and_(*query)
-        return QueryResponse(
-            attrs.filter_results(query, self), self.queryresult
-        )
+        return QueryResponse(attrs.filter_results(query, self), self.queryresult)
 
     @classmethod
     def create(cls, queryresult):
@@ -176,8 +179,10 @@ class QueryResponse(list):
 
     def time_range(self):
         """ Return total time-range all records span across. """
-        return TimeRange(min(record.time.start for record in self if record.time.start is not None),
-                         max(record.time.end for record in self if record.time.end is not None))
+        return TimeRange(
+            min(record.time.start for record in self if record.time.start is not None),
+            max(record.time.end for record in self if record.time.end is not None),
+        )
 
     def build_table(self):
         """
@@ -187,7 +192,7 @@ class QueryResponse(list):
         -------
         table : `astropy.table.QTable`
         """
-        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']
+        keywords = ["Start Time", "End Time", "Source", "Instrument", "Type", "Wavelength"]
         record_items = {}
         for key in keywords:
             record_items[key] = []
@@ -195,43 +200,44 @@ class QueryResponse(list):
         def validate_time(time):
             # Handle if the time is None when coming back from VSO
             if time is None:
-                return ['None']
+                return ["None"]
             if record.time.start is not None:
                 return [parse_time(time).strftime(TIME_FORMAT)]
             else:
-                return ['N/A']
+                return ["N/A"]
 
         for record in self:
-            record_items['Start Time'].append(validate_time(record.time.start))
-            record_items['End Time'].append(validate_time(record.time.end))
-            record_items['Source'].append(str(record.source))
-            record_items['Instrument'].append(str(record.instrument))
-            record_items['Type'].append(str(record.extent.type)
-                                        if record.extent.type is not None else ['N/A'])
+            record_items["Start Time"].append(validate_time(record.time.start))
+            record_items["End Time"].append(validate_time(record.time.end))
+            record_items["Source"].append(str(record.source))
+            record_items["Instrument"].append(str(record.instrument))
+            record_items["Type"].append(
+                str(record.extent.type) if record.extent.type is not None else ["N/A"]
+            )
             # If we have a start and end Wavelength, make a quantity
-            if hasattr(record, 'wave') and record.wave.wavemin and record.wave.wavemax:
+            if hasattr(record, "wave") and record.wave.wavemin and record.wave.wavemax:
                 unit = record.wave.waveunit
                 # Convert this so astropy units parses it correctly
                 if unit == "kev":
                     unit = "keV"
-                record_items['Wavelength'].append(u.Quantity([float(record.wave.wavemin),
-                                                              float(record.wave.wavemax)],
-                                                             unit=unit))
+                record_items["Wavelength"].append(
+                    u.Quantity([float(record.wave.wavemin), float(record.wave.wavemax)], unit=unit)
+                )
             # If not save None
             else:
-                record_items['Wavelength'].append(None)
+                record_items["Wavelength"].append(None)
         # If we have no wavelengths for the whole list, drop the col
-        if all([a is None for a in record_items['Wavelength']]):
-            record_items.pop('Wavelength')
-            keywords.remove('Wavelength')
+        if all([a is None for a in record_items["Wavelength"]]):
+            record_items.pop("Wavelength")
+            keywords.remove("Wavelength")
         else:
             # Make whole column a quantity
             try:
                 with u.set_enabled_equivalencies(u.spectral()):
-                    record_items['Wavelength'] = u.Quantity(record_items['Wavelength'])
+                    record_items["Wavelength"] = u.Quantity(record_items["Wavelength"])
             # If we have mixed units or some Nones just represent as strings
             except (u.UnitConversionError, TypeError):
-                record_items['Wavelength'] = [str(a) for a in record_items['Wavelength']]
+                record_items["Wavelength"] = [str(a) for a in record_items["Wavelength"]]
 
         return Table(record_items)[keywords]
 
@@ -247,9 +253,9 @@ class QueryResponse(list):
         s : list
             List of strings, containing attribute names in the response blocks.
         """
-        s = {a if not a.startswith('_') else None for a in dir(self[0])}
+        s = {a if not a.startswith("_") else None for a in dir(self[0])}
         for resp in self[1:]:
-            s = s.intersection({a if not a.startswith('_') else None for a in dir(resp)})
+            s = s.intersection({a if not a.startswith("_") else None for a in dir(resp)})
 
         s.remove(None)
         return s
@@ -306,9 +312,8 @@ class VSOClient(BaseClient):
         The `zeep.Client` instance to use for interacting with the VSO. If not
         specified one will be created.
     """
-    method_order = [
-        'URL-FILE_Rice', 'URL-FILE', 'URL-packaged', 'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR',
-    ]
+
+    method_order = ["URL-FILE_Rice", "URL-FILE", "URL-packaged", "URL-TAR_GZ", "URL-ZIP", "URL-TAR"]
 
     def __init__(self, url=None, port=None, api=None):
         if not isinstance(api, zeep.Client):
@@ -359,15 +364,13 @@ class VSOClient(BaseClient):
             :py:meth:`VSOClient.search`.
         """
         query = and_(*query)
-        QueryRequest = self.api.get_type('VSO:QueryRequest')
-        VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
+        QueryRequest = self.api.get_type("VSO:QueryRequest")
+        VSOQueryResponse = self.api.get_type("VSO:QueryResponse")
         responses = []
         for block in walker.create(query, self.api):
             try:
                 responses.append(
-                    VSOQueryResponse(self.api.service.Query(
-                        QueryRequest(block=block)
-                    ))
+                    VSOQueryResponse(self.api.service.Query(QueryRequest(block=block)))
                 )
             except Exception as ex:
                 response = QueryResponse.create(self.merge(responses))
@@ -386,32 +389,28 @@ class VSOClient(BaseClient):
         for queryresponse in queryresponses:
             for provideritem in queryresponse.provideritem:
                 provider = provideritem.provider
-                if not hasattr(provideritem, 'record'):
+                if not hasattr(provideritem, "record"):
                     continue
-                if not hasattr(provideritem.record, 'recorditem'):
+                if not hasattr(provideritem.record, "recorditem"):
                     continue
                 if provideritem.provider not in providers:
                     providers[provider] = provideritem
                     fileids |= {
-                        record_item.fileid
-                        for record_item in provideritem.record.recorditem
+                        record_item.fileid for record_item in provideritem.record.recorditem
                     }
                 else:
                     for record_item in provideritem.record.recorditem:
                         if record_item.fileid not in fileids:
                             fileids.add(record_item.fileid)
-                            providers[provider].record.recorditem.append(
-                                record_item
-                            )
+                            providers[provider].record.recorditem.append(record_item)
                             providers[provider].no_of_records_found += 1
                             providers[provider].no_of_records_returned += 1
-        return self.make('QueryResponse',
-                         provideritem=list(providers.values()))
+        return self.make("QueryResponse", provideritem=list(providers.values()))
 
     @staticmethod
     def mk_filename(pattern, queryresponse, resp, url):
         name = None
-        url_filename = url.split('/')[-1]
+        url_filename = url.split("/")[-1]
         if resp:
             name = resp.headers.get("Content-Disposition", url_filename)
             if name:
@@ -518,43 +517,46 @@ class VSOClient(BaseClient):
             Matched items. Return value is of same type as the one of
             :py:class:`VSOClient.search`.
         """
-        def sdk(key): return partial(lambda key, value: {key: value}, key)
+
+        def sdk(key):
+            return partial(lambda key, value: {key: value}, key)
+
         ALIASES = {
-            'wave_min': sdk('wave_wavemin'),
-            'wave_max': sdk('wave_wavemax'),
-            'wave_type': sdk('wave_wavetype'),
-            'wave_unit': sdk('wave_waveunit'),
-            'min_wave': sdk('wave_wavemin'),
-            'max_wave': sdk('wave_wavemax'),
-            'type_wave': sdk('wave_wavetype'),
-            'unit_wave': sdk('wave_waveunit'),
-            'wave': _parse_waverange,
-            'inst': sdk('instrument'),
-            'telescope': sdk('instrument'),
-            'spacecraft': sdk('source'),
-            'observatory': sdk('source'),
-            'start_date': sdk('time_start'),
-            'end_date': sdk('time_end'),
-            'start': sdk('time_start'),
-            'end': sdk('time_end'),
-            'near_time': sdk('time_near'),
-            'date': _parse_date,
-            'layout': sdk('datatype'),
+            "wave_min": sdk("wave_wavemin"),
+            "wave_max": sdk("wave_wavemax"),
+            "wave_type": sdk("wave_wavetype"),
+            "wave_unit": sdk("wave_waveunit"),
+            "min_wave": sdk("wave_wavemin"),
+            "max_wave": sdk("wave_wavemax"),
+            "type_wave": sdk("wave_wavetype"),
+            "unit_wave": sdk("wave_waveunit"),
+            "wave": _parse_waverange,
+            "inst": sdk("instrument"),
+            "telescope": sdk("instrument"),
+            "spacecraft": sdk("source"),
+            "observatory": sdk("source"),
+            "start_date": sdk("time_start"),
+            "end_date": sdk("time_end"),
+            "start": sdk("time_start"),
+            "end": sdk("time_end"),
+            "near_time": sdk("time_near"),
+            "date": _parse_date,
+            "layout": sdk("datatype"),
         }
         if tstart is not None:
-            kwargs.update({'time_start': tstart})
+            kwargs.update({"time_start": tstart})
         if tend is not None:
-            kwargs.update({'time_end': tend})
+            kwargs.update({"time_end": tend})
 
-        QueryRequest = self.api.get_type('VSO:QueryRequest')
-        VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
-        block = self.api.get_type('VSO:QueryRequestBlock')()
+        QueryRequest = self.api.get_type("VSO:QueryRequest")
+        VSOQueryResponse = self.api.get_type("VSO:QueryResponse")
+        block = self.api.get_type("VSO:QueryRequestBlock")()
 
         for key, value in kwargs.items():
             for k, v in ALIASES.get(key, sdk(key))(value).items():
-                if k.startswith('time'):
+                if k.startswith("time"):
                     v = parse_time(v).strftime(TIMEFORMAT)
-                attr = k.split('_')
+                attr = k.split("_")
                 lst = attr[-1]
                 rest = attr[:-1]
 
@@ -564,28 +566,35 @@ class VSOClient(BaseClient):
                             block[elem] = {}
                         block = block[elem]
                     except KeyError:
-                        raise ValueError(
-                            f"Unexpected argument {key!s}.")
+                        raise ValueError(f"Unexpected argument {key!s}.")
                 if lst in block and block[lst]:
-                    raise ValueError(
-                        f"Got multiple values for {k!s}.")
+                    raise ValueError(f"Got multiple values for {k!s}.")
                 block[lst] = v
 
-        return QueryResponse.create(VSOQueryResponse(
-            self.api.service.Query(QueryRequest(block=block))))
+        return QueryResponse.create(
+            VSOQueryResponse(self.api.service.Query(QueryRequest(block=block)))
+        )
 
     @deprecated("1.0")
     def latest(self):
         """ Return newest record (limited to last week). """
         from datetime import datetime, timedelta
+
         return self.query_legacy(
-            datetime.utcnow() - timedelta(7),
-            datetime.utcnow(),
-            time_near=datetime.utcnow()
+            datetime.utcnow() - timedelta(7), datetime.utcnow(), time_near=datetime.utcnow()
         )
 
-    def fetch(self, query_response, path=None, methods=None, site=None,
-              progress=True, overwrite=False, downloader=None, wait=True):
+    def fetch(
+        self,
+        query_response,
+        path=None,
+        methods=None,
+        site=None,
+        progress=True,
+        overwrite=False,
+        downloader=None,
+        wait=True,
+    ):
         """
         Download data specified in the query_response.
 
@@ -654,10 +663,9 @@ class VSOClient(BaseClient):
         >>> files = fetch(qr) # doctest:+SKIP
         """
         if path is None:
-            path = os.path.join(config.get('downloads', 'download_dir'),
-                                '{file}')
-        elif isinstance(path, str) and '{file}' not in path:
-            path = os.path.join(path, '{file}')
+            path = os.path.join(config.get("downloads", "download_dir"), "{file}")
+        elif isinstance(path, str) and "{file}" not in path:
+            path = os.path.join(path, "{file}")
         path = os.path.expanduser(path)
 
         dl_set = True
@@ -671,7 +679,7 @@ class VSOClient(BaseClient):
         # Adding the site parameter to the info
         info = {}
         if site is not None:
-            info['site'] = site
+            info["site"] = site
 
         VSOGetDataResponse = self.api.get_type("VSO:VSOGetDataResponse")
 
@@ -698,7 +706,7 @@ class VSOClient(BaseClient):
 
         for record_item in query_response:
             try:
-                item = _Str(maps[record_item.fileid]['path'])
+                item = _Str(maps[record_item.fileid]["path"])
             except KeyError:
                 continue
             # pylint: disable=W0201
@@ -709,12 +717,10 @@ class VSOClient(BaseClient):
     def make_getdatarequest(self, response, methods=None, info=None):
         """ Make datarequest with methods from response. """
         if methods is None:
-            methods = self.method_order + ['URL']
+            methods = self.method_order + ["URL"]
 
         return self.create_getdatarequest(
-            {k: [x.fileid for x in v]
-                 for k, v in self.by_provider(response).items()},
-            methods, info
+            {k: [x.fileid for x in v] for k, v in self.by_provider(response).items()}, methods, info
         )
 
     def create_getdatarequest(self, maps, methods, info=None):
@@ -723,21 +729,23 @@ class VSOClient(BaseClient):
         if info is None:
             info = {}
 
-        if 'email' not in info:
-            info['email'] = 'sunpy'
+        if "email" not in info:
+            info["email"] = "sunpy"
 
         # For the JSOC provider we need to make a DataRequestItem for each
         # series, not just one for the whole provider.
 
         # Remove JSOC provider items from the map
-        jsoc = maps.pop('JSOC', [])
+        jsoc = maps.pop("JSOC", [])
         # Make DRIs for everything that's not JSOC one per provider
-        dris = [self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
-                for k, v in maps.items()]
+        dris = [
+            self.make("DataRequestItem", provider=k, fileiditem={"fileid": v})
+            for k, v in maps.items()
+        ]
 
         def series_func(x):
             """ Extract the series from the fileid. """
-            return x.split(':')[0]
+            return x.split(":")[0]
 
         # Sort the JSOC fileids by series
         # This is a precursor to groupby as recommended by the groupby docs
@@ -746,42 +754,36 @@ class VSOClient(BaseClient):
         # groupby creates an iterator based on a key function, in this case
         # based on the series (the part before the first ':')
         for series, fileids in itertools.groupby(series_sorted, key=series_func):
-            dris.append(self.make('DataRequestItem',
-                                  provider='JSOC',
-                                  fileiditem={'fileid': list(fileids)}))
+            dris.append(
+                self.make("DataRequestItem", provider="JSOC", fileiditem={"fileid": list(fileids)})
+            )
 
-        request = {'method': {'methodtype': methods},
-                   'info': info,
-                   'datacontainer': {'datarequestitem': dris}
-                   }
+        request = {
+            "method": {"methodtype": methods},
+            "info": info,
+            "datacontainer": {"datarequestitem": dris},
+        }
 
-        return self.make('VSOGetDataRequest', request=request)
+        return self.make("VSOGetDataRequest", request=request)
 
     # pylint: disable=R0913,R0912
     def download_all(self, response, methods, downloader, path, qr, info=None):
         results = Results()
-        GET_VERSION = [
-            ('0.8', (5, 8)),
-            ('0.7', (1, 4)),
-            ('0.6', (0, 3)),
-        ]
+        GET_VERSION = [("0.8", (5, 8)), ("0.7", (1, 4)), ("0.6", (0, 3))]
 
         for dresponse in response.getdataresponseitem:
             for version, (from_, to) in GET_VERSION:
-                if getattr(dresponse, version, '0.6') >= version:
+                if getattr(dresponse, version, "0.6") >= version:
                     break
             else:
-                results.add_error('', UnknownVersion(dresponse))
+                results.add_error("", UnknownVersion(dresponse))
                 continue
 
             # If from_ and to are uninitialized, the else block of the loop
             # continues the outer loop and thus this code is never reached.
             # pylint: disable=W0631
-            code = (
-                dresponse.status[from_:to]
-                if getattr(dresponse, 'status', None) else '200'
-            )
-            if code == '200':
+            code = dresponse.status[from_:to] if getattr(dresponse, "status", None) else "200"
+            if code == "200":
                 for dataitem in dresponse.getdataitem.dataitem:
 
                     try:
@@ -790,47 +792,40 @@ class VSOClient(BaseClient):
                             dataitem.url,
                             downloader,
                             path,
-                            qr[dataitem.fileiditem.fileid[0]]
+                            qr[dataitem.fileiditem.fileid[0]],
                         )
                     except NoData:
-                        results.add_error('', DownloadFailed(dresponse))
+                        results.add_error("", DownloadFailed(dresponse))
                         continue
 
-            elif code == '300' or code == '412' or code == '405':
-                if code == '300':
+            elif code == "300" or code == "412" or code == "405":
+                if code == "300":
                     try:
-                        methods = self.multiple_choices(
-                            dresponse.method.methodtype, dresponse
-                        )
+                        methods = self.multiple_choices(dresponse.method.methodtype, dresponse)
                     except NoData:
-                        results.add_error('', MultipleChoices(dresponse))
+                        results.add_error("", MultipleChoices(dresponse))
                         continue
-                elif code == '412':
+                elif code == "412":
                     try:
-                        info = self.missing_information(
-                            info, dresponse.info
-                        )
+                        info = self.missing_information(info, dresponse.info)
                     except NoData:
-                        results.add_error('', MissingInformation(dresponse))
+                        results.add_error("", MissingInformation(dresponse))
                         continue
-                elif code == '405':
+                elif code == "405":
                     try:
                         methods = self.unknown_method(dresponse)
                     except NoData:
-                        results.add_error('', UnknownMethod(dresponse))
+                        results.add_error("", UnknownMethod(dresponse))
                         continue
 
                 files = []
                 for dataitem in dresponse.getdataitem.dataitem:
                     files.extend(dataitem.fileiditem.fileid)
 
-                request = self.create_getdatarequest(
-                    {dresponse.provider: files}, methods, info
-                )
+                request = self.create_getdatarequest({dresponse.provider: files}, methods, info)
 
                 self.download_all(
-                    self.api.service.GetData(request), methods, downloader, path,
-                    qr, info
+                    self.api.service.GetData(request), methods, downloader, path, qr, info
                 )
             else:
                 results.add_error(UnknownStatus(dresponse))
@@ -839,7 +834,7 @@ class VSOClient(BaseClient):
 
     def download(self, method, url, downloader, *args):
         """ Enqueue a file to be downloaded, extra args are passed to ``mk_filename``"""
-        if method.startswith('URL'):
+        if method.startswith("URL"):
             return downloader.enqueue_file(url, filename=partial(self.mk_filename, *args))
 
         raise NoData
@@ -863,9 +858,7 @@ class VSOClient(BaseClient):
         corresponding to records in the response.
         """
 
-        return {
-            record.fileid: record for record in response
-        }
+        return {record.fileid: record for record in response}
 
     # pylint: disable=W0613
     def multiple_choices(self, choices, response):

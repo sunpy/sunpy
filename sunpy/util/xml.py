@@ -3,7 +3,7 @@ This module provides XML helper functions.
 """
 from xml.dom.minidom import parseString
 
-__all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text']
+__all__ = ["NotTextNodeError", "xml_to_dict", "node_to_dict", "get_node_text"]
 
 
 class NotTextNodeError(Exception):

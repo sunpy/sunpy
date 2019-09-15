@@ -24,11 +24,26 @@ from sunpy.time import TimeRange as _TimeRange
 from sunpy.time import parse_time
 from sunpy.util.multimethod import MultiMethod
 
-__all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
-           'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
-           'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
+__all__ = [
+    "Wavelength",
+    "Time",
+    "Extent",
+    "Field",
+    "Provider",
+    "Source",
+    "Instrument",
+    "Physobs",
+    "Pixels",
+    "Level",
+    "Resolution",
+    "Detector",
+    "Filter",
+    "Sample",
+    "Quicklook",
+    "PScale",
+]
 
-TIMEFORMAT = '%Y%m%d%H%M%S'
+TIMEFORMAT = "%Y%m%d%H%M%S"
 
 
 class Field(ValueAttr):
@@ -36,10 +51,9 @@ class Field(ValueAttr):
     A subclass of the value attribute.  Used in defining a decorator for the
     dummy attribute.
     """
+
     def __init__(self, fielditem):
-        ValueAttr.__init__(self, {
-            ('field', 'fielditem'): fielditem
-        })
+        ValueAttr.__init__(self, {("field", "fielditem"): fielditem})
 
 
 class _Range:
@@ -116,9 +130,7 @@ class Wavelength(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<Wavelength({!r}, {!r}, '{!s}')>".format(self.min.value,
-                                                            self.max.value,
-                                                            self.unit)
+        return "<Wavelength({!r}, {!r}, '{!s}')>".format(self.min.value, self.max.value, self.unit)
 
 
 class Time(Attr, _Range):
@@ -140,6 +152,7 @@ class Time(Attr, _Range):
         functionality.
 
     """
+
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, _TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
@@ -158,11 +171,21 @@ class Time(Attr, _Range):
         Attr.__init__(self)
 
     def __hash__(self):
-        if not (isinstance(self.start, collections.Hashable) and
-                isinstance(self.end, collections.Hashable)):
+        if not (
+            isinstance(self.start, collections.Hashable)
+            and isinstance(self.end, collections.Hashable)
+        ):
             # The hash is the hash of the start and end time
-            return hash((self.start.jd1, self.start.jd2, self.start.scale,
-                         self.end.jd1, self.end.jd2, self.end.scale))
+            return hash(
+                (
+                    self.start.jd1,
+                    self.start.jd2,
+                    self.start.scale,
+                    self.end.jd1,
+                    self.end.jd2,
+                    self.end.scale,
+                )
+            )
         else:
             return super().__hash__()
 
@@ -180,7 +203,7 @@ class Time(Attr, _Range):
         return Time(self.start - timedelta, self.start + timedelta)
 
     def __repr__(self):
-        return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)
+        return "<Time({s.start!r}, {s.end!r}, {s.near!r})>".format(s=self)
 
 
 class Extent(Attr):
@@ -189,6 +212,7 @@ class Extent(Attr):
     the Extent attribute is not used.
 
     """
+
     # pylint: disable=R0913
     def __init__(self, x, y, width, length, atype):
         super().__init__()
@@ -217,6 +241,7 @@ class Provider(SimpleAttr):
     For a list of sources see
     https://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
     """
+
     pass
 
 
@@ -236,6 +261,7 @@ class Source(SimpleAttr):
     what the VSO Data Model refers to as 'Observatory'.  For a list of sources
     see https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
     """
+
     pass
 
 
@@ -253,6 +279,7 @@ class Instrument(SimpleAttr):
     within the VSO Registry. For a list of instruments see
     https://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
+
     def __init__(self, value):
         if not isinstance(value, str):
             raise ValueError("Instrument names must be strings")
@@ -277,6 +304,7 @@ class Detector(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
+
     pass
 
 
@@ -294,6 +322,7 @@ class Physobs(SimpleAttr):
     Registry.  For a list of physical observables see
     https://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
     """
+
     pass
 
 
@@ -314,6 +343,7 @@ class Level(SimpleAttr):
         one of: lt gt le ge < > <= >=
 
     """
+
     pass
 
 
@@ -327,6 +357,7 @@ class Pixels(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
+
     pass
 
 
@@ -355,6 +386,7 @@ class Resolution(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
+
     pass
 
 
@@ -380,6 +412,7 @@ class PScale(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
+
     pass
 
 
@@ -392,6 +425,7 @@ class Sample(SimpleAttr):
     value : `astropy.units.Quantity`
         A sampling rate convertible to seconds.
     """
+
     @u.quantity_input
     def __init__(self, value: u.s):
         super().__init__(value)
@@ -417,6 +451,7 @@ class Quicklook(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
+
     def __init__(self, value):
         super().__init__(value)
         if self.value:
@@ -434,6 +469,7 @@ class Filter(SimpleAttr):
     value : str
 
     """
+
     pass
 
 
@@ -451,8 +487,8 @@ walker = AttrWalker()
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """ Implementation detail. """
-    api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
-    value = api.get_type('VSO:QueryRequestBlock')()
+    api.set_ns_prefix("VSO", "http://virtualsolar.org/VSO/VSOi")
+    value = api.get_type("VSO:QueryRequestBlock")()
     wlk.apply(root, api, value)
     return [value]
 
@@ -500,31 +536,28 @@ def _create(wlk, root, api):
 # known to it. All of those convert types into ValueAttrs, which are
 # handled above by just assigning according to the keys and values of the
 # attrs member.
-walker.add_converter(Extent)(
+walker.add_converter(Extent)(lambda x: ValueAttr({("extent", k): v for k, v in vars(x).items()}))
+
+walker.add_converter(Time)(
     lambda x: ValueAttr(
-        {('extent', k): v for k, v in vars(x).items()}
+        {
+            ("time", "start"): x.start.strftime(TIMEFORMAT),
+            ("time", "end"): x.end.strftime(TIMEFORMAT),
+            ("time", "near"): (x.near.strftime(TIMEFORMAT) if x.near is not None else None),
+        }
     )
 )
 
-walker.add_converter(Time)(
-    lambda x: ValueAttr({
-            ('time', 'start'): x.start.strftime(TIMEFORMAT),
-            ('time', 'end'): x.end.strftime(TIMEFORMAT),
-            ('time', 'near'): (
-                x.near.strftime(TIMEFORMAT) if x.near is not None else None),
-    })
-)
-
-walker.add_converter(SimpleAttr)(
-    lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
-)
+walker.add_converter(SimpleAttr)(lambda x: ValueAttr({(x.__class__.__name__.lower(),): x.value}))
 
 walker.add_converter(Wavelength)(
-    lambda x: ValueAttr({
-            ('wave', 'wavemin'): x.min.value,
-            ('wave', 'wavemax'): x.max.value,
-            ('wave', 'waveunit'): x.unit.name,
-    })
+    lambda x: ValueAttr(
+        {
+            ("wave", "wavemin"): x.min.value,
+            ("wave", "wavemax"): x.max.value,
+            ("wave", "waveunit"): x.unit.name,
+        }
+    )
 )
 
 # The idea of using a multi-method here - that means a method which dispatches
@@ -533,7 +566,7 @@ walker.add_converter(Wavelength)(
 # AttrAnd and AttrOr obviously are - in the HEK module). If we defined the
 # filter method as a member of the attribute classes, we could only filter
 # one type of data (that is, VSO data).
-filter_results = MultiMethod(lambda *a, **kw: (a[0], ))
+filter_results = MultiMethod(lambda *a, **kw: (a[0],))
 
 
 # If we filter with ANDed together attributes, the only items are the ones
@@ -564,10 +597,10 @@ def _(attr, results):
 def _(attr, results):
     attrname = attr.__class__.__name__.lower()
     return {
-        item for item in results
+        item
+        for item in results
         # Some servers seem to omit some fields. No way to filter there.
-        if not hasattr(item, attrname) or
-        getattr(item, attrname).lower() == attr.value.lower()
+        if not hasattr(item, attrname) or getattr(item, attrname).lower() == attr.value.lower()
     }
 
 
@@ -580,39 +613,31 @@ def _(attr, results):
 @filter_results.add_dec(Wavelength)
 def _(attr, results):
     return {
-        it for it in results
-        if
-        it.wave.wavemax is not None
-        and
-        attr.min <= it.wave.wavemax.to(u.angstrom, equivalencies=u.spectral())
-        and
-        it.wave.wavemin is not None
-        and
-        attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral())
+        it
+        for it in results
+        if it.wave.wavemax is not None
+        and attr.min <= it.wave.wavemax.to(u.angstrom, equivalencies=u.spectral())
+        and it.wave.wavemin is not None
+        and attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral())
     }
 
 
 @filter_results.add_dec(Time)
 def _(attr, results):
     return {
-        it for it in results
-        if
-        it.time.end is not None
-        and
-        attr.min <= Time.strptime(it.time.end, TIMEFORMAT)
-        and
-        it.time.start is not None
-        and
-        attr.max >= Time.strptime(it.time.start, TIMEFORMAT)
+        it
+        for it in results
+        if it.time.end is not None
+        and attr.min <= Time.strptime(it.time.end, TIMEFORMAT)
+        and it.time.start is not None
+        and attr.max >= Time.strptime(it.time.start, TIMEFORMAT)
     }
 
 
 @filter_results.add_dec(Extent)
 def _(attr, results):
     return {
-        it for it in results
-        if
-        it.extent.type is not None
-        and
-        it.extent.type.lower() == attr.type.lower()
+        it
+        for it in results
+        if it.extent.type is not None and it.extent.type.lower() == attr.type.lower()
     }

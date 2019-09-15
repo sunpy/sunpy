@@ -2,7 +2,7 @@ import numpy as np
 
 from sunpy.map import GenericMap
 
-__all__ = ['SJIMap']
+__all__ = ["SJIMap"]
 
 
 class SJIMap(GenericMap):
@@ -38,18 +38,18 @@ class SJIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        header["cunit1"] = header.get("cunit1", "arcsec")
+        header["cunit2"] = header.get("cunit2", "arcsec")
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self.meta['detector'] = "SJI"
-        self.meta['waveunit'] = "Angstrom"
-        self.meta['wavelnth'] = header['twave1']
+        self.meta["detector"] = "SJI"
+        self.meta["waveunit"] = "Angstrom"
+        self.meta["wavelnth"] = header["twave1"]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an IRIS SJI image"""
-        tele = header.get('TELESCOP', '').startswith('IRIS')
-        obs = header.get('INSTRUME', '').startswith('SJI')
-        level = header.get('lvl_num') == 1
+        tele = header.get("TELESCOP", "").startswith("IRIS")
+        obs = header.get("INSTRUME", "").startswith("SJI")
+        level = header.get("lvl_num") == 1
         return tele and obs

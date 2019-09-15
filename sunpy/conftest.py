@@ -21,7 +21,7 @@ try:
 except ImportError:
     pass
 else:
-    matplotlib.use('Agg')
+    matplotlib.use("Agg")
 
 # Don't actually import pytest_remotedata because that can do things to the
 # entrypoints code in pytest.
@@ -33,13 +33,12 @@ def pytest_addoption(parser):
     parser.addoption("--figure_dir", action="store", default="./figure_test_images")
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def figure_base_dir(request):
-    sunpy.tests.helpers.figure_base_dir = pathlib.Path(
-        request.config.getoption("--figure_dir"))
+    sunpy.tests.helpers.figure_base_dir = pathlib.Path(request.config.getoption("--figure_dir"))
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def tmp_config_dir(request):
     """
     Globally set the default config for all tests.
@@ -68,7 +67,7 @@ def undo_config_dir_patch():
     os.environ["SUNPY_CONFIGDIR"] = oridir
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def tmp_dl_dir(request):
     """
     Globally set the default download directory for the test run to a tmp dir.
@@ -96,7 +95,7 @@ def pytest_runtest_setup(item):
     pytest_remotedata plugin is not installed.
     """
     if isinstance(item, pytest.Function):
-        if 'remote_data' in item.keywords and not HAVE_REMOTEDATA:
+        if "remote_data" in item.keywords and not HAVE_REMOTEDATA:
             pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
 
 
@@ -107,8 +106,8 @@ def pytest_unconfigure(config):
         # Write the new hash library in JSON
         figure_base_dir = pathlib.Path(config.getoption("--figure_dir"))
         hashfile = figure_base_dir / HASH_LIBRARY_NAME
-        with open(hashfile, 'w') as outfile:
-            json.dump(new_hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
+        with open(hashfile, "w") as outfile:
+            json.dump(new_hash_library, outfile, sort_keys=True, indent=4, separators=(",", ": "))
 
         """
         Turn on internet when generating the figure comparison webpage.
@@ -116,14 +115,18 @@ def pytest_unconfigure(config):
         if HAVE_REMOTEDATA:
             from pytest_remotedata.disable_internet import turn_on_internet, turn_off_internet
         else:
-            def turn_on_internet(): pass
-            def turn_off_internet(): pass
+
+            def turn_on_internet():
+                pass
+
+            def turn_off_internet():
+                pass
 
         turn_on_internet()
         generate_figure_webpage(new_hash_library)
         turn_off_internet()
 
-        print('All images from image tests can be found in {}'.format(figure_base_dir.resolve()))
+        print("All images from image tests can be found in {}".format(figure_base_dir.resolve()))
         print("The corresponding hash library is {}".format(hashfile.resolve()))
 
 

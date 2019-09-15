@@ -3,7 +3,7 @@ from zeep import Plugin
 
 from sunpy import log
 
-__all__ = ['SunPyLoggingZeepPlugin']
+__all__ = ["SunPyLoggingZeepPlugin"]
 
 
 class SunPyLoggingZeepPlugin(Plugin):

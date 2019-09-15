@@ -51,4 +51,4 @@ def test_measurement(createEIT):
 
 def test_rsun(createEIT):
     """Tests the measurement property of the EITMap object."""
-    assert u.allclose(createEIT.rsun_obs, 979.0701*u.arcsec)
+    assert u.allclose(createEIT.rsun_obs, 979.0701 * u.arcsec)

@@ -79,12 +79,8 @@ def test_vso_attribute_parse(hek_client):
     assert vso_query[2].value == hek_query[0]["obs_instrument"]
 
     # Checking Wavelength
-    assert vso_query[3].min == hek_query[0]["obs_meanwavel"] * u.Unit(
-        hek_query[0]["obs_wavelunit"]
-    )
-    assert vso_query[3].max == hek_query[0]["obs_meanwavel"] * u.Unit(
-        hek_query[0]["obs_wavelunit"]
-    )
+    assert vso_query[3].min == hek_query[0]["obs_meanwavel"] * u.Unit(hek_query[0]["obs_wavelunit"])
+    assert vso_query[3].max == hek_query[0]["obs_meanwavel"] * u.Unit(hek_query[0]["obs_wavelunit"])
     assert vso_query[3].unit == u.Unit("Angstrom")
 
 
@@ -114,9 +110,7 @@ def test_translate_and_query(h2v_client, hek_client):
 def test_full_query(h2v_client, hek_client):
     h2v = h2v_client
     h = hek_client
-    h2v_q_1 = h2v.full_query(
-        (hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType))
-    )
+    h2v_q_1 = h2v.full_query((hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType)))
 
     assert h2v.num_of_records == 2908
     assert len(h2v.vso_results) == 19
@@ -139,9 +133,7 @@ def test_full_query(h2v_client, hek_client):
 @pytest.mark.remote_data
 def test_quick_clean(h2v_client, hek_client):
     h2v = h2v_client
-    h2v_q = h2v.full_query(
-        (hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType))
-    )
+    h2v_q = h2v.full_query((hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType)))
 
     assert h2v.num_of_records != 0
     assert len(h2v.vso_results) != 0

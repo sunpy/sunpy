@@ -5,7 +5,7 @@ import textwrap
 
 from sunpy.time import TimeRange, parse_time
 
-__all__ = ['roi']
+__all__ = ["roi"]
 
 
 class roi:
@@ -38,6 +38,7 @@ class roi:
     >>> result = roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'], description='UV occult.',source='LYRA LYTAF')
     >>> result = roi(times='2013-05-12 03:12:00')
     """
+
     def __init__(self, times=None, description=None, source=None):
         # time could be a list with one or two elements
         if times and type(times) == list:
@@ -82,19 +83,21 @@ class roi:
         Print out info on the ROI.
         """
         if not self.start_time:
-            startstring = 'None'
+            startstring = "None"
         else:
             startstring = self.start_time.iso
 
         if not self.end_time:
-            endstring = 'None'
+            endstring = "None"
         else:
             endstring = self.end_time.iso
-        return textwrap.dedent(f"""\
+        return textwrap.dedent(
+            f"""\
         SunPy Region-of-interest (ROI) object
         -------------------------------------
         Source:            {self.source}
         Start time:        {startstring}
         End time:          {endstring}
         Event description: {self.description}
-        """)
+        """
+        )

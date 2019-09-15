@@ -8,7 +8,8 @@ import numpy as np
 import pytest
 
 import astropy.units as u
-asdf = pytest.importorskip('asdf', '2.0')
+
+asdf = pytest.importorskip("asdf", "2.0")
 from asdf.tests.helpers import assert_roundtrip_tree  # noqa
 
 import sunpy.map  # noqa
@@ -26,16 +27,16 @@ def aia171_test_map():
 # Skip these two tests on windows due to a weird interaction with atomicfile
 # and tmpdir
 skip_windows_asdf = pytest.mark.skipif(
-    (LooseVersion(asdf.__version__) < LooseVersion("2.3.1")
-     and platform.system() == 'Windows'),
-    reason="See https://github.com/spacetelescope/asdf/pull/632")
+    (LooseVersion(asdf.__version__) < LooseVersion("2.3.1") and platform.system() == "Windows"),
+    reason="See https://github.com/spacetelescope/asdf/pull/632",
+)
 
 
 @skip_windows_asdf
 @asdf_entry_points
 def test_genericmap_basic(aia171_test_map, tmpdir):
 
-    tree = {'smap': aia171_test_map}
+    tree = {"smap": aia171_test_map}
 
     assert_roundtrip_tree(tree, tmpdir, extensions=SunpyExtension())
 
@@ -50,6 +51,6 @@ def test_genericmap_mask(aia171_test_map, tmpdir):
     aia171_test_map.mask = mask
     aia171_test_map._unit = u.m
 
-    tree = {'smap': aia171_test_map}
+    tree = {"smap": aia171_test_map}
 
     assert_roundtrip_tree(tree, tmpdir, extensions=SunpyExtension())

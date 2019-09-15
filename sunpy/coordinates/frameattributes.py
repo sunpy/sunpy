@@ -7,7 +7,7 @@ from astropy.time import Time
 
 from sunpy.time import parse_time
 
-__all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']
+__all__ = ["TimeFrameAttributeSunPy", "ObserverCoordinateAttribute"]
 
 
 class TimeFrameAttributeSunPy(TimeAttribute):
@@ -54,7 +54,7 @@ class TimeFrameAttributeSunPy(TimeAttribute):
         if value is None:
             return None, False
 
-        elif value == 'now':
+        elif value == "now":
             return Time(datetime.datetime.now()), True
 
         elif isinstance(value, Time):
@@ -65,13 +65,13 @@ class TimeFrameAttributeSunPy(TimeAttribute):
             try:
                 out = Time(parse_time(value))
             except Exception as err:
-                raise ValueError(f'Invalid time input {self.name}={value!r}\n{err}')
+                raise ValueError(f"Invalid time input {self.name}={value!r}\n{err}")
             converted = True
         else:
             try:
                 out = Time(value)
             except Exception as err:
-                raise ValueError(f'Invalid time input {self.name}={value!r}\n{err}')
+                raise ValueError(f"Invalid time input {self.name}={value!r}\n{err}")
             converted = True
 
         return out, converted
@@ -119,7 +119,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
 
         if out == "earth":
             rep = obscoord.spherical
-            rep.lon[()] = 0*u.deg
+            rep.lon[()] = 0 * u.deg
             obscoord = obscoord.realize_frame(rep)
 
         return obscoord
@@ -128,10 +128,10 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
         # If instance is None then we can't get obstime so it doesn't matter.
         if instance is not None:
             # Get observer if the instance has one, or the default.
-            observer = getattr(instance, '_' + self.name, self.default)
+            observer = getattr(instance, "_" + self.name, self.default)
 
             # We have an instance of a frame, so get obstime
-            obstime = getattr(instance, 'obstime', None)
+            obstime = getattr(instance, "obstime", None)
 
             # If the observer is a string and we have obstime then calculate
             # the position of the observer.
@@ -139,7 +139,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
                 if obstime is not None:
                     new_observer = self._convert_string_to_coord(observer.lower(), obstime)
                     new_observer.object_name = observer
-                    setattr(instance, '_' + self.name, new_observer)
+                    setattr(instance, "_" + self.name, new_observer)
                 else:
                     return observer
 

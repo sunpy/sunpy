@@ -12,9 +12,9 @@ def foostrwrap(request):
 @pytest.fixture
 @pytest.mark.remote_data
 def hek_client_creator():
-    startTime = '2011/08/09 07:23:56'
-    endTime = '2011/08/09 12:40:29'
-    eventType = 'FL'
+    startTime = "2011/08/09 07:23:56"
+    endTime = "2011/08/09 12:40:29"
+    eventType = "FL"
 
     hekTime = hek.attrs.Time(startTime, endTime)
     hekEvent = hek.attrs.EventType(eventType)
@@ -28,11 +28,9 @@ def test_eventtype_collide():
     with pytest.raises(TypeError):
         hek.attrs.AR & hek.attrs.CE
     with pytest.raises(TypeError):
-        (hek.attrs.AR & hek.attrs.Time((2011, 1, 1),
-                                       (2011, 1, 2))) & hek.attrs.CE
+        (hek.attrs.AR & hek.attrs.Time((2011, 1, 1), (2011, 1, 2))) & hek.attrs.CE
         with pytest.raises(TypeError):
-            (hek.attrs.AR | hek.attrs.Time((2011, 1, 1),
-                                           (2011, 1, 2))) & hek.attrs.CE
+            (hek.attrs.AR | hek.attrs.Time((2011, 1, 1), (2011, 1, 2))) & hek.attrs.CE
 
 
 def test_eventtype_or():
@@ -42,49 +40,49 @@ def test_eventtype_or():
 def test_paramattr():
     res = hek.attrs.walker.create(hek.attrs._ParamAttr("foo", "=", "bar"), {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '=', 'param0': 'foo'}
+    assert res[0] == {"value0": "bar", "op0": "=", "param0": "foo"}
 
 
 def test_stringwrapper_eq(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap == "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '=', 'param0': 'foo'}
+    assert res[0] == {"value0": "bar", "op0": "=", "param0": "foo"}
 
 
 def test_stringwrapper_lt(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap < "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '<', 'param0': 'foo'}
+    assert res[0] == {"value0": "bar", "op0": "<", "param0": "foo"}
 
 
 def test_stringwrapper_gt(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap > "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '>', 'param0': 'foo'}
+    assert res[0] == {"value0": "bar", "op0": ">", "param0": "foo"}
 
 
 def test_stringwrapper_le(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap <= "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '<=', 'param0': 'foo'}
+    assert res[0] == {"value0": "bar", "op0": "<=", "param0": "foo"}
 
 
 def test_stringwrapper_ge(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap >= "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '>=', 'param0': 'foo'}
+    assert res[0] == {"value0": "bar", "op0": ">=", "param0": "foo"}
 
 
 def test_stringwrapper_ne(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap != "bar", {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': '!=', 'param0': 'foo'}
+    assert res[0] == {"value0": "bar", "op0": "!=", "param0": "foo"}
 
 
 def test_stringwrapper_like(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap.like("bar"), {})
     assert len(res) == 1
-    assert res[0] == {'value0': 'bar', 'op0': 'like', 'param0': 'foo'}
+    assert res[0] == {"value0": "bar", "op0": "like", "param0": "foo"}
 
 
 def test_err_dummyattr_create():
@@ -99,9 +97,9 @@ def test_err_dummyattr_apply():
 
 @pytest.mark.remote_data
 def test_hek_client():
-    startTime = '2011/08/09 07:23:56'
-    endTime = '2011/08/09 12:40:29'
-    eventType = 'FL'
+    startTime = "2011/08/09 07:23:56"
+    endTime = "2011/08/09 12:40:29"
+    eventType = "FL"
 
     hekTime = hek.attrs.Time(startTime, endTime)
     hekEvent = hek.attrs.EventType(eventType)
@@ -113,9 +111,9 @@ def test_hek_client():
 
 @pytest.mark.remote_data
 def test_hek_empty_search_result():
-    startTime = '1985-05-04 00:00:00'
-    endTime = '1985-05-04 00:00:00'
-    eventType = 'FL'
+    startTime = "1985-05-04 00:00:00"
+    endTime = "1985-05-04 00:00:00"
+    eventType = "FL"
 
     hekTime = hek.attrs.Time(startTime, endTime)
     hekEvent = hek.attrs.EventType(eventType)
@@ -136,7 +134,7 @@ def test_getitem(hek_client_creator):
 def test_get_voevent(hek_client_creator):
     hc = hek_client_creator
     ve = hc[0].get_voevent()
-    assert len(ve['voe:VOEvent']) == 7
+    assert len(ve["voe:VOEvent"]) == 7
 
 
 @pytest.mark.remote_data
@@ -159,8 +157,8 @@ def test_vso_instrument(hek_client_creator):
 @pytest.mark.remote_data
 def test_HEKRow_get(hek_client_creator):
     hc = hek_client_creator
-    assert hc[0]['event_peaktime'] == hc[0].get('event_peaktime')
-    assert hc[0].get('') is None
+    assert hc[0]["event_peaktime"] == hc[0].get("event_peaktime")
+    assert hc[0].get("") is None
 
 
 @pytest.mark.remote_data
@@ -168,4 +166,7 @@ def test_mixed_results_get():
     # To check that the following bug is fixed:
     # https://github.com/sunpy/sunpy/issues/3238
     client = hek.HEKClient()
-    client.search(hek.attrs.Time(parse_time('2013/02/01 00:00:00'), parse_time('2013/02/01 23:30:00')), hek.attrs.FRM.Name == 'SPoCA')
+    client.search(
+        hek.attrs.Time(parse_time("2013/02/01 00:00:00"), parse_time("2013/02/01 23:30:00")),
+        hek.attrs.FRM.Name == "SPoCA",
+    )

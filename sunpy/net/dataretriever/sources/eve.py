@@ -10,10 +10,12 @@ from sunpy.util.scraper import Scraper
 
 from ..client import GenericClient
 
-__all__ = ['EVEClient']
+__all__ = ["EVEClient"]
 
-BASEURL = ('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
-           'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
+BASEURL = (
+    "http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/"
+    "L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt"
+)
 
 
 class EVEClient(GenericClient):
@@ -62,8 +64,8 @@ class EVEClient(GenericClient):
         # If start of time range is before 00:00, converted to such, so
         # files of the requested time ranger are included.
         # This is done because the archive contains daily files.
-        if timerange.start.strftime('%M-%S') != '00-00':
-            timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
+        if timerange.start.strftime("%M-%S") != "00-00":
+            timerange = TimeRange(timerange.start.strftime("%Y-%m-%d"), timerange.end)
         eve = Scraper(BASEURL)
         return eve.filelist(timerange)
 
@@ -73,17 +75,17 @@ class EVEClient(GenericClient):
         for url in urls:
             t0 = eve._extractDateURL(url)
             # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
+            times.append(TimeRange(t0, t0 + TimeDelta(1 * u.day)))
         return times
 
     def _makeimap(self):
         """
         Helper Function: used to hold information about source.
         """
-        self.map_['source'] = 'SDO'
-        self.map_['provider'] = 'LASP'
-        self.map_['instrument'] = 'eve'
-        self.map_['physobs'] = 'irradiance'
+        self.map_["source"] = "SDO"
+        self.map_["provider"] = "LASP"
+        self.map_["instrument"] = "eve"
+        self.map_["physobs"] = "irradiance"
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -101,10 +103,10 @@ class EVEClient(GenericClient):
         """
         chk_var = 0
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'eve':
+            if x.__class__.__name__ == "Instrument" and x.value.lower() == "eve":
                 chk_var += 1
 
-            elif x.__class__.__name__ == 'Level' and x.value == 0:
+            elif x.__class__.__name__ == "Level" and x.value == 0:
                 chk_var += 1
 
         if chk_var == 2:

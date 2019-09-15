@@ -17,22 +17,25 @@ from sunpy.time.utime import TimeUTime  # noqa
 from sunpy.util.decorators import add_common_docstring
 
 __all__ = [
-    'find_time', 'parse_time', 'is_time',
-    'is_time_in_given_format', 'is_time_equal',
-    'julian_centuries'
+    "find_time",
+    "parse_time",
+    "is_time",
+    "is_time_in_given_format",
+    "is_time_equal",
+    "julian_centuries",
 ]
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
-    '%Y': r'(?P<year>\d{4})',
-    '%j': r'(?P<dayofyear>\d{3})',
-    '%m': r'(?P<month>\d{1,2})',
-    '%d': r'(?P<day>\d{1,2})',
-    '%H': r'(?P<hour>\d{1,2})',
-    '%M': r'(?P<minute>\d{1,2})',
-    '%S': r'(?P<second>\d{1,2})',
-    '%f': r'(?P<microsecond>\d+)',
-    '%b': r'(?P<month_str>[a-zA-Z]+)',
+    "%Y": r"(?P<year>\d{4})",
+    "%j": r"(?P<dayofyear>\d{3})",
+    "%m": r"(?P<month>\d{1,2})",
+    "%d": r"(?P<day>\d{1,2})",
+    "%H": r"(?P<hour>\d{1,2})",
+    "%M": r"(?P<minute>\d{1,2})",
+    "%S": r"(?P<second>\d{1,2})",
+    "%f": r"(?P<microsecond>\d+)",
+    "%b": r"(?P<month_str>[a-zA-Z]+)",
 }
 
 TIME_FORMAT_LIST = [
@@ -103,8 +106,8 @@ def _regex_parse_time(inp, format):
         return inp, astropy.time.TimeDelta(0 * u.day)
     if hour == "24":
         if not all(
-                _n_or_eq(_group_or_none(match, g, int), 00)
-                for g in ["minute", "second", "microsecond"]):
+            _n_or_eq(_group_or_none(match, g, int), 00) for g in ["minute", "second", "microsecond"]
+        ):
             raise ValueError
         from_, to = match.span("hour")
         return inp[:from_] + "00" + inp[to:], astropy.time.TimeDelta(1 * u.day)
@@ -131,7 +134,7 @@ def find_time(string, format):
             yield dt
 
 
-find_time.__doc__ += ', '.join(list(REGEX.keys()))
+find_time.__doc__ += ", ".join(list(REGEX.keys()))
 
 
 @singledispatch
@@ -156,6 +159,7 @@ try:
     def convert_time_pandasDatetimeIndex(time_string, **kwargs):
         return Time(time_string.tolist(), **kwargs)
 
+
 except ImportError:
     pass
 
@@ -173,19 +177,19 @@ def convert_time_date(time_string, **kwargs):
 @convert_time.register(tuple)
 def convert_time_tuple(time_string, **kwargs):
     # Make sure there are enough values to unpack
-    time_string = (time_string + (0, ) * 7)[:7]
-    return Time('{}-{}-{}T{}:{}:{}.{:06}'.format(*time_string), **kwargs)
+    time_string = (time_string + (0,) * 7)[:7]
+    return Time("{}-{}-{}T{}:{}:{}.{:06}".format(*time_string), **kwargs)
 
 
 @convert_time.register(np.datetime64)
 def convert_time_npdatetime64(time_string, **kwargs):
-    return Time(str(time_string.astype('M8[ns]')), **kwargs)
+    return Time(str(time_string.astype("M8[ns]")), **kwargs)
 
 
 @convert_time.register(np.ndarray)
 def convert_time_npndarray(time_string, **kwargs):
-    if 'datetime64' in str(time_string.dtype):
-        return Time([str(dt.astype('M8[ns]')) for dt in time_string], **kwargs)
+    if "datetime64" in str(time_string.dtype):
+        return Time([str(dt.astype("M8[ns]")) for dt in time_string], **kwargs)
     else:
         return convert_time.dispatch(object)(time_string, **kwargs)
 
@@ -199,11 +203,11 @@ def convert_time_astropy(time_string, **kwargs):
 def convert_time_str(time_string, **kwargs):
     # remove trailing zeros and the final dot to allow any
     # number of zeros. This solves issue #289
-    if '.' in time_string:
+    if "." in time_string:
         time_string = time_string.rstrip("0").rstrip(".")
 
-    if 'TAI' in time_string:
-        kwargs['scale'] = 'tai'
+    if "TAI" in time_string:
+        kwargs["scale"] = "tai"
 
     for time_format in TIME_FORMAT_LIST:
         try:
@@ -227,23 +231,32 @@ def _variables_for_parse_time_docstring():
     example_time = datetime(2017, 1, 1, 11, 10, 9)
     example_parse_time = [example_time.strftime(f) for f in TIME_FORMAT_LIST]
     example_parse_time = "\n      ".join(example_parse_time)
-    ret['parse_time_formats'] = example_parse_time
+    ret["parse_time_formats"] = example_parse_time
 
     types = list(convert_time.registry.keys())
     types.remove(object)
     # Do Builtins
     types2 = [t.__qualname__ for t in types if t.__module__ == "builtins"]
     # # Do all the non-special ones where we take the package name and the class
-    types2 += [t.__module__.split(".")[0] + "." + t.__qualname__ for t in types if not t.__module__.startswith(("builtins", "astropy"))]
+    types2 += [
+        t.__module__.split(".")[0] + "." + t.__qualname__
+        for t in types
+        if not t.__module__.startswith(("builtins", "astropy"))
+    ]
     # Special case astropy.time where we need the subpackage
-    types2 += ["astropy.time." + t.__qualname__ for t in types if t.__module__.startswith("astropy.time")]
+    types2 += [
+        "astropy.time." + t.__qualname__ for t in types if t.__module__.startswith("astropy.time")
+    ]
     parse_time_types = str(types2)[1:-1].replace("'", "`")
-    ret['parse_time_types'] = parse_time_types
-    ret['parse_time_desc'] = """
+    ret["parse_time_types"] = parse_time_types
+    ret[
+        "parse_time_desc"
+    ] = """
                              Any time input, will be passed into `~sunpy.time.parse_time`.
                              """
-    ret['astropy_time_formats'] = textwrap.fill(str(list(astropy.time.Time.FORMATS.keys())),
-                                                subsequent_indent=' '*10)
+    ret["astropy_time_formats"] = textwrap.fill(
+        str(list(astropy.time.Time.FORMATS.keys())), subsequent_indent=" " * 10
+    )
 
     return ret
 
@@ -287,7 +300,7 @@ def parse_time(time_string, *, format=None, **kwargs):
 
       {parse_time_formats}
     """
-    if isinstance(time_string, str) and time_string == 'now':
+    if isinstance(time_string, str) and time_string == "now":
         rt = Time.now()
     else:
         rt = convert_time(time_string, format=format, **kwargs)
@@ -354,7 +367,7 @@ def is_time_in_given_format(time_string, time_format):
         return False
 
 
-def julian_centuries(t='now'):
+def julian_centuries(t="now"):
     """
     Returns the number of Julian centuries since J1900.0 (noon on 1900 January
     0).

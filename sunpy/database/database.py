@@ -24,11 +24,8 @@ from sunpy.net.attr import and_
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.vso import VSOClient
 
-__authors__ = ['Simon Liedtke', 'Rajul Srivastava']
-__emails__ = [
-    'liedtke.simon@googlemail.com',
-    'rajul09@gmail.com'
-]
+__authors__ = ["Simon Liedtke", "Rajul Srivastava"]
+__emails__ = ["liedtke.simon@googlemail.com", "rajul09@gmail.com"]
 
 
 class EntryNotFoundError(Exception):
@@ -41,8 +38,7 @@ class EntryNotFoundError(Exception):
         self.entry_id = entry_id
 
     def __str__(self):  # pragma: no cover
-        return 'an entry with the ID {:d} does not exist'.format(
-            self.entry_id)
+        return "an entry with the ID {:d} does not exist".format(self.entry_id)
 
 
 class EntryAlreadyAddedError(Exception):
@@ -55,9 +51,7 @@ class EntryAlreadyAddedError(Exception):
         self.database_entry = database_entry
 
     def __str__(self):  # pragma: no cover
-        return (
-            'the entry {!r} was already added '
-            'to the database'.format(self.database_entry))
+        return "the entry {!r} was already added " "to the database".format(self.database_entry)
 
 
 class EntryAlreadyStarredError(Exception):
@@ -71,9 +65,7 @@ class EntryAlreadyStarredError(Exception):
         self.database_entry = database_entry
 
     def __str__(self):  # pragma: no cover
-        return (
-            'the entry {!r} is already marked '
-            'as starred'.format(self.database_entry))
+        return "the entry {!r} is already marked " "as starred".format(self.database_entry)
 
 
 class EntryAlreadyUnstarredError(Exception):
@@ -86,9 +78,7 @@ class EntryAlreadyUnstarredError(Exception):
         self.database_entry = database_entry
 
     def __str__(self):  # pragma: no cover
-        return (
-            'the entry {!r} is already not marked '
-            'as starred'.format(self.database_entry))
+        return "the entry {!r} is already not marked " "as starred".format(self.database_entry)
 
 
 class NoSuchTagError(Exception):
@@ -101,8 +91,7 @@ class NoSuchTagError(Exception):
         self.tag_name = tag_name
 
     def __str__(self):  # pragma: no cover
-        return 'the tag {!r} is not saved in the database'.format(
-            self.tag_name)
+        return "the tag {!r} is not saved in the database".format(self.tag_name)
 
 
 class TagAlreadyAssignedError(Exception):
@@ -116,7 +105,7 @@ class TagAlreadyAssignedError(Exception):
         self.tag_name = tag_name
 
     def __str__(self):  # pragma: no cover
-        errmsg = 'the database entry {0!r} has already assigned the tag {1!r}'
+        errmsg = "the database entry {0!r} has already assigned the tag {1!r}"
         return errmsg.format(self.database_entry, self.tag_name)
 
 
@@ -225,6 +214,7 @@ class Database:
         the wavelength unit results in a
         :exc:`sunpy.database.WaveunitNotFoundError`.
     """
+
     """
     Attributes
     ----------
@@ -292,10 +282,11 @@ class Database:
 
     """
 
-    def __init__(self, url=None, CacheClass=LRUCache, cache_size=float('inf'),
-                 default_waveunit=None):
+    def __init__(
+        self, url=None, CacheClass=LRUCache, cache_size=float("inf"), default_waveunit=None
+    ):
         if url is None:
-            url = sunpy.config.get('database', 'url')
+            url = sunpy.config.get("database", "url")
         self._engine = create_engine(url)
         self._session_cls = sessionmaker(bind=self._engine)
         self.session = scoped_session(self._session_cls)
@@ -309,7 +300,6 @@ class Database:
         self._enable_history = True
 
         class Cache(CacheClass):
-
             def callback(this, entry_id, database_entry):
                 self.remove(database_entry)
 
@@ -318,6 +308,7 @@ class Database:
                     this[max(this or [0]) + 1] = value
                 except TypeError:
                     this[1] = value
+
         self._create_tables()
         self._cache = Cache(cache_size)
         for entry in self:
@@ -380,13 +371,20 @@ class Database:
         """
         self.session.commit()
 
-    def _download_and_collect_entries(self, query_result, client=None,
-                                      path=None, progress=False, methods=None,
-                                      overwrite=False, **kwargs):
+    def _download_and_collect_entries(
+        self,
+        query_result,
+        client=None,
+        path=None,
+        progress=False,
+        methods=None,
+        overwrite=False,
+        **kwargs,
+    ):
 
         if kwargs:
             k, v = kwargs.popitem()
-            raise TypeError(f'unexpected keyword argument {k!r}')
+            raise TypeError(f"unexpected keyword argument {k!r}")
 
         if client is None:
             client = VSOClient()
@@ -397,9 +395,20 @@ class Database:
             temp = tables.DatabaseEntry._from_query_result_block(qr)
             for database_entry in self:
                 if database_entry.path is not None and temp._compare_attributes(
-                    database_entry, ["source", "provider", "physobs", "fileid",
-                                     "observation_time_start", "observation_time_end",
-                                     "instrument", "size", "wavemin", "wavemax"]):
+                    database_entry,
+                    [
+                        "source",
+                        "provider",
+                        "physobs",
+                        "fileid",
+                        "observation_time_start",
+                        "observation_time_end",
+                        "instrument",
+                        "size",
+                        "wavemin",
+                        "wavemax",
+                    ],
+                ):
                     if not overwrite:
                         remove_list.append(qr)
                     else:
@@ -421,7 +430,7 @@ class Database:
             elif os.path.isdir(path):
                 entries = tables.entries_from_dir(path, self.default_waveunit)
             else:
-                raise ValueError('The path is neither a file nor directory')
+                raise ValueError("The path is neither a file nor directory")
 
             for entry in entries:
                 entry.source = qr_entry.source
@@ -528,9 +537,9 @@ class Database:
         """
 
         if not query:
-            raise TypeError('at least one attribute required')
+            raise TypeError("at least one attribute required")
 
-        client = kwargs.get('client', None)
+        client = kwargs.get("client", None)
         if client is None:
             client = VSOClient()
         qr = client.search(*query)
@@ -539,8 +548,7 @@ class Database:
         if not qr:
             return
 
-        entries = list(self._download_and_collect_entries(
-            qr, **kwargs))
+        entries = list(self._download_and_collect_entries(qr, **kwargs))
 
         self.add_many(entries)
 
@@ -593,11 +601,11 @@ class Database:
 
         """
         if not query:
-            raise TypeError('at least one attribute required')
-        sortby = kwargs.pop('sortby', 'observation_time_start')
+            raise TypeError("at least one attribute required")
+        sortby = kwargs.pop("sortby", "observation_time_start")
         if kwargs:
             k, v = kwargs.popitem()
-            raise TypeError(f'unexpected keyword argument {k!r}')
+            raise TypeError(f"unexpected keyword argument {k!r}")
 
         db_entries = walker.create(and_(*query), self.session)
 
@@ -605,7 +613,7 @@ class Database:
         # sorting key should fall back to 'id', orherwise it fails with
         # TypeError on py3
         if any([getattr(entry, sortby) is None for entry in db_entries]):
-            sortby = 'id'
+            sortby = "id"
 
         return sorted(db_entries, key=operator.attrgetter(sortby))
 
@@ -648,7 +656,7 @@ class Database:
 
         """
         if not tags:
-            raise TypeError('at least one tag must be given')
+            raise TypeError("at least one tag must be given")
         # avoid duplicates
         tag_names = set(tags)
         cmds = CompositeOperation()
@@ -776,8 +784,7 @@ class Database:
         else:
             self._cache[database_entry.id] = database_entry
 
-    def add_from_hek_query_result(self, query_result,
-                                  ignore_already_added=False):
+    def add_from_hek_query_result(self, query_result, ignore_already_added=False):
         """Add database entries from a HEK query result.
 
         Parameters
@@ -789,13 +796,18 @@ class Database:
             See :meth:`sunpy.database.Database.add`.
 
         """
-        vso_qr = itertools.chain.from_iterable(
-            H2VClient().translate_and_query(query_result))
+        vso_qr = itertools.chain.from_iterable(H2VClient().translate_and_query(query_result))
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
 
-    def download_from_vso_query_result(self, query_result, client=None,
-                                       path=None, progress=False,
-                                       ignore_already_added=False, overwrite=False):
+    def download_from_vso_query_result(
+        self,
+        query_result,
+        client=None,
+        path=None,
+        progress=False,
+        ignore_already_added=False,
+        overwrite=False,
+    ):
         """download(query_result, client=sunpy.net.vso.VSOClient(),
         path=None, progress=False, ignore_already_added=False)
 
@@ -816,11 +828,13 @@ class Database:
         """
         if not query_result:
             return
-        self.add_many(self._download_and_collect_entries(
-            query_result, client=client, path=path, progress=progress, overwrite=overwrite))
+        self.add_many(
+            self._download_and_collect_entries(
+                query_result, client=client, path=path, progress=progress, overwrite=overwrite
+            )
+        )
 
-    def add_from_vso_query_result(self, query_result,
-                                  ignore_already_added=False):
+    def add_from_vso_query_result(self, query_result, ignore_already_added=False):
         """Generate database entries from a VSO query result and add all the
         generated entries to this database.
 
@@ -835,12 +849,11 @@ class Database:
 
         """
         self.add_many(
-            tables.entries_from_query_result(
-                query_result, self.default_waveunit),
-            ignore_already_added)
+            tables.entries_from_query_result(query_result, self.default_waveunit),
+            ignore_already_added,
+        )
 
-    def add_from_fido_search_result(self, search_result,
-                                    ignore_already_added=False):
+    def add_from_fido_search_result(self, search_result, ignore_already_added=False):
         """
         Generate database entries from a Fido search result and add all the
         generated entries to this database.
@@ -857,12 +870,19 @@ class Database:
             See :meth:`sunpy.database.Database.add`.
 
         """
-        self.add_many(tables.entries_from_fido_search_result(search_result,
-                                                             self.default_waveunit),
-                      ignore_already_added)
+        self.add_many(
+            tables.entries_from_fido_search_result(search_result, self.default_waveunit),
+            ignore_already_added,
+        )
 
-    def add_from_dir(self, path, recursive=False, pattern='*',
-                     ignore_already_added=False, time_string_parse_format=None):
+    def add_from_dir(
+        self,
+        path,
+        recursive=False,
+        pattern="*",
+        ignore_already_added=False,
+        time_string_parse_format=None,
+    ):
         """Search the given directory for FITS files and use their FITS headers
         to add new entries to the database. Note that one entry in the database
         is assigned to a list of FITS headers, so not the number of FITS headers
@@ -900,8 +920,12 @@ class Database:
         """
         cmds = CompositeOperation()
         entries = tables.entries_from_dir(
-            path, recursive, pattern, self.default_waveunit,
-            time_string_parse_format=time_string_parse_format)
+            path,
+            recursive,
+            pattern,
+            self.default_waveunit,
+            time_string_parse_format=time_string_parse_format,
+        )
         for database_entry, filepath in entries:
             if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
@@ -929,9 +953,7 @@ class Database:
             See :meth:`sunpy.database.Database.add`.
 
         """
-        self.add_many(
-            tables.entries_from_file(file, self.default_waveunit),
-            ignore_already_added)
+        self.add_many(tables.entries_from_file(file, self.default_waveunit), ignore_already_added)
 
     def edit(self, database_entry, **kwargs):
         """Change the given database entry so that it interprets the passed
@@ -999,8 +1021,11 @@ class Database:
             # comments from each entry before removing the entry itself!
         # remove all entries from all helper tables
         database_tables = [
-            tables.JSONDump, tables.Tag, tables.FitsHeaderEntry,
-            tables.FitsKeyComment]
+            tables.JSONDump,
+            tables.Tag,
+            tables.FitsHeaderEntry,
+            tables.FitsKeyComment,
+        ]
         for table in database_tables:
             for entry in self.session.query(table):
                 cmds.add(commands.RemoveEntry(self.session, entry))
@@ -1078,8 +1103,7 @@ class Database:
         database, False otherwise.
 
         """
-        (ret,), = self.session.query(
-            exists().where(tables.DatabaseEntry.id == database_entry.id))
+        (ret,), = self.session.query(exists().where(tables.DatabaseEntry.id == database_entry.id))
         return ret
 
     def __iter__(self):

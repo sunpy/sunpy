@@ -1,4 +1,3 @@
-
 import sys
 
 import pytest
@@ -17,15 +16,15 @@ def test_super():
 
     @mm.add_dec(str, str)
     def foo(foo, bar):
-        return 'String'
+        return "String"
 
     # Suppress pep8 warning "F811 redefinition of unused 'foo' ..."
     @mm.add_dec(String, str)
     def foo(foo, bar):
-        return 'Fancy', mm.super(super(String, foo), bar)
+        return "Fancy", mm.super(super(String, foo), bar)
 
-    assert mm('foo', 'bar') == 'String'
-    assert mm(String('foo'), 'bar') == ('Fancy', 'String')
+    assert mm("foo", "bar") == "String"
+    assert mm(String("foo"), "bar") == ("Fancy", "String")
 
 
 def test_override(recwarn):
@@ -36,24 +35,19 @@ def test_override(recwarn):
 
     @mm.add_dec(str, str)
     def foo(foo, bar):
-        return 'String'
+        return "String"
 
-    pytest.raises(
-        TypeError, mm.add_dec(String, str, override=FAIL), lambda x, y: None
-    )
+    pytest.raises(TypeError, mm.add_dec(String, str, override=FAIL), lambda x, y: None)
 
     mm.add_dec(String, str, override=WARN)(lambda x, y: None)
     w = recwarn.pop(TypeWarning)
-    assert 'Definition (String, str) overrides prior definition (str, str).' in str(w.message)
+    assert "Definition (String, str) overrides prior definition (str, str)." in str(w.message)
 
     # Illegal value for 'override'
-    pytest.raises(
-        ValueError, mm.add_dec(String, String, override=sys.maxsize), lambda x, y: None
-    )
+    pytest.raises(ValueError, mm.add_dec(String, String, override=sys.maxsize), lambda x, y: None)
 
 
 def test_invalid_arg_for_override_to_add_method():
-
     def dummy_validator():
         pass
 
@@ -65,13 +59,12 @@ def test_invalid_arg_for_override_to_add_method():
 
 
 def test_call_cached():
-
     def sum_together(first, second):
         return first + second
 
     # Setup
     mm = MultiMethod(lambda *a: a)
-    mm.add(sum_together, (int, int, ))
+    mm.add(sum_together, (int, int))
     assert mm(3, 4) == 7
 
     # The following call 'should' use the previously cached call

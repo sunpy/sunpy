@@ -24,29 +24,30 @@ from sunpy.map.maputils import (
 
 testpath = sunpy.data.test.rootdir
 
+
 @pytest.fixture
 def aia171_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+    return sunpy.map.Map(os.path.join(testpath, "aia_171_level1.fits"))
 
 
 @pytest.fixture
 def all_off_disk_map(aia171_test_map):
-    return aia171_test_map.submap((1, 1)*u.pix, (11, 12)*u.pix)
+    return aia171_test_map.submap((1, 1) * u.pix, (11, 12) * u.pix)
 
 
 @pytest.fixture
 def all_on_disk_map(aia171_test_map):
-    return aia171_test_map.submap((30, 60)*u.pix, (50, 85)*u.pix)
+    return aia171_test_map.submap((30, 60) * u.pix, (50, 85) * u.pix)
 
 
 @pytest.fixture
 def straddles_limb_map(aia171_test_map):
-    return aia171_test_map.submap((64, 80)*u.pix, (120, 127)*u.pix)
+    return aia171_test_map.submap((64, 80) * u.pix, (120, 127) * u.pix)
 
 
 @pytest.fixture
 def sub_smap(aia171_test_map):
-    return aia171_test_map.submap((0, 0)*u.pix, (50, 60)*u.pix)
+    return aia171_test_map.submap((0, 0) * u.pix, (50, 60) * u.pix)
 
 
 def test_all_pixel_indices_from_map(sub_smap):
@@ -56,10 +57,10 @@ def test_all_pixel_indices_from_map(sub_smap):
     nx = shape[1]
     assert np.all(pixel_indices.shape == (2, ny, nx))
     assert np.all(pixel_indices.unit == u.pix)
-    assert np.all(pixel_indices[:, 0, 0] == [0., 0.] * u.pix)
-    assert np.all(pixel_indices[:, 0, nx-1] == [nx-1, 0.] * u.pix)
-    assert np.all(pixel_indices[:, ny-1, 0] == [0., ny-1] * u.pix)
-    assert np.all(pixel_indices[:, ny-1, nx-1] == [nx-1, ny-1] * u.pix)
+    assert np.all(pixel_indices[:, 0, 0] == [0.0, 0.0] * u.pix)
+    assert np.all(pixel_indices[:, 0, nx - 1] == [nx - 1, 0.0] * u.pix)
+    assert np.all(pixel_indices[:, ny - 1, 0] == [0.0, ny - 1] * u.pix)
+    assert np.all(pixel_indices[:, ny - 1, nx - 1] == [nx - 1, ny - 1] * u.pix)
 
 
 def test_all_coordinates_from_map(sub_smap):
@@ -126,7 +127,9 @@ def test_contains_limb(aia171_test_map, all_off_disk_map, all_on_disk_map, strad
     assert contains_limb(straddles_limb_map)
 
 
-def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
+def test_coordinate_is_on_solar_disk(
+    aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map
+):
     off_disk = aia171_test_map.bottom_left_coord
     on_disk = aia171_test_map.center
 

@@ -43,6 +43,7 @@ class MockObject(MutableMapping):
     >>> m.start
     'Thursday'
     """
+
     def __init__(self, *args, **kwargs):
         self._datastore = dict()
         self.prohibited_attrs = set(dir(self))
@@ -50,10 +51,12 @@ class MockObject(MutableMapping):
 
         for candidate in kwargs.keys():
             if candidate in self.prohibited_attrs:
-                raise ValueError("kwarg '{kwarg}' is already an attribute "
-                                 "of {datastore} or {obj}".format(kwarg=candidate,
-                                                                  datastore=type(self._datastore),
-                                                                  obj=type(self)))
+                raise ValueError(
+                    "kwarg '{kwarg}' is already an attribute "
+                    "of {datastore} or {obj}".format(
+                        kwarg=candidate, datastore=type(self._datastore), obj=type(self)
+                    )
+                )
         self.update(dict(*args, **kwargs))
 
     def __getattr__(self, name):
@@ -67,15 +70,18 @@ class MockObject(MutableMapping):
 
     def __setitem__(self, name, value):
         if name in self.prohibited_attrs:
-            raise ValueError("Name '{name}' is already an attribute "
-                             "of {datastore} or {obj}".format(name=name,
-                                                              datastore=type(self._datastore),
-                                                              obj=type(self)))
+            raise ValueError(
+                "Name '{name}' is already an attribute "
+                "of {datastore} or {obj}".format(
+                    name=name, datastore=type(self._datastore), obj=type(self)
+                )
+            )
         self._datastore[name] = value
 
     def __delitem__(self, name):
-        raise NotImplementedError("'del' operation for {} "
-                                  "not supported".format(self.__class__.__name__))
+        raise NotImplementedError(
+            "'del' operation for {} " "not supported".format(self.__class__.__name__)
+        )
 
     def __iter__(self):
         return iter(self._datastore)
@@ -84,10 +90,12 @@ class MockObject(MutableMapping):
         return len(self._datastore)
 
     def __repr__(self):
-        return ("<{module}.{name} {contents} at {address}>".format(module=self.__module__,
-                                                                   name=self.__class__.__name__,
-                                                                   contents=self._datastore,
-                                                                   address=hex(id(self))))
+        return "<{module}.{name} {contents} at {address}>".format(
+            module=self.__module__,
+            name=self.__class__.__name__,
+            contents=self._datastore,
+            address=hex(id(self)),
+        )
 
 
 class MockHTTPResponse(MockObject):
@@ -114,17 +122,18 @@ class MockHTTPResponse(MockObject):
     >>> result.headers.get('Content-Type')
     'text/html'
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setdefault('url', '')
+        self.setdefault("url", "")
 
         headers_store = defaultdict(lambda: None)
 
-        if 'headers' in self:
-            headers_store.update(self['headers'])
+        if "headers" in self:
+            headers_store.update(self["headers"])
 
-        self['headers'] = headers_store
+        self["headers"] = headers_store
 
 
 class MockOpenTextFile(MockObject):
@@ -155,6 +164,7 @@ class MockOpenTextFile(MockObject):
     >>> named_read = MockOpenTextFile('b.txt')
     >>> named_rd_wr = MockOpenTextFile('c.txt', 'r+', data='Hello, world')
     """
+
     def __init__(self, *args, **kwargs):
         # Positional and/or keyword args can be used for the 'file' & 'mode'
         # parameters. Could do a lot more checking to make sure all required
@@ -163,23 +173,23 @@ class MockOpenTextFile(MockObject):
         num_pos_args = len(args)
 
         if num_pos_args == 1:
-            kwargs['file'] = args[0]
+            kwargs["file"] = args[0]
         elif num_pos_args == 2:
-            kwargs['file'] = args[0]
-            kwargs['mode'] = args[1]
+            kwargs["file"] = args[0]
+            kwargs["mode"] = args[1]
 
-        if 'mode' not in kwargs:
-            kwargs['mode'] = 'r'
+        if "mode" not in kwargs:
+            kwargs["mode"] = "r"
 
         super().__init__(**kwargs)
-        self.setdefault('file', 'N/A')
-        self['name'] = self['file']
-        self.setdefault('closed', False)
-        self.setdefault('data', '')
+        self.setdefault("file", "N/A")
+        self["name"] = self["file"]
+        self.setdefault("closed", False)
+        self.setdefault("data", "")
 
     def write(self, content):
         if not self.writable():
-            raise io.UnsupportedOperation(':not writable')
+            raise io.UnsupportedOperation(":not writable")
 
         self.data += content
 
@@ -187,37 +197,40 @@ class MockOpenTextFile(MockObject):
 
     def read(self):
         if not self.readable():
-            raise io.UnsupportedOperation(': not readable')
+            raise io.UnsupportedOperation(": not readable")
 
         return self.data
 
     def readlines(self):
         if self.closed:
-            raise ValueError('I/O operation on closed file')
+            raise ValueError("I/O operation on closed file")
 
         # Documentation recommends using '\n' as the line terminator when reading/writing text
         # files. See `os.linesep` in https://docs.python.org/3/library/os.html
-        new_line = '\n'
-        return [f'{line}{new_line}' for line in self.data.split(new_line)]
+        new_line = "\n"
+        return [f"{line}{new_line}" for line in self.data.split(new_line)]
 
     def readable(self):
         if self.closed:
-            raise ValueError('I/O operation on closed file')
+            raise ValueError("I/O operation on closed file")
 
-        return 'r' in self.mode
+        return "r" in self.mode
 
     def writable(self):
         if self.closed:
-            raise ValueError('I/O operation on closed file')
+            raise ValueError("I/O operation on closed file")
 
-        return ('w' in self.mode) or ('r+' in self.mode)
+        return ("w" in self.mode) or ("r+" in self.mode)
 
     def close(self):
         self.closed = True
-        self.data = ''
+        self.data = ""
 
     def __repr__(self):
-        return ("<{module}.{name} file '{file}' mode '{mode}' "
-                "at {address}>".format(module=self.__module__, name=self.__class__.__name__,
-                                       file=self.file, mode=self.mode,
-                                       address=hex(id(self))))
+        return "<{module}.{name} file '{file}' mode '{mode}' " "at {address}>".format(
+            module=self.__module__,
+            name=self.__class__.__name__,
+            file=self.file,
+            mode=self.mode,
+            address=hex(id(self)),
+        )

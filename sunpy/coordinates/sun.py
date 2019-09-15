@@ -32,17 +32,30 @@ __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"
 
 __all__ = [
-    "angular_radius", "sky_position", "carrington_rotation_number",
-    "true_longitude", "apparent_longitude", "true_latitude", "apparent_latitude",
-    "mean_obliquity_of_ecliptic", "true_rightascension", "true_declination",
-    "true_obliquity_of_ecliptic", "apparent_rightascension", "apparent_declination",
+    "angular_radius",
+    "sky_position",
+    "carrington_rotation_number",
+    "true_longitude",
+    "apparent_longitude",
+    "true_latitude",
+    "apparent_latitude",
+    "mean_obliquity_of_ecliptic",
+    "true_rightascension",
+    "true_declination",
+    "true_obliquity_of_ecliptic",
+    "apparent_rightascension",
+    "apparent_declination",
     "print_params",
-    "B0", "L0", "P", "earth_distance", "orientation"
+    "B0",
+    "L0",
+    "P",
+    "earth_distance",
+    "orientation",
 ]
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def angular_radius(t='now'):
+def angular_radius(t="now"):
     """
     Return the angular radius of the Sun as viewed from Earth.
 
@@ -56,7 +69,7 @@ def angular_radius(t='now'):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def sky_position(t='now', equinox_of_date=True):
+def sky_position(t="now", equinox_of_date=True):
     """
     Returns the apparent position of the Sun (right ascension and declination) on the
     celestial sphere using the equatorial coordinate system, referred to the true equinox of date
@@ -77,7 +90,7 @@ def sky_position(t='now', equinox_of_date=True):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def carrington_rotation_number(t='now'):
+def carrington_rotation_number(t="now"):
     """
     Return the Carrington rotation number.  Each whole rotation number marks when the Sun's prime
     meridian coincides with the central meridian as seen from Earth, with the first rotation
@@ -98,7 +111,7 @@ def carrington_rotation_number(t='now'):
 
     # The fractional rotation number from the above estimate is inaccurate, so calculate the actual
     # fractional rotation number from the longitude of the central meridian (L0)
-    actual_frac = 1 - L0(time).to('deg').value / 360
+    actual_frac = 1 - L0(time).to("deg").value / 360
 
     # Calculate any adjustment to the integer rotation number due to wrapping
     wrap_adjustment = np.around(estimate_frac - actual_frac)
@@ -111,7 +124,7 @@ def carrington_rotation_number(t='now'):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def true_longitude(t='now'):
+def true_longitude(t="now"):
     """
     Returns the Sun's true geometric longitude, referred to the mean equinox of date.  No
     corrections for nutation or aberration are included.
@@ -125,15 +138,15 @@ def true_longitude(t='now'):
 
     # Calculate Earth's true geometric longitude and add 180 degrees for the Sun's longitude.
     # This approach is used because Astropy's GeocentricMeanEcliptic includes aberration.
-    earth = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='gcrs', obstime=time)
+    earth = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame="gcrs", obstime=time)
     coord = earth.transform_to(HeliocentricMeanEcliptic(equinox=time))
-    lon = coord.lon + 180*u.deg
+    lon = coord.lon + 180 * u.deg
 
     return Longitude(lon)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def apparent_longitude(t='now'):
+def apparent_longitude(t="now"):
     """
     Returns the Sun's apparent longitude, referred to the true equinox of date.  Corrections for
     nutation and aberration (for Earth motion) are included.
@@ -148,19 +161,19 @@ def apparent_longitude(t='now'):
     The nutation model is IAU 2000A nutation with adjustments to match IAU 2006 precession.
     """
     time = parse_time(t)
-    sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
+    sun = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame="hcrs", obstime=time)
     coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
 
     # Astropy's GeocentricMeanEcliptic already includes aberration, so only add nutation
-    jd1, jd2 = get_jd12(time, 'tt')
-    nut_lon, _ = erfa.nut06a(jd1, jd2)*u.radian
+    jd1, jd2 = get_jd12(time, "tt")
+    nut_lon, _ = erfa.nut06a(jd1, jd2) * u.radian
     lon = coord.lon + nut_lon
 
     return Longitude(lon)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def true_latitude(t='now'):
+def true_latitude(t="now"):
     """
     Returns the Sun's true geometric latitude, referred to the mean equinox of date.  No
     corrections for nutation or aberration are included.
@@ -171,7 +184,7 @@ def true_latitude(t='now'):
         Time to use in a parse-time-compatible format
     """
     time = parse_time(t)
-    sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
+    sun = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame="hcrs", obstime=time)
     coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
 
     # Astropy's GeocentricMeanEcliptic includes aberration from Earth motion, but the contribution
@@ -182,7 +195,7 @@ def true_latitude(t='now'):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def apparent_latitude(t='now'):
+def apparent_latitude(t="now"):
     """
     Returns the Sun's apparent latitude, referred to the true equinox of date.  Corrections for
     nutation and aberration (for Earth motion) are included.
@@ -193,7 +206,7 @@ def apparent_latitude(t='now'):
         Time to use in a parse-time-compatible format
     """
     time = parse_time(t)
-    sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
+    sun = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame="hcrs", obstime=time)
     coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
 
     # Astropy's GeocentricMeanEcliptic does not include nutation, but the contribution is negligible
@@ -203,7 +216,7 @@ def apparent_latitude(t='now'):
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def mean_obliquity_of_ecliptic(t='now'):
+def mean_obliquity_of_ecliptic(t="now"):
     """
     Returns the mean obliquity of the ecliptic, using the IAU 2006 definition.  No correction for
     nutation is included.
@@ -214,13 +227,13 @@ def mean_obliquity_of_ecliptic(t='now'):
         Time to use in a parse-time-compatible format
     """
     time = parse_time(t)
-    jd1, jd2 = get_jd12(time, 'tt')
-    obl = erfa.obl06(jd1, jd2)*u.radian
+    jd1, jd2 = get_jd12(time, "tt")
+    obl = erfa.obl06(jd1, jd2) * u.radian
     return Angle(obl, u.arcsec)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def true_rightascension(t='now', equinox_of_date=True):
+def true_rightascension(t="now", equinox_of_date=True):
     """
     Returns the Sun's true geometric right ascension relative to Earth, referred to the mean equinox
     of date (as default).  No corrections for nutation or aberration are included.  The correction
@@ -250,14 +263,14 @@ def true_rightascension(t='now', equinox_of_date=True):
         # J2000.0 epoch
         # Calculate Earth's true geometric right ascension relative to the Sun and add 180 degrees.
         # This approach is used because Astropy's GCRS includes aberration.
-        earth = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='gcrs', obstime=parse_time(t))
-        result = earth.hcrs.ra + 180*u.deg
+        earth = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame="gcrs", obstime=parse_time(t))
+        result = earth.hcrs.ra + 180 * u.deg
 
     return Longitude(result, u.hourangle)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def true_declination(t='now', equinox_of_date=True):
+def true_declination(t="now", equinox_of_date=True):
     """
     Returns the Sun's true geometric declination relative to Earth, referred to the mean equinox
     of date (as default).  No corrections for nutation or aberration are included.  The correction
@@ -284,14 +297,14 @@ def true_declination(t='now', equinox_of_date=True):
         # J2000.0 epoch
         # Calculate Earth's true geometric declination relative to the Sun and multipy by -1.
         # This approach is used because Astropy's GCRS includes aberration.
-        earth = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='gcrs', obstime=parse_time(t))
+        earth = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame="gcrs", obstime=parse_time(t))
         result = -earth.hcrs.dec
 
     return Latitude(result, u.deg)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def true_obliquity_of_ecliptic(t='now'):
+def true_obliquity_of_ecliptic(t="now"):
     """
     Returns the true obliquity of the ecliptic, using the IAU 2006 definition.  Correction for
     nutation is included.
@@ -306,15 +319,15 @@ def true_obliquity_of_ecliptic(t='now'):
     The nutation model is IAU 2000A nutation with adjustments to match IAU 2006 precession.
     """
     time = parse_time(t)
-    jd1, jd2 = get_jd12(time, 'tt')
-    obl = erfa.obl06(jd1, jd2)*u.radian
-    _, nut_obl = erfa.nut06a(jd1, jd2)*u.radian
+    jd1, jd2 = get_jd12(time, "tt")
+    obl = erfa.obl06(jd1, jd2) * u.radian
+    _, nut_obl = erfa.nut06a(jd1, jd2) * u.radian
     obl += nut_obl
     return Angle(obl, u.arcsec)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def apparent_rightascension(t='now', equinox_of_date=True):
+def apparent_rightascension(t="now", equinox_of_date=True):
     """
     Returns the Sun's apparent right ascension relative to Earth, referred to the true equinox
     of date (as default).  Corrections for nutation or aberration (for Earth motion) are included.
@@ -340,14 +353,14 @@ def apparent_rightascension(t='now', equinox_of_date=True):
         result = np.arctan2(y, x)
     else:
         # J2000.0 epoch
-        sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=parse_time(t))
+        sun = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame="hcrs", obstime=parse_time(t))
         result = sun.gcrs.ra
 
     return Longitude(result, u.hourangle)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def apparent_declination(t='now', equinox_of_date=True):
+def apparent_declination(t="now", equinox_of_date=True):
     """
     Returns the Sun's apparent declination relative to Earth, referred to the true equinox
     of date (as default).  Corrections for nutation or aberration (for Earth motion) are included.
@@ -371,14 +384,14 @@ def apparent_declination(t='now', equinox_of_date=True):
         result = np.arcsin(np.sin(lat) * np.cos(obl) + np.cos(lat) * np.sin(obl) * np.sin(lon))
     else:
         # J2000.0 epoch
-        sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=parse_time(t))
+        sun = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame="hcrs", obstime=parse_time(t))
         result = sun.gcrs.dec
 
     return Latitude(result, u.deg)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def print_params(t='now'):
+def print_params(t="now"):
     """
     Print out a summary of solar ephemeris. 'True' values are true geometric values referred to the
     mean equinox of date, with no corrections for nutation or aberration.  'Apparent' values are
@@ -390,28 +403,43 @@ def print_params(t='now'):
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     """
-    print('Solar Ephemeris for {} UTC\n'.format(parse_time(t).utc))
-    print('Distance = {}'.format(earth_distance(t)))
-    print('Semidiameter = {}'.format(angular_radius(t)))
-    print('True (long, lat) = ({}, {})'.format(true_longitude(t).to_string(),
-                                               true_latitude(t).to_string()))
-    print('Apparent (long, lat) = ({}, {})'.format(apparent_longitude(t).to_string(),
-                                                   apparent_latitude(t).to_string()))
-    print('True (RA, Dec) = ({}, {})'.format(true_rightascension(t).to_string(),
-                                             true_declination(t).to_string()))
-    print('Apparent (RA, Dec) = ({}, {})'.format(apparent_rightascension(t).to_string(),
-                                                 apparent_declination(t).to_string()))
-    print('Heliographic long. and lat of disk center = ({}, {})'.format(L0(t).to_string(),
-                                                                        B0(t).to_string()))
-    print('Position angle of north pole = {}'.format(P(t)))
-    print('Carrington rotation number = {}'.format(carrington_rotation_number(t)))
+    print("Solar Ephemeris for {} UTC\n".format(parse_time(t).utc))
+    print("Distance = {}".format(earth_distance(t)))
+    print("Semidiameter = {}".format(angular_radius(t)))
+    print(
+        "True (long, lat) = ({}, {})".format(
+            true_longitude(t).to_string(), true_latitude(t).to_string()
+        )
+    )
+    print(
+        "Apparent (long, lat) = ({}, {})".format(
+            apparent_longitude(t).to_string(), apparent_latitude(t).to_string()
+        )
+    )
+    print(
+        "True (RA, Dec) = ({}, {})".format(
+            true_rightascension(t).to_string(), true_declination(t).to_string()
+        )
+    )
+    print(
+        "Apparent (RA, Dec) = ({}, {})".format(
+            apparent_rightascension(t).to_string(), apparent_declination(t).to_string()
+        )
+    )
+    print(
+        "Heliographic long. and lat of disk center = ({}, {})".format(
+            L0(t).to_string(), B0(t).to_string()
+        )
+    )
+    print("Position angle of north pole = {}".format(P(t)))
+    print("Carrington rotation number = {}".format(carrington_rotation_number(t)))
 
 
 # The following functions belong to this module, but their code is still in the old location of
 # sunpy.coordinates.ephemeris.  That code should be moved here after the deprecation period.
 
 # Create functions that call the appropriate private functions in sunpy.coordinates.ephemeris
-_functions = ['B0', 'L0', 'P', 'earth_distance', 'orientation']
+_functions = ["B0", "L0", "P", "earth_distance", "orientation"]
 for func in _functions:
-    vars()[func] = vars()['_' + func]
+    vars()[func] = vars()["_" + func]
     vars()[func].__module__ = __name__  # so that docs think that the function is local

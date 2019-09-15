@@ -42,11 +42,12 @@ class Chaincode(np.ndarray):
     >>> ax.plot(x[0], y[0], 'go-')   # doctest: +SKIP
     >>> fig.show()   # doctest: +SKIP
     """
+
     def __new__(cls, origin, chaincode, **kargs):
         if isinstance(origin, list):
             obj = np.asarray(origin).view(cls)
         else:
-            raise TypeError('Invalid input')
+            raise TypeError("Invalid input")
         return obj
 
     def __init__(self, origin, chaincode, xdelta=1, ydelta=1):
@@ -56,16 +57,15 @@ class Chaincode(np.ndarray):
         self.coordinates[:, 0] = origin
         if chaincode.isdigit():
             for index, step in enumerate(chaincode):
-                self.coordinates[:, index + 1] = self.coordinates[:, index] + \
-                    [[x_steps[int(step)] * xdelta,
-                      y_steps[int(step)] * ydelta]]
+                self.coordinates[:, index + 1] = self.coordinates[:, index] + [
+                    [x_steps[int(step)] * xdelta, y_steps[int(step)] * ydelta]
+                ]
 
     def matchend(self, end):
         return np.alltrue(np.equal(self.coordinates[:, -1], np.asarray(end)))
 
     def matchany(self, coordinates, index):
-        return np.alltrue(np.allclose(self.coordinates[:, index],
-                                      np.asarray(coordinates)))
+        return np.alltrue(np.allclose(self.coordinates[:, index], np.asarray(coordinates)))
 
     def BoundingBox(self):
         """
@@ -103,8 +103,9 @@ class Chaincode(np.ndarray):
             IndexValue = 0
         else:
             raise ValueError("No edges input.")
-        mask = (self.coordinates[IndexMask, :] >= edge[0]) & \
-            (self.coordinates[IndexMask, :] <= edge[1])
+        mask = (self.coordinates[IndexMask, :] >= edge[0]) & (
+            self.coordinates[IndexMask, :] <= edge[1]
+        )
         # Should the edges be included?
         mx = np.ma.masked_array(self.coordinates[IndexValue, :], mask=(~mask))
         return [mx.min(), mx.max()]

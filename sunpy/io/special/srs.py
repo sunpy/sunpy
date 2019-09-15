@@ -10,7 +10,7 @@ import astropy.io.ascii
 import astropy.units as u
 from astropy.table import Column, MaskedColumn, QTable, vstack
 
-__all__ = ['read_srs']
+__all__ = ["read_srs"]
 
 
 def read_srs(filepath):
@@ -47,28 +47,27 @@ def make_table(header, section_lines):
     tables = []
     for i, lines in enumerate(section_lines):
         if lines:
-            key = list(meta_data['id'].keys())[i]
+            key = list(meta_data["id"].keys())[i]
             t1 = astropy.io.ascii.read(lines)
 
             if len(t1) == 0:
                 col_data_types = {
                     # ID : <class 'str'>
-                    'Nmbr': np.dtype('i4'),
-                    'Location': np.dtype('U6'),
-                    'Lo': np.dtype('i8'),
-                    'Area': np.dtype('i8'),
-                    'Z': np.dtype('U3'),
-                    'LL': np.dtype('i8'),
-                    'NN': np.dtype('i8'),
-                    'MagType': np.dtype('S4'),
-                    'Lat': np.dtype('i8')
+                    "Nmbr": np.dtype("i4"),
+                    "Location": np.dtype("U6"),
+                    "Lo": np.dtype("i8"),
+                    "Area": np.dtype("i8"),
+                    "Z": np.dtype("U3"),
+                    "LL": np.dtype("i8"),
+                    "NN": np.dtype("i8"),
+                    "MagType": np.dtype("S4"),
+                    "Lat": np.dtype("i8"),
                 }
                 for c in t1.itercols():
                     # Put data types of columns in empty table to correct types,
                     # or else vstack will fail.
                     c.dtype = col_data_types[c._name]
-                t1.add_column(
-                    Column(data=None, name="ID", dtype=('S2')), index=0)
+                t1.add_column(Column(data=None, name="ID", dtype=("S2")), index=0)
             else:
                 t1.add_column(Column(data=[key] * len(t1), name="ID"), index=0)
 
@@ -77,16 +76,16 @@ def make_table(header, section_lines):
     out_table = vstack(tables)
 
     # Parse the Location column in Table 1
-    if 'Location' in out_table.columns:
-        col_lat, col_lon = parse_location(out_table['Location'])
-        del out_table['Location']
+    if "Location" in out_table.columns:
+        col_lat, col_lon = parse_location(out_table["Location"])
+        del out_table["Location"]
         out_table.add_column(col_lat)
         out_table.add_column(col_lon)
 
     # Parse the Lat column in Table 3
-    if 'Lat' in out_table.columns:
-        parse_lat_col(out_table['Lat'], out_table['Latitude'])
-        del out_table['Lat']
+    if "Lat" in out_table.columns:
+        parse_lat_col(out_table["Lat"], out_table["Latitude"])
+        del out_table["Lat"]
 
     # Give columns more sensible names
     out_table.rename_column("Nmbr", "Number")
@@ -99,21 +98,22 @@ def make_table(header, section_lines):
     a = {}
     u.def_unit(
         "SH",
-        represents=(2 * np.pi * u.solRad**2),
+        represents=(2 * np.pi * u.solRad ** 2),
         prefixes=True,
         namespace=a,
-        doc="A solar hemisphere is the area of the visible solar disk.")
+        doc="A solar hemisphere is the area of the visible solar disk.",
+    )
 
     # Set units on the table
-    out_table['Carrington Longitude'].unit = u.deg
-    out_table['Area'].unit = a['uSH']
-    out_table['Longitudinal Extent'].unit = u.deg
+    out_table["Carrington Longitude"].unit = u.deg
+    out_table["Area"].unit = a["uSH"]
+    out_table["Longitudinal Extent"].unit = u.deg
 
     out_table.meta = meta_data
 
     # Number should be formatted in 10000 after 2002-06-15.
-    if out_table.meta['issued'] > datetime.datetime(2002, 6, 15):
-        out_table['Number'] += 10000
+    if out_table.meta["issued"] > datetime.datetime(2002, 6, 15):
+        out_table["Number"] += 10000
 
     return QTable(out_table)
 
@@ -129,22 +129,22 @@ def split_lines(file_lines):
         if line.startswith(("I.", "IA.", "II.")):
             section_lines.append(i)
 
-    header = file_lines[:section_lines[0]]
+    header = file_lines[: section_lines[0]]
     header += [file_lines[s] for s in section_lines]
 
     # Append comments to the comment lines
     for l in section_lines:
-        file_lines[l] = '# ' + file_lines[l]
+        file_lines[l] = "# " + file_lines[l]
 
-    t1_lines = file_lines[section_lines[0]:section_lines[1]]
+    t1_lines = file_lines[section_lines[0] : section_lines[1]]
     # Remove the space so table reads it correctly
-    t1_lines[1] = t1_lines[1].replace('Mag Type', 'MagType')
-    t2_lines = file_lines[section_lines[1]:section_lines[2]]
-    t3_lines = file_lines[section_lines[2]:]
+    t1_lines[1] = t1_lines[1].replace("Mag Type", "MagType")
+    t2_lines = file_lines[section_lines[1] : section_lines[2]]
+    t3_lines = file_lines[section_lines[2] :]
 
     lines = [t1_lines, t2_lines, t3_lines]
     for i, ll in enumerate(lines):
-        if ll[2].strip() == 'None':
+        if ll[2].strip() == "None":
             del ll[2]
 
     return header, lines
@@ -156,26 +156,25 @@ def get_meta_data(header):
     """
     meta_lines = []
     for l in header:
-        if l.startswith(':'):
+        if l.startswith(":"):
             meta_lines.append(l)
 
     meta_data = {}
     for m in meta_lines:
-        k, v = m.strip().split(':')[1:]
+        k, v = m.strip().split(":")[1:]
         meta_data[k.lower()] = v.strip()
-    meta_data['issued'] = datetime.datetime.strptime(meta_data['issued'],
-                                                     "%Y %b %d %H%M UTC")
+    meta_data["issued"] = datetime.datetime.strptime(meta_data["issued"], "%Y %b %d %H%M UTC")
 
     # Get ID descriptions
-    meta_data['id'] = OrderedDict()
+    meta_data["id"] = OrderedDict()
     for h in header:
         if h.startswith(("I.", "IA.", "II.")):
-            i = h.find('.')
+            i = h.find(".")
             k = h[:i]
-            v = h[i + 2:]
-            meta_data['id'][k] = v.strip()
+            v = h[i + 2 :]
+            meta_data["id"][k] = v.strip()
 
-    meta_data['header'] = [h.strip() for h in header]
+    meta_data["header"] = [h.strip() for h in header]
     return meta_data
 
 
@@ -183,7 +182,7 @@ def parse_longitude(value):
     """
     Parse longitude in the form "W10" or "E10".
     """
-    lonsign = {'W': 1, 'E': -1}
+    lonsign = {"W": 1, "E": -1}
     if "W" in value or "E" in value:
         return lonsign[value[3]] * float(value[4:])
 
@@ -192,7 +191,7 @@ def parse_latitude(value):
     """
     Parse latitude in the form "S10" or "N10".
     """
-    latsign = {'N': 1, 'S': -1}
+    latsign = {"N": 1, "S": -1}
     if "N" in value or "S" in value:
         return latsign[value[0]] * float(value[1:3])
 

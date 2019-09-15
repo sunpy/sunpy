@@ -11,7 +11,7 @@ from astropy.visualization import LinearStretch
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
-__all__ = ['from_helioviewer_project', 'source_stretch']
+__all__ = ["from_helioviewer_project", "source_stretch"]
 
 
 def from_helioviewer_project(meta):
@@ -29,7 +29,7 @@ def from_helioviewer_project(meta):
     returned.  If not, False is returned.
 
     """
-    return 'helioviewer' in meta.keys()
+    return "helioviewer" in meta.keys()
 
 
 def source_stretch(meta, fits_stretch):

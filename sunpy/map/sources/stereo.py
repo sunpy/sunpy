@@ -1,5 +1,5 @@
 """STEREO Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1121
+# pylint: disable=W0221,W0222,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -14,7 +14,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
-__all__ = ['EUVIMap', 'CORMap', 'HIMap']
+__all__ = ["EUVIMap", "CORMap", "HIMap"]
 
 
 class EUVIMap(GenericMap):
@@ -36,14 +36,18 @@ class EUVIMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = plt.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
-        self.meta['waveunit'] = 'Angstrom'
+        self.plot_settings["cmap"] = plt.get_cmap(
+            "sohoeit{wl:d}".format(wl=int(self.wavelength.value))
+        )
+        self.plot_settings["norm"] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.25))
+        )
+        self.meta["waveunit"] = "Angstrom"
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
-        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
-            self.meta['date-obs'] = self.meta['date_obs']
+        if ("date_obs" in self.meta) and not ("date-obs" in self.meta):
+            self.meta["date-obs"] = self.meta["date_obs"]
 
     @property
     def rsun_arcseconds(self):
@@ -54,7 +58,7 @@ class EUVIMap(GenericMap):
         ----------
         https://sohowww.nascom.nasa.gov/solarsoft/stereo/secchi/doc/FITS_keywords.pdf
         """
-        return self.meta.get('rsun', None)
+        return self.meta.get("rsun", None)
 
     @property
     def rsun_obs(self):
@@ -65,17 +69,17 @@ class EUVIMap(GenericMap):
         ----------
         https://sohowww.nascom.nasa.gov/solarsoft/stereo/secchi/doc/FITS_keywords.pdf
         """
-        rsun_arcseconds = self.meta.get('rsun', None)
+        rsun_arcseconds = self.meta.get("rsun", None)
 
         if rsun_arcseconds is None:
             rsun_arcseconds = super().rsun_obs
 
-        return u.Quantity(rsun_arcseconds, 'arcsec')
+        return u.Quantity(rsun_arcseconds, "arcsec")
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EUVI image"""
-        return header.get('detector') == 'EUVI'
+        return header.get("detector") == "EUVI"
 
 
 class CORMap(GenericMap):
@@ -102,13 +106,15 @@ class CORMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = plt.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
+        self.plot_settings["cmap"] = plt.get_cmap("stereocor{det!s}".format(det=self.detector[-1]))
+        self.plot_settings["norm"] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.5))
+        )
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
-        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
-            self.meta['date-obs'] = self.meta['date_obs']
+        if ("date_obs" in self.meta) and not ("date-obs" in self.meta):
+            self.meta["date-obs"] = self.meta["date_obs"]
 
     @property
     def measurement(self):
@@ -121,7 +127,7 @@ class CORMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an COR image"""
-        return header.get('detector', '').startswith('COR')
+        return header.get("detector", "").startswith("COR")
 
 
 class HIMap(GenericMap):
@@ -142,17 +148,20 @@ class HIMap(GenericMap):
     * `STEREO SECCHI <https://secchi.nrl.navy.mil>`_
     * `HI Instrument Page <http://www.stereo.rl.ac.uk>`_
     """
+
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = plt.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
+        self.plot_settings["cmap"] = plt.get_cmap("stereohi{det!s}".format(det=self.detector[-1]))
+        self.plot_settings["norm"] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.25))
+        )
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
-        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
-            self.meta['date-obs'] = self.meta['date_obs']
+        if ("date_obs" in self.meta) and not ("date-obs" in self.meta):
+            self.meta["date-obs"] = self.meta["date_obs"]
 
     @property
     def measurement(self):
@@ -165,4 +174,4 @@ class HIMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an COR image"""
-        return header.get('detector', '').startswith('HI')
+        return header.get("detector", "").startswith("HI")

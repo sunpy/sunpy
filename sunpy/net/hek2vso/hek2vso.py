@@ -4,7 +4,7 @@
 #
 # This module was developed with funding from the GSOC 2013 summer of code
 #
-#pylint: disable=W0142
+# pylint: disable=W0142
 
 """
 This module translates the results of a HEK query into a VSO query
@@ -20,10 +20,10 @@ from astropy.table import Table
 
 from sunpy.net import hek, vso
 
-__author__ = 'Michael Malocha'
-__version__ = 'Aug 10th, 2013'
+__author__ = "Michael Malocha"
+__version__ = "Aug 10th, 2013"
 
-__all__ = ['translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
+__all__ = ["translate_results_to_query", "vso_attribute_parse", "H2VClient"]
 
 
 def translate_results_to_query(results):
@@ -93,11 +93,12 @@ def vso_attribute_parse(phrase):
     [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T07:22:38.000>, <Time object: scale='utc' format='isot' value=2011-08-09T08:32:02.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
-        query = [vso.attrs.Time(phrase['event_starttime'],
-                                phrase['event_endtime']),
-                 vso.attrs.Source(phrase['obs_observatory']),
-                 vso.attrs.Instrument(phrase['obs_instrument'])]
-        avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
+        query = [
+            vso.attrs.Time(phrase["event_starttime"], phrase["event_endtime"]),
+            vso.attrs.Source(phrase["obs_observatory"]),
+            vso.attrs.Instrument(phrase["obs_instrument"]),
+        ]
+        avg_wave_len = phrase["obs_meanwavel"] * units.Unit(phrase["obs_wavelunit"])
         query.append(vso.attrs.Wavelength(avg_wave_len, avg_wave_len))
     except (KeyError, TypeError):
         raise TypeError("'{dtype!s}' is an improper data type".format(dtype=type(phrase)))
@@ -122,7 +123,7 @@ class H2VClient:
 
     def __init__(self):
         self.hek_client = hek.HEKClient()
-        self.hek_results = ''
+        self.hek_results = ""
         self.vso_client = vso.VSOClient()
         self.vso_results = []
         self.num_of_records = 0
@@ -151,12 +152,11 @@ class H2VClient:
         """
         self._quick_clean()
         if progress:
-            sys.stdout.write('\rQuerying HEK webservice...')
+            sys.stdout.write("\rQuerying HEK webservice...")
             sys.stdout.flush()
         self.hek_results = self.hek_client.search(*client_query)
         self._quick_clean()
-        return self.translate_and_query(self.hek_results,
-                                        limit=limit, progress=progress)
+        return self.translate_and_query(self.hek_results, limit=limit, progress=progress)
 
     def translate_and_query(self, hek_results, limit=None, progress=False):
         """

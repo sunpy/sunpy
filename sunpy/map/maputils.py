@@ -10,10 +10,18 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.coordinates import Helioprojective
 
-__all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
-           'map_edges', 'solar_angular_radius', 'contains_full_disk',
-           'is_all_off_disk', 'is_all_on_disk', 'contains_limb',
-           'coordinate_is_on_solar_disk', 'on_disk_bounding_coordinates']
+__all__ = [
+    "all_pixel_indices_from_map",
+    "all_coordinates_from_map",
+    "map_edges",
+    "solar_angular_radius",
+    "contains_full_disk",
+    "is_all_off_disk",
+    "is_all_on_disk",
+    "contains_limb",
+    "coordinate_is_on_solar_disk",
+    "on_disk_bounding_coordinates",
+]
 
 
 def all_pixel_indices_from_map(smap):
@@ -145,7 +153,9 @@ def contains_full_disk(smap):
 
     # Test if all the edge pixels are more than one solar radius distant
     # and that the whole map is not all off disk.
-    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and ~is_all_off_disk(smap)
+    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and ~is_all_off_disk(
+        smap
+    )
 
 
 @u.quantity_input
@@ -171,7 +181,7 @@ def coordinate_is_on_solar_disk(coordinates):
     """
 
     if not isinstance(coordinates.frame, Helioprojective):
-        raise ValueError('The input coordinate(s) must be in the Helioprojective Cartesian frame.')
+        raise ValueError("The input coordinate(s) must be in the Helioprojective Cartesian frame.")
     # Calculate the angle of every pixel from the center of the Sun and compare it the angular
     # radius of the Sun.
     return np.sqrt(coordinates.Tx ** 2 + coordinates.Ty ** 2) < solar_angular_radius(coordinates)
@@ -294,6 +304,9 @@ def on_disk_bounding_coordinates(smap):
     # the on disk coordinates.
     tx = on_disk_coordinates.Tx.value
     ty = on_disk_coordinates.Ty.value
-    return SkyCoord([np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
-                    [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
-                    frame=Helioprojective, observer=smap.observer_coordinate)
+    return SkyCoord(
+        [np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
+        [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
+        frame=Helioprojective,
+        observer=smap.observer_coordinate,
+    )

@@ -9,9 +9,9 @@ from glymur import Jp2k
 from sunpy.io.header import FileHeader
 from sunpy.util.xml import xml_to_dict
 
-__all__ = ['read', 'get_header', 'write']
+__all__ = ["read", "get_header", "write"]
 
-HDPair = collections.namedtuple('HDPair', ['data', 'header'])
+HDPair = collections.namedtuple("HDPair", ["data", "header"])
 
 
 def read(filepath, **kwargs):
@@ -50,8 +50,8 @@ def get_header(filepath):
         A list of headers read from the file.
     """
     jp2 = Jp2k(filepath)
-    xml_box = [box for box in jp2.box if box.box_id == 'xml ']
-    xmlstring = ET.tostring(xml_box[0].xml.find('fits'))
+    xml_box = [box for box in jp2.box if box.box_id == "xml "]
+    xmlstring = ET.tostring(xml_box[0].xml.find("fits"))
     pydict = xml_to_dict(xmlstring)["fits"]
 
     # Fix types
@@ -62,11 +62,11 @@ def get_header(filepath):
             pydict[k] = float(v)
 
     # Remove newlines from comment
-    if 'comment' in pydict:
-        pydict['comment'] = pydict['comment'].replace("\n", "")
+    if "comment" in pydict:
+        pydict["comment"] = pydict["comment"].replace("\n", "")
 
     # Is this file a Helioviewer Project JPEG2000 file?
-    pydict['helioviewer'] = xml_box[0].xml.find('helioviewer') is not None
+    pydict["helioviewer"] = xml_box[0].xml.find("helioviewer") is not None
 
     return [FileHeader(pydict)]
 

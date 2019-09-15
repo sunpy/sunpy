@@ -24,7 +24,7 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
 )
 
-__all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
+__all__ = ["Fido", "UnifiedResponse", "UnifiedDownloaderFactory"]
 
 
 class UnifiedResponse(Sequence):
@@ -53,11 +53,13 @@ class UnifiedResponse(Sequence):
         # numfile is the number of files not the number of results.
         self._numfile = 0
         if isinstance(lst, (QueryResponse, vsoQueryResponse)):
-            if not hasattr(lst, 'client'):
+            if not hasattr(lst, "client"):
                 raise ValueError(
-                    ("A {} object is only a valid input to UnifiedResponse "
-                     "if it has a client attribute.").
-                    format(type(lst).__name__))
+                    (
+                        "A {} object is only a valid input to UnifiedResponse "
+                        "if it has a client attribute."
+                    ).format(type(lst).__name__)
+                )
             tmplst.append(lst)
             self._numfile = len(lst)
         else:
@@ -66,12 +68,13 @@ class UnifiedResponse(Sequence):
                     block[0].client = block[1]
                     tmplst.append(block[0])
                     self._numfile += len(block[0])
-                elif hasattr(block, 'client'):
+                elif hasattr(block, "client"):
                     tmplst.append(block)
                     self._numfile += len(block)
                 else:
                     raise ValueError(
-                        "{} is not a valid input to UnifiedResponse.".format(type(lst)))
+                        "{} is not a valid input to UnifiedResponse.".format(type(lst))
+                    )
         self._list = tmplst
 
     def __len__(self):
@@ -116,8 +119,9 @@ class UnifiedResponse(Sequence):
         # Make sure we only have a length two slice.
         elif isinstance(aslice, tuple):
             if len(aslice) > 2:
-                raise IndexError("UnifiedResponse objects can only "
-                                 "be sliced with one or two indices.")
+                raise IndexError(
+                    "UnifiedResponse objects can only " "be sliced with one or two indices."
+                )
 
             # Indexing both client and records, but only for one client.
             if isinstance(aslice[0], int):
@@ -174,34 +178,35 @@ class UnifiedResponse(Sequence):
     def _repr_html_(self):
         nprov = len(self)
         if nprov == 1:
-            ret = 'Results from {} Provider:</br></br>'.format(len(self))
+            ret = "Results from {} Provider:</br></br>".format(len(self))
         else:
-            ret = 'Results from {} Providers:</br></br>'.format(len(self))
+            ret = "Results from {} Providers:</br></br>".format(len(self))
         for block in self.responses:
-            ret += "{} Results from the {}:</br>".format(len(block),
-                                                         block.client.__class__.__name__)
+            ret += "{} Results from the {}:</br>".format(
+                len(block), block.client.__class__.__name__
+            )
             ret += block._repr_html_()
-            ret += '</br>'
+            ret += "</br>"
 
         return ret
 
     def __repr__(self):
         ret = super().__repr__()
-        ret += '\n' + str(self)
+        ret += "\n" + str(self)
 
         return ret
 
     def __str__(self):
         nprov = len(self)
         if nprov == 1:
-            ret = 'Results from {} Provider:\n\n'.format(len(self))
+            ret = "Results from {} Provider:\n\n".format(len(self))
         else:
-            ret = 'Results from {} Providers:\n\n'.format(len(self))
+            ret = "Results from {} Providers:\n\n".format(len(self))
         for block in self.responses:
             ret += "{} Results from the {}:\n".format(len(block), block.client.__class__.__name__)
-            lines = repr(block).split('\n')
-            ret += '\n'.join(lines[1:])
-            ret += '\n\n'
+            lines = repr(block).split("\n")
+            ret += "\n".join(lines[1:])
+            ret += "\n\n"
 
         return ret
 
@@ -225,7 +230,7 @@ def _create_and(walker, query, factory):
     if not is_time:
         error = "The following part of the query did not have a time specified:\n"
         for at in query.attrs:
-            error += str(at) + ', '
+            error += str(at) + ", "
         raise ValueError(error)
 
     # Return the response and the client
@@ -297,8 +302,16 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 
-    def fetch(self, *query_results, path=None, max_conn=5, progress=True,
-              overwrite=False, downloader=None, **kwargs):
+    def fetch(
+        self,
+        *query_results,
+        path=None,
+        max_conn=5,
+        progress=True,
+        overwrite=False,
+        downloader=None,
+        **kwargs,
+    ):
         """
         Download the records represented by
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
@@ -366,15 +379,18 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                 results._errors += dr._errors
             return results
         elif any(retries):
-            raise TypeError("If any arguments to fetch are "
-                            "`parfive.Results` objects, all arguments must be.")
+            raise TypeError(
+                "If any arguments to fetch are " "`parfive.Results` objects, all arguments must be."
+            )
 
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                reslist.append(block.client.fetch(block, path=path,
-                                                  downloader=downloader,
-                                                  wait=False, **kwargs))
+                reslist.append(
+                    block.client.fetch(
+                        block, path=path, downloader=downloader, wait=False, **kwargs
+                    )
+                )
 
         results = downloader.download()
         # Combine the results objects from all the clients into one Results
@@ -385,7 +401,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             if not isinstance(result, Results):
                 raise TypeError(
                     "If wait is False a client must return a parfive.Downloader and either None"
-                    " or a parfive.Results object.")
+                    " or a parfive.Results object."
+                )
             results.data += result.data
             results._errors += result.errors
 
@@ -415,9 +432,11 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # Finally check that we only have one match.
         if len(candidate_widget_types) > 1:
             candidate_names = [cls.__name__ for cls in candidate_widget_types]
-            raise MultipleMatchError("The following clients matched this query. "
-                                     "Please make your query more specific.\n"
-                                     "{}".format(candidate_names))
+            raise MultipleMatchError(
+                "The following clients matched this query. "
+                "Please make your query more specific.\n"
+                "{}".format(candidate_names)
+            )
 
         return candidate_widget_types
 
@@ -442,4 +461,5 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
 
 Fido = UnifiedDownloaderFactory(
-    registry=BaseClient._registry, additional_validation_functions=['_can_handle_query'])
+    registry=BaseClient._registry, additional_validation_functions=["_can_handle_query"]
+)

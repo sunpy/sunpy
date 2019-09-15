@@ -15,7 +15,7 @@ from sunpy.util.config import (
     print_config,
 )
 
-USER = os.path.expanduser('~')
+USER = os.path.expanduser("~")
 
 
 def test_is_writable_dir(tmpdir, tmp_path):
@@ -64,15 +64,15 @@ def test_print_config_files(tmpdir, tmp_path, undo_download_dir_patch):
 def test_get_and_create_download_dir(undo_download_dir_patch):
     # test default config
     path = get_and_create_download_dir()
-    assert Path(path) == Path(USER) / 'sunpy' / 'data'
+    assert Path(path) == Path(USER) / "sunpy" / "data"
     # test updated config
-    new_path = os.path.join(USER, 'sunpy_data_here_please')
-    config.set('downloads', 'download_dir', new_path)
+    new_path = os.path.join(USER, "sunpy_data_here_please")
+    config.set("downloads", "download_dir", new_path)
     path = get_and_create_download_dir()
     assert path == os.path.join(USER, new_path)
     # Set the config back
     os.rmdir(new_path)
-    config.set('downloads', 'download_dir', os.path.join(USER, 'sunpy', 'data'))
+    config.set("downloads", "download_dir", os.path.join(USER, "sunpy", "data"))
 
 
 def test_get_and_create_sample_dir():
@@ -80,10 +80,10 @@ def test_get_and_create_sample_dir():
     path = get_and_create_sample_dir()
     assert Path(path) == Path(dirs.user_data_dir)
     # test updated config
-    new_path = os.path.join(USER, 'sample_data_here_please')
-    config.set('downloads', 'sample_dir', new_path)
+    new_path = os.path.join(USER, "sample_data_here_please")
+    config.set("downloads", "sample_dir", new_path)
     path = get_and_create_sample_dir()
     assert path == new_path
     # Set the config back
     os.rmdir(new_path)
-    config.set('downloads', 'sample_dir', os.path.join(USER, 'sunpy', 'data', 'sample_data'))
+    config.set("downloads", "sample_dir", os.path.join(USER, "sunpy", "data", "sample_data"))

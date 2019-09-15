@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-__all__ = ['read_genx']
+__all__ = ["read_genx"]
 
 
 class SSWUnpacker(xdrlib.Unpacker):
@@ -15,11 +15,12 @@ class SSWUnpacker(xdrlib.Unpacker):
     A `xdrlib.Unpacker` customisation to read strings and complex data as
     written by IDL.
     """
+
     def unpack_string(self):
         n = self.unpack_uint()
         if n > 0:
             n = self.unpack_uint()
-        return self.unpack_fstring(n).decode('utf-8')
+        return self.unpack_fstring(n).decode("utf-8")
 
     def unpack_complex(self):
         return complex(self.unpack_float(), self.unpack_float())
@@ -41,7 +42,7 @@ def read_struct_skeleton(xdrdata):
     tagdict = OrderedDict()
     for tt in tags:
         dim = xdrdata.unpack_uint()
-        arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int) # [7, 1]
+        arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int)  # [7, 1]
         typedata = arr_size[-2]
         if typedata == 8:  # it's a structure
             if dim == 2 and arr_size[0] == 1:
@@ -54,7 +55,9 @@ def read_struct_skeleton(xdrdata):
                 dim = 1
                 arr_size[0] = arr_size[1]
             if arr_size[-1] > 1:
-                tagdict[tt] = np.array([read_struct_skeleton(xdrdata)] * arr_size[-1]).reshape(arr_size[0:-2])
+                tagdict[tt] = np.array([read_struct_skeleton(xdrdata)] * arr_size[-1]).reshape(
+                    arr_size[0:-2]
+                )
             else:
                 tagdict[tt] = read_struct_skeleton(xdrdata)
         else:
@@ -109,8 +112,10 @@ def struct_to_data(xdrdata, subskeleton):
             if sswsize[0] == 0:
                 subskeleton[key] = types_dict[sswtype][0]()
             else:
-                subskeleton[key] = np.array(xdrdata.unpack_farray(sswsize[-1], types_dict[sswtype][0]),
-                                            dtype=types_dict[sswtype][1]).reshape(sswsize[1:-2][::-1])
+                subskeleton[key] = np.array(
+                    xdrdata.unpack_farray(sswsize[-1], types_dict[sswtype][0]),
+                    dtype=types_dict[sswtype][1],
+                ).reshape(sswsize[1:-2][::-1])
 
 
 def read_genx(filename):
@@ -148,7 +153,7 @@ def read_genx(filename):
 
     **Strings** read from genx files are assumed to be UTF-8.
     """
-    with open(filename, mode='rb') as xdrfile:
+    with open(filename, mode="rb") as xdrfile:
         xdrdata = SSWUnpacker(xdrfile.read())
 
     # HEADER information
@@ -167,18 +172,20 @@ def read_genx(filename):
     # run as in multi-dim structure.
 
     dim = xdrdata.unpack_int()
-    arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int)  # noqa [1, 8, 1] = Main structure for the data
+    arr_size = xdrdata.unpack_farray(
+        dim + 2, xdrdata.unpack_int
+    )  # noqa [1, 8, 1] = Main structure for the data
     mainsize = arr_size[2]  # noqa the number of upper level strs noqa
 
     skeleton = read_struct_skeleton(xdrdata)
     struct_to_data(xdrdata, skeleton)
     xdrdata.done()
-    skeleton['HEADER'] = OrderedDict([('VERSION', version), ('XDR', xdr), ('CREATION', creation)])
+    skeleton["HEADER"] = OrderedDict([("VERSION", version), ("XDR", xdr), ("CREATION", creation)])
     if version == 2:
-        skeleton['HEADER']['IDL_VERSION'] = OrderedDict([('ARCH', arch),
-                                                         ('OS', os),
-                                                         ('RELEASE', release)])
-    skeleton['HEADER']['TEXT'] = text
+        skeleton["HEADER"]["IDL_VERSION"] = OrderedDict(
+            [("ARCH", arch), ("OS", os), ("RELEASE", release)]
+        )
+    skeleton["HEADER"]["TEXT"] = text
     # TODO: for python >= 3.2; so we can keep the original order as how it's stored in the file
     # skeleton.move_to_end('HEADER', last=False)
     return skeleton

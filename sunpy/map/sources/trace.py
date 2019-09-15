@@ -1,5 +1,5 @@
 """TRACE Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
@@ -12,7 +12,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
-__all__ = ['TRACEMap']
+__all__ = ["TRACEMap"]
 
 
 class TRACEMap(GenericMap):
@@ -50,31 +50,31 @@ class TRACEMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        header["cunit1"] = header.get("cunit1", "arcsec")
+        header["cunit2"] = header.get("cunit2", "arcsec")
 
         GenericMap.__init__(self, data, header, **kwargs)
 
         # It needs to be verified that these must actually be set and are not
         # already in the header.
-        self.meta['detector'] = "TRACE"
-        self.meta['obsrvtry'] = "TRACE"
+        self.meta["detector"] = "TRACE"
+        self.meta["obsrvtry"] = "TRACE"
         self._nickname = self.detector
         # Colour maps
-        self.plot_settings['cmap'] = plt.get_cmap('trace' + str(self.meta['WAVE_LEN']))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, LogStretch()))
+        self.plot_settings["cmap"] = plt.get_cmap("trace" + str(self.meta["WAVE_LEN"]))
+        self.plot_settings["norm"] = ImageNormalize(stretch=source_stretch(self.meta, LogStretch()))
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an TRACE image"""
-        return header.get('instrume') == 'TRACE'
+        return header.get("instrume") == "TRACE"
 
     @property
     def measurement(self):
         """
         Returns the measurement type.
         """
-        s = self.meta['WAVE_LEN']
-        if s == 'WL':
-            s = 'white-light'
+        s = self.meta["WAVE_LEN"]
+        if s == "WL":
+            s = "white-light"
         return s

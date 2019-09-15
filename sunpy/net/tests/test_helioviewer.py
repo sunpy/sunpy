@@ -23,13 +23,13 @@ def client():
         client.sources = client.get_data_sources()
         return client
     except urllib.error.HTTPError as e:
-        pytest.skip("There was a HTTP error {} {} for "
-                    "HelioViewer.".format(e.code, e.args))
+        pytest.skip("There was a HTTP error {} {} for " "HelioViewer.".format(e.code, e.args))
 
 
 @pytest.mark.remote_data
 class TestHelioviewerClient:
     """Tests the Helioviewer.org API Client class"""
+
     def test_get_datasources(self, client):
         """
         Tests get_data_sources and data_sources and that they match.
@@ -38,8 +38,8 @@ class TestHelioviewerClient:
         assert isinstance(client.sources, dict)
         # Rough check that the ordered dict is ordered
         assert list(client.data_sources.values())[0:3] == [0, 1, 2]
-        aia_4500_id = client.data_sources['SDO', 'AIA', None, '4500']
-        aia_4500_id_copy = client.sources['SDO']['AIA']['4500']['sourceId']
+        aia_4500_id = client.data_sources["SDO", "AIA", None, "4500"]
+        aia_4500_id_copy = client.sources["SDO"]["AIA"]["4500"]["sourceId"]
         assert isinstance(aia_4500_id, int)
         assert isinstance(aia_4500_id_copy, int)
         assert aia_4500_id == aia_4500_id_copy
@@ -55,23 +55,25 @@ class TestHelioviewerClient:
 
     def test_get_closest_image(self, client):
         """Tests getClosestImage API method"""
-        image_meta = client.get_closest_image('1994/01/01', observatory='SOHO',
-                                              instrument='EIT', measurement='304')
+        image_meta = client.get_closest_image(
+            "1994/01/01", observatory="SOHO", instrument="EIT", measurement="304"
+        )
         assert isinstance(image_meta, dict)
-        assert image_meta['id'] == "1795504"
-        assert image_meta['width'] == image_meta['height'] == 1024
-        assert image_meta['height'] == image_meta['height'] == 1024
-        assert image_meta['name'] == 'EIT 304'
-        source_id = client.data_sources['SOHO', 'EIT', None, '304']
-        image_meta_id = client.get_closest_image('1994/01/01', source_id=source_id)
+        assert image_meta["id"] == "1795504"
+        assert image_meta["width"] == image_meta["height"] == 1024
+        assert image_meta["height"] == image_meta["height"] == 1024
+        assert image_meta["name"] == "EIT 304"
+        source_id = client.data_sources["SOHO", "EIT", None, "304"]
+        image_meta_id = client.get_closest_image("1994/01/01", source_id=source_id)
         assert image_meta == image_meta_id
 
     def test_download_jp2(self, client):
         """
         Tests getJP2Image API method.
         """
-        filepath = client.download_jp2('2012/01/01', observatory='SOHO',
-                                       instrument='MDI', measurement='continuum')
+        filepath = client.download_jp2(
+            "2012/01/01", observatory="SOHO", instrument="MDI", measurement="continuum"
+        )
         assert "2011_01_11__22_39_00_000__SOHO_MDI_MDI_continuum.jp2" in filepath
         os.remove(filepath)
 
@@ -79,12 +81,13 @@ class TestHelioviewerClient:
         """
         Tests getJP2Header API method
         """
-        header1 = client.get_jp2_header('1994/01/01', observatory='SOHO',
-                                              instrument='EIT', measurement='304')
-        header2 = client.get_jp2_header('1994/01/01', jp2_id = 1795504)
+        header1 = client.get_jp2_header(
+            "1994/01/01", observatory="SOHO", instrument="EIT", measurement="304"
+        )
+        header2 = client.get_jp2_header("1994/01/01", jp2_id=1795504)
         assert header1 == header2
         assert len(header1) == len(header2) == 1
-        assert ('fits' in header1.keys()) and ('fits' in header2.keys())
+        assert ("fits" in header1.keys()) and ("fits" in header2.keys())
 
     @skip_glymur
     def test_download_jp2_map(self, client):
@@ -92,8 +95,9 @@ class TestHelioviewerClient:
         Tests getJP2Image API method with Map.
         """
         # TODO: make this a figure test.
-        filepath = client.download_jp2('2012/01/01', observatory='SOHO',
-                                       instrument='MDI', measurement='continuum')
+        filepath = client.download_jp2(
+            "2012/01/01", observatory="SOHO", instrument="MDI", measurement="continuum"
+        )
         map_ = sunpy.map.Map(filepath)
         assert isinstance(map_, sunpy.map.GenericMap)
         os.remove(filepath)
@@ -102,45 +106,65 @@ class TestHelioviewerClient:
         """
         Tests for missing directory.
         """
-        fake_dir = os.path.join(str(tmpdir), 'directorynotexist')
-        filepath = client.download_jp2('2020/01/01', observatory='SOHO',
-                                       instrument='MDI', measurement='continuum',
-                                       directory=fake_dir)
-        assert 'directorynotexist' in filepath
+        fake_dir = os.path.join(str(tmpdir), "directorynotexist")
+        filepath = client.download_jp2(
+            "2020/01/01",
+            observatory="SOHO",
+            instrument="MDI",
+            measurement="continuum",
+            directory=fake_dir,
+        )
+        assert "directorynotexist" in filepath
         os.remove(filepath)
-        fake_dir = os.path.join(str(tmpdir), 'directorynotexist_2')
-        filepath = client.download_png('2020/01/01', 2.4, "[SOHO,MDI,continuum,1,100]",
-                                       directory=fake_dir)
-        assert 'directorynotexist_2' in filepath
+        fake_dir = os.path.join(str(tmpdir), "directorynotexist_2")
+        filepath = client.download_png(
+            "2020/01/01", 2.4, "[SOHO,MDI,continuum,1,100]", directory=fake_dir
+        )
+        assert "directorynotexist_2" in filepath
         os.remove(filepath)
 
     def test_overwrite_jp2(self, client):
         """
         Tests for that overwrites, overwrites jp2 edition.
         """
-        filepath = client.download_jp2('2020/01/01', observatory='SOHO',
-                                       instrument='MDI', measurement='continuum',
-                                       overwrite=False)
-        filepath_2 = client.download_jp2('2020/01/01', observatory='SOHO',
-                                         instrument='MDI', measurement='continuum',
-                                         overwrite=False)
+        filepath = client.download_jp2(
+            "2020/01/01",
+            observatory="SOHO",
+            instrument="MDI",
+            measurement="continuum",
+            overwrite=False,
+        )
+        filepath_2 = client.download_jp2(
+            "2020/01/01",
+            observatory="SOHO",
+            instrument="MDI",
+            measurement="continuum",
+            overwrite=False,
+        )
         assert filepath_2 == filepath
-        filepath_3 = client.download_jp2('2020/01/01', observatory='SOHO',
-                                         instrument='MDI', measurement='continuum',
-                                         overwrite=True)
+        filepath_3 = client.download_jp2(
+            "2020/01/01",
+            observatory="SOHO",
+            instrument="MDI",
+            measurement="continuum",
+            overwrite=True,
+        )
         assert filepath_3 == filepath
 
     def test_overwrite_png(self, client):
         """
         Tests for that overwrites, overwrites png edition.
         """
-        filepath = client.download_png('2020/01/01', 2.4, "[SOHO,MDI,continuum,1,100]",
-                                       overwrite=False)
-        filepath_2 = client.download_png('2020/01/01', 2.4, "[SOHO,MDI,continuum,1,100]",
-                                         overwrite=False)
+        filepath = client.download_png(
+            "2020/01/01", 2.4, "[SOHO,MDI,continuum,1,100]", overwrite=False
+        )
+        filepath_2 = client.download_png(
+            "2020/01/01", 2.4, "[SOHO,MDI,continuum,1,100]", overwrite=False
+        )
         assert filepath_2 is not filepath
-        filepath_3 = client.download_png('2020/01/01', 2.4, "[SOHO,MDI,continuum,1,100]",
-                                         overwrite=True)
+        filepath_3 = client.download_png(
+            "2020/01/01", 2.4, "[SOHO,MDI,continuum,1,100]", overwrite=True
+        )
         assert filepath_3 == filepath
 
     def test_progress_jp2(self, client, capsys):
@@ -148,13 +172,18 @@ class TestHelioviewerClient:
         Tests if progress bars are disabled when running `download_jp2()`.
         """
         client = HelioviewerClient()
-        client.download_jp2("2012/01/01", observatory="SOHO",
-                            instrument="MDI", measurement="continuum",
-                            progress=False)
+        client.download_jp2(
+            "2012/01/01",
+            observatory="SOHO",
+            instrument="MDI",
+            measurement="continuum",
+            progress=False,
+        )
         out, err = capsys.readouterr()
         assert err == ""
-        client.download_jp2("2012/01/01", observatory="SOHO",
-                            instrument="MDI", measurement="continuum")
+        client.download_jp2(
+            "2012/01/01", observatory="SOHO", instrument="MDI", measurement="continuum"
+        )
         out, err = capsys.readouterr()
         assert err != ""
 
@@ -163,14 +192,26 @@ class TestHelioviewerClient:
         Tests if progress bars are disabled when running `download_png()`.
         """
         client = HelioviewerClient()
-        client.download_png('2012/07/16 10:08:00', 2.4,
-                            "[SDO,AIA,AIA,171,1,100]",
-                            x0=0, y0=0, width=1024, height=1024,
-                            progress=False)
+        client.download_png(
+            "2012/07/16 10:08:00",
+            2.4,
+            "[SDO,AIA,AIA,171,1,100]",
+            x0=0,
+            y0=0,
+            width=1024,
+            height=1024,
+            progress=False,
+        )
         out, err = capsys.readouterr()
         assert err == ""
-        client.download_png('2012/07/16 10:08:00', 2.4,
-                            "[SDO,AIA,AIA,171,1,100]",
-                            x0=0, y0=0, width=1024, height=1024)
+        client.download_png(
+            "2012/07/16 10:08:00",
+            2.4,
+            "[SDO,AIA,AIA,171,1,100]",
+            x0=0,
+            y0=0,
+            width=1024,
+            height=1024,
+        )
         out, err = capsys.readouterr()
         assert err != ""

@@ -3,7 +3,7 @@ This module provies "UTime" support.
 """
 from astropy.time.formats import TimeFromEpoch, erfa
 
-__all__ = ['TimeUTime']
+__all__ = ["TimeUTime"]
 
 
 class TimeUTime(TimeFromEpoch):
@@ -24,9 +24,10 @@ class TimeUTime(TimeFromEpoch):
     >>> print(t2.utime)
     0.0
     """
-    name = 'utime'
+
+    name = "utime"
     unit = 1.0 / erfa.DAYSEC  # in days (1 day == 86400 seconds)
-    epoch_val = '1979-01-01 00:00:00'
+    epoch_val = "1979-01-01 00:00:00"
     epoch_val2 = None
-    epoch_scale = 'utc'  # Scale for epoch_val class attribute
-    epoch_format = 'iso'  # Format for epoch_val class attribute
+    epoch_scale = "utc"  # Scale for epoch_val class attribute
+    epoch_format = "iso"  # Format for epoch_val class attribute

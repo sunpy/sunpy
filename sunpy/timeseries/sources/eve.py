@@ -20,7 +20,7 @@ from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from sunpy.visualization import peek_show
 
-__all__ = ['EVESpWxTimeSeries', 'ESPTimeSeries']
+__all__ = ["EVESpWxTimeSeries", "ESPTimeSeries"]
 
 
 class ESPTimeSeries(GenericTimeSeries):
@@ -57,14 +57,14 @@ class ESPTimeSeries(GenericTimeSeries):
     used for short-time observations of solar irradiance.
     """
 
-    _source = 'esp'
+    _source = "esp"
 
     @peek_show
-    def peek(self, title='EVE/ESP Level1', **kwargs):
+    def peek(self, title="EVE/ESP Level1", **kwargs):
 
         self._validate_data_for_ploting()
 
-        names = ('Flux \n 0.1-7nm', 'Flux \n 18nm', 'Flux \n 26nm', 'Flux \n 30nm', 'Flux \n 36nm')
+        names = ("Flux \n 0.1-7nm", "Flux \n 18nm", "Flux \n 26nm", "Flux \n 30nm", "Flux \n 36nm")
 
         figure = plt.figure()
         axes = plt.gca()
@@ -74,9 +74,9 @@ class ESPTimeSeries(GenericTimeSeries):
         axes[0].set_title(title)
         for i, ax in enumerate(axes):
             ax.set_ylabel(names[i])
-            ax.legend(loc='upper right')
-        axes[-1].set_xlabel('Time (UT) ' + str(self.data.index[0])[0:11])
-        axes[-1].xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
+            ax.legend(loc="upper right")
+        axes[-1].set_xlabel("Time (UT) " + str(self.data.index[0])[0:11])
+        axes[-1].xaxis.set_major_formatter(dates.DateFormatter("%H:%M"))
         plt.tight_layout()
         plt.subplots_adjust(hspace=0.05)
 
@@ -94,22 +94,28 @@ class ESPTimeSeries(GenericTimeSeries):
     def _parse_hdus(cls, hdulist):
         header = MetaDict(OrderedDict(hdulist[0].header))
         # Adding telescope to MetaData
-        header.update({'TELESCOP': hdulist[1].header['TELESCOP'].split()[0]})
+        header.update({"TELESCOP": hdulist[1].header["TELESCOP"].split()[0]})
 
-        start_time = parse_time(hdulist[1].header['T_OBS'])
-        times = start_time + TimeDelta(hdulist[1].data['SOD']*u.second)
+        start_time = parse_time(hdulist[1].header["T_OBS"])
+        times = start_time + TimeDelta(hdulist[1].data["SOD"] * u.second)
 
-        colnames = ['QD', 'CH_18', 'CH_26', 'CH_30', 'CH_36']
+        colnames = ["QD", "CH_18", "CH_26", "CH_30", "CH_36"]
 
         all_data = [hdulist[1].data[x] for x in colnames]
-        data = DataFrame(np.array(all_data).T, index=times.isot.astype('datetime64'), columns=colnames)
+        data = DataFrame(
+            np.array(all_data).T, index=times.isot.astype("datetime64"), columns=colnames
+        )
         data.sort_index(inplace=True)
 
-        units = OrderedDict([('QD', u.W/u.m**2),
-                             ('CH_18', u.W/u.m**2),
-                             ('CH_26', u.W/u.m**2),
-                             ('CH_30', u.W/u.m**2),
-                             ('CH_36', u.W/u.m**2)])
+        units = OrderedDict(
+            [
+                ("QD", u.W / u.m ** 2),
+                ("CH_18", u.W / u.m ** 2),
+                ("CH_26", u.W / u.m ** 2),
+                ("CH_30", u.W / u.m ** 2),
+                ("CH_36", u.W / u.m ** 2),
+            ]
+        )
 
         return data, header, units
 
@@ -118,10 +124,10 @@ class ESPTimeSeries(GenericTimeSeries):
         """
         Determines if header corresponds to an EVE image.
         """
-        if kwargs.get('source', ''):
-            return kwargs.get('source', '').lower().startswith(cls._source)
-        if 'meta' in kwargs.keys():
-            return kwargs['meta'].get('TELESCOP', '').endswith('SDO/EVE')
+        if kwargs.get("source", ""):
+            return kwargs.get("source", "").lower().startswith(cls._source)
+        if "meta" in kwargs.keys():
+            return kwargs["meta"].get("TELESCOP", "").endswith("SDO/EVE")
 
 
 class EVESpWxTimeSeries(GenericTimeSeries):
@@ -162,8 +168,9 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`__
     * `Instrument Paper <https://doi.org/10.1007/s11207-009-9487-6>`__
     """
+
     # Class attribute used to specify the source class of the TimeSeries.
-    _source = 'eve'
+    _source = "eve"
 
     @peek_show
     def peek(self, column=None, **kwargs):
@@ -191,20 +198,20 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         # Choose title if none was specified
         if "title" not in kwargs and column is None:
             if len(self.data.columns) > 1:
-                kwargs['title'] = 'EVE (1 minute data)'
+                kwargs["title"] = "EVE (1 minute data)"
             else:
                 if self._filename is not None:
-                    base = self._filename.replace('_', ' ')
-                    kwargs['title'] = os.path.splitext(base)[0]
+                    base = self._filename.replace("_", " ")
+                    kwargs["title"] = os.path.splitext(base)[0]
                 else:
-                    kwargs['title'] = 'EVE Averages'
+                    kwargs["title"] = "EVE Averages"
 
         if column is None:
             self.plot(**kwargs)
         else:
             data = self.data[column]
             if "title" not in kwargs:
-                kwargs['title'] = 'EVE ' + column.replace('_', ' ')
+                kwargs["title"] = "EVE " + column.replace("_", " ")
             data.plot(**kwargs)
 
         return figure
@@ -215,7 +222,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         Parses an EVE CSV file.
         """
         cls._filename = basename(filepath)
-        with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
+        with codecs.open(filepath, mode="rb", encoding="ascii") as fp:
             # Determine type of EVE CSV file and parse
             line1 = fp.readline()
             fp.seek(0)
@@ -245,29 +252,29 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         # Read header at top of file
         while line.startswith(";"):
             header.append(line)
-            if '; Missing data:' in line:
+            if "; Missing data:" in line:
                 is_missing_data = True
-                missing_data_val = line.split(':')[1].strip()
+                missing_data_val = line.split(":")[1].strip()
 
             line = fp.readline()
 
         meta = MetaDict()
         for hline in header:
-            if hline == '; Format:\n' or hline == '; Column descriptions:\n':
+            if hline == "; Format:\n" or hline == "; Column descriptions:\n":
                 continue
-            elif ('Created' in hline) or ('Source' in hline):
-                meta[hline.split(':',
-                                 1)[0].replace(';',
-                                               ' ').strip()] = hline.split(':', 1)[1].strip()
-            elif ':' in hline:
-                meta[hline.split(':')[0].replace(';', ' ').strip()] = hline.split(':')[1].strip()
+            elif ("Created" in hline) or ("Source" in hline):
+                meta[hline.split(":", 1)[0].replace(";", " ").strip()] = hline.split(":", 1)[
+                    1
+                ].strip()
+            elif ":" in hline:
+                meta[hline.split(":")[0].replace(";", " ").strip()] = hline.split(":")[1].strip()
 
         fieldnames_start = False
         for hline in header:
             if hline.startswith("; Format:"):
                 fieldnames_start = False
             if fieldnames_start:
-                fields.append(hline.split(":")[0].replace(';', ' ').strip())
+                fields.append(hline.split(":")[0].replace(";", " ").strip())
             if hline.startswith("; Column descriptions:"):
                 fieldnames_start = True
 
@@ -282,29 +289,40 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             # Parse date column (HHMM)
             return datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
-        data = read_csv(fp, sep=r"\s+", names=fields,
-                        index_col=0, date_parser=parser, header=None, engine='python')
+        data = read_csv(
+            fp,
+            sep=r"\s+",
+            names=fields,
+            index_col=0,
+            date_parser=parser,
+            header=None,
+            engine="python",
+        )
         if is_missing_data:  # If missing data specified in header
             data[data == float(missing_data_val)] = np.nan
 
         # Add the units data
-        units = OrderedDict([('XRS-B proxy', u.W/u.m**2),
-                             ('XRS-A proxy', u.W/u.m**2),
-                             ('SEM proxy', u.W/u.m**2),
-                             ('0.1-7ESPquad', u.W/u.m**2),
-                             ('17.1ESP', u.W/u.m**2),
-                             ('25.7ESP', u.W/u.m**2),
-                             ('30.4ESP', u.W/u.m**2),
-                             ('36.6ESP', u.W/u.m**2),
-                             ('darkESP', u.ct),
-                             ('121.6MEGS-P', u.W/u.m**2),
-                             ('darkMEGS-P', u.ct),
-                             ('q0ESP', u.dimensionless_unscaled),
-                             ('q1ESP', u.dimensionless_unscaled),
-                             ('q2ESP', u.dimensionless_unscaled),
-                             ('q3ESP', u.dimensionless_unscaled),
-                             ('CMLat', u.deg),
-                             ('CMLon', u.deg)])
+        units = OrderedDict(
+            [
+                ("XRS-B proxy", u.W / u.m ** 2),
+                ("XRS-A proxy", u.W / u.m ** 2),
+                ("SEM proxy", u.W / u.m ** 2),
+                ("0.1-7ESPquad", u.W / u.m ** 2),
+                ("17.1ESP", u.W / u.m ** 2),
+                ("25.7ESP", u.W / u.m ** 2),
+                ("30.4ESP", u.W / u.m ** 2),
+                ("36.6ESP", u.W / u.m ** 2),
+                ("darkESP", u.ct),
+                ("121.6MEGS-P", u.W / u.m ** 2),
+                ("darkMEGS-P", u.ct),
+                ("q0ESP", u.dimensionless_unscaled),
+                ("q1ESP", u.dimensionless_unscaled),
+                ("q2ESP", u.dimensionless_unscaled),
+                ("q3ESP", u.dimensionless_unscaled),
+                ("CMLat", u.deg),
+                ("CMLon", u.deg),
+            ]
+        )
         # Todo: check units used.
         return data, meta, units
 
@@ -313,5 +331,5 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         """
         Determines if header corresponds to an EVE image.
         """
-        if kwargs.get('source', ''):
-            return kwargs.get('source', '').lower().startswith(cls._source)
+        if kwargs.get("source", ""):
+            return kwargs.get("source", "").lower().startswith(cls._source)

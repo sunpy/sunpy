@@ -7,7 +7,7 @@ from sunpy.visualization import animator as imageanimator
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
 from sunpy.visualization.wcsaxes_compat import _FORCE_NO_WCSAXES
 
-__all__ = ['MapSequenceAnimator']
+__all__ = ["MapSequenceAnimator"]
 
 
 class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
@@ -46,19 +46,20 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
     Extra keywords are passed to ``mapsequence[0].plot()`` i.e. the ``plot()`` routine of
     the maps in the sequence.
     """
+
     def __init__(self, mapsequence, annotate=True, **kwargs):
 
         self.mapsequence = mapsequence
         self.annotate = annotate
-        self.user_plot_function = kwargs.pop('plot_function',
-                                             lambda fig, ax, smap: [])
+        self.user_plot_function = kwargs.pop("plot_function", lambda fig, ax, smap: [])
         # List of object to remove at the start of each plot step
         self.remove_obj = []
         slider_functions = [self.updatefig]
         slider_ranges = [[0, len(mapsequence.maps)]]
 
         imageanimator.BaseFuncAnimator.__init__(
-            self, mapsequence.maps, slider_functions, slider_ranges, **kwargs)
+            self, mapsequence.maps, slider_functions, slider_ranges, **kwargs
+        )
 
         if annotate:
             self._annotate_plot(0)
@@ -71,9 +72,9 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
 
         i = int(val)
         im.set_array(self.data[i].data)
-        im.set_cmap(self.mapsequence[i].plot_settings['cmap'])
+        im.set_cmap(self.mapsequence[i].plot_settings["cmap"])
 
-        norm = deepcopy(self.mapsequence[i].plot_settings['norm'])
+        norm = deepcopy(self.mapsequence[i].plot_settings["norm"])
         # The following explicit call is for bugged versions of Astropy's ImageNormalize
         norm.autoscale_None(self.data[i].data)
         im.set_norm(norm)
@@ -87,8 +88,7 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
         if self.annotate:
             self._annotate_plot(i)
 
-        self.remove_obj += list(
-            self.user_plot_function(self.fig, self.axes, self.mapsequence[i]))
+        self.remove_obj += list(self.user_plot_function(self.fig, self.axes, self.mapsequence[i]))
 
     def _annotate_plot(self, ind):
         """
@@ -99,10 +99,16 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
         # Normal plot
         self.axes.set_title("{s.name}".format(s=self.data[ind]))
 
-        self.axes.set_xlabel(axis_labels_from_ctype(self.data[ind].coordinate_system[0],
-                                                    self.data[ind].spatial_units[0]))
-        self.axes.set_ylabel(axis_labels_from_ctype(self.data[ind].coordinate_system[1],
-                                                    self.data[ind].spatial_units[1]))
+        self.axes.set_xlabel(
+            axis_labels_from_ctype(
+                self.data[ind].coordinate_system[0], self.data[ind].spatial_units[0]
+            )
+        )
+        self.axes.set_ylabel(
+            axis_labels_from_ctype(
+                self.data[ind].coordinate_system[1], self.data[ind].spatial_units[1]
+            )
+        )
 
     def _get_main_axes(self):
         """
@@ -114,8 +120,6 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
             return self.fig.add_subplot(111)
 
     def plot_start_image(self, ax):
-        im = self.mapsequence[0].plot(
-            annotate=self.annotate, axes=ax, **self.imshow_kwargs)
-        self.remove_obj += list(
-            self.user_plot_function(self.fig, self.axes, self.mapsequence[0]))
+        im = self.mapsequence[0].plot(annotate=self.annotate, axes=ax, **self.imshow_kwargs)
+        self.remove_obj += list(self.user_plot_function(self.fig, self.axes, self.mapsequence[0]))
         return im

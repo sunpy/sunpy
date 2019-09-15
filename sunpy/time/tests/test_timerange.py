@@ -8,21 +8,24 @@ from astropy.time import Time, TimeDelta
 import sunpy.time
 from sunpy.time import is_time_equal
 
-tbegin_str = '2012/1/1'
-tfin_str = '2012/1/2'
-dt = u.Quantity(24 * 60 * 60, 's')
+tbegin_str = "2012/1/1"
+tfin_str = "2012/1/2"
+dt = u.Quantity(24 * 60 * 60, "s")
 
 start = sunpy.time.parse_time(tbegin_str)
 end = sunpy.time.parse_time(tfin_str)
 delta = end - start
 
 
-@pytest.mark.parametrize("inputs", [
-    (tbegin_str, tfin_str),
-    (tbegin_str, dt),
-    (tbegin_str, TimeDelta(1*u.day)),
-    (tbegin_str, timedelta(days=1))
-])
+@pytest.mark.parametrize(
+    "inputs",
+    [
+        (tbegin_str, tfin_str),
+        (tbegin_str, dt),
+        (tbegin_str, TimeDelta(1 * u.day)),
+        (tbegin_str, timedelta(days=1)),
+    ],
+)
 def test_timerange_inputs(inputs):
     timerange = sunpy.time.TimeRange(*inputs)
     assert isinstance(timerange, sunpy.time.TimeRange)
@@ -32,9 +35,9 @@ def test_timerange_inputs(inputs):
 
 
 def test_timerange_invalid_range():
-    lower = '2016/01/04 09:30'
-    mid = '2016/06/04 09:30'
-    upper = '2017/03/04 09:30'
+    lower = "2016/01/04 09:30"
+    mid = "2016/06/04 09:30"
+    upper = "2017/03/04 09:30"
 
     with pytest.raises(ValueError):
         sunpy.time.TimeRange((lower,))
@@ -44,9 +47,9 @@ def test_timerange_invalid_range():
 
 
 def test_equals():
-    lower = '2016/01/04T09:30:00.000'
-    upper = '2016/06/04T09:30:00.000'
-    upper_plus_one_msec = '2016/06/04T09:30:00.001'
+    lower = "2016/01/04T09:30:00.000"
+    upper = "2016/06/04T09:30:00.000"
+    upper_plus_one_msec = "2016/06/04T09:30:00.001"
 
     tr = sunpy.time.TimeRange((lower, upper))
 
@@ -54,12 +57,12 @@ def test_equals():
     assert tr == tr
 
     # Same values, different format
-    tr_diff_format = sunpy.time.TimeRange('2016-01-04T09:30:00.000', '2016-06-04T09:30:00.000')
+    tr_diff_format = sunpy.time.TimeRange("2016-01-04T09:30:00.000", "2016-06-04T09:30:00.000")
 
     assert tr == tr_diff_format
 
-    lower_dt = Time('2016-01-04T09:30:00.000')
-    upper_dt = Time('2016-06-04T09:30:00.000')
+    lower_dt = Time("2016-01-04T09:30:00.000")
+    upper_dt = Time("2016-06-04T09:30:00.000")
     tr_datetime = sunpy.time.TimeRange(lower_dt, upper_dt)
 
     assert tr == tr_datetime
@@ -74,11 +77,11 @@ def test_equals():
 
 
 def test_not_equals():
-    a_st = '2016/01/04T09:30:00.000'
-    a_et = '2016/06/04T09:30:00.000'
+    a_st = "2016/01/04T09:30:00.000"
+    a_et = "2016/06/04T09:30:00.000"
 
-    b_st = '2017/01/04T09:30:00.000'
-    b_et = '2017/06/04T09:30:00.000'
+    b_st = "2017/01/04T09:30:00.000"
+    b_et = "2017/06/04T09:30:00.000"
 
     # Same start time, different end times
     assert sunpy.time.TimeRange(a_st, a_et) != sunpy.time.TimeRange(a_st, b_et)
@@ -95,31 +98,34 @@ def test_not_equals():
 
 
 def test_get_dates():
-    lower = '2016/01/04 09:30'
-    lower_plus_one_day = '2016/01/05 09:30'
+    lower = "2016/01/04 09:30"
+    lower_plus_one_day = "2016/01/05 09:30"
 
     single_day = sunpy.time.TimeRange((lower, lower))
 
-    assert single_day.get_dates() == [Time('2016-1-4')]
+    assert single_day.get_dates() == [Time("2016-1-4")]
 
     two_days = sunpy.time.TimeRange((lower, lower_plus_one_day))
 
-    assert two_days.get_dates() == [Time('2016-1-4'), Time('2016-1-5')]
+    assert two_days.get_dates() == [Time("2016-1-4"), Time("2016-1-5")]
 
-    one_year = sunpy.time.TimeRange('2017/01/01', '2017-12-31')
+    one_year = sunpy.time.TimeRange("2017/01/01", "2017-12-31")
     assert len(one_year.get_dates()) == 365
 
-    leap_year = sunpy.time.TimeRange('2016/01/01', '2016-12-31')
+    leap_year = sunpy.time.TimeRange("2016/01/01", "2016-12-31")
     assert len(leap_year.get_dates()) == 366
 
 
-@pytest.mark.parametrize("ainput", [
-    (tbegin_str, tfin_str),
-    (tbegin_str, dt),
-    (tbegin_str, TimeDelta(1*u.day)),
-    (tbegin_str, timedelta(days=1)),
-    (sunpy.time.TimeRange(tbegin_str, tfin_str))
-    ])
+@pytest.mark.parametrize(
+    "ainput",
+    [
+        (tbegin_str, tfin_str),
+        (tbegin_str, dt),
+        (tbegin_str, TimeDelta(1 * u.day)),
+        (tbegin_str, timedelta(days=1)),
+        (sunpy.time.TimeRange(tbegin_str, tfin_str)),
+    ],
+)
 def test_timerange_input(ainput):
     timerange = sunpy.time.TimeRange(ainput)
     assert isinstance(timerange, sunpy.time.TimeRange)
@@ -128,11 +134,9 @@ def test_timerange_input(ainput):
     assert timerange.dt == delta
 
 
-@pytest.mark.parametrize("ainput", [
-    (tbegin_str, tfin_str),
-    (tfin_str, -dt),
-    (tfin_str, tbegin_str)
-    ])
+@pytest.mark.parametrize(
+    "ainput", [(tbegin_str, tfin_str), (tfin_str, -dt), (tfin_str, tbegin_str)]
+)
 def test_start_lessthan_end(ainput):
     timerange = sunpy.time.TimeRange(ainput)
     t1 = timerange.start
@@ -148,15 +152,22 @@ def timerange_a():
 
 
 def test_center(timerange_a):
-    assert is_time_equal(timerange_a.center, Time('2012-1-1T12:00:00'))
+    assert is_time_equal(timerange_a.center, Time("2012-1-1T12:00:00"))
 
 
 def test_split(timerange_a):
-    expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T12:00:00'),
-              sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/2T00:00:00')]
+    expect = [
+        sunpy.time.TimeRange("2012/1/1T00:00:00", "2012/1/1T12:00:00"),
+        sunpy.time.TimeRange("2012/1/1T12:00:00", "2012/1/2T00:00:00"),
+    ]
     split = timerange_a.split(n=2)
     # Doing direct comparisons seem to not work
-    assert all([is_time_equal(wi.start, ex.start) and is_time_equal(wi.end, ex.end) for wi, ex in zip(split, expect)])
+    assert all(
+        [
+            is_time_equal(wi.start, ex.start) and is_time_equal(wi.end, ex.end)
+            for wi, ex in zip(split, expect)
+        ]
+    )
 
 
 def test_split_n_0_error(timerange_a):
@@ -171,32 +182,39 @@ def test_input_error(timerange_a):
 
 def test_window(timerange_a):
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    window = timerange.window(u.Quantity(12 * 60 * 60, 's'), u.Quantity(10, 's'))
-    expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'),
-              sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
-              sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
+    window = timerange.window(u.Quantity(12 * 60 * 60, "s"), u.Quantity(10, "s"))
+    expect = [
+        sunpy.time.TimeRange("2012/1/1T00:00:00", "2012/1/1T00:00:10"),
+        sunpy.time.TimeRange("2012/1/1T12:00:00", "2012/1/1T12:00:10"),
+        sunpy.time.TimeRange("2012/1/2T00:00:00", "2012/1/2T00:00:10"),
+    ]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
     assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
-@pytest.mark.parametrize("td1,td2", [
-    (TimeDelta(12*u.hour), TimeDelta(10*u.second)),
-    (timedelta(hours=12), timedelta(seconds=10))
-])
+@pytest.mark.parametrize(
+    "td1,td2",
+    [
+        (TimeDelta(12 * u.hour), TimeDelta(10 * u.second)),
+        (timedelta(hours=12), timedelta(seconds=10)),
+    ],
+)
 def test_window_timedelta(timerange_a, td1, td2):
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
     window = timerange.window(td1, td2)
-    expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'),
-              sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
-              sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
+    expect = [
+        sunpy.time.TimeRange("2012/1/1T00:00:00", "2012/1/1T00:00:10"),
+        sunpy.time.TimeRange("2012/1/1T12:00:00", "2012/1/1T12:00:10"),
+        sunpy.time.TimeRange("2012/1/2T00:00:00", "2012/1/2T00:00:10"),
+    ]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
     assert all([wi == ex for wi, ex in zip(window, expect)])
 
 
 def test_days(timerange_a):
-    assert timerange_a.days == u.Quantity(1, 'd')
+    assert timerange_a.days == u.Quantity(1, "d")
 
 
 def test_start(timerange_a):
@@ -212,11 +230,11 @@ def test_seconds(timerange_a):
 
 
 def test_minutes(timerange_a):
-    assert timerange_a.minutes == u.Quantity(24 * 60, 'min')
+    assert timerange_a.minutes == u.Quantity(24 * 60, "min")
 
 
 def test_hours(timerange_a):
-    assert timerange_a.hours == u.Quantity(24, 'hour')
+    assert timerange_a.hours == u.Quantity(24, "hour")
 
 
 def test_next():
@@ -247,17 +265,17 @@ def test_extend():
 
 
 def test_contains(timerange_a):
-    before = Time('1990-1-1')
-    after = Time('2022-1-1')
-    between = Time('2014-5-4')
-    timerange = sunpy.time.TimeRange('2014/05/03 12:00', '2014/05/05 21:00')
+    before = Time("1990-1-1")
+    after = Time("2022-1-1")
+    between = Time("2014-5-4")
+    timerange = sunpy.time.TimeRange("2014/05/03 12:00", "2014/05/05 21:00")
     assert between in timerange
     assert before not in timerange
     assert after not in timerange
     assert timerange.start in timerange
     assert timerange.end in timerange
-    assert '2014/05/04 15:21' in timerange
-    assert '1975/4/13' not in timerange
-    assert '2100/1/1'not in timerange
-    assert '2014/05/03 12:00' in timerange
-    assert '2014/05/05 21:00' in timerange
+    assert "2014/05/04 15:21" in timerange
+    assert "1975/4/13" not in timerange
+    assert "2100/1/1" not in timerange
+    assert "2014/05/03 12:00" in timerange
+    assert "2014/05/05 21:00" in timerange

@@ -8,6 +8,7 @@ class SunPyTestRunner(TestRunner):
     A runner for SunPy tests, it modifies the arguments to the astropy runner
     to maintain a similar but more SunPy focused CLI.
     """
+
     # Disable certain astropy flags
     @keyword()
     def remote_data(self, remote_data, kwargs):
@@ -31,7 +32,7 @@ class SunPyTestRunner(TestRunner):
             Enable the online tests if `True` or disable them if `False`.
         """
         if online:
-            return ['--remote-data=any']
+            return ["--remote-data=any"]
 
         return []
 
@@ -43,9 +44,9 @@ class SunPyTestRunner(TestRunner):
         """
         r = []
         if online_only:
-            r.append('-k remote_data')
-            if not kwargs['online']:
-                r.append('--remote-data=any')
+            r.append("-k remote_data")
+            if not kwargs["online"]:
+                r.append("--remote-data=any")
 
         return r
 
@@ -55,8 +56,8 @@ class SunPyTestRunner(TestRunner):
         figure : `bool`, optional
             Enable the figure tests.
         """
-        if not figure and not kwargs['figure_only']:
-            return ['-m', 'not figure']
+        if not figure and not kwargs["figure_only"]:
+            return ["-m", "not figure"]
 
         return []
 
@@ -67,7 +68,7 @@ class SunPyTestRunner(TestRunner):
             Only run the figure tests.
         """
         if figure:
-            return ['-m', 'figure']
+            return ["-m", "figure"]
 
         return []
 
@@ -80,11 +81,11 @@ class SunPyTestRunner(TestRunner):
         # If our test path is outside of our base dir (docs) then we have to
         # skip sending --figure_dir as we will not have hit the conftest.py
         # file.
-        if kwargs['test_path'] and self.base_path not in kwargs['test_path']:
+        if kwargs["test_path"] and self.base_path not in kwargs["test_path"]:
             return []
 
         if figure_dir:
-            return ['--figure_dir', figure_dir]
+            return ["--figure_dir", figure_dir]
 
         return []
 
@@ -113,9 +114,9 @@ class SunPyTestRunner(TestRunner):
 
     @keyword()
     def cov_report(self, cov_report, kwargs):
-        if kwargs['coverage'] and cov_report:
+        if kwargs["coverage"] and cov_report:
             a = [cov_report] if isinstance(cov_report, str) else []
-            return ['--cov-report'] + a
+            return ["--cov-report"] + a
 
         return []
 
@@ -124,7 +125,7 @@ class SunPyTestRunner(TestRunner):
         """
         Ignore the docs directory if we have set test_path.
         """
-        if kwargs['test_path']:
+        if kwargs["test_path"]:
             return []
         else:
             return super().docs_path(docs_path, kwargs)

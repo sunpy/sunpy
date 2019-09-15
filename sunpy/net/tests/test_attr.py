@@ -9,10 +9,12 @@ from sunpy.net.attr import make_tuple
 
 # TODO: Refactor the Attr tests, its too cluttered.
 
+
 class Instrument(attr.SimpleAttr):
     """
     Dummy Instrument Class.
     """
+
     def __init__(self, value):
         super().__init__(value)
 
@@ -24,27 +26,27 @@ def EmptyAttr():
 
 @pytest.fixture
 def AIA():
-    return Instrument('AIA')
+    return Instrument("AIA")
 
 
 @pytest.fixture
 def NUM():
-    return Instrument('1')
+    return Instrument("1")
 
 
 @pytest.fixture
 def NUMBER():
-    return Instrument('1AIA')
+    return Instrument("1AIA")
 
 
 @pytest.fixture
 def NUMBERS():
-    return Instrument('12AIAs')
+    return Instrument("12AIAs")
 
 
 @pytest.fixture
 def HMI():
-    return Instrument('HMI')
+    return Instrument("HMI")
 
 
 @pytest.fixture
@@ -54,7 +56,7 @@ def SPEC():
 
 @pytest.fixture
 def KEYWORD():
-    return Instrument('class')
+    return Instrument("class")
 
 
 class SA1(attr.SimpleAttr):
@@ -158,7 +160,7 @@ def test_simple_attr_repr():
 
 def test_dummyattr():
     one = attr.DummyAttr()
-    other = attr.ValueAttr({'a': 'b'})
+    other = attr.ValueAttr({"a": "b"})
     assert (one | other) is other
     assert (one & other) is other
 
@@ -177,7 +179,7 @@ def test_dummyattr_collides():
 def test_dummyattr_eq():
     one = attr.DummyAttr()
     two = attr.DummyAttr()
-    other = attr.ValueAttr({'a': 'b'})
+    other = attr.ValueAttr({"a": "b"})
     assert one == two
     assert one != other
 
@@ -203,26 +205,30 @@ def test_or_nesting():
 
 
 def test_attr_metamagic(AIA, HMI):
-    attr.Attr.update_values({Instrument: [('AIA', 'This is AIA, it takes data')]})
+    attr.Attr.update_values({Instrument: [("AIA", "This is AIA, it takes data")]})
     # .name is the attribute name return
     assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower()]
     # .name_long is the original name
     assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value]
     # .des is the description of the item.
-    assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data']
+    assert attr.Attr._attr_registry[Instrument].desc == ["This is AIA, it takes data"]
     # The _value_registry on the Attr object does not get cleaned.
     # So by adding it again to the same type, in this case Instrument the list is appended.
-    attr.Attr.update_values({Instrument: [('HMI', 'This is HMI, it lives next to AIA')]})
+    attr.Attr.update_values({Instrument: [("HMI", "This is HMI, it lives next to AIA")]})
     assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower(), HMI.value.lower()]
     assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value, HMI.value]
-    assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data', 'This is HMI, it lives next to AIA']
+    assert attr.Attr._attr_registry[Instrument].desc == [
+        "This is AIA, it takes data",
+        "This is HMI, it lives next to AIA",
+    ]
 
     # Tests the print out for the first two inputs only
     output = textwrap.dedent(
-    "Attribute Name | Full Name | Description                      \n"
-    "---------------+-----------+----------------------------------\n"
-    "aia            | AIA       | This is AIA, it takes data       \n"
-    "hmi            | HMI       | This is HMI, it lives next to AIA")
+        "Attribute Name | Full Name | Description                      \n"
+        "---------------+-----------+----------------------------------\n"
+        "aia            | AIA       | This is AIA, it takes data       \n"
+        "hmi            | HMI       | This is HMI, it lives next to AIA"
+    )
 
     assert str(Instrument) == output
 
@@ -232,8 +238,8 @@ def test_attr_metamagic(AIA, HMI):
 
 def test_attr_dynamic(AIA, HMI):
     # This checks the dynamic attribute creation.
-    attr.Attr.update_values({Instrument: [('AIA', 'This is AIA, it takes data')]})
-    attr.Attr.update_values({Instrument: [('HMI', 'This is HMI, it lives next to AIA')]})
+    attr.Attr.update_values({Instrument: [("AIA", "This is AIA, it takes data")]})
+    attr.Attr.update_values({Instrument: [("HMI", "This is HMI, it lives next to AIA")]})
     assert Instrument.aia == AIA
     assert Instrument.hmi == HMI
     # Clean Registry
@@ -242,42 +248,44 @@ def test_attr_dynamic(AIA, HMI):
 
 def test_attr_dir(AIA, HMI):
     # Test for __dir__
-    attr.Attr.update_values({Instrument: [('AIA', 'This is AIA, it takes data')]})
-    attr.Attr.update_values({Instrument: [('HMI', 'This is HMI, it lives next to AIA')]})
-    assert 'aia' in dir(Instrument)
-    assert 'hmi' in dir(Instrument)
+    attr.Attr.update_values({Instrument: [("AIA", "This is AIA, it takes data")]})
+    attr.Attr.update_values({Instrument: [("HMI", "This is HMI, it lives next to AIA")]})
+    assert "aia" in dir(Instrument)
+    assert "hmi" in dir(Instrument)
     # Clean Registry
     EmptyAttr()
 
 
 def test_attr_sanity(SPEC):
-    attr.Attr.update_values({Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]})
+    attr.Attr.update_values(
+        {Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', "To test the attribute cleaning.")]}
+    )
     # This checks for sanitization of names.
-    assert attr.Attr._attr_registry[Instrument].name == ['thisnameisspecial']
+    assert attr.Attr._attr_registry[Instrument].name == ["thisnameisspecial"]
     assert attr.Attr._attr_registry[Instrument].name_long == ['_!£!THIS_NAME!"!ISSPECIAL~~##']
-    assert attr.Attr._attr_registry[Instrument].desc == ['To test the attribute cleaning.']
+    assert attr.Attr._attr_registry[Instrument].desc == ["To test the attribute cleaning."]
 
     # Clean Registry
     EmptyAttr()
 
 
 def test_attr_keyword(KEYWORD):
-    attr.Attr.update_values({Instrument: [('class', 'Keyword checking.')]})
+    attr.Attr.update_values({Instrument: [("class", "Keyword checking.")]})
     # This checks for sanitization of names.
-    assert attr.Attr._attr_registry[Instrument].name == ['class_']
-    assert attr.Attr._attr_registry[Instrument].name_long == ['class']
-    assert attr.Attr._attr_registry[Instrument].desc == ['Keyword checking.']
+    assert attr.Attr._attr_registry[Instrument].name == ["class_"]
+    assert attr.Attr._attr_registry[Instrument].name_long == ["class"]
+    assert attr.Attr._attr_registry[Instrument].desc == ["Keyword checking."]
 
     # Clean Registry
     EmptyAttr()
 
 
 def test_attr_num(NUM):
-    attr.Attr.update_values({Instrument: [('1', 'One')]})
+    attr.Attr.update_values({Instrument: [("1", "One")]})
     # This checks for sanitization of names.
-    assert attr.Attr._attr_registry[Instrument].name == ['one']
-    assert attr.Attr._attr_registry[Instrument].name_long == ['1']
-    assert attr.Attr._attr_registry[Instrument].desc == ['One']
+    assert attr.Attr._attr_registry[Instrument].name == ["one"]
+    assert attr.Attr._attr_registry[Instrument].name_long == ["1"]
+    assert attr.Attr._attr_registry[Instrument].desc == ["One"]
     assert Instrument.one == NUM
 
     # Clean Registry
@@ -285,11 +293,11 @@ def test_attr_num(NUM):
 
 
 def test_attr_number(NUMBER):
-    attr.Attr.update_values({Instrument: [('1AIA', 'One Number first.')]})
+    attr.Attr.update_values({Instrument: [("1AIA", "One Number first.")]})
     # This checks for sanitization of names.
-    assert attr.Attr._attr_registry[Instrument].name == ['one_aia']
-    assert attr.Attr._attr_registry[Instrument].name_long == ['1AIA']
-    assert attr.Attr._attr_registry[Instrument].desc == ['One Number first.']
+    assert attr.Attr._attr_registry[Instrument].name == ["one_aia"]
+    assert attr.Attr._attr_registry[Instrument].name_long == ["1AIA"]
+    assert attr.Attr._attr_registry[Instrument].desc == ["One Number first."]
     assert Instrument.one_aia == NUMBER
 
     # Clean Registry
@@ -297,12 +305,12 @@ def test_attr_number(NUMBER):
 
 
 def test_attr_numbes(NUMBERS):
-    attr.Attr.update_values({Instrument: [('12AIAs', 'That is too many AIAs')]})
+    attr.Attr.update_values({Instrument: [("12AIAs", "That is too many AIAs")]})
     # This checks for sanitization of names.
-    assert attr.Attr._attr_registry[Instrument].name == ['12aias']
-    assert attr.Attr._attr_registry[Instrument].name_long == ['12AIAs']
-    assert attr.Attr._attr_registry[Instrument].desc == ['That is too many AIAs']
-    assert '12aias' in dir(Instrument)
+    assert attr.Attr._attr_registry[Instrument].name == ["12aias"]
+    assert attr.Attr._attr_registry[Instrument].name_long == ["12AIAs"]
+    assert attr.Attr._attr_registry[Instrument].desc == ["That is too many AIAs"]
+    assert "12aias" in dir(Instrument)
 
     # Clean Registry
     EmptyAttr()
@@ -311,10 +319,10 @@ def test_attr_numbes(NUMBERS):
 def test_attr_iterable_length(AIA):
     # not iterable
     with pytest.raises(ValueError):
-        attr.Attr.update_values({Instrument: 'AIA'})
+        attr.Attr.update_values({Instrument: "AIA"})
     # too many items
     with pytest.raises(ValueError):
-        attr.Attr.update_values({Instrument: [('AIA', 'AIA is Nice', 'Error now')]})
+        attr.Attr.update_values({Instrument: [("AIA", "AIA is Nice", "Error now")]})
 
     # Clean Registry
     EmptyAttr()

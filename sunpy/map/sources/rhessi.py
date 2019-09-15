@@ -1,5 +1,5 @@
 """RHESSI Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1121
+# pylint: disable=W0221,W0222,E1121
 
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
 
-__all__ = ['RHESSIMap']
+__all__ = ["RHESSIMap"]
 
 
 class RHESSIMap(GenericMap):
@@ -38,8 +38,8 @@ class RHESSIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        header["cunit1"] = header.get("cunit1", "arcsec")
+        header["cunit2"] = header.get("cunit2", "arcsec")
 
         GenericMap.__init__(self, data, header, **kwargs)
 
@@ -47,25 +47,25 @@ class RHESSIMap(GenericMap):
         # TODO Currently (8/29/2011), cannot read fits files containing more
         # than one image (schriste)
         # Fix some broken/misapplied keywords
-        if self.meta['ctype1'] == 'arcsec':
-            self.meta['cunit1'] = 'arcsec'
-            self.meta['ctype1'] = 'HPLN-TAN'
-        if self.meta['ctype2'] == 'arcsec':
-            self.meta['cunit2'] = 'arcsec'
-            self.meta['ctype2'] = 'HPLT-TAN'
+        if self.meta["ctype1"] == "arcsec":
+            self.meta["cunit1"] = "arcsec"
+            self.meta["ctype1"] = "HPLN-TAN"
+        if self.meta["ctype2"] == "arcsec":
+            self.meta["cunit2"] = "arcsec"
+            self.meta["ctype2"] = "HPLT-TAN"
 
-        self.meta['waveunit'] = 'keV'
-        self.meta['wavelnth'] = [self.meta['energy_l'], self.meta['energy_h']]
-        self.plot_settings['cmap'] = plt.get_cmap('rhessi')
+        self.meta["waveunit"] = "keV"
+        self.meta["wavelnth"] = [self.meta["energy_l"], self.meta["energy_h"]]
+        self.plot_settings["cmap"] = plt.get_cmap("rhessi")
 
     @property
     def detector(self):
         """
         Returns the name of the detector
         """
-        return self.meta['telescop']
+        return self.meta["telescop"]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an RHESSI image"""
-        return header.get('instrume') == 'RHESSI'
+        return header.get("instrume") == "RHESSI"

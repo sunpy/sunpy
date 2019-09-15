@@ -75,11 +75,16 @@ class TimeSeriesMetaData:
     |2012-06-02T00:00:00.000    |                 |                                                   |
     |-------------------------------------------------------------------------------------------------|
     """
+
     def __init__(self, meta=None, timerange=None, colnames=None):
         self.metadata = []
         # Parse in arguments
         if not isinstance(meta, type(None)):
-            if isinstance(meta, (dict, MetaDict)) and isinstance(timerange, TimeRange) and isinstance(colnames, list):
+            if (
+                isinstance(meta, (dict, MetaDict))
+                and isinstance(timerange, TimeRange)
+                and isinstance(colnames, list)
+            ):
                 # Given a single metadata entry as a dictionary with additional timerange and colnames.
                 self.metadata.append((timerange, colnames, meta))
             elif isinstance(meta, tuple):
@@ -94,12 +99,17 @@ class TimeSeriesMetaData:
                 self.metadata.append((timerange, colnames, MetaDict()))
             elif isinstance(timerange, TimeRange):
                 self.metadata.append((timerange, [], MetaDict()))
-                warnings.warn("No time range given for metadata. "
-                              "This will mean the metadata can't be linked "
-                              "to columns in data.", SunpyUserWarning)
+                warnings.warn(
+                    "No time range given for metadata. "
+                    "This will mean the metadata can't be linked "
+                    "to columns in data.",
+                    SunpyUserWarning,
+                )
             else:
-                raise ValueError("You cannot create a TimeSeriesMetaData "
-                                 "object without specifying a TimeRange")
+                raise ValueError(
+                    "You cannot create a TimeSeriesMetaData "
+                    "object without specifying a TimeRange"
+                )
 
     def __eq__(self, other):
         """
@@ -167,7 +177,7 @@ class TimeSeriesMetaData:
                 if timerange.start > meta[0].start:
                     pos = i + 1
         else:
-            raise ValueError('Incorrect datatime or data for append to TimeSeriesMetaData.')
+            raise ValueError("Incorrect datatime or data for append to TimeSeriesMetaData.")
 
         # Prepare tuple to append.
         new_metadata = (timerange, columns, metadata)
@@ -370,7 +380,7 @@ class TimeSeriesMetaData:
             new_keys.difference_update(old_keys)
 
             # Old keys only overwritten if allowed
-            for key in (self.metadata[i][2].keys()):
+            for key in self.metadata[i][2].keys():
                 if key in old_keys and overwrite:
                     self.metadata[i][2][key] = dictionary[key]
             for key in dictionary:
@@ -531,12 +541,17 @@ class TimeSeriesMetaData:
         indices = range(0, len(self.metadata))
         for i, j in itertools.combinations(indices, 2):
             # Check if the TimeRanges overlap
-            if not ((self.metadata[i][0].end <= self.metadata[j][0].start) or (self.metadata[i][0].start >= self.metadata[j][0].end)):
+            if not (
+                (self.metadata[i][0].end <= self.metadata[j][0].start)
+                or (self.metadata[i][0].start >= self.metadata[j][0].end)
+            ):
                 # Check column headings overlap
                 col_overlap = list(set(self.metadata[i][1]) & set(self.metadata[j][1]))
                 # If we have an overlap then show a warning
                 if col_overlap:
-                    warnings.warn(f'Metadata entries {i} and {j} contain interleaved data.', SunpyUserWarning)
+                    warnings.warn(
+                        f"Metadata entries {i} and {j} contain interleaved data.", SunpyUserWarning
+                    )
 
         # TODO: Check all entries are in tr.start time order.
         return True
@@ -556,33 +571,34 @@ class TimeSeriesMetaData:
             The number of characters wide to make the entire table. Defaults to 99.
         """
         # Parameters
-        colspace = ' | '
-        liswidths = (26, 15, width-2-2*len(colspace) - 26 - 15)
-        colheadings = '|' + 'TimeRange'.ljust(100)[:liswidths[0]] + colspace
-        colheadings += 'Columns'.ljust(100)[:liswidths[1]] + colspace
-        colheadings += 'Meta'.ljust(100)[:liswidths[2]] + '|'
-        rowspace = "-" * (liswidths[0] + len(colspace) + liswidths[1]
-                          + len(colspace) + liswidths[2])
-        rowspace = '|' + rowspace + '|'
+        colspace = " | "
+        liswidths = (26, 15, width - 2 - 2 * len(colspace) - 26 - 15)
+        colheadings = "|" + "TimeRange".ljust(100)[: liswidths[0]] + colspace
+        colheadings += "Columns".ljust(100)[: liswidths[1]] + colspace
+        colheadings += "Meta".ljust(100)[: liswidths[2]] + "|"
+        rowspace = "-" * (
+            liswidths[0] + len(colspace) + liswidths[1] + len(colspace) + liswidths[2]
+        )
+        rowspace = "|" + rowspace + "|"
 
         # Headings
-        full = rowspace + '\n' + colheadings + '\n' + rowspace + '\n'
+        full = rowspace + "\n" + colheadings + "\n" + rowspace + "\n"
 
         # Add metadata entries
         for entry in self.metadata:
             # Make lists for each of the columns for each metadata entry
             # Padded to the widths given in liswidths
-            lis_range = [str(entry[0].start), '            to            ', str(entry[0].end)]
+            lis_range = [str(entry[0].start), "            to            ", str(entry[0].end)]
             # Shorten TimeRange representation if depth of only 2
             if depth == 2:
                 lis_range = [str(entry[0].start), str(entry[0].end)]
             liscols = []
             for col in entry[1]:
-                liscols.append(col.ljust(100)[:liswidths[1]])
+                liscols.append(col.ljust(100)[: liswidths[1]])
             lismeta = []
             for key in list(entry[2].keys()):
-                string = str(key) + ': ' + str(entry[2][key])
-                lismeta.append(string.ljust(100)[:liswidths[2]])
+                string = str(key) + ": " + str(entry[2][key])
+                lismeta.append(string.ljust(100)[: liswidths[2]])
 
             # Add lines of the entry upto the given depth
             for i in range(0, depth):
@@ -590,67 +606,67 @@ class TimeSeriesMetaData:
                 # then the current depth
                 if len(lis_range) > i or len(entry[1]) > i or len(lismeta) > i:
                     # The start of the line Str is just a vertical bar/pipe
-                    line = '|'
+                    line = "|"
                     # Check we have a time range entry to print
                     if len(lis_range) > i:
                         # Simply add that time range entry to the line Str
-                        line += lis_range[i].ljust(100)[:liswidths[0]]
+                        line += lis_range[i].ljust(100)[: liswidths[0]]
                     else:
                         # No entry to add, so just add a blank space
-                        line += ''.ljust(100)[:liswidths[0]]
+                        line += "".ljust(100)[: liswidths[0]]
                     # Add a column break vertical bar/pipe
                     line += colspace
                     # Check we have another column name entry to print
                     if len(entry[1]) > i:
                         # Simply add that column name to the line Str
-                        line += entry[1][i].ljust(100)[:liswidths[1]]
+                        line += entry[1][i].ljust(100)[: liswidths[1]]
                     else:
                         # No entry to add, so just add a blank space
-                        line += ''.ljust(100)[:liswidths[1]]
+                        line += "".ljust(100)[: liswidths[1]]
                     # Add a column break vertical bar/pipe
                     line += colspace
                     # Check we have another meta key/value pair to print
                     if len(lismeta) > i:
                         # Simply add that key/value pair to the line Str
-                        line += lismeta[i].ljust(100)[:liswidths[2]]
+                        line += lismeta[i].ljust(100)[: liswidths[2]]
                     else:
                         # No entry to add, so just add a blank space
-                        line += ''.ljust(100)[:liswidths[2]]
+                        line += "".ljust(100)[: liswidths[2]]
                     # Finish the line Str with vertical bar/pipe and \n
-                    full += line + '|\n'
+                    full += line + "|\n"
             # Reached the depth limit, add line to show if the columns are truncated
             if len(lis_range) >= depth or len(entry[1]) >= depth or len(lismeta) >= depth:
                 # The start of the line Str is just a vertical bar/pipe
-                line = '|'
+                line = "|"
                 # Check we have more time range entries to print
                 if len(lis_range) > depth:
                     # We have more time range entries, use ellipsis to show this
-                    line += '...'.ljust(100)[:liswidths[0]]
+                    line += "...".ljust(100)[: liswidths[0]]
                 else:
                     # No entry to add, so just add a blank space
-                    line += ''.ljust(100)[:liswidths[0]]
+                    line += "".ljust(100)[: liswidths[0]]
                 # Add a column break vertical bar/pipe
                 line += colspace
                 # Check we have more than one column name entry to print
                 if len(entry[1]) > depth:
                     # We have more column name entries, use ellipsis
-                    line += '...'.ljust(100)[:liswidths[1]]
+                    line += "...".ljust(100)[: liswidths[1]]
                 else:
                     # No more column name entries, so just add a blank space
-                    line += ''.ljust(100)[:liswidths[1]]
+                    line += "".ljust(100)[: liswidths[1]]
                 # Add a column break vertical bar/pipe
                 line += colspace
                 # Check we have more meta key/value pairs to print
                 if len(lismeta) > depth:
                     # We have more key/value pairs, use ellipsis to show this
-                    line += '...'.ljust(100)[:liswidths[2]]
+                    line += "...".ljust(100)[: liswidths[2]]
                 else:
                     # No morekey/value pairs, add a blank space
-                    line += ''.ljust(100)[:liswidths[2]]
+                    line += "".ljust(100)[: liswidths[2]]
                 # Finish the line Str with vertical bar/pipe and \n
-                full += line + '|\n'
+                full += line + "|\n"
             # Add a line to close the table
-            full += rowspace + '\n'
+            full += rowspace + "\n"
         return full
 
     def __repr__(self):

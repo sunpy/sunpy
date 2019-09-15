@@ -5,9 +5,15 @@ from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm import make_transient
 
 __all__ = [
-    'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError',
-    'DatabaseOperation', 'AddEntry', 'RemoveEntry', 'EditEntry',
-    'CommandManager']
+    "EmptyCommandStackError",
+    "NoSuchEntryError",
+    "NonRemovableTagError",
+    "DatabaseOperation",
+    "AddEntry",
+    "RemoveEntry",
+    "EditEntry",
+    "CommandManager",
+]
 
 
 class EmptyCommandStackError(Exception):
@@ -22,13 +28,15 @@ class NoSuchEntryError(Exception):
     though it does not exist in the database.
 
     """
+
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
     def __str__(self):  # pragma: no cover
         return (
-            'the database entry {!r} cannot be removed because it '
-            'is not stored in the database'.format(self.database_entry))
+            "the database entry {!r} cannot be removed because it "
+            "is not stored in the database".format(self.database_entry)
+        )
 
 
 class NonRemovableTagError(Exception):
@@ -36,12 +44,13 @@ class NonRemovableTagError(Exception):
     database entry even though it is not saved in this entry.
 
     """
+
     def __init__(self, database_entry, tag):
         self.database_entry = tag
         self.tag = tag
 
     def __str__(self):  # pragma: no cover
-        errmsg = 'the tag {0} cannot be removed from the database entry {1!r}'
+        errmsg = "the tag {0} cannot be removed from the database entry {1!r}"
         return errmsg.format(self.database_entry, self.tag)
 
 
@@ -85,7 +94,10 @@ class CompositeOperation(DatabaseOperation):
         for operation in self._operations:
             # FIXME: What follows is the worst hack of my life. Enjoy.
             # Without it, the test test_clear_database would fail.
-            f = open(os.devnull, 'w'); f.write(repr(operation)); f.flush(); f.close()
+            f = open(os.devnull, "w")
+            f.write(repr(operation))
+            f.flush()
+            f.close()
             operation()
 
     def undo(self):
@@ -102,6 +114,7 @@ class AddEntry(DatabaseOperation):
     the caller. The ``undo`` method removes the entry from the session again.
 
     """
+
     def __init__(self, session, database_entry):
         self.session = session
         self.database_entry = database_entry
@@ -126,8 +139,9 @@ class AddEntry(DatabaseOperation):
             make_transient(self.database_entry)
 
     def __repr__(self):
-        return '<{}(session {!r}, entry id {})>'.format(
-            self.__class__.__name__, self.session, self.database_entry.id)
+        return "<{}(session {!r}, entry id {})>".format(
+            self.__class__.__name__, self.session, self.database_entry.id
+        )
 
 
 class RemoveEntry(DatabaseOperation):
@@ -137,6 +151,7 @@ class RemoveEntry(DatabaseOperation):
     the database entry back into the session object.
 
     """
+
     def __init__(self, session, entry):
         self.session = session
         self.entry = entry
@@ -154,8 +169,9 @@ class RemoveEntry(DatabaseOperation):
         self.session.add(self.entry)
 
     def __repr__(self):
-        return '<{}(session {!r}, entry {!r})>'.format(
-            self.__class__.__name__, self.session, self.entry)
+        return "<{}(session {!r}, entry {!r})>".format(
+            self.__class__.__name__, self.session, self.entry
+        )
 
 
 class EditEntry(DatabaseOperation):
@@ -166,6 +182,7 @@ class EditEntry(DatabaseOperation):
     ``entry`` to the value ``'bar'``.
 
     """
+
     def __init__(self, database_entry, **kwargs):
         self.database_entry = database_entry
         if not kwargs:
@@ -185,8 +202,7 @@ class EditEntry(DatabaseOperation):
             setattr(self.database_entry, k, v)
 
     def __repr__(self):
-        return '<EditEntry(kwargs {!r}, entry id {})>'.format(
-            self.kwargs, self.database_entry.id)
+        return "<EditEntry(kwargs {!r}, entry id {})>".format(self.kwargs, self.database_entry.id)
 
 
 class AddTag(DatabaseOperation):
@@ -219,7 +235,8 @@ class AddTag(DatabaseOperation):
 
     def __repr__(self):
         return "<AddTag(tag '{}', session {!r}, entry id {})>".format(
-            self.tag, self.session, self.database_entry.id)
+            self.tag, self.session, self.database_entry.id
+        )
 
 
 class RemoveTag(DatabaseOperation):
@@ -229,6 +246,7 @@ class RemoveTag(DatabaseOperation):
     puts the removed tag back into the tag list of the database entry.
 
     """
+
     def __init__(self, session, database_entry, tag):
         self.session = session
         self.database_entry = database_entry
@@ -269,7 +287,8 @@ class RemoveTag(DatabaseOperation):
 
     def __repr__(self):
         return "<RemoveTag(tag '{}', session {!r}, entry id {})>".format(
-            self.tag, self.session, self.database_entry.id)
+            self.tag, self.session, self.database_entry.id
+        )
 
 
 class CommandManager:
@@ -281,6 +300,7 @@ class CommandManager:
     ``push_redo_command``, and ``pop_redo_command``, respectively.
 
     """
+
     def __init__(self):
         self.undo_commands = []
         self.redo_commands = []

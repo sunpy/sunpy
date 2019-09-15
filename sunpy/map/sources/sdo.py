@@ -18,7 +18,7 @@ except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
 
-__all__ = ['AIAMap', 'HMIMap']
+__all__ = ["AIAMap", "HMIMap"]
 
 
 class AIAMap(GenericMap):
@@ -55,19 +55,27 @@ class AIAMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing info
-        self.meta['detector'] = self.meta.get('detector', "AIA")
+        self.meta["detector"] = self.meta.get("detector", "AIA")
         self._nickname = self.detector
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
+        self.plot_settings["cmap"] = plt.get_cmap(self._get_cmap_name())
+        self.plot_settings["norm"] = ImageNormalize(
+            stretch=source_stretch(self.meta, AsinhStretch(0.01))
+        )
 
     @property
     def _supported_observer_coordinates(self):
-        return [(('haex_obs', 'haey_obs', 'haez_obs'), {'x': self.meta.get('haex_obs'),
-                                                        'y': self.meta.get('haey_obs'),
-                                                        'z': self.meta.get('haez_obs'),
-                                                        'unit': u.m,
-                                                        'representation_type': CartesianRepresentation,
-                                                        'frame': HeliocentricMeanEcliptic})
+        return [
+            (
+                ("haex_obs", "haey_obs", "haez_obs"),
+                {
+                    "x": self.meta.get("haex_obs"),
+                    "y": self.meta.get("haey_obs"),
+                    "z": self.meta.get("haez_obs"),
+                    "unit": u.m,
+                    "representation_type": CartesianRepresentation,
+                    "frame": HeliocentricMeanEcliptic,
+                },
+            )
         ] + super()._supported_observer_coordinates
 
     @property
@@ -75,12 +83,12 @@ class AIAMap(GenericMap):
         """
         Returns the observatory.
         """
-        return self.meta.get('telescop', '').split('/')[0]
+        return self.meta.get("telescop", "").split("/")[0]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an AIA image"""
-        return header.get('instrume', '').startswith('AIA')
+        return header.get("instrume", "").startswith("AIA")
 
 
 class HMIMap(GenericMap):
@@ -101,11 +109,12 @@ class HMIMap(GenericMap):
     * `Instrument Page <http://hmi.stanford.edu>`_
     * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`_
     """
+
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self.meta['detector'] = self.meta.get('detector', "HMI")
+        self.meta["detector"] = self.meta.get("detector", "HMI")
         self._nickname = self.detector
 
     @property
@@ -113,16 +122,16 @@ class HMIMap(GenericMap):
         """
         Returns the measurement type.
         """
-        return self.meta.get('content', '').split(" ")[0].lower()
+        return self.meta.get("content", "").split(" ")[0].lower()
 
     @property
     def observatory(self):
         """
         Returns the observatory.
         """
-        return self.meta.get('telescop', '').split('/')[0]
+        return self.meta.get("telescop", "").split("/")[0]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an HMI image"""
-        return header.get('instrume', '').startswith('HMI')
+        return header.get("instrume", "").startswith("HMI")

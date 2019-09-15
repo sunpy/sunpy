@@ -20,7 +20,7 @@ from sunpy.visualization import peek_show
 
 TIME_FORMAT = config.get("general", "time_format")
 
-__all__ = ['LYRATimeSeries']
+__all__ = ["LYRATimeSeries"]
 
 
 class LYRATimeSeries(GenericTimeSeries):
@@ -53,8 +53,9 @@ class LYRATimeSeries(GenericTimeSeries):
     * `LYRA Data Homepage <http://proba2.sidc.be/data/LYRA>`_
     * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`_
     """
+
     # Class attribute used to specify the source class of the TimeSeries.
-    _source = 'lyra'
+    _source = "lyra"
 
     @peek_show
     def peek(self, names=3, **kwargs):
@@ -78,8 +79,10 @@ class LYRATimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
 
-        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
-                     ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
+        lyranames = (
+            ("Lyman alpha", "Herzberg cont.", "Al filter", "Zr filter"),
+            ("120-123nm", "190-222nm", "17-80nm + <5nm", "6-20nm + <2nm"),
+        )
         figure = plt.figure()
         plt.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
         axes = plt.gca()
@@ -90,13 +93,13 @@ class LYRATimeSeries(GenericTimeSeries):
             if names < 3:
                 name = lyranames[names][i]
             else:
-                name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
+                name = lyranames[0][i] + " \n (" + lyranames[1][i] + ")"
             axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
 
-        axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0],TIME_FORMAT))
+        axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0], TIME_FORMAT))
         axes[-1].set_xlabel("Time")
         for axe in axes:
-            axe.locator_params(axis='y',nbins=6)
+            axe.locator_params(axis="y", nbins=6)
 
         return figure
 
@@ -127,40 +130,46 @@ class LYRATimeSeries(GenericTimeSeries):
         fits_record = hdulist[1].data
 
         metadata = MetaDict(OrderedDict(hdulist[0].header))
-        start_str = metadata.get('date-obs', metadata.get('date_obs', ''))
+        start_str = metadata.get("date-obs", metadata.get("date_obs", ""))
         start = parse_time(start_str)
 
         # First column are times.  For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
-        if hdulist[1].header['TUNIT1'] == 's':
-            times = start + TimeDelta(fits_record.field(0)*u.second)
-        elif hdulist[1].header['TUNIT1'] == 'MIN':
+        if hdulist[1].header["TUNIT1"] == "s":
+            times = start + TimeDelta(fits_record.field(0) * u.second)
+        elif hdulist[1].header["TUNIT1"] == "MIN":
             td = [int(n) for n in fits_record.field(0)]
-            times = start + TimeDelta(td*u.minute)
+            times = start + TimeDelta(td * u.minute)
         else:
-            raise ValueError("Time unit in LYRA fits file not recognised.  "
-                             "Value = {}".format(hdulist[1].header['TUNIT1']))
+            raise ValueError(
+                "Time unit in LYRA fits file not recognised.  "
+                "Value = {}".format(hdulist[1].header["TUNIT1"])
+            )
 
         # Rest of columns are the data
         table = {}
 
         for i, col in enumerate(fits_record.columns[1:-1]):
             # temporary patch for big-endian data bug on pandas 0.13
-            if fits_record.field(i+1).dtype.byteorder == '>' and sys.byteorder =='little':
+            if fits_record.field(i + 1).dtype.byteorder == ">" and sys.byteorder == "little":
                 table[col.name] = fits_record.field(i + 1).byteswap().newbyteorder()
             else:
                 table[col.name] = fits_record.field(i + 1)
 
         # Return the header and the data
         times.precision = 9
-        data = pandas.DataFrame(table, index=times.isot.astype('datetime64'))
+        data = pandas.DataFrame(table, index=times.isot.astype("datetime64"))
         data.sort_index(inplace=True)
 
         # Add the units data
-        units = OrderedDict([('CHANNEL1', u.W/u.m**2),
-                             ('CHANNEL2', u.W/u.m**2),
-                             ('CHANNEL3', u.W/u.m**2),
-                             ('CHANNEL4', u.W/u.m**2)])
+        units = OrderedDict(
+            [
+                ("CHANNEL1", u.W / u.m ** 2),
+                ("CHANNEL2", u.W / u.m ** 2),
+                ("CHANNEL3", u.W / u.m ** 2),
+                ("CHANNEL4", u.W / u.m ** 2),
+            ]
+        )
         # TODO: check: http://www.wmo-sat.info/oscar/instruments/view/733
         return data, metadata, units
 
@@ -171,9 +180,9 @@ class LYRATimeSeries(GenericTimeSeries):
         `~sunpy.timeseries.TimeSeries`.
         """
         # Check if source is explicitly assigned
-        if 'source' in kwargs.keys():
-            if kwargs.get('source', ''):
-                return kwargs.get('source', '').lower().startswith(cls._source)
+        if "source" in kwargs.keys():
+            if kwargs.get("source", ""):
+                return kwargs.get("source", "").lower().startswith(cls._source)
         # Check if HDU defines the source instrument
-        if 'meta' in kwargs.keys():
-            return kwargs['meta'].get('INSTRUME', '').startswith('LYRA')
+        if "meta" in kwargs.keys():
+            return kwargs["meta"].get("INSTRUME", "").startswith("LYRA")

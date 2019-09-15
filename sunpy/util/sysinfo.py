@@ -4,7 +4,7 @@ This module provides functions to retrieve system information.
 import datetime
 import platform
 
-__all__ = ['get_sys_dict', 'system_info']
+__all__ = ["get_sys_dict", "system_info"]
 
 
 def get_sys_dict():
@@ -19,7 +19,7 @@ def get_sys_dict():
     try:
         from sunpy.version import version as sunpy_version
     except ImportError:
-        sunpy_version = 'Missing sunpy version.'
+        sunpy_version = "Missing sunpy version."
 
     # Dependencies
     try:
@@ -82,17 +82,26 @@ def get_sys_dict():
     except ImportError:
         drms_version = "NOT INSTALLED"
 
-    sys_prop = {'Time': datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
-                'System': platform.system(), 'Processor': platform.processor(),
-                'SunPy': sunpy_version,
-                'Arch': platform.architecture()[0], "Python": platform.python_version(),
-                'NumPy': numpy_version, 'PyQt5': pyqt5_version,
-                'SciPy': scipy_version, 'matplotlib': matplotlib_version,
-                'Astropy': astropy_version, 'Pandas': pandas_version,
-                'beautifulsoup': bs4_version, 'PyQt4': pyqt4_version,
-                'Zeep': zeep_version, 'Sqlalchemy': sqlalchemy_version,
-                'parfive': parfive_version, 'drms': drms_version
-                }
+    sys_prop = {
+        "Time": datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
+        "System": platform.system(),
+        "Processor": platform.processor(),
+        "SunPy": sunpy_version,
+        "Arch": platform.architecture()[0],
+        "Python": platform.python_version(),
+        "NumPy": numpy_version,
+        "PyQt5": pyqt5_version,
+        "SciPy": scipy_version,
+        "matplotlib": matplotlib_version,
+        "Astropy": astropy_version,
+        "Pandas": pandas_version,
+        "beautifulsoup": bs4_version,
+        "PyQt4": pyqt4_version,
+        "Zeep": zeep_version,
+        "Sqlalchemy": sqlalchemy_version,
+        "parfive": parfive_version,
+        "drms": drms_version,
+    }
     return sys_prop
 
 
@@ -114,19 +123,22 @@ def system_info():
     print("#######")
     # OS and architecture information
 
-    for sys_info in ['Time', 'System', 'Processor', 'Arch', 'SunPy']:
-        print('{} : {}'.format(sys_info, sys_prop[sys_info]))
+    for sys_info in ["Time", "System", "Processor", "Arch", "SunPy"]:
+        print("{} : {}".format(sys_info, sys_prop[sys_info]))
 
-    if sys_prop['System'] == "Linux":
+    if sys_prop["System"] == "Linux":
         distro = " ".join(platform.linux_distribution())
-        print("OS: {} (Linux {} {})".format(distro, platform.release(), sys_prop['Processor']))
-    elif sys_prop['System'] == "Darwin":
-        print("OS: Mac OS X {} ({})".format(platform.mac_ver()[0], sys_prop['Processor']))
-    elif sys_prop['System'] == "Windows":
-        print("OS: Windows {} {} ({})".format(platform.release(), platform.version(),
-                                                 sys_prop['Processor']))
+        print("OS: {} (Linux {} {})".format(distro, platform.release(), sys_prop["Processor"]))
+    elif sys_prop["System"] == "Darwin":
+        print("OS: Mac OS X {} ({})".format(platform.mac_ver()[0], sys_prop["Processor"]))
+    elif sys_prop["System"] == "Windows":
+        print(
+            "OS: Windows {} {} ({})".format(
+                platform.release(), platform.version(), sys_prop["Processor"]
+            )
+        )
     else:
-        print("Unknown OS ({})".format(sys_prop['Processor']))
+        print("Unknown OS ({})".format(sys_prop["Processor"]))
 
     print("\n")
     # required libraries
@@ -134,8 +146,8 @@ def system_info():
     print("Required Libraries")
     print("##################")
 
-    for sys_info in ['Python', 'NumPy', 'SciPy', 'matplotlib', 'Astropy', 'Pandas', 'parfive']:
-        print('{}: {}'.format(sys_info, sys_prop[sys_info]))
+    for sys_info in ["Python", "NumPy", "SciPy", "matplotlib", "Astropy", "Pandas", "parfive"]:
+        print("{}: {}".format(sys_info, sys_prop[sys_info]))
 
     print("\n")
     # recommended
@@ -143,5 +155,5 @@ def system_info():
     print("Recommended Libraries")
     print("#####################")
 
-    for sys_info in ['beautifulsoup', 'PyQt4', 'PyQt5', 'Zeep', 'Sqlalchemy', 'drms']:
-        print('{}: {}'.format(sys_info, sys_prop[sys_info]))
+    for sys_info in ["beautifulsoup", "PyQt4", "PyQt5", "Zeep", "Sqlalchemy", "drms"]:
+        print("{}: {}".format(sys_info, sys_prop[sys_info]))

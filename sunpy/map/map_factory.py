@@ -30,6 +30,7 @@ from sunpy.util.net import download_file
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
     import dask.array
+
     SUPPORTED_ARRAY_TYPES += (dask.array.Array,)
 except ImportError:
     pass
@@ -41,10 +42,12 @@ __email__ = "stuart@mumford.me.uk"
 try:
     from sunpy.database.tables import DatabaseEntry
 except ImportError:
+
     class DatabaseEntry:
         pass
 
-__all__ = ['Map', 'MapFactory']
+
+__all__ = ["Map", "MapFactory"]
 
 
 class MapFactory(BasicRegistrationFactory):
@@ -187,32 +190,30 @@ class MapFactory(BasicRegistrationFactory):
 
             # Data-header or data-WCS pair
             if isinstance(arg, SUPPORTED_ARRAY_TYPES):
-                arg_header = args[i+1]
+                arg_header = args[i + 1]
                 if isinstance(arg_header, WCS):
-                    arg_header = args[i+1].to_header()
+                    arg_header = args[i + 1].to_header()
 
                 if self._validate_meta(arg_header):
                     pair = (args[i], OrderedDict(arg_header))
                     data_header_pairs.append(pair)
-                    i += 1    # an extra increment to account for the data-header pairing
+                    i += 1  # an extra increment to account for the data-header pairing
 
             # File name
-            elif (isinstance(arg, str) and
-                  os.path.isfile(os.path.expanduser(arg))):
+            elif isinstance(arg, str) and os.path.isfile(os.path.expanduser(arg)):
                 path = os.path.expanduser(arg)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
-            elif (isinstance(arg, str) and
-                  os.path.isdir(os.path.expanduser(arg))):
+            elif isinstance(arg, str) and os.path.isdir(os.path.expanduser(arg)):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
-            elif (isinstance(arg, str) and '*' in arg):
+            elif isinstance(arg, str) and "*" in arg:
                 files = glob.glob(os.path.expanduser(arg))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
@@ -222,8 +223,7 @@ class MapFactory(BasicRegistrationFactory):
                 already_maps.append(arg)
 
             # A URL
-            elif (isinstance(arg, str) and
-                  _is_url(arg)):
+            elif isinstance(arg, str) and _is_url(arg):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
                 pairs = self._read_file(path, **kwargs)
@@ -296,7 +296,7 @@ class MapFactory(BasicRegistrationFactory):
         new_maps += already_maps
 
         if not len(new_maps):
-            raise RuntimeError('No maps loaded')
+            raise RuntimeError("No maps loaded")
 
         # If the list is meant to be a sequence, instantiate a map sequence
         if sequence:
@@ -329,9 +329,11 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({})."
-                                     "Specify enough keywords to guarantee unique type"
-                                     "identification.".format(n_matches))
+            raise MultipleMatchError(
+                "Too many candidate types identified ({})."
+                "Specify enough keywords to guarantee unique type"
+                "identification.".format(n_matches)
+            )
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
@@ -350,20 +352,26 @@ def _is_url(arg):
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
     not point to a valid Map input file."""
+
     pass
 
 
 class InvalidMapType(ValueError):
     """Exception to raise when an invalid type of map is requested with Map
     """
+
     pass
 
 
 class NoMapsFound(ValueError):
     """Exception to raise when input does not point to any valid maps or files
     """
+
     pass
 
 
-Map = MapFactory(registry=GenericMap._registry, default_widget_type=GenericMap,
-                 additional_validation_functions=['is_datasource_for'])
+Map = MapFactory(
+    registry=GenericMap._registry,
+    default_widget_type=GenericMap,
+    additional_validation_functions=["is_datasource_for"],
+)

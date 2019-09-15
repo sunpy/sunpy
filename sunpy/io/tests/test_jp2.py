@@ -14,6 +14,7 @@ def test_read_data():
     Tests the reading of the JP2 data.
     """
     import glymur
+
     data = glymur.Jp2k(AIA_193_JP2).read()
     assert isinstance(data, np.ndarray)
 
@@ -24,6 +25,7 @@ def test_read_header():
     Tests the reading of the JP2 header.
     """
     from sunpy.io.jp2 import get_header
+
     header = get_header(AIA_193_JP2)[0]
     assert isinstance(header, FileHeader)
 

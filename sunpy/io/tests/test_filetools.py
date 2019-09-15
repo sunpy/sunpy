@@ -9,16 +9,15 @@ from sunpy.tests.helpers import skip_ana, skip_glymur
 
 testpath = sunpy.data.test.rootdir
 
-RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
-EIT_195_IMAGE = os.path.join(testpath, 'EIT/efz20040301.000010_s.fits')
-AIA_171_IMAGE = os.path.join(testpath, 'aia_171_level1.fits')
+RHESSI_IMAGE = os.path.join(testpath, "hsi_image_20101016_191218.fits")
+EIT_195_IMAGE = os.path.join(testpath, "EIT/efz20040301.000010_s.fits")
+AIA_171_IMAGE = os.path.join(testpath, "aia_171_level1.fits")
 
 
 # =============================================================================
 # Test, read, get_header and write through the file independent layer
 # =============================================================================
 class TestFiletools:
-
     def test_read_file_fits(self):
         # Test read FITS
         aiapair = sunpy.io.read_file(AIA_171_IMAGE)
@@ -34,13 +33,14 @@ class TestFiletools:
         assert len(pairs) == 4
         assert all([len(p) == 2 for p in pairs])
         assert all([isinstance(p[0], np.ndarray) for p in pairs])
-        assert all([isinstance(p[1],
-                               sunpy.io.header.FileHeader) for p in pairs])
+        assert all([isinstance(p[1], sunpy.io.header.FileHeader) for p in pairs])
 
     def test_read_file_fits_gzip(self):
         # Test read gzipped fits file
         for fits_extension in [".fts", ".fit", ".fits"]:
-            pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir, f"gzip_test{fits_extension}.gz"))
+            pair = sunpy.io.read_file(
+                os.path.join(sunpy.data.test.rootdir, f"gzip_test{fits_extension}.gz")
+            )
             assert isinstance(pair, list)
             assert len(pair) == 1
             assert len(pair[0]) == 2
@@ -51,8 +51,9 @@ class TestFiletools:
     @skip_glymur
     def test_read_file_jp2(self):
         # Test read jp2
-        pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir,
-                                               "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"))
+        pair = sunpy.io.read_file(
+            os.path.join(sunpy.data.test.rootdir, "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")
+        )
 
         assert isinstance(pair, list)
         assert len(pair) == 1
@@ -70,8 +71,9 @@ class TestFiletools:
     @skip_glymur
     def test_read_file_header_jp2(self):
         # Test jp2
-        hlist = sunpy.io.read_file_header(os.path.join(sunpy.data.test.rootdir,
-                                          "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"))
+        hlist = sunpy.io.read_file_header(
+            os.path.join(sunpy.data.test.rootdir, "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")
+        )
         assert isinstance(hlist, list)
         assert len(hlist) == 1
         assert isinstance(hlist[0], sunpy.io.header.FileHeader)
@@ -79,8 +81,7 @@ class TestFiletools:
     def test_write_file_fits(self):
         # Test write FITS
         aiapair = sunpy.io.read_file(AIA_171_IMAGE)[0]
-        sunpy.io.write_file("aia_171_image.fits", aiapair[0], aiapair[1],
-                            overwrite=True)
+        sunpy.io.write_file("aia_171_image.fits", aiapair[0], aiapair[1], overwrite=True)
         assert os.path.exists("aia_171_image.fits")
         outpair = sunpy.io.read_file(AIA_171_IMAGE)[0]
         assert np.all(np.equal(outpair[0], aiapair[0]))
@@ -90,8 +91,8 @@ class TestFiletools:
     def test_write_file_fits_bytes(self):
         # Test write FITS
         aiapair = sunpy.io.read_file(AIA_171_IMAGE)[0]
-        with open("aia_171_image_bytes.fits", 'wb') as fileo:
-            sunpy.io.write_file(fileo, aiapair[0], aiapair[1], filetype='fits')
+        with open("aia_171_image_bytes.fits", "wb") as fileo:
+            sunpy.io.write_file(fileo, aiapair[0], aiapair[1], filetype="fits")
         assert os.path.exists("aia_171_image_bytes.fits")
         outpair = sunpy.io.read_file(AIA_171_IMAGE)[0]
         assert np.all(np.equal(outpair[0], aiapair[0]))

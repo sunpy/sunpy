@@ -11,9 +11,9 @@ from sunpy.time import is_time_equal, parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
-TIME_FORMAT = config.get('general', 'time_format')
+TIME_FORMAT = config.get("general", "time_format")
 
-__all__ = ['TimeRange']
+__all__ = ["TimeRange"]
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -55,6 +55,7 @@ class TimeRange:
                34560000.0 seconds
     <BLANKLINE>
     """
+
     def __init__(self, a, b=None, format=None):
         # If a is a TimeRange object, copy attributes to new instance.
         self._t1 = None
@@ -68,7 +69,7 @@ class TimeRange:
         if b is None:
             x = parse_time(a[0], format=format)
             if len(a) != 2:
-                raise ValueError('If b is None a must have two elements')
+                raise ValueError("If b is None a must have two elements")
             else:
                 y = a[1]
         else:
@@ -79,7 +80,7 @@ class TimeRange:
             y = TimeDelta(y)
 
         if isinstance(y, timedelta):
-            y = TimeDelta(y, format='datetime')
+            y = TimeDelta(y, format="datetime")
 
         # Timedelta
         if isinstance(y, TimeDelta):
@@ -160,7 +161,7 @@ class TimeRange:
         `astropy.units.Quantity`
            The amount of hours between the start and end time.
         """
-        return self.dt.to('hour')
+        return self.dt.to("hour")
 
     @property
     def days(self):
@@ -172,7 +173,7 @@ class TimeRange:
         `astropy.units.Quantity`
             The amount of days between the start and end time.
         """
-        return self.dt.to('d')
+        return self.dt.to("d")
 
     @property
     def seconds(self):
@@ -184,7 +185,7 @@ class TimeRange:
         `astropy.units.Quantity`
            The amount of seconds between the start and end time.
         """
-        return self.dt.to('s')
+        return self.dt.to("s")
 
     @property
     def minutes(self):
@@ -196,7 +197,7 @@ class TimeRange:
         `astropy.units.Quantity`
            The amount of minutes between the start and end time.
         """
-        return self.dt.to('min')
+        return self.dt.to("min")
 
     def __eq__(self, other):
         """
@@ -214,8 +215,7 @@ class TimeRange:
             `True` if equal, `False` otherwise.
         """
         if isinstance(other, TimeRange):
-            return is_time_equal(
-                self.start, other.start) and is_time_equal(self.end, other.end)
+            return is_time_equal(self.start, other.start) and is_time_equal(self.end, other.end)
 
         return NotImplemented
 
@@ -234,8 +234,9 @@ class TimeRange:
             `True` if non-equal, `False` otherwise.
         """
         if isinstance(other, TimeRange):
-            return not (is_time_equal(
-                self.start, other.start) and is_time_equal(self.end, other.end))
+            return not (
+                is_time_equal(self.start, other.start) and is_time_equal(self.end, other.end)
+            )
 
         return NotImplemented
 
@@ -247,17 +248,30 @@ class TimeRange:
         t1 = self.start.strftime(TIME_FORMAT)
         t2 = self.end.strftime(TIME_FORMAT)
         center = self.center.strftime(TIME_FORMAT)
-        fully_qualified_name = f'{self.__class__.__module__}.{self.__class__.__name__}'
+        fully_qualified_name = f"{self.__class__.__module__}.{self.__class__.__name__}"
 
-        return ('   <{} object at {}>'.format(fully_qualified_name, hex(id(self))) +
-                '\n    Start:'.ljust(12) + t1 +
-                '\n    End:'.ljust(12) + t2 +
-                '\n    Center:'.ljust(12) + center +
-                '\n    Duration:'.ljust(12) + str(self.days.value) + ' days or' +
-                '\n    '.ljust(12) + str(self.hours.value) + ' hours or' +
-                '\n    '.ljust(12) + str(self.minutes.value) + ' minutes or' +
-                '\n    '.ljust(12) + str(self.seconds.value) + ' seconds' +
-                '\n')
+        return (
+            "   <{} object at {}>".format(fully_qualified_name, hex(id(self)))
+            + "\n    Start:".ljust(12)
+            + t1
+            + "\n    End:".ljust(12)
+            + t2
+            + "\n    Center:".ljust(12)
+            + center
+            + "\n    Duration:".ljust(12)
+            + str(self.days.value)
+            + " days or"
+            + "\n    ".ljust(12)
+            + str(self.hours.value)
+            + " hours or"
+            + "\n    ".ljust(12)
+            + str(self.minutes.value)
+            + " minutes or"
+            + "\n    ".ljust(12)
+            + str(self.seconds.value)
+            + " seconds"
+            + "\n"
+        )
 
     def split(self, n=2):
         """
@@ -275,7 +289,7 @@ class TimeRange:
             A list of equally sized `sunpy.time.TimeRange` between the start and end times.
         """
         if n <= 0:
-            raise ValueError('n must be greater than or equal to 1')
+            raise ValueError("n must be greater than or equal to 1")
         subsections = []
         previous_time = self.start
         next_time = None
@@ -349,8 +363,7 @@ class TimeRange:
         n = 1
         times = [TimeRange(self.start, self.start + window)]
         while times[-1].end < self.end:
-            times.append(TimeRange(self.start + cadence * n,
-                                   self.start + cadence * n + window))
+            times.append(TimeRange(self.start + cadence * n, self.start + cadence * n + window))
             n += 1
         return times
 
@@ -395,7 +408,7 @@ class TimeRange:
         """
         dates = []
         dates = [
-            parse_time(self.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
+            parse_time(self.start.strftime("%Y-%m-%d")) + TimeDelta(i * u.day)
             for i in range(int(self.days.value) + 1)
         ]
         return dates

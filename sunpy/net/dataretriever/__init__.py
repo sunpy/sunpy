@@ -17,6 +17,17 @@ from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
 
-__all__ = ['QueryResponseBlock', 'QueryResponse', 'GenericClient',
-           'EVEClient', 'XRSClient', 'LYRAClient', 'NOAAIndicesClient',
-           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', 'GBMClient']
+__all__ = [
+    "QueryResponseBlock",
+    "QueryResponse",
+    "GenericClient",
+    "EVEClient",
+    "XRSClient",
+    "LYRAClient",
+    "NOAAIndicesClient",
+    "NOAAPredictClient",
+    "NoRHClient",
+    "RHESSIClient",
+    "SRSClient",
+    "GBMClient",
+]

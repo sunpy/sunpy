@@ -11,13 +11,13 @@ from bs4 import BeautifulSoup
 
 from sunpy.net.helio import registry_links as RL
 
-__all__ = ['webservice_parser', 'endpoint_parser', 'wsdl_retriever']
+__all__ = ["webservice_parser", "endpoint_parser", "wsdl_retriever"]
 
 # Lifespan in seconds before a link times-out
 LINK_TIMEOUT = 3
 
 
-def webservice_parser(service='HEC'):
+def webservice_parser(service="HEC"):
     """
     Quickly parses important contents from HELIO registry.
 
@@ -48,20 +48,20 @@ def webservice_parser(service='HEC'):
      'http://hec.helio-vo.eu/helio_hec/HelioLongQueryService']
 
     """
-    link = RL.LINK + '/' + service.lower()
+    link = RL.LINK + "/" + service.lower()
     xml = link_test(link)
     if xml is None:
         return None
     root = EL.fromstring(xml)
     links = []
 
-    for interface in root.iter('interface'):
+    for interface in root.iter("interface"):
         service_type = interface.attrib
         key = list(service_type.keys())
         if len(key) > 0:
             value = service_type[key[0]]
-            if value == 'vr:WebService':
-                for url in interface.iter('accessURL'):
+            if value == "vr:WebService":
+                for url in interface.iter("accessURL"):
                     if url.text not in links:
                         links.append(url.text)
     return links
@@ -103,10 +103,10 @@ def endpoint_parser(link):
     endpoint_page = link_test(link)
     if endpoint_page is None:
         return None
-    soup = BeautifulSoup(endpoint_page, 'html.parser')
+    soup = BeautifulSoup(endpoint_page, "html.parser")
     endpoints = []
-    for web_link in soup.find_all('a'):
-        url = web_link.get('href')
+    for web_link in soup.find_all("a"):
+        url = web_link.get("href")
         if url not in endpoints:
             endpoints.append(url)
     return endpoints
@@ -144,7 +144,7 @@ def taverna_parser(link):
     if endpoints is None:
         return None
     for web_link in endpoints:
-        if 'Taverna' in web_link and web_link not in taverna_links:
+        if "Taverna" in web_link and web_link not in taverna_links:
             taverna_links.append(web_link)
     if len(taverna_links) == 0:
         return None
@@ -183,7 +183,7 @@ def link_test(link):
         return None
 
 
-def wsdl_retriever(service='HEC'):
+def wsdl_retriever(service="HEC"):
     """
     Retrieves a link to a taverna WSDL file
 
@@ -217,7 +217,10 @@ def wsdl_retriever(service='HEC'):
         this function to take a while to return. Timeout duration can be
         controlled through the LINK_TIMEOUT value
     """
-    def fail(): raise ValueError("No online HELIO servers can be found.")
+
+    def fail():
+        raise ValueError("No online HELIO servers can be found.")
+
     service_links = webservice_parser(service=service)
     wsdl = None
     wsdl_links = None

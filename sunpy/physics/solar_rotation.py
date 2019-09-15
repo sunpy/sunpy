@@ -10,9 +10,9 @@ import astropy.units as u
 from sunpy.image.coalignment import apply_shifts
 from sunpy.physics.differential_rotation import solar_rotate_coordinate
 
-__author__ = 'J. Ireland'
+__author__ = "J. Ireland"
 
-__all__ = ['calculate_solar_rotate_shift', 'mapsequence_solar_derotate']
+__all__ = ["calculate_solar_rotate_shift", "mapsequence_solar_derotate"]
 
 
 def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
@@ -71,9 +71,9 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
         # Calculate the rotation of the center of the map 'm' at its
         # observation time to the observation time of the reference layer
         # indicated by "layer_index".
-        new_coordinate = solar_rotate_coordinate(m.center,
-                                                 observer=rotate_to_this_layer.observer_coordinate,
-                                                 **kwargs)
+        new_coordinate = solar_rotate_coordinate(
+            m.center, observer=rotate_to_this_layer.observer_coordinate, **kwargs
+        )
 
         # Calculate the shift in arcseconds
         xshift_arcseconds[i] = new_coordinate.Tx - rotate_to_this_layer.center.Tx
@@ -137,8 +137,8 @@ def mapsequence_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwarg
     # use the shifts passed in.
     if shift is None:
         shift = calculate_solar_rotate_shift(mc, layer_index=layer_index, **kwargs)
-    xshift_arcseconds = shift['x']
-    yshift_arcseconds = shift['y']
+    xshift_arcseconds = shift["x"]
+    yshift_arcseconds = shift["y"]
 
     # Calculate the pixel shifts
     for i, m in enumerate(mc):

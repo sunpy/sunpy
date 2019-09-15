@@ -4,9 +4,25 @@ This is where datasource specific logic is implemented. Each mission should
 have its own file with one or more classes defined. Typically, these classes
 will be subclasses of the :mod`sunpy.map.Map` class.
 """
-__all__ = ['XRTMap', 'SOTMap', 'SWAPMap', 'RHESSIMap', 'AIAMap', 'HMIMap',
-           'EITMap', 'LASCOMap', 'MDIMap', 'EUVIMap', 'CORMap', 'HIMap',
-           'SXTMap', 'SJIMap', 'TRACEMap', 'KCorMap', 'source_stretch']
+__all__ = [
+    "XRTMap",
+    "SOTMap",
+    "SWAPMap",
+    "RHESSIMap",
+    "AIAMap",
+    "HMIMap",
+    "EITMap",
+    "LASCOMap",
+    "MDIMap",
+    "EUVIMap",
+    "CORMap",
+    "HIMap",
+    "SXTMap",
+    "SJIMap",
+    "TRACEMap",
+    "KCorMap",
+    "source_stretch",
+]
 
 from ..map_factory import Map
 from .hinode import SOTMap, XRTMap

@@ -21,7 +21,7 @@ from sunpy.visualization import peek_show
 
 TIME_FORMAT = config.get("general", "time_format")
 
-__all__ = ['NoRHTimeSeries']
+__all__ = ["NoRHTimeSeries"]
 
 
 class NoRHTimeSeries(GenericTimeSeries):
@@ -49,8 +49,9 @@ class NoRHTimeSeries(GenericTimeSeries):
     * `Analysis Manual <https://solar.nro.nao.ac.jp/norh/doc/manuale/index.html>`_
     * `Nobeyama Correlation Plots <https://solar.nro.nao.ac.jp/norh/html/cor_plot/>`_
     """
+
     # Class attribute used to specify the source class of the TimeSeries.
-    _source = 'norh'
+    _source = "norh"
 
     def __init__(self, data, header, units, **kwargs):
         super().__init__(data, header, units, **kwargs)
@@ -72,18 +73,21 @@ class NoRHTimeSeries(GenericTimeSeries):
 
         figure = plt.figure()
         axes = plt.gca()
-        data_lab = str(self.meta.get('OBS-FREQ').values()).replace('[', '').replace(
-            ']', '').replace('\'', '')
+        data_lab = (
+            str(self.meta.get("OBS-FREQ").values())
+            .replace("[", "")
+            .replace("]", "")
+            .replace("'", "")
+        )
         axes.plot(self.data.index, self.data, label=data_lab)
         axes.set_yscale("log")
         axes.set_ylim(1e-4, 1)
-        axes.set_title('Nobeyama Radioheliograph')
-        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
-        axes.set_ylabel('Correlation')
+        axes.set_title("Nobeyama Radioheliograph")
+        axes.set_xlabel("Start time: " + self.data.index[0].strftime(TIME_FORMAT))
+        axes.set_ylabel("Correlation")
         axes.legend()
 
         return figure
-
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -115,20 +119,23 @@ class NoRHTimeSeries(GenericTimeSeries):
 
         # No explicit time array in FITS file, so construct the time array from
         # the FITS header
-        obs_start_time = parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
+        obs_start_time = parse_time(header["DATE-OBS"] + "T" + header["CRVAL1"])
         length = len(data)
-        cadence = np.float(header['CDELT1'])
+        cadence = np.float(header["CDELT1"])
         sec_array = np.linspace(0, length - 1, int(length / cadence))
 
-        norh_time = obs_start_time + TimeDelta(sec_array*u.second)
+        norh_time = obs_start_time + TimeDelta(sec_array * u.second)
         norh_time.precision = 9
-        norh_time = norh_time.isot.astype('datetime64')
+        norh_time = norh_time.isot.astype("datetime64")
 
         # Add the units data
-        units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
+        units = OrderedDict([("Correlation Coefficient", u.dimensionless_unscaled)])
         # Todo: check units used.
-        return pandas.DataFrame(
-            data, index=norh_time, columns=('Correlation Coefficient', )), header, units
+        return (
+            pandas.DataFrame(data, index=norh_time, columns=("Correlation Coefficient",)),
+            header,
+            units,
+        )
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
@@ -136,8 +143,8 @@ class NoRHTimeSeries(GenericTimeSeries):
         Determines if header corresponds to a Nobeyama Radioheliograph
         Correlation `~sunpy.timeseries.TimeSeries`.
         """
-        if 'source' in kwargs.keys():
-            if kwargs.get('source', ''):
-                return kwargs.get('source', '').lower().startswith(cls._source)
-        if 'meta' in kwargs.keys():
-            return kwargs['meta'].get('ORIGIN', '').startswith('NOBEYAMA RADIO OBS')
+        if "source" in kwargs.keys():
+            if kwargs.get("source", ""):
+                return kwargs.get("source", "").lower().startswith(cls._source)
+        if "meta" in kwargs.keys():
+            return kwargs["meta"].get("ORIGIN", "").startswith("NOBEYAMA RADIO OBS")

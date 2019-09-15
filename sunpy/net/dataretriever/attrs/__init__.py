@@ -1,3 +1,3 @@
 from . import goes
 
-__all__ = ['goes']
+__all__ = ["goes"]

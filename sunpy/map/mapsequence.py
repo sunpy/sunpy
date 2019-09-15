@@ -1,5 +1,5 @@
 """A Python MapSequence Object"""
-#pylint: disable=W0401,W0614,W0201,W0212,W0404
+# pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 from copy import deepcopy
 
@@ -14,7 +14,7 @@ from sunpy.util import expand_list
 from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
 from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 
-__all__ = ['MapSequence']
+__all__ = ["MapSequence"]
 
 
 class MapSequence:
@@ -47,18 +47,19 @@ class MapSequence:
 
     MapSequences can be co-aligned using the routines in sunpy.image.coalignment.
     """
-    def __init__(self, *args, sortby='date', derotate=False, **kwargs):
+
+    def __init__(self, *args, sortby="date", derotate=False, **kwargs):
         """Creates a new Map instance"""
 
         self.maps = expand_list(args)
 
         for m in self.maps:
             if not isinstance(m, GenericMap):
-                raise ValueError('MapSequence expects pre-constructed map objects.')
+                raise ValueError("MapSequence expects pre-constructed map objects.")
 
         # Optionally sort data
         if sortby is not None:
-            if sortby == 'date':
+            if sortby == "date":
                 self.maps.sort(key=self._sort_by_date())
             else:
                 raise ValueError("Only sort by date is supported")
@@ -89,8 +90,9 @@ class MapSequence:
         """Derotates the layers in the MapSequence"""
         pass
 
-    def plot(self, axes=None, resample=None, annotate=True,
-             interval=200, plot_function=None, **kwargs):
+    def plot(
+        self, axes=None, resample=None, annotate=True, interval=200, plot_function=None, **kwargs
+    ):
         """
         A animation plotting routine that animates each element in the
         MapSequence
@@ -165,17 +167,19 @@ class MapSequence:
         # Normal plot
         def annotate_frame(i):
             axes.set_title("{s.name}".format(s=self[i]))
-            axes.set_xlabel(axis_labels_from_ctype(self[i].coordinate_system[0],
-                                                   self[i].spatial_units[0]))
-            axes.set_ylabel(axis_labels_from_ctype(self[i].coordinate_system[1],
-                                                   self[i].spatial_units[1]))
+            axes.set_xlabel(
+                axis_labels_from_ctype(self[i].coordinate_system[0], self[i].spatial_units[0])
+            )
+            axes.set_ylabel(
+                axis_labels_from_ctype(self[i].coordinate_system[1], self[i].spatial_units[1])
+            )
 
         if resample:
             if self.all_maps_same_shape():
                 resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
                 ani_data = [amap.resample(resample) for amap in self.maps]
             else:
-                raise ValueError('Maps in mapsequence do not all have the same shape.')
+                raise ValueError("Maps in mapsequence do not all have the same shape.")
         else:
             ani_data = self.maps
 
@@ -186,9 +190,9 @@ class MapSequence:
                 removes.pop(0).remove()
 
             im.set_array(ani_data[i].data)
-            im.set_cmap(ani_data[i].plot_settings['cmap'])
+            im.set_cmap(ani_data[i].plot_settings["cmap"])
 
-            norm = deepcopy(ani_data[i].plot_settings['norm'])
+            norm = deepcopy(ani_data[i].plot_settings["norm"])
             # The following explicit call is for bugged versions of Astropy's
             # ImageNormalize
             norm.autoscale_None(ani_data[i].data)
@@ -209,11 +213,14 @@ class MapSequence:
                 annotate_frame(i)
             removes += list(plot_function(fig, axes, ani_data[i]))
 
-        ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                                 frames=list(range(0, len(ani_data))),
-                                                 fargs=[im, annotate, ani_data, removes],
-                                                 interval=interval,
-                                                 blit=False)
+        ani = matplotlib.animation.FuncAnimation(
+            fig,
+            updatefig,
+            frames=list(range(0, len(ani_data))),
+            fargs=[im, annotate, ani_data, removes],
+            interval=interval,
+            blit=False,
+        )
 
         return ani
 
@@ -293,7 +300,7 @@ class MapSequence:
                 for amap in self.maps:
                     plot_sequence.maps.append(amap.resample(resample))
             else:
-                raise ValueError('Maps in mapsequence do not all have the same shape.')
+                raise ValueError("Maps in mapsequence do not all have the same shape.")
         else:
             plot_sequence = self
 
@@ -325,7 +332,9 @@ class MapSequence:
         If all the map shapes are not the same, a ValueError is thrown.
         """
         if self.all_maps_same_shape():
-            data = np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
+            data = np.swapaxes(
+                np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2
+            ).copy()
             if self.at_least_one_map_has_mask():
                 mask_sequence = np.zeros_like(data, dtype=bool)
                 for im, m in enumerate(self.maps):
@@ -335,7 +344,7 @@ class MapSequence:
             else:
                 return data
         else:
-            raise ValueError('Not all maps have the same shape.')
+            raise ValueError("Not all maps have the same shape.")
 
     def all_meta(self):
         """

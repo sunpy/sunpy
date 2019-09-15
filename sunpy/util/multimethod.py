@@ -3,7 +3,7 @@ This module provides multimethod implementation in pure Python.
 """
 from warnings import warn
 
-__all__ = ['TypeWarning', 'MultiMethod']
+__all__ = ["TypeWarning", "MultiMethod"]
 
 SILENT = 0
 WARN = 1
@@ -11,7 +11,7 @@ FAIL = 2
 
 
 def _fmt_t(types):
-    return ', '.join(type_.__name__ for type_ in types)
+    return ", ".join(type_.__name__ for type_ in types)
 
 
 class TypeWarning(UserWarning):
@@ -28,6 +28,7 @@ class MultiMethod:
     get : `function`
         The function which receives args and kwargs and returns a tuple of values to consider for dispatch.
     """
+
     def __init__(self, get):
         self.get = get
 
@@ -64,9 +65,13 @@ class MultiMethod:
         if overriden and override == FAIL:
             raise TypeError
         elif overriden and override == WARN:
-            warn('Definition ({}) overrides prior definition ({}).'.format(_fmt_t(types),
-                                                                             _fmt_t(signature)),
-                 TypeWarning, stacklevel=3)
+            warn(
+                "Definition ({}) overrides prior definition ({}).".format(
+                    _fmt_t(types), _fmt_t(signature)
+                ),
+                TypeWarning,
+                stacklevel=3,
+            )
 
         self.methods.append((types, fun))
 
@@ -81,8 +86,9 @@ class MultiMethod:
         self.cache = {}
 
         def _dec(fun):
-            self.add(fun, types, kwargs.get('override', SILENT))
+            self.add(fun, types, kwargs.get("override", SILENT))
             return fun
+
         return _dec
 
     def __call__(self, *args, **kwargs):
@@ -99,7 +105,7 @@ class MultiMethod:
             if all(issubclass(ty, sig) for ty, sig in zip(types, signature)):
                 self.cache[types] = fun
                 return fun(*args, **kwargs)
-        raise TypeError(f'{types!r}')
+        raise TypeError(f"{types!r}")
 
     # XXX: Other Python implementations.
     def super(self, *args, **kwargs):
@@ -113,15 +119,9 @@ class MultiMethod:
         """
         objs = self.get(*args, **kwargs)
         types = tuple(
-            [
-                x.__thisclass__.__mro__[1] if isinstance(x, super) else type(x)
-                for x in objs
-            ]
+            [x.__thisclass__.__mro__[1] if isinstance(x, super) else type(x) for x in objs]
         )
-        nargs = [
-            x.__self__ if isinstance(x, super) else x
-            for x in args
-        ]
+        nargs = [x.__self__ if isinstance(x, super) else x for x in args]
 
         for k, elem in kwargs.items():
             if isinstance(elem, super):

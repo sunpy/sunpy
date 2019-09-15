@@ -15,53 +15,94 @@ from sunpy.coordinates.utils import GreatArc
 # calculate these co-ordinates using the inner angle formulae as listed here:
 # https://en.wikipedia.org/wiki/Great-circle_distance
 #
-@pytest.mark.parametrize("start, end", [((0, 0), (0, 45)),
-                                        ((0, 0), (45, 0)),
-                                        ((0, 45), (0, 0)),
-                                        ((45, 0), (0, 0)),
-                                        ((12, 13), (12, 58)),
-                                        ((-10, 6), (-10, 51)),
-                                        ((-20, -50), (-20, -5)),
-                                        ((10, -50), (87.53163324626676, -55))])
+@pytest.mark.parametrize(
+    "start, end",
+    [
+        ((0, 0), (0, 45)),
+        ((0, 0), (45, 0)),
+        ((0, 45), (0, 0)),
+        ((45, 0), (0, 0)),
+        ((12, 13), (12, 58)),
+        ((-10, 6), (-10, 51)),
+        ((-20, -50), (-20, -5)),
+        ((10, -50), (87.53163324626676, -55)),
+    ],
+)
 def test_great_arc_calculable(start, end):
-    c = SkyCoord(start[0]*u.degree, start[1]*u.degree, frame=frames.HeliographicStonyhurst,
-                 observer=frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
-    d = SkyCoord(end[0]*u.degree, end[1]*u.degree, frame=frames.HeliographicStonyhurst,
-                 observer=frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
+    c = SkyCoord(
+        start[0] * u.degree,
+        start[1] * u.degree,
+        frame=frames.HeliographicStonyhurst,
+        observer=frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, 1 * u.AU),
+    )
+    d = SkyCoord(
+        end[0] * u.degree,
+        end[1] * u.degree,
+        frame=frames.HeliographicStonyhurst,
+        observer=frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, 1 * u.AU),
+    )
     gc = GreatArc(c, d)
 
     assert gc.start == c
     assert gc.end == d
-    np.testing.assert_almost_equal(gc.inner_angle.to('deg').value, 45.0)
-    np.testing.assert_almost_equal(gc.radius.to('km').value, sun.constants.radius.to('km').value)
-    np.testing.assert_almost_equal(gc.distance.to('km').value, sun.constants.radius.to('km').value * 2 * np.pi/8, decimal=1)
+    np.testing.assert_almost_equal(gc.inner_angle.to("deg").value, 45.0)
+    np.testing.assert_almost_equal(gc.radius.to("km").value, sun.constants.radius.to("km").value)
+    np.testing.assert_almost_equal(
+        gc.distance.to("km").value, sun.constants.radius.to("km").value * 2 * np.pi / 8, decimal=1
+    )
 
 
 # Test the calculation of coordinates using varying numbers of points on
 # initialization of the GreatArc object.
-@pytest.mark.parametrize("points_requested, points_expected, first_point, last_point, last_inner_angle, last_distance",
-                         # Test default
-                         [(None, 100, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981299),
-                          # Test int as an option
-                          (3, 3, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981299),
-                          # Test equally spaced monotonically increasing numpy
-                          # array
-                          (np.linspace(0, 1, 43), 43, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981299),
-                          # Test unequally spaced monotonically increasing numpy
-                          # array
-                          (np.asarray([0.1, 0.2, 0.6, 0.67, 0.99]), 5, (604.68091703, -468.64217597), (-88.83212616, 792.76284375), 1.84967446, 1287373.4261486),
-                          # Test unequally spaced monotonically decreasing numpy
-                          # array
-                          (np.asarray([0.93, 0.78, 0.3, 0.001]), 4, (-21.28208654, 743.58866798), (600.1512768 , -598.78376614), 0.00186836, 1300.37719813),
-                          # Test numpy array that increases and decreases
-                          (np.asarray([0.94, 0.73, 0.8, 0.21]), 4, (-32.5852606 , 752.45507707), (585.45829119, -305.26965043), 0.39235519, 273079.2116073)])
-def test_great_arc_coordinates(points_requested, points_expected, first_point,
-                               last_point, last_inner_angle, last_distance):
+@pytest.mark.parametrize(
+    "points_requested, points_expected, first_point, last_point, last_inner_angle, last_distance",
+    # Test default
+    [
+        (None, 100, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981299),
+        # Test int as an option
+        (3, 3, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981299),
+        # Test equally spaced monotonically increasing numpy
+        # array
+        (np.linspace(0, 1, 43), 43, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981299),
+        # Test unequally spaced monotonically increasing numpy
+        # array
+        (
+            np.asarray([0.1, 0.2, 0.6, 0.67, 0.99]),
+            5,
+            (604.68091703, -468.64217597),
+            (-88.83212616, 792.76284375),
+            1.84967446,
+            1287373.4261486,
+        ),
+        # Test unequally spaced monotonically decreasing numpy
+        # array
+        (
+            np.asarray([0.93, 0.78, 0.3, 0.001]),
+            4,
+            (-21.28208654, 743.58866798),
+            (600.1512768, -598.78376614),
+            0.00186836,
+            1300.37719813,
+        ),
+        # Test numpy array that increases and decreases
+        (
+            np.asarray([0.94, 0.73, 0.8, 0.21]),
+            4,
+            (-32.5852606, 752.45507707),
+            (585.45829119, -305.26965043),
+            0.39235519,
+            273079.2116073,
+        ),
+    ],
+)
+def test_great_arc_coordinates(
+    points_requested, points_expected, first_point, last_point, last_inner_angle, last_distance
+):
 
-    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits')))
+    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath("aia_171_level1.fits")))
     coordinate_frame = m.coordinate_frame
-    a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
-    b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
+    a = SkyCoord(600 * u.arcsec, -600 * u.arcsec, frame=coordinate_frame)
+    b = SkyCoord(-100 * u.arcsec, 800 * u.arcsec, frame=coordinate_frame)
     gc = GreatArc(a, b, points=points_requested)
     coordinates = gc.coordinates()
     inner_angles = gc.inner_angles()
@@ -79,14 +120,24 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
     assert gc.center.y == 0 * u.km
     assert gc.center.z == 0 * u.km
 
-    np.testing.assert_almost_equal(gc.start_cartesian, np.asarray([428721.0913539, -428722.9051924, 341776.0910214]))
-    np.testing.assert_almost_equal(gc.end_cartesian, np.asarray([-71429.5229381, 571439.071248, 390859.5797815]))
+    np.testing.assert_almost_equal(
+        gc.start_cartesian, np.asarray([428721.0913539, -428722.9051924, 341776.0910214])
+    )
+    np.testing.assert_almost_equal(
+        gc.end_cartesian, np.asarray([-71429.5229381, 571439.071248, 390859.5797815])
+    )
     np.testing.assert_almost_equal(gc.center_cartesian, np.asarray([0, 0, 0]))
 
-    np.testing.assert_almost_equal(gc.v1, np.asarray([428721.0913539, -428722.9051924, 341776.0910214]))
+    np.testing.assert_almost_equal(
+        gc.v1, np.asarray([428721.0913539, -428722.9051924, 341776.0910214])
+    )
     np.testing.assert_almost_equal(gc._r, 696000.000001501)
-    np.testing.assert_almost_equal(gc.v2, np.asarray([-71429.5229381, 571439.071248, 390859.5797815]))
-    np.testing.assert_almost_equal(gc.v3, np.asarray([56761.6265851, 466230.7005856, 513637.0815867]))
+    np.testing.assert_almost_equal(
+        gc.v2, np.asarray([-71429.5229381, 571439.071248, 390859.5797815])
+    )
+    np.testing.assert_almost_equal(
+        gc.v3, np.asarray([56761.6265851, 466230.7005856, 513637.0815867])
+    )
 
     # Inner angle
     assert gc.inner_angle.unit == u.rad
@@ -122,15 +173,20 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
 
 
 # Test that the great arc code rejects wrongly formatted points
-@pytest.mark.parametrize("points", [np.asarray([[0, 0.1], [0.2, 0.3]]),
-                                    np.asarray([0.1, 0.2, -0.1, 0.4]),
-                                    np.asarray([0.3, 1.1, 0.6, 0.7]),
-                                    'strings_not_permitted'])
+@pytest.mark.parametrize(
+    "points",
+    [
+        np.asarray([[0, 0.1], [0.2, 0.3]]),
+        np.asarray([0.1, 0.2, -0.1, 0.4]),
+        np.asarray([0.3, 1.1, 0.6, 0.7]),
+        "strings_not_permitted",
+    ],
+)
 def test_great_arc_wrongly_formatted_points(points):
-    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits')))
+    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath("aia_171_level1.fits")))
     coordinate_frame = m.coordinate_frame
-    a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
-    b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
+    a = SkyCoord(600 * u.arcsec, -600 * u.arcsec, frame=coordinate_frame)
+    b = SkyCoord(-100 * u.arcsec, 800 * u.arcsec, frame=coordinate_frame)
     with pytest.raises(ValueError):
         dummy = GreatArc(a, b, points=points)
 
@@ -150,10 +206,10 @@ def test_great_arc_wrongly_formatted_points(points):
 # Test that the great arc code properly differentiates between the default
 # points and the requested points
 def test_great_arc_points_differentiates():
-    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits')))
+    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath("aia_171_level1.fits")))
     coordinate_frame = m.coordinate_frame
-    a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
-    b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
+    a = SkyCoord(600 * u.arcsec, -600 * u.arcsec, frame=coordinate_frame)
+    b = SkyCoord(-100 * u.arcsec, 800 * u.arcsec, frame=coordinate_frame)
     gc = GreatArc(a, b)
     coordinates = gc.coordinates(10)
     inner_angles = gc.inner_angles(11)

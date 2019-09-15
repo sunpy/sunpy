@@ -33,8 +33,13 @@ from sunpy.util.datatype_factory_base import (
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
 
-__all__ = ['TimeSeries', 'TimeSeriesFactory', 'NoTimeSeriesFound',
-           'InvalidTimeSeriesInput', 'InvalidTimeSeriesType']
+__all__ = [
+    "TimeSeries",
+    "TimeSeriesFactory",
+    "NoTimeSeriesFound",
+    "InvalidTimeSeriesInput",
+    "InvalidTimeSeriesType",
+]
 
 
 class TimeSeriesFactory(BasicRegistrationFactory):
@@ -124,7 +129,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             List of ``(data, header)`` pairs if ``parsed`` is `True`,  ``fname`` if ``parsed`` is `False`.
             `False` if the file is not supported or incorrect.
         """
-        if 'source' not in kwargs.keys() or not kwargs['source']:
+        if "source" not in kwargs.keys() or not kwargs["source"]:
             try:
                 pairs = read_file(fname, **kwargs)
 
@@ -167,7 +172,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         `sunpy.util.metadict.MetaDict`) with only `astropy.units` for
         values.
         """
-        warnings.simplefilter('always', Warning)
+        warnings.simplefilter("always", Warning)
         result = True
 
         # It must be a dictionary
@@ -202,8 +207,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             if len(table.primary_key) == 1:
                 table.primary_key[0]
             else:
-                raise ValueError("Invalid input Table, TimeSeries doesn't support conversion"
-                                 " of tables with more then one index column.")
+                raise ValueError(
+                    "Invalid input Table, TimeSeries doesn't support conversion"
+                    " of tables with more then one index column."
+                )
 
         # Extract, convert and remove the index column from the input table
         index = table[index_name]
@@ -263,7 +270,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             arg = args[i]
 
             # Data-header pair in a tuple
-            if (isinstance(arg, (np.ndarray, Table, pd.DataFrame))):
+            if isinstance(arg, (np.ndarray, Table, pd.DataFrame)):
                 # and self._validate_meta(args[i+1])):
                 # Assume a Pandas Dataframe is given
                 data = arg
@@ -280,34 +287,32 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
                 # If there are 1 or 2 more arguments:
                 for _ in range(2):
-                    if (len(args) > i+1):
+                    if len(args) > i + 1:
                         # If that next argument isn't data but is metaddata or units:
-                        if not isinstance(args[i+1], (np.ndarray, Table, pd.DataFrame)):
-                            if self._validate_units(args[i+1]):
-                                units.update(args[i+1])
+                        if not isinstance(args[i + 1], (np.ndarray, Table, pd.DataFrame)):
+                            if self._validate_units(args[i + 1]):
+                                units.update(args[i + 1])
                                 i += 1  # an extra increment to account for the units
-                            elif self._validate_meta(args[i+1]):
+                            elif self._validate_meta(args[i + 1]):
                                 # if we have an astropy.io FITS header then convert
                                 # to preserve multi-line comments
-                                if isinstance(args[i+1], astropy.io.fits.header.Header):
-                                    args[i+1] = MetaDict(sunpy.io.header.FileHeader(args[i+1]))
-                                meta.update(args[i+1])
+                                if isinstance(args[i + 1], astropy.io.fits.header.Header):
+                                    args[i + 1] = MetaDict(sunpy.io.header.FileHeader(args[i + 1]))
+                                meta.update(args[i + 1])
                                 i += 1  # an extra increment to account for the meta
 
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
 
             # Filepath
-            elif (isinstance(arg, str) and
-                  os.path.isfile(os.path.expanduser(arg))):
+            elif isinstance(arg, str) and os.path.isfile(os.path.expanduser(arg)):
 
                 path = os.path.expanduser(arg)
                 result = self._read_file(path, **kwargs)
                 data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths, result)
 
             # Directory
-            elif (isinstance(arg, str) and
-                  os.path.isdir(os.path.expanduser(arg))):
+            elif isinstance(arg, str) and os.path.isdir(os.path.expanduser(arg)):
 
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
@@ -315,27 +320,28 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     # returns a boolean telling us if it were read and either a
                     # tuple or the original filepath for reading by a source
                     result = self._read_file(afile, **kwargs)
-                    data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths,
-                                                                 result)
+                    data_header_pairs, filepaths = _apply_result(
+                        data_header_pairs, filepaths, result
+                    )
 
             # Glob
-            elif isinstance(arg, str) and '*' in arg:
+            elif isinstance(arg, str) and "*" in arg:
 
                 files = glob.glob(os.path.expanduser(arg))
                 for afile in files:
                     # returns a boolean telling us if it were read and either a
                     # tuple or the original filepath for reading by a source
                     result = self._read_file(afile, **kwargs)
-                    data_header_pairs, filepaths = _apply_result(data_header_pairs, filepaths,
-                                                                 result)
+                    data_header_pairs, filepaths = _apply_result(
+                        data_header_pairs, filepaths, result
+                    )
 
             # Already a TimeSeries
             elif isinstance(arg, GenericTimeSeries):
                 already_timeseries.append(arg)
 
             # A URL
-            elif (isinstance(arg, str) and
-                  _is_url(arg)):
+            elif isinstance(arg, str) and _is_url(arg):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
                 result = self._read_file(path, **kwargs)
@@ -369,8 +375,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         -----
         Extra keyword arguments are passed through to `sunpy.io.read_file` such as `memmap` for FITS files.
         """
-        (data_header_unit_tuples, data_header_pairs,
-         already_timeseries, filepaths) = self._parse_args(*args, **kwargs)
+        (
+            data_header_unit_tuples,
+            data_header_pairs,
+            already_timeseries,
+            filepaths,
+        ) = self._parse_args(*args, **kwargs)
 
         new_timeseries = list()
 
@@ -406,11 +416,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 # If no specific classes have been found we can read the data
                 # if we only have one data header pair:
                 if len(pairs) == 1:
-                    already_timeseries.append(GenericTimeSeries(pairs[0].data,
-                                                                pairs[0].header))
+                    already_timeseries.append(GenericTimeSeries(pairs[0].data, pairs[0].header))
                 else:
-                    raise NoMatchError("Input read by sunpy.io can not find a "
-                                       "matching class for reading multiple HDUs")
+                    raise NoMatchError(
+                        "Input read by sunpy.io can not find a "
+                        "matching class for reading multiple HDUs"
+                    )
             if len(set(types)) > 1:
                 raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
 
@@ -429,8 +440,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             meta = MetaDict(meta)
 
             try:
-                new_ts = self._check_registered_widgets(data=data, meta=meta,
-                                                        units=units, **kwargs)
+                new_ts = self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)
                 new_timeseries.append(new_ts)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
@@ -441,7 +451,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         new_timeseries += already_timeseries
 
         # Concatenate the timeseries into one if specified.
-        concatenate = kwargs.get('concatenate', False)
+        concatenate = kwargs.get("concatenate", False)
         if concatenate:
             # Merge all these timeseries into one.
             full_timeseries = new_timeseries.pop(0)
@@ -475,9 +485,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({})."
-                                     "Specify enough keywords to guarantee unique type "
-                                     "identification.".format(n_matches))
+            raise MultipleMatchError(
+                "Too many candidate types identified ({})."
+                "Specify enough keywords to guarantee unique type "
+                "identification.".format(n_matches)
+            )
 
         # Only one suitable source class is found
         return candidate_widget_types[0]
@@ -495,10 +507,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Dealing with the fact that timeseries filetypes are less consistent
         # (then maps), we use a _parse_file() method embedded into each
         # instrument subclass.
-        filepath = kwargs.pop('filepath', None)
-        data = kwargs.pop('data', None)
-        meta = kwargs.pop('meta', None)
-        units = kwargs.pop('units', None)
+        filepath = kwargs.pop("filepath", None)
+        data = kwargs.pop("data", None)
+        meta = kwargs.pop("meta", None)
+        units = kwargs.pop("units", None)
         if filepath:
             data, meta, units = WidgetType._parse_file(filepath)
 
@@ -546,6 +558,8 @@ class NoTimeSeriesFound(ValueError):
     """
 
 
-TimeSeries = TimeSeriesFactory(registry=GenericTimeSeries._registry,
-                               default_widget_type=GenericTimeSeries,
-                               additional_validation_functions=['is_datasource_for'])
+TimeSeries = TimeSeriesFactory(
+    registry=GenericTimeSeries._registry,
+    default_widget_type=GenericTimeSeries,
+    additional_validation_functions=["is_datasource_for"],
+)

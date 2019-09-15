@@ -9,10 +9,10 @@ import functools
 
 from sunpy.util.exceptions import SunpyDeprecationWarning
 
-__all__ = ['deprecated']
+__all__ = ["deprecated"]
 
 
-def deprecated(since, message='', name='', alternative=''):
+def deprecated(since, message="", name="", alternative=""):
     """
     Used to mark a function or class as deprecated.
 
@@ -52,15 +52,16 @@ def deprecated(since, message='', name='', alternative=''):
         Returns a given docstring with a deprecation message prepended to it.
         """
         if not old_doc:
-            old_doc = ''
-        old_doc = textwrap.dedent(old_doc).strip('\n')
-        new_doc = (('\n.. deprecated:: {since}'
-                    '\n    {message}\n\n'.format(
-                     **{'since': since, 'message': message.strip()})) + old_doc)
+            old_doc = ""
+        old_doc = textwrap.dedent(old_doc).strip("\n")
+        new_doc = (
+            "\n.. deprecated:: {since}"
+            "\n    {message}\n\n".format(**{"since": since, "message": message.strip()})
+        ) + old_doc
         if not old_doc:
             # This is to prevent a spurious 'unexpected unindent' warning from
             # docutils when the original docstring was blank.
-            new_doc += r'\ '
+            new_doc += r"\ "
         return new_doc
 
     def get_function(func):
@@ -97,11 +98,10 @@ def deprecated(since, message='', name='', alternative=''):
         # functools.wraps on it, but we normally don't care.
         # This crazy way to get the type of a wrapper descriptor is
         # straight out of the Python 3.3 inspect module docs.
-        if type(func) is not type(str.__dict__['__add__']):  # noqa
+        if type(func) is not type(str.__dict__["__add__"]):  # noqa
             deprecated_func = functools.wraps(func)(deprecated_func)
 
-        deprecated_func.__doc__ = deprecate_doc(
-            deprecated_func.__doc__, message)
+        deprecated_func.__doc__ = deprecate_doc(deprecated_func.__doc__, message)
 
         return func_wrapper(deprecated_func)
 
@@ -129,40 +129,46 @@ def deprecated(since, message='', name='', alternative=''):
 
         members = cls.__dict__.copy()
 
-        members.update({
-            '__doc__': deprecate_doc(cls.__doc__, message),
-            '__init__': deprecate_function(get_function(cls.__init__),
-                                           message),
-        })
+        members.update(
+            {
+                "__doc__": deprecate_doc(cls.__doc__, message),
+                "__init__": deprecate_function(get_function(cls.__init__), message),
+            }
+        )
 
         return type(cls)(cls.__name__, cls.__bases__, members)
 
     def deprecate(obj, message=message, name=name, alternative=alternative):
         if isinstance(obj, type):
-            obj_type_name = 'class'
+            obj_type_name = "class"
         elif inspect.isfunction(obj):
-            obj_type_name = 'function'
+            obj_type_name = "function"
         elif inspect.ismethod(obj) or isinstance(obj, method_types):
-            obj_type_name = 'method'
+            obj_type_name = "method"
         else:
-            obj_type_name = 'object'
+            obj_type_name = "object"
 
         if not name:
             name = get_function(obj).__name__
 
-        altmessage = ''
+        altmessage = ""
         if not message or type(message) is type(deprecate):
-            message = ('The {func} {obj_type} is deprecated and may '
-                       'be removed in a future version.')
+            message = (
+                "The {func} {obj_type} is deprecated and may " "be removed in a future version."
+            )
             if alternative:
-                altmessage = f'\n        Use {alternative} instead.'
+                altmessage = f"\n        Use {alternative} instead."
 
-        message = ((message.format(**{
-            'func': name,
-            'name': name,
-            'alternative': alternative,
-            'obj_type': obj_type_name})) +
-            altmessage)
+        message = (
+            message.format(
+                **{
+                    "func": name,
+                    "name": name,
+                    "alternative": alternative,
+                    "obj_type": obj_type_name,
+                }
+            )
+        ) + altmessage
 
         if isinstance(obj, type):
             return deprecate_class(obj, message)
@@ -201,9 +207,9 @@ class add_common_docstring:
         self.kwargs = kwargs
 
     def __call__(self, func):
-        func.__doc__ = func.__doc__ if func.__doc__ else ''
-        self.append = self.append if self.append else ''
-        self.prepend = self.prepend if self.prepend else ''
+        func.__doc__ = func.__doc__ if func.__doc__ else ""
+        self.append = self.append if self.append else ""
+        self.prepend = self.prepend if self.prepend else ""
         if self.append and isinstance(func.__doc__, str):
             func.__doc__ += self.append
         if self.prepend and isinstance(func.__doc__, str):

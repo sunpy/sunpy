@@ -19,13 +19,13 @@ try:
 except ImportError:
     ana = None
 
-__all__ = ['read_file', 'read_file_header', 'write_file']
+__all__ = ["read_file", "read_file_header", "write_file"]
 
 # File formats supported by SunPy
 _known_extensions = {
-    ('fts', 'fits'): 'fits',
-    ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
-    ('fz', 'f0'): 'ana'
+    ("fts", "fits"): "fits",
+    ("jp2", "j2k", "jpc", "jpt"): "jp2",
+    ("fz", "f0"): "ana",
 }
 
 
@@ -37,18 +37,16 @@ class Readers(dict):
     def __getitem__(self, key):
         val = dict.__getitem__(self, key)
         if val is None:
-            raise ReaderError(f"The Reader sunpy.io.{key} is not available, "
-                               "please check that you have the required dependencies "
-                               "installed.")
+            raise ReaderError(
+                f"The Reader sunpy.io.{key} is not available, "
+                "please check that you have the required dependencies "
+                "installed."
+            )
         return val
 
 
 # Map the readers
-_readers = Readers({
-            'fits': fits,
-            'jp2': jp2,
-            'ana': ana
-})
+_readers = Readers({"fits": fits, "jp2": jp2, "ana": ana})
 
 
 def read_file(filepath, filetype=None, **kwargs):
@@ -122,7 +120,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
     return _readers[readername].get_header(filepath, **kwargs)
 
 
-def write_file(fname, data, header, filetype='auto', **kwargs):
+def write_file(fname, data, header, filetype="auto", **kwargs):
     """
     Write a file from a data & header pair using one of the defined file types.
 
@@ -143,7 +141,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     * Other keyword arguments will be passes to the writer function used.
     * This routine currently only supports saving a single HDU.
     """
-    if filetype == 'auto':
+    if filetype == "auto":
         if not isinstance(fname, str):
             raise ValueError("Can not automatically detect filetype for non-string fname argument")
         for extension, readername in _known_extensions.items():
@@ -175,7 +173,7 @@ def _detect_filetype(filepath):
     """
 
     # Open file and read in first two lines
-    with open(filepath, 'rb') as fp:
+    with open(filepath, "rb") as fp:
         line1 = fp.readline()
         line2 = fp.readline()
         # Some FITS files do not have line breaks at the end of header cards.
@@ -190,13 +188,13 @@ def _detect_filetype(filepath):
 
     gzip_extensions = [".gz"]
     fits_extensions = [".fts", ".fit", ".fits"]
-    if (ext1 in gzip_extensions and ext2 in fits_extensions):
-        return 'fits'
+    if ext1 in gzip_extensions and ext2 in fits_extensions:
+        return "fits"
 
     # Check for "KEY_WORD  =" at beginning of file
     match = re.match(br"[A-Z0-9_]{0,8} *=", first80)
     if match is not None:
-        return 'fits'
+        return "fits"
 
     # JPEG 2000
     #
@@ -205,16 +203,19 @@ def _detect_filetype(filepath):
     # [1] https://www.sno.phy.queensu.ca/~phil/exiftool/
     # [2] http://www.hlevkin.com/Standards/fcd15444-2.pdf
     # [3] http://www.hlevkin.com/Standards/fcd15444-1.pdf
-    jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
-                      b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
+    jp2_signatures = [
+        b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
+        b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a",
+    ]
 
     for sig in jp2_signatures:
         if line1 + line2 == sig:
-            return 'jp2'
+            return "jp2"
 
     # Raise an error if an unsupported filetype is encountered
-    raise UnrecognizedFileTypeError("The requested filetype is not currently "
-                                    "supported by SunPy.")
+    raise UnrecognizedFileTypeError(
+        "The requested filetype is not currently " "supported by SunPy."
+    )
 
 
 class UnrecognizedFileTypeError(OSError):

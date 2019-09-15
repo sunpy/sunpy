@@ -12,9 +12,9 @@ from sunpy.util.scraper import Scraper
 
 from ..client import GenericClient
 
-__all__ = ['NoRHClient']
+__all__ = ["NoRHClient"]
 
-BASEURL = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
+BASEURL = "ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d"
 
 
 class NoRHClient(GenericClient):
@@ -47,6 +47,7 @@ class NoRHClient(GenericClient):
     <BLANKLINE>
 
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns list of URLS corresponding to value of input timerange.
@@ -64,11 +65,13 @@ class NoRHClient(GenericClient):
 
         # We allow queries with no Wavelength but error here so that the query
         # does not get passed to VSO and spit out garbage.
-        if 'wavelength' not in kwargs.keys() or not kwargs['wavelength']:
-            raise ValueError("Queries to NORH should specify either 17GHz or 34GHz as a Wavelength."
-                             "see https://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
+        if "wavelength" not in kwargs.keys() or not kwargs["wavelength"]:
+            raise ValueError(
+                "Queries to NORH should specify either 17GHz or 34GHz as a Wavelength."
+                "see https://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html"
+            )
         else:
-            wavelength = kwargs['wavelength']
+            wavelength = kwargs["wavelength"]
 
         # If wavelength is a single value GenericClient will have made it a
         # Quantity in the kwargs.
@@ -77,19 +80,20 @@ class NoRHClient(GenericClient):
 
         wavelength = wavelength.to(u.GHz, equivalencies=u.spectral())
         if wavelength == 34 * u.GHz:
-            freq = 'tcz'
+            freq = "tcz"
         elif wavelength == 17 * u.GHz:
-            freq = 'tca'
+            freq = "tca"
         else:
-            raise ValueError("NORH Data can be downloaded for 17GHz or 34GHz,"
-                             " see https://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
+            raise ValueError(
+                "NORH Data can be downloaded for 17GHz or 34GHz,"
+                " see https://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html"
+            )
 
         # If start of time range is before 00:00, converted to such, so
         # files of the requested time ranger are included.
         # This is done because the archive contains daily files.
-        if timerange.start.strftime('%M-%S') != '00-00':
-            timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'),
-                                  timerange.end)
+        if timerange.start.strftime("%M-%S") != "00-00":
+            timerange = TimeRange(timerange.start.strftime("%Y-%m-%d"), timerange.end)
 
         norh = Scraper(BASEURL, freq=freq)
         # TODO: warn user that some files may have not been listed, like for example:
@@ -99,23 +103,23 @@ class NoRHClient(GenericClient):
         return norh.filelist(timerange)
 
     def _get_time_for_url(self, urls):
-        freq = urls[0].split('/')[-1][0:3]  # extract the frequency label
+        freq = urls[0].split("/")[-1][0:3]  # extract the frequency label
         crawler = Scraper(BASEURL, freq=freq)
         times = list()
         for url in urls:
             t0 = crawler._extractDateURL(url)
             # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
+            times.append(TimeRange(t0, t0 + TimeDelta(1 * u.day)))
         return times
 
     def _makeimap(self):
         """
         Helper Function used to hold information about source.
         """
-        self.map_['source'] = 'NAOJ'
-        self.map_['provider'] = 'NRO'
-        self.map_['instrument'] = 'NORH'
-        self.map_['physobs'] = ''
+        self.map_["source"] = "NAOJ"
+        self.map_["provider"] = "NRO"
+        self.map_["instrument"] = "NORH"
+        self.map_["physobs"] = ""
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -144,7 +148,7 @@ class NoRHClient(GenericClient):
         # if we get this far we have either Instrument and Time
         # or Instrument, Time and Wavelength
         for x in query:
-            if isinstance(x, a.Instrument) and x.value.lower() == 'norh':
+            if isinstance(x, a.Instrument) and x.value.lower() == "norh":
                 return True
 
         return False

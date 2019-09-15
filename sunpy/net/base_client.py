@@ -29,7 +29,7 @@ class BaseClient(ABC):
         """
         super().__init_subclass__(**kwargs)
         # We do not want to register GenericClient since its a dummy client.
-        if cls.__name__ != 'GenericClient':
+        if cls.__name__ != "GenericClient":
             cls._registry[cls] = cls._can_handle_query
 
     @abstractmethod
@@ -39,8 +39,17 @@ class BaseClient(ABC):
         """
 
     @abstractmethod
-    def fetch(self, *query_results, path=None, overwrite=False, progress=True,
-              max_conn=5, downloader=None, wait=True, **kwargs):
+    def fetch(
+        self,
+        *query_results,
+        path=None,
+        overwrite=False,
+        progress=True,
+        max_conn=5,
+        downloader=None,
+        wait=True,
+        **kwargs
+    ):
         """
         This enables the user to fetch the data using the client, after a search.
 

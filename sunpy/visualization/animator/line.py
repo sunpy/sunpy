@@ -2,7 +2,7 @@ import numpy as np
 
 from sunpy.visualization.animator.base import ArrayAnimator, edges_to_centers_nd
 
-__all__ = ['LineAnimator']
+__all__ = ["LineAnimator"]
 
 
 class LineAnimator(ArrayAnimator):
@@ -77,19 +77,33 @@ class LineAnimator(ArrayAnimator):
     Extra keywords are passed to `~sunpy.visualization.animator.ArrayAnimator`.
     """
 
-    def __init__(self, data, plot_axis_index=-1, axis_ranges=None, ylabel=None, xlabel=None,
-                 xlim=None, ylim=None, aspect='auto', **kwargs):
+    def __init__(
+        self,
+        data,
+        plot_axis_index=-1,
+        axis_ranges=None,
+        ylabel=None,
+        xlabel=None,
+        xlim=None,
+        ylim=None,
+        aspect="auto",
+        **kwargs
+    ):
         # Check inputs.
         self.plot_axis_index = int(plot_axis_index)
         if self.plot_axis_index not in range(-data.ndim, data.ndim):
-            raise ValueError("plot_axis_index must be within range of number of data dimensions"
-                             " (or equivalent negative indices).")
+            raise ValueError(
+                "plot_axis_index must be within range of number of data dimensions"
+                " (or equivalent negative indices)."
+            )
         if data.ndim < 2:
-            raise ValueError("data must have at least two dimensions. One for data "
-                             "for each single plot and at least one for time/iteration.")
+            raise ValueError(
+                "data must have at least two dimensions. One for data "
+                "for each single plot and at least one for time/iteration."
+            )
         # Define number of slider axes.
         self.naxis = data.ndim
-        self.num_sliders = self.naxis-1
+        self.num_sliders = self.naxis - 1
         # Attach data to class.
         if axis_ranges is not None and all(axis_range is None for axis_range in axis_ranges):
             axis_ranges = None
@@ -105,8 +119,9 @@ class LineAnimator(ArrayAnimator):
             # Else derive the xdata as pixel centers from the pixel edges supplied by
             # the user in axis_ranges[plot_axis_index] along axis=plot_axis_index
             else:
-                self.xdata = edges_to_centers_nd(np.asarray(axis_ranges[self.plot_axis_index]),
-                                                 plot_axis_index)
+                self.xdata = edges_to_centers_nd(
+                    np.asarray(axis_ranges[self.plot_axis_index]), plot_axis_index
+                )
         if ylim is None:
             ylim = (data.min(), data.max())
         if xlim is None:
@@ -117,8 +132,7 @@ class LineAnimator(ArrayAnimator):
         self.ylabel = ylabel
         self.aspect = aspect
         # Run init for base class
-        super().__init__(data, image_axes=[self.plot_axis_index], axis_ranges=axis_ranges,
-                         **kwargs)
+        super().__init__(data, image_axes=[self.plot_axis_index], axis_ranges=axis_ranges, **kwargs)
 
     def plot_start_image(self, ax):
         """
@@ -126,7 +140,7 @@ class LineAnimator(ArrayAnimator):
         """
         ax.set_xlim(self.xlim)
         ax.set_ylim(self.ylim)
-        ax.set_aspect(self.aspect, adjustable = 'datalim')
+        ax.set_aspect(self.aspect, adjustable="datalim")
         if self.xlabel is not None:
             ax.set_xlabel(self.xlabel)
         if self.ylabel is not None:

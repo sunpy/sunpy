@@ -16,11 +16,12 @@ from sunpy.time import parse_time
 from sunpy.util.util import partial_key_match
 from sunpy.util.xml import xml_to_dict
 
-__all__ = ['HelioviewerClient']
+__all__ = ["HelioviewerClient"]
 
 
 class HelioviewerClient:
     """Helioviewer.org Client"""
+
     def __init__(self, url="https://api.helioviewer.org/"):
         """
         Parameters
@@ -44,15 +45,17 @@ class HelioviewerClient:
             # TRACE only has measurements and is thus nested once
             if name == "TRACE":
                 for instr, params in observ.items():
-                    data_sources_dict[(name, None, None, instr)] = params['sourceId']
+                    data_sources_dict[(name, None, None, instr)] = params["sourceId"]
             else:
                 for inst, detect in observ.items():
                     for wavelength, params in detect.items():
-                        if 'sourceId' in params:
-                            data_sources_dict[(name, inst, None, wavelength)] = params['sourceId']
+                        if "sourceId" in params:
+                            data_sources_dict[(name, inst, None, wavelength)] = params["sourceId"]
                         else:
                             for wave, adict in params.items():
-                                data_sources_dict[(name, inst, wavelength, wave)] = adict['sourceId']
+                                data_sources_dict[(name, inst, wavelength, wave)] = adict[
+                                    "sourceId"
+                                ]
 
         # Sort the output for printing purposes
         return OrderedDict(sorted(data_sources_dict.items(), key=lambda x: x[1]))
@@ -71,8 +74,15 @@ class HelioviewerClient:
         params = {"action": "getDataSources"}
         return self._get_json(params)
 
-    def get_closest_image(self, date, observatory=None, instrument=None,
-                          detector=None, measurement=None, source_id=None):
+    def get_closest_image(
+        self,
+        date,
+        observatory=None,
+        instrument=None,
+        detector=None,
+        measurement=None,
+        source_id=None,
+    ):
         """
         Finds the closest image available for the specified source and date.
         **This does not download any file.**
@@ -119,17 +129,27 @@ class HelioviewerClient:
         params = {
             "action": "getClosestImage",
             "date": self._format_date(date),
-            "sourceId": source_id
+            "sourceId": source_id,
         }
         response = self._get_json(params)
 
         # Cast date string to Time
-        response['date'] = parse_time(response['date'])
+        response["date"] = parse_time(response["date"])
 
         return response
 
-    def download_jp2(self, date, progress=True, observatory=None, instrument=None, detector=None,
-                     measurement=None, source_id=None, directory=None, overwrite=False):
+    def download_jp2(
+        self,
+        date,
+        progress=True,
+        observatory=None,
+        instrument=None,
+        detector=None,
+        measurement=None,
+        source_id=None,
+        directory=None,
+        overwrite=False,
+    ):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
@@ -186,15 +206,13 @@ class HelioviewerClient:
         if source_id is None:
             source_id = self._get_source_id((observatory, instrument, detector, measurement))
 
-        params = {
-            "action": "getJP2Image",
-            "date": self._format_date(date),
-            "sourceId": source_id,
-        }
+        params = {"action": "getJP2Image", "date": self._format_date(date), "sourceId": source_id}
 
         return self._get_file(params, progress=progress, directory=directory, overwrite=overwrite)
 
-    def get_jp2_header(self, date, observatory=None, instrument=None, detector=None, measurement=None, jp2_id=None):
+    def get_jp2_header(
+        self, date, observatory=None, instrument=None, detector=None, measurement=None, jp2_id=None
+    ):
         """
         Get the XML header embedded in a JPEG2000 image. Includes the FITS header as well as a section
         of Helioviewer-specific metadata.
@@ -241,24 +259,41 @@ class HelioviewerClient:
         >>> helioviewer_meta_data = header['helioviewer']  # doctest: +REMOTE_DATA
         """
         if jp2_id is None:
-            jp2_id = self.get_closest_image(date, observatory, instrument, detector, measurement)['id']
+            jp2_id = self.get_closest_image(date, observatory, instrument, detector, measurement)[
+                "id"
+            ]
 
-        params = {
-            "action": "getJP2Header",
-            "id" : jp2_id,
-        }
+        params = {"action": "getJP2Header", "id": jp2_id}
 
         responses = self._request(params)
         # Reads the output from HTTPResponse object and decodes it.
-        responses = responses.read().decode('utf-8')
-        return xml_to_dict(responses)['meta']
+        responses = responses.read().decode("utf-8")
+        return xml_to_dict(responses)["meta"]
 
-    def download_png(self, date, image_scale, layers, progress=True,
-                     directory=None, overwrite=False, watermark=False,
-                     events="", event_labels=False,
-                     scale=False, scale_type="earth", scale_x=0, scale_y=0,
-                     width=4096, height=4096, x0=0, y0=0,
-                     x1=None, y1=None, x2=None, y2=None):
+    def download_png(
+        self,
+        date,
+        image_scale,
+        layers,
+        progress=True,
+        directory=None,
+        overwrite=False,
+        watermark=False,
+        events="",
+        event_labels=False,
+        scale=False,
+        scale_type="earth",
+        scale_x=0,
+        scale_y=0,
+        width=4096,
+        height=4096,
+        x0=0,
+        y0=0,
+        x1=None,
+        y1=None,
+        x2=None,
+        y2=None,
+    ):
         """
         Downloads the PNG that most closely matches the specified time and
         data source.
@@ -385,17 +420,15 @@ class HelioviewerClient:
             "scaleX": scale_x,
             "scaleY": scale_y,
             # Returns the image which we do not want a user to change.
-            "display": True
+            "display": True,
         }
 
         # We want to enforce that all values of x1, x2, y1, y2 are not None.
         # You can not use both scaling parameters so we try to exclude that here.
         if any(i is None for i in [x1, x2, y1, y2]):
-            adict = {"x0": x0, "y0": y0,
-                     "width": width, "height": height}
+            adict = {"x0": x0, "y0": y0, "width": width, "height": height}
         else:
-            adict = {"x1": x1, "x2": x2,
-                     "y1": y1, "y2": y2}
+            adict = {"x1": x1, "x2": x2, "y1": y1, "y2": y2}
         params.update(adict)
 
         return self._get_file(params, progress=progress, directory=directory, overwrite=overwrite)
@@ -418,14 +451,13 @@ class HelioviewerClient:
     def _get_file(self, params, progress=True, directory=None, overwrite=False):
         """Downloads a file and return the filepath to that file."""
         if directory is None:
-            directory = Path(sunpy.config.get('downloads', 'download_dir'))
+            directory = Path(sunpy.config.get("downloads", "download_dir"))
         else:
             directory = Path(directory).expanduser().absolute()
 
         downloader = parfive.Downloader(progress=progress, overwrite=overwrite)
 
-        url = urllib.parse.urljoin(self._api,
-                                   "?" + urllib.parse.urlencode(params))
+        url = urllib.parse.urljoin(self._api, "?" + urllib.parse.urlencode(params))
         downloader.enqueue_file(url, path=directory)
 
         res = downloader.download()
@@ -448,8 +480,7 @@ class HelioviewerClient:
         -------
         out : result of the request
         """
-        response = urllib.request.urlopen(
-            self._api, urllib.parse.urlencode(params).encode('utf-8'))
+        response = urllib.request.urlopen(self._api, urllib.parse.urlencode(params).encode("utf-8"))
         return response
 
     def _format_date(self, date):
@@ -462,7 +493,9 @@ class HelioviewerClient:
         """
         source_id_list = list(partial_key_match(key, self.data_sources))
         if len(source_id_list) != 1:
-            raise KeyError(f"The values used: {key} do not correspond to one source_id "
-                           f"but {len(source_id_list)} source_id(s)."
-                           " Please check the list using HelioviewerClient.data_sources.")
+            raise KeyError(
+                f"The values used: {key} do not correspond to one source_id "
+                f"but {len(source_id_list)} source_id(s)."
+                " Please check the list using HelioviewerClient.data_sources."
+            )
         return source_id_list[0]

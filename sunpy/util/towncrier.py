@@ -35,7 +35,9 @@ def generate_changelog_for_docs(directory, output_filename=None):
 
     print("Loading template...")
     if config["template"] is None:
-        template = pkg_resources.resource_string("towncrier", "templates/template.rst").decode("utf8")
+        template = pkg_resources.resource_string("towncrier", "templates/template.rst").decode(
+            "utf8"
+        )
     else:
         with open(config["template"], "rb") as tmpl:
             template = tmpl.read().decode("utf8")
@@ -48,8 +50,9 @@ def generate_changelog_for_docs(directory, output_filename=None):
         base_directory = _join_dir(config["directory"])
         fragment_directory = None
 
-    fragments, fragment_filenames = find_fragments(base_directory, config["sections"],
-                                                   fragment_directory, definitions)
+    fragments, fragment_filenames = find_fragments(
+        base_directory, config["sections"], fragment_directory, definitions
+    )
 
     print("Rendering news fragments...")
     fragments = split_fragments(fragments, definitions)
@@ -67,8 +70,7 @@ def generate_changelog_for_docs(directory, output_filename=None):
 
     package = config.get("package")
     if package:
-        project_name = get_project_name(
-            os.path.abspath(_join_dir(config["package_dir"])), package)
+        project_name = get_project_name(os.path.abspath(_join_dir(config["package_dir"])), package)
     else:
         # Can't determine a project_name, but maybe it is not needed.
         project_name = ""
@@ -76,7 +78,8 @@ def generate_changelog_for_docs(directory, output_filename=None):
     project_date = _get_date()
 
     top_line = config["title_format"].format(
-        name=project_name, version=project_version, project_date=project_date)
+        name=project_name, version=project_version, project_date=project_date
+    )
     top_line += "\n" + (config["underlines"][0] * len(top_line)) + "\n"
 
     print("Writing to newsfile...")

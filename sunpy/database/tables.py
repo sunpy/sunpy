@@ -24,32 +24,50 @@ from sunpy.time import parse_time
 
 TIME_FORMAT = config.get("general", "time_format")
 
-DEFAULT_HEADER = FileHeader([('SIMPLE', True),
-            ('BITPIX', 8),
-            ('NAXIS', 0),
-            ('EXTEND', True),
-            ('COMMENT', ''),
-            ('HISTORY', ''),
-            ('KEYCOMMENTS',
-            {'SIMPLE': 'conforms to FITS standard',
-            'BITPIX': 'array data type',
-            'NAXIS': 'number of array dimensions'}),
-            ('WAVEUNIT', None)])
+DEFAULT_HEADER = FileHeader(
+    [
+        ("SIMPLE", True),
+        ("BITPIX", 8),
+        ("NAXIS", 0),
+        ("EXTEND", True),
+        ("COMMENT", ""),
+        ("HISTORY", ""),
+        (
+            "KEYCOMMENTS",
+            {
+                "SIMPLE": "conforms to FITS standard",
+                "BITPIX": "array data type",
+                "NAXIS": "number of array dimensions",
+            },
+        ),
+        ("WAVEUNIT", None),
+    ]
+)
 
 
 __all__ = [
-    'WaveunitNotFoundError', 'WaveunitNotConvertibleError', 'JSONDump',
-    'FitsHeaderEntry', 'FitsKeyComment', 'Tag', 'DatabaseEntry',
-    'entries_from_query_result', 'entries_from_file', 'entries_from_dir',
-    'display_entries']
+    "WaveunitNotFoundError",
+    "WaveunitNotConvertibleError",
+    "JSONDump",
+    "FitsHeaderEntry",
+    "FitsKeyComment",
+    "Tag",
+    "DatabaseEntry",
+    "entries_from_query_result",
+    "entries_from_file",
+    "entries_from_dir",
+    "display_entries",
+]
 
 Base = declarative_base()
 
 # required for the many-to-many relation on tags:entries
-association_table = Table('association', Base.metadata,
-                          Column('tag_name', String, ForeignKey('tags.name')),
-                          Column('entry_id', Integer, ForeignKey('data.id'))
-                          )
+association_table = Table(
+    "association",
+    Base.metadata,
+    Column("tag_name", String, ForeignKey("tags.name")),
+    Column("entry_id", Integer, ForeignKey("data.id")),
+)
 
 
 class WaveunitNotFoundError(Exception):
@@ -62,8 +80,10 @@ class WaveunitNotFoundError(Exception):
         self.obj = obj
 
     def __str__(self):  # pragma: no cover
-        return f'the wavelength unit cannot be found in {self.obj}' + \
-               ' and default_waveunit not specified when opening the database'
+        return (
+            f"the wavelength unit cannot be found in {self.obj}"
+            + " and default_waveunit not specified when opening the database"
+        )
 
 
 class WaveunitNotConvertibleError(Exception):
@@ -76,13 +96,13 @@ class WaveunitNotConvertibleError(Exception):
         self.waveunit = waveunit
 
     def __str__(self):  # pragma: no cover
-        return (
-            'the waveunit {!r} cannot be converted to an '
-            'astropy.units.Unit instance'.format(self.waveunit))
+        return "the waveunit {!r} cannot be converted to an " "astropy.units.Unit instance".format(
+            self.waveunit
+        )
 
 
 class JSONDump(Base):
-    __tablename__ = 'jsondumps'
+    __tablename__ = "jsondumps"
 
     dump = Column(String, nullable=False, primary_key=True)
 
@@ -99,13 +119,13 @@ class JSONDump(Base):
         return self.dump
 
     def __repr__(self):  # pragma: no cover
-        return f'<{self.__class__.__name__}(dump {self.dump!r})>'
+        return f"<{self.__class__.__name__}(dump {self.dump!r})>"
 
 
 class FitsHeaderEntry(Base):
-    __tablename__ = 'fitsheaderentries'
+    __tablename__ = "fitsheaderentries"
 
-    dbentry_id = Column(Integer, ForeignKey('data.id'))
+    dbentry_id = Column(Integer, ForeignKey("data.id"))
     id = Column(Integer, primary_key=True)
     key = Column(String, nullable=False)
     value = Column(String)
@@ -116,9 +136,10 @@ class FitsHeaderEntry(Base):
 
     def __eq__(self, other):
         return (
-            (self.id == other.id or self.id is None or other.id is None) and
-            self.key == other.key and
-            self.value == other.value)
+            (self.id == other.id or self.id is None or other.id is None)
+            and self.key == other.key
+            and self.value == other.value
+        )
 
     def __hash__(self):
         return super().__hash__()
@@ -127,14 +148,15 @@ class FitsHeaderEntry(Base):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return '<{}(id {}, key {!r}, value {!r})>'.format(
-            self.__class__.__name__, self.id, self.key, self.value)
+        return "<{}(id {}, key {!r}, value {!r})>".format(
+            self.__class__.__name__, self.id, self.key, self.value
+        )
 
 
 class FitsKeyComment(Base):
-    __tablename__ = 'fitskeycomments'
+    __tablename__ = "fitskeycomments"
 
-    dbentry_id = Column(Integer, ForeignKey('data.id'))
+    dbentry_id = Column(Integer, ForeignKey("data.id"))
     id = Column(Integer, primary_key=True)
     key = Column(String, nullable=False)
     value = Column(String)
@@ -145,13 +167,13 @@ class FitsKeyComment(Base):
 
     def __eq__(self, other):
         return (
-            (self.id == other.id or self.id is None or other.id is None) and
-            self.key == other.key and
-            self.value == other.value)
+            (self.id == other.id or self.id is None or other.id is None)
+            and self.key == other.key
+            and self.value == other.value
+        )
 
     def __lt__(self, other):
-        return (f'{self.key}, {self.value}' <
-                f'{other.key}, {other.value}')
+        return f"{self.key}, {self.value}" < f"{other.key}, {other.value}"
 
     def __hash__(self):
         return super().__hash__()
@@ -160,12 +182,13 @@ class FitsKeyComment(Base):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return '<{}(id {}, key {!r}, value {!r})>'.format(
-            self.__class__.__name__, self.id, self.key, self.value)
+        return "<{}(id {}, key {!r}, value {!r})>".format(
+            self.__class__.__name__, self.id, self.key, self.value
+        )
 
 
 class Tag(Base):
-    __tablename__ = 'tags'
+    __tablename__ = "tags"
 
     name = Column(String, nullable=False, primary_key=True)
 
@@ -185,7 +208,7 @@ class Tag(Base):
         return self.name
 
     def __repr__(self):  # pragma: no cover
-        return f'<{self.__class__.__name__}(name {self.name!r})>'
+        return f"<{self.__class__.__name__}(name {self.name!r})>"
 
 
 class DatabaseEntry(Base):
@@ -245,7 +268,8 @@ class DatabaseEntry(Base):
         add a new tag or multiple tags to a specific entry.
 
     """
-    __tablename__ = 'data'
+
+    __tablename__ = "data"
 
     # FIXME: primary key is data provider + file ID + download_time!
     id = Column(Integer, primary_key=True)
@@ -263,9 +287,9 @@ class DatabaseEntry(Base):
     path = Column(String)
     download_time = Column(DateTime)
     starred = Column(Boolean, default=False)
-    fits_header_entries = relationship('FitsHeaderEntry')
-    fits_key_comments = relationship('FitsKeyComment')
-    tags = relationship('Tag', secondary=association_table, backref='data')
+    fits_header_entries = relationship("FitsHeaderEntry")
+    fits_key_comments = relationship("FitsKeyComment")
+    tags = relationship("Tag", secondary=association_table, backref="data")
 
     @classmethod
     def _from_query_result_block(cls, qr_block, default_waveunit=None):
@@ -310,10 +334,10 @@ class DatabaseEntry(Base):
         (19.5, 19.5)
 
         """
-        time_start = datetime.strptime(qr_block.time.start, '%Y%m%d%H%M%S')
+        time_start = datetime.strptime(qr_block.time.start, "%Y%m%d%H%M%S")
         if not qr_block.time.end:
             qr_block.time.end = qr_block.time.start
-        time_end = datetime.strptime(qr_block.time.end, '%Y%m%d%H%M%S')
+        time_end = datetime.strptime(qr_block.time.end, "%Y%m%d%H%M%S")
         wave = qr_block.wave
         unit = None
         if wave.waveunit is None:
@@ -331,28 +355,33 @@ class DatabaseEntry(Base):
         else:
             if unit is None:
                 raise WaveunitNotFoundError(qr_block)
-            wavemin = unit.to(nm, float(wave.wavemin),
-                              equivalencies.spectral())
+            wavemin = unit.to(nm, float(wave.wavemin), equivalencies.spectral())
         if wave.wavemax is None:
             wavemax = None
         else:
             if unit is None:
                 raise WaveunitNotFoundError(qr_block)
-            wavemax = unit.to(nm, float(wave.wavemax),
-                              equivalencies.spectral())
-        source = getattr(qr_block, 'source', None)
-        provider = getattr(qr_block, 'provider', None)
-        fileid = getattr(qr_block, 'fileid', None)
-        instrument = getattr(qr_block, 'instrument', None)
-        size = getattr(qr_block, 'size', -1)
-        physobs = getattr(qr_block, 'physobs', None)
+            wavemax = unit.to(nm, float(wave.wavemax), equivalencies.spectral())
+        source = getattr(qr_block, "source", None)
+        provider = getattr(qr_block, "provider", None)
+        fileid = getattr(qr_block, "fileid", None)
+        instrument = getattr(qr_block, "instrument", None)
+        size = getattr(qr_block, "size", -1)
+        physobs = getattr(qr_block, "physobs", None)
         if physobs is not None:
             physobs = str(physobs)
         return cls(
-            source=source, provider=provider, physobs=physobs, fileid=fileid,
-            observation_time_start=time_start, observation_time_end=time_end,
-            instrument=instrument, size=size,
-            wavemin=wavemin, wavemax=wavemax)
+            source=source,
+            provider=provider,
+            physobs=physobs,
+            fileid=fileid,
+            observation_time_start=time_start,
+            observation_time_end=time_end,
+            instrument=instrument,
+            size=size,
+            wavemin=wavemin,
+            wavemax=wavemax,
+        )
 
     @classmethod
     def _from_fido_search_result_block(cls, sr_block, default_waveunit=None):
@@ -373,29 +402,29 @@ class DatabaseEntry(Base):
         """
         # All attributes of DatabaseEntry that are not in QueryResponseBlock
         # are set as None for now.
-        source = getattr(sr_block, 'source', None)
-        provider = getattr(sr_block, 'provider', None)
-        physobs = getattr(sr_block, 'physobs', None)
+        source = getattr(sr_block, "source", None)
+        provider = getattr(sr_block, "provider", None)
+        physobs = getattr(sr_block, "physobs", None)
         if physobs is not None:
             physobs = str(physobs)
-        instrument = getattr(sr_block, 'instrument', None)
+        instrument = getattr(sr_block, "instrument", None)
         time_start = sr_block.time.start.datetime
         time_end = sr_block.time.end.datetime
 
-        wavelengths = getattr(sr_block, 'wave', None)
+        wavelengths = getattr(sr_block, "wave", None)
         wavelength_temp = {}
         if isinstance(wavelength_temp, tuple):
             # Tuple of values
-            wavelength_temp['wavemin'] = wavelengths[0]
-            wavelength_temp['wavemax'] = wavelengths[1]
+            wavelength_temp["wavemin"] = wavelengths[0]
+            wavelength_temp["wavemax"] = wavelengths[1]
         else:
             # Single Value
-            wavelength_temp['wavemin'] = wavelength_temp['wavemax'] = wavelengths
+            wavelength_temp["wavemin"] = wavelength_temp["wavemax"] = wavelengths
 
         final_values = {}
         for key, val in wavelength_temp.items():
             if isinstance(val, quantity.Quantity):
-                unit = getattr(val, 'unit', None)
+                unit = getattr(val, "unit", None)
                 if unit is None:
                     if default_waveunit is not None:
                         unit = Unit(default_waveunit)
@@ -405,17 +434,24 @@ class DatabaseEntry(Base):
             elif val is None or np.isnan(val):
                 final_values[key] = val
 
-        wavemin = final_values['wavemin']
-        wavemax = final_values['wavemax']
+        wavemin = final_values["wavemin"]
+        wavemax = final_values["wavemax"]
 
         # sr_block.url of a QueryResponseBlock attribute is stored in fileid
         fileid = str(sr_block.url) if sr_block.url is not None else None
         size = None
         return cls(
-            source=source, provider=provider, physobs=physobs, fileid=fileid,
-            observation_time_start=time_start, observation_time_end=time_end,
-            instrument=instrument, size=size,
-            wavemin=wavemin, wavemax=wavemax)
+            source=source,
+            provider=provider,
+            physobs=physobs,
+            fileid=fileid,
+            observation_time_start=time_start,
+            observation_time_end=time_end,
+            instrument=instrument,
+            size=size,
+            wavemin=wavemin,
+            wavemax=wavemax,
+        )
 
     def __eq__(self, other):
 
@@ -436,22 +472,23 @@ class DatabaseEntry(Base):
             wavemaxs_equal = np.allclose([self.wavemax], [other.wavemax], equal_nan=True)
 
         return (
-            (self.id == other.id or self.id is None or other.id is None) and
-            self.source == other.source and
-            self.provider == other.provider and
-            self.physobs == other.physobs and
-            self.fileid == other.fileid and
-            self.observation_time_start == other.observation_time_start and
-            self.observation_time_end == other.observation_time_end and
-            self.instrument == other.instrument and
-            self.size == other.size and
-            wavemins_equal and
-            wavemaxs_equal and
-            self.path == other.path and
-            self.download_time == other.download_time and
-            bool(self.starred) == bool(other.starred) and
-            self.fits_header_entries == other.fits_header_entries and
-            self.tags == other.tags)
+            (self.id == other.id or self.id is None or other.id is None)
+            and self.source == other.source
+            and self.provider == other.provider
+            and self.physobs == other.physobs
+            and self.fileid == other.fileid
+            and self.observation_time_start == other.observation_time_start
+            and self.observation_time_end == other.observation_time_end
+            and self.instrument == other.instrument
+            and self.size == other.size
+            and wavemins_equal
+            and wavemaxs_equal
+            and self.path == other.path
+            and self.download_time == other.download_time
+            and bool(self.starred) == bool(other.starred)
+            and self.fits_header_entries == other.fits_header_entries
+            and self.tags == other.tags
+        )
 
     def _compare_attributes(self, other, attribute_list):
         """
@@ -468,7 +505,7 @@ class DatabaseEntry(Base):
 
         """
         if len(attribute_list) == 0:
-            raise TypeError('At least one attribute required')
+            raise TypeError("At least one attribute required")
         for attribute in attribute_list:
             if getattr(self, attribute) != getattr(other, attribute):
                 return False
@@ -482,17 +519,30 @@ class DatabaseEntry(Base):
 
     def __repr__(self):  # pragma: no cover
         attrs = [
-            'id', 'source', 'provider', 'physobs', 'fileid',
-            'observation_time_start', 'observation_time_end', 'instrument',
-            'size', 'wavemin', 'wavemax', 'path', 'download_time', 'starred',
-            'fits_header_entries', 'tags']
-        ret = f'<{self.__class__.__name__}('
+            "id",
+            "source",
+            "provider",
+            "physobs",
+            "fileid",
+            "observation_time_start",
+            "observation_time_end",
+            "instrument",
+            "size",
+            "wavemin",
+            "wavemax",
+            "path",
+            "download_time",
+            "starred",
+            "fits_header_entries",
+            "tags",
+        ]
+        ret = f"<{self.__class__.__name__}("
         for attr in attrs:
             value = getattr(self, attr, None)
             if value:
-                ret += f'{attr} {value!r}, '
-        ret = ret.rstrip(', ')
-        ret += ')>'
+                ret += f"{attr} {value!r}, "
+        ret = ret.rstrip(", ")
+        ret += ")>"
         return ret
 
 
@@ -598,8 +648,7 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
                 yield DatabaseEntry._from_fido_search_result_block(block, default_waveunit)
 
 
-def entries_from_file(file, default_waveunit=None,
-                      time_string_parse_format=''):
+def entries_from_file(file, default_waveunit=None, time_string_parse_format=""):
     # Note: time_string_parse_format='' so that None won't be passed to Time.strptime
     # (which would make strptime freak out, if I remember correctly).
     """Use the headers of a FITS file to generate an iterator of
@@ -669,16 +718,16 @@ def entries_from_file(file, default_waveunit=None,
     if isinstance(file, str):
         filename = file
     else:
-        filename = getattr(file, 'name', None)
+        filename = getattr(file, "name", None)
     for header in headers:
         entry = DatabaseEntry(path=filename)
         for key, value in header.items():
             # Yes, it is possible to have an empty key in a FITS file.
             # Example: sunpy.data.sample.EIT_195_IMAGE
             # Don't ask me why this could be a good idea.
-            if key == '':
+            if key == "":
                 value = str(value)
-            elif key == 'KEYCOMMENTS':
+            elif key == "KEYCOMMENTS":
                 for k, v in value.items():
                     entry.fits_key_comments.append(FitsKeyComment(k, v))
                 continue
@@ -695,23 +744,22 @@ def entries_from_file(file, default_waveunit=None,
                 raise WaveunitNotConvertibleError(waveunit)
         for header_entry in entry.fits_header_entries:
             key, value = header_entry.key, header_entry.value
-            if key == 'INSTRUME':
+            if key == "INSTRUME":
                 entry.instrument = value
-            elif key == 'WAVELNTH':
+            elif key == "WAVELNTH":
                 if unit is None:
                     raise WaveunitNotFoundError(file)
                 # use the value of `unit` to convert the wavelength to nm
-                entry.wavemin = entry.wavemax = unit.to(
-                    nm, value, equivalencies.spectral())
+                entry.wavemin = entry.wavemax = unit.to(nm, value, equivalencies.spectral())
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
-            elif key in ('DATE-END', 'DATE_END'):
+            elif key in ("DATE-END", "DATE_END"):
                 try:
                     dt = parse_time(value).datetime
                 except ValueError:
                     dt = Time.strptime(value, time_string_parse_format).datetime
                 entry.observation_time_end = dt
-            elif key in ('DATE-OBS', 'DATE_OBS'):
+            elif key in ("DATE-OBS", "DATE_OBS"):
                 try:
                     dt = parse_time(value).datetime
                 except ValueError:
@@ -720,8 +768,9 @@ def entries_from_file(file, default_waveunit=None,
         yield entry
 
 
-def entries_from_dir(fitsdir, recursive=False, pattern='*',
-                     default_waveunit=None, time_string_parse_format=None):
+def entries_from_dir(
+    fitsdir, recursive=False, pattern="*", default_waveunit=None, time_string_parse_format=None
+):
     """Search the given directory for FITS files and use the corresponding FITS
     headers to generate instances of :class:`DatabaseEntry`. FITS files are
     detected by reading the content of each file, the `pattern` argument may be
@@ -779,13 +828,13 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
             try:
                 filetype = sunpy_filetools._detect_filetype(path)
             except (
-                    sunpy_filetools.UnrecognizedFileTypeError,
-                    sunpy_filetools.InvalidJPEG2000FileExtension):
+                sunpy_filetools.UnrecognizedFileTypeError,
+                sunpy_filetools.InvalidJPEG2000FileExtension,
+            ):
                 continue
-            if filetype == 'fits':
+            if filetype == "fits":
                 for entry in entries_from_file(
-                        path, default_waveunit,
-                        time_string_parse_format=time_string_parse_format
+                    path, default_waveunit, time_string_parse_format=time_string_parse_format
                 ):
                     yield entry, path
         if not recursive:
@@ -815,39 +864,49 @@ def _create_display_table(database_entries, columns=None, sort=False):
 
     """
     if columns is None:
-        columns = ['id', 'observation_time_start', 'observation_time_end',
-                   'instrument', 'source', 'provider', 'physobs', 'wavemin',
-                   'wavemax', 'path', 'fileid', 'tags', 'starred',
-                   'download_time', 'size']
+        columns = [
+            "id",
+            "observation_time_start",
+            "observation_time_end",
+            "instrument",
+            "source",
+            "provider",
+            "physobs",
+            "wavemin",
+            "wavemax",
+            "path",
+            "fileid",
+            "tags",
+            "starred",
+            "download_time",
+            "size",
+        ]
 
     data = []
     for entry in database_entries:
         row = []
         for col in columns:
-            if col == 'starred':
-                row.append('Yes' if entry.starred else 'No')
-            elif col == 'tags':
-                row.append(', '.join(map(str, entry.tags)) or 'N/A')
-            elif col == 'hdu_index':
+            if col == "starred":
+                row.append("Yes" if entry.starred else "No")
+            elif col == "tags":
+                row.append(", ".join(map(str, entry.tags)) or "N/A")
+            elif col == "hdu_index":
                 row.append(entry.hdu_index)
             # do not display microseconds in datetime columns
-            elif col in (
-                    'observation_time_start',
-                    'observation_time_end',
-                    'download_time'):
+            elif col in ("observation_time_start", "observation_time_end", "download_time"):
                 time = getattr(entry, col, None)
                 if time is None:
-                    formatted_time = 'N/A'
+                    formatted_time = "N/A"
                 else:
                     formatted_time = time.strftime(TIME_FORMAT)
                 row.append(formatted_time)
             else:
-                row.append(str(getattr(entry, col) or 'N/A'))
+                row.append(str(getattr(entry, col) or "N/A"))
         if not row:
-            raise TypeError('at least one column must be given')
+            raise TypeError("at least one column must be given")
         data.append(row)
     if not data:
-        raise TypeError('given iterable is empty')
+        raise TypeError("given iterable is empty")
     if sort:
         data.sort()
     return astropy.table.Table(rows=data, names=columns)

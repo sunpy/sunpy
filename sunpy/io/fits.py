@@ -35,9 +35,9 @@ from astropy.io import fits
 from sunpy.io.header import FileHeader
 from sunpy.util.exceptions import SunpyUserWarning
 
-__all__ = ['header_to_fits', 'read', 'get_header', 'write', 'extract_waveunit']
+__all__ = ["header_to_fits", "read", "get_header", "write", "extract_waveunit"]
 
-HDPair = collections.namedtuple('HDPair', ['data', 'header'])
+HDPair = collections.namedtuple("HDPair", ["data", "header"])
 
 
 def read(filepath, hdus=None, memmap=None, **kwargs):
@@ -71,7 +71,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
             elif isinstance(hdus, collections.Iterable):
                 hdulist = [hdulist[i] for i in hdus]
 
-        hdulist.verify('silentfix+warn')
+        hdulist.verify("silentfix+warn")
 
         headers = get_header(hdulist)
         pairs = []
@@ -83,7 +83,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
                 message = f"Error when reading HDU {i}. Skipping.\n"
                 for line in traceback.format_tb(sys.exc_info()[2]):
                     message += line
-                    message += '\n'
+                    message += "\n"
                 message += repr(e)
                 warnings.warn(message, SunpyUserWarning)
 
@@ -111,32 +111,32 @@ def get_header(afile):
         close = False
     else:
         hdulist = fits.open(afile, ignore_blank=True)
-        hdulist.verify('silentfix')
+        hdulist.verify("silentfix")
         close = True
 
     try:
         headers = []
         for hdu in hdulist:
             try:
-                comment = "".join(hdu.header['COMMENT']).strip()
+                comment = "".join(hdu.header["COMMENT"]).strip()
             except KeyError:
                 comment = ""
             try:
-                history = "".join(hdu.header['HISTORY']).strip()
+                history = "".join(hdu.header["HISTORY"]).strip()
             except KeyError:
                 history = ""
 
             header = FileHeader(hdu.header)
-            header['COMMENT'] = comment
-            header['HISTORY'] = history
+            header["COMMENT"] = comment
+            header["HISTORY"] = history
 
             # Strip out KEYCOMMENTS to a dict, the hard way
             keydict = {}
             for card in hdu.header.cards:
-                if card.comment != '':
+                if card.comment != "":
                     keydict.update({card.keyword: card.comment})
-            header['KEYCOMMENTS'] = keydict
-            header['WAVEUNIT'] = extract_waveunit(header)
+            header["KEYCOMMENTS"] = keydict
+            header["WAVEUNIT"] = extract_waveunit(header)
 
             headers.append(header)
     finally:
@@ -170,7 +170,7 @@ def write(fname, data, header, hdu_type=None, **kwargs):
     if isinstance(fname, str):
         fname = os.path.expanduser(fname)
 
-    fitskwargs = {'output_verify': 'fix'}
+    fitskwargs = {"output_verify": "fix"}
     fitskwargs.update(kwargs)
 
     if not hdu_type:
@@ -194,20 +194,20 @@ def header_to_fits(header):
     # kwargs. Find and deal with them:
     fits_header = fits.Header()
     # Check Header
-    key_comments = header.pop('KEYCOMMENTS', False)
+    key_comments = header.pop("KEYCOMMENTS", False)
 
     for k, v in header.items():
         if isinstance(v, fits.header._HeaderCommentaryCards):
-            if k.upper() == 'COMMENT':
-                comments = str(v).split('\n')
+            if k.upper() == "COMMENT":
+                comments = str(v).split("\n")
                 for com in comments:
                     fits_header.add_comment(com)
-            elif k.upper() == 'HISTORY':
-                hists = str(v).split('\n')
+            elif k.upper() == "HISTORY":
+                hists = str(v).split("\n")
                 for hist in hists:
                     fits_header.add_history(hist)
-            elif k != '':
-                fits_header.append(fits.Card(k, str(v).split('\n')))
+            elif k != "":
+                fits_header.append(fits.Card(k, str(v).split("\n")))
 
         else:
             fits_header.append(fits.Card(k, v))
@@ -265,26 +265,27 @@ def extract_waveunit(header):
     # 3.1 "[$UNIT] ..." -> $UNIT
     # 3.2 "Observed wavelength ($UNIT)" -> $UNIT
     def parse_waveunit_comment(waveunit_comment):
-        if waveunit_comment == 'in meters':
-            return 'm'
+        if waveunit_comment == "in meters":
+            return "m"
 
-    waveunit_comment = header['KEYCOMMENTS'].get('WAVEUNIT')
-    wavelnth_comment = header['KEYCOMMENTS'].get('WAVELNTH')
-    waveunit = header.get('WAVEUNIT')
+    waveunit_comment = header["KEYCOMMENTS"].get("WAVEUNIT")
+    wavelnth_comment = header["KEYCOMMENTS"].get("WAVELNTH")
+    waveunit = header.get("WAVEUNIT")
     if waveunit is not None:
         metre_submultiples = {
             0: parse_waveunit_comment(waveunit_comment),
-            -1: 'dm',
-            -2: 'cm',
-            -3: 'mm',
-            -6: 'um',
-            -9: 'nm',
-            -10: 'angstrom',
-            -12: 'pm',
-            -15: 'fm',
-            -18: 'am',
-            -21: 'zm',
-            -24: 'ym'}
+            -1: "dm",
+            -2: "cm",
+            -3: "mm",
+            -6: "um",
+            -9: "nm",
+            -10: "angstrom",
+            -12: "pm",
+            -15: "fm",
+            -18: "am",
+            -21: "zm",
+            -24: "ym",
+        }
         waveunit = metre_submultiples.get(waveunit, str(waveunit).lower())
     elif waveunit_comment is not None:
         waveunit = parse_waveunit_comment(waveunit_comment)
@@ -292,13 +293,13 @@ def extract_waveunit(header):
         # supported formats (where $UNIT is the unit like "nm" or "Angstrom"):
         #   "Observed wavelength ($UNIT)"
         #   "[$UNIT] ..."
-        parentheses_pattern = r'Observed wavelength \((\w+?)\)$'
-        brackets_pattern = r'^\[(\w+?)\]'
+        parentheses_pattern = r"Observed wavelength \((\w+?)\)$"
+        brackets_pattern = r"^\[(\w+?)\]"
         for pattern in [parentheses_pattern, brackets_pattern]:
             m = re.search(pattern, wavelnth_comment)
             if m is not None:
                 waveunit = m.group(1)
                 break
-    if waveunit == '':
+    if waveunit == "":
         return None  # To fix problems associated with HMI FITS.
     return waveunit

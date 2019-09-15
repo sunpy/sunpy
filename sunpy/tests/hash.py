@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 __all__ = ["hash_figure", "verify_figure_hash"]
 
-HASH_LIBRARY_NAME = f'figure_hashes_py{version_info.major}{version_info.minor}.json'
+HASH_LIBRARY_NAME = f"figure_hashes_py{version_info.major}{version_info.minor}.json"
 HASH_LIBRARY_FILE = os.path.join(os.path.dirname(__file__), HASH_LIBRARY_NAME)
 
 # Load the hash library if it exists
@@ -45,7 +45,7 @@ def hash_figure(figure=None, out_stream=None):
     else:
         imgdata = out_stream
 
-    figure.savefig(imgdata, format='png')
+    figure.savefig(imgdata, format="png")
 
     out = _hash_file(imgdata)
     if out_stream is None:

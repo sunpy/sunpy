@@ -4,7 +4,7 @@ parsing and normalization.
 """
 from collections import OrderedDict
 
-__all__ = ['MetaDict']
+__all__ = ["MetaDict"]
 
 
 class MetaDict(OrderedDict):
@@ -15,6 +15,7 @@ class MetaDict(OrderedDict):
     This class handles everything in lower case. This allows case
     insensitive indexing.
     """
+
     def __init__(self, *args):
         """
         Creates a new MapHeader instance.

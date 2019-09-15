@@ -5,8 +5,13 @@ import os
 from itertools import chain, count
 from collections import UserList
 
-__all__ = ['unique', 'replacement_filename', 'expand_list',
-           'expand_list_generator', 'dict_keys_same']
+__all__ = [
+    "unique",
+    "replacement_filename",
+    "expand_list",
+    "expand_list_generator",
+    "dict_keys_same",
+]
 
 
 def unique(itr, key=None):
@@ -62,7 +67,7 @@ def replacement_filename(path):
         dir_, filename = os.path.split(path)
         base, ext = os.path.splitext(filename)
         for c in count():
-            name = base + '.' + str(c) + ext
+            name = base + "." + str(c) + ext
             newpath = os.path.join(dir_, name)
             if not os.path.exists(newpath):
                 return newpath

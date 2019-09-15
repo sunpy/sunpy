@@ -10,8 +10,13 @@ from astropy.visualization import wcsaxes
 # It should only be used by tests and other such hacks.
 _FORCE_NO_WCSAXES = False
 
-__all__ = ["is_wcsaxes", "gca_wcs", "get_world_transform",
-           "default_wcs_grid", "wcsaxes_heliographic_overlay"]
+__all__ = [
+    "is_wcsaxes",
+    "gca_wcs",
+    "get_world_transform",
+    "default_wcs_grid",
+    "wcsaxes_heliographic_overlay",
+]
 
 
 def is_wcsaxes(axes):
@@ -90,7 +95,7 @@ def get_world_transform(axes):
         The transformation object.
     """
     if is_wcsaxes(axes):
-        transform = axes.get_transform('world')
+        transform = axes.get_transform("world")
     else:
         transform = axes.transData
 
@@ -108,12 +113,11 @@ def default_wcs_grid(axes):
         The `~astropy.visualization.wcsaxes.WCSAxes` object to draw the world
         coordinate grid on.
     """
-    axes.coords.grid(color='white', alpha=0.6, linestyle='dotted',
-                     linewidth=0.5)
+    axes.coords.grid(color="white", alpha=0.6, linestyle="dotted", linewidth=0.5)
 
 
 @u.quantity_input
-def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs):
+def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10 * u.deg, **kwargs):
     """
     Create a heliographic overlay using
     `~astropy.visualization.wcsaxes.WCSAxes`.
@@ -147,28 +151,28 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs)
     # Set the native coordinates to be bottom and left only so they don't share
     # axes with the overlay.
     c1, c2 = axes.coords
-    c1.set_ticks_position('bl')
-    c2.set_ticks_position('bl')
+    c1.set_ticks_position("bl")
+    c2.set_ticks_position("bl")
 
-    overlay = axes.get_coords_overlay('heliographic_stonyhurst')
+    overlay = axes.get_coords_overlay("heliographic_stonyhurst")
 
     lon = overlay[0]
     lat = overlay[1]
 
     lon.coord_wrap = 180
-    lon.set_major_formatter('dd')
+    lon.set_major_formatter("dd")
 
-    lon.set_axislabel('Solar Longitude', minpad=0.8)
-    lat.set_axislabel('Solar Latitude', minpad=0.9)
+    lon.set_axislabel("Solar Longitude", minpad=0.8)
+    lat.set_axislabel("Solar Latitude", minpad=0.9)
 
-    lon.set_ticks_position('tr')
-    lat.set_ticks_position('tr')
+    lon.set_ticks_position("tr")
+    lat.set_ticks_position("tr")
 
-    grid_kw = {'color': 'white', 'zorder': 100, 'alpha': 0.5}
+    grid_kw = {"color": "white", "zorder": 100, "alpha": 0.5}
     grid_kw.update(kwargs)
 
     # Don't plot white ticks by default (only if explicitly asked)
-    tick_color = grid_kw['color'] if 'color' in kwargs else 'k'
+    tick_color = grid_kw["color"] if "color" in kwargs else "k"
     lon.set_ticks(spacing=lon_space, color=tick_color)
     lat.set_ticks(spacing=lat_space, color=tick_color)
 

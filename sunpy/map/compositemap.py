@@ -12,7 +12,7 @@ from sunpy.map import GenericMap
 from sunpy.util import expand_list
 from sunpy.visualization import axis_labels_from_ctype, peek_show
 
-__all__ = ['CompositeMap']
+__all__ = ["CompositeMap"]
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -69,13 +69,13 @@ class CompositeMap:
     >>> comp_map.peek()  # doctest: +SKIP
 
     """
+
     def __init__(self, *args, **kwargs):
         self._maps = expand_list(args)
 
         for m in self._maps:
             if not isinstance(m, GenericMap):
-                raise ValueError(
-                           'CompositeMap expects pre-constructed map objects.')
+                raise ValueError("CompositeMap expects pre-constructed map objects.")
 
         # Default alpha and zorder values
         alphas = [1] * len(self._maps)
@@ -257,7 +257,7 @@ class CompositeMap:
         if percent is False:
             self._maps[index].levels = levels
         else:
-            self._maps[index].levels = [self._maps[index].max()*level/100.0 for level in levels]
+            self._maps[index].levels = [self._maps[index].max() * level / 100.0 for level in levels]
 
     def set_plot_settings(self, index, plot_settings):
         """Sets the plot settings for a layer in the composite image.
@@ -319,19 +319,20 @@ class CompositeMap:
         """
         if index is None:
             for i, amap in enumerate(self._maps):
-                if hasattr(amap, 'rsun_obs'):
+                if hasattr(amap, "rsun_obs"):
                     index = i
                     break
 
-        index_check = hasattr(self._maps[index], 'rsun_obs')
+        index_check = hasattr(self._maps[index], "rsun_obs")
         if not index_check or index is None:
-            raise ValueError("Specified index does not have all"
-                             " the required attributes to draw limb.")
+            raise ValueError(
+                "Specified index does not have all" " the required attributes to draw limb."
+            )
 
         return self._maps[index].draw_limb(axes=axes, **kwargs)
 
     @u.quantity_input
-    def draw_grid(self, index=None, axes=None, grid_spacing: u.deg=20*u.deg, **kwargs):
+    def draw_grid(self, index=None, axes=None, grid_spacing: u.deg = 20 * u.deg, **kwargs):
         """Draws a grid over the surface of the Sun.
 
         Parameters
@@ -353,8 +354,7 @@ class CompositeMap:
         -----
         Keyword arguments are passed onto `sunpy.map.mapbase.GenericMap.draw_grid`.
         """
-        needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
-                        'heliographic_longitude']
+        needed_attrs = ["rsun_meters", "dsun", "heliographic_latitude", "heliographic_longitude"]
         if index is None:
             for i, amap in enumerate(self._maps):
                 if all([hasattr(amap, k) for k in needed_attrs]):
@@ -363,14 +363,20 @@ class CompositeMap:
 
         index_check = all([hasattr(self._maps[index], k) for k in needed_attrs])
         if not index_check or index is None:
-            raise ValueError("Specified index does not have all"
-                             " the required attributes to draw grid.")
+            raise ValueError(
+                "Specified index does not have all" " the required attributes to draw grid."
+            )
 
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
         return ax
 
-    def plot(self, axes=None, annotate=True,  # pylint: disable=W0613
-             title="SunPy Composite Plot", **matplot_args):
+    def plot(
+        self,
+        axes=None,
+        annotate=True,  # pylint: disable=W0613
+        title="SunPy Composite Plot",
+        **matplot_args
+    ):
         """Plots the composite map object using matplotlib
 
         Parameters
@@ -402,10 +408,16 @@ class CompositeMap:
             axes = plt.gca()
 
         if annotate:
-            axes.set_xlabel(axis_labels_from_ctype(self._maps[0].coordinate_system[0],
-                                                   self._maps[0].spatial_units[0]))
-            axes.set_ylabel(axis_labels_from_ctype(self._maps[0].coordinate_system[1],
-                                                   self._maps[0].spatial_units[1]))
+            axes.set_xlabel(
+                axis_labels_from_ctype(
+                    self._maps[0].coordinate_system[0], self._maps[0].spatial_units[0]
+                )
+            )
+            axes.set_ylabel(
+                axis_labels_from_ctype(
+                    self._maps[0].coordinate_system[1], self._maps[0].spatial_units[1]
+                )
+            )
             axes.set_title(title)
 
         # Define a list of plotted objects
@@ -420,8 +432,8 @@ class CompositeMap:
             params = {
                 "origin": "lower",
                 "extent": x_range + y_range,
-                "cmap": m.plot_settings['cmap'],
-                "norm": m.plot_settings['norm'],
+                "cmap": m.plot_settings["cmap"],
+                "norm": m.plot_settings["norm"],
                 "alpha": m.alpha,
                 "zorder": m.zorder,
             }
@@ -441,21 +453,26 @@ class CompositeMap:
                 if m.mask is None:
                     ret.append(axes.contour(m.data, m.levels, **params))
                 else:
-                    ret.append(axes.contour(np.ma.array(np.asarray(m.data), mask=m.mask), m.levels, **params))
+                    ret.append(
+                        axes.contour(
+                            np.ma.array(np.asarray(m.data), mask=m.mask), m.levels, **params
+                        )
+                    )
 
                 # Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)
 
         # Adjust axes extents to include all data
-        axes.axis('image')
+        axes.axis("image")
 
         # Set current image (makes colorbar work)
         plt.sci(ret[0])
         return ret
 
     @peek_show
-    def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
-             draw_grid=False, **matplot_args):
+    def peek(
+        self, colorbar=True, basic_plot=False, draw_limb=True, draw_grid=False, **matplot_args
+    ):
         """
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the `~sunpy.map.CompositeMap.plot`
@@ -487,10 +504,10 @@ class CompositeMap:
 
         # Basic plot
         if basic_plot:
-            axes = plt.Axes(figure, [0., 0., 1., 1.])
+            axes = plt.Axes(figure, [0.0, 0.0, 1.0, 1.0])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate': False})
+            matplot_args.update({"annotate": False})
         else:
             axes = figure.add_subplot(111)
 
@@ -519,4 +536,5 @@ class OutOfRangeAlphaValue(ValueError):
     """Exception to raise when an alpha value outside of the range 0-1 is
     requested.
     """
+
     pass
