@@ -115,7 +115,7 @@ class TestMap:
 
     # requires sqlalchemy to run properly
     def test_databaseentry(self):
-        sqlalchemy = pytest.importorskip("sqlalchemy")
+        pytest.importorskip("sqlalchemy")
         sunpy_database = pytest.importorskip("sunpy.database")
         db = sunpy_database.Database(url="sqlite://", default_waveunit="angstrom")
         db.add_from_file(a_fname)

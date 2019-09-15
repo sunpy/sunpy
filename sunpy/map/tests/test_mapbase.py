@@ -684,7 +684,7 @@ def test_validate_meta(generic_map):
             "wavelnth": 10,
             "waveunit": "ANGSTROM",
         }
-        bad_map = sunpy.map.Map((generic_map.data, bad_header))
+        sunpy.map.Map((generic_map.data, bad_header))
 
     assert "waveunit".upper() in str(w[0].message)
 

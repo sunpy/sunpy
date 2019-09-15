@@ -133,7 +133,7 @@ def test_full_query(h2v_client, hek_client):
 @pytest.mark.remote_data
 def test_quick_clean(h2v_client, hek_client):
     h2v = h2v_client
-    h2v_q = h2v.full_query((hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType)))
+    h2v.full_query((hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType)))
 
     assert h2v.num_of_records != 0
     assert len(h2v.vso_results) != 0

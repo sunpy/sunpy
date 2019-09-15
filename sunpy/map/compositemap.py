@@ -537,4 +537,3 @@ class OutOfRangeAlphaValue(ValueError):
     requested.
     """
 
-    pass

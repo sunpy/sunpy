@@ -2,8 +2,6 @@
 """
 Ephemeris calculations using SunPy coordinate frames
 """
-import datetime
-import warnings
 
 import numpy as np
 

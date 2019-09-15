@@ -289,7 +289,7 @@ def test_request_data_error():
         attrs.Protocol("foo"),
     )
     with pytest.raises(TypeError):
-        req = client.request_data(responses)
+        client.request_data(responses)
 
 
 @pytest.mark.remote_data

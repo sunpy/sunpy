@@ -1832,4 +1832,3 @@ class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
 
-    pass

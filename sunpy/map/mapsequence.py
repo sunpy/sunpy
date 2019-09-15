@@ -88,7 +88,6 @@ class MapSequence:
 
     def _derotate(self):
         """Derotates the layers in the MapSequence"""
-        pass
 
     def plot(
         self, axes=None, resample=None, annotate=True, interval=200, plot_function=None, **kwargs

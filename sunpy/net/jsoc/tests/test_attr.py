@@ -52,11 +52,11 @@ def test_complexquery():
 
 def test_wavelength_error():
     with pytest.raises(TypeError):
-        w1 = attrs.Wavelength("wobble")
+        attrs.Wavelength("wobble")
     with pytest.raises(TypeError):
-        w1 = attrs.Wavelength(3.24)
+        attrs.Wavelength(3.24)
     with pytest.raises(TypeError):
-        w1 = attrs.Wavelength((3, 3))
+        attrs.Wavelength((3, 3))
 
 
 def test_wave_self():

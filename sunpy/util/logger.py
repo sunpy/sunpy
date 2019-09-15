@@ -16,7 +16,7 @@ def _init_log(config=None):
     try:
         log = logging.getLogger("sunpy")
         if config is not None:
-            conf = _config_to_loggerConf(config)
+            _config_to_loggerConf(config)
         log._set_defaults()
     finally:
         logging.setLoggerClass(orig_logger_cls)

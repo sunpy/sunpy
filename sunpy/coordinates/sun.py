@@ -1,7 +1,6 @@
 """
 Sun-specific coordinate calculations
 """
-import warnings
 
 import numpy as np
 

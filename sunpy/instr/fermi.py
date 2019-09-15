@@ -64,7 +64,7 @@ def download_weekly_pointing_file(date):
 
     # try to download the file from the FTP site
     try:
-        resp = urllib.request.urlopen(pointing_file_url)
+        urllib.request.urlopen(pointing_file_url)
         exists = True
     except urllib.error.HTTPError:
         exists = False

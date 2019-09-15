@@ -130,9 +130,9 @@ def test_goes_chianti_tem_errors():
     with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(LONGFLUX, temp_test, abundances="Neither")
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(LONGFLUX, temp_test_toosmall)
+        goes._goes_get_chianti_em(LONGFLUX, temp_test_toosmall)
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(LONGFLUX, temp_test_toobig)
+        goes._goes_get_chianti_em(LONGFLUX, temp_test_toobig)
 
 
 @pytest.mark.remote_data
@@ -294,15 +294,15 @@ def test_calc_rad_loss_errors():
     temp_outofrange = Quantity([101, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
-        rad_loss_test = goes._calc_rad_loss(temp_toolong, em, obstime)
+        goes._calc_rad_loss(temp_toolong, em, obstime)
     with pytest.raises(ValueError):
-        rad_loss_test = goes._calc_rad_loss(temp_outofrange, em, obstime)
+        goes._calc_rad_loss(temp_outofrange, em, obstime)
     with pytest.raises(OSError):
-        rad_loss_test = goes._calc_rad_loss(temp, em, obstime_toolong)
+        goes._calc_rad_loss(temp, em, obstime_toolong)
     with pytest.raises(ValueError):
-        lx_test = goes._calc_rad_loss(temp, em, obstime_notdatetime)
+        goes._calc_rad_loss(temp, em, obstime_notdatetime)
     with pytest.raises(ValueError):
-        rad_loss_test = goes._calc_rad_loss(temp, em, obstime_nonchrono)
+        goes._calc_rad_loss(temp, em, obstime_nonchrono)
 
 
 @pytest.mark.remote_data
@@ -372,7 +372,7 @@ def test_calculate_xray_luminosity():
     # Check correct exceptions are raised to incorrect inputs
     not_goeslc = []
     with pytest.raises(TypeError):
-        goes_test = goes.calculate_xray_luminosity(not_goeslc)
+        goes.calculate_xray_luminosity(not_goeslc)
     # Check function gives correct results.
     goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     goeslc_test = goes.calculate_xray_luminosity(goeslc_input)
@@ -408,11 +408,11 @@ def test_goes_lx_errors():
     obstime_notdatetime[0] = 1
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
-        lx_test = goes._goes_lx(longflux_toolong, shortflux, obstime)
+        goes._goes_lx(longflux_toolong, shortflux, obstime)
     with pytest.raises(ValueError):
-        lx_test = goes._goes_lx(longflux, shortflux, obstime_notdatetime)
+        goes._goes_lx(longflux, shortflux, obstime_notdatetime)
     with pytest.raises(ValueError):
-        lx_test = goes._goes_lx(longflux, shortflux, obstime_nonchrono)
+        goes._goes_lx(longflux, shortflux, obstime_nonchrono)
 
 
 def test_goes_lx_nokwargs():

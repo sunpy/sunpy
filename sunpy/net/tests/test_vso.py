@@ -295,7 +295,7 @@ def test_no_download(client):
             pass
 
         def download(self, *args, **kwargs):
-            download_called = True
+            pass
 
     # this should fail
     stereo = (

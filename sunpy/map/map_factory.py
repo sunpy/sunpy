@@ -353,21 +353,18 @@ class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
     not point to a valid Map input file."""
 
-    pass
 
 
 class InvalidMapType(ValueError):
     """Exception to raise when an invalid type of map is requested with Map
     """
 
-    pass
 
 
 class NoMapsFound(ValueError):
     """Exception to raise when input does not point to any valid maps or files
     """
 
-    pass
 
 
 Map = MapFactory(
