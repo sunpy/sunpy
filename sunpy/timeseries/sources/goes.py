@@ -4,7 +4,6 @@ This module provies GOES XRS `~sunpy.timeseries.TimeSeries` source.
 import datetime
 from collections import OrderedDict
 
-import matplotlib as mpl
 import matplotlib.dates
 import numpy as np
 from matplotlib import pyplot as plt

@@ -6,7 +6,6 @@ import copy
 import warnings
 from collections import OrderedDict
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 

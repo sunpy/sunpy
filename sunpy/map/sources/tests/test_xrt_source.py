@@ -6,10 +6,7 @@ This particular test file pertains to XRTMap.
 import os
 import glob
 
-import numpy as np
-from matplotlib import colors
 
-import astropy.units as u
 
 import sunpy.data.test
 from sunpy.map import Map

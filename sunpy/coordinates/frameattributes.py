@@ -112,7 +112,6 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
         """
 
         # Import here to prevent circular import
-        from .frames import HeliographicStonyhurst
         from .ephemeris import get_body_heliographic_stonyhurst
 
         obscoord = get_body_heliographic_stonyhurst(out, obstime)

@@ -3,7 +3,6 @@
 import pytest
 
 import astropy.units as u
-from astropy.config.paths import set_temp_cache
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import SkyCoord
 from astropy.tests.helper import assert_quantity_allclose

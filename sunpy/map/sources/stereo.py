@@ -5,7 +5,6 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 import astropy.units as u
 from astropy.visualization import PowerStretch

@@ -3,7 +3,6 @@ This module provies NOAA Solar Cycle `~sunpy.timeseries.TimeSeries` source.
 """
 from collections import OrderedDict
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from pandas.io.parsers import read_csv

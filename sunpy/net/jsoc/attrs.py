@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from astropy.time import Time as astropyTime
 
 from sunpy.net.attr import Attr, AttrAnd, AttrOr, AttrWalker, SimpleAttr
 from sunpy.net.vso.attrs import Time as VSO_Time
-from sunpy.net.vso.attrs import Wavelength, _Range
+from sunpy.net.vso.attrs import Wavelength
 
 __all__ = ["Series", "Protocol", "Notify", "Segment", "Keys", "PrimeKey"]
 

@@ -6,9 +6,7 @@ This particular test file pertains to EITMap.
 import os
 import glob
 
-import numpy as np
 import pytest
-from matplotlib import colors
 
 import astropy.units as u
 

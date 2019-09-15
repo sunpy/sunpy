@@ -568,7 +568,7 @@ def _get_win_folder_with_jna(csidl_name):
 
 if system == "win32":
     try:
-        import win32com.shell
+        pass
 
         _get_win_folder = _get_win_folder_with_pywin32
     except ImportError:
@@ -578,7 +578,7 @@ if system == "win32":
             _get_win_folder = _get_win_folder_with_ctypes
         except ImportError:
             try:
-                import com.sun.jna
+                pass
 
                 _get_win_folder = _get_win_folder_with_jna
             except ImportError:

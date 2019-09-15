@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 
 import astropy.units as u
-from astropy.coordinates import CartesianRepresentation, SkyCoord
+from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import AsinhStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 

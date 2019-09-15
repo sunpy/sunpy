@@ -3,7 +3,6 @@ This module FERMI GBM `~sunpy.timeseries.TimeSeries` source.
 """
 from collections import OrderedDict
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd

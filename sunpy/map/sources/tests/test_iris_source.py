@@ -8,7 +8,6 @@ import glob
 
 import sunpy.data.test
 from sunpy.map import Map
-from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources.iris import SJIMap
 
 path = sunpy.data.test.rootdir
