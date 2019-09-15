@@ -92,7 +92,7 @@ jobs:
           command: |
             export DEBIAN_FRONTEND="noninteractive"
             apt-get update
-            apt-get install -y libfreetype6 libfreetype6-dev libpng-dev tk pkg-config python3-pip git openssh-client
+            apt-get install -y libfreetype6 libfreetype6-dev libpng-dev tk pkg-config python3-pip git openssh-client libssl-dev
       - run: pip3 install tox | cat
       - run: PYTHONHASHSEED=42 tox -e py36-offline -- -n=4
 
