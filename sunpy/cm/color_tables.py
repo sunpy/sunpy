@@ -996,7 +996,7 @@ def sot_color_table(measurement):
             "intensity")
 
     cdict = create_cdict(r, g, b)
-    return colors.LinearSegmentedColormap( f'Hinode SOT {measurement:s}', cdict)
+    return colors.LinearSegmentedColormap(f'Hinode SOT {measurement:s}', cdict)
 
 
 def iris_sji_color_table(measurement, aialike=False):
@@ -1173,7 +1173,7 @@ hi1_blue = np.array([
     255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
     255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
 ],
-                    dtype=np.uint8)
+    dtype=np.uint8)
 
 hi1_green = np.array([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1191,7 +1191,7 @@ hi1_green = np.array([
     219, 220, 222, 223, 225, 227, 228, 230, 231, 233, 235, 236, 238, 239, 241,
     243, 244, 246, 247, 249, 251, 252, 254, 255
 ],
-                     dtype=np.uint8)
+    dtype=np.uint8)
 
 hi1_red = np.array([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1207,7 +1207,7 @@ hi1_red = np.array([
     162, 166, 170, 175, 179, 183, 187, 191, 195, 199, 203, 207, 211, 215, 219,
     223, 227, 231, 235, 239, 243, 247, 251, 255
 ],
-                   dtype=np.uint8)
+    dtype=np.uint8)
 
 hi2_blue = np.array([
     0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4,
@@ -1226,7 +1226,7 @@ hi2_blue = np.array([
     230, 231, 232, 233, 235, 236, 237, 238, 239, 240, 241, 242, 243, 243, 244,
     245, 246, 246, 247, 248, 249, 249, 250, 251, 252, 252, 253, 254
 ],
-                    dtype=np.uint8)
+    dtype=np.uint8)
 
 hi2_green = np.array([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1243,7 +1243,7 @@ hi2_green = np.array([
     155, 158, 161, 164, 167, 170, 173, 176, 180, 184, 188, 192, 197, 202, 207,
     212, 217, 222, 227, 232, 237, 242, 247, 252, 252, 253, 254
 ],
-                     dtype=np.uint8)
+    dtype=np.uint8)
 
 hi2_red = np.array([
     0, 0, 3, 6, 10, 13, 17, 20, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57,
@@ -1264,7 +1264,7 @@ hi2_red = np.array([
     252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
     252, 252, 252, 252, 252, 253, 254
 ],
-                   dtype=np.uint8)
+    dtype=np.uint8)
 
 
 def stereo_hi_color_table(camera):
@@ -1285,5 +1285,5 @@ def create_cdict(r, g, b):
     i = np.linspace(0, 1, r0.size)
 
     cdict = {name: list(zip(i, el / 255.0, el / 255.0))
-                 for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')]}
+             for el, name in [(r, 'red'), (g, 'green'), (b, 'blue')]}
     return cdict

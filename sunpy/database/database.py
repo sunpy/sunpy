@@ -185,7 +185,7 @@ def disable_undo(database):
 
 class Database:
     """
-    Database(url[, CacheClass[, cache_size[, default_waveunit]]])
+    Database(url[CacheClass, cache_size, default_waveunit])
 
     Parameters
     ----------
@@ -212,9 +212,7 @@ class Database:
         is raised. If `None` (the default), attempting to add an entry without knowing
         the wavelength unit results in a
         :exc:`sunpy.database.WaveunitNotFoundError`.
-    """
 
-    """
     Attributes
     ----------
     session : sqlalchemy.orm.session.Session

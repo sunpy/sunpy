@@ -3,9 +3,14 @@ import os
 import sys
 from itertools import chain
 
-from astropy_helpers.setup_helpers import get_package_info, register_commands  # noqa
 from setuptools import setup
 from setuptools.config import read_configuration
+
+# Append cwd for pip 19
+sys.path.append(os.path.abspath("."))
+import ah_bootstrap  # NOQA isort:skip
+from astropy_helpers.setup_helpers import get_package_info, register_commands  # NOQA isort:skip
+
 
 ################################################################################
 # Override the default Astropy Test Command
