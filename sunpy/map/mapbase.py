@@ -18,6 +18,7 @@ from astropy.visualization import AsymmetricPercentileInterval
 from astropy.visualization.wcsaxes import WCSAxes
 
 import sunpy.cm
+
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
 import sunpy.io as io

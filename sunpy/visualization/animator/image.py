@@ -170,7 +170,7 @@ class ImageAnimatorWCS(ImageAnimator):
         unit_x_axis=None,
         unit_y_axis=None,
         axis_ranges=None,
-        **kwargs
+        **kwargs,
     ):
         if not isinstance(wcs, (astropy.wcs.WCS, BaseLowLevelWCS)):
             raise ValueError("wcs data should be provided.")

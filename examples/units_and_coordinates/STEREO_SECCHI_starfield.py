@@ -8,6 +8,7 @@ identify bright points in a STEREO/SECCHI COR 2 image as stars.
 As a bonus, we also identify Mars.
 """
 import matplotlib.pyplot as plt
+
 # astroquery is not a dependency of SunPy so will need to be
 # install this package separately.
 from astroquery.vizier import Vizier

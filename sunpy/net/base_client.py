@@ -51,7 +51,7 @@ class BaseClient(ABC):
         max_conn=5,
         downloader=None,
         wait=True,
-        **kwargs
+        **kwargs,
     ):
         """
         This enables the user to fetch the data using the client, after a

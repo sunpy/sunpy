@@ -8,6 +8,7 @@ This is an example to show some possible usage of ``parse_time``.
 objects from various other time objects and strings.
 """
 import time
+
 ##############################################################################
 # Import the required modules.
 from datetime import date, datetime

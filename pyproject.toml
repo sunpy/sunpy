@@ -21,6 +21,7 @@ exclude = '''
     | docs
   )/
   | ah_bootstrap.py
+  | sunpy/cm/color_tables.py
 )
 '''
 

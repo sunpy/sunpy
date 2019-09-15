@@ -14,6 +14,7 @@ the existing sunpy conda environemnt: conda install -c astropy astroquery
 """
 
 import matplotlib.pyplot as plt
+
 # sphinx_gallery_thumbnail_number = 2
 import numpy as np
 

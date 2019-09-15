@@ -87,7 +87,7 @@ class LineAnimator(ArrayAnimator):
         xlim=None,
         ylim=None,
         aspect="auto",
-        **kwargs
+        **kwargs,
     ):
         # Check inputs.
         self.plot_axis_index = int(plot_axis_index)
