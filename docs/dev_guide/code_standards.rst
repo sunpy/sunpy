@@ -28,6 +28,7 @@ Coding Style/Conventions
 
 * The code will follow the standard `PEP8 Style Guide for Python Code <https://www.python.org/dev/peps/pep-0008/>`_.
   In particular, this includes using only 4 spaces for indentation, and never tabs.
+  Specfically, we aim to follow the `black style <https://pypi.org/project/black/>`__.
 
 * **Follow the existing coding style** within a file and avoid making changes that are purely stylistic.
   Please try to maintain the style when adding or modifying code.
@@ -48,6 +49,17 @@ Coding Style/Conventions
 * ``__init__.py`` files for modules should not contain any significant implementation code. ``__init__.py`` can contain docstrings and code for organizing the module layout.
 
 * General utilities necessary for but not specific to the package should be placed in the ``sunpy.utils`` module.
+
+Formatting
+==========
+
+We have pre-commit hooks in our repository if you would rather let these tools do the work for you.
+You will need to:
+
+* Install pre-commit: ``pip install pre-commit``
+* Execute pre-commit: ``pre-commit install``
+
+Now each time on a commit, the tools defined in ``.pre-commit-config.yaml`` will run and their changes either be added to the commit or you have to re-add them.
 
 Documentation and Testing
 =========================

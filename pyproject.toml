@@ -2,6 +2,28 @@
 requires = ["setuptools", "setuptools_scm", "wheel", "numpy==1.14.5"]
 build-backend = 'setuptools.build_meta'
 
+[tool.black]
+line-length = 100
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | astropy_helpers
+    | docs
+  )/
+  | ah_bootstrap.py
+)
+'''
+
 [ tool.sunpy-bot ]
   # disable astropy checks
   changelog_check = false

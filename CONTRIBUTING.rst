@@ -221,6 +221,14 @@ You will need to check two things:
    We follow the `PEP8`_ style for all Python code and depending on your setup, you can use a `linter program <https://realpython.com/python-code-quality/#how-to-improve-python-code-quality>`_ to check your code.
    For documentation, we follow the `numpydoc style <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_.
 
+We have pre-commit hooks in our repository if you would rather let these tools do the work for you.
+You will need to:
+
+* Install pre-commit: ``pip install pre-commit``
+* Execute pre-commit: ``pre-commit install``
+
+Now each time on a commit, the tools defined in ``.pre-commit-config.yaml`` will run and their changes either be added to the commit or you have to re-add them.
+
 We provide more more detail about our :ref: `test suite and how to write tests <testing>`, and how to :ref: `create and style documentation <docs_guidelines>`.
 
 .. _pytest: https://docs.pytest.org/en/latest/

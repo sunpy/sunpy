@@ -198,6 +198,7 @@ $RECYCLE.BIN/
 
 ### VScode: https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore
 .vscode/*
+.history/*
 
 ### Extra Python Items and SunPy Specific
 .hypothesis
