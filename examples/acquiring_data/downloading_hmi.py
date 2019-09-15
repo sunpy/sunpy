@@ -5,11 +5,13 @@ Downloading and plotting an HMI magnetogram
 
 How to download an HMI magnetogram data with Fido and make a plot.
 """
-import astropy.units as u
 import matplotlib.pyplot as plt
 
+import astropy.units as u
+
 import sunpy.map
-from sunpy.net import Fido, attrs as a
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 ###############################################################################
 # To download the required data, we use
@@ -17,10 +19,12 @@ from sunpy.net import Fido, attrs as a
 # First define the search variables, a timerange, the instrument,
 # the observation type,
 # and a cadence of images spaced every 720 seconds.
-result = Fido.search(a.Time('2011/11/09 17:40:00', '2011/11/09 17:55:00'),
-                     a.Instrument('hmi'),
-                     a.Sample(720*u.s),
-                     a.vso.Physobs('LOS_magnetic_field'))
+result = Fido.search(
+    a.Time("2011/11/09 17:40:00", "2011/11/09 17:55:00"),
+    a.Instrument("hmi"),
+    a.Sample(720 * u.s),
+    a.vso.Physobs("LOS_magnetic_field"),
+)
 
 ###############################################################################
 # Now we can see what results we obtained from our search.

@@ -5,9 +5,10 @@ Finding the brightest pixel
 
 How to find and overplot the location of the brightest pixel
 """
-import numpy as np
-import astropy.units as u
 import matplotlib.pyplot as plt
+import numpy as np
+
+import astropy.units as u
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
@@ -27,7 +28,7 @@ hpc_max = aia.pixel_to_world(pixel_pos[:, 1], pixel_pos[:, 0])
 fig = plt.figure()
 ax = plt.subplot(projection=aia)
 aia.plot()
-ax.plot_coord(hpc_max, 'wx', fillstyle='none', markersize=15)
+ax.plot_coord(hpc_max, "wx", fillstyle="none", markersize=15)
 # or you could also use
-ax.plot(pixel_pos[:, 1], pixel_pos[:, 0], 'ro', fillstyle='none', markersize=15)
+ax.plot(pixel_pos[:, 1], pixel_pos[:, 0], "ro", fillstyle="none", markersize=15)
 plt.show()

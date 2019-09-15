@@ -24,9 +24,6 @@ from sunpy.net.attr import and_
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.vso import VSOClient
 
-__authors__ = ["Simon Liedtke", "Rajul Srivastava"]
-__emails__ = ["liedtke.simon@googlemail.com", "rajul09@gmail.com"]
-
 
 class EntryNotFoundError(Exception):
     """
@@ -56,7 +53,8 @@ class EntryAlreadyAddedError(Exception):
 
 class EntryAlreadyStarredError(Exception):
     """
-    This exception is raised if a database entry is marked as starred using
+    This exception is raised if a database entry is marked as starred using.
+
     :meth:`Database.star` although it was already starred before this
     operation.
     """

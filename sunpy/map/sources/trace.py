@@ -1,10 +1,6 @@
 """
 TRACE Map subclass definitions.
 """
-# pylint: disable=W0221,W0222,E1101,E1121
-
-__author__ = "Jack Ireland"
-__email__ = "jack.ireland@nasa.gov"
 
 import matplotlib.pyplot as plt
 

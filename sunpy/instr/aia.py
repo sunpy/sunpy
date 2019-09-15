@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Provides processing routines for data captured with the AIA instrument on SDO.
 """

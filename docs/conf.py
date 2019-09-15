@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 #
 # SunPy documentation build configuration file.
@@ -29,6 +28,13 @@ import os
 import sys
 import pathlib
 import datetime
+
+# -- Shut up numpy warnings from WCSAxes --------------------------------------
+import numpy as np
+from pkg_resources import get_distribution
+
+# -- Download Sample Data -----------------------------------------------------
+import sunpy.data.sample
 
 # -- Import Base config from sphinx-astropy ------------------------------------
 try:
@@ -91,7 +97,6 @@ except ImportError:
     )
     sys.exit(1)
 
-from pkg_resources import get_distribution
 
 versionmod = get_distribution("sunpy")
 
@@ -105,13 +110,9 @@ release = versionmod.version.split("+")[0]
 # Is this version a development release
 is_development = ".dev" in release
 
-# -- Shut up numpy warnings from WCSAxes --------------------------------------
-import numpy as np
 
 np.seterr(invalid="ignore")
 
-# -- Download Sample Data -----------------------------------------------------
-import sunpy.data.sample
 
 # -- General configuration ----------------------------------------------------
 

@@ -14,9 +14,6 @@ from sunpy.visualization import axis_labels_from_ctype, peek_show
 
 __all__ = ["CompositeMap"]
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
 
 class CompositeMap:
     """
@@ -381,13 +378,7 @@ class CompositeMap:
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
         return ax
 
-    def plot(
-        self,
-        axes=None,
-        annotate=True,  # pylint: disable=W0613
-        title="SunPy Composite Plot",
-        **matplot_args
-    ):
+    def plot(self, axes=None, annotate=True, title="SunPy Composite Plot", **matplot_args):
         """
         Plots the composite map object using matplotlib.
 

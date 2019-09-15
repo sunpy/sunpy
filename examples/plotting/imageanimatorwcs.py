@@ -9,13 +9,13 @@ This example shows how to create a simple visualization using
 # Start by importing the necessary modules.
 from itertools import product
 
-import astropy.wcs
 import astropy.units as u
+import astropy.wcs
 
 import sunpy.map
+from sunpy.data.sample import AIA_171_IMAGE, AIA_193_IMAGE
 from sunpy.time import parse_time
 from sunpy.visualization.animator import ImageAnimatorWCS
-from sunpy.data.sample import AIA_171_IMAGE, AIA_193_IMAGE
 
 ################################################################################
 # To showcase how to visualize a sequence of 2D images using
@@ -39,13 +39,15 @@ sequence_array = map_sequence.as_array()
 # This dictionary comprehension is extracting the three basic keywords we need
 # to create a astropy.wcs.WCS header: 'CTYPE','CUNIT' and 'CDELT'
 # from the meta information stored in the 'map_sequence'.
-wcs_input_dict = {f'{key}{n+1}': map_sequence.all_meta()[0].get(f'{key}{n}')
-                  for n, key in product([1, 2], ['CTYPE', 'CUNIT', 'CDELT'])}
+wcs_input_dict = {
+    f"{key}{n+1}": map_sequence.all_meta()[0].get(f"{key}{n}")
+    for n, key in product([1, 2], ["CTYPE", "CUNIT", "CDELT"])
+}
 
 # Now we need to get the time difference between the two observations.
-t0, t1 = map(parse_time, [k['date-obs'] for k in map_sequence.all_meta()])
+t0, t1 = map(parse_time, [k["date-obs"] for k in map_sequence.all_meta()])
 time_diff = (t1 - t0).to(u.s)
-wcs_input_dict.update({'CTYPE1': 'TIME', 'CUNIT1': time_diff.unit.name, 'CDELT1': time_diff.value})
+wcs_input_dict.update({"CTYPE1": "TIME", "CUNIT1": time_diff.unit.name, "CDELT1": time_diff.value})
 
 # We can now just pass this into astropy.wcs.WCS to create our WCS header.
 wcs = astropy.wcs.WCS(wcs_input_dict)
@@ -81,17 +83,17 @@ wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1
 time, solar_y, solar_x = wcs_anim.axes.coords
 
 # Now we can label the X and Y axes.
-solar_x.set_axislabel('Solar X (arsec)')
-solar_y.set_axislabel('Solar Y (arsec)')
+solar_x.set_axislabel("Solar X (arsec)")
+solar_y.set_axislabel("Solar Y (arsec)")
 
 # Move the axis labels to avoid the slider.
-solar_x.set_axislabel_position('t')
-solar_y.set_axislabel_position('r')
+solar_x.set_axislabel_position("t")
+solar_y.set_axislabel_position("r")
 
 # Now we can change the spacing and we have to use `astropy.units` here.
 # We are setting the spacing to be quite small here and this will cause overlap.
-solar_x.set_ticks(spacing=1*u.arcmin, color='black')
-solar_y.set_ticks(spacing=1*u.arcmin, color='black')
+solar_x.set_ticks(spacing=1 * u.arcmin, color="black")
+solar_y.set_ticks(spacing=1 * u.arcmin, color="black")
 
 # We can make sure the ticks do not overlap.
 solar_x.set_ticklabel(exclude_overlapping=True)

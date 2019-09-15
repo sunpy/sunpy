@@ -21,7 +21,8 @@ __all__ = ["XRSClient"]
 
 class XRSClient(GenericClient):
     """
-    Provides access to the GOES XRS fits files `archive
+    Provides access to the GOES XRS fits files `archive.
+
     <https://umbra.nascom.nasa.gov/goes/fits/>`__ hosted by the `Solar Data
     Analysis Center <https://umbra.nascom.nasa.gov/index.html/>`__.
 

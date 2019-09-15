@@ -5,26 +5,29 @@ Overplotting SRS active region locations on a magnetograms
 
 How to find and plot the location of an active region on an HMI magnetogram.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.time import TimeDelta
 
-import sunpy.map
 import sunpy.coordinates
+import sunpy.map
 from sunpy.io.special import srs
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 from sunpy.time import parse_time
-from sunpy.net import Fido, attrs as a
 
 ##############################################################################
 # For this example, we will search for and download a single HMI using Fido.
 start_time = parse_time("2017-01-25")
-end_time = start_time + TimeDelta(23*u.hour + 59*u.minute + 59*u.second)
-results = Fido.search(a.Time(start_time, end_time),
-                      a.Instrument('HMI') & a.vso.Physobs("LOS_magnetic_field"),
-                      a.vso.Sample(60 * u.second))
+end_time = start_time + TimeDelta(23 * u.hour + 59 * u.minute + 59 * u.second)
+results = Fido.search(
+    a.Time(start_time, end_time),
+    a.Instrument("HMI") & a.vso.Physobs("LOS_magnetic_field"),
+    a.vso.Sample(60 * u.second),
+)
 
 ##############################################################################
 # Let's select only the first file, download it and create a map.
@@ -34,7 +37,7 @@ smap = sunpy.map.Map(file_name)
 
 ##############################################################################
 # Download the SRS file.
-srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument('SRS_TABLE'))
+srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument("SRS_TABLE"))
 srs_downloaded_files = Fido.fetch(srs_results)
 
 ##############################################################################
@@ -46,9 +49,8 @@ print(srs_table)
 ##############################################################################
 # We only need the rows which have 'ID' = 'I' or 'IA'.
 
-if 'I' in srs_table['ID'] or 'IA' in srs_table['ID']:
-    srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I',
-                                        srs_table['ID'] == 'IA')]
+if "I" in srs_table["ID"] or "IA" in srs_table["ID"]:
+    srs_table = srs_table[np.logical_or(srs_table["ID"] == "I", srs_table["ID"] == "IA")]
 else:
     print("Warning : No I or IA entries for this date.")
     srs_table = None
@@ -58,9 +60,9 @@ else:
 # empty list if there are no ARs.
 
 if srs_table is not None:
-    lats = srs_table['Latitude']
-    lngs = srs_table['Longitude']
-    numbers = srs_table['Number']
+    lats = srs_table["Latitude"]
+    lngs = srs_table["Longitude"]
+    numbers = srs_table["Number"]
 else:
     lats = lngs = numbers = []
 
@@ -74,9 +76,12 @@ ax.set_autoscale_on(False)
 
 if len(lats) > 0:
     c = SkyCoord(lngs, lats, frame="heliographic_stonyhurst")
-    ax.plot_coord(c, 'o')
+    ax.plot_coord(c, "o")
 
     for i, num in enumerate(numbers):
-        ax.annotate(num, (lngs[i].value, lats[i].value),
-                    xycoords=ax.get_transform('heliographic_stonyhurst'))
+        ax.annotate(
+            num,
+            (lngs[i].value, lats[i].value),
+            xycoords=ax.get_transform("heliographic_stonyhurst"),
+        )
 plt.show()

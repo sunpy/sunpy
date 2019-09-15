@@ -1,10 +1,6 @@
 """
 RHESSI Map subclass definitions.
 """
-# pylint: disable=W0221,W0222,E1121
-
-__author__ = "Steven Christe"
-__email__ = "steven.d.christe@nasa.gov"
 
 import matplotlib.pyplot as plt
 

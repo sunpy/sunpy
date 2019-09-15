@@ -36,22 +36,21 @@ See https://github.com/astropy/astropy-helpers for more details, and for the
 latest version of this module.
 """
 
-import contextlib
-import errno
 import io
-import locale
 import os
 import re
-import subprocess as sp
 import sys
-
+import errno
+import locale
+import contextlib
+import subprocess as sp
 from distutils import log
-from distutils.debug import DEBUG
-
 from configparser import ConfigParser, RawConfigParser
+from distutils.debug import DEBUG
+# Check that setuptools 30.3 or later is present
+from distutils.version import LooseVersion
 
 import pkg_resources
-
 from setuptools import Distribution
 from setuptools.package_index import PackageIndex
 
@@ -146,8 +145,6 @@ _str_types = (str, bytes)
 # issues with either missing or misbehaving pacakges (including making sure
 # setuptools itself is installed):
 
-# Check that setuptools 30.3 or later is present
-from distutils.version import LooseVersion
 
 try:
     import setuptools
@@ -199,8 +196,9 @@ except:
 
 class _Bootstrapper(object):
     """
-    Bootstrapper implementation.  See ``use_astropy_helpers`` for parameter
-    documentation.
+    Bootstrapper implementation.
+
+    See ``use_astropy_helpers`` for parameter documentation.
     """
 
     def __init__(self, path=None, index_url=None, use_git=None, offline=None,
@@ -611,12 +609,13 @@ class _Bootstrapper(object):
 
     def _check_submodule_using_git(self):
         """
-        Check if the given path is a git submodule.  If so, attempt to initialize
-        and/or update the submodule if needed.
+        Check if the given path is a git submodule.  If so, attempt to
+        initialize and/or update the submodule if needed.
 
-        This function makes calls to the ``git`` command in subprocesses.  The
-        ``_check_submodule_no_git`` option uses pure Python to check if the given
-        path looks like a git submodule, but it cannot perform updates.
+        This function makes calls to the ``git`` command in
+        subprocesses.  The ``_check_submodule_no_git`` option uses pure
+        Python to check if the given path looks like a git submodule,
+        but it cannot perform updates.
         """
 
         cmd = ['git', 'submodule', 'status', '--', self.path]
@@ -687,13 +686,14 @@ class _Bootstrapper(object):
 
     def _check_submodule_no_git(self):
         """
-        Like ``_check_submodule_using_git``, but simply parses the .gitmodules file
-        to determine if the supplied path is a git submodule, and does not exec any
-        subprocesses.
+        Like ``_check_submodule_using_git``, but simply parses the .gitmodules
+        file to determine if the supplied path is a git submodule, and does not
+        exec any subprocesses.
 
-        This can only determine if a path is a submodule--it does not perform
-        updates, etc.  This function may need to be updated if the format of the
-        .gitmodules file is changed between git versions.
+        This can only determine if a path is a submodule--it does not
+        perform updates, etc.  This function may need to be updated if
+        the format of the .gitmodules file is changed between git
+        versions.
         """
 
         gitmodules_path = os.path.abspath('.gitmodules')
@@ -802,8 +802,7 @@ class _CommandNotFound(OSError):
 
 def run_cmd(cmd):
     """
-    Run a command in a subprocess, given as a list of command-line
-    arguments.
+    Run a command in a subprocess, given as a list of command-line arguments.
 
     Returns a ``(returncode, stdout, stderr)`` tuple.
     """
@@ -882,7 +881,9 @@ def _next_version(version):
 
 
 class _DummyFile(object):
-    """A noop writeable object."""
+    """
+    A noop writeable object.
+    """
 
     errors = ''  # Required for Python 3.x
     encoding = 'utf-8'
@@ -900,7 +901,9 @@ def _verbose():
 
 @contextlib.contextmanager
 def _silence():
-    """A context manager that silences sys.stdout and sys.stderr."""
+    """
+    A context manager that silences sys.stdout and sys.stderr.
+    """
 
     old_stdout = sys.stdout
     old_stderr = sys.stderr

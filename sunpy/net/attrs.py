@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from .dataretriever.attrs import goes
 from .jsoc import attrs as jsoc
 from .vso.attrs import Detector, Instrument, Level, Resolution, Sample, Time, Wavelength

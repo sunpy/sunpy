@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 #
 # This module was developed with funding provided by
@@ -9,31 +8,40 @@
 # ALL CHANGES WILL BE LOST THE NEXT TIME IT IS GENERATED FROM THE TEMPLATE.
 
 """
-Attributes that can be used to construct HEK queries. They are different to
-the VSO ones in that a lot of them are wrappers that conveniently expose
-the comparisons by overloading Python operators. So, e.g., you are able
-to say AR & AR.NumSpots < 5 to find all active regions with less than 5 spots.
-As with the VSO query, you can use the fundamental logic operators AND and OR
-to construct queries of almost arbitrary complexity. Note that complex queries
-result in multiple requests to the server which might make them less efficient.
+Attributes that can be used to construct HEK queries.
+
+They are different to the VSO ones in that a lot of them are wrappers
+that conveniently expose the comparisons by overloading Python
+operators. So, e.g., you are able to say AR & AR.NumSpots < 5 to find
+all active regions with less than 5 spots. As with the VSO query, you
+can use the fundamental logic operators AND and OR to construct queries
+of almost arbitrary complexity. Note that complex queries result in
+multiple requests to the server which might make them less efficient.
 """
 
 from __future__ import absolute_import
 
 from datetime import datetime
+
 from sunpy.net import attr
 from sunpy.time import parse_time
 
+
 class _ParamAttr(attr.Attr):
-    """ A _ParamAttr is used to represent equality or inequality checks
-    for certain parameters. It stores the attribute's name, the operator to
-    compare with, and the value to compare to. """
+    """
+    A _ParamAttr is used to represent equality or inequality checks for certain
+    parameters.
+
+    It stores the attribute's name, the operator to compare with, and
+    the value to compare to.
+    """
+
     def __init__(self, name, op, value):
         attr.Attr.__init__(self)
         self.name = name
         self.op = op
         self.value = value
-    
+
     def collides(self, other):
         if not isinstance(other, self.__class__):
             return False
@@ -42,37 +50,41 @@ class _ParamAttr(attr.Attr):
 
 # XXX: Why is this here but never used.
 class _BoolParamAttr(_ParamAttr):
-    def __init__(self, name, value='true'):
-        _ParamAttr.__init__(self, name, '=', value)
-    
+    def __init__(self, name, value="true"):
+        _ParamAttr.__init__(self, name, "=", value)
+
     def __neg__(self):
-        if self.value == 'true':
-            return _BoolParamAttr(self.name, 'false')
+        if self.value == "true":
+            return _BoolParamAttr(self.name, "false")
         else:
             return _BoolParamAttr(self.name)
-    
+
     def __pos__(self):
         return _BoolParamAttr(self.name)
 
 
 class _ListAttr(attr.Attr):
-    """ A _ListAttr is used when the server expects a list of things with
-    the name (GET parameter name) key. By adding the _ListAttr to the query,
-    item is added to that list. """
+    """
+    A _ListAttr is used when the server expects a list of things with the name
+    (GET parameter name) key.
+
+    By adding the _ListAttr to the query, item is added to that list.
+    """
+
     def __init__(self, key, item):
         attr.Attr.__init__(self)
-        
+
         self.key = key
         self.item = item
-    
+
     def collides(self, other):
         return False
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
         return hash(tuple(vars(self).itervalues()))
 
@@ -81,61 +93,62 @@ class EventType(attr.Attr):
     def __init__(self, item):
         attr.Attr.__init__(self)
         self.item = item
-    
+
     def collides(self, other):
         return isinstance(other, EventType)
-    
+
     def __or__(self, other):
         if isinstance(other, EventType):
-            return EventType(self.item + ',' + other.item)
+            return EventType(self.item + "," + other.item)
         else:
             return super(EventType, self).__or__(other)
 
 
 # XXX: XOR
 class Time(attr.Attr):
-    """ Restrict query to time range between start and end. """
+    """
+    Restrict query to time range between start and end.
+    """
+
     def __init__(self, start, end):
         attr.Attr.__init__(self)
         self.start = start
         self.end = end
-    
+
     def collides(self, other):
         return isinstance(other, Time)
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
         return hash(tuple(vars(self).itervalues()))
-    
+
     @classmethod
     def dt(cls, start, end):
         return cls(datetime(*start), datetime(*end))
 
 
-# pylint: disable=R0913
 class SpatialRegion(attr.Attr):
-    def __init__(
-        self, x1=-5000, y1=-5000, x2=5000, y2=5000, sys='helioprojective'):
+    def __init__(self, x1=-5000, y1=-5000, x2=5000, y2=5000, sys="helioprojective"):
         attr.Attr.__init__(self)
-        
+
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
         self.sys = sys
-    
+
     def collides(self, other):
         return isinstance(other, SpatialRegion)
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
         return hash(tuple(vars(self).itervalues()))
 
@@ -144,15 +157,15 @@ class Contains(attr.Attr):
     def __init__(self, *types):
         attr.Attr.__init__(self)
         self.types = types
-    
+
     def collides(self, other):
         return False
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
         return hash(tuple(vars(self).itervalues()))
 
@@ -160,29 +173,29 @@ class Contains(attr.Attr):
 class _ComparisonParamAttrWrapper(object):
     def __init__(self, name):
         self.name = name
-    
+
     def __lt__(self, other):
-        return _ParamAttr(self.name, '<', other)
-    
+        return _ParamAttr(self.name, "<", other)
+
     def __le__(self, other):
-        return _ParamAttr(self.name, '<=', other)
-    
+        return _ParamAttr(self.name, "<=", other)
+
     def __gt__(self, other):
-        return _ParamAttr(self.name, '>', other)
-    
+        return _ParamAttr(self.name, ">", other)
+
     def __ge__(self, other):
-        return _ParamAttr(self.name, '>=', other)
-    
+        return _ParamAttr(self.name, ">=", other)
+
     def __eq__(self, other):
-        return _ParamAttr(self.name, '=', other)
-    
+        return _ParamAttr(self.name, "=", other)
+
     def __ne__(self, other):
-        return _ParamAttr(self.name, '!=', other)
+        return _ParamAttr(self.name, "!=", other)
 
 
 class _StringParamAttrWrapper(_ComparisonParamAttrWrapper):
     def like(self, other):
-        return _ParamAttr(self.name, 'like', other)
+        return _ParamAttr(self.name, "like", other)
 
 
 class _NumberParamAttrWrapper(_ComparisonParamAttrWrapper):
@@ -194,77 +207,75 @@ class _NumberParamAttrWrapper(_ComparisonParamAttrWrapper):
 # a dictionary of GET parameters to be sent to the server.
 walker = attr.AttrWalker()
 
+
 @walker.add_applier(Contains)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
-    dct['type'] = 'contains'
+    dct["type"] = "contains"
     if not Contains in state:
         state[Contains] = 1
-    
+
     nid = state[Contains]
     n = 0
     for n, type_ in enumerate(root.types):
-        dct['event_type{num:d}'.format(num=(nid + n))] = type_
+        dct["event_type{num:d}".format(num=(nid + n))] = type_
     state[Contains] += n
     return dct
 
-@walker.add_creator(
-    Time, SpatialRegion, EventType, _ParamAttr, attr.AttrAnd, Contains)
-# pylint: disable=E0102,C0103,W0613
+
+@walker.add_creator(Time, SpatialRegion, EventType, _ParamAttr, attr.AttrAnd, Contains)
 def _c(wlk, root, state):
     value = {}
     wlk.apply(root, state, value)
     return [value]
 
+
 @walker.add_applier(Time)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
-    dct['event_starttime'] = parse_time(root.start).strftime('%Y-%m-%dT%H:%M:%S')
-    dct['event_endtime'] = parse_time(root.end).strftime('%Y-%m-%dT%H:%M:%S')
+    dct["event_starttime"] = parse_time(root.start).strftime("%Y-%m-%dT%H:%M:%S")
+    dct["event_endtime"] = parse_time(root.end).strftime("%Y-%m-%dT%H:%M:%S")
     return dct
+
 
 @walker.add_applier(SpatialRegion)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
-    dct['x1'] = root.x1
-    dct['y1'] = root.y1
-    dct['x2'] = root.x2
-    dct['y2'] = root.y2
-    dct['event_coordsys'] = root.sys
+    dct["x1"] = root.x1
+    dct["y1"] = root.y1
+    dct["x2"] = root.x2
+    dct["y2"] = root.y2
+    dct["event_coordsys"] = root.sys
     return dct
+
 
 @walker.add_applier(EventType)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
-    if dct.get('type', None) == 'contains':
+    if dct.get("type", None) == "contains":
         raise ValueError
-    dct['event_type'] = root.item
+    dct["event_type"] = root.item
     return dct
 
+
 @walker.add_applier(_ParamAttr)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     if not _ParamAttr in state:
         state[_ParamAttr] = 0
-    
+
     nid = state[_ParamAttr]
-    dct['param{num:d}'.format(num=nid)] = root.name
-    dct['op{num:d}'.format(num=nid)] = root.op
-    dct['value{num:d}'.format(num=nid)] = root.value
+    dct["param{num:d}".format(num=nid)] = root.name
+    dct["op{num:d}".format(num=nid)] = root.op
+    dct["value{num:d}".format(num=nid)] = root.value
     state[_ParamAttr] += 1
     return dct
 
+
 @walker.add_applier(attr.AttrAnd)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     for attribute in root.attrs:
         wlk.apply(attribute, state, dct)
 
+
 @walker.add_creator(attr.AttrOr)
-# pylint: disable=E0102,C0103,W0613
 def _c(wlk, root, state):
     blocks = []
     for attribute in root.attrs:
         blocks.extend(wlk.create(attribute, state))
     return blocks
-

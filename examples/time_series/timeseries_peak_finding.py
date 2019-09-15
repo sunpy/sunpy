@@ -7,19 +7,19 @@ How to find minimum or maximum peaks in a TimeSeries.
 Note: Peak finding is a complex problem that has many potential solutions and
 this example is just one method of many.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-from sunpy.timeseries import TimeSeries
 from sunpy.data.sample import NOAAINDICES_TIMESERIES as noaa_ind
+from sunpy.timeseries import TimeSeries
 
 ##############################################################################
 # We will now create a TimeSeries object from an observational data source,
 # Also, we will truncate it to do analysis on a smaller time duration of 10
 # years.
 
-ts_noaa_ind = TimeSeries(noaa_ind, source='NOAAIndices')
-my_timeseries = ts_noaa_ind.truncate('1991/01/01', '2001/01/01')
+ts_noaa_ind = TimeSeries(noaa_ind, source="NOAAIndices")
+my_timeseries = ts_noaa_ind.truncate("1991/01/01", "2001/01/01")
 fig, ax = plt.subplots()
 my_timeseries.plot()
 
@@ -66,7 +66,7 @@ def findpeaks(series, DELTA):
             mn = value
             mnpos = time_pos
         if lookformax:
-            if value < mx-DELTA:
+            if value < mx - DELTA:
                 # a local maxima
                 maxpeaks.append((mxpos, mx))
                 mn = value
@@ -79,16 +79,16 @@ def findpeaks(series, DELTA):
                 mxpos = time_pos
                 start = False
         else:
-            if value > mn+DELTA:
+            if value > mn + DELTA:
                 # a local minima
                 minpeaks.append((mnpos, mn))
                 mx = value
                 mxpos = time_pos
                 lookformax = True
     # check for extrema at end
-    if value > mn+DELTA:
+    if value > mn + DELTA:
         maxpeaks.append((mxpos, mx))
-    elif value < mx-DELTA:
+    elif value < mx - DELTA:
         minpeaks.append((mnpos, mn))
     return minpeaks, maxpeaks
 
@@ -97,16 +97,16 @@ def findpeaks(series, DELTA):
 # Now we take the column 'sunspot SWO' of this TimeSeries and try to find it's
 # extrema using the function findpeaks. We take the value of DELTA to be
 # approximately the length of smallest peak that we wish to detect.
-series = my_timeseries.data['sunspot SWO']
-minpeaks, maxpeaks = findpeaks(series, DELTA=10.)
+series = my_timeseries.data["sunspot SWO"]
+minpeaks, maxpeaks = findpeaks(series, DELTA=10.0)
 # Plotting the figure and extremum points
 fig, ax = plt.subplots()
-ax.set_ylabel('Sunspot Number')
-ax.set_xlabel('Time')
-ax.set_title('Peaks in TimeSeries')
+ax.set_ylabel("Sunspot Number")
+ax.set_xlabel("Time")
+ax.set_title("Peaks in TimeSeries")
 series.plot()
-ax.scatter(*zip(*minpeaks), color='red', label='min')
-ax.scatter(*zip(*maxpeaks), color='green', label='max')
+ax.scatter(*zip(*minpeaks), color="red", label="min")
+ax.scatter(*zip(*maxpeaks), color="green", label="max")
 ax.legend()
 ax.grid(True)
 

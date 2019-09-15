@@ -33,9 +33,6 @@ try:
 except ImportError:
     pass
 
-__authors__ = ["Russell Hewett, Stuart Mumford"]
-__email__ = "stuart@mumford.me.uk"
-
 # Make a mock DatabaseEntry class if sqlalchemy is not installed
 try:
     from sunpy.database.tables import DatabaseEntry

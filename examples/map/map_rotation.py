@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ==============
 Rotating a Map
@@ -6,12 +5,12 @@ Rotating a Map
 
 How to rotate a map.
 """
-import astropy.units as u
-
 import matplotlib.pyplot as plt
 
-import sunpy.map
+import astropy.units as u
+
 import sunpy.data.sample
+import sunpy.map
 
 ###############################################################################
 # We start with the sample data

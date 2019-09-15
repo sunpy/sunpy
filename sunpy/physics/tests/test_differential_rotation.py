@@ -24,8 +24,6 @@ from sunpy.physics.differential_rotation import (
     solar_rotate_coordinate,
 )
 
-# pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
-
 # Please note the numbers in these tests are not checked for physical
 # accuracy, only that they are the values the function was outputting upon
 # implementation.  This is not a significant issue for the diff_rot function

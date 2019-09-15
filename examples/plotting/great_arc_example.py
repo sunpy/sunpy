@@ -7,8 +7,8 @@ Drawing and using a Great Arc
 How to define and draw a great arc on an image of the
 Sun, and to extract intensity values along that arc.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -35,7 +35,7 @@ great_arc = GreatArc(start, end)
 fig = plt.figure()
 ax = plt.subplot(projection=m)
 m.plot(axes=ax)
-ax.plot_coord(great_arc.coordinates(), color='c')
+ax.plot_coord(great_arc.coordinates(), color="c")
 plt.show()
 
 ###############################################################################
@@ -58,7 +58,7 @@ angles = great_arc.inner_angles().to(u.deg)
 # Plot the intensity along the arc from the start to the end point.
 fig, ax = plt.subplots()
 ax.plot(angles, intensity_along_arc)
-ax.set_xlabel('degrees of arc from start')
-ax.set_ylabel('intensity')
-ax.grid(linestyle='dotted')
+ax.set_xlabel("degrees of arc from start")
+ax.set_ylabel("intensity")
+ax.grid(linestyle="dotted")
 plt.show()

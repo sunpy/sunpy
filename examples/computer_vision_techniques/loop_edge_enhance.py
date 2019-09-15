@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ============================
 Edge Enhancing Coronal Loops
@@ -6,9 +5,9 @@ Edge Enhancing Coronal Loops
 
 How to edge enhance coronal loops in an SDO/AIA image.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import ndimage
-import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -27,8 +26,8 @@ aia_smap = aia.submap(bottom_left, top_right)
 ###############################################################################
 # Next we apply an edge enhance filter to the data in both x and y directions
 # and combine the two images together.
-sx = ndimage.sobel(aia_smap.data, axis=0, mode='constant')
-sy = ndimage.sobel(aia_smap.data, axis=1, mode='constant')
+sx = ndimage.sobel(aia_smap.data, axis=0, mode="constant")
+sy = ndimage.sobel(aia_smap.data, axis=1, mode="constant")
 edge_enhanced_im = np.hypot(sx, sy)
 
 ###############################################################################

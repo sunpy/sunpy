@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ==============
 Cropping a Map
@@ -6,12 +5,13 @@ Cropping a Map
 
 How to crop a map by using submap.
 """
+import matplotlib.pyplot as plt
+
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-import sunpy.map
 import sunpy.data.sample
-import matplotlib.pyplot as plt
+import sunpy.map
 
 ###############################################################################
 # We start with the sample data

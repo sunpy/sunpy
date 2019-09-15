@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Ephemeris calculations using SunPy coordinate frames.
 """
@@ -34,9 +33,6 @@ try:
 except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
-
-__author__ = "Albert Y. Shih"
-__email__ = "ayshih@gmail.com"
 
 __all__ = [
     "get_body_heliographic_stonyhurst",

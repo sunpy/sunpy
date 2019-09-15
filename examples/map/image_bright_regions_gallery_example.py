@@ -9,8 +9,8 @@ count the approximate number of regions of interest using ndimage.
 """
 # sphinx_gallery_thumbnail_number = 2
 
-from scipy import ndimage
 import matplotlib.pyplot as plt
+from scipy import ndimage
 
 import sunpy.map
 from sunpy.data.sample import AIA_193_IMAGE
@@ -68,5 +68,5 @@ plt.figure()
 ax = plt.subplot(projection=aiamap)
 aiamap.plot()
 plt.contour(labels)
-plt.figtext(0.3, 0.2, f'Number of regions = {n}', color='white')
+plt.figtext(0.3, 0.2, f"Number of regions = {n}", color="white")
 plt.show()

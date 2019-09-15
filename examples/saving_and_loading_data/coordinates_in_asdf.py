@@ -18,13 +18,13 @@ the same form as they were saved.
 
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize
-import matplotlib.pyplot as plt
 
 import asdf
-import astropy.units as u
 import astropy.constants as const
+import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.map
@@ -39,43 +39,49 @@ from sunpy.data.sample import AIA_171_IMAGE
 
 
 @u.quantity_input
-def semi_circular_loop(length: u.m, theta0: u.deg=0*u.deg):
+def semi_circular_loop(length: u.m, theta0: u.deg = 0 * u.deg):
     """
-    Return a Heliographic Stonyhurst coordinate object with points of a semi circular loop in it.
+    Return a Heliographic Stonyhurst coordinate object with points of a semi
+    circular loop in it.
     """
     r_sun = const.R_sun
 
     def r_2_func(x):
-        return np.arccos(0.5 * x / r_sun.to(u.cm).value) - np.pi + length.to(u.cm).value / 2. / x
+        return np.arccos(0.5 * x / r_sun.to(u.cm).value) - np.pi + length.to(u.cm).value / 2.0 / x
 
-    r_2 = scipy.optimize.bisect(r_2_func,
-                                length.to(u.cm).value / (2 * np.pi),
-                                length.to(u.cm).value / np.pi) * u.cm
+    r_2 = (
+        scipy.optimize.bisect(
+            r_2_func, length.to(u.cm).value / (2 * np.pi), length.to(u.cm).value / np.pi
+        )
+        * u.cm
+    )
     alpha = np.arccos(0.5 * (r_2 / r_sun).decompose())
     phi = np.linspace(-np.pi * u.rad + alpha, np.pi * u.rad - alpha, 2000)
 
     # Quadratic formula to find r
-    a = 1.
+    a = 1.0
     b = -2 * (r_sun.to(u.cm) * np.cos(phi.to(u.radian)))
-    c = r_sun.to(u.cm)**2 - r_2.to(u.cm)**2
-    r = (-b + np.sqrt(b**2 - 4 * a * c)) / 2 / a
+    c = r_sun.to(u.cm) ** 2 - r_2.to(u.cm) ** 2
+    r = (-b + np.sqrt(b ** 2 - 4 * a * c)) / 2 / a
     # Choose only points above the surface
     i_r = np.where(r > r_sun)
     r = r[i_r]
     phi = phi[i_r]
     hcc_frame = frames.Heliocentric(
-        observer=SkyCoord(lon=0 * u.deg, lat=theta0, radius=r_sun, frame='heliographic_stonyhurst'))
+        observer=SkyCoord(lon=0 * u.deg, lat=theta0, radius=r_sun, frame="heliographic_stonyhurst")
+    )
 
     return SkyCoord(
         x=r.to(u.cm) * np.sin(phi.to(u.radian)),
         y=u.Quantity(r.shape[0] * [0 * u.cm]),
         z=r.to(u.cm) * np.cos(phi.to(u.radian)),
-        frame=hcc_frame).transform_to('heliographic_stonyhurst')
+        frame=hcc_frame,
+    ).transform_to("heliographic_stonyhurst")
 
 
 ################################################################################
 # Use this function to generate a `~astropy.coordinates.SkyCoord` object.
-loop_coords = semi_circular_loop(500*u.Mm, 30*u.deg)
+loop_coords = semi_circular_loop(500 * u.Mm, 30 * u.deg)
 print(loop_coords.shape)
 # print the first and last coordinate point
 print(loop_coords[[0, -1]])
@@ -107,7 +113,7 @@ ax.plot_coord(loop_coords)
 # can save the underlying frame. Therefore we construct a tree with the frame.
 
 
-tree = {'loop_points': loop_coords.frame}
+tree = {"loop_points": loop_coords.frame}
 
 with asdf.AsdfFile(tree) as asdf_file:
     asdf_file.write_to("loop_coords.asdf")
@@ -118,7 +124,7 @@ with asdf.AsdfFile(tree) as asdf_file:
 # Astropy and SunPy installed. We can reload the file like so:
 
 with asdf.open("loop_coords.asdf") as input_asdf:
-    coords = input_asdf['loop_points']
+    coords = input_asdf["loop_points"]
     new_coords = SkyCoord(coords)
 
 print(new_coords.shape)

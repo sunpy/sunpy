@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from sunpy.net.attr import Attr, AttrAnd, AttrOr, AttrWalker, SimpleAttr
 from sunpy.net.vso.attrs import Time as VSO_Time
 from sunpy.net.vso.attrs import Wavelength

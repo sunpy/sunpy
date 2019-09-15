@@ -10,8 +10,6 @@ import astropy.units as u
 from sunpy.image.coalignment import apply_shifts
 from sunpy.physics.differential_rotation import solar_rotate_coordinate
 
-__author__ = "J. Ireland"
-
 __all__ = ["calculate_solar_rotate_shift", "mapsequence_solar_derotate"]
 
 

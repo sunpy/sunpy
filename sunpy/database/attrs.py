@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from sqlalchemy import and_, not_, or_
 
 from sunpy.database.tables import DatabaseEntry
@@ -202,7 +201,6 @@ def _create(wlk, root, session):
         elif typ == "path":
             path, inverted = value
             if inverted:
-                # pylint: disable=E711
                 query = query.filter(or_(DatabaseEntry.path != path, DatabaseEntry.path == None))
             else:
                 query = query.filter(DatabaseEntry.path == path)

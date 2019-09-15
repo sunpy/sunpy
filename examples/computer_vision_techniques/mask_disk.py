@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ==========================
 Masking out the solar disk
@@ -6,9 +5,9 @@ Masking out the solar disk
 
 How to mask out all emission from the solar disk.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 import numpy.ma as ma
-import matplotlib.pyplot as plt
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
@@ -30,8 +29,8 @@ r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 # the solar radius are masked. We also make a slight change to the colormap
 # so that masked values are shown as black instead of the default white.
 mask = ma.masked_less_equal(r, 1)
-palette = aia.plot_settings['cmap']
-palette.set_bad('black')
+palette = aia.plot_settings["cmap"]
+palette.set_bad("black")
 
 ###############################################################################
 # Finally we create a new map with our new mask.

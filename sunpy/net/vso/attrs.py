@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-#
-# This module was developed with funding provided by
-# the ESA Summer of Code (2011).
-#
-# pylint: disable=C0103,R0903
-
 """
 Attributes that can be used to construct VSO queries.
 
@@ -214,7 +206,6 @@ class Extent(Attr):
     Due to a bug in the VSO, the Extent attribute is not used.
     """
 
-    # pylint: disable=R0913
     def __init__(self, x, y, width, length, atype):
         super().__init__()
 
@@ -465,7 +456,6 @@ walker = AttrWalker()
 
 
 @walker.add_creator(ValueAttr, AttrAnd)
-# pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """
     Implementation detail.
@@ -477,7 +467,6 @@ def _create(wlk, root, api):
 
 
 @walker.add_applier(ValueAttr)
-# pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, block):
     """
     Implementation detail.
@@ -500,7 +489,6 @@ def _apply(wlk, root, api, block):
 
 
 @walker.add_applier(AttrAnd)
-# pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
     """
     Implementation detail.
@@ -510,7 +498,6 @@ def _apply(wlk, root, api, queryblock):
 
 
 @walker.add_creator(AttrOr)
-# pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """
     Implementation detail.

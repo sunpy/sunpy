@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 #
 # This module was developed with funding provided by
@@ -132,7 +131,6 @@ class Time(attr.Attr):
         return cls(parse_time(start), parse_time(end))
 
 
-# pylint: disable=R0913
 class SpatialRegion(attr.Attr):
     def __init__(self, x1=-5000, y1=-5000, x2=5000, y2=5000, sys="helioprojective"):
         attr.Attr.__init__(self)
@@ -211,7 +209,6 @@ walker = attr.AttrWalker()
 
 
 @walker.add_applier(Contains)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     dct["type"] = "contains"
     if not Contains in state:
@@ -226,7 +223,6 @@ def _a(wlk, root, state, dct):
 
 
 @walker.add_creator(Time, SpatialRegion, EventType, _ParamAttr, attr.AttrAnd, Contains)
-# pylint: disable=E0102,C0103,W0613
 def _c(wlk, root, state):
     value = {}
     wlk.apply(root, state, value)
@@ -234,7 +230,6 @@ def _c(wlk, root, state):
 
 
 @walker.add_applier(Time)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     dct["event_starttime"] = parse_time(root.start).strftime("%Y-%m-%dT%H:%M:%S")
     dct["event_endtime"] = parse_time(root.end).strftime("%Y-%m-%dT%H:%M:%S")
@@ -242,7 +237,6 @@ def _a(wlk, root, state, dct):
 
 
 @walker.add_applier(SpatialRegion)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     dct["x1"] = root.x1
     dct["y1"] = root.y1
@@ -253,7 +247,6 @@ def _a(wlk, root, state, dct):
 
 
 @walker.add_applier(EventType)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     if dct.get("type", None) == "contains":
         raise ValueError
@@ -262,7 +255,6 @@ def _a(wlk, root, state, dct):
 
 
 @walker.add_applier(_ParamAttr)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     if not _ParamAttr in state:
         state[_ParamAttr] = 0
@@ -276,14 +268,12 @@ def _a(wlk, root, state, dct):
 
 
 @walker.add_applier(attr.AttrAnd)
-# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     for attribute in root.attrs:
         wlk.apply(attribute, state, dct)
 
 
 @walker.add_creator(attr.AttrOr)
-# pylint: disable=E0102,C0103,W0613
 def _c(wlk, root, state):
     blocks = []
     for attribute in root.attrs:

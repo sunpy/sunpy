@@ -11,12 +11,13 @@ to find those regions in the map data where the intensity values form a local ma
 Then we plot those peaks in the original AIA plot.
 """
 
-import numpy as np
-import astropy.units as u
 import matplotlib.pyplot as plt
+import numpy as np
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
 from skimage.feature import peak_local_max
+
+import astropy.units as u
 
 import sunpy.map
 from sunpy.data.sample import AIA_193_IMAGE
@@ -53,21 +54,21 @@ coordinates = peak_local_max(aiamap.data, min_distance=60, threshold_rel=0.2)
 # those positions marked red in the aiamap data.
 
 fig = plt.figure(figsize=(12, 8))
-ax = fig.add_subplot(111, projection='3d')
+ax = fig.add_subplot(111, projection="3d")
 ax.plot_surface(X, Y, aiamap.data)
 ax.view_init(elev=39, azim=64)
 peaks_pos = aiamap.data[coordinates[:, 0], coordinates[:, 1]]
-ax.scatter(coordinates[:, 1], coordinates[:, 0], peaks_pos, color='r')
-ax.set_xlabel('X Coordinates')
-ax.set_ylabel('Y Coordinates')
-ax.set_zlabel('Intensity')
+ax.scatter(coordinates[:, 1], coordinates[:, 0], peaks_pos, color="r")
+ax.set_xlabel("X Coordinates")
+ax.set_ylabel("Y Coordinates")
+ax.set_zlabel("Intensity")
 
 
 ###############################################################################
 # Now we need to turn the pixel coordinates into the world location so
 # they can be easily overlaid on the Map.
 
-hpc_max = aiamap.pixel_to_world(coordinates[:, 1]*u.pixel, coordinates[:, 0]*u.pixel)
+hpc_max = aiamap.pixel_to_world(coordinates[:, 1] * u.pixel, coordinates[:, 0] * u.pixel)
 
 ###############################################################################
 # Finally we do an AIA plot to check for the local maxima locations
@@ -76,5 +77,5 @@ hpc_max = aiamap.pixel_to_world(coordinates[:, 1]*u.pixel, coordinates[:, 0]*u.p
 fig = plt.figure()
 ax = plt.subplot(projection=aiamap)
 aiamap.plot()
-ax.plot_coord(hpc_max, 'bx')
+ax.plot_coord(hpc_max, "bx")
 plt.show()

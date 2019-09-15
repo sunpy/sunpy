@@ -17,7 +17,8 @@ __all__ = ["NOAAIndicesClient", "NOAAPredictClient", "SRSClient"]
 
 class NOAAIndicesClient(GenericClient):
     """
-    Provides access to the NOAA solar cycle indices from the `ftp archive
+    Provides access to the NOAA solar cycle indices from the `ftp archive.
+
     <ftp://ftp.swpc.noaa.gov/pub/weekly/>`__.
 
     This is a fixed dataset so the result is independent of the time range.
@@ -82,7 +83,8 @@ class NOAAIndicesClient(GenericClient):
 class NOAAPredictClient(GenericClient):
     """
     Provides access to the `NOAA SWPC <https://www.swpc.noaa.gov>`__ predicted
-    sunspot Number and 10.7 cm radio flux values from the `ftp archive
+    sunspot Number and 10.7 cm radio flux values from the `ftp archive.
+
     <http://services.swpc.noaa.gov/text/>`__.
 
     This is a fixed prediction so the result is independent of the time range.
@@ -153,7 +155,8 @@ class NOAAPredictClient(GenericClient):
 class SRSClient(GenericClient):
     """
     Provides access to the `NOAA SWPC <https://www.swpc.noaa.gov>`__ solar
-    region summary data from the `ftp archive
+    region summary data from the `ftp archive.
+
     <ftp://ftp.swpc.noaa.gov/pub/warehouse/>`__.
 
     Examples

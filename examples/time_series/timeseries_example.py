@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ============================================
 Interacting with Data Using SunPy TimeSeries
@@ -10,36 +9,39 @@ This is intended primarily to demonstrate the current interface for discussion
 of the final implementation. Much of the code will be changes as the class is
 developed.
 """
-import datetime
 import copy
+import datetime
 from collections import OrderedDict
 
+import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
-import matplotlib.pyplot as plt
 
 import astropy.units as u
-from astropy.time import Time, TimeDelta
 from astropy.table import Table
+from astropy.time import Time, TimeDelta
 
 import sunpy.data.sample
 import sunpy.timeseries
-from sunpy.util.metadata import MetaDict
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 from sunpy.time import TimeRange, parse_time
-from sunpy.net import Fido, attrs as a
+from sunpy.util.metadata import MetaDict
 
 ##############################################################################
 # Creating a TimeSeries from a file can be done using the factory.
-ts_eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')
-ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
-ts_lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
+ts_eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source="EVE")
+ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source="XRS")
+ts_lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source="LYRA")
 ts_noaa_ind = sunpy.timeseries.TimeSeries(
-    sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
+    sunpy.data.sample.NOAAINDICES_TIMESERIES, source="NOAAIndices"
+)
 ts_noaa_pre = sunpy.timeseries.TimeSeries(
-    sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')
-ts_norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_TIMESERIES, source='NoRH')
-ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_TIMESERIES, source='RHESSI')
-ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')
+    sunpy.data.sample.NOAAPREDICT_TIMESERIES, source="NOAAPredictIndices"
+)
+ts_norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_TIMESERIES, source="NoRH")
+ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_TIMESERIES, source="RHESSI")
+ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source="GBMSummary")
 # Note: for some FITS files a source can be determined implicitly, however it
 # is good practice to delcare it explicitly when possible.
 
@@ -50,10 +52,10 @@ goes = Fido.search(a.Time("2012/06/01", "2012/06/04"), a.Instrument("XRS"))
 goes_files = Fido.fetch(goes)
 
 # Using these new files you get a list:
-lis_goes_ts = sunpy.timeseries.TimeSeries(goes_files[:2], source='XRS')
-lis_goes_ts = sunpy.timeseries.TimeSeries(goes_files, source='XRS')
+lis_goes_ts = sunpy.timeseries.TimeSeries(goes_files[:2], source="XRS")
+lis_goes_ts = sunpy.timeseries.TimeSeries(goes_files, source="XRS")
 # Using concatenate=True kwarg you can merge the files into one TimeSeries:
-combined_goes_ts = sunpy.timeseries.TimeSeries(goes_files, source='XRS', concatenate=True)
+combined_goes_ts = sunpy.timeseries.TimeSeries(goes_files, source="XRS", concatenate=True)
 fig, ax = plt.subplots()
 combined_goes_ts.plot()
 # Note: ATM we only accept TimeSeries of a single class being created together
@@ -85,10 +87,10 @@ ts_lyra.index
 ts_lyra.columns
 # Further data is available from within the metadata, you can filter out for a
 # key using the TimeSeriesMetaData.get() method:
-combined_goes_ts.meta.get('telescop')
+combined_goes_ts.meta.get("telescop")
 # Note: this returns a TimeSeriesMetaData object, to get a list of just the
 # values for this key use the values property of the metadata:
-combined_goes_ts.meta.get('telescop').values()
+combined_goes_ts.meta.get("telescop").values()
 # Note: this always returns a list because there may be one or more results.
 
 ##############################################################################
@@ -97,12 +99,12 @@ combined_goes_ts.meta.get('telescop').values()
 # You can access a specific value within the TimeSeries data DataFrame using
 # all the normal Pandas methods.
 # For example, the row with the index of 2015-01-01 00:02:00.008000:
-ts_lyra.data.loc[parse_time('2011-06-07 00:02:00.010').datetime]
+ts_lyra.data.loc[parse_time("2011-06-07 00:02:00.010").datetime]
 # Pandas will actually parse a string to a datetime automatically if it can:
-ts_lyra.data.loc['2011-06-07 00:02:00.010']
+ts_lyra.data.loc["2011-06-07 00:02:00.010"]
 # Pandas includes methods to find the indexes of the max/min values in a dataframe:
-lyra_ch1_max_index = ts_lyra.data['CHANNEL1'].idxmax()
-lyra_ch1_min_index = ts_lyra.data['CHANNEL1'].idxmin()
+lyra_ch1_max_index = ts_lyra.data["CHANNEL1"].idxmax()
+lyra_ch1_min_index = ts_lyra.data["CHANNEL1"].idxmin()
 
 ##############################################################################
 # The TimeSeriesMetaData can be summarised:
@@ -119,7 +121,7 @@ ts_eve.peek(subplots=True)
 
 ##############################################################################
 # An individual column can be extracted from a TimeSeries:
-ts_eve_extract = ts_eve.extract('CMLon')
+ts_eve_extract = ts_eve.extract("CMLon")
 # Note: no matter the source type of the original TimeSeries, the extracted
 # TimeSeries is always generic.
 
@@ -130,10 +132,10 @@ ts_eve_extract = ts_eve.extract('CMLon')
 # Using integers we can get every other entry using:
 ts_goes_trunc = ts_goes.truncate(0, 100000, 2)
 # Or using a TimeRange:
-tr = TimeRange('2011-06-07 05:00', '2011-06-07 06:30')
+tr = TimeRange("2011-06-07 05:00", "2011-06-07 06:30")
 ts_goes_trunc = ts_goes.truncate(tr)
 # Or using strings:
-ts_goes_trunc = ts_goes.truncate('2011-06-07 05:00', '2011-06-07 06:30')
+ts_goes_trunc = ts_goes.truncate("2011-06-07 05:00", "2011-06-07 06:30")
 fig, ax = plt.subplots()
 ts_goes_trunc.plot()
 # Note: the strings are parsed using SunPy's string parser.
@@ -141,7 +143,7 @@ ts_goes_trunc.plot()
 
 ##############################################################################
 # You can use Pandas resample method, for example to downsample:
-df_downsampled = ts_goes_trunc.data.resample('10T', 'mean')
+df_downsampled = ts_goes_trunc.data.resample("10T", "mean")
 # To get this into a similar TimeSeries we can copy the original:
 ts_downsampled = copy.deepcopy(ts_goes_trunc)
 ts_downsampled.data = df_downsampled
@@ -154,7 +156,7 @@ ts_downsampled.plot()
 
 ##############################################################################
 # Similarly, to upsample:
-df_upsampled = ts_downsampled.data.resample('1T', 'ffill')
+df_upsampled = ts_downsampled.data.resample("1T", "ffill")
 # And this can be made into a TimeSeries using:
 ts_upsampled = copy.deepcopy(ts_downsampled)
 ts_upsampled.data = df_upsampled
@@ -178,20 +180,20 @@ ts_goes.to_array()
 # Table or a Numpy Array.
 # To generate some data and the corresponding dates
 base = datetime.datetime.today()
-dates = Time(base) - TimeDelta(np.arange(24 * 60)*u.minute)
+dates = Time(base) - TimeDelta(np.arange(24 * 60) * u.minute)
 intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 # Create the data DataFrame, header MetaDict and units OrderedDict
-data = DataFrame(intensity, index=dates, columns=['intensity'])
-units = OrderedDict([('intensity', u.W / u.m**2)])
-meta = MetaDict({'key': 'value'})
+data = DataFrame(intensity, index=dates, columns=["intensity"])
+units = OrderedDict([("intensity", u.W / u.m ** 2)])
+meta = MetaDict({"key": "value"})
 # Create the time series
 ts_custom = sunpy.timeseries.TimeSeries(data, meta, units)
 
 # A more manual dataset would be a numpy array, which we can creat using:
-tm = Time(['2000:002', '2001:345', '2002:345'])
+tm = Time(["2000:002", "2001:345", "2002:345"])
 a = [1, 4, 5]
 b = [2.0, 5.0, 8.2]
-c = ['x', 'y', 'z']
+c = ["x", "y", "z"]
 arr = np.stack([tm, a, b, c], axis=1)
 # Note: this array needs to have the times in the first column, this can be in
 # any form that can be converted using astropy.time.Time().
@@ -200,8 +202,8 @@ arr = np.stack([tm, a, b, c], axis=1)
 ts_from_arr = sunpy.timeseries.TimeSeries(arr, {})
 
 # We can use this to create a table and even include units:
-t = Table([tm, a, b, c], names=('time', 'a', 'b', 'c'), meta={'name': 'table'})
-t['b'].unit = 's'  # Adding units
+t = Table([tm, a, b, c], names=("time", "a", "b", "c"), meta={"name": "table"})
+t["b"].unit = "s"  # Adding units
 ts_from_table = sunpy.timeseries.TimeSeries(t, {})
 
 # If you wanted to make a dataframe from this array then you could use:
@@ -212,17 +214,17 @@ ts_from_df = sunpy.timeseries.TimeSeries(df, {})
 ##############################################################################
 # You can optionally add units data, a dictionary matching column heading keys
 # to an astropy unit.
-units = OrderedDict([('a', u.Unit("ct")), ('b', u.Unit("ct")), ('c', u.Unit("ct"))])
+units = OrderedDict([("a", u.Unit("ct")), ("b", u.Unit("ct")), ("c", u.Unit("ct"))])
 ts_from_table = sunpy.timeseries.TimeSeries(t, {}, units)
 ts_from_df = sunpy.timeseries.TimeSeries(df, {}, units)
 
 ##############################################################################
 # Changing the units for a column simply requires changing the value:
-ts_from_table.units['a'] = u.m
+ts_from_table.units["a"] = u.m
 
 ##############################################################################
 # Quantities can be extracted from a column using the quantity(col_name) method:
-colname = 'CMLat'
+colname = "CMLat"
 qua = ts_eve.quantity(colname)
 print(qua)
 
@@ -240,5 +242,5 @@ ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 # Finally, if you want to change the units used, you can specify a new unit for
 # the column using the unit keyword:
 qua_new = u.Quantity(qua.value * 0.00001, ts_eve.units[colname])
-unit = u.W / (u.km**2)
+unit = u.W / (u.km ** 2)
 ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)

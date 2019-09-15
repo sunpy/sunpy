@@ -5,14 +5,14 @@ Fine grained Plotting Features of Map
 
 How to control various plotting features of map.
 """
-import astropy.units as u
-from astropy.coordinates import SkyCoord
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
+import astropy.units as u
+from astropy.coordinates import SkyCoord
+
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
-
 
 ###############################################################################
 # SkyCoord module provides flexible celestial coordinate representation and a
@@ -20,11 +20,11 @@ from sunpy.data.sample import AIA_171_IMAGE
 # image taken can also be displayed in the plot.
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
-bottom_left = SkyCoord(-400*u.arcsec, -900*u.arcsec, frame=aiamap.coordinate_frame)
-top_right = SkyCoord(800*u.arcsec, 700*u.arcsec, frame=aiamap.coordinate_frame)
+bottom_left = SkyCoord(-400 * u.arcsec, -900 * u.arcsec, frame=aiamap.coordinate_frame)
+top_right = SkyCoord(800 * u.arcsec, 700 * u.arcsec, frame=aiamap.coordinate_frame)
 aiamap_sub = aiamap.submap(bottom_left, top_right)
 
-title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
+title_obsdate = aiamap_sub.date.strftime("%Y-%b-%d %H:%M:%S")
 
 ###############################################################################
 # The SunPy map peek method shows a helioprojective  grid by default.
@@ -38,12 +38,12 @@ title_obsdate = aiamap_sub.date.strftime('%Y-%b-%d %H:%M:%S')
 fig = plt.figure(figsize=(6, 6))
 ax = plt.subplot(projection=aiamap_sub)
 aiamap_sub.plot()
-aiamap_sub.draw_limb(color='white', linewidth=2, linestyle='dashed')
+aiamap_sub.draw_limb(color="white", linewidth=2, linestyle="dashed")
 
 # To have more control over the Heliographic Stonyhurst grid,
 # the axes object properties can be changed directly
 
-overlay = ax.get_coords_overlay('heliographic_stonyhurst')
+overlay = ax.get_coords_overlay("heliographic_stonyhurst")
 lon = overlay[0]
 lat = overlay[1]
 
@@ -53,20 +53,20 @@ lat.set_ticklabel_visible(False)
 lon.set_ticklabel_visible(False)
 
 lon.coord_wrap = 180
-lon.set_major_formatter('dd')
+lon.set_major_formatter("dd")
 
 # Plot the Heliographic Stonyhurst grid
-overlay.grid(color='blue', linewidth=2, linestyle='dashed')
+overlay.grid(color="blue", linewidth=2, linestyle="dashed")
 # Switch off the helioprojective grid
 ax.grid(False)
 
 # Change how the helioprojective grid tick labels are formatted
 tx, ty = ax.coords
 # Use integer coordinates for either axis.
-tx.set_major_formatter('s')
-ty.set_major_formatter('s')
-ax.set_title(fr'AIA 171 $\AA$ {title_obsdate}')
-ax.set_ylabel('Helioprojective Latitude [arcsec]')
-ax.set_xlabel('Helioprojective Longitude [arcsec]')
-plt.colorbar(fraction=0.045, pad=0.03, label='DN', ax=ax)
+tx.set_major_formatter("s")
+ty.set_major_formatter("s")
+ax.set_title(fr"AIA 171 $\AA$ {title_obsdate}")
+ax.set_ylabel("Helioprojective Latitude [arcsec]")
+ax.set_xlabel("Helioprojective Longitude [arcsec]")
+plt.colorbar(fraction=0.045, pad=0.03, label="DN", ax=ax)
 plt.show()

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Provides programs to process and analyze RHESSI data.
 

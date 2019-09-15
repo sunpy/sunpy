@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from sunpy.util.metadata import MetaDict
 
 
