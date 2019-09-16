@@ -105,7 +105,6 @@ def test_fetch_working(suvi_client):
     assert mock_qr.physobs == qr.physobs
     assert mock_qr.instrument == qr.instrument
     assert mock_qr.url == qr.url
-    assert mock_qr.time == qr.time
 
     assert qr1.time_range() == TimeRange(start, end)
 
