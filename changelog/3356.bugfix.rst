@@ -1,3 +1,3 @@
-Fix off by one error in `sunpy.map.make_fiteswcs_header` where when using the
+Fix off by one error in `sunpy.map.make_fitswcs_header` where when using the
 default ``reference_pixel=None`` keyword argument the pixel coordinate of the
 reference pixel was off by +1.
