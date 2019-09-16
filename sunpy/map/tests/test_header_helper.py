@@ -125,8 +125,8 @@ def test_HGS_CAR_header():
     new_data = np.empty((72, 144))
     new_frame = SkyCoord(0*u.deg, 0*u.deg, obstime="2019-06-16", frame="heliographic_stonyhurst")
     new_header = sunpy.map.make_fitswcs_header(new_data, new_frame,
-                                            scale=[2.5, 2.5]*u.deg/u.pix,
-                                            projection_code="CAR")
+                                               scale=[2.5, 2.5]*u.deg/u.pix,
+                                               projection_code="CAR")
 
     assert new_header['ctype1'] == "HGLN-CAR"
     assert new_header['ctype2'] == "HGLT-CAR"
@@ -136,3 +136,15 @@ def test_HGS_CAR_header():
     assert "hgln_obs" not in new_header
     assert "hglt_obs" not in new_header
     assert "dsun_obs" not in new_header
+
+    wcs = WCS(new_header)
+    pix_coords = np.mgrid[0:new_data.shape[1], 0:new_data.shape[0]]
+    world_coords = wcs.pixel_to_world(*pix_coords)
+
+    # In this projection the coordinate system is symmetric around the
+    # reference pixel. because the reference pixel should be in the center of
+    # the array it means the array should be symmetric apart from the sign
+    # flip. This is therefore testing that the reference pixel is correctly in
+    # the center of the array.
+    assert u.allclose(world_coords.lon, world_coords.lon[::-1, ::-1]*-1)
+    assert u.allclose(world_coords.lat, world_coords.lat[::-1, ::-1]*-1)
