@@ -87,7 +87,7 @@ def test_make_fits_header(map_data, hpc_test_header, hgc_test_header,
     # Check that correct information is in header MetaDict including observer for HPC
     header = sunpy.map.make_fitswcs_header(map_data, hpc_test_header)
     assert header['crval1'] == 0
-    assert header['crpix1'] == 6.5
+    assert header['crpix1'] == 5.5
     assert header['ctype1'] == 'HPLN-TAN'
     assert header['dsun_obs'] == hpc_test_header.frame.observer.radius.to_value(u.m)
     assert isinstance(WCS(header), WCS)
