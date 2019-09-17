@@ -11,12 +11,12 @@ class, so do not need to be called individually.
 from .client import QueryResponseBlock, QueryResponse, GenericClient
 from .sources.eve import EVEClient
 from .sources.lyra import LYRAClient
-from .sources.goes import XRSClient
+from .sources.goes import XRSClient, SUVIClient
 from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
 from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 from .sources.fermi_gbm import GBMClient
 
 __all__ = ['QueryResponseBlock', 'QueryResponse', 'GenericClient',
-           'EVEClient', 'XRSClient', 'LYRAClient', 'NOAAIndicesClient',
+           'EVEClient', 'XRSClient', 'SUVIClient', 'LYRAClient', 'NOAAIndicesClient',
            'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', 'GBMClient']
