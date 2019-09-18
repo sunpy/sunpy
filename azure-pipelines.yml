@@ -5,15 +5,13 @@ variables:
   CI_BUILD_URL: "https://dev.azure.com/sunpy/sunpy/_build/results?buildId=$(Build.BuildId)"
   CIBW_BUILD: cp36-* cp37-*
   CIBW_SKIP: "*-win32 *-manylinux1_i686"
-  CIBW_TEST_COMMAND: pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy
-  CIBW_TEST_REQUIRES: sqlalchemy scikit-image glymur beautifulsoup4 drms python-dateutil zeep tqdm asdf hypothesis pytest-astropy pytest-mock
 
 resources:
   repositories:
-  - repository: sunpy
+  - repository: OpenAstronomy
     type: github
     endpoint: sunpy
-    name: sunpy/azure-pipelines-template
+    name: OpenAstronomy/azure-pipelines-templates
     ref: master
 
 trigger:
@@ -29,50 +27,52 @@ trigger:
     - '*post*'
 
 jobs:
-- template: run-tox-env.yml@sunpy
+- template: run-tox-env.yml@OpenAstronomy
   parameters:
-    name: Linux_37_offline
-    os: linux
-    tox: py37-offline -- -n=4
-    jpeg: True
+    submodules: false
+    coverage: codecov
+    posargs: -n=4
+    libraries:
+      apt:
+        - libopenjpeg5
+      brew:
+        - openjpeg
+    envs:
+      - macos: py37-offline
+        name: py37_offline
 
-- template: run-tox-env.yml@sunpy
-  parameters:
-    name: Linux_36_offline_astropy31
-    os: linux
-    tox: py36-astropy31 -- -n=4
-    jpeg: True
+      - windows: py36-offline
+        name: py36_offline
 
-- template: run-tox-env.yml@sunpy
-  parameters:
-    name: Windows_36_offline
-    os: windows
-    tox: py36-offline -- -n=4
-    jpeg: True
+      - linux: py37-online
+        name: py37_online
 
+      - linux: py36-conda
+        name: py36_conda
+        libraries: {}
 
-- template: run-tox-env.yml@sunpy
-  parameters:
-    name: macOS_37_online
-    os: macos
-    tox: py37-online -- -n=4
-    jpeg: True
+      - linux: py36-astropy31
+        name: py36_astropy31
 
-- template: run-tox-env.yml@sunpy
-  parameters:
-    name: Linux_36_Conda_offline
-    os: linux
-    tox: conda -- -n=4
-    jpeg: True
+      - linux: py37-astropydev
 
-- template: run-tox-env.yml@sunpy
-  parameters:
-    name: Linux_37_astropydev
-    os: linux
-    tox: py37-astropydev -- -n=4
-    jpeg: True
-
-- ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
-  - template: publish-pypi.yml@sunpy
+# On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
+- ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
+  - template: publish.yml@OpenAstronomy
     parameters:
-      dependsOn: [Linux_37_offline,Windows_36_offline,macOS_37_online,Linux_36_Conda_offline]
+      # Only Upload to PyPI on tags
+      ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
+        pypi_connection_name : 'PyPI'
+      test_extras: 'dev'
+      test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
+      submodules: false
+      targets:
+        - wheels_linux
+        - wheels_macos
+        - sdist
+      dependsOn:
+        - py37_offline
+        - py36_offline
+        - py37_online
+        - py36_conda
+        - py36_astropy31
