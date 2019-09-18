@@ -129,3 +129,4 @@ def test_time_for_url(LCClient, time):
     times = LCClient._get_time_for_url(url)
 
     assert all([tr == t2 for t2 in times])
+
