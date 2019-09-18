@@ -584,8 +584,6 @@ def test_remove_column(eve_test_ts):
         eve_test_ts.remove_column('random column name')
 
 
-
-
 @pytest.fixture
 def add_column_from_array_ts(eve_test_ts, column_quantity):
     # Add a column to a TS using a numpy array
