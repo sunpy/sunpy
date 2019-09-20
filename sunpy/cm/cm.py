@@ -27,6 +27,14 @@ sohoeit195 = ct.eit_color_table(195)
 sohoeit284 = ct.eit_color_table(284)
 sohoeit304 = ct.eit_color_table(304)
 
+goesrsuvi94 = ct.suvi_color_table(94)
+goesrsuvi131 = ct.suvi_color_table(131)
+goesrsuvi171 = ct.suvi_color_table(171)
+goesrsuvi195 = ct.suvi_color_table(195)
+goesrsuvi284 = ct.suvi_color_table(284)
+goesrsuvi304 = ct.suvi_color_table(304)
+
+
 # The color tables below returns one of the fundamental color tables for SOHO
 # LASCO images. These are not the same as those used in SSWIDL.  This is
 # because the SSWIDL color scaling for LASCO level 0.5 and 1.0 is highly
@@ -67,52 +75,58 @@ kcor = deepcopy(mplcm.get_cmap("gist_gray"))
 kcor.name = 'MLSO KCor'
 
 cmlist = {
-    'sdoaia94': sdoaia94,
-    'sdoaia131': sdoaia131,
-    'sdoaia171': sdoaia171,
-    'sdoaia193': sdoaia193,
-    'sdoaia211': sdoaia211,
-    'sdoaia304': sdoaia304,
-    'sdoaia335': sdoaia335,
-    'sdoaia1600': sdoaia1600,
-    'sdoaia1700': sdoaia1700,
-    'sdoaia4500': sdoaia4500,
-    'sohoeit171': sohoeit171,
-    'sohoeit195': sohoeit195,
-    'sohoeit284': sohoeit284,
-    'sohoeit304': sohoeit304,
-    'soholasco2': soholasco2,
-    'soholasco3': soholasco3,
-    'sswidlsoholasco2': sswidlsoholasco2,
-    'sswidlsoholasco3': sswidlsoholasco3,
-    'stereocor1': stereocor1,
-    'stereocor2': stereocor2,
-    'stereohi1': stereohi1,
-    'stereohi2': stereohi2,
-    'rhessi': mplcm.jet,
-    'yohkohsxtal': yohkohsxtal,
-    'yohkohsxtwh': yohkohsxtwh,
-    'hinodexrt': hinodexrt,
-    'hinodesotintensity': hinodesotintensity,
-    'trace171': trace171,
-    'trace195': trace195,
-    'trace284': trace284,
-    'trace1216': trace1216,
-    'trace1550': trace1550,
-    'trace1600': trace1600,
-    'trace1700': trace1700,
-    'traceWL': traceWL,
-    'hmimag': hmimag,
-    'irissji1330': ct.iris_sji_color_table('1330'),
-    'irissji1400': ct.iris_sji_color_table('1400'),
-    'irissji1600': ct.iris_sji_color_table('1600'),
-    'irissji2796': ct.iris_sji_color_table('2796'),
-    'irissji2832': ct.iris_sji_color_table('2832'),
-    'irissji5000': ct.iris_sji_color_table('5000'),
-    'irissjiFUV': ct.iris_sji_color_table('FUV'),
-    'irissjiNUV': ct.iris_sji_color_table('NUV'),
-    'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
-    'kcor': kcor
+          'goes-rsuvi94': goesrsuvi94,
+          'goes-rsuvi131': goesrsuvi131,
+          'goes-rsuvi171': goesrsuvi171,
+          'goes-rsuvi195': goesrsuvi195,
+          'goes-rsuvi284': goesrsuvi284,
+          'goes-rsuvi304': goesrsuvi304,
+          'sdoaia94': sdoaia94,
+          'sdoaia131': sdoaia131,
+          'sdoaia171': sdoaia171,
+          'sdoaia193': sdoaia193,
+          'sdoaia211': sdoaia211,
+          'sdoaia304': sdoaia304,
+          'sdoaia335': sdoaia335,
+          'sdoaia1600': sdoaia1600,
+          'sdoaia1700': sdoaia1700,
+          'sdoaia4500': sdoaia4500,
+          'sohoeit171': sohoeit171,
+          'sohoeit195': sohoeit195,
+          'sohoeit284': sohoeit284,
+          'sohoeit304': sohoeit304,
+          'soholasco2': soholasco2,
+          'soholasco3': soholasco3,
+          'sswidlsoholasco2': sswidlsoholasco2,
+          'sswidlsoholasco3': sswidlsoholasco3,
+          'stereocor1': stereocor1,
+          'stereocor2': stereocor2,
+          'stereohi1': stereohi1,
+          'stereohi2': stereohi2,
+          'rhessi': mplcm.jet,
+          'yohkohsxtal': yohkohsxtal,
+          'yohkohsxtwh': yohkohsxtwh,
+          'hinodexrt': hinodexrt,
+          'hinodesotintensity': hinodesotintensity,
+          'trace171': trace171,
+          'trace195': trace195,
+          'trace284': trace284,
+          'trace1216': trace1216,
+          'trace1550': trace1550,
+          'trace1600': trace1600,
+          'trace1700': trace1700,
+          'traceWL': traceWL,
+          'hmimag': hmimag,
+          'irissji1330': ct.iris_sji_color_table('1330'),
+          'irissji1400': ct.iris_sji_color_table('1400'),
+          'irissji1600': ct.iris_sji_color_table('1600'),
+          'irissji2796': ct.iris_sji_color_table('2796'),
+          'irissji2832': ct.iris_sji_color_table('2832'),
+          'irissji5000': ct.iris_sji_color_table('5000'),
+          'irissjiFUV': ct.iris_sji_color_table('FUV'),
+          'irissjiNUV': ct.iris_sji_color_table('NUV'),
+          'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV'),
+          'kcor': kcor
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
