@@ -375,9 +375,10 @@ long as it recognizes the instrument. To see what colormaps are available::
 
     >>> import sunpy.cm
     >>> sunpy.cm.cmlist.keys()
-    dict_keys(['sdoaia94', 'sdoaia131', 'sdoaia171', 'sdoaia193', 'sdoaia211',
-    'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700', 'sdoaia4500',
-    'sohoeit171', 'sohoeit195', 'sohoeit284', 'sohoeit304', 'soholasco2',
+    dict_keys(['goes-rsuvi94', 'goes-rsuvi131', 'goes-rsuvi171', 'goes-rsuvi195',
+    'goes-rsuvi284', 'goes-rsuvi304', 'sdoaia94', 'sdoaia131', 'sdoaia171',
+    'sdoaia193', 'sdoaia211', 'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700',
+    'sdoaia4500', 'sohoeit171', 'sohoeit195', 'sohoeit284', 'sohoeit304', 'soholasco2',
     'soholasco3', 'sswidlsoholasco2', 'sswidlsoholasco3', 'stereocor1',
     'stereocor2', 'stereohi1', 'stereohi2', 'rhessi', 'yohkohsxtal',
     'yohkohsxtwh', 'hinodexrt', 'hinodesotintensity', 'trace171', 'trace195',
