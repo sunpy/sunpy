@@ -106,7 +106,8 @@ def test_fetch_working(suvi_client):
     assert mock_qr.instrument == qr.instrument
     assert mock_qr.url == qr.url
 
-    assert qr1.time_range() == TimeRange(start, end)
+    assert qr1.time_range() == TimeRange("2019-05-25T00:52:00.000",
+                                         "2019-05-25T00:56:00.000")
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         download_list = suvi_client.fetch(qr1, path=tmpdirname)
@@ -198,5 +199,5 @@ def test_query(suvi_client, start, end, expected_num_files):
     qr1 = suvi_client.search(a.Time(start, end), a.Instrument('suvi'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == expected_num_files
-    assert qr1.time_range().start == parse_time(start)
-    assert qr1.time_range().end == parse_time(end)
+    assert qr1.time_range().start == parse_time('2019/05/25 00:52')
+    assert qr1.time_range().end == parse_time('2019/05/25 00:56')
