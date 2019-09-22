@@ -132,6 +132,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid='EVE_L1_esp_2012001_00',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
+        size=-1.0,
         instrument='EVE',
         wavemin=0.1, wavemax=30.4)
     # 2 entries from goes
