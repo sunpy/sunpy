@@ -421,7 +421,8 @@ def test_walker_create_vso_instrument(vso_session):
                              instrument='RHESSI', wavemin=0.4132806579880238,
                              wavemax=7.293188082141598e-05)]
     assert len(entries) == len(expected)
-    assert entries in [expected]
+    for e in entries:
+        assert e in entries
 
 
 @pytest.mark.remote_data
@@ -438,10 +439,13 @@ def test_walker_create_time(vso_session):
         datetime(2011, 9, 17, 0, 0, 0), datetime(2011, 9, 20, 0, 0, 0))
     entries = walker.create(time, vso_session)
     assert len(entries) == 1
-    assert entries == [tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
-                       physobs=u'intensity',
-                       fileid=u'/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
-                       observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
-                       observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
-                       instrument=u'RHESSI', wavemin=0.4132806579880238,
-                       wavemax=7.293188082141598e-05)]
+    expected = tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
+                                            physobs=u'intensity',
+                                            fileid=u'/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
+                                            observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
+                                            observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
+                                            instrument=u'RHESSI',
+                                            size=-1.0,
+                                            wavemin=0.4132806579880238,
+                                            wavemax=7.293188082141598e-05)
+    assert expected in entries

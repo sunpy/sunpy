@@ -120,7 +120,7 @@ def test_full_query(h2v_client, hek_client):
         (hek.attrs.Time(startTime, endTime), hek.attrs.EventType(eventType))
     )
 
-    assert h2v.num_of_records == 2908
+    assert h2v.num_of_records == 3640
     assert len(h2v.vso_results) == 19
     assert len(h2v.hek_results) == 19
 

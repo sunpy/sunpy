@@ -132,6 +132,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid='EVE_L1_esp_2012001_00',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
+        size=-1.0,
         instrument='EVE',
         wavemin=0.1, wavemax=30.4)
     # 2 entries from goes
@@ -408,7 +409,7 @@ def test_entries_from_dir_recursively_true():
         entries = list(entries_from_dir(testdir, True,
                                         default_waveunit='angstrom',
                                         time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 130
+    assert len(entries) == 131
 
 
 def test_entries_from_dir_recursively_false():
@@ -416,7 +417,7 @@ def test_entries_from_dir_recursively_false():
         entries = list(entries_from_dir(testdir, False,
                                         default_waveunit='angstrom',
                                         time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 109
+    assert len(entries) == 110
 
 
 @pytest.mark.remote_data
