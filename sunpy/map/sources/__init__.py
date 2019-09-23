@@ -6,7 +6,8 @@ will be subclasses of the :mod`sunpy.map.Map` class.
 """
 __all__ = ['XRTMap', 'SOTMap', 'SWAPMap', 'RHESSIMap', 'AIAMap', 'HMIMap',
            'EITMap', 'LASCOMap', 'MDIMap', 'EUVIMap', 'CORMap', 'HIMap',
-           'SXTMap', 'SJIMap', 'TRACEMap', 'KCorMap', 'source_stretch']
+           'SXTMap', 'SJIMap', 'TRACEMap', 'KCorMap', 'SUVIMap',
+           'source_stretch']
 
 from .. map_factory import Map
 
@@ -21,6 +22,8 @@ from .sdo import AIAMap, HMIMap
 from .soho import EITMap, LASCOMap, MDIMap
 
 from .stereo import EUVIMap, CORMap, HIMap
+
+from .suvi import SUVIMap
 
 from .yohkoh import SXTMap
 
