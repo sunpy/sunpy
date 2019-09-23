@@ -81,8 +81,8 @@ Here's an example of creating a header from some generic data and an `astropy.co
     >>> for key, value in header.items():
     ...     print(f"{key}: {value}")
     wcsaxes: 2
-    crpix1: 6.5
-    crpix2: 6.5
+    crpix1: 5.5
+    crpix2: 5.5
     cdelt1: 1.0
     cdelt2: 1.0
     cunit1: arcsec
@@ -115,8 +115,8 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     >>> for key, value in header.items():
     ...     print(f"{key}: {value}")
     wcsaxes: 2
-    crpix1: 6.0
-    crpix2: 6.0
+    crpix1: 5.0
+    crpix2: 5.0
     cdelt1: 2.0
     cdelt2: 2.0
     cunit1: arcsec
@@ -375,9 +375,10 @@ long as it recognizes the instrument. To see what colormaps are available::
 
     >>> import sunpy.cm
     >>> sunpy.cm.cmlist.keys()
-    dict_keys(['sdoaia94', 'sdoaia131', 'sdoaia171', 'sdoaia193', 'sdoaia211',
-    'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700', 'sdoaia4500',
-    'sohoeit171', 'sohoeit195', 'sohoeit284', 'sohoeit304', 'soholasco2',
+    dict_keys(['goes-rsuvi94', 'goes-rsuvi131', 'goes-rsuvi171', 'goes-rsuvi195',
+    'goes-rsuvi284', 'goes-rsuvi304', 'sdoaia94', 'sdoaia131', 'sdoaia171',
+    'sdoaia193', 'sdoaia211', 'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700',
+    'sdoaia4500', 'sohoeit171', 'sohoeit195', 'sohoeit284', 'sohoeit304', 'soholasco2',
     'soholasco3', 'sswidlsoholasco2', 'sswidlsoholasco3', 'stereocor1',
     'stereocor2', 'stereohi1', 'stereohi2', 'rhessi', 'yohkohsxtal',
     'yohkohsxtwh', 'hinodexrt', 'hinodesotintensity', 'trace171', 'trace195',

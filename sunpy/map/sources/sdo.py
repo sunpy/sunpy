@@ -30,7 +30,7 @@ class AIAMap(GenericMap):
     the Sun in the following seven extreme ultraviolet bandpasses: 94 A
     (Fe XVIII), 131 A (Fe VIII, XXI), 171 A (Fe IX), 193 A (Fe XII, XXIV),
     211 A (Fe XIV), 304 A (He II), 335 A (Fe XVI). One telescope observes
-    in the visible 1600 A (C IV) and the nearby continuun (1700 A).
+    in the visible 1600 A (C IV) and the nearby continuum (1700 A).
 
     Notes
     -----
