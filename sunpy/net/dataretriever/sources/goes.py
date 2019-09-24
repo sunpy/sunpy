@@ -115,7 +115,7 @@ class XRSClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns a URL to the GOES data for the specified date.
-        
+
         Parameters
         ----------
         timerange : `~sunpy.time.TimeRange`
@@ -127,9 +127,11 @@ class XRSClient(GenericClient):
         """
 
         if timerange.start < parse_time("1999/01/15"):
-            goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/%Y/go{satellitenumber}%y%m%d.fits")
+            goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/"
+                            "%Y/go{satellitenumber}%y%m%d.fits")
         else:
-            goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/%Y/go{satellitenumber}%Y%m%d.fits")
+            goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/"
+                            "%Y/go{satellitenumber}%Y%m%d.fits")
 
         satellitenumber = kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start))
         goes_files = Scraper(goes_pattern, satellitenumber=satellitenumber)
