@@ -14,6 +14,8 @@ This module contains the functions for converting one
 
 """
 from copy import deepcopy
+from functools import wraps
+import logging
 
 import numpy as np
 
@@ -35,6 +37,7 @@ except ImportError:
 from astropy._erfa import obl06
 from astropy.coordinates.builtin_frames.utils import get_jd12
 
+from sunpy import log
 from sunpy.sun import constants
 
 from .frames import (Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst,
@@ -59,6 +62,56 @@ __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hee_to_gse', 'gse_to_hee', 'gse_to_gse',
            'hgs_to_hci', 'hci_to_hgs', 'hci_to_hci',
            'hme_to_gei', 'gei_to_hme', 'gei_to_gei']
+
+
+# Global counter to keep track of the layer of transformation
+_layer_level = 0
+
+
+def _transformation_debug(description):
+    """
+    Decorator to produce debugging output for a transformation function: its description, inputs,
+    and output.  Unicode box-drawing characters are used.
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapped_func(*args, **kwargs):
+            global _layer_level
+
+            # Check if the logging level is at least DEBUG (for performance reasons)
+            debug_output = log.getEffectiveLevel() <= logging.DEBUG
+
+            if debug_output:
+                # Indention for transformation layer
+                indention = u"\u2502   " * _layer_level
+
+                # For the input arguments, add indention to any lines after the first line
+                from_str = str(args[0]).replace("\n", f"\n       {indention}\u2502       ")
+                to_str = str(args[1]).replace("\n", f"\n       {indention}\u2502       ")
+
+                # Log the description and the input arguments
+                log.debug(f"{indention}{description}")
+                log.debug(f"{indention}\u251c\u2500From: {from_str}")
+                log.debug(f"{indention}\u251c\u2500To  : {to_str}")
+
+                # Increment the layer level to increase the indention for nested transformations
+                _layer_level += 1
+
+            result = func(*args, **kwargs)
+
+            if debug_output:
+                # Decrement the layer level
+                _layer_level -= 1
+
+                # For the output, add intention to any lines after the first line
+                out_str = str(result).replace("\n", f"\n       {indention}        ")
+
+                # Log the output
+                log.debug(f"{indention}\u2514\u2500Out : {out_str}")
+
+            return result
+        return wrapped_func
+    return decorator
 
 
 def _observers_are_equal(obs_1, obs_2, string_ok=False):
@@ -114,6 +167,7 @@ def _rotation_matrix_hgs_to_hgc(obstime):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliographicStonyhurst, HeliographicCarrington)
+@_transformation_debug("HGS->HGC")
 def hgs_to_hgc(hgscoord, hgcframe):
     """
     Convert from Heliographic Stonyhurst to Heliographic Carrington.
@@ -130,6 +184,7 @@ def hgs_to_hgc(hgscoord, hgcframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliographicCarrington, HeliographicStonyhurst)
+@_transformation_debug("HGC->HGS")
 def hgc_to_hgs(hgccoord, hgsframe):
     """
     Convert from Heliographic Carrington to Heliographic Stonyhurst.
@@ -159,6 +214,7 @@ def _matrix_hcc_to_hpc():
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  Heliocentric, Helioprojective)
+@_transformation_debug("HCC->HPC")
 def hcc_to_hpc(helioccoord, heliopframe):
     """
     Convert from Heliocentric Cartesian to Helioprojective Cartesian.
@@ -183,6 +239,7 @@ def hcc_to_hpc(helioccoord, heliopframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  Helioprojective, Heliocentric)
+@_transformation_debug("HPC->HCC")
 def hpc_to_hcc(heliopcoord, heliocframe):
     """
     Convert from Helioprojective Cartesian to Heliocentric Cartesian.
@@ -231,6 +288,7 @@ def _rotation_matrix_hcc_to_hgs(longitude, latitude):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  Heliocentric, HeliographicStonyhurst)
+@_transformation_debug("HCC->HGS")
 def hcc_to_hgs(helioccoord, heliogframe):
     """
     Convert from Heliocentric Cartesian to Heliographic Stonyhurst.
@@ -256,6 +314,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliographicStonyhurst, Heliocentric)
+@_transformation_debug("HGS->HCC")
 def hgs_to_hcc(heliogcoord, heliocframe):
     """
     Convert from Heliographic Stonyhurst to Heliocentric Cartesian.
@@ -281,6 +340,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  Helioprojective, Helioprojective)
+@_transformation_debug("HPC->HPC")
 def hpc_to_hpc(from_coo, to_frame):
     """
     This converts from HPC to HPC, with different observer location parameters.
@@ -364,6 +424,7 @@ _SUN_DETILT_MATRIX = _rotation_matrix_reprs_to_reprs(_SOLAR_NORTH_POLE_HCRS,
 
 
 @frame_transform_graph.transform(AffineTransform, HCRS, HeliographicStonyhurst)
+@_transformation_debug("HCRS->HGS (affine transformation)")
 def hcrs_to_hgs(hcrscoord, hgsframe):
     """
     Convert from HCRS to Heliographic Stonyhurst (HGS).
@@ -421,6 +482,7 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
 
 
 @frame_transform_graph.transform(AffineTransform, HeliographicStonyhurst, HCRS)
+@_transformation_debug("HGS->HCRS (affine transformation)")
 def hgs_to_hcrs(hgscoord, hcrsframe):
     """
     Convert from Heliographic Stonyhurst to HCRS.
@@ -444,6 +506,7 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliographicStonyhurst, HeliographicStonyhurst)
+@_transformation_debug("HGS->HGS")
 def hgs_to_hgs(from_coo, to_frame):
     """
     Convert between two Heliographic Stonyhurst frames.
@@ -456,6 +519,7 @@ def hgs_to_hgs(from_coo, to_frame):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliographicCarrington, HeliographicCarrington)
+@_transformation_debug("HGC->HGC")
 def hgc_to_hgc(from_coo, to_frame):
     """
     Convert between two Heliographic Carrington frames.
@@ -469,6 +533,7 @@ def hgc_to_hgc(from_coo, to_frame):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  Heliocentric, Heliocentric)
+@_transformation_debug("HCC->HCC")
 def hcc_to_hcc(from_coo, to_frame):
     """
     Convert between two Heliocentric frames.
@@ -503,6 +568,7 @@ def _rotation_matrix_hme_to_hee(hmeframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliocentricMeanEcliptic, HeliocentricEarthEcliptic)
+@_transformation_debug("HME->HEE")
 def hme_to_hee(hmecoord, heeframe):
     """
     Convert from Heliocentric Mean Ecliptic to Heliocentric Earth Ecliptic
@@ -520,6 +586,7 @@ def hme_to_hee(hmecoord, heeframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliocentricEarthEcliptic, HeliocentricMeanEcliptic)
+@_transformation_debug("HEE->HME")
 def hee_to_hme(heecoord, hmeframe):
     """
     Convert from Heliocentric Earth Ecliptic to Heliocentric Mean Ecliptic
@@ -537,6 +604,7 @@ def hee_to_hme(heecoord, hmeframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliocentricEarthEcliptic, HeliocentricEarthEcliptic)
+@_transformation_debug("HEE->HEE")
 def hee_to_hee(from_coo, to_frame):
     """
     Convert between two Heliocentric Earth Ecliptic frames.
@@ -549,6 +617,7 @@ def hee_to_hee(from_coo, to_frame):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliocentricEarthEcliptic, GeocentricSolarEcliptic)
+@_transformation_debug("HEE->GSE")
 def hee_to_gse(heecoord, gseframe):
     """
     Convert from Heliocentric Earth Ecliptic to Geocentric Solar Ecliptic
@@ -573,6 +642,7 @@ def hee_to_gse(heecoord, gseframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  GeocentricSolarEcliptic, HeliocentricEarthEcliptic)
+@_transformation_debug("GSE->HEE")
 def gse_to_hee(gsecoord, heeframe):
     """
     Convert from Geocentric Solar Ecliptic to Heliocentric Earth Ecliptic
@@ -598,6 +668,7 @@ def gse_to_hee(gsecoord, heeframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  GeocentricSolarEcliptic, GeocentricSolarEcliptic)
+@_transformation_debug("GSE->GSE")
 def gse_to_gse(from_coo, to_frame):
     """
     Convert between two Geocentric Solar Ecliptic frames.
@@ -630,6 +701,7 @@ def _rotation_matrix_hgs_to_hci(obstime):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliographicStonyhurst, HeliocentricInertial)
+@_transformation_debug("HGS->HCI")
 def hgs_to_hci(hgscoord, hciframe):
     """
     Convert from Heliographic Stonyhurst to Heliocentric Inertial
@@ -646,6 +718,7 @@ def hgs_to_hci(hgscoord, hciframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliocentricInertial, HeliographicStonyhurst)
+@_transformation_debug("HCI->HGS")
 def hci_to_hgs(hcicoord, hgsframe):
     """
     Convert from Heliocentric Inertial to Heliographic Stonyhurst
@@ -662,6 +735,7 @@ def hci_to_hgs(hcicoord, hgsframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliocentricInertial, HeliocentricInertial)
+@_transformation_debug("HCI->HCI")
 def hci_to_hci(from_coo, to_frame):
     """
     Convert between two Heliocentric Inertial frames.
@@ -682,6 +756,7 @@ def _rotation_matrix_obliquity(time):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  HeliocentricMeanEcliptic, GeocentricEarthEquatorial)
+@_transformation_debug("HME->GEI")
 def hme_to_gei(hmecoord, geiframe):
     """
     Convert from Heliocentric Mean Ecliptic to Geocentric Earth Equatorial
@@ -706,6 +781,7 @@ def hme_to_gei(hmecoord, geiframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  GeocentricEarthEquatorial, HeliocentricMeanEcliptic)
+@_transformation_debug("GEI->HME")
 def gei_to_hme(geicoord, hmeframe):
     """
     Convert from Geocentric Earth Equatorial to Heliocentric Mean Ecliptic
@@ -731,6 +807,7 @@ def gei_to_hme(geicoord, hmeframe):
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
                                  GeocentricEarthEquatorial, GeocentricEarthEquatorial)
+@_transformation_debug("GEI->GEI")
 def gei_to_gei(from_coo, to_frame):
     """
     Convert between two Geocentric Earth Equatorial frames.
