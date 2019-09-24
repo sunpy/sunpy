@@ -1,7 +1,6 @@
 import matplotlib as mpl
 
 from astropy.wcs.wcsapi import BaseLowLevelWCS
-import astropy.wcs
 
 from sunpy.visualization.animator.base import ArrayAnimator
 
@@ -122,8 +121,7 @@ class ImageAnimator(ArrayAnimator):
 
 class ImageAnimatorWCS(ImageAnimator):
     """
-    Animates N-dimensional data with the associated `astropy.wcs.WCS`
-    information.
+    Animates N-dimensional data with an associated World Coordinate System.
 
     The following keyboard shortcuts are defined in the viewer:
 
@@ -140,15 +138,17 @@ class ImageAnimatorWCS(ImageAnimator):
     ----------
     data: `numpy.ndarray`
         The data to be visualized.
+    wcs : `~astropy.wcs.wcsapi.BaseLowLevelWCS`
+        The WCS object describing the physical coordinates of the data.
     image_axes: `list`, optional
         A list of the axes order that make up the image.
-    unit_x_axis: `astropy.units.Unit`
+    unit_x_axis: `astropy.units.Unit`, optional
         The unit of X axis.
-    unit_y_axis: `astropy.units.Unit`
+    unit_y_axis: `astropy.units.Unit`, optional
         The unit of Y axis.
-    axis_ranges: `list` of physical coordinates for the `numpy.ndarray`, optional
+    axis_ranges: `list`, optional
         Defaults to `None` and array indices will be used for all axes.
-        The `list` should contain one element for each axis of the `numpy.ndarray`.
+        The `list` should contain one element for each axis of the input data array.
         For the image axes a ``[min, max]`` pair should be specified which will be
         passed to `matplotlib.pyplot.imshow` as an extent.
         For the slider axes a ``[min, max]`` pair can be specified or an array the
@@ -158,12 +158,12 @@ class ImageAnimatorWCS(ImageAnimator):
     -----
     Extra keywords are passed to `~sunpy.visualization.animator.ArrayAnimator`.
     """
-    def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
+    def __init__(self, data, wcs, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
                  axis_ranges=None, **kwargs):
-        if not isinstance(wcs, (astropy.wcs.WCS, BaseLowLevelWCS)):
-            raise ValueError("wcs data should be provided.")
+        if not isinstance(wcs, BaseLowLevelWCS):
+            raise ValueError("A WCS object should be provided that implements the astropy WCS API.")
         if wcs.pixel_n_dim is not data.ndim:
-            raise ValueError("Dimensions of data and wcs not matching")
+            raise ValueError("Dimensionality of the data and WCS object do not match.")
         self.wcs = wcs
         list_slices_wcsaxes = [0 for i in range(self.wcs.pixel_n_dim)]
         list_slices_wcsaxes[image_axes[0]] = 'x'
