@@ -1,0 +1,1 @@
+Updating both GOES XRS and LYRA dataretriver cleints to use Scraper
