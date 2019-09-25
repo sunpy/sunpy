@@ -131,8 +131,8 @@ def make_fitswcs_header(data, coordinate,
     if scale is None:
         scale = [1., 1.] * (u.arcsec/u.pixel)
 
-    meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lat.to_value(meta_wcs['cunit1']),
-                                              coordinate.spherical.lon.to_value(meta_wcs['cunit2']))
+    meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lon.to_value(meta_wcs['cunit1']),
+                                              coordinate.spherical.lat.to_value(meta_wcs['cunit2']))
 
     meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel),
                                               reference_pixel[1].to_value(u.pixel))
