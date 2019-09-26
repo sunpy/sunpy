@@ -1,37 +1,50 @@
+"""
+This module provides processing routines for Fermi Gamma-ray Space Telescope
+(FGST), formerly called the Gamma-ray Large Area Space Telescope (GLAST).
+"""
 import os
 import copy
 import urllib
 import tempfile
 from collections import OrderedDict
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
-from astropy.time import TimeDelta
 from astropy.coordinates import Latitude, Longitude
+from astropy.time import TimeDelta
 
 from sunpy.coordinates import sun
-from sunpy.time import TimeRange, parse_time
 from sunpy.io.fits import fits
+from sunpy.time import TimeRange, parse_time
+from sunpy.time.time import _variables_for_parse_time_docstring
+from sunpy.util.decorators import add_common_docstring
 
 __all__ = ['download_weekly_pointing_file', 'get_detector_sun_angles_for_time',
            'get_detector_sun_angles_for_date', 'plot_detector_sun_angles',
            'met_to_utc']
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def download_weekly_pointing_file(date):
     """
     Downloads the FERMI/LAT weekly pointing file corresponding to the specified
-    date. This file contains 1 minute cadence data on the spacecraft pointing,
+    date.
+
+    This file contains 1 minute cadence data on the spacecraft pointing,
     useful for calculating detector angles.
 
     Parameters
     ----------
+    date : {parse_time_types}
+        A date specified as a parse_time-compatible
+        time string, number, or a datetime object.
 
-    date : `astropy.time.Time`
-        A `~astropy.time.Time` object or other date format understood by the parse_time
-        function.
+    Returns
+    -------
+    `str`:
+        The filepath to the downloaded file.
     """
 
     date = parse_time(date)
@@ -77,19 +90,24 @@ def download_weekly_pointing_file(date):
     return destination
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def get_detector_sun_angles_for_time(time, file):
     """
-    get the GBM detector angles vs the sun for a single time.
+    Get the GBM detector angles vs the Sun for a single time.
 
     Parameters
     ----------
-
-    time : `astropy.time.Time`
-        A `~astropy.time.Time` object or other time format understood by the parse_time
-        function.
+    time : {parse_time_types}
+        A time specified as a parse_time-compatible
+        time string, number, or a datetime object.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
         download_weekly_pointing_file function).
+
+    Returns
+    -------
+    `tuple`:
+        A tuple of all the detector angles.
     """
 
     time = parse_time(time)
@@ -115,20 +133,25 @@ def get_detector_sun_angles_for_time(time, file):
     return detector_to_sun_angles
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def get_detector_sun_angles_for_date(date, file):
     """
-    get the GBM detector angles vs the sun as a function of time for a given
-    date
+    Get the GBM detector angles vs the Sun as a function of time for a given
+    date.
 
     Parameters
     ----------
-
-    date : `astropy.time.Time`
-        A `~astropy.time.Time` object or other date format understood by the parse_time
-        function.
+    date : {parse_time_types}
+        A date specified as a parse_time-compatible
+        time string, number, or a datetime object.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
         download_weekly_pointing_file function).
+
+    Returns
+    -------
+    `tuple`:
+        A tuple of all the detector angles.
     """
 
     date = parse_time(date)
@@ -177,11 +200,10 @@ def plot_detector_sun_angles(angles):
 
     Parameters
     ----------
-
     angles : `dict`
         A dictionary containing the Fermi/GBM detector angle information as a
-        function of time. Obtained from the get_detector_separation_angles
-        function.
+        function of time. Obtained from the
+        `~sunpy.instr.fermi.get_detector_separation_angles` function.
     """
 
     # make a plot showing the angles vs time
@@ -202,19 +224,26 @@ def plot_detector_sun_angles(angles):
     plt.show()
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def get_scx_scz_at_time(time, file):
     """
-    Read a downloaded FERMI weekly pointing file and extract scx, scz for a
+    Read a downloaded FERMI weekly pointing file and extract "scx", "scz" for a
     single time.
 
     Parameters
     ----------
-
-    time : `astropy.time.Time`
-        A `~astropy.time.Time` object or other time format understood by the parse_time function.
+    time : {parse_time_types}
+        A time specified as a parse_time-compatible
+        time string, number, or a datetime object.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
-         download_weekly_pointing_file function).
+         `~sunpy.instr.fermi.download_weekly_pointing_file` function).
+
+    Returns
+    -------
+    `tuple`, `tuple`, `list`:
+        The pointing coordinates as a `~astropy.coordinates.Longitude` in a `tuple`
+        and it's time.
     """
 
     time = parse_time(time)
@@ -239,12 +268,17 @@ def get_scx_scz_in_timerange(timerange, file):
 
     Parameters
     ----------
-
     timerange : `sunpy.time.TimeRange`
-        A SunPy TimeRange object.
+        A SunPy `~sunpy.time.TimeRange`.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
-        download_weekly_pointing_file function).
+        `~sunpy.instr.fermi.download_weekly_pointing_file` function).
+
+    Returns
+    -------
+    `list`, `list`, `list`:
+        The pointing coordinates as a `~astropy.coordinates.Longitude` in a `list`
+        and it's time.
     """
 
     hdulist = fits.open(file)
@@ -268,9 +302,15 @@ def get_scx_scz_in_timerange(timerange, file):
 def nai_detector_angles():
     """
     Returns the dictionary of Fermi/GBM NAI detector zenith and azimuth angles,
-    in spacecraft coordinates. zenith angle is measured from +z (along the LAT
-    boresight), azimuth is measured from +x. see Meegan et al. (2009) for
-    details and detector angles.
+    in spacecraft coordinates.
+
+    Zenith angle is measured from "+z" (along the LAT boresight), azimuth
+    is measured from "+x".
+
+    References
+    ----------
+    Meegan, Charles, et al. "The Fermi gamma-ray burst monitor."
+    The Astrophysical Journal 702.1 (2009): 791.
     """
 
     # angles listed as [azimuth, zenith]
@@ -290,34 +330,36 @@ def nai_detector_angles():
     return detectors
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def nai_detector_radecs(detectors, scx, scz, time):
     """
-    calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC
-    positions.
+    calculates the "RA/DEC" for each NaI detector given spacecraft "z" and "x"
+    "RA/DEC" positions.
 
-    NB: This routine is based on code found in GTBURST, originally written by
+    This routine is based on code found in `GTBURST <https://fermi.gsfc.nasa.gov/ssc/data/analysis/scitools/gtburst.html>`__, originally written by
     Dr Giacamo Vianello for the Fermi Science Tools.
 
     Parameters
     ----------
-
     detectors : `dict`
         A dictionary containing the Fermi/GBM detector pointing angles relative
-        to the spacecraft axes. Obtained from the nai_detector_angles function.
+        to the spacecraft axes. Obtained from the
+        `sunpy.instr.fermi.nai_detector_angles` function.
     scx : array-like
-        Two-element tuple containing the RA/DEC information of the Fermi
+        Two-element tuple containing the "RA/DEC" information of the Fermi
         spacecraft X-axis
     scz : array-like
-        Two-element tuple containing the RA/DEC information of the Fermi
+        Two-element tuple containing the "RA/DEC" information of the Fermi
         spacecraft Z-axis
-    time : `astropy.time.Time`
-        The time corresponding to the input scx and scz values, in a format
-        understandable by parse_time.
+    time : {parse_time_types}
+        A time specified as a parse_time-compatible
+        time string, number, or a datetime object.
+        This will correspond to the input ``scx`` and ``scz`` values.
 
     Returns
     -------
     `dict`
-        A dictionary containing the RA/DEC for each Fermi/GBM NaI detector at
+        A dictionary containing the "RA/DEC" for each Fermi/GBM NaI detector at
         the given input time.
     """
 
@@ -366,11 +408,11 @@ def rotate_vector(vector, axis, theta):
     Parameters
     ----------
     vector : `numpy.ndarray`
-          a three-element vector to be rotated
+        A three-element vector to be rotated.
     axis : `numpy.ndarray`
-          the the-element vector to rotate around
+        The three-element vector to rotate around.
     theta : `float`
-          the angle (in radians) by which to rotate vector around axis
+        The angle (in radians) by which to rotate vector around axis.
 
     Reference
     ---------
@@ -393,19 +435,18 @@ def rotate_vector(vector, axis, theta):
 
 def get_detector_separation_angles(detector_radecs, sunpos):
     """
-    Finds the separation angle between the Sun and each NaI detector,
-    given a dictionary of detector RA/DECs.
+    Finds the separation angle between the Sun and each NaI detector, given a
+    dictionary of detector "RA/DEC"s.
 
     Parameters
     ----------
     detector_radecs : `dict`
-            the RA/DEC for each NaI detector as Astropy quantities. Obtained
-            from the fermi.nai_detector_radecs function
+        The "RA/DEC" for each NaI detector as Astropy quantities. Obtained
+        from the `sunpy.instr.fermi.nai_detector_radecs` function
     sunpos : `list`
-            Two-element list containing the RA/DEC of the Sun position as
-            Astropy Quantities, e.g. [<Longitude 73.94 deg>,
-            <Latitude 22.66 deg>]
-
+        Two-element list containing the "RA/DEC" of the Sun position as
+        `astropy.unit.quantity`, e.g., ``[<Longitude 73.94 deg>,
+        <Latitude 22.66 deg>]``
     """
     angles = copy.deepcopy(detector_radecs)
     for l, d in detector_radecs.items():
@@ -418,18 +459,19 @@ def get_detector_separation_angles(detector_radecs, sunpos):
 
 def separation_angle(radec1, radec2):
     """
-    Use the law of spherical cosines to calculate the separation angle
-    between two RA/DEC positions.
+    Use the law of spherical cosines to calculate the separation angle between
+    two "RA/DEC" positions.
 
     Parameters
     ----------
     radec1 : `list`
-           A two-element list containing an RA/DEC position as Astropy Quantities,
-           e.g. [<Longitude 73.94 deg>, <Latitude 22.66 deg>]
+        Two-element list containing the "RA/DEC" position as
+        `astropy.unit.quantity`, e.g., ``[<Longitude 73.94 deg>,
+        <Latitude 22.66 deg>]``
     radec2 : `list`
-           A two-element list containing an RA/DEC position as Astropy Quantities,
-           e.g. [<Longitude 73.94 deg>, <Latitude 22.66 deg>]
-
+        Two-element list containing the "RA/DEC" position as
+        `astropy.unit.quantity`, e.g., ``[<Longitude 73.94 deg>,
+        <Latitude 22.66 deg>]``
     """
 
     cosine_of_angle = (
@@ -446,19 +488,19 @@ def separation_angle(radec1, radec2):
 
 def met_to_utc(timeinsec):
     """
-    Converts Fermi Mission Elapsed Time (MET) in seconds to a `~astropy.time.Time` object.
+    Converts Fermi Mission Elapsed Time (MET) in seconds to a
+    `~astropy.time.Time` object.
 
     Parameters
     ----------
     timeinsec : `float`
-        time in seconds since 00:00 UT on 1st January 2001 (the Fermi MET
-        format)
+        Time in seconds since "00:00 UT" on 1st January 2001 (the Fermi MET
+        format).
 
     Returns
     -------
     `astropy.time.Time`
         The input Fermi Mission Elapsed Time converted to a `~astropy.time.Time` object.
-
     """
     # Times for GBM are in Mission Elapsed Time (MET).
     # The reference time for this is 2001-Jan-01 00:00.
@@ -467,20 +509,21 @@ def met_to_utc(timeinsec):
     return met_ref_time + timeinsec * u.second
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def utc_to_met(time_ut):
     """
     Converts a UT to a Fermi Mission Elapsed Time (MET) float.
 
     Parameters
     ----------
-    time_ut : `astropy.time.Time`
-        A `~astropy.time.Time` object in UT
+    time_ut : {parse_time_types}
+        A time specified as a parse_time-compatible
+        time string, number, or a datetime object.
 
     Returns
     -------
     `astropy.units.Quantity`
         The Fermi Mission Elapsed Time corresponding to the input UT
-
     """
     met_ref_time = parse_time('2001-01-01 00:00')
 

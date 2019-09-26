@@ -26,7 +26,7 @@ __all__ = ['NoRHTimeSeries']
 
 class NoRHTimeSeries(GenericTimeSeries):
     """
-    Nobeyama Radioheliograph Correlation Lightcurve TimeSeries.
+    Nobeyama Radioheliograph Correlation lightcurve TimeSeries.
 
     Nobeyama Radioheliograph (NoRH) is a radio telescope dedicated to observing the Sun.
     It consists of 84 parabolic antennas with a 80 cm diameter,

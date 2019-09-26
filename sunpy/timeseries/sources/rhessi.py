@@ -22,7 +22,7 @@ __all__ = ['RHESSISummaryTimeSeries']
 
 class RHESSISummaryTimeSeries(GenericTimeSeries):
     """
-    RHESSI X-ray Summary Lightcurve TimeSeries.
+    RHESSI X-ray Summary lightcurve TimeSeries.
 
     The RHESSI mission consists of a single spin-stabilized spacecraft in a low-altitude orbit
     inclined 38 degrees to the Earth's equator.
