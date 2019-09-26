@@ -1,19 +1,18 @@
-import tempfile
 import os.path
-import pytest
 import datetime
+import tempfile
 
 import numpy as np
 import pandas
+import pytest
 
-from astropy.time import TimeDelta
 import astropy.units as u
+from astropy.time import TimeDelta
 
-from sunpy.data.test import rootdir
-from sunpy.time import parse_time, is_time_equal
 from sunpy import timeseries
+from sunpy.data.test import rootdir
 from sunpy.instr import lyra
-
+from sunpy.time import is_time_equal, parse_time
 
 # Define location for test LYTAF database files
 TEST_DATA_PATH = rootdir
@@ -48,7 +47,9 @@ LYTAF_TEST = np.append(
 
 @pytest.mark.remote_data
 def test_split_series_using_lytaf():
-    '''test the downloading of the LYTAF file and subsequent queries'''
+    """
+    test the downloading of the LYTAF file and subsequent queries.
+    """
     tmp_dir = tempfile.mkdtemp()
     lyra.download_lytaf_database(lytaf_dir=tmp_dir)
     assert os.path.exists(os.path.join(tmp_dir, 'annotation_ppt.db'))
@@ -97,7 +98,9 @@ def lyra_ts():
 
 @pytest.mark.remote_data
 def test_remove_lytaf_events_from_timeseries(lyra_ts):
-    """Test if artefacts are correctly removed from a TimeSeries."""
+    """
+    Test if artifact are correctly removed from a TimeSeries.
+    """
     # Check correct errors are raised due to bad input
     with pytest.raises(AttributeError):
         ts_test = lyra.remove_lytaf_events_from_timeseries(
@@ -146,7 +149,9 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
 
 
 def test_remove_lytaf_events_1():
-    """Test _remove_lytaf_events() with some artifacts found and others not."""
+    """
+    Test _remove_lytaf_events() with some artifacts found and others not.
+    """
     # Run _remove_lytaf_events
     time_test, channels_test, artifacts_status_test = \
         lyra._remove_lytaf_events(
@@ -199,7 +204,9 @@ def test_remove_lytaf_events_1():
 
 
 def test_remove_lytaf_events_2():
-    """Test _remove_lytaf_events() with no user artifacts found."""
+    """
+    Test _remove_lytaf_events() with no user artifacts found.
+    """
     # Run _remove_lytaf_events
     with pytest.warns(UserWarning, match='None of user supplied artifacts were found.'):
         time_test, channels_test, artifacts_status_test = \
@@ -248,7 +255,9 @@ def test_remove_lytaf_events_2():
 
 
 def test_remove_lytaf_events_3():
-    """Test if correct errors are raised by _remove_lytaf_events()."""
+    """
+    Test if correct errors are raised by _remove_lytaf_events().
+    """
     with pytest.raises(TypeError):
         lyra._remove_lytaf_events(TIME, channels=6, artifacts=["LAR"],
                                   lytaf_path=TEST_DATA_PATH,
@@ -269,7 +278,9 @@ def test_remove_lytaf_events_3():
 
 
 def test_get_lytaf_events():
-    """Test if LYTAF events are correctly downloaded and read in."""
+    """
+    Test if LYTAF events are correctly downloaded and read in.
+    """
     # Run get_lytaf_events
     lytaf_test = lyra.get_lytaf_events("2008-01-01", "2014-01-01",
                                        lytaf_path=TEST_DATA_PATH,
@@ -342,12 +353,16 @@ def test_get_lytaf_events():
 
 
 def test_get_lytaf_event_types():
-    """Test that LYTAF event types are printed."""
+    """
+    Test that LYTAF event types are printed.
+    """
     lyra.get_lytaf_event_types(lytaf_path=TEST_DATA_PATH)
 
 
 def test_lytaf_event2string():
-    """Test _lytaf_event2string() associates correct numbers and events."""
+    """
+    Test _lytaf_event2string() associates correct numbers and events.
+    """
     out_test = lyra._lytaf_event2string(list(range(12)))
     assert out_test == ['LAR', 'N/A', 'UV occult.', 'Vis. occult.', 'Offpoint',
                         'SAA', 'Auroral zone', 'Moon in LYRA', 'Moon in SWAP',
@@ -357,7 +372,9 @@ def test_lytaf_event2string():
 
 
 def test_prep_columns():
-    """Test whether _prep_columns correctly prepares data."""
+    """
+    Test whether _prep_columns correctly prepares data.
+    """
     # Generate simple input data
     time_input = TIME[0:2]
     time_input.precision = 9
