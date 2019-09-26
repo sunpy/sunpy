@@ -566,6 +566,24 @@ def test_add_column_from_quantity(eve_test_ts, add_column_from_quantity_ts,
         eve_test_ts.data.columns) | {'quantity_added'}
 
 
+def test_remove_column(eve_test_ts):
+    removed = eve_test_ts.remove_column('XRS-B proxy')
+    # Check that column remains in eve_test_ts but isn't in removed
+    assert 'XRS-B proxy' not in removed.columns
+    assert 'XRS-B proxy' in eve_test_ts.columns
+    assert len(removed.columns) == len(eve_test_ts.columns) - 1 == 18
+
+    # Check units updated correctly
+    assert len(removed.columns) == len(removed.units)
+
+    # Check data updated correctly
+    assert len(removed.columns) == removed.data.shape[1]
+
+    # Check that removing a non-existant column errors
+    with pytest.raises(ValueError):
+        eve_test_ts.remove_column('random column name')
+
+
 @pytest.fixture
 def add_column_from_array_ts(eve_test_ts, column_quantity):
     # Add a column to a TS using a numpy array

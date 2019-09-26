@@ -1,0 +1,2 @@
+A new method has been added to remove columns from a
+`sunpy.timeseries.GenericTimeSeries`.
