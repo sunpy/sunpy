@@ -1,0 +1,2 @@
+Improve error messages and type checking in
+`sunpy.visualization.animator.image.ImageAnimatorWCS`.

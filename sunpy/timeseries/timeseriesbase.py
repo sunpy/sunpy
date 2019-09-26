@@ -217,6 +217,27 @@ class GenericTimeSeries:
         # Return a new TimeSeries with the given updated/added column.
         return self.__class__(data, meta, units)
 
+    def remove_column(self, colname):
+        """
+        Remove a column.
+
+        Parameters
+        ----------
+        colname : str
+            The heading of the column to remove.
+
+        Returns
+        -------
+        `sunpy.timeseries.TimeSeries`
+            A new `~sunpy.timeseries.TimeSeries`.
+        """
+        if colname not in self.columns:
+            raise ValueError(f'Given column name ({colname}) not in list of columns {self.columns}')
+        data = self.data.drop(colname, 'columns')
+        units = self.units.copy()
+        units.pop(colname)
+        return self.__class__(data, self.meta, units)
+
     def sort_index(self, **kwargs):
         """
         Returns a sorted version of a `~sunpy.timeseries.TimeSeries`. Generally
