@@ -1,6 +1,6 @@
 # Base dependencies required to install and run SunPy.
 
-numpy>=1.11
+numpy>=1.11<1.17
 astropy>=2.0.3>=3.0.2
 scipy
 pandas>=0.12.0

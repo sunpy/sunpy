@@ -26,7 +26,7 @@ env:
         - COLUMNS=180
         - PYTHON_VERSION=3.6
         - PREVIOUS_NUMPY=1.13.3
-        - NUMPY_VERSION='stable'
+        - NUMPY_VERSION='1.16'
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test --coverage'
