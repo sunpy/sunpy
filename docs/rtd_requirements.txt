@@ -1,7 +1,7 @@
 # This file is used on ReadTheDocs to build the
 # documentation and is separate of tox.ini and setup.cfg
 numpy
-pytest
+pytest<5.1
 astropy
 scipy
 pandas

@@ -200,8 +200,7 @@ def test_wave_toangstrom():
     with pytest.raises(u.UnitsError) as excinfo:
         va.Wavelength(10 * u.g, 23 * u.g)
     assert ('This unit is not convertable to any of [Unit("Angstrom"), Unit("kHz"), '
-            'Unit("keV")]' in str(excinfo))
-
+            'Unit("keV")]' in str(excinfo.value))
 
 def test_time_xor():
     one = va.Time((2010, 1, 1), (2010, 1, 2))

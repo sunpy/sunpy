@@ -17,14 +17,8 @@ branches:
 addons:
     apt:
         packages:
-            - libatlas-dev
-            - liblapack-dev
-            - libopenjpeg-dev
-            - libopenjpeg2
-            - gfortran
+            - libopenjpeg5
             - graphviz
-            - texlive-latex-extra
-            - dvipng
 
 # Configure the build environment. Global variables are defined for all configurations.
 env:
@@ -32,12 +26,12 @@ env:
         - COLUMNS=180
         - PYTHON_VERSION=3.6
         - PREVIOUS_NUMPY=1.13.3
-        - NUMPY_VERSION='stable'
+        - NUMPY_VERSION='1.16'
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test --coverage'
         - CONDA_CHANNELS='sunpy'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas pytest-astropy suds-jurko glymur dask drms sphinx-astropy pytest-cov hypothesis'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas pytest-astropy suds-jurko glymur dask drms sphinx sphinx-astropy pytest-cov hypothesis'
         - PIP_DEPENDENCIES='pytest-sugar'
         - EVENT_TYPE='push pull_request cron'
         - MPLBACKEND='agg'
@@ -60,6 +54,9 @@ matrix:
            env: SETUP_CMD='test'
 
          - python: 3.6
+           env: SETUP_CMD='test'
+
+         - python: 3.7
            env: SETUP_CMD='test'
 
         # Comprehensive tests below this line

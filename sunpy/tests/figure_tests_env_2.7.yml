@@ -23,6 +23,7 @@ dependencies:
   - python=2.7.14=4
   - qt=5.6.2
   - readline=7.0=0
+  - sphinx=1.8.5=py27_0
   - scikit-image=0.13.1=py27_0
   - scipy=1.0.0=py27_blas_openblas_201
   - six=1.11.0=py27_1

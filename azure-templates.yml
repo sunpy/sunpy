@@ -10,6 +10,9 @@ jobs:
 
   steps:
 
+  - checkout: self
+    submodules: false
+
   - ${{ if eq(parameters.os, 'linux') }}:
     - script: |
         sudo apt-get install -y libopenjpeg5
