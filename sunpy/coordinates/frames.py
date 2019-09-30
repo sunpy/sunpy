@@ -223,7 +223,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
     This system differs from Stonyhurst Heliographic (HGS) in its definition of longitude.
 
     A new instance can be created using the following signatures
-    (note that ``obstime`` must be supplied as a keyword)::
+    (note that if supplied, ``obstime`` must be a keyword argument)::
 
         HeliographicCarrington(lon, lat, obstime)
         HeliographicCarrington(lon, lat, radius, obstime)
