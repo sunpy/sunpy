@@ -153,9 +153,9 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     (note that ``obstime`` and ``representation_type`` must be supplied as
     keywords)::
 
-        HeliographicStonyhurst(lon, lat, obstime)
-        HeliographicStonyhurst(lon, lat, radius, obstime)
-        HeliographicStonyhurst(x, y, z, obstime, representation_type='cartesian')
+        HeliographicStonyhurst(lon, lat, obstime=obstime)
+        HeliographicStonyhurst(lon, lat, radius, obstime=obstime)
+        HeliographicStonyhurst(x, y, z, representation_type='cartesian', obstime=obstime)
 
     Parameters
     ----------
@@ -252,8 +252,8 @@ class HeliographicCarrington(HeliographicStonyhurst):
     A new instance can be created using the following signatures
     (note that if supplied, ``obstime`` must be a keyword argument)::
 
-        HeliographicCarrington(lon, lat, obstime)
-        HeliographicCarrington(lon, lat, radius, obstime)
+        HeliographicCarrington(lon, lat, obstime=obstime)
+        HeliographicCarrington(lon, lat, radius, obstime=obstime)
 
     Parameters
     ----------
@@ -311,8 +311,8 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     (note that ``obstime`` and ``representation_type`` must be supplied as
     keywords)::
 
-        Heliocentric(x, y, z, obstime)
-        Heliocentric(rho, psi, z, obstime, representation_type='cylindrical')
+        Heliocentric(x, y, z, obstime=obstime)
+        Heliocentric(rho, psi, z, representation_type='cylindrical', obstime=obstime)
 
     Parameters
     ----------
@@ -375,8 +375,8 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     A new instance can be created using the following signatures
     (note that ``obstime`` and ``observer`` must be supplied as keywords)::
 
-        Helioprojective(theta_x, theta_y, obstime, observer)
-        Helioprojective(theta_x, theta_y, distance, obstime, observer)
+        Helioprojective(theta_x, theta_y, obstime=obstime, observer=observer)
+        Helioprojective(theta_x, theta_y, distance, obstime=obstime, observer=observer)
 
     Parameters
     ----------
