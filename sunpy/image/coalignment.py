@@ -27,7 +27,7 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.map.mapbase import GenericMap
-from sunpy.util import (SunpyUserWarning, deprecated)
+from sunpy.util import (SunpyUserWarning, SunpyDeprecationWarning, deprecated)
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
@@ -47,7 +47,7 @@ def _default_fmap_function(data):
     return np.float64(data)
 
 
-def calculate_shift(this_layer, template):
+def calculate_shift(this_layer, template, repair_nonfinite=True):
     """
     Calculates the pixel shift required to put the template in the "best"
     position on a layer.
@@ -66,8 +66,16 @@ def calculate_shift(this_layer, template):
         Pixel shifts ``(yshift, xshift)`` relative to the offset of the template
         to the input array.
     """
-    # Warn user if any NANs, Infs, etc are present in the layer or the template
-    check_for_nonfinite_entries(this_layer, template)
+    if repair_nonfinite:
+        # Repair any NANs, Infs, etc in the layer and the template
+        # This behaviour is deprecated
+        warnings.warn('The value True for the repair_nonfinite kwarg is deprecated',
+            SunpyDeprecationWarning)
+        this_layer = repair_image_nonfinite(this_layer)
+        template = repair_image_nonfinite(template)
+    else:
+        # Warn user if any NANs, Infs, etc are present in the layer or the template
+        check_for_nonfinite_entries(this_layer, template)
 
     # Calculate the correlation array matching the template to this layer
     corr = match_template_to_layer(this_layer, template)
