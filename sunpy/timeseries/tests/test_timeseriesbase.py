@@ -771,6 +771,10 @@ def test_ts_index(generic_ts):
     assert (generic_ts.index == generic_ts.data.index).all()
 
 
+def test_ts_shape(generic_ts):
+    assert generic_ts.shape == generic_ts.data.shape
+
+
 def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().data.equals(generic_ts.data.sort_index())
 
