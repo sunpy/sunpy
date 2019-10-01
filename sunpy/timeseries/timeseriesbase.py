@@ -142,6 +142,13 @@ class GenericTimeSeries:
         return self.data.index
 
     @property
+    def shape(self):
+        """
+        The shape of the data, a tuple (nrows, ncols).
+        """
+        return self.data.shape
+
+    @property
     def time_range(self):
         """
         The start and end times of the TimeSeries as a `~sunpy.time.TimeRange`.
