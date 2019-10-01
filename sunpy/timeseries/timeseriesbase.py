@@ -59,6 +59,7 @@ class GenericTimeSeries:
     >>> from sunpy.timeseries import TimeSeries
     >>> from sunpy.time import parse_time
     >>> from astropy.time import TimeDelta
+    >>> import astropy.units as u
     >>> import numpy as np
     >>> import pandas as pd
     >>> times = parse_time("now") - TimeDelta(np.arange(24 * 60)*u.minute)
