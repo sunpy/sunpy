@@ -423,7 +423,8 @@ def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
 
 
 def calculate_match_template_shift(mc, template=None, layer_index=0,
-                                   func=_default_fmap_function):
+                                   func=_default_fmap_function,
+                                   repair_nonfinite=True):
     """
     Calculate the arcsecond shifts necessary to co-register the layers in a
     `~sunpy.map.MapSequence` according to a template taken from that
@@ -493,7 +494,8 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
         this_layer = func(m.data)
 
         # Calculate the y and x shifts in pixels
-        yshift, xshift = calculate_shift(this_layer, tplate)
+        yshift, xshift = calculate_shift(this_layer, tplate,
+            repair_nonfinite=repair_nonfinite)
 
         # Keep shifts in pixels
         yshift_keep[i] = yshift
@@ -515,7 +517,7 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
 # Coalignment by matching a template
 def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
                                           func=_default_fmap_function, clip=True,
-                                          shift=None, **kwargs):
+                                          shift=None, repair_nonfinite=True, **kwargs):
     """
     Co-register the layers in a `~sunpy.map.MapSequence` according to a
     template taken from that `~sunpy.map.MapSequence`. This method REQUIRES
@@ -594,7 +596,8 @@ def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
     if shift is None:
         shifts = calculate_match_template_shift(mc, template=template,
                                                 layer_index=layer_index,
-                                                func=func)
+                                                func=func,
+                                                repair_nonfinite=repair_nonfinite)
         xshift_arcseconds = shifts['x']
         yshift_arcseconds = shifts['y']
     else:
