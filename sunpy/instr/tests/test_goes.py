@@ -1,20 +1,19 @@
 import copy
-import pytest
 
 import numpy as np
-from astropy.units.quantity import Quantity
-from astropy.tests.helper import assert_quantity_allclose
-from numpy.testing import assert_array_equal, assert_almost_equal
+import pytest
+from numpy.testing import assert_almost_equal, assert_array_equal
 from pandas.util.testing import assert_frame_equal
 
 import astropy.units as u
-
-from sunpy.time import TimeRange, parse_time, is_time_equal
-from sunpy import timeseries
-from sunpy.instr import goes
-from sunpy.data.test import get_test_filepath
-
+from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
+from astropy.units.quantity import Quantity
+
+from sunpy import timeseries
+from sunpy.data.test import get_test_filepath
+from sunpy.instr import goes
+from sunpy.time import TimeRange, is_time_equal, parse_time
 
 # Define input variables to be used in test functions for
 # _goes_chianti_tem.
@@ -104,7 +103,6 @@ def test_goes_chianti_tem_errors():
     shortflux_toobig = copy.deepcopy(SHORTFLUX)
     shortflux_toobig.value[0] = 1
     temp_test = Quantity(np.zeros(len(LONGFLUX))+10, unit="MK")
-    temp_test_toomany = Quantity(np.append(temp_test.value, 0), unit="MK")
     temp_test_toosmall = copy.deepcopy(temp_test)
     temp_test_toosmall.value[0] = -1
     temp_test_toobig = copy.deepcopy(temp_test)
@@ -112,30 +110,30 @@ def test_goes_chianti_tem_errors():
     # First test correct exceptions are raised if incorrect inputs are
     # entered.
     with pytest.raises(ValueError):
-        temp, em = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=-1)
+        goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=-1)
     with pytest.raises(ValueError):
-        temp, em = goes._goes_chianti_tem(LONGFLUX, shortflux_toomany)
+        goes._goes_chianti_tem(LONGFLUX, shortflux_toomany)
     with pytest.raises(ValueError):
-        temp = goes._goes_get_chianti_temp(ratio, satellite=-1)
+        goes._goes_get_chianti_temp(ratio, satellite=-1)
     with pytest.raises(ValueError):
-        temp, em = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX,
-                                          abundances="Neither")
+        goes._goes_chianti_tem(LONGFLUX, SHORTFLUX,
+                               abundances="Neither")
     with pytest.raises(ValueError):
-        temp = goes._goes_get_chianti_temp(ratio, abundances="Neither")
+        goes._goes_get_chianti_temp(ratio, abundances="Neither")
     with pytest.raises(ValueError):
-        temp, em = goes._goes_chianti_tem(LONGFLUX, shortflux_toobig)
+        goes._goes_chianti_tem(LONGFLUX, shortflux_toobig)
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(LONGFLUX, temp_test, satellite=-1)
+        goes._goes_get_chianti_em(LONGFLUX, temp_test, satellite=-1)
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(LONGFLUX, temp_test,
-                                       abundances="Neither")
+        goes._goes_get_chianti_em(LONGFLUX, temp_test,
+                                  abundances="Neither")
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(LONGFLUX, temp_test,
-                                       abundances="Neither")
+        goes._goes_get_chianti_em(LONGFLUX, temp_test,
+                                  abundances="Neither")
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(LONGFLUX, temp_test_toosmall)
+        goes._goes_get_chianti_em(LONGFLUX, temp_test_toosmall)
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(LONGFLUX, temp_test_toobig)
+        goes._goes_get_chianti_em(LONGFLUX, temp_test_toobig)
 
 
 @pytest.mark.remote_data
@@ -232,7 +230,7 @@ def test_goes_chianti_tem_case8():
 
 
 @pytest.mark.remote_data
-@pytest.mark.array_compare(file_format='text',reference_dir='./')
+@pytest.mark.array_compare(file_format='text', reference_dir='./')
 def test_calculate_radiative_loss_rate():
     # Define input variables.
     goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
@@ -245,14 +243,14 @@ def test_calculate_radiative_loss_rate():
         goes_test = goes.calculate_radiative_loss_rate(not_goeslc)
 
     # Check function gives correct results.
-    # Test case 1: GOESLightCurve object with only flux data
+    # Test case 1: GOESTimeSeries object with only flux data
     goeslc_test = goes.calculate_radiative_loss_rate(goeslc_input)
     exp_data = np.array([1.78100055e+19, 1.66003113e+19, 1.71993065e+19,
                          1.60171768e+19, 1.71993065e+19])
     np.testing.assert_allclose(goeslc_test.data.rad_loss_rate[:5],
                                exp_data)
 
-    # Test case 2: GOESLightCurve object with flux and temperature
+    # Test case 2: GOESTimeSeries object with flux and temperature
     # data, but no EM data.
     goes_test = goes.calculate_radiative_loss_rate(goeslc_no_em)
     # we test that the column has been added
@@ -288,15 +286,15 @@ def test_calc_rad_loss_errors():
     temp_outofrange = Quantity([101, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
-        rad_loss_test = goes._calc_rad_loss(temp_toolong, em, obstime)
+        goes._calc_rad_loss(temp_toolong, em, obstime)
     with pytest.raises(ValueError):
-        rad_loss_test = goes._calc_rad_loss(temp_outofrange, em, obstime)
-    with pytest.raises(OSError):
-        rad_loss_test = goes._calc_rad_loss(temp, em, obstime_toolong)
+        goes._calc_rad_loss(temp_outofrange, em, obstime)
+    with pytest.raises(IOError):
+        goes._calc_rad_loss(temp, em, obstime_toolong)
     with pytest.raises(ValueError):
-        lx_test = goes._calc_rad_loss(temp, em, obstime_notdatetime)
+        goes._calc_rad_loss(temp, em, obstime_notdatetime)
     with pytest.raises(ValueError):
-        rad_loss_test = goes._calc_rad_loss(temp, em, obstime_nonchrono)
+        goes._calc_rad_loss(temp, em, obstime_nonchrono)
 
 
 @pytest.mark.remote_data
@@ -305,12 +303,6 @@ def test_calc_rad_loss_nokwags():
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
                   unit="1/cm**3")
-    obstime = np.array([parse_time((2014, 1, 1, 0, 0, 0)),
-                        parse_time((2014, 1, 1, 0, 0, 2)),
-                        parse_time((2014, 1, 1, 0, 0, 4)),
-                        parse_time((2014, 1, 1, 0, 0, 6)),
-                        parse_time((2014, 1, 1, 0, 0, 8)),
-                        parse_time((2014, 1, 1, 0, 0, 10))], dtype=object)
     # Test output is correct when no kwags are set.
     rad_loss_test = goes._calc_rad_loss(temp[:2], em[:2])
     rad_loss_expected = {"rad_loss_rate":
@@ -355,7 +347,7 @@ def test_calculate_xray_luminosity():
     # Check correct exceptions are raised to incorrect inputs
     not_goeslc = []
     with pytest.raises(TypeError):
-        goes_test = goes.calculate_xray_luminosity(not_goeslc)
+        goes.calculate_xray_luminosity(not_goeslc)
     # Check function gives correct results.
     goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     goeslc_test = goes.calculate_xray_luminosity(goeslc_input)
@@ -384,11 +376,11 @@ def test_goes_lx_errors():
     obstime_notdatetime[0] = 1
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
-        lx_test = goes._goes_lx(longflux_toolong, shortflux, obstime)
+        goes._goes_lx(longflux_toolong, shortflux, obstime)
     with pytest.raises(ValueError):
-        lx_test = goes._goes_lx(longflux, shortflux, obstime_notdatetime)
+        goes._goes_lx(longflux, shortflux, obstime_notdatetime)
     with pytest.raises(ValueError):
-        lx_test = goes._goes_lx(longflux, shortflux, obstime_nonchrono)
+        goes._goes_lx(longflux, shortflux, obstime_nonchrono)
 
 
 def test_goes_lx_nokwargs():
@@ -461,7 +453,9 @@ def test_goes_lx_obstime():
 
 
 def test_flux_to_classletter():
-    """Test converting fluxes into a class letter"""
+    """
+    Test converting fluxes into a class letter.
+    """
     fluxes = Quantity(10**(-np.arange(9, 2., -1)), 'W/m**2')
     classesletter = ['A', 'A', 'B', 'C', 'M', 'X', 'X']
     calculated_classesletter = [goes.flux_to_flareclass(f)[0] for f in fluxes]

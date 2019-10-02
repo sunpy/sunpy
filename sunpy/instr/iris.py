@@ -1,17 +1,22 @@
 """
-Some very beta tools for IRIS
-"""
+This package provides Interface Region Imaging Spectrometer (IRIS) instrument
+routines.
 
+.. note::
+
+    More comprehensive IRIS tools are now being developed in the `IRISPy
+    <https://github.com/sunpy/irispy>`__ affiliated package.
+"""
 import sunpy.io
-import sunpy.time
 import sunpy.map
+import sunpy.time
 
 __all__ = ['SJI_to_sequence']
 
 
 def SJI_to_sequence(filename, start=0, stop=None, hdu=0):
     """
-    Read a SJI file and return a MapSequence
+    Read a SJI file and return a `sunpy.map.MapSequence`.
 
     .. warning::
         This function is a very early beta and is not stable. Further work is
@@ -19,22 +24,21 @@ def SJI_to_sequence(filename, start=0, stop=None, hdu=0):
 
     Parameters
     ----------
-    filename: str
-        File to read
-
-    start: int
-        Temporal axis index to create MapSequence from
-
-    stop: int
-        Temporal index to stop MapSequence at
-
-    hdu: int
-        Choose hdu index
+    filename: `str`
+        File to read.
+    start: `int`, optional
+        Temporal axis index to create `~sunpy.map.MapSequence` from.
+        Defaults to 0, which will start from the begining.
+    stop: `int`, optional
+        Temporal index to stop `~sunpy.map.MapSequence` at.
+        Defaults to `None`, which will use the entire index.
+    hdu: `int`, optional
+        The hdu index to use, defaults to 0.
 
     Returns
     -------
-    iris_cube: sunpy.map.MapSequence
-        A map cube of the SJI sequence
+    `~sunpy.map.MapSequence`
+        A map sequence of the SJI data.
     """
 
     hdus = sunpy.io.read_file(filename)
