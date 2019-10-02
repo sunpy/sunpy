@@ -205,8 +205,9 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
         super().__init__(*args, **kwargs)
 
         # Make 3D if specified as 2D
-        if self._data and self._data.norm().unit is u.one and \
-           u.allclose(self._data.norm(), 1*u.one):
+        if (self._data is not None and self._data.norm().unit is u.one
+            and u.allclose(self._data.norm(), 1*u.one)):
+
             self._data *= _RSUN.to(u.km)
 
 
