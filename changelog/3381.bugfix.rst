@@ -1,0 +1,1 @@
+Updated the URL for Fermi spacecraft-pointing files to use an HTTPS connection to HEASARC.

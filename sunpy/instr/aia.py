@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
 """
-Provides processing routines for data captured with the AIA instrument on SDO.
+This module provides processing routines for data captured with the AIA
+instrument on SDO.
 """
 import numpy as np
+
 import astropy.units as u
 
 from sunpy.map.sources.sdo import AIAMap, HMIMap
@@ -13,33 +14,32 @@ __all__ = ['aiaprep']
 def aiaprep(aiamap):
     """
     Processes a level 1 `~sunpy.map.sources.sdo.AIAMap` into a level 1.5
-    `~sunpy.map.sources.sdo.AIAMap`. Rotates, scales and
-    translates the image so that solar North is aligned with the y axis, each
-    pixel is 0.6 arcsec across, and the center of the sun is at the center of
-    the image. The actual transformation is done by Map's
-    :meth:`~sunpy.map.mapbase.GenericMap.rotate` method.
+    `~sunpy.map.sources.sdo.AIAMap`.
 
-    This function is similar in functionality to aia_prep() in SSWIDL, but
+    Rotates, scales and translates the image so that solar North is aligned
+    with the y axis, each pixel is 0.6 arcsec across, and the center of the
+    Sun is at the center of the image. The actual transformation is done by Map's `~sunpy.map.mapbase.GenericMap.rotate` method.
+
+    This function is similar in functionality to ``aia_prep`` in SSWIDL, but
     it does not use the same transformation to rotate the image and it handles
     the meta data differently. It should therefore not be expected to produce
     the same results.
 
     Parameters
     ----------
-    aiamap : `~sunpy.map.sources.sdo.AIAMap` instance
-        A `sunpy.map.Map` from AIA
+    aiamap : `~sunpy.map.sources.sdo.AIAMap`
+        A `sunpy.map.Map` from AIA.
 
     Returns
     -------
-    newmap : A level 1.5 copy of `~sunpy.map.sources.sdo.AIAMap`
+    `~sunpy.map.sources.sdo.AIAMap`:
+        A level 1.5 copy of `~sunpy.map.sources.sdo.AIAMap`.
 
     Notes
     -----
-    This routine makes use of Map's :meth:`~sunpy.map.mapbase.GenericMap.rotate`
-    method, which modifies the header information to the standard PCi_j WCS
-    formalism.
-    The FITS header resulting in saving a file after this procedure will
-    therefore differ from the original file.
+    This routine modifies the header information to the standard PCi_j WCS
+    formalism. The FITS header resulting in saving a file after this
+    procedure will therefore differ from the original file.
     """
 
     if not isinstance(aiamap, (AIAMap, HMIMap)):
