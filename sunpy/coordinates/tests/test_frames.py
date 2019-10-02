@@ -143,7 +143,7 @@ def test_hpc_distance():
     assert hpc1.Tx == 0 * u.arcsec
     assert hpc1.Ty == 0 * u.arcsec
 
-    hpc2 = hpc1.calculate_distance()
+    hpc2 = hpc1.make_3d()
 
     assert isinstance(hpc2._data, SphericalRepresentation)
 
@@ -160,7 +160,7 @@ def test_hpc_distance_cartesian():
     assert isinstance(hpc1, Helioprojective)
     assert isinstance(hpc1._data, CartesianRepresentation)
 
-    assert hpc1.calculate_distance() is hpc1
+    assert hpc1.make_3d() is hpc1
 
 
 def test_hpc_distance_off_limb():
@@ -175,7 +175,7 @@ def test_hpc_distance_off_limb():
     assert hpc1.Tx == 1500 * u.arcsec
     assert hpc1.Ty == 0 * u.arcsec
 
-    hpc2 = hpc1.calculate_distance()
+    hpc2 = hpc1.make_3d()
 
     assert isinstance(hpc2._data, SphericalRepresentation)
 
@@ -196,7 +196,7 @@ def test_hpc_distance_3D():
     assert hpc1.Tx == 1500 * u.arcsec
     assert hpc1.Ty == 0 * u.arcsec
 
-    hpc2 = hpc1.calculate_distance()
+    hpc2 = hpc1.make_3d()
 
     assert hpc2 is hpc1
 
@@ -405,12 +405,12 @@ two_D_parameters = [
                                               {'representation_type': 'unitspherical'})])
 def test_skycoord_hpc(args, kwargs):
     """
-    Test that when instantiating a HPC frame with SkyCoord calculate distance
+    Test that when instantiating a HPC frame with SkyCoord that make_3d
     still works.
     """
 
     sc = SkyCoord(*args, **kwargs, frame="helioprojective", obstime="2011-01-01T00:00:00")
-    # Test the transform to HGS because it will force a `calculate_distance` call.
+    # Test the transform to HGS because it will force a `make_3d` call.
     hgs = sc.transform_to("heliographic_stonyhurst")
 
     assert isinstance(hgs.frame, HeliographicStonyhurst)
