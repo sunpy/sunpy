@@ -205,23 +205,9 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
         super().__init__(*args, **kwargs)
 
         # Make 3D if specified as 2D
-        # If representation was explicitly passed, do not change the rep, unless
-        # it's specified as SphericalRepresentation, in which case we should
-        # upgrade it to that rep if we only have UnitSphericalRepresentation
-        if not _rep_kwarg or _rep_kwarg is SphericalRepresentation:
-            if isinstance(self._data, UnitSphericalRepresentation):
-                self._data = self.spherical
-
-    def represent_as(self, base, s='base', in_frame_units=False):
-        """
-        Unless the requested representation is UnitSphericalRepresentation, scale a coordinate with
-        dimensionless length so that it has the length of the solar radius.
-        """
-        data = super().represent_as(base, s, in_frame_units=in_frame_units)
-        if not isinstance(data, UnitSphericalRepresentation) and \
-           data.norm().unit is u.one and u.allclose(data.norm(), 1*u.one):
-            data *= _RSUN.to(u.km)
-        return data
+        if self._data and self._data.norm().unit is u.one and \
+           u.allclose(self._data.norm(), 1*u.one):
+            self._data *= _RSUN.to(u.km)
 
 
 @add_common_docstring(**_frame_parameters())
