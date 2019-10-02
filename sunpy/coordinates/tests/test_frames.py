@@ -408,7 +408,8 @@ def test_skycoord_hpc(args, kwargs):
     still works.
     """
 
-    sc = SkyCoord(*args, **kwargs, frame="helioprojective", obstime="2011-01-01T00:00:00")
+    sc = SkyCoord(*args, **kwargs, frame="helioprojective",
+                  observer='earth', obstime="2011-01-01T00:00:00")
     # Test the transform to HGS because it will force a `make_3d` call.
     hgs = sc.transform_to("heliographic_stonyhurst")
 
