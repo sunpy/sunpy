@@ -342,7 +342,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
         CylindricalRepresentation: [RepresentationMapping('phi', 'psi', u.deg)]
     }
 
-    observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
+    observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
 
 
 @add_common_docstring(**_frame_parameters())
@@ -427,7 +427,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     }
 
     rsun = Attribute(default=_RSUN.to(u.km))
-    observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
+    observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
 
     def make_3d(self):
         """

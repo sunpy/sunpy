@@ -127,11 +127,8 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
     def __get__(self, instance, frame_cls=None):
         # If instance is None then we can't get obstime so it doesn't matter.
         if instance is not None:
-            # Get observer if the instance has one, or the default.
-            observer = getattr(instance, '_' + self.name, self.default)
-
-            # We have an instance of a frame, so get obstime
-            obstime = getattr(instance, 'obstime', None)
+            observer = getattr(instance, '_' + self.name)
+            obstime = getattr(instance, 'obstime', None)  # TODO: Why is this `None` needed?
 
             # If the observer is a string and we have obstime then calculate
             # the position of the observer.
