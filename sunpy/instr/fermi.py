@@ -51,7 +51,7 @@ def download_weekly_pointing_file(date):
     # use a temp directory to hold the file
     tmp_dir = tempfile.mkdtemp()
     # use Fermi data server to access weekly LAT pointing file.
-    base_url = 'ftp://legacy.gsfc.nasa.gov/FTP/glast/data/lat/weekly/spacecraft/'
+    base_url = 'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/lat/weekly/spacecraft/'
     fbasename = 'lat_spacecraft_weekly_w'
 
     # find out which file to get based on date
@@ -71,7 +71,7 @@ def download_weekly_pointing_file(date):
     full_fname = fbasename + weekstr + '_p202_v001.fits'
     pointing_file_url = base_url + full_fname
 
-    # try to download the file from the FTP site
+    # try to download the file
     try:
         resp = urllib.request.urlopen(pointing_file_url)
         exists = True
