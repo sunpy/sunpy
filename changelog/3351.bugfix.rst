@@ -1,2 +1,1 @@
-Ensure that Heliographic frames are always constructed as 3D even when
-constructed through `~astropy.coordinates.SkyCoord`.
+Fixed bug where Heliographic frames were not constructed as 3D as intended.
