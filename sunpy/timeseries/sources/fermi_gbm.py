@@ -22,7 +22,7 @@ __all__ = ['GBMSummaryTimeSeries']
 
 class GBMSummaryTimeSeries(GenericTimeSeries):
     """
-    Fermi/GBM Summary Lightcurve TimeSeries.
+    Fermi/GBM Summary lightcurve TimeSeries.
 
     The Gamma-ray Burst Monitor (GBM) is an instrument aboard Fermi.
     It is meant to detect gamma-ray bursts but also detects solar flares.
