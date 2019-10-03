@@ -8,6 +8,132 @@ authors:
   - name: Stuart J. Mumford
     orcid: 0000-0003-4217-4642
     affiliation: "1, 2"
+  - name: Nabil Freij
+  - name: Steven Christe
+  - name: Jack Ireland
+  - name: Florian Mayer
+  - name: Keith Hughitt
+  - name: Albert Y. Shih
+  - name: Daniel Ryan
+  - name: Simon Liedtke
+  - name: David Pérez-Suárez
+  - name: Pritish Chakraborty
+  - name: Vishnunarayan K I.
+  - name: Andrew Inglis
+  - name: Punyaslok Pattnaik
+  - name: Brigitta Sipocz
+  - name: Rishabh Sharma
+  - name: Andrew Leonard
+  - name: David Stansby
+  - name: Russell Hewett
+  - name: Alex Hamilton
+  - name: Laura Hayes
+  - name: Asish Panda
+  - name: Matt Earnshaw
+  - name: Nitin Choudhary
+  - name: Ankit Kumar
+  - name: Prateek Chanda
+  - name: Md Akramul Haque
+  - name: Michael S Kirk
+  - name: Michael Mueller
+  - name: Sudarshan Konge
+  - name: Rajul Srivastava
+  - name: Yash Jain
+  - name: Samuel Bennett
+  - name: Ankit Baruah
+  - name: Will Barnes
+  - name: Michael Charlton
+  - name: Cubostar
+  - name: Shane Maloney
+  - name: Nicky Chorley
+  - name: Himanshu
+  - name: Sanskar Modi
+  - name: James Paul Mason
+  - name: Naman9639
+  - name: Yash
+  - name: Jose Ivan Campos Rozo
+  - name: Larry Manley
+  - name: Agneet Chatterjee
+  - name: John Evans
+  - name: Michael Malocha
+  - name: Monica Bobra
+  - name: Sourav Ghosh
+  - name: Airmansmith97
+  - name: Dominik Stańczak
+  - name: Ruben De Visscher
+  - name: Shresth Verma
+  - name: Ankit Agrawal
+  - name: Dumindu Buddhika
+  - name: Swapnil Sharma
+  - name: Jongyeob Park
+  - name: Matt Bates
+  - name: Dhruv Goel
+  - name: Garrison Taylor
+  - name: Goran Cetusic
+  - name: Jacob
+  - name: Mateo Inchaurrandieta
+  - name: Sally Dacie
+  - name: Sanjeev Dubey
+  - name: Deepankar Sharma
+  - name: Erik M. Bray
+  - name: Jai Ram Rideout
+  - name: Serge Zahniy
+  - name: Tomas Meszaros
+  - name: Abhigyan Bose
+  - name: Andre Chicrala
+  - name: Ankit
+  - name: Chloé Guennou
+  - name: Daniel D'Avella
+  - name: Daniel Williams
+  - name: Jordan Ballew
+  - name: Nick Murphy
+  - name: Priyank Lodha
+  - name: Thomas Robitaille
+  - name: Yash Krishan
+  - name: Andrew Hill
+  - name: Arthur Eigenbrot
+  - name: Benjamin Mampaey
+  - name: Bernhard M. Wiedemann
+  - name: Carlos Molina
+  - name: Duygu Keşkek
+  - name: Ishtyaq Habib
+  - name: Joe Letts
+  - name: Juanjo Bazán
+  - name: Quinn Arbolante
+  - name: Reid Gomillion
+  - name: Yash Kothari
+  - name: Yash Sharma
+  - name: Abigail Stevens
+  - name: Adrian Price-Whelan
+  - name: Ambar Mehrotra
+  - name: Arseniy Kustov
+  - name: Brandon Stone
+  - name: Dang Trung Kien
+  - name: Emmanuel Arias
+  - name: Fionnlagh Mackenzie Dover
+  - name: Freek Verstringe
+  - name: Gulshan Mittal
+  - name: Harsh Mathur
+  - name: Igor Babuschkin
+  - name: Jaylen Wimbish
+  - name: Juan Camilo Buitrago-Casas
+  - name: Kalpesh Krishna
+  - name: Kaustubh Hiware
+  - name: Manas Mangaonkar
+  - name: Matthew Mendero
+  - name: Mickaël Schoentgen
+  - name: Norbert Gyenge
+  - name: Ole Streicher
+  - name: Rajasekhar Reddy Mekala
+  - name: Rishabh Mishra
+  - name: S Shashank
+  - name: Sarthak Jain
+  - name: Tannmay Yadav
+  - name: Tessa D. Wilkinson
+  - name: Tiago Pereira
+  - name: Yudhik Agrawal
+  - name: jamescalixto
+  - name: yasintoda
 
 affiliations:
  - name: SP2RC, School of Mathematics and Statistics, The University of Sheffield, UK
