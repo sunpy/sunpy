@@ -3,7 +3,7 @@ import matplotlib
 import pylab
 import sunpy.map
 import sunpy.data.sample
-from sunpy.timeseries import TimeSeries
+import sunpy.timeseries as ts
 from sunpy.time import parse_time
 from astropy import units as u
 from astropy.coordinates import SkyCoord
@@ -11,8 +11,7 @@ from sunpy.net import hek
 client = hek.HEKClient()
 
 # GOES data for timeseries
-goes_file = 'go1520110607.fits'
-goes = TimeSeries(goes_file)
+goes = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
 
 flares_hek = client.search(hek.attrs.Time('2011-06-07 00:00', '2011-06-07 23:59'),
                            hek.attrs.FL, hek.attrs.FRM.Name == 'SWPC')
