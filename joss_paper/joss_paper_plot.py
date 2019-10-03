@@ -61,5 +61,5 @@ cbar_ax = plt.gcf().add_axes([0.97, 0.08, 0.01, 0.82])
 plt.colorbar(cax=cbar_ax)
 
 
-plt.savefig('joss_paper_plot.png', dpi = 200)
+plt.savefig('joss_paper_plot.pdf', dpi = 200)
 plt.close()
