@@ -96,7 +96,7 @@ def test_coord_get():
 
     # Test default (instance=None)
     obs = Helioprojective.observer
-    assert obs == "earth"
+    assert obs is None
 
     # Test get
     obstime = "2013-04-01"
@@ -113,7 +113,7 @@ def test_coord_get():
 
     # Test get
     obstime = "2013-04-01"
-    obs = Helioprojective(obstime=obstime).observer
+    obs = Helioprojective(observer="earth", obstime=obstime).observer
     earth = get_earth(obstime)
     assert isinstance(obs, HeliographicStonyhurst)
     assert_quantity_allclose(obs.lon, earth.lon)
@@ -138,7 +138,7 @@ def test_coord_get():
 
 def test_default_hcc_observer():
     h = frames.Heliocentric()
-    assert h.observer == "earth"
+    assert h.observer is None
 
     h = frames.Heliocentric(observer="mars")
     assert h.observer == "mars"
@@ -148,8 +148,7 @@ def test_obstime_hack():
     """
     Test that the obstime can be updated in place, this is used in the transform pipeline.
     """
-    h = frames.Heliocentric()
-    assert h.observer == "earth"
+    h = frames.Heliocentric(observer="earth")
 
     obstime = "2011-01-01"
     h._obstime = obstime
@@ -162,23 +161,3 @@ def test_obstime_hack():
     assert_quantity_allclose(obs.lon, earth.lon)
     assert_quantity_allclose(obs.lat, earth.lat)
     assert_quantity_allclose(obs.radius, earth.radius)
-
-
-"""
-These two tests are to make sure that during the transformation stack the value
-of observer is correctly calculated.
-"""
-
-
-def test_default_observer_transform_hcc():
-    center = frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, obstime="2017-07-11 15:00")
-    hpc = center.transform_to(frames.Heliocentric(obstime="2017-07-11 15:00"))
-
-    assert_quantity_allclose(hpc.y, -48484.509203 * u.km)
-
-
-def test_default_observer_transform_hpc():
-    center = frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, obstime="2017-07-11 15:00")
-    hpc = center.transform_to(frames.Helioprojective(obstime="2017-07-11 15:00"))
-
-    assert_quantity_allclose(hpc.Ty, -66.062568 * u.arcsec)
