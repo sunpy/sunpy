@@ -13,7 +13,6 @@ examples:
     - |
         !<tag:sunpy.org:sunpy/coordinates/frames/helioprojective-1.0.0>
           frame_attributes:
-            observer: earth
             rsun: !unit/quantity-1.1.0 {unit: !unit/unit-1.0.0 km, value: 695700.0}
   -
     - A Helioprojective frame with an observer and an obstime
@@ -52,6 +51,6 @@ allOf:
           obstime:
             $ref: "tag:stsci.edu:asdf/time/time-1.1.0"
 
-        required: [observer, rsun]
+        required: [rsun]
         additionalProperties: False
 ...
