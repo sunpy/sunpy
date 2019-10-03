@@ -154,7 +154,7 @@ A SkyCoord object to represent a point on the Sun can then be created::
 This `~astropy.coordinates.SkyCoord` object can then be transformed to any
 other coordinate frame defined either in Astropy or SunPy, for example::
 
-  >>> c.transform_to(frames.Helioprojective)
+  >>> c.transform_to(frames.Helioprojective(observer="earth"))
   <SkyCoord (Helioprojective: obstime=2017-08-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
       (769.96270814, -498.89715922, 1.51668773e+08)>
 
@@ -174,10 +174,10 @@ Observer Location
 Both `~sunpy.coordinates.frames.Helioprojective` and
 `~sunpy.coordinates.frames.Heliocentric` frames are defined based on the
 position of the observer. Therefore to transform either of these frames to a
-different frame the location of the observer must be known. The default
-observer is the Earth. A different observer can be specified for a coordinate
-object using the ``observer`` argument to `~astropy.coordinates.SkyCoord`.
-For SunPy to calculate the location of the Earth, it must know the time for
+different frame the location of the observer must be known.
+The observer can be specified for a coordinate object using the ``observer``
+argument to `~astropy.coordinates.SkyCoord`.  For SunPy to calculate the
+location of Earth or another solar-system body, it must know the time for
 which the coordinate is valid; this is specified with the ``obstime`` argument.
 
 Using the observer location it is possible to convert a coordinate as seen by
