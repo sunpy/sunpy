@@ -69,8 +69,10 @@ def calculate_shift(this_layer, template, repair_nonfinite=True):
     if repair_nonfinite:
         # Repair any NANs, Infs, etc in the layer and the template
         # This behaviour is deprecated
-        warnings.warn('The value True for the repair_nonfinite kwarg is deprecated',
-            SunpyDeprecationWarning)
+        warnings.warn('The repairing of nonfinite values is deprecated '
+                      'and will be removed in future versions. '
+                      'You can disable this behaviour by setting the '
+                      'repair_nonfinite kwarg to False.', SunpyDeprecationWarning)
         this_layer = repair_image_nonfinite(this_layer)
         template = repair_image_nonfinite(template)
     else:
@@ -308,10 +310,18 @@ def check_for_nonfinite_entries(layer_image, template_image):
         A two-dimensional `numpy.ndarray`.
     """
     if not np.all(np.isfinite(layer_image)):
-        warnings.warn('The layer image has noninfinite entries.', SunpyUserWarning)
+        warnings.warn('The layer image has nonfinite entries. '
+                      'This could cause errors when calculating shift between two '
+                      'images. Please make sure there are no infinity or '
+                      'Not a Number values. For instance, replacing them with a '
+                      'local mean.', SunpyUserWarning)
 
     if not np.all(np.isfinite(template_image)):
-        warnings.warn('The template image has noninfinite entries.', SunpyUserWarning)
+        warnings.warn('The template image has nonfinite entries. '
+                      'This could cause errors when calculating shift between two '
+                      'images. Please make sure there are no infinity or '
+                      'Not a Number values. For instance, replacing them with a '
+                      'local mean.', SunpyUserWarning)
 
 
 @deprecated("1.1")
@@ -495,7 +505,7 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
 
         # Calculate the y and x shifts in pixels
         yshift, xshift = calculate_shift(this_layer, tplate,
-            repair_nonfinite=repair_nonfinite)
+                                         repair_nonfinite=repair_nonfinite)
 
         # Keep shifts in pixels
         yshift_keep[i] = yshift
