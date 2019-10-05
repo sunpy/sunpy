@@ -1,0 +1,1 @@
+Improved the contributing guide by updating commands and highlighting text. 

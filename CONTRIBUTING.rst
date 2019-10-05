@@ -141,19 +141,20 @@ Next we will want to setup the conda environment and we will need to add the `co
 
     $ conda config --add channels conda-forge
     $ conda create -n sunpy-dev sunpy
-    $ source activate sunpy-dev
+    $ conda activate sunpy-dev
 
 This will create a new conda environment called "sunpy-dev" and install the latest version of SunPy from the conda-forge channel.
 The next step is remove the conda version of SunPy and install the development version of SunPy.
 This will require that `git`_ be installed.
 
-If you have a `GitHub`_ account, we suggest that you `fork`_ the `SunPy repository`_ (the fork button is to the top right) and **use that url for the clone step** below.
-This will make submitting changes easier in the long term for you:
-
 .. warning::
 
     Do not clone the sunpy repository into ``$HOME/sunpy``. Depending on the operating system this location is used to store downloaded data files.
     This will cause conflicts later on, so the last argument (``sunpy-git``) on the ``git clone`` line will become the local folder name of the cloned repository.
+
+.. note::
+    If you have a `GitHub`_ account, we suggest that you `fork`_ the `SunPy repository`_ (the fork button is to the top right) and **use that url for the clone step** below.
+    This will make submitting changes easier in the long term for you:
 
 .. code:: bash
 
