@@ -1,3 +1,3 @@
 
 - Bring the `conda` command to activate an environment up to date
-- Make the hint to fork the sunpy-repo more visible
+Improved the contributing guide by updating commands and highlighting text. 
