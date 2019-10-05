@@ -141,7 +141,7 @@ Next we will want to setup the conda environment and we will need to add the `co
 
     $ conda config --add channels conda-forge
     $ conda create -n sunpy-dev sunpy
-    $ source activate sunpy-dev
+    $ conda activate sunpy-dev
 
 This will create a new conda environment called "sunpy-dev" and install the latest version of SunPy from the conda-forge channel.
 The next step is remove the conda version of SunPy and install the development version of SunPy.
