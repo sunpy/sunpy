@@ -1,3 +1,2 @@
-
 - Bring the `conda` command to activate an environment up to date
 Improved the contributing guide by updating commands and highlighting text. 
