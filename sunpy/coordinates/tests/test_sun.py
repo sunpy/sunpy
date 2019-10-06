@@ -262,8 +262,8 @@ def test_carrington_rotation_number(date, day_fraction, rotation_number):
                           (1860, 2448872.027509),
                           ])
 def test_carrington_rotation_starttime(crot, julian_days):
-    # Stated precision in the docstring is 45 seconds
-    atol = 45 / (60 * 60 * 24)
+    # Stated precision in the docstring is 0.11 seconds
+    atol = 0.11 / (60 * 60 * 24)
     assert_allclose(sun.carrington_rotation_time(crot).tt.jd, julian_days, atol=atol)
 
 
@@ -273,5 +273,5 @@ def test_carrington_rotation_roundtrip():
     t_roundtrip = sun.carrington_rotation_time(crot)
     dt = t - t_roundtrip
     dt.format = 'sec'
-    # Stated precision in the docstring is 45 seconds
-    assert np.abs(dt.value) < 45
+    # Stated precision in the docstring is 0.11 seconds
+    assert np.abs(dt.value) < 0.11
