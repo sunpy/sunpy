@@ -4,6 +4,8 @@ This module provides functions to retrieve system information.
 import datetime
 import platform
 
+from distro import linux_distribution
+
 __all__ = ['get_sys_dict', 'system_info']
 
 
@@ -118,7 +120,7 @@ def system_info():
         print('{} : {}'.format(sys_info, sys_prop[sys_info]))
 
     if sys_prop['System'] == "Linux":
-        distro = " ".join(platform.linux_distribution())
+        distro = " ".join(linux_distribution())
         print("OS: {} (Linux {} {})".format(distro, platform.release(), sys_prop['Processor']))
     elif sys_prop['System'] == "Darwin":
         print("OS: Mac OS X {} ({})".format(platform.mac_ver()[0], sys_prop['Processor']))
