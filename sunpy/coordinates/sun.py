@@ -97,7 +97,7 @@ def carrington_rotation_time(crot):
     # The above estimate is inaccurate (see comments below in carrington_rotation_number),
     # so put the estimate into carrington_rotation_number to determine a correction amount
     def refine(estimate):
-        crot_estimate = carrington_rotation_number(t=Time(estimate, format='jd'))
+        crot_estimate = carrington_rotation_number(t=Time(estimate, scale='tt', format='jd'))
         dcrot = crot - crot_estimate
         # Correct the estimate using a linear fraction of the Carrington rotation period
         return estimate + (dcrot * _CARRINGTON_ROTATION_PERIOD)
@@ -105,7 +105,7 @@ def carrington_rotation_time(crot):
     # Perform two iterations of the correction to achieve sub-second accuracy
     estimate = refine(estimate)
     estimate = refine(estimate)
-    return parse_time(estimate, format='jd')
+    return Time(estimate, scale='tt', format='jd')
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
