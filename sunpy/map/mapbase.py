@@ -1416,7 +1416,7 @@ class GenericMap(NDData):
 # #### Visualization #### #
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):
+    def draw_grid(self, axes=None, annotation=False, grid_spacing: u.deg = 15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1441,18 +1441,16 @@ class GenericMap(NDData):
         Notes
         -----
         Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
+        :param annotation:
         """
 
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
         if not wcsaxes_compat.is_wcsaxes(axes):
             raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
-        c_kw = {'annotate': False
-                }
-        c_kw.update(kwargs)
-        return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
+        return wcsaxes_compat.wcsaxes_heliographic_overlay(axes, annotation,
                                                            grid_spacing=grid_spacing,
-                                                           **c_kw)
+                                                           **kwargs)
 
     def draw_limb(self, axes=None, **kwargs):
         """

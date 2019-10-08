@@ -113,7 +113,7 @@ def default_wcs_grid(axes):
 
 
 @u.quantity_input
-def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs):
+def wcsaxes_heliographic_overlay(axes, annotate=False, grid_spacing: u.deg = 10*u.deg, **kwargs):
     """
     Create a heliographic overlay using
     `~astropy.visualization.wcsaxes.WCSAxes`.
@@ -135,6 +135,7 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs)
     Notes
     -----
     Keywords are passed to `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap.grid`.
+    :param annotate:
     """
     # Unpack spacing
     if isinstance(grid_spacing, u.Quantity) and grid_spacing.size == 1:
@@ -158,19 +159,21 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs)
     lon.coord_wrap = 180
     lon.set_major_formatter('dd')
 
-    lon.set_axislabel('Solar Longitude', minpad=0.8)
-    lat.set_axislabel('Solar Latitude', minpad=0.9)
+    if annotate:
+        lon.set_axislabel('Solar Longitude', minpad=0.8)
+        lat.set_axislabel('Solar Latitude', minpad=0.9)
 
-    lon.set_ticks_position('tr')
-    lat.set_ticks_position('tr')
+        lon.set_ticks_position('tr')
+        lat.set_ticks_position('tr')
 
     grid_kw = {'color': 'white', 'zorder': 100, 'alpha': 0.5}
     grid_kw.update(kwargs)
 
     # Don't plot white ticks by default (only if explicitly asked)
     tick_color = grid_kw['color'] if 'color' in kwargs else 'k'
-    lon.set_ticks(spacing=lon_space, color=tick_color)
-    lat.set_ticks(spacing=lat_space, color=tick_color)
+    if annotate:
+        lon.set_ticks(spacing=lon_space, color=tick_color)
+        lat.set_ticks(spacing=lat_space, color=tick_color)
 
     overlay.grid(**grid_kw)
 
