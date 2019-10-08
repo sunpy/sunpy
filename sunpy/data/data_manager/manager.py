@@ -1,8 +1,10 @@
 import pathlib
 import functools
 from contextlib import contextmanager
+import warnings
 
 from sunpy.util.util import hash_file
+from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['DataManager']
 
@@ -52,6 +54,8 @@ class DataManager:
                     else:
                         file_path, file_hash, _ = self._cache._download_and_hash([replace['uri']])
                         if replace['hash'] and file_hash != replace['hash']:
+                            # if hash provided to replace function doesn't match the hash of the file
+                            # raise error
                             raise err
                 elif self._skip_hash_check:
                     file_path = self._cache.download(urls, redownload=True)
@@ -65,12 +69,18 @@ class DataManager:
                             raise err
                         file_path = self._cache.download(urls)
                         if hash_file(file_path) != sha_hash:
-                            raise err
+                            # the hash of the file downloaded does not match the hash of the file downloaded
+                            # this means the file has changed on the server.
+                            # the function should be updated to use the new hash. Raise an error to notify.
+                            raise RuntimeError("Remote file on the server has changed. Update hash of the function.")
                     else:
-                        # This is to handle the case when the file is tampered on disk
+                        # This is to handle the case when the file is tampered/corrupted
                         if hash_file(details['file_path']) != details['file_hash']:
-                            raise err
-                        file_path = details['file_path']
+                            warnings.warn("Hash does not match. File might have been tampered/corrupted. File will be redownloaded.",
+                                          SunpyUserWarning)
+                            file_path = self._cache.download(urls, redownload=True)
+                        else:
+                            file_path = details['file_path']
 
                 self._file_cache[name] = file_path
                 return func(*args, **kwargs)
