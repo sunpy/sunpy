@@ -42,9 +42,6 @@ class ParfiveDownloader(DownloaderBase):
     using `parfive`.
     """
 
-    def __init__(self):
-        pass
-
     def download(self, url, path):
         downloader = Downloader()
         path = Path(path)
