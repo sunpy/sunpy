@@ -1447,9 +1447,12 @@ class GenericMap(NDData):
             axes = wcsaxes_compat.gca_wcs(self.wcs)
         if not wcsaxes_compat.is_wcsaxes(axes):
             raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
+        c_kw = {'annotate': False
+                }
+        c_kw.update(kwargs)
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
-                                                           **kwargs)
+                                                           **c_kw)
 
     def draw_limb(self, axes=None, **kwargs):
         """
