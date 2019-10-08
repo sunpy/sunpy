@@ -74,9 +74,9 @@ def sky_position(t='now', equinox_of_date=True):
     return ra, dec
 
 
-# Time in Julian Days of the start of CR1
+# Time in Julian Days (TT) of the start of the first Carrington rotation
 _FIRST_CROT_JD = 2398167.4
-# Length of a carrington rotation in days
+# Length of a Carrington rotation in days
 _CARRINGTON_ROTATION_PERIOD = 27.2753
 
 
@@ -94,13 +94,15 @@ def carrington_rotation_time(crot):
     """
     estimate = (_CARRINGTON_ROTATION_PERIOD * (crot - 1)) + _FIRST_CROT_JD
 
-    # The above estimate is wrong (see comments below in carrington_rotation_number),
-    # so put the estimate into carrington_rotaiton_number to get the fraction correction needed
+    # The above estimate is inaccurate (see comments below in carrington_rotation_number),
+    # so put the estimate into carrington_rotation_number to determine a correction amount
     def refine(estimate):
         crot_estimate = carrington_rotation_number(t=Time(estimate, format='jd'))
         dcrot = crot - crot_estimate
-        # Correct to match the value given by carrington_rotation_number
+        # Correct the estimate using a linear fraction of the Carrington rotation period
         return estimate + (dcrot * _CARRINGTON_ROTATION_PERIOD)
+
+    # Perform two iterations of the correction to achieve sub-second accuracy
     estimate = refine(estimate)
     estimate = refine(estimate)
     return parse_time(estimate, format='jd')
