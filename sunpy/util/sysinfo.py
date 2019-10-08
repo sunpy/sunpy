@@ -4,7 +4,7 @@ This module provides functions to retrieve system information.
 import datetime
 import platform
 
-from distro import linux_distribution
+from sunpy.extern.distro import linux_distribution
 
 __all__ = ['get_sys_dict', 'system_info']
 
