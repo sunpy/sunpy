@@ -1416,7 +1416,7 @@ class GenericMap(NDData):
 # #### Visualization #### #
 
     @u.quantity_input
-    def draw_grid(self, axes=None, annotation=True, grid_spacing: u.deg = 15*u.deg, **kwargs):
+    def draw_grid(self, axes=None, annotation=False, grid_spacing: u.deg = 15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1433,6 +1433,8 @@ class GenericMap(NDData):
             Spacing for longitude and latitude grid, if length two it specifies
             (lon, lat) spacing.
 
+        annotation: to turn off the tick and axes labels
+
         Returns
         -------
         overlay: `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap`
@@ -1441,7 +1443,6 @@ class GenericMap(NDData):
         Notes
         -----
         Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
-        :param annotation:
         """
 
         if not axes:

@@ -113,7 +113,7 @@ def default_wcs_grid(axes):
 
 
 @u.quantity_input
-def wcsaxes_heliographic_overlay(axes, annotate=True, grid_spacing: u.deg = 10*u.deg, **kwargs):
+def wcsaxes_heliographic_overlay(axes, annotate, grid_spacing: u.deg = 10*u.deg, **kwargs):
     """
     Create a heliographic overlay using
     `~astropy.visualization.wcsaxes.WCSAxes`.
@@ -127,6 +127,8 @@ def wcsaxes_heliographic_overlay(axes, annotate=True, grid_spacing: u.deg = 10*u
     grid_spacing: `~astropy.units.Quantity`
         Spacing for longitude and latitude grid in degrees.
 
+    annotate: to turn off the tick and axes labels
+
     Returns
     -------
     `~astropy.visualization.wcsaxes.WCSAxes`
@@ -135,7 +137,6 @@ def wcsaxes_heliographic_overlay(axes, annotate=True, grid_spacing: u.deg = 10*u
     Notes
     -----
     Keywords are passed to `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap.grid`.
-    :param annotate:
     """
     # Unpack spacing
     if isinstance(grid_spacing, u.Quantity) and grid_spacing.size == 1:
@@ -148,8 +149,9 @@ def wcsaxes_heliographic_overlay(axes, annotate=True, grid_spacing: u.deg = 10*u
     # Set the native coordinates to be bottom and left only so they don't share
     # axes with the overlay.
     c1, c2 = axes.coords
-    c1.set_ticks_position('bl')
-    c2.set_ticks_position('bl')
+    if annotate:
+        c1.set_ticks_position('bl')
+        c2.set_ticks_position('bl')
 
     overlay = axes.get_coords_overlay('heliographic_stonyhurst')
 
@@ -170,8 +172,8 @@ def wcsaxes_heliographic_overlay(axes, annotate=True, grid_spacing: u.deg = 10*u
     grid_kw.update(kwargs)
 
     # Don't plot white ticks by default (only if explicitly asked)
-    tick_color = grid_kw['color'] if 'color' in kwargs else 'k'
     if annotate:
+        tick_color = grid_kw['color'] if 'color' in kwargs else 'k'
         lon.set_ticks(spacing=lon_space, color=tick_color)
         lat.set_ticks(spacing=lat_space, color=tick_color)
 
