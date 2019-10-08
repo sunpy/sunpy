@@ -50,6 +50,7 @@ def cache(downloader, storage, mocker):
 def manager(downloader, storage, mocker):
     tempdir = tempfile.mkdtemp()
     manager = DataManager(Cache(downloader, storage, tempdir))
+    manager._tempdir = tempdir
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
     mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)

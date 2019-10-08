@@ -10,10 +10,12 @@ class MockDownloader(DownloaderBase):
 
     def __init__(self):
         self.times_called = 0
+        self.last_called_url = ''
 
     def download(self, url, path):
         write_to_test_file(path, "a")
         self.times_called += 1
+        self.last_called_url = url
         return path
 
 
