@@ -221,16 +221,16 @@ of where the files have been downloaded to.
 
 You can also specify the path to which you want the data downloaded::
 
-  >>> downloaded_files = Fido.fetch(results, path='/ThisIs/MyPath/to/Data/{file}.fits')  # doctest: +SKIP
+  >>> downloaded_files = Fido.fetch(results, path='/ThisIs/MyPath/to/Data/{file}')  # doctest: +SKIP
 
 This downloads the query results into the directory
 ``/ThisIs/MyPath/to/Data``, naming each downloaded file with the
-filename ``{file}`` obtained from the client, and appended with the suffix
-``.fits``. You can also use other properties of the returned query
+filename ``{file}`` obtained from the client.
+You can also use other properties of the returned query
 to define the path where the data is saved.  For example, to save the
 data to a subdirectory named after the instrument, use::
 
-    >>> downloaded_files = Fido.fetch(results, path='./{instrument}/{file}.fits')  # doctest: +SKIP
+    >>> downloaded_files = Fido.fetch(results, path='./{instrument}/{file}')  # doctest: +SKIP
 
 You can see the list of options that can be specified in path for all the files
 to be downloaded with ``results.response_block_properties``.
