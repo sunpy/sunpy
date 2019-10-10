@@ -7,7 +7,9 @@ tags:
 authors:
   - name: Stuart J. Mumford
     orcid: 0000-0003-4217-4642
-    affiliation: "1, 2"
+    affiliation: 
+      - "SP2RC, School of Mathematics and Statistics, The University of Sheffield, UK"
+      - "Aperio Software Ltd., Headingley Enterprise and Arts Centre, Bennett Road, Leeds LS6 3HN"
   - name: Nabil Freij
     orcid: 0000-0002-6253-082X
     affiliation: "Institute for Environmental Analytics, University of Reading, Reading RG6 6BX"
@@ -210,13 +212,11 @@ authors:
   - name: jamescalixto
   - name: yasintoda
 
-affiliations:
- - name: SP2RC, School of Mathematics and Statistics, The University of Sheffield, UK
-   index: 1
- - name: Aperio Software, Leeds, LS6 3HN, UK
-   index: 2
+affiliations: []
 date: 3 October 2019
 bibliography: paper.bib
+aas-doi: "Add DOI HERE"
+aas-journal: "The Astrophysical Journal"
 ---
 
 # Summary
