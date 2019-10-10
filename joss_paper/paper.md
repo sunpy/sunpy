@@ -9,32 +9,57 @@ authors:
     orcid: 0000-0003-4217-4642
     affiliation: "1, 2"
   - name: Nabil Freij
+    orcid: 0000-0002-6253-082X
+    affiliation: "Institute for Environmental Analytics, University of Reading, Reading RG6 6BX"
   - name: Steven Christe
+    orcid: 0000-0001-6127-795X
+    affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Jack Ireland
   - name: Florian Mayer
   - name: Keith Hughitt
   - name: Albert Y. Shih
+    orcid: 0000-0001-6874-2594
+    affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Daniel Ryan
   - name: Simon Liedtke
   - name: David Pérez-Suárez
+    orcid: 0000-0003-0784-6909
+    affiliation: "University College London, Gower Street, London, UK"
   - name: Pritish Chakraborty
   - name: Vishnunarayan K I.
   - name: Andrew Inglis
+    orcid: 0000-0003-0656-2437
+    affiliation: "Catholic University of America / NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Punyaslok Pattnaik
-  - name: Brigitta Sipocz
+  - name: Brigitta Sipőcz
+    orcid: 0000-0002-3713-6337
+    affiliation: "DIRAC Institute, Department of Astronomy, University of Washington, Seattle, WA 98195, USA"
   - name: Rishabh Sharma
   - name: Andrew Leonard
+    orcid: 0000-0001-5270-7487
+    affiliation: "Aperio Software Ltd., Headingley Enterprise and Arts Centre, Bennett Road, Leeds LS6 3HN"
   - name: David Stansby
+    orcid: 0000-0002-1365-1908
+    affiliation: 'Mullard Space Science Laboratory, University College London, Surrey, UK'
   - name: Russell Hewett
   - name: Alex Hamilton
   - name: Laura Hayes
+    orcid: 0000-0002-6835-2390
+    affiliation: 'NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA'
   - name: Asish Panda
   - name: Matt Earnshaw
   - name: Nitin Choudhary
+    orcid : 0000-0001-6915-4583
+    affiliation: 'Department of Mathematics, Indian Institute of Technology, Kharagpur, 721302, India'
   - name: Ankit Kumar
   - name: Prateek Chanda
+    orcid: 0000-0002-7068-2866
+    affiliation: 'Department of Computer Science & Technology, Indian Institute of Engineering Science & Technology, Shibpur, 711103, India'
   - name: Md Akramul Haque
+    affiliation: 'Department of Mechanical Engineering, ZHCET, Aligarh Muslim University, Aligarh, India'
   - name: Michael S Kirk
+    orcid: 0000-0001-9874-1429
+    affiliation: 'Catholic University of America / NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA'
   - name: Michael Mueller
   - name: Sudarshan Konge
   - name: Rajul Srivastava
@@ -42,26 +67,40 @@ authors:
   - name: Samuel Bennett
   - name: Ankit Baruah
   - name: Will Barnes
+    orcid: 0000-0001-9642-6089
+    affiliation: Lockheed Martin Solar and Astrophysics Laboratory / Bay Area Environmental Research Institute
   - name: Michael Charlton
   - name: Cubostar
   - name: Shane Maloney
+    orcid: 0000-0002-4715-1805
+    affiliation: Trinity College Dublin / Dublin Institute for Advanced Studies
   - name: Nicky Chorley
+    orcid: 0000-0002-2747-2716
+    affiliation: Centre for Fusion, Space and Astrophysics, Physics Department, University of Warwick, Coventry CV4 7AL, United Kingdom
   - name: Himanshu
   - name: Sanskar Modi
   - name: James Paul Mason
   - name: Naman9639
   - name: Yash
   - name: Jose Ivan Campos Rozo
+    orcid: 0000-0001-8883-6790
+    affiliation: Institut für Physik/IGAM - Karl-Franzens University of Graz, Austria
   - name: Larry Manley
   - name: Agneet Chatterjee
   - name: John Evans
   - name: Michael Malocha
-  - name: Monica Bobra
+  - name: Monica G. Bobra
+    affiliation: "W.W. Hansen Experimental Physics Laboratory, Stanford University, Stanford, CA 94305, USA"
+    orcid: 0000-0002-5662-9604
   - name: Sourav Ghosh
   - name: Airmansmith97
   - name: Dominik Stańczak
+    affiliation: University of Warsaw
+    orcid: 0000-0001-6291-8843
   - name: Ruben De Visscher
   - name: Shresth Verma
+    orcid:  0000-0003-0370-5471
+    affiliation: "ABV-Indian Institute of Information Technology and Management, Gwalior, MP 474015, India"
   - name: Ankit Agrawal
   - name: Dumindu Buddhika
   - name: Swapnil Sharma
@@ -77,6 +116,8 @@ authors:
   - name: Deepankar Sharma
   - name: Erik M. Bray
   - name: Jai Ram Rideout
+    orcid: 0000-0003-2587-1454
+    affiliation: "Dogfox Software LLC, Flagstaff, AZ 86001, USA"
   - name: Serge Zahniy
   - name: Tomas Meszaros
   - name: Abhigyan Bose
@@ -85,6 +126,8 @@ authors:
   - name: Chloé Guennou
   - name: Daniel D'Avella
   - name: Daniel Williams
+    affiliation: "SUPA, University of Glasgow, Glasgow G12 8QQ, United Kingdom"
+    orcid: 0000-0003-3772-198X
   - name: Jordan Ballew
   - name: Nick Murphy
   - name: Priyank Lodha
@@ -92,45 +135,77 @@ authors:
   - name: Yash Krishan
   - name: Andrew Hill
   - name: Arthur Eigenbrot
+    orcid: 0000-0003-0810-4368
+    affiliation: "National Solar Observatory" 
   - name: Benjamin Mampaey
   - name: Bernhard M. Wiedemann
   - name: Carlos Molina
+    orcid: 0000-0003-0300-4106
   - name: Duygu Keşkek
   - name: Ishtyaq Habib
-  - name: Joe Letts
+  - name: Joseph Letts
+    orcid: 0000-0001-9900-739X
   - name: Juanjo Bazán
+    orcid: 0000-0001-7699-3983
+    affiliation: CIEMAT, Astroparticle physics, Madrid, Spain.
   - name: Quinn Arbolante
+    affiliation: Lockheed Martin Solar and Astrophysics Laboratory
+    orcid: 0000-0003-0260-453X
   - name: Reid Gomillion
   - name: Yash Kothari
   - name: Yash Sharma
-  - name: Abigail Stevens
+  - name: Abigail L. Stevens
+    orcid: 0000-0002-5041-3079
+    affiliation:
+      - 'Department of Physics & Astronomy, Michigan State University, 567 Wilson Road, East Lansing, MI 48824, USA'
+      - 'Department of Astronomy, University of Michigan, 1085 South University Avenue, Ann Arbor, MI 48109, USA'
   - name: Adrian Price-Whelan
+    orcid: 0000-0003-0872-7098
+    affiliation: Center for Computational Astrophysics, Flatiron Institute, 162 Fifth Ave, New York, NY 10010, USA
   - name: Ambar Mehrotra
   - name: Arseniy Kustov
   - name: Brandon Stone
-  - name: Dang Trung Kien
+  - name: Trung Kien Dang
+    orcid: 0000-0001-7562-6495
+    affiliation: Saw Swee Hock School of Public Health, National University Health System, National University of Singapore, Singapore
   - name: Emmanuel Arias
   - name: Fionnlagh Mackenzie Dover
+    orcid: 0000-0002-1984-7303
+    affiliation: "SP2RC, School of Mathematics and Statistics, The University of Sheffield, UK"
   - name: Freek Verstringe
-  - name: Gulshan Mittal
+    affiliation: "Royal Observatory of Belgium"
+  - name: Gulshan Kumar
+    orcid: 0000-0001-8523-7223
+    affiliation: International Institute of Information Technology, Hyderabad
   - name: Harsh Mathur
+    orcid: 0000-0001-5253-4213
+    affiliation: Indian Institute of Astrophysics, Bangalore
   - name: Igor Babuschkin
   - name: Jaylen Wimbish
   - name: Juan Camilo Buitrago-Casas
   - name: Kalpesh Krishna
   - name: Kaustubh Hiware
+    orcid: 0000-0003-3301-1016
+    affiliation: "Indian Institute of Technology, Kharagpur"
   - name: Manas Mangaonkar
   - name: Matthew Mendero
   - name: Mickaël Schoentgen
   - name: Norbert Gyenge
   - name: Ole Streicher
+    orcid: 0000-0001-7751-1843
+    affiliation: Leibniz Institute for Astrophysics Potsdam, Germany
   - name: Rajasekhar Reddy Mekala
   - name: Rishabh Mishra
-  - name: S Shashank
+  - name: Shashank Srikanth
+    affiliation: International Institute of Information Technology, Hyderabad
   - name: Sarthak Jain
   - name: Tannmay Yadav
   - name: Tessa D. Wilkinson
-  - name: Tiago Pereira
+  - name: Tiago M. D. Pereira
+    orcid: 000-0003-4747-4329
+    affiliation: 
+      - "Rosseland Centre for Solar Physics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway"
+      - "Institute of Theoretical Astrophysics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway"
   - name: Yudhik Agrawal
   - name: jamescalixto
   - name: yasintoda
