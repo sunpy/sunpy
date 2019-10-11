@@ -213,6 +213,11 @@ authors:
   - name: Yudhik Agrawal
   - name: jamescalixto
   - name: yasintoda
+  - name: Daniel F. Ryan
+    orcid: 0000-0001-8661-3825
+    affiliation: 
+      - "American University, Washington, DC 20016, USA"
+      - "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
 
 affiliations: []
 date: 3 October 2019
