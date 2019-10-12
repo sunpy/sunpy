@@ -1,6 +1,6 @@
-==================
-Region of Interest
-==================
+===================
+Regions of Interest
+===================
 
 .. warning:: This module is under development.
 
