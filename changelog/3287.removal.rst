@@ -1,0 +1,2 @@
+Removed the step of reparing images (replacing non-finite entries with local mean) before coaligning them. The user is expected to do this themselves before coaligning images. If NaNs/non-finite entries are present, a warning is thrown.
+The function `sunpy.image.coalignment.repair_image_nonfinite` is deprecated.
