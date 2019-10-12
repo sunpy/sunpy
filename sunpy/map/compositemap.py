@@ -1,11 +1,5 @@
-"""A Composite Map class
-
-Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
-"""
+"""A Composite Map class"""
 import numpy as np
-
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 
 import astropy.units as u
 
@@ -15,9 +9,6 @@ from sunpy.visualization import axis_labels_from_ctype, peek_show
 from sunpy.util import expand_list
 
 __all__ = ['CompositeMap']
-
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
 
 
 class CompositeMap:
@@ -398,6 +389,7 @@ class CompositeMap:
         ret : `list`
             List of axes image or quad contour sets that have been plotted.
         """
+        import matplotlib.pyplot as plt
 
         # Get current axes
         if not axes:
@@ -483,6 +475,7 @@ class CompositeMap:
             Matplotlib Any additional imshow arguments that should be used
             when plotting.
         """
+        import matplotlib.pyplot as plt
 
         # Create a figure and add title and axes
         figure = plt.figure(frameon=not basic_plot)

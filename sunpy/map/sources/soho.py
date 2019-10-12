@@ -1,13 +1,8 @@
 """SOHO Map subclass definitions"""
-
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import colors
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, SkyCoord
-from astropy.visualization import PowerStretch
-from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
@@ -50,9 +45,18 @@ class EITMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(
+
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+        from astropy.visualization import PowerStretch
+        from astropy.visualization.mpl_normalize import ImageNormalize
+
+        plot_settings = super()._default_plot_settings()
+        plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
+        plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)))
+
+        return plot_settings
 
     @property
     def detector(self):
@@ -127,9 +131,18 @@ class LASCOMap(GenericMap):
         if 'date_obs' in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
         self._nickname = self.instrument + "-" + self.detector
-        self.plot_settings['cmap'] = plt.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
-        self.plot_settings['norm'] = ImageNormalize(
+
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+        from astropy.visualization import PowerStretch
+        from astropy.visualization.mpl_normalize import ImageNormalize
+
+        plot_settings = super()._default_plot_settings()
+        plot_settings['cmap'] = plt.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
+        plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)))
+
+        return plot_settings
 
     @property
     def measurement(self):
@@ -178,12 +191,20 @@ class MDIMap(GenericMap):
 
         # Fill in some missing or broken info
         self._nickname = self.detector + " " + self.measurement
+
+    def _default_plot_settings(self):
+        from matplotlib import colors
+
+        plot_settings = super()._default_plot_settings()
+
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)
         if abs(vmin) > abs(vmax):
-            self.plot_settings['norm'] = colors.Normalize(-vmin, vmin)
+            plot_settings['norm'] = colors.Normalize(-vmin, vmin)
         else:
-            self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
+            plot_settings['norm'] = colors.Normalize(-vmax, vmax)
+
+        return plot_settings
 
     @property
     def _supported_observer_coordinates(self):

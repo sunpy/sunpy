@@ -2,13 +2,7 @@
 Source type-dependencies.
 
 Helioviewer JPEG2000 files have stretched images compared to the FITS data.
-
 """
-from astropy.visualization import LinearStretch
-# pylint: disable=W0221,W0222,E1121
-
-__author__ = "Jack Ireland"
-__email__ = "jack.ireland@nasa.gov"
 
 __all__ = ['from_helioviewer_project', 'source_stretch']
 
@@ -46,6 +40,8 @@ def source_stretch(meta, fits_stretch):
     -------
     An image stretching function appropriate to the image data source.
     """
+    from astropy.visualization import LinearStretch
+
     if from_helioviewer_project(meta):
         # Helioviewer JPEG2000 files already have a stretched data values, so
         # just use a linear stretch.

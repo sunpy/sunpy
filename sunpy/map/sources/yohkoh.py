@@ -1,18 +1,9 @@
 """Yohkoh SXT Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121
-
-__author__ = "Jack Ireland"
-__email__ = "jack.ireland@nasa.gov"
-
 import numpy as np
-import matplotlib.pyplot as plt
-
-from astropy.visualization import PowerStretch
-from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
-from sunpy.sun import constants
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.sun import constants
 
 __all__ = ['SXTMap']
 
@@ -43,12 +34,10 @@ class SXTMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
-        self.plot_settings['cmap'] = plt.get_cmap(name='yohkohsxt' + self.measurement[0:2].lower())
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
         # 2012/12/19 - the SXT headers do not have a value of the distance from
         # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'
@@ -60,6 +49,18 @@ class SXTMap(GenericMap):
         self.meta['dsun_apparent'] = constants.au
         if 'solar_r' in self.meta:
             self.meta['dsun_apparent'] = constants.radius/(np.deg2rad(self.meta['solar_r']/3600.0))
+
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+
+        from astropy.visualization import PowerStretch
+        from astropy.visualization.mpl_normalize import ImageNormalize
+
+        plot_settings = super()._default_plot_settings()
+        plot_settings['cmap'] = plt.get_cmap(name='yohkohsxt' + self.measurement[0:2].lower())
+        plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
+
+        return plot_settings
 
     @property
     def dsun(self):

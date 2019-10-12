@@ -1,10 +1,8 @@
 """
 This module provides functions to make WCSAxes work in SunPy.
 """
-import matplotlib.pyplot as plt
 
 import astropy.units as u
-from astropy.visualization import wcsaxes
 
 # Force is put here to enable disabling all checks in this module.
 # It should only be used by tests and other such hacks.
@@ -29,6 +27,8 @@ def is_wcsaxes(axes):
     `bool`
         Result of the test.
     """
+    from astropy.visualization import wcsaxes
+
     if not _FORCE_NO_WCSAXES:
         return isinstance(axes, wcsaxes.WCSAxes)
     else:
@@ -56,6 +56,8 @@ def gca_wcs(wcs, fig=None, slices=None):
     `matplotlib.axes.Axes` or `~astropy.visualization.wcsaxes.WCSAxes`
         The current axes, or a new one if created.
     """
+    import matplotlib.pyplot as plt
+
     if not fig:
         fig = plt.gcf()
 

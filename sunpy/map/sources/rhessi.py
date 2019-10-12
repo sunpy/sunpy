@@ -1,11 +1,4 @@
 """RHESSI Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1121
-
-__author__ = "Steven Christe"
-__email__ = "steven.d.christe@nasa.gov"
-
-import matplotlib.pyplot as plt
-
 from sunpy.map import GenericMap
 
 
@@ -42,7 +35,7 @@ class RHESSIMap(GenericMap):
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
         # TODO Currently (8/29/2011), cannot read fits files containing more
@@ -57,7 +50,13 @@ class RHESSIMap(GenericMap):
 
         self.meta['waveunit'] = 'keV'
         self.meta['wavelnth'] = [self.meta['energy_l'], self.meta['energy_h']]
-        self.plot_settings['cmap'] = plt.get_cmap('rhessi')
+
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+
+        plot_settings = super()._default_plot_settings()
+        plot_settings['cmap'] = plt.get_cmap('rhessi')
+        return plot_settings
 
     @property
     def detector(self):

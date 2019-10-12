@@ -1,11 +1,4 @@
 """PROBA2 Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121
-
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
-import matplotlib.pyplot as plt
-
 from sunpy.map import GenericMap
 
 __all__ = ['SWAPMap']
@@ -29,8 +22,7 @@ class SWAPMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         # It needs to be verified that these must actually be set and
         # are not already in the header.
@@ -39,6 +31,11 @@ class SWAPMap(GenericMap):
         self.meta['obsrvtry'] = "PROBA2"
 
         self._nickname = self.detector
+
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+
+        plot_settings = super()._default_plot_settings()
         self.plot_settings['cmap'] = plt.get_cmap(name='sdoaia171')
 
     @classmethod

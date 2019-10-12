@@ -1,14 +1,6 @@
 """STEREO Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1121
-
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
 import numpy as np
-import matplotlib.pyplot as plt
 
-from astropy.visualization import PowerStretch
-from astropy.visualization.mpl_normalize import ImageNormalize
 import astropy.units as u
 
 from sunpy.map import GenericMap
@@ -33,17 +25,25 @@ class EUVIMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = plt.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
         self.meta['waveunit'] = 'Angstrom'
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
+
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+
+        from astropy.visualization import PowerStretch
+        from astropy.visualization.mpl_normalize import ImageNormalize
+
+        plot_settings = super()._default_plot_settings()
+        plot_settings['cmap'] = plt.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
+        plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
+        return plot_settings
 
     @property
     def rsun_arcseconds(self):
@@ -98,17 +98,27 @@ class CORMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = plt.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
+
+
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+
+        from astropy.visualization import PowerStretch
+        from astropy.visualization.mpl_normalize import ImageNormalize
+
+        plot_settings = super()._default_plot_settings()
+        plot_settings['cmap'] = plt.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
+        plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
+
+        return plot_settings
 
     @property
     def measurement(self):
@@ -143,16 +153,26 @@ class HIMap(GenericMap):
     * `HI Instrument Page <http://www.stereo.rl.ac.uk>`_
     """
     def __init__(self, data, header, **kwargs):
+        super().__init__(data, header, **kwargs)
 
-        GenericMap.__init__(self, data, header, **kwargs)
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = plt.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
+
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+
+        from astropy.visualization import PowerStretch
+        from astropy.visualization.mpl_normalize import ImageNormalize
+
+        plot_settings = super()._default_plot_settings()
+        plot_settings['cmap'] = plt.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
+        plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
+
+        return plot_settings
 
     @property
     def measurement(self):

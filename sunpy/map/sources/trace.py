@@ -1,13 +1,4 @@
 """TRACE Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121
-
-__author__ = "Jack Ireland"
-__email__ = "jack.ireland@nasa.gov"
-
-import matplotlib.pyplot as plt
-
-from astropy.visualization import LogStretch
-from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
@@ -52,16 +43,25 @@ class TRACEMap(GenericMap):
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         # It needs to be verified that these must actually be set and are not
         # already in the header.
         self.meta['detector'] = "TRACE"
         self.meta['obsrvtry'] = "TRACE"
         self._nickname = self.detector
-        # Colour maps
-        self.plot_settings['cmap'] = plt.get_cmap('trace' + str(self.meta['WAVE_LEN']))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, LogStretch()))
+
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+
+        from astropy.visualization import LogStretch
+        from astropy.visualization.mpl_normalize import ImageNormalize
+
+        plot_settings = super()._default_plot_settings()
+        plot_settings['cmap'] = plt.get_cmap('trace' + str(self.meta['wave_len']))
+        plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, LogStretch()))
+
+        return plot_settings
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

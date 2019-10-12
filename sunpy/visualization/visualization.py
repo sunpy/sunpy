@@ -3,8 +3,6 @@ This module provides plotting support in iPython.
 """
 from functools import wraps
 
-import matplotlib.pyplot as plt
-
 __all__ = ['peek_show', "axis_labels_from_ctype"]
 
 
@@ -16,8 +14,10 @@ def peek_show(func):
     attempt to show it in the correct way. This decorator will not return the
     figure to the user.
     """
+
     @wraps(func)
     def show_figure(*args, **kwargs):
+        import matplotlib.pyplot as plt
         _ = func(*args, **kwargs)
         plt.show()
 

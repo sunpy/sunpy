@@ -2,37 +2,35 @@
 Map is a generic Map class from which all other Map classes inherit from.
 """
 import copy
+import textwrap
 import warnings
 from collections import namedtuple
-import textwrap
 
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import patches, cm, colors
 
-import astropy.wcs
 import astropy.units as u
-from astropy.visualization import AsymmetricPercentileInterval
-from astropy.visualization.wcsaxes import WCSAxes
+import astropy.wcs
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
+from astropy.nddata import NDData
 
 import sunpy.io as io
-# The next two are not used but are called to register functions with external modules
-import sunpy.coordinates
-import sunpy.cm
 from sunpy import config
-from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype, peek_show
-from sunpy.sun import constants
-from sunpy.coordinates import sun
-from sunpy.time import parse_time, is_time
-from sunpy.image.transform import affine_transform
-from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.coordinates import get_earth, sun
 from sunpy.image.resample import resample as sunpy_image_resample
-from sunpy.coordinates import get_earth
+from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.image.transform import affine_transform
+from sunpy.sun import constants
+from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
-from astropy.nddata import NDData
+# Attempt to import the colormaps to register them, if it doesn't work you
+# probably don't have matplotlib installed so you don't want them anyway.
+try:
+    import sunpy.cm
+except Exception:
+    pass
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
@@ -196,19 +194,41 @@ class GenericMap(NDData):
         self._validate_meta()
         self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
 
+
+        # Visualization attributes
+        self._plot_settings = None
+
+        if plot_settings:
+            self._plot_settings = {**self._default_plot_settings(), **plot_settings}
+
+    def _default_plot_settings(self):
+        from matplotlib import colors, cm
         if self.dtype == np.uint8:
             norm = None
         else:
             norm = colors.Normalize()
 
-        # Visualization attributes
-        self.plot_settings = {'cmap': cm.gray,
-                              'norm': norm,
-                              'interpolation': 'nearest',
-                              'origin': 'lower'
-                              }
-        if plot_settings:
-            self.plot_settings.update(plot_settings)
+        return {'cmap': cm.gray,
+                'norm': norm,
+                'interpolation': 'nearest',
+                'origin': 'lower'}
+
+    @property
+    def plot_settings(self):
+        """
+        A dictionary of settings to control how this map is displayed.
+
+        This dictionary is passed to `matplotlib.axes.Axes.imshow` when
+        plotting as keyword arguments.
+        """
+        if not self._plot_settings:
+            self._plot_settings = self._default_plot_settings()
+
+        return self._plot_settings
+
+    @plot_settings.setter
+    def plot_settings_setter(self, val):
+        self._plot_settings = val
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -317,6 +337,7 @@ class GenericMap(NDData):
         axes. See https://wcsaxes.readthedocs.io for more information.
         """
         # This code is reused from Astropy
+        from astropy.visualization.wcsaxes import WCSAxes
 
         return WCSAxes, {'wcs': self.wcs}
 
@@ -1470,6 +1491,7 @@ class GenericMap(NDData):
         -----
         Keyword arguments are passed onto `matplotlib.patches.Circle`.
         """
+        from matplotlib.patches import Circle
 
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
@@ -1487,7 +1509,7 @@ class GenericMap(NDData):
                 }
         c_kw.update(kwargs)
 
-        circ = patches.Circle([0, 0], **c_kw)
+        circ = Circle([0, 0], **c_kw)
         axes.add_artist(circ)
 
         return [circ]
@@ -1527,6 +1549,7 @@ class GenericMap(NDData):
         `~matplotlib.patches.Rectangle` instance.
 
         """
+        import matplotlib.pyplot as plt
 
         if not axes:
             axes = plt.gca()
@@ -1614,6 +1637,8 @@ class GenericMap(NDData):
             Matplotlib Any additional imshow arguments that should be used
             when plotting.
         """
+        import matplotlib.pyplot as plt
+
         figure = plt.figure()
         axes = wcsaxes_compat.gca_wcs(self.wcs)
 
@@ -1679,6 +1704,9 @@ class GenericMap(NDData):
         >>> aia.draw_grid()   # doctest: +SKIP
 
         """
+        import matplotlib.pyplot as plt
+        from astropy.visualization import AsymmetricPercentileInterval
+
         # Get current axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)

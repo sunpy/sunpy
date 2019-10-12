@@ -1,7 +1,3 @@
-import matplotlib.pyplot as plt
-
-from astropy.visualization.mpl_normalize import ImageNormalize
-from astropy.visualization import PowerStretch
 import astropy.units as u
 
 from sunpy.map import GenericMap
@@ -31,7 +27,6 @@ class KCorMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing info
@@ -43,11 +38,21 @@ class KCorMap(GenericMap):
         self.meta['hgln_obs'] = 0.0
         self._nickname = self.detector
 
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+
+        from astropy.visualization.mpl_normalize import ImageNormalize
+        from astropy.visualization import PowerStretch
+
+        plot_settings = super()._default_plot_settings()
+
+        plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
+        plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
         # Negative value pixels can appear that lead to ugly looking images.
         # This can be fixed by setting the lower limit of the normalization.
-        self.plot_settings['norm'].vmin = 0.0
+        plot_settings['norm'].vmin = 0.0
+
+        return plot_settings
 
     def _get_cmap_name(self):
         """Build the default color map name."""

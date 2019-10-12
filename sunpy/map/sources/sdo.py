@@ -1,20 +1,17 @@
 """SDO Map subclass definitions"""
-
-import matplotlib.pyplot as plt
-
+import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, SkyCoord
+
+from sunpy.map import GenericMap
+from sunpy.map.sources.source_type import source_stretch
+
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
 # with the misleading name HeliocentricTrueEcliptic
 try:
     from astropy.coordinates import HeliocentricMeanEcliptic
 except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
-import astropy.units as u
-from astropy.visualization.mpl_normalize import ImageNormalize
-from astropy.visualization import AsinhStretch
 
-from sunpy.map import GenericMap
-from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['AIAMap', 'HMIMap']
 
@@ -50,13 +47,21 @@ class AIAMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         # Fill in some missing info
         self.meta['detector'] = self.meta.get('detector', "AIA")
         self._nickname = self.detector
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
+
+    def _default_plot_settings(self):
+        import matplotlib.pyplot as plt
+        from astropy.visualization.mpl_normalize import ImageNormalize
+        from astropy.visualization import AsinhStretch
+
+        plot_settings = super()._default_plot_settings()
+        plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
+        plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
+        return plot_settings
 
     @property
     def _supported_observer_coordinates(self):

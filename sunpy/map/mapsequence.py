@@ -1,19 +1,14 @@
 """A Python MapSequence Object"""
-#pylint: disable=W0401,W0614,W0201,W0212,W0404
-
 from copy import deepcopy
 
 import numpy as np
-import matplotlib.animation
 import numpy.ma as ma
 
 import astropy.units as u
 
 from sunpy.map import GenericMap
-from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
-from sunpy.visualization import wcsaxes_compat
-from sunpy.visualization import axis_labels_from_ctype
 from sunpy.util import expand_list
+from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
 
 __all__ = ['MapSequence']
 
@@ -155,6 +150,8 @@ class MapSequence:
         >>> plt.show()   # doctest: +SKIP
 
         """
+        import matplotlib.animation
+
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.maps[0].wcs)
         fig = axes.get_figure()
@@ -286,6 +283,7 @@ class MapSequence:
         >>> ani = sequence.peek(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
         >>> mplani = ani.get_animation()   # doctest: +SKIP
         """
+        from sunpy.visualization.animator import MapSequenceAnimator
 
         if resample:
             if self.all_maps_same_shape():
