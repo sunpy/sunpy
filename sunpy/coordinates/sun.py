@@ -30,6 +30,7 @@ __email__ = "ayshih@gmail.com"
 
 __all__ = [
     "angular_radius", "sky_position", "carrington_rotation_number",
+    "carrington_rotation_time",
     "true_longitude", "apparent_longitude", "true_latitude", "apparent_latitude",
     "mean_obliquity_of_ecliptic", "true_rightascension", "true_declination",
     "true_obliquity_of_ecliptic", "apparent_rightascension", "apparent_declination",
@@ -73,6 +74,40 @@ def sky_position(t='now', equinox_of_date=True):
     return ra, dec
 
 
+# Time in Julian Days (TT) of the start of the first Carrington rotation
+_FIRST_CROT_JD = 2398167.4
+# Length of a Carrington rotation in days
+_CARRINGTON_ROTATION_PERIOD = 27.2753
+
+
+def carrington_rotation_time(crot):
+    """
+    Return the time of a given Carrington rotation.
+
+    The round-trip from this method to `carrington_rotation_number` has
+    absolute errors of < 0.11 seconds.
+
+    Parameters
+    ----------
+    crot : float
+        Carrington rotation number. Can be a fractional cycle number.
+    """
+    estimate = (_CARRINGTON_ROTATION_PERIOD * (crot - 1)) + _FIRST_CROT_JD
+
+    # The above estimate is inaccurate (see comments below in carrington_rotation_number),
+    # so put the estimate into carrington_rotation_number to determine a correction amount
+    def refine(estimate):
+        crot_estimate = carrington_rotation_number(t=Time(estimate, scale='tt', format='jd'))
+        dcrot = crot - crot_estimate
+        # Correct the estimate using a linear fraction of the Carrington rotation period
+        return estimate + (dcrot * _CARRINGTON_ROTATION_PERIOD)
+
+    # Perform two iterations of the correction to achieve sub-second accuracy
+    estimate = refine(estimate)
+    estimate = refine(estimate)
+    return Time(estimate, scale='tt', format='jd')
+
+
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def carrington_rotation_number(t='now'):
     """
@@ -90,7 +125,7 @@ def carrington_rotation_number(t='now'):
     # Estimate the Carrington rotation number by dividing the time that has elapsed since
     # JD 2398167.4 (late in the day on 1853 Nov 9), see Astronomical Algorithms (Meeus 1998, p.191),
     # by the mean synodic period (27.2753 days)
-    estimate = (time.tt.jd - 2398167.4) / 27.2753 + 1
+    estimate = (time.tt.jd - _FIRST_CROT_JD) / _CARRINGTON_ROTATION_PERIOD + 1
     estimate_int, estimate_frac = divmod(estimate, 1)
 
     # The fractional rotation number from the above estimate is inaccurate, so calculate the actual
