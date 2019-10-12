@@ -22,7 +22,11 @@ authors:
   - name: Albert Y. Shih
     orcid: 0000-0001-6874-2594
     affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
-  - name: Daniel Ryan
+  - name: Daniel F. Ryan
+    orcid: 0000-0001-8661-3825
+    affiliation: 
+      - "American University, Washington, DC 20016, USA"
+      - "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Simon Liedtke
   - name: David Pérez-Suárez
     orcid: 0000-0003-0784-6909
@@ -213,6 +217,7 @@ authors:
   - name: Yudhik Agrawal
   - name: jamescalixto
   - name: yasintoda
+
 
 affiliations: []
 date: 3 October 2019
