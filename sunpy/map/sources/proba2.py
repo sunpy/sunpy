@@ -36,7 +36,7 @@ class SWAPMap(GenericMap):
         import matplotlib.pyplot as plt
 
         plot_settings = super()._default_plot_settings()
-        self.plot_settings['cmap'] = plt.get_cmap(name='sdoaia171')
+        plot_settings['cmap'] = plt.get_cmap(name='sdoaia171')
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
