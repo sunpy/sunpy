@@ -207,13 +207,13 @@ class MapFactory(BasicRegistrationFactory):
             elif (isinstance(arg, str) and
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                files = [os.path.join(path, elem) for elem in os.listdir(path)]
+                files = sorted([os.path.join(path, elem) for elem in os.listdir(path)])
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
             elif (isinstance(arg, str) and '*' in arg):
-                files = glob.glob(os.path.expanduser(arg))
+                files = sorted(glob.glob(os.path.expanduser(arg)))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 
