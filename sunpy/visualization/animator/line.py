@@ -89,7 +89,7 @@ class LineAnimator(ArrayAnimator):
                              "for each single plot and at least one for time/iteration.")
         # Define number of slider axes.
         self.naxis = data.ndim
-        self.num_sliders = self.naxis-1
+        self.num_sliders = self.naxis - 1
         # Attach data to class.
         if axis_ranges is not None and all(axis_range is None for axis_range in axis_ranges):
             axis_ranges = None
@@ -126,7 +126,7 @@ class LineAnimator(ArrayAnimator):
         """
         ax.set_xlim(self.xlim)
         ax.set_ylim(self.ylim)
-        ax.set_aspect(self.aspect, adjustable = 'datalim')
+        ax.set_aspect(self.aspect, adjustable='datalim')
         if self.xlabel is not None:
             ax.set_xlabel(self.xlabel)
         if self.ylabel is not None:
@@ -148,8 +148,7 @@ class LineAnimator(ArrayAnimator):
         """
         val = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
-        ind = int(np.argmin(np.abs(self.axis_ranges[ax_ind] - val)))
-        self.frame_slice[ax_ind] = ind
+        self.frame_slice[ax_ind] = val
         if val != slider.cval:
             line.set_ydata(self.data[self.frame_index])
             if self.xdata.shape == self.data.shape:
