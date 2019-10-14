@@ -8,7 +8,7 @@ import mpl_toolkits.axes_grid1.axes_size as Size
 import numpy as np
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-__all__ = ['BaseFuncAnimator', 'ArrayAnimator']
+__all__ = ['BaseFuncAnimator', 'ArrayAnimator', 'ArrayAnimatorWCS']
 
 
 class BaseFuncAnimator:
@@ -590,6 +590,127 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         # Update slider label to reflect real world values in axis_ranges.
         label = self.axis_ranges[ax_ind](ind)
         slider.valtext.set_text(f"{label}")
+
+
+from astropy.wcs.wcsapi import BaseLowLevelWCS, SlicedLowLevelWCS
+
+
+class ArrayAnimatorWCS(ArrayAnimator):
+    """
+    Plot a 1 or 2D slice through a ND array with a WCS.
+    """
+
+    def __init__(self, data, wcs, slices, coord_params=None, **kwargs):
+        if not isinstance(wcs, BaseLowLevelWCS):
+            raise ValueError("A WCS object should be provided that implements the astropy WCS API.")
+        if wcs.pixel_n_dim is not data.ndim:
+            raise ValueError("Dimensionality of the data and WCS object do not match.")
+        if len(slices) != wcs.pixel_n_dim:
+            raise ValueError("slices should be the same length as the number of pixel dimensions.")
+        if "x" not in slices:
+            raise ValueError("slices should contain at least 'x' to indicate the axis to plot on the x axis.")
+
+        self.plot_dimensionality = 1
+
+        image_axes = [slices[::-1].index("x")]
+        if "y" in slices:
+            image_axes.append(slices[::-1].index("y"))
+            self.plot_dimensionality = 2
+
+        self.naxis = data.ndim
+        self.num_sliders = self.naxis - self.plot_dimensionality
+        self.slices_wcsaxes = list(slices)
+        self.wcs = wcs
+        self.coord_params = coord_params
+
+        super().__init__(data, image_axes=image_axes, axis_ranges=None, **kwargs)
+
+
+    def _sanitize_axis_ranges(self, *args):
+        """
+        This overrides the behaviour of ArrayAnimator to generate axis_ranges
+        based on the WCS.
+        """
+
+        def partial_pixel_to_world(pixel_dimension, pixel_coord):
+            wcs_dimension = self.wcs.pixel_n_dim - pixel_dimension - 1
+            corr = self.wcs.axis_correlation_matrix[:, wcs_dimension]
+            # If more than one world axis is linked to this dimension we can't
+            # display the world coordinate because we have no way of picking,
+            # so we just display pixel index.
+            if len(np.nonzero(corr)[0]) != 1:
+                return pixel_coord
+
+            slices = [0] * self.wcs.pixel_n_dim
+            slices[pixel_dimension] = slice(None)
+            # We know only one world axis correlates, so this should always
+            # return one world result.
+            return SlicedLowLevelWCS(self.wcs, slices).pixel_to_world_values(pixel_coord)
+
+
+        axis_ranges = [None] * self.wcs.pixel_n_dim
+        for i in self.slider_axes:
+            axis_ranges[i] = partial(partial_pixel_to_world, i)
+
+        return axis_ranges, None
+
+    def _get_main_axes(self):
+        axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
+                                 slices=self.slices_wcsaxes)
+        return axes
+
+    def plot_start_image(self, ax):
+        if self.plot_dimensionality == 1:
+            return self.plot_start_image_1d(ax)
+
+        elif self.plot_dimensionality == 2:
+            return self.plot_start_image_2d(ax)
+
+    def update_plot(self, val, artist, slider):
+        if self.plot_dimensionality == 1:
+            self.update_plot_1d(val, artist, slider)
+        elif self.plot_dimensionality == 2:
+            self.update_plot_2d(val, artist, slider)
+
+        return super().update_plot(val, artist, slider)
+
+    def plot_start_image_1d(self, ax):
+        ylim = (self.data.min(), self.data.max())
+        ax.set_ylim(ylim)
+        line, = ax.plot(self.data[self.frame_index], **self.imshow_kwargs)
+        return line
+
+    def update_plot_1d(self, val, line, slider):
+        ind = int(val)
+        ax_ind = self.slider_axes[slider.slider_ind]
+        self.frame_slice[ax_ind] = ind
+        print(self.frame_slice)
+        self.slices_wcsaxes[self.wcs.pixel_n_dim - ax_ind - 1] = ind
+
+        if val != slider.cval:
+            self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
+            line.set_ydata(self.data[self.frame_index])
+            slider.cval = val
+
+    def plot_start_image_2d(self, ax):
+        imshow_args = {'interpolation': 'nearest',
+                       'origin': 'lower'}
+        imshow_args.update(self.imshow_kwargs)
+        im = ax.imshow(self.data[self.frame_index], **imshow_args)
+        if self.if_colorbar:
+            self._add_colorbar(im)
+        return im
+
+    def update_plot_2d(self, val, im, slider):
+        ind = int(val)
+        ax_ind = self.slider_axes[slider.slider_ind]
+        self.frame_slice[ax_ind] = ind
+        self.slices_wcsaxes[self.wcs.pixel_n_dim - ax_ind - 1] = ind
+
+        if val != slider.cval:
+            self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
+            im.set_array(self.data[self.frame_index])
+            slider.cval = val
 
 
 def edges_to_centers_nd(axis_range, edges_axis):
