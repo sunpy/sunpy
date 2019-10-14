@@ -600,11 +600,30 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             slider.valtext.set_text(f"{label:10.2f}")
 
 
-
-
 class ArrayAnimatorWCS(ArrayAnimator):
     """
-    Plot a 1 or 2D slice through a ND array with a WCS.
+    Animate an array with associated `~astropy.wcs.wcsapi.BaseLowLevelWCS` object.
+
+    The following keyboard shortcuts are defined in the viewer:
+
+    * 'left': previous step on active slider.
+    * 'right': next step on active slider.
+    * 'top': change the active slider up one.
+    * 'bottom': change the active slider down one.
+    * 'p': play/pause active slider.
+
+    Parameters
+    ----------
+    data: `numpy.ndarray`
+        The data to be visualized.
+    wcs: `astropy.wcs.wcsapi.BaseLowLevelWCS`
+        The world coordinate object associated with the array.
+    slices: `tuple` or `list`
+        A list specifying which axes of the array should be plotted on which
+        axes. The list should be the same length as the number of pixel
+        dimensions with ``'x'`` and (optionally) ``'y'`` in the elements
+        corresponding to the axes to be plotted. If only ``'x'`` is present a
+        line plot will be drawn. All other elements should be `0`.
     """
 
     def __init__(self, data, wcs, slices, coord_params=None, **kwargs):
@@ -632,7 +651,6 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         super().__init__(data, image_axes=image_axes, axis_ranges=None, **kwargs)
 
-
     def _sanitize_axis_ranges(self, *args):
         """
         This overrides the behaviour of ArrayAnimator to generate axis_ranges
@@ -640,8 +658,13 @@ class ArrayAnimatorWCS(ArrayAnimator):
         """
 
         def partial_pixel_to_world(pixel_dimension, pixel_coord):
+            """
+            Return the world coordinate along one axis, if it is only
+            correlated to that axis.
+            """
             wcs_dimension = self.wcs.pixel_n_dim - pixel_dimension - 1
             corr = self.wcs.axis_correlation_matrix[:, wcs_dimension]
+
             # If more than one world axis is linked to this dimension we can't
             # display the world coordinate because we have no way of picking,
             # so we just display pixel index.
@@ -675,6 +698,17 @@ class ArrayAnimatorWCS(ArrayAnimator):
             return self.plot_start_image_2d(ax)
 
     def update_plot(self, val, artist, slider):
+        """
+        Update the plot when a slider changes.
+
+        This method both updates the state of the Animator and also re-draws
+        the matplotlib artist.
+        """
+        ind = int(val)
+        ax_ind = self.slider_axes[slider.slider_ind]
+        self.frame_slice[ax_ind] = ind
+        self.slices_wcsaxes[self.wcs.pixel_n_dim - ax_ind - 1] = ind
+
         if self.plot_dimensionality == 1:
             self.update_plot_1d(val, artist, slider)
         elif self.plot_dimensionality == 2:
@@ -683,40 +717,54 @@ class ArrayAnimatorWCS(ArrayAnimator):
         return super().update_plot(val, artist, slider)
 
     def plot_start_image_1d(self, ax):
+        """
+        Set up a line plot.
+
+        When plotting with WCSAxes, we always plot against pixel coordinate.
+        """
         ylim = (self.data.min(), self.data.max())
         ax.set_ylim(ylim)
         line, = ax.plot(self.data[self.frame_index], **self.imshow_kwargs)
         return line
 
-    def update_plot_1d(self, val, line, slider):
-        ind = int(val)
-        ax_ind = self.slider_axes[slider.slider_ind]
-        self.frame_slice[ax_ind] = ind
-        self.slices_wcsaxes[self.wcs.pixel_n_dim - ax_ind - 1] = ind
+    @property
+    def data_transposed(self):
+        """
+        Return data for 2D plotting, transposed if needed.
+        """
+        if self.slices_wcsaxes.index('y') < self.slices_wcsaxes.index("x"):
+            return self.data[self.frame_index].transpose()
+        else:
+            return self.data[self.frame_index]
 
+    def update_plot_1d(self, val, line, slider):
+        """
+        Update the line plot.
+        """
         if val != slider.cval:
             self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
             line.set_ydata(self.data[self.frame_index])
             slider.cval = val
 
     def plot_start_image_2d(self, ax):
+        """
+        Setup an image plot.
+        """
         imshow_args = {'interpolation': 'nearest',
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
-        im = ax.imshow(self.data[self.frame_index], **imshow_args)
+        im = ax.imshow(self.data_transposed, **imshow_args)
         if self.if_colorbar:
             self._add_colorbar(im)
         return im
 
     def update_plot_2d(self, val, im, slider):
-        ind = int(val)
-        ax_ind = self.slider_axes[slider.slider_ind]
-        self.frame_slice[ax_ind] = ind
-        self.slices_wcsaxes[self.wcs.pixel_n_dim - ax_ind - 1] = ind
-
+        """
+        Update the image plot.
+        """
         if val != slider.cval:
             self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
-            im.set_array(self.data[self.frame_index])
+            im.set_array(self.data_transposed)
             slider.cval = val
 
 
