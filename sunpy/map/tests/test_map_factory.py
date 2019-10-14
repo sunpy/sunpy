@@ -58,12 +58,12 @@ class TestMap:
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
 
         # Glob
-        pattern = pathlib.Path(filepath, "EIT", "*")
-        maps = sunpy.map.Map(os.fspath(pattern))
+        pattern = os.path.join(filepath, "EIT", "*")
+        maps = sunpy.map.Map(pattern)
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
         # Test that returned maps are sorted
-        files_sorted = sorted(list(pattern.parent.glob('*')))
+        files_sorted = sorted(list(pathlib.Path(pattern).parent.glob('*')))
         maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
 
