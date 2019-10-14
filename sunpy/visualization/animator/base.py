@@ -173,8 +173,9 @@ class BaseFuncAnimator:
         Returns
         -------
         `matplotlib.image.AxesImage`
-            An `matplotlib.image.AxesImage` object, the instance returned
-            from `matplotlib.pyplot.imshow`.
+            An `matplotlib.image.AxesImage` object, the instance returned from
+            `matplotlib.pyplot.imshow`, can also return other matplotlib objects
+            which can be updated by the slider functions.
         """
         raise NotImplementedError("Please define this function.")
 
@@ -437,7 +438,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             'slider_ranges': [[0, dim] for dim in np.array(data.shape)[self.slider_axes]]
             }
         base_kwargs.update(kwargs)
-        BaseFuncAnimator.__init__(self, data, **base_kwargs)
+        super().__init__(data, **base_kwargs)
 
     @property
     def frame_index(self):
@@ -480,6 +481,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         * ``[min, max]`` pair where ``min == max``: convert to array indies "min,max" pair or array.
         * array of axis length, check that it was passed for a slider axes and do nothing
           if it was, error if it is not.
+        * For slider axes: a function which maps from pixel to world value.
         """
         ndim = len(data_shape)
         # If no axis range at all make it all [min,max] pairs
@@ -532,12 +534,18 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                     axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
                 else:
                     raise ValueError(incompatible_axis_ranges_error_message(i))
-        # For each axis validate and translate the axis_ranges.
+
+        # For each slider axis validate and translate the axis_ranges.
+        def get_pixel_to_world_callable(array):
+            def pixel_to_world(pixel):
+                return array[pixel]
+            return pixel_to_world
+
         for i in self.slider_axes:
             if axis_ranges[i] is None:
                 # If axis range not supplied, set pixel center values as integers starting at 0.
-                axis_ranges[i] = np.arange(data_shape[i])
-            else:
+                axis_ranges[i] = get_pixel_to_world_callable(np.arange(data_shape[i]))
+            elif not callable(axis_ranges[i]):
                 axis_ranges[i] = np.array(axis_ranges[i])
                 if len(axis_ranges[i]) == 2:
                     # If axis range given as a min, max pair, derive the center of each pixel
@@ -545,17 +553,17 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
 
                     axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
                                                  data_shape[i]+1)
-                    axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
+                    axis_ranges[i] = get_pixel_to_world_callable(edges_to_centers_nd(axis_ranges[i], i))
                 elif axis_ranges[i].ndim == 1 and len(axis_ranges[i]) == data_shape[i]+1:
                     # If axis range given as 1D array of pixel edges (i.e. axis is independent),
                     # derive pixel centers.
 
-                    axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]), 0)
+                    axis_ranges[i] = get_pixel_to_world_callable(edges_to_centers_nd(np.asarray(axis_ranges[i]), 0))
                 elif axis_ranges[i].ndim == ndim and axis_ranges[i].shape[i] == data_shape[i]+1:
                     # If axis range given as array of pixel edges the same shape as
                     # the data array (i.e. axis is not independent), derive pixel centers.
 
-                    axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]), i)
+                    axis_ranges[i] = get_pixel_to_world_callable(edges_to_centers_nd(np.asarray(axis_ranges[i]), i))
                 else:
                     raise ValueError(incompatible_axis_ranges_error_message(i))
 
@@ -580,7 +588,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         ind = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
         # Update slider label to reflect real world values in axis_ranges.
-        label = self.axis_ranges[ax_ind][ind]
+        label = self.axis_ranges[ax_ind](ind)
         slider.valtext.set_text(f"{label}")
 
 
