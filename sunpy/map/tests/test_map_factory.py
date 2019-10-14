@@ -49,14 +49,24 @@ class TestMap:
         assert isinstance(eitmap, sunpy.map.GenericMap)
 
         # Directory
-        maps = sunpy.map.Map(os.path.join(filepath, "EIT"))
+        directory = os.path.join(filepath, "EIT")
+        maps = sunpy.map.Map(directory)
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+        # Test that returned maps are sorted
+        files_sorted = sorted([os.path.join(directory, f) for f in os.listdir(directory)])
+        maps_sorted = [sunpy.map.Map(f) for f in files_sorted]
+        assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
 
         # Glob
-        maps = sunpy.map.Map(os.path.join(filepath, "EIT", "*"))
+        pattern = os.path.join(filepath, "EIT", "*")
+        maps = sunpy.map.Map(pattern)
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+        # Test that returned maps are sorted
+        files_sorted = sorted(glob.glob(pattern))
+        maps_sorted = [sunpy.map.Map(f) for f in files_sorted]
+        assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
 
         # Already a Map
         amap = sunpy.map.Map(maps[0])
