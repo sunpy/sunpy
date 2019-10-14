@@ -1,7 +1,7 @@
 import os
-import glob
 from collections import OrderedDict
 import warnings
+import pathlib
 
 import numpy as np
 import astropy.io.fits
@@ -124,7 +124,7 @@ class MapFactory(BasicRegistrationFactory):
 
         # File gets read here.  This needs to be generic enough to seamlessly
         # call a fits file or a jpeg2k file, etc
-        pairs = read_file(fname, **kwargs)
+        pairs = read_file(os.fspath(fname), **kwargs)
 
         new_pairs = []
         for pair in pairs:
@@ -197,23 +197,22 @@ class MapFactory(BasicRegistrationFactory):
                     i += 1    # an extra increment to account for the data-header pairing
 
             # File name
-            elif (isinstance(arg, str) and
-                  os.path.isfile(os.path.expanduser(arg))):
-                path = os.path.expanduser(arg)
+            elif (isinstance(arg, str) and pathlib.Path(arg).expanduser().is_file()):
+                path = pathlib.Path(arg).expanduser()
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
-            elif (isinstance(arg, str) and
-                  os.path.isdir(os.path.expanduser(arg))):
-                path = os.path.expanduser(arg)
-                files = sorted([os.path.join(path, elem) for elem in os.listdir(path)])
+            elif (isinstance(arg, str) and pathlib.Path(arg).expanduser().is_dir()):
+                path = pathlib.Path(arg).expanduser()
+                files = sorted(list(path.glob('*')))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
             elif (isinstance(arg, str) and '*' in arg):
-                files = sorted(glob.glob(os.path.expanduser(arg)))
+                path = pathlib.Path(arg).expanduser().parent
+                files = sorted(list(path.glob('*')))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 

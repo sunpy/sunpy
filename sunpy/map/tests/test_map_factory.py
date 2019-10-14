@@ -5,8 +5,8 @@ Created on Fri Jun 21 15:05:09 2013
 @author: stuart
 """
 import os
-import glob
 import tempfile
+import pathlib
 
 import pytest
 import numpy as np
@@ -19,7 +19,7 @@ import sunpy.data.test
 
 
 filepath = sunpy.data.test.rootdir
-a_list_of_many = glob.glob(os.path.join(filepath, "EIT", "*"))
+a_list_of_many = [os.fspath(f) for f in pathlib.Path(filepath, "EIT").glob("*")]
 a_fname = a_list_of_many[0]
 
 AIA_171_IMAGE = os.path.join(filepath, 'aia_171_level1.fits')
@@ -48,23 +48,23 @@ class TestMap:
         assert isinstance(eitmap, sunpy.map.GenericMap)
 
         # Directory
-        directory = os.path.join(filepath, "EIT")
-        maps = sunpy.map.Map(directory)
+        directory = pathlib.Path(filepath, "EIT")
+        maps = sunpy.map.Map(os.fspath(directory))
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
         # Test that returned maps are sorted
-        files_sorted = sorted([os.path.join(directory, f) for f in os.listdir(directory)])
-        maps_sorted = [sunpy.map.Map(f) for f in files_sorted]
+        files_sorted = sorted(list(directory.glob('*')))
+        maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
 
         # Glob
-        pattern = os.path.join(filepath, "EIT", "*")
-        maps = sunpy.map.Map(pattern)
+        pattern = pathlib.Path(filepath, "EIT", "*")
+        maps = sunpy.map.Map(os.fspath(pattern))
         assert isinstance(maps, list)
         assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
         # Test that returned maps are sorted
-        files_sorted = sorted(glob.glob(pattern))
-        maps_sorted = [sunpy.map.Map(f) for f in files_sorted]
+        files_sorted = sorted(list(pattern.parent.glob('*')))
+        maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
 
         # Already a Map
