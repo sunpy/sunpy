@@ -8,6 +8,9 @@ import mpl_toolkits.axes_grid1.axes_size as Size
 import numpy as np
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+import astropy.units as u
+from astropy.wcs.wcsapi import BaseLowLevelWCS, SlicedLowLevelWCS
+
 __all__ = ['BaseFuncAnimator', 'ArrayAnimator', 'ArrayAnimatorWCS']
 
 
@@ -589,10 +592,14 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         ax_ind = self.slider_axes[slider.slider_ind]
         # Update slider label to reflect real world values in axis_ranges.
         label = self.axis_ranges[ax_ind](ind)
-        slider.valtext.set_text(f"{label}")
+        if isinstance(label, u.Quantity):
+            slider.valtext.set_text(label.to_string(precision=5,
+                                                    format='latex',
+                                                    subfmt='inline'))
+        else:
+            slider.valtext.set_text(f"{label:10.2f}")
 
 
-from astropy.wcs.wcsapi import BaseLowLevelWCS, SlicedLowLevelWCS
 
 
 class ArrayAnimatorWCS(ArrayAnimator):
@@ -645,7 +652,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
             slices[pixel_dimension] = slice(None)
             # We know only one world axis correlates, so this should always
             # return one world result.
-            return SlicedLowLevelWCS(self.wcs, slices).pixel_to_world_values(pixel_coord)
+            wc = SlicedLowLevelWCS(self.wcs, slices).pixel_to_world_values(pixel_coord)
+            return u.Quantity(wc, unit=self.wcs.world_axis_units[wcs_dimension])
 
 
         axis_ranges = [None] * self.wcs.pixel_n_dim
@@ -684,7 +692,6 @@ class ArrayAnimatorWCS(ArrayAnimator):
         ind = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
         self.frame_slice[ax_ind] = ind
-        print(self.frame_slice)
         self.slices_wcsaxes[self.wcs.pixel_n_dim - ax_ind - 1] = ind
 
         if val != slider.cval:
