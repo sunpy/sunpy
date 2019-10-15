@@ -3,6 +3,7 @@ import matplotlib as mpl
 from astropy.wcs.wcsapi import BaseLowLevelWCS
 
 from sunpy.visualization.animator.base import ArrayAnimator
+from sunpy.util.decorators import deprecated
 
 __all__ = ['ImageAnimator', 'ImageAnimatorWCS']
 
@@ -119,6 +120,7 @@ class ImageAnimator(ArrayAnimator):
         super().update_plot(val, im, slider)
 
 
+@deprecated("1.1", alternative="sunpy.visualization.animator.ArrayAnimatorWCS")
 class ImageAnimatorWCS(ImageAnimator):
     """
     Animates N-dimensional data with an associated World Coordinate System.
