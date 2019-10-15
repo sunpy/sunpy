@@ -9,7 +9,7 @@ import numpy as np
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import astropy.units as u
-from astropy.wcs.wcsapi import BaseLowLevelWCS, SlicedLowLevelWCS
+from astropy.wcs.wcsapi import BaseLowLevelWCS
 
 __all__ = ['BaseFuncAnimator', 'ArrayAnimator', 'ArrayAnimatorWCS']
 
@@ -593,9 +593,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         # Update slider label to reflect real world values in axis_ranges.
         label = self.axis_ranges[ax_ind](ind)
         if isinstance(label, u.Quantity):
-            slider.valtext.set_text(label.to_string(precision=5,
-                                                    format='latex',
-                                                    subfmt='inline'))
+            slider.valtext.set_text(format_quantity_as_string(label))
         else:
             slider.valtext.set_text(f"{label:10.2f}")
 
@@ -699,11 +697,11 @@ class ArrayAnimatorWCS(ArrayAnimator):
             if len(np.nonzero(corr)[0]) != 1:
                 return pixel_coord
 
-            slices = [0] * self.wcs.pixel_n_dim
-            slices[pixel_dimension] = slice(None)
-            # We know only one world axis correlates, so this should always
-            # return one world result.
-            wc = SlicedLowLevelWCS(self.wcs, slices).pixel_to_world_values(pixel_coord)
+            # We know that the coordinate we care about is independent of the
+            # other axes, so we can set the pixel coordinates to 0.
+            coords = [0] * self.wcs.pixel_n_dim
+            coords[wcs_dimension] = pixel_coord
+            wc = self.wcs.pixel_to_world_values(*coords)[wcs_dimension]
             return u.Quantity(wc, unit=self.wcs.world_axis_units[wcs_dimension])
 
 
@@ -851,3 +849,16 @@ def edges_to_centers_nd(axis_range, edges_axis):
     lower_edges = axis_range[tuple(lower_edge_indices)]
 
     return (upper_edges - lower_edges) / 2 + lower_edges
+
+
+def format_quantity_as_string(quantity):
+    """
+    An Astropy 3.1 compatibility wrapper for Quantity.to_string.
+    """
+    to_string = getattr(quantity, "to_string", None)
+    if not to_string:
+        return quantity._repr_latex_()
+    else:
+        return quantity.to_string(precision=5,
+                                  format='latex',
+                                  subfmt='inline')
