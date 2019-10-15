@@ -29,7 +29,7 @@ from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compa
 # probably don't have matplotlib installed so you don't want them anyway.
 try:
     import sunpy.cm
-except Exception:
+except ImportError:
     pass
 
 TIME_FORMAT = config.get("general", "time_format")
