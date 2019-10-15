@@ -165,8 +165,8 @@ def test_sanitize_axis_ranges(axis_ranges, exp_extent, exp_axis_ranges):
     out_axis_ranges, out_extent = aanim._sanitize_axis_ranges(axis_ranges=axis_ranges,
                                                               data_shape=data_shape)
     assert exp_extent == out_extent
-    assert np.array_equal(exp_axis_ranges[0], out_axis_ranges[0])
     assert np.array_equal(exp_axis_ranges[1], out_axis_ranges[1])
+    assert callable(out_axis_ranges[0])
 
 
 xdata = np.tile(np.linspace(0, 100, 11), (5, 5, 1))
