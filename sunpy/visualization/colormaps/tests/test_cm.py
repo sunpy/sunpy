@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-import sunpy.cm as cm
+import sunpy.visualization.colormaps as cm
 
 
 # Checks that colormaps are imported by MPL

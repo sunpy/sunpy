@@ -8,7 +8,6 @@ Code Reference
    :maxdepth: 2
 
    sunpy
-   cm
    coordinates
    data
    database

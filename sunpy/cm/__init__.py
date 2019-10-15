@@ -1,7 +1,9 @@
-"""
-The following colormaps are provided by this module:
-"""
-from sunpy.cm.cm import *  # noqa
+from sunpy.util.decorators import deprecated as _d
 
-for cmname in cmlist.keys():  # noqa
-    __doc__ += f"\n* '`~sunpy.cm.cm.{cmname}`'\n"
+_d("1.1",
+   "The sunpy.cm module has been moved.",
+   alternative="sunpy.visualization.colormaps")
+
+from sunpy.visualization.colormaps import cm
+from sunpy.visualization.colormaps import color_tables
+from sunpy.visualization.colormaps.cm import *
