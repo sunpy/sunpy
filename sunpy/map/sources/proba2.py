@@ -38,6 +38,8 @@ class SWAPMap(GenericMap):
         plot_settings = super()._default_plot_settings()
         plot_settings['cmap'] = plt.get_cmap(name='sdoaia171')
 
+        return plot_settings
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an SWAP image"""

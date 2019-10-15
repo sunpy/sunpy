@@ -106,7 +106,7 @@ class HMIMap(GenericMap):
     """
     def __init__(self, data, header, **kwargs):
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self.meta['detector'] = self.meta.get('detector', "HMI")
         self._nickname = self.detector
