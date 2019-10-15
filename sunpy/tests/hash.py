@@ -4,7 +4,6 @@ import json
 import hashlib
 from sys import version_info
 
-import matplotlib.pyplot as plt
 
 __all__ = ["hash_figure", "verify_figure_hash"]
 
@@ -36,6 +35,7 @@ def hash_figure(figure=None, out_stream=None):
     `str`
         The SHA256 hash in hexadecimal representation.
     """
+    import matplotlib.pyplot as plt
 
     if figure is None:
         figure = plt.gcf()

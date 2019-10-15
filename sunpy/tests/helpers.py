@@ -5,9 +5,7 @@ import warnings
 import pkg_resources
 from functools import wraps
 
-import matplotlib.pyplot as plt
 import pytest
-from matplotlib.testing import compare
 
 from sunpy.tests import hash
 
@@ -76,6 +74,8 @@ def figure_test(test_function):
     def test_simple_plot():
         plt.plot([0,1])
     """
+    import matplotlib.pyplot as plt
+
     @pytest.mark.figure
     @wraps(test_function)
     def wrapper(*args, **kwargs):
@@ -179,6 +179,8 @@ table, th, td {
 
 
 def _generate_fig_html(fname):
+    from matplotlib.testing import compare
+
     generated_image = figure_base_dir / (fname + '.png')
 
     # Download baseline image
