@@ -373,8 +373,8 @@ SunPy provides the colormaps for each mission as defined by the mission teams.
 The Map object chooses the appropriate colormap for you when it is created as
 long as it recognizes the instrument. To see what colormaps are available::
 
-    >>> import sunpy.cm
-    >>> sunpy.cm.cmlist.keys()
+    >>> import sunpy.visualization.colormaps as cm
+    >>> cm.cmlist.keys()
     dict_keys(['goes-rsuvi94', 'goes-rsuvi131', 'goes-rsuvi171', 'goes-rsuvi195',
     'goes-rsuvi284', 'goes-rsuvi304', 'sdoaia94', 'sdoaia131', 'sdoaia171',
     'sdoaia193', 'sdoaia211', 'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700',
@@ -390,9 +390,9 @@ The SunPy colormaps are registered with matplotlib so you can grab them like
 you would any other colormap::
 
     >>> import matplotlib.pyplot as plt
-    >>> import sunpy.cm
+    >>> import sunpy.visualization.colormaps
 
-You need to import sunpy.cm or sunpy.map for this to work::
+You need to import `sunpy.visualization.colormaps` or `sunpy.map` for this to work::
 
     >>> cmap = plt.get_cmap('sdoaia171')
 
@@ -402,8 +402,8 @@ The following plot shows off all of the colormaps.
 .. plot::
 
     import matplotlib.pyplot as plt
-    import sunpy.cm
-    sunpy.cm.show_colormaps()
+    import sunpy.visualization.colormaps as cm
+    cm.show_colormaps()
 
 These can be used with the standard commands to change the colormap. So for
 example if you wanted to plot an AIA image but use an EIT colormap, you would

@@ -25,7 +25,7 @@ aiamap.plot_settings['cmap'] = plt.get_cmap('Greys_r')
 aiamap.plot_settings['norm'] = colors.LogNorm(100, aiamap.max())
 
 ###############################################################################
-# To see all of the colormaps SunPy provides see `sunpy.cm`.
+# To see all of the colormaps SunPy provides see `sunpy.visualization.colormaps`.
 # Matplotlib provides a number of `colormaps <https://matplotlib.org/examples/color/colormaps_reference.html>`_
 # and `normalizations <https://matplotlib.org/users/colormapnorms.html>`_.
 # For more advanced normalizations see `astropy.visualization`.

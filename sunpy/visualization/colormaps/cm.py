@@ -7,7 +7,7 @@ import matplotlib.cm as mplcm
 import matplotlib.pyplot as plt
 import numpy as np
 
-from sunpy.cm import color_tables as ct
+from sunpy.visualization.colormaps import color_tables as ct
 
 __all__ = ['show_colormaps', 'cmlist']
 
