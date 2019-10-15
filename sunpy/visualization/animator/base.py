@@ -624,9 +624,29 @@ class ArrayAnimatorWCS(ArrayAnimator):
         dimensions with ``'x'`` and (optionally) ``'y'`` in the elements
         corresponding to the axes to be plotted. If only ``'x'`` is present a
         line plot will be drawn. All other elements should be `0`.
+    coord_params: `dict`, optional
+        This dict allows you to override
+        `~astropy.visualization.wcsaxes.WCSAxes` parameters for each world
+        coordinate. The keys of this dictionary should be a value which can be
+        looked up in ``WCSAxes.coords`` (i.e. ``em.wl`` or ``hpln``) and the
+        values should be a dict which supports the following keys, and passes
+        their values to the associated `~astropy.visualization.wcsaxes.WCSAxes`
+        methods.
+
+        * ``format_unit``: `~astropy.visualization.wcsaxes.CoordinateHelper.set_format_unit`
+        * ``major_formatter``: `~astropy.visualization.wcsaxes.CoordinateHelper.set_major_formatter`
+        * ``axislabel``: `~astropy.visualization.wcsaxes.CoordinateHelper.set_axislabel`
+        * ``grid``: `~astropy.visualization.wcsaxes.CoordinateHelper.grid` (The value should be a dict of keyword arguments to ``grid()`` or `True`).
+    ylim: `tuple` or `None`, optional
+       The yaxis limits to use when drawing a line plot, if not specified
+       defaults to the data limits.
+    ylabel: `string`, optional
+       The yaxis label to use when drawing a line plot. Setting the label on
+       the y-axis on an image plot should be done via ``coord_params``.
+
     """
 
-    def __init__(self, data, wcs, slices, coord_params=None, **kwargs):
+    def __init__(self, data, wcs, slices, coord_params=None, ylim=None, ylabel=None, **kwargs):
         if not isinstance(wcs, BaseLowLevelWCS):
             raise ValueError("A WCS object should be provided that implements the astropy WCS API.")
         if wcs.pixel_n_dim is not data.ndim:
@@ -643,11 +663,19 @@ class ArrayAnimatorWCS(ArrayAnimator):
             image_axes.append(slices[::-1].index("y"))
             self.plot_dimensionality = 2
 
+        if self.plot_dimensionality == 1:
+            try:
+                from astropy.visualization.wcsaxes.frame import RectangularFrame1D
+            except ImportError as e:
+                raise ImportError("Astropy 4.0 must be installed to do line plotting with WCSAxes.") from e
+
         self.naxis = data.ndim
         self.num_sliders = self.naxis - self.plot_dimensionality
         self.slices_wcsaxes = list(slices)
         self.wcs = wcs
         self.coord_params = coord_params
+        self.ylim = ylim
+        self.ylabel = ylabel
 
         super().__init__(data, image_axes=image_axes, axis_ranges=None, **kwargs)
 
@@ -685,6 +713,34 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         return axis_ranges, None
 
+
+    def _apply_coord_params(self):
+        if self.coord_params is None:
+            return
+
+        for coord_name in self.coord_params:
+            coord = self.axes.coords[coord_name]
+            params = self.coord_params[coord_name]
+
+            format_unit = params.get("format_unit", None)
+            if format_unit:
+                coord.set_format_unit(format_unit)
+
+            major_formatter = params.get("major_formatter", None)
+            if major_formatter:
+                coord.set_major_formatter(major_formatter)
+
+            axislabel = params.get("axislabel", None)
+            if axislabel:
+                coord.set_axislabel(axislabel)
+
+            grid = params.get("grid", None)
+            if grid is not None:
+                if not isinstance(grid, dict):
+                    grid = {}
+                coord.grid(**grid)
+
+
     def _get_main_axes(self):
         axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
                                  slices=self.slices_wcsaxes)
@@ -692,10 +748,14 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
     def plot_start_image(self, ax):
         if self.plot_dimensionality == 1:
-            return self.plot_start_image_1d(ax)
+            artist = self.plot_start_image_1d(ax)
 
         elif self.plot_dimensionality == 2:
-            return self.plot_start_image_2d(ax)
+            artist = self.plot_start_image_2d(ax)
+
+        self._apply_coord_params()
+
+        return artist
 
     def update_plot(self, val, artist, slider):
         """
@@ -714,6 +774,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         elif self.plot_dimensionality == 2:
             self.update_plot_2d(val, artist, slider)
 
+        self._apply_coord_params()
         return super().update_plot(val, artist, slider)
 
     def plot_start_image_1d(self, ax):
@@ -722,8 +783,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         When plotting with WCSAxes, we always plot against pixel coordinate.
         """
-        ylim = (self.data.min(), self.data.max())
+        ylim = self.ylim or (self.data.min(), self.data.max())
         ax.set_ylim(ylim)
+        if self.ylabel:
+            ax.set_ylabel(self.ylabel)
         line, = ax.plot(self.data[self.frame_index], **self.imshow_kwargs)
         return line
 
