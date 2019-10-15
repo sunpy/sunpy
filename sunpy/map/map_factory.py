@@ -2,6 +2,7 @@ import os
 from collections import OrderedDict
 import warnings
 import pathlib
+import glob
 
 import numpy as np
 import astropy.io.fits
@@ -211,8 +212,7 @@ class MapFactory(BasicRegistrationFactory):
 
             # Glob
             elif (isinstance(arg, str) and '*' in arg):
-                path = pathlib.Path(arg).expanduser().parent
-                files = sorted(list(path.glob('*')))
+                files = sorted(glob.glob(arg))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 
