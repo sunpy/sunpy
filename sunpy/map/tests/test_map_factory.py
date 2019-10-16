@@ -57,6 +57,14 @@ class TestMap:
         maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
 
+        # Pathlib
+        path = pathlib.Path(a_fname)
+        eitmap = sunpy.map.Map(path)
+        assert isinstance(eitmap, sunpy.map.GenericMap)
+        maps = sunpy.map.Map(directory)
+        assert isinstance(maps, list)
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+
         # Glob
         pattern = os.path.join(filepath, "EIT", "*")
         maps = sunpy.map.Map(pattern)
