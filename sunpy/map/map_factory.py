@@ -125,6 +125,8 @@ class MapFactory(BasicRegistrationFactory):
 
         # File gets read here.  This needs to be generic enough to seamlessly
         # call a fits file or a jpeg2k file, etc
+        # NOTE: use os.fspath so that fname can be either a str or pathlib.Path
+        # This can be removed once read_file supports pathlib.Path
         pairs = read_file(os.fspath(fname), **kwargs)
 
         new_pairs = []
@@ -210,7 +212,7 @@ class MapFactory(BasicRegistrationFactory):
                     raise ValueError(f'{path} is neither a file nor a directory')
 
             # Glob
-            elif isinstance(arg, str) and len(glob.glob(arg)) >= 1:
+            elif isinstance(arg, str) and len(glob.glob(arg)):
                 for afile in sorted(glob.glob(arg)):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
