@@ -39,7 +39,10 @@ class SWAPMap(GenericMap):
         self.meta['obsrvtry'] = "PROBA2"
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = plt.get_cmap(name='sdoaia171')
+
+    @property
+    def cmap(self):
+        return plt.get_cmap(name='sdoaia171')
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

@@ -197,18 +197,14 @@ class GenericMap(NDData):
         self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
 
         if self.dtype == np.uint8:
-            norm = None
+            self.norm = None
         else:
-            norm = colors.Normalize()
+            self.norm = colors.Normalize()
 
-        # Visualization attributes
-        self.plot_settings = {'cmap': cm.gray,
-                              'norm': norm,
-                              'interpolation': 'nearest',
-                              'origin': 'lower'
-                              }
+        self.cmap = cm.gray
+
         if plot_settings:
-            self.plot_settings.update(plot_settings)
+            self.plot_settings = plot_settings
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -1414,6 +1410,44 @@ class GenericMap(NDData):
         return new_map
 
 # #### Visualization #### #
+    @property
+    def cmap(self):
+        """
+        Colormap used for plotting the map.
+        """
+        return self._cmap
+
+    @cmap.setter
+    def cmap_set(self, cmap):
+        self._cmap = cmap
+
+    @property
+    def norm(self):
+        """
+        Normalisation to use for plotting the map.
+        """
+        return self._norm
+
+    @norm.setter
+    def norm_set(self, norm):
+        self._norm = norm
+
+    @property
+    def plot_settings(self):
+        """
+        Plot settings given to imshow.
+        """
+        return {'cmap': self.cmap,
+                'norm': self.norm,
+                'interpolation': 'nearest',
+                'origin': 'lower'}
+
+    @plot_settings.setter
+    def plot_settings_set(self, plot_settings):
+        if 'cmap' in plot_settings:
+            self.cmap = plot_settings['cmap']
+        if 'norm' in plot_settings:
+            self.norm = plot_settings['norm']
 
     @u.quantity_input
     def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):

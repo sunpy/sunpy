@@ -50,8 +50,14 @@ class EITMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(
+
+    @property
+    def cmap(self):
+        return plt.get_cmap(self._get_cmap_name())
+
+    @property
+    def norm(self):
+        return self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
     @property

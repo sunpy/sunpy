@@ -60,6 +60,10 @@ class RHESSIMap(GenericMap):
         self.plot_settings['cmap'] = plt.get_cmap('rhessi')
 
     @property
+    def cmap(self):
+        return plt.get_cmap('rhessi')
+
+    @property
     def detector(self):
         """
         Returns the name of the detector

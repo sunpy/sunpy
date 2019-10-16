@@ -47,9 +47,6 @@ class SXTMap(GenericMap):
 
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
-        self.plot_settings['cmap'] = plt.get_cmap(name='yohkohsxt' + self.measurement[0:2].lower())
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
-
         # 2012/12/19 - the SXT headers do not have a value of the distance from
         # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'
         # appears to refer to the observed diameter of the Sun.  Until such
@@ -60,6 +57,14 @@ class SXTMap(GenericMap):
         self.meta['dsun_apparent'] = constants.au
         if 'solar_r' in self.meta:
             self.meta['dsun_apparent'] = constants.radius/(np.deg2rad(self.meta['solar_r']/3600.0))
+
+    @property
+    def cmap(self):
+        return plt.get_cmap(name='yohkohsxt' + self.measurement[0:2].lower())
+
+    @property
+    def norm(self):
+        return ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
     @property
     def dsun(self):

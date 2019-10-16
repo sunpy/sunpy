@@ -43,11 +43,17 @@ class KCorMap(GenericMap):
         self.meta['hgln_obs'] = 0.0
         self._nickname = self.detector
 
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
+    @property
+    def cmap(self):
+        return plt.get_cmap(self._get_cmap_name())
+
+    @property
+    def norm(self):
+        norm = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
         # Negative value pixels can appear that lead to ugly looking images.
         # This can be fixed by setting the lower limit of the normalization.
-        self.plot_settings['norm'].vmin = 0.0
+        norm.vmin = 0.0
+        return norm
 
     def _get_cmap_name(self):
         """Build the default color map name."""

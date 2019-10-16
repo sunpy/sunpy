@@ -59,9 +59,14 @@ class TRACEMap(GenericMap):
         self.meta['detector'] = "TRACE"
         self.meta['obsrvtry'] = "TRACE"
         self._nickname = self.detector
-        # Colour maps
-        self.plot_settings['cmap'] = plt.get_cmap('trace' + str(self.meta['WAVE_LEN']))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, LogStretch()))
+
+    @property
+    def cmap(self):
+        return plt.get_cmap('trace' + str(self.meta['WAVE_LEN']))
+
+    @property
+    def norm(self):
+        return ImageNormalize(stretch=source_stretch(self.meta, LogStretch()))
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
