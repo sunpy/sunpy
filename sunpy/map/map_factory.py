@@ -197,32 +197,29 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs.append(pair)
                     i += 1    # an extra increment to account for the data-header pairing
 
-            # File name
-            elif (isinstance(arg, str) and pathlib.Path(arg).expanduser().is_file()):
+            # File system path (file or directory)
+            elif _is_path(arg):
                 path = pathlib.Path(arg).expanduser()
-                pairs = self._read_file(path, **kwargs)
-                data_header_pairs += pairs
-
-            # Directory
-            elif (isinstance(arg, str) and pathlib.Path(arg).expanduser().is_dir()):
-                path = pathlib.Path(arg).expanduser()
-                files = sorted(list(path.glob('*')))
-                for afile in files:
-                    data_header_pairs += self._read_file(afile, **kwargs)
+                if path.is_file():
+                    pairs = self._read_file(path, **kwargs)
+                    data_header_pairs += pairs
+                elif path.is_dir():
+                    for afile in sorted(path.glob('*')):
+                        data_header_pairs += self._read_file(afile, **kwargs)
+                else:
+                    raise ValueError(f'{path} is neither a file nor a directory')
 
             # Glob
-            elif (isinstance(arg, str) and '*' in arg):
-                files = sorted(glob.glob(arg))
-                for afile in files:
+            elif isinstance(arg, str) and len(glob.glob(arg)) >= 1:
+                for afile in sorted(glob.glob(arg)):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Already a Map
             elif isinstance(arg, GenericMap):
                 already_maps.append(arg)
 
-            # A URL
-            elif (isinstance(arg, str) and
-                  _is_url(arg)):
+            # URL
+            elif isinstance(arg, str) and _is_url(arg):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
                 pairs = self._read_file(path, **kwargs)
@@ -344,6 +341,15 @@ def _is_url(arg):
     except Exception:
         return False
     return True
+
+
+def _is_path(arg):
+    try:
+        is_path = pathlib.Path(arg).expanduser().exists()
+    except Exception:
+        return False
+    else:
+        return is_path
 
 
 class InvalidMapInput(ValueError):
