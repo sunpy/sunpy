@@ -478,9 +478,10 @@ very easily when initializing the normalization variable. For example::
 This clips out many of the brightest pixels. If you'd like to see what areas of
 your images got clipped set the following values::
 
-    >>> cmap = cmap.plot_settings['cmap']  # doctest: +SKIP
+    >>> cmap = map.cmap  # doctest: +SKIP
     >>> cmap.set_over('red', 1.0)  # doctest: +SKIP
     >>> cmap.set_under('green', 1.0)  # doctest: +SKIP
+    >>> map.cmap = cmap   # doctest: +SKIP
 
 This will color the areas above and below in red and green respectively
 (similar to this `example <https://matplotlib.org/examples/pylab_examples/image_masked.html>`_).
@@ -520,7 +521,7 @@ will mean that the bright regions look 'saturated'. This is achieved in the foll
     import matplotlib.colors as colors
     import sunpy.data.sample
     smap = sunpy.map.Map(sunpy.data.sample.AIA_193_CUTOUT01_IMAGE)
-    cmap = smap.plot_settings['cmap']
+    cmap = smap.cmap
     cmap.set_over('blue', 1.0)
     cmap.set_under('purple', 1.0)
     norm = colors.Normalize(vmin=0, vmax=smap.mean() + 5 * smap.std())
