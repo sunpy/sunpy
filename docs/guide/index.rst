@@ -12,12 +12,12 @@ For more details checkout the :ref:`reference`.
    :maxdepth: 3
 
    installation/index
-   tour
-   acquiring_data/index
-   data_types/index
-   plotting
-   units-coordinates
-   time
+   Brief Tour <tour>
+   Data Acquisition <acquiring_data/index>
+   Data Types <data_types/index>
+   Plotting <plotting>
+   Units and Coordinates <units-coordinates>
+   Time <time>
    roi
    customization
    logger
