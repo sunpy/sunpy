@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-
 from astropy.visualization.mpl_normalize import ImageNormalize
 from astropy.visualization import PowerStretch
 import astropy.units as u
@@ -43,7 +41,7 @@ class KCorMap(GenericMap):
         self.meta['hgln_obs'] = 0.0
         self._nickname = self.detector
 
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
+        self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
         # Negative value pixels can appear that lead to ugly looking images.
         # This can be fixed by setting the lower limit of the normalization.
