@@ -74,6 +74,18 @@ class TestMap:
         files_sorted = sorted(list(pathlib.Path(pattern).parent.glob('*')))
         maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
+        # Single character wildcard (?)
+        pattern = os.path.join(filepath, "EIT", "efz20040301.0?0010_s.fits")
+        maps = sunpy.map.Map(pattern)
+        assert isinstance(maps, list)
+        assert len(maps) == 7
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
+        # Character ranges
+        pattern = os.path.join(filepath, "EIT", "efz20040301.0[2-6]0010_s.fits")
+        maps = sunpy.map.Map(pattern)
+        assert isinstance(maps, list)
+        assert len(maps) == 4
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
         # Already a Map
         amap = sunpy.map.Map(maps[0])
