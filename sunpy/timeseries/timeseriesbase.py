@@ -409,7 +409,8 @@ class GenericTimeSeries:
             If provided the image will be plotted on the given axes.
             Defaults to `None`, so the current axes will be used.
         **plot_args : `dict`, optional
-            Any additional plot arguments that should be used when plotting.
+            Additional plot keyword arguments that are handed to
+            :meth:`pandas.DataFrame.plot`.
 
         Returns
         -------
