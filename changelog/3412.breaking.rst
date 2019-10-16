@@ -1,0 +1,4 @@
+The colormap stored in SunPy's Map subclasses (ie. ``map.plot_settings['cmap']``)
+can now be colormap string instead of the full `matplotlib.colormap.Colormap`
+object. To get the full `Colormap` object use the new attribute
+``map.cmap``.
