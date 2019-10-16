@@ -4,8 +4,6 @@
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
 __email__ = "jack.ireland@nasa.gov"
 
-import matplotlib.pyplot as plt
-
 from sunpy.map import GenericMap
 
 __all__ = ['XRTMap', 'SOTMap']
@@ -64,7 +62,7 @@ class XRTMap(GenericMap):
         self.meta['detector'] = "XRT"
 #        self.meta['instrume'] = "XRT"
         self.meta['telescop'] = "Hinode"
-        self.plot_settings['cmap'] = plt.get_cmap(name='hinodexrt')
+        self.plot_settings['cmap'] = 'hinodexrt'
 
     @property
     def measurement(self):
@@ -130,7 +128,7 @@ class SOTMap(GenericMap):
                  'SOT/SP': 'intensity',  # For the 1st 2 dimensions
                  }
 
-        self.plot_settings['cmap'] = plt.get_cmap('hinodesot' + color[self.instrument])
+        self.plot_settings['cmap'] = 'hinodesot' + color[self.instrument]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
