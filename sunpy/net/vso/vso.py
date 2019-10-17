@@ -4,8 +4,6 @@ This module provides a wrapper around the VSO API.
 """
 
 import os
-import ssl
-import requests
 import re
 import sys
 import socket
