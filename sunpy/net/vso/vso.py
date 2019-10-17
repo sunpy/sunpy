@@ -4,6 +4,8 @@ This module provides a wrapper around the VSO API.
 """
 
 import os
+import ssl
+import requests
 import re
 import sys
 import socket
@@ -727,6 +729,10 @@ class VSOClient(BaseClient):
             # If from_ and to are uninitialized, the else block of the loop
             # continues the outer loop and thus this code is never reached.
             # pylint: disable=W0631
+            if os.access(path, os.W_OK) != True:
+                raise PermissionError('You do not have permission to write'
+                                      'file in this directory')
+            
             code = (
                 dresponse.status[from_:to]
                 if getattr(dresponse, 'status', None) else '200'
@@ -791,7 +797,6 @@ class VSOClient(BaseClient):
         """ Enqueue a file to be downloaded, extra args are passed to ``mk_filename``"""
         if method.startswith('URL'):
             return downloader.enqueue_file(url, filename=partial(self.mk_filename, *args))
-
         raise NoData
 
     @staticmethod
