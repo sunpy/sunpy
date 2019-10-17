@@ -1,6 +1,7 @@
 import os
 import glob
 from collections import OrderedDict
+from pathlib import Path
 import warnings
 
 import numpy as np
@@ -184,6 +185,9 @@ class MapFactory(BasicRegistrationFactory):
         while i < len(args):
 
             arg = args[i]
+
+            if isinstance(arg, Path):
+                arg = str(arg)
 
             # Data-header or data-WCS pair
             if isinstance(arg, SUPPORTED_ARRAY_TYPES):

@@ -7,6 +7,7 @@ Created on Fri Jun 21 15:05:09 2013
 import os
 import glob
 import tempfile
+import pathlib
 
 import pytest
 import numpy as np
@@ -31,14 +32,14 @@ RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
 #==============================================================================
 class TestMap:
     def test_mapsequence(self):
-        #Test making a MapSequence
+        # Test making a MapSequence
         sequence = sunpy.map.Map(a_list_of_many, sequence=True)
         assert isinstance(sequence, sunpy.map.MapSequence)
 
     def test_composite(self):
-        #Test making a CompositeMap
+        # Test making a CompositeMap
         comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE,
-                         composite=True)
+                             composite=True)
         assert isinstance(comp, sunpy.map.CompositeMap)
 
     def test_patterns(self):
@@ -48,10 +49,15 @@ class TestMap:
         eitmap = sunpy.map.Map(a_fname)
         assert isinstance(eitmap, sunpy.map.GenericMap)
 
+        # Path
+        eitmap = sunpy.map.Map(pathlib.Path(a_fname))
+        assert isinstance(eitmap, sunpy.map.GenericMap)
+
         # Directory
         maps = sunpy.map.Map(os.path.join(filepath, "EIT"))
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+
 
         # Glob
         maps = sunpy.map.Map(os.path.join(filepath, "EIT", "*"))
