@@ -9,6 +9,7 @@ import astropy.io.fits
 from astropy.wcs import WCS
 
 import sunpy
+from sunpy import log
 from sunpy.map.mapbase import GenericMap, MapMetaValidationError
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapsequence import MapSequence
@@ -98,6 +99,14 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map('local_dir/sub_dir')   # doctest: +SKIP
 
+    * A filesystem path expressed as a `pathlib.Path`
+
+    >>> import pathlib
+    >>> mymap = sunpy.map.Map(pathlib.Path('file1.fits'))   # doctest: +SKIP
+    >>> sub_dir = pathlib.Path('local_dir/sub_dir')
+    >>> mymap = sunpy.map.Map(sub_dir)   # doctest: +SKIP
+    >>> mymap = sunpy.map.Map(sub_dir / 'file3.fits')   # doctest: +SKIP
+
     * Some regex globs
 
     >>> mymap = sunpy.map.Map('eit_*.fits')   # doctest: +SKIP
@@ -127,6 +136,7 @@ class MapFactory(BasicRegistrationFactory):
         # call a fits file or a jpeg2k file, etc
         # NOTE: use os.fspath so that fname can be either a str or pathlib.Path
         # This can be removed once read_file supports pathlib.Path
+        log.debug(f'Reading {fname}')
         pairs = read_file(os.fspath(fname), **kwargs)
 
         new_pairs = []
@@ -159,8 +169,8 @@ class MapFactory(BasicRegistrationFactory):
         * data, header not in a tuple
         * data, wcs object in a tuple
         * data, wcs object not in a tuple
-        * filename, which will be read
-        * directory, from which all files will be read
+        * filename, as a str or pathlib.Path, which will be read
+        * directory, as a str or pathlib.Path, from which all files will be read
         * glob, from which all files will be read
         * url, which will be downloaded and read
         * lists containing any of the above.
@@ -212,7 +222,7 @@ class MapFactory(BasicRegistrationFactory):
                     raise ValueError(f'{path} is neither a file nor a directory')
 
             # Glob
-            elif isinstance(arg, str) and len(glob.glob(arg)):
+            elif isinstance(arg, str) and glob.glob(arg):
                 for afile in sorted(glob.glob(arg)):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
