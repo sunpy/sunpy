@@ -777,10 +777,10 @@ class VSOClient(BaseClient):
             # If from_ and to are uninitialized, the else block of the loop
             # continues the outer loop and thus this code is never reached.
             # pylint: disable=W0631
-            if os.access(path, os.W_OK) != True:
+            if os.access(path, os.W_OK) is not True:
                 raise PermissionError('You do not have permission to write'
                                       'file in this directory')
-            
+
             code = (
                 dresponse.status[from_:to]
                 if getattr(dresponse, 'status', None) else '200'
