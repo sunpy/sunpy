@@ -1,4 +1,0 @@
-The returned list of `sunpy.map.Map` objects is now sorted by filename when passing a
-directory or glob pattern to `sunpy.map.MapFactory`. Single character wildcards and
-character ranges can now also be used as glob patterns. `sunpy.map.Map` also now accepts
-`pathlib.Path` objects, in addition to `str`, when passing a file system path.

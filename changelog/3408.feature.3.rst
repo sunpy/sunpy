@@ -1,0 +1,2 @@
+`~sunpy.map.Map` now accepts filenames and directories as `pathlib.Path`
+objects.
