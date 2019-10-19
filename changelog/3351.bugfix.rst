@@ -1,1 +1,1 @@
-Fixed bug where Heliographic frames were not constructed as 3D as intended.
+Fixed situations where 2D coordinates provided to `~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` were not converted to 3D as intended.  Furthermore, the stored data will always be the post-conversion, 3D version.
