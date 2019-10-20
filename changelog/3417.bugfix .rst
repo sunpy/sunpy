@@ -1,0 +1,1 @@
+Fixed a bug permission denied errors on VSO results are ugly  by adding an error message in FIDO.fetch().
