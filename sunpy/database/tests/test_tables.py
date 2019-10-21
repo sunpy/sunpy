@@ -441,7 +441,6 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
     list(entries_from_query_result(qr_with_none_waves))
 
 
-@pytest.mark.xfail
 @pytest.mark.remote_data
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
