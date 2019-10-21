@@ -161,6 +161,7 @@ class MapFactory(BasicRegistrationFactory):
         else:
             return False
 
+    def _parse_args(self, *args, **kwargs):
         """
         Parses an args list for data-header pairs.  args can contain any
         mixture of the following entries:
@@ -173,6 +174,7 @@ class MapFactory(BasicRegistrationFactory):
         * glob, from which all files will be read
         * url, which will be downloaded and read
         * lists containing any of the above.
+
         Example
         -------
         self._parse_args(data, header,
