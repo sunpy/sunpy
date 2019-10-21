@@ -659,7 +659,7 @@ def test_hme_gei_sunspice():
 
 def test_gei_gei():
     # Test GEI loopback transformation using the 2017 revision to Franz & Harper 2002
-    t = Time('1996-08-28 16:46:00', 'tt')
+    t = Time('1996-08-28 16:46:00', scale='tt')
     gei_j2000 = CartesianRepresentation([-5.7840451, -4.1082375, 1.9146822] * (6378.14*u.km))
     gei_d = CartesianRepresentation([-5.7864918, -4.1039136, 1.9165612] * (6378.14*u.km))
 
