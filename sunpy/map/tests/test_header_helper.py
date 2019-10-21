@@ -148,3 +148,14 @@ def test_HGS_CAR_header():
     # the center of the array.
     assert u.allclose(world_coords.lon, world_coords.lon[::-1, ::-1]*-1)
     assert u.allclose(world_coords.lat, world_coords.lat[::-1, ::-1]*-1)
+
+
+def test_latlon_order():
+    # This tests that CRVAL1, CRVAL2 (i.e. lon,lat) correspond to CTYPE1, CTYPE2 (i.e. HGLN, HGLT)
+    data = np.zeros((100, 100))
+    coord = SkyCoord(20*u.arcsec, -10*u.arcsec, obstime='2013-10-28', frame=frames.Helioprojective)
+    header = sunpy.map.make_fitswcs_header(data, coord)
+    # check LON
+    assert ('LN' in header['ctype1']) and header['crval1'] == coord.spherical.lon.to_value()
+    # check LAT
+    assert 'LT' in header['ctype2'] and header['crval2'] == coord.spherical.lat.to_value()
