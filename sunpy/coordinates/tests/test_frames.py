@@ -40,11 +40,9 @@ These are common 2D params, kwargs are frame specific
 two_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec], None),
     ([0 * u.deg, 0 * u.arcsec], {'obstime': '2011/01/01T00:00:00'}),
-    ([0 * u.deg, 0 * u.arcsec], {'representation_type': 'unitspherical'}),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], None),
-    ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], None), (
-        [UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)],
-        {'obstime': '2011/01/01T00:00:00'})
+    ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], {'obstime': '2011/01/01T00:00:00'}),
+    ([0 * u.deg, 0 * u.arcsec], {'representation_type': 'unitspherical'})
 ]
 """
 These are common 3D params, kwargs are frame specific
@@ -238,7 +236,7 @@ def test_HEE_creation():
 
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
-@pytest.mark.parametrize("args, kwargs", two_D_parameters[:2] + two_D_parameters[4:] +
+@pytest.mark.parametrize("args, kwargs", two_D_parameters[:4] +
                          [(None, {'lat': 0*u.deg, 'lon': 0*u.arcsec})])
 def test_create_hgs_2d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
@@ -265,7 +263,7 @@ def test_create_hgs_2d(frame, args, kwargs):
 
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
-@pytest.mark.parametrize("args, kwargs", two_D_parameters[2:4])
+@pytest.mark.parametrize("args, kwargs", two_D_parameters[4:])
 def test_create_hgs_force_2d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
 
@@ -274,8 +272,7 @@ def test_create_hgs_force_2d(frame, args, kwargs):
 
     rep_kwarg = kwargs.get('representation_type', None) if kwargs else None
 
-    if rep_kwarg == 'unitspherical':
-        assert isinstance(hgs1._data, UnitSphericalRepresentation)
+    assert not hasattr(hgs1, 'radius')
 
     # Check the attrs are correct
     assert hgs1.lon == 0 * u.deg
@@ -394,6 +391,8 @@ def test_hcc_default_observer():
 
 two_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec], {}),
+    ([[0, 1, 2, 3], [5, 6, 7, 8]], {'unit': u.deg}),
+    ([0 * u.deg, 0 * u.arcsec], {'representation_type': SphericalRepresentation}),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], {}),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], {}),
     ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1*u.one)], {}),
@@ -419,7 +418,7 @@ def test_skycoord_hpc(args, kwargs):
 @pytest.mark.parametrize("args, kwargs", two_D_parameters)
 def test_skycoord_hgs(args, kwargs):
     """
-    Test that when instantiating a HPC frame with SkyCoord correctly replaces
+    Test that when instantiating a HGS frame with SkyCoord correctly replaces
     distance.
 
     Note: We only need to test HGS here not HGC as they share the same
@@ -427,6 +426,9 @@ def test_skycoord_hgs(args, kwargs):
     """
 
     RSUN_METERS = sun.constants.get('radius').si
-    sc = SkyCoord(*args, **kwargs, frame="heliographic_stonyhurst", obstime="2011-01-01T00:00:00")
+    sc = SkyCoord(*args, **kwargs, frame=HeliographicStonyhurst(obstime="2011-01-01T00:00:00"))
 
+    # Check that we have upgraded the data to Spherical
+    assert isinstance(sc.frame._data, SphericalRepresentation)
+    # Check the value is correct
     assert_quantity_allclose(sc.radius, RSUN_METERS)
