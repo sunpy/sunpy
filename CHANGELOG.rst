@@ -1,3 +1,21 @@
+Sunpy v1.0.4 (2019-10-21)
+=========================
+
+Bug Fixes
+---------
+
+- Fix off by one error in `sunpy.map.make_fitswcs_header` where when using the
+  default ``reference_pixel=None`` keyword argument the pixel coordinate of the
+  reference pixel was off by +1. (`#3356 <https://github.com/sunpy/sunpy/pull/3356>`__)
+- Updated the URL for Fermi spacecraft-pointing files to use an HTTPS connection to HEASARC. (`#3381 <https://github.com/sunpy/sunpy/pull/3381>`__)
+
+
+Improved Documentation
+----------------------
+
+- Improved the contributing guide by updating commands and highlighting text. (`#3394 <https://github.com/sunpy/sunpy/pull/3394>`__)
+
+
 Sunpy v1.0.3 (2019-08-29)
 =========================
 
