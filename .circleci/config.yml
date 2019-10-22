@@ -126,6 +126,17 @@ jobs:
       - run: *sudo-apt-install
       - run: pip install -U tox
       - run: tox -e build_docs
+      - run:
+          name: Prepare for upload
+          command: |
+            # If it's not a PR, don't upload
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
+              rm -r docs/_build/html/*
+            else
+              # If it is a PR, delete sources, because it's a lot of files
+              # which we don't really need to upload
+              rm -r docs/_build/html/_sources
+            fi
       - store_artifacts:
           path: docs/_build/html
       - run:
