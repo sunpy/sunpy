@@ -1,3 +1,13 @@
+Sunpy v1.0.5 (2019-10-22)
+=========================
+
+Bug Fixes
+---------
+
+- Fix incorrect files being included in the tarball, and docs missing from the
+  tarball (`#3423 <https://github.com/sunpy/sunpy/pull/3423>`__)
+
+
 Sunpy v1.0.4 (2019-10-22)
 =========================
 
