@@ -1,6 +1,3 @@
-cm:
-  status: mature
-  comments: Only forwards compatible changes expected.
 coordinates:
   status: stable
   comments: Should be stable, with additions and small changes expected.
@@ -12,10 +9,10 @@ database:
   comments: Undergoing changes with each major release.
 image:
   status: dev
-  comments:
+  comments: Undergoing changes with each major release.
 instr:
   status: dev
-  comments:
+  comments: Maybe be phased out and migrated to affiliated packages in the future.
 io:
   status: mature
   comments: Should see no major changes.
