@@ -1,3 +1,24 @@
+Sunpy v1.0.4 (2019-10-22)
+=========================
+
+Bug Fixes
+---------
+
+- Fixed situations where 2D coordinates provided to `~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` were not converted to 3D as intended.  Furthermore, the stored data will always be the post-conversion, 3D version. (`#3351 <https://github.com/sunpy/sunpy/pull/3351>`__)
+- Fix off by one error in `sunpy.map.make_fitswcs_header` where when using the
+  default ``reference_pixel=None`` keyword argument the pixel coordinate of the
+  reference pixel was off by +1. (`#3356 <https://github.com/sunpy/sunpy/pull/3356>`__)
+- Fixing the ordering of lon and lat inputs into `sunpy.map.make_fitswcs_header` (`#3371 <https://github.com/sunpy/sunpy/pull/3371>`__)
+- Updated the URL for Fermi spacecraft-pointing files to use an HTTPS connection to HEASARC. (`#3381 <https://github.com/sunpy/sunpy/pull/3381>`__)
+
+
+Improved Documentation
+----------------------
+
+- Improved the contributing guide by updating commands and highlighting text. (`#3394 <https://github.com/sunpy/sunpy/pull/3394>`__)
+- Removing `.fits` from the end of path kwargs in `sunpy.net.FIDO.fetch` docs to change output file extension from `{file}.fits.fits` to `{file}.fits`. (`#3399 <https://github.com/sunpy/sunpy/pull/3399>`__)
+
+
 Sunpy v1.0.3 (2019-08-29)
 =========================
 
