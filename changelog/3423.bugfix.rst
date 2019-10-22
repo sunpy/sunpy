@@ -1,0 +1,2 @@
+Fix incorrect files being included in the tarball, and docs missing from the
+tarball
