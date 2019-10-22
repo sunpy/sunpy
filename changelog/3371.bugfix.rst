@@ -1,1 +1,1 @@
-Fixing the ordering of lon and lat inputs into make_fitswcs_header 
+Fixing the ordering of lon and lat inputs into `sunpy.map.make_fitswcs_header`
