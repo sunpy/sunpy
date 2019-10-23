@@ -51,7 +51,7 @@ class EITMap(GenericMap):
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)))
+            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
     def detector(self):
@@ -128,7 +128,7 @@ class LASCOMap(GenericMap):
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = 'soholasco{det!s}'.format(det=self.detector[1])
         self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)))
+            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
     def measurement(self):
