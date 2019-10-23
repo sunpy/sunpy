@@ -15,6 +15,7 @@ from sunpy.net.tests.strategies import time_attr
 LCClient = lyra.LYRAClient()
 
 
+@pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/1/7', '2012/1/7'),
      'http://proba2.oma.be/lyra/data/bsd/2012/01/07/lyra_20120107-000000_lev2_std.fits',
