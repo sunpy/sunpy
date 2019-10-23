@@ -47,7 +47,7 @@ class DataManager:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 replace = self._skip_file.get(name, None)
-                err = KeyError("Hash does not match")
+                err_message = "Hash does not match."
                 if replace:
                     if replace['uri'].startswith('file://'):
                         file_path = replace['uri'][len('file://'):]
@@ -57,7 +57,7 @@ class DataManager:
                     if replace['hash'] and file_hash != replace['hash']:
                         # if hash provided to replace function doesn't match the hash of the file
                         # raise error
-                        raise err
+                        raise KeyError(err_message + " Hash provided to replace_file does not match hash of the file.")
                 elif self._skip_hash_check:
                     file_path = self._cache.download(urls, redownload=True)
                 else:
@@ -67,7 +67,7 @@ class DataManager:
                         # That might mean the wrong hash is supplied to decorator
                         # We match by urls to make sure that is not the case
                         if self._cache_has_file(urls):
-                            raise err
+                            raise KeyError(err_message + " Hash provided does not match the hash in database.")
                         file_path = self._cache.download(urls)
                         if hash_file(file_path) != sha_hash:
                             # the hash of the file downloaded does not match the hash of the file downloaded

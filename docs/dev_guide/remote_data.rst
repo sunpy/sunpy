@@ -12,7 +12,7 @@ If the files are changed on the remote server or if they are tampered with after
 
 Remote Data Manager provides the developers a way to download the files easily and ensure that the files are intact when they are used.
 If the file is changed on the remote server, the data manager will raise an error so that the developer can update the function to use the new hash.
-If the file has been tampered, data manager will redownload the file after warning the user.
+If the file has changed on disk, data manager will redownload the file after warning the user.
 
 Usage
 -----
