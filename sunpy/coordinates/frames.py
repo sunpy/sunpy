@@ -150,8 +150,8 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     represented using Cartesian components.
 
     A new instance can be created using the following signatures
-    (note that ``obstime`` and ``representation_type`` must be supplied as
-    keywords)::
+    (note that if supplied, ``obstime`` and ``representation_type`` must be
+    keyword arguments)::
 
         HeliographicStonyhurst(lon, lat, obstime=obstime)
         HeliographicStonyhurst(lon, lat, radius, obstime=obstime)
@@ -308,8 +308,8 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     by 90 degrees compared to the convention of the Heliocentric Radial (HCR) system.
 
     A new instance can be created using the following signatures
-    (note that ``obstime`` and ``representation_type`` must be supplied as
-    keywords)::
+    (note that if supplied ``obstime`` and ``representation_type``, must be
+    keyword arguments)::
 
         Heliocentric(x, y, z, obstime=obstime)
         Heliocentric(rho, psi, z, representation_type='cylindrical', obstime=obstime)
@@ -373,7 +373,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     is appropriate, ``theta_x`` and ``theta_y`` can be approximated as Cartesian components.
 
     A new instance can be created using the following signatures
-    (note that ``obstime`` and ``observer`` must be supplied as keywords)::
+    (note that if supplied, ``obstime`` and ``observer`` must be keyword arguments)::
 
         Helioprojective(theta_x, theta_y, obstime=obstime, observer=observer)
         Helioprojective(theta_x, theta_y, distance, obstime=obstime, observer=observer)
