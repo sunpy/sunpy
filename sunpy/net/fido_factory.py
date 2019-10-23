@@ -8,10 +8,10 @@ This module provides the `Fido
 `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
 
 """
+import os
 from collections.abc import Sequence
 
 from parfive import Downloader, Results
-import os
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
