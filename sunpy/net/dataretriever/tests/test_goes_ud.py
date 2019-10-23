@@ -20,6 +20,7 @@ def LCClient():
     return goes.XRSClient()
 
 
+@pytest.mark.remote_data
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
     [(TimeRange('1995/06/03', '1995/06/05'),
@@ -50,6 +51,7 @@ def test_no_satellite(LCClient):
         LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('XRS'))
 
 
+@pytest.mark.remote_data
 def test_fixed_satellite(LCClient):
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
                            a.Instrument('XRS'))
