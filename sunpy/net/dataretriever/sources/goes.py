@@ -115,17 +115,16 @@ class XRSClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns a URL to the GOES data for the specified date.
-        
+
         Parameters
         ----------
         timerange : `~sunpy.time.TimeRange`
-        
+
         Returns
         -------
         list :
             The URL(s) for the corresponding timerange.
         """
-
         timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
         if timerange.start < parse_time("1999/01/15"):
             goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/"
@@ -245,7 +244,6 @@ class SUVIClient(GenericClient):
                 these_timeranges.append(TimeRange(start_time, end_time))
         return these_timeranges
 
-
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns urls to the SUVI data for the specified time range.
@@ -274,7 +272,7 @@ class SUVIClient(GenericClient):
                     raise ValueError(f"Wavelength {kwargs.get('wavelength')} not supported.")
                 else:
                     wavelength = [kwargs.get("wavelength")]
-            else:  #  _Range was provided
+            else:  # _Range was provided
                 compress_index = [wavelength_input.wavemin <= this_wave <= wavelength_input.wavemax for this_wave in (supported_waves * u.Angstrom)]
                 if not any(compress_index):
                     raise ValueError(
