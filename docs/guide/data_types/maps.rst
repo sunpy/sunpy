@@ -481,7 +481,6 @@ your images got clipped set the following values::
     >>> cmap = map.cmap  # doctest: +SKIP
     >>> cmap.set_over('red', 1.0)  # doctest: +SKIP
     >>> cmap.set_under('green', 1.0)  # doctest: +SKIP
-    >>> map.cmap = cmap   # doctest: +SKIP
 
 This will color the areas above and below in red and green respectively
 (similar to this `example <https://matplotlib.org/examples/pylab_examples/image_masked.html>`_).
