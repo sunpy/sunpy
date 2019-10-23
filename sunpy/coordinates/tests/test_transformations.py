@@ -689,7 +689,7 @@ def test_no_observer():
 
     # Self-transformations should succeed
     for f in frames_in:
-        f.transform_to(f)
+        f.transform_to(f.replicate_without_data())
 
     # All other transformations should error
     for i, f1 in enumerate(frames_in):

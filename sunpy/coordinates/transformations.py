@@ -114,15 +114,24 @@ def _transformation_debug(description):
     return decorator
 
 
-def _observers_are_equal(obs_1, obs_2, string_ok=False):
-    if string_ok:
-        if obs_1 == obs_2:
-            return True
+def _observers_are_equal(obs_1, obs_2):
+    # Note that this also lets pass the situation where both observers are None
+    if obs_1 == obs_2:
+        return True
 
-    if not isinstance(obs_1, BaseCoordinateFrame):
-        raise ConvertError(f"Source observer {obs_1} is not fully specified.")
-    if not isinstance(obs_2, BaseCoordinateFrame):
-        raise ConvertError(f"Destination observer {obs_2} is not fully specified.")
+    # obs_1 != obs_2
+    if obs_1 is None:
+        raise ConvertError("The source observer is set to None, but the destination observer is "
+                           f"{obs_2}.")
+    if obs_2 is None:
+        raise ConvertError("The destination observer is set to None, but the source observer is "
+                           f"{obs_2}.")
+    if isinstance(obs_1, str):
+        raise ConvertError("The source observer needs to have `obstime` set because the "
+                           "destination observer is different.")
+    if isinstance(obs_2, str):
+        raise ConvertError("The destination observer needs to have `obstime` set because the "
+                           "source observer is different.")
 
     return (u.allclose(obs_1.lat, obs_2.lat) and
             u.allclose(obs_1.lon, obs_2.lon) and
@@ -354,7 +363,7 @@ def hpc_to_hpc(from_coo, to_frame):
     This converts from HPC to HPC, with different observer location parameters.
     It does this by transforming through HGS.
     """
-    if _observers_are_equal(from_coo.observer, to_frame.observer, string_ok=True) and \
+    if _observers_are_equal(from_coo.observer, to_frame.observer) and \
        np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
 
@@ -542,7 +551,7 @@ def hcc_to_hcc(from_coo, to_frame):
     """
     Convert between two Heliocentric frames.
     """
-    if _observers_are_equal(from_coo.observer, to_frame.observer, string_ok=True) and \
+    if _observers_are_equal(from_coo.observer, to_frame.observer) and \
        np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
 
