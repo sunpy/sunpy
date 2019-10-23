@@ -1,13 +1,15 @@
 import os
-import glob
 from collections import OrderedDict
 import warnings
+import pathlib
+import glob
 
 import numpy as np
 import astropy.io.fits
 from astropy.wcs import WCS
 
 import sunpy
+from sunpy import log
 from sunpy.map.mapbase import GenericMap, MapMetaValidationError
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapsequence import MapSequence
@@ -97,6 +99,14 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map('local_dir/sub_dir')   # doctest: +SKIP
 
+    * A filesystem path expressed as a `pathlib.Path`
+
+    >>> import pathlib
+    >>> mymap = sunpy.map.Map(pathlib.Path('file1.fits'))   # doctest: +SKIP
+    >>> sub_dir = pathlib.Path('local_dir/sub_dir')
+    >>> mymap = sunpy.map.Map(sub_dir)   # doctest: +SKIP
+    >>> mymap = sunpy.map.Map(sub_dir / 'file3.fits')   # doctest: +SKIP
+
     * Some regex globs
 
     >>> mymap = sunpy.map.Map('eit_*.fits')   # doctest: +SKIP
@@ -124,7 +134,10 @@ class MapFactory(BasicRegistrationFactory):
 
         # File gets read here.  This needs to be generic enough to seamlessly
         # call a fits file or a jpeg2k file, etc
-        pairs = read_file(fname, **kwargs)
+        # NOTE: use os.fspath so that fname can be either a str or pathlib.Path
+        # This can be removed once read_file supports pathlib.Path
+        log.debug(f'Reading {fname}')
+        pairs = read_file(os.fspath(fname), **kwargs)
 
         new_pairs = []
         for pair in pairs:
@@ -156,8 +169,8 @@ class MapFactory(BasicRegistrationFactory):
         * data, header not in a tuple
         * data, wcs object in a tuple
         * data, wcs object not in a tuple
-        * filename, which will be read
-        * directory, from which all files will be read
+        * filename, as a str or pathlib.Path, which will be read
+        * directory, as a str or pathlib.Path, from which all files will be read
         * glob, from which all files will be read
         * url, which will be downloaded and read
         * lists containing any of the above.
@@ -196,34 +209,29 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs.append(pair)
                     i += 1    # an extra increment to account for the data-header pairing
 
-            # File name
-            elif (isinstance(arg, str) and
-                  os.path.isfile(os.path.expanduser(arg))):
-                path = os.path.expanduser(arg)
-                pairs = self._read_file(path, **kwargs)
-                data_header_pairs += pairs
-
-            # Directory
-            elif (isinstance(arg, str) and
-                  os.path.isdir(os.path.expanduser(arg))):
-                path = os.path.expanduser(arg)
-                files = [os.path.join(path, elem) for elem in os.listdir(path)]
-                for afile in files:
-                    data_header_pairs += self._read_file(afile, **kwargs)
+            # File system path (file or directory)
+            elif _is_path(arg):
+                path = pathlib.Path(arg).expanduser()
+                if path.is_file():
+                    pairs = self._read_file(path, **kwargs)
+                    data_header_pairs += pairs
+                elif path.is_dir():
+                    for afile in sorted(path.glob('*')):
+                        data_header_pairs += self._read_file(afile, **kwargs)
+                else:
+                    raise ValueError(f'{path} is neither a file nor a directory')
 
             # Glob
-            elif (isinstance(arg, str) and '*' in arg):
-                files = glob.glob(os.path.expanduser(arg))
-                for afile in files:
+            elif isinstance(arg, str) and glob.glob(arg):
+                for afile in sorted(glob.glob(arg)):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Already a Map
             elif isinstance(arg, GenericMap):
                 already_maps.append(arg)
 
-            # A URL
-            elif (isinstance(arg, str) and
-                  _is_url(arg)):
+            # URL
+            elif isinstance(arg, str) and _is_url(arg):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
                 pairs = self._read_file(path, **kwargs)
@@ -345,6 +353,15 @@ def _is_url(arg):
     except Exception:
         return False
     return True
+
+
+def _is_path(arg):
+    try:
+        is_path = pathlib.Path(arg).expanduser().exists()
+    except Exception:
+        return False
+    else:
+        return is_path
 
 
 class InvalidMapInput(ValueError):

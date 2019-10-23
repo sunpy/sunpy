@@ -115,16 +115,17 @@ class XRSClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns a URL to the GOES data for the specified date.
-
+        
         Parameters
         ----------
         timerange : `~sunpy.time.TimeRange`
-
+        
         Returns
         -------
         list :
             The URL(s) for the corresponding timerange.
         """
+
         timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
         if timerange.start < parse_time("1999/01/15"):
             goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/"
@@ -138,7 +139,6 @@ class XRSClient(GenericClient):
 
         urls = goes_files.filelist(timerange)
         return urls
-
 
     def _makeimap(self):
         """

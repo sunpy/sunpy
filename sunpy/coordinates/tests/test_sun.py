@@ -1,5 +1,6 @@
 import pytest
 
+import numpy as np
 from numpy.testing import assert_allclose
 
 from astropy.coordinates import Angle, EarthLocation, SkyCoord
@@ -253,3 +254,22 @@ def test_orientation():
 def test_carrington_rotation_number(date, day_fraction, rotation_number):
     assert_allclose(sun.carrington_rotation_number(Time(date, scale='tt') + day_fraction*u.day),
                     rotation_number, rtol=0, atol=2e-4)
+
+
+@pytest.mark.parametrize("crot, julian_days",
+                         [(1, 2398167.4),
+                          (2, 2398194.6756),
+                          (1860, 2448872.027509),
+                          ])
+def test_carrington_rotation_starttime(crot, julian_days):
+    # Stated precision in the docstring is 0.11 seconds
+    assert_quantity_allclose(sun.carrington_rotation_time(crot).tt.jd * u.day, julian_days * u.day, atol=0.11*u.s)
+
+
+def test_carrington_rotation_roundtrip():
+    t = Time('2010-1-1')
+    crot = sun.carrington_rotation_number(t)
+    t_roundtrip = sun.carrington_rotation_time(crot)
+    dt = t - t_roundtrip
+    # Stated precision in the docstring is 0.11 seconds
+    assert_quantity_allclose(dt.to(u.s), 0*u.s, atol=0.11*u.s)

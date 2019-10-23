@@ -249,7 +249,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
                            "heliocentric coordinates for observer '{}' "
                            "without `obstime` being specified.".format(heliopcoord.observer))
 
-    heliopcoord = heliopcoord.calculate_distance()
+    heliopcoord = heliopcoord.make_3d()
 
     # Permute/swap axes from HPC equivalent Cartesian to HCC
     newrepr = heliopcoord.cartesian.transform(matrix_transpose(_matrix_hcc_to_hpc()))
