@@ -37,6 +37,8 @@ authors:
     orcid: 0000-0003-0656-2437
     affiliation: "Catholic University of America / NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Punyaslok Pattnaik
+    orcid: 0000-0001-6216-2353
+    affiliation: 'International Institute of Information Technology, Hyderabad 500 032, India'
   - name: Brigitta Sipőcz
     orcid: 0000-0002-3713-6337
     affiliation: "DIRAC Institute, Department of Astronomy, University of Washington, Seattle, WA 98195, USA"
@@ -76,7 +78,6 @@ authors:
     orcid: 0000-0001-9642-6089
     affiliation: Lockheed Martin Solar and Astrophysics Laboratory / Bay Area Environmental Research Institute
   - name: Michael Charlton
-  - name: Cubostar
   - name: Shane Maloney
     orcid: 0000-0002-4715-1805
     affiliation: Trinity College Dublin / Dublin Institute for Advanced Studies
@@ -87,7 +88,6 @@ authors:
   - name: Sanskar Modi
   - name: James Paul Mason
   - name: Naman9639
-  - name: Yash
   - name: Jose Ivan Campos Rozo
     orcid: 0000-0001-8883-6790
     affiliation: Institut für Physik/IGAM - Karl-Franzens University of Graz, Austria
@@ -144,6 +144,8 @@ authors:
     orcid: 0000-0003-0810-4368
     affiliation: "National Solar Observatory" 
   - name: Benjamin Mampaey
+    orcid: 0000-0001-6541-4966
+    affiliation: Royal Observatory of Belgium
   - name: Bernhard M. Wiedemann
   - name: Carlos Molina
     orcid: 0000-0003-0300-4106
@@ -210,7 +212,7 @@ authors:
     affiliation: "Department of Chemical Engineering, Indian Institute of Technology Kharagpur, 721302, India"
   - name: Tessa D. Wilkinson
   - name: Tiago M. D. Pereira
-    orcid: 000-0003-4747-4329
+    orcid: 0000-0003-4747-4329
     affiliation: 
       - "Rosseland Centre for Solar Physics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway"
       - "Institute of Theoretical Astrophysics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway"
