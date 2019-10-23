@@ -74,7 +74,7 @@ class XRSTimeSeries(GenericTimeSeries):
             Any additional plot arguments that should be used when plotting.
         """
         # Check we have a timeseries valid for plotting
-        self._validate_data_for_ploting()
+        self._validate_data_for_plotting()
 
         figure = plt.figure()
         axes = plt.gca()

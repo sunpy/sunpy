@@ -73,7 +73,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
             gbm.peek()
         """
         # Check we have a timeseries valid for plotting
-        self._validate_data_for_ploting()
+        self._validate_data_for_plotting()
 
         figure = plt.figure()
         axes = plt.gca()
