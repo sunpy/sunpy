@@ -6,8 +6,6 @@ from __future__ import absolute_import, print_function, division
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
-import matplotlib.pyplot as plt
-
 from astropy.coordinates import CartesianRepresentation
 import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize
@@ -81,7 +79,7 @@ class SUVIMap(GenericMap):
         self.meta["detector"] = "SUVI"
         self.meta["telescop"] = "GOES-R"
         self._nickname = self.detector
-        self.plot_settings["cmap"] = plt.get_cmap(self._get_cmap_name())
+        self.plot_settings["cmap"] = self._get_cmap_name()
         self.plot_settings["norm"] = ImageNormalize(
             stretch=source_stretch(self.meta, AsinhStretch(0.01))
         )

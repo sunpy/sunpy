@@ -1,6 +1,5 @@
 """SOHO Map subclass definitions"""
 
-import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import colors
 
@@ -50,7 +49,7 @@ class EITMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = plt.get_cmap(self._get_cmap_name())
+        self.plot_settings['cmap'] = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
@@ -127,7 +126,7 @@ class LASCOMap(GenericMap):
         if 'date_obs' in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
         self._nickname = self.instrument + "-" + self.detector
-        self.plot_settings['cmap'] = plt.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
+        self.plot_settings['cmap'] = 'soholasco{det!s}'.format(det=self.detector[1])
         self.plot_settings['norm'] = ImageNormalize(
             stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
