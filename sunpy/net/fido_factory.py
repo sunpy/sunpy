@@ -8,6 +8,7 @@ This module provides the `Fido
 `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
 
 """
+import os
 from collections.abc import Sequence
 
 from parfive import Downloader, Results
@@ -346,6 +347,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> filepaths = Fido.fetch(filepaths)  # doctest: +SKIP
 
         """
+        if path is not None and not os.access(path, os.W_OK):
+            raise PermissionError('You do not have permission to write'
+                                  ' file in this directory')
 
         if "wait" in kwargs:
             raise ValueError("wait is not a valid keyword argument to Fido.fetch.")
