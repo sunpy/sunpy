@@ -30,7 +30,7 @@ r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 # the solar radius are masked. We also make a slight change to the colormap
 # so that masked values are shown as black instead of the default white.
 mask = ma.masked_less_equal(r, 1)
-palette = aia.plot_settings['cmap']
+palette = aia.cmap
 palette.set_bad('black')
 
 ###############################################################################

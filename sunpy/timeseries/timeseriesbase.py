@@ -6,8 +6,6 @@ import copy
 import warnings
 from collections import OrderedDict
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 import pandas as pd
 
 import astropy
@@ -418,6 +416,7 @@ class GenericTimeSeries:
         axes : `~matplotlib.axes.Axes`
             The plot axes.
         """
+        import matplotlib.pyplot as plt
         # Get current axes
         if axes is None:
             axes = plt.gca()
@@ -438,6 +437,7 @@ class GenericTimeSeries:
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
         """
+        import matplotlib.pyplot as plt
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
 

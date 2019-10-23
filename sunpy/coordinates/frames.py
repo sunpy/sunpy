@@ -20,7 +20,7 @@ from sunpy.time.time import _variables_for_parse_time_docstring
 
 from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
 
-from sunpy.util.decorators import add_common_docstring
+from sunpy.util.decorators import add_common_docstring, deprecated
 from sunpy.time.time import _variables_for_parse_time_docstring
 
 _J2000 = Time('J2000.0', scale='tt')
@@ -221,21 +221,10 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
         super().__init__(*args, **kwargs)
 
         # Make 3D if specified as 2D
-        # If representation was explicitly passed, do not change the rep.
-        if not _rep_kwarg:
-            if isinstance(self._data, UnitSphericalRepresentation):
-                self._data = self.spherical
+        if (self._data is not None and self._data.norm().unit is u.one
+            and u.allclose(self._data.norm(), 1*u.one)):
 
-    def represent_as(self, base, s='base', in_frame_units=False):
-        """
-        Unless the requested representation is UnitSphericalRepresentation, scale a coordinate with
-        dimensionless length so that it has the length of the solar radius.
-        """
-        data = super().represent_as(base, s, in_frame_units=in_frame_units)
-        if not isinstance(data, UnitSphericalRepresentation) and \
-           data.norm().unit is u.one and u.allclose(data.norm(), 1*u.one):
-            data *= _RSUN.to(u.km)
-        return data
+            self._data *= _RSUN.to(u.km)
 
 
 @add_common_docstring(**_frame_parameters())
@@ -440,17 +429,16 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     rsun = Attribute(default=_RSUN.to(u.km))
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
 
-    def calculate_distance(self):
+    def make_3d(self):
         """
         This method calculates the third coordinate of the Helioprojective
-        frame. It assumes that the coordinate point is on the disk of the Sun
-        at the rsun radius.
+        frame. It assumes that the coordinate point is on the surface of the Sun.
 
         If a point in the frame is off limb then NaN will be returned.
 
         Returns
         -------
-        new_frame : `~sunpy.coordinates.frames.HelioProjective`
+        new_frame : `~sunpy.coordinates.frames.Helioprojective`
             A new frame instance with all the attributes of the original but
             now with a third coordinate.
         """
@@ -460,9 +448,9 @@ class Helioprojective(SunPyBaseCoordinateFrame):
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):
-            raise ConvertError("Cannot calculate distance to the solar disk "
-                               "for observer '{}' "
-                               "without `obstime` being specified.".format(self.observer))
+            raise ConvertError("Cannot calculate distance to the Sun "
+                               f"for observer '{self.observer}' "
+                               "without `obstime` being specified.")
 
         rep = self.represent_as(UnitSphericalRepresentation)
         lat, lon = rep.lat, rep.lon
@@ -476,6 +464,10 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         return self.realize_frame(SphericalRepresentation(lon=lon,
                                                           lat=lat,
                                                           distance=d))
+
+    # Support the previous name for make_3d for now
+    calculate_distance = deprecated('1.1', name="calculate_distance",
+                                    alternative="make_3d")(make_3d)
 
 
 @add_common_docstring(**_frame_parameters())

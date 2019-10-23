@@ -202,7 +202,7 @@ class GenericMap(NDData):
             norm = colors.Normalize()
 
         # Visualization attributes
-        self.plot_settings = {'cmap': cm.gray,
+        self.plot_settings = {'cmap': 'gray',
                               'norm': norm,
                               'interpolation': 'nearest',
                               'origin': 'lower'
@@ -1414,6 +1414,19 @@ class GenericMap(NDData):
         return new_map
 
 # #### Visualization #### #
+
+    @property
+    def cmap(self):
+        """
+        Return the `matplotlib.colors.Colormap` instance this map uses.
+        """
+        cmap = self.plot_settings['cmap']
+        if isinstance(cmap, str):
+            cmap = plt.get_cmap(cmap)
+            # Set the colormap to be this specific instance so we are not
+            # returning a copy
+            self.plot_settings['cmap'] = cmap
+        return cmap
 
     @u.quantity_input
     def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):

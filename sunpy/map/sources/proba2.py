@@ -4,8 +4,6 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-import matplotlib.pyplot as plt
-
 from sunpy.map import GenericMap
 
 __all__ = ['SWAPMap']
@@ -39,7 +37,7 @@ class SWAPMap(GenericMap):
         self.meta['obsrvtry'] = "PROBA2"
 
         self._nickname = self.detector
-        self.plot_settings['cmap'] = plt.get_cmap(name='sdoaia171')
+        self.plot_settings['cmap'] = 'sdoaia171'
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

@@ -199,6 +199,10 @@ def test_units(generic_map):
     generic_map.spatial_units == ('arcsec', 'arcsec')
 
 
+def test_cmap(generic_map):
+    assert generic_map.cmap == plt.get_cmap('gray')
+
+
 def test_coordinate_frame(aia171_test_map):
     frame = aia171_test_map.coordinate_frame
     assert isinstance(frame, sunpy.coordinates.Helioprojective)
