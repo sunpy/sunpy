@@ -37,7 +37,7 @@ class EUVIMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = plt.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
+        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
         self.meta['waveunit'] = 'Angstrom'
 
         # Try to identify when the FITS meta data does not have the correct
@@ -103,7 +103,7 @@ class CORMap(GenericMap):
 
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = plt.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
+        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
@@ -147,7 +147,7 @@ class HIMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
         self._nickname = "{}-{}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = plt.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))
+        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
