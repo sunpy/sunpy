@@ -4,8 +4,6 @@
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
-import matplotlib.pyplot as plt
-
 from astropy.visualization import LogStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
@@ -60,7 +58,7 @@ class TRACEMap(GenericMap):
         self.meta['obsrvtry'] = "TRACE"
         self._nickname = self.detector
         # Colour maps
-        self.plot_settings['cmap'] = plt.get_cmap('trace' + str(self.meta['WAVE_LEN']))
+        self.plot_settings['cmap'] = 'trace' + str(self.meta['WAVE_LEN'])
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, LogStretch()))
 
     @classmethod
