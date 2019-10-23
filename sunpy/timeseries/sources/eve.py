@@ -62,7 +62,7 @@ class ESPTimeSeries(GenericTimeSeries):
     @peek_show
     def peek(self, title='EVE/ESP Level1', **kwargs):
 
-        self._validate_data_for_ploting()
+        self._validate_data_for_plotting()
 
         names = ('Flux \n 0.1-7nm', 'Flux \n 18nm', 'Flux \n 26nm', 'Flux \n 30nm', 'Flux \n 36nm')
 
@@ -185,7 +185,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             Any additional plot arguments that should be used when plotting.
         """
         # Check we have a timeseries valid for plotting
-        self._validate_data_for_ploting()
+        self._validate_data_for_plotting()
 
         figure = plt.figure()
         # Choose title if none was specified

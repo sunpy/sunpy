@@ -76,7 +76,7 @@ class LYRATimeSeries(GenericTimeSeries):
             Any additional plot arguments that should be used when plotting.
         """
         # Check we have a timeseries valid for plotting
-        self._validate_data_for_ploting()
+        self._validate_data_for_plotting()
 
         lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
                      ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
