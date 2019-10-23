@@ -347,7 +347,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> filepaths = Fido.fetch(filepaths)  # doctest: +SKIP
 
         """
-        if path is not None and os.access(path, os.W_OK) is not True:
+        if path is not None and not os.access(path, os.W_OK):
             raise PermissionError('You do not have permission to write'
                                   ' file in this directory')
 
