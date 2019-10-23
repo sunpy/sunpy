@@ -113,17 +113,19 @@ def test_query(mock_search):
 @mock.patch('parfive.Downloader.download',
             return_value=None)
 @mock.patch('parfive.Downloader.enqueue_file')
-def test_fetch(mock_wait, mock_search, mock_enqueue):
+def test_fetch(mock_wait, mock_search, mock_enqueue,tmp_path):
+    path = tmp_path / "sub"
+    path.mkdir()
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
                           Instrument('noaa-indices'))
-    LCClient.fetch(qr1, path="/some/path/{file}")
+    LCClient.fetch(qr1, path=path/"{file}")
 
     # Here we assert that the `fetch` function has called the parfive
     # Downloader.enqueue_file method with the correct arguments. Everything
     # that happens after this point should either be tested in the
     # GenericClient tests or in parfive itself.
     assert mock_enqueue.called_once_with(("ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt",
-                                          "/some/path/RecentIndices.txt"))
+                                          path/"RecentIndices.txt"))
 
 
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
@@ -132,17 +134,19 @@ def test_fetch(mock_wait, mock_search, mock_enqueue):
 @mock.patch('parfive.Downloader.download',
             return_value=None)
 @mock.patch('parfive.Downloader.enqueue_file')
-def test_fido(mock_wait, mock_search, mock_enqueue):
+def test_fido(mock_wait, mock_search, mock_enqueue,tmp_path):
+    path = tmp_path / "sub"
+    path.mkdir()
     qr1 = Fido.search(Time('2012/10/4', '2012/10/6'),
                       Instrument('noaa-indices'))
-    Fido.fetch(qr1, path="/some/path/{file}")
+    Fido.fetch(qr1, path=path)
 
     # Here we assert that the `fetch` function has called the parfive
     # Downloader.enqueue_file method with the correct arguments. Everything
     # that happens after this point should either be tested in the
     # GenericClient tests or in parfive itself.
     assert mock_enqueue.called_once_with(("ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt",
-                                          "/some/path/RecentIndices.txt"))
+                                          path/"RecentIndices.txt"))
 
 
 @pytest.mark.remote_data
