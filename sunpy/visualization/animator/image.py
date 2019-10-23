@@ -173,7 +173,9 @@ class ImageAnimatorWCS(ImageAnimator):
         self.slices_wcsaxes = list_slices_wcsaxes[::-1]
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
-        super().__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
+
+        # For some reason using `super()` here causes an error.
+        ImageAnimator.__init__(self, data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def _get_main_axes(self):
         axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
