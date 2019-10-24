@@ -3,14 +3,90 @@
 SunPy coordinates
 =================
 
-The SunPy coordinates submodule is an implementation of the common solar physics
-coordinate frames using the :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
+This sub-package contains:
+
+* A robust framework for working with solar-physics coordinate systems
+* Functions to obtain the locations of solar-system bodies (`sunpy.coordinates.ephemeris`)
+* Functions to calculate Sun-specific coordinate information (`sunpy.coordinates.sun`)
+
+The SunPy coordinate framework extends the
+:ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
+
+Supported Coordinate Systems
+----------------------------
+
+.. list-table::
+   :widths: auto
+   :header-rows: 1
+
+   * - Coordinate system
+     - Abbreviation
+     - SunPy/Astropy equivalent
+     - Notes
+   * - Heliocentric Aries Ecliptic (Mean)
+     - HAE (also HEC)
+     - Astropy's `~astropy.coordinates.HeliocentricMeanEcliptic`
+     -
+   * - Heliocentric Cartesian
+     - HCC
+     - `~sunpy.coordinates.frames.Heliocentric`
+     -
+   * - Heliocentric Earth Ecliptic
+     - HEE
+     - `~sunpy.coordinates.frames.HeliocentricEarthEcliptic`
+     -
+   * - Heliocentric Earth Equatorial
+     - HEEQ (also HEQ)
+     - `~sunpy.coordinates.frames.HeliographicStonyhurst`
+     - Use a Cartesian representation
+   * - Heliocentric Inertial
+     - HCI
+     - `~sunpy.coordinates.frames.HeliocentricInertial`
+     -
+   * - Heliocentric Radial
+     - HCR
+     - similar to `~sunpy.coordinates.frames.Heliocentric`
+     - Use a cylindrical representation, *but* with a 90-degree offset in ``psi``
+   * - Heliocentric/Heliographic Radial-Tangential-Normal
+     - HGRTN
+     - similar to `~sunpy.coordinates.frames.Heliocentric`
+     - The axes are permuted, with HCC X, Y, Z equivalent respectively to HGRTN Y, Z, X
+   * - Heliocentric Carrington
+     - HGC
+     - `~sunpy.coordinates.frames.HeliographicCarrington`
+     -
+   * - Heliocentric Stonyhurst
+     - HGS
+     - `~sunpy.coordinates.frames.HeliographicStonyhurst`
+     -
+   * - Helioprojective Cartesian
+     - HPC
+     - `~sunpy.coordinates.frames.Helioprojective`
+     -
+   * - Geocentric Earth Equatorial (Mean)
+     - GEI
+     - `~sunpy.coordinates.frames.GeocentricEarthEquatorial`
+     -
+   * - Geographic
+     - GEO
+     - Astropy's `~astropy.coordinates.ITRS`
+     - The precise geographic definitions may differ
+   * - Geocentric Solar Ecliptic
+     - GSE
+     - `~sunpy.coordinates.frames.GeocentricSolarEcliptic`
+     -
+
+
+For a description of these coordinate systems,
+see `Thompson (2006) <https://doi.org/10.1051/0004-6361:20054262>`_
+and `Franz & Harper (2002) <https://doi.org/10.1016/S0032-0633(01)00119-2>`_
+(and `corrected version <https://www2.mps.mpg.de/homes/fraenz/systems/systems3art/systems3art.html>`_).
 
 
 Getting Started
 ---------------
 
-The easiest interface to the coordinates module is through the `~astropy.coordinates.SkyCoord` class::
+The easiest interface to work with coordinates is through the `~astropy.coordinates.SkyCoord` class::
 
   >>> import astropy.units as u
   >>> from astropy.coordinates import SkyCoord
@@ -24,9 +100,9 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
       (70., -30., 695700.)>
 
 
-It is also possible to use strings to define the frame but in that case make sure to
-explicitly import `sunpy.coordinates` as it registers solar coordinate frames with
-astropy coordinates.::
+It is also possible to use strings to specify the frame but in that case make sure to
+explicitly import `sunpy.coordinates` as it registers SunPy's coordinate frames with
+the Astropy coordinates framework::
 
   >>> import astropy.units as u
   >>> from astropy.coordinates import SkyCoord
@@ -38,25 +114,13 @@ astropy coordinates.::
       (-100., 500.)>
 
 
-SunPy implements support for the following solar physics coordinate systems:
-
-* Helioprojective (Cartesian) `~sunpy.coordinates.frames.Helioprojective`
-* Heliocentric `~sunpy.coordinates.frames.Heliocentric`
-* Heliographic Stonyhurst `~sunpy.coordinates.frames.HeliographicStonyhurst`
-* Heliographic Carrington `~sunpy.coordinates.frames.HeliographicCarrington`
-
-for a complete description of these frames see `sunpy.coordinates.frames`, for
-a more detailed description of the frames see `Thompson (2006) <https://doi.org/10.1051/0004-6361:20054262>`_
-
-
-`~astropy.coordinates.SkyCoord` and all other `~astropy.coordinates` objects
-also support array coordinates. These work the same as single-value coordinates,
+`~astropy.coordinates.SkyCoord` and all coordinate frames
+support array coordinates. These work the same as single-value coordinates,
 but they store multiple coordinates in a single object. When you're going to
 apply the same operation to many different coordinates, this is a better choice
 than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
 *much* faster than applying the operation to each
-`~astropy.coordinates.SkyCoord` in a ``for`` loop.
-::
+`~astropy.coordinates.SkyCoord` in a ``for`` loop::
 
    >>> c = SkyCoord([-500, 400]*u.arcsec, [100, 200]*u.arcsec, frame=frames.Helioprojective)
    >>> c
@@ -71,15 +135,14 @@ Accessing Coordinates
 ^^^^^^^^^^^^^^^^^^^^^
 
 Individual coordinates can be accessed via attributes on the SkyCoord object,
-but the names of the components of the coordinates for each frame differ. For a full
-description of all the properties of the frames see `sunpy.coordinates.frames`.
+but the names of the components of the coordinates can depend on the the frame and the chosen
+representation (e.g., Cartesian versus spherical).
 
 `~sunpy.coordinates.Helioprojective`
 ####################################
 
-For the helioprojective frame the coordinates are accessed as ``Tx`` and ``Ty``
-representing theta x and y. These are the same coordinates that are often
-referred to as 'solar-x' and 'solar-y'.::
+For the helioprojective frame, the theta_x and theta_y components are accessed as
+``Tx`` and ``Ty``, respectively::
 
   >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective)
   >>> c.Tx
@@ -90,7 +153,7 @@ referred to as 'solar-x' and 'solar-y'.::
 `~sunpy.coordinates.Heliocentric`
 #################################
 
-Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x, y, z``::
+Heliocentric is typically used with Cartesian components::
 
   >>> c = SkyCoord(-72241.0*u.km, 361206.1*u.km, 589951.4*u.km, frame=frames.Heliocentric)
   >>> c.x
@@ -103,7 +166,7 @@ Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x, 
 `~sunpy.coordinates.HeliographicStonyhurst` and `~sunpy.coordinates.HeliographicCarrington`
 ###########################################################################################
 
-Both the heliographic frames use latitude, longitude and radius which are accessed as follows::
+Both of the heliographic frames have the components of latitude, longitude and radius::
 
    >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
    >>> c.lat
@@ -113,6 +176,19 @@ Both the heliographic frames use latitude, longitude and radius which are access
    >>> c.radius
    <Distance 695700. km>
 
+Heliographic Stonyhurst, when used with Cartesian components, is known as Heliocentric
+Earth Equatorial (HEEQ).  Here's an example of how to use
+`~sunpy.coordinates.frames.HeliographicStonyhurst` for HEEQ coordinates::
+
+  >>> c = SkyCoord(-72241.0*u.km, 361206.1*u.km, 589951.4*u.km,
+  ...              representation_type='cartesian', frame=frames.HeliographicStonyhurst)
+  >>> c.x
+  <Quantity -72241. km>
+  >>> c.y
+  <Quantity 361206.1 km>
+  >>> c.z
+  <Quantity 589951.4 km>
+
 Transforming Between Coordinate Frames
 --------------------------------------
 
@@ -120,9 +196,8 @@ Both `~astropy.coordinates.SkyCoord` and
 `~astropy.coordinates.BaseCoordinateFrame` instances have a
 `~astropy.coordinates.SkyCoord.transform_to` method. This can be used to
 transform the frame to any other frame, either implemented in SunPy or in
-Astropy `the astropy documentation
-<https://docs.astropy.org/en/stable/coordinates/transforming.html>`_ for more
-details. An example of transforming the center of the solar disk to Carrington
+Astropy (see also :ref:`astropy-coordinates-transforming`).
+An example of transforming the center of the solar disk to Carrington
 coordinates is::
 
    >>> c = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime="2017-07-26",
@@ -189,10 +264,10 @@ An example with two maps, named ``aia`` and ``stereo``::
   >>> hpc2 = hpc1.transform_to(stereo.coordinate_frame)  # doctest: +SKIP
 
 
-Design of the Coordinates Module
---------------------------------
+Design of the Coordinates Sub-Package
+-------------------------------------
 
-This module works by defining a collection of ``Frames``
+This sub-package works by defining a collection of ``Frames``
 (`sunpy.coordinates.frames`), which exists on a transformation graph, where the
 transformations between the coordinate frames are then defined and registered
 with the transformation graph (`sunpy.coordinates.transformations`). It is also
@@ -200,7 +275,7 @@ possible to transform SunPy frames to Astropy frames.
 
 Positions within these ``Frames`` are stored as a ``Representation`` of a
 coordinate, a representation being a description of a point in a Cartesian,
-spherical or cylindrical system (`astropy.coordinates.representation`). A frame
+spherical or cylindrical system (see :ref:`astropy-coordinates-representations`). A frame
 that contains a representation of one or many points is said to have been
 'realized'.
 
@@ -213,7 +288,7 @@ Frames and SkyCoord
 ^^^^^^^^^^^^^^^^^^^
 
 The `~astropy.coordinates.SkyCoord` class is a high level wrapper around the
-`astropy.coordinates` package. It provides an easier way to create and transform
+`astropy.coordinates` sub-package. It provides an easier way to create and transform
 coordinates, by using string representations for frames rather than the classes
 themselves and some other usability improvements, for more information see the
 `~astropy.coordinates.SkyCoord` documentation.
@@ -240,14 +315,14 @@ mean to be describing a point above the defined 'surface' of the Sun.
 Coordinates and WCS
 -------------------
 
-The `sunpy.coordinates` package provides a mapping between FITS-WCS CTYPE
+The `sunpy.coordinates` sub-package provides a mapping between FITS-WCS CTYPE
 convention and the coordinate frames as defined in `sunpy.coordinates`. This is
 used via the `astropy.wcs.utils.wcs_to_celestial_frame` function, with which the
 SunPy frames are registered upon being imported. This list is used by packages
 such as ``wcsaxes`` to convert from `astropy.wcs.WCS` objects to coordinate
 frames.
 
-The `sunpy.map.GenricMap` class creates `astropy.wcs.WCS` objects as
+The `sunpy.map.GenericMap` class creates `astropy.wcs.WCS` objects as
 ``amap.wcs``, however, it adds some extra attributes to the `~astropy.wcs.WCS`
 object to be able to fully specify the coordinate frame. It adds
 ``heliographic_observer`` and ``rsun``.
@@ -299,4 +374,4 @@ Some of this documentation was adapted from Astropy under the terms of the `BSD
 License
 <https://raw.githubusercontent.com/astropy/astropy/master/LICENSE.rst>`_.
 
-This package was initially developed by Pritish Chakraborty as part of GSOC 2014 and Stuart Mumford.
+This sub-package was initially developed by Pritish Chakraborty as part of GSOC 2014 and Stuart Mumford.

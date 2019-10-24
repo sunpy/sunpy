@@ -3,6 +3,7 @@ This subpackage contains:
 
 * A robust framework for working with coordinate systems
 * Functions to obtain the locations of solar-system bodies
+  (`sunpy.coordinates.ephemeris`)
 * Functions to calculate Sun-specific coordinate information
   (`sunpy.coordinates.sun`)
 
@@ -13,7 +14,7 @@ for converting other coordinates to them using attribute-style access).
 
 The frames colored in cyan are implemented in `astropy.coordinates`, and there
 are other astronomical frames that can be transformed to that are not shown
-below.  See the documentation for `astropy.coordinates` for more information.
+below (see `astropy.coordinates.builtin_frames`).
 
 """
 
