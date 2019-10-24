@@ -32,3 +32,8 @@ def test_measurement():
 def test_observatory():
     """Tests the observatory property of the LASCOMap object."""
     assert lasco.observatory == "SOHO"
+
+
+def test_norm_clip():
+    # Tests that the default normalizer has clipping disabled
+    assert lasco.plot_settings['norm'].clip == False

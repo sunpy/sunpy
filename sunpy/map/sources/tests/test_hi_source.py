@@ -31,3 +31,7 @@ def test_observatory():
     """Tests the observatory property of the HIMap object."""
     assert hi.observatory == "STEREO A"
 
+
+def test_norm_clip():
+    # Tests that the default normalizer has clipping disabled
+    assert hi.plot_settings['norm'].clip == False

@@ -37,3 +37,8 @@ def test_measurement(createTRACE):
 def test_observatory(createTRACE):
     """Tests the observatory property of the TRACEMap object."""
     assert createTRACE.observatory == "TRACE"
+
+
+def test_norm_clip(createTRACE):
+    # Tests that the default normalizer has clipping disabled
+    assert createTRACE.plot_settings['norm'].clip == False
