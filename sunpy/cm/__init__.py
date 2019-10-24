@@ -4,7 +4,8 @@ import sys as _sys
 import warnings as _w
 from sunpy.util.exceptions import SunpyDeprecationWarning as _SDW
 
-_w.warn("The sunpy.cm module has been moved in 1.1 to sunpy.visualization.colormaps, it will be removed in 2.1",
+_w.warn("The functionality of the sunpy.cm module is now in sunpy.visualization.colormaps as of SunPy 1.1. "
+        "The ability to import sunpy.cm as a module may be removed in a future version of SunPy.",
         category=_SDW)
 
 # Import docstring from the new module
