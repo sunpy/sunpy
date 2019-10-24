@@ -114,17 +114,39 @@ def _transformation_debug(description):
     return decorator
 
 
-def _observers_are_equal(obs_1, obs_2, string_ok=False):
-    if string_ok:
-        if obs_1 == obs_2:
-            return True
-    if not (isinstance(obs_1, BaseCoordinateFrame) and isinstance(obs_2, BaseCoordinateFrame)):
-        raise ValueError("To compare two observers, both must be instances of BaseCoordinateFrame. "
-                         "Cannot compare two observers {} and {}.".format(obs_1, obs_2))
+def _observers_are_equal(obs_1, obs_2):
+    # Note that this also lets pass the situation where both observers are None
+    if obs_1 == obs_2:
+        return True
+
+    # obs_1 != obs_2
+    if obs_1 is None:
+        raise ConvertError("The source observer is set to None, but the destination observer is "
+                           f"{obs_2}.")
+    if obs_2 is None:
+        raise ConvertError("The destination observer is set to None, but the source observer is "
+                           f"{obs_2}.")
+    if isinstance(obs_1, str):
+        raise ConvertError("The source observer needs to have `obstime` set because the "
+                           "destination observer is different.")
+    if isinstance(obs_2, str):
+        raise ConvertError("The destination observer needs to have `obstime` set because the "
+                           "source observer is different.")
+
     return (u.allclose(obs_1.lat, obs_2.lat) and
             u.allclose(obs_1.lon, obs_2.lon) and
             u.allclose(obs_1.radius, obs_2.radius) and
             obs_1.obstime == obs_2.obstime)
+
+
+def _check_observer_defined(frame):
+    if frame.observer is None:
+        raise ConvertError("This transformation cannot be performed because the "
+                           f"{frame.__class__.__name__} frame has observer=None.")
+    elif isinstance(frame.observer, str):
+        raise ConvertError("This transformation cannot be performed because the "
+                           f"{frame.__class__.__name__} frame needs a specified obstime "
+                           f"to fully resolve observer='{frame.observer}'.")
 
 
 # =============================================================================
@@ -219,6 +241,9 @@ def hcc_to_hpc(helioccoord, heliopframe):
     """
     Convert from Heliocentric Cartesian to Helioprojective Cartesian.
     """
+    _check_observer_defined(helioccoord)
+    _check_observer_defined(heliopframe)
+
     # Transform the HPC observer (in HGS) to the HPC obstime in case it's different
     observer = _transform_obstime(heliopframe.observer, heliopframe.obstime)
 
@@ -244,10 +269,8 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     """
     Convert from Helioprojective Cartesian to Heliocentric Cartesian.
     """
-    if not isinstance(heliopcoord.observer, BaseCoordinateFrame):
-        raise ConvertError("Cannot transform helioprojective coordinates to "
-                           "heliocentric coordinates for observer '{}' "
-                           "without `obstime` being specified.".format(heliopcoord.observer))
+    _check_observer_defined(heliopcoord)
+    _check_observer_defined(heliocframe)
 
     heliopcoord = heliopcoord.make_3d()
 
@@ -293,10 +316,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
     """
     Convert from Heliocentric Cartesian to Heliographic Stonyhurst.
     """
-    if not isinstance(helioccoord.observer, BaseCoordinateFrame):
-        raise ConvertError("Cannot transform heliocentric coordinates to "
-                           "heliographic coordinates for observer '{}' "
-                           "without `obstime` being specified.".format(helioccoord.observer))
+    _check_observer_defined(helioccoord)
 
     # Transform the HCC observer (in HGS) to the HCC obstime in case it's different
     hcc_observer_at_hcc_obstime = _transform_obstime(helioccoord.observer, helioccoord.obstime)
@@ -319,10 +339,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     """
     Convert from Heliographic Stonyhurst to Heliocentric Cartesian.
     """
-    if not isinstance(heliocframe.observer, BaseCoordinateFrame):
-        raise ConvertError("Cannot transform heliographic coordinates to "
-                           "heliocentric coordinates for observer '{}' "
-                           "without `obstime` being specified.".format(heliocframe.observer))
+    _check_observer_defined(heliocframe)
 
     # Loopback transform HGS if there is a change in obstime
     int_coord = _transform_obstime(heliogcoord, heliocframe.obstime)
@@ -346,16 +363,12 @@ def hpc_to_hpc(from_coo, to_frame):
     This converts from HPC to HPC, with different observer location parameters.
     It does this by transforming through HGS.
     """
-    if _observers_are_equal(from_coo.observer, to_frame.observer, string_ok=True) and \
+    if _observers_are_equal(from_coo.observer, to_frame.observer) and \
        np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
 
-    if not isinstance(to_frame.observer, BaseCoordinateFrame):
-        raise ConvertError("Cannot transform between helioprojective frames "
-                           "without `obstime` being specified for observer {}.".format(to_frame.observer))
-    if not isinstance(from_coo.observer, BaseCoordinateFrame):
-        raise ConvertError("Cannot transform between helioprojective frames "
-                           "without `obstime` being specified for observer {}.".format(from_coo.observer))
+    _check_observer_defined(from_coo)
+    _check_observer_defined(to_frame)
 
     hgs = from_coo.transform_to(HeliographicStonyhurst(obstime=to_frame.obstime))
     hpc = hgs.transform_to(to_frame)
@@ -538,9 +551,12 @@ def hcc_to_hcc(from_coo, to_frame):
     """
     Convert between two Heliocentric frames.
     """
-    if _observers_are_equal(from_coo.observer, to_frame.observer, string_ok=True) and \
+    if _observers_are_equal(from_coo.observer, to_frame.observer) and \
        np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
+
+    _check_observer_defined(from_coo)
+    _check_observer_defined(to_frame)
 
     # Convert through HGS
     hgscoord = from_coo.transform_to(HeliographicStonyhurst(obstime=to_frame.obstime))

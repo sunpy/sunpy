@@ -32,7 +32,7 @@ astropy coordinates.::
   >>> from astropy.coordinates import SkyCoord
 
   >>> import sunpy.coordinates
-  >>> c = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame='helioprojective')
+  >>> c = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame='helioprojective', observer='earth')
   >>> c
   <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=earth): (Tx, Ty) in arcsec
       (-100., 500.)>
@@ -60,10 +60,10 @@ than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
 
    >>> c = SkyCoord([-500, 400]*u.arcsec, [100, 200]*u.arcsec, frame=frames.Helioprojective)
    >>> c
-   <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=earth): (Tx, Ty) in arcsec
+   <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec
        [(-500.,  100.), ( 400.,  200.)]>
    >>> c[0]
-   <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=earth): (Tx, Ty) in arcsec
+   <SkyCoord (Helioprojective: obstime=None, rsun=695700.0 km, observer=None): (Tx, Ty) in arcsec
        (-500.,  100.)>
 
 
@@ -125,7 +125,8 @@ Astropy `the astropy documentation
 details. An example of transforming the center of the solar disk to Carrington
 coordinates is::
 
-   >>> c = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime="2017-07-26")
+   >>> c = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime="2017-07-26",
+   ...              observer="earth")
    >>> c
    <SkyCoord (Helioprojective: obstime=2017-07-26T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
        (0., 0.)>
@@ -155,13 +156,14 @@ observer is at the origin of the coordinate system. This information is encoded
 in the `~sunpy.coordinates.frames.Helioprojective` and
 `~sunpy.coordinates.frames.Heliocentric` frames as the ``observer`` attribute,
 which is itself an instance of the
-`~sunpy.coordinates.frames.HeliographicStonyhurst` frame. The default observer
-location is set to the position of the Earth (using
-`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`) as long as the
-``obstime`` attribute is specified. If the ``obstime`` attribute is not set then
-you will be unable to transform the frame unless an explicit ``observer`` is
-specified, as the time is required to calculate the location of the Earth. The
-location of the observer is automatically populated from meta data when
+`~sunpy.coordinates.frames.HeliographicStonyhurst` frame.
+The ``observer`` can be a string for a solar-system body (e.g., "earth" or
+"mars"), and
+`~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst` will be used
+with the specified ``obstime`` to fully specify the observer location.  If
+the observer location is not fully specified, or not present at all, most
+transformations cannot be performed.
+The location of the observer is automatically populated from meta data when
 coordinate frames are created using map.
 
 It is possible to convert from a `~sunpy.coordinates.frames.Helioprojective`
