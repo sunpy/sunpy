@@ -1,4 +1,5 @@
-Units and Coordinates
-=====================
+Coordinates, times, and units
+=============================
 
-This section contains any examples which showcase how SunPy handles coordinate information and scientific units.
+This section contains any examples which showcasse how SunPy handles coordinate
+information, times, and scientific units.
