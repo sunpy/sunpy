@@ -42,3 +42,8 @@ def test_observatory(suvi):
 def test_detector(suvi):
     """Tests the detector property of the SUVIMap object."""
     assert suvi.detector == "SUVI"
+
+
+def test_norm_clip(suvi):
+    # Tests that the default normalizer has clipping disabled
+    assert suvi.plot_settings['norm'].clip == False
