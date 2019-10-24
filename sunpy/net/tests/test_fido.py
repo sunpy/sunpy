@@ -249,6 +249,12 @@ def test_repr():
 def filter_queries(queries):
     return attr.and_(queries) not in queries
 
+def test_path():
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+
+    with pytest.raises(PermissionError):
+        Fido.fetch(results, path="/some/path/{file}")
 
 @settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
