@@ -439,7 +439,7 @@ class GenericTimeSeries:
         """
         import matplotlib.pyplot as plt
         # Check we have a timeseries valid for plotting
-        self._validate_data_for_ploting()
+        self._validate_data_for_plotting()
 
         # Now make the plot
         figure = plt.figure()
@@ -447,7 +447,7 @@ class GenericTimeSeries:
 
         return figure
 
-    def _validate_data_for_ploting(self):
+    def _validate_data_for_plotting(self):
         """
         Raises an exception if the `~sunpy.timeseries.TimeSeries` is invalid
         for plotting.
