@@ -32,3 +32,8 @@ def test_measurement():
 def test_observatory():
     """Tests the observatory property of the CORMap object."""
     assert cor.observatory == "STEREO A"
+
+
+def test_norm_clip():
+    # Tests that the default normalizer has clipping disabled
+    assert cor.plot_settings['norm'].clip == False
