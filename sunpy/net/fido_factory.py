@@ -9,6 +9,7 @@ This module provides the `Fido
 
 """
 import os
+from pathlib import Path
 from collections.abc import Sequence
 
 from parfive import Downloader, Results
@@ -347,9 +348,11 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> filepaths = Fido.fetch(filepaths)  # doctest: +SKIP
 
         """
-        if path is not None and not os.access(path, os.W_OK):
-            raise PermissionError('You do not have permission to write'
-                                  ' file in this directory')
+        if path is not None:
+            exists = list(filter(lambda p: p.exists(), Path(path).parents))
+            if not os.access(exists[0], os.W_OK):
+                raise PermissionError('You do not have permission to write'
+                                      f' to the directory {exists[0]}.')
 
         if "wait" in kwargs:
             raise ValueError("wait is not a valid keyword argument to Fido.fetch.")
