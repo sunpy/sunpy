@@ -48,3 +48,8 @@ def test_measurement(createAIAMap):
     """Tests the measurement property of the AIAMap object."""
     assert createAIAMap.measurement.value in [171, 193]
     # aiaimg has 171, jp2path has 193.
+
+
+def test_norm_clip(createAIAMap):
+    # Tests that the default normalizer has clipping disabled
+    assert createAIAMap.plot_settings['norm'].clip == False

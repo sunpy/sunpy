@@ -43,3 +43,8 @@ def test_rsun_missing():
     euvi_no_rsun = Map(fitspath)
     euvi_no_rsun.meta['rsun'] = None
     assert euvi_no_rsun.rsun_obs.value == sun.angular_radius(euvi.date).to('arcsec').value
+
+
+def test_norm_clip():
+    # Tests that the default normalizer has clipping disabled
+    assert euvi.plot_settings['norm'].clip == False
