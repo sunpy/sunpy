@@ -624,7 +624,7 @@ class GenericMap(NDData):
 
     @property
     def dsun(self):
-        """The observer distance from the Sun."""
+        """The observer distance from the center of the Sun."""
         return self.observer_coordinate.radius.to('m')
 
     @property
