@@ -14,7 +14,8 @@ import astropy.units as u
 ######################################################################################
 # We use `~astropy.coordinates.SkyCoord` to define the center of the Sun
 obstime = "2013-09-21 16:00:00"
-c = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime=obstime, frame=frames.Helioprojective)
+c = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime=obstime,
+             observer="earth", frame=frames.Helioprojective)
 
 ######################################################################################
 # Now we establish our location on the Earth, in this case let's consider a high altitude
@@ -34,5 +35,5 @@ print(f'Altitude is {sun_altaz.T.alt} and Azimuth is {sun_altaz.T.az}')
 # solar distance. Define distance with SunPy's almanac.
 distance = sun.earth_distance(obstime)
 b = SkyCoord(az=sun_altaz.T.az, alt=sun_altaz.T.alt, distance=distance, frame=frame_altaz)
-sun_helio = b.transform_to(frames.Helioprojective)
+sun_helio = b.transform_to(frames.Helioprojective(observer="earth"))
 print(f'The helioprojective point is {sun_helio.T.Tx}, {sun_helio.T.Ty}')

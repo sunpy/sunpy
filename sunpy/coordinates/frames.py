@@ -318,20 +318,19 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     >>> import astropy.units as u
 
     >>> sc = SkyCoord(CartesianRepresentation(10*u.km, 1*u.km, 2*u.km),
-    ...               obstime="2011/01/05T00:00:50", frame="heliocentric")
+    ...               obstime="2011/01/05T00:00:50", observer="earth", frame="heliocentric")
     >>> sc
     <SkyCoord (Heliocentric: obstime=2011-01-05T00:00:50.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in km
         (10., 1., 2.)>
 
-    >>> sc = SkyCoord([1,2]*u.km, [3,4]*u.m, [5,6]*u.cm, frame="heliocentric", obstime="2011/01/01T00:00:54")
-
+    >>> sc = SkyCoord([1,2]*u.km, [3,4]*u.m, [5,6]*u.cm,
+    ...               obstime="2011/01/01T00:00:54", observer="earth", frame="heliocentric")
     >>> sc
     <SkyCoord (Heliocentric: obstime=2011-01-01T00:00:54.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in (km, m, cm)
         [(1., 3., 5.), (2., 4., 6.)]>
 
     >>> sc = SkyCoord(CylindricalRepresentation(10*u.km, 60*u.deg, 10*u.km),
-    ...               obstime="2011/01/05T00:00:50",
-    ...               frame="heliocentric")
+    ...               obstime="2011/01/05T00:00:50", observer="earth", frame="heliocentric")
     >>> sc
     <SkyCoord (Heliocentric: obstime=2011-01-05T00:00:50.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (x, y, z) in km
         (5., 8.66025404, 10.)>
@@ -342,7 +341,7 @@ class Heliocentric(SunPyBaseCoordinateFrame):
         CylindricalRepresentation: [RepresentationMapping('phi', 'psi', u.deg)]
     }
 
-    observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
+    observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
 
 
 @add_common_docstring(**_frame_parameters())
@@ -389,18 +388,18 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     >>> from astropy.coordinates import SkyCoord
     >>> import sunpy.coordinates
     >>> import astropy.units as u
-    >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km, obstime="2010/01/01T00:00:00",
-    ...               frame="helioprojective")
+    >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km,
+    ...               obstime="2010/01/01T00:00:00", observer="earth", frame="helioprojective")
     >>> sc
     <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
         (0., 0., 5.)>
-    >>> sc = SkyCoord(0*u.deg, 0*u.deg, obstime="2010/01/01T00:00:00", frame="helioprojective")
+    >>> sc = SkyCoord(0*u.deg, 0*u.deg,
+    ...               obstime="2010/01/01T00:00:00", observer="earth", frame="helioprojective")
     >>> sc
     <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty) in arcsec
         (0., 0.)>
     >>> sc = SkyCoord(CartesianRepresentation(1*u.AU, 1e5*u.km, -2e5*u.km),
-    ...               obstime="2011/01/05T00:00:50",
-    ...               frame="helioprojective")
+    ...               obstime="2011/01/05T00:00:50", observer="earth", frame="helioprojective")
     >>> sc
     <SkyCoord (Helioprojective: obstime=2011-01-05T00:00:50.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         (137.87948623, -275.75878762, 1.00000112)>
@@ -427,7 +426,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     }
 
     rsun = Attribute(default=_RSUN.to(u.km))
-    observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
+    observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
 
     def make_3d(self):
         """

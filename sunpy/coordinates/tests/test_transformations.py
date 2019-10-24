@@ -183,10 +183,11 @@ def test_hgs_cartesian_rep_to_hpc():
     hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
                              frame=HeliographicStonyhurst(obstime=obstime),
                              representation_type='cartesian')
+    hpc_frame = Helioprojective(observer='earth', obstime=obstime)
     hgscoord_sph = hgscoord_cart.copy()
     hgscoord_sph.representation_type = 'spherical'
-    hpccoord_cart = hgscoord_cart.transform_to(Helioprojective(obstime=obstime))
-    hpccoord_sph = hgscoord_sph.transform_to(Helioprojective(obstime=obstime))
+    hpccoord_cart = hgscoord_cart.transform_to(hpc_frame)
+    hpccoord_sph = hgscoord_sph.transform_to(hpc_frame)
     assert_quantity_allclose(hpccoord_cart.Tx, hpccoord_sph.Tx)
     assert_quantity_allclose(hpccoord_cart.Ty, hpccoord_sph.Ty)
     assert_quantity_allclose(hpccoord_cart.distance, hpccoord_sph.distance)
@@ -201,10 +202,11 @@ def test_hgs_cartesian_rep_to_hcc():
     hgscoord_cart = SkyCoord(x=1*u.km, y=0.*u.km, z=0.*u.km,
                              frame=HeliographicStonyhurst(obstime=obstime),
                              representation_type='cartesian')
+    hcc_frame = Heliocentric(observer='earth', obstime=obstime)
     hgscoord_sph = hgscoord_cart.copy()
     hgscoord_sph.representation_type = 'spherical'
-    hcccoord_cart = hgscoord_cart.transform_to(Heliocentric(obstime=obstime))
-    hcccoord_sph = hgscoord_sph.transform_to(Heliocentric(obstime=obstime))
+    hcccoord_cart = hgscoord_cart.transform_to(hcc_frame)
+    hcccoord_sph = hgscoord_sph.transform_to(hcc_frame)
     assert_quantity_allclose(hcccoord_cart.x, hcccoord_sph.x)
     assert_quantity_allclose(hcccoord_cart.y, hcccoord_sph.y)
     assert_quantity_allclose(hcccoord_cart.z, hcccoord_sph.z)
@@ -451,7 +453,7 @@ def test_hgs_hcc_sunspice():
 
     old = SkyCoord(CartesianRepresentation([7e5, 8e5, 9e5]*u.km),
                    frame=HeliographicStonyhurst(obstime='2019-06-01'))
-    new = old.heliocentric
+    new = old.transform_to(Heliocentric(observer='earth'))
 
     assert_quantity_allclose(new.x, 800000.00*u.km, atol=1e-2*u.km)
     assert_quantity_allclose(new.y, 908797.89*u.km, atol=1e-2*u.km)
@@ -667,3 +669,32 @@ def test_gei_gei():
     new = old.transform_to(GeocentricEarthEquatorial(equinox=t, obstime=t)).cartesian
 
     assert_quantity_allclose(new.xyz, gei_d.xyz)
+
+
+def test_no_observer():
+    # Tests transformations to and from observer-based frames with no observer defined
+    frames_in = [Heliocentric(0*u.km, 0*u.km, 0*u.km, observer=None),
+                 Heliocentric(0*u.km, 0*u.km, 0*u.km, observer=None, obstime='2001-01-01'),
+                 Helioprojective(0*u.deg, 0*u.deg, observer=None),
+                 Helioprojective(0*u.deg, 0*u.deg, observer=None, obstime='2001-01-01')]
+    frames_out = frames_in + [
+                     HeliographicStonyhurst(0*u.deg, 0*u.deg, obstime=None),
+                     HeliographicStonyhurst(0*u.deg, 0*u.deg, obstime='2001-01-01'),
+                     Heliocentric(0*u.km, 0*u.km, 0*u.km, observer=None, obstime='2012-12-12'),
+                     Heliocentric(0*u.km, 0*u.km, 0*u.km, observer="earth", obstime=None),
+                     Heliocentric(0*u.km, 0*u.km, 0*u.km, observer="earth", obstime='2001-01-01'),
+                     Helioprojective(0*u.deg, 0*u.deg, observer=None, obstime='2012-12-12'),
+                     Helioprojective(0*u.deg, 0*u.deg, observer="earth", obstime=None),
+                     Helioprojective(0*u.deg, 0*u.deg, observer="earth", obstime='2001-01-01')]
+
+    # Self-transformations should succeed
+    for f in frames_in:
+        f.transform_to(f.replicate_without_data())
+
+    # All other transformations should error
+    for i, f1 in enumerate(frames_in):
+        for f2 in frames_out[i + 1:]:
+            with pytest.raises(ConvertError):
+                f1.transform_to(f2)
+            with pytest.raises(ConvertError):
+                f2.transform_to(f1)

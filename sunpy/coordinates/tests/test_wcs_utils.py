@@ -117,7 +117,7 @@ def test_wcs_extras():
 
 
 def test_hpc_frame_to_wcs():
-    frame = Helioprojective(obstime='2013-10-28')
+    frame = Helioprojective(observer="earth", obstime='2013-10-28')
     result_wcs = solar_frame_to_wcs_mapping(frame)
 
     assert isinstance(result_wcs, WCS)
@@ -184,7 +184,7 @@ def test_hgc_frame_to_wcs():
 
 
 def test_hcc_frame_to_wcs():
-    frame = Heliocentric(obstime='2013-10-28')
+    frame = Heliocentric(observer="earth", obstime='2013-10-28')
     result_wcs = solar_frame_to_wcs_mapping(frame)
 
     assert isinstance(result_wcs, WCS)
