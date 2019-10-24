@@ -61,8 +61,10 @@ class _Range:
         return new
 
     def __contains__(self, other):
-        return self.min <= other.min and self.max >= other.max
-
+        if isinstance(other, _Range):
+            return self.min <= other.min and self.max >= other.max
+        else:
+            return self.min <= other <= self.max
 
 class Wavelength(Attr, _Range):
     def __init__(self, wavemin, wavemax=None):
