@@ -52,3 +52,8 @@ def test_measurement(createEIT):
 def test_rsun(createEIT):
     """Tests the measurement property of the EITMap object."""
     assert u.allclose(createEIT.rsun_obs, 979.0701*u.arcsec)
+
+
+def test_norm_clip(createEIT):
+    # Tests that the default normalizer has clipping disabled
+    assert createEIT.plot_settings['norm'].clip == False
