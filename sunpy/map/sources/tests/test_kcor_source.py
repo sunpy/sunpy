@@ -45,3 +45,8 @@ def test_measurement(kcor):
 def test_observatory(kcor):
     """Tests the observatory property of the KCorMap object."""
     assert kcor.observatory == "MLSO"
+
+
+def test_norm_clip(kcor):
+    # Tests that the default normalizer has clipping disabled
+    assert kcor.plot_settings['norm'].clip == False
