@@ -1,3 +1,8 @@
+no-backports: &no-backports
+  filters:
+    branches:
+      ignore: /backport.*/
+
 skip-check: &skip-check
   name: Check for [ci skip]
   command: bash .circleci/early_exit.sh
@@ -152,28 +157,28 @@ workflows:
 
   egg-info:
     jobs:
-      - egg-info-36
-      - egg-info-37
+      - egg-info-36: *no-backports
+      - egg-info-37: *no-backports
 
   twine-check:
     jobs:
-      - twine-check
+      - twine-check: *no-backports
 
   pip-install:
     jobs:
-      - pip-install
+      - pip-install: *no-backports
 
   build-32:
     jobs:
-      - 32bit
+      - 32bit: *no-backports
 
   figure-tests:
     jobs:
-      - figure-tests-36
+      - figure-tests-36: *no-backports
 
   test-documentation:
     jobs:
-      - html-docs
+      - html-docs: *no-backports
 
 notify:
   webhooks:
