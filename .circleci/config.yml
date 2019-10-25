@@ -1,7 +1,9 @@
 no-backports: &no-backports
-  filters:
-    branches:
-      ignore: /backport.*/
+  name: Skip any branches called backport* but not PRs
+  command: |
+    if [[ -z "${CIRCLE_PR_NUMBER}" && "${CIRCLE_BRANCH}" = *"backport"* ]]; then
+      circleci step halt
+    fi
 
 skip-check: &skip-check
   name: Check for [ci skip]
@@ -43,6 +45,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: python setup.py egg_info
 
@@ -52,6 +55,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: python setup.py egg_info
 
@@ -61,6 +65,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: *permission-run
       - run: python setup.py sdist
@@ -73,6 +78,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: *permission-run
       - run: *sudo-apt-install
@@ -92,6 +98,7 @@ jobs:
           keys: sample-data-v1
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run:
           name: apt dependencies
           command: |
@@ -107,6 +114,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: *apt-install
       - run: pip install -U tox tox-conda codecov
@@ -126,6 +134,7 @@ jobs:
           keys: sample-data-v1
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: *permission-run
       - run: *sudo-apt-install
@@ -146,28 +155,28 @@ workflows:
 
   egg-info:
     jobs:
-      - egg-info-36: *no-backports
-      - egg-info-37: *no-backports
+      - egg-info-36
+      - egg-info-37
 
   twine-check:
     jobs:
-      - twine-check: *no-backports
+      - twine-check
 
   pip-install:
     jobs:
-      - pip-install: *no-backports
+      - pip-install
 
   build-32:
     jobs:
-      - 32bit: *no-backports
+      - 32bit
 
   figure-tests:
     jobs:
-      - figure-tests-36: *no-backports
+      - figure-tests-36
 
   test-documentation:
     jobs:
-      - html-docs: *no-backports
+      - html-docs
 
 notify:
   webhooks:
