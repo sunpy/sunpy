@@ -466,16 +466,17 @@ the normalization is different.
 Masking and Clipping Data
 -------------------------
 It is often necessary for the purposes of display or otherwise to ignore certain
-data in an image. For example large data value could be due to
+data in an image. For example, a large data value could be due to
 cosmic ray hits and should be ignored. The most straightforward way to ignore
 this kind of data in plots without altering the data is to clip it. This can be achieved
-very easily when initializing the normalization variable. For example::
+very easily by using the ``clip_interval`` keyword. For example::
 
-    >>> import matplotlib.colors as colors
-    >>> norm = colors.Normalize(vmin=smap.min(), vmax=smap.mean() + 3 *smap.std())  # doctest: +SKIP
+    >>> import astropy.units as u
+    >>> smap.plot(clip_interval=(1, 99.5)*u.percent)  #doctest: +SKIP
 
-This clips out many of the brightest pixels. If you'd like to see what areas of
-your images got clipped set the following values::
+This clips out the dimmest 1% of pixels and the brightest 0.5% of pixels.  With those outlier
+pixels clipped, the resulting image makes better use of the full range of colors.
+If you'd like to see what areas of your images got clipped, you can modify the colormap::
 
     >>> cmap = cmap.plot_settings['cmap']  # doctest: +SKIP
     >>> cmap.set_over('red', 1.0)  # doctest: +SKIP
@@ -487,12 +488,13 @@ You can use the following colorbar command to display these choices::
 
     >>> plt.colorbar(extend='both')   # doctest: +SKIP
 
-Here is an example of this put to use on an AIA image. If you see how the image
-displays by default you'll see that it does not look that pretty. This is
-because the image contains some negative values which are throwing off the
-normalization.
+Here is an example of this put to use on an AIA image.
 
 .. plot::
+    :include-source:
+
+    import astropy.units as u
+    import matplotlib.pyplot as plt
 
     import sunpy.map
     import matplotlib.pyplot as plt
@@ -507,31 +509,33 @@ normalization.
     plt.colorbar()
     plt.show()
 
-In order to fix this we need to adjust our normalization to not display negative
-values. We can also brighten the image by clipping the high values though this
-will mean that the bright regions look 'saturated'. This is achieved in the following plot.
+    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    cmap = smap.cmap
+    cmap.set_over('blue')
+    cmap.set_under('green')
 
-.. plot::
-    :include-source:
+    fig = plt.figure()
 
-    import sunpy.map
-    import matplotlib.pyplot as plt
-    import matplotlib.colors as colors
-    import sunpy.data.sample
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_193_CUTOUT01_IMAGE)
-    cmap = smap.plot_settings['cmap']
-    cmap.set_over('blue', 1.0)
-    cmap.set_under('purple', 1.0)
-    norm = colors.Normalize(vmin=0, vmax=smap.mean() + 5 * smap.std())
-    smap.plot(norm=norm)
+    ax1 = fig.add_subplot(1,2,1)
+    smap.plot(title='Without clipping')
+    plt.colorbar()
+
+    ax2 = fig.add_subplot(1,2,2)
+    smap.plot(clip_interval=(1, 99.5)*u.percent, title='With clipping')
     plt.colorbar(extend='both')
+
     plt.show()
 
-Another method to ignore bad data is to mask the data. A mask is a boolean
+Another approach to clipping data is to specify explicit values for the minimum and maximum pixel
+values using the plotting keywords ``vmin`` and ``vmax``.
+
+Clipping excludes data that has extreme values, but there can be other forms of bad data.
+A mask is a boolean
 array and so can give you much more fine-grained control over what is not being
 displayed.  A `~numpy.ma.MaskedArray`
 is a subclass of a numpy array so it has all of the same properties with the
 addition of an associated boolean array which holds the mask.
+See `this example <https://docs.sunpy.org/en/stable/generated/gallery/computer_vision_techniques/mask_disk.html>`_ in our gallery.
 
 .. the following is a good example which could be fixed and added later
 .. The following plot achieves the same goal as above but using a mask instead of clipping.
