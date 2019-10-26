@@ -11,24 +11,29 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.coordinates import solar_system_ephemeris
-from astropy.utils.data import download_file
 
+from sunpy.net import Fido, attrs as a
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
 
 ###############################################################################
 # Let's download an image of the Venus transit.
-f = download_file('http://jsoc.stanford.edu/data/events/Venus_AIA24s_1600/Out/fits/20120606_040731_UTC.0041.fits')
-aiamap = sunpy.map.Map(f)
+result = Fido.search(a.Time('2012/06/06 04:07:25', '2012/06/06 04:07:35'),
+                     a.Instrument('aia'),
+                     a.Wavelength(1600*u.angstrom))
+files = Fido.fetch(result)
+aiamap = sunpy.map.Map(files[0])
 
 ###############################################################################
-# For this example, we require high precision ephemeris information. The built-in
-# ephemeris provided by astropy are not accurate enough. This requires ``jplephem``
+# For this example, we require high-precision ephemeris information. The built-in
+# ephemeris provided by astropy is not accurate enough. This call requires ``jplephem``
 # to be installed. This will also trigger a download of about ~10 MB.
 solar_system_ephemeris.set('de432s')
 
 ###############################################################################
-# Now we get the position of venus and convert it into the SDO/AIA coordinates.
+# Now we get the position of Venus and convert it into the SDO/AIA coordinates.
+# The apparent position of Venus accounts for the time it takes for light to
+# travel from Venus to SDO.
 venus = get_body_heliographic_stonyhurst('venus', aiamap.date, observer=aiamap.observer_coordinate)
 venus_hpc = venus.transform_to(aiamap.coordinate_frame)
 
@@ -44,5 +49,7 @@ smap = aiamap.submap(top_right, bottom_left)
 ax = plt.subplot(projection=smap)
 smap.plot()
 smap.draw_limb()
-ax.plot_coord(venus_hpc, 'x', color='white')
+ax.grid(False)
+ax.plot_coord(venus_hpc, 'x', color='deepskyblue', label='Venus')
+plt.legend()
 plt.show()
