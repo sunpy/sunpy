@@ -1,7 +1,7 @@
 no-backports: &no-backports
   name: Skip any branches called backport* but not PRs
   command: |
-    if [[ -z "${CIRCLE_PR_NUMBER}" && "${CIRCLE_BRANCH}" = *"backport"* ]]; then
+    if [[ -z "${CIRCLE_PULL_REQUEST}" && "${CIRCLE_BRANCH}" = *"backport"* ]]; then
       circleci step halt
     fi
 
