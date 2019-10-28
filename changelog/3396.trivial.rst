@@ -1,0 +1,1 @@
+Copy the library `distro` into `sunpy/extern`: replaces the deprecated `platform/linux_distribution`
