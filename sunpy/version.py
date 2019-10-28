@@ -1,6 +1,13 @@
 # This file is for compatibility with astropy_helpers
-from pkg_resources import get_distribution, DistributionNotFound
+version = 'unknown.dev'
 try:
-    version = get_distribution("sunpy").version
-except DistributionNotFound:
-    version = 'unknown.dev'
+    from importlib_metadata import version as _version, PackageNotFoundError
+    version = _version('sunpy')
+except ImportError:
+    from pkg_resources import get_distribution, DistributionNotFound
+    try:
+        version = get_distribution("sunpy").version
+    except DistributionNotFound:
+        pass
+except PackageNotFoundError:
+    pass
