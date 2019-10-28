@@ -13,36 +13,38 @@ This module contains the functions for converting one
   `~astropy.coordinates.SkyCoord` instances.
 
 """
+import logging
 from copy import deepcopy
 from functools import wraps
-import logging
 
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import (ICRS, HCRS, ConvertError, BaseCoordinateFrame,
+from astropy._erfa import obl06
+from astropy.coordinates import (HCRS, ICRS, BaseCoordinateFrame, ConvertError,
                                  get_body_barycentric, get_body_barycentric_posvel)
 from astropy.coordinates.baseframe import frame_transform_graph
-from astropy.coordinates.representation import (CartesianRepresentation, SphericalRepresentation,
-                                                UnitSphericalRepresentation, CartesianDifferential)
-from astropy.coordinates.transformations import (FunctionTransform, AffineTransform,
+from astropy.coordinates.builtin_frames.utils import get_jd12
+from astropy.coordinates.matrix_utilities import matrix_product, matrix_transpose, rotation_matrix
+from astropy.coordinates.representation import (CartesianDifferential, CartesianRepresentation,
+                                                SphericalRepresentation,
+                                                UnitSphericalRepresentation)
+from astropy.coordinates.transformations import (AffineTransform, FunctionTransform,
                                                  FunctionTransformWithFiniteDifference)
-from astropy.coordinates.matrix_utilities import matrix_product, rotation_matrix, matrix_transpose
+
+from sunpy import log
+from sunpy.sun import constants
+
+from .frames import (_J2000, GeocentricEarthEquatorial, GeocentricSolarEcliptic,
+                     Heliocentric, HeliocentricEarthEcliptic, HeliocentricInertial,
+                     HeliographicCarrington, HeliographicStonyhurst, Helioprojective)
+
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
 # with the incorrect name HeliocentricTrueEcliptic
 try:
     from astropy.coordinates import HeliocentricMeanEcliptic
 except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
-from astropy._erfa import obl06
-from astropy.coordinates.builtin_frames.utils import get_jd12
-
-from sunpy import log
-from sunpy.sun import constants
-
-from .frames import (Heliocentric, Helioprojective, HeliographicCarrington, HeliographicStonyhurst,
-                     HeliocentricEarthEcliptic, GeocentricSolarEcliptic, HeliocentricInertial,
-                     GeocentricEarthEquatorial, _J2000)
 
 try:
     from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
@@ -133,10 +135,10 @@ def _observers_are_equal(obs_1, obs_2):
         raise ConvertError("The destination observer needs to have `obstime` set because the "
                            "source observer is different.")
 
-    return (u.allclose(obs_1.lat, obs_2.lat) and
-            u.allclose(obs_1.lon, obs_2.lon) and
-            u.allclose(obs_1.radius, obs_2.radius) and
-            obs_1.obstime == obs_2.obstime)
+    return np.atleast_1d((u.allclose(obs_1.lat, obs_2.lat) and
+                          u.allclose(obs_1.lon, obs_2.lon) and
+                          u.allclose(obs_1.radius, obs_2.radius) and
+                          obs_1.obstime == obs_2.obstime)).all()
 
 
 def _check_observer_defined(frame):
