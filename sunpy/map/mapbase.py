@@ -965,7 +965,8 @@ class GenericMap(NDData):
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
-    def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
+    @u.quantity_input
+    def rotate(self, angle: u.deg = None, rmatrix=None, order=4, scale=1.0,
                recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.
@@ -1030,35 +1031,12 @@ class GenericMap(NDData):
         to rotation, and differences from IDL's rot().
         """
         if angle is not None and rmatrix is not None:
-            raise ValueError("You cannot specify both an angle and a matrix")
+            raise ValueError("You cannot specify both an angle and a rotation matrix.")
         elif angle is None and rmatrix is None:
             rmatrix = self.rotation_matrix
 
-        # This is out of the quantity_input decorator. To allow the angle=None
-        # case. See https://github.com/astropy/astropy/issues/3734
-        if angle:
-            try:
-                equivalent = angle.unit.is_equivalent(u.deg)
-
-                if not equivalent:
-                    raise u.UnitsError("Argument '{}' to function '{}'"
-                                       " must be in units convertable to"
-                                       " '{}'.".format('angle', 'rotate',
-                                                        u.deg.to_string()))
-
-            # Either there is no .unit or no .is_equivalent
-            except AttributeError:
-                if hasattr(angle, "unit"):
-                    error_msg = "a 'unit' attribute without an 'is_equivalent' method"
-                else:
-                    error_msg = "no 'unit' attribute"
-                raise TypeError("Argument '{}' to function '{}' has {}. "
-                                "You may want to pass in an astropy Quantity instead."
-                                .format('angle', 'rotate', error_msg))
-
-        # Interpolation parameter sanity
         if order not in range(6):
-            raise ValueError("Order must be between 0 and 5")
+            raise ValueError("Order must be between 0 and 5.")
 
         # The FITS-WCS transform is by definition defined around the
         # reference coordinate in the header.
