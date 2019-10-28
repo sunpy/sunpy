@@ -420,7 +420,6 @@ do so as follows.
     cmap = plt.get_cmap('sohoeit171')
 
     fig = plt.figure()
-    ax = plt.subplot(1,1,1)
     smap.plot(cmap=cmap)
     plt.colorbar()
     plt.show()
@@ -433,7 +432,7 @@ The normalization is also set automatically and is chosen so that all the
 data from minimum to maximum is displayed as best as possible for most cases.
 This means that it is never necessary to touch the data such as applying a function
 such sqrt or log to the data to make your plot look good.
-There are many normalizations available from matplotlib such as `~matplotlib.colors.Lognorm`. Other
+There are many normalizations available from matplotlib such as `~matplotlib.colors.LogNorm`. Other
 `more exotic normalizations <https://docs.astropy.org/en/stable/visualization/index.html>`_ are also
 made available from Astropy.  Just like the colormap the default normalization
 can be changed through the plot_settings dictionary or directly for the individual
@@ -450,14 +449,16 @@ a linear and logarithmic normalization on an AIA image.
 
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
-    fig = plt.figure()
-    ax1 = fig.add_subplot(2,1,1)
-    smap.plot(norm=colors.Normalize())
+    fig = plt.figure(figsize=(4, 9))
+
+    ax1 = fig.add_subplot(2, 1, 1, projection=smap)
+    smap.plot(norm=colors.Normalize(), title='Linear normalization')
     plt.colorbar()
-    ax2 = fig.add_subplot(2,1,2)
-    smap.plot(norm=colors.LogNorm())
-    fig.subplots_adjust(hspace=0.4)
+
+    ax2 = fig.add_subplot(2, 1, 2, projection=smap)
+    smap.plot(norm=colors.LogNorm(), title='Logarithmic normalization')
     plt.colorbar()
+
     plt.show()
 
 Note how the color in the colorbar does not change since these two maps share
@@ -505,13 +506,13 @@ Here is an example of this put to use on an AIA image.
     cmap.set_over('blue')
     cmap.set_under('green')
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(12, 4))
 
-    ax1 = fig.add_subplot(1,2,1)
+    ax1 = fig.add_subplot(1, 2, 1, projection=smap)
     smap.plot(title='Without clipping')
     plt.colorbar()
 
-    ax2 = fig.add_subplot(1,2,2)
+    ax2 = fig.add_subplot(1, 2, 2, projection=smap)
     smap.plot(clip_interval=(1, 99.5)*u.percent, title='With clipping')
     plt.colorbar(extend='both')
 
