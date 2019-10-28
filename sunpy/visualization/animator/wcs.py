@@ -90,40 +90,38 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         super().__init__(data, image_axes=image_axes, axis_ranges=None, **kwargs)
 
+    def _partial_pixel_to_world(self, pixel_dimension, pixel_coord):
+        """
+        Return the world coordinate along one axis, if it is only
+        correlated to that axis.
+        """
+        wcs_dimension = self.wcs.pixel_n_dim - pixel_dimension - 1
+        corr = self.wcs.axis_correlation_matrix[:, wcs_dimension]
+
+        # If more than one world axis is linked to this dimension we can't
+        # display the world coordinate because we have no way of picking,
+        # so we just display pixel index.
+        if len(np.nonzero(corr)[0]) != 1:
+            return pixel_coord
+
+        # We know that the coordinate we care about is independent of the
+        # other axes, so we can set the pixel coordinates to 0.
+        coords = [0] * self.wcs.pixel_n_dim
+        coords[wcs_dimension] = pixel_coord
+        wc = self.wcs.pixel_to_world_values(*coords)[wcs_dimension]
+        return u.Quantity(wc, unit=self.wcs.world_axis_units[wcs_dimension])
+
     def _sanitize_axis_ranges(self, *args):
         """
         This overrides the behaviour of ArrayAnimator to generate axis_ranges
         based on the WCS.
         """
 
-        def partial_pixel_to_world(pixel_dimension, pixel_coord):
-            """
-            Return the world coordinate along one axis, if it is only
-            correlated to that axis.
-            """
-            wcs_dimension = self.wcs.pixel_n_dim - pixel_dimension - 1
-            corr = self.wcs.axis_correlation_matrix[:, wcs_dimension]
-
-            # If more than one world axis is linked to this dimension we can't
-            # display the world coordinate because we have no way of picking,
-            # so we just display pixel index.
-            if len(np.nonzero(corr)[0]) != 1:
-                return pixel_coord
-
-            # We know that the coordinate we care about is independent of the
-            # other axes, so we can set the pixel coordinates to 0.
-            coords = [0] * self.wcs.pixel_n_dim
-            coords[wcs_dimension] = pixel_coord
-            wc = self.wcs.pixel_to_world_values(*coords)[wcs_dimension]
-            return u.Quantity(wc, unit=self.wcs.world_axis_units[wcs_dimension])
-
-
         axis_ranges = [None] * self.wcs.pixel_n_dim
         for i in self.slider_axes:
-            axis_ranges[i] = partial(partial_pixel_to_world, i)
+            axis_ranges[i] = partial(self._partial_pixel_to_world, i)
 
         return axis_ranges, None
-
 
     def _apply_coord_params(self):
         if self.coord_params is None:
