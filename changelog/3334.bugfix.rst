@@ -1,1 +1,1 @@
-GreatArc now accounts for the start and end points of the arc having different observers.
+`~sunpy.coordinates.utils.GreatArc` now accounts for the start and end points of the arc having different observers.
