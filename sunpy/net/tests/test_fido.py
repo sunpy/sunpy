@@ -1,6 +1,7 @@
 import os
 import copy
 import pathlib
+from stat import S_IREAD, S_IRGRP, S_IROTH
 from unittest import mock
 
 import hypothesis.strategies as st
@@ -253,8 +254,15 @@ def test_path():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
 
+    Fido.fetch(results, path="notapath/{file}")
+
+def test_path_read_only(tmp_path):
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+
+    os.chmod(tmp_path, S_IREAD|S_IRGRP|S_IROTH)
     with pytest.raises(PermissionError):
-        Fido.fetch(results, path="/some/path/{file}")
+        Fido.fetch(results, path=tmp_path / "{file}")
 
 @settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
