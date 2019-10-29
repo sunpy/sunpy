@@ -25,6 +25,7 @@ from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.datatype_factory_base import MultipleMatchError
+from sunpy.tests.helpers import skip_windows
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -256,10 +257,12 @@ def test_path():
 
     Fido.fetch(results, path="notapath/{file}")
 
+@skip_windows
 def test_path_read_only(tmp_path):
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
 
+    # chmod dosen't seem to work correctly on the windows CI
     os.chmod(tmp_path, S_IREAD|S_IRGRP|S_IROTH)
     with pytest.raises(PermissionError):
         Fido.fetch(results, path=tmp_path / "{file}")
