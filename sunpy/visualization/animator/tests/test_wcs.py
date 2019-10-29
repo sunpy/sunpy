@@ -129,7 +129,6 @@ def test_array_animator_wcs_coord_params(wcs_4d):
             'format_unit': u.deg,
             'major_formatter': 'hh:mm:ss',
             'axislabel': 'Longitude',
-            'grid': False
         }
     }
 

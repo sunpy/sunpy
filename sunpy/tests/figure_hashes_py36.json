@@ -31,5 +31,6 @@
     "sunpy.visualization.animator.tests.test_basefuncanimator.test_lineanimator_figure": "360673f30fa79c3218b4962bafb0aff85ff29e05949a1c5f25a0d78d0f200aba",
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_2d_simple_plot": "d660a3b69f136e9e4ea4e6f519e294db3e0b23246c94a757bd24ed616a0b85db",
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_2d_transpose_update_plot": "d174ca33f02d173705edf03553fc75a0040015233b3dc8d21f9229e3823bed50",
-    "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_2d_update_plot": "b808dc29996a32cef05a77a4fcccca7f34a4165ff10bc492ec9908ec4a505ad3"
+    "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_2d_update_plot": "b808dc29996a32cef05a77a4fcccca7f34a4165ff10bc492ec9908ec4a505ad3",
+    "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params": "08974470152a2952838f9495dac710130795abfe8288a70d25030411ede98c2c"
 }
