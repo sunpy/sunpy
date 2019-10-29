@@ -111,7 +111,6 @@ is_development = '.dev' in release
 
 # -- Shut up numpy warnings from WCSAxes --------------------------------------
 import numpy as np  # noqa  isort:skip
-
 np.seterr(invalid='ignore')
 
 # -- Download Sample Data -----------------------------------------------------
@@ -256,8 +255,7 @@ if has_sphinx_gallery:
     sphinx_gallery_conf = {
         'backreferences_dir':
         path.joinpath('generated', 'modules'),  # path to store the module using example template
-        # execute all examples except those that start with "skip_"
-        'filename_pattern': '^((?!skip_).)*$',
+        'filename_pattern': '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
         'examples_dirs': example_dir,  # path to the examples scripts
         'subsection_order': ExplicitOrder([(os.path.join('..', 'examples/acquiring_data')),
                                            (os.path.join('..', 'examples/map')),
@@ -265,9 +263,9 @@ if has_sphinx_gallery:
                                            (os.path.join('..', 'examples/units_and_coordinates')),
                                            (os.path.join('..', 'examples/plotting')),
                                            (os.path.join('..', 'examples/saving_and_loading_data')),
-                                           (os.path.join('..', 'examples/computer_vision_techniques'))]),
-        # path to save gallery generated examples
-        'gallery_dirs': path.joinpath('generated', 'gallery'),
+                                           (os.path.join('..', 'examples/computer_vision_techniques')),
+                                           (os.path.join('..', 'examples/sunpy_other_packages'))]),
+        'gallery_dirs': path.joinpath('generated', 'gallery'),  # path to save gallery generated examples
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
         'abort_on_example_error': False,
         'plot_gallery': True
