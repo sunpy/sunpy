@@ -4,20 +4,24 @@
 Identifying stars in a STEREO/SECCHI COR2 coronagraph image
 ===========================================================
 
-How to use the `Vizier star catalog <https://vizier.u-strasbg.fr>`_ to
+How to use the `Vizier star catalog <https://vizier.u-strasbg.fr>`__ to
 identify bright points in a STEREO/SECCHI COR 2 image as stars.
 As a bonus, we also identify Mars.
+
+This requires the intallation of the
+`astroquery <https://astroquery.readthedocs.io/en/latest/>`__
+package and an internet connection.
+`astroquery <https://astroquery.readthedocs.io/en/latest/>`__ can be installed ontop of
+the existing sunpy conda environment: ``conda install -c astropy astroquery``
 """
 import matplotlib.pyplot as plt
-
-# astroquery is not a dependency of SunPy so will need to be
-# install this package separately.
 from astroquery.vizier import Vizier
+
 import astropy.units as u
 from astropy.coordinates import SkyCoord, get_body_barycentric
 
 import sunpy.map
-from sunpy.coordinates import get_body_heliographic_stonyhurst, frames
+from sunpy.coordinates import frames, get_body_heliographic_stonyhurst
 from sunpy.net import helioviewer
 
 ###############################################################################
