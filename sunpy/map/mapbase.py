@@ -275,7 +275,6 @@ class GenericMap(NDData):
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.spatial_units
         w2.wcs.dateobs = self.date.iso
-        w2.heliographic_observer = self.observer_coordinate
         w2.rsun = self.rsun_meters
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
@@ -287,6 +286,13 @@ class GenericMap(NDData):
 
         if w2.wcs.ctype[1].lower() in ("solar-y", "solar_y"):
             w2.wcs.ctype[1] = 'HPLT-TAN'
+
+        # GenericMap.coordinate_frame is implemented using this method, so we
+        # need to do this only based on .meta.
+        ctypes = {c[:4] for c in w2.wcs.ctype}
+        # Check that the ctypes contains one of these two pairs of axes.
+        if {'HPLN', 'HPLT'} <= ctypes or {'SOLX', 'SOLY'} <= ctypes:
+            w2.heliographic_observer = self.observer_coordinate
 
         return w2
 
