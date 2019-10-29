@@ -48,7 +48,7 @@ outmap.plot_settings = aia_map.plot_settings
 ###############################################################################
 # Plot the result
 fig = plt.figure()
-ax = plt.subplot(projection=outmap.wcs)
+ax = plt.subplot(projection=outmap)
 outmap.plot(ax)
 
 ax.set_xlim(0, shape_out[1])
