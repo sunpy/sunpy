@@ -264,8 +264,10 @@ def test_path_read_only(tmp_path):
 
     # chmod dosen't seem to work correctly on the windows CI
     os.chmod(tmp_path, S_IREAD|S_IRGRP|S_IROTH)
-    with pytest.raises(PermissionError):
-        Fido.fetch(results, path=tmp_path / "{file}")
+    # Check to see if it's actually read only before running the test
+    if not os.access(tmp_path, os.W_OK):
+        with pytest.raises(PermissionError):
+            Fido.fetch(results, path=tmp_path / "{file}")
 
 @settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
