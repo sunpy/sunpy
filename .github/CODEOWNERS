@@ -1,6 +1,3 @@
-sunpy/cm/                         @sunpy/cm
-docs/code_ref/cm.rst              @sunpy/cm
-
 sunpy/coordinates/                @sunpy/coordinates
 docs/code_ref/coordinates.rst     @sunpy/coordinates
 

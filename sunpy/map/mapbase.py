@@ -19,7 +19,7 @@ from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 import sunpy.io as io
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
-import sunpy.cm
+import sunpy.visualization.colormaps
 from sunpy import config
 from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype, peek_show
 from sunpy.sun import constants

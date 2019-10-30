@@ -5,6 +5,8 @@ SunPy visualization
 
 .. automodapi:: sunpy.visualization
 
+.. automodapi:: sunpy.visualization.colormaps
+
 .. automodapi:: sunpy.visualization.animator
     :headings: ^#
 
