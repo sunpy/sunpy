@@ -9,7 +9,7 @@ How you can use the SunPy colormaps with matplotlib.
 import numpy as np
 import matplotlib.pyplot as plt
 
-import sunpy.cm as cm
+import sunpy.visualization.colormaps as cm
 
 ###############################################################################
 # When the sunpy colormaps are imported, the SunPy colormaps are registered
