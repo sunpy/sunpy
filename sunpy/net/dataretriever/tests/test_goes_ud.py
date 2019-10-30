@@ -46,6 +46,7 @@ def test_can_handle_query(time):
     assert ans3 is False
 
 
+@pytest.mark.remote_data
 def test_no_satellite(LCClient):
     with pytest.raises(ValueError):
         LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('XRS'))
@@ -72,6 +73,7 @@ def test_fixed_satellite(LCClient):
 # This example tests a time range with a satellite jump and no overlap
 @example(a.Time("2009-11-30", "2009-12-3"))
 @given(goes_time())
+@pytest.mark.remote_data
 def test_query(LCClient, time):
     qr1 = LCClient.search(time, Instrument('XRS'))
     assert isinstance(qr1, QueryResponse)
@@ -83,7 +85,7 @@ def test_query(LCClient, time):
     end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
     assert is_time_equal(qr1.time_range().end, end)
 
-
+@pytest.mark.remote_data
 def test_query_error(LCClient):
     times = [a.Time("1983-05-01", "1983-05-02")]
     for time in times:
@@ -121,6 +123,7 @@ def test_fido(time, instrument):
     assert len(response) == qr._numfile
 
 @settings(deadline=50000)
+@pytest.mark.remote_data
 @given(goes_time())
 def test_time_for_url(LCClient, time):
     time = time.start.strftime("%Y/%m/%d")
