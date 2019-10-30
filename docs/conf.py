@@ -132,6 +132,7 @@ intersphinx_mapping['pandas'] = ('https://pandas.pydata.org/pandas-docs/stable/'
 intersphinx_mapping['skimage'] = ('https://scikit-image.org/docs/stable/', None)
 intersphinx_mapping['drms'] = ('https://docs.sunpy.org/projects/drms/en/stable/', None)
 intersphinx_mapping['parfive'] = ('https://parfive.readthedocs.io/en/latest/', None)
+intersphinx_mapping['reproject'] = ('https://reproject.readthedocs.io/en/stable/', None)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

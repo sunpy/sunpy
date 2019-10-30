@@ -3,8 +3,8 @@
 Creating a Heliographic Map
 ===========================
 
-In this example we use the :ref:`reproject <reproject:quickstart>` package to
-make a heliographic image from an AIA image.
+In this example we use the `reproject` package to make a heliographic image
+from an AIA image.
 
 You will need to install reproject to run this example.
 """
