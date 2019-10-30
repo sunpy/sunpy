@@ -202,14 +202,14 @@ UnifiedResponse Tests
 Use LYRA here because it does not use the internet to return results.
 """
 
-
+@pytest.mark.remote_data
 def test_unifiedresponse_slicing():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
     assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], UnifiedResponse)
 
-
+@pytest.mark.remote_data
 def test_unifiedresponse_slicing_reverse():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
@@ -225,7 +225,7 @@ def test_vso_unifiedresponse():
     uresp = UnifiedResponse(vrep)
     assert isinstance(uresp, UnifiedResponse)
 
-
+@pytest.mark.remote_data
 def test_responses():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
@@ -235,7 +235,7 @@ def test_responses():
 
     assert i + 1 == len(results)
 
-
+@pytest.mark.remote_data
 def test_repr():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
@@ -249,6 +249,7 @@ def test_repr():
 def filter_queries(queries):
     return attr.and_(queries) not in queries
 
+@pytest.mark.remote_data
 def test_path():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
@@ -388,7 +389,7 @@ def test_mixed_retry_error():
     with pytest.raises(TypeError):
         Fido.fetch([], Results())
 
-
+@pytest.mark.remote_data
 @mock.patch("sunpy.net.dataretriever.sources.goes.XRSClient.fetch",
             return_value=["hello"])
 def test_client_fetch_wrong_type(mock_fetch):

@@ -53,6 +53,7 @@ def test_can_handle_query(time):
 
 @settings(deadline=50000)
 @given(time_attr())
+@pytest.mark.remote_data
 def test_query(time):
     qr1 = LCClient.search(time, Instrument('lyra'))
     assert isinstance(qr1, QueryResponse)
