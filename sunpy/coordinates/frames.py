@@ -297,11 +297,11 @@ class Heliocentric(SunPyBaseCoordinateFrame):
     by 90 degrees compared to the convention of the Heliocentric Radial (HCR) system.
 
     A new instance can be created using the following signatures
-    (note that if supplied ``obstime`` and ``representation_type``, must be
+    (note that if supplied, ``obstime``, ``observer``, and ``representation_type`` must be
     keyword arguments)::
 
-        Heliocentric(x, y, z, obstime=obstime)
-        Heliocentric(rho, psi, z, representation_type='cylindrical', obstime=obstime)
+        Heliocentric(x, y, z, obstime=obstime, observer=observer)
+        Heliocentric(rho, psi, z, representation_type='cylindrical', obstime=obstime, observer=observer)
 
     Parameters
     ----------
