@@ -123,12 +123,12 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         return axis_ranges, None
 
-    def _apply_coord_params(self):
+    def _apply_coord_params(self, axes):
         if self.coord_params is None:
             return
 
         for coord_name in self.coord_params:
-            coord = self.axes.coords[coord_name]
+            coord = axes.coords[coord_name]
             params = self.coord_params[coord_name]
 
             format_unit = params.get("format_unit", None)
@@ -152,6 +152,9 @@ class ArrayAnimatorWCS(ArrayAnimator):
     def _get_main_axes(self):
         axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
                                  slices=self.slices_wcsaxes)
+
+        self._apply_coord_params(axes)
+
         return axes
 
     def plot_start_image(self, ax):
@@ -160,8 +163,6 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         elif self.plot_dimensionality == 2:
             artist = self.plot_start_image_2d(ax)
-
-        self._apply_coord_params()
 
         return artist
 
@@ -182,7 +183,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         elif self.plot_dimensionality == 2:
             self.update_plot_2d(val, artist, slider)
 
-        self._apply_coord_params()
+        self._apply_coord_params(self.axes)
         return super().update_plot(val, artist, slider)
 
     def plot_start_image_1d(self, ax):
