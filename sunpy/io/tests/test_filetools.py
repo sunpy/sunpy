@@ -1,4 +1,7 @@
 import os
+import pathlib
+
+import pytest
 
 import numpy as np
 
@@ -76,10 +79,12 @@ class TestFiletools:
         assert len(hlist) == 1
         assert isinstance(hlist[0], sunpy.io.header.FileHeader)
 
-    def test_write_file_fits(self):
+    @pytest.mark.parametrize('fname', ['aia_171_image.fits',
+                                       pathlib.Path('aia_171_image.fits')])
+    def test_write_file_fits(self, fname):
         # Test write FITS
         aiapair = sunpy.io.read_file(AIA_171_IMAGE)[0]
-        sunpy.io.write_file("aia_171_image.fits", aiapair[0], aiapair[1],
+        sunpy.io.write_file(fname, aiapair[0], aiapair[1],
                             overwrite=True)
         assert os.path.exists("aia_171_image.fits")
         outpair = sunpy.io.read_file(AIA_171_IMAGE)[0]
