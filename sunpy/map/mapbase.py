@@ -877,14 +877,10 @@ class GenericMap(NDData):
         ----------
         filepath : str
             Location to save file to.
-
         filetype : str
             'auto' or any supported file extension.
-
-        Keywords
-        --------
-        hdu_type: `None`, `~fits.CompImageHDU`
-            `None` will return a normal FITS files.
+        hdu_type: None, `~fits.CompImageHDU`
+            `None` will return a normal FITS file.
             `~fits.CompImageHDU` will rice compress the FITS file.
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
