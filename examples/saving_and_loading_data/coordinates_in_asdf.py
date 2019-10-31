@@ -68,7 +68,7 @@ def semi_circular_loop(length: u.m, theta0: u.deg=0*u.deg):
 
     return SkyCoord(
         x=r.to(u.cm) * np.sin(phi.to(u.radian)),
-        y=u.Quantity(r.shape[0] * [0 * u.cm]),
+        y=r.shape[0] * u.cm * 0,
         z=r.to(u.cm) * np.cos(phi.to(u.radian)),
         frame=hcc_frame).transform_to('heliographic_stonyhurst')
 
