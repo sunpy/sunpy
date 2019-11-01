@@ -24,10 +24,10 @@ import matplotlib.pyplot as plt
 
 import asdf
 import astropy.units as u
-import astropy.constants as const
 from astropy.coordinates import SkyCoord
 
 import sunpy.map
+from sunpy.sun import constants
 from sunpy.coordinates import frames
 from sunpy.data.sample import AIA_171_IMAGE
 
@@ -39,37 +39,29 @@ from sunpy.data.sample import AIA_171_IMAGE
 
 
 @u.quantity_input
-def semi_circular_loop(length: u.m, theta0: u.deg=0*u.deg):
+def semi_circular_loop(length: u.m, latitude: u.deg = 0*u.deg):
     """
     Return a Heliographic Stonyhurst coordinate object with points of a semi circular loop in it.
     """
-    r_sun = const.R_sun
+    r_sun = constants.radius
 
     def r_2_func(x):
         return np.arccos(0.5 * x / r_sun.to(u.cm).value) - np.pi + length.to(u.cm).value / 2. / x
 
+    # Find the loop radius corresponding to the loop length
     r_2 = scipy.optimize.bisect(r_2_func,
                                 length.to(u.cm).value / (2 * np.pi),
                                 length.to(u.cm).value / np.pi) * u.cm
-    alpha = np.arccos(0.5 * (r_2 / r_sun).decompose())
+    alpha = np.arccos(0.5 * (r_2 / r_sun))
     phi = np.linspace(-np.pi * u.rad + alpha, np.pi * u.rad - alpha, 2000)
 
-    # Quadratic formula to find r
-    a = 1.
-    b = -2 * (r_sun.to(u.cm) * np.cos(phi.to(u.radian)))
-    c = r_sun.to(u.cm)**2 - r_2.to(u.cm)**2
-    r = (-b + np.sqrt(b**2 - 4 * a * c)) / 2 / a
-    # Choose only points above the surface
-    i_r = np.where(r > r_sun)
-    r = r[i_r]
-    phi = phi[i_r]
     hcc_frame = frames.Heliocentric(
-        observer=SkyCoord(lon=0 * u.deg, lat=theta0, radius=r_sun, frame='heliographic_stonyhurst'))
+        observer=frames.HeliographicStonyhurst(lon=0 * u.deg, lat=latitude, radius=1 * u.AU))
 
     return SkyCoord(
-        x=r.to(u.cm) * np.sin(phi.to(u.radian)),
-        y=u.Quantity(r.shape[0] * [0 * u.cm]),
-        z=r.to(u.cm) * np.cos(phi.to(u.radian)),
+        x=r_2 * np.sin(phi),
+        y=0 * u.cm,
+        z=r_2 * np.cos(phi) + r_sun,
         frame=hcc_frame).transform_to('heliographic_stonyhurst')
 
 
@@ -88,10 +80,10 @@ print(loop_coords[[0, -1]])
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 ax = plt.subplot(projection=aiamap)
-aiamap.plot(axes=ax)
-ax.plot_coord(loop_coords)
+aiamap.plot(axes=ax, clip_interval=(1, 99.5) * u.percent)
+ax.plot_coord(loop_coords.transform_to(aiamap.coordinate_frame), 'r')
 
-# plt.show()
+plt.show()
 
 
 ################################################################################
@@ -103,7 +95,8 @@ ax.plot_coord(loop_coords)
 # asdf files save a dictionary to a file, so to save the loop coordinates we
 # need to put them into a dictionary. This becomes what asdf calls a tree.
 #
-# The asdf file can not save the `~astropy.coordinates.SkyCoord` object, but it
+# The asdf file can not save the `~astropy.coordinates.SkyCoord` object in
+# versions of Astropy prior to 3.2, but it
 # can save the underlying frame. Therefore we construct a tree with the frame.
 
 
