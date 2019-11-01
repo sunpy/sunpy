@@ -52,27 +52,6 @@ class LYRAClient(GenericClient):
 
         return urls
 
-    def _get_url_for_date(self, date, **kwargs):
-        """
-        Return URL for corresponding date.
-
-        Parameters
-        ----------
-        date : `astropy.time.Time`, `~datetime.datetime`, `~datetime.date`
-
-        Returns
-        -------
-        str
-            The URL for the corresponding date.
-        """
-
-        filename = "lyra_{}-000000_lev{:d}_std.fits".format(
-            date.strftime('%Y%m%d'), kwargs.get('level', 2))
-        base_url = "http://proba2.oma.be/lyra/data/bsd/"
-        url_path = urljoin(date.strftime('%Y/%m/%d/'), filename)
-
-        return urljoin(base_url, url_path)
-
     def _makeimap(self):
         """
         Helper Function:used to hold information about source.

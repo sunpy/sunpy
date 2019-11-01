@@ -128,7 +128,7 @@ class XRSClient(GenericClient):
         timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
         if timerange.start < parse_time("1999/01/15"):
             goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/"
-                            "%Y/go{satellitenumber}%y%m%d.fits")
+                            "%Y/go{satellitenumber:02d}%y%m%d.fits")
         else:
             goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/"
                             "%Y/go{satellitenumber}%Y%m%d.fits")
