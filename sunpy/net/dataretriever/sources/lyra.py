@@ -3,7 +3,7 @@
 # Google Summer of Code 2014
 
 from urllib.parse import urljoin
-
+from sunpy.util.scraper import Scraper
 from ..client import GenericClient
 
 __all__ = ['LYRAClient']
@@ -36,22 +36,20 @@ class LYRAClient(GenericClient):
     """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        Returns list of URLS corresponding to value of input timerange.
-
+        Return URL(s) for corresponding timerange.
         Parameters
         ----------
-        timerange: sunpy.time.TimeRange
-            time range for which data is to be downloaded.
-
+        timerange : `~sunpy.time.TimeRange`
         Returns
         -------
-        urls : list
-            list of URLs corresponding to the requested time range
+        list :
+            The URL(s) for the corresponding timerange.
         """
-        days = timerange.get_dates()
-        urls = []
-        for day in days:
-            urls.append(self._get_url_for_date(day, **kwargs))
+        lyra_pattern = ('http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
+                        'lyra_%Y%m%d-000000_lev{level}_std.fits')
+        lyra_files = Scraper(lyra_pattern, level=kwargs.get('level', 2))
+        urls = lyra_files.filelist(timerange)
+
         return urls
 
     def _get_url_for_date(self, date, **kwargs):
@@ -98,8 +96,8 @@ class LYRAClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr =  ['Time', 'Instrument', 'Level']
-        chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chkattr = ['Time', 'Instrument', 'Level']
+        chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'lyra':
                 return all(chklist)
