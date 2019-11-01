@@ -32,8 +32,8 @@ coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28 08:24', observer='e
 # scale sets the size of the pixels. You can also to set a number of other
 # metadata as well such as the instrument name and wavelength.
 header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
-                                                     reference_pixel=u.Quantity([0, 0]*u.pixel),
-                                                     scale=u.Quantity([2, 2]*u.arcsec/u.pixel),
+                                                     reference_pixel=[0, 0]*u.pixel,
+                                                     scale=[2, 2]*u.arcsec/u.pixel,
                                                      telescope='Fake Telescope', instrument='UV detector',
                                                      wavelength=1000*u.angstrom)
 
