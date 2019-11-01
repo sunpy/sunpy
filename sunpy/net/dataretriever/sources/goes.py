@@ -118,43 +118,26 @@ class XRSClient(GenericClient):
 
         Parameters
         ----------
-        timerange: sunpy.time.TimeRange
-            time range for which data is to be downloaded.
-        satellitenumber : int
-            GOES satellite number (default = 15)
-        data_type : str
-            Data type to return for the particular GOES satellite. Supported
-            types depend on the satellite number specified. (default = xrs_2s)
-        """
-        # find out which satellite and datatype to query from the query times
-        base_url = "https://umbra.nascom.nasa.gov/goes/fits/"
-        start_time = Time(timerange.start.strftime("%Y-%m-%d"))
-        # make sure we are counting a day even if only a part of it is in the query range.
-        day_range = TimeRange(
-            timerange.start.strftime("%Y-%m-%d"), timerange.end.strftime("%Y-%m-%d")
-        )
-        total_days = int(day_range.days.value) + 1
-        result = list()
+        timerange : `~sunpy.time.TimeRange`
 
-        # Iterate over each day in the input timerange and generate a URL for
-        # it.
-        for day in range(total_days):
-            # It is okay to convert to datetime here as the start_time is a date
-            # hence we don't necesserily gain anything.
-            # This is necessary because when adding a day to a Time, we may
-            # end up with the same day if the day is a leap second day
-            date = start_time.datetime + timedelta(days=day)
-            regex = date.strftime("%Y") + "/go{sat:02d}"
-            if date < parse_time("1999/01/15"):
-                regex += date.strftime("%y%m%d") + ".fits"
-            else:
-                regex += date.strftime("%Y%m%d") + ".fits"
-            satellitenumber = kwargs.get(
-                "satellitenumber", self._get_goes_sat_num(date)
-            )
-            url = base_url + regex.format(sat=satellitenumber)
-            result.append(url)
-        return result
+        Returns
+        -------
+        list :
+            The URL(s) for the corresponding timerange.
+        """
+        timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
+        if timerange.start < parse_time("1999/01/15"):
+            goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/"
+                            "%Y/go{satellitenumber}%y%m%d.fits")
+        else:
+            goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/"
+                            "%Y/go{satellitenumber}%Y%m%d.fits")
+
+        satellitenumber = kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start))
+        goes_files = Scraper(goes_pattern, satellitenumber=satellitenumber)
+
+        urls = goes_files.filelist(timerange)
+        return urls
 
     def _makeimap(self):
         """
@@ -261,7 +244,6 @@ class SUVIClient(GenericClient):
                 these_timeranges.append(TimeRange(start_time, end_time))
         return these_timeranges
 
-
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns urls to the SUVI data for the specified time range.
@@ -290,7 +272,7 @@ class SUVIClient(GenericClient):
                     raise ValueError(f"Wavelength {kwargs.get('wavelength')} not supported.")
                 else:
                     wavelength = [kwargs.get("wavelength")]
-            else:  #  _Range was provided
+            else:  # _Range was provided
                 compress_index = [wavelength_input.wavemin <= this_wave <= wavelength_input.wavemax for this_wave in (supported_waves * u.Angstrom)]
                 if not any(compress_index):
                     raise ValueError(
