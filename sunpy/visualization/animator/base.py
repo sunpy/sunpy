@@ -249,18 +249,20 @@ class BaseFuncAnimator:
         small_x = Size.Fraction((1.-2.*pad)/10, Size.AxesX(self.axes))
         ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(self.axes))
 
+        button_grid = max((7, self.num_buttons))
         # Set up grid, 3x3 with cells for padding.
         if self.num_buttons > 0:
-            xsize = Size.Fraction((1.-2.*pad)/self.num_buttons, Size.AxesX(self.axes))
-            horiz = [xsize] + [pad_size, xsize]*(self.num_buttons-1) + \
-                    [Size.Fraction(0.1, Size.AxesY(self.axes)), small_x]
+            xsize = Size.Fraction((1.-2.*pad)/button_grid, Size.AxesX(self.axes))
+            horiz = [xsize] + [pad_size, xsize]*(button_grid-1)
             vert = [ysize, pad_size] * self.num_sliders + \
                    [large_pad_size, large_pad_size, Size.AxesY(self.axes)]
         else:
             vert = [ysize, large_pad_size] * self.num_sliders + \
                    [large_pad_size, Size.AxesY(self.axes)]
-            horiz = [Size.Fraction(0.8, Size.AxesX(self.axes))] + \
-                    [Size.Fraction(0.1, Size.AxesX(self.axes))]*2
+            horiz = [Size.Fraction(0.1, Size.AxesX(self.axes))] + \
+                    [Size.Fraction(0.05, Size.AxesX(self.axes))] + \
+                    [Size.Fraction(0.65, Size.AxesX(self.axes))] + \
+                    [Size.Fraction(0.2, Size.AxesX(self.axes))]
 
         self.divider.set_horizontal(horiz)
         self.divider.set_vertical(vert)
@@ -282,7 +284,7 @@ class BaseFuncAnimator:
     def _add_widgets(self):
         self.buttons = []
         for i in range(0, self.num_buttons):
-            x = i*2
+            x = i * 2
             # The i+1/10. is a bug that if you make two axes directly on top of
             # one another then the divider doesn't work.
             self.buttons.append(self.fig.add_axes((0., 0., 0.+i/10., 1.)))
@@ -295,15 +297,15 @@ class BaseFuncAnimator:
         self.sliders = []
         self.slider_buttons = []
         for i in range(self.num_sliders):
-            x = i * 2
+            y = i * 2
             self.sliders.append(self.fig.add_axes((0., 0., 0.01+i/10., 1.)))
             if self.num_buttons == 0:
-                nx1 = 1
+                nx1 = 3
             else:
-                nx1 = -3
-            locator = self.divider.new_locator(nx=0, ny=x, nx1=nx1)
+                nx1 = -2
+            locator = self.divider.new_locator(nx=2, ny=y, nx1=nx1)
             self.sliders[-1].set_axes_locator(locator)
-            sframe = widgets.Slider(self.sliders[-1], f"{i:d}",
+            sframe = widgets.Slider(self.sliders[-1], "",
                                     self.slider_ranges[i][0],
                                     self.slider_ranges[i][-1]-1,
                                     valinit=self.slider_ranges[i][0],
@@ -314,12 +316,8 @@ class BaseFuncAnimator:
             self.sliders[-1]._slider = sframe
 
             self.slider_buttons.append(
-                self.fig.add_axes((0., 0., 0.05+x/10., 1.)))
-            if self.num_buttons == 0:
-                nx = 2
-            else:
-                nx = 2 + 2*(self.num_buttons-1)
-            locator = self.divider.new_locator(nx=nx, ny=x)
+                self.fig.add_axes((0., 0., 0.05+y/10., 1.)))
+            locator = self.divider.new_locator(nx=0, ny=y)
 
             self.slider_buttons[-1].set_axes_locator(locator)
             butt = widgets.Button(self.slider_buttons[-1], ">")
