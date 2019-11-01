@@ -36,12 +36,6 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
-
-def test_get_url_for_date():
-    url = LCClient._get_url_for_date(parse_time((2013, 2, 13)))
-    assert url == 'http://proba2.oma.be/lyra/data/bsd/2013/02/13/lyra_20130213-000000_lev2_std.fits'
-
-
 @given(time_attr())
 def test_can_handle_query(time):
     ans1 = lyra.LYRAClient._can_handle_query(
