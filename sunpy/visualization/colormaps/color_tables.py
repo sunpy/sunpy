@@ -87,6 +87,10 @@ def aia_color_table(wavelength):
 
     Based on aia_lct.pro part of SDO/AIA on SSWIDL written by Karel
     Schrijver (2010/04/12).
+
+    Parmeters
+    ---------
+    wavelength : int
     """
     try:
         r, g, b = aia_wave_dict[wavelength]
