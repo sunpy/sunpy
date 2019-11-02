@@ -102,7 +102,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         # display the world coordinate because we have no way of picking,
         # so we just display pixel index.
         if len(np.nonzero(corr)[0]) != 1:
-            return pixel_coord
+            return pixel_coord * u.pix
 
         # We know that the coordinate we care about is independent of the
         # other axes, so we can set the pixel coordinates to 0.
