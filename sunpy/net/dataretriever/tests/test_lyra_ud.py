@@ -36,6 +36,7 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
+
 @given(time_attr())
 def test_can_handle_query(time):
     ans1 = lyra.LYRAClient._can_handle_query(

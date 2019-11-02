@@ -85,6 +85,7 @@ def test_query(LCClient, time):
     end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
     assert is_time_equal(qr1.time_range().end, end)
 
+
 @pytest.mark.remote_data
 def test_query_error(LCClient):
     times = [a.Time("1983-05-01", "1983-05-02")]
@@ -122,6 +123,7 @@ def test_fido(time, instrument):
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
 
+
 @settings(deadline=50000)
 @pytest.mark.remote_data
 @given(goes_time())
@@ -132,6 +134,4 @@ def test_time_for_url(LCClient, time):
     tr = TimeRange(time, almost_day)
     url = LCClient._get_url_for_timerange(tr)
     times = LCClient._get_time_for_url(url)
-
-    assert all([tr == t2 for t2 in times])
-
+    assert all([tr == t2 for t2 in times])  
