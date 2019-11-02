@@ -18,6 +18,7 @@ from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
 from sunpy.visualization.animator import (ArrayAnimator, BaseFuncAnimator,
                                           ImageAnimatorWCS, LineAnimator, base)
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 class FuncAnimatorTest(BaseFuncAnimator):
@@ -212,7 +213,7 @@ def test_imageanimator_figure():
     wcs_input_dict.update({'CTYPE1': 'Time', 'CUNIT1': time_diff.unit.name, 'CDELT1': time_diff.value})
     wcs = astropy.wcs.WCS(wcs_input_dict)
     with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
+        warnings.simplefilter("ignore", SunpyDeprecationWarning)
         wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1])
 
     return wcs_anim.fig

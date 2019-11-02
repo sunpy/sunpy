@@ -61,8 +61,8 @@ def test_construct_array_animator(wcs_4d, data, slices, dim):
             assert callable(arange)
             a = arange(0)
             if "pos" in wcs_4d.world_axis_physical_types[i]:
-                assert not isinstance(a, u.Quantity)
-                assert a is 0
+                assert isinstance(a, u.Quantity)
+                assert u.allclose(a, 0 * u.pix)
             else:
                 assert isinstance(a, u.Quantity)
                 assert a.value == wcs_4d.pixel_to_world_values(*[0]*wcs_4d.world_n_dim)[i]
@@ -73,19 +73,19 @@ def test_construct_array_animator(wcs_4d, data, slices, dim):
 
 def test_constructor_errors(wcs_4d):
     # WCS is not BaseLowLevelWCS
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="provided that implements the astropy WCS API."):
         ArrayAnimatorWCS(np.arange(25).reshape((5,5)), {}, ['x', 'y'])
 
     # Data has wrong number of dimensions
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Dimensionality of the data and WCS object do not match."):
         ArrayAnimatorWCS(np.arange(25).reshape((5,5)), wcs_4d, ['x', 'y'])
 
     # Slices is wrong length
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="slices should be the same length"):
         ArrayAnimatorWCS(np.arange(16).reshape((2,2,2,2)), wcs_4d, ['x', 'y'])
 
     # x not in slices
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="slices should contain at least"):
         ArrayAnimatorWCS(np.arange(16).reshape((2,2,2,2)), wcs_4d, [0,0,0,'y'])
 
 
