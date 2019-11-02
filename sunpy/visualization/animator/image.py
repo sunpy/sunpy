@@ -174,7 +174,7 @@ class ImageAnimatorWCS(ImageAnimator):
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
 
-        # For some reason using `super()` here causes an error.
+        # Using `super()` here causes an error with the @deprecated decorator.
         ImageAnimator.__init__(self, data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def _get_main_axes(self):

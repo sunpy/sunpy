@@ -174,10 +174,10 @@ class BaseFuncAnimator:
 
         Returns
         -------
-        `matplotlib.image.AxesImage`
-            An `matplotlib.image.AxesImage` object, the instance returned from
-            `matplotlib.pyplot.imshow`, can also return other matplotlib objects
-            which can be updated by the slider functions.
+        `matplotlib.artist.Artist`
+            The matplotlib object to be animated, this is usually either a
+            `~matplotlib.image.AxesImage` object, or a
+            `~matplotlib.lines.Line2D`.
         """
         raise NotImplementedError("Please define this function.")
 
@@ -541,29 +541,31 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                 return array[pixel]
             return pixel_to_world
 
-        for i in self.slider_axes:
-            if axis_ranges[i] is None:
+        for sidx in self.slider_axes:
+            if axis_ranges[sidx] is None:
                 # If axis range not supplied, set pixel center values as integers starting at 0.
-                axis_ranges[i] = get_pixel_to_world_callable(np.arange(data_shape[i]))
-            elif not callable(axis_ranges[i]):
-                axis_ranges[i] = np.array(axis_ranges[i])
-                if len(axis_ranges[i]) == 2:
+                axis_ranges[sidx] = get_pixel_to_world_callable(np.arange(data_shape[sidx]))
+            elif not callable(axis_ranges[sidx]):
+                axis_ranges[sidx] = np.array(axis_ranges[sidx])
+                if len(axis_ranges[sidx]) == 2:
                     # If axis range given as a min, max pair, derive the center of each pixel
                     # assuming they are equally spaced.
 
-                    axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
-                                                 data_shape[i]+1)
-                    axis_ranges[i] = get_pixel_to_world_callable(edges_to_centers_nd(axis_ranges[i], i))
-                elif axis_ranges[i].ndim == 1 and len(axis_ranges[i]) == data_shape[i]+1:
+                    axis_ranges[sidx] = np.linspace(axis_ranges[sidx][0], axis_ranges[sidx][-1],
+                                                    data_shape[sidx]+1)
+                    axis_ranges[sidx] = get_pixel_to_world_callable(edges_to_centers_nd(axis_ranges[sidx], sidx))
+                elif axis_ranges[sidx].ndim == 1 and len(axis_ranges[sidx]) == data_shape[sidx]+1:
                     # If axis range given as 1D array of pixel edges (i.e. axis is independent),
                     # derive pixel centers.
 
-                    axis_ranges[i] = get_pixel_to_world_callable(edges_to_centers_nd(np.asarray(axis_ranges[i]), 0))
-                elif axis_ranges[i].ndim == ndim and axis_ranges[i].shape[i] == data_shape[i]+1:
+                    axis_ranges[sidx] = get_pixel_to_world_callable(
+                        edges_to_centers_nd(np.asarray(axis_ranges[sidx]), 0))
+                elif axis_ranges[sidx].ndim == ndim and axis_ranges[sidx].shape[sidx] == data_shape[sidx]+1:
                     # If axis range given as array of pixel edges the same shape as
                     # the data array (i.e. axis is not independent), derive pixel centers.
 
-                    axis_ranges[i] = get_pixel_to_world_callable(edges_to_centers_nd(np.asarray(axis_ranges[i]), i))
+                    axis_ranges[sidx] = get_pixel_to_world_callable(
+                        edges_to_centers_nd(np.asarray(axis_ranges[sidx]), i))
                 else:
                     raise ValueError(incompatible_axis_ranges_error_message(i))
 
@@ -620,6 +622,7 @@ def edges_to_centers_nd(axis_range, edges_axis):
 def format_quantity_as_string(quantity):
     """
     An Astropy 3.1 compatibility wrapper for Quantity.to_string.
+    Can be removed when Astropy dependency is >=3.2
     """
     to_string = getattr(quantity, "to_string", None)
     if not to_string:
