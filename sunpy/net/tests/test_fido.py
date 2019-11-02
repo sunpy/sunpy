@@ -168,7 +168,7 @@ def test_call_error():
     # Python core.
     assert "'UnifiedDownloaderFactory' object is not callable" in str(excinfo.value)
 
-
+@pytest.mark.remote_data
 def test_multiple_match():
     """
     Using the builtin clients a multiple match is not possible so we create a
@@ -258,6 +258,7 @@ def test_path():
 
     Fido.fetch(results, path="notapath/{file}")
 
+@pytest.mark.remote_data
 @skip_windows
 def test_path_read_only(tmp_path):
     results = Fido.search(
