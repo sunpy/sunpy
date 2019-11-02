@@ -232,10 +232,9 @@ class Scraper:
                             fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
-                                breakpoint()
-                                if (datehref >= timerange.start and
-                                        datehref <= timerange.end):
-                                    filesurls.append(fullpath)
+                                if (datehref - timerange.start) >= 0 and \
+                                   (datehref - timerange.end) <= 0:
+                                        filesurls.append(fullpath)
                 finally:
                     opn.close()
             except HTTPError as http_err:
@@ -260,8 +259,8 @@ class Scraper:
                     fullpath = directory + file_i
                     if self._URL_followsPattern(fullpath):
                         datehref = self._extractDateURL(fullpath)
-                        if (datehref >= timerange.start.value and
-                                datehref <= timerange.end.value):
+                        if (datehref >= timerange.start and
+                                datehref <= timerange.end):
                             filesurls.append(fullpath)
         filesurls = ['ftp://anonymous:data@sunpy.org@' + url[domain + 2:] for url in filesurls]
         return filesurls
