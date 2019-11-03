@@ -17,6 +17,8 @@ authors:
     orcid: 0000-0001-6127-795X
     affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Jack Ireland
+    orcid: 0000-0002-2019-8881
+    affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Florian Mayer
   - name: Keith Hughitt
   - name: Albert Y. Shih
@@ -32,6 +34,8 @@ authors:
     orcid: 0000-0003-0784-6909
     affiliation: "University College London, Gower Street, London, UK"
   - name: Pritish Chakraborty
+    orcid: 0000-0001-8875-5819
+    affiliation: "Manav Rachna University"
   - name: Vishnunarayan K I.
   - name: Andrew Inglis
     orcid: 0000-0003-0656-2437
@@ -72,6 +76,8 @@ authors:
   - name: Sudarshan Konge
   - name: Rajul Srivastava
   - name: Yash Jain
+     orcid: 0000-0001-5347-4734
+     affiliation: 'Indian Institute of Technology, Kharagpur, 721302, India'
   - name: Samuel Bennett
   - name: Ankit Baruah
   - name: Will Barnes
@@ -93,12 +99,16 @@ authors:
     affiliation: Institut für Physik/IGAM - Karl-Franzens University of Graz, Austria
   - name: Larry Manley
   - name: Agneet Chatterjee
+    orcid : 0000-0002-0961-9569
+    affiliation : Jadavpur University, Kolkata
   - name: John Evans
   - name: Michael Malocha
   - name: Monica G. Bobra
     affiliation: "W.W. Hansen Experimental Physics Laboratory, Stanford University, Stanford, CA 94305, USA"
     orcid: 0000-0002-5662-9604
   - name: Sourav Ghosh
+    orcid: 0000-0002-7259-5651
+    affiliation: Jadavpur University, Kolkata
   - name: Airmansmith97
   - name: Dominik Stańczak
     affiliation: University of Warsaw
@@ -118,6 +128,8 @@ authors:
   - name: Jacob
   - name: Mateo Inchaurrandieta
   - name: Sally Dacie
+    orcid: 0000-0001-7572-2903
+    affiliation: Mullard Space Science Laboratory, University College London, Holmbury St. Mary, Surrey, RH5 6NT, UK
   - name: Sanjeev Dubey
   - name: Deepankar Sharma
   - name: Erik M. Bray
@@ -125,9 +137,13 @@ authors:
     orcid: 0000-0003-2587-1454
     affiliation: "Dogfox Software LLC, Flagstaff, AZ 86001, USA"
   - name: Serge Zahniy
+  orcid: 0000-0001-8835-7087
+  affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Tomas Meszaros
   - name: Abhigyan Bose
-  - name: Andre Chicrala
+  - name: André Chicrala
+    orcid: 0000-0002-5230-4909
+    affiliation: Northumbria University, England
   - name: Ankit
   - name: Chloé Guennou
   - name: Daniel D'Avella
@@ -136,6 +152,8 @@ authors:
     orcid: 0000-0003-3772-198X
   - name: Jordan Ballew
   - name: Nick Murphy
+    affiliation: Center for Astrophysics | Harvard & Smithsonian
+    orcid: 0000-0001-6628-8033
   - name: Priyank Lodha
   - name: Thomas Robitaille
   - name: Yash Krishan
@@ -192,13 +210,18 @@ authors:
   - name: Jaylen Wimbish
   - name: Juan Camilo Buitrago-Casas
   - name: Kalpesh Krishna
+    orcid: 0000-0001-6574-0817
+    affiliation: University of Massachusetts, Amherst
   - name: Kaustubh Hiware
     orcid: 0000-0003-3301-1016
     affiliation: "Indian Institute of Technology, Kharagpur"
   - name: Manas Mangaonkar
   - name: Matthew Mendero
   - name: Mickaël Schoentgen
-  - name: Norbert Gyenge
+    orcid: 0000-0002-0106-4810
+  - name: Norbert G Gyenge
+    orcid: 0000-0003-0464-1537
+    affiliation: "SP2RC, School of Mathematics and Statistics, University of Sheffield, Sheffield, S3 7RH, UK"
   - name: Ole Streicher
     orcid: 0000-0001-7751-1843
     affiliation: Leibniz Institute for Astrophysics Potsdam, Germany
@@ -217,9 +240,13 @@ authors:
       - "Rosseland Centre for Solar Physics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway"
       - "Institute of Theoretical Astrophysics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway"
   - name: Yudhik Agrawal
+    orcid: 0000-0003-3827-6857
+    affiliation: 'International Institute of Information Technology, Hyderabad 500 032, India'
   - name: jamescalixto
   - name: yasintoda
-
+  - name: Sophie A. Murray
+    orcid: 0000-0002-9378-5315
+    affiliation: Trinity College Dublin, Ireland
 
 affiliations: []
 date: 3 October 2019
