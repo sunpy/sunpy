@@ -37,8 +37,7 @@ try:
 except ImportError:
     __version__ = ''
 
-__citation__ = """\
-@ARTICLE{2015CS&D....8a4009S,
+__citation__ = r"""@ARTICLE{2015CS&D....8a4009S,
    author = {{SunPy Community}, T. and {Mumford}, S.~J. and {Christe}, S. and
     {P{\'e}rez-Su{\'a}rez}, D. and {Ireland}, J. and {Shih}, A.~Y. and
     {Inglis}, A.~R. and {Liedtke}, S. and {Hewett}, R.~J. and {Mayer}, F. and
