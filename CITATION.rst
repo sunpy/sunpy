@@ -41,6 +41,9 @@ The citation should be to the `SunPy paper`_ and the version number should cite 
           adsnote = {Provided by the SAO/NASA Astrophysics Data System}
         }
 
+
+You can also get this information with ``sunpy.__citation__``.
+
 Posters and talks
 =================
 
