@@ -1,0 +1,2 @@
+Apply `os.path.expanduser` to `sunpy.map.MapFactory` input
+before passing to `glob.glob`
