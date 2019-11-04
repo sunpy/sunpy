@@ -172,7 +172,7 @@ def test_sanitize_axis_ranges(axis_ranges, exp_extent, exp_axis_ranges):
     assert exp_extent == out_extent
     assert np.array_equal(exp_axis_ranges[1], out_axis_ranges[1])
     assert callable(out_axis_ranges[0])
-
+    assert np.array_equal(exp_axis_ranges[0], out_axis_ranges[0](np.arange(10)))
 
 xdata = np.tile(np.linspace(0, 100, 11), (5, 5, 1))
 
