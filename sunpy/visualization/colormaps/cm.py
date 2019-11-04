@@ -150,7 +150,7 @@ def show_colormaps(search=None):
 
     Examples
     --------
-    >>> import sunpy.cm as cm
+    >>> import sunpy.visualization.colormaps as cm
     >>> cm.show_colormaps()
     >>> cm.show_colormaps(search='aia')
     >>> cm.show_colormaps(search='171')
