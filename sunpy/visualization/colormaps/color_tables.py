@@ -90,7 +90,8 @@ def aia_color_table(wavelength):
 
     Parmeters
     ---------
-    wavelength : int
+    wavelength : `int`
+        Wavelength for the desired AIA color table.
     """
     try:
         r, g, b = aia_wave_dict[wavelength]
