@@ -262,7 +262,8 @@ class BaseFuncAnimator:
             horiz = [Size.Fraction(0.1, Size.AxesX(self.axes))] + \
                     [Size.Fraction(0.05, Size.AxesX(self.axes))] + \
                     [Size.Fraction(0.65, Size.AxesX(self.axes))] + \
-                    [Size.Fraction(0.2, Size.AxesX(self.axes))]
+                    [Size.Fraction(0.1, Size.AxesX(self.axes))] + \
+                    [Size.Fraction(0.1, Size.AxesX(self.axes))]
 
         self.divider.set_horizontal(horiz)
         self.divider.set_vertical(vert)
