@@ -222,8 +222,8 @@ class MapFactory(BasicRegistrationFactory):
                     raise ValueError(f'{path} is neither a file nor a directory')
 
             # Glob
-            elif isinstance(arg, str) and glob.glob(arg):
-                for afile in sorted(glob.glob(arg)):
+            elif isinstance(arg, str) and glob.glob(os.path.expanduser(arg)):
+                for afile in sorted(glob.glob(os.path.expanduser(arg))):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Already a Map
