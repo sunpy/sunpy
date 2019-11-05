@@ -75,7 +75,7 @@ def test_fixed_satellite(LCClient):
 @given(goes_time())
 @pytest.mark.remote_data
 def test_query(LCClient, time):
-    qr1 = LCClient.search(time, Instrument('XRS'))
+    qr1 = LCClient.search(time, Instrument('XRS'), a.goes.SatelliteNumber('12'))
     assert isinstance(qr1, QueryResponse)
     # We only compare dates here as the start time of the qr will always be the
     # start of the day.
