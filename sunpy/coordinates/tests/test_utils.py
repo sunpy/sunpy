@@ -232,6 +232,7 @@ def test_great_arc_different_observer(aia171_test_map):
 
     # The end point stored internally has the Heliocentric coordinates of the initial coordinate passed in.
     b2h = b.transform_to(frames.Heliocentric(observer=aia171_test_map.observer_coordinate))
+
     # Missing an dp on b2h compared to end (TODO BUG?)
     np.testing.assert_almost_equal(end.x.value, b2h.x.value)
     np.testing.assert_almost_equal(end.y.value, b2h.y.value)
