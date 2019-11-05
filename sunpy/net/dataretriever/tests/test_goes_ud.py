@@ -69,13 +69,12 @@ def test_fixed_satellite(LCClient):
 
 
 @settings(deadline=50000)
-@example(a.Time("2006-08-01", "2006-08-01"))
-# This example tests a time range with a satellite jump and no overlap
-@example(a.Time("2009-11-30", "2009-12-3"))
+@example(a.Time("2006-06-01", "2006-06-01"))
+@example(a.Time("2009-12-03", "2009-12-07"))
 @given(goes_time())
 @pytest.mark.remote_data
 def test_query(LCClient, time):
-    qr1 = LCClient.search(time, Instrument('XRS'), a.goes.SatelliteNumber('12'))
+    qr1 = LCClient.search(time, Instrument('XRS'))
     assert isinstance(qr1, QueryResponse)
     # We only compare dates here as the start time of the qr will always be the
     # start of the day.
