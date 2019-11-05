@@ -51,10 +51,10 @@ def translate_results_to_query(results):
     19
 
     >>> hek2vso.translate_results_to_query(q[0])  # doctest: +REMOTE_DATA
-    [[<Time(<Time object: scale='utc' format='isot' value=2011-08-08T01:30:04.000>, <Time object: scale='utc' format='isot' value=2011-08-10T00:00:04.000>, None)>, <Source('SDO')>, <Instrument('HMI')>, Wavelength(6172.999999999998, 6172.999999999998, 'Angstrom')>]]
-
+    [[<Time(<Time object: scale='utc' format='isot' value=2011-08-08T01:30:04.000>, <Time object: scale='utc' format='isot' value=2011-08-10T00:00:04.000>, None)>, <Source('SDO')>, <Instrument('HEK')>, <Wavelength(0.0, 0.0, 'Angstrom')>]]
+    
     >>> hek2vso.translate_results_to_query(q)   # doctest: +SKIP
-    [[<Time(<Time object: scale='utc' format='isot' value=2011-08-08T01:30:04.000>, <Time object: scale='utc' format='isot' value=2011-08-10T00:00:04.000>, None)>, <Source('SDO')>, <Instrument('HMI')>, <Wavelength(6172.999999999998, 6172.999999999998, 'Angstrom')>], ..., [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T08:01:21.000>, <Time object: scale='utc' format='isot' value=2011-08-09T08:16:45.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
+    [[<Time(<Time object: scale='utc' format='isot' value=2011-08-08T01:30:04.000>, <Time object: scale='utc' format='isot' value=2011-08-10T00:00:04.000>, None)>, <Source('SDO')>, <Instrument('HEK')>, <Wavelength(0.0, 0.0, 'Angstrom')>], ..., [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T08:01:21.000>, <Time object: scale='utc' format='isot' value=2011-08-09T08:16:45.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
     """
     queries = []
     if isinstance(results, Table):
