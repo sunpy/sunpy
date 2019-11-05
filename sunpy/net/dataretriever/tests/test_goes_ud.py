@@ -68,10 +68,10 @@ def test_fixed_satellite(LCClient):
         assert "go13" in resp.url
 
 
-@settings(deadline=50000)
-@example(a.Time("2006-06-01", "2006-06-01"))
-@example(a.Time("2009-12-03", "2009-12-07"))
-@given(goes_time())
+
+@pytest.mark.parametrize("time", [
+    Time('2005/4/27', '2005/4/27'),
+    Time('2016/2/4', '2016/2/10')])
 @pytest.mark.remote_data
 def test_query(LCClient, time):
     qr1 = LCClient.search(time, Instrument('XRS'))
