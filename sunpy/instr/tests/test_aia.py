@@ -46,7 +46,7 @@ def test_aiaprep(original, prep_map):
 def test_filesave(prep_map):
     # Test that adjusted header values are still correct after saving the map
     # and reloading it.
-    afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+    afilename = tempfile.NamedTemporaryFile(suffix='.fits').name
     with pytest.warns(
             VerifyWarning, match="The 'BLANK' keyword is only applicable to integer data"):
         prep_map.save(afilename, overwrite=True)

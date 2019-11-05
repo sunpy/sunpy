@@ -2,6 +2,7 @@
 This module provides a generic file reader.
 """
 import os
+import pathlib
 import re
 
 try:
@@ -144,18 +145,15 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     * This routine currently only supports saving a single HDU.
     """
     if filetype == 'auto':
-        if not isinstance(fname, str):
-            raise ValueError("Can not automatically detect filetype for non-string fname argument")
-        for extension, readername in _known_extensions.items():
-            if fname.endswith(extension):
-                return _readers[readername].write(fname, data, header, **kwargs)
-    else:
-        for extension, readername in _known_extensions.items():
-            if filetype in extension:
-                return _readers[readername].write(fname, data, header, **kwargs)
+        # Get the extension without the leading dot
+        filetype = pathlib.Path(fname).suffix[1:]
+
+    for extension, readername in _known_extensions.items():
+        if filetype in extension:
+            return _readers[readername].write(fname, data, header, **kwargs)
 
     # Nothing has matched, report an error
-    raise ValueError("This filetype is not supported")
+    raise ValueError(f"The filetype provided ({filetype}) is not supported")
 
 
 def _detect_filetype(filepath):
