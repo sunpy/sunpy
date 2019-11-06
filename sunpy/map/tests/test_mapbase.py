@@ -108,6 +108,11 @@ def test_wcs(aia171_test_map):
     assert set(wcs.wcs.cunit) == {u.Unit(a) for a in aia171_test_map.spatial_units}
 
 
+def test_no_observer_wcs(heliographic_test_map):
+    assert isinstance(heliographic_test_map.wcs, astropy.wcs.WCS)
+    assert not hasattr(heliographic_test_map.wcs, "heliographic_observer")
+
+
 def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
 
