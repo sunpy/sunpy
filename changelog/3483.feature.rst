@@ -1,0 +1,1 @@
+`sunpy.map.make_fitswcs_header` now accepts a `tuple` representing the shape of an array as well as the actual array as the ``data`` argument.
