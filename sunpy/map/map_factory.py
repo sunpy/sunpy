@@ -161,7 +161,6 @@ class MapFactory(BasicRegistrationFactory):
         else:
             return False
 
-    def _parse_args(self, *args, **kwargs):
         """
         Parses an args list for data-header pairs.  args can contain any
         mixture of the following entries:
@@ -174,7 +173,6 @@ class MapFactory(BasicRegistrationFactory):
         * glob, from which all files will be read
         * url, which will be downloaded and read
         * lists containing any of the above.
-
         Example
         -------
         self._parse_args(data, header,
@@ -183,7 +181,6 @@ class MapFactory(BasicRegistrationFactory):
                          'file4',
                          'directory1',
                          '*.fits')
-
         """
 
         data_header_pairs = list()
@@ -209,20 +206,17 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs.append(pair)
                     i += 1    # an extra increment to account for the data-header pairing
 
-            # File name
-            elif (isinstance(arg, str) and
-                  os.path.isfile(os.path.expanduser(arg))):
-                path = os.path.expanduser(arg)
-                pairs = self._read_file(path, **kwargs)
-                data_header_pairs += pairs
-
-            # Directory
-            elif (isinstance(arg, str) and
-                  os.path.isdir(os.path.expanduser(arg))):
-                path = os.path.expanduser(arg)
-                files = [os.path.join(path, elem) for elem in os.listdir(path)]
-                for afile in files:
-                    data_header_pairs += self._read_file(afile, **kwargs)
+            # File system path (file or directory)
+            elif _is_path(arg):
+                path = pathlib.Path(arg).expanduser()
+                if path.is_file():
+                    pairs = self._read_file(path, **kwargs)
+                    data_header_pairs += pairs
+                elif path.is_dir():
+                    for afile in sorted(path.glob('*')):
+                        data_header_pairs += self._read_file(afile, **kwargs)
+                else:
+                    raise ValueError(f'{path} is neither a file nor a directory')
 
             # Glob
             elif isinstance(arg, str) and glob.glob(os.path.expanduser(arg)):
@@ -253,6 +247,7 @@ class MapFactory(BasicRegistrationFactory):
         # In the end, if there are already maps it should be put in the same
         # order as the input, currently they are not.
         return data_header_pairs, already_maps
+
 
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
