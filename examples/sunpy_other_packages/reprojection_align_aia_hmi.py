@@ -17,7 +17,7 @@ import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.net import Fido, attrs as a
 
-from reproject import reproject_interp, reproject_exact
+from reproject import reproject_interp
 
 
 ######################################################################
@@ -65,12 +65,14 @@ map_hmi.plot(axes = ax2)
 
 ######################################################################
 # We can now reproject the HMI image to the WCS of the AIA image. We are using
-# the slow but most accurate `~reproject.reproject_exact` function here. This
-# function only works when reprojecting between two WCSes with the same
-# observer, which makes it well suited to aligning data.
+# the fast `~reproject.reproject_interp`, however the slower but most accurate
+# `~reproject.reproject_exact` would also work well here. The
+# `~reproject.reproject_exact` function only works when reprojecting between
+# two WCSes with the same observer, which makes it well suited to aligning
+# data.
 #
 
-output, footprint = reproject_exact(map_hmi, map_aia.wcs, map_aia.data.shape)
+output, footprint = reproject_interp(map_hmi, map_aia.wcs, map_aia.data.shape)
 
 
 ######################################################################

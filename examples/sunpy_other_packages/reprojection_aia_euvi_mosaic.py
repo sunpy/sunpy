@@ -52,7 +52,7 @@ maps = sunpy.map.Map(sorted(files))
 ######################################################################
 # When combining these images all three need to assume the same radius of
 # the Sun for the data. The AIA images specify a slightly different value
-# that the IAU 2015 constant. To avoid coordinate transformation issues we
+# than the IAU 2015 constant. To avoid coordinate transformation issues we
 # reset this here.
 #
 
@@ -87,11 +87,10 @@ plt.show()
 
 
 ######################################################################
-# The next step is to calculate the output coordinate system for the
-# combined map. We select a heliographic Stonyhurst frame, and a Plate
-# Caree projection, and generate a header using
-# `sunpy.map.make_fitswcs_header` and then construct a WCS object for
-# that header.
+# The next step is to calculate the output coordinate system for the combined
+# map. We select a heliographic Stonyhurst frame, and a Plate Carrée (CAR)
+# projection, and generate a header using `sunpy.map.make_fitswcs_header` and
+# then construct a WCS object for that header.
 #
 
 shape_out = (360, 720)
@@ -133,7 +132,7 @@ outmap.peek()
 # warping towards the points which are close to the limb in the input
 # images, we can define a set of weights to use when coadding the output
 # arrays. To reduce this warping we want to calculate an set of weights
-# which weights highly points close to the centre of the disk in the input
+# which highly weigh points close to the centre of the disk in the input
 # image.
 #
 # We can achieve this by using SunPy’s coordinate framework. First we
