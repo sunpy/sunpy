@@ -1,3 +1,10 @@
+no-backports: &no-backports
+  name: Skip any branches called backport* but not PRs
+  command: |
+    if [[ -z "${CIRCLE_PULL_REQUEST}" && "${CIRCLE_BRANCH}" = *"backport"* ]]; then
+      circleci step halt
+    fi
+
 skip-check: &skip-check
   name: Check for [ci skip]
   command: bash .circleci/early_exit.sh
@@ -38,6 +45,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: python setup.py egg_info
 
@@ -47,6 +55,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: python setup.py egg_info
 
@@ -56,6 +65,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: *permission-run
       - run: python setup.py sdist
@@ -68,6 +78,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: *permission-run
       - run: *sudo-apt-install
@@ -87,6 +98,7 @@ jobs:
           keys: sample-data-v1
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run:
           name: apt dependencies
           command: |
@@ -102,6 +114,7 @@ jobs:
     steps:
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: *apt-install
       - run: pip install -U tox tox-conda codecov
@@ -121,6 +134,7 @@ jobs:
           keys: sample-data-v1
       - checkout
       - run: *skip-check
+      - run: *no-backports
       - run: *merge-check
       - run: *permission-run
       - run: *sudo-apt-install
