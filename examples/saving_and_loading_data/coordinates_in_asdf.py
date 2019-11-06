@@ -59,9 +59,9 @@ def semi_circular_loop(length: u.m, latitude: u.deg = 0*u.deg):
         observer=frames.HeliographicStonyhurst(lon=0 * u.deg, lat=latitude, radius=1 * u.AU))
 
     return SkyCoord(
-        x=r.to(u.cm) * np.sin(phi.to(u.radian)),
-        y=r.shape[0] * u.cm * 0,
-        z=r.to(u.cm) * np.cos(phi.to(u.radian)),
+        x=r_2 * np.sin(phi),
+        y=0 * u.cm,
+        z=r_2 * np.cos(phi) + r_sun,
         frame=hcc_frame).transform_to('heliographic_stonyhurst')
 
 
