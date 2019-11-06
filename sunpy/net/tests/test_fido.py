@@ -1,6 +1,7 @@
 import os
 import copy
 import pathlib
+from stat import S_IREAD, S_IRGRP, S_IROTH
 from unittest import mock
 
 import hypothesis.strategies as st
@@ -24,6 +25,7 @@ from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.datatype_factory_base import MultipleMatchError
+from sunpy.tests.helpers import skip_windows
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -253,8 +255,19 @@ def test_path():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
 
-    with pytest.raises(PermissionError):
-        Fido.fetch(results, path="/some/path/{file}")
+    Fido.fetch(results, path="notapath/{file}")
+
+@skip_windows
+def test_path_read_only(tmp_path):
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+
+    # chmod dosen't seem to work correctly on the windows CI
+    os.chmod(tmp_path, S_IREAD|S_IRGRP|S_IROTH)
+    # Check to see if it's actually read only before running the test
+    if not os.access(tmp_path, os.W_OK):
+        with pytest.raises(PermissionError):
+            Fido.fetch(results, path=tmp_path / "{file}")
 
 @settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
