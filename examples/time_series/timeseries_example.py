@@ -230,15 +230,15 @@ print(qua)
 # You can add or overwrite a column using the add_column method.
 # This method ascepts an astropy quantity and will convert to the intended units
 # if necessary.
-qua_new = u.Quantity(qua.value * 0.01, ts_eve.units[colname])
+qua_new = qua.value * 0.01 * ts_eve.units[colname]
 print(qua_new)
 ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 # Otherwise you can also use a numpy array and it assume you're using the original
 # units:
-arr_new = u.Quantity(qua.value * 0.1, ts_eve.units[colname]).value
+arr_new = (qua.value * 0.1 * ts_eve.units[colname]).value
 ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 # Finally, if you want to change the units used, you can specify a new unit for
 # the column using the unit keyword:
-qua_new = u.Quantity(qua.value * 0.00001, ts_eve.units[colname])
+qua_new = qua.value * 0.00001 * ts_eve.units[colname]
 unit = u.W / (u.km**2)
 ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)
