@@ -510,7 +510,7 @@ Here is an example of this put to use on an AIA image.
     plt.show()
 
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    cmap = cmap.plot_settings['cmap']
+    cmap = smap.plot_settings['cmap']
     cmap.set_over('blue')
     cmap.set_under('green')
 
