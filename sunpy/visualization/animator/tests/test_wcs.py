@@ -1,8 +1,11 @@
+from textwrap import dedent
+
 import pytest
 import numpy as np
 
 import astropy.units as u
 from astropy.wcs import WCS
+from astropy.io import fits
 
 from sunpy.tests.helpers import figure_test
 from sunpy.visualization.animator.wcs import ArrayAnimatorWCS
@@ -13,32 +16,32 @@ def wcs_4d():
     # This is weirdly indented and with line continuations to make it a valid
     # FITS header string so that no warnings are logged during WCS
     # construction.
-    header = """\
-WCSAXES =                    4 / Number of coordinate axes                      \
-CRPIX1  =                  0.0 / Pixel coordinate of reference point            \
-CRPIX2  =                  0.0 / Pixel coordinate of reference point            \
-CRPIX3  =                  0.0 / Pixel coordinate of reference point            \
-CRPIX4  =                  5.0 / Pixel coordinate of reference point            \
-CDELT1  =                  0.4 / [min] Coordinate increment at reference point  \
-CDELT2  =                2E-11 / [m] Coordinate increment at reference point    \
-CDELT3  =   0.0027777777777778 / [deg] Coordinate increment at reference point  \
-CDELT4  =   0.0013888888888889 / [deg] Coordinate increment at reference point  \
-CUNIT1  = 'min'                / Units of coordinate increment and value        \
-CUNIT2  = 'm'                  / Units of coordinate increment and value        \
-CUNIT3  = 'deg'                / Units of coordinate increment and value        \
-CUNIT4  = 'deg'                / Units of coordinate increment and value        \
-CTYPE1  = 'TIME'               / Coordinate type code                           \
-CTYPE2  = 'WAVE'               / Vacuum wavelength (linear)                     \
-CTYPE3  = 'HPLT-TAN'           / Coordinate type codegnomonic projection        \
-CTYPE4  = 'HPLN-TAN'           / Coordinate type codegnomonic projection        \
-CRVAL1  =                  0.0 / [min] Coordinate value at reference point      \
-CRVAL2  =                  0.0 / [m] Coordinate value at reference point        \
-CRVAL3  =                  0.0 / [deg] Coordinate value at reference point      \
-CRVAL4  =                  0.0 / [deg] Coordinate value at reference point      \
-LONPOLE =                180.0 / [deg] Native longitude of celestial pole       \
-LATPOLE =                  0.0 / [deg] Native latitude of celestial pole        \
-"""
-    return WCS(header=header)
+    header = dedent("""\
+        WCSAXES =                    4 / Number of coordinate axes
+        CRPIX1  =                  0.0 / Pixel coordinate of reference point
+        CRPIX2  =                  0.0 / Pixel coordinate of reference point
+        CRPIX3  =                  0.0 / Pixel coordinate of reference point
+        CRPIX4  =                  5.0 / Pixel coordinate of reference point
+        CDELT1  =                  0.4 / [min] Coordinate increment at reference point
+        CDELT2  =                2E-11 / [m] Coordinate increment at reference point
+        CDELT3  =   0.0027777777777778 / [deg] Coordinate increment at reference point
+        CDELT4  =   0.0013888888888889 / [deg] Coordinate increment at reference point
+        CUNIT1  = 'min'                / Units of coordinate increment and value
+        CUNIT2  = 'm'                  / Units of coordinate increment and value
+        CUNIT3  = 'deg'                / Units of coordinate increment and value
+        CUNIT4  = 'deg'                / Units of coordinate increment and value
+        CTYPE1  = 'TIME'               / Coordinate type code
+        CTYPE2  = 'WAVE'               / Vacuum wavelength (linear)
+        CTYPE3  = 'HPLT-TAN'           / Coordinate type codegnomonic projection
+        CTYPE4  = 'HPLN-TAN'           / Coordinate type codegnomonic projection
+        CRVAL1  =                  0.0 / [min] Coordinate value at reference point
+        CRVAL2  =                  0.0 / [m] Coordinate value at reference point
+        CRVAL3  =                  0.0 / [deg] Coordinate value at reference point
+        CRVAL4  =                  0.0 / [deg] Coordinate value at reference point
+        LONPOLE =                180.0 / [deg] Native longitude of celestial pole
+        LATPOLE =                  0.0 / [deg] Native latitude of celestial pole
+        """)
+    return WCS(header=fits.Header.fromstring(header, sep='\n'))
 
 
 @pytest.mark.parametrize("data, slices, dim", (
