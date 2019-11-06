@@ -1,6 +1,6 @@
 """
-Reprojecting AIA Images to Different Observers
-==============================================
+Reprojecting Images to Different Observers
+==========================================
 
 This example demonstrates how you can reproject images to the view from
 different observers, we use both AIA and STEREO A data to demonstrate this.
@@ -9,15 +9,15 @@ different observers, we use both AIA and STEREO A data to demonstrate this.
 # sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt
+
 import astropy.units as u
 from astropy.wcs import WCS
 from astropy.coordinates import SkyCoord
+from reproject import reproject_interp
 
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.net import Fido, attrs as a
-
-from reproject import reproject_interp
 
 
 ######################################################################
@@ -56,10 +56,10 @@ files = Fido.fetch(res)
 map_aia, map_stereo = sunpy.map.Map(sorted(files))
 
 fig = plt.figure()
-ax1 = fig.add_subplot(1,2,1, projection=map_aia)
-map_aia.plot(axes = ax1)
-ax2 = fig.add_subplot(1,2,2, projection=map_stereo)
-map_stereo.plot(axes = ax2)
+ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+map_aia.plot(axes=ax1)
+ax2 = fig.add_subplot(1, 2, 2, projection=map_stereo)
+map_stereo.plot(axes=ax2)
 plt.show()
 
 ######################################################################
@@ -111,10 +111,10 @@ outmap = sunpy.map.Map(output, out_header)
 outmap.plot_settings = map_stereo.plot_settings
 
 fig = plt.figure()
-ax1 = fig.add_subplot(1,2,1, projection=map_aia)
-map_aia.plot(axes = ax1)
-ax2 = fig.add_subplot(1,2,2, projection=outmap)
-outmap.plot(axes = ax2)
+ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+map_aia.plot(axes=ax1)
+ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
+outmap.plot(axes=ax2)
 
 plt.show()
 
@@ -179,12 +179,12 @@ outmap.plot_settings = map_aia.plot_settings
 
 fig = plt.figure()
 
-ax1 = fig.add_subplot(1,2,1, projection=map_aia)
-map_aia.plot(axes = ax1)
+ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+map_aia.plot(axes=ax1)
 outmap.draw_grid(color='w')
 
-ax2 = fig.add_subplot(1,2,2, projection=outmap)
-outmap.plot(axes = ax2)
+ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
+outmap.plot(axes=ax2)
 outmap.draw_grid(color='w')
 
 plt.show()

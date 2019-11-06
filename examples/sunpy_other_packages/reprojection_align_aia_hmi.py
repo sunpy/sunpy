@@ -7,25 +7,23 @@ to the WCS of another. This is a very generic way of aligning data, and can be
 very accurate.
 
 """
-
 import matplotlib.pyplot as plt
+
 import astropy.units as u
-from astropy.wcs import WCS
 from astropy.coordinates import SkyCoord
+from astropy.wcs import WCS
+from reproject import reproject_interp
 
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.net import Fido, attrs as a
-
-from reproject import reproject_interp
-
 
 ######################################################################
 # In this example we are going to make a lot of side by side figures, so
 # let’s change the default figure size.
 #
 
-plt.rcParams['figure.figsize'] = (16,8)
+plt.rcParams['figure.figsize'] = (16, 8)
 
 
 ######################################################################
@@ -56,11 +54,11 @@ map_aia, map_hmi = [m.resample((1024, 1024)*u.pix) for m in sunpy.map.Map(sorted
 
 fig = plt.figure()
 
-ax1 = fig.add_subplot(1,2,1, projection=map_aia)
-map_aia.plot(axes = ax1)
+ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+map_aia.plot(axes=ax1)
 
-ax2 = fig.add_subplot(1,2,2, projection=map_hmi)
-map_hmi.plot(axes = ax2)
+ax2 = fig.add_subplot(1, 2, 2, projection=map_hmi)
+map_hmi.plot(axes=ax2)
 
 
 ######################################################################
@@ -84,10 +82,10 @@ out_hmi.plot_settings['cmap'] = "hmimag"
 out_hmi.plot_settings['norm'] = plt.Normalize(-1500, 1500)
 
 fig = plt.figure()
-ax1 = fig.add_subplot(1,2,1, projection=map_aia)
-map_aia.plot(axes = ax1)
-ax2 = fig.add_subplot(1,2,2, projection=out_hmi)
-out_hmi.plot(axes = ax2)
+ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
+map_aia.plot(axes=ax1)
+ax2 = fig.add_subplot(1, 2, 2, projection=out_hmi)
+out_hmi.plot(axes=ax2)
 
 
 ######################################################################
@@ -96,6 +94,6 @@ out_hmi.plot(axes = ax2)
 #
 
 fig = plt.figure(figsize=(20, 15))
-ax1 = fig.add_subplot(1,2,1, projection=map_aia)
+ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
 map_aia.plot(axes=ax1)
 out_hmi.plot(axes=ax1, alpha=0.5)
