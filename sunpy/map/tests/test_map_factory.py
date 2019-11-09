@@ -26,9 +26,9 @@ AIA_171_IMAGE = os.path.join(filepath, 'aia_171_level1.fits')
 RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
 
 
-#==============================================================================
+# ==============================================================================
 # Map Factory Tests
-#==============================================================================
+# ==============================================================================
 class TestMap:
     def test_mapsequence(self):
         # Test making a MapSequence
@@ -56,14 +56,6 @@ class TestMap:
         files_sorted = sorted(list(directory.glob('*')))
         maps_sorted = [sunpy.map.Map(os.fspath(f)) for f in files_sorted]
         assert all([m.date == m_s.date for m, m_s in zip(maps, maps_sorted)])
-
-        # Pathlib
-        path = pathlib.Path(a_fname)
-        eitmap = sunpy.map.Map(path)
-        assert isinstance(eitmap, sunpy.map.GenericMap)
-        maps = sunpy.map.Map(directory)
-        assert isinstance(maps, list)
-        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
 
         # Glob
         pattern = os.path.join(filepath, "EIT", "*")
@@ -163,9 +155,9 @@ class TestMap:
         backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)
 
-#==============================================================================
+# ==============================================================================
 # Sources Tests
-#==============================================================================
+# ==============================================================================
     def test_sdo(self):
         # Test an AIAMap
         aia = sunpy.map.Map(AIA_171_IMAGE)

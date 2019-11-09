@@ -1,7 +1,6 @@
 import os
 from collections import OrderedDict
 import warnings
-import pathlib
 import glob
 
 import numpy as np
@@ -99,14 +98,6 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map('local_dir/sub_dir')   # doctest: +SKIP
 
-    * A filesystem path expressed as a `pathlib.Path`
-
-    >>> import pathlib
-    >>> mymap = sunpy.map.Map(pathlib.Path('file1.fits'))   # doctest: +SKIP
-    >>> sub_dir = pathlib.Path('local_dir/sub_dir')
-    >>> mymap = sunpy.map.Map(sub_dir)   # doctest: +SKIP
-    >>> mymap = sunpy.map.Map(sub_dir / 'file3.fits')   # doctest: +SKIP
-
     * Some regex globs
 
     >>> mymap = sunpy.map.Map('eit_*.fits')   # doctest: +SKIP
@@ -169,8 +160,8 @@ class MapFactory(BasicRegistrationFactory):
         * data, header not in a tuple
         * data, wcs object in a tuple
         * data, wcs object not in a tuple
-        * filename, as a str or pathlib.Path, which will be read
-        * directory, as a str or pathlib.Path, from which all files will be read
+        * filename, as a str, which will be read
+        * directory, as a str, from which all files will be read
         * glob, from which all files will be read
         * url, which will be downloaded and read
         * lists containing any of the above.
@@ -208,17 +199,20 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs.append(pair)
                     i += 1    # an extra increment to account for the data-header pairing
 
-            # File system path (file or directory)
-            elif _is_path(arg):
-                path = pathlib.Path(arg).expanduser()
-                if path.is_file():
-                    pairs = self._read_file(path, **kwargs)
-                    data_header_pairs += pairs
-                elif path.is_dir():
-                    for afile in sorted(path.glob('*')):
-                        data_header_pairs += self._read_file(afile, **kwargs)
-                else:
-                    raise ValueError(f'{path} is neither a file nor a directory')
+            # File name
+            elif (isinstance(arg, str) and
+                  os.path.isfile(os.path.expanduser(arg))):
+                path = os.path.expanduser(arg)
+                pairs = self._read_file(path, **kwargs)
+                data_header_pairs += pairs
+
+            # Directory
+            elif (isinstance(arg, str) and
+                  os.path.isdir(os.path.expanduser(arg))):
+                path = os.path.expanduser(arg)
+                files = [os.path.join(path, elem) for elem in os.listdir(path)]
+                for afile in sorted(files):
+                    data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
             elif isinstance(arg, str) and glob.glob(os.path.expanduser(arg)):
@@ -249,7 +243,6 @@ class MapFactory(BasicRegistrationFactory):
         # In the end, if there are already maps it should be put in the same
         # order as the input, currently they are not.
         return data_header_pairs, already_maps
-
 
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
@@ -353,15 +346,6 @@ def _is_url(arg):
     except Exception:
         return False
     return True
-
-
-def _is_path(arg):
-    try:
-        is_path = pathlib.Path(arg).expanduser().exists()
-    except Exception:
-        return False
-    else:
-        return is_path
 
 
 class InvalidMapInput(ValueError):
