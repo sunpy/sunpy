@@ -888,6 +888,9 @@ class GenericMap(NDData):
         hdu_type: None, `~fits.CompImageHDU`
             `None` will return a normal FITS file.
             `~fits.CompImageHDU` will rice compress the FITS file.
+        kwargs :
+            Any additional keyword arguments are passed to
+            `~sunpy.io.write_file`.
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
