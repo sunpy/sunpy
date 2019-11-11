@@ -40,14 +40,14 @@ jobs:
       brew:
         - openjpeg
     envs:
-      - macos: py37-offline
+      - macos: py38-offline
+        name: py38_offline
+
+      - windows: py37-offline
         name: py37_offline
 
-      - windows: py36-offline
-        name: py36_offline
-
-      - linux: py37-online
-        name: py37_online
+      - linux: py38-online
+        name: py38_online
 
       - linux: py36-conda
         name: py36_conda
@@ -73,8 +73,8 @@ jobs:
         - wheels_macos
         - sdist
       dependsOn:
+        - py38_offline
         - py37_offline
-        - py36_offline
-        - py37_online
+        - py38_online
         - py36_conda
         - py36_astropy31
