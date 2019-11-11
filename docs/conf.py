@@ -82,6 +82,27 @@ except ImportError:
           'the "glymur" package to be installed')
     sys.exit(1)
 
+try:
+    import sqlalchemy
+except ImportError:
+    print('ERROR: sqlalchemy could not be imported. Building the documentation requires '
+          'the "sqlalchemy" package to be installed')
+    sys.exit(1)
+
+try:
+    import astroquery
+except ImportError:
+    print('ERROR: astroquery could not be imported. Building the documentation requires '
+          'the "astroquery" package to be installed')
+    sys.exit(1)
+
+try:
+    import jplephem
+except ImportError:
+    print('ERROR: jplephem could not be imported. Building the documentation requires '
+          'the "jplephem" package to be installed')
+    sys.exit(1)
+
 from pkg_resources import get_distribution
 versionmod = get_distribution('sunpy')
 
