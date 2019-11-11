@@ -49,8 +49,9 @@ def make_fitswcs_header(data, coordinate,
 
     Parameters
     ----------
-    data : `~numpy.ndarray`
-        Array data of Map for which a header is required.
+    data : `~numpy.ndarray` or `tuple`
+        Array data of Map for which a header is required, or the shape of the
+        data array (in numpy order, i.e. ``(y_size, x_size)``).
     coordinates : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseFrame`
         Coordinate object to get meta information for map header.
     reference_pixel :`~astropy.units.Quantity` of size 2, optional
@@ -117,6 +118,11 @@ def make_fitswcs_header(data, coordinate,
     if isinstance(coordinate, frames.Heliocentric):
         raise ValueError("This function does not currently support heliocentric coordinates.")
 
+    if hasattr(data, "shape"):
+        shape = data.shape
+    else:
+        shape = data
+
     meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
     if hasattr(coordinate, "observer") and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
@@ -127,7 +133,7 @@ def make_fitswcs_header(data, coordinate,
     meta_wcs.update(meta_instrument)
 
     if reference_pixel is None:
-        reference_pixel = u.Quantity([(data.shape[1] + 1)/2.*u.pixel, (data.shape[0] + 1)/2.*u.pixel])
+        reference_pixel = u.Quantity([(shape[1] + 1)/2.*u.pixel, (shape[0] + 1)/2.*u.pixel])
     if scale is None:
         scale = [1., 1.] * (u.arcsec/u.pixel)
 
