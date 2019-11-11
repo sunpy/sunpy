@@ -20,7 +20,9 @@ authors:
     orcid: 0000-0002-2019-8881
     affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Florian Mayer
-  - name: Keith Hughitt
+  - name: V. Keith Hughitt
+    orcid: 0000-0003-0787-9559
+    affiliation: "Center for Cancer Research, National Cancer Institute, Bethesda, MD 20892-9760, USA"
   - name: Albert Y. Shih
     orcid: 0000-0001-6874-2594
     affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
