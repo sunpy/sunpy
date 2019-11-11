@@ -34,14 +34,14 @@ map_1600 = sunpy.map.Map(AIA_1600_IMAGE)
 fig = plt.figure()
 
 # Add the main axes. Note this is resized to leave room for the slider axes
-ax = fig.add_axes([0.1, 0.2, 0.9, 0.8], projection=map_171)
+ax = fig.add_axes([0.1, 0.2, 0.9, 0.7], projection=map_171)
 
 im_1600 = map_1600.plot(axes=ax)
 im_171 = map_171.plot(axes=ax, alpha=0.5)
 ax.set_title('AIA 171 + 1600')
 
 # Add the slider axes
-ax_slider = fig.add_axes([0.25, 0.1, 0.65, 0.03])
+ax_slider = fig.add_axes([0.25, 0.05, 0.65, 0.03])
 slider = Slider(ax_slider, 'Alpha', 0, 1, valinit=0.5)
 
 
