@@ -23,7 +23,7 @@ from sunpy.data.sample import AIA_171_IMAGE, AIA_1600_IMAGE
 #
 # Note that these maps must be co-aligned. If they are taken at different times
 # or from different observation locations they will need to be aligned using
-# rotate() or reproject().
+# `~sunpy.map.GenericMap.rotate` or `reproject`.
 map_171 = sunpy.map.Map(AIA_171_IMAGE)
 map_1600 = sunpy.map.Map(AIA_1600_IMAGE)
 
