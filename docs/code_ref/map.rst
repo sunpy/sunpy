@@ -117,7 +117,7 @@ demonstrated by the following example.
        @classmethod
        def is_datasource_for(cls, data, header, **kwargs):
             """Determines if header corresponds to an AIA image"""
-            return header.get('instrume', '').startswith('FUTURESCOPE')
+            return str(header.get('instrume', '')).startswith('FUTURESCOPE')
 
 
 This class will now be available through the `Map <sunpy.map.map_factory.MapFactory>` factory as long as this

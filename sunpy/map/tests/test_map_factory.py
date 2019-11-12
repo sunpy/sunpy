@@ -99,6 +99,16 @@ class TestMap(object):
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
+        # Common keys not strings
+        data = np.arange(0, 100).reshape(10, 10)
+        header = {'cdelt1': 10, 'cdelt2': 10,
+                  'telescop': 100,
+                  'detector': 1,
+                  'instrume': 50,
+                  'cunit1': 'arcsec', 'cunit2': 'arcsec'}
+        pair_map = sunpy.map.Map(data, header)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+
     # requires sqlalchemy to run properly
     @pytest.mark.skipif('not HAS_SQLALCHEMY')
     def test_databaseentry(self):
