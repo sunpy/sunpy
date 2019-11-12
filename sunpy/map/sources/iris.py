@@ -1,11 +1,6 @@
-import copy
-
 import numpy as np
 
-import astropy.wcs
-
 from sunpy.map import GenericMap
-from sunpy.util.metadata import MetaDict
 
 __all__ = ['SJIMap']
 
@@ -53,7 +48,7 @@ class SJIMap(GenericMap):
 
         # We have to change this or else the WCS doesn't parse properly, even
         # though we don't care about the third dimension.
-        if self.meta['cdelt3'] == 0:
+        if self.meta.get('cdelt3', None) == 0:
             self.meta['cdelt3'] = 1e-10
 
     @classmethod
