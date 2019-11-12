@@ -1,0 +1,2 @@
+Made a couple of module imports lazy to reduce the import time of sunpy.map by
+~20%.
