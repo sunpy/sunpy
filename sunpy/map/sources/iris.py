@@ -1,6 +1,11 @@
+import copy
+
 import numpy as np
 
+import astropy.wcs
+
 from sunpy.map import GenericMap
+from sunpy.util.metadata import MetaDict
 
 __all__ = ['SJIMap']
 
@@ -40,11 +45,16 @@ class SJIMap(GenericMap):
         # Assume pixel units are arcesc if not given
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self.meta['detector'] = "SJI"
         self.meta['waveunit'] = "Angstrom"
         self.meta['wavelnth'] = header['twave1']
+
+        # We have to change this or else the WCS doesn't parse properly, even
+        # though we don't care about the third dimension.
+        if self.meta['cdelt3'] == 0:
+            self.meta['cdelt3'] = 1e-10
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
