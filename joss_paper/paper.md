@@ -7,7 +7,7 @@ tags:
 authors:
   - name: Stuart J. Mumford
     orcid: 0000-0003-4217-4642
-    affiliation: 
+    affiliation:
       - "SP2RC, School of Mathematics and Statistics, The University of Sheffield, UK"
       - "Aperio Software Ltd., Headingley Enterprise and Arts Centre, Bennett Road, Leeds LS6 3HN"
   - name: Nabil Freij
@@ -28,7 +28,7 @@ authors:
     affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Daniel F. Ryan
     orcid: 0000-0001-8661-3825
-    affiliation: 
+    affiliation:
       - "American University, Washington, DC 20016, USA"
       - "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Simon Liedtke
@@ -56,6 +56,8 @@ authors:
     orcid: 0000-0002-1365-1908
     affiliation: 'Mullard Space Science Laboratory, University College London, Surrey, UK'
   - name: Russell Hewett
+    orcid: 0000-0001-8944-4705
+    affiliation: 'Department of Mathematics, Virginia Polytechnic Institute and State University, Blacksburg, VA 24061-0123, USA'
   - name: Alex Hamilton
   - name: Laura Hayes
     orcid: 0000-0002-6835-2390
@@ -123,9 +125,12 @@ authors:
   - name: Dumindu Buddhika
   - name: Swapnil Sharma
   - name: Jongyeob Park
+    orcid: 0000-0002-1063-9129
+    affiliation: 'Space Science Division, Korea Astronomy and Space Science Institute, Daejeon 34055, South Korea'
   - name: Matt Bates
   - name: Dhruv Goel
   - name: Garrison Taylor
+    affiliation: 'Harvard-Smithsonian Center for Astrophysics, Cambridge, MA 02138, USA'
   - name: Goran Cetusic
   - name: Jacob
   - name: Mateo Inchaurrandieta
@@ -139,8 +144,8 @@ authors:
     orcid: 0000-0003-2587-1454
     affiliation: "Dogfox Software LLC, Flagstaff, AZ 86001, USA"
   - name: Serge Zahniy
-  orcid: 0000-0001-8835-7087
-  affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
+    orcid: 0000-0001-8835-7087
+    affiliation: "NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA"
   - name: Tomas Meszaros
   - name: Abhigyan Bose
   - name: André Chicrala
@@ -162,7 +167,7 @@ authors:
   - name: Andrew Hill
   - name: Arthur Eigenbrot
     orcid: 0000-0003-0810-4368
-    affiliation: "National Solar Observatory" 
+    affiliation: "National Solar Observatory"
   - name: Benjamin Mampaey
     orcid: 0000-0001-6541-4966
     affiliation: Royal Observatory of Belgium
@@ -238,7 +243,7 @@ authors:
   - name: Tessa D. Wilkinson
   - name: Tiago M. D. Pereira
     orcid: 0000-0003-4747-4329
-    affiliation: 
+    affiliation:
       - "Rosseland Centre for Solar Physics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway"
       - "Institute of Theoretical Astrophysics, University of Oslo, P.O. Box 1029 Blindern, NO-0315 Oslo, Norway"
   - name: Yudhik Agrawal
