@@ -11,7 +11,7 @@ authors = data['authors']
 # Create a list of all affiliations and make the affiliation key a list (and always present)
 affiliations = []
 for auth in authors:
-    affil = auth.get('affiliation', None)
+    affil = auth.get('affiliation', "None")
     if affil is not None:
         if not isinstance(affil, list):
             auth['affiliation'] = [affil]
@@ -20,9 +20,9 @@ for auth in authors:
 
 affiliations = set(affiliations)
 
-affiliation_index = {"The SunPy Developers": 1}
+affiliation_index = {}
 for auth in authors:
-    new_affils = [1]
+    new_affils = []
     if auth.get('affiliation') is not None:
         for affil in auth['affiliation']:
             index = affiliation_index.get(affil, len(affiliation_index) + 1)
