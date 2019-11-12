@@ -266,7 +266,15 @@ class GenericMap(NDData):
         """
         The `~astropy.wcs.WCS` property of the map.
         """
-        w2 = astropy.wcs.WCS(naxis=2)
+        # Construct the WCS based on the FITS header, but don't "do_set" which
+        # analyses the FITS header for correctness.
+        w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
+
+        # If the FITS header is > 2D pick the first 2 and move on.
+        # This will require the FITS header to be valid.
+        if w2.naxis != 2:
+            w2 = w2.sub([1,2])
+
         w2.wcs.crpix = u.Quantity(self.reference_pixel)
         # Make these a quantity array to prevent the numpy setting element of
         # array with sequence error.
