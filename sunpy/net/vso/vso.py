@@ -793,7 +793,7 @@ class VSOClient(BaseClient):
                             qr[dataitem.fileiditem.fileid[0]]
                         )
                     except NoData:
-                        results.add_error('', DownloadFailed(dresponse))
+                        results.add_error('', '', DownloadFailed(dresponse))
                         continue
 
             elif code == '300' or code == '412' or code == '405':
@@ -803,7 +803,7 @@ class VSOClient(BaseClient):
                             dresponse.method.methodtype, dresponse
                         )
                     except NoData:
-                        results.add_error('', MultipleChoices(dresponse))
+                        results.add_error('', '', MultipleChoices(dresponse))
                         continue
                 elif code == '412':
                     try:
@@ -811,13 +811,13 @@ class VSOClient(BaseClient):
                             info, dresponse.info
                         )
                     except NoData:
-                        results.add_error('', MissingInformation(dresponse))
+                        results.add_error('', '', MissingInformation(dresponse))
                         continue
                 elif code == '405':
                     try:
                         methods = self.unknown_method(dresponse)
                     except NoData:
-                        results.add_error('', UnknownMethod(dresponse))
+                        results.add_error('', '', UnknownMethod(dresponse))
                         continue
 
                 files = []
@@ -833,7 +833,7 @@ class VSOClient(BaseClient):
                     qr, info
                 )
             else:
-                results.add_error(UnknownStatus(dresponse))
+                results.add_error('', '', UnknownStatus(dresponse))
 
         return results
 
