@@ -131,6 +131,16 @@ class TestMap:
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
+        # Common keys not strings
+        data = np.arange(0, 100).reshape(10, 10)
+        header = {'cdelt1': 10, 'cdelt2': 10,
+                  'telescop': 100,
+                  'detector': 1,
+                  'instrume': 50,
+                  'cunit1': 'arcsec', 'cunit2': 'arcsec'}
+        pair_map = sunpy.map.Map(data, header)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+
     # requires dask array to run properly
     def test_dask_array(self):
         dask_array = pytest.importorskip('dask.array')
