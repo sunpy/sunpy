@@ -273,7 +273,7 @@ class GenericMap(NDData):
         # If the FITS header is > 2D pick the first 2 and move on.
         # This will require the FITS header to be valid.
         if w2.naxis != 2:
-            w2 = w2.sub([1,2])
+            w2 = w2.sub([1, 2])
 
         w2.wcs.crpix = u.Quantity(self.reference_pixel)
         # Make these a quantity array to prevent the numpy setting element of
@@ -303,6 +303,8 @@ class GenericMap(NDData):
         if {'HPLN', 'HPLT'} <= ctypes or {'SOLX', 'SOLY'} <= ctypes:
             w2.heliographic_observer = self.observer_coordinate
 
+        # Validate the WCS here.
+        w2.wcs.set()
         return w2
 
     @property
