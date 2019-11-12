@@ -1,0 +1,2 @@
+Fix multiple instances of `sunpy.map.sources` assuming the type of FITS Header
+values.
