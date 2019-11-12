@@ -80,8 +80,8 @@ authors:
   - name: Sudarshan Konge
   - name: Rajul Srivastava
   - name: Yash Jain
-     orcid: 0000-0001-5347-4734
-     affiliation: 'Indian Institute of Technology, Kharagpur, 721302, India'
+    orcid: 0000-0001-5347-4734
+    affiliation: 'Indian Institute of Technology, Kharagpur, 721302, India'
   - name: Samuel Bennett
   - name: Ankit Baruah
   - name: Will Barnes
@@ -260,7 +260,7 @@ date: 3 October 2019
 bibliography: paper.bib
 aas-doi: "Add DOI HERE"
 aas-journal: "The Astrophysical Journal"
----
+...
 
 # Summary
 
