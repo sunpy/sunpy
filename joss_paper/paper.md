@@ -444,7 +444,7 @@ Other functionality provided by `sunpy` includes physical models of solar behavi
 
 The `sunpy` package is designed to be extensible, which means that it is easy to add support for additional instruments or data sources. It relies heavily on the `astropy` Python package as well as the scientific python stack (e.g. `numpy`, `scipy`, `matplotlib` and `pandas`).
 
-A more complete description of the SunPy Project and the `sunpy` package, the methodology, development model, and implementation can be found in [@sunpy_community2019].
+A more complete description of the SunPy Project and the `sunpy` package, including the methodology, development model, and implementation, as well as a comparison with other commonly-used packages in solar physics, can be found in [@sunpy_community2019].
 
 The SunPy Project supports affiliated packages, which build upon or extends the functionality of `sunpy`. Current affiliated packages are `drms` [@Glogowski2019drms], [`ndcube`](https://docs.sunpy.org/projects/ndcube), [`radiospectra`](https://docs.sunpy.org/projects/radiospectra) and [`IRISPy`](https://docs.sunpy.org/projects/irispy). The Project is also a member of the Python in Heliophysics community [PyHC, @annex], whose mission is to enable interdisciplinary analysis across all sub-disciplines of heliophysics by adhering to standards for code development and interoperability.
 
