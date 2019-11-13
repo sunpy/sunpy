@@ -709,7 +709,7 @@ def test_array_obstime():
                  frame="heliographic_carrington")
 
     t = a.transform_to(Helioprojective)
-    assert isinstance(t, Helioprojective)
+    assert isinstance(t.frame, Helioprojective)
 
     t2 = a.transform_to(Helioprojective(obstime=["2019-01-03", "2019-01-04"]))
-    assert isinstance(t2, Helioprojective)
+    assert isinstance(t2.frame, Helioprojective)
