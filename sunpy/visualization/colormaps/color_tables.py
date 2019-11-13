@@ -58,15 +58,15 @@ r0 = np.array(
         205, 207, 208, 210, 211, 212, 214, 215, 217, 218, 220, 221, 223, 224,
         226, 227, 228, 230, 231, 233, 234, 236, 237, 239, 240, 241, 243, 244,
         246, 247, 249, 250, 252, 253
-    ], 256, 255))*u.angstrom
+    ], 256, 255))
 
-g0 = np.array(padfr(_mkx(1, range(17, 256, 17), 2), 256))*u.angstrom
-b0 = np.array(padfr(_mkx(3, range(51, 256, 51), 4), 256))*u.angstrom
+g0 = np.array(padfr(_mkx(1, range(17, 256, 17), 2), 256))
+b0 = np.array(padfr(_mkx(3, range(51, 256, 51), 4), 256))
 
-c0 = np.arange(256, dtype='f')*u.angstrom
-c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')*u.angstrom
-c2 = (np.arange(256)**2 / 255.0).astype('f')*u.angstrom
-c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')*u.angstrom
+c0 = np.arange(256, dtype='f')
+c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')
+c2 = (np.arange(256)**2 / 255.0).astype('f')
+c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')
 
 aia_wave_dict = {
     1600: (c3, c3, c2),
@@ -81,7 +81,7 @@ aia_wave_dict = {
     335: (c2, c0, c1)
 }
 
-
+@u.quantity_input
 def aia_color_table(wavelength: u.angstrom):
     """
     Returns one of the fundamental color tables for SDO AIA images.
@@ -91,7 +91,7 @@ def aia_color_table(wavelength: u.angstrom):
 
     Parmeters
     ---------
-    wavelength : `int`
+    wavelength : `~astropy.units.quantity.Quantity`
         Wavelength for the desired AIA color table.
     """
     try:
