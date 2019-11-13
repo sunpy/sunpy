@@ -72,6 +72,10 @@ plt.show()
 # neater. `~sunpy.visualization.ArrayAnimatorWCS` provides a way of setting
 # some display properties of the `~astropy.visualization.wcsaxes.WCSAxes`
 # object on every frame of the animation via use of the ``coord_params`` dict.
+# They keys of the ``coord_params`` dict are either the first half of the
+# ``CTYPE`` key, the whole ``CTYPE`` key or the entries in
+# ``wcs.world_axis_physical_types`` here we use the short ctype identifiers for
+# the latitude and longitude axes.
 
 
 coord_params = {
