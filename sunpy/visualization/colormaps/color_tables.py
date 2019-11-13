@@ -82,6 +82,8 @@ aia_wave_dict = {
 }
 
 @u.quantity_input
+
+
 def aia_color_table(wavelength: u.angstrom):
     """
     Returns one of the fundamental color tables for SDO AIA images.
