@@ -6,6 +6,8 @@ dictionaries.
 import matplotlib.colors as colors
 import numpy as np
 
+import astropy.units as u
+
 __all__ = [
     'aia_color_table', 'sswidl_lasco_color_table', 'eit_color_table',
     'sxt_color_table', 'xrt_color_table', 'trace_color_table',
@@ -68,20 +70,21 @@ c2 = (np.arange(256)**2 / 255.0).astype('f')
 c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')
 
 aia_wave_dict = {
-    1600: (c3, c3, c2),
-    1700: (c1, c0, c0),
-    4500: (c0, c0, b0 / 2.0),
-    94: (c2, c3, c0),
-    131: (g0, r0, r0),
-    171: (r0, c0, b0),
-    193: (c1, c0, c2),
-    211: (c1, c0, c3),
-    304: (r0, g0, b0),
-    335: (c2, c0, c1)
+    1600*u.angstrom: (c3, c3, c2),
+    1700*u.angstrom: (c1, c0, c0),
+    4500*u.angstrom: (c0, c0, b0 / 2.0),
+    94*u.angstrom: (c2, c3, c0),
+    131*u.angstrom: (g0, r0, r0),
+    171*u.angstrom: (r0, c0, b0),
+    193*u.angstrom: (c1, c0, c2),
+    211*u.angstrom: (c1, c0, c3),
+    304*u.angstrom: (r0, g0, b0),
+    335*u.angstrom: (c2, c0, c1)
 }
 
 
-def aia_color_table(wavelength):
+@u.quantity_input
+def aia_color_table(wavelength: u.angstrom):
     """
     Returns one of the fundamental color tables for SDO AIA images.
 
@@ -90,7 +93,7 @@ def aia_color_table(wavelength):
 
     Parmeters
     ---------
-    wavelength : `int`
+    wavelength : `~astropy.units.quantity`
         Wavelength for the desired AIA color table.
     """
     try:
@@ -272,7 +275,8 @@ eit_dark_red_b = np.concatenate((np.zeros(204).astype('int'), np.array(
        192, 200, 204, 207, 215, 223, 227, 231, 231, 235, 243, 247, 255])))
 
 
-def eit_color_table(wavelength):
+@u.quantity_input
+def eit_color_table(wavelength: u.angstrom):
     """
     Returns one of the fundamental color tables for SOHO EIT images.
     """
@@ -283,10 +287,10 @@ def eit_color_table(wavelength):
     # EIT 304 IDL Name EIT Dark Bot Red
     try:
         r, g, b = {
-            171: (eit_dark_blue_r, eit_dark_blue_g, eit_dark_blue_b),
-            195: (eit_dark_green_r, eit_dark_green_g, eit_dark_green_b),
-            284: (eit_yellow_r, eit_yellow_g, eit_yellow_b),
-            304: (eit_dark_red_r, eit_dark_red_g, eit_dark_red_b)
+            171*u.angstrom: (eit_dark_blue_r, eit_dark_blue_g, eit_dark_blue_b),
+            195*u.angstrom: (eit_dark_green_r, eit_dark_green_g, eit_dark_green_b),
+            284*u.angstrom: (eit_yellow_r, eit_yellow_g, eit_yellow_b),
+            304*u.angstrom: (eit_dark_red_r, eit_dark_red_g, eit_dark_red_b)
         }[wavelength]
     except KeyError:
         raise ValueError("Invalid EIT wavelength. Valid values are "
@@ -1287,15 +1291,16 @@ def create_cdict(r, g, b):
     return cdict
 
 
-def suvi_color_table(wavelength):
+@u.quantity_input
+def suvi_color_table(wavelength: u.angstrom):
     """Returns one of the fundamental color tables for SUVI images.
        SUVI uses AIA color tables.
     """
     try:
-        if wavelength == 195:
-            r, g, b = aia_wave_dict[193]
-        elif wavelength == 284:
-            r,g, b = aia_wave_dict[335]
+        if wavelength == 195*u.angstrom:
+            r, g, b = aia_wave_dict[193*u.angstrom]
+        elif wavelength == 284*u.angstrom:
+            r, g, b = aia_wave_dict[335*u.angstrom]
         else:
             r, g, b = aia_wave_dict[wavelength]
     except KeyError:
