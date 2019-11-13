@@ -160,6 +160,9 @@ def write(fname, data, header, hdu_type=None, **kwargs):
     hdu_type: `None` or `~astropy.io.fits.CompImageHDU`
         `None` will return a normal FITS files.
         `~astropy.io.fits.CompImageHDU` will rice compress the FITS file.
+    kwargs :
+        Additional keyword arguments are given to
+        `~astropy.io.fits.HDUList.writeto`.
     """
     # Copy header so the one in memory is left alone while changing it for
     # write.
