@@ -698,3 +698,18 @@ def test_no_observer():
                 f1.transform_to(f2)
             with pytest.raises(ConvertError):
                 f2.transform_to(f1)
+
+
+def test_array_obstime():
+    # Validate that you can transform from an array of obstimes to no obstimes,
+    # or different obstimes.
+    a = SkyCoord([10]*2, [10]*2, unit=u.deg,
+                 observer="earth",
+                 obstime=["2019-01-01", "2019-01-02"],
+                 frame="heliographic_carrington")
+
+    t = a.transform_to(Helioprojective)
+    assert isinstance(t, Helioprojective)
+
+    t2 = a.transform_to(Helioprojective(obstime=["2019-01-03", "2019-01-04"]))
+    assert isinstance(t2, Helioprojective)
