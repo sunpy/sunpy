@@ -48,6 +48,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         * ``major_formatter``: `~astropy.visualization.wcsaxes.CoordinateHelper.set_major_formatter`
         * ``axislabel``: `~astropy.visualization.wcsaxes.CoordinateHelper.set_axislabel`
         * ``grid``: `~astropy.visualization.wcsaxes.CoordinateHelper.grid` (The value should be a dict of keyword arguments to ``grid()`` or `True`).
+        * ``ticks``: `dict` the keyword arguments to the `~astropy.visualization.wcsaxes.CoordinateHelper.set_ticks` method.
     ylim: `tuple` or `None`, optional
        The yaxis limits to use when drawing a line plot, if not specified
        defaults to the data limits.
@@ -148,6 +149,12 @@ class ArrayAnimatorWCS(ArrayAnimator):
                 if not isinstance(grid, dict):
                     grid = {}
                 coord.grid(**grid)
+
+            ticks = params.get("ticks", None)
+            if ticks is not None:
+                if not isinstance(ticks, dict):
+                    raise TypeError("The 'ticks' value in the coord_params dictionary must be a dict.")
+                coord.set_ticks(**ticks)
 
     def _get_main_axes(self):
         axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
