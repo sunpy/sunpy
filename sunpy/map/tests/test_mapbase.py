@@ -573,7 +573,7 @@ def test_rotate_new_matrix(generic_map):
 
 
 def test_rotate_rmatrix_angle(generic_map):
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         generic_map.rotate(angle=5, rmatrix=np.array([[1, 0], [0, 1]]))
 
 
