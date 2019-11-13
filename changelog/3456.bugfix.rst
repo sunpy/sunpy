@@ -1,3 +1,0 @@
-Fix a warning in `sunpy.map.GenericMap.rotate` where the truth value of an array
-was being calculated. Also clean up the logic to make use of newer astropy
-features.
