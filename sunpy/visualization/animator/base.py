@@ -52,9 +52,14 @@ class BaseFuncAnimator:
     colorbar: `bool`, optional
         Plot a colorbar. Defaults to `False`.
     button_labels: `list`, optional
-        A list of strings to label buttons. Defaults to `None`.
+        A list of strings to label buttons. Defaults to `None`, if not
+        specified and ``button_func`` is specified, it will default to the
+        names of the functions.
     button_func: `list`, optional
-        A list of functions to map to the buttons. Defaults to `None`.
+        A list of functions to map to the buttons, these functions are called
+        with two arguments, ``(animator, event)`` where the first argument is
+        the animator object, and the second is the matplotlib mouse event.
+        Defaults to `None`.
 
     Notes
     -----
@@ -65,9 +70,11 @@ class BaseFuncAnimator:
                  start_image_func=None, **kwargs):
 
         # Allow the user to specify the button func:
-        self.button_func = button_func if button_func else []
-        self.button_labels = button_labels if button_labels else []
-        self.num_buttons = len(self.button_labels)
+        self.button_func = button_func or []
+        if button_func and not button_labels:
+            button_labels = [a.__name__ for a in button_func]
+        self.button_labels = button_labels or []
+        self.num_buttons = len(self.button_func)
 
         if not fig:
             fig = plt.figure()
@@ -293,7 +300,7 @@ class BaseFuncAnimator:
             self.buttons[-1].set_axes_locator(locator)
             self.buttons[-1]._button = widgets.Button(self.buttons[-1],
                                                       self.button_labels[i])
-            self.buttons[-1]._button.on_clicked(self.button_func[i])
+            self.buttons[-1]._button.on_clicked(partial(self.button_func[i], self))
 
         self.sliders = []
         self.slider_buttons = []
