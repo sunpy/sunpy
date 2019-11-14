@@ -442,7 +442,7 @@ The `sunpy.coordinates` subpackage provides support for representing and transfo
 
 Other functionality provided by `sunpy` includes physical models of solar behavior, such as differential rotation, color maps for certain data sources, image-processing routines integrated with `Map`, and useful physical parameters such as constants.
 
-The `sunpy` package is designed to be extensible, which means that it is easy to add support for additional instruments or data sources. It relies heavily on the `astropy`[@astropy] Python package as well as the scientific python stack (e.g. `numpy`[@numpy], `scipy`[@scipy], `matplotlib`[@matplotlib] and `pandas`[@pandas]).
+The `sunpy` package is designed to be extensible, which means that it is easy to add support for additional instruments or data sources. It relies heavily on the `astropy` [@astropy] Python package as well as the scientific python stack (e.g. `numpy` [@numpy], `scipy` [@scipy], `matplotlib` [@matplotlib] and `pandas` [@pandas]).
 
 A more complete description of the SunPy Project and the `sunpy` package, including the methodology, development model, and implementation, as well as a comparison with other commonly-used packages in solar physics, can be found in [@sunpy_community2019].
 
