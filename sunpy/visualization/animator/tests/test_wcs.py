@@ -127,6 +127,18 @@ def test_array_animator_wcs_2d_colorbar_buttons(wcs_4d):
 
 
 @figure_test
+def test_array_animator_wcs_2d_extra_sliders(wcs_4d):
+    def vmin_slider(val, im, slider):
+        im.set_clim(vmin=val)
+    def vmax_slider(val, im, slider):
+        im.set_clim(vmax=val)
+
+    data = np.arange(120).reshape((5, 4, 3, 2))
+    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'y', 'x'], colorbar=True, slider_functions=[vmin_slider, vmax_slider])
+    a.update_plot(1, a.im, a.sliders[0]._slider)
+    return a.fig
+
+@figure_test
 def test_array_animator_wcs_1d_update_plot(wcs_4d):
     pytest.importorskip("astropy", minversion="4.0dev26173")
     data = np.arange(120).reshape((5, 4, 3, 2))

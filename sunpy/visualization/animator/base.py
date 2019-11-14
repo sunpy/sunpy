@@ -434,10 +434,13 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         for i in self.slider_axes:
             self.frame_slice[i] = 0
 
+        slider_functions = kwargs.pop("slider_functions", [])
+        slider_ranges = kwargs.pop("slider_ranges", [])
         base_kwargs = {
-            'slider_functions': [self.update_plot] * self.num_sliders,
-            'slider_ranges': [[0, dim] for dim in np.array(data.shape)[self.slider_axes]]
+            'slider_functions': ([self.update_plot] * self.num_sliders) + slider_functions,
+            'slider_ranges': [[0, dim] for dim in np.array(data.shape)[self.slider_axes]] + slider_ranges
             }
+        self.num_sliders = len(base_kwargs["slider_functions"])
         base_kwargs.update(kwargs)
         super().__init__(data, **base_kwargs)
 
