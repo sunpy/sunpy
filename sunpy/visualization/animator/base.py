@@ -60,6 +60,9 @@ class BaseFuncAnimator:
         with two arguments, ``(animator, event)`` where the first argument is
         the animator object, and the second is the matplotlib mouse event.
         Defaults to `None`.
+    slider_labels: `list`, optional
+        A list of labels to draw in the slider, must be the same length as
+        ``slider_functions``.
 
     Notes
     -----
@@ -67,7 +70,7 @@ class BaseFuncAnimator:
     """
     def __init__(self, data, slider_functions, slider_ranges, fig=None,
                  interval=200, colorbar=False, button_func=None, button_labels=None,
-                 start_image_func=None, **kwargs):
+                 start_image_func=None, slider_labels=None, **kwargs):
 
         # Allow the user to specify the button func:
         self.button_func = button_func or []
@@ -86,10 +89,16 @@ class BaseFuncAnimator:
         self.imshow_kwargs = kwargs
 
         if len(slider_functions) != len(slider_ranges):
-            raise ValueError("You must specify the same number of functions as extents")
+            raise ValueError("slider_functions and slider_ranges must be the same length.")
+
+        if slider_labels is not None:
+            if len(slider_labels) != len(slider_functions):
+                raise ValueError("slider_functions and slider_labels must be the same length.")
+
         self.num_sliders = len(slider_functions)
         self.slider_functions = slider_functions
         self.slider_ranges = slider_ranges
+        self.slider_labels = slider_labels or [''] * len(slider_functions)
 
         # Set active slider
         self.active_slider = 0
@@ -313,6 +322,11 @@ class BaseFuncAnimator:
                 nx1 = -2
             locator = self.divider.new_locator(nx=2, ny=y, nx1=nx1)
             self.sliders[-1].set_axes_locator(locator)
+            self.sliders[-1].text(0.5, 0.5, self.slider_labels[i],
+                                  transform=self.sliders[-1].transAxes,
+                                  horizontalalignment="center",
+                                  verticalalignment="center")
+
             sframe = widgets.Slider(self.sliders[-1], "",
                                     self.slider_ranges[i][0],
                                     self.slider_ranges[i][-1]-1,
