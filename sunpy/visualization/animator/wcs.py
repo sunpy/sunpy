@@ -49,16 +49,17 @@ class ArrayAnimatorWCS(ArrayAnimator):
         * ``axislabel``: `~astropy.visualization.wcsaxes.CoordinateHelper.set_axislabel`
         * ``grid``: `~astropy.visualization.wcsaxes.CoordinateHelper.grid` (The value should be a dict of keyword arguments to ``grid()`` or `True`).
         * ``ticks``: `dict` the keyword arguments to the `~astropy.visualization.wcsaxes.CoordinateHelper.set_ticks` method.
-    ylim: `tuple` or `None`, optional
-       The yaxis limits to use when drawing a line plot, if not specified
-       defaults to the data limits.
+    ylim: `tuple` or `str`, optional
+       The yaxis limits to use when drawing a line plot, if 'fixed' then use
+       the global data limits, if 'dynamic' then set the y limit for each frame
+       individually (meaning the y limits change as you animate).
     ylabel: `string`, optional
        The yaxis label to use when drawing a line plot. Setting the label on
        the y-axis on an image plot should be done via ``coord_params``.
 
     """
 
-    def __init__(self, data, wcs, slices, coord_params=None, ylim=None, ylabel=None, **kwargs):
+    def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None, **kwargs):
         if not isinstance(wcs, BaseLowLevelWCS):
             raise ValueError("A WCS object should be provided that implements the astropy WCS API.")
         if wcs.pixel_n_dim != data.ndim:
@@ -199,10 +200,15 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         When plotting with WCSAxes, we always plot against pixel coordinate.
         """
-        ylim = self.ylim or (self.data.min(), self.data.max())
-        ax.set_ylim(ylim)
+        if self.ylim != 'dynamic':
+            ylim = self.ylim
+            if ylim == 'fixed':
+                ylim = (self.data.min(), self.data.max())
+            ax.set_ylim(ylim)
+
         if self.ylabel:
             ax.set_ylabel(self.ylabel)
+
         line, = ax.plot(self.data[self.frame_index], **self.imshow_kwargs)
         return line
 
@@ -223,6 +229,11 @@ class ArrayAnimatorWCS(ArrayAnimator):
         if val != slider.cval:
             self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
             line.set_ydata(self.data[self.frame_index])
+
+            # If we are not setting ylim globally then we set it per frame.
+            if self.ylim == 'dynamic':
+                self.axes.set_ylim(self.data[self.frame_index].min(),
+                                   self.data[self.frame_index].max())
             slider.cval = val
 
     def plot_start_image_2d(self, ax):
