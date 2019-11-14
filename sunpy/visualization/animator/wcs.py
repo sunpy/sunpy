@@ -5,6 +5,7 @@ import numpy as np
 import astropy.units as u
 from astropy.wcs.wcsapi import BaseLowLevelWCS
 
+from sunpy.extern import modest_image
 from sunpy.visualization.animator.base import ArrayAnimator
 
 
@@ -243,9 +244,23 @@ class ArrayAnimatorWCS(ArrayAnimator):
         imshow_args = {'interpolation': 'nearest',
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
-        im = ax.imshow(self.data_transposed, **imshow_args)
+
+        im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
+
+        if 'extent' in imshow_args:
+            ax.set_xlim(imshow_args['extent'][:2])
+            ax.set_ylim(imshow_args['extent'][2:])
+        else:
+            ny, nx = self.data_transposed.shape
+            ax.set_xlim(-0.5, nx - 0.5)
+            ax.set_ylim(-0.5, ny - 0.5)
+
+        ax.dataLim.intervalx = ax.get_xlim()
+        ax.dataLim.intervaly = ax.get_ylim()
+
         if self.if_colorbar:
             self._add_colorbar(im)
+
         return im
 
     def update_plot_2d(self, val, im, slider):
