@@ -35,6 +35,17 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
+@pytest.mark.remote_data
+@pytest.mark.parametrize("timerange, url_start, url_end", 
+    [(TimeRange('1999/01/10', '1999/01/20'),
+     'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
+     'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits')])
+def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
+    urls = LCClient._get_url_for_timerange(timerange)
+    assert len(urls) == 9
+    assert urls[0] == url_start
+    assert urls[-1] == url_end
+
 
 @given(goes_time())
 def test_can_handle_query(time):

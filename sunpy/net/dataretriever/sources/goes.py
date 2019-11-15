@@ -126,8 +126,10 @@ class XRSClient(GenericClient):
             The URL(s) for the corresponding timerange.
         """
         timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
-        if timerange.start and timerange.end < parse_time("1999/01/15"):
-            goes_file = "%Y/go{satellitenumber:02d}%y%m%d.fits"     
+        if timerange.end < parse_time("1999/01/15"):
+            goes_file = "%Y/go{satellitenumber:02d}%y%m%d.fits" 
+        elif timerange.start < parse_time("1999/01/15") and timerange.end >= parse_time("1999/01/15"):
+            return self._get_overlap_urls(timerange)
         else:
             goes_file = "%Y/go{satellitenumber}%Y%m%d.fits"
 
@@ -136,6 +138,26 @@ class XRSClient(GenericClient):
         goes_files = Scraper(goes_pattern, satellitenumber=satellitenumber)
 
         return goes_files.filelist(timerange)
+
+    def _get_overlap_urls(self, timerange):
+        """
+        Return a list of URLs over timerange when the URL path changed format `%Y` to `%y`
+        on the date 1999/01/15
+
+        Parameters
+        ----------
+        timerange : `~sunpy.time.TimeRange`
+            The time range you want the files for.
+        Returns
+        -------
+        `list`
+            The URL(s) for the corresponding timerange.
+        """
+        tr_before = TimeRange(timerange.start, parse_time("1999/01/14"))
+        tr_after = TimeRange(parse_time("1999/01/15"), timerange.end)
+        urls_before = self._get_url_for_timerange(tr_before)
+        urls_after = self._get_url_for_timerange(tr_after)
+        return urls_before + urls_after
 
     def _makeimap(self):
         """
