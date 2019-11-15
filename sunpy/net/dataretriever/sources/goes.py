@@ -119,25 +119,23 @@ class XRSClient(GenericClient):
         Parameters
         ----------
         timerange : `~sunpy.time.TimeRange`
-
+            The time range you want the files for.
         Returns
         -------
-        list :
+        `list`
             The URL(s) for the corresponding timerange.
         """
         timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
-        if timerange.start < parse_time("1999/01/15"):
-            goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/"
-                            "%Y/go{satellitenumber:02d}%y%m%d.fits")
+        if timerange.start and timerange.end < parse_time("1999/01/15"):
+            goes_file = "%Y/go{satellitenumber:02d}%y%m%d.fits"     
         else:
-            goes_pattern = ("https://umbra.nascom.nasa.gov/goes/fits/"
-                            "%Y/go{satellitenumber}%Y%m%d.fits")
+            goes_file = "%Y/go{satellitenumber}%Y%m%d.fits"
 
+        goes_pattern = f"https://umbra.nascom.nasa.gov/goes/fits/{goes_file}"
         satellitenumber = kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start))
         goes_files = Scraper(goes_pattern, satellitenumber=satellitenumber)
 
-        urls = goes_files.filelist(timerange)
-        return urls
+        return goes_files.filelist(timerange)
 
     def _makeimap(self):
         """
