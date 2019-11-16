@@ -1,4 +1,5 @@
 """
+=======================
 Fading between two maps
 =======================
 
@@ -24,6 +25,7 @@ from sunpy.data.sample import AIA_171_IMAGE, AIA_1600_IMAGE
 # Note that these maps must be co-aligned. If they are taken at different times
 # or from different observation locations they will need to be aligned using
 # `~sunpy.map.GenericMap.rotate` or `reproject`.
+
 map_171 = sunpy.map.Map(AIA_171_IMAGE)
 map_1600 = sunpy.map.Map(AIA_1600_IMAGE)
 
@@ -31,6 +33,7 @@ map_1600 = sunpy.map.Map(AIA_1600_IMAGE)
 # First we create a figure, and add the axes that will show the maps. Then
 # plot both of the images on the same axes. Finally, we add another axes that
 # contains the slider.
+
 fig = plt.figure()
 
 # Add the main axes. Note this is resized to leave room for the slider axes
@@ -47,8 +50,9 @@ slider = Slider(ax_slider, 'Alpha', 0, 1, valinit=0.5)
 
 ###############################################################################
 # Finally, define what happens when the slider is changed and link this to the
-# slider we set up above. In this case we just set the alpha (ie. transparencey)
+# slider we set up above. In this case we just set the alpha (ie. transparency)
 # of the 171 image.
+
 def update(val):
     alpha = slider.val
     im_171.set_alpha(alpha)
