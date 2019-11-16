@@ -33,62 +33,14 @@ If you want to see the current test dependencies, you check "extras_require" in 
 Running Tests
 -------------
 
-There are currently three different ways to invoke the SunPy tests.
+There are currently two different ways to invoke the SunPy tests.
+However, we strongly suggest using ``tox`` as the default one.
 Each method uses the widely-used ``pytest`` framework and are detailed below.
-
-``python setup.py test``
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-SunPy provides a ``test`` setup command, invoked by running ``python setup.py test`` while in the
-package root directory.
-Run ``python setup.py test --help`` to see the options to the test command.
-
-Note also that this test runner actually installs SunPy into a temporary directory and uses that for running the tests.
-This means that tests of things like entry points or data file paths should act just like they would once SunPy is installed.
-The other two approaches described below do **not** do this, and hence may give different results when ran.
-Hence, if you're running the tests because you've modified code that might be impacted by this, the ``python setup.py test`` approach is the recommended method.
-
-It is possible to run only the tests for a particular subpackage or set of subpackages.
-For example, to run only the "map" tests from the commandline::
-
-    $ python setup.py test -P map
-
-Or, to run only the "map" and "timeseries" tests::
-
-    $ python setup.py test -P map,timeseries
-
-You can also specify a single file to test from the commandline::
-
-    $ python setup.py test -t sunpy/map/tests/test_mapbase.py
-
-When the ``-t`` option is given a relative path, it is relative to  installed root of sunpy.
-When ``-t`` is given a relative path to a documentation ``.rst`` file to test, it is relative to the root of the documentation, i.e. the ``docs`` directory in the source tree.
-For example::
-
-    $ python setup.py test -t guide/index.rst
-
-Since ``python setup.py test`` wraps the ``pytest`` framework, you may want to pass options to the ``pytest`` command itself::
-
-    $ python setup.py test --args <pytest arg here>
-
-``pytest``
-^^^^^^^^^^
-
-The test suite can be run directly from the native ``pytest`` command.
-In this case, it is important for developers to be aware that they must manually rebuild any extensions by running ``python setup.py build_ext`` before testing.
-
-As shown for ``python setup.py test`` above, you can do the same for ``pytest``::
-
-    $ pytest sunpy/map/tests/test_mapbase.py
-
-If a test errors, you can use ``pdb`` to create a debugging session at test fail::
-
-    $ pytest --pdb
 
 ``tox``
 ^^^^^^^^
 
-The third method is to use `tox`_, which is a generic virtualenv management and test command line tool.
+The primary method is to use `tox`_, which is a generic virtualenv management and test command line tool.
 We have several environments within our "tox.ini" file and you can list them::
 
     $ tox -l
@@ -102,6 +54,32 @@ This is the method that our continuous integration uses.
 
 .. _tox: https://tox.readthedocs.io/en/latest/
 
+``pytest``
+^^^^^^^^^^
+
+The test suite can be run directly from the native ``pytest`` command.
+In this case, it is important for developers to be aware that they must manually rebuild any extensions by running ``python setup.py build_ext`` before testing.
+
+To run the entire suite with ``pytest``::
+
+    $ pytest
+
+will use the settings in ``setup.cfg``.
+
+If you want to run one specific test file::
+
+    $ pytest sunpy/map/tests/test_mapbase.py
+
+or one specific test in a test file::
+
+    $ pytest sunpy/map/tests/test_mapbase.py::<test_name>
+
+(This does not work with ``tox`` and is a known issue.)
+
+If a test errors, you can use ``pdb`` to create a debugging session at the moment the test fails::
+
+    $ pytest --pdb
+
 Test coverage reports
 ---------------------
 
@@ -111,10 +89,6 @@ This plugin can be installed using `pip`_::
     $ pip install pytest-cov
 
 To generate a test coverage report, use::
-
-    $ python setup.py test --coverage
-
-or::
 
     $ pytest --cov ./sunpy
 
@@ -137,15 +111,11 @@ This plugin can be installed using `pip`_::
 Once installed, tests can be run in parallel using the ``--parallel`` commandline option.
 For example, to use 4 processes::
 
-    $ python setup.py test --parallel=4
+    $ tox -e <name of environment> -- -n=4
 
 or::
 
     $ pytest -n 4 ./sunpy
-
-or::
-
-    $ tox -e <name of environment> -- -n=4
 
 .. _pytest-xdist: https://pypi.python.org/pypi/pytest-xdist
 .. _pip: https://pypi.org/project/pip/
@@ -231,7 +201,7 @@ Marking tests is pretty straightforward, use the decorator ``@pytest.mark.remote
 
 By default, no online tests are selected and so to run the online tests you have to::
 
-    $ python setup.py test --online
+    $ tox -e py37-online
 
 or::
 
@@ -287,10 +257,6 @@ Since the hashes are checked, we test figures against a fixed set of packages an
 
     $ tox -e figure
 
-To run the figure tests otherwise you can::
-
-    $ python setup.py test --figure-only
-
 or::
 
     $ pytest -m "figure"
@@ -305,7 +271,7 @@ To avoid running the tests::
 The output (regardless if via ``tox`` or ``pytest``) of these figure tests will be in a "figure_test_images" folder within your work folder.
 For example, "<local clone location>/figure_test_images" which is ignored by git.
 
-Writing Doctests
+Writing doctests
 ----------------
 
 Code examples in the documentation will also be run as tests and this helps to validate that the documentation is accurate and up to date.

@@ -106,17 +106,19 @@ To build the documentation locally you must have all the dependencies (``pip ins
 
 In the root directory run::
 
-    $ python setup.py build_docs
+    $ tox -e build_docs
 
 This will generate HTML documentation for SunPy in the "docs/_build/html" directory.
 You can open the "index.html" file to browse the final product.
 The gallery examples are located under "docs/_build/html/generated/gallery".
 Sphinx builds documentation iteratively, only adding things that have changed.
-If you'd like to start from scratch then just delete the build directory or run::
+If you'd like to start from scratch then just delete the tox build directory::
 
-    $ python setup.py build_docs -l
+    $ rm .tox/build_docs/
 
-to clean previous builds before building new ones.
+or::
+
+    $ tox --recreate -e build_docs
 
 For more information on how to use Sphinx, consult the `Sphinx documentation <http://www.sphinx-doc.org/en/stable/contents.html>`_.
 
