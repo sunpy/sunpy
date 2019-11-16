@@ -6,6 +6,8 @@ include setup.py
 include setup.cfg
 include pyproject.toml
 include LICENSE.rst
+include CITATION.rst
+include sunpy/CITATION.rst
 include licenses/*.rst
 include README.rst
 
@@ -23,7 +25,7 @@ prune docs/_build
 prune docs/api
 
 
-# the next few stanzas are for astropy_helpers.  It's derived from the
+# the next few stanzas are for astropy_helpers. It's derived from the
 # astropy_helpers/MANIFEST.in, but requires additional includes for the actual
 # package directory and egg-info.
 
