@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# Licensed under a 3-clause BSD style license - see LICENSE.rst
-#
 # SunPy documentation build configuration file.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -25,6 +22,12 @@
 # Thus, any C-extensions that are needed to build the documentation will *not*
 # be accessible, and the documentation will not build correctly.
 
+# ITS THE WILD WEST IN HERE
+# flake8: noqa
+
+import sunpy.data.sample
+import numpy as np
+from pkg_resources import get_distribution
 import os
 import sys
 import pathlib
@@ -57,53 +60,45 @@ if on_rtd:
 try:
     import zeep
 except ImportError:
-    print('ERROR: zeep could not be imported. Building the documentation requires '
-          'the "zeep" package to be installed')
-    sys.exit(1)
+    raise Exception(e, 'ERROR: zeep could not be imported. Building the documentation requires '
+                    'the "zeep" package to be installed')
 
 try:
     import skimage
-except ImportError:
-    print('ERROR: skimage could not be imported. Building the documentation requires '
-          'the "scikit-image" package to be installed')
-    sys.exit(1)
+except ImportError as e:
+    raise Exception(e, 'ERROR: skimage could not be imported. Building the documentation requires '
+                    'the "scikit-image" package to be installed')
 
 try:
     import drms
-except ImportError:
-    print('ERROR: drms could not be imported. Building the documentation requires '
-          'the "drms" package to be installed')
-    sys.exit(1)
+except ImportError as e:
+    raise Exception(e, 'ERROR: drms could not be imported. Building the documentation requires '
+                    'the "drms" package to be installed')
 
 try:
     import glymur
-except ImportError:
-    print('ERROR: glymur could not be imported. Building the documentation requires '
-          'the "glymur" package to be installed')
-    sys.exit(1)
+except ImportError as e:
+    raise Exception(e, 'ERROR: glymur could not be imported. Building the documentation requires '
+                    'the "glymur" package to be installed')
 
 try:
     import sqlalchemy
-except ImportError:
-    print('ERROR: sqlalchemy could not be imported. Building the documentation requires '
-          'the "sqlalchemy" package to be installed')
-    sys.exit(1)
+except ImportError as e:
+    raise Exception(e, 'ERROR: sqlalchemy could not be imported. Building the documentation requires '
+                    'the "sqlalchemy" package to be installed')
 
 try:
     import astroquery
-except ImportError:
-    print('ERROR: astroquery could not be imported. Building the documentation requires '
-          'the "astroquery" package to be installed')
-    sys.exit(1)
+except ImportError as e:
+    raise Exception(e, 'ERROR: astroquery could not be imported. Building the documentation requires '
+                    'the "astroquery" package to be installed')
 
 try:
     import jplephem
-except ImportError:
-    print('ERROR: jplephem could not be imported. Building the documentation requires '
-          'the "jplephem" package to be installed')
-    sys.exit(1)
+except ImportError as e:
+    raise Exception(e, 'ERROR: jplephem could not be imported. Building the documentation requires '
+                    'the "jplephem" package to be installed')
 
-from pkg_resources import get_distribution
 versionmod = get_distribution('sunpy')
 
 # The version info for the project you're documenting, acts as replacement for
@@ -117,11 +112,9 @@ release = versionmod.version.split('+')[0]
 is_development = '.dev' in release
 
 # -- Shut up numpy warnings from WCSAxes --------------------------------------
-import numpy as np
 np.seterr(invalid='ignore')
 
 # -- Download Sample Data -----------------------------------------------------
-import sunpy.data.sample
 
 # -- General configuration ----------------------------------------------------
 
@@ -262,7 +255,8 @@ if has_sphinx_gallery:
     sphinx_gallery_conf = {
         'backreferences_dir':
         path.joinpath('generated', 'modules'),  # path to store the module using example template
-        'filename_pattern': '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
+        # execute all examples except those that start with "skip_"
+        'filename_pattern': '^((?!skip_).)*$',
         'examples_dirs': example_dir,  # path to the examples scripts
         'subsection_order': ExplicitOrder([(os.path.join('..', 'examples/acquiring_data')),
                                            (os.path.join('..', 'examples/map')),
@@ -271,7 +265,8 @@ if has_sphinx_gallery:
                                            (os.path.join('..', 'examples/plotting')),
                                            (os.path.join('..', 'examples/saving_and_loading_data')),
                                            (os.path.join('..', 'examples/computer_vision_techniques'))]),
-        'gallery_dirs': path.joinpath('generated', 'gallery'),  # path to save gallery generated examples
+        # path to save gallery generated examples
+        'gallery_dirs': path.joinpath('generated', 'gallery'),
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
         'abort_on_example_error': False,
         'plot_gallery': True
