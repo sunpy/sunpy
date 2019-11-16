@@ -64,11 +64,10 @@ class ESPTimeSeries(GenericTimeSeries):
         """
         Parameters
         ----------
-        title : str, optional
+        title : `str`, optional
             Plot title.
-        **kwargs : dict
-            Additional plot keyword arguments that are handed to
-            :meth:`pandas.DataFrame.plot`.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `pandas.DataFrame.plot`.
         """
 
         self._validate_data_for_plotting()
@@ -111,7 +110,8 @@ class ESPTimeSeries(GenericTimeSeries):
         colnames = ['QD', 'CH_18', 'CH_26', 'CH_30', 'CH_36']
 
         all_data = [hdulist[1].data[x] for x in colnames]
-        data = DataFrame(np.array(all_data).T, index=times.isot.astype('datetime64'), columns=colnames)
+        data = DataFrame(np.array(all_data).T, index=times.isot.astype(
+            'datetime64'), columns=colnames)
         data.sort_index(inplace=True)
 
         units = OrderedDict([('QD', u.W/u.m**2),
