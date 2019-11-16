@@ -1,3 +1,4 @@
+import warnings
 from functools import partial
 from itertools import product
 
@@ -7,13 +8,17 @@ import matplotlib.backend_bases as mback
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-import astropy.wcs
+
 import astropy.units as u
+import astropy.wcs
 
 import sunpy.data.test
-from sunpy.time import parse_time
+import sunpy.map
 from sunpy.tests.helpers import figure_test
-from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, LineAnimator, ImageAnimatorWCS, base
+from sunpy.time import parse_time
+from sunpy.visualization.animator import (ArrayAnimator, BaseFuncAnimator,
+                                          ImageAnimatorWCS, LineAnimator, base)
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 class FuncAnimatorTest(BaseFuncAnimator):
@@ -165,9 +170,9 @@ def test_sanitize_axis_ranges(axis_ranges, exp_extent, exp_axis_ranges):
     out_axis_ranges, out_extent = aanim._sanitize_axis_ranges(axis_ranges=axis_ranges,
                                                               data_shape=data_shape)
     assert exp_extent == out_extent
-    assert np.array_equal(exp_axis_ranges[0], out_axis_ranges[0])
     assert np.array_equal(exp_axis_ranges[1], out_axis_ranges[1])
-
+    assert callable(out_axis_ranges[0])
+    assert np.array_equal(exp_axis_ranges[0], out_axis_ranges[0](np.arange(10)))
 
 xdata = np.tile(np.linspace(0, 100, 11), (5, 5, 1))
 
@@ -189,9 +194,10 @@ def test_lineanimator_figure():
     plot_axis0 = 1
     slider_axis0 = 0
     xdata = np.tile(np.linspace(0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
-    fig = plt.figure()
-    ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata], fig=fig)
-    ani.plot_start_image(ax=fig.gca())
+
+    ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata])
+
+    return ani.fig
 
 
 @figure_test
@@ -206,5 +212,8 @@ def test_imageanimator_figure():
     time_diff = (t1 - t0).to(u.s)
     wcs_input_dict.update({'CTYPE1': 'Time', 'CUNIT1': time_diff.unit.name, 'CDELT1': time_diff.value})
     wcs = astropy.wcs.WCS(wcs_input_dict)
-    wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1])
-    plt.show()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", SunpyDeprecationWarning)
+        wcs_anim = ImageAnimatorWCS(sequence_array, wcs=wcs, vmax=1000, image_axes=[0, 1])
+
+    return wcs_anim.fig

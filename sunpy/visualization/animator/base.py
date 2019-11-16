@@ -8,6 +8,8 @@ import mpl_toolkits.axes_grid1.axes_size as Size
 import numpy as np
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+import astropy.units as u
+
 __all__ = ['BaseFuncAnimator', 'ArrayAnimator']
 
 
@@ -172,9 +174,10 @@ class BaseFuncAnimator:
 
         Returns
         -------
-        `matplotlib.image.AxesImage`
-            An `matplotlib.image.AxesImage` object, the instance returned
-            from `matplotlib.pyplot.imshow`.
+        `matplotlib.artist.Artist`
+            The matplotlib object to be animated, this is usually either a
+            `~matplotlib.image.AxesImage` object, or a
+            `~matplotlib.lines.Line2D`.
         """
         raise NotImplementedError("Please define this function.")
 
@@ -246,18 +249,21 @@ class BaseFuncAnimator:
         small_x = Size.Fraction((1.-2.*pad)/10, Size.AxesX(self.axes))
         ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(self.axes))
 
+        button_grid = max((7, self.num_buttons))
         # Set up grid, 3x3 with cells for padding.
         if self.num_buttons > 0:
-            xsize = Size.Fraction((1.-2.*pad)/self.num_buttons, Size.AxesX(self.axes))
-            horiz = [xsize] + [pad_size, xsize]*(self.num_buttons-1) + \
-                    [Size.Fraction(0.1, Size.AxesY(self.axes)), small_x]
+            xsize = Size.Fraction((1.-2.*pad)/button_grid, Size.AxesX(self.axes))
+            horiz = [xsize] + [pad_size, xsize]*(button_grid-1)
             vert = [ysize, pad_size] * self.num_sliders + \
                    [large_pad_size, large_pad_size, Size.AxesY(self.axes)]
         else:
             vert = [ysize, large_pad_size] * self.num_sliders + \
                    [large_pad_size, Size.AxesY(self.axes)]
-            horiz = [Size.Fraction(0.8, Size.AxesX(self.axes))] + \
-                    [Size.Fraction(0.1, Size.AxesX(self.axes))]*2
+            horiz = [Size.Fraction(0.1, Size.AxesX(self.axes))] + \
+                    [Size.Fraction(0.05, Size.AxesX(self.axes))] + \
+                    [Size.Fraction(0.65, Size.AxesX(self.axes))] + \
+                    [Size.Fraction(0.1, Size.AxesX(self.axes))] + \
+                    [Size.Fraction(0.1, Size.AxesX(self.axes))]
 
         self.divider.set_horizontal(horiz)
         self.divider.set_vertical(vert)
@@ -279,7 +285,7 @@ class BaseFuncAnimator:
     def _add_widgets(self):
         self.buttons = []
         for i in range(0, self.num_buttons):
-            x = i*2
+            x = i * 2
             # The i+1/10. is a bug that if you make two axes directly on top of
             # one another then the divider doesn't work.
             self.buttons.append(self.fig.add_axes((0., 0., 0.+i/10., 1.)))
@@ -292,15 +298,15 @@ class BaseFuncAnimator:
         self.sliders = []
         self.slider_buttons = []
         for i in range(self.num_sliders):
-            x = i * 2
+            y = i * 2
             self.sliders.append(self.fig.add_axes((0., 0., 0.01+i/10., 1.)))
             if self.num_buttons == 0:
-                nx1 = 1
+                nx1 = 3
             else:
-                nx1 = -3
-            locator = self.divider.new_locator(nx=0, ny=x, nx1=nx1)
+                nx1 = -2
+            locator = self.divider.new_locator(nx=2, ny=y, nx1=nx1)
             self.sliders[-1].set_axes_locator(locator)
-            sframe = widgets.Slider(self.sliders[-1], f"{i:d}",
+            sframe = widgets.Slider(self.sliders[-1], "",
                                     self.slider_ranges[i][0],
                                     self.slider_ranges[i][-1]-1,
                                     valinit=self.slider_ranges[i][0],
@@ -311,12 +317,8 @@ class BaseFuncAnimator:
             self.sliders[-1]._slider = sframe
 
             self.slider_buttons.append(
-                self.fig.add_axes((0., 0., 0.05+x/10., 1.)))
-            if self.num_buttons == 0:
-                nx = 2
-            else:
-                nx = 2 + 2*(self.num_buttons-1)
-            locator = self.divider.new_locator(nx=nx, ny=x)
+                self.fig.add_axes((0., 0., 0.05+y/10., 1.)))
+            locator = self.divider.new_locator(nx=0, ny=y)
 
             self.slider_buttons[-1].set_axes_locator(locator)
             butt = widgets.Button(self.slider_buttons[-1], ">")
@@ -437,7 +439,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             'slider_ranges': [[0, dim] for dim in np.array(data.shape)[self.slider_axes]]
             }
         base_kwargs.update(kwargs)
-        BaseFuncAnimator.__init__(self, data, **base_kwargs)
+        super().__init__(data, **base_kwargs)
 
     @property
     def frame_index(self):
@@ -480,6 +482,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         * ``[min, max]`` pair where ``min == max``: convert to array indies "min,max" pair or array.
         * array of axis length, check that it was passed for a slider axes and do nothing
           if it was, error if it is not.
+        * For slider axes: a function which maps from pixel to world value.
         """
         ndim = len(data_shape)
         # If no axis range at all make it all [min,max] pairs
@@ -532,30 +535,38 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
                     axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
                 else:
                     raise ValueError(incompatible_axis_ranges_error_message(i))
-        # For each axis validate and translate the axis_ranges.
-        for i in self.slider_axes:
-            if axis_ranges[i] is None:
+
+        # For each slider axis validate and translate the axis_ranges.
+        def get_pixel_to_world_callable(array):
+            def pixel_to_world(pixel):
+                return array[pixel]
+            return pixel_to_world
+
+        for sidx in self.slider_axes:
+            if axis_ranges[sidx] is None:
                 # If axis range not supplied, set pixel center values as integers starting at 0.
-                axis_ranges[i] = np.arange(data_shape[i])
-            else:
-                axis_ranges[i] = np.array(axis_ranges[i])
-                if len(axis_ranges[i]) == 2:
+                axis_ranges[sidx] = get_pixel_to_world_callable(np.arange(data_shape[sidx]))
+            elif not callable(axis_ranges[sidx]):
+                axis_ranges[sidx] = np.array(axis_ranges[sidx])
+                if len(axis_ranges[sidx]) == 2:
                     # If axis range given as a min, max pair, derive the center of each pixel
                     # assuming they are equally spaced.
 
-                    axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][-1],
-                                                 data_shape[i]+1)
-                    axis_ranges[i] = edges_to_centers_nd(axis_ranges[i], i)
-                elif axis_ranges[i].ndim == 1 and len(axis_ranges[i]) == data_shape[i]+1:
+                    axis_ranges[sidx] = np.linspace(axis_ranges[sidx][0], axis_ranges[sidx][-1],
+                                                    data_shape[sidx]+1)
+                    axis_ranges[sidx] = get_pixel_to_world_callable(edges_to_centers_nd(axis_ranges[sidx], sidx))
+                elif axis_ranges[sidx].ndim == 1 and len(axis_ranges[sidx]) == data_shape[sidx]+1:
                     # If axis range given as 1D array of pixel edges (i.e. axis is independent),
                     # derive pixel centers.
 
-                    axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]), 0)
-                elif axis_ranges[i].ndim == ndim and axis_ranges[i].shape[i] == data_shape[i]+1:
+                    axis_ranges[sidx] = get_pixel_to_world_callable(
+                        edges_to_centers_nd(np.asarray(axis_ranges[sidx]), 0))
+                elif axis_ranges[sidx].ndim == ndim and axis_ranges[sidx].shape[sidx] == data_shape[sidx]+1:
                     # If axis range given as array of pixel edges the same shape as
                     # the data array (i.e. axis is not independent), derive pixel centers.
 
-                    axis_ranges[i] = edges_to_centers_nd(np.asarray(axis_ranges[i]), i)
+                    axis_ranges[sidx] = get_pixel_to_world_callable(
+                        edges_to_centers_nd(np.asarray(axis_ranges[sidx]), i))
                 else:
                     raise ValueError(incompatible_axis_ranges_error_message(i))
 
@@ -580,8 +591,11 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         ind = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
         # Update slider label to reflect real world values in axis_ranges.
-        label = self.axis_ranges[ax_ind][ind]
-        slider.valtext.set_text(f"{label}")
+        label = self.axis_ranges[ax_ind](ind)
+        if isinstance(label, u.Quantity):
+            slider.valtext.set_text(format_quantity_as_string(label))
+        else:
+            slider.valtext.set_text(f"{label:10.2f}")
 
 
 def edges_to_centers_nd(axis_range, edges_axis):
@@ -604,3 +618,17 @@ def edges_to_centers_nd(axis_range, edges_axis):
     lower_edges = axis_range[tuple(lower_edge_indices)]
 
     return (upper_edges - lower_edges) / 2 + lower_edges
+
+
+def format_quantity_as_string(quantity):
+    """
+    An Astropy 3.1 compatibility wrapper for Quantity.to_string.
+    Can be removed when Astropy dependency is >=3.2
+    """
+    to_string = getattr(quantity, "to_string", None)
+    if not to_string:
+        return quantity._repr_latex_()
+    else:
+        return quantity.to_string(precision=5,
+                                  format='latex',
+                                  subfmt='inline')
