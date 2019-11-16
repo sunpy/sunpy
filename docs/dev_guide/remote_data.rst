@@ -22,12 +22,12 @@ The manager has to be imported before it is used::
 
 `~sunpy.data.data_manager.manager.DataManager.require` is a decorator which is used to inform the data manager that the function requires a file for its execution.
 `~sunpy.data.data_manager.manager.DataManager.get` function is used to access the file inside the function.
-Suppose a function requires a file with url 'http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt' which has a SHA1 hash of '0f56b28dd53a99556254e66ba2c0401d567d0e94'.
+Suppose a function requires a file with url 'http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt' which has a SHA256 hash of 'b15c77b7537ac99304e05ce211cab160'.
 The following example will show how this function can be implemented::
 
     @manager.require('test_file',
                     ['http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt'],
-                    '0f56b28dd53a99556254e66ba2c0401d567d0e94')
+                    '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11')
     def test_function():
         file_path = manager.get('test_file')
         # do something with file

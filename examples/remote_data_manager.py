@@ -16,12 +16,12 @@ from sunpy.data import manager
 # Let's start by defining a function which uses some remote files.
 # Let's assume the function requires a file,
 # say http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt, which has
-# the SHA1 hash '0f56b28dd53a99556254e66ba2c0401d567d0e94'.
+# the SHA256 hash '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11'.
 
 
 @manager.require('test_file',
                  ['http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt'],
-                 '0f56b28dd53a99556254e66ba2c0401d567d0e94')
+                 '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11')
 def test_function():
     pass
 
@@ -33,7 +33,7 @@ def test_function():
 
 @manager.require('test_file',
                  ['http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt'],
-                 '0f56b28dd53a99556254e66ba2c0401d567d0e94')
+                 '4c85b04a5528aa97eb84a087450eda0421c71833820576330bba148564089b11')
 def test_function():
     return manager.get('test_file')
 
