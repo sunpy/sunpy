@@ -232,9 +232,9 @@ class Scraper:
                             fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
-                                if (datehref >= timerange.start and
-                                        datehref <= timerange.end):
-                                    filesurls.append(fullpath)
+                                if (datehref.to_datetime() >= timerange.start.to_datetime() and
+                                    datehref.to_datetime() <= timerange.end.to_datetime()):
+                                        filesurls.append(fullpath)
                 finally:
                     opn.close()
             except HTTPError as http_err:

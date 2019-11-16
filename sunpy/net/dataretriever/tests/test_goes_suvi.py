@@ -130,6 +130,7 @@ def test_get_url_for_time_range_level2(suvi_client, start, end, wave, expected_n
     assert isinstance(urls, list)
     assert len(urls) == expected_num_files
 
+
 @pytest.mark.remote_data
 @pytest.mark.parametrize("start, end, expected_num_files",
                          [('2019/05/25 00:50', '2019/05/25 00:52', 6)]
