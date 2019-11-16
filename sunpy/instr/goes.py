@@ -426,10 +426,10 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
 
 @manager.require('file_temp_cor',
                  [urljoin(GOES_REMOTE_PATH, FILE_TEMP_COR)],
-                 'e455eca2e0d8356e67aaab4685b7933af4ac8dbc')
+                 '3d8ddaaabf0faf75ba8d15e0c468896ce3d7622cc23076bf91437951e0ab3ad4')
 @manager.require('file_temp_pho',
                  [urljoin(GOES_REMOTE_PATH, FILE_TEMP_PHO)],
-                 'fd80aeed37d8e05f87f38cab5009e4b7032bbbe1')
+                 'dd8c6b949a492174146a0b7307dd5fb197236431dbbedfdbab2e3f8dcd360267')
 @u.quantity_input
 def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
                            download=False, download_dir=None):
@@ -570,10 +570,10 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
 
 @manager.require('file_em_cor',
                  [urljoin(GOES_REMOTE_PATH, FILE_EM_COR)],
-                 'a7f5e41210ab112330dc19c95123cf26921098dc')
+                 'a7440e20cbcb74e87db528e8e9d47cd69fbbd8f56ddc92cf4e854a66fb2a6172')
 @manager.require('file_em_pho',
                  [urljoin(GOES_REMOTE_PATH, FILE_EM_PHO)],
-                 '95128a5337f9d4150b9daa36f871d077b6312c2e')
+                 '0d59042b265bf76351d129b3e2a5844b3a9c96943cb246538013fd8c1b9b71b9')
 @u.quantity_input
 def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
                          abundances="coronal", download=False,
@@ -862,7 +862,7 @@ def calculate_radiative_loss_rate(goests, force_download=False,
 
 @manager.require('file_rad_cor',
                  [urljoin(GOES_REMOTE_PATH, FILE_RAD_COR)],
-                 '09ee4a63f93307e6163e797d2122ce465b5f9a31')
+                 'b56dccaa1035da46baa1a9251c4840107750d869de101d1811b506ceaec5828e')
 @u.quantity_input
 def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
                    download_dir=None):

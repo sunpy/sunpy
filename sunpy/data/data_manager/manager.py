@@ -109,7 +109,7 @@ class DataManager:
             URI of the file which replaces original file. Scheme should be
             one of ``http``, ``https``, ``ftp`` or ``file``.
         sha_hash: `str`, optional
-            SHA1 hash of the file to compared to after downloading.
+            SHA256 hash of the file to compared to after downloading.
         """
         try:
             self._skip_file[name] = {
