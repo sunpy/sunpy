@@ -3,10 +3,12 @@
 Creating a Full Sun Map with AIA and EUVI
 =========================================
 
-In this example we will combine three EUV images, one from AIA and one
-from each of EUVI_A and EUVI_B into a full latitude / longitude map of
-the Sun.
+With SDO/AIA and STEREO/A and STEREO/B, it is now possible (given specific dates)
+to combine combine three EUV images from these satellites
+to produce a full latitude / longitude map of the Sun.
 
+You will need an active internet connection as well as
+`reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 or higher installed.
 """
 # sphinx_gallery_thumbnail_number = 4
 
@@ -26,8 +28,7 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 ######################################################################
-# To get started let’s download the data:
-#
+# To get started, let's download the data:
 
 stereo = (a.Instrument('EUVI') &
           a.Time('2011-11-01', '2011-11-01T00:10:00'))
@@ -42,27 +43,22 @@ res = Fido.search(wave, aia | stereo)
 
 files = Fido.fetch(res)
 
-
 ######################################################################
 # Next we create a SunPy map for each of the files.
-#
-maps = sunpy.map.Map(sorted(files))
 
+maps = sunpy.map.Map(sorted(files))
 
 ######################################################################
 # When combining these images all three need to assume the same radius of
 # the Sun for the data. The AIA images specify a slightly different value
 # than the IAU 2015 constant. To avoid coordinate transformation issues we
 # reset this here.
-#
 
 maps[0].meta['rsun_ref'] = sunpy.sun.constants.radius.to_value(u.m)
-
 
 ######################################################################
 # Next we will plot the locations of the three spacecraft with respect to
 # the Sun so we can easily see the relative separations.
-#
 
 earth = get_body_heliographic_stonyhurst('earth', maps[0].date)
 
@@ -83,15 +79,12 @@ ax.set_theta_zero_location("S")
 ax.set_rlim(0, 1.3)
 
 plt.legend()
-plt.show()
-
 
 ######################################################################
 # The next step is to calculate the output coordinate system for the combined
-# map. We select a heliographic Stonyhurst frame, and a Plate Carrée (CAR)
+# map. We select a heliographic Stonyhurst frame, and a Plate Carree (CAR)
 # projection, and generate a header using `sunpy.map.make_fitswcs_header` and
-# then construct a WCS object for that header.
-#
+# then construct a World Coordinate System (WCS) object for that header.
 
 shape_out = (360, 720)
 header = sunpy.map.make_fitswcs_header(shape_out,
@@ -104,25 +97,21 @@ header = sunpy.map.make_fitswcs_header(shape_out,
 
 out_wcs = WCS(header)
 
-
 ######################################################################
 # Next we call the `reproject.mosaicking.reproject_and_coadd` function, which
 # takes a list of maps, and the desired output WCS and array shape.
-#
+
 array, footprint = reproject_and_coadd(maps, out_wcs, shape_out,
                                        reproject_function=reproject_interp)
-
 
 ######################################################################
 # To display the output we construct a new map using the new array and our
 # generated header. We also borrow the plot settings from the AIA map.
-#
 
 outmap = sunpy.map.Map((array, header))
 outmap.plot_settings = maps[0].plot_settings
 
-outmap.peek()
-
+outmap.plot()
 
 ######################################################################
 # Improving the Output
@@ -130,34 +119,29 @@ outmap.peek()
 #
 # As you can see this leaves a little to be desired. To reduce the obvious
 # warping towards the points which are close to the limb in the input
-# images, we can define a set of weights to use when coadding the output
+# images, we can define a set of weights to use when co-adding the output
 # arrays. To reduce this warping we want to calculate an set of weights
 # which highly weigh points close to the centre of the disk in the input
 # image.
 #
-# We can achieve this by using SunPy’s coordinate framework. First we
+# We can achieve this by using SunPy's coordinate framework. First we
 # calculate all the world coordinates for all the pixels in all three
 # input maps.
-#
 
 coordinates = tuple(map(sunpy.map.all_coordinates_from_map, maps))
-
 
 ######################################################################
 # To get a weighting which is high close to disk centre and low towards
 # the limb, we can use the Z coordinate in the heliocentric frame. This
 # coordinate is the distance of the sphere from the centre of the Sun
 # towards the observer.
-#
 
 weights = [coord.transform_to("heliocentric").z.value for coord in coordinates]
-
 
 ######################################################################
 # These weights are good, but they are better if the ramp down is a little
 # smoother, and more biased to the centre. Also we can scale them to the
 # range 0-1, and set any off disk (NaN) regions to 0.
-#
 
 weights = [(w / np.nanmax(w)) ** 3 for w in weights]
 for w in weights:
@@ -166,8 +150,6 @@ for w in weights:
 plt.figure()
 plt.imshow(weights[0])
 plt.colorbar()
-plt.show()
-
 
 ######################################################################
 # Now we can rerun the reprojection. This time we also set
@@ -186,11 +168,9 @@ array, footprint = reproject_and_coadd(maps, out_wcs, shape_out,
                                        match_background=True,
                                        background_reference=0)
 
-
 ######################################################################
 # Once again we create a new map, and this time we customise the plot a
 # little.
-#
 
 outmap = sunpy.map.Map((array, header))
 outmap.plot_settings = maps[0].plot_settings
