@@ -1,0 +1,1 @@
+Fix a bug with observer based frames that prevented a coordinate with an array of obstimes being transformed to other frames.
