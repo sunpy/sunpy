@@ -4,7 +4,6 @@ This module provides a JPEG 2000 file reader.
 import collections
 from xml.etree import cElementTree as ET
 
-from glymur import Jp2k
 
 from sunpy.io.header import FileHeader
 from sunpy.util.xml import xml_to_dict
@@ -28,6 +27,8 @@ def read(filepath, **kwargs):
     pairs : `list`
         A list of (data, header) tuples.
     """
+    # Put import here to speed up sunpy.io import time
+    from glymur import Jp2k
     header = get_header(filepath)
 
     data = Jp2k(filepath).read()[::-1]
@@ -49,6 +50,8 @@ def get_header(filepath):
     headers : list
         A list of headers read from the file.
     """
+    # Put import here to speed up sunpy.io import time
+    from glymur import Jp2k
     jp2 = Jp2k(filepath)
     xml_box = [box for box in jp2.box if box.box_id == 'xml ']
     xmlstring = ET.tostring(xml_box[0].xml.find('fits'))
