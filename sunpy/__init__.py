@@ -39,7 +39,7 @@ except ImportError:
 
 def _get_bibtex():
     # Set the bibtex entry to the article referenced in CITATION.rst
-    citation_file = os.path.join(os.path.dirname(__file__), '..', 'CITATION.rst')
+    citation_file = os.path.join(os.path.dirname(__file__), 'CITATION.rst')
 
     with open(citation_file, 'r') as citation:
         refs = citation.read().split('@ARTICLE')[1:]
