@@ -220,4 +220,7 @@ tags
 
 # Release script
 .github_cache
+
+# Misc Stuff
 .history
+*.orig
