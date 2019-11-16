@@ -121,7 +121,7 @@ class CORMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an COR image"""
-        return header.get('detector', '').startswith('COR')
+        return str(header.get('detector', '')).startswith('COR')
 
 
 class HIMap(GenericMap):
@@ -165,4 +165,4 @@ class HIMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an COR image"""
-        return header.get('detector', '').startswith('HI')
+        return str(header.get('detector', '')).startswith('HI')
