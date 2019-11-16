@@ -3,6 +3,7 @@ import matplotlib as mpl
 from astropy.wcs.wcsapi import BaseLowLevelWCS
 
 from sunpy.visualization.animator.base import ArrayAnimator
+from sunpy.util.decorators import deprecated
 
 __all__ = ['ImageAnimator', 'ImageAnimatorWCS']
 
@@ -119,6 +120,7 @@ class ImageAnimator(ArrayAnimator):
         super().update_plot(val, im, slider)
 
 
+@deprecated("1.1", alternative="sunpy.visualization.animator.ArrayAnimatorWCS")
 class ImageAnimatorWCS(ImageAnimator):
     """
     Animates N-dimensional data with an associated World Coordinate System.
@@ -171,7 +173,9 @@ class ImageAnimatorWCS(ImageAnimator):
         self.slices_wcsaxes = list_slices_wcsaxes[::-1]
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
-        super().__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
+
+        # Using `super()` here causes an error with the @deprecated decorator.
+        ImageAnimator.__init__(self, data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def _get_main_axes(self):
         axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,

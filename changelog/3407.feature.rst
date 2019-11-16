@@ -1,0 +1,5 @@
+`sunpy.visualization.animator.ArrayAnimatorWCS` was added which uses the WCS
+object to get the coordinates of all axes, including the slider labels. It also provides the
+ability to customise the plot by specifying arguments to
+`~astropy.visualization.wcsaxes.WCSAxes` methods and supports animation of
+WCS aware line plots with Astroy 4.0.

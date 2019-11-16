@@ -120,6 +120,24 @@ jobs:
           name: "Image comparison page is available at: "
           command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/figure_test_images/fig_comparison.html"; echo $FIGS_URL
 
+  figure-tests-37-astropydev:
+    docker:
+      - image: continuumio/miniconda3
+    steps:
+      - checkout
+      - run: *skip-check
+      - run: *no-backports
+      - run: *merge-check
+      - run: *apt-install
+      - run: pip install -U tox tox-conda codecov
+      - run: tox -e figure_astropydev
+      - run: codecov
+      - store_artifacts:
+          path: figure_test_images
+      - run:
+          name: "Image comparison page is available at: "
+          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/figure_test_images/fig_comparison.html"; echo $FIGS_URL
+
   html-docs:
     docker:
       - image: circleci/python:3.7
@@ -177,6 +195,7 @@ workflows:
   figure-tests:
     jobs:
       - figure-tests-36
+      - figure-tests-37-astropydev
 
   test-documentation:
     jobs:
