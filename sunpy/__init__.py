@@ -4,10 +4,8 @@ SunPy
 
 An open-source Python library for Solar Physics data analysis.
 
-Web Links
----------
-Homepage: https://sunpy.org
-Documentation: https://docs.sunpy.org/en/stable/
+* Homepage: https://sunpy.org
+* Documentation: https://docs.sunpy.org/en/stable/
 """
 # Enforce Python version check during package import.
 # This is the same check as the one at the top of setup.py
@@ -23,7 +21,8 @@ class UnsupportedPythonError(Exception):
 
 if sys.version_info < tuple(int(val) for val in __minimum_python_version__.split('.')):
     # This has to be .format to keep backwards compatibly.
-    raise UnsupportedPythonError("Sunpy does not support Python < {}".format(__minimum_python_version__))
+    raise UnsupportedPythonError(
+        "Sunpy does not support Python < {}".format(__minimum_python_version__))
 
 # this indicates whether or not we are in the package's setup.py
 try:
@@ -37,29 +36,20 @@ try:
 except ImportError:
     __version__ = ''
 
-__citation__ = r"""@ARTICLE{2015CS&D....8a4009S,
-   author = {{SunPy Community}, T. and {Mumford}, S.~J. and {Christe}, S. and
-    {P{\'e}rez-Su{\'a}rez}, D. and {Ireland}, J. and {Shih}, A.~Y. and
-    {Inglis}, A.~R. and {Liedtke}, S. and {Hewett}, R.~J. and {Mayer}, F. and
-    {Hughitt}, K. and {Freij}, N. and {Meszaros}, T. and {Bennett}, S.~M. and
-    {Malocha}, M. and {Evans}, J. and {Agrawal}, A. and {Leonard}, A.~J. and
-    {Robitaille}, T.~P. and {Mampaey}, B. and {Iv{\'a}n Campos-Rozo}, J. and
-    {Kirk}, M.~S.},
-    title = "{SunPy{\mdash}Python for solar physics}",
-  journal = {Computational Science and Discovery},
-archivePrefix = "arXiv",
-   eprint = {1505.02563},
- primaryClass = "astro-ph.IM",
-     year = 2015,
-    month = jan,
-   volume = 8,
-   number = 1,
-      eid = {014009},
-    pages = {014009},
-      doi = {10.1088/1749-4699/8/1/014009},
-   adsurl = {http://adsabs.harvard.edu/abs/2015CS%26D....8a4009S},
-  adsnote = {Provided by the SAO/NASA Astrophysics Data System}
-}"""
+
+def _get_bibtex():
+    # Set the bibtex entry to the article referenced in CITATION.rst
+    citation_file = os.path.join(os.path.dirname(__file__), '..', 'CITATION.rst')
+
+    with open(citation_file, 'r') as citation:
+        refs = citation.read().split('@ARTICLE')[1:]
+        if len(refs) == 0:
+            return ''
+        bibtexreference = r"@ARTICLE{}".format(refs[0])
+    return bibtexreference
+
+
+__citation__ = __bibtex__ = _get_bibtex()
 
 
 if not _SUNPY_SETUP_:
