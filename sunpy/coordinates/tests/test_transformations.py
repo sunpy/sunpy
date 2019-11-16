@@ -464,9 +464,9 @@ def test_hpc_hgs_implicit_hcc():
 
     implicit = start.transform_to(frame)
     explicit1 = start.transform_to(Heliocentric(obstime=start.obstime, observer='earth')).\
-                      transform_to(frame)
+        transform_to(frame)
     explicit2 = start.transform_to(Heliocentric(obstime=frame.obstime, observer='earth')).\
-                      transform_to(frame)
+        transform_to(frame)
 
     assert_quantity_allclose(implicit.separation_3d(explicit1), 0*u.AU, atol=1e-10*u.AU)
     assert_quantity_allclose(implicit.separation_3d(explicit2), 0*u.AU, atol=1e-10*u.AU)
@@ -509,3 +509,18 @@ def test_velocity_hgs_hgc():
     assert_quantity_allclose(new_vel.d_lon, -360*u.deg / (27.27253*u.day), rtol=1e-2)
     assert_quantity_allclose(new_vel.d_lat, 0*u.deg/u.s)
     assert_quantity_allclose(new_vel.d_distance, 0*u.km/u.s, atol=1e-7*u.km/u.s)
+
+
+def test_array_obstime():
+    # Validate that you can transform from an array of obstimes to no obstimes,
+    # or different obstimes.
+    a = SkyCoord([10]*2, [10]*2, unit=u.deg,
+                 observer="earth",
+                 obstime=["2019-01-01", "2019-01-02"],
+                 frame="heliographic_carrington")
+
+    t = a.transform_to(Helioprojective)
+    assert isinstance(t.frame, Helioprojective)
+
+    t2 = a.transform_to(Helioprojective(obstime=["2019-01-03", "2019-01-04"]))
+    assert isinstance(t2.frame, Helioprojective)
