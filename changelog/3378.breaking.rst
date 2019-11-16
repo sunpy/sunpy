@@ -1,0 +1,2 @@
+`NOAAIndicesTimeSeries.peek` now checks that the `type` argument is a
+valid string, and raises a `ValueError` if it isn't.
