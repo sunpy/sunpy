@@ -99,7 +99,6 @@ def test_wcs(aia171_test_map):
                [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
     assert all(wcs.wcs.cdelt == [aia171_test_map.scale.axis1.value,
                                  aia171_test_map.scale.axis2.value])
-
     assert all(
         wcs.wcs.crval ==
         [aia171_test_map._reference_longitude.value, aia171_test_map._reference_latitude.value])
