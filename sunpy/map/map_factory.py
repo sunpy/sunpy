@@ -22,6 +22,7 @@ from sunpy.util import expand_list
 from sunpy.util.metadata import MetaDict
 from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.types import DatabaseEntryType
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -38,13 +39,6 @@ except ImportError:
 
 __authors__ = ["Russell Hewett, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
-
-# Make a mock DatabaseEntry class if sqlalchemy is not installed
-try:
-    from sunpy.database.tables import DatabaseEntry
-except ImportError:
-    class DatabaseEntry:
-        pass
 
 __all__ = ['Map', 'MapFactory']
 
@@ -238,7 +232,7 @@ class MapFactory(BasicRegistrationFactory):
                 data_header_pairs += pairs
 
             # A database Entry
-            elif isinstance(arg, DatabaseEntry):
+            elif isinstance(arg, DatabaseEntryType):
                 data_header_pairs += self._read_file(arg.path, **kwargs)
 
             else:

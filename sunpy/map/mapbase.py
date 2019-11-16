@@ -8,7 +8,7 @@ import textwrap
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import patches, cm, colors
+from matplotlib import cm
 
 import astropy.wcs
 import astropy.units as u
@@ -25,7 +25,6 @@ from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype, peek_sho
 from sunpy.sun import constants
 from sunpy.coordinates import sun
 from sunpy.time import parse_time, is_time
-from sunpy.image.transform import affine_transform
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_earth
@@ -199,6 +198,8 @@ class GenericMap(NDData):
         if self.dtype == np.uint8:
             norm = None
         else:
+            # Put import here to reduce sunpy.map import time
+            from matplotlib import colors
             norm = colors.Normalize()
 
         # Visualization attributes
@@ -1029,6 +1030,9 @@ class GenericMap(NDData):
         transformations, situations when the underlying data is modified prior
         to rotation, and differences from IDL's rot().
         """
+        # Put the import here to reduce sunpy.map import time
+        from sunpy.image.transform import affine_transform
+
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
@@ -1488,6 +1492,8 @@ class GenericMap(NDData):
         -----
         Keyword arguments are passed onto `matplotlib.patches.Circle`.
         """
+        # Put import here to reduce sunpy.map import time
+        from matplotlib import patches
 
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)

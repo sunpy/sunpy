@@ -21,6 +21,7 @@ from sunpy import config
 from sunpy.time import parse_time
 from sunpy.io.header import FileHeader
 from sunpy.io import fits, file_tools as sunpy_filetools
+from sunpy.util.types import DatabaseEntryType
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -188,7 +189,7 @@ class Tag(Base):
         return f'<{self.__class__.__name__}(name {self.name!r})>'
 
 
-class DatabaseEntry(Base):
+class DatabaseEntry(DatabaseEntryType, Base):
     """
     DatabaseEntry()
 
