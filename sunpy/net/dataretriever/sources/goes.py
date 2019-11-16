@@ -127,7 +127,7 @@ class XRSClient(GenericClient):
         """
         timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
         if timerange.end < parse_time("1999/01/15"):
-            goes_file = "%Y/go{satellitenumber:02d}%y%m%d.fits" 
+            goes_file = "%Y/go{satellitenumber:02d}%y%m%d.fits"
         elif timerange.start < parse_time("1999/01/15") and timerange.end >= parse_time("1999/01/15"):
             return self._get_overlap_urls(timerange)
         else:
@@ -259,8 +259,10 @@ class SUVIClient(GenericClient):
                 end_time = parse_time(os.path.basename(this_url).split('_e')[1].split('Z')[0])
                 these_timeranges.append(TimeRange(start_time, end_time))
             if this_url.count('/l1b/') > 0:  # this is a level 1b data file
-                start_time = datetime.strptime(os.path.basename(this_url).split('_s')[1].split('_e')[0][:-1], '%Y%j%H%M%S')
-                end_time = datetime.strptime(os.path.basename(this_url).split('_e')[1].split('_c')[0][:-1], '%Y%j%H%M%S')
+                start_time = datetime.strptime(os.path.basename(this_url).split('_s')[
+                                               1].split('_e')[0][:-1], '%Y%j%H%M%S')
+                end_time = datetime.strptime(os.path.basename(this_url).split('_e')[
+                                             1].split('_c')[0][:-1], '%Y%j%H%M%S')
                 these_timeranges.append(TimeRange(start_time, end_time))
         return these_timeranges
 
@@ -293,7 +295,8 @@ class SUVIClient(GenericClient):
                 else:
                     wavelength = [kwargs.get("wavelength")]
             else:  # _Range was provided
-                compress_index = [wavelength_input.wavemin <= this_wave <= wavelength_input.wavemax for this_wave in (supported_waves * u.Angstrom)]
+                compress_index = [wavelength_input.wavemin <= this_wave <=
+                                  wavelength_input.wavemax for this_wave in (supported_waves * u.Angstrom)]
                 if not any(compress_index):
                     raise ValueError(
                         f"Wavelength {wavelength_input} not supported.")
@@ -302,9 +305,11 @@ class SUVIClient(GenericClient):
         else:  # no wavelength provided return all of them
             wavelength = supported_waves * u.Angstrom
         # check that the input wavelength can be converted to angstrom
-        waves = [int(this_wave.to_value('angstrom', equivalencies=u.spectral())) for this_wave in wavelength]
+        waves = [int(this_wave.to_value('angstrom', equivalencies=u.spectral()))
+                 for this_wave in wavelength]
         # use the given satellite number or choose the best one
-        satellitenumber = int(kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start)))
+        satellitenumber = int(kwargs.get(
+            "satellitenumber", self._get_goes_sat_num(timerange.start)))
         if satellitenumber < 16:
             raise ValueError(f"Satellite number {satellitenumber} not supported.")
         # default to the highest level of data
@@ -316,14 +321,18 @@ class SUVIClient(GenericClient):
         results = []
         for this_wave in waves:
             if level == "2":
-                search_pattern = base_url + 'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g{goes_number}_s%Y%m%dT%H%M%SZ_.*\.fits'
+                search_pattern = base_url + \
+                    'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g{goes_number}_s%Y%m%dT%H%M%SZ_.*\.fits'
             elif level == "1b":
                 if this_wave in [131, 171, 195, 284]:
-                    search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                    search_pattern = base_url + \
+                        'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
                 elif this_wave == 304:
-                    search_pattern = base_url + 'l{level}/suvi-l{level}-he{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-He{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                    search_pattern = base_url + \
+                        'l{level}/suvi-l{level}-he{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-He{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
                 elif this_wave == 94:
-                    search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                    search_pattern = base_url + \
+                        'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
 
             if search_pattern.count('wave_minus1'):
                 scraper = Scraper(search_pattern, level=level, wave=this_wave,

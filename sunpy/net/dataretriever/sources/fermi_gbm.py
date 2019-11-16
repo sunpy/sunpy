@@ -46,6 +46,7 @@ class GBMClient(GenericClient):
     <BLANKLINE>
     <BLANKLINE>
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns the url for Fermi/GBM data for the given date.
