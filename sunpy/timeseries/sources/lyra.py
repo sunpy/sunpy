@@ -73,7 +73,8 @@ class LYRATimeSeries(GenericTimeSeries):
         names : `int`, optional
             The number of columns to plot. Defaults to 3.
         **kwargs : `dict`
-            Any additional plot arguments that should be used when plotting.
+            Additional plot keyword arguments that are handed to
+            :meth:`pandas.DataFrame.plot`.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
@@ -93,10 +94,10 @@ class LYRATimeSeries(GenericTimeSeries):
                 name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
             axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
 
-        axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0],TIME_FORMAT))
+        axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0], TIME_FORMAT))
         axes[-1].set_xlabel("Time")
         for axe in axes:
-            axe.locator_params(axis='y',nbins=6)
+            axe.locator_params(axis='y', nbins=6)
 
         return figure
 

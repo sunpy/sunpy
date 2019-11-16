@@ -70,8 +70,6 @@ class XRSTimeSeries(GenericTimeSeries):
         ----------
         title : `str`. optional
             The title of the plot. Defaults to "GOES Xray Flux".
-        **kwargs : `dict`
-            Any additional plot arguments that should be used when plotting.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
