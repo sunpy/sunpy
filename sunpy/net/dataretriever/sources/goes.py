@@ -118,43 +118,46 @@ class XRSClient(GenericClient):
 
         Parameters
         ----------
-        timerange: sunpy.time.TimeRange
-            time range for which data is to be downloaded.
-        satellitenumber : int
-            GOES satellite number (default = 15)
-        data_type : str
-            Data type to return for the particular GOES satellite. Supported
-            types depend on the satellite number specified. (default = xrs_2s)
+        timerange : `~sunpy.time.TimeRange`
+            The time range you want the files for.
+        Returns
+        -------
+        `list`
+            The URL(s) for the corresponding timerange.
         """
-        # find out which satellite and datatype to query from the query times
-        base_url = "https://umbra.nascom.nasa.gov/goes/fits/"
-        start_time = Time(timerange.start.strftime("%Y-%m-%d"))
-        # make sure we are counting a day even if only a part of it is in the query range.
-        day_range = TimeRange(
-            timerange.start.strftime("%Y-%m-%d"), timerange.end.strftime("%Y-%m-%d")
-        )
-        total_days = int(day_range.days.value) + 1
-        result = list()
+        timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
+        if timerange.end < parse_time("1999/01/15"):
+            goes_file = "%Y/go{satellitenumber:02d}%y%m%d.fits"
+        elif timerange.start < parse_time("1999/01/15") and timerange.end >= parse_time("1999/01/15"):
+            return self._get_overlap_urls(timerange)
+        else:
+            goes_file = "%Y/go{satellitenumber}%Y%m%d.fits"
 
-        # Iterate over each day in the input timerange and generate a URL for
-        # it.
-        for day in range(total_days):
-            # It is okay to convert to datetime here as the start_time is a date
-            # hence we don't necesserily gain anything.
-            # This is necessary because when adding a day to a Time, we may
-            # end up with the same day if the day is a leap second day
-            date = start_time.datetime + timedelta(days=day)
-            regex = date.strftime("%Y") + "/go{sat:02d}"
-            if date < parse_time("1999/01/15"):
-                regex += date.strftime("%y%m%d") + ".fits"
-            else:
-                regex += date.strftime("%Y%m%d") + ".fits"
-            satellitenumber = kwargs.get(
-                "satellitenumber", self._get_goes_sat_num(date)
-            )
-            url = base_url + regex.format(sat=satellitenumber)
-            result.append(url)
-        return result
+        goes_pattern = f"https://umbra.nascom.nasa.gov/goes/fits/{goes_file}"
+        satellitenumber = kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start))
+        goes_files = Scraper(goes_pattern, satellitenumber=satellitenumber)
+
+        return goes_files.filelist(timerange)
+
+    def _get_overlap_urls(self, timerange):
+        """
+        Return a list of URLs over timerange when the URL path changed format `%Y` to `%y`
+        on the date 1999/01/15
+
+        Parameters
+        ----------
+        timerange : `~sunpy.time.TimeRange`
+            The time range you want the files for.
+        Returns
+        -------
+        `list`
+            The URL(s) for the corresponding timerange.
+        """
+        tr_before = TimeRange(timerange.start, parse_time("1999/01/14"))
+        tr_after = TimeRange(parse_time("1999/01/15"), timerange.end)
+        urls_before = self._get_url_for_timerange(tr_before)
+        urls_after = self._get_url_for_timerange(tr_after)
+        return urls_before + urls_after
 
     def _makeimap(self):
         """
@@ -256,11 +259,12 @@ class SUVIClient(GenericClient):
                 end_time = parse_time(os.path.basename(this_url).split('_e')[1].split('Z')[0])
                 these_timeranges.append(TimeRange(start_time, end_time))
             if this_url.count('/l1b/') > 0:  # this is a level 1b data file
-                start_time = datetime.strptime(os.path.basename(this_url).split('_s')[1].split('_e')[0][:-1], '%Y%j%H%M%S')
-                end_time = datetime.strptime(os.path.basename(this_url).split('_e')[1].split('_c')[0][:-1], '%Y%j%H%M%S')
+                start_time = datetime.strptime(os.path.basename(this_url).split('_s')[
+                                               1].split('_e')[0][:-1], '%Y%j%H%M%S')
+                end_time = datetime.strptime(os.path.basename(this_url).split('_e')[
+                                             1].split('_c')[0][:-1], '%Y%j%H%M%S')
                 these_timeranges.append(TimeRange(start_time, end_time))
         return these_timeranges
-
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
@@ -290,8 +294,9 @@ class SUVIClient(GenericClient):
                     raise ValueError(f"Wavelength {kwargs.get('wavelength')} not supported.")
                 else:
                     wavelength = [kwargs.get("wavelength")]
-            else:  #  _Range was provided
-                compress_index = [wavelength_input.wavemin <= this_wave <= wavelength_input.wavemax for this_wave in (supported_waves * u.Angstrom)]
+            else:  # _Range was provided
+                compress_index = [wavelength_input.wavemin <= this_wave <=
+                                  wavelength_input.wavemax for this_wave in (supported_waves * u.Angstrom)]
                 if not any(compress_index):
                     raise ValueError(
                         f"Wavelength {wavelength_input} not supported.")
@@ -300,9 +305,11 @@ class SUVIClient(GenericClient):
         else:  # no wavelength provided return all of them
             wavelength = supported_waves * u.Angstrom
         # check that the input wavelength can be converted to angstrom
-        waves = [int(this_wave.to_value('angstrom', equivalencies=u.spectral())) for this_wave in wavelength]
+        waves = [int(this_wave.to_value('angstrom', equivalencies=u.spectral()))
+                 for this_wave in wavelength]
         # use the given satellite number or choose the best one
-        satellitenumber = int(kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start)))
+        satellitenumber = int(kwargs.get(
+            "satellitenumber", self._get_goes_sat_num(timerange.start)))
         if satellitenumber < 16:
             raise ValueError(f"Satellite number {satellitenumber} not supported.")
         # default to the highest level of data
@@ -314,14 +321,18 @@ class SUVIClient(GenericClient):
         results = []
         for this_wave in waves:
             if level == "2":
-                search_pattern = base_url + 'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g{goes_number}_s%Y%m%dT%H%M%SZ_.*\.fits'
+                search_pattern = base_url + \
+                    'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g{goes_number}_s%Y%m%dT%H%M%SZ_.*\.fits'
             elif level == "1b":
                 if this_wave in [131, 171, 195, 284]:
-                    search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                    search_pattern = base_url + \
+                        'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
                 elif this_wave == 304:
-                    search_pattern = base_url + 'l{level}/suvi-l{level}-he{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-He{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                    search_pattern = base_url + \
+                        'l{level}/suvi-l{level}-he{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-He{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
                 elif this_wave == 94:
-                    search_pattern = base_url + 'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                    search_pattern = base_url + \
+                        'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
 
             if search_pattern.count('wave_minus1'):
                 scraper = Scraper(search_pattern, level=level, wave=this_wave,

@@ -65,6 +65,7 @@ class RHESSIClient(GenericClient):
     <BLANKLINE>
 
     """
+
     def get_observing_summary_filename(self, time_range):
         """
         Download the RHESSI observing summary data from one of the RHESSI
@@ -93,7 +94,8 @@ class RHESSIClient(GenericClient):
 
         filenames = []
 
-        diff_months = (dt.end.datetime.year - dt.start.datetime.year) * 12 + dt.end.datetime.month - dt.start.datetime.month
+        diff_months = (dt.end.datetime.year - dt.start.datetime.year) * \
+            12 + dt.end.datetime.month - dt.start.datetime.month
         first_month = datetime(dt.start.datetime.year, dt.start.datetime.month, 1)
         month_list = rrule(MONTHLY, dtstart=first_month, count=diff_months+1)
 
@@ -104,10 +106,12 @@ class RHESSIClient(GenericClient):
             dbase_file_name, hdrs = self.get_observing_summary_dbase_file(this_month)
             dbase_dat = rhessi.parse_observing_summary_dbase_file(dbase_file_name)
             this_month_obssumm_filenames = dbase_dat.get('filename')
-            daily_filenames_dates = [datetime.strptime(d[0:20], 'hsi_obssumm_%Y%m%d') for d in this_month_obssumm_filenames]
+            daily_filenames_dates = [datetime.strptime(
+                d[0:20], 'hsi_obssumm_%Y%m%d') for d in this_month_obssumm_filenames]
             for i, this_date in enumerate(daily_filenames_dates):
                 if dt.start <= this_date <= dt.end:
-                    filenames.append(posixpath.join(get_base_url(), 'metadata', 'catalog', this_month_obssumm_filenames[i] + 's'))
+                    filenames.append(posixpath.join(get_base_url(), 'metadata',
+                                                    'catalog', this_month_obssumm_filenames[i] + 's'))
 
         return filenames
 

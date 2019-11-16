@@ -112,12 +112,14 @@ def test_parsed_dbase():
     """
     Test that parsed_based still matches what is returned by rhessi.
     """
-    filename, _ = urlretrieve("https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt")
+    filename, _ = urlretrieve(
+        "https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt")
     dbase = sunpy.instr.rhessi.parse_observing_summary_dbase_file(filename)
     rows = {}
     for key in dbase.keys():
         rows[key] = dbase[key][:5]
     assert rows == parsed_dbase()
+
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
 @mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())

@@ -16,15 +16,15 @@ LCClient = fermi_gbm.GBMClient()
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end",
                          [(TimeRange('2011/06/07', '2011/06/09'),
-                          'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/07/'
-                          'current/glg_cspec_n5_110607_v00.pha',
-                          'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/09/'
-                          'current/glg_cspec_n5_110609_v00.pha'),
+                           'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/07/'
+                           'current/glg_cspec_n5_110607_v00.pha',
+                           'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/09/'
+                           'current/glg_cspec_n5_110609_v00.pha'),
                           (TimeRange('2016/09/09', '2016/09/11'),
-                          'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2016/09/09/'
-                          'current/glg_cspec_n5_160909_v00.pha',
-                          'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
-                          '2016/09/11/current/glg_cspec_n5_160911_v00.pha')])
+                           'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2016/09/09/'
+                           'current/glg_cspec_n5_160909_v00.pha',
+                           'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
+                           '2016/09/11/current/glg_cspec_n5_160911_v00.pha')])
 def test_get_url_for_time_range(timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange, detector='n5', resolution='cspec')
     assert isinstance(urls, list)

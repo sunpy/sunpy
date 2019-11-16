@@ -10,11 +10,12 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given, settings
-from sunpy.net.tests.strategies import time_attr
+from sunpy.net.tests.strategies import range_time
 
 LCClient = lyra.LYRAClient()
 
 
+@pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/1/7', '2012/1/7'),
      'http://proba2.oma.be/lyra/data/bsd/2012/01/07/lyra_20120107-000000_lev2_std.fits',
@@ -36,12 +37,7 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 
-def test_get_url_for_date():
-    url = LCClient._get_url_for_date(parse_time((2013, 2, 13)))
-    assert url == 'http://proba2.oma.be/lyra/data/bsd/2013/02/13/lyra_20130213-000000_lev2_std.fits'
-
-
-@given(time_attr())
+@given(range_time('2010-01-06'))
 def test_can_handle_query(time):
     ans1 = lyra.LYRAClient._can_handle_query(
         time, Instrument('lyra'))
@@ -50,8 +46,10 @@ def test_can_handle_query(time):
     assert ans2 is False
 
 
-@settings(deadline=50000)
-@given(time_attr())
+@pytest.mark.parametrize("time", [
+    Time('2015/8/27', '2015/8/27'),
+    Time('2016/2/4', '2016/2/6')])
+@pytest.mark.remote_data
 def test_query(time):
     qr1 = LCClient.search(time, Instrument('lyra'))
     assert isinstance(qr1, QueryResponse)

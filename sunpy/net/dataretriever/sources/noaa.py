@@ -173,6 +173,7 @@ class SRSClient(GenericClient):
     <BLANKLINE>
 
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         result = list()
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
@@ -295,6 +296,6 @@ class SRSClient(GenericClient):
         """
         for x in query:
             if (x.__class__.__name__ == "Instrument" and
-                str(x.value).lower() in ["soon", "srs_table"]):
+                    str(x.value).lower() in ["soon", "srs_table"]):
                 return True
         return False

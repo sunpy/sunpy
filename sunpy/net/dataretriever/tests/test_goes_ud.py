@@ -20,6 +20,7 @@ def LCClient():
     return goes.XRSClient()
 
 
+@pytest.mark.remote_data
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
     [(TimeRange('1995/06/03', '1995/06/05'),
@@ -35,6 +36,18 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 
+@pytest.mark.remote_data
+@pytest.mark.parametrize("timerange, url_start, url_end",
+                         [(TimeRange('1999/01/10', '1999/01/20'),
+                           'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
+                           'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits')])
+def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
+    urls = LCClient._get_url_for_timerange(timerange)
+    assert len(urls) == 9
+    assert urls[0] == url_start
+    assert urls[-1] == url_end
+
+
 @given(goes_time())
 def test_can_handle_query(time):
     ans1 = goes.XRSClient._can_handle_query(time, Instrument('XRS'))
@@ -45,11 +58,13 @@ def test_can_handle_query(time):
     assert ans3 is False
 
 
+@pytest.mark.remote_data
 def test_no_satellite(LCClient):
     with pytest.raises(ValueError):
         LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('XRS'))
 
 
+@pytest.mark.remote_data
 def test_fixed_satellite(LCClient):
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
                            a.Instrument('XRS'))
@@ -65,11 +80,10 @@ def test_fixed_satellite(LCClient):
         assert "go13" in resp.url
 
 
-@settings(deadline=50000)
-@example(a.Time("2006-08-01", "2006-08-01"))
-# This example tests a time range with a satellite jump and no overlap
-@example(a.Time("2009-11-30", "2009-12-3"))
-@given(goes_time())
+@pytest.mark.parametrize("time", [
+    Time('2005/4/27', '2005/4/27'),
+    Time('2016/2/4', '2016/2/10')])
+@pytest.mark.remote_data
 def test_query(LCClient, time):
     qr1 = LCClient.search(time, Instrument('XRS'))
     assert isinstance(qr1, QueryResponse)
@@ -82,6 +96,7 @@ def test_query(LCClient, time):
     assert is_time_equal(qr1.time_range().end, end)
 
 
+@pytest.mark.remote_data
 def test_query_error(LCClient):
     times = [a.Time("1983-05-01", "1983-05-02")]
     for time in times:
@@ -118,7 +133,9 @@ def test_fido(time, instrument):
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
 
+
 @settings(deadline=50000)
+@pytest.mark.remote_data
 @given(goes_time())
 def test_time_for_url(LCClient, time):
     time = time.start.strftime("%Y/%m/%d")
@@ -127,6 +144,4 @@ def test_time_for_url(LCClient, time):
     tr = TimeRange(time, almost_day)
     url = LCClient._get_url_for_timerange(tr)
     times = LCClient._get_time_for_url(url)
-
     assert all([tr == t2 for t2 in times])
-
