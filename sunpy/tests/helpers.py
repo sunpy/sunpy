@@ -86,7 +86,7 @@ def figure_test(test_function):
             pytest.xfail("No directory to save figures to found")
 
         name = "{}.{}".format(test_function.__module__,
-                                test_function.__name__)
+                              test_function.__name__)
         # Run the test function and get the figure
         plt.figure()
         fig = test_function(*args, **kwargs)
