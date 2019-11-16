@@ -47,6 +47,7 @@ class NoRHClient(GenericClient):
     <BLANKLINE>
 
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns list of URLS corresponding to value of input timerange.

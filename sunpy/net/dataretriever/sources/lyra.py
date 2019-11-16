@@ -34,18 +34,19 @@ class LYRAClient(GenericClient):
     <BLANKLINE>
 
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Return URL(s) for corresponding timerange.
-        
+
         Parameters
         ----------
         timerange : `~sunpy.time.TimeRange`
             The time range you want the files for.
-        
+
         Returns
         -------
-        `list` 
+        `list`
             The URL(s) for the corresponding timerange.
         """
         lyra_pattern = ('http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'

@@ -35,11 +35,12 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
+
 @pytest.mark.remote_data
-@pytest.mark.parametrize("timerange, url_start, url_end", 
-    [(TimeRange('1999/01/10', '1999/01/20'),
-     'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
-     'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits')])
+@pytest.mark.parametrize("timerange, url_start, url_end",
+                         [(TimeRange('1999/01/10', '1999/01/20'),
+                           'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
+                           'https://umbra.nascom.nasa.gov/goes/fits/1999/go1019990120.fits')])
 def test_get_overlap_urls(LCClient, timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert len(urls) == 9
@@ -77,7 +78,6 @@ def test_fixed_satellite(LCClient):
 
     for resp in ans1:
         assert "go13" in resp.url
-
 
 
 @pytest.mark.parametrize("time", [
@@ -144,4 +144,4 @@ def test_time_for_url(LCClient, time):
     tr = TimeRange(time, almost_day)
     url = LCClient._get_url_for_timerange(tr)
     times = LCClient._get_time_for_url(url)
-    assert all([tr == t2 for t2 in times])  
+    assert all([tr == t2 for t2 in times])

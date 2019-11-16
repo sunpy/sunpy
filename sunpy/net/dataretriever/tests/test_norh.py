@@ -48,6 +48,7 @@ def test_can_handle_query(time):
     ans2 = norh.NoRHClient._can_handle_query(time)
     assert ans2 is False
 
+
 @pytest.mark.remote_data
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
 @given(time=range_time(Time('1992-6-1')))

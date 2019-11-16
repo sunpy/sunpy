@@ -1,1 +1,1 @@
-Updating both GOES XRS and LYRA dataretriver clients to use `sunpy.util.scraper.Scraper` as to make sure that files are actually on servers being queried 
+Updated both GOES XRS and LYRA dataretriever clients to use `~sunpy.util.scraper.Scraper`, to make sure that files are actually on the servers being queried.
