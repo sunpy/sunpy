@@ -48,6 +48,7 @@ def test_wrong_hash_provided(manager):
     with pytest.raises(RuntimeError):
         test_foo()
 
+
 def test_skip_all(manager, storage, downloader, data_function):
     """
     Test skip_hash_check redownloads data.
@@ -60,9 +61,10 @@ def test_skip_all(manager, storage, downloader, data_function):
     assert len(storage._store) == 1
     assert Path(storage._store[0]['file_path']).name == ('test_file')
 
-def test_replace_file(manager, storage, downloader, data_function):
+
+def test_override_file(manager, storage, downloader, data_function):
     """
-    Test the replace_file functionality.
+    Test the override_file functionality.
     """
 
     def default_tester(manager):
@@ -71,39 +73,39 @@ def test_replace_file(manager, storage, downloader, data_function):
         """
         assert manager.get('test_file').name == ('test_file')
 
-    def replace_file_tester(manager):
+    def override_file_tester(manager):
         """
         Function to test whether the file is /tmp/another_file.
         """
-        assert manager.get('test_file') == Path('/tmp/another_fiel')
+        assert manager.get('test_file') == Path('/tmp/another_file')
 
     # Outside the context manager file is default
     data_function(default_tester)
-    write_to_test_file('/tmp/another_fiel', 'a')
+    write_to_test_file('/tmp/another_file', 'a')
 
-    with manager.replace_file('test_file', 'file:///tmp/another_fiel'):
+    with manager.override_file('test_file', 'file:///tmp/another_file'):
         # Inside the file is replaced
-        data_function(replace_file_tester)
+        data_function(override_file_tester)
 
     # check the function works with hash provided
-    with manager.replace_file('test_file', 'file:///tmp/another_fiel', MOCK_HASH):
-        data_function(replace_file_tester)
+    with manager.override_file('test_file', 'file:///tmp/another_file', MOCK_HASH):
+        data_function(override_file_tester)
 
     with pytest.raises(KeyError):
         # check if functions errors with the wrong hash
-        with manager.replace_file('test_file', 'file:///tmp/another_fiel', 'wrong_hash'):
+        with manager.override_file('test_file', 'file:///tmp/another_file', 'wrong_hash'):
             # Inside the file is replaced
-            data_function(replace_file_tester)
+            data_function(override_file_tester)
 
     # Even after context manager call outside the file is default
     data_function(default_tester)
 
 
-def test_replace_file_remote(manager, downloader, data_function):
-    replace_url = 'http://example.com/another_fiel'
+def test_override_file_remote(manager, downloader, data_function):
+    replace_url = 'http://example.com/another_file'
     data_function()
     assert downloader.times_called == 1
-    with manager.replace_file('test_file', replace_url):
+    with manager.override_file('test_file', replace_url):
         data_function()
 
     assert downloader.times_called == 2

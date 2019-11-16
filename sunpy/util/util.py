@@ -7,7 +7,7 @@ import hashlib
 from collections import UserList
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
-           'expand_list_generator', 'dict_keys_same']
+           'expand_list_generator', 'dict_keys_same', 'hash_file']
 
 
 def unique(itr, key=None):

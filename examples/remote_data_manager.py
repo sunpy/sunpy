@@ -1,20 +1,23 @@
 """
-========================================
-Using sunpy.data.manager
-========================================
+=========================
+Using Remote Data Manager
+=========================
 
 This is an example to show how to use remote data manager to
-handle remote data in sunpy.
+handle remote data in Sunpy.
 """
 ##############################################################################
 # Remote data manager is used to handle the usage of remote files in the code
-# base in a sane way.
+#  base with file verification using hashes.
+
 from sunpy.data import manager
 
 ##############################################################################
 # Let's start by defining a function which uses some remote files.
-# Let's assume the function requires a file, say http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt, which has
+# Let's assume the function requires a file,
+# say http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt, which has
 # the SHA1 hash '0f56b28dd53a99556254e66ba2c0401d567d0e94'.
+
 
 @manager.require('test_file',
                  ['http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt'],
@@ -22,10 +25,11 @@ from sunpy.data import manager
 def test_function():
     pass
 
-
 ##############################################################################
-# To access the downloaded file inside the function, you can use `~sunpy.data.data_manager.manager.DataManager.get` function.
+# To access the downloaded file inside the function, you can use
+# `~sunpy.data.data_manager.manager.DataManager.get` function
 # `manager.get` returns a `pathlib.Path` object.
+
 
 @manager.require('test_file',
                  ['http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt'],
@@ -33,10 +37,10 @@ def test_function():
 def test_function():
     return manager.get('test_file')
 
-
 ##############################################################################
 # The first time the function is called, the file will be downloaded.
 # During subsequent calls, no downloading will take place.
+
 
 test_function()  # The file will be downloaded
 test_function()  # No downloading here
@@ -52,5 +56,5 @@ with manager.skip_hash_check():
 # If the user knows the function is going to use a file and want to replace it with another version
 # they can do that too.
 
-with manager.replace_file('test_file', 'http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits'):
+with manager.override_file('test_file', 'http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits'):
     test_function()

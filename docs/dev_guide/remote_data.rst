@@ -1,18 +1,17 @@
 .. _remote_data:
 
-************
-Remote Files
-************
-
+*******************
 Remote Data Manager
-===================
+*******************
 
 There are functions which require files to be downloaded from the internet before they are executed.
-If the files are changed on the remote server or if they are tampered with after the file is downloaded, the function may return erraneous results.
+If the files change on the remote server or if they are tampered with after the file is downloaded, the function may return erroneous results.
 
-Remote Data Manager provides the developers a way to download the files easily and ensure that the files are intact when they are used.
-If the file is changed on the remote server, the data manager will raise an error so that the developer can update the function to use the new hash.
+This Remote Data Manager provides developers with a way to download the files easily and ensure that the files are intact when they are used.
+If the file is changed on the remote server, the data manager will raise an error so that the user is made aware that the intended file is not available.
 If the file has changed on disk, data manager will redownload the file after warning the user.
+
+Also in `sunpy.util`, there is a `~sunpy.util.hash_file` function.
 
 Usage
 -----
@@ -21,13 +20,10 @@ The manager has to be imported before it is used::
 
     from sunpy.data import manager
 
-
-
-`~sunpy.data.data_manager.manager.DataManager.require` is a decorator which is used to inform the data manager that the function requires a file for it's execution.
+`~sunpy.data.data_manager.manager.DataManager.require` is a decorator which is used to inform the data manager that the function requires a file for its execution.
 `~sunpy.data.data_manager.manager.DataManager.get` function is used to access the file inside the function.
 Suppose a function requires a file with url 'http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt' which has a SHA1 hash of '0f56b28dd53a99556254e66ba2c0401d567d0e94'.
-The following example will show how this function can be implemented.::
-
+The following example will show how this function can be implemented::
 
     @manager.require('test_file',
                     ['http://data.sunpy.org/sample-data/predicted-sunspot-radio-flux.txt'],
@@ -41,8 +37,9 @@ Cache
 =====
 
 Remote files sometimes have to be cached.
-This is to ensure that the files are not redownloaded frequently, thus saving users' disc space and well as internet bandwidth.
-The expiry of the cache is configured by the user.
+This is to ensure that the files are not redownloaded frequently, thus saving users' disk space and well as internet bandwidth.
+The cache has an expiry time which is set by the ``sunpyrc`` config file.
+To change this please see :ref:`customizing-sunpy`.
 
 Usage
 -----

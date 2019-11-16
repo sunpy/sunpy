@@ -1,1 +1,2 @@
-Add new `sunpy.data.manager` and `sunpy.data.cache` for dealing with remote data in a sensible way.
+Add a new `sunpy.data.manager` and `sunpy.data.cache` for dealing with versioned remote data within functions.
+Please see the :ref:`remote_data` guide.
