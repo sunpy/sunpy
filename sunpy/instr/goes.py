@@ -66,7 +66,6 @@ from sunpy.data import manager
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.util.config import get_and_create_download_dir
-from sunpy.util.net import check_download_file
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
                         'M': u.Quantity(1e-5, "W/m^2"),
@@ -148,7 +147,7 @@ def get_goes_event_list(timerange, goes_class_filter=None):
             'goes_class': str(r['fl_goescls']),
             'goes_location': (r['event_coord1'], r['event_coord2']),
             'noaa_active_region': r['ar_noaanum']
-            }
+        }
         goes_event_list.append(goes_event)
 
     return goes_event_list
@@ -718,7 +717,7 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
        np.isnan(np.min(log10_temp)):
         raise ValueError("All values in temp must be within the range "
                          "{} - {} MK.".format(np.min(10**modeltemp),
-                                                np.max(10**modeltemp)))
+                                              np.max(10**modeltemp)))
 
     # Perform spline fit to model data
     spline = interpolate.splrep(modeltemp, modelflux, s=0)
@@ -974,7 +973,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
     if temp.value.min() < modeltemp.min() or temp.value.max() > modeltemp.max():
         raise ValueError("All values in temp must be within the range " +
                          "{} - {} MK.".format(np.min(modeltemp/1e6),
-                                                np.max(modeltemp/1e6)))
+                                              np.max(modeltemp/1e6)))
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)

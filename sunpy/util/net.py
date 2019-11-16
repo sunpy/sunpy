@@ -11,6 +11,7 @@ from urllib.parse import urljoin, urlparse
 from urllib.request import urlopen
 
 from sunpy.util import replacement_filename
+from sunpy.util import deprecated
 
 __all__ = ['slugify', 'get_content_disposition', 'get_filename', 'get_system_filename',
            'download_file', 'download_fileobj', 'check_download_file']
@@ -200,6 +201,7 @@ def download_file(url, directory, default="file", overwrite=False):
     return path
 
 
+@deprecated("1.1")
 def check_download_file(filename, remotepath, download_dir, remotename=None, replace=False):
     """
     Downloads a file from a remotepath to a localpath if it isn't there.

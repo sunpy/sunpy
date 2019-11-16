@@ -29,10 +29,10 @@ class Cache:
         Directory where the downloaded files will be stored.
     expiry: `astropy.units.quantity.Quantity` or `None`, optional
         The interval after which the cache is invalidated. If the expiry is `None`,
-        then the expiry is not checked (or the cache never expires). Defaults to 10 seconds.
+        then the expiry is not checked. Defaults to 10 days.
     """
 
-    def __init__(self, downloader, storage, cache_dir, expiry=10*u.s):
+    def __init__(self, downloader, storage, cache_dir, expiry=10*u.day):
         self._downloader = downloader
         self._storage = storage
         self._cache_dir = Path(cache_dir)
@@ -41,6 +41,13 @@ class Cache:
     def download(self, urls, redownload=False):
         """
         Downloads the files from the urls.
+
+        The overall flow of this function is:
+            1. If ``redownload``: Download, update cache and return file path.
+            2. If not ``redownload``: Check cache,
+                i. If present in cache:
+                    - If cache has expired, remove the entry from cache, download and add to cache
+                    - If cache has not expired, return the path
 
         Parameters
         ----------
@@ -62,7 +69,6 @@ class Cache:
         #    i. If present in cache:
         #        - If cache expired, remove entry from cache, download and add to cache
         #        - If cache not expired, return path
-        #    ii. If not download, store in cache and return path
         details = None
         for url in urls:
             details = self._get_by_url(url)
@@ -94,7 +100,7 @@ class Cache:
         Parameters
         ----------
         details: `dict`
-            Details detched from cache.
+            Details detached from cache.
 
         Returns
         -------

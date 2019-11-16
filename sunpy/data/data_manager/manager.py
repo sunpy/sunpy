@@ -1,3 +1,4 @@
+from typing import Dict
 import pathlib
 import functools
 from contextlib import contextmanager
@@ -25,7 +26,7 @@ class DataManager:
         self._file_cache = {}
 
         self._skip_hash_check = False
-        self._skip_file = {}  # Dict[str, str]
+        self._skip_file: Dict[str, str] = {}
 
     def require(self, name, urls, sha_hash):
         """
@@ -43,11 +44,11 @@ class DataManager:
         """
         if isinstance(urls, str):
             urls = [urls]
+
         def decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 replace = self._skip_file.get(name, None)
-                err_message = "Hash does not match."
                 if replace:
                     if replace['uri'].startswith('file://'):
                         file_path = replace['uri'][len('file://'):]
@@ -57,7 +58,8 @@ class DataManager:
                     if replace['hash'] and file_hash != replace['hash']:
                         # if hash provided to replace function doesn't match the hash of the file
                         # raise error
-                        raise KeyError(err_message + " Hash provided to replace_file does not match hash of the file.")
+                        raise ValueError(
+                            "Hash provided to override_file does not match hash of the file.")
                 elif self._skip_hash_check:
                     file_path = self._cache.download(urls, redownload=True)
                 else:
@@ -67,19 +69,24 @@ class DataManager:
                         # That might mean the wrong hash is supplied to decorator
                         # We match by urls to make sure that is not the case
                         if self._cache_has_file(urls):
-                            raise KeyError(err_message + " Hash provided does not match the hash in database.")
+                            raise ValueError(" Hash provided does not match the hash in database.")
                         file_path = self._cache.download(urls)
                         if hash_file(file_path) != sha_hash:
-                            # the hash of the file downloaded does not match the hash of the file downloaded
+                            # the hash of the file downloaded does not match provided hash
                             # this means the file has changed on the server.
                             # the function should be updated to use the new hash. Raise an error to notify.
-                            raise RuntimeError("Remote file on the server has changed. Update hash of the function.")
+                            raise RuntimeError(
+                                "Remote file on the server has changed. Update hash of the function.")
                     else:
-                        # This is to handle the case when the file is tampered/corrupted
+                        # This is to handle the case when the local file appears to be tampered/corrupted
                         if hash_file(details['file_path']) != details['file_hash']:
-                            warnings.warn("Hash does not match. File might have been tampered/corrupted. File will be redownloaded.",
+                            warnings.warn("Hashes do not match, the file will be redownloaded (could be be tampered/corrupted)",
                                           SunpyUserWarning)
                             file_path = self._cache.download(urls, redownload=True)
+                            # Recheck the hash again, if this fails, we will exit.
+                            if hash_file(file_path) != details['file_hash']:
+                                raise RuntimeError("Redownloaded file also has the incorrect hash."
+                                                   "The remote file on the server might have changed.")
                         else:
                             file_path = details['file_path']
 
@@ -90,7 +97,7 @@ class DataManager:
         return decorator
 
     @contextmanager
-    def replace_file(self, name, uri, sha_hash=None):
+    def override_file(self, name, uri, sha_hash=None):
         """
         Replaces the file by the name with the file provided by the url/path.
 

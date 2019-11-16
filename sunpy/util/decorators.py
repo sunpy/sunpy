@@ -44,6 +44,10 @@ def deprecated(since, message='', name='', alternative=''):
         place of the deprecated object. The deprecation warning will
         tell the user about this alternative if provided.
     """
+    major = int(since.split('.')[0]) + 1
+    minor = 1
+    removal_version = f"{major}.{minor}"
+    message = f"Removal in {removal_version}."
 
     method_types = (classmethod, staticmethod, types.MethodType)
 
@@ -56,7 +60,7 @@ def deprecated(since, message='', name='', alternative=''):
         old_doc = textwrap.dedent(old_doc).strip('\n')
         new_doc = (('\n.. deprecated:: {since}'
                     '\n    {message}\n\n'.format(
-                     **{'since': since, 'message': message.strip()})) + old_doc)
+                        **{'since': since, 'message': message.strip()})) + old_doc)
         if not old_doc:
             # This is to prevent a spurious 'unexpected unindent' warning from
             # docutils when the original docstring was blank.
@@ -81,7 +85,7 @@ def deprecated(since, message='', name='', alternative=''):
         if isinstance(func, method_types):
             func_wrapper = type(func)
         else:
-            func_wrapper = lambda f: f  # noqa
+            def func_wrapper(f): return f  # noqa
 
         func = get_function(func)
 

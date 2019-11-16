@@ -74,6 +74,7 @@ def sunpy_cache(mocker):
         cache_dir,
         None
     )
+
     def add(self, url, path):
         self._storage.store({
             'url': url,
@@ -81,6 +82,7 @@ def sunpy_cache(mocker):
             'file_hash': 'none',  # hash doesn't matter
         })
     cache.add = MethodType(add, cache)
+
     def func(mocked):
         mocker.patch(mocked, cache)
         return cache
