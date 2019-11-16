@@ -76,7 +76,7 @@ class AIAMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an AIA image"""
-        return header.get('instrume', '').startswith('AIA')
+        return str(header.get('instrume', '')).startswith('AIA')
 
 
 class HMIMap(GenericMap):
@@ -121,4 +121,4 @@ class HMIMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an HMI image"""
-        return header.get('instrume', '').startswith('HMI')
+        return str(header.get('instrume', '')).startswith('HMI')
