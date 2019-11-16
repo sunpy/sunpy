@@ -4,10 +4,8 @@ SunPy
 
 An open-source Python library for Solar Physics data analysis.
 
-Web Links
----------
-Homepage: https://sunpy.org
-Documentation: https://docs.sunpy.org/en/stable/
+* Homepage: https://sunpy.org
+* Documentation: https://docs.sunpy.org/en/stable/
 """
 # Enforce Python version check during package import.
 # This is the same check as the one at the top of setup.py
@@ -23,7 +21,8 @@ class UnsupportedPythonError(Exception):
 
 if sys.version_info < tuple(int(val) for val in __minimum_python_version__.split('.')):
     # This has to be .format to keep backwards compatibly.
-    raise UnsupportedPythonError("Sunpy does not support Python < {}".format(__minimum_python_version__))
+    raise UnsupportedPythonError(
+        "Sunpy does not support Python < {}".format(__minimum_python_version__))
 
 # this indicates whether or not we are in the package's setup.py
 try:
@@ -36,6 +35,22 @@ try:
     from .version import version as __version__
 except ImportError:
     __version__ = ''
+
+
+def _get_bibtex():
+    # Set the bibtex entry to the article referenced in CITATION.rst
+    citation_file = os.path.join(os.path.dirname(__file__), 'CITATION.rst')
+
+    with open(citation_file, 'r') as citation:
+        refs = citation.read().split('@ARTICLE')[1:]
+        if len(refs) == 0:
+            return ''
+        bibtexreference = r"@ARTICLE{}".format(refs[0])
+    return bibtexreference
+
+
+__citation__ = __bibtex__ = _get_bibtex()
+
 
 if not _SUNPY_SETUP_:
     from sunpy.util.config import load_config, print_config
