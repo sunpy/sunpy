@@ -22,7 +22,7 @@ aiamap = sunpy.map.Map(AIA_193_IMAGE)
 
 ##############################################################################
 # First we make a mask, which tells us which regions are bright. We
-# choose the criterion that the data should be at least 5% of the maximum
+# choose the criterion that the data should be at least 10% of the maximum
 # value. Pixels with intensity values greater than this are included in the
 # mask, while all other pixels are excluded.
 mask = aiamap.data < aiamap.max() * 0.10
@@ -63,7 +63,7 @@ labels, n = ndimage.label(aiamap2.data)
 ##############################################################################
 # Finally, we plot the smoothed bright image data, along with the estimate of
 # the number of distinct regions. We can see that approximately 6 distinct hot
-# regions are present above the 5% of the maximum level.
+# regions are present above the 10% of the maximum level.
 plt.figure()
 ax = plt.subplot(projection=aiamap)
 aiamap.plot()
