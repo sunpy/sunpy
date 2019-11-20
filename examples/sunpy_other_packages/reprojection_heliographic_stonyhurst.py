@@ -3,8 +3,7 @@
 Creating a Heliographic Map
 ===========================
 
-Sometimes you just want to see what the Sun looks like if it was flat (much like the Earth is.)
-So in this example we use the `reproject` package to make a heliographic image from an AIA image.
+In this example we use the `reproject` generate an image in heliographic coordinates from an AIA image.
 
 You will need `reproject <https://reproject.readthedocs.io/en/stable/>`__ v0.6 or higher installed.
 """
