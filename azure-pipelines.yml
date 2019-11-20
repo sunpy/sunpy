@@ -3,7 +3,7 @@ variables:
   CI_NAME: Azure Pipelines
   CI_BUILD_ID: $(Build.BuildId)
   CI_BUILD_URL: "https://dev.azure.com/sunpy/sunpy/_build/results?buildId=$(Build.BuildId)"
-  CIBW_BUILD: cp36-* cp37-*
+  CIBW_BUILD: cp36-* cp37-* cp38-*
   CIBW_SKIP: "*-win32 *-manylinux1_i686"
 
 resources:
@@ -40,14 +40,14 @@ jobs:
       brew:
         - openjpeg
     envs:
-      - macos: py37-offline
-        name: py37_offline
-
-      - windows: py36-offline
+      - macos: py36-offline
         name: py36_offline
 
-      - linux: py37-online
-        name: py37_online
+      - windows: py37-offline
+        name: py37_offline
+
+      - linux: py38-online
+        name: py38_online
 
       - linux: py36-conda
         name: py36_conda
@@ -73,8 +73,8 @@ jobs:
         - wheels_macos
         - sdist
       dependsOn:
-        - py37_offline
         - py36_offline
-        - py37_online
+        - py37_offline
+        - py38_online
         - py36_conda
         - py36_astropy31
