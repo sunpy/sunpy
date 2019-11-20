@@ -351,6 +351,9 @@ which is equivalent to::
 .. automodapi:: sunpy.coordinates.frames
     :headings: ^#
 
+.. automodapi:: sunpy.coordinates.metaframes
+    :headings: ^#
+
 .. automodapi:: sunpy.coordinates.transformations
     :headings: ^#
 
@@ -358,9 +361,6 @@ which is equivalent to::
     :headings: ^#
 
 .. automodapi:: sunpy.coordinates.sun
-    :headings: ^#
-
-.. automodapi:: sunpy.coordinates.offset_frame
     :headings: ^#
 
 .. automodapi:: sunpy.coordinates.wcs_utils
