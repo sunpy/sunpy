@@ -1,6 +1,7 @@
 import pytest
 import hypothesis.strategies as st
 from hypothesis import given, settings
+import numpy as np
 
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
@@ -16,7 +17,7 @@ def latitude(draw, lat=st.floats(min_value=-90, max_value=90,
 
 
 @st.composite
-def lonitude(draw, lon=st.floats(min_value=-180, max_value=180,
+def longitude(draw, lon=st.floats(min_value=-180, max_value=180,
                                  allow_nan=False, allow_infinity=False)):
     return draw(lon) * u.deg
 
@@ -32,7 +33,7 @@ def test_null():
     assert off.origin.lon == 0*u.deg
 
 
-@given(lon=lonitude(), lat=latitude())
+@given(lon=longitude(), lat=latitude())
 @settings(deadline=5000)
 def test_transform(lon, lat):
     """
@@ -52,6 +53,15 @@ def test_south_pole():
     off = NorthOffsetFrame(north=s)
     assert_quantity_allclose(off.origin.lon, 170*u.deg)
     assert_quantity_allclose(off.origin.lat, -90*u.deg)
+
+
+def test_cartesian():
+    # Test a north pole specified in Cartesian coordinates
+    s = SkyCoord(1, 2, 3, unit=u.m,
+                 representation_type='cartesian', frame='heliographic_stonyhurst')
+    off = NorthOffsetFrame(north=s)
+    assert_quantity_allclose(off.origin.lon, np.arctan2(s.y, s.x))
+    assert_quantity_allclose(off.origin.lat, np.arctan2(s.z, np.sqrt(s.x**2 + s.y**2)) - 90*u.deg)
 
 
 def test_error():
