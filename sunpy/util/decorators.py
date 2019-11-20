@@ -47,10 +47,10 @@ def deprecated(since, message='', name='', alternative=''):
     since_major, since_minor = since.split('.')[:2]
     since_lts = since_minor == 0
     if since_lts:
-        major = since_major
-        minor = since_minor + 1
+        major = int(since_major)
+        minor = int(since_minor) + 1
     else:
-        major = since_major + 1
+        major = int(since_major) + 1
         minor = 1
     removal_version = f"{major}.{minor}"
     message += f" This is scheduled for removal in {removal_version}."
