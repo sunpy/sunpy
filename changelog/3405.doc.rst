@@ -1,0 +1,3 @@
+A new example gallery section "Using SunPy with Other Packages" has been added,
+which contains a set of new examples using the `reproject
+<https://reproject.readthedocs.io/>`__ with solar data.

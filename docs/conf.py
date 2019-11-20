@@ -111,7 +111,6 @@ is_development = '.dev' in release
 
 # -- Shut up numpy warnings from WCSAxes --------------------------------------
 import numpy as np  # noqa  isort:skip
-
 np.seterr(invalid='ignore')
 
 # -- Download Sample Data -----------------------------------------------------
@@ -133,6 +132,7 @@ intersphinx_mapping['pandas'] = ('https://pandas.pydata.org/pandas-docs/stable/'
 intersphinx_mapping['skimage'] = ('https://scikit-image.org/docs/stable/', None)
 intersphinx_mapping['drms'] = ('https://docs.sunpy.org/projects/drms/en/stable/', None)
 intersphinx_mapping['parfive'] = ('https://parfive.readthedocs.io/en/latest/', None)
+intersphinx_mapping['reproject'] = ('https://reproject.readthedocs.io/en/stable/', None)
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -265,7 +265,8 @@ if has_sphinx_gallery:
                                            (os.path.join('..', 'examples/units_and_coordinates')),
                                            (os.path.join('..', 'examples/plotting')),
                                            (os.path.join('..', 'examples/saving_and_loading_data')),
-                                           (os.path.join('..', 'examples/computer_vision_techniques'))]),
+                                           (os.path.join('..', 'examples/computer_vision_techniques')),
+                                           (os.path.join('..', 'examples/sunpy_other_packages'))]),
         # path to save gallery generated examples
         'gallery_dirs': path.joinpath('generated', 'gallery'),
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
