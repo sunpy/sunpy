@@ -114,7 +114,7 @@ The gallery examples are located under "docs/_build/html/generated/gallery".
 Sphinx builds documentation iteratively, only adding things that have changed.
 If you'd like to start from scratch then just run::
 
-    $ tox --recreate -e build_docs -- -aE
+    $ tox -e build_docs -- -aE
 
 For more information on how to use Sphinx, consult the `Sphinx documentation <http://www.sphinx-doc.org/en/stable/contents.html>`_.
 
