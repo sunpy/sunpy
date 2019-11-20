@@ -34,3 +34,4 @@ dependencies:
     - sunpy-sphinx-theme
     - jplephem
     - astroquery
+    - reproject
