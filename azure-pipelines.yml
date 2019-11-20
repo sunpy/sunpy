@@ -5,7 +5,7 @@ variables:
   CI_BUILD_URL: "https://dev.azure.com/sunpy/sunpy/_build/results?buildId=$(Build.BuildId)"
   CIBW_BUILD: cp36-* cp37-* cp38-*
   CIBW_SKIP: "*-win32 *-manylinux1_i686"
-  CIBW_TEST_REQUIRES: "numpy"
+  CIBW_TEST_REQUIRES: "beautifulsoup4 drms python-dateutil zeep tqdm asdf hypothesis pytest-astropy pytest-mock sqlalchemy scikit-image glymur"
 
 resources:
   repositories:
@@ -66,7 +66,7 @@ jobs:
       # Only Upload to PyPI on tags
       ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
         pypi_connection_name : 'PyPI'
-      test_extras: 'dev'
+      #test_extras: 'dev'
       test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
       submodules: false
       targets:
