@@ -5,6 +5,7 @@ variables:
   CI_BUILD_URL: "https://dev.azure.com/sunpy/sunpy/_build/results?buildId=$(Build.BuildId)"
   CIBW_BUILD: cp36-* cp37-* cp38-*
   CIBW_SKIP: "*-win32 *-manylinux1_i686"
+  CIBW_TEST_REQUIRES: "numpy"
 
 resources:
   repositories:
