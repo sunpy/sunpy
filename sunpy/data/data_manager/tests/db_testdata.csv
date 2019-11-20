@@ -1,0 +1,4 @@
+file_hash,file_path,url,time
+hash1,/tmp/test_file1,http://example.com/test_file_1,2019-06-17T19:16:55.159274
+hash2,/tmp/test_file2,http://example.com/test_file_2,2019-06-17T19:16:55.159274
+hash3,/tmp/test_file3,http://example.com/test_file_3,2019-06-17T19:16:55.159274

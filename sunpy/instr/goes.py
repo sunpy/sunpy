@@ -51,6 +51,7 @@ import socket
 import os.path
 import datetime
 from itertools import dropwhile
+from urllib.parse import urljoin
 
 import numpy as np
 from scipy import interpolate
@@ -61,17 +62,16 @@ from astropy.time import TimeDelta
 
 from sunpy import timeseries
 from sunpy.coordinates import get_sunearth_distance, sun
+from sunpy.data import manager
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.util.config import get_and_create_download_dir
-from sunpy.util.net import check_download_file
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
                         'M': u.Quantity(1e-5, "W/m^2"),
                         'C': u.Quantity(1e-6, "W/m^2"),
                         'B': u.Quantity(1e-7, "W/m^2"),
                         'A': u.Quantity(1e-8, "W/m^2")}
-
 __all__ = ['get_goes_event_list', 'calculate_temperature_em',
            'calculate_radiative_loss_rate', 'calculate_xray_luminosity', 'flux_to_flareclass',
            'flareclass_to_flux']
@@ -147,7 +147,7 @@ def get_goes_event_list(timerange, goes_class_filter=None):
             'goes_class': str(r['fl_goescls']),
             'goes_location': (r['event_coord1'], r['event_coord2']),
             'noaa_active_region': r['ar_noaanum']
-            }
+        }
         goes_event_list.append(goes_event)
 
     return goes_event_list
@@ -424,6 +424,12 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     return temp, em
 
 
+@manager.require('file_temp_cor',
+                 [urljoin(GOES_REMOTE_PATH, FILE_TEMP_COR)],
+                 '3d8ddaaabf0faf75ba8d15e0c468896ce3d7622cc23076bf91437951e0ab3ad4')
+@manager.require('file_temp_pho',
+                 [urljoin(GOES_REMOTE_PATH, FILE_TEMP_PHO)],
+                 'dd8c6b949a492174146a0b7307dd5fb197236431dbbedfdbab2e3f8dcd360267')
 @u.quantity_input
 def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
                            download=False, download_dir=None):
@@ -511,15 +517,6 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     >>> temp  # doctest: +REMOTE_DATA
     <Quantity [12.27557778, 12.27557778] MK>
     """
-    if not download_dir:
-        download_dir = get_and_create_download_dir()
-    # If download kwarg is True, or required data files cannot be
-    # found locally, download required data files.
-    check_download_file(FILE_TEMP_COR, GOES_REMOTE_PATH, download_dir,
-                        replace=download)
-    check_download_file(FILE_TEMP_PHO, GOES_REMOTE_PATH, download_dir,
-                        replace=download)
-
     # check inputs are correct
     fluxratio = fluxratio.decompose()
     int(satellite)
@@ -529,9 +526,9 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
     if abundances == "coronal":
-        data_file = FILE_TEMP_COR
+        data_file = manager.get('file_temp_cor')
     elif abundances == "photospheric":
-        data_file = FILE_TEMP_PHO
+        data_file = manager.get('file_temp_pho')
     else:
         raise ValueError("abundances must be a string equalling "
                          "'coronal' or 'photospheric'.")
@@ -545,7 +542,7 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     label = f"ratioGOES{satellite}"
     # Read data representing appropriate temperature--flux ratio
     # relationship depending on satellite number and assumed abundances.
-    with open(os.path.join(get_and_create_download_dir(), data_file), "r") as csvfile:
+    with open(data_file, "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -571,6 +568,12 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     return temp
 
 
+@manager.require('file_em_cor',
+                 [urljoin(GOES_REMOTE_PATH, FILE_EM_COR)],
+                 'a7440e20cbcb74e87db528e8e9d47cd69fbbd8f56ddc92cf4e854a66fb2a6172')
+@manager.require('file_em_pho',
+                 [urljoin(GOES_REMOTE_PATH, FILE_EM_PHO)],
+                 '0d59042b265bf76351d129b3e2a5844b3a9c96943cb246538013fd8c1b9b71b9')
 @u.quantity_input
 def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
                          abundances="coronal", download=False,
@@ -667,15 +670,6 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     >>> em  # doctest: +REMOTE_DATA
     <Quantity [3.45200672e+48, 3.45200672e+48] 1 / cm3>
     """
-    if not download_dir:
-        download_dir = get_and_create_download_dir()
-    # If download kwarg is True, or required data files cannot be
-    # found locally, download required data files.
-    check_download_file(FILE_EM_COR, GOES_REMOTE_PATH, download_dir,
-                        replace=download)
-    check_download_file(FILE_EM_PHO, GOES_REMOTE_PATH, download_dir,
-                        replace=download)
-
     # Check inputs are of correct type
     longflux = longflux.to(u.W/u.m**2)
     temp = temp.to(u.MK)
@@ -687,9 +681,9 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
     if abundances == "coronal":
-        data_file = FILE_EM_COR
+        data_file = manager.get('file_em_cor')
     elif abundances == "photospheric":
-        data_file = FILE_EM_PHO
+        data_file = manager.get('file_em_pho')
     else:
         raise ValueError("abundances must be a string equalling "
                          "'coronal' or 'photospheric'.")
@@ -708,7 +702,7 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
 
     # Read data representing appropriate temperature--long flux
     # relationship depending on satellite number and assumed abundances.
-    with open(os.path.join(get_and_create_download_dir(), data_file), "r") as csvfile:
+    with open(data_file, "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -723,7 +717,7 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
        np.isnan(np.min(log10_temp)):
         raise ValueError("All values in temp must be within the range "
                          "{} - {} MK.".format(np.min(10**modeltemp),
-                                                np.max(10**modeltemp)))
+                                              np.max(10**modeltemp)))
 
     # Perform spline fit to model data
     spline = interpolate.splrep(modeltemp, modelflux, s=0)
@@ -866,6 +860,9 @@ def calculate_radiative_loss_rate(goests, force_download=False,
     return ts_new
 
 
+@manager.require('file_rad_cor',
+                 [urljoin(GOES_REMOTE_PATH, FILE_RAD_COR)],
+                 'b56dccaa1035da46baa1a9251c4840107750d869de101d1811b506ceaec5828e')
 @u.quantity_input
 def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
                    download_dir=None):
@@ -956,10 +953,6 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
     em = em.to(1/u.cm**3)
     if len(temp) != len(em):
         raise ValueError("temp and em must all have same number of elements.")
-    # If force_download kwarg is True, or required data files cannot be
-    # found locally, download required data files.
-    check_download_file(FILE_RAD_COR, GOES_REMOTE_PATH, download_dir,
-                        replace=force_download)
 
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
@@ -968,8 +961,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
 
     # Read data from csv file into lists, being sure to skip commented
     # lines beginning with "#"
-    with open(os.path.join(get_and_create_download_dir(), FILE_RAD_COR),
-              "r") as csvfile:
+    with open(manager.get('file_rad_cor'), "r") as csvfile:
         startline = csvfile.readlines()[7:]
         csvreader = csv.reader(startline, delimiter=" ")
         for row in csvreader:
@@ -981,7 +973,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
     if temp.value.min() < modeltemp.min() or temp.value.max() > modeltemp.max():
         raise ValueError("All values in temp must be within the range " +
                          "{} - {} MK.".format(np.min(modeltemp/1e6),
-                                                np.max(modeltemp/1e6)))
+                                              np.max(modeltemp/1e6)))
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)

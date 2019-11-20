@@ -37,6 +37,15 @@ time_format = %Y-%m-%d %H:%M:%S
 ; Default value: data/
 download_dir = data
 
+; Location to save remote data manager (sunpy.data.manager) data to.
+; Path should be specified relative to the SunPy working directory.
+; Default value: data_manager/
+remote_data_manager_dir = data_manager
+
+; Time interval for cache expiry in days.
+; Default value: 10
+cache_expiry = 10
+
 ; Location where the sample data will be downloaded. If not specified, will be
 ; downloaded to platform specific user data directory.
 ; The default directory is specified by appdirs (https://github.com/ActiveState/appdirs)

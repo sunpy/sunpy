@@ -3,10 +3,11 @@ This module provides general utility functions.
 """
 import os
 from itertools import chain, count
+import hashlib
 from collections import UserList
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
-           'expand_list_generator', 'dict_keys_same']
+           'expand_list_generator', 'dict_keys_same', 'hash_file']
 
 
 def unique(itr, key=None):
@@ -163,3 +164,34 @@ def dict_keys_same(list_of_dicts):
     for d in list_of_dicts:
         d.update({key: None for key in all_keys if key not in d})
     return list_of_dicts
+
+
+def hash_file(path):
+    """
+    Returns the SHA-256 hash of a file.
+
+    Parameters
+    ----------
+    path: `str`
+        The path of the file to be hashed.
+
+    Returns
+    -------
+    `str`
+        SHA-256 hash of the file.
+
+    References
+    ----------
+    * https://stackoverflow.com/a/22058673
+    """
+    BUF_SIZE = 65536
+    sha256 = hashlib.sha256()
+
+    with open(path, 'rb') as f:
+        while True:
+            data = f.read(BUF_SIZE)
+            if not data:
+                break
+            sha256.update(data)
+
+    return sha256.hexdigest()
