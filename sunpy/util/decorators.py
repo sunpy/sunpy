@@ -44,8 +44,14 @@ def deprecated(since, message='', name='', alternative=''):
         place of the deprecated object. The deprecation warning will
         tell the user about this alternative if provided.
     """
-    major = int(since.split('.')[0]) + 1
-    minor = 1
+    since_major, since_minor = since.split('.')[:2]
+    since_lts = since_minor == 0
+    if since_lts:
+        major = since_major
+        minor = since_minor + 1
+    else:
+        major = since_major + 1
+        minor = 1
     removal_version = f"{major}.{minor}"
     message = f"Removal in {removal_version}."
 
