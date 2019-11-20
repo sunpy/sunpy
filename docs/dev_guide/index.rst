@@ -23,6 +23,7 @@ This goes over the basics and has links to useful tutorials on git.
    new_objects
    maintainer_workflow
    logger
+   remote_data
    config
    funding
    stability

@@ -1,0 +1,165 @@
+from typing import Dict
+import pathlib
+import functools
+from contextlib import contextmanager
+import warnings
+
+from sunpy.util.util import hash_file
+from sunpy.util.exceptions import SunpyUserWarning
+
+__all__ = ['DataManager']
+
+
+class DataManager:
+    """
+    This class provides a remote data manager for managing remote files.
+
+    Parameters
+    ----------
+    cache: `sunpy.data.data_manager.cache.Cache`
+        Cache object to be used by `~sunpy.data.data_manager.manager.DataManager`.
+    """
+
+    def __init__(self, cache):
+        self._cache = cache
+
+        self._file_cache = {}
+
+        self._skip_hash_check = False
+        self._skip_file: Dict[str, str] = {}
+
+    def require(self, name, urls, sha_hash):
+        """
+        Decorator for informing the data manager about the requirement of
+        a file by a function.
+
+        Parameters
+        ----------
+        name: `str`
+            The name to reference the file with.
+        urls: `list` or `str`
+            A list of urls to download the file from.
+        sha_hash: `str`
+            SHA-1 hash of file.
+        """
+        if isinstance(urls, str):
+            urls = [urls]
+
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                replace = self._skip_file.get(name, None)
+                if replace:
+                    if replace['uri'].startswith('file://'):
+                        file_path = replace['uri'][len('file://'):]
+                        file_hash = hash_file(file_path)
+                    else:
+                        file_path, file_hash, _ = self._cache._download_and_hash([replace['uri']])
+                    if replace['hash'] and file_hash != replace['hash']:
+                        # if hash provided to replace function doesn't match the hash of the file
+                        # raise error
+                        raise ValueError(
+                            "Hash provided to override_file does not match hash of the file.")
+                elif self._skip_hash_check:
+                    file_path = self._cache.download(urls, redownload=True)
+                else:
+                    details = self._cache.get_by_hash(sha_hash)
+                    if not details:
+                        # In case we are matching by hash and file does not exist
+                        # That might mean the wrong hash is supplied to decorator
+                        # We match by urls to make sure that is not the case
+                        if self._cache_has_file(urls):
+                            raise ValueError(" Hash provided does not match the hash in database.")
+                        file_path = self._cache.download(urls)
+                        if hash_file(file_path) != sha_hash:
+                            # the hash of the file downloaded does not match provided hash
+                            # this means the file has changed on the server.
+                            # the function should be updated to use the new hash. Raise an error to notify.
+                            raise RuntimeError(
+                                "Remote file on the server has changed. Update hash of the function.")
+                    else:
+                        # This is to handle the case when the local file appears to be tampered/corrupted
+                        if hash_file(details['file_path']) != details['file_hash']:
+                            warnings.warn("Hashes do not match, the file will be redownloaded (could be be tampered/corrupted)",
+                                          SunpyUserWarning)
+                            file_path = self._cache.download(urls, redownload=True)
+                            # Recheck the hash again, if this fails, we will exit.
+                            if hash_file(file_path) != details['file_hash']:
+                                raise RuntimeError("Redownloaded file also has the incorrect hash."
+                                                   "The remote file on the server might have changed.")
+                        else:
+                            file_path = details['file_path']
+
+                self._file_cache[name] = file_path
+                return func(*args, **kwargs)
+            return wrapper
+
+        return decorator
+
+    @contextmanager
+    def override_file(self, name, uri, sha_hash=None):
+        """
+        Replaces the file by the name with the file provided by the url/path.
+
+        Parameters
+        ----------
+        name: `str`
+            Name of the file provided in the `require` decorator.
+        uri: `str`
+            URI of the file which replaces original file. Scheme should be
+            one of ``http``, ``https``, ``ftp`` or ``file``.
+        sha_hash: `str`, optional
+            SHA256 hash of the file to compared to after downloading.
+        """
+        try:
+            self._skip_file[name] = {
+                'uri': uri,
+                'hash': sha_hash,
+            }
+            yield
+        finally:
+            _ = self._skip_file.pop(name, None)
+
+    @contextmanager
+    def skip_hash_check(self):
+        """
+        Disables hash checking temporarily
+
+        Examples
+        --------
+        >>> with remote_data_manager.skip_hash_check():
+        ...     myfunction()
+        """
+        try:
+            self._skip_hash_check = True
+            yield
+        finally:
+            self._skip_hash_check = False
+
+    def get(self, name):
+        """
+        Get the file by name.
+
+        Parameters
+        ----------
+        name: `str`
+            Name of the file given to the data manager, same as the one provided
+            in `~sunpy.data.data_manager.manager.DataManager.require`.
+
+        Returns
+        -------
+        `pathlib.Path`
+            Path of the file.
+
+        Raises
+        ------
+        `KeyError`
+            If ``name`` is not in the cache.
+        """
+        return pathlib.Path(self._file_cache[name])
+
+    def _cache_has_file(self, urls):
+        for url in urls:
+            if self._cache._get_by_url(url):
+                return True
+        return False

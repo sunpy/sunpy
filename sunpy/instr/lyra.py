@@ -9,6 +9,7 @@ import os.path
 import sqlite3
 import datetime
 from warnings import warn
+from urllib.parse import urljoin
 
 import numpy as np
 import pandas
@@ -16,11 +17,11 @@ import pandas
 from astropy.io import fits
 from astropy.time import Time
 
+from sunpy.data import cache
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.config import get_and_create_download_dir
-from sunpy.util.decorators import add_common_docstring
-from sunpy.util.net import check_download_file
+from sunpy.util.decorators import add_common_docstring, deprecated
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
@@ -108,8 +109,8 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
         ...        lyrats, artifacts=["LAR"], return_artifacts=True)  # doctest: +REMOTE_DATA
     """
     # Check that input argument is of correct type
-    if not lytaf_path:
-        lytaf_path = get_and_create_download_dir()
+    if lytaf_path:
+        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
     # Remove artifacts from time series
     data_columns = ts.data.columns
     time, channels, artifact_status = _remove_lytaf_events(
@@ -238,8 +239,8 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +SKIP
     """
     # Check inputs
-    if not lytaf_path:
-        lytaf_path = get_and_create_download_dir()
+    if lytaf_path:
+        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
     if channels and type(channels) is not list:
         raise TypeError("channels must be None or a list of numpy arrays "
                         "of dtype 'float64'.")
@@ -423,8 +424,8 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     """
     # Check inputs
     # Check lytaf path
-    if not lytaf_path:
-        lytaf_path = get_and_create_download_dir()
+    if lytaf_path:
+        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
     # Parse start_time and end_time
     start_time = parse_time(start_time)
     end_time = parse_time(end_time)
@@ -453,9 +454,9 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     for suffix in combine_files:
         # Check database files are present
         dbname = f"annotation_{suffix}.db"
-        check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
+        lytaf_path = cache.download(urljoin(LYTAF_REMOTE_PATH, dbname))
         # Open SQLITE3 annotation files
-        connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+        connection = sqlite3.connect(str(lytaf_path))
         # Create cursor to manipulate data in annotation file
         cursor = connection.cursor()
         # Check if lytaf file spans the start and end times defined by
@@ -477,10 +478,10 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
                 cursor.close()
                 connection.close()
                 # ...Download latest lytaf file...
-                check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path,
-                                    replace=True)
+                lytaf_path = cache.download(urljoin(LYTAF_REMOTE_PATH, dbname),
+                                            redownload=True)
                 # ...and open new version of lytaf database.
-                connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+                connection = sqlite3.connect(str(lytaf_path))
                 cursor = connection.cursor()
         # Select and extract the data from event table within file within
         # given time range
@@ -560,8 +561,8 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
         List of all events types in all lytaf databases.
     """
     # Set lytaf_path is not done by user
-    if not lytaf_path:
-        lytaf_path = get_and_create_download_dir()
+    if lytaf_path:
+        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
     suffixes = ["lyra", "manual", "ppt", "science"]
     all_event_types = []
     # For each database file extract the event types and print them.
@@ -570,9 +571,9 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     for suffix in suffixes:
         dbname = f"annotation_{suffix}.db"
         # Check database file exists, else download it.
-        check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
+        lytaf_path = cache.download(urljoin(LYTAF_REMOTE_PATH, dbname))
         # Open SQLITE3 LYTAF files
-        connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+        connection = sqlite3.connect(str(lytaf_path))
         # Create cursor to manipulate data in annotation file
         cursor = connection.cursor()
         cursor.execute("select type from eventType;")
@@ -589,7 +590,7 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
                        for event_type in event_types]
     return all_event_types
 
-
+@deprecated("1.1")
 def download_lytaf_database(lytaf_dir=''):
     """
     download latest Proba2 pointing database from Proba2 Science Center.

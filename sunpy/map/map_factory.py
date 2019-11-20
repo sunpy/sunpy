@@ -14,13 +14,13 @@ from sunpy.map.mapbase import GenericMap, MapMetaValidationError
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapsequence import MapSequence
 
+from sunpy.data import cache
+
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
-from sunpy.util.net import download_file
 from sunpy.util import expand_list
 from sunpy.util.metadata import MetaDict
-from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.types import DatabaseEntryType
 
@@ -227,7 +227,7 @@ class MapFactory(BasicRegistrationFactory):
             # URL
             elif isinstance(arg, str) and _is_url(arg):
                 url = arg
-                path = download_file(url, get_and_create_download_dir())
+                path = str(cache.download(url).absolute())
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 

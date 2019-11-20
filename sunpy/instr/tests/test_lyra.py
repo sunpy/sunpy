@@ -19,7 +19,7 @@ TEST_DATA_PATH = rootdir
 
 # Define some test data for test_remove_lytaf_events()
 TIME = parse_time(np.array([datetime.datetime(2013, 2, 1) + datetime.timedelta(minutes=i)
-                  for i in range(120)]))
+                            for i in range(120)]))
 CHANNELS = [np.zeros(len(TIME)) + 0.4, np.zeros(len(TIME)) + 0.1]
 EMPTY_LYTAF = np.empty((0,), dtype=[("insertion_time", object),
                                     ("begin_time", object),
@@ -50,10 +50,6 @@ def test_split_series_using_lytaf():
     """
     test the downloading of the LYTAF file and subsequent queries.
     """
-    tmp_dir = tempfile.mkdtemp()
-    lyra.download_lytaf_database(lytaf_dir=tmp_dir)
-    assert os.path.exists(os.path.join(tmp_dir, 'annotation_ppt.db'))
-
     # test split_series_using_lytaf
     # construct a dummy signal for testing purposes
     basetime = parse_time('2010-06-13 02:00')
@@ -62,7 +58,6 @@ def test_split_series_using_lytaf():
     dummy_data = np.random.random(seconds)
 
     lytaf_tmp = lyra.get_lytaf_events('2010-06-13 02:00', '2010-06-13 06:00',
-                                      lytaf_path=tmp_dir,
                                       combine_files=["ppt"])
     split = lyra.split_series_using_lytaf(dummy_time, dummy_data, lytaf_tmp)
     assert type(split) == list
@@ -104,14 +99,14 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
     # Check correct errors are raised due to bad input
     with pytest.raises(AttributeError):
         ts_test = lyra.remove_lytaf_events_from_timeseries(
-            [], lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
+            [], force_use_local_lytaf=True)
 
     # Run remove_artifacts_from_timeseries, returning artifact
     # status
     ts_test, artifact_status_test = \
         lyra.remove_lytaf_events_from_timeseries(
             lyra_ts, artifacts=["LAR", "Offpoint"], return_artifacts=True,
-            lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
+            force_use_local_lytaf=True)
     # Generate expected data by calling _remove_lytaf_events and
     # constructing expected dataframe manually.
     time, channels, artifact_status_expected = lyra._remove_lytaf_events(
@@ -120,7 +115,7 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
                                       np.asanyarray(lyra_ts.data["CHANNEL3"]),
                                       np.asanyarray(lyra_ts.data["CHANNEL4"])],
         artifacts=["LAR", "Offpoint"], return_artifacts=True,
-        lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
+        force_use_local_lytaf=True)
     dataframe_expected = pandas.DataFrame(index=time,
                                           data={"CHANNEL1": channels[0],
                                                 "CHANNEL2": channels[1],
@@ -143,12 +138,25 @@ def test_remove_lytaf_events_from_timeseries(lyra_ts):
     ts_test = \
         lyra.remove_lytaf_events_from_timeseries(
             lyra_ts, artifacts=["LAR", "Offpoint"],
-            lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
+            force_use_local_lytaf=True)
     # Assert expected result is returned
     pandas.util.testing.assert_frame_equal(ts_test.data, dataframe_expected)
 
 
-def test_remove_lytaf_events_1():
+@pytest.fixture()
+def local_cache(sunpy_cache):
+    sunpy_cache = sunpy_cache('sunpy.instr.lyra.cache')
+    sunpy_cache.add('http://proba2.oma.be/lyra/data/lytaf/annotation_lyra.db',
+                    os.path.join(TEST_DATA_PATH, 'annotation_lyra.db'))
+    sunpy_cache.add('http://proba2.oma.be/lyra/data/lytaf/annotation_manual.db',
+                    os.path.join(TEST_DATA_PATH, 'annotation_manual.db'))
+    sunpy_cache.add('http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db',
+                    os.path.join(TEST_DATA_PATH, 'annotation_ppt.db'))
+    sunpy_cache.add('http://proba2.oma.be/lyra/data/lytaf/annotation_science.db',
+                    os.path.join(TEST_DATA_PATH, 'annotation_science.db'))
+
+
+def test_remove_lytaf_events_1(local_cache):
     """
     Test _remove_lytaf_events() with some artifacts found and others not.
     """
@@ -156,8 +164,7 @@ def test_remove_lytaf_events_1():
     time_test, channels_test, artifacts_status_test = \
         lyra._remove_lytaf_events(
             TIME, channels=CHANNELS, artifacts=["LAR", "Offpoint"],
-            return_artifacts=True, lytaf_path=TEST_DATA_PATH,
-            force_use_local_lytaf=True)
+            return_artifacts=True, force_use_local_lytaf=True)
     # Generated expected result
     bad_indices = np.logical_and(TIME >= LYTAF_TEST["begin_time"][0],
                                  TIME <= LYTAF_TEST["end_time"][0])
@@ -188,8 +195,7 @@ def test_remove_lytaf_events_1():
     time_test, artifacts_status_test = \
         lyra._remove_lytaf_events(
             TIME, artifacts=["LAR", "Offpoint"],
-            return_artifacts=True, lytaf_path=TEST_DATA_PATH,
-            force_use_local_lytaf=True)
+            return_artifacts=True, force_use_local_lytaf=True)
     # Assert test values are same as expected
     assert time_test.all() == time_expected.all()
     assert artifacts_status_test.keys() == artifacts_status_expected.keys()
@@ -203,7 +209,7 @@ def test_remove_lytaf_events_1():
         artifacts_status_expected["not_found"]
 
 
-def test_remove_lytaf_events_2():
+def test_remove_lytaf_events_2(local_cache):
     """
     Test _remove_lytaf_events() with no user artifacts found.
     """
@@ -212,8 +218,7 @@ def test_remove_lytaf_events_2():
         time_test, channels_test, artifacts_status_test = \
             lyra._remove_lytaf_events(
                 TIME, channels=CHANNELS, artifacts="Offpoint",
-                return_artifacts=True, lytaf_path=TEST_DATA_PATH,
-                force_use_local_lytaf=True)
+                return_artifacts=True, force_use_local_lytaf=True)
     # Generated expected result
     time_expected = TIME
     channels_expected = CHANNELS
@@ -240,8 +245,7 @@ def test_remove_lytaf_events_2():
     # Run _remove_lytaf_events
     with pytest.warns(UserWarning, match='None of user supplied artifacts were found.'):
         time_test, channels_test = lyra._remove_lytaf_events(
-            TIME, channels=CHANNELS, artifacts=["Offpoint"],
-            lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
+            TIME, channels=CHANNELS, artifacts=["Offpoint"], force_use_local_lytaf=True)
     assert np.all(time_test == time_expected)
     assert (channels_test[0]).all() == (channels_expected[0]).all()
     assert (channels_test[1]).all() == (channels_expected[1]).all()
@@ -249,41 +253,35 @@ def test_remove_lytaf_events_2():
     # Run _remove_lytaf_events
     with pytest.warns(UserWarning, match='None of user supplied artifacts were found.'):
         time_test = lyra._remove_lytaf_events(
-            TIME, artifacts=["Offpoint"],
-            lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
+            TIME, artifacts=["Offpoint"], force_use_local_lytaf=True)
     assert np.all(time_test == time_expected)
 
 
-def test_remove_lytaf_events_3():
+def test_remove_lytaf_events_3(local_cache):
     """
     Test if correct errors are raised by _remove_lytaf_events().
     """
     with pytest.raises(TypeError):
         lyra._remove_lytaf_events(TIME, channels=6, artifacts=["LAR"],
-                                  lytaf_path=TEST_DATA_PATH,
                                   force_use_local_lytaf=True)
     with pytest.raises(ValueError):
         lyra._remove_lytaf_events(TIME,
-                                  lytaf_path=TEST_DATA_PATH,
                                   force_use_local_lytaf=True)
     with pytest.raises(TypeError):
         lyra._remove_lytaf_events(TIME, artifacts=[6],
-                                  lytaf_path=TEST_DATA_PATH,
                                   force_use_local_lytaf=True)
     with pytest.raises(ValueError):
         lyra._remove_lytaf_events(TIME,
                                   artifacts=["LAR", "incorrect artifact type"],
-                                  lytaf_path=TEST_DATA_PATH,
                                   force_use_local_lytaf=True)
 
 
-def test_get_lytaf_events():
+def test_get_lytaf_events(local_cache):
     """
     Test if LYTAF events are correctly downloaded and read in.
     """
     # Run get_lytaf_events
     lytaf_test = lyra.get_lytaf_events("2008-01-01", "2014-01-01",
-                                       lytaf_path=TEST_DATA_PATH,
                                        force_use_local_lytaf=True)
     # Form expected result of extract_combined_lytaf
     insertion_time = [datetime.datetime.utcfromtimestamp(1371459961),
@@ -347,16 +345,15 @@ def test_get_lytaf_events():
     # are incorrectly input.
     with pytest.raises(ValueError):
         lytaf_test = lyra.get_lytaf_events("2008-01-01", "2014-01-01",
-                                           lytaf_path="test_data",
                                            combine_files=["gigo"],
                                            force_use_local_lytaf=True)
 
 
-def test_get_lytaf_event_types():
+def test_get_lytaf_event_types(local_cache):
     """
     Test that LYTAF event types are printed.
     """
-    lyra.get_lytaf_event_types(lytaf_path=TEST_DATA_PATH)
+    lyra.get_lytaf_event_types()
 
 
 def test_lytaf_event2string():
