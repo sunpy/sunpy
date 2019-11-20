@@ -604,6 +604,8 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         label = self.axis_ranges[ax_ind](ind)
         if isinstance(label, u.Quantity):
             slider.valtext.set_text(format_quantity_as_string(label))
+        elif isinstance(label, str):
+            slider.valtext.set_text(label)
         else:
             slider.valtext.set_text(f"{label:10.2f}")
 
