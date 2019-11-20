@@ -1,25 +1,28 @@
 import astropy.units as u
-from astropy.coordinates import SkyOffsetFrame, SphericalRepresentation, UnitSphericalRepresentation
+from astropy.coordinates import SkyOffsetFrame, SphericalRepresentation
 
 __all__ = ['NorthOffsetFrame']
 
 
 class NorthOffsetFrame:
     """
-    A frame which is relative to some position and another frame. Based on
-    `astropy.coordinates.SkyOffsetFrame`
+    A frame which is offset from another frame such that it shares the same origin, but has its
+    "north pole" (i.e., the Z axis) in a different direction.
 
-    Coordinates in a NorthOffsetFrame are both centered on the position
-    specified by the ``north`` keyword *and* they are oriented in the same
-    manner as the ``north`` frame.
+    The original coordinate frame and the direction of the new north pole are specified by the
+    ``north`` keyword.
 
-    Unlike `~astropy.coordinates.SkyOffsetFrame` a `NorthOffsetFrame` allows
-    you to specify the position of the new north pole rather than the new
-    origin to centre the new frame.
+    This class should be used when specifying a new north pole is natural.  In constrast, for
+    shifting the origin in the projected sky (e.g., where helioprojective X and Y coordinates are
+    zero), use `~astropy.coordinates.SkyOffsetFrame` instead.
+
+    Parameters
+    ----------
+    north : `~sunpy.coordinates.frames.HeliographicStonyhurst`
+        The direction and frame for the new "north pole".
 
     Examples
     --------
-
     A common use for this is to create a frame derived from Heliographic, which
     has the north pole at some point of interest. In this new frame, lines of
     longitude form great circles radially away from the point, and lines of
@@ -61,30 +64,22 @@ class NorthOffsetFrame:
     -----
     ``NorthOffsetFrame`` is a wrapper around the
     `~astropy.coordinates.SkyOffsetFrame` factory class. This class will
-    calculate the desired coordianates of the ``origin`` from the ``north``
+    calculate the desired coordinates of the ``origin`` from the ``north``
     keyword argument and then create a `~astropy.coordinates.SkyOffsetFrame`.
 
     Using this frame is equivalent to using
     `~astropy.coordinates.SkyOffsetFrame` with ``lat = lat - 90*u.deg`` for a
     position of the north pole in the original northern hemisphere.
-
-    This class will only work for Heliographic-Stonyhurst and Heliographic
-    Carrington frames, and not helioprojective. If you want to rotate a
-    helioprojective frame, it would be more natural to use the
-    `~astropy.coordinates.SkyOffsetFrame`.
     """
 
     def __new__(cls, *args, **kwargs):
         origin_frame = kwargs.pop('north', None)
         if origin_frame is None:
-            raise TypeError("Can't initialize an NorthOffsetFrame without origin= keyword.")
+            raise TypeError("Can't initialize an NorthOffsetFrame without a `north` keyword.")
         if hasattr(origin_frame, 'frame'):
             origin_frame = origin_frame.frame
 
-        if not isinstance(origin_frame.data, SphericalRepresentation):
-            rep = origin_frame.represent_as(SphericalRepresentation)
-        else:
-            rep = origin_frame.data
+        rep = origin_frame.spherical
 
         lon = rep.lon
         lat = rep.lat
@@ -96,16 +91,11 @@ class NorthOffsetFrame:
             lat = -90*u.deg - lat
             rotation = 180*u.deg
 
-        if isinstance(origin_frame.data, UnitSphericalRepresentation):
-            new_rep = origin_frame.representation_type(lon=lon,
-                                                       lat=lat)
-
-        else:
-            new_rep = origin_frame.representation_type(lon=lon,
-                                                       lat=lat,
-                                                       distance=rep.distance)
-
+        new_rep = SphericalRepresentation(lon=lon,
+                                          lat=lat,
+                                          distance=rep.distance)
         new_origin = origin_frame.realize_frame(new_rep)
+
         kwargs['origin'] = new_origin
         kwargs['rotation'] = rotation
 
