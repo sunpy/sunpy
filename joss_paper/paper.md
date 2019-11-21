@@ -5,7 +5,7 @@ tags:
 - Astronomy
 - Solar physics
 authors:
-- name: Stuart J. Mumford
+- name: Stuart J. Mumford[^*]
   orcid: 0000-0003-4217-4642
   affiliation: 1, 2
 - name: Nabil Freij
@@ -423,6 +423,9 @@ bibliography: paper.bib
 aas-doi: Add DOI HERE
 aas-journal: The Astrophysical Journal
 ...
+
+[^*]: The author list in this paper is sorted by number of commits to the core
+  SunPy repository.
 
 # Summary
 
