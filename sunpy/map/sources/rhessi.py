@@ -40,7 +40,7 @@ class RHESSIMap(GenericMap):
         header['cunit1'] = header.get('cunit1', 'arcsec')
         header['cunit2'] = header.get('cunit2', 'arcsec')
 
-        GenericMap.__init__(self, data, header, **kwargs)
+        super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
         # TODO Currently (8/29/2011), cannot read fits files containing more
