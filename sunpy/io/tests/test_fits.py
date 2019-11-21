@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from collections import OrderedDict
 
 import pytest
@@ -124,3 +125,14 @@ def test_write_with_metadict_header_astropy(tmpdir):
     temp_file = tmpdir / "temp.fits"
     sunpy.io.fits.write(str(temp_file), data, meta_header)
     assert temp_file.exists()
+
+
+def test_fitsheader():
+    extensions = ('fts', 'fits')
+    for ext in extensions:
+        for ffile in Path(testpath).glob(f"*.{ext}*"):
+            fits_file = fits.open(ffile)
+            fits_file.verify("fix")
+            data, header = fits_file[0].data, fits_file[0].header
+            meta_header = MetaDict(OrderedDict(header))
+            sunpy.io.fits.header_to_fits(meta_header)
