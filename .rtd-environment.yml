@@ -35,3 +35,4 @@ dependencies:
     - jplephem
     - astroquery
     - reproject
+    - semantic-version==2.6.0
