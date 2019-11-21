@@ -1,3 +1,43 @@
+Sunpy v1.0.6 (2019-11-20)
+=========================
+
+Bug Fixes
+---------
+
+- `~sunpy.coordinates.utils.GreatArc` now accounts for the start and end points of the arc having different observers. (`#3334 <https://github.com/sunpy/sunpy/pull/3334>`__)
+- Single character wildcards and character ranges can now be passed as
+  glob patterns to `~sunpy.map.Map`. (`#3408 <https://github.com/sunpy/sunpy/pull/3408>`__)
+- The returned list of `~sunpy.map.Map` objects is now sorted by filename when
+  passing a directory or glob pattern to `~sunpy.map.MapFactory`. (`#3408 <https://github.com/sunpy/sunpy/pull/3408>`__)
+- Fixed a bug where clipping behavior had been enabled by default in the plotting normalizers for ``Map`` objects.  Clipping needs to be disabled to make use of the over/under/masked colors in the colormap. (`#3427 <https://github.com/sunpy/sunpy/pull/3427>`__)
+- Fix a bug with observer based frames that prevented a coordinate with an array of obstimes being transformed to other frames. (`#3455 <https://github.com/sunpy/sunpy/pull/3455>`__)
+- `sunpy.map.GenericMap` will no longer raise a warning if the posisition of the
+  observer is not known for frames that don't need an observer, i.e. heliographic
+  frames. (`#3462 <https://github.com/sunpy/sunpy/pull/3462>`__)
+- Apply `os.path.expanduser` to `sunpy.map.MapFactory` input
+  before passing to `glob.glob` (`#3477 <https://github.com/sunpy/sunpy/pull/3477>`__)
+- Fix multiple instances of `sunpy.map.sources` assuming the type of FITS Header
+  values. (`#3497 <https://github.com/sunpy/sunpy/pull/3497>`__)
+
+
+Improved Documentation
+----------------------
+
+- Clarified the meaning of :attr:`GenericMap.dsun`. (`#3430 <https://github.com/sunpy/sunpy/pull/3430>`__)
+- Updated the user guide for Map to use ``clip_interval``. (`#3450 <https://github.com/sunpy/sunpy/pull/3450>`__)
+- Updated the Venus-transit gallery to use the VSO so that it has correct pointing information in the header. (`#3451 <https://github.com/sunpy/sunpy/pull/3451>`__)
+- Fixed various issues with the gallery example of saving/loading coordinates using `asdf`. (`#3473 <https://github.com/sunpy/sunpy/pull/3473>`__)
+- Added ``sunpy.__citation__`` with a BibTex entry for citing sunpy. (`#3478 <https://github.com/sunpy/sunpy/pull/3478>`__)
+- Added an example showing how to display two maps and fade between them. (`#3488 <https://github.com/sunpy/sunpy/pull/3488>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Copy the library `distro` into `sunpy/extern`: replaces the deprecated `platform/linux_distribution` (`#3396 <https://github.com/sunpy/sunpy/pull/3396>`__)
+- Corrected spelling of 'plotting' in timeseries method (changed 'ploting' to 'plotting'). (`#3429 <https://github.com/sunpy/sunpy/pull/3429>`__)
+
+
 Sunpy v1.0.5 (2019-10-22)
 =========================
 

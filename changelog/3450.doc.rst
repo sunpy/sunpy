@@ -1,1 +1,0 @@
-Updated the user guide for Map to use ``clip_interval``.

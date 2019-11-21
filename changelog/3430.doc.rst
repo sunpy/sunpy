@@ -1,1 +1,0 @@
-Clarified the meaning of :attr:`GenericMap.dsun`.

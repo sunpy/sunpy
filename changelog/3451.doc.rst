@@ -1,1 +1,0 @@
-Updated the Venus-transit gallery to use the VSO so that it has correct pointing information in the header.
