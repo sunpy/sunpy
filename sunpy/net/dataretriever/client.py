@@ -295,16 +295,16 @@ class GenericClient(BaseClient):
             Path to the download directory, or file template including the
             ``{file}`` string which will be replaced with the filename.
 
-        progress : `bool`, optional
-            If `True` show a progress bar showing how many of the total files
-            have been downloaded. If `False`, no progress bar will be shown.
-
         overwrite : `bool` or `str`, optional
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
             and the existing file will be overwritten, if `'unique'` the filename
             will be modified to be unique.
+
+        progress : `bool`, optional
+            If `True` show a progress bar showing how many of the total files
+            have been downloaded. If `False`, no progress bar will be shown.
 
         downloader : `parfive.Downloader`, optional
             The download manager to use.
