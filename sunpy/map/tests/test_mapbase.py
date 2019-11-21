@@ -97,15 +97,13 @@ def test_wcs(aia171_test_map):
 
     assert all(wcs.wcs.crpix ==
                [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
-    assert all(wcs.wcs.cdelt == [aia171_test_map.scale.axis1.value,
-                                 aia171_test_map.scale.axis1.value])
-    assert all(
-        wcs.wcs.crval ==
-        [aia171_test_map._reference_longitude.value, aia171_test_map._reference_latitude.value])
+    assert u.allclose(wcs.wcs.cdelt * (u.Unit(wcs.wcs.cunit[0])/u.pix),
+                      u.Quantity(aia171_test_map.scale))
+    assert u.allclose(wcs.wcs.crval * u.Unit(wcs.wcs.cunit[0]),
+                      u.Quantity([aia171_test_map._reference_longitude, aia171_test_map._reference_latitude]))
     assert set(wcs.wcs.ctype) == {
         aia171_test_map.coordinate_system.axis1, aia171_test_map.coordinate_system.axis2}
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
-    assert set(wcs.wcs.cunit) == {u.Unit(a) for a in aia171_test_map.spatial_units}
 
 
 def test_no_observer_wcs(heliographic_test_map):

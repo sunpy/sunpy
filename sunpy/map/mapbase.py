@@ -266,7 +266,26 @@ class GenericMap(NDData):
         """
         The `~astropy.wcs.WCS` property of the map.
         """
-        w2 = astropy.wcs.WCS(naxis=2)
+
+
+        # Construct the WCS based on the FITS header, but don't "do_set" which
+        # analyses the FITS header for correctness.
+        with warnings.catch_warnings():
+            # Ignore warnings we may raise when constructing the fits header about dropped keys.
+            warnings.simplefilter("ignore", SunpyUserWarning)
+            w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
+
+        # If the FITS header is > 2D pick the first 2 and move on.
+        # This will require the FITS header to be valid.
+        if w2.naxis > 2:
+            # We have to change this or else the WCS doesn't parse properly, even
+            # though we don't care about the third dimension. This applies to both
+            # EIT and IRIS data, it is here to reduce the chances of silly errors.
+            if self.meta.get('cdelt3', None) == 0:
+                w2.wcs.cdelt[2] = 1e-10
+
+            w2 = w2.sub([1, 2])
+
         w2.wcs.crpix = u.Quantity(self.reference_pixel)
         # Make these a quantity array to prevent the numpy setting element of
         # array with sequence error.
@@ -295,6 +314,8 @@ class GenericMap(NDData):
         if {'HPLN', 'HPLT'} <= ctypes or {'SOLX', 'SOLY'} <= ctypes:
             w2.heliographic_observer = self.observer_coordinate
 
+        # Validate the WCS here.
+        w2.wcs.set()
         return w2
 
     @property
