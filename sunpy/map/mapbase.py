@@ -266,6 +266,8 @@ class GenericMap(NDData):
         """
         The `~astropy.wcs.WCS` property of the map.
         """
+
+
         # Construct the WCS based on the FITS header, but don't "do_set" which
         # analyses the FITS header for correctness.
         w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
@@ -273,6 +275,12 @@ class GenericMap(NDData):
         # If the FITS header is > 2D pick the first 2 and move on.
         # This will require the FITS header to be valid.
         if w2.naxis > 2:
+            # We have to change this or else the WCS doesn't parse properly, even
+            # though we don't care about the third dimension. This applies to both
+            # EIT and IRIS data, it is here to reduce the chances of silly errors.
+            if self.meta.get('cdelt3', None) == 0:
+                self.meta['cdelt3'] = 1e-10
+
             w2 = w2.sub([1, 2])
 
         w2.wcs.crpix = u.Quantity(self.reference_pixel)
