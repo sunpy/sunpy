@@ -331,9 +331,12 @@ def test_hgc_hgc():
     old = SkyCoord(90*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicCarrington(obstime=obstime))
     new = old.transform_to(HeliographicCarrington(obstime=obstime + 1*u.day))
 
-    assert_quantity_allclose(new.lon, old.lon - 14.1844*u.deg, atol=1e-4*u.deg)  # solar rotation
-    assert_quantity_allclose(new.lat, old.lat, atol=1e-4*u.deg)
-    assert_quantity_allclose(new.radius, old.radius, atol=1e-5*u.AU)
+    assert_quantity_allclose(new.lon, 75.815607 * u.deg, atol=1e-7*u.deg)  # solar rotation
+    # These are not equal to the old values, because the coordinates stay fixed
+    # in inertial space, whilst the frame (fixed to the center of the Sun)
+    # moves slightly.
+    assert_quantity_allclose(new.lat, 9.999963 * u.deg, atol=1e-7*u.deg)
+    assert_quantity_allclose(new.radius, 1.000009 * u.AU, atol=1e-7*u.AU)
 
 
 def test_hcc_hcc():
