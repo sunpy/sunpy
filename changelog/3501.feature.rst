@@ -1,1 +1,5 @@
-Sunpy Maps now can read WISPR Data.
+`sunpy.map.GenericMap.wcs` now uses the full FITS header to construct the WCS.
+This adds support for instruments with more complex projections, such as WISPR,
+however does mean that Map will be more sensative to incorrect or invalid FITS
+headers. If you are using custom headers with SunPy Map you might encounter
+issues relating to this change.
