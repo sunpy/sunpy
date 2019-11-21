@@ -542,8 +542,14 @@ def hgc_to_hgc(from_coo, to_frame):
     if np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
-        return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
-               transform_to(to_frame)
+        # Import here to avoid a circular import
+        from .sun import L0
+        # Difference in Carrington longitude
+        from_l0 = L0(from_coo.obstime)
+        to_l0 = L0(to_frame.obstime)
+        R = rotation_matrix(-(to_l0 - from_l0), 'z')
+        newrepr = from_coo.cartesian.transform(R)
+        return to_frame.realize_frame(newrepr)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
