@@ -212,6 +212,11 @@ def header_to_fits(header):
             elif k != '':
                 fits_header.append(fits.Card(k, str(v).split('\n')))
 
+        # For some horrific reason, we save a list to the wavelnth key in
+        # sources/rhessi.py. This is the least invasive fix for that stupidity.
+        elif isinstance(v, list):
+            v = str(v)
+
         else:
             fits_header.append(fits.Card(k, v))
 
