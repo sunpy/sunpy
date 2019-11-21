@@ -34,4 +34,4 @@ dependencies:
     - sunpy-sphinx-theme
     - jplephem
     - astroquery
-    - semantic-version=2.6.0
+    - semantic-version==2.6.0
