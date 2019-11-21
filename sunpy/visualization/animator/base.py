@@ -52,9 +52,18 @@ class BaseFuncAnimator:
     colorbar: `bool`, optional
         Plot a colorbar. Defaults to `False`.
     button_labels: `list`, optional
-        A list of strings to label buttons. Defaults to `None`.
+        A list of strings to label buttons. Defaults to `None`. If `None`
+        and ``button_func`` is specified, it will default to the
+        names of the functions.
     button_func: `list`, optional
-        A list of functions to map to the buttons. Defaults to `None`.
+        A list of functions to map to the buttons. These functions are called
+        with two arguments, ``(animator, event)`` where the first argument is
+        the animator object, and the second is a
+        `matplotlib.backend_bases.MouseEvent` object.
+        Defaults to `None`.
+    slider_labels: `list`, optional
+        A list of labels to draw in the slider, must be the same length as
+        ``slider_functions``.
 
     Notes
     -----
@@ -62,12 +71,14 @@ class BaseFuncAnimator:
     """
     def __init__(self, data, slider_functions, slider_ranges, fig=None,
                  interval=200, colorbar=False, button_func=None, button_labels=None,
-                 start_image_func=None, **kwargs):
+                 start_image_func=None, slider_labels=None, **kwargs):
 
         # Allow the user to specify the button func:
-        self.button_func = button_func if button_func else []
-        self.button_labels = button_labels if button_labels else []
-        self.num_buttons = len(self.button_labels)
+        self.button_func = button_func or []
+        if button_func and not button_labels:
+            button_labels = [a.__name__ for a in button_func]
+        self.button_labels = button_labels or []
+        self.num_buttons = len(self.button_func)
 
         if not fig:
             fig = plt.figure()
@@ -79,10 +90,16 @@ class BaseFuncAnimator:
         self.imshow_kwargs = kwargs
 
         if len(slider_functions) != len(slider_ranges):
-            raise ValueError("You must specify the same number of functions as extents")
+            raise ValueError("slider_functions and slider_ranges must be the same length.")
+
+        if slider_labels is not None:
+            if len(slider_labels) != len(slider_functions):
+                raise ValueError("slider_functions and slider_labels must be the same length.")
+
         self.num_sliders = len(slider_functions)
         self.slider_functions = slider_functions
         self.slider_ranges = slider_ranges
+        self.slider_labels = slider_labels or [''] * len(slider_functions)
 
         # Set active slider
         self.active_slider = 0
@@ -293,7 +310,7 @@ class BaseFuncAnimator:
             self.buttons[-1].set_axes_locator(locator)
             self.buttons[-1]._button = widgets.Button(self.buttons[-1],
                                                       self.button_labels[i])
-            self.buttons[-1]._button.on_clicked(self.button_func[i])
+            self.buttons[-1]._button.on_clicked(partial(self.button_func[i], self))
 
         self.sliders = []
         self.slider_buttons = []
@@ -306,6 +323,11 @@ class BaseFuncAnimator:
                 nx1 = -2
             locator = self.divider.new_locator(nx=2, ny=y, nx1=nx1)
             self.sliders[-1].set_axes_locator(locator)
+            self.sliders[-1].text(0.5, 0.5, self.slider_labels[i],
+                                  transform=self.sliders[-1].transAxes,
+                                  horizontalalignment="center",
+                                  verticalalignment="center")
+
             sframe = widgets.Slider(self.sliders[-1], "",
                                     self.slider_ranges[i][0],
                                     self.slider_ranges[i][-1]-1,
@@ -434,10 +456,13 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         for i in self.slider_axes:
             self.frame_slice[i] = 0
 
+        slider_functions = kwargs.pop("slider_functions", [])
+        slider_ranges = kwargs.pop("slider_ranges", [])
         base_kwargs = {
-            'slider_functions': [self.update_plot] * self.num_sliders,
-            'slider_ranges': [[0, dim] for dim in np.array(data.shape)[self.slider_axes]]
+            'slider_functions': ([self.update_plot] * self.num_sliders) + slider_functions,
+            'slider_ranges': [[0, dim] for dim in np.array(data.shape)[self.slider_axes]] + slider_ranges
             }
+        self.num_sliders = len(base_kwargs["slider_functions"])
         base_kwargs.update(kwargs)
         super().__init__(data, **base_kwargs)
 
@@ -594,6 +619,8 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         label = self.axis_ranges[ax_ind](ind)
         if isinstance(label, u.Quantity):
             slider.valtext.set_text(format_quantity_as_string(label))
+        elif isinstance(label, str):
+            slider.valtext.set_text(label)
         else:
             slider.valtext.set_text(f"{label:10.2f}")
 
