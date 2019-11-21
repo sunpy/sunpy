@@ -49,6 +49,12 @@ files = Fido.fetch(res)
 maps = sunpy.map.Map(sorted(files))
 
 ######################################################################
+# To reduce memory consumption we also downsample these maps before continuing,
+# you can disable this.
+
+maps = [m.resample((1024, 1024)*u.pix) for m in maps]
+
+######################################################################
 # When combining these images all three need to assume the same radius of
 # the Sun for the data. The AIA images specify a slightly different value
 # than the IAU 2015 constant. To avoid coordinate transformation issues we
@@ -79,6 +85,7 @@ ax.set_theta_zero_location("S")
 ax.set_rlim(0, 1.3)
 
 plt.legend()
+plt.show()
 
 ######################################################################
 # The next step is to calculate the output coordinate system for the combined
@@ -86,7 +93,8 @@ plt.legend()
 # projection, and generate a header using `sunpy.map.make_fitswcs_header` and
 # then construct a World Coordinate System (WCS) object for that header.
 
-shape_out = (360, 720)
+shape_out = (180, 360)  # This is set deliberately low to reduce memory consumption
+
 header = sunpy.map.make_fitswcs_header(shape_out,
                                        SkyCoord(0, 0, unit=u.deg,
                                                 frame="heliographic_stonyhurst",
@@ -112,6 +120,7 @@ outmap = sunpy.map.Map((array, header))
 outmap.plot_settings = maps[0].plot_settings
 
 outmap.plot()
+plt.show()
 
 ######################################################################
 # Improving the Output
@@ -150,6 +159,7 @@ for w in weights:
 plt.figure()
 plt.imshow(weights[0])
 plt.colorbar()
+plt.show()
 
 ######################################################################
 # Now we can rerun the reprojection. This time we also set
@@ -162,11 +172,11 @@ plt.colorbar()
 # `reproject.reproject_interp`, a more accurate but slower method is
 # `reproject.reproject_adaptive`.
 
-array, footprint = reproject_and_coadd(maps, out_wcs, shape_out,
-                                       input_weights=weights,
-                                       reproject_function=reproject_interp,
-                                       match_background=True,
-                                       background_reference=0)
+array, _ = reproject_and_coadd(maps, out_wcs, shape_out,
+                               input_weights=weights,
+                               reproject_function=reproject_interp,
+                               match_background=True,
+                               background_reference=0)
 
 ######################################################################
 # Once again we create a new map, and this time we customise the plot a
