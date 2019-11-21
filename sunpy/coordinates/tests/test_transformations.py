@@ -333,8 +333,8 @@ def test_hgc_hgc():
 
     assert_quantity_allclose(new.lon, 76.82974*u.deg, atol=1e-4*u.deg)  # solar rotation
     # Lattitude and radius shouldn't change
-    assert_quantity_allclose(new.lat, old.lat, atol=1e-10*u.deg)
-    assert_quantity_allclose(new.radius, old.radius, atol=1e-10*u.R_sun)
+    assert_quantity_allclose(new.lat, old.lat, atol=0*u.deg)
+    assert_quantity_allclose(new.radius, old.radius, atol=0*u.m)
 
 
 def test_hcc_hcc():
