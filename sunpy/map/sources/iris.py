@@ -46,11 +46,6 @@ class SJIMap(GenericMap):
         self.meta['waveunit'] = "Angstrom"
         self.meta['wavelnth'] = header['twave1']
 
-        # We have to change this or else the WCS doesn't parse properly, even
-        # though we don't care about the third dimension.
-        if self.meta.get('cdelt3', None) == 0:
-            self.meta['cdelt3'] = 1e-10
-
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an IRIS SJI image"""
