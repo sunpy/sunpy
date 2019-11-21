@@ -5,6 +5,7 @@ import numpy as np
 import astropy.units as u
 from astropy.wcs.wcsapi import BaseLowLevelWCS
 
+from sunpy.extern import modest_image
 from sunpy.visualization.animator.base import ArrayAnimator
 
 
@@ -90,7 +91,27 @@ class ArrayAnimatorWCS(ArrayAnimator):
         self.ylim = ylim
         self.ylabel = ylabel
 
-        super().__init__(data, image_axes=image_axes, axis_ranges=None, **kwargs)
+        extra_slider_labels = []
+        if "slider_functions" in kwargs and "slider_labels" not in kwargs:
+            extra_slider_labels = [a.__name__ for a in kwargs['slider_functions']]
+
+
+        slider_labels = [w for i, w in enumerate(self._get_wcs_labels()) if not slices[i]][::-1] + extra_slider_labels
+        slider_labels = kwargs.pop("slider_labels", slider_labels)
+
+        super().__init__(data, image_axes=image_axes, axis_ranges=None,
+                         slider_labels=slider_labels,
+                         **kwargs)
+
+
+    def _get_wcs_labels(self):
+        """
+        Read first the axes names property of the wcs and fall back to physical types.
+        """
+        # world_axis_names was only added to the APE 14 API in 4.0, so do this for backwards compatibility.
+        world_axis_names = getattr(self.wcs, "world_axis_names", [''] * self.wcs.world_n_dim)
+        # Return the name if it is set, or the physical type if it is not.
+        return [l or t for l, t in zip(world_axis_names, self.wcs.world_axis_physical_types)]
 
     def _partial_pixel_to_world(self, pixel_dimension, pixel_coord):
         """
@@ -243,9 +264,23 @@ class ArrayAnimatorWCS(ArrayAnimator):
         imshow_args = {'interpolation': 'nearest',
                        'origin': 'lower'}
         imshow_args.update(self.imshow_kwargs)
-        im = ax.imshow(self.data_transposed, **imshow_args)
+
+        im = modest_image.imshow(ax, self.data_transposed, **imshow_args)
+
+        if 'extent' in imshow_args:
+            ax.set_xlim(imshow_args['extent'][:2])
+            ax.set_ylim(imshow_args['extent'][2:])
+        else:
+            ny, nx = self.data_transposed.shape
+            ax.set_xlim(-0.5, nx - 0.5)
+            ax.set_ylim(-0.5, ny - 0.5)
+
+        ax.dataLim.intervalx = ax.get_xlim()
+        ax.dataLim.intervaly = ax.get_ylim()
+
         if self.if_colorbar:
             self._add_colorbar(im)
+
         return im
 
     def update_plot_2d(self, val, im, slider):
