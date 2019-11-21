@@ -52,11 +52,11 @@ class BaseFuncAnimator:
     colorbar: `bool`, optional
         Plot a colorbar. Defaults to `False`.
     button_labels: `list`, optional
-        A list of strings to label buttons. Defaults to `None`, if not
-        specified and ``button_func`` is specified, it will default to the
+        A list of strings to label buttons. Defaults to `None`. If `None`
+        and ``button_func`` is specified, it will default to the
         names of the functions.
     button_func: `list`, optional
-        A list of functions to map to the buttons, these functions are called
+        A list of functions to map to the buttons. These functions are called
         with two arguments, ``(animator, event)`` where the first argument is
         the animator object, and the second is the matplotlib mouse event.
         Defaults to `None`.
