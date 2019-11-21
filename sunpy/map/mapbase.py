@@ -279,7 +279,7 @@ class GenericMap(NDData):
             # though we don't care about the third dimension. This applies to both
             # EIT and IRIS data, it is here to reduce the chances of silly errors.
             if self.meta.get('cdelt3', None) == 0:
-                self.meta['cdelt3'] = 1e-10
+                w2.wcs.cdelt[2] = 1e-10
 
             w2 = w2.sub([1, 2])
 
