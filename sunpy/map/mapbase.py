@@ -270,7 +270,10 @@ class GenericMap(NDData):
 
         # Construct the WCS based on the FITS header, but don't "do_set" which
         # analyses the FITS header for correctness.
-        w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
+        with warnings.catch_warnings():
+            # Ignore warnings we may raise when constructing the fits header about dropped keys.
+            warnings.simplefilter("ignore", SunpyUserWarning)
+            w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
 
         # If the FITS header is > 2D pick the first 2 and move on.
         # This will require the FITS header to be valid.

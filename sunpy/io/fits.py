@@ -200,24 +200,25 @@ def header_to_fits(header):
     key_comments = header.pop('KEYCOMMENTS', False)
 
     for k, v in header.items():
-        if isinstance(v, fits.header._HeaderCommentaryCards):
-            if k.upper() == 'COMMENT':
-                comments = str(v).split('\n')
-                for com in comments:
-                    fits_header.add_comment(com)
-            elif k.upper() == 'HISTORY':
-                hists = str(v).split('\n')
-                for hist in hists:
-                    fits_header.add_history(hist)
-            elif k != '':
+        if len(k) > 8:
+            warnings.warn(f"The meta key {k} is too long, dropping from the FITS header.", SunpyUserWarning)
+            continue
+        if k.upper() in ('COMMENT', 'HV_COMMENT'):
+            comments = str(v).split('\n')
+            for com in comments:
+                fits_header.add_comment(com)
+        elif k.upper() == 'HISTORY':
+            hists = str(v).split('\n')
+            for hist in hists:
+                fits_header.add_history(hist)
+        elif isinstance(v, fits.header._HeaderCommentaryCards):
+            if k != '':
                 fits_header.append(fits.Card(k, str(v).split('\n')))
-
-        # For some horrific reason, we save a list to the wavelnth key in
-        # sources/rhessi.py. This is the least invasive fix for that stupidity.
-        elif isinstance(v, list):
-            v = str(v)
-
         else:
+            # For some horrific reason, we save a list to the wavelnth key in
+            # sources/rhessi.py. This is the least invasive fix for that stupidity.
+            if isinstance(v, list):
+                v = str(v)
             fits_header.append(fits.Card(k, v))
 
     if isinstance(key_comments, dict):
