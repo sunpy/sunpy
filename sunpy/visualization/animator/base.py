@@ -58,7 +58,8 @@ class BaseFuncAnimator:
     button_func: `list`, optional
         A list of functions to map to the buttons. These functions are called
         with two arguments, ``(animator, event)`` where the first argument is
-        the animator object, and the second is the matplotlib mouse event.
+        the animator object, and the second is a
+        `matplotlib.backend_bases.MouseEvent` object.
         Defaults to `None`.
     slider_labels: `list`, optional
         A list of labels to draw in the slider, must be the same length as
