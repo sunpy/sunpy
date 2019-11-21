@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python
   - pip
-  - semantic-version<=2.6.0,>=2.3.1
+  - semantic-version=2.6.0
   - openjpeg
   - jsonschema=2.6.0
   - numpy
