@@ -200,6 +200,7 @@ def header_to_fits(header):
     key_comments = header.pop('KEYCOMMENTS', False)
 
     for k, v in header.items():
+        # Drop any keys which are too long to save into FITS
         if len(k) > 8:
             warnings.warn(f"The meta key {k} is too long, dropping from the FITS header.", SunpyUserWarning)
             continue
