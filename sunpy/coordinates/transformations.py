@@ -250,7 +250,7 @@ def hcc_to_hpc(helioccoord, heliopframe):
     observer = _transform_obstime(heliopframe.observer, heliopframe.obstime)
 
     # Loopback transform HCC coord to obstime and observer of HPC frame
-    int_frame = Heliocentric(obstime=heliopframe.obstime, observer=observer)
+    int_frame = Heliocentric(obstime=observer.obstime, observer=observer)
     int_coord = helioccoord.transform_to(int_frame)
 
     # Shift the origin from the Sun to the observer
@@ -287,7 +287,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     newrepr += CartesianRepresentation(0*u.m, 0*u.m, distance)
 
     # Complete the conversion of HPC to HCC at the obstime and observer of the HPC coord
-    int_coord = Heliocentric(newrepr, obstime=heliopcoord.obstime, observer=observer)
+    int_coord = Heliocentric(newrepr, obstime=observer.obstime, observer=observer)
 
     # Loopback transform HCC as needed
     return int_coord.transform_to(heliocframe)
@@ -328,7 +328,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
 
     # Transform from HCC to HGS at the HCC obstime
     newrepr = helioccoord.cartesian.transform(total_matrix)
-    int_coord = HeliographicStonyhurst(newrepr, obstime=helioccoord.obstime)
+    int_coord = HeliographicStonyhurst(newrepr, obstime=hcc_observer_at_hcc_obstime.obstime)
 
     # Loopback transform HGS if there is a change in obstime
     return _transform_obstime(int_coord, heliogframe.obstime)
@@ -347,7 +347,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     int_coord = _transform_obstime(heliogcoord, heliocframe.obstime)
 
     # Transform the HCC observer (in HGS) to the HCC obstime in case it's different
-    hcc_observer_at_hcc_obstime = _transform_obstime(heliocframe.observer, heliocframe.obstime)
+    hcc_observer_at_hcc_obstime = _transform_obstime(heliocframe.observer, int_coord.obstime)
 
     total_matrix = matrix_transpose(_rotation_matrix_hcc_to_hgs(hcc_observer_at_hcc_obstime.lon,
                                                                 hcc_observer_at_hcc_obstime.lat))
@@ -728,7 +728,7 @@ def hgs_to_hci(hgscoord, hciframe):
     int_coord = _transform_obstime(hgscoord, hciframe.obstime)
 
     # Rotate from HGS to HCI
-    total_matrix = _rotation_matrix_hgs_to_hci(hciframe.obstime)
+    total_matrix = _rotation_matrix_hgs_to_hci(int_coord.obstime)
     newrepr = int_coord.cartesian.transform(total_matrix)
 
     return hciframe.realize_frame(newrepr)
@@ -745,7 +745,7 @@ def hci_to_hgs(hcicoord, hgsframe):
     int_coord = _transform_obstime(hcicoord, hgsframe.obstime)
 
     # Rotate from HCI to HGS
-    total_matrix = matrix_transpose(_rotation_matrix_hgs_to_hci(hgsframe.obstime))
+    total_matrix = matrix_transpose(_rotation_matrix_hgs_to_hci(int_coord.obstime))
     newrepr = int_coord.cartesian.transform(total_matrix)
 
     return hgsframe.realize_frame(newrepr)
