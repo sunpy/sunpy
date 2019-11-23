@@ -1,0 +1,1 @@
+Fixed bug with some coordinate transformations when ``obstime`` is ``None`` on one end and should have been copied from the other end.
