@@ -18,6 +18,11 @@ def attr():
     return TimeFrameAttributeSunPy()
 
 
+@pytest.fixture
+def oca():
+    return ObserverCoordinateAttribute(HeliographicStonyhurst)
+
+
 def test_now(attr):
     """ We can't actually test the value independantly """
     result, converted = attr.convert_input('now')
@@ -80,16 +85,22 @@ def test_on_frame_error2():
 # ObserverCoordinateAttribute
 
 
-def test_string_coord():
-
-    oca = ObserverCoordinateAttribute(HeliographicStonyhurst)
-
+def test_string_coord(oca):
     obstime = "2011-01-01"
     coord = oca._convert_string_to_coord("earth", obstime)
 
     assert isinstance(coord, HeliographicStonyhurst)
 
     assert coord.obstime == parse_time(obstime)
+
+
+def test_observer_not_hgs(oca):
+    # Use the location of Earth specified in HPC rather than HGS
+    observer = Helioprojective(0*u.deg, 0*u.deg, 0*u.AU, observer="earth", obstime='2001-01-01')
+    result, converted = oca.convert_input(observer)
+
+    assert isinstance(result, HeliographicStonyhurst)
+    assert converted
 
 
 def test_coord_get():
