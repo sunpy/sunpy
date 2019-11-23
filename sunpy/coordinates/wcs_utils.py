@@ -15,6 +15,9 @@ def solar_wcs_frame_mapping(wcs):
     type values in the `astropy.wcs.utils.wcs_to_celestial_frame` registry.
     """
 
+    if hasattr(wcs, "coordinate_frame"):
+        return wcs.coordinate_frame
+
     dateobs = wcs.wcs.dateobs or None
 
     # SunPy Map adds 'heliographic_observer' and 'rsun' attributes to the WCS
