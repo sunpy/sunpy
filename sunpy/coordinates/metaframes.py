@@ -3,23 +3,26 @@ Coordinate frames that are defined relative to other frames
 """
 
 from astropy import units as u
-from astropy.coordinates.transformations import FunctionTransform
-from astropy.coordinates.baseframe import frame_transform_graph
-from astropy.coordinates.attributes import Attribute, QuantityAttribute
 from astropy.coordinates import SphericalRepresentation
+from astropy.coordinates.attributes import Attribute, QuantityAttribute
+from astropy.coordinates.baseframe import frame_transform_graph
+from astropy.coordinates.transformations import FunctionTransform
 
 from sunpy import log
-from .frames import SunPyBaseCoordinateFrame, HeliocentricInertial
-from .transformations import _transformation_debug
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 
+from .frames import HeliocentricInertial, SunPyBaseCoordinateFrame
+from .offset_frame import NorthOffsetFrame
+from .transformations import _transformation_debug
+
 __all__ = ['NorthOffsetFrame', 'RotatedSunFrame']
 
 
-from .offset_frame import NorthOffsetFrame
-vars()['NorthOffsetFrame'].__module__ = __name__  # so that docs think that the class is local
+# The code for NorthOffsetFrame currently lives in `offset_frame.py`
+# This changes its module to this file so that the docs think that the class is local
+NorthOffsetFrame.__module__ = __name__
 
 
 _rotatedsun_cache = {}
@@ -43,7 +46,7 @@ def _make_rotatedsun_cls(framecls):
         return _rotatedsun_cache[framecls]
 
     # the class of a class object is the metaclass
-    framemeta = framecls.__class__
+    framemeta = type(framecls)
 
     class RotatedSunMeta(framemeta):
         """
@@ -166,9 +169,8 @@ class RotatedSunFrame:
         # an rotated-Sun frame for this class.
         if not (issubclass(cls, RotatedSunFrame) and cls is not RotatedSunFrame):
             # We get the base argument, and handle it here.
-            try:
-                base_frame = kwargs['base']
-            except KeyError:
+            base_frame = kwargs.get('base', None)
+            if base_frame is None:
                 raise TypeError("Can't initialize a RotatedSunFrame without a `base` keyword.")
 
             # If a SkyCoord is provided, use the underlying frame
