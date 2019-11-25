@@ -209,3 +209,14 @@ class RotatedSunFrame:
             if not self.has_data:
                 self._data = self.base.data
             self._base = self.base.replicate_without_data()
+
+    def as_base(self):
+        """
+        Returns a coordinate with the current representation and in the base coordinate frame.
+
+        This method can be thought of as "removing" the
+        `~sunpy.coordinates.metaframe.RotatedSunFrame` layer.  Be aware that this method is not
+        merely a coordinate transformation, because this method changes the location in inertial
+        space that is being pointed to.
+        """
+        return self.base.realize_frame(self.data)
