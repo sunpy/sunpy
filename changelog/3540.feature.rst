@@ -1,0 +1,1 @@
+Added a context manager (`~sunpy.coordinates.transform_with_sun_center`) to ignore the motion of the center of the Sun for coordinate transformations.
