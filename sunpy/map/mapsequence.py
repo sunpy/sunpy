@@ -81,6 +81,12 @@ class MapSequence:
         """Return the number of maps in a mapsequence."""
         return len(self.maps)
 
+    def __repr__(self):
+        names = set([m.__class__.__name__ for m in self.maps])
+
+        no_of_elements = len(self.maps)
+        return f'MapSequence of {no_of_elements} elements, with maps from {", ".join(names)}'
+
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
