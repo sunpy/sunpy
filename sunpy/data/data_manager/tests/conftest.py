@@ -1,17 +1,18 @@
+import csv
 import shutil
 import tempfile
-import csv
 from unittest import mock
+from pathlib import Path
 
 import pytest
-from sunpy.data.data_manager.tests import mocks
 
 from sunpy.data.data_manager.cache import Cache
 from sunpy.data.data_manager.manager import DataManager
 from sunpy.data.data_manager.storage import InMemStorage, SqliteStorage
+from sunpy.data.data_manager.tests import mocks
 
-DB_TESTDATA_FILE = 'sunpy/data/data_manager/tests/db_testdata.csv'
 
+DB_TESTDATA_FILE = str(Path(__file__).parent / 'db_testdata.csv')
 
 @pytest.fixture
 def downloader():
