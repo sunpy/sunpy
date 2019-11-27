@@ -4,12 +4,7 @@ from itertools import chain
 from setuptools import setup
 from setuptools.config import read_configuration
 
-import astropy_helpers.setup_helpers
-from astropy_helpers.setup_helpers import get_package_info
-
-# Dirty hack the internal state of astropy_helpers because we are only
-# collecting extensions
-astropy_helpers.setup_helpers._module_state['registered_commands'] = {}
+from extension_helpers.setup_helpers import get_package_info
 
 ################################################################################
 # Programmatically generate some extras combos.
