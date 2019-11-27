@@ -50,9 +50,11 @@ SunPy Specific Rules
 
 .. code-block:: python
 
+    """
     `Map <sunpy.map.map_factory.MapFactory>`
     `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`
     `TimeSeries <sunpy.timeseries.timeseries_factory.TimeSeriesFactory>`
+    """
 
 * Standards on docstring length and style are enforced using `docformatter <https://pypi.org/project/docformatter/>`__:
 
