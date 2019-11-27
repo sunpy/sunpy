@@ -4,7 +4,7 @@ from glob import glob
 from distutils.core import Extension
 
 import numpy
-from astropy_helpers import setup_helpers
+from extension_helpers import setup_helpers
 
 
 def get_extensions():
