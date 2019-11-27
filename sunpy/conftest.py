@@ -28,6 +28,8 @@ else:
 remotedata_spec = importlib.util.find_spec("pytest_remotedata")
 HAVE_REMOTEDATA = remotedata_spec is not None
 
+# Do not collect the sample data file because this would download the sample data.
+collect_ignore = ["data/sample.py"]
 
 def pytest_addoption(parser):
     parser.addoption("--figure_dir", action="store", default="./figure_test_images")

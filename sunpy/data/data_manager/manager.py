@@ -127,8 +127,8 @@ class DataManager:
 
         Examples
         --------
-        >>> with remote_data_manager.skip_hash_check():
-        ...     myfunction()
+        >>> with remote_data_manager.skip_hash_check():  # doctest: +SKIP
+        ...     myfunction()  # doctest: +SKIP
         """
         try:
             self._skip_hash_check = True
