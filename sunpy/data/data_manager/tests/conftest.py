@@ -12,7 +12,7 @@ from sunpy.data.data_manager.storage import InMemStorage, SqliteStorage
 from sunpy.data.data_manager.tests import mocks
 
 
-DB_TESTDATA_FILE = str(Path(__file__).parent / 'db_testdata.csv')
+DB_TESTDATA_FILE = Path(__file__).parent / 'db_testdata.csv'
 
 @pytest.fixture
 def downloader():
@@ -37,26 +37,22 @@ def sqlstorage():
     return storage
 
 @pytest.fixture
-def cache(downloader, storage, mocker):
-    tempdir = tempfile.mkdtemp()
+def cache(tmp_path, downloader, storage, mocker):
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
     mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
-    cache = Cache(downloader, storage, tempdir)
+    cache = Cache(downloader, storage, tmp_path)
     yield cache
-    shutil.rmtree(tempdir)
 
 
 @pytest.fixture
-def manager(downloader, storage, mocker):
-    tempdir = tempfile.mkdtemp()
-    manager = DataManager(Cache(downloader, storage, tempdir))
-    manager._tempdir = tempdir
+def manager(tmp_path, downloader, storage, mocker):
+    manager = DataManager(Cache(downloader, storage, tmp_path))
+    manager._tempdir = str(tmp_path)
     m = mock.Mock()
     m.headers = {'Content-Disposition': 'test_file'}
     mocker.patch('sunpy.data.data_manager.cache.urlopen', return_value=m)
     yield manager
-    shutil.rmtree(tempdir)
 
 
 @pytest.fixture
