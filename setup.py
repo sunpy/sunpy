@@ -4,7 +4,7 @@ from itertools import chain
 from setuptools import setup
 from setuptools.config import read_configuration
 
-from extension_helpers.setup_helpers import get_package_info
+from extension_helpers.setup_helpers import get_extensions
 
 ################################################################################
 # Programmatically generate some extras combos.
@@ -20,4 +20,4 @@ ex_extras = dict(filter(lambda i: i[0] not in exclude_keys, extras.items()))
 # Concatenate all the values together for 'all'
 extras['all'] = list(chain.from_iterable(ex_extras.values()))
 
-setup(extras_require=extras, use_scm_version=True, **get_package_info())
+setup(extras_require=extras, use_scm_version=True, **get_extensions())
