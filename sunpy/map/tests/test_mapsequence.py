@@ -145,3 +145,11 @@ def test_all_meta(mapsequence_all_the_same):
     assert len(meta) == 2
     assert np.all(np.asarray([isinstance(h, MetaDict) for h in meta]))
     assert np.all(np.asarray([meta[i] == mapsequence_all_the_same[i].meta for i in range(0, len(meta))]))
+
+
+def test_repr(mapsequence_all_the_same):
+    """ Tests that overidden __repr__ functionality works as expected """
+    expected_out = f'MapSequence of 2 elements, with maps from AIAMap'
+    obtained_out = repr(mapsequence_all_the_same)
+    assert len(mapsequence_all_the_same) == 2
+    assert obtained_out == expected_out
