@@ -91,7 +91,7 @@ def test_override_file(manager, storage, downloader, data_function):
     with manager.override_file('test_file', 'file:///tmp/another_file', MOCK_HASH):
         data_function(override_file_tester)
 
-    with pytest.raises(KeyError):
+    with pytest.raises(ValueError):
         # check if functions errors with the wrong hash
         with manager.override_file('test_file', 'file:///tmp/another_file', 'wrong_hash'):
             # Inside the file is replaced
@@ -121,7 +121,7 @@ def test_wrong_hash_error(manager, storage):
     @manager.require('test_file', ['url1', 'url2'], 'asdf')
     def foo():
         pass
-    with pytest.raises(KeyError):
+    with pytest.raises(ValueError):
         foo()
 
 
@@ -135,5 +135,5 @@ def test_file_changed(data_function, storage):
     write_to_test_file(file, "asd")
 
     # Now it should error
-    with pytest.raises(KeyError):
+    with pytest.warns(SunpyUserWarning):
         data_function()
