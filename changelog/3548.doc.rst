@@ -1,0 +1,1 @@
+Fixed an issue with the scaling of class-inheritance diagrams in the online documentation by blocking the versions of `graphviz` containing a bug.
