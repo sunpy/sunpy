@@ -1,0 +1,1 @@
+Add links to Thompson 2006 paper on solar coordinates to synoptic map example.
