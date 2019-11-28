@@ -60,7 +60,7 @@ def tmp_config_dir(request):
 
 
 @pytest.fixture()
-def sunpy_cache(mocker):
+def sunpy_cache(mocker, tmp_path):
     """
     Provide a way to add local files to the cache. This can be useful when mocking
     remote requests.
@@ -69,11 +69,10 @@ def sunpy_cache(mocker):
     from sunpy.data.data_manager.cache import Cache
     from sunpy.data.data_manager.storage import InMemStorage
     from sunpy.data.data_manager.downloader import ParfiveDownloader
-    cache_dir = tempfile.mkdtemp()
     cache = Cache(
         ParfiveDownloader(),
         InMemStorage(),
-        cache_dir,
+        tmp_path,
         None
     )
 
@@ -134,20 +133,7 @@ def pytest_runtest_setup(item):
             pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
 
 
-def pytest_configure(config):
-    """
-    Used to detect if code is being run as a test or not
-    From: https://docs.pytest.org/en/5.1.1/example/simple.html#detect-if-running-from-within-a-pytest-run
-    """
-    import sunpy
-    sunpy._called_from_test = True
-
-
 def pytest_unconfigure(config):
-    # tear down for setup in pytest configure
-    import sunpy
-    del sunpy._called_from_test
-
     # If at least one figure test has been run, print result image directory
     if len(new_hash_library) > 0:
         # Write the new hash library in JSON
