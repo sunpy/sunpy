@@ -220,9 +220,11 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def _B0(time='now'):
     """
-    Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the
-    Sun-disk center as seen from Earth.  The range of B0 is +/-7.23 degrees.
-
+    Return the B0 angle for the Sun at a specified time, which is the tilt of the solar North rotational
+    axis toward the observer (heliographic latitude of the observer).  The range of B0 is +/-7.23 degrees.
+    Ref: see section 7 of Thompson, A&A 449, 791-803 (2006), 
+         https://www.aanda.org/articles/aa/abs/2006/14/aa4262-05/aa4262-05.html
+    
     Parameters
     ----------
     time : {parse_time_types}
