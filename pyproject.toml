@@ -1,5 +1,11 @@
 [build-system]
-requires = ["setuptools", "setuptools_scm", "wheel", "numpy==1.14.5"]
+requires = [
+         "setuptools",
+         "setuptools_scm",
+         "wheel",
+         "numpy==1.14.5; python_version<='3.7'",
+         "numpy==1.17.3; python_version>='3.8'",
+         ]
 build-backend = 'setuptools.build_meta'
 
 [ tool.sunpy-bot ]
