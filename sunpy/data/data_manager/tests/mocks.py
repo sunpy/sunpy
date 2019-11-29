@@ -1,7 +1,7 @@
 from sunpy.data.data_manager.downloader import DownloaderBase
 
 # This is the hash of file containing just the character 'a'
-MOCK_HASH = "86f7e437faa5a7fce15d1ddcb9eaeaea377667b8"
+MOCK_HASH = "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb"
 
 class MockDownloader(DownloaderBase):
     """
