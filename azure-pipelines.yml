@@ -69,6 +69,8 @@ jobs:
       test_command: 'pytest -p no:warnings --doctest-rst -m "not figure" --pyargs sunpy'
       submodules: false
       targets:
+        - wheels_linux
+        - wheels_macos
         - sdist
       dependsOn:
         - py36_offline
