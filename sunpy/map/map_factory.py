@@ -203,22 +203,9 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs.append(pair)
                     i += 1    # an extra increment to account for the data-header pairing
 
-            # File system path (file or directory)
-            elif _is_path(arg):
-                path = pathlib.Path(arg).expanduser()
-                if path.is_file():
-                    pairs = self._read_file(path, **kwargs)
-                    data_header_pairs += pairs
-                elif path.is_dir():
-                    for afile in sorted(path.glob('*')):
-                        data_header_pairs += self._read_file(afile, **kwargs)
-                else:
-                    raise ValueError(f'{path} is neither a file nor a directory')
-
-            # Glob
-            elif isinstance(arg, str) and glob.glob(os.path.expanduser(arg)):
-                for afile in sorted(glob.glob(os.path.expanduser(arg))):
-                    data_header_pairs += self._read_file(afile, **kwargs)
+            # A database Entry
+            elif isinstance(arg, DatabaseEntryType):
+                data_header_pairs += self._read_file(arg.path, **kwargs)
 
             # Already a Map
             elif isinstance(arg, GenericMap):
@@ -231,12 +218,23 @@ class MapFactory(BasicRegistrationFactory):
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
-            # A database Entry
-            elif isinstance(arg, DatabaseEntryType):
-                data_header_pairs += self._read_file(arg.path, **kwargs)
+            # File system path (file or directory or glob)
+            elif _is_path(arg):
+                path = pathlib.Path(arg).expanduser()
+                if path.is_file():
+                    pairs = self._read_file(path, **kwargs)
+                    data_header_pairs += pairs
+                elif path.is_dir():
+                    for afile in sorted(path.glob('*')):
+                        data_header_pairs += self._read_file(afile, **kwargs)
+                elif glob.glob(os.path.expanduser(arg)):
+                    for afile in sorted(glob.glob(os.path.expanduser(arg))):
+                        data_header_pairs += self._read_file(afile, **kwargs)
+                else:
+                    raise ValueError(f'Did not find any files at {arg}')
 
             else:
-                raise ValueError("File not found or invalid input")
+                raise ValueError(f"Invalid input: {arg}")
 
             i += 1
 
@@ -350,12 +348,15 @@ def _is_url(arg):
 
 
 def _is_path(arg):
+    """
+    Check if arg can be coerced into a Path object.
+    Does *not* check if the path exists.
+    """
     try:
-        is_path = pathlib.Path(arg).expanduser().exists()
+        is_path = pathlib.Path(arg)
+        return True
     except Exception:
         return False
-    else:
-        return is_path
 
 
 class InvalidMapInput(ValueError):
