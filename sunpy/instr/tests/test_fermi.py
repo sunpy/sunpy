@@ -17,7 +17,6 @@ def test_download_weekly_pointing_file():
 
 
 @pytest.mark.remote_data
-@pytest.mark.flaky(reruns=5)
 def test_detector_angles():
     # set a test date
     date = parse_time('2012-02-15')
