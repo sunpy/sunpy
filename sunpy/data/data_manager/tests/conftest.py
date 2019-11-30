@@ -14,6 +14,7 @@ from sunpy.data.data_manager.tests import mocks
 
 DB_TESTDATA_FILE = Path(__file__).parent / 'db_testdata.csv'
 
+
 @pytest.fixture
 def downloader():
     downloader = mocks.MockDownloader()
@@ -35,6 +36,7 @@ def sqlstorage():
         for row in reader:
             storage.store(row)
     return storage
+
 
 @pytest.fixture
 def cache(tmp_path, downloader, storage, mocker):

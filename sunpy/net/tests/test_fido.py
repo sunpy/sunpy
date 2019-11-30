@@ -64,7 +64,6 @@ def test_offline_fido(query):
 
 
 @pytest.mark.remote_data
-@pytest.mark.flaky(reruns=5)
 # Until we get more mocked, we can't really do this to online clients.
 # TODO: Hypothesis this again
 @pytest.mark.parametrize("query", [
@@ -110,7 +109,6 @@ def test_save_path(tmpdir):
 
 
 @pytest.mark.remote_data
-@pytest.mark.flaky(reruns=5)
 def test_save_path_pathlib(tmpdir):
     qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
 
@@ -168,6 +166,7 @@ def test_call_error():
     # Python core.
     assert "'UnifiedDownloaderFactory' object is not callable" in str(excinfo.value)
 
+
 @pytest.mark.remote_data
 def test_multiple_match():
     """
@@ -191,11 +190,11 @@ def test_multiple_match():
 
 @pytest.mark.remote_data
 def test_fetch():
-        qr = Fido.search(a.Instrument('EVE'),
-                         a.Time("2016/10/01", "2016/10/02"),
-                         a.Level(0))
-        res = Fido.fetch(qr)
-        assert isinstance(res, Results)
+    qr = Fido.search(a.Instrument('EVE'),
+                     a.Time("2016/10/01", "2016/10/02"),
+                     a.Level(0))
+    res = Fido.fetch(qr)
+    assert isinstance(res, Results)
 
 
 """
@@ -204,12 +203,14 @@ UnifiedResponse Tests
 Use LYRA here because it does not use the internet to return results.
 """
 
+
 @pytest.mark.remote_data
 def test_unifiedresponse_slicing():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
     assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], UnifiedResponse)
+
 
 @pytest.mark.remote_data
 def test_unifiedresponse_slicing_reverse():
@@ -227,6 +228,7 @@ def test_vso_unifiedresponse():
     uresp = UnifiedResponse(vrep)
     assert isinstance(uresp, UnifiedResponse)
 
+
 @pytest.mark.remote_data
 def test_responses():
     results = Fido.search(
@@ -236,6 +238,7 @@ def test_responses():
         assert isinstance(resp, QueryResponse)
 
     assert i + 1 == len(results)
+
 
 @pytest.mark.remote_data
 def test_repr():
@@ -251,12 +254,14 @@ def test_repr():
 def filter_queries(queries):
     return attr.and_(queries) not in queries
 
+
 @pytest.mark.remote_data
 def test_path():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
 
     Fido.fetch(results, path="notapath/{file}")
+
 
 @pytest.mark.remote_data
 @skip_windows
@@ -265,11 +270,12 @@ def test_path_read_only(tmp_path):
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
 
     # chmod dosen't seem to work correctly on the windows CI
-    os.chmod(tmp_path, S_IREAD|S_IRGRP|S_IROTH)
+    os.chmod(tmp_path, S_IREAD | S_IRGRP | S_IROTH)
     # Check to see if it's actually read only before running the test
     if not os.access(tmp_path, os.W_OK):
         with pytest.raises(PermissionError):
             Fido.fetch(results, path=tmp_path / "{file}")
+
 
 @settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
@@ -402,6 +408,7 @@ def test_downloader_type_error():
 def test_mixed_retry_error():
     with pytest.raises(TypeError):
         Fido.fetch([], Results())
+
 
 @pytest.mark.remote_data
 @mock.patch("sunpy.net.dataretriever.sources.goes.XRSClient.fetch",
