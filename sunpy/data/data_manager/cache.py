@@ -7,6 +7,7 @@ from urllib.request import urlopen
 import astropy.units as u
 from astropy.time import TimeDelta
 
+from sunpy.time import parse_time
 from sunpy.data.data_manager.downloader import DownloaderError
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import get_filename
@@ -107,7 +108,12 @@ class Cache:
         `bool`
             Whether the url has expired or not.
         """
-        return self._expiry and datetime.now() - datetime.fromisoformat(details['time']) > self._expiry
+        # Remove this once we depend on Python >=3.7
+        if hasattr(datetime, "fromisoformat"):
+            time = datetime.fromisoformat(details['time'])
+        else:
+            time = parse_time(details['time']).datetime
+        return self._expiry and datetime.now() - time > self._expiry
 
     def get_by_hash(self, sha_hash):
         """
