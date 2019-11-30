@@ -175,8 +175,6 @@ def testFilesRange_sameDirectory_local():
     assert len(s.filelist(TimeRange(startdate, enddate))) == 0
 
 
-# TODO: Fix this
-@pytest.mark.xfail
 @pytest.mark.remote_data
 def testFilesRange_sameDirectory_remote():
     pattern = ('http://solarmonitor.org/data/%Y/%m/%d/'
@@ -193,8 +191,6 @@ def testFilesRange_sameDirectory_remote():
     assert len(s.filelist(timerange)) == 0
 
 
-# TODO: Fix this
-@pytest.mark.xfail
 @pytest.mark.remote_data
 def testFilesRange_sameDirectory_months_remote():
     pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
