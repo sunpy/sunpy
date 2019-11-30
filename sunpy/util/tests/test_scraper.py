@@ -160,6 +160,7 @@ def testURL_patternMillisecondsZeroPadded():
     assert s.now == 'fd_20190419_000000_004.fts'
 
 
+# TODO: Fix this
 @pytest.mark.xfail
 def testFilesRange_sameDirectory_local():
     # Fails due to an IsADirectoryError, wrapped in a URLError, after `requests`
@@ -174,6 +175,7 @@ def testFilesRange_sameDirectory_local():
     assert len(s.filelist(TimeRange(startdate, enddate))) == 0
 
 
+# TODO: Fix this
 @pytest.mark.xfail
 @pytest.mark.remote_data
 def testFilesRange_sameDirectory_remote():
@@ -191,6 +193,7 @@ def testFilesRange_sameDirectory_remote():
     assert len(s.filelist(timerange)) == 0
 
 
+# TODO: Fix this
 @pytest.mark.xfail
 @pytest.mark.remote_data
 def testFilesRange_sameDirectory_months_remote():

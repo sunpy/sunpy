@@ -472,9 +472,9 @@ def test_hpc_hgs_implicit_hcc():
 
     implicit = start.transform_to(frame)
     explicit1 = start.transform_to(Heliocentric(obstime=start.obstime, observer='earth')).\
-                      transform_to(frame)
+        transform_to(frame)
     explicit2 = start.transform_to(Heliocentric(obstime=frame.obstime, observer='earth')).\
-                      transform_to(frame)
+        transform_to(frame)
 
     assert_quantity_allclose(implicit.separation_3d(explicit1), 0*u.AU, atol=1e-10*u.AU)
     assert_quantity_allclose(implicit.separation_3d(explicit2), 0*u.AU, atol=1e-10*u.AU)
@@ -681,14 +681,14 @@ def test_no_observer():
                  Helioprojective(0*u.deg, 0*u.deg, observer=None),
                  Helioprojective(0*u.deg, 0*u.deg, observer=None, obstime='2001-01-01')]
     frames_out = frames_in + [
-                     HeliographicStonyhurst(0*u.deg, 0*u.deg, obstime=None),
-                     HeliographicStonyhurst(0*u.deg, 0*u.deg, obstime='2001-01-01'),
-                     Heliocentric(0*u.km, 0*u.km, 0*u.km, observer=None, obstime='2012-12-12'),
-                     Heliocentric(0*u.km, 0*u.km, 0*u.km, observer="earth", obstime=None),
-                     Heliocentric(0*u.km, 0*u.km, 0*u.km, observer="earth", obstime='2001-01-01'),
-                     Helioprojective(0*u.deg, 0*u.deg, observer=None, obstime='2012-12-12'),
-                     Helioprojective(0*u.deg, 0*u.deg, observer="earth", obstime=None),
-                     Helioprojective(0*u.deg, 0*u.deg, observer="earth", obstime='2001-01-01')]
+        HeliographicStonyhurst(0*u.deg, 0*u.deg, obstime=None),
+        HeliographicStonyhurst(0*u.deg, 0*u.deg, obstime='2001-01-01'),
+        Heliocentric(0*u.km, 0*u.km, 0*u.km, observer=None, obstime='2012-12-12'),
+        Heliocentric(0*u.km, 0*u.km, 0*u.km, observer="earth", obstime=None),
+        Heliocentric(0*u.km, 0*u.km, 0*u.km, observer="earth", obstime='2001-01-01'),
+        Helioprojective(0*u.deg, 0*u.deg, observer=None, obstime='2012-12-12'),
+        Helioprojective(0*u.deg, 0*u.deg, observer="earth", obstime=None),
+        Helioprojective(0*u.deg, 0*u.deg, observer="earth", obstime='2001-01-01')]
 
     # Self-transformations should succeed
     for f in frames_in:
