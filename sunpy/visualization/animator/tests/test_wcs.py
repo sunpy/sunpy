@@ -50,7 +50,7 @@ def wcs_4d():
     (np.arange(120).reshape((5, 4, 3, 2)), ['x', 0, 0, 'y'], 2),
     (np.arange(120).reshape((5, 4, 3, 2)), ['y', 0, 'x', 0], 2),
     (np.arange(120).reshape((5, 4, 3, 2)), [0, 0, 0, 'x'], 1),
-    ))
+))
 def test_construct_array_animator(wcs_4d, data, slices, dim):
     if dim == 1:
         pytest.importorskip("astropy", minversion="4.0dev26173")
@@ -78,19 +78,19 @@ def test_construct_array_animator(wcs_4d, data, slices, dim):
 def test_constructor_errors(wcs_4d):
     # WCS is not BaseLowLevelWCS
     with pytest.raises(ValueError, match="provided that implements the astropy WCS API."):
-        ArrayAnimatorWCS(np.arange(25).reshape((5,5)), {}, ['x', 'y'])
+        ArrayAnimatorWCS(np.arange(25).reshape((5, 5)), {}, ['x', 'y'])
 
     # Data has wrong number of dimensions
     with pytest.raises(ValueError, match="Dimensionality of the data and WCS object do not match."):
-        ArrayAnimatorWCS(np.arange(25).reshape((5,5)), wcs_4d, ['x', 'y'])
+        ArrayAnimatorWCS(np.arange(25).reshape((5, 5)), wcs_4d, ['x', 'y'])
 
     # Slices is wrong length
     with pytest.raises(ValueError, match="slices should be the same length"):
-        ArrayAnimatorWCS(np.arange(16).reshape((2,2,2,2)), wcs_4d, ['x', 'y'])
+        ArrayAnimatorWCS(np.arange(16).reshape((2, 2, 2, 2)), wcs_4d, ['x', 'y'])
 
     # x not in slices
     with pytest.raises(ValueError, match="slices should contain at least"):
-        ArrayAnimatorWCS(np.arange(16).reshape((2,2,2,2)), wcs_4d, [0,0,0,'y'])
+        ArrayAnimatorWCS(np.arange(16).reshape((2, 2, 2, 2)), wcs_4d, [0, 0, 0, 'y'])
 
 
 @figure_test
@@ -121,7 +121,8 @@ def test_array_animator_wcs_2d_colorbar_buttons(wcs_4d):
     data = np.arange(120).reshape((5, 4, 3, 2))
     bf = [lambda x: x]*10
     bl = ['h']*10
-    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'y', 'x'], colorbar=True, button_func=bf, button_labels=bl)
+    a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'y', 'x'],
+                         colorbar=True, button_func=bf, button_labels=bl)
     a.update_plot(1, a.im, a.sliders[0]._slider)
     return a.fig
 
@@ -140,6 +141,7 @@ def test_array_animator_wcs_2d_colorbar_buttons_default_labels(wcs_4d):
 def test_array_animator_wcs_2d_extra_sliders(wcs_4d):
     def vmin_slider(val, im, slider):
         im.set_clim(vmin=val)
+
     def vmax_slider(val, im, slider):
         im.set_clim(vmax=val)
 
@@ -149,6 +151,7 @@ def test_array_animator_wcs_2d_extra_sliders(wcs_4d):
                          slider_ranges=[[0, 100], [0, 100]])
     a.update_plot(1, a.im, a.sliders[0]._slider)
     return a.fig
+
 
 @figure_test
 def test_array_animator_wcs_1d_update_plot(wcs_4d):
