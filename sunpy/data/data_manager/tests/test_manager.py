@@ -62,7 +62,7 @@ def test_skip_all(manager, storage, downloader, data_function):
     assert Path(storage._store[0]['file_path']).name == ('test_file')
 
 
-def test_override_file(manager, storage, downloader, data_function):
+def test_override_file(manager, storage, downloader, data_function, tmpdir):
     """
     Test the override_file functionality.
     """
@@ -77,23 +77,24 @@ def test_override_file(manager, storage, downloader, data_function):
         """
         Function to test whether the file is /tmp/another_file.
         """
-        assert manager.get('test_file') == Path('/tmp/another_file')
+        assert manager.get('test_file') == Path(f'{folder}/another_file')
 
     # Outside the context manager file is default
+    folder = tmpdir.strpath
     data_function(default_tester)
-    write_to_test_file('/tmp/another_file', 'a')
+    write_to_test_file(str(Path(folder+'/another_file')), 'a')
 
-    with manager.override_file('test_file', 'file:///tmp/another_file'):
+    with manager.override_file('test_file', f'file://{folder}/another_file'):
         # Inside the file is replaced
         data_function(override_file_tester)
 
     # check the function works with hash provided
-    with manager.override_file('test_file', 'file:///tmp/another_file', MOCK_HASH):
+    with manager.override_file('test_file', f'file://{folder}/another_file', MOCK_HASH):
         data_function(override_file_tester)
 
     with pytest.raises(ValueError):
         # check if functions errors with the wrong hash
-        with manager.override_file('test_file', 'file:///tmp/another_file', 'wrong_hash'):
+        with manager.override_file('test_file', f'file://{folder}/another_file', 'wrong_hash'):
             # Inside the file is replaced
             data_function(override_file_tester)
 

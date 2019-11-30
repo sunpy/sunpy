@@ -113,7 +113,6 @@ def test_tag_hashability():
 
 
 @pytest.mark.remote_data
-@pytest.mark.flaky(reruns=5)
 def test_entries_from_fido_search_result(fido_search_result):
     entries = list(entries_from_fido_search_result(fido_search_result))
     # 66 entries for 8 instruments in fido_search_result
@@ -552,7 +551,7 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             observation_time_end=datetime(2012, 9, 14, 0, 0),
             instrument='VIRGO', size=512000.0, wavemin=None,
             wavemax=None)
-        ]
+    ]
 
     for e in entries:
         assert e in expected
