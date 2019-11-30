@@ -1,4 +1,4 @@
-from mocks import MOCK_HASH
+from .mocks import MOCK_HASH
 
 
 def test_cache_basic(cache):
