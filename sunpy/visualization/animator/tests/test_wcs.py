@@ -53,7 +53,7 @@ def wcs_4d():
 ))
 def test_construct_array_animator(wcs_4d, data, slices, dim):
     if dim == 1:
-        pytest.importorskip("astropy", minversion="4.0.0")
+        pytest.importorskip("astropy", minversion="4.0dev26173")
 
     array_animator = ArrayAnimatorWCS(data, wcs_4d, slices)
 
@@ -155,7 +155,7 @@ def test_array_animator_wcs_2d_extra_sliders(wcs_4d):
 
 @figure_test
 def test_array_animator_wcs_1d_update_plot(wcs_4d):
-    pytest.importorskip("astropy", minversion="4.0.0")
+    pytest.importorskip("astropy", minversion="4.0dev26173")
     data = np.arange(120).reshape((5, 4, 3, 2))
     a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 0], ylabel="Y axis!")
     a.update_plot(1, a.im, a.sliders[0]._slider)
@@ -181,7 +181,7 @@ def test_array_animator_wcs_coord_params(wcs_4d):
 
 @figure_test
 def test_array_animator_wcs_coord_params_grid(wcs_4d):
-    pytest.importorskip("astropy", minversion="4.0.0")
+    pytest.importorskip("astropy", minversion="4.0dev26173")
 
     coord_params = {
         'hpln': {
