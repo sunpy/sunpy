@@ -81,7 +81,7 @@ def test_override_file(manager, storage, downloader, data_function):
 
     # Outside the context manager file is default
     data_function(default_tester)
-    write_to_test_file('/tmp/another_file', 'a')
+    write_to_test_file(str(Path('/tmp/another_file')), 'a')
 
     with manager.override_file('test_file', 'file:///tmp/another_file'):
         # Inside the file is replaced
