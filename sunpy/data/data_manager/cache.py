@@ -110,11 +110,11 @@ class Cache:
         """
         time = details.get("time", datetime.now().isoformat())
 
-        # Remove this once we depend on Python >=3.7
+        # TODO: Remove this once we depend on Python >=3.7
         if hasattr(datetime, "fromisoformat"):
-            time = datetime.fromisoformat(details['time'])
+            time = datetime.fromisoformat(time)
         else:
-            time = parse_time(details['time']).datetime
+            time = parse_time(time).datetime
         return self._expiry and datetime.now() - time > self._expiry
 
     def get_by_hash(self, sha_hash):
