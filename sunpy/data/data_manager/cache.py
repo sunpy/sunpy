@@ -108,6 +108,8 @@ class Cache:
         `bool`
             Whether the url has expired or not.
         """
+        time = details.get("time", datetime.now().isoformat())
+
         # Remove this once we depend on Python >=3.7
         if hasattr(datetime, "fromisoformat"):
             time = datetime.fromisoformat(details['time'])
