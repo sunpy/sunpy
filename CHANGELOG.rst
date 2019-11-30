@@ -1,3 +1,12 @@
+Sunpy v1.1rc2 (2019-11-30)
+==========================
+
+Trivial/Internal Changes
+------------------------
+
+- Fix tests for `sunpy.data.data_manager` and ensure they are correctly executed with pytest. (`#3550 <https://github.com/sunpy/sunpy/pull/3550>`__)
+
+
 Sunpy v1.1rc1 (2019-11-22)
 ==========================
 
