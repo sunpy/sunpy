@@ -221,15 +221,17 @@ class MapFactory(BasicRegistrationFactory):
             # File system path (file or directory or glob)
             elif _is_path(arg):
                 path = pathlib.Path(arg).expanduser()
-                if path.is_file():
+                if _is_file(path):
                     pairs = self._read_file(path, **kwargs)
                     data_header_pairs += pairs
-                elif path.is_dir():
+                elif _is_dir(path):
                     for afile in sorted(path.glob('*')):
                         data_header_pairs += self._read_file(afile, **kwargs)
                 elif glob.glob(os.path.expanduser(arg)):
                     for afile in sorted(glob.glob(os.path.expanduser(arg))):
+                        print(afile)
                         data_header_pairs += self._read_file(afile, **kwargs)
+
                 else:
                     raise ValueError(f'Did not find any files at {arg}')
 
@@ -355,6 +357,24 @@ def _is_path(arg):
     try:
         is_path = pathlib.Path(arg)
         return True
+    except Exception:
+        return False
+
+
+# In python<3.8 paths with un-representable chars (ie. '*' on windows)
+# raise an error, so make our own version that returns False instead of
+# erroring. These can be removed when we support python >= 3.8
+# https://docs.python.org/3/library/pathlib.html#methods
+def _is_file(path):
+    try:
+        return path.is_file()
+    except Exception:
+        return False
+
+
+def _is_dir(path):
+    try:
+        return path.is_dir()
     except Exception:
         return False
 
