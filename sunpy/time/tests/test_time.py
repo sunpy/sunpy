@@ -8,7 +8,7 @@ import astropy.time
 from astropy.time import Time
 
 import sunpy.time as time
-from sunpy.time import is_time_equal, parse_time
+from sunpy.time import is_time_equal, parse_time, julian_centuries
 
 LANDING = Time('1966-02-03', format='isot')
 
@@ -336,3 +336,8 @@ def test_is_time():
 def test_is_time_in_given_format():
     assert time.is_time_in_given_format('2017-02-14 08:08:12.999', "%Y-%m-%d %H:%M:%S.%f") is True
     assert time.is_time_in_given_format('2017-02-14 08:08:12.999', "%Y-%m-%dT%H:%M:%S.%f") is False
+
+
+def test_julian_centuries():
+    assert julian_centuries('1899-12-31 12:00:00') == 0
+    assert julian_centuries('1999-12-31 12:00:00') == 0.9999726214921287
