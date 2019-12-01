@@ -131,8 +131,7 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
 
 
 def _remove_lytaf_events(time, channels=None, artifacts=None,
-                         return_artifacts=False, fitsfile=None,
-                         csvfile=None, filecolumns=None,
+                         return_artifacts=False, filecolumns=None,
                          lytaf_path=None, force_use_local_lytaf=False):
     """
     Removes periods of LYRA artifacts from a time series.
@@ -167,16 +166,6 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         Set to True to return a numpy recarray containing the start time, end
         time and type of all artifacts removed.
         Default=False
-
-    fitsfile : `str`
-        file name (including file path and suffix, .fits) of output fits file
-        which is generated if this kwarg is not None.
-        Default=None, i.e. no fits file is output.
-
-    csvfile : `str`
-        file name (including file path and suffix, .csv) of output csv file
-        which is generated if this kwarg is not None.
-        Default=None, i.e. no csv file is output.
 
     filecolumns : `list` of strings
         Gives names of columns of any output files produced.  Although
@@ -303,48 +292,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
                            "removed": lytaf[artifact_indices],
                            "not_removed": np.delete(lytaf, artifact_indices),
                            "not_found": artifacts_not_found}
-    # Output FITS file if fits kwarg is set
-    if fitsfile:
-        # Create time array of time strings rather than Time objects
-        # and verify filecolumns have been correctly input.  If None,
-        # generate generic filecolumns (see docstring of function called
-        # below.
-        string_time, filecolumns = _prep_columns(time, channels, filecolumns)
-        # Prepare column objects.
-        cols = [fits.Column(name=filecolumns[0], format="26A",
-                            array=string_time)]
-        if channels:
-            for i, f in enumerate(channels):
-                cols.append(fits.Column(name=filecolumns[i+1], format="D",
-                                        array=f))
-        coldefs = fits.ColDefs(cols)
-        tbhdu = fits.new_table(coldefs)
-        hdu = fits.PrimaryHDU()
-        tbhdulist = fits.HDUList([hdu, tbhdu])
-        # Write data to fits file.
-        tbhdulist.writeto(fitsfile)
-    # Output csv file if csv kwarg is set.
-    if csvfile:
-        # Create time array of time strings rather than Time objects
-        # and verify filecolumns have been correctly input.  If None,
-        # generate generic filecolumns (see docstring of function called
-        # below.
-        string_time, filecolumns = _prep_columns(time, channels, filecolumns)
-        # Open and write data to csv file.
-        with open(csvfile, 'w') as openfile:
-            csvwriter = csv.writer(openfile, delimiter=';')
-            # Write header.
-            csvwriter.writerow(filecolumns)
-            # Write data.
-            if not channels:
-                for i in range(len(time)):
-                    csvwriter.writerow(string_time[i])
-            else:
-                for i in range(len(time)):
-                    row = [string_time[i]]
-                    for f in channels:
-                        row.append(f[i])
-                    csvwriter.writerow(row)
+
     # Return values.
     if return_artifacts:
         if not channels:
