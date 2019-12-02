@@ -1,0 +1,2 @@
+Added a more helpful error message when trying to load a file or directory
+that doesn't exist with `Map`.
