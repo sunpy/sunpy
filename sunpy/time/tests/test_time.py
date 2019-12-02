@@ -9,6 +9,7 @@ from astropy.time import Time
 
 import sunpy.time as time
 from sunpy.time import is_time_equal, parse_time, julian_centuries
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 LANDING = Time('1966-02-03', format='isot')
 
@@ -339,5 +340,6 @@ def test_is_time_in_given_format():
 
 
 def test_julian_centuries():
-    assert julian_centuries('1899-12-31 12:00:00') == 0
-    assert julian_centuries('1999-12-31 12:00:00') == 0.9999726214921287
+    with pytest.warns(SunpyDeprecationWarning):
+        assert julian_centuries('1899-12-31 12:00:00') == 0
+        assert julian_centuries('1999-12-31 12:00:00') == 0.9999726214921287

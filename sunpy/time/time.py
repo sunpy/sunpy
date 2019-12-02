@@ -14,7 +14,7 @@ from astropy.time import Time
 
 # This is not called but imported to register it
 from sunpy.time.utime import TimeUTime  # noqa
-from sunpy.util.decorators import add_common_docstring
+from sunpy.util.decorators import add_common_docstring, deprecated
 
 __all__ = [
     'find_time', 'parse_time', 'is_time',
@@ -354,6 +354,7 @@ def is_time_in_given_format(time_string, time_format):
         return False
 
 
+@deprecated("2.0", alternative='(time.jd - 2415020) / 36525')
 def julian_centuries(t='now'):
     """
     Returns the number of Julian centuries since J1900.0 (noon on 1900 January
