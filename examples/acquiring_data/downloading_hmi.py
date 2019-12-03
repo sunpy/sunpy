@@ -15,7 +15,8 @@ from sunpy.net import Fido, attrs as a
 # To download the required data, we use
 # `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`, a downloader client,
 # to query the Joint Science Operations Center, or JSOC, where HMI data are stored.
-# First define the search variables, a timerange, a [data series](http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html),
+# First define the search variables, a timerange, 
+# a [data series](http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html),
 # keywords, and your e-mail address (to notify you when the download is complete).
 # See the JSOC e-mail address registration page
 # [here](http://jsoc.stanford.edu/ajax/register_email.html).
