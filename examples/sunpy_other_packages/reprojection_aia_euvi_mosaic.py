@@ -185,6 +185,10 @@ array, _ = reproject_and_coadd(maps, out_wcs, shape_out,
 outmap = sunpy.map.Map((array, header))
 outmap.plot_settings = maps[0].plot_settings
 
+outmap.nickname = 'AIA + EUVI/A + EUVI/B'
+outmap.meta.update({'wavelnth': maps[0].meta['wavelnth']})
+outmap.meta.update({'waveunit': maps[0].meta['waveunit']})
+
 plt.figure(figsize=(10, 5))
 ax = plt.subplot(projection=out_wcs)
 im = outmap.plot(vmin=400)
