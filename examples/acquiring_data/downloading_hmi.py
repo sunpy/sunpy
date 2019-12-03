@@ -47,17 +47,15 @@ print(downloaded_file)
 # We see that solar North is pointed down instead of up in this image, which is
 # indicated by the coordinates (that range from positive to negative, rather
 # than negative to positive).
-# We can verify the rotation of the image by querying the keyword `CROTA2`,
-# which indicates the number degrees the image must be rotated for solar North
-# to point up.
 hmi_map = sunpy.map.Map(downloaded_file[0])
 fig = plt.figure()
 hmi_map.plot()
 plt.show()
 
 ###############################################################################
-# Rotate the image such that solar North is pointed up. The map automatically
-# incorporates the value of `CROTA2` into the rotation.
+# Rotate the image such that solar North is pointed up.
+# The order specifies the type of interpolation; in this case, 3 refers to 
+# bi-cubic.
 hmi_rotated = hmi_map.rotate(order=3)
 hmi_rotated.plot()
 plt.show()
