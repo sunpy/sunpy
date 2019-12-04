@@ -111,7 +111,7 @@ def hgs_to_hgc(hgscoord, hgcframe):
     total_matrix = _rotation_matrix_hgs_to_hgc(int_coord.obstime)
     newrepr = int_coord.cartesian.transform(total_matrix)
 
-    return hgcframe.realize_frame(newrepr)
+    return hgcframe._replicate(newrepr, obstime=int_coord.obstime)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -127,7 +127,7 @@ def hgc_to_hgs(hgccoord, hgsframe):
     total_matrix = matrix_transpose(_rotation_matrix_hgs_to_hgc(int_coord.obstime))
     newrepr = int_coord.cartesian.transform(total_matrix)
 
-    return hgsframe.realize_frame(newrepr)
+    return hgsframe._replicate(newrepr, obstime=int_coord.obstime)
 
 
 def _matrix_hcc_to_hpc():
@@ -410,7 +410,9 @@ def hgs_to_hgs(from_coo, to_frame):
     """
     Convert between two Heliographic Stonyhurst frames.
     """
-    if np.all(from_coo.obstime == to_frame.obstime):
+    if to_frame.obstime is None:
+        return from_coo.replicate()
+    elif np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HCRS(obstime=from_coo.obstime)).transform_to(to_frame)
