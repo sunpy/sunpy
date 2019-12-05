@@ -8,7 +8,7 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.coordinates import ICRS, get_body_barycentric
 
 from sunpy.time import parse_time
-from ..frames import Helioprojective, HeliographicStonyhurst
+from ..frames import Helioprojective, HeliographicStonyhurst, HeliocentricInertial
 from ..frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
 from sunpy.coordinates import get_earth, frames
 
@@ -16,6 +16,11 @@ from sunpy.coordinates import get_earth, frames
 @pytest.fixture
 def attr():
     return TimeFrameAttributeSunPy()
+
+
+@pytest.fixture
+def oca():
+    return ObserverCoordinateAttribute(HeliographicStonyhurst)
 
 
 def test_now(attr):
@@ -80,16 +85,21 @@ def test_on_frame_error2():
 # ObserverCoordinateAttribute
 
 
-def test_string_coord():
-
-    oca = ObserverCoordinateAttribute(HeliographicStonyhurst)
-
+def test_string_coord(oca):
     obstime = "2011-01-01"
     coord = oca._convert_string_to_coord("earth", obstime)
 
     assert isinstance(coord, HeliographicStonyhurst)
 
     assert coord.obstime == parse_time(obstime)
+
+
+def test_observer_not_hgs(oca):
+    observer = HeliocentricInertial(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-01-01')
+    result, converted = oca.convert_input(observer)
+
+    assert isinstance(result, HeliographicStonyhurst)
+    assert converted
 
 
 def test_coord_get():
