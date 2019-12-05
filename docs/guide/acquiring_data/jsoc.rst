@@ -36,7 +36,7 @@ the data provider is downloaded to your computer.
 .. warning::
 
     You must have an email address registered with JSOC before you are allowed to make a request.
-    See `this <http://jsoc.stanford.edu/ajax/register_email.html>` to register your email address.
+    See `this <http://jsoc.stanford.edu/ajax/register_email.html>`__ to register your email address.
 
 Querying the JSOC
 -----------------
