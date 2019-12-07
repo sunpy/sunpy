@@ -1,2 +1,0 @@
-Due to upstream Helioviewer API changes, the 0.9 Helioviewer client does not fully work anymore.
-The client fully works in Sunpy 1.0 and higher.

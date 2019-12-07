@@ -1,3 +1,21 @@
+Sunpy 0.9.10 (2019-12-07)
+=========================
+
+Backwards Incompatible Changes
+------------------------------
+
+- Due to upstream Helioviewer API changes, the 0.9 Helioviewer client does not fully work anymore.
+  The client fully works in Sunpy 1.0 and higher. (`#3497 <https://github.com/sunpy/sunpy/pull/3497>`__)
+
+
+Bug Fixes
+---------
+
+- Updated the URL for Fermi spacecraft-pointing files to use an HTTPS connection to HEASARC. (`#3381 <https://github.com/sunpy/sunpy/pull/3381>`__)
+- Fix multiple instances of `sunpy.map.sources` assuming the type of FITS Header
+  values. (`#3497 <https://github.com/sunpy/sunpy/pull/3497>`__)
+
+
 Sunpy v0.9.9 (2019-05-30)
 =========================
 
