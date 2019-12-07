@@ -29,6 +29,7 @@ dependencies:
   - sqlalchemy=1.2.1=py27_0
   - suds-jurko=0.6=py27_1
   - pip:
+    - hypothesis
     - pytest-astropy
     - drms
     - attrs<17.4
