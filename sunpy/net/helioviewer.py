@@ -23,7 +23,8 @@ __all__ = ['HelioviewerClient']
 
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
-    def __init__(self, url="https://legacy.helioviewer.org/api/"):
+
+    def __init__(self, url="https://api.helioviewer.org/"):
         """
         url : location of the Helioviewer API.  The default location points to
             version 1 of the API.  Version 1 of the Helioviewer API is
@@ -45,7 +46,7 @@ class HelioviewerClient(object):
 
         For more information on what types of requests are available and the
         expected usage for the response, consult the Helioviewer API
-        documentation: http://legacy.helioviewer.org/api/docs/v1/ .
+        documentation: https://api.helioviewer.org/docs/v1/ .
 
         Parameters
         ----------
@@ -127,10 +128,6 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')   # doctest: +REMOTE_DATA
-        >>> aia = sunpy.map.Map(filepath)   # doctest: +REMOTE_DATA
-        >>> aia.peek()   # doctest: +SKIP
-
         >>> data_sources = hv.get_data_sources()  # doctest: +REMOTE_DATA
         >>> file = hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])   # doctest: +REMOTE_DATA
         """
@@ -207,9 +204,9 @@ class HelioviewerClient(object):
         >>> from sunpy.net.helioviewer import HelioviewerClient
         >>> import datetime
         >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-        >>> file = hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)   # doctest: +REMOTE_DATA
-        >>> file = hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800)   # doctest: +REMOTE_DATA
-        >>> file = hv.download_jp2(datetime.datetime.now(), observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')   # doctest: +REMOTE_DATA
+        >>> file = hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)   # doctest: +SKIP
+        >>> file = hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800)  # doctest: +SKIP
+        >>> file = hv.download_jp2(datetime.datetime.now(), observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')  # doctest: +SKIP
         """
         params = {
             "action": "takeScreenshot",

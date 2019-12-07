@@ -32,14 +32,14 @@ using the get_datasources method::
     >>> from sunpy.net.helioviewer import HelioviewerClient
 
     >>> hv = HelioviewerClient()
-    >>> datasources = hv.get_data_sources()  # doctest: +REMOTE_DATA
+    >>> datasources = hv.get_data_sources()  # doctest: +SKIP
 
     >>> # print a list of datasources and their associated ids
-    >>> for observatory, instruments in datasources.items():  # doctest: +REMOTE_DATA
-    ...     for inst, detectors in instruments.items():  # doctest: +REMOTE_DATA
-    ...         for det, measurements in detectors.items():  # doctest: +REMOTE_DATA
-    ...             for meas, params in measurements.items():  # doctest: +REMOTE_DATA
-    ...                 print("%s %s: %d" % (observatory, params['nickname'], params['sourceId']))  # doctest: +REMOTE_DATA
+    >>> for observatory, instruments in datasources.items():  # doctest: +SKIP
+    ...     for inst, detectors in instruments.items():  # doctest: +SKIP
+    ...         for det, measurements in detectors.items():  # doctest: +SKIP
+    ...             for meas, params in measurements.items():  # doctest: +SKIP
+    ...                 print("%s %s: %d" % (observatory, params['nickname'], params['sourceId']))  # doctest: +SKIP
     SOHO EIT 171: 0
     SOHO EIT 195: 1
     SOHO EIT 284: 2
@@ -90,8 +90,8 @@ approach as shown in the following example.::
    >>> import matplotlib.pyplot as plt
    >>> from matplotlib.image import imread
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)  # doctest: +REMOTE_DATA
-   >>> im = imread(file)  # doctest: +REMOTE_DATA
+   >>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)  # doctest: +SKIP
+   >>> im = imread(file)  # doctest: +SKIP
    >>> plt.imshow(im)  # doctest: +SKIP
    >>> plt.axis('off')  # doctest: +SKIP
    >>> plt.show()  # doctest: +SKIP
@@ -134,8 +134,8 @@ lower layer.::
    >>> import matplotlib.pyplot as plt
    >>> from matplotlib.image import imread
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> file = hv.download_png('2099/01/01', 6, "[SDO,AIA,AIA,304,1,100],[SDO,AIA,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]", x0=0, y0=0, width=768, height=768)  # doctest: +REMOTE_DATA
-   >>> im = imread(file)  # doctest: +REMOTE_DATA
+   >>> file = hv.download_png('2099/01/01', 6, "[SDO,AIA,AIA,304,1,100],[SDO,AIA,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]", x0=0, y0=0, width=768, height=768)  # doctest: +SKIP
+   >>> im = imread(file)  # doctest: +SKIP
    >>> plt.imshow(im)  # doctest: +SKIP
    >>> plt.axis('off')  # doctest: +SKIP
    >>> plt.show()  # doctest: +SKIP
@@ -154,10 +154,10 @@ can specify the values as separate keyword arguments.::
    >>> from astropy.units import Quantity
    >>> from sunpy.map import Map
    >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
-   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')  # doctest: +REMOTE_DATA
-   >>> hmi = Map(filepath)  # doctest: +REMOTE_DATA
-   >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
-   >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA
+   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')  # doctest: +SKIP
+   >>> hmi = Map(filepath)  # doctest: +SKIP
+   >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +SKIP
+   >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +SKIP
    >>> hmi.submap(xrange, yrange).peek()  # doctest: +SKIP
 
 
