@@ -219,7 +219,7 @@ class MapFactory(BasicRegistrationFactory):
                 data_header_pairs += pairs
 
             # File system path (file or directory or glob)
-            elif _is_path(arg):
+            elif _possibly_a_path(arg):
                 path = pathlib.Path(arg).expanduser()
                 if _is_file(path):
                     pairs = self._read_file(path, **kwargs)
@@ -349,7 +349,7 @@ def _is_url(arg):
     return True
 
 
-def _is_path(arg):
+def _possibly_a_path(arg):
     """
     Check if arg can be coerced into a Path object.
     Does *not* check if the path exists.
