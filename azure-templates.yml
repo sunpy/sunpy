@@ -34,25 +34,5 @@ jobs:
     - script: pip install --upgrade tox-conda
       displayName: install tox-conda
 
-  - script: tox -e ${{ parameters.tox }} -vvv --junitxml=junit/test-results.xml --cov-report=xml --cov-report=html
+  - script: tox -e ${{ parameters.tox }} -vvv
     displayName: run tox
-
-  - script: |
-      pip install --upgrade codecov
-      codecov --name ${{ format(parameters.name) }}
-    displayName: run codecov
-    condition: succeededOrFailed()
-
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    inputs:
-      testResultsFiles: '**/test-*.xml'
-      testRunTitle: 'Publish test results for ${{ format(parameters.name) }}'
-
-  - ${{ if contains(parameters.tox, 'online') }}:
-    - task: PublishCodeCoverageResults@1
-      condition: succeededOrFailed()
-      inputs:
-        codeCoverageTool: Cobertura
-        summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
-        reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'

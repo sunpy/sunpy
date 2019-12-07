@@ -29,9 +29,9 @@ env:
         - NUMPY_VERSION='1.16'
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
-        - SETUP_CMD='test --coverage'
+        - SETUP_CMD='test'
         - CONDA_CHANNELS='sunpy'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas pytest-astropy suds-jurko glymur dask drms sphinx sphinx-astropy pytest-cov hypothesis'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas pytest-astropy suds-jurko glymur dask drms sphinx sphinx-astropy hypothesis'
         - PIP_DEPENDENCIES='pytest-sugar'
         - EVENT_TYPE='push pull_request cron'
         - MPLBACKEND='agg'
@@ -90,14 +90,11 @@ before_script:
     # Download the sample data for the online builds only.
     - if [[ $SETUP_CMD == *online-only* ]] || [[ $SETUP_CMD == *remote-data* ]] || [[ $PYTHON_VERSION == "2.7" ]]; then python -m "sunpy.data.sample"; fi
     - if [[ $MAIN_CMD == py.test* ]]; then pip install -e ./; fi
-    - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
+    - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml;  conda activate sunpy-figure-tests-$PYTHON_VERSION; fi
     - if [[ $JOB == *pip* ]]; then pip install .[all]; fi
 
 script:
     - $MAIN_CMD $SETUP_CMD
-
-after_success:
-    - if [[ $SETUP_CMD = *"cov"* ]]; then pip install codecov; codecov; fi
 
 # Notify the IRC channel of build status
 notifications:

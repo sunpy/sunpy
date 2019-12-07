@@ -47,9 +47,9 @@ def online_query(draw, instrument=online_instruments(), time=time_attr()):
     # If we have AttrAnd then we don't have RHESSI
     if isinstance(query, a.Instrument) and query.value == 'rhessi':
         # Build a time attr which does not span a month.
-        year = draw(st.integers(min_value=2003, max_value=2017))
-        month = draw(st.integers(min_value=1, max_value=12))
-        days = draw(st.integers(min_value=1, max_value=28))
+        year = draw(st.integers(min_value=2010, max_value=2017))
+        month = draw(st.integers(min_value=3, max_value=9))
+        days = draw(st.integers(min_value=10, max_value=25))
         query = query & a.Time("{}-{}-01".format(year, month, days),
                                "{}-{}-{}".format(year, month, days))
     return query
@@ -183,12 +183,12 @@ def test_multiple_match():
 
 @pytest.mark.remote_data
 def test_no_wait_fetch():
-        qr = Fido.search(a.Instrument('EVE'),
-                         a.Time("2016/10/01", "2016/10/02"),
-                         a.Level(0))
-        res = Fido.fetch(qr, wait=False)
-        assert isinstance(res, DownloadResponse)
-        assert isinstance(res.wait(), list)
+    qr = Fido.search(a.Instrument('EVE'),
+                     a.Time("2016/10/01", "2016/10/02"),
+                     a.Level(0))
+    res = Fido.fetch(qr, wait=False)
+    assert isinstance(res, DownloadResponse)
+    assert isinstance(res.wait(), list)
 
 
 """

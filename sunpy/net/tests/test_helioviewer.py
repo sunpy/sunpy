@@ -29,14 +29,17 @@ def client():
 
 
 @pytest.mark.remote_data
+@pytest.mark.skip
 class TestHelioviewerClient:
     """Tests the Helioviewer.org API Client class"""
 
+    @pytest.mark.skip
     def test_get_datasources(self, client):
         """Makes sure datasource query returns a valid result and source id
         is casted to an integer"""
         assert type(client.sources['SDO']['AIA']['AIA']['171']['sourceId']) is int
 
+    @pytest.mark.skip
     def test_get_closest_image(self, client):
         """Tests getClosestImage API method"""
         # check basic query
@@ -55,6 +58,7 @@ class TestHelioviewerClient:
         assert im1 == im2
 
     @skip_glymur
+    @pytest.mark.skip
     def test_download_jp2(self, client):
         """Tests getJP2Image API method"""
         filepath = client.download_jp2('2020/01/01', observatory='SOHO',
@@ -64,6 +68,7 @@ class TestHelioviewerClient:
         assert isinstance(map_, sunpy.map.GenericMap)
 
     @skip_glymur
+    @pytest.mark.skip
     def test_download_jp2_directory_not_exist(self, client, tmpdir):
         """Tests getJP2Image API method"""
 
