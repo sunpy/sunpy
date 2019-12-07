@@ -632,27 +632,27 @@ class GenericMap(NDData):
 
     @property
     def heliographic_latitude(self):
-        """Heliographic latitude."""
+        """Observer heliographic latitude."""
         return self.observer_coordinate.lat
 
     @property
     def heliographic_longitude(self):
-        """Heliographic longitude."""
+        """Observer heliographic longitude."""
         return self.observer_coordinate.lon
 
     @property
     def carrington_latitude(self):
-        """Carrington latitude."""
+        """Observer Carrington latitude."""
         return self.observer_coordinate.heliographic_carrington.lat
 
     @property
     def carrington_longitude(self):
-        """Carrington longitude."""
+        """Observer Carrington longitude."""
         return self.observer_coordinate.heliographic_carrington.lon
 
     @property
     def dsun(self):
-        """The observer distance from the center of the Sun."""
+        """Observer distance from the center of the Sun."""
         return self.observer_coordinate.radius.to('m')
 
     @property
