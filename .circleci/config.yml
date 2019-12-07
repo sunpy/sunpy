@@ -108,7 +108,7 @@ jobs:
           command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off numpy==1.15.3 scipy astropy matplotlib==1.5.3
       - run:
           name: Install dependencies two
-          command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off sqlalchemy scikit-image==0.13.1 glymur drms suds-jurko beautifulsoup4 requests python-dateutil pytest==4.6.5 pytest-cov pytest-mock mock hypothesis pytest-astropy pytest-rerunfailures
+          command: /opt/python/cp36-cp36m/bin/pip install --progress-bar off sqlalchemy scikit-image==0.13.1 glymur drms suds-jurko beautifulsoup4 requests python-dateutil pytest==4.6.5 pytest-mock mock hypothesis pytest-astropy pytest-rerunfailures
       - run:
           name: Run tests
           command: PYTHONHASHSEED=42 /opt/python/cp36-cp36m/bin/pytest

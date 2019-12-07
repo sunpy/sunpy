@@ -4,7 +4,6 @@ channels:
   - defaults
 dependencies:
   - pip
-  - hypothesis
   - requests
   - mock
   - astropy=2.0.4=py27_0
@@ -29,7 +28,7 @@ dependencies:
   - six=1.11.0=py27_1
   - sqlalchemy=1.2.1=py27_0
   - suds-jurko=0.6=py27_1
-  - nomkl=1.0=0
   - pip:
     - pytest-astropy
     - drms
+    - attrs<17.4
