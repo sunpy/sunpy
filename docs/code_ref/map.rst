@@ -69,6 +69,7 @@ All SunPy Maps are derived from `sunpy.map.GenericMap`, all the methods and attr
 .. automodapi:: sunpy.map
     :no-main-docstr:
     :no-heading:
+    :inherited-members:
 
 .. _map-sources:
 
