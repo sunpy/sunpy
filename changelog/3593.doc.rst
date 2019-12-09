@@ -1,0 +1,1 @@
+Fixed documentation of `sunpy.database.Database.search` by adding ``Returns`` docstring.
