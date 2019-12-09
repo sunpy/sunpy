@@ -580,8 +580,10 @@ class Database:
 
         Returns
         -------
-        table
-            List of database entries that satisfy all of the given attributes.
+        table : `list`
+            List of :class:`sunpy.database.tables.DatabaseEntry` that
+            satisfy all of the given attributes.
+
 
         Raises
         ------
