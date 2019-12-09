@@ -578,6 +578,11 @@ class Database:
             :class:`sunpy.database.tables.DatabaseEntry` for a list of all
             possible values.
 
+        Returns
+        -------
+        table
+            List of database entries that satisfy all of the given attributes.
+
         Raises
         ------
         TypeError
