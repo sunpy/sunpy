@@ -111,13 +111,11 @@ def sample_at_coords(smap, coordinates):
     ----------
     smap : `~sunpy.map.GenericMap`
         A SunPy map.
-
     coordinates : `~astropy.coordinates.SkyCoord`
-        A list of input coordinates
-
+        Input coordinates.
     Returns
     -------
-    `~numpy.array`
+    `numpy.array`
         A `numpy.array` corresponding to the data obtained from the map,
         at the input coordinates.
     """
