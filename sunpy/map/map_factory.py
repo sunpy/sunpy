@@ -229,7 +229,6 @@ class MapFactory(BasicRegistrationFactory):
                         data_header_pairs += self._read_file(afile, **kwargs)
                 elif glob.glob(os.path.expanduser(arg)):
                     for afile in sorted(glob.glob(os.path.expanduser(arg))):
-                        print(afile)
                         data_header_pairs += self._read_file(afile, **kwargs)
 
                 else:
