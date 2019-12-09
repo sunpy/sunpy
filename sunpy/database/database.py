@@ -581,7 +581,7 @@ class Database:
         Returns
         -------
         table : `list`
-            List of :class:`sunpy.database.tables.DatabaseEntry` that
+            List of `sunpy.database.tables.DatabaseEntry` objects that
             satisfy all of the given attributes.
 
         Raises
