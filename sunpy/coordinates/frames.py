@@ -137,7 +137,45 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
 
 
 @add_common_docstring(**_frame_parameters())
-class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
+class BaseHeliographic(SunPyBaseCoordinateFrame):
+    """
+    Base class for HeliographicCarrington (HGC) and HeliographicStonyhurst (HGS) frames.
+    """
+    name = "base_heliographic"
+    default_representation = SphericalRepresentation
+
+    frame_specific_representation_info = {
+        SphericalRepresentation: [RepresentationMapping(reprname='lon',
+                                                        framename='lon',
+                                                        defaultunit=u.deg),
+                                  RepresentationMapping(reprname='lat',
+                                                        framename='lat',
+                                                        defaultunit=u.deg),
+                                  RepresentationMapping(reprname='distance',
+                                                        framename='radius',
+                                                        defaultunit=None)],
+        CartesianRepresentation: [RepresentationMapping(reprname='x',
+                                                        framename='x'),
+                                  RepresentationMapping(reprname='y',
+                                                        framename='y'),
+                                  RepresentationMapping(reprname='z',
+                                                        framename='z')]
+    }
+
+    def __init__(self, *args, **kwargs):
+        _rep_kwarg = kwargs.get('representation_type', None)
+
+        super().__init__(*args, **kwargs)
+
+        # Make 3D if specified as 2D
+        if (self._data is not None and self._data.norm().unit is u.one
+            and u.allclose(self._data.norm(), 1*u.one)):
+
+            self._data *= _RSUN.to(u.km)
+
+
+@add_common_docstring(**_frame_parameters())
+class HeliographicStonyhurst(BaseHeliographic):
     """
     A coordinate or frame in the Stonyhurst Heliographic (HGS) system.
 
@@ -195,40 +233,10 @@ class HeliographicStonyhurst(SunPyBaseCoordinateFrame):
     ``rsun``.
     """
     name = "heliographic_stonyhurst"
-    default_representation = SphericalRepresentation
-
-    frame_specific_representation_info = {
-        SphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                        framename='lon',
-                                                        defaultunit=u.deg),
-                                  RepresentationMapping(reprname='lat',
-                                                        framename='lat',
-                                                        defaultunit=u.deg),
-                                  RepresentationMapping(reprname='distance',
-                                                        framename='radius',
-                                                        defaultunit=None)],
-        CartesianRepresentation: [RepresentationMapping(reprname='x',
-                                                        framename='x'),
-                                  RepresentationMapping(reprname='y',
-                                                        framename='y'),
-                                  RepresentationMapping(reprname='z',
-                                                        framename='z')]
-    }
-
-    def __init__(self, *args, **kwargs):
-        _rep_kwarg = kwargs.get('representation_type', None)
-
-        super().__init__(*args, **kwargs)
-
-        # Make 3D if specified as 2D
-        if (self._data is not None and self._data.norm().unit is u.one
-            and u.allclose(self._data.norm(), 1*u.one)):
-
-            self._data *= _RSUN.to(u.km)
 
 
 @add_common_docstring(**_frame_parameters())
-class HeliographicCarrington(HeliographicStonyhurst):
+class HeliographicCarrington(BaseHeliographic):
     """
     A coordinate or frame in the Carrington Heliographic (HGC) system.
 
