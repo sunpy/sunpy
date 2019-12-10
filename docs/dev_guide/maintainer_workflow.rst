@@ -105,7 +105,7 @@ Pull requests **may** be rebased (either manually or with the rebase and merge b
 * There are conflicts with master
 * There are merge commits from upstream/master in the PR commit history (merge commits from PRs to the user's fork are fine)
 
-Asking contributors who are new to the project or in experienced with using git is **discouraged**, as is maintainers rebasing these PRs before merge time, as this requires resetting of local git checkouts.
+Asking contributors who are new to the project or inexperienced with using git is **discouraged**, as is maintainers rebasing these PRs before merge time, as this requires resetting of local git checkouts.
 
 
 A few commits
