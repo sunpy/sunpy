@@ -96,11 +96,17 @@ When squashing, extra care should be taken to keep authorship credit to all indi
 When to rebase
 --------------
 
-Pull requests **must** be rebased (but not necessarily squashed to a single commit) if at least one of the following conditions is met:
+Pull requests **must** be rebased (but not necessarily squashed to a single commit) if:
+
+* There are commit messages include offensive language or violate the code of conduct (in this case the rebase must also edit the commit messages)
+
+Pull requests **may** be rebased (either manually or with the rebase and merge button) if:
 
 * There are conflicts with master
 * There are merge commits from upstream/master in the PR commit history (merge commits from PRs to the user's fork are fine)
-* There are commit messages include offensive language or violate the code of conduct (in this case the rebase must also edit the commit messages)
+
+Asking contributors who are new to the project or inexperienced with using git is **discouraged**, as is maintainers rebasing these PRs before merge time, as this requires resetting of local git checkouts.
+
 
 A few commits
 -------------
