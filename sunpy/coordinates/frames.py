@@ -136,12 +136,12 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
             return super().__str__()
 
 
-@add_common_docstring(**_frame_parameters())
 class BaseHeliographic(SunPyBaseCoordinateFrame):
     """
     Base class for HeliographicCarrington (HGC) and HeliographicStonyhurst (HGS) frames.
+
+    This class is not intended to be used directly and has no transformations defined.
     """
-    name = "base_heliographic"
     default_representation = SphericalRepresentation
 
     frame_specific_representation_info = {
