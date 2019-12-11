@@ -1,0 +1,5 @@
+Created new class `~sunpy.coordinates.frames.BaseHeliographic`
+inherited by both `HGC` and `HGS` .
+``isinstance(frame, HeliographicStonyhurst)``
+will no longer return ``True`` when ``frame`` is
+`~sunpy.coordinates.frames.HeliographicCarrington` .
