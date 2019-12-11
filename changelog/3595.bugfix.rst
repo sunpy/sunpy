@@ -1,4 +1,0 @@
-`isinstance(frame, HeliographicStonyhurst)` will no longer
-return true when frame is `HeliographicCarrington` .
-Created new class `Base_Heliographic` inherited by both
-`HGC` and `HGS` .
