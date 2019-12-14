@@ -28,8 +28,13 @@ class MapSequence:
     ----------
     args : `list`
         A list of Map instances
-    sortby : `datetime.datetime`
+    sortby : `str`|`None`
         Method by which the MapSequence should be sorted along the z-axis.
+        Valid input types : `str` , `None`
+        Default sorting strategy : 'date'
+        Currently supported sorting strategies : 'date'
+        Passing `None` disables sorting.
+
     derotate : `bool`
         Apply a derotation to the data. Default to False.
 
