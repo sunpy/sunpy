@@ -30,7 +30,7 @@ class MapSequence:
         A list of Map instances
     sortby : { "date" | `None`}
         Method by which the MapSequence should be sorted along the z-axis.
-        Passing `None` disables sorting.
+        Defaults to sorting by: "date" and is the only supported sorting strategy. 
         Default sorting strategy : 'date'
         Currently supported sorting strategies : 'date'
 
