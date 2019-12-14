@@ -1,2 +1,2 @@
-Add ``__repr__`` for `MapSequence' objects under `sunpy.map.MapSequence` so that users can view the
+Add ``__repr__`` for `~sunpy.map.MapSequence` objects  so that users can view the
 critical information of all the ``Map`` objects, in a concise manner.
