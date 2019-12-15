@@ -48,8 +48,10 @@ TimeSeries
 SunPy handles time series data, fundamental to the study of any real world
 phenomenon, by creating a TimeSeries object. A timeseries consists of two parts;
 times and measurements taken at those times. The data can either be in your
-current Python session, alternatively within a local or remote file. Let's
-create some fake data and pass it into a timeseries object.
+current Python session, alternatively within a local or remote file. 
+In the code block that follows, data is taken from a file containing samples 
+from a file containing samples from the GOES satellite's X-ray Sensors (XRS).
+
 
 .. plot::
     :include-source:
