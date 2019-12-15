@@ -1,0 +1,1 @@
+Updated the docstring for ``TimeSeries`` in `~docs.guide.tour.rst` describing the file used in the codeblock following the docstring.
