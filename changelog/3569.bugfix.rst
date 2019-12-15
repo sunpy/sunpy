@@ -1,0 +1,2 @@
+Fixed ``map.__repr__`` when the coordinate system information contained in the
+``CUNIT1/2`` metadata is not set to a known value.
