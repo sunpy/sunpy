@@ -52,7 +52,6 @@ current Python session, alternatively within a local or remote file.
 In the code block that follows, data is taken from a file containing samples 
 from a file containing samples from the GOES satellite's X-ray Sensors (XRS).
 
-Reference : `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
 
 .. plot::
     :include-source:
