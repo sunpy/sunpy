@@ -50,7 +50,7 @@ phenomenon, by creating a TimeSeries object. A timeseries consists of two parts;
 times and measurements taken at those times. The data can either be in your
 current Python session, alternatively within a local or remote file. 
 In the code block that follows, data is taken from a file containing samples 
-data is taken from a file containing samples from GOES satellite's X-ray Sensors (XRS).
+from a file containing samples from the GOES satellite's X-ray Sensors (XRS).
 
 Reference : `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
 
