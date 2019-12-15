@@ -141,6 +141,17 @@ class TestMap:
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
+    def test_errors(self):
+        # If directory doesn't exist, make sure it's listed in the error msg
+        nonexist_dir = 'nonexist'
+        directory = pathlib.Path(filepath, nonexist_dir)
+        with pytest.raises(ValueError, match=nonexist_dir):
+            maps = sunpy.map.Map(os.fspath(directory))
+
+        with pytest.raises(ValueError, match='Invalid input: 78'):
+            # Check a random unsupported type (int) fails
+            sunpy.map.Map(78)
+
     # requires dask array to run properly
     def test_dask_array(self):
         dask_array = pytest.importorskip('dask.array')
