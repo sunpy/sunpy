@@ -30,7 +30,7 @@ class MapSequence:
         A list of Map instances
     sortby : { "date" | `None`}
         Method by which the MapSequence should be sorted along the z-axis.
-        Defaults to sorting by: "date" and is the only supported sorting strategy. 
+        Defaults to sorting by: "date" and is the only supported sorting strategy.
         Passing `None` will disable sorting.
     derotate : `bool`
         Apply a derotation to the data. Default to False.
