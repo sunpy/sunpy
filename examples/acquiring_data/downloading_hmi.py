@@ -5,7 +5,6 @@ Downloading and plotting an HMI magnetogram
 
 This example shows how to download a HMI magnetogram data with Fido and make a plot.
 """
-import astropy.units as u
 import matplotlib.pyplot as plt
 
 import sunpy.map
@@ -15,7 +14,7 @@ from sunpy.net import Fido, attrs as a
 # To download the required data, we use
 # `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`, a downloader client,
 # to query the Joint Science Operations Center, or JSOC, where HMI data are stored.
-# First define the search variables, a timerange, 
+# First define the search variables, a timerange,
 # a [data series](http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html),
 # keywords, and your e-mail address (to notify you when the download is complete).
 # See the JSOC e-mail address registration page
@@ -24,7 +23,7 @@ from sunpy.net import Fido, attrs as a
 result = Fido.search(a.Time('2014/11/20 00:00:00', '2014/11/20 00:04:00'),
                      a.jsoc.Series("hmi.M_720s"),
                      a.jsoc.Keys(["T_REC, CROTA2"]),
-                     a.jsoc.Notify("sunpy@sunpy.org"))
+                     a.jsoc.Notify("jsoc@cadair.com"))
 
 ###############################################################################
 # Now we can see what results we obtained from our search.
@@ -54,7 +53,7 @@ plt.show()
 
 ###############################################################################
 # Rotate the image such that solar North is pointed up.
-# The order specifies the type of interpolation; in this case, 3 refers to 
+# The order specifies the type of interpolation; in this case, 3 refers to
 # bi-cubic.
 hmi_rotated = hmi_map.rotate(order=3)
 hmi_rotated.plot()
