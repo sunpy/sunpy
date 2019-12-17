@@ -1,0 +1,2 @@
+Removed un-used and un-tested code paths in the private ``_remove_lytaf_events`` function
+in `sunpy.instr.lyra`.

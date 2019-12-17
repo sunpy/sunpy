@@ -719,3 +719,9 @@ def test_missing_metadata_warnings():
 
 def test_fits_header(aia171_test_map):
     assert isinstance(aia171_test_map.fits_header, fits.Header)
+
+
+def test_bad_coordframe_repr(generic_map):
+    generic_map.meta['CTYPE1'] = "STUART1"
+    generic_map.meta['CTYPE2'] = "STUART2"
+    assert 'Unknown' in generic_map.__repr__()

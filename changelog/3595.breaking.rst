@@ -1,0 +1,2 @@
+The frames `~sunpy.coordinates.frames.HeliographicStonyhurst` and `~sunpy.coordinates.frames.HeliographicCarrington` now inherit from the new base class `~sunpy.coordinates.frames.BaseHeliographic`.
+This changes means that ``isinstance(frame, HeliographicStonyhurst)`` is no longer ``True`` when ``frame`` is `~sunpy.coordinates.frames.HeliographicCarrington`.
