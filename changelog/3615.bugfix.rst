@@ -1,2 +1,0 @@
-Fixed bugs in `remote_data_manager.py` which fixes bold type and extra line
-breaks in remote data manager.
