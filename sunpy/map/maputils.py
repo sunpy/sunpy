@@ -106,7 +106,7 @@ def solar_angular_radius(coordinates):
 def sample_at_coords(smap, coordinates):
     """
     Samples the data in a map at given series of coordinates.
-    Uses nearest neighbour interpolation of coordinates in map, as
+    Uses nearest-neighbor interpolation of coordinates in map, as
     it effectively uses array indexing.
 
     Parameters
