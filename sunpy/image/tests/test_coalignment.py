@@ -34,7 +34,7 @@ def aia171_test_shift():
 
 @pytest.fixture
 def aia171_test_map_layer(aia171_test_map):
-    return aia171_test_map.data
+    return aia171_test_map.data.astype('float32')  # SciPy 1.4 requires at least 16-bit floats
 
 
 @pytest.fixture
