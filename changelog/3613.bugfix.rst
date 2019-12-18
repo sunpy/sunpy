@@ -1,0 +1,2 @@
+Updated ``sunpy.map.mapsequence.MapSequence`` so that calling ``_derotate()`` raises ``NotImplementedError``.
+Added associated tests.
