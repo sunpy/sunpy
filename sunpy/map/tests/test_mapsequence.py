@@ -149,5 +149,5 @@ def test_all_meta(mapsequence_all_the_same):
 
 def test_derotate():
     with pytest.raises(NotImplementedError) as excinfo:
-        sunpy.map.MapSequence.derotate()
-    assert str(excinfo) == "This functionality has not yet been implemented."
+        mapsequence = sunpy.map.MapSequence()
+        mapsequence.derotate()
