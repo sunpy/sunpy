@@ -6,9 +6,10 @@ Using Remote Data Manager
 This is an example to show how to use remote data manager to
 handle remote data in Sunpy.
 """
+
 ##############################################################################
 # Remote data manager is used to handle the usage of remote files in the code
-#  base with file verification using hashes.
+# base with file verification using hashes.
 
 from sunpy.data import manager
 
