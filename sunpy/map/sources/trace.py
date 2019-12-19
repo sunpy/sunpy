@@ -58,7 +58,7 @@ class TRACEMap(GenericMap):
         self.meta['obsrvtry'] = "TRACE"
         self._nickname = self.detector
         # Colour maps
-        self.plot_settings['cmap'] = 'trace' + str(self.meta['WAVE_LEN'])
+        self.cmap = 'trace' + str(self.meta['WAVE_LEN'])
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, LogStretch()), clip=False)
 
     @classmethod

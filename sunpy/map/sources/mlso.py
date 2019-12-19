@@ -41,7 +41,7 @@ class KCorMap(GenericMap):
         self.meta['hgln_obs'] = 0.0
         self._nickname = self.detector
 
-        self.plot_settings['cmap'] = self._get_cmap_name()
+        self.cmap = self._get_cmap_name()
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)), clip=False)
         # Negative value pixels can appear that lead to ugly looking images.
         # This can be fixed by setting the lower limit of the normalization.

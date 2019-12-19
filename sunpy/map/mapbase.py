@@ -54,6 +54,8 @@ class GenericMap(NDData):
         A 2d list or ndarray containing the map data.
     header : dict
         A dictionary of the original image header tags.
+    cmap : `matplotlib.colors.Colormap`, str
+        Colormap of the map image
     plot_settings : dict, optional
         Plot settings.
 
@@ -159,7 +161,7 @@ class GenericMap(NDData):
         if hasattr(cls, 'is_datasource_for'):
             cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, header, plot_settings=None, **kwargs):
+    def __init__(self, data, header, cmap='gray', plot_settings=None, **kwargs):
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim
@@ -203,7 +205,9 @@ class GenericMap(NDData):
             norm = colors.Normalize()
 
         # Visualization attributes
-        self.plot_settings = {'cmap': 'gray',
+        self._cmap = cmap
+
+        self.plot_settings = {
                               'norm': norm,
                               'interpolation': 'nearest',
                               'origin': 'lower'
@@ -1445,13 +1449,20 @@ class GenericMap(NDData):
         """
         Return the `matplotlib.colors.Colormap` instance this map uses.
         """
-        cmap = self.plot_settings['cmap']
+        cmap = self._cmap
         if isinstance(cmap, str):
             cmap = plt.get_cmap(cmap)
             # Set the colormap to be this specific instance so we are not
             # returning a copy
-            self.plot_settings['cmap'] = cmap
+            self._cmap = cmap
         return cmap
+
+    @cmap.setter
+    def cmap(self, n):
+        if isinstance(n, str):
+            self._cmap = plt.get_cmap(n)
+        else:
+            self._cmap = n
 
     @u.quantity_input
     def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True, **kwargs):
