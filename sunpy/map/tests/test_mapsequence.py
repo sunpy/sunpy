@@ -148,6 +148,5 @@ def test_all_meta(mapsequence_all_the_same):
 
 
 def test_derotate():
-    with pytest.raises(NotImplementedError) as excinfo:
-        mapsequence = sunpy.map.MapSequence()
-        mapsequence.derotate()
+    with pytest.raises(NotImplementedError):
+        mapsequence = sunpy.map.MapSequence(derotate=True)

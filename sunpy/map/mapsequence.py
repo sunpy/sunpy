@@ -345,9 +345,3 @@ class MapSequence:
         Return all the meta objects as a list.
         """
         return [m.meta for m in self.maps]
-
-    def derotate(self):
-        """
-         Return derotated layers in the MapSequence
-        """
-        return self._derotate()
