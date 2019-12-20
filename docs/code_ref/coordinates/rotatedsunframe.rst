@@ -158,19 +158,15 @@ Transforming multiple durations of rotation
 
 Another common use case for differential rotation is to track a solar feature over a sequence of time steps.
 Let's track an active region that starts at `~sunpy.coordinates.frames.Helioprojective` coordinates (-123 arcsec, 456 arcsec), as seen from Earth, and we will look both backwards and forwards in time.
+When ``duration`` is an array, the base coordinate will be automatically upgraded to an array if it is a scalar.
 We specify a range of durations from -5 days to +5 days, stepping at 1-day increments::
 
   >>> durations = range(-5, 6, 1)*u.day
-  >>> ar_start = f.Helioprojective([-123]*len(durations)*u.arcsec, [456]*len(durations)*u.arcsec,
-  ...                              obstime=["2001-01-01"]*len(durations), observer="earth")
+  >>> ar_start = f.Helioprojective(-123*u.arcsec, 456*u.arcsec,
+  ...                              obstime="2001-01-01", observer="earth")
   >>> ar = RotatedSunFrame(base=ar_start, duration=durations)
   >>> ar
-  <RotatedSunHelioprojective Coordinate (base=<Helioprojective Frame (obstime=['2001-01-01 00:00:00.000' '2001-01-01 00:00:00.000'
-   '2001-01-01 00:00:00.000' '2001-01-01 00:00:00.000'
-   '2001-01-01 00:00:00.000' '2001-01-01 00:00:00.000'
-   '2001-01-01 00:00:00.000' '2001-01-01 00:00:00.000'
-   '2001-01-01 00:00:00.000' '2001-01-01 00:00:00.000'
-   '2001-01-01 00:00:00.000'], rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=[-5. -4. -3. -2. -1.  0.  1.  2.  3.  4.  5.] d, rotation_model=howard): (Tx, Ty) in arcsec
+  <RotatedSunHelioprojective Coordinate (base=<Helioprojective Frame (obstime=2001-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>)>, duration=[-5. -4. -3. -2. -1.  0.  1.  2.  3.  4.  5.] d, rotation_model=howard): (Tx, Ty) in arcsec
       [(-123., 456.), (-123., 456.), (-123., 456.), (-123., 456.),
        (-123., 456.), (-123., 456.), (-123., 456.), (-123., 456.),
        (-123., 456.), (-123., 456.), (-123., 456.)]>
@@ -178,12 +174,7 @@ We specify a range of durations from -5 days to +5 days, stepping at 1-day incre
 Let's convert to the base coordinate frame to reveal the motion of the active region over time::
 
   >>> ar.transform_to(ar.base)
-  <Helioprojective Coordinate (obstime=['2001-01-01 00:00:00.000' '2001-01-01 00:00:00.000'
-   '2001-01-01 00:00:00.000' '2001-01-01 00:00:00.000'
-   '2001-01-01 00:00:00.000' '2001-01-01 00:00:00.000'
-   '2001-01-01 00:00:00.000' '2001-01-01 00:00:00.000'
-   '2001-01-01 00:00:00.000' '2001-01-01 00:00:00.000'
-   '2001-01-01 00:00:00.000'], rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
+  <Helioprojective Coordinate (obstime=2001-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
       [(-865.54956344, 418.10284813, 0.98251245),
        (-794.6736101 , 429.25935934, 0.98154904),
        (-676.99949185, 439.15848306, 0.98069504),
@@ -198,10 +189,15 @@ Let's convert to the base coordinate frame to reveal the motion of the active re
 
 Be aware that these coordinates are represented in the ``Helioprojective`` coordinates as seen from Earth at the base time.
 Since the Earth moves in its orbit around the Sun, one may be more interested in representing these coordinates as they would been seen by an Earth observer at each time step.
+Since the destination frame of the transformation will now have arrays for ``obstime`` and ``observer``, one actually has to construct the initial coordinate with an array for ``obstime`` (and ``observer``) due to a limitation in Astropy.
 Note that the active region moves slightly slower across the disk of the Sun because the Earth orbits in the same direction as the Sun rotates, thus reducing the apparent rotation of the Sun::
 
-  >>> earth_hpc = f.Helioprojective(obstime=ar.base.obstime + durations, observer="earth")
-  >>> ar.transform_to(earth_hpc)
+  >>> ar_start_array = f.Helioprojective([-123]*len(durations)*u.arcsec,
+  ...                                    [456]*len(durations)*u.arcsec,
+  ...                                    obstime=["2001-01-01"]*len(durations), observer="earth")
+  >>> ar_array = RotatedSunFrame(base=ar_start_array, duration=durations)
+  >>> earth_hpc = f.Helioprojective(obstime=ar_array.rotated_time, observer="earth")
+  >>> ar_array.transform_to(earth_hpc)
   <Helioprojective Coordinate (obstime=['2000-12-27 00:00:00.000' '2000-12-28 00:00:00.000'
    '2000-12-29 00:00:00.000' '2000-12-30 00:00:00.000'
    '2000-12-31 00:00:00.000' '2001-01-01 00:00:00.000'
@@ -281,7 +277,7 @@ Here, we plot the differentially rotated locations of a solar feature from -5 da
    m.plot(clip_interval=(1., 99.95)*u.percent)
 
    durations = range(-5, 6, 1)*u.day
-   point = SkyCoord([187]*len(durations)*u.arcsec, [283]*len(durations)*u.arcsec, frame=m.coordinate_frame)
+   point = SkyCoord(187*u.arcsec, 283*u.arcsec, frame=m.coordinate_frame)
    diffrot_point = RotatedSunFrame(base=point, duration=durations)
 
    middle = len(durations) // 2
