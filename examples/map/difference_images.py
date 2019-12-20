@@ -1,7 +1,7 @@
 """
-================
+===========================
 Plotting a difference image
-================
+===========================
 How to compute and plot a difference image.
 The example uses `sunpy.map.MapSequence` to compute a difference image and then plot it.
 This basic method works for base difference or running difference. Just change whether
@@ -24,9 +24,8 @@ import sunpy.map
 
 instrument = a.Instrument('AIA')
 wave = a.Wavelength(30 * u.nm, 31 * u.nm)
-result1 = Fido.search(a.Time('2015-06-18T00:00:00', '2015-06-18T00:00:10'), instrument, wave)
-result2 = Fido.search(a.Time('2015-06-18T01:03:30', '2015-06-18T01:03:35'), instrument, wave)
-downloaded_files = Fido.fetch(result1, result2)
+result = Fido.search(a.Time('2015-06-18T00:00:00', '2015-06-18T00:00:10') | a.Time('2015-06-18T01:03:30', '2015-06-18T01:03:35'), instrument, wave)
+downloaded_files = Fido.fetch(result)
 maps = sunpy.map.Map(downloaded_files, sequence=True)
 
 ###########################################################################
@@ -48,8 +47,8 @@ diff = maps[1].data - maps[0].data
 # for your application. Here we'll just use the metadata from the second
 # image. Then we can store the difference and header back in a Map.
 
-header = maps[1].fits_header
-diff_map = sunpy.map.Map(diff, header)
+meta = maps[1].meta
+diff_map = sunpy.map.Map(diff, meta)
 
 ###########################################################################
 # Finally, we'll plot it. We'll apply a colormap and renormalize the
