@@ -104,6 +104,12 @@ Note that the points closer to the equator (latitude of 0 degrees) have evolved 
        (112.80904447,  45., 695700.), (111.70697161,  60., 695700.),
        (110.7550473 ,  75., 695700.)]>
 
+.. testsetup::
+  # The next test is run with fixed-precision printing to ensure no whitespace appears when tested
+  >>> import numpy as np
+  >>> old_floatmode = np.get_printoptions()['floatmode']
+  >>> np.set_printoptions(floatmode='fixed')
+
 In the specific case of `~sunpy.coordinates.frames.HeliographicCarrington`, this frame rotates with the Sun, but in a non-differential manner.
 The Carrington longitude approximately follows the rotation of the Sun.
 One can transform to the coordinate frame of 1 day in the future to see the difference between Carrington rotation and differential rotation.
@@ -111,17 +117,20 @@ Note that equator rotates slightly faster than the Carrington rotation rate (its
 
   >>> meridian.transform_to(f.HeliographicCarrington(obstime="2001-01-02"))
   <HeliographicCarrington Coordinate (obstime=2001-01-02T00:00:00.000): (lon, lat, radius) in (deg, deg, km)
-      [( 96.50790846, -7.48914278e+01, 695909.38247254),
-       ( 97.49463421, -5.98996150e+01, 696243.38561962),
-       ( 98.60552101, -4.49146239e+01, 696540.31843083),
-       ( 99.48029415, -2.99354294e+01, 696780.00438298),
-       ( 99.97427245, -1.49606149e+01, 696946.17523076),
-       (100.12423256,  1.15298509e-02, 697027.56204653),
-       ( 99.97381379,  1.49828932e+01, 697018.64842723),
-       ( 99.47937935,  2.99554157e+01, 696920.03844654),
-       ( 98.60439605,  4.49309606e+01, 696738.41638666),
-       ( 97.49378223,  5.99111888e+01, 696486.10075649),
-       ( 96.50761602,  7.48974456e+01, 696180.22046675)]>
+      [( 96.50790846, -74.89142779, 695909.38247254),
+       ( 97.49463421, -59.89961500, 696243.38561962),
+       ( 98.60552101, -44.91462387, 696540.31843083),
+       ( 99.48029415, -29.93542937, 696780.00438298),
+       ( 99.97427245, -14.96061485, 696946.17523076),
+       (100.12423256,   0.01152985, 697027.56204653),
+       ( 99.97381379,  14.98289320, 697018.64842723),
+       ( 99.47937935,  29.95541572, 696920.03844654),
+       ( 98.60439605,  44.93096060, 696738.41638666),
+       ( 97.49378223,  59.91118882, 696486.10075649),
+       ( 96.50761602,  74.89744559, 696180.22046675)]>
+
+.. testcleanup::
+  >>> np.set_printoptions(floatmode=old_floatmode)
 
 Be aware that transformations with a change in ``obstime`` will also contend with a translation of the center of the Sun.
 Note that the ``radius`` component above is no longer precisely on the surface of the Sun.
@@ -132,17 +141,17 @@ Using the context manager, the ``radius`` component stays as the solar radius as
   >>> with transform_with_sun_center():
   ...     print(meridian.transform_to(f.HeliographicCarrington(obstime="2001-01-02")))
   <HeliographicCarrington Coordinate (obstime=2001-01-02T00:00:00.000): (lon, lat, radius) in (deg, deg, km)
-      [( 96.5706473 , -7.50000000e+01, 695700.),
-       ( 97.52257161, -6.00000000e+01, 695700.),
-       ( 98.62464447, -4.50000000e+01, 695700.),
-       ( 99.49776339, -3.00000000e+01, 695700.),
-       ( 99.99177983, -1.50000000e+01, 695700.),
-       (100.14192838,  4.79380955e-15, 695700.),
-       ( 99.99177983,  1.50000000e+01, 695700.),
-       ( 99.49776339,  3.00000000e+01, 695700.),
-       ( 98.62464447,  4.50000000e+01, 695700.),
-       ( 97.52257161,  6.00000000e+01, 695700.),
-       ( 96.5706473 ,  7.50000000e+01, 695700.)]>
+      [( 96.5706473 , -75., 695700.),
+       ( 97.52257161, -60., 695700.),
+       ( 98.62464447, -45., 695700.),
+       ( 99.49776339, -30., 695700.),
+       ( 99.99177983, -15., 695700.),
+       (100.14192838,   0., 695700.),
+       ( 99.99177983,  15., 695700.),
+       ( 99.49776339,  30., 695700.),
+       ( 98.62464447,  45., 695700.),
+       ( 97.52257161,  60., 695700.),
+       ( 96.5706473 ,  75., 695700.)]>
 
 Transforming multiple durations of rotation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
