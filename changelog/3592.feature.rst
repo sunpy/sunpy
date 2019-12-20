@@ -1,0 +1,1 @@
+Creates a function named ``sunpy.map.sample_at_coords`` that samples the data from the map at the given set of coordinates.

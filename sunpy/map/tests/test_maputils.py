@@ -7,14 +7,16 @@ from astropy.coordinates import SkyCoord, BaseCoordinateFrame
 
 from sunpy.map.maputils import (all_pixel_indices_from_map,
                                 all_coordinates_from_map, map_edges, solar_angular_radius,
-                                contains_full_disk, is_all_off_disk,
+                                sample_at_coords, contains_full_disk, is_all_off_disk,
                                 is_all_on_disk, contains_limb,
                                 coordinate_is_on_solar_disk, on_disk_bounding_coordinates)
 from sunpy.coordinates import HeliographicStonyhurst
+from sunpy.coordinates.utils import GreatArc
 import sunpy.data.test
 import sunpy.map
 
 testpath = sunpy.data.test.rootdir
+
 
 @pytest.fixture
 def aia171_test_map():
@@ -39,6 +41,13 @@ def straddles_limb_map(aia171_test_map):
 @pytest.fixture
 def sub_smap(aia171_test_map):
     return aia171_test_map.submap((0, 0)*u.pix, (50, 60)*u.pix)
+
+
+@pytest.fixture
+def aia_test_arc(aia171_test_map):
+    start = SkyCoord(735 * u.arcsec, -471 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    end = SkyCoord(-100 * u.arcsec, 800 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    return GreatArc(start, end)
 
 
 def test_all_pixel_indices_from_map(sub_smap):
@@ -146,3 +155,14 @@ def test_on_disk_bounding_coordinates(aia171_test_map):
     np.testing.assert_almost_equal(bl.Ty.to(u.arcsec).value, -965.93063472, decimal=1)
     np.testing.assert_almost_equal(tr.Tx.to(u.arcsec).value, 964.27061417, decimal=1)
     np.testing.assert_almost_equal(tr.Ty.to(u.arcsec).value, 971.63586861, decimal=1)
+
+
+def test_data_at_coordinates(aia171_test_map, aia_test_arc):
+    data = sample_at_coords(aia171_test_map, aia_test_arc.coordinates())
+    pixels = np.asarray(np.rint(
+        aia171_test_map.world_to_pixel(aia_test_arc.coordinates())), dtype=int)
+    x = pixels[0, :]
+    y = pixels[1, :]
+    intensity_along_arc = aia171_test_map.data[y, x]
+    np.testing.assert_almost_equal(data[0], intensity_along_arc[0], decimal=1)
+    np.testing.assert_almost_equal(data[-1], intensity_along_arc[-1], decimal=1)
