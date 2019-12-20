@@ -207,7 +207,11 @@ class RotatedSunFrame:
         # Move data out from the base frame
         if self.base.has_data:
             if not self.has_data:
-                self._data = self.base.data
+                # If the duration is an array but the data is scalar, upgrade data to an array
+                if self.base.data.isscalar and not self.duration.isscalar:
+                    self._data = self.base.data._apply('repeat', self.duration.shape)
+                else:
+                    self._data = self.base.data
             self._base = self.base.replicate_without_data()
 
     def as_base(self):
@@ -220,3 +224,10 @@ class RotatedSunFrame:
         space that is being pointed to.
         """
         return self.base.realize_frame(self.data)
+
+    @property
+    def rotated_time(self):
+        """
+        Returns the sum of the base frame's observation time and the rotation of duration.
+        """
+        return self.base.obstime + self.duration

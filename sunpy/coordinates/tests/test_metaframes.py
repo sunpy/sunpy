@@ -3,6 +3,7 @@ import pytest
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord, frame_transform_graph
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import Time
 
 import sunpy.coordinates.frames as f
 from sunpy.coordinates.metaframes import RotatedSunFrame, _rotatedsun_cache
@@ -108,6 +109,25 @@ def test_rotated_time_to_duration():
     r2 = RotatedSunFrame(base=f.HeliographicStonyhurst(obstime='2001-01-02'),
                          rotated_time='2001-01-01')
     assert_quantity_allclose(r2.duration, -1*u.day)
+
+
+def test_rotated_time_property():
+    r1 = RotatedSunFrame(base=f.HeliographicStonyhurst(obstime='2001-01-02'), duration=1*u.day)
+    assert r1.rotated_time == Time('2001-01-03')
+
+    r2 = RotatedSunFrame(base=f.HeliographicStonyhurst(obstime='2001-01-02'), duration=-1*u.day)
+    assert r2.rotated_time == Time('2001-01-01')
+
+
+def test_scalar_base_and_array_duration():
+    scalar_base = f.HeliographicStonyhurst(1*u.deg, 2*u.deg, obstime='2001-01-02')
+    array_duration = [1, -1]*u.day
+    r = RotatedSunFrame(base=scalar_base, duration=array_duration)
+
+    assert not r.data.isscalar
+    assert r.data.shape == array_duration.shape
+    assert_quantity_allclose(r.cartesian[0].xyz, scalar_base.cartesian.xyz)
+    assert_quantity_allclose(r.cartesian[1].xyz, scalar_base.cartesian.xyz)
 
 
 def test_base_skycoord(rot_frames):
