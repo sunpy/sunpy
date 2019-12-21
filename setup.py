@@ -45,7 +45,7 @@ from itertools import chain
 from setuptools import setup
 from setuptools.config import read_configuration
 
-from extension_helpers.setup_helpers import get_extensions
+from extension_helpers import get_extensions
 
 ################################################################################
 # Programmatically generate some extras combos.
