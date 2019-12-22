@@ -15,7 +15,8 @@ __all__ = ['meta_keywords', 'make_fitswcs_header']
 
 def meta_keywords():
     """
-    Returns the metadata keywords that are used when creating a `sunpy.map.GenericMap`.
+    Returns the metadata keywords that are used when creating a
+    `sunpy.map.GenericMap`.
 
     Examples
     --------
@@ -44,8 +45,8 @@ def make_fitswcs_header(data, coordinate,
                         projection_code="TAN"):
     """
     Function to create a FITS-WCS header from a coordinate object
-    (`~astropy.coordinates.SkyCoord`) that is required to
-    create a `~sunpy.map.GenericMap`.
+    (`~astropy.coordinates.SkyCoord`) that is required to create a
+    `~sunpy.map.GenericMap`.
 
     Parameters
     ----------
@@ -231,7 +232,7 @@ def get_observer_meta(observer, rsun: u.Mm):
 
 def _get_instrument_meta(instrument, telescope, observatory, wavelength, exposure):
     """
-    Function to correctly name keywords from keyword arguments
+    Function to correctly name keywords from keyword arguments.
     """
     coord = {}
 

@@ -1,8 +1,8 @@
 """
 Common solar physics coordinate systems.
 
-This submodule implements various solar physics coordinate frames for use with
-the `astropy.coordinates` module.
+This submodule implements various solar physics coordinate frames for
+use with the `astropy.coordinates` module.
 """
 import numpy as np
 
@@ -32,7 +32,8 @@ __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
 
 def _frame_parameters():
     """
-    Returns formatting dictionary to use with add_common_docstring to populate frame docstrings
+    Returns formatting dictionary to use with add_common_docstring to populate
+    frame docstrings.
     """
     ret = {}
 
@@ -116,7 +117,8 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
 
     def represent_as(self, base, s='base', in_frame_units=False):
         """
-        If a frame wrap angle is set, use that wrap angle for any spherical representations.
+        If a frame wrap angle is set, use that wrap angle for any spherical
+        representations.
         """
         data = super().represent_as(base, s, in_frame_units=in_frame_units)
         if self._wrap_angle is not None and \
@@ -137,9 +139,11 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
 
 class BaseHeliographic(SunPyBaseCoordinateFrame):
     """
-    Base class for HeliographicCarrington (HGC) and HeliographicStonyhurst (HGS) frames.
+    Base class for HeliographicCarrington (HGC) and HeliographicStonyhurst
+    (HGS) frames.
 
-    This class is not intended to be used directly and has no transformations defined.
+    This class is not intended to be used directly and has no
+    transformations defined.
     """
     default_representation = SphericalRepresentation
 
@@ -354,7 +358,8 @@ class Heliocentric(SunPyBaseCoordinateFrame):
 @add_common_docstring(**_frame_parameters())
 class Helioprojective(SunPyBaseCoordinateFrame):
     """
-    A coordinate or frame in the Helioprojective Cartesian (HPC) system, which is observer-based.
+    A coordinate or frame in the Helioprojective Cartesian (HPC) system, which
+    is observer-based.
 
     - The origin is the location of the observer.
     - ``theta_x`` is the angle relative to the plane containing the Sun-observer line and the Sun's
@@ -438,7 +443,8 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     def make_3d(self):
         """
         This method calculates the third coordinate of the Helioprojective
-        frame. It assumes that the coordinate point is on the surface of the Sun.
+        frame. It assumes that the coordinate point is on the surface of the
+        Sun.
 
         If a point in the frame is off limb then NaN will be returned.
 

@@ -1,4 +1,6 @@
-"""SDO Map subclass definitions"""
+"""
+SDO Map subclass definitions.
+"""
 
 import astropy.units as u
 from astropy.coordinates import CartesianRepresentation, SkyCoord
@@ -20,7 +22,8 @@ __all__ = ['AIAMap', 'HMIMap']
 
 
 class AIAMap(GenericMap):
-    """AIA Image Map.
+    """
+    AIA Image Map.
 
     The Atmospheric Imaging Assembly is a set of four telescopes that employ
     normal-incidence, multi-layer coated optics to provide narrow-band imaging
@@ -77,12 +80,15 @@ class AIAMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an AIA image"""
+        """
+        Determines if header corresponds to an AIA image.
+        """
         return str(header.get('instrume', '')).startswith('AIA')
 
 
 class HMIMap(GenericMap):
-    """HMI Image Map.
+    """
+    HMI Image Map.
 
     HMI consists of a refracting telescope, a polarization selector,
     an image stabilization system, a narrow band tunable filter
@@ -122,5 +128,7 @@ class HMIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an HMI image"""
+        """
+        Determines if header corresponds to an HMI image.
+        """
         return str(header.get('instrume', '')).startswith('HMI')

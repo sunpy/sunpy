@@ -53,8 +53,9 @@ def solar_wcs_frame_mapping(wcs):
 def solar_frame_to_wcs_mapping(frame, projection='TAN'):
     """
     For a given frame, this function returns the corresponding WCS object.
-    It registers the WCS coordinates types from their associated frame in the
-    `astropy.wcs.utils.celestial_frame_to_wcs` registry.
+
+    It registers the WCS coordinates types from their associated frame
+    in the `astropy.wcs.utils.celestial_frame_to_wcs` registry.
     """
     wcs = WCS(naxis=2)
 

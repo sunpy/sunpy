@@ -1,4 +1,6 @@
-"""STEREO Map subclass definitions"""
+"""
+STEREO Map subclass definitions.
+"""
 #pylint: disable=W0221,W0222,E1121
 
 __author__ = "Keith Hughitt"
@@ -17,7 +19,8 @@ __all__ = ['EUVIMap', 'CORMap', 'HIMap']
 
 
 class EUVIMap(GenericMap):
-    """STEREO-SECCHI EUVI Image Map
+    """
+    STEREO-SECCHI EUVI Image Map.
 
     EUVI is an extreme ultraviolet (EUV) imager. Part of the STEREO-SECCHI
     suite it observes the Sun from 1 to 1.7 solar radii. It is capable of
@@ -73,12 +76,15 @@ class EUVIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an EUVI image"""
+        """
+        Determines if header corresponds to an EUVI image.
+        """
         return header.get('detector') == 'EUVI'
 
 
 class CORMap(GenericMap):
-    """STEREO-SECCHI CORonograph Image Map.
+    """
+    STEREO-SECCHI CORonograph Image Map.
 
     Part of the STEREO-SECCHI suite of remote sensing telescopes,
     COR is a set of two coronographs (COR1, COR2) onboard STEREO.
@@ -119,12 +125,15 @@ class CORMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an COR image"""
+        """
+        Determines if header corresponds to an COR image.
+        """
         return str(header.get('detector', '')).startswith('COR')
 
 
 class HIMap(GenericMap):
-    """STEREO-SECCHI Heliospheric Imager (HI) Map.
+    """
+    STEREO-SECCHI Heliospheric Imager (HI) Map.
 
     The HI is a wide-angle visible-light imaging system
     for the detection of coronal mass ejection (CME) events
@@ -163,5 +172,7 @@ class HIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an COR image"""
+        """
+        Determines if header corresponds to an COR image.
+        """
         return str(header.get('detector', '')).startswith('HI')

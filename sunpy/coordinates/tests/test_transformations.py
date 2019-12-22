@@ -43,11 +43,11 @@ except ImportError:
 
 
 def test_hcc_to_hgs():
-    '''
+    """
     Check that a coordinate pointing to the observer in Heliocentric
     coordinates maps to the lattitude/longitude of the observer in
     HeliographicStonyhurst coordinates.
-    '''
+    """
     lat = 10 * u.deg
     lon = 20 * u.deg
     observer = HeliographicStonyhurst(lat=lat, lon=lon)

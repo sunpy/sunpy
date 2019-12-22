@@ -73,6 +73,7 @@ def test_wcs_extras():
     """
     To enable proper creation of the coordinate systems, Map sticks three extra
     attributes on the WCS object:
+
     * heliographic_longitude
     * heliographic_latitude
     * dsun

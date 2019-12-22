@@ -217,7 +217,6 @@ class JSOCClient(BaseClient):
     of the download::
 
         >>> res.wait(progress=True)   # doctest: +SKIP
-
     """
 
     def search(self, *query, **kwargs):
@@ -320,7 +319,6 @@ class JSOCClient(BaseClient):
             2014-01-01T00:00:37Z  SDO/AIA    AIA_3      171    2145
             2014-01-01T00:00:49Z  SDO/AIA    AIA_3      171    2145
             2014-01-01T00:01:01Z  SDO/AIA    AIA_3      171    2145
-
         """
 
         return_results = JSOCResponse()
@@ -337,8 +335,8 @@ class JSOCClient(BaseClient):
 
     def search_metadata(self, *query, **kwargs):
         """
-        Get the metadata of all the files obtained in a search query.
-        Builds a jsoc query, similar to query method, and takes similar inputs.
+        Get the metadata of all the files obtained in a search query. Builds a
+        jsoc query, similar to query method, and takes similar inputs.
 
         Complex queries to be easily formed using logical operators such as
         ``&`` and ``|``, in the same way as the query function.
@@ -378,7 +376,6 @@ class JSOCClient(BaseClient):
             aia.lev1_euv_12s[2014-01-01T00:00:37Z][304]  2014-01-01T00:00:44.58Z       304
             aia.lev1_euv_12s[2014-01-01T00:00:49Z][304]  2014-01-01T00:00:56.57Z       304
             aia.lev1_euv_12s[2014-01-01T00:01:01Z][304]  2014-01-01T00:01:08.59Z       304
-
         """
         query = and_(*query)
         blocks = []
@@ -409,7 +406,6 @@ class JSOCClient(BaseClient):
 
             Request Id can be accessed by requests.id
             Request status can be accessed by requests.status
-
         """
 
         requests = []
@@ -477,7 +473,6 @@ class JSOCClient(BaseClient):
         -------
         results : a `~sunpy.net.download.Results` instance
             A Results object
-
         """
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
@@ -535,7 +530,6 @@ class JSOCClient(BaseClient):
         -------
         res: `~sunpy.net.download.Results`
             A `~sunpy.net.download.Results` instance or `None` if no URLs to download
-
         """
         c = drms.Client()
 
@@ -656,7 +650,6 @@ class JSOCClient(BaseClient):
         in the online database. Any missing prime-keys should be compensated by
         an empty {}, if it occurs before any passed prime-key. Any empty curly braces
         that is present at last of the pkstr, can be skipped.
-
         """
 
         # Extract and format segment
@@ -760,7 +753,8 @@ class JSOCClient(BaseClient):
 
     def _lookup_records(self, iargs):
         """
-        Do a LookData request to JSOC to workout what results the query returns.
+        Do a LookData request to JSOC to workout what results the query
+        returns.
         """
 
         keywords_default = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']

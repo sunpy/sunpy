@@ -85,7 +85,9 @@ def test_fido(query):
 def test_levels(time):
     """
     Test the correct handling of level 0 / 1.
-    The default should be level 1 from VSO, level 0 comes from EVEClient.
+
+    The default should be level 1 from VSO, level 0 comes from
+    EVEClient.
     """
     eve_a = a.Instrument('EVE')
     qr = Fido.search(time, eve_a)

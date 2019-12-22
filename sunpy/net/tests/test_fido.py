@@ -33,7 +33,7 @@ TIMEFORMAT = config.get("general", "time_format")
 @st.composite
 def offline_query(draw, instrument=offline_instruments()):
     """
-    Strategy for any valid offline query
+    Strategy for any valid offline query.
     """
     query = draw(instrument)
     # If we have AttrAnd then we don't have GOES
@@ -78,7 +78,7 @@ def test_online_fido(query):
 
 def check_response(query, unifiedresp):
     """
-    Common test for online or offline query
+    Common test for online or offline query.
     """
     query_tr = None
     query_instr = None

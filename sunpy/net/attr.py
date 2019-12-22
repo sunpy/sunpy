@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Allow representation of queries as logic expressions. This module makes
-sure that attributes that are combined using the two logic operations AND (&)
-and OR (|) always are in disjunctive normal form, that is, there are only two
-levels ­- the first being disjunction and the second being conjunction. In other
-words, every combinations of attributes looks like this:
-(a AND b AND c) OR (d AND e).
+Allow representation of queries as logic expressions. This module makes sure
+that attributes that are combined using the two logic operations AND (&) and OR
+(|) always are in disjunctive normal form, that is, there are only two levels
+­- the first being disjunction and the second being conjunction. In other
+words, every combinations of attributes looks like this: (a AND b AND c) OR (d
+AND e).
 
 Walkers are used to traverse the tree that results from combining attributes.
 They are implemented using sunpy.util.multimethod. Multimethods are functions
@@ -38,7 +38,9 @@ def make_tuple():
 
 def strtonum(value):
     """
-    For numbers 0 to 9, return the number spelled out. Otherwise, return the
+    For numbers 0 to 9, return the number spelled out.
+
+    Otherwise, return the
     number. This follows Associated Press style.  This always returns a string
     unless the value was not int-able, unlike the Django filter.
     Taken from: https://github.com/jmoiron/humanize/blob/master/humanize/number.py#L81
@@ -55,9 +57,13 @@ def strtonum(value):
 
 class AttrMeta(type):
     """
-    We want to enable discovery, by tab completion, of values for all subclasses of Attr.
-    So have to create a metaclass that overloads the methods that Python uses, so that they work on the classes.
-    This would allow that `attrs.Instrument` to be able to tab complete to `attrs.Instrument.aia`.
+    We want to enable discovery, by tab completion, of values for all
+    subclasses of Attr.
+
+    So have to create a metaclass that overloads the methods that Python
+    uses, so that they work on the classes. This would allow that
+    `attrs.Instrument` to be able to tab complete to
+    `attrs.Instrument.aia`.
     """
 
     # The aim is to register Attrs as a namedtuple of lists
@@ -66,14 +72,17 @@ class AttrMeta(type):
 
     def __getattr__(self, item):
         """
-        Our method for Attrs is to register using the attribute type (i.e. Instrument) as keys in a dictionary.
-        ``_attr_registry`` is a dictionary with the keys being subclasses of Attr
-        and the value being the namedtuple of lists.
-        As a result we index `_attr_registry` with `[self]` which will be the `type`
-        of the `Attr` class to access the dictionary.
-        This will return the namedtuple that has three attributes: `name`, `name_long` and `desc`.
-        Each of which are a list.
-        `name` will be the attribute name, `name_long` is the original name passed in and `desc` the description of the object.
+        Our method for Attrs is to register using the attribute type (i.e.
+        Instrument) as keys in a dictionary.
+
+        ``_attr_registry`` is a dictionary with the keys being
+        subclasses of Attr and the value being the namedtuple of lists.
+        As a result we index `_attr_registry` with `[self]` which will
+        be the `type` of the `Attr` class to access the dictionary. This
+        will return the namedtuple that has three attributes: `name`,
+        `name_long` and `desc`. Each of which are a list. `name` will be
+        the attribute name, `name_long` is the original name passed in
+        and `desc` the description of the object.
         """
         # Get the revelant entries.
         registry = self._attr_registry[self]
@@ -88,7 +97,9 @@ class AttrMeta(type):
     def __dir__(self):
         """
         To tab complete in Python we need to add to the `__dir__()` return.
-        So we add all the registered values for this subclass of Attr to the output.
+
+        So we add all the registered values for this subclass of Attr to
+        the output.
         """
         return super().__dir__() + self._attr_registry[self].name
 
@@ -109,7 +120,9 @@ class AttrMeta(type):
 
 
 class Attr(metaclass=AttrMeta):
-    """This is the base for all attributes."""
+    """
+    This is the base for all attributes.
+    """
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
@@ -139,7 +152,8 @@ class Attr(metaclass=AttrMeta):
     @classmethod
     def update_values(cls, adict):
         """
-        Clients will use this method to register their values for subclasses of `~sunpy.net.attr.Attr`.
+        Clients will use this method to register their values for subclasses of
+        `~sunpy.net.attr.Attr`.
 
         The input has be a dictionary, with each key being a subclass of Attr.
         The value for each key should be a list of tuples with each tuple of the form (`Name`, `Description`).
@@ -207,10 +221,9 @@ class Attr(metaclass=AttrMeta):
 
 class DummyAttr(Attr):
     """
-    Empty attribute. Useful for building up queries. Returns other
-    attribute when ORed or ANDed. It can be considered an empty query
-    that you can use as an initial value if you want to build up your
-    query in a loop.
+    Empty attribute. Useful for building up queries. Returns other attribute
+    when ORed or ANDed. It can be considered an empty query that you can use as
+    an initial value if you want to build up your query in a loop.
 
     So, if we wanted an attr matching all the time intervals between the times
     stored as (from, to) tuples in a list, we could do.
@@ -262,7 +275,9 @@ class SimpleAttr(Attr):
 
 
 class AttrAnd(Attr):
-    """ Attribute representing attributes ANDed together. """
+    """
+    Attribute representing attributes ANDed together.
+    """
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -294,7 +309,9 @@ class AttrAnd(Attr):
 
 
 class AttrOr(Attr):
-    """ Attribute representing attributes ORed together. """
+    """
+    Attribute representing attributes ORed together.
+    """
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -421,7 +438,8 @@ class AttrWalker:
 
 
 def and_(*args):
-    """ Trick operator precedence.
+    """
+    Trick operator precedence.
 
     and_(foo < bar, bar < baz)
     """
@@ -432,7 +450,8 @@ def and_(*args):
 
 
 def or_(*args):
-    """ Trick operator precedence.
+    """
+    Trick operator precedence.
 
     or_(foo < bar, bar < baz)
     """

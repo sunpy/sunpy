@@ -1,4 +1,6 @@
-"""Test cases for STEREO Map subclasses.
+"""
+Test cases for STEREO Map subclasses.
+
 This particular test file pertains to HIMap.
 """
 
@@ -14,21 +16,30 @@ fitspath = glob.glob(os.path.join(path,"hi_20110910_114721_s7h2A.fts"))
 hi = Map(fitspath)
 
 def test_fitstoHI():
-    """Tests the creation of HIMap to fits"""
+    """
+    Tests the creation of HIMap to fits.
+    """
     assert isinstance(hi, HIMap)
         
 def test_is_datasource_for():
-    """Test the is_data_source_for method of HIMap.
-    Note that header data to be provided as an argument
-    can be a MetaDict object."""
+    """
+    Test the is_data_source_for method of HIMap.
+
+    Note that header data to be provided as an argument can be a
+    MetaDict object.
+    """
     assert hi.is_datasource_for(hi.data, hi.meta)
 
 def test_measurement():
-    """Tests the measurement property of the HIMap object."""
+    """
+    Tests the measurement property of the HIMap object.
+    """
     assert hi.measurement == "white-light"
 
 def test_observatory():
-    """Tests the observatory property of the HIMap object."""
+    """
+    Tests the observatory property of the HIMap object.
+    """
     assert hi.observatory == "STEREO A"
 
 

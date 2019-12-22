@@ -45,15 +45,19 @@ RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 # TODO: Name
 class NoData(Exception):
 
-    """ Risen for callbacks of VSOClient that are unable to supply
-    information for the request. """
+    """
+    Risen for callbacks of VSOClient that are unable to supply information for
+    the request.
+    """
     pass
 
 
 class _Str(str):
 
-    """ Subclass of string that contains a meta attribute for the
-    record_item associated with the file. """
+    """
+    Subclass of string that contains a meta attribute for the record_item
+    associated with the file.
+    """
     pass
 
 
@@ -156,8 +160,10 @@ class QueryResponse(list):
         self.table = None
 
     def search(self, *query):
-        """ Furtherly reduce the query response by matching it against
-        another query, e.g. response.search(attrs.Instrument('aia')). """
+        """
+        Furtherly reduce the query response by matching it against another
+        query, e.g. response.search(attrs.Instrument('aia')).
+        """
         query = and_(*query)
         return QueryResponse(
             attrs.filter_results(query, self), self.queryresult
@@ -168,13 +174,19 @@ class QueryResponse(list):
         return cls(iter_records(queryresult), queryresult)
 
     def total_size(self):
-        """ Total size of data in KB. May be less than the actual
-        size because of inaccurate data providers. """
+        """
+        Total size of data in KB.
+
+        May be less than the actual size because of inaccurate data
+        providers.
+        """
         # Warn about -1 values?
         return sum(record.size for record in self if record.size > 0)
 
     def time_range(self):
-        """ Return total time-range all records span across. """
+        """
+        Return total time-range all records span across.
+        """
         return TimeRange(min(record.time.start for record in self if record.time.start is not None),
                          max(record.time.end for record in self if record.time.end is not None))
 
@@ -254,11 +266,15 @@ class QueryResponse(list):
         return s
 
     def __str__(self):
-        """Print out human-readable summary of records retrieved"""
+        """
+        Print out human-readable summary of records retrieved.
+        """
         return str(self.build_table())
 
     def __repr__(self):
-        """Print out human-readable summary of records retrieved"""
+        """
+        Print out human-readable summary of records retrieved.
+        """
         return repr(self.build_table())
 
     def _repr_html_(self):
@@ -291,7 +307,7 @@ class UnknownStatus(Exception):
 
 class VSOClient(BaseClient):
     """
-    VSO Client
+    VSO Client.
 
     Parameters
     ----------
@@ -324,8 +340,9 @@ class VSOClient(BaseClient):
         return obj(**kwargs)
 
     def search(self, *query):
-        """ Query data from the VSO with the new API. Takes a variable number
-        of attributes as parameter, which are chained together using AND.
+        """
+        Query data from the VSO with the new API. Takes a variable number of
+        attributes as parameter, which are chained together using AND.
 
         The new query language allows complex queries to be easily formed.
 
@@ -375,7 +392,9 @@ class VSOClient(BaseClient):
         return QueryResponse.create(self.merge(responses))
 
     def merge(self, queryresponses):
-        """ Merge responses into one. """
+        """
+        Merge responses into one.
+        """
         if len(queryresponses) == 1:
             return queryresponses[0]
 
@@ -438,8 +457,8 @@ class VSOClient(BaseClient):
     def query_legacy(self, tstart=None, tend=None, **kwargs):
         """
         Query data from the VSO mocking the IDL API as close as possible.
-        Either tstart and tend or date_start and date_end or date have
-        to be supplied.
+        Either tstart and tend or date_start and date_end or date have to be
+        supplied.
 
         Parameters
         ----------
@@ -575,7 +594,9 @@ class VSOClient(BaseClient):
 
     @deprecated("1.0")
     def latest(self):
-        """ Return newest record (limited to last week). """
+        """
+        Return newest record (limited to last week).
+        """
         from datetime import datetime, timedelta
         return self.query_legacy(
             datetime.utcnow() - timedelta(7),
@@ -689,8 +710,10 @@ class VSOClient(BaseClient):
 
     @staticmethod
     def link(query_response, maps):
-        """ Return list of paths with records associated with them in
-        the meta attribute. """
+        """
+        Return list of paths with records associated with them in the meta
+        attribute.
+        """
         if not maps:
             return []
         ret = []
@@ -706,7 +729,9 @@ class VSOClient(BaseClient):
         return ret
 
     def make_getdatarequest(self, response, methods=None, info=None):
-        """ Make datarequest with methods from response. """
+        """
+        Make datarequest with methods from response.
+        """
         if methods is None:
             methods = self.method_order + ['URL']
 
@@ -717,8 +742,10 @@ class VSOClient(BaseClient):
         )
 
     def create_getdatarequest(self, maps, methods, info=None):
-        """ Create datarequest from maps mapping data provider to
-        fileids and methods, """
+        """
+        Create datarequest from maps mapping data provider to fileids and
+        methods,
+        """
         if info is None:
             info = {}
 
@@ -735,7 +762,9 @@ class VSOClient(BaseClient):
                 for k, v in maps.items()]
 
         def series_func(x):
-            """ Extract the series from the fileid. """
+            """
+            Extract the series from the fileid.
+            """
             return x.split(':')[0]
 
         # Sort the JSOC fileids by series
@@ -837,7 +866,10 @@ class VSOClient(BaseClient):
         return results
 
     def download(self, method, url, downloader, *args):
-        """ Enqueue a file to be downloaded, extra args are passed to ``mk_filename``"""
+        """
+        Enqueue a file to be downloaded, extra args are passed to
+        ``mk_filename``
+        """
         if method.startswith('URL'):
             return downloader.enqueue_file(url, filename=partial(self.mk_filename, *args))
 
@@ -846,8 +878,8 @@ class VSOClient(BaseClient):
     @staticmethod
     def by_provider(response):
         """
-        Returns a dictionary of provider
-        corresponding to records in the response.
+        Returns a dictionary of provider corresponding to records in the
+        response.
         """
 
         map_ = defaultdict(list)
@@ -858,8 +890,8 @@ class VSOClient(BaseClient):
     @staticmethod
     def by_fileid(response):
         """
-        Returns a dictionary of fileids
-        corresponding to records in the response.
+        Returns a dictionary of fileids corresponding to records in the
+        response.
         """
 
         return {
@@ -868,7 +900,9 @@ class VSOClient(BaseClient):
 
     # pylint: disable=W0613
     def multiple_choices(self, choices, response):
-        """ Override to pick between multiple download choices. """
+        """
+        Override to pick between multiple download choices.
+        """
         for elem in self.method_order:
             if elem in choices:
                 return [elem]
@@ -876,12 +910,16 @@ class VSOClient(BaseClient):
 
     # pylint: disable=W0613
     def missing_information(self, info, field):
-        """ Override to provide missing information. """
+        """
+        Override to provide missing information.
+        """
         raise NoData
 
     # pylint: disable=W0613
     def unknown_method(self, response):
-        """ Override to pick a new method if the current one is unknown. """
+        """
+        Override to pick a new method if the current one is unknown.
+        """
         raise NoData
 
     @classmethod

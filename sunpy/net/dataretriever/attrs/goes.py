@@ -5,5 +5,5 @@ __all__ = ['SatelliteNumber']
 
 class SatelliteNumber(SimpleAttr):
     """
-    The GOES Satellite Number
+    The GOES Satellite Number.
     """

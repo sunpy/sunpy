@@ -54,9 +54,9 @@ association_table = Table('association', Base.metadata,
 
 
 class WaveunitNotFoundError(Exception):
-    """This exception is raised if a wavelength unit cannot be found in a FITS
+    """
+    This exception is raised if a wavelength unit cannot be found in a FITS
     header or in a VSO query result block.
-
     """
 
     def __init__(self, obj):
@@ -68,9 +68,9 @@ class WaveunitNotFoundError(Exception):
 
 
 class WaveunitNotConvertibleError(Exception):
-    """This exception is raised if a wavelength cannot be converted to an
+    """
+    This exception is raised if a wavelength cannot be converted to an
     astropy.units.Unit instance.
-
     """
 
     def __init__(self, waveunit):
@@ -244,7 +244,6 @@ class DatabaseEntry(DatabaseEntryType, Base):
     tags : list
         A list of ``Tag`` instances. Use `sunpy.database.Database.tag` to
         add a new tag or multiple tags to a specific entry.
-
     """
     __tablename__ = 'data'
 
@@ -270,7 +269,8 @@ class DatabaseEntry(DatabaseEntryType, Base):
 
     @classmethod
     def _from_query_result_block(cls, qr_block, default_waveunit=None):
-        """Make a new :class:`DatabaseEntry` instance from a VSO query result
+        """
+        Make a new :class:`DatabaseEntry` instance from a VSO query result
         block. The values of :attr:`wavemin` and :attr:`wavemax` are converted
         to nm (nanometres).
 
@@ -309,7 +309,6 @@ class DatabaseEntry(DatabaseEntryType, Base):
         2059.0
         >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
         (19.5, 19.5)
-
         """
         time_start = datetime.strptime(qr_block.time.start, '%Y%m%d%H%M%S')
         if not qr_block.time.end:
@@ -358,8 +357,8 @@ class DatabaseEntry(DatabaseEntryType, Base):
     @classmethod
     def _from_fido_search_result_block(cls, sr_block, default_waveunit=None):
         """
-        Make a new :class:`DatabaseEntry` instance from a Fido search
-        result block.
+        Make a new :class:`DatabaseEntry` instance from a Fido search result
+        block.
 
         Parameters
         ----------
@@ -466,7 +465,6 @@ class DatabaseEntry(DatabaseEntryType, Base):
         attribute_list : `list`
             The list of attributes that will be compared in both instances,
             self and other.
-
         """
         if len(attribute_list) == 0:
             raise TypeError('At least one attribute required')
@@ -723,7 +721,8 @@ def entries_from_file(file, default_waveunit=None,
 
 def entries_from_dir(fitsdir, recursive=False, pattern='*',
                      default_waveunit=None, time_string_parse_format=None):
-    """Search the given directory for FITS files and use the corresponding FITS
+    """
+    Search the given directory for FITS files and use the corresponding FITS
     headers to generate instances of :class:`DatabaseEntry`. FITS files are
     detected by reading the content of each file, the `pattern` argument may be
     used to avoid reading entire directories if one knows that all FITS files
@@ -772,7 +771,6 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     >>> entries = list(entries_from_dir(eitdir, default_waveunit='angstrom'))
     >>> len(entries)
     13
-
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):
         filename_paths = (os.path.join(dirpath, name) for name in sorted(filenames))
@@ -794,7 +792,8 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
 
 def _create_display_table(database_entries, columns=None, sort=False):
-    """Generate a table to display the database entries.
+    """
+    Generate a table to display the database entries.
 
     Parameters
     ----------
@@ -813,7 +812,6 @@ def _create_display_table(database_entries, columns=None, sort=False):
     str
         An astropy table that can be printed on the console or written to a
         file.
-
     """
     if columns is None:
         columns = ['id', 'observation_time_start', 'observation_time_end',
@@ -855,7 +853,8 @@ def _create_display_table(database_entries, columns=None, sort=False):
 
 
 def display_entries(database_entries, columns=None, sort=False):
-    """Print a table to display the database entries.
+    """
+    Print a table to display the database entries.
 
     Parameters
     ----------
@@ -868,6 +867,5 @@ def display_entries(database_entries, columns=None, sort=False):
 
     sort : bool (optional)
         If True, sorts the entries before displaying them.
-
     """
     return _create_display_table(database_entries, columns, sort).__str__()

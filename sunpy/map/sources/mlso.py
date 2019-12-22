@@ -48,7 +48,9 @@ class KCorMap(GenericMap):
         self.plot_settings['norm'].vmin = 0.0
 
     def _get_cmap_name(self):
-        """Build the default color map name."""
+        """
+        Build the default color map name.
+        """
         cmap_string = self.meta['detector']
         return cmap_string.lower()
 
@@ -61,5 +63,7 @@ class KCorMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to a COSMO image"""
+        """
+        Determines if header corresponds to a COSMO image.
+        """
         return header.get('instrume') == 'COSMO K-Coronagraph'

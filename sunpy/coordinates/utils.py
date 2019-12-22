@@ -79,7 +79,6 @@ class GreatArc:
     >>> m.plot(axes=ax)  # doctest: +SKIP
     >>> ax.plot_coord(great_arc.coordinates(), color='c')  # doctest: +SKIP
     >>> plt.show()  # doctest: +SKIP
-
     """
 
     def __init__(self, start, end, center=None, points=None):
@@ -193,15 +192,14 @@ class GreatArc:
         inner_angles : `~astropy.units.rad`
             Radian angles of the points along the great arc from the start to
             end co-ordinate.
-
         """
         these_points = self._points_handler(points)
         return these_points.reshape(len(these_points), 1)*self.inner_angle
 
     def distances(self, points=None):
         """
-        Calculates the distance from the start co-ordinate to the end
-        co-ordinate on the sphere for all the parameterized points.
+        Calculates the distance from the start co-ordinate to the end co-
+        ordinate on the sphere for all the parameterized points.
 
         Parameters
         ----------
@@ -226,9 +224,9 @@ class GreatArc:
 
     def coordinates(self, points=None):
         """
-        Calculates the co-ordinates on the sphere from the start to the end
-        co-ordinate for all the parameterized points.  Co-ordinates are
-        returned in the frame of the start coordinate.
+        Calculates the co-ordinates on the sphere from the start to the end co-
+        ordinate for all the parameterized points.  Co-ordinates are returned
+        in the frame of the start coordinate.
 
         Parameters
         ----------
@@ -246,7 +244,6 @@ class GreatArc:
         arc : `~astropy.coordinates.SkyCoord`
             Co-ordinates along the great arc in the co-ordinate frame of the
             start point.
-
         """
         # Calculate the inner angles
         these_inner_angles = self.inner_angles(points=points)

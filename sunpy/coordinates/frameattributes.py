@@ -12,9 +12,8 @@ __all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']
 
 class TimeFrameAttributeSunPy(TimeAttribute):
     """
-    Frame attribute descriptor for quantities that are Time objects.
-    See the `~astropy.coordinates.Attribute` API doc for further
-    information.
+    Frame attribute descriptor for quantities that are Time objects. See the
+    `~astropy.coordinates.Attribute` API doc for further information.
 
     Parameters
     ----------
@@ -32,8 +31,8 @@ class TimeFrameAttributeSunPy(TimeAttribute):
 
     def convert_input(self, value):
         """
-        Convert input value to a Time object and validate by running through the
-        Time constructor.  Also check that the input was a scalar.
+        Convert input value to a Time object and validate by running through
+        the Time constructor.  Also check that the input was a scalar.
 
         Parameters
         ----------
@@ -82,7 +81,8 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
     An Attribute to describe the location of the observer in the solar system.
     The observer location can be given as a string of a known observer, which
     will be converted to a coordinate as long as the ``obstime`` attribute is
-    valid on the instance of the frame. Alternatively a low-level frame class
+    valid on the instance of the frame. Alternatively a low-level frame class.
+
     *or* a `~astropy.coordinates.SkyCoord` can be provided to specify the
     location of the observer. If a `~astropy.coordinates.SkyCoord` is passed it
     will always be converted to the low-level frame class when accessed.

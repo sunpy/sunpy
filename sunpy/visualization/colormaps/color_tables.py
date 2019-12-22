@@ -1288,8 +1288,10 @@ def create_cdict(r, g, b):
 
 
 def suvi_color_table(wavelength):
-    """Returns one of the fundamental color tables for SUVI images.
-       SUVI uses AIA color tables.
+    """
+    Returns one of the fundamental color tables for SUVI images.
+
+    SUVI uses AIA color tables.
     """
     try:
         if wavelength == 195:

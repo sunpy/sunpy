@@ -20,12 +20,15 @@ class BaseClient(ABC):
 
     def __init_subclass__(cls, *args, **kwargs):
         """
-        An __init_subclass__ hook initializes all of the subclasses of a given class.
+        An __init_subclass__ hook initializes all of the subclasses of a given
+        class.
+
         So for each subclass, it will call this block of code on import.
-        This replicates some metaclass magic without the need to be aware of metaclasses.
-        Here we use this to register each subclass in a dict that has the `_can_handle_query` attribute.
-        This is then passed into the UnifiedDownloaderFactory so we can register them.
-        This means that Fido can use the clients internally.
+        This replicates some metaclass magic without the need to be
+        aware of metaclasses. Here we use this to register each subclass
+        in a dict that has the `_can_handle_query` attribute. This is
+        then passed into the UnifiedDownloaderFactory so we can register
+        them. This means that Fido can use the clients internally.
         """
         super().__init_subclass__(**kwargs)
         # We do not want to register GenericClient since its a dummy client.
@@ -42,7 +45,8 @@ class BaseClient(ABC):
     def fetch(self, *query_results, path=None, overwrite=False, progress=True,
               max_conn=5, downloader=None, wait=True, **kwargs):
         """
-        This enables the user to fetch the data using the client, after a search.
+        This enables the user to fetch the data using the client, after a
+        search.
 
         Parameters
         ----------
@@ -74,5 +78,6 @@ class BaseClient(ABC):
     @abstractmethod
     def _can_handle_query(cls, *query):
         """
-        This enables the client to register what kind of searches it can handle, to prevent Fido using the incorrect client.
+        This enables the client to register what kind of searches it can
+        handle, to prevent Fido using the incorrect client.
         """

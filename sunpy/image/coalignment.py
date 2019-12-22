@@ -300,7 +300,8 @@ def parabolic_turning_point(y):
 
 def check_for_nonfinite_entries(layer_image, template_image):
     """
-    Issue a warning if there is any nonfinite entry in the layer or template images.
+    Issue a warning if there is any nonfinite entry in the layer or template
+    images.
 
     Parameters
     ----------

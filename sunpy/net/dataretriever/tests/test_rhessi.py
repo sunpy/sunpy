@@ -41,8 +41,8 @@ def test_get_observing_summary_dbase_file_with_unsupported_start_time():
 def test_get_observing_summary_dbase_file_build_correct_url(mock_get_base_url, mock_urlretrieve,
                                                             one_day_timerange):
     """
-    This test ensures that we build the correct url which is then used
-    to get the database file.
+    This test ensures that we build the correct url which is then used to get
+    the database file.
     """
     LCClient.get_observing_summary_dbase_file(one_day_timerange.start)
     mock_urlretrieve.assert_called_with(
@@ -54,7 +54,7 @@ def test_get_observing_summary_dbase_file_build_correct_url(mock_get_base_url, m
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.urlopen', return_value=None)
 def test_get_base_url(mock_urlopen):
     """
-    Success case, can successfully 'ping' first data_server
+    Success case, can successfully 'ping' first data_server.
     """
     assert rhessi.get_base_url() == rhessi.data_servers[0]
 
@@ -81,8 +81,8 @@ def test_get_base_url_on_timeout(mock_urlopen):
 
 def parsed_dbase():
     """
-    The result of calling `parse_observing_summary_dbase_file(...)` on
-    https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt but
+    The result of calling `parse_observing_summary_dbase_file(...)` on https://
+    hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt but
     only using the first two rows of data.
     """
 
@@ -128,7 +128,8 @@ def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase
                                                 mock_parse_observing_summary_dbase_file,
                                                 mock_get_base_url):
     """
-    Given a time range of one day, make sure we get one days data back, i.e. one file.
+    Given a time range of one day, make sure we get one days data back, i.e.
+    one file.
     """
     filename = LCClient.get_observing_summary_filename(('2003-11-01', '2003-11-01T23:59:59'))
 
@@ -143,8 +144,8 @@ def test_get_observing_summary_filename_two_days(mock_get_observing_summary_dbas
                                                  mock_parse_observing_summary_dbase_file,
                                                  mock_get_base_url):
     """
-    Given a time range of two days, make sure we get two files back, one
-    for each day.
+    Given a time range of two days, make sure we get two files back, one for
+    each day.
     """
     filenames = LCClient.get_observing_summary_filename(('2003-11-01', '2003-11-02T23:59:59'))
 

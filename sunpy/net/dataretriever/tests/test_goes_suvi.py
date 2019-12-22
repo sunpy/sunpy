@@ -53,7 +53,9 @@ def test_get_goes_sat_num_error(suvi_client):
 
 
 def test_get_url_for_timerange_errors(suvi_client):
-    """Check that unsupported values raise errors."""
+    """
+    Check that unsupported values raise errors.
+    """
     tr = TimeRange('2019/06/11 00:00', '2019/06/11 00:10')
     with pytest.raises(ValueError):
         suvi_client._get_url_for_timerange(tr, level=0)
@@ -65,7 +67,7 @@ def test_get_url_for_timerange_errors(suvi_client):
 
 def mock_querry_object(suvi_client, start, end):
     """
-    Creating a Query Response object and prefilling it with some information
+    Creating a Query Response object and prefilling it with some information.
     """
     # Creating a Query Response Object
     obj = {
@@ -86,6 +88,7 @@ def mock_querry_object(suvi_client, start, end):
 def test_fetch_working(suvi_client):
     """
     Tests if the online server for fermi_gbm is working.
+
     This also checks if the mock is working well.
     """
     start = '2019/05/25 00:50'
@@ -136,7 +139,9 @@ def test_get_url_for_time_range_level2(suvi_client, start, end, wave, expected_n
                          [('2019/05/25 00:50', '2019/05/25 00:52', 6)]
                          )
 def test_get_url_for_time_range_level2_allwave(suvi_client, start, end, expected_num_files):
-    """check that we get all wavelengths if no wavelength is given"""
+    """
+    check that we get all wavelengths if no wavelength is given.
+    """
     urls = suvi_client._get_url_for_timerange(TimeRange(start, end), level=2)
     assert isinstance(urls, list)
     assert len(urls) == expected_num_files
@@ -152,7 +157,9 @@ def test_get_url_for_time_range_level2_allwave(suvi_client, start, end, expected
                           ('2019/05/25 00:50', '2019/05/25 00:54', 304, 4)]
                          )
 def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_num_files):
-    """check that we get all wavelengths if no wavelength is given"""
+    """
+    check that we get all wavelengths if no wavelength is given.
+    """
     urls = suvi_client._get_url_for_timerange(TimeRange(start, end),
                                               wavelength=wave * u.Angstrom,
                                               level='1b')
@@ -185,7 +192,9 @@ def test_fido_onewave_level1b(start, end, wave, expected_num_files):
                           ('2019/05/25 00:50', '2019/05/25 00:54', 1, 310, 24)]
                          )
 def test_fido_waverange_level1b(start, end, wave1, wave2, expected_num_files):
-    """check that we get all wavelengths if no wavelength is given"""
+    """
+    check that we get all wavelengths if no wavelength is given.
+    """
     result = Fido.search(a.Time(start, end), a.Instrument('suvi'),
                          a.Wavelength(wave1 * u.Angstrom, wave2 * u.Angstrom),
                          a.Level('1b'))

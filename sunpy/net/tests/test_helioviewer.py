@@ -1,5 +1,5 @@
 """
-Helioviewer Client tests
+Helioviewer Client tests.
 """
 import os
 import urllib
@@ -16,7 +16,7 @@ from sunpy.tests.helpers import skip_glymur
 @pytest.fixture(scope="function")
 def client():
     """
-    Fixture to create a client and skip tests if not available
+    Fixture to create a client and skip tests if not available.
     """
     try:
         client = HelioviewerClient()
@@ -29,7 +29,9 @@ def client():
 
 @pytest.mark.remote_data
 class TestHelioviewerClient:
-    """Tests the Helioviewer.org API Client class"""
+    """
+    Tests the Helioviewer.org API Client class.
+    """
     def test_get_datasources(self, client):
         """
         Tests get_data_sources and data_sources and that they match.
@@ -54,7 +56,9 @@ class TestHelioviewerClient:
             client.download_jp2("2012/01/01")
 
     def test_get_closest_image(self, client):
-        """Tests getClosestImage API method"""
+        """
+        Tests getClosestImage API method.
+        """
         image_meta = client.get_closest_image('1994/01/01', observatory='SOHO',
                                               instrument='EIT', measurement='304')
         assert isinstance(image_meta, dict)
@@ -77,7 +81,7 @@ class TestHelioviewerClient:
 
     def test_get_jp2_header(self, client):
         """
-        Tests getJP2Header API method
+        Tests getJP2Header API method.
         """
         header1 = client.get_jp2_header('1994/01/01', observatory='SOHO',
                                               instrument='EIT', measurement='304')

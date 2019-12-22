@@ -6,8 +6,9 @@ __all__ = ['NorthOffsetFrame']
 
 class NorthOffsetFrame:
     """
-    A frame which is offset from another frame such that it shares the same origin, but has its
-    "north pole" (i.e., the Z axis) in a different direction.
+    A frame which is offset from another frame such that it shares the same
+    origin, but has its "north pole" (i.e., the Z axis) in a different
+    direction.
 
     The original coordinate frame and the direction of the new north pole are specified by the
     ``north`` keyword.

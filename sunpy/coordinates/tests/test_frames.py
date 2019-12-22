@@ -399,8 +399,8 @@ two_D_parameters = [
                                               {'representation_type': 'unitspherical'})])
 def test_skycoord_hpc(args, kwargs):
     """
-    Test that when instantiating a HPC frame with SkyCoord that make_3d
-    still works.
+    Test that when instantiating a HPC frame with SkyCoord that make_3d still
+    works.
     """
 
     sc = SkyCoord(*args, **kwargs, frame="helioprojective",

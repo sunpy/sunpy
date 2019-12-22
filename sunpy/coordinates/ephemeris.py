@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Ephemeris calculations using SunPy coordinate frames
+Ephemeris calculations using SunPy coordinate frames.
 """
 import datetime
 import warnings
@@ -49,9 +49,9 @@ __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def get_body_heliographic_stonyhurst(body, time='now', observer=None):
     """
-    Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the location of a
-    solar-system body at a specified time.  The location can be corrected for light travel time
-    to an observer.
+    Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the
+    location of a solar-system body at a specified time.  The location can be
+    corrected for light travel time to an observer.
 
     Parameters
     ----------
@@ -104,8 +104,9 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def get_earth(time='now'):
     """
-    Return a `~astropy.coordinates.SkyCoord` for the location of the Earth at a specified time in
-    the `~sunpy.coordinates.frames.HeliographicStonyhurst` frame.  The longitude will be 0 by definition.
+    Return a `~astropy.coordinates.SkyCoord` for the location of the Earth at a
+    specified time in the `~sunpy.coordinates.frames.HeliographicStonyhurst`
+    frame.  The longitude will be 0 by definition.
 
     Parameters
     ----------
@@ -128,9 +129,10 @@ def get_earth(time='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def get_horizons_coord(body, time='now', id_type='majorbody'):
     """
-    Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
-    solar-system body at a specified time.  This location is the instantaneous or "true" location,
-    and is not corrected for light travel time or observer motion.
+    Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the
+    location of a solar-system body at a specified time.  This location is the
+    instantaneous or "true" location, and is not corrected for light travel
+    time or observer motion.
 
     .. note::
         This function requires the Astroquery package to be installed and
@@ -226,8 +228,9 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def _B0(time='now'):
     """
-    Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the
-    Sun-disk center as seen from Earth.  The range of B0 is +/-7.23 degrees.
+    Return the B0 angle for the Sun at a specified time, which is the
+    heliographic latitude of the Sun-disk center as seen from Earth.  The range
+    of B0 is +/-7.23 degrees.
 
     Parameters
     ----------
@@ -268,8 +271,8 @@ _DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.10*u.deg)
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def _L0(time='now'):
     """
-    Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the
-    Sun-disk center as seen from Earth.
+    Return the L0 angle for the Sun at a specified time, which is the
+    Carrington longitude of the Sun-disk center as seen from Earth.
 
     Parameters
     ----------
@@ -305,9 +308,9 @@ def _L0(time='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def _P(time='now'):
     """
-    Return the position (P) angle for the Sun at a specified time, which is the angle between
-    geocentric north and solar north as seen from Earth, measured eastward from geocentric north.
-    The range of P is +/-26.3 degrees.
+    Return the position (P) angle for the Sun at a specified time, which is the
+    angle between geocentric north and solar north as seen from Earth, measured
+    eastward from geocentric north. The range of P is +/-26.3 degrees.
 
     Parameters
     ----------
@@ -348,9 +351,9 @@ def _earth_distance(time='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def _orientation(location, time='now'):
     """
-    Return the orientation angle for the Sun from a specified Earth location and time.  The
-    orientation angle is the angle between local zenith and solar north, measured eastward from
-    local zenith.
+    Return the orientation angle for the Sun from a specified Earth location
+    and time.  The orientation angle is the angle between local zenith and
+    solar north, measured eastward from local zenith.
 
     Parameters
     ----------
@@ -374,8 +377,8 @@ def _orientation(location, time='now'):
 
 def _sun_north_angle_to_z(frame):
     """
-    Return the angle between solar north and the Z axis of the provided frame's coordinate system
-    and observation time.
+    Return the angle between solar north and the Z axis of the provided frame's
+    coordinate system and observation time.
     """
     # Find the Sun center in HGS at the frame's observation time(s)
     sun_center_repr = SphericalRepresentation(0*u.deg, 0*u.deg, 0*u.km)

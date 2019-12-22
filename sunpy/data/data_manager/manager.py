@@ -30,8 +30,8 @@ class DataManager:
 
     def require(self, name, urls, sha_hash):
         """
-        Decorator for informing the data manager about the requirement of
-        a file by a function.
+        Decorator for informing the data manager about the requirement of a
+        file by a function.
 
         Parameters
         ----------
@@ -123,7 +123,7 @@ class DataManager:
     @contextmanager
     def skip_hash_check(self):
         """
-        Disables hash checking temporarily
+        Disables hash checking temporarily.
 
         Examples
         --------

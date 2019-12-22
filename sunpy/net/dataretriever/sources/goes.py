@@ -25,9 +25,9 @@ __all__ = ["XRSClient", "SUVIClient"]
 
 class XRSClient(GenericClient):
     """
-    Provides access to the GOES XRS fits files
-    `archive <https://umbra.nascom.nasa.gov/goes/fits/>`__ hosted
-    by the `Solar Data Analysis Center <https://umbra.nascom.nasa.gov/index.html/>`__.
+    Provides access to the GOES XRS fits files `archive
+    <https://umbra.nascom.nasa.gov/goes/fits/>`__ hosted by the `Solar Data
+    Analysis Center <https://umbra.nascom.nasa.gov/index.html/>`__.
 
     Examples
     --------
@@ -47,7 +47,6 @@ class XRSClient(GenericClient):
     2016-01-02 00:00:00 2016-01-02 23:59:59   nasa       goes        nan
     <BLANKLINE>
     <BLANKLINE>
-
     """
 
     def _get_goes_sat_num(self, date):
@@ -140,8 +139,8 @@ class XRSClient(GenericClient):
 
     def _get_overlap_urls(self, timerange):
         """
-        Return a list of URLs over timerange when the URL path changed format `%Y` to `%y`
-        on the date 1999/01/15
+        Return a list of URLs over timerange when the URL path changed format
+        `%Y` to `%y` on the date 1999/01/15.
 
         Parameters
         ----------

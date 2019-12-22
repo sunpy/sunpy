@@ -1,4 +1,6 @@
-"""SOHO Map subclass definitions"""
+"""
+SOHO Map subclass definitions.
+"""
 
 import numpy as np
 from matplotlib import colors
@@ -38,7 +40,6 @@ class EITMap(GenericMap):
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
     * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`_
     * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`_
-
     """
 
     def __init__(self, data, header, **kwargs):
@@ -80,13 +81,15 @@ class EITMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an EIT image"""
+        """
+        Determines if header corresponds to an EIT image.
+        """
         return header.get('instrume') == 'EIT'
 
 
 class LASCOMap(GenericMap):
     """
-    SOHO LASCO Image Map
+    SOHO LASCO Image Map.
 
     The Large Angle and Spectrometric COronagraph (LASCO) is a set of three
     Lyot-type coronagraphs (C1, C2, and C3) that image the solar corona from
@@ -140,13 +143,15 @@ class LASCOMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an LASCO image."""
+        """
+        Determines if header corresponds to an LASCO image.
+        """
         return header.get('instrume') == 'LASCO'
 
 
 class MDIMap(GenericMap):
     """
-    SOHO MDI Image Map
+    SOHO MDI Image Map.
 
     The Michelson Doppler Imager (MDI) is a white light refracting telescope
     which feeds sunlight through a series of filters onto a CCD camera. Two
@@ -210,5 +215,7 @@ class MDIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an MDI image"""
+        """
+        Determines if header corresponds to an MDI image.
+        """
         return header.get('instrume') == 'MDI' or header.get('camera') == 'MDI'

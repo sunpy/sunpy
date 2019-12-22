@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Test Generic Map
+Test Generic Map.
 """
 import os
 

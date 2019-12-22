@@ -24,7 +24,9 @@ def oca():
 
 
 def test_now(attr):
-    """ We can't actually test the value independantly """
+    """
+    We can't actually test the value independantly.
+    """
     result, converted = attr.convert_input('now')
 
     assert isinstance(result, Time)
@@ -32,7 +34,9 @@ def test_now(attr):
 
 
 def test_none(attr):
-    """ We can't actually test the value independantly """
+    """
+    We can't actually test the value independantly.
+    """
     result, converted = attr.convert_input(None)
 
     assert result is None
@@ -156,7 +160,8 @@ def test_default_hcc_observer():
 
 def test_obstime_hack():
     """
-    Test that the obstime can be updated in place, this is used in the transform pipeline.
+    Test that the obstime can be updated in place, this is used in the
+    transform pipeline.
     """
     h = frames.Heliocentric(observer="earth")
 
