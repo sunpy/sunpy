@@ -8,7 +8,6 @@ How to control various plotting features of map.
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE

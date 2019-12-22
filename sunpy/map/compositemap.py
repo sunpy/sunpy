@@ -3,7 +3,6 @@ A Composite Map class.
 
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -534,4 +533,3 @@ class OutOfRangeAlphaValue(ValueError):
     Exception to raise when an alpha value outside of the range 0-1 is
     requested.
     """
-    pass

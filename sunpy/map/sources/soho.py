@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib import colors
 
 import astropy.units as u
-from astropy.coordinates import CartesianRepresentation, SkyCoord
+from astropy.coordinates import CartesianRepresentation
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 

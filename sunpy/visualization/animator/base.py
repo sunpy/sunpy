@@ -263,7 +263,7 @@ class BaseFuncAnimator:
         large_pad_size = Size.Fraction(0.1, Size.AxesY(self.axes))
 
         # Define size of useful axes cells, 50% each in x 20% for buttons in y.
-        small_x = Size.Fraction((1.-2.*pad)/10, Size.AxesX(self.axes))
+        Size.Fraction((1.-2.*pad)/10, Size.AxesX(self.axes))
         ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(self.axes))
 
         button_grid = max((7, self.num_buttons))

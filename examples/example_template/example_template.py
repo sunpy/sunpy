@@ -68,7 +68,6 @@ def dummy():
     """
     Dummy function to make sure docstrings don't get rendered as text.
     """
-    pass
 
 # Code comments not preceded by the hash splitter are left in code blocks.
 

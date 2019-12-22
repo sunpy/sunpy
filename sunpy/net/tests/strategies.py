@@ -34,7 +34,7 @@ def TimeDelta(draw):
     Timedelta strategy that limits the maximum timedelta to being positive and
     abs max is about 10 weeks + 10 days + 10 hours + 10 minutes + a bit.
     """
-    keys = st.sampled_from(['weeks', 'days', 'hours', 'minutes', 'seconds'])
+    st.sampled_from(['weeks', 'days', 'hours', 'minutes', 'seconds'])
     values = st.floats(min_value=1, max_value=10)
     time_dict = {'days': st.floats(min_value=1, max_value=8),
                  'hours': st.floats(min_value=1, max_value=12),

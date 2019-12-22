@@ -49,7 +49,6 @@ class NoData(Exception):
     Risen for callbacks of VSOClient that are unable to supply information for
     the request.
     """
-    pass
 
 
 class _Str(str):
@@ -58,7 +57,6 @@ class _Str(str):
     Subclass of string that contains a meta attribute for the record_item
     associated with the file.
     """
-    pass
 
 
 # ----------------------------------------

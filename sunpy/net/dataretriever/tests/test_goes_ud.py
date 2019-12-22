@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import example, given, settings
+from hypothesis import given, settings
 
 import astropy.units as u
 from astropy.time import TimeDelta

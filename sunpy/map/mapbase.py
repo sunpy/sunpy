@@ -8,7 +8,6 @@ from collections import namedtuple
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import cm
 
 import astropy.units as u
 import astropy.wcs
@@ -328,7 +327,7 @@ class GenericMap(NDData):
         """
         try:
             return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
-        except ValueError as e:
+        except ValueError:
             warnings.warn(f'Could not determine coordinate frame from map metadata',
                           SunpyUserWarning)
             return None
@@ -1833,4 +1832,3 @@ class InvalidHeaderInformation(ValueError):
     Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file.
     """
-    pass

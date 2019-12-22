@@ -48,7 +48,6 @@ References
 import csv
 import copy
 import socket
-import os.path
 import datetime
 from itertools import dropwhile
 from urllib.parse import urljoin
@@ -61,7 +60,7 @@ import astropy.units as u
 from astropy.time import TimeDelta
 
 from sunpy import timeseries
-from sunpy.coordinates import get_sunearth_distance, sun
+from sunpy.coordinates import sun
 from sunpy.data import manager
 from sunpy.sun import constants
 from sunpy.time import parse_time

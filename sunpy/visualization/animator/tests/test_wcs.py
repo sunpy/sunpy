@@ -131,7 +131,7 @@ def test_array_animator_wcs_2d_colorbar_buttons(wcs_4d):
 def test_array_animator_wcs_2d_colorbar_buttons_default_labels(wcs_4d):
     data = np.arange(120).reshape((5, 4, 3, 2))
     bf = [lambda x: x]*10
-    bl = ['h']*10
+    ['h']*10
     a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'y', 'x'], colorbar=True, button_func=bf)
     a.update_plot(1, a.im, a.sliders[0]._slider)
     return a.fig

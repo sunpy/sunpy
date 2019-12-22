@@ -1,7 +1,6 @@
 """
 Sun-specific coordinate calculations.
 """
-import warnings
 
 import numpy as np
 
@@ -16,7 +15,7 @@ from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from .ephemeris import _B0, _L0, _P, _earth_distance, _orientation, get_earth
+from .ephemeris import _B0, _L0, _P, _earth_distance, _orientation, get_earth  # NOQA
 
 # Versions of Astropy that do not have *MeanEcliptic frames have the same frames
 # with the misleading names *TrueEcliptic

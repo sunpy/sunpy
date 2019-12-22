@@ -1,5 +1,4 @@
 import tempfile
-from unittest import mock
 
 import pytest
 from hypothesis import given

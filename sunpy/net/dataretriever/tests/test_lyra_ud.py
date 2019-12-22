@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given, settings
+from hypothesis import given
 
 import sunpy.net.dataretriever.sources.lyra as lyra
 from sunpy.net import Fido
@@ -8,7 +8,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import range_time
 from sunpy.net.vso.attrs import Instrument, Time
-from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 
 LCClient = lyra.LYRAClient()

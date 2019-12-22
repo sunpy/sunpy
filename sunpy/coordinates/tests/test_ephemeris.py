@@ -3,7 +3,6 @@
 import pytest
 
 import astropy.units as u
-from astropy.config.paths import set_temp_cache
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
@@ -59,7 +58,7 @@ def test_get_earth():
 @pytest.mark.remote_data
 def test_get_horizons_coord():
     # get_horizons_coord() depends on astroquery
-    astroquery = pytest.importorskip("astroquery")
+    pytest.importorskip("astroquery")
 
     # Validate against published values from the Astronomical Almanac (2013)
     e1 = get_horizons_coord('Geocenter', '2013-Jan-01')
@@ -76,7 +75,7 @@ def test_get_horizons_coord():
 @pytest.mark.remote_data
 def test_get_horizons_coord_array_time():
     # get_horizons_coord() depends on astroquery
-    astroquery = pytest.importorskip("astroquery")
+    pytest.importorskip("astroquery")
 
     # Validate against published values from the Astronomical Almanac (2013, C8-C13)
     array_time = Time(['2013-05-01', '2013-06-01', '2013-04-01', '2013-03-01'])
@@ -102,7 +101,7 @@ def test_get_horizons_coord_array_time():
 @pytest.mark.remote_data
 def test_consistency_with_horizons():
     # get_horizons_coord() depends on astroquery
-    astroquery = pytest.importorskip("astroquery")
+    pytest.importorskip("astroquery")
 
     # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
     now = parse_time('now')

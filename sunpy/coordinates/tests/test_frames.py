@@ -265,7 +265,7 @@ def test_create_hgs_force_2d(frame, args, kwargs):
     # Check we have the right class!
     assert isinstance(hgs1, frame)
 
-    rep_kwarg = kwargs.get('representation_type', None) if kwargs else None
+    kwargs.get('representation_type', None) if kwargs else None
 
     assert not hasattr(hgs1, 'radius')
 

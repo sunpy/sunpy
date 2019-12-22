@@ -1,13 +1,12 @@
 import os
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime
 from warnings import warn
 from urllib.request import urlopen
 
 import astropy.units as u
 from astropy.time import TimeDelta
 
-from sunpy.data.data_manager.downloader import DownloaderError
 from sunpy.time import parse_time
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import get_filename

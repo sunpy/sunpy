@@ -1,4 +1,3 @@
-import warnings
 
 import numpy as np
 
@@ -8,7 +7,6 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.coordinates import frames
 from sunpy.util import MetaDict
-from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['meta_keywords', 'make_fitswcs_header']
 

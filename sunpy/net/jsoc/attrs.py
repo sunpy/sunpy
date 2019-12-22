@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from astropy.time import Time as astropyTime
 
 from sunpy.net.attr import Attr, AttrAnd, AttrOr, AttrWalker, SimpleAttr
 from sunpy.net.vso.attrs import Time as VSO_Time
-from sunpy.net.vso.attrs import Wavelength, _Range
+from sunpy.net.vso.attrs import Wavelength
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 
@@ -14,14 +13,12 @@ class Series(SimpleAttr):
 
     This is the list of `Series <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`__.
     """
-    pass
 
 
 class Keys(SimpleAttr):
     """
     Keys choose which keywords to fetch while making a query request.
     """
-    pass
 
 
 class PrimeKey(Attr):
@@ -65,7 +62,6 @@ class Protocol(SimpleAttr):
 
     Only FITS is supported, the others will require extra keywords.
     """
-    pass
 
 
 class Notify(SimpleAttr):

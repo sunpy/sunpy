@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import astropy.wcs.utils
-from astropy.wcs import WCS, WCSSUB_CELESTIAL
+from astropy.wcs import WCS
 
 from .frames import (
     BaseCoordinateFrame,

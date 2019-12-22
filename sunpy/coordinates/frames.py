@@ -166,7 +166,7 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
     }
 
     def __init__(self, *args, **kwargs):
-        _rep_kwarg = kwargs.get('representation_type', None)
+        kwargs.get('representation_type', None)
 
         super().__init__(*args, **kwargs)
 

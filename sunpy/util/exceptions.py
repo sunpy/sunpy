@@ -4,7 +4,6 @@ This module provides errors/exceptions and warnings of general use for SunPy.
 Exceptions that are specific to a given package should **not** be here,
 but rather in the particular package.
 """
-import sys
 
 from astropy.utils.exceptions import AstropyWarning
 

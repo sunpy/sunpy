@@ -14,7 +14,6 @@ from urllib.parse import urljoin
 import numpy as np
 import pandas
 
-from astropy.io import fits
 from astropy.time import Time
 
 from sunpy.data import cache

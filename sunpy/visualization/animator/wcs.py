@@ -67,7 +67,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         if len(slices) != wcs.pixel_n_dim:
             raise ValueError("slices should be the same length as the number of pixel dimensions.")
         if "x" not in slices:
-            raise ValueError("slices should contain at least 'x' to indicate the axis to plot on the x axis.")
+            raise ValueError(
+                "slices should contain at least 'x' to indicate the axis to plot on the x axis.")
 
         self.plot_dimensionality = 1
 
@@ -78,9 +79,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         if self.plot_dimensionality == 1:
             try:
-                from astropy.visualization.wcsaxes.frame import RectangularFrame1D
+                from astropy.visualization.wcsaxes.frame import RectangularFrame1D  # NOQA
             except ImportError as e:
-                raise ImportError("Astropy 4.0 must be installed to do line plotting with WCSAxes.") from e
+                raise ImportError(
+                    "Astropy 4.0 must be installed to do line plotting with WCSAxes.") from e
 
         self.naxis = data.ndim
         self.num_sliders = self.naxis - self.plot_dimensionality
@@ -94,14 +96,13 @@ class ArrayAnimatorWCS(ArrayAnimator):
         if "slider_functions" in kwargs and "slider_labels" not in kwargs:
             extra_slider_labels = [a.__name__ for a in kwargs['slider_functions']]
 
-
-        slider_labels = [w for i, w in enumerate(self._get_wcs_labels()) if not slices[i]][::-1] + extra_slider_labels
+        slider_labels = [w for i, w in enumerate(
+            self._get_wcs_labels()) if not slices[i]][::-1] + extra_slider_labels
         slider_labels = kwargs.pop("slider_labels", slider_labels)
 
         super().__init__(data, image_axes=image_axes, axis_ranges=None,
                          slider_labels=slider_labels,
                          **kwargs)
-
 
     def _get_wcs_labels(self):
         """
@@ -175,7 +176,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
             ticks = params.get("ticks", None)
             if ticks is not None:
                 if not isinstance(ticks, dict):
-                    raise TypeError("The 'ticks' value in the coord_params dictionary must be a dict.")
+                    raise TypeError(
+                        "The 'ticks' value in the coord_params dictionary must be a dict.")
                 coord.set_ticks(**ticks)
 
     def _get_main_axes(self):

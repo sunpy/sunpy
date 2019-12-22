@@ -10,7 +10,6 @@ import numpy as np
 import astropy.io.fits
 from astropy.wcs import WCS
 
-import sunpy
 from sunpy import log
 from sunpy.data import cache
 from sunpy.io.file_tools import read_file
@@ -25,7 +24,6 @@ from sunpy.util.datatype_factory_base import (
     NoMatchError,
     ValidationFunctionError,
 )
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
 
@@ -357,7 +355,7 @@ def _possibly_a_path(arg):
     Does *not* check if the path exists.
     """
     try:
-        is_path = pathlib.Path(arg)
+        pathlib.Path(arg)
         return True
     except Exception:
         return False
@@ -386,21 +384,18 @@ class InvalidMapInput(ValueError):
     Exception to raise when input variable is not a Map instance and does not
     point to a valid Map input file.
     """
-    pass
 
 
 class InvalidMapType(ValueError):
     """
     Exception to raise when an invalid type of map is requested with Map.
     """
-    pass
 
 
 class NoMapsFound(ValueError):
     """
     Exception to raise when input does not point to any valid maps or files.
     """
-    pass
 
 
 Map = MapFactory(registry=GenericMap._registry, default_widget_type=GenericMap,

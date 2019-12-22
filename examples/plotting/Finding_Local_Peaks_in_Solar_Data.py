@@ -11,7 +11,6 @@ to find those regions in the map data where the intensity values form a local ma
 Then we plot those peaks in the original AIA plot.
 """
 
-import numpy as np
 import astropy.units as u
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d

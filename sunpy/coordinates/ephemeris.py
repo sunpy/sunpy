@@ -2,13 +2,10 @@
 """
 Ephemeris calculations using SunPy coordinate frames.
 """
-import datetime
-import warnings
 
 import numpy as np
 
 import astropy.units as u
-from astropy._erfa.core import ErfaWarning
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (
     ICRS,

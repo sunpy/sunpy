@@ -2,7 +2,6 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-from urllib.parse import urljoin
 
 from sunpy.util.scraper import Scraper
 from ..client import GenericClient

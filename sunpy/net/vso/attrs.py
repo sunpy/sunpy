@@ -220,7 +220,6 @@ class Provider(SimpleAttr):
     For a list of sources see
     https://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
     """
-    pass
 
 
 class Source(SimpleAttr):
@@ -239,7 +238,6 @@ class Source(SimpleAttr):
     what the VSO Data Model refers to as 'Observatory'.  For a list of sources
     see https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
     """
-    pass
 
 
 class Instrument(SimpleAttr):
@@ -280,7 +278,6 @@ class Detector(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
-    pass
 
 
 class Physobs(SimpleAttr):
@@ -297,7 +294,6 @@ class Physobs(SimpleAttr):
     Registry.  For a list of physical observables see
     https://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
     """
-    pass
 
 
 class Level(SimpleAttr):
@@ -316,7 +312,6 @@ class Level(SimpleAttr):
         #. May be a string of the form '(operator) (number)' where operator is\
         one of: lt gt le ge < > <= >=
     """
-    pass
 
 
 class Pixels(SimpleAttr):
@@ -329,7 +324,6 @@ class Pixels(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
-    pass
 
 
 class Resolution(SimpleAttr):
@@ -357,7 +351,6 @@ class Resolution(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
-    pass
 
 
 class PScale(SimpleAttr):
@@ -382,7 +375,6 @@ class PScale(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
-    pass
 
 
 class Sample(SimpleAttr):
@@ -435,7 +427,6 @@ class Filter(SimpleAttr):
     ----------
     value : str
     """
-    pass
 
 
 # The walker specifies how the Attr-tree is converted to a query the

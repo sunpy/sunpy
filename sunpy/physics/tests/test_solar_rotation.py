@@ -15,7 +15,6 @@ from astropy.tests.helper import assert_quantity_allclose
 import sunpy.data.test
 import sunpy.map
 from sunpy.physics.solar_rotation import calculate_solar_rotate_shift, mapsequence_solar_derotate
-from sunpy.tests.helpers import skip_32bit
 
 
 @pytest.fixture
