@@ -213,7 +213,7 @@ class SRSClient(GenericClient):
             name = url.split('/')[-1]
 
             # temporary fix !!! coz All QRBs have same start_time values
-            day = Time(qre.time.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
+            day = Time(qre.time.start.strftime('%Y-%m-%d')) + TimeDelta(i * u.day)
 
             if name not in filenames:
                 filenames.append(name)

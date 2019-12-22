@@ -32,7 +32,7 @@ class Cache:
         then the expiry is not checked. Defaults to 10 days.
     """
 
-    def __init__(self, downloader, storage, cache_dir, expiry=10*u.day):
+    def __init__(self, downloader, storage, cache_dir, expiry=10 * u.day):
         self._downloader = downloader
         self._storage = storage
         self._cache_dir = Path(cache_dir)

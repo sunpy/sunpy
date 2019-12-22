@@ -39,16 +39,16 @@ class Readers(dict):
         val = dict.__getitem__(self, key)
         if val is None:
             raise ReaderError(f"The Reader sunpy.io.{key} is not available, "
-                               "please check that you have the required dependencies "
-                               "installed.")
+                              "please check that you have the required dependencies "
+                              "installed.")
         return val
 
 
 # Map the readers
 _readers = Readers({
-            'fits': fits,
-            'jp2': jp2,
-            'ana': ana
+    'fits': fits,
+    'jp2': jp2,
+    'ana': ana
 })
 
 

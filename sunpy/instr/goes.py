@@ -278,7 +278,7 @@ def calculate_temperature_em(goests, abundances="coronal",
 
 
 @u.quantity_input
-def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8,
+def _goes_chianti_tem(longflux: u.W / u.m / u.m, shortflux: u.W / u.m / u.m, satellite=8,
                       date=datetime.datetime.today(), abundances="coronal",
                       download=False, download_dir=None):
     """
@@ -378,8 +378,8 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     if not download_dir:
         download_dir = get_and_create_download_dir()
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
-    longflux = longflux.to(u.W/u.m/u.m)
-    shortflux = shortflux.to(u.W/u.m/u.m)
+    longflux = longflux.to(u.W / u.m / u.m)
+    shortflux = shortflux.to(u.W / u.m / u.m)
     satellite = int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -394,7 +394,7 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
     if date < parse_time((1983, 6, 28)) and satellite == 6:
-        longflux_corrected = longflux*(4.43/5.32)
+        longflux_corrected = longflux * (4.43 / 5.32)
     else:
         longflux_corrected = longflux
     # Un-scale fluxes if GOES satellite is after 7.  See 2nd paragraph
@@ -574,7 +574,7 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
                  [urljoin(GOES_REMOTE_PATH, FILE_EM_PHO)],
                  '0d59042b265bf76351d129b3e2a5844b3a9c96943cb246538013fd8c1b9b71b9')
 @u.quantity_input
-def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
+def _goes_get_chianti_em(longflux: u.W / u.m / u.m, temp: u.MK, satellite=8,
                          abundances="coronal", download=False,
                          download_dir=None):
     """
@@ -670,7 +670,7 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     <Quantity [3.45200672e+48, 3.45200672e+48] 1 / cm3>
     """
     # Check inputs are of correct type
-    longflux = longflux.to(u.W/u.m**2)
+    longflux = longflux.to(u.W / u.m**2)
     temp = temp.to(u.MK)
     log10_temp = np.log10(temp.value)
     int(satellite)
@@ -721,7 +721,7 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     # Perform spline fit to model data
     spline = interpolate.splrep(modeltemp, modelflux, s=0)
     denom = interpolate.splev(log10_temp, spline, der=0)
-    em = longflux.value/denom * 1e55
+    em = longflux.value / denom * 1e55
     em = u.Quantity(em, unit='cm**(-3)')
 
     return em
@@ -949,7 +949,7 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         download_dir = get_and_create_download_dir()
     # Check inputs are correct
     temp = temp.to(u.K)
-    em = em.to(1/u.cm**3)
+    em = em.to(1 / u.cm**3)
     if len(temp) != len(em):
         raise ValueError("temp and em must all have same number of elements.")
 
@@ -971,14 +971,14 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
     # Ensure input values of flux ratio are within limits of model table
     if temp.value.min() < modeltemp.min() or temp.value.max() > modeltemp.max():
         raise ValueError("All values in temp must be within the range " +
-                         "{} - {} MK.".format(np.min(modeltemp/1e6),
-                                              np.max(modeltemp/1e6)))
+                         "{} - {} MK.".format(np.min(modeltemp / 1e6),
+                                              np.max(modeltemp / 1e6)))
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)
     rad_loss = em.value * interpolate.splev(temp.value, spline, der=0)
     rad_loss = u.Quantity(rad_loss, unit='erg/s')
-    rad_loss = rad_loss.to(u.J/u.s)
+    rad_loss = rad_loss.to(u.J / u.s)
 
     # If obstime keyword giving measurement times is set, calculate
     # radiative losses integrated over time.
@@ -999,11 +999,11 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         obstime_seconds = (obstime - obstime[0]).sec
         # Finally, integrate using trapezoid rule
         rad_loss_int = trapz(rad_loss.value, obstime_seconds)
-        rad_loss_int = u.Quantity(rad_loss_int, unit=rad_loss.unit*u.s)
+        rad_loss_int = u.Quantity(rad_loss_int, unit=rad_loss.unit * u.s)
         # Calculate cumulative radiated energy in each GOES channel as
         # a function of time.
         rad_loss_cumul = cumtrapz(rad_loss, obstime_seconds)
-        rad_loss_cumul = u.Quantity(rad_loss_cumul, unit=rad_loss.unit*u.s)
+        rad_loss_cumul = u.Quantity(rad_loss_cumul, unit=rad_loss.unit * u.s)
         # Enter results into output dictionary.
         rad_loss_out = {"rad_loss_rate": rad_loss,
                         "rad_loss_cumul": rad_loss_cumul,
@@ -1195,16 +1195,16 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
 
         # Finally, integrate using trapezoid rule
         longlum_int = trapz(longlum.value, obstime_seconds)
-        longlum_int = u.Quantity(longlum_int, unit=longlum.unit*u.s)
+        longlum_int = u.Quantity(longlum_int, unit=longlum.unit * u.s)
         shortlum_int = trapz(shortlum.value, obstime_seconds)
-        shortlum_int = u.Quantity(shortlum_int, unit=shortlum.unit*u.s)
+        shortlum_int = u.Quantity(shortlum_int, unit=shortlum.unit * u.s)
         # Calculate cumulative radiated energy in each GOES channel as
         # a function of time.
         longlum_cumul = cumtrapz(longlum.value, obstime_seconds)
-        longlum_cumul = u.Quantity(longlum_cumul, unit=longlum.unit*u.s)
+        longlum_cumul = u.Quantity(longlum_cumul, unit=longlum.unit * u.s)
         shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
         shortlum_cumul = u.Quantity(shortlum_cumul,
-                                    unit=shortlum.unit*u.s)
+                                    unit=shortlum.unit * u.s)
         lx_out = {"longlum": longlum, "shortlum": shortlum,
                   "longlum_cumul": longlum_cumul,
                   "shortlum_cumul": shortlum_cumul,
@@ -1216,7 +1216,7 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
 
 
 @u.quantity_input
-def _calc_xraylum(flux: u.W/u.m/u.m, date=None):
+def _calc_xraylum(flux: u.W / u.m / u.m, date=None):
     """
     Calculates solar luminosity based on observed flux observed at 1AU.
 
@@ -1298,7 +1298,7 @@ def flareclass_to_flux(flareclass):
 
 
 @u.quantity_input
-def flux_to_flareclass(goesflux: u.watt/u.m**2):
+def flux_to_flareclass(goesflux: u.watt / u.m**2):
     """
     Converts X-ray flux into the corresponding GOES flare class.
 
@@ -1359,5 +1359,5 @@ def flux_to_flareclass(goesflux: u.watt/u.m**2):
 def _assert_chrono_order(obstime):
     chrono_check = np.array(obstime) - np.roll(obstime, 1)
     chrono_check = chrono_check[1:]
-    if not all(val > TimeDelta(0*u.day) for val in chrono_check):
+    if not all(val > TimeDelta(0 * u.day) for val in chrono_check):
         raise ValueError("Elements of obstime must be in chronological order.")

@@ -1,4 +1,3 @@
-
 """
 =======================================================
 Converting between Helioprojective and AltAz Coordinate

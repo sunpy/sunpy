@@ -75,6 +75,6 @@ def test_fido(query):
     qr = Fido.search(query)
     client = qr.get_response(0).client
     assert isinstance(qr, UnifiedResponse)
-    assert type(client) == type(LCClient)
+    assert isinstance(client, type(LCClient))
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile

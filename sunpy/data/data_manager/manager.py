@@ -74,11 +74,13 @@ class DataManager:
                         if hash_file(file_path) != sha_hash:
                             # the hash of the file downloaded does not match provided hash
                             # this means the file has changed on the server.
-                            # the function should be updated to use the new hash. Raise an error to notify.
+                            # the function should be updated to use the new hash. Raise an error to
+                            # notify.
                             raise RuntimeError(
                                 "Remote file on the server has changed. Update hash of the function.")
                     else:
-                        # This is to handle the case when the local file appears to be tampered/corrupted
+                        # This is to handle the case when the local file appears to be
+                        # tampered/corrupted
                         if hash_file(details['file_path']) != details['file_hash']:
                             warnings.warn("Hashes do not match, the file will be redownloaded (could be be tampered/corrupted)",
                                           SunpyUserWarning)

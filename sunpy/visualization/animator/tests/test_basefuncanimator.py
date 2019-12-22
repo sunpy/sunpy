@@ -48,7 +48,7 @@ def button_func1(*args, **kwargs):
 def test_base_func_init(fig, colorbar, buttons):
     data = np.random.random((3, 10, 10))
     func0 = partial(update_plotval, data=data)
-    func1 = partial(update_plotval, data=data*10)
+    func1 = partial(update_plotval, data=data * 10)
     funcs = [func0, func1]
     ranges = [(0, 3), (0, 3)]
 
@@ -110,6 +110,7 @@ def test_base_func_init(fig, colorbar, buttons):
     tfa._mouse_click(event)
     assert tfa.active_slider == 0
 
+
 @pytest.fixture
 def funcanimator():
     data = np.random.random((3, 10, 10))
@@ -158,16 +159,16 @@ axis_ranges1 = np.tile(np.linspace(0, 100, 21), (10, 1))
 
 @pytest.mark.parametrize('axis_ranges, exp_extent, exp_axis_ranges',
                          [([None, None], [-0.5, 19.5],
-                          [np.arange(10), np.array([-0.5, 19.5])]),
+                           [np.arange(10), np.array([-0.5, 19.5])]),
 
                           ([[0, 10], [0, 20]], [0, 20],
-                          [np.arange(0.5, 10.5), np.asarray([0, 20])]),
+                           [np.arange(0.5, 10.5), np.asarray([0, 20])]),
 
                           ([np.arange(0, 11), np.arange(0, 21)], [0, 20],
-                          [np.arange(0.5, 10.5), np.arange(0.5, 20.5)]),
+                           [np.arange(0.5, 10.5), np.arange(0.5, 20.5)]),
 
                           ([None, axis_ranges1], [0.0, 100.0],
-                          [np.arange(10), base.edges_to_centers_nd(axis_ranges1, 1)])])
+                           [np.arange(10), base.edges_to_centers_nd(axis_ranges1, 1)])])
 def test_sanitize_axis_ranges(axis_ranges, exp_extent, exp_axis_ranges):
     data_shape = (10, 20)
     data = np.random.rand(*data_shape)
@@ -178,6 +179,7 @@ def test_sanitize_axis_ranges(axis_ranges, exp_extent, exp_axis_ranges):
     assert np.array_equal(exp_axis_ranges[1], out_axis_ranges[1])
     assert callable(out_axis_ranges[0])
     assert np.array_equal(exp_axis_ranges[0], out_axis_ranges[0](np.arange(10)))
+
 
 xdata = np.tile(np.linspace(0, 100, 11), (5, 5, 1))
 
@@ -198,7 +200,13 @@ def test_lineanimator_figure():
     data0 = np.random.rand(*data_shape0)
     plot_axis0 = 1
     slider_axis0 = 0
-    xdata = np.tile(np.linspace(0, 100, (data_shape0[plot_axis0] + 1)), (data_shape0[slider_axis0], 1))
+    xdata = np.tile(
+        np.linspace(
+            0,
+            100,
+            (data_shape0[plot_axis0] + 1)),
+        (data_shape0[slider_axis0],
+         1))
 
     ani = LineAnimator(data0, plot_axis_index=plot_axis0, axis_ranges=[None, xdata])
 
@@ -215,7 +223,9 @@ def test_imageanimator_figure():
                       for n, key in product([1, 2], ['CTYPE', 'CUNIT', 'CDELT'])}
     t0, t1 = map(parse_time, [k['date-obs'] for k in map_seuence.all_meta()])
     time_diff = (t1 - t0).to(u.s)
-    wcs_input_dict.update({'CTYPE1': 'Time', 'CUNIT1': time_diff.unit.name, 'CDELT1': time_diff.value})
+    wcs_input_dict.update({'CTYPE1': 'Time',
+                           'CUNIT1': time_diff.unit.name,
+                           'CDELT1': time_diff.value})
     wcs = astropy.wcs.WCS(wcs_input_dict)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", SunpyDeprecationWarning)

@@ -145,7 +145,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
                              ('300 - 800 keV', u.ct / u.s / u.Unit('detector')),
                              ('800 - 7000 keV', u.ct / u.s / u.Unit('detector')),
                              ('7000 - 20000 keV', u.ct / u.s / u.Unit('detector'))])
-        # Todo: check units used. https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
+        # Todo: check units used.
+        # https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
         return data, header, units
 
     @classmethod

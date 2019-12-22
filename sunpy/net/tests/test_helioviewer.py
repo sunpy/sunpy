@@ -32,6 +32,7 @@ class TestHelioviewerClient:
     """
     Tests the Helioviewer.org API Client class.
     """
+
     def test_get_datasources(self, client):
         """
         Tests get_data_sources and data_sources and that they match.
@@ -84,8 +85,8 @@ class TestHelioviewerClient:
         Tests getJP2Header API method.
         """
         header1 = client.get_jp2_header('1994/01/01', observatory='SOHO',
-                                              instrument='EIT', measurement='304')
-        header2 = client.get_jp2_header('1994/01/01', jp2_id = 1795504)
+                                        instrument='EIT', measurement='304')
+        header2 = client.get_jp2_header('1994/01/01', jp2_id=1795504)
         assert header1 == header2
         assert len(header1) == len(header2) == 1
         assert ('fits' in header1.keys()) and ('fits' in header2.keys())

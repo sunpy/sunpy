@@ -99,7 +99,7 @@ def test_wcs(aia171_test_map):
 
     assert all(wcs.wcs.crpix ==
                [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
-    assert u.allclose(wcs.wcs.cdelt * (u.Unit(wcs.wcs.cunit[0])/u.pix),
+    assert u.allclose(wcs.wcs.cdelt * (u.Unit(wcs.wcs.cunit[0]) / u.pix),
                       u.Quantity(aia171_test_map.scale))
     assert u.allclose(wcs.wcs.crval * u.Unit(wcs.wcs.cunit[0]),
                       u.Quantity([aia171_test_map._reference_longitude, aia171_test_map._reference_latitude]))
@@ -555,7 +555,7 @@ def test_rotate(aia171_test_map):
 
 
 def test_rotate_pad_crpix(generic_map):
-    rotated_map = generic_map.rotate(30*u.deg)
+    rotated_map = generic_map.rotate(30 * u.deg)
     # This tests that the reference pixel of the map is in the expected place.
     assert rotated_map.data.shape != generic_map.data.shape
     assert_quantity_allclose(u.Quantity(rotated_map.reference_pixel),
@@ -613,9 +613,9 @@ def test_as_mpl_axes_aia171(aia171_test_map):
 
 
 def test_pixel_to_world_no_projection(generic_map):
-    out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel)+1*u.pix, origin=1)
-    assert_quantity_allclose(out.Tx, -10*u.arcsec)
-    assert_quantity_allclose(out.Ty, 10*u.arcsec)
+    out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel) + 1 * u.pix, origin=1)
+    assert_quantity_allclose(out.Tx, -10 * u.arcsec)
+    assert_quantity_allclose(out.Ty, 10 * u.arcsec)
 
 
 def test_validate_meta(generic_map):

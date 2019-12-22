@@ -544,7 +544,9 @@ class Database:
 
     def search(self, *query, **kwargs):
         """
-        search(*query[, sortby]) Send the given query to the database and
+        search(*query[, sortby])
+
+        Send the given query to the database and
         return a list of database entries that satisfy all of the given
         attributes.
 

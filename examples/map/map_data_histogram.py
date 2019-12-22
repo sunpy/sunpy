@@ -1,4 +1,3 @@
-
 """
 =====================
 Histograming map data

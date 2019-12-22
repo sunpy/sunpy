@@ -50,7 +50,7 @@ _temperature = [15.513, 15.48, 15.36, 14.404,
 _density = [147.74, 146.66, 142.73, 116.10, 93.35,
             72.73, 48.19, 34.28, 21.958, 15.157,
             10.157, 5.566, 2.259, 0.4483, 0.1528,
-            0.042, 0.00361, 1.99e-7] * u.g*u.cm**-3
+            0.042, 0.00361, 1.99e-7] * u.g * u.cm**-3
 
 _d = {'radius': _radius, 'mass': _mass, 'luminosity': _luminosity,
       'temperature': _temperature, 'density': _density}

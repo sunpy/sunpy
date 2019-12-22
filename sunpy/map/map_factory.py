@@ -191,9 +191,9 @@ class MapFactory(BasicRegistrationFactory):
 
             # Data-header or data-WCS pair
             if isinstance(arg, SUPPORTED_ARRAY_TYPES):
-                arg_header = args[i+1]
+                arg_header = args[i + 1]
                 if isinstance(arg_header, WCS):
-                    arg_header = args[i+1].to_header()
+                    arg_header = args[i + 1].to_header()
 
                 if self._validate_meta(arg_header):
                     pair = (args[i], OrderedDict(arg_header))

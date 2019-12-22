@@ -114,7 +114,8 @@ class AttrMeta(type):
         pad_desc = max(len(elm) for elm in desc)
         fmt = f"%-{pad_name}s | %-{pad_long}s | %-{pad_desc}s"
         lines = [fmt % elm for elm in zip(name, name_long, desc)]
-        lines.insert(1, '-' * (pad_name + 1) + '+' + '-' * (pad_long + 2) + '+' + '-' * (pad_desc + 1))
+        lines.insert(1, '-' * (pad_name + 1) + '+' + '-' *
+                     (pad_long + 2) + '+' + '-' * (pad_desc + 1))
         return "\n".join(lines)
 
 
@@ -122,6 +123,7 @@ class Attr(metaclass=AttrMeta):
     """
     This is the base for all attributes.
     """
+
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
@@ -215,7 +217,7 @@ class Attr(metaclass=AttrMeta):
                         cls._attr_registry[key][2].append(pair[1])
             else:
                 raise ValueError(f"Invalid input value: {value} for key: {repr(key)}. "
-                                  "The value is not iterable or just a string.")
+                                 "The value is not iterable or just a string.")
 
 
 class DummyAttr(Attr):
@@ -233,6 +235,7 @@ class DummyAttr(Attr):
        for from, to in times:
            attr |= Time(from, to)
     """
+
     def __and__(self, other):
         return other
 
@@ -261,6 +264,7 @@ class SimpleAttr(Attr):
     value : `object`
        The value for the attribute to hold.
     """
+
     def __init__(self, value):
         Attr.__init__(self)
         self.value = value
@@ -277,6 +281,7 @@ class AttrAnd(Attr):
     """
     Attribute representing attributes ANDed together.
     """
+
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -311,6 +316,7 @@ class AttrOr(Attr):
     """
     Attribute representing attributes ORed together.
     """
+
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs

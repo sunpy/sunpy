@@ -37,7 +37,8 @@ def test_get_observing_summary_dbase_file_with_unsupported_start_time():
 
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.urlretrieve', return_value=None)
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url',
+            return_value='http://www.example.com')
 def test_get_observing_summary_dbase_file_build_correct_url(mock_get_base_url, mock_urlretrieve,
                                                             one_day_timerange):
     """
@@ -121,9 +122,11 @@ def test_parsed_dbase():
     assert rows == parsed_dbase()
 
 
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url',
+            return_value='http://www.example.com')
 @mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file',
+            return_value=('', {}))
 def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase_file,
                                                 mock_parse_observing_summary_dbase_file,
                                                 mock_get_base_url):
@@ -137,9 +140,11 @@ def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase
     assert filename[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_139.fits'
 
 
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url',
+            return_value='http://www.example.com')
 @mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file',
+            return_value=('', {}))
 def test_get_observing_summary_filename_two_days(mock_get_observing_summary_dbase_file,
                                                  mock_parse_observing_summary_dbase_file,
                                                  mock_get_base_url):
@@ -162,9 +167,11 @@ def test_can_handle_query():
     assert ans2 is False
 
 
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url',
+            return_value='http://www.example.com')
 @mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file',
+            return_value=('', {}))
 def test_query(mock_get_observing_summary_dbase_file,
                mock_parse_observing_summary_dbase_file,
                mock_get_base_url):
@@ -175,9 +182,11 @@ def test_query(mock_get_observing_summary_dbase_file,
     assert qr1.time_range().end.datetime == parse_time('2003/11/03T23:59:59.999')
 
 
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url',
+            return_value='http://www.example.com')
 @mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file',
+            return_value=('', {}))
 def test_fido_mock(mock_get_observing_summary_dbase_file,
                    mock_parse_observing_summary_dbase_file,
                    mock_get_base_url):

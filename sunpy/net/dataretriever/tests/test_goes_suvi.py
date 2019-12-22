@@ -42,7 +42,7 @@ def test_get_goes_sat_num(suvi_client):
     date = parse_time('2019/06/11 00:00')
     min_satellite_number = 16  # when SUVI was first included
     assert suvi_client._get_goes_sat_num(date) >= min_satellite_number
-    assert type(suvi_client._get_goes_sat_num(date)) is int
+    assert isinstance(suvi_client._get_goes_sat_num(date), int)
 
 
 def test_get_goes_sat_num_error(suvi_client):
@@ -72,7 +72,7 @@ def mock_querry_object(suvi_client, start, end):
     obj = {
         'TimeRange': TimeRange(parse_time(start), parse_time(end)),
         'Time_start': parse_time(start),
-        'Time_end':  parse_time(end),
+        'Time_end': parse_time(end),
         'source': 'GOES',
         'instrument': 'SUVI',
         'physobs': 'flux',

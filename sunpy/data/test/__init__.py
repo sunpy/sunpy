@@ -50,7 +50,7 @@ def test_data_filenames():
         The name of all test files in ``data/test`` directory.
     """
     test_data_filenames_list = []
-    excludes = ['*.pyc', '*'+os.path.sep+'__*__', '*.py']
+    excludes = ['*.pyc', '*' + os.path.sep + '__*__', '*.py']
     excludes = r'|'.join([fnmatch.translate(x) for x in excludes]) or r'$.'
 
     for root, dirs, files in os.walk(rootdir):

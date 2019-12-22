@@ -58,7 +58,8 @@ class SXTMap(GenericMap):
         # is used, and the solar radius stored in SXT FITS files is in arcseconds.
         self.meta['dsun_apparent'] = constants.au
         if 'solar_r' in self.meta:
-            self.meta['dsun_apparent'] = constants.radius/(np.deg2rad(self.meta['solar_r']/3600.0))
+            self.meta['dsun_apparent'] = constants.radius / \
+                (np.deg2rad(self.meta['solar_r'] / 3600.0))
 
     @property
     def dsun(self):

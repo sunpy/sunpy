@@ -168,7 +168,8 @@ def contains_full_disk(smap):
 
     # Test if all the edge pixels are more than one solar radius distant
     # and that the whole map is not all off disk.
-    return np.all(coordinate_angles > solar_angular_radius(edge_of_world)) and ~is_all_off_disk(smap)
+    return np.all(coordinate_angles > solar_angular_radius(
+        edge_of_world)) and ~is_all_off_disk(smap)
 
 
 @u.quantity_input

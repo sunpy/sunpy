@@ -1,4 +1,3 @@
-
 """
 ===============
 Resampling Maps

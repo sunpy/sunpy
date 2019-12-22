@@ -29,7 +29,7 @@ from sunpy.time.timerange import TimeRange
      )
 ])
 def test_get_url_for_time_range(timerange, url_start, url_end):
-    urls = norh.NoRHClient()._get_url_for_timerange(timerange, wavelength=17*u.GHz)
+    urls = norh.NoRHClient()._get_url_for_timerange(timerange, wavelength=17 * u.GHz)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -40,14 +40,14 @@ def test_can_handle_query(time):
     ans1 = norh.NoRHClient._can_handle_query(time, a.Instrument('norh'))
     assert ans1 is True
     ans1 = norh.NoRHClient._can_handle_query(time, a.Instrument('norh'),
-                                             a.Wavelength(10*u.GHz))
+                                             a.Wavelength(10 * u.GHz))
     assert ans1 is True
     ans2 = norh.NoRHClient._can_handle_query(time)
     assert ans2 is False
 
 
 @pytest.mark.remote_data
-@pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
+@pytest.mark.parametrize("wave", [a.Wavelength(17 * u.GHz), a.Wavelength(34 * u.GHz)])
 @given(time=range_time(Time('1992-6-1')))
 @settings(max_examples=2, deadline=50000)
 def test_query(time, wave):
@@ -61,7 +61,7 @@ def test_query(time, wave):
         assert qr1.time_range().start.strftime('%Y-%m-%d') >= time.start.strftime('%Y-%m-%d')
         #  and the end time equal or smaller.
         # hypothesis can give same start-end, but the query will give you from start to end (so +1)
-        assert qr1.time_range().end <= time.end + TimeDelta(1*u.day)
+        assert qr1.time_range().end <= time.end + TimeDelta(1 * u.day)
 
 
 # Don't use time_attr here for speed.
@@ -82,13 +82,13 @@ def test_query_wrong_wave():
     c = norh.NoRHClient()
     with pytest.raises(ValueError):
         c.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'),
-                 a.Wavelength(50*u.GHz))
+                 a.Wavelength(50 * u.GHz))
 
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument,wave", [
-    (a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz)),
-    (a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'), a.Wavelength(34*u.GHz))])
+    (a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17 * u.GHz)),
+    (a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'), a.Wavelength(34 * u.GHz))])
 def test_get(time, instrument, wave):
     LCClient = norh.NoRHClient()
     qr1 = LCClient.search(time, instrument, wave)
@@ -99,8 +99,8 @@ def test_get(time, instrument, wave):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument, wave",
-    [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz)),
-     (a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'), a.Wavelength(34*u.GHz))])
+    [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17 * u.GHz)),
+     (a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'), a.Wavelength(34 * u.GHz))])
 def test_fido(time, instrument, wave):
     qr = Fido.search(time, instrument, wave)
     assert isinstance(qr, UnifiedResponse)

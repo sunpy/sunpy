@@ -46,6 +46,7 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
     Extra keywords are passed to ``mapsequence[0].plot()`` i.e. the ``plot()`` routine of
     the maps in the sequence.
     """
+
     def __init__(self, mapsequence, annotate=True, **kwargs):
 
         self.mapsequence = mapsequence

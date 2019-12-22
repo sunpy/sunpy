@@ -38,9 +38,10 @@ class roi:
     >>> result = roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'], description='UV occult.',source='LYRA LYTAF')
     >>> result = roi(times='2013-05-12 03:12:00')
     """
+
     def __init__(self, times=None, description=None, source=None):
         # time could be a list with one or two elements
-        if times and type(times) == list:
+        if times and isinstance(times, list):
             if len(times) == 1:
                 # if only one time given, make start and end times the same
                 self.start_time = parse_time(times[0])
@@ -51,7 +52,7 @@ class roi:
             else:
                 self.start_time = None
                 self.end_time = None
-        elif type(times) == str:
+        elif isinstance(times, str):
             self.start_time = parse_time(times)
             self.end_time = parse_time(times)
         else:

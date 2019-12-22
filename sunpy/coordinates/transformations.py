@@ -1,4 +1,3 @@
-
 """
 Coordinate Transformation Functions.
 
@@ -68,7 +67,7 @@ try:
     from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
 except ImportError:
     from astropy.coordinates import make_transform_graph_docs as _make_transform_graph_docs
-    make_transform_graph_docs = lambda: _make_transform_graph_docs(frame_transform_graph)
+    def make_transform_graph_docs(): return _make_transform_graph_docs(frame_transform_graph)
 
 
 RSUN_METERS = constants.get('radius').si.to(u.m)
@@ -277,7 +276,7 @@ def hcc_to_hpc(helioccoord, heliopframe):
 
     # Shift the origin from the Sun to the observer
     distance = int_coord.observer.radius
-    newrepr = int_coord.cartesian - CartesianRepresentation(0*u.m, 0*u.m, distance)
+    newrepr = int_coord.cartesian - CartesianRepresentation(0 * u.m, 0 * u.m, distance)
 
     # Permute/swap axes from HCC to HPC equivalent Cartesian
     newrepr = newrepr.transform(_matrix_hcc_to_hpc())
@@ -306,7 +305,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
 
     # Shift the origin from the observer to the Sun
     distance = observer.radius
-    newrepr += CartesianRepresentation(0*u.m, 0*u.m, distance)
+    newrepr += CartesianRepresentation(0 * u.m, 0 * u.m, distance)
 
     # Complete the conversion of HPC to HCC at the obstime and observer of the HPC coord
     int_coord = Heliocentric(newrepr, obstime=observer.obstime, observer=observer)
@@ -456,7 +455,7 @@ def _sun_earth_icrf(time):
 # (See Archinal et al. 2011,
 #   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
 # The orientation of the north pole in ICRS/HCRS is assumed to be constant in time
-_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87*u.deg)
+_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13 * u.deg, lat=63.87 * u.deg)
 
 
 # Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
@@ -573,7 +572,7 @@ def hgc_to_hgc(from_coo, to_frame):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
-               transform_to(to_frame)
+            transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -731,7 +730,7 @@ def _rotation_matrix_hgs_to_hci(obstime):
     """
     Return the rotation matrix from HGS to HCI at the same observation time.
     """
-    z_axis = CartesianRepresentation(0, 0, 1)*u.m
+    z_axis = CartesianRepresentation(0, 0, 1) * u.m
     if not obstime.isscalar:
         z_axis = z_axis._apply('repeat', obstime.size)
 
@@ -742,7 +741,7 @@ def _rotation_matrix_hgs_to_hci(obstime):
     # Rotate the ecliptic pole to the -YZ plane, which aligns the solar ascending node with the X
     # axis
     rot_matrix = _rotation_matrix_reprs_to_xz_about_z(ecliptic_pole_hgs.cartesian)
-    xz_to_yz_matrix = rotation_matrix(-90*u.deg, 'z')
+    xz_to_yz_matrix = rotation_matrix(-90 * u.deg, 'z')
 
     return xz_to_yz_matrix @ rot_matrix
 
@@ -792,14 +791,14 @@ def hci_to_hci(from_coo, to_frame):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
-               transform_to(to_frame)
+            transform_to(to_frame)
 
 
 def _rotation_matrix_obliquity(time):
     """
     Return the rotation matrix from Earth equatorial to ecliptic coordinates.
     """
-    return rotation_matrix(obl06(*get_jd12(time, 'tt'))*u.radian, 'x')
+    return rotation_matrix(obl06(*get_jd12(time, 'tt')) * u.radian, 'x')
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,

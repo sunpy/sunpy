@@ -48,23 +48,27 @@ class TestTimeSeries:
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
-        ts_from_folder = sunpy.timeseries.TimeSeries(os.path.join(filepath, "eve"), source='EVE', concatenate=True)
+        ts_from_folder = sunpy.timeseries.TimeSeries(
+            os.path.join(filepath, "eve"), source='EVE', concatenate=True)
         assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         # text the two methods get identical dataframes
         assert ts_from_list == ts_from_folder
         # test the frames have correct headings/keys (correct concatenation axis)
-        ts_from_list.columns == sunpy.timeseries.TimeSeries(a_list_of_many[0], source='EVE', concatenate=True).columns
+        ts_from_list.columns == sunpy.timeseries.TimeSeries(
+            a_list_of_many[0], source='EVE', concatenate=True).columns
 
     def test_factory_concatenate_different_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
         assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
-        ts_from_folder = sunpy.timeseries.TimeSeries(os.path.join(filepath, "eve"), source='EVE', concatenate=True)
+        ts_from_folder = sunpy.timeseries.TimeSeries(
+            os.path.join(filepath, "eve"), source='EVE', concatenate=True)
         assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         # text the two methods get identical dataframes
         assert ts_from_list == ts_from_folder
         # test the frames have correct headings/keys (correct concatenation axis)
-        ts_from_list.columns == sunpy.timeseries.TimeSeries(a_list_of_many[0], source='EVE', concatenate=True).columns
+        ts_from_list.columns == sunpy.timeseries.TimeSeries(
+            a_list_of_many[0], source='EVE', concatenate=True).columns
 
     def test_factory_generate_list_of_ts(self):
         # Test making a list TimeSeries from multiple files
@@ -75,7 +79,8 @@ class TestTimeSeries:
 
     def test_factory_generate_from_glob(self):
         # Test making a TimeSeries from a glob
-        ts_from_glob = sunpy.timeseries.TimeSeries(os.path.join(filepath, "eve", "*"), source='EVE', concatenate=True)
+        ts_from_glob = sunpy.timeseries.TimeSeries(os.path.join(
+            filepath, "eve", "*"), source='EVE', concatenate=True)
         assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
 # =============================================================================
@@ -200,8 +205,8 @@ class TestTimeSeries:
     def test_meta_from_fits_header(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = base - TimeDelta(np.arange(24*60)*u.minute)
-        intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        times = base - TimeDelta(np.arange(24 * 60) * u.minute)
+        intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
         data = DataFrame(intensity, index=times, columns=['intensity'])
 
         # Use a FITS file HDU using sunpy.io
@@ -224,12 +229,12 @@ class TestTimeSeries:
     def test_generic_construction_basic(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
-        intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        times = base - TimeDelta(np.arange(24 * 60) * u.minute)
+        intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
         data = DataFrame(intensity, index=times, columns=['intensity'])
-        units = OrderedDict([('intensity', u.W/u.m**2)])
+        units = OrderedDict([('intensity', u.W / u.m**2)])
         meta = MetaDict({'key': 'value'})
 
         # Create normal TS from dataframe and check
@@ -247,12 +252,12 @@ class TestTimeSeries:
     def test_generic_construction_basic_omitted_details(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
-        intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        times = base - TimeDelta(np.arange(24 * 60) * u.minute)
+        intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
         data = DataFrame(intensity, index=times, columns=['intensity'])
-        units = OrderedDict([('intensity', u.W/u.m**2)])
+        units = OrderedDict([('intensity', u.W / u.m**2)])
         meta = MetaDict({'key': 'value'})
 
         # Create TS omitting units input arguments
@@ -271,12 +276,12 @@ class TestTimeSeries:
     def test_generic_construction_basic_different_meta_types(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
-        intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        times = base - TimeDelta(np.arange(24 * 60) * u.minute)
+        intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
         data = DataFrame(intensity, index=times, columns=['intensity'])
-        units = OrderedDict([('intensity', u.W/u.m**2)])
+        units = OrderedDict([('intensity', u.W / u.m**2)])
         meta_md = MetaDict({'key': 'value'})
         meta_di = {'key': 'value'}
         meta_od = OrderedDict({'key': 'value'})
@@ -291,15 +296,15 @@ class TestTimeSeries:
     def test_generic_construction_ts_list(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
-        intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
-        intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        times = base - TimeDelta(np.arange(24 * 60) * u.minute)
+        intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
+        intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
-        units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        units = OrderedDict([('intensity', u.W / u.m**2)])
+        units2 = OrderedDict([('intensity', u.W / u.m**2)])
         meta = MetaDict({'key': 'value'})
         meta2 = MetaDict({'key2': 'value2'})
 
@@ -321,15 +326,15 @@ class TestTimeSeries:
     def test_generic_construction_concatenation(self):
         # Generate the data and the corrisponding dates
         base = parse_time(datetime.datetime.today())
-        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
-        intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
-        intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        times = base - TimeDelta(np.arange(24 * 60) * u.minute)
+        intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
+        intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
         data = DataFrame(intensity1, index=times, columns=['intensity'])
         data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
-        units = OrderedDict([('intensity', u.W/u.m**2)])
-        units2 = OrderedDict([('intensity', u.W/u.m**2)])
+        units = OrderedDict([('intensity', u.W / u.m**2)])
+        units2 = OrderedDict([('intensity', u.W / u.m**2)])
         meta = MetaDict({'key': 'value'})
         meta2 = MetaDict({'key2': 'value2'})
 
@@ -339,22 +344,25 @@ class TestTimeSeries:
         ts_concat_1 = ts_1.concatenate(ts_2)
 
         # Concatinate during construction
-        ts_concat_2 = sunpy.timeseries.TimeSeries(data, meta, units, data2, meta2, units2, concatenate=True)
+        ts_concat_2 = sunpy.timeseries.TimeSeries(
+            data, meta, units, data2, meta2, units2, concatenate=True)
         assert isinstance(ts_concat_2, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
 
         # Create TS using a tuple
-        ts_concat_3 = sunpy.timeseries.TimeSeries(((data, meta, units), (data2, meta2, units2)), concatenate=True)
+        ts_concat_3 = sunpy.timeseries.TimeSeries(
+            ((data, meta, units), (data2, meta2, units2)), concatenate=True)
         assert isinstance(ts_concat_3, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
         assert ts_concat_1 == ts_concat_2 == ts_concat_3
 
     def test_table_to_ts(self):
         # Generate the data and the corresponding dates
         base = parse_time(datetime.datetime.today())
-        times = base - TimeDelta(np.arange(24 * 60)*u.minute)
-        intensity = u.Quantity(np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60)))), u.W/u.m**2)
+        times = base - TimeDelta(np.arange(24 * 60) * u.minute)
+        intensity = u.Quantity(
+            np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60)))), u.W / u.m**2)
 
         # Create the units and meta objects
-        units = OrderedDict([('intensity', u.W/u.m**2)])
+        units = OrderedDict([('intensity', u.W / u.m**2)])
         meta = MetaDict({'key': 'value'})
         tbl_meta = MetaDict({'t_key': 't_value'})
 
@@ -417,13 +425,16 @@ class TestTimeSeries:
             sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
 
     def test_validate_units(self):
-        valid_units = OrderedDict([('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))])
+        valid_units = OrderedDict(
+            [('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))])
         assert sunpy.timeseries.TimeSeries._validate_units(valid_units)
         # Test for not having only units for values
-        invalid_units_1 = OrderedDict([('Watt Per Meter Squared', 'string'), ('Meter Cubed', u.Unit("m3"))])
+        invalid_units_1 = OrderedDict(
+            [('Watt Per Meter Squared', 'string'), ('Meter Cubed', u.Unit("m3"))])
         assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_1)
         # Test for being a MetaDict object
-        invalid_units_2 = MetaDict(OrderedDict([('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))]))
+        invalid_units_2 = MetaDict(OrderedDict(
+            [('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))]))
         assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_2)
 
     def test_validate_meta_basic(self):

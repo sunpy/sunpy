@@ -1,5 +1,3 @@
-
-
 import numpy as np
 import pytest
 
@@ -126,7 +124,7 @@ def test_cart_init():
 # Test HPC Calculate Distance
 def test_hpc_distance():
     hpc1 = Helioprojective(0 * u.deg, 0 * u.arcsec,
-                           observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
+                           observer=HeliographicStonyhurst(0 * u.deg, 0 * u.deg, 1 * u.AU))
 
     assert isinstance(hpc1, Helioprojective)
     # Check that we have a 2D wrap180 representation
@@ -158,7 +156,7 @@ def test_hpc_distance_cartesian():
 
 def test_hpc_distance_off_limb():
     hpc1 = Helioprojective(1500 * u.arcsec, 0 * u.arcsec,
-                           observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
+                           observer=HeliographicStonyhurst(0 * u.deg, 0 * u.deg, 1 * u.AU))
 
     assert isinstance(hpc1, Helioprojective)
     # Check that we have a 2D wrap180 representation
@@ -195,23 +193,23 @@ def test_hpc_distance_3D():
 
 
 def test_wrapping_on():
-    hpc1 = Helioprojective(359.9*u.deg, 10*u.deg)
-    assert_quantity_allclose(hpc1.Tx, -0.1*u.deg)
-    assert_quantity_allclose(hpc1.Tx.wrap_angle, 180*u.deg)
+    hpc1 = Helioprojective(359.9 * u.deg, 10 * u.deg)
+    assert_quantity_allclose(hpc1.Tx, -0.1 * u.deg)
+    assert_quantity_allclose(hpc1.Tx.wrap_angle, 180 * u.deg)
 
 
 def test_wrapping_off():
-    hpc1 = Helioprojective(359.9*u.deg, 10*u.deg, wrap_longitude=False)
-    assert_quantity_allclose(hpc1.Tx, 359.9*u.deg)
-    assert_quantity_allclose(hpc1.Tx.wrap_angle, 360*u.deg)
+    hpc1 = Helioprojective(359.9 * u.deg, 10 * u.deg, wrap_longitude=False)
+    assert_quantity_allclose(hpc1.Tx, 359.9 * u.deg)
+    assert_quantity_allclose(hpc1.Tx.wrap_angle, 360 * u.deg)
 
 
 def test_hpc_default_observer():
     # Observer is considered default if it hasn't been specified *and* if obstime isn't specified
-    hpc = Helioprojective(0*u.arcsec, 0*u.arcsec)
+    hpc = Helioprojective(0 * u.arcsec, 0 * u.arcsec)
     assert hpc.is_frame_attr_default('observer')
 
-    hpc = Helioprojective(0*u.arcsec, 0*u.arcsec, obstime='2019-06-01')
+    hpc = Helioprojective(0 * u.arcsec, 0 * u.arcsec, obstime='2019-06-01')
     assert not hpc.is_frame_attr_default('observer')
 
 
@@ -221,18 +219,18 @@ def test_hpc_default_observer():
 
 def test_HEE_creation():
     # Smoke test to make sure HEE constructors work fine
-    _ = HeliographicStonyhurst(lon=0*u.deg, lat=90*u.deg,
+    _ = HeliographicStonyhurst(lon=0 * u.deg, lat=90 * u.deg,
                                obstime=parse_time('2018-12-21'))
-    _ = HeliographicStonyhurst(lon=0*u.deg, lat=90*u.deg, radius=1*u.km,
+    _ = HeliographicStonyhurst(lon=0 * u.deg, lat=90 * u.deg, radius=1 * u.km,
                                obstime=parse_time('2018-12-21'))
-    _ = HeliographicStonyhurst(x=1*u.km, y=1*u.km, z=1*u.km,
+    _ = HeliographicStonyhurst(x=1 * u.km, y=1 * u.km, z=1 * u.km,
                                obstime=parse_time('2018-12-21'),
                                representation_type='cartesian')
 
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
 @pytest.mark.parametrize("args, kwargs", two_D_parameters[:4] +
-                         [(None, {'lat': 0*u.deg, 'lon': 0*u.arcsec})])
+                         [(None, {'lat': 0 * u.deg, 'lon': 0 * u.arcsec})])
 def test_create_hgs_2d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
 
@@ -326,20 +324,21 @@ def test_hgs_cart_init():
 
 
 def test_hgs_wrapping_on():
-    hpc1 = HeliographicStonyhurst(350*u.deg, 10*u.deg)
-    assert_quantity_allclose(hpc1.lon, -10*u.deg)
-    assert_quantity_allclose(hpc1.lon.wrap_angle, 180*u.deg)
+    hpc1 = HeliographicStonyhurst(350 * u.deg, 10 * u.deg)
+    assert_quantity_allclose(hpc1.lon, -10 * u.deg)
+    assert_quantity_allclose(hpc1.lon.wrap_angle, 180 * u.deg)
 
 
 def test_hgs_wrapping_off():
-    hpc1 = HeliographicStonyhurst(350*u.deg, 10*u.deg, wrap_longitude=False)
-    assert_quantity_allclose(hpc1.lon, 350*u.deg)
-    assert_quantity_allclose(hpc1.lon.wrap_angle, 360*u.deg)
+    hpc1 = HeliographicStonyhurst(350 * u.deg, 10 * u.deg, wrap_longitude=False)
+    assert_quantity_allclose(hpc1.lon, 350 * u.deg)
+    assert_quantity_allclose(hpc1.lon.wrap_angle, 360 * u.deg)
+
 
 def test_hgc_wrapping_360():
-    hpc1 = HeliographicCarrington(350*u.deg, 10*u.deg)
-    assert_quantity_allclose(hpc1.lon, 350*u.deg)
-    assert_quantity_allclose(hpc1.lon.wrap_angle, 360*u.deg)
+    hpc1 = HeliographicCarrington(350 * u.deg, 10 * u.deg)
+    assert_quantity_allclose(hpc1.lon, 350 * u.deg)
+    assert_quantity_allclose(hpc1.lon.wrap_angle, 360 * u.deg)
 
 
 # ==============================================================================
@@ -372,10 +371,10 @@ def test_create_hcc_3d(args, kwargs):
 
 def test_hcc_default_observer():
     # Observer is considered default if it hasn't been specified *and* if obstime isn't specified
-    hcc = Heliocentric(0*u.AU, 0*u.AU, 0*u.AU)
+    hcc = Heliocentric(0 * u.AU, 0 * u.AU, 0 * u.AU)
     assert hcc.is_frame_attr_default('observer')
 
-    hcc = Heliocentric(0*u.AU, 0*u.AU, 0*u.AU, obstime='2019-06-01')
+    hcc = Heliocentric(0 * u.AU, 0 * u.AU, 0 * u.AU, obstime='2019-06-01')
     assert not hcc.is_frame_attr_default('observer')
 
 
@@ -390,7 +389,7 @@ two_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec], {'representation_type': SphericalRepresentation}),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], {}),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], {}),
-    ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1*u.one)], {}),
+    ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.one)], {}),
 ]
 
 

@@ -479,8 +479,8 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     # Calculate a template.  If no template is passed then define one
     # from the index layer.
     if template is None:
-        tplate = mc.maps[layer_index].data[int(ny/4): int(3*ny/4),
-                                           int(nx/4): int(3*nx/4)]
+        tplate = mc.maps[layer_index].data[int(ny / 4): int(3 * ny / 4),
+                                           int(nx / 4): int(3 * nx / 4)]
     elif isinstance(template, GenericMap):
         tplate = template.data
     elif isinstance(template, np.ndarray):

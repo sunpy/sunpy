@@ -1,4 +1,3 @@
-
 from sqlalchemy import and_, not_, or_
 
 from sunpy.database.tables import DatabaseEntry
@@ -200,7 +199,8 @@ def _create(wlk, root, session):
             path, inverted = value
             if inverted:
                 query = query.filter(or_(
-                    DatabaseEntry.path != path, DatabaseEntry.path == None))
+                    # BUG: Has to be == otherwise it breaks
+                    DatabaseEntry.path != path, DatabaseEntry.path == None))  # NOQA: E711
             else:
                 query = query.filter(DatabaseEntry.path == path)
         elif typ == 'wave':

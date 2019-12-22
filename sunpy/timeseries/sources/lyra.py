@@ -133,10 +133,10 @@ class LYRATimeSeries(GenericTimeSeries):
         # First column are times.  For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
         if hdulist[1].header['TUNIT1'] == 's':
-            times = start + TimeDelta(fits_record.field(0)*u.second)
+            times = start + TimeDelta(fits_record.field(0) * u.second)
         elif hdulist[1].header['TUNIT1'] == 'MIN':
             td = [int(n) for n in fits_record.field(0)]
-            times = start + TimeDelta(td*u.minute)
+            times = start + TimeDelta(td * u.minute)
         else:
             raise ValueError("Time unit in LYRA fits file not recognised.  "
                              "Value = {}".format(hdulist[1].header['TUNIT1']))
@@ -146,7 +146,7 @@ class LYRATimeSeries(GenericTimeSeries):
 
         for i, col in enumerate(fits_record.columns[1:-1]):
             # temporary patch for big-endian data bug on pandas 0.13
-            if fits_record.field(i+1).dtype.byteorder == '>' and sys.byteorder =='little':
+            if fits_record.field(i + 1).dtype.byteorder == '>' and sys.byteorder == 'little':
                 table[col.name] = fits_record.field(i + 1).byteswap().newbyteorder()
             else:
                 table[col.name] = fits_record.field(i + 1)
@@ -157,10 +157,10 @@ class LYRATimeSeries(GenericTimeSeries):
         data.sort_index(inplace=True)
 
         # Add the units data
-        units = OrderedDict([('CHANNEL1', u.W/u.m**2),
-                             ('CHANNEL2', u.W/u.m**2),
-                             ('CHANNEL3', u.W/u.m**2),
-                             ('CHANNEL4', u.W/u.m**2)])
+        units = OrderedDict([('CHANNEL1', u.W / u.m**2),
+                             ('CHANNEL2', u.W / u.m**2),
+                             ('CHANNEL3', u.W / u.m**2),
+                             ('CHANNEL4', u.W / u.m**2)])
         # TODO: check: http://www.wmo-sat.info/oscar/instruments/view/733
         return data, metadata, units
 

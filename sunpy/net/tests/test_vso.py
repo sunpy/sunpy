@@ -38,6 +38,7 @@ class MockQRResponse:
     >>> res.provideritem[1].record.recorditem  # doctest: +SKIP
     [2]
     """
+
     def __init__(self, records=None, errors=None):
 
         self.provideritem = list()

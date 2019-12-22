@@ -25,7 +25,7 @@ def test_invalid_show_cmaps():
      [ct.sxt_color_table, 'Invalid SXT filter type number.'],
      [ct.cor_color_table, 'Invalid COR number.'],
      [ct.trace_color_table, 'Invalid TRACE filter waveband passed.'],
-     [ct.sot_color_table, 'Invalid \(or not supported\) SOT type.'],
+     [ct.sot_color_table, r'Invalid \(or not supported\) SOT type.'],
      [ct.iris_sji_color_table, 'Invalid IRIS SJI waveband.'],
      [ct.stereo_hi_color_table, 'Valid HI cameras are 1 and 2'],
      [ct.suvi_color_table, 'Invalid SUVI wavelength.']]

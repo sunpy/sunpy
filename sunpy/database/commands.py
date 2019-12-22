@@ -22,6 +22,7 @@ class NoSuchEntryError(Exception):
     This exception is raised if it is attempted to remove an entry even though
     it does not exist in the database.
     """
+
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
@@ -36,6 +37,7 @@ class NonRemovableTagError(Exception):
     This exception is raised if it is attempted to remove a tag from a database
     entry even though it is not saved in this entry.
     """
+
     def __init__(self, database_entry, tag):
         self.database_entry = tag
         self.tag = tag
@@ -87,7 +89,10 @@ class CompositeOperation(DatabaseOperation):
         for operation in self._operations:
             # FIXME: What follows is the worst hack of my life. Enjoy.
             # Without it, the test test_clear_database would fail.
-            f = open(os.devnull, 'w'); f.write(repr(operation)); f.flush(); f.close()
+            f = open(os.devnull, 'w')
+            f.write(repr(operation))
+            f.flush()
+            f.close()
             operation()
 
     def undo(self):
@@ -106,6 +111,7 @@ class AddEntry(DatabaseOperation):
     the session; this has to be checked by the caller. The ``undo``
     method removes the entry from the session again.
     """
+
     def __init__(self, session, database_entry):
         self.session = session
         self.database_entry = database_entry
@@ -143,6 +149,7 @@ class RemoveEntry(DatabaseOperation):
     :exc:`sunpy.database.NoSuchEntryError` is raised. The ``undo`` method puts
     the database entry back into the session object.
     """
+
     def __init__(self, session, entry):
         self.session = session
         self.entry = entry
@@ -174,6 +181,7 @@ class EditEntry(DatabaseOperation):
     Example: ``EditEntry(entry, foo='bar')`` will set the attribute ``foo`` of
     ``entry`` to the value ``'bar'``.
     """
+
     def __init__(self, database_entry, **kwargs):
         self.database_entry = database_entry
         if not kwargs:
@@ -239,6 +247,7 @@ class RemoveTag(DatabaseOperation):
     :exc:`sunpy.database.NonRemovableTagError` is raised. The ``undo`` method
     puts the removed tag back into the tag list of the database entry.
     """
+
     def __init__(self, session, database_entry, tag):
         self.session = session
         self.database_entry = database_entry
@@ -294,6 +303,7 @@ class CommandManager:
     ``pop_undo_command``, ``push_redo_command``, and
     ``pop_redo_command``, respectively.
     """
+
     def __init__(self):
         self.undo_commands = []
         self.redo_commands = []

@@ -55,6 +55,7 @@ class TimeRange:
                34560000.0 seconds
     <BLANKLINE>
     """
+
     def __init__(self, a, b=None, format=None):
         # If a is a TimeRange object, copy attributes to new instance.
         self._t1 = None
@@ -395,7 +396,7 @@ class TimeRange:
         """
         dates = []
         dates = [
-            parse_time(self.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
+            parse_time(self.start.strftime('%Y-%m-%d')) + TimeDelta(i * u.day)
             for i in range(int(self.days.value) + 1)
         ]
         return dates

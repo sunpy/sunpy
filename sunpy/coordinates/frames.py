@@ -98,7 +98,7 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
     """
     obstime = TimeFrameAttributeSunPy()
 
-    _wrap_angle = 180*u.deg
+    _wrap_angle = 180 * u.deg
 
     def __init__(self, *args, **kwargs):
         self.object_name = None
@@ -172,7 +172,7 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
 
         # Make 3D if specified as 2D
         if (self._data is not None and self._data.norm().unit is u.one
-            and u.allclose(self._data.norm(), 1*u.one)):
+                and u.allclose(self._data.norm(), 1 * u.one)):
 
             self._data *= _RSUN.to(u.km)
 
@@ -288,7 +288,7 @@ class HeliographicCarrington(BaseHeliographic):
         (90., 2.54480438, 45.04442252)>
     """
     name = "heliographic_carrington"
-    _wrap_angle = 360*u.deg
+    _wrap_angle = 360 * u.deg
 
 
 @add_common_docstring(**_frame_parameters())
@@ -456,7 +456,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         """
         # Skip if we already are 3D
         distance = self.spherical.distance
-        if not (distance.unit is u.one and u.allclose(distance, 1*u.one)):
+        if not (distance.unit is u.one and u.allclose(distance, 1 * u.one)):
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):
@@ -471,7 +471,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
         b = -2 * self.observer.radius * np.cos(alpha)
         # Ingore sqrt of NaNs
         with np.errstate(invalid='ignore'):
-            d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
+            d = ((-1 * b) - np.sqrt(b**2 - 4 * c)) / 2
 
         return self.realize_frame(SphericalRepresentation(lon=lon,
                                                           lat=lat,

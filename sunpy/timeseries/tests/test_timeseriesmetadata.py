@@ -17,7 +17,8 @@ from sunpy.util.metadata import MetaDict
 def basic_1_md():
     tr = TimeRange('2010-01-01 13:59:57.468999', '2010-01-02 13:59:56.091999')
     colnames = ['column1', 'column2']
-    metadict = MetaDict(OrderedDict([('md1_key1', 'value1'), ('md1_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_1')]))
+    metadict = MetaDict(OrderedDict(
+        [('md1_key1', 'value1'), ('md1_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_1')]))
     lis = [(tr, colnames, metadict)]
     return TimeSeriesMetaData(lis)
 
@@ -26,7 +27,8 @@ def basic_1_md():
 def basic_2_md():
     tr = TimeRange('2010-01-02 13:59:57.468999', '2010-01-03 13:59:56.091999')
     colnames = ['column1', 'column2']
-    metadict = MetaDict(OrderedDict([('md2_key1', 'value1'), ('md2_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_2')]))
+    metadict = MetaDict(OrderedDict(
+        [('md2_key1', 'value1'), ('md2_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_2')]))
     lis = [(tr, colnames, metadict)]
     return TimeSeriesMetaData(lis)
 
@@ -35,7 +37,8 @@ def basic_2_md():
 def basic_3_md():
     tr = TimeRange('2010-01-03 13:59:57.468999', '2010-01-03 13:59:56.091999')
     colnames = ['column1', 'column2']
-    metadict = MetaDict(OrderedDict([('md3_key1', 'value1'), ('md3_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_3')]))
+    metadict = MetaDict(OrderedDict(
+        [('md3_key1', 'value1'), ('md3_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_3')]))
     lis = [(tr, colnames, metadict)]
     return TimeSeriesMetaData(lis)
 
@@ -44,7 +47,8 @@ def basic_3_md():
 def basic_4_md():
     tr = TimeRange('2010-01-01 20:59:57.468999', '2010-01-03 20:59:56.091999')
     colnames = ['md4_column1', 'md4_column2']
-    metadict = MetaDict(OrderedDict([('md4_key1', 'value1'), ('md4_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_4')]))
+    metadict = MetaDict(OrderedDict(
+        [('md4_key1', 'value1'), ('md4_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_4')]))
     tup = (tr, colnames, metadict)
     return TimeSeriesMetaData(tup)
 
@@ -53,7 +57,8 @@ def basic_4_md():
 def overlap_and_interleave_with_basic_1_md():
     tr = TimeRange('2010-01-01 01:01:00.0', '2010-01-02 01:01:00.0')
     colnames = ['column1', 'column2']
-    metadict = MetaDict(OrderedDict([('other_key1', 'value1'), ('other_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_5')]))
+    metadict = MetaDict(OrderedDict(
+        [('other_key1', 'value1'), ('other_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_5')]))
     lis = [(tr, colnames, metadict)]
     return TimeSeriesMetaData(lis)
 
@@ -279,8 +284,12 @@ def test_find_colname_filter(basic_4_md, complex_append_md, basic_ascending_appe
 
 
 def test_find_both_filters(basic_2_md, basic_4_md, complex_append_md):
-    assert complex_append_md.find(time='2010-01-02 20:59:57.468999', colname='column2') == basic_2_md
-    assert complex_append_md.find(time='2010-01-02 20:59:57.468999', colname='md4_column1') == basic_4_md
+    assert complex_append_md.find(
+        time='2010-01-02 20:59:57.468999',
+        colname='column2') == basic_2_md
+    assert complex_append_md.find(
+        time='2010-01-02 20:59:57.468999',
+        colname='md4_column1') == basic_4_md
 
 
 # =============================================================================
@@ -297,21 +306,30 @@ def test_get_no_filters(complex_append_md):
 
 
 def test_get_time_filter(complex_append_md):
-    assert complex_append_md.get('md1_key1', time='2010-01-01 20:59:57.468999').values() == ['value1']
-    assert complex_append_md.get('md2_key2', time='2010-01-02 20:59:57.468999').values() == ['value2']
-    assert complex_append_md.get('all_same', time='2010-01-01 20:59:57.468999').values() == ['value3']
-    assert complex_append_md.get('all_different', time='2010-01-01 20:59:57.468999').values() == ['diff_1', 'diff_4']
+    assert complex_append_md.get('md1_key1',
+                                 time='2010-01-01 20:59:57.468999').values() == ['value1']
+    assert complex_append_md.get('md2_key2',
+                                 time='2010-01-02 20:59:57.468999').values() == ['value2']
+    assert complex_append_md.get('all_same',
+                                 time='2010-01-01 20:59:57.468999').values() == ['value3']
+    assert complex_append_md.get(
+        'all_different', time='2010-01-01 20:59:57.468999').values() == ['diff_1', 'diff_4']
 
 
 def test_get_colname_filter(complex_append_md):
     assert complex_append_md.get('md1_key1', colname='column1').values() == ['value1']
     assert complex_append_md.get('md2_key2', colname='column2').values() == ['value2']
     assert complex_append_md.get('all_same', colname='column1').values() == ['value3']
-    assert complex_append_md.get('all_different', colname='column1').values() == ['diff_1', 'diff_2', 'diff_3']
+    assert complex_append_md.get(
+        'all_different', colname='column1').values() == [
+        'diff_1', 'diff_2', 'diff_3']
 
 
 def test_get_both_filters(complex_append_md):
-    assert complex_append_md.get('all_different', time='2010-01-02 20:59:57.468999', colname='column2').values() == ['diff_2']
+    assert complex_append_md.get(
+        'all_different',
+        time='2010-01-02 20:59:57.468999',
+        colname='column2').values() == ['diff_2']
 
 
 # =============================================================================
@@ -358,7 +376,8 @@ def test_update_colname_filter(complex_append_md):
 
 def test_update_both_filters(complex_append_md):
     updated_md = copy.deepcopy(complex_append_md)
-    updated_md.update({'all_same': 'updated'}, colname='column1', time='2010-01-01 23:59:57.468999', overwrite=True)
+    updated_md.update({'all_same': 'updated'}, colname='column1',
+                      time='2010-01-01 23:59:57.468999', overwrite=True)
     assert updated_md.metadata[0][2]['all_same'] == 'updated'
     assert updated_md.metadata[1][2]['all_same'] == updated_md.metadata[2][2]['all_same'] == updated_md.metadata[3][2]['all_same'] == 'value3'
 
@@ -396,7 +415,8 @@ def test_to_string_depth(basic_1_md):
     depth_2_str = basic_1_md.to_string(depth=2)
     assert len(depth_2_str.split('\n')) == 8
     assert len(depth_2_str.split('...')) == 2
-    assert (basic_1_md.metadata[0][1][0] in depth_2_str) and (basic_1_md.metadata[0][1][1] in depth_2_str)
+    assert (basic_1_md.metadata[0][1][0] in depth_2_str) and (
+        basic_1_md.metadata[0][1][1] in depth_2_str)
 
 
 def test_to_string_width(basic_1_md):
@@ -428,8 +448,7 @@ def test_timeranges(basic_ascending_append_md):
 
 
 def test_columns(complex_append_md):
-    lis = complex_append_md.metadata[0][1] + complex_append_md.metadata[1][1]
-    lis.sort()
+    lis = sorted(complex_append_md.metadata[0][1] + complex_append_md.metadata[1][1])
     assert complex_append_md.columns == lis
 
 
@@ -454,15 +473,19 @@ def test_remove_column(complex_append_md):
     col_removed_md = copy.deepcopy(complex_append_md)
     col = complex_append_md.metadata[0][1][0]
     col_removed_md._remove_columns(col)
-    assert col_removed_md.metadata[0][1] == col_removed_md.metadata[2][1] == col_removed_md.metadata[3][1] == [complex_append_md.metadata[0][1][1]]
-    assert col_removed_md.metadata[1][1] == [complex_append_md.metadata[1][1][0], complex_append_md.metadata[1][1][1]]
+    assert col_removed_md.metadata[0][1] == col_removed_md.metadata[2][1] == col_removed_md.metadata[3][1] == [
+        complex_append_md.metadata[0][1][1]]
+    assert col_removed_md.metadata[1][1] == [
+        complex_append_md.metadata[1][1][0],
+        complex_append_md.metadata[1][1][1]]
 
 
 def test_remove_columns(complex_append_md):
     cols_removed_md = copy.deepcopy(complex_append_md)
     lis = [complex_append_md.metadata[0][1][0], complex_append_md.metadata[1][1][1]]
     cols_removed_md._remove_columns(lis)
-    assert cols_removed_md.metadata[0][1] == cols_removed_md.metadata[2][1] == cols_removed_md.metadata[3][1] == [complex_append_md.metadata[0][1][1]]
+    assert cols_removed_md.metadata[0][1] == cols_removed_md.metadata[2][1] == cols_removed_md.metadata[3][1] == [
+        complex_append_md.metadata[0][1][1]]
     assert cols_removed_md.metadata[1][1] == [complex_append_md.metadata[1][1][0]]
 
 

@@ -1,4 +1,3 @@
-
 """
 =================================
 Finding and masking bright pixels

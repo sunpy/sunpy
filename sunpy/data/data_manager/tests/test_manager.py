@@ -82,7 +82,7 @@ def test_override_file(manager, storage, downloader, data_function, tmpdir):
     # Outside the context manager file is default
     folder = tmpdir.strpath
     data_function(default_tester)
-    write_to_test_file(str(Path(folder+'/another_file')), 'a')
+    write_to_test_file(str(Path(folder + '/another_file')), 'a')
 
     with manager.override_file('test_file', f'file://{folder}/another_file'):
         # Inside the file is replaced

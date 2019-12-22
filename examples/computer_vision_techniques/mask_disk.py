@@ -1,4 +1,3 @@
-
 """
 ==========================
 Masking out the solar disk

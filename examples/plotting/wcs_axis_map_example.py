@@ -1,4 +1,3 @@
-
 """
 ===========================
 Imshow and maps coordinates

@@ -194,7 +194,7 @@ class GreatArc:
             end co-ordinate.
         """
         these_points = self._points_handler(points)
-        return these_points.reshape(len(these_points), 1)*self.inner_angle
+        return these_points.reshape(len(these_points), 1) * self.inner_angle
 
     def distances(self, points=None):
         """

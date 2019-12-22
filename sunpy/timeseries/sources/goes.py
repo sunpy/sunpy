@@ -189,7 +189,7 @@ class XRSTimeSeries(GenericTimeSeries):
         else:
             raise ValueError("Don't know how to parse this file")
 
-        times = start_time + TimeDelta(seconds_from_start*u.second)
+        times = start_time + TimeDelta(seconds_from_start * u.second)
         times.precision = 9
 
         # remove bad values as defined in header comments
@@ -205,8 +205,8 @@ class XRSTimeSeries(GenericTimeSeries):
         data.sort_index(inplace=True)
 
         # Add the units
-        units = OrderedDict([('xrsa', u.W/u.m**2),
-                             ('xrsb', u.W/u.m**2)])
+        units = OrderedDict([('xrsa', u.W / u.m**2),
+                             ('xrsb', u.W / u.m**2)])
         return data, header, units
 
     @classmethod

@@ -1,4 +1,3 @@
-
 """
 ======================================
 Downloading and plotting LASCO C3 data

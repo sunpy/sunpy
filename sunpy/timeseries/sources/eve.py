@@ -104,7 +104,7 @@ class ESPTimeSeries(GenericTimeSeries):
         header.update({'TELESCOP': hdulist[1].header['TELESCOP'].split()[0]})
 
         start_time = parse_time(hdulist[1].header['T_OBS'])
-        times = start_time + TimeDelta(hdulist[1].data['SOD']*u.second)
+        times = start_time + TimeDelta(hdulist[1].data['SOD'] * u.second)
 
         colnames = ['QD', 'CH_18', 'CH_26', 'CH_30', 'CH_36']
 
@@ -113,11 +113,11 @@ class ESPTimeSeries(GenericTimeSeries):
             'datetime64'), columns=colnames)
         data.sort_index(inplace=True)
 
-        units = OrderedDict([('QD', u.W/u.m**2),
-                             ('CH_18', u.W/u.m**2),
-                             ('CH_26', u.W/u.m**2),
-                             ('CH_30', u.W/u.m**2),
-                             ('CH_36', u.W/u.m**2)])
+        units = OrderedDict([('QD', u.W / u.m**2),
+                             ('CH_18', u.W / u.m**2),
+                             ('CH_26', u.W / u.m**2),
+                             ('CH_30', u.W / u.m**2),
+                             ('CH_36', u.W / u.m**2)])
 
         return data, header, units
 
@@ -297,16 +297,16 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             data[data == float(missing_data_val)] = np.nan
 
         # Add the units data
-        units = OrderedDict([('XRS-B proxy', u.W/u.m**2),
-                             ('XRS-A proxy', u.W/u.m**2),
-                             ('SEM proxy', u.W/u.m**2),
-                             ('0.1-7ESPquad', u.W/u.m**2),
-                             ('17.1ESP', u.W/u.m**2),
-                             ('25.7ESP', u.W/u.m**2),
-                             ('30.4ESP', u.W/u.m**2),
-                             ('36.6ESP', u.W/u.m**2),
+        units = OrderedDict([('XRS-B proxy', u.W / u.m**2),
+                             ('XRS-A proxy', u.W / u.m**2),
+                             ('SEM proxy', u.W / u.m**2),
+                             ('0.1-7ESPquad', u.W / u.m**2),
+                             ('17.1ESP', u.W / u.m**2),
+                             ('25.7ESP', u.W / u.m**2),
+                             ('30.4ESP', u.W / u.m**2),
+                             ('36.6ESP', u.W / u.m**2),
                              ('darkESP', u.ct),
-                             ('121.6MEGS-P', u.W/u.m**2),
+                             ('121.6MEGS-P', u.W / u.m**2),
                              ('darkMEGS-P', u.ct),
                              ('q0ESP', u.dimensionless_unscaled),
                              ('q1ESP', u.dimensionless_unscaled),

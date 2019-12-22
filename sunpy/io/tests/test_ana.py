@@ -11,11 +11,11 @@ from sunpy.tests.helpers import skip_ana
 img_size = (456, 345)
 img_src = np.arange(np.product(img_size))
 img_src.shape = img_size
-img_i8 = img_src*2**8/img_src.max()
+img_i8 = img_src * 2**8 / img_src.max()
 img_i8 = img_i8.astype(np.int8)
-img_i16 = img_src*2**16/img_src.max()
+img_i16 = img_src * 2**16 / img_src.max()
 img_i16 = img_i16.astype(np.int16)
-img_f32 = img_src*1.0/img_src.max()
+img_f32 = img_src * 1.0 / img_src.max()
 img_f32 = img_f32.astype(np.float32)
 
 
@@ -67,11 +67,12 @@ def test_f32u():
 @skip_ana
 def test_f32c():
     # TODO: Bug with same code. Needs to be tracked down.
-    #Test if float 32 compressed functions
+    # Test if float 32 compressed functions
     #ana.write('/tmp/pyana-testf32c', img_f32, 1, 'testcase', 0)
     #img_f32c_rec = ana.read('/tmp/pyana-testf32c', 1)
-    #assert_(np.sum(img_f32c_rec[0][1]- img_f32) == 0,
-    #        msg="Storing 32 bits float data without compression failed (diff: %g)" % (1.0*np.sum(img_f32c_rec[0][1] - img_f32)))
+    # assert_(np.sum(img_f32c_rec[0][1]- img_f32) == 0,
+    # msg="Storing 32 bits float data without compression failed (diff: %g)" %
+    # (1.0*np.sum(img_f32c_rec[0][1] - img_f32)))
     afilename = tempfile.NamedTemporaryFile().name
     with pytest.raises(RuntimeError):
         ana.write(afilename, img_f32, 'testcase', 1)

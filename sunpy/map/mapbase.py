@@ -166,7 +166,7 @@ class GenericMap(NDData):
             # We create a slice that removes all but the 'last' two
             # dimensions. (Note dimensions in ndarray are in reverse order)
 
-            new_2d_slice = [0]*(ndim-2)
+            new_2d_slice = [0] * (ndim - 2)
             new_2d_slice.extend([slice(None), slice(None)])
             data = data[tuple(new_2d_slice)]
             # Warn the user that the data has been truncated
@@ -533,7 +533,7 @@ class GenericMap(NDData):
         """
         The physical coordinate for the bottom left [0,0] pixel.
         """
-        return self.pixel_to_world(0*u.pix, 0*u.pix)
+        return self.pixel_to_world(0 * u.pix, 0 * u.pix)
 
     @property
     def top_right_coord(self):
@@ -646,7 +646,7 @@ class GenericMap(NDData):
                                                         'lat': self.meta.get('crlt_obs'),
                                                         'radius': self.meta.get('dsun_obs'),
                                                         'unit': (u.deg, u.deg, u.m),
-                                                        'frame': "heliographic_carrington"}),]
+                                                        'frame': "heliographic_carrington"}), ]
 
     def _remove_existing_observer_location(self):
         """
@@ -792,7 +792,7 @@ class GenericMap(NDData):
         p = np.deg2rad(self.meta.get('CROTA2', 0))
 
         return np.array([[np.cos(p), -1 * lam * np.sin(p)],
-                         [1/lam * np.sin(p), np.cos(p)]])
+                         [1 / lam * np.sin(p), np.cos(p)]])
 
     @property
     def fits_header(self):
@@ -871,7 +871,7 @@ class GenericMap(NDData):
                 warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
 
         if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
-            self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
+                self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
             warnings.warn("SunPy Map does not support three dimensional data "
                           "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.",
                           SunpyUserWarning)
@@ -903,7 +903,8 @@ class GenericMap(NDData):
         """
         if not isinstance(coordinate, (SkyCoord,
                                        astropy.coordinates.BaseCoordinateFrame)):
-            raise ValueError("world_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
+            raise ValueError(
+                "world_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
 
         native_frame = coordinate.transform_to(self.coordinate_frame)
         lon, lat = u.Quantity(self._get_lon_lat(native_frame)).to(u.deg)
@@ -1324,7 +1325,8 @@ class GenericMap(NDData):
                                     astropy.coordinates.BaseCoordinateFrame)):
             if not top_right:
                 if bottom_left.shape[0] != 2:
-                    raise ValueError("If top_right is not specified bottom_left must have length two.")
+                    raise ValueError(
+                        "If top_right is not specified bottom_left must have length two.")
                 else:
                     lon, lat = self._get_lon_lat(bottom_left)
                     top_right = u.Quantity([lon[1], lat[1]])
@@ -1355,7 +1357,8 @@ class GenericMap(NDData):
             y_pixels = u.Quantity([top_right[1], bottom_left[1]]).value
 
         else:
-            raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
+            raise ValueError(
+                "Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
 
         # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
@@ -1395,7 +1398,7 @@ class GenericMap(NDData):
         return new_map
 
     @u.quantity_input
-    def superpixel(self, dimensions: u.pixel, offset: u.pixel=(0, 0)*u.pixel, func=np.sum):
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0) * u.pixel, func=np.sum):
         """
         Returns a new map consisting of superpixels formed by applying 'func'
         to the original map data.
@@ -1468,8 +1471,10 @@ class GenericMap(NDData):
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
         lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5*(offset[0]*self.scale[0]).to(self.spatial_units[0]).value
-        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5*(offset[1]*self.scale[1]).to(self.spatial_units[1]).value
+        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5 * \
+            (offset[0] * self.scale[0]).to(self.spatial_units[0]).value
+        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5 * \
+            (offset[1] * self.scale[1]).to(self.spatial_units[1]).value
 
         # Create new map instance
         if self.mask is not None:
@@ -1499,7 +1504,7 @@ class GenericMap(NDData):
         return cmap
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing: u.deg = 15 * u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.

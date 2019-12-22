@@ -113,7 +113,7 @@ def default_wcs_grid(axes):
 
 
 @u.quantity_input
-def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs):
+def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10 * u.deg, **kwargs):
     """
     Create a heliographic overlay using
     `~astropy.visualization.wcsaxes.WCSAxes`.

@@ -1,8 +1,6 @@
 """
-This module provides the `Fido.
-
-<sunpy.net.fido_factory.UnifiedDownloaderFactory>` instance of
-`sunpy.net.fido_factory.UnifiedDownloaderFactory` it also provides the
+This module provides the `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`
+instance of `sunpy.net.fido_factory.UnifiedDownloaderFactory` it also provides the
 `~sunpy.net.fido_factory.UnifiedResponse` class which
 `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>` returns and the
 `~sunpy.net.fido_factory.DownloadResponse` class that is returned by

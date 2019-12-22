@@ -17,11 +17,14 @@ fitspath = glob.glob(os.path.join(path, "cor1_20090615_000500_s4c1A.fts"))
 cor = Map(fitspath)
 
 # COR Tests
+
+
 def test_fitstoEIT():
     """
     Tests the creation of CORMap using FITS.
     """
     assert isinstance(cor, CORMap)
+
 
 def test_is_datasource_for():
     """
@@ -32,11 +35,13 @@ def test_is_datasource_for():
     """
     assert cor.is_datasource_for(cor.data, cor.meta)
 
+
 def test_measurement():
     """
     Tests the measurement property of the CORMap object.
     """
     assert cor.measurement == "white-light"
+
 
 def test_observatory():
     """

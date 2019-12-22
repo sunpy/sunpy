@@ -94,7 +94,7 @@ class RHESSIClient(GenericClient):
         diff_months = (dt.end.datetime.year - dt.start.datetime.year) * \
             12 + dt.end.datetime.month - dt.start.datetime.month
         first_month = datetime(dt.start.datetime.year, dt.start.datetime.month, 1)
-        month_list = rrule(MONTHLY, dtstart=first_month, count=diff_months+1)
+        month_list = rrule(MONTHLY, dtstart=first_month, count=diff_months + 1)
 
         # need to download and inspect the dbase file to determine the filename
         # for the observing summary data
@@ -164,7 +164,7 @@ class RHESSIClient(GenericClient):
     def _get_time_for_url(self, urls):
         ts = [datetime.strptime(url.split("hsi_obssumm_")[1].split("_")[0],
                                 "%Y%m%d") for url in urls]
-        return [TimeRange(t, (1*u.day-1*u.ms)) for t in ts]
+        return [TimeRange(t, (1 * u.day - 1 * u.ms)) for t in ts]
 
     def _makeimap(self):
         """

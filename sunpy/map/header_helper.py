@@ -32,14 +32,14 @@ def meta_keywords():
 @u.quantity_input(equivalencies=u.spectral())
 def make_fitswcs_header(data, coordinate,
                         reference_pixel: u.pix = None,
-                        scale: u.arcsec/u.pix = None,
+                        scale: u.arcsec / u.pix = None,
                         rotation_angle: u.deg = None,
                         rotation_matrix=None,
                         instrument=None,
                         telescope=None,
                         observatory=None,
-                        wavelength: u.angstrom=None,
-                        exposure: u.s=None,
+                        wavelength: u.angstrom = None,
+                        exposure: u.s = None,
                         projection_code="TAN"):
     """
     Function to create a FITS-WCS header from a coordinate object
@@ -124,7 +124,8 @@ def make_fitswcs_header(data, coordinate,
 
     meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
-    if hasattr(coordinate, "observer") and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
+    if hasattr(coordinate, "observer") and isinstance(
+            coordinate.observer, frames.BaseCoordinateFrame):
         meta_observer = get_observer_meta(coordinate.observer, coordinate.rsun)
         meta_wcs.update(meta_observer)
 
@@ -132,9 +133,9 @@ def make_fitswcs_header(data, coordinate,
     meta_wcs.update(meta_instrument)
 
     if reference_pixel is None:
-        reference_pixel = u.Quantity([(shape[1] + 1)/2.*u.pixel, (shape[0] + 1)/2.*u.pixel])
+        reference_pixel = u.Quantity([(shape[1] + 1) / 2. * u.pixel, (shape[0] + 1) / 2. * u.pixel])
     if scale is None:
-        scale = [1., 1.] * (u.arcsec/u.pixel)
+        scale = [1., 1.] * (u.arcsec / u.pixel)
 
     meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lon.to_value(meta_wcs['cunit1']),
                                               coordinate.spherical.lat.to_value(meta_wcs['cunit2']))
@@ -142,8 +143,8 @@ def make_fitswcs_header(data, coordinate,
     meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel),
                                               reference_pixel[1].to_value(u.pixel))
 
-    meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0].to_value(meta_wcs['cunit1']/u.pixel),
-                                              scale[1].to_value(meta_wcs['cunit2']/u.pixel))
+    meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0].to_value(meta_wcs['cunit1'] / u.pixel),
+                                              scale[1].to_value(meta_wcs['cunit2'] / u.pixel))
 
     if rotation_angle is not None and rotation_matrix is not None:
         raise ValueError("Can not specify both rotation angle and rotation matrix.")
@@ -153,7 +154,7 @@ def make_fitswcs_header(data, coordinate,
         p = np.deg2rad(rotation_angle)
 
         rotation_matrix = np.array([[np.cos(p), -1 * lam * np.sin(p)],
-                                    [1/lam * np.sin(p), np.cos(p)]])
+                                    [1 / lam * np.sin(p), np.cos(p)]])
 
     if rotation_matrix is not None:
         (meta_wcs['PC1_1'], meta_wcs['PC1_2'],

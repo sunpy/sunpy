@@ -1,4 +1,3 @@
-
 """
 ============================================
 Interacting with Data Using SunPy TimeSeries

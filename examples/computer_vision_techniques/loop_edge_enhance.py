@@ -1,4 +1,3 @@
-
 """
 ============================
 Edge Enhancing Coronal Loops

@@ -25,6 +25,7 @@ class PrimeKey(Attr):
     """
     Prime Keys.
     """
+
     def __init__(self, label, value):
         Attr.__init__(self)
         self.label = label
@@ -43,6 +44,7 @@ class Segment(Attr):
     Segments choose which files to download when there are more than one
     present for each record e.g. 'image'.
     """
+
     def __init__(self, value):
         Attr.__init__(self)
         self.value = value

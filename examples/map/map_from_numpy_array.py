@@ -1,4 +1,3 @@
-
 """
 ================================
 Generating a map from data array
@@ -24,7 +23,8 @@ data = np.arange(0, 100).reshape(10, 10)
 # Next we need to create the metadata. This is made easier using the `~sunpy.map.header_helper`
 # function which will create a header object for you. First define the reference coordinate
 # which requires a time and an observer location.
-coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28 08:24', observer='earth', frame=frames.Helioprojective)
+coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime='2013-10-28 08:24',
+                 observer='earth', frame=frames.Helioprojective)
 
 ##############################################################################
 # Let's pass that into the helper function along with some parameters.

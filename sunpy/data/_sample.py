@@ -82,12 +82,12 @@ def download_sample_data(overwrite=False):
     already_downloaded = []
     for file_name in _sample_files.keys():
         url = urljoin(first_url, file_name)
-        fname = sampledata_dir/file_name
+        fname = sampledata_dir / file_name
         # We have to avoid calling download if we already have all the files.
         if fname.exists() and not overwrite:
             already_downloaded.append(fname)
         else:
-            dl.enqueue_file(url, filename=sampledata_dir/file_name)
+            dl.enqueue_file(url, filename=sampledata_dir / file_name)
 
     if dl.queued_downloads:
         results = dl.download()

@@ -155,7 +155,7 @@ def get_detector_sun_angles_for_date(date, file):
     """
 
     date = parse_time(date)
-    tran = TimeRange(date, date + TimeDelta(1*u.day))
+    tran = TimeRange(date, date + TimeDelta(1 * u.day))
     scx, scz, times = get_scx_scz_in_timerange(tran, file)
 
     # retrieve the detector angle information in spacecraft coordinates

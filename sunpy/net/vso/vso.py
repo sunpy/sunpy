@@ -734,7 +734,7 @@ class VSOClient(BaseClient):
 
         return self.create_getdatarequest(
             {k: [x.fileid for x in v]
-                 for k, v in self.by_provider(response).items()},
+             for k, v in self.by_provider(response).items()},
             methods, info
         )
 

@@ -64,7 +64,8 @@ def test_parse_observing_summary_dbase_file():
     Test that we get the observing summary database file with the content we
     expect.
     """
-    obssum = rhessi.parse_observing_summary_dbase_file(get_test_filepath("hsi_obssumm_filedb_201104.txt"))
+    obssum = rhessi.parse_observing_summary_dbase_file(
+        get_test_filepath("hsi_obssumm_filedb_201104.txt"))
 
     assert obssum['filename'][0][0:20] == 'hsi_obssumm_20110401'
     assert obssum['filename'][1][0:20] == 'hsi_obssumm_20110402'

@@ -14,5 +14,6 @@ class FileHeader(OrderedDict):
     Open read all file types should format their header into a
     FileHeader
     """
+
     def __init__(self, *args, **kwargs):
         OrderedDict.__init__(self, *args, **kwargs)

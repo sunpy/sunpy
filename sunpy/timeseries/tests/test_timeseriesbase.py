@@ -60,9 +60,11 @@ def esp_test_ts():
     # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='ESP')
     return sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
 
+
 @pytest.fixture
 def fermi_gbm_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath,
+    # filename), source='GBMSummary')
     with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
         return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
 
@@ -93,13 +95,15 @@ def rhessi_test_ts():
 
 @pytest.fixture
 def noaa_ind_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath,
+    # filename), source='NOAAIndices')
     return sunpy.timeseries.TimeSeries(noaa_ind_filepath, source='NOAAIndices')
 
 
 @pytest.fixture
 def noaa_pre_test_ts():
-    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
+    # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath,
+    # filename), source='NOAAPredictIndices')
     return sunpy.timeseries.TimeSeries(
         noaa_pre_filepath, source='NOAAPredictIndices')
 
@@ -108,7 +112,7 @@ def noaa_pre_test_ts():
 def generic_ts():
     # Generate the data and the corrisponding dates
     base = parse_time("2016/10/01T05:00:00")
-    dates = base - TimeDelta(np.arange(24 * 60)*u.minute)
+    dates = base - TimeDelta(np.arange(24 * 60) * u.minute)
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
     # Create the data DataFrame, header MetaDict and units OrderedDict
@@ -135,7 +139,7 @@ def concatenate_multi_files_ts():
 def table_ts():
     # Generate the data and the corresponding dates
     base = parse_time(datetime.datetime.today())
-    times = base - TimeDelta(np.arange(24 * 60)*u.minute)
+    times = base - TimeDelta(np.arange(24 * 60) * u.minute)
     intensity = u.Quantity(
         np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60)))), u.W / u.m ** 2)
 
@@ -276,9 +280,9 @@ def test_truncation_dates(eve_test_ts, truncation_dates_test_ts):
 def truncated_none_ts(concatenate_multi_files_ts):
     # This timerange covers the whole range of metadata, so no change is expected
     a = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - TimeDelta(1*u.day)
+        0].start - TimeDelta(1 * u.day)
     b = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + TimeDelta(1*u.day)
+        0].end + TimeDelta(1 * u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -294,7 +298,7 @@ def truncated_start_ts(concatenate_multi_files_ts):
     # This time range starts after the original, so expect truncation
     a = concatenate_multi_files_ts.meta.metadata[1][0].center
     b = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + TimeDelta(1*u.day)
+        0].end + TimeDelta(1 * u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -320,7 +324,7 @@ def test_truncated_start_ts(concatenate_multi_files_ts, truncated_start_ts):
 def truncated_end_ts(concatenate_multi_files_ts):
     # This time range ends before the original, so expect truncation
     a = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - TimeDelta(1*u.day)
+        0].start - TimeDelta(1 * u.day)
     b = concatenate_multi_files_ts.meta.metadata[-2][0].center
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
@@ -383,9 +387,9 @@ def test_truncated_both_ts(concatenate_multi_files_ts, truncated_both_ts):
 def truncated_new_tr_all_before_ts(concatenate_multi_files_ts):
     # Time range begins and ends before the data
     a = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - TimeDelta(2*u.day)
+        0].start - TimeDelta(2 * u.day)
     b = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - TimeDelta(1*u.day)
+        0].start - TimeDelta(1 * u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -396,9 +400,9 @@ def truncated_new_tr_all_before_ts(concatenate_multi_files_ts):
 def truncated_new_tr_all_after_ts(concatenate_multi_files_ts):
     # Time range begins and ends after the data
     a = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + TimeDelta(1*u.day)
+        0].end + TimeDelta(1 * u.day)
     b = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + TimeDelta(2*u.day)
+        0].end + TimeDelta(2 * u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -508,7 +512,7 @@ def test_concatenation_different_data_error(eve_test_ts, fermi_gbm_test_ts):
 def test_generic_construction_concatenation():
     # Generate the data and the corrisponding dates
     base = parse_time(datetime.datetime.today())
-    times = base - TimeDelta(np.arange(24 * 60)*u.minute)
+    times = base - TimeDelta(np.arange(24 * 60) * u.minute)
     intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
     intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 
@@ -694,15 +698,16 @@ def test_generic_ts_peek(generic_ts):
 
 
 def test_eve_invalid_peek(eve_test_ts):
-    a = eve_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = eve_test_ts.time_range.start - TimeDelta(1*u.day)
+    a = eve_test_ts.time_range.start - TimeDelta(2 * u.day)
+    b = eve_test_ts.time_range.start - TimeDelta(1 * u.day)
     empty_ts = eve_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
+
 def test_esp_invalid_peek(esp_test_ts):
-    a = esp_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = esp_test_ts.time_range.start - TimeDelta(1*u.day)
+    a = esp_test_ts.time_range.start - TimeDelta(2 * u.day)
+    b = esp_test_ts.time_range.start - TimeDelta(1 * u.day)
     empty_ts = esp_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
@@ -710,10 +715,10 @@ def test_esp_invalid_peek(esp_test_ts):
 
 def test_fermi_gbm_invalid_peek(fermi_gbm_test_ts):
     with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        a = fermi_gbm_test_ts.time_range.start - TimeDelta(2*u.day)
+        a = fermi_gbm_test_ts.time_range.start - TimeDelta(2 * u.day)
 
     with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
-        b = fermi_gbm_test_ts.time_range.start - TimeDelta(1*u.day)
+        b = fermi_gbm_test_ts.time_range.start - TimeDelta(1 * u.day)
 
     empty_ts = fermi_gbm_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError), pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
@@ -721,48 +726,48 @@ def test_fermi_gbm_invalid_peek(fermi_gbm_test_ts):
 
 
 def test_norh_invalid_peek(norh_test_ts):
-    a = norh_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = norh_test_ts.time_range.start - TimeDelta(1*u.day)
+    a = norh_test_ts.time_range.start - TimeDelta(2 * u.day)
+    b = norh_test_ts.time_range.start - TimeDelta(1 * u.day)
     empty_ts = norh_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_lyra_invalid_peek(lyra_test_ts):
-    a = lyra_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = lyra_test_ts.time_range.start - TimeDelta(1*u.day)
+    a = lyra_test_ts.time_range.start - TimeDelta(2 * u.day)
+    b = lyra_test_ts.time_range.start - TimeDelta(1 * u.day)
     empty_ts = lyra_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_rhessi_invalid_peek(rhessi_test_ts):
-    a = rhessi_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = rhessi_test_ts.time_range.start - TimeDelta(1*u.day)
+    a = rhessi_test_ts.time_range.start - TimeDelta(2 * u.day)
+    b = rhessi_test_ts.time_range.start - TimeDelta(1 * u.day)
     empty_ts = rhessi_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_noaa_ind_invalid_peek(noaa_ind_test_ts):
-    a = noaa_ind_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = noaa_ind_test_ts.time_range.start - TimeDelta(1*u.day)
+    a = noaa_ind_test_ts.time_range.start - TimeDelta(2 * u.day)
+    b = noaa_ind_test_ts.time_range.start - TimeDelta(1 * u.day)
     empty_ts = noaa_ind_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_noaa_pre_invalid_peek(noaa_pre_test_ts):
-    a = noaa_pre_test_ts.time_range.start - TimeDelta(2*u.day)
-    b = noaa_pre_test_ts.time_range.start - TimeDelta(1*u.day)
+    a = noaa_pre_test_ts.time_range.start - TimeDelta(2 * u.day)
+    b = noaa_pre_test_ts.time_range.start - TimeDelta(1 * u.day)
     empty_ts = noaa_pre_test_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()
 
 
 def test_generic_ts_invalid_peek(generic_ts):
-    a = generic_ts.time_range.start - TimeDelta(2*u.day)
-    b = generic_ts.time_range.start - TimeDelta(1*u.day)
+    a = generic_ts.time_range.start - TimeDelta(2 * u.day)
+    b = generic_ts.time_range.start - TimeDelta(1 * u.day)
     empty_ts = generic_ts.truncate(TimeRange(a, b))
     with pytest.raises(ValueError):
         empty_ts.peek()

@@ -541,6 +541,7 @@ class cached_property(object):
     On access, it calls the underlying function and sets the value in
     `__dict__` so future accesses will not re-call the property.
     """
+
     def __init__(self, f):
         self._fname = f.__name__
         self._f = f
@@ -720,7 +721,7 @@ class LinuxDistribution(object):
                 or self.lsb_release_attr('description')
             if not name:
                 name = self.distro_release_attr('name') \
-                       or self.uname_attr('name')
+                    or self.uname_attr('name')
                 version = self.version(pretty=True)
                 if version:
                     name = name + ' ' + version
@@ -1091,11 +1092,10 @@ class LinuxDistribution(object):
             return distro_info
         else:
             try:
-                basenames = os.listdir(_UNIXCONFDIR)
+                basenames = sorted(os.listdir(_UNIXCONFDIR))
                 # We sort for repeatability in cases where there are multiple
                 # distro specific files; e.g. CentOS, Oracle, Enterprise all
                 # containing `redhat-release` on top of their own.
-                basenames.sort()
             except OSError:
                 # This may occur when /etc is not readable but we can't be
                 # sure about the *-release files. Check common entries of

@@ -1,4 +1,3 @@
-
 """
 ===========================
 Enhancing off-disk emission

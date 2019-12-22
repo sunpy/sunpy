@@ -1,4 +1,3 @@
-
 """
 ========================
 Creating a Composite map

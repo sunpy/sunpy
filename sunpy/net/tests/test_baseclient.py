@@ -20,6 +20,7 @@ CLIENT_LIST.remove(dataretriever.client.GenericClient)
 CLIENT_NAMES = base_client.BaseClient._registry.keys()
 CLIENTS_REG = base_client.BaseClient._registry.items()
 
+
 @pytest.mark.parametrize("client", CLIENT_LIST)
 def test_registry(client):
     """

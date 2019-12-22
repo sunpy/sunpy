@@ -75,12 +75,15 @@ class TimeSeriesMetaData:
     |2012-06-02T00:00:00.000    |                 |                                                   |
     |-------------------------------------------------------------------------------------------------|
     """
+
     def __init__(self, meta=None, timerange=None, colnames=None):
         self.metadata = []
         # Parse in arguments
         if not isinstance(meta, type(None)):
-            if isinstance(meta, (dict, MetaDict)) and isinstance(timerange, TimeRange) and isinstance(colnames, list):
-                # Given a single metadata entry as a dictionary with additional timerange and colnames.
+            if isinstance(meta, (dict, MetaDict)) and isinstance(
+                    timerange, TimeRange) and isinstance(colnames, list):
+                # Given a single metadata entry as a dictionary with additional timerange
+                # and colnames.
                 self.metadata.append((timerange, colnames, meta))
             elif isinstance(meta, tuple):
                 # Given a single metadata entry as a tuple.
@@ -424,8 +427,7 @@ class TimeSeriesMetaData:
         all_cols = set()
         for metatuple in self.metadata:
             all_cols.update(metatuple[1])
-        all_cols = list(all_cols)
-        all_cols.sort()
+        all_cols = sorted(all_cols)
         return all_cols
 
     @property
@@ -459,8 +461,7 @@ class TimeSeriesMetaData:
         for metatuple in self.metadata:
             for key, value in metatuple[2].items():
                 all_vals.add(str(value))
-        all_vals = list(all_vals)
-        all_vals.sort()
+        all_vals = sorted(all_vals)
         return all_vals
 
     @property
@@ -531,12 +532,15 @@ class TimeSeriesMetaData:
         indices = range(0, len(self.metadata))
         for i, j in itertools.combinations(indices, 2):
             # Check if the TimeRanges overlap
-            if not ((self.metadata[i][0].end <= self.metadata[j][0].start) or (self.metadata[i][0].start >= self.metadata[j][0].end)):
+            if not ((self.metadata[i][0].end <= self.metadata[j][0].start)
+                    or (self.metadata[i][0].start >= self.metadata[j][0].end)):
                 # Check column headings overlap
                 col_overlap = list(set(self.metadata[i][1]) & set(self.metadata[j][1]))
                 # If we have an overlap then show a warning
                 if col_overlap:
-                    warnings.warn(f'Metadata entries {i} and {j} contain interleaved data.', SunpyUserWarning)
+                    warnings.warn(
+                        f'Metadata entries {i} and {j} contain interleaved data.',
+                        SunpyUserWarning)
 
         # TODO: Check all entries are in tr.start time order.
         return True
@@ -557,7 +561,7 @@ class TimeSeriesMetaData:
         """
         # Parameters
         colspace = ' | '
-        liswidths = (26, 15, width-2-2*len(colspace) - 26 - 15)
+        liswidths = (26, 15, width - 2 - 2 * len(colspace) - 26 - 15)
         colheadings = '|' + 'TimeRange'.ljust(100)[:liswidths[0]] + colspace
         colheadings += 'Columns'.ljust(100)[:liswidths[1]] + colspace
         colheadings += 'Meta'.ljust(100)[:liswidths[2]] + '|'

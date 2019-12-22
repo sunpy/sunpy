@@ -51,7 +51,7 @@ def online_query(draw, instrument=online_instruments()):
     if isinstance(query, a.Instrument) and query.value == 'eve':
         query &= a.Level(0)
     if isinstance(query, a.Instrument) and query.value == 'norh':
-        query &= a.Wavelength(17*u.GHz)
+        query &= a.Wavelength(17 * u.GHz)
 
     return query
 
@@ -69,7 +69,7 @@ def test_offline_fido(query):
 @pytest.mark.parametrize("query", [
     (a.Instrument('eve') & a.Time('2014/7/7', '2014/7/14') & a.Level(0)),
     (a.Instrument('rhessi') & a.Time('2014/7/7', '2014/7/14')),
-    (a.Instrument('norh') & a.Time('2014/7/7', '2014/7/14') & a.Wavelength(17*u.GHz)),
+    (a.Instrument('norh') & a.Time('2014/7/7', '2014/7/14') & a.Wavelength(17 * u.GHz)),
 ])
 def test_online_fido(query):
     unifiedresp = Fido.search(query)
@@ -156,7 +156,7 @@ def test_no_time_error():
 def test_no_match():
     with pytest.raises(DrmsQueryError):
         Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
-                    a.vso.Sample(10*u.s))
+                    a.vso.Sample(10 * u.s))
 
 
 def test_call_error():
@@ -375,7 +375,7 @@ def results_generator(dl):
     ftp = list(dl.ftp_queue._queue)
 
     outputs = []
-    for url in http+ftp:
+    for url in http + ftp:
         outputs.append(pathlib.Path(url.keywords['url'].split("/")[-1]))
 
     return Results(outputs)

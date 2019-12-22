@@ -60,6 +60,7 @@ class Scraper:
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
+
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
         milliseconds = re.search(r'\%e', self.pattern)
@@ -101,7 +102,7 @@ class Scraper:
             return [directorypattern]
         else:
             # Number of elements in the time range (including end)
-            n_steps = rangedelta.sec/timestep.sec
+            n_steps = rangedelta.sec / timestep.sec
             TotalTimeElements = int(round(n_steps)) + 1
             directories = [(timerange.start + n * timestep).strftime(directorypattern)
                            for n in range(TotalTimeElements)]  # TODO if date <= endate
@@ -233,8 +234,8 @@ class Scraper:
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
                                 if (datehref.to_datetime() >= timerange.start.to_datetime() and
-                                    datehref.to_datetime() <= timerange.end.to_datetime()):
-                                        filesurls.append(fullpath)
+                                        datehref.to_datetime() <= timerange.end.to_datetime()):
+                                    filesurls.append(fullpath)
                 finally:
                     opn.close()
             except HTTPError as http_err:
@@ -271,17 +272,17 @@ class Scraper:
         """
         try:
             if "%S" in directoryPattern:
-                return TimeDelta(1*u.second)
+                return TimeDelta(1 * u.second)
             elif "%M" in directoryPattern:
-                return TimeDelta(1*u.minute)
+                return TimeDelta(1 * u.minute)
             elif any(hour in directoryPattern for hour in ["%H", "%I"]):
-                return TimeDelta(1*u.hour)
+                return TimeDelta(1 * u.hour)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
-                return TimeDelta(1*u.day)
+                return TimeDelta(1 * u.day)
             elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
-                return TimeDelta(31*u.day)
+                return TimeDelta(31 * u.day)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
-                return TimeDelta(365*u.day)
+                return TimeDelta(365 * u.day)
             else:
                 return None
         except Exception:

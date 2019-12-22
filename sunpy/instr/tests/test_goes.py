@@ -28,15 +28,15 @@ def test_goes_event_list():
     trange = TimeRange('2011-06-07 00:00', '2011-06-08 00:00')
     # Test case where GOES class filter is applied
     result = goes.get_goes_event_list(trange, goes_class_filter='M1')
-    assert type(result) == list
-    assert type(result[0]) == dict
-    assert type(result[0]['event_date']) == str
-    assert type(result[0]['goes_location']) == tuple
+    assert isinstance(result, list)
+    assert isinstance(result[0], dict)
+    assert isinstance(result[0]['event_date'], str)
+    assert isinstance(result[0]['goes_location'], tuple)
     assert isinstance(result[0]['peak_time'], Time)
     assert isinstance(result[0]['start_time'], Time)
     assert isinstance(result[0]['end_time'], Time)
-    assert type(result[0]['goes_class']) == str
-    assert type(result[0]['noaa_active_region']) == np.int64
+    assert isinstance(result[0]['goes_class'], str)
+    assert isinstance(result[0]['noaa_active_region'], np.int64)
     assert result[0]['event_date'] == '2011-06-07'
     assert result[0]['goes_location'] == (54, -21)
     # float errror
@@ -47,15 +47,15 @@ def test_goes_event_list():
     assert result[0]['noaa_active_region'] == 11226
     # Test case where GOES class filter not applied
     result = goes.get_goes_event_list(trange)
-    assert type(result) == list
-    assert type(result[0]) == dict
-    assert type(result[0]['event_date']) == str
-    assert type(result[0]['goes_location']) == tuple
+    assert isinstance(result, list)
+    assert isinstance(result[0], dict)
+    assert isinstance(result[0]['event_date'], str)
+    assert isinstance(result[0]['goes_location'], tuple)
     assert isinstance(result[0]['peak_time'], Time)
     assert isinstance(result[0]['start_time'], Time)
     assert isinstance(result[0]['end_time'], Time)
-    assert type(result[0]['goes_class']) == str
-    assert type(result[0]['noaa_active_region']) == np.int64
+    assert isinstance(result[0]['goes_class'], str)
+    assert isinstance(result[0]['noaa_active_region'], np.int64)
     assert result[0]['event_date'] == '2011-06-07'
     assert result[0]['goes_location'] == (54, -21)
     assert is_time_equal(result[0]['start_time'], parse_time((2011, 6, 7, 6, 16)))
@@ -95,14 +95,14 @@ def test_calculate_temperature_em():
 @pytest.mark.remote_data
 def test_goes_chianti_tem_errors():
     # Define input variables.
-    ratio = SHORTFLUX/LONGFLUX
+    ratio = SHORTFLUX / LONGFLUX
     shortflux_toomany = Quantity(
         np.append(SHORTFLUX.value, SHORTFLUX.value[0]), unit="W/m**2")
     shortflux_toosmall = copy.deepcopy(SHORTFLUX)
     shortflux_toosmall.value[0] = -1
     shortflux_toobig = copy.deepcopy(SHORTFLUX)
     shortflux_toobig.value[0] = 1
-    temp_test = Quantity(np.zeros(len(LONGFLUX))+10, unit="MK")
+    temp_test = Quantity(np.zeros(len(LONGFLUX)) + 10, unit="MK")
     temp_test_toosmall = copy.deepcopy(temp_test)
     temp_test_toosmall.value[0] = -1
     temp_test_toobig = copy.deepcopy(temp_test)
@@ -463,13 +463,13 @@ def test_flux_to_classletter():
     assert_array_equal(classesletter, calculated_classesletter)
     assert_array_equal([0.1, 1, 1, 1, 1, 1, 10], calculated_classnumber)
     # now test the Examples
-    assert goes.flux_to_flareclass(1e-08 * u.watt/u.m**2) == 'A1'
-    assert goes.flux_to_flareclass(0.00682 * u.watt/u.m**2) == 'X68.2'
-    assert goes.flux_to_flareclass(7.8e-09 * u.watt/u.m**2) == 'A0.78'
-    assert goes.flux_to_flareclass(0.00024 * u.watt/u.m**2) == 'X2.4'
-    assert goes.flux_to_flareclass(4.7e-06 * u.watt/u.m**2) == 'C4.7'
-    assert goes.flux_to_flareclass(6.9e-07 * u.watt/u.m**2) == 'B6.9'
-    assert goes.flux_to_flareclass(2.1e-05 * u.watt/u.m**2) == 'M2.1'
+    assert goes.flux_to_flareclass(1e-08 * u.watt / u.m**2) == 'A1'
+    assert goes.flux_to_flareclass(0.00682 * u.watt / u.m**2) == 'X68.2'
+    assert goes.flux_to_flareclass(7.8e-09 * u.watt / u.m**2) == 'A0.78'
+    assert goes.flux_to_flareclass(0.00024 * u.watt / u.m**2) == 'X2.4'
+    assert goes.flux_to_flareclass(4.7e-06 * u.watt / u.m**2) == 'C4.7'
+    assert goes.flux_to_flareclass(6.9e-07 * u.watt / u.m**2) == 'B6.9'
+    assert goes.flux_to_flareclass(2.1e-05 * u.watt / u.m**2) == 'M2.1'
 
 
 def test_class_to_flux():

@@ -140,8 +140,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
                                  ('sunspot ratio', u.dimensionless_unscaled),
                                  ('sunspot SWO smooth', u.dimensionless_unscaled),
                                  ('sunspot RI smooth', u.dimensionless_unscaled),
-                                 ('radio flux', u.W/u.m**2),
-                                 ('radio flux smooth', u.W/u.m**2),
+                                 ('radio flux', u.W / u.m**2),
+                                 ('radio flux smooth', u.W / u.m**2),
                                  ('geomagnetic ap', u.dimensionless_unscaled),
                                  ('geomagnetic smooth', u.dimensionless_unscaled)])
             # TODO: check units
@@ -264,9 +264,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             units = OrderedDict([('sunspot', u.dimensionless_unscaled),
                                  ('sunspot low', u.dimensionless_unscaled),
                                  ('sunspot high', u.dimensionless_unscaled),
-                                 ('radio flux', u.W/u.m**2),
-                                 ('radio flux low', u.W/u.m**2),
-                                 ('radio flux high', u.W/u.m**2)])
+                                 ('radio flux', u.W / u.m**2),
+                                 ('radio flux low', u.W / u.m**2),
+                                 ('radio flux high', u.W / u.m**2)])
             # Todo: check units used.
             return data, MetaDict({'comments': header}), units
 

@@ -234,16 +234,22 @@ def _variables_for_parse_time_docstring():
     # Do Builtins
     types2 = [t.__qualname__ for t in types if t.__module__ == "builtins"]
     # # Do all the non-special ones where we take the package name and the class
-    types2 += [t.__module__.split(".")[0] + "." + t.__qualname__ for t in types if not t.__module__.startswith(("builtins", "astropy"))]
+    types2 += [
+        t.__module__.split(".")[0] +
+        "." +
+        t.__qualname__ for t in types if not t.__module__.startswith(
+            ("builtins",
+             "astropy"))]
     # Special case astropy.time where we need the subpackage
-    types2 += ["astropy.time." + t.__qualname__ for t in types if t.__module__.startswith("astropy.time")]
+    types2 += ["astropy.time." +
+               t.__qualname__ for t in types if t.__module__.startswith("astropy.time")]
     parse_time_types = str(types2)[1:-1].replace("'", "`")
     ret['parse_time_types'] = parse_time_types
     ret['parse_time_desc'] = """
                              Any time input, will be passed into `~sunpy.time.parse_time`.
                              """
     ret['astropy_time_formats'] = textwrap.fill(str(list(astropy.time.Time.FORMATS.keys())),
-                                                subsequent_indent=' '*10)
+                                                subsequent_indent=' ' * 10)
 
     return ret
 

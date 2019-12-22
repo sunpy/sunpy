@@ -28,6 +28,7 @@ class MultiMethod:
     get : `function`
         The function which receives args and kwargs and returns a tuple of values to consider for dispatch.
     """
+
     def __init__(self, get):
         self.get = get
 
@@ -65,7 +66,7 @@ class MultiMethod:
             raise TypeError
         elif overriden and override == WARN:
             warn('Definition ({}) overrides prior definition ({}).'.format(_fmt_t(types),
-                                                                             _fmt_t(signature)),
+                                                                           _fmt_t(signature)),
                  TypeWarning, stacklevel=3)
 
         self.methods.append((types, fun))

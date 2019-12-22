@@ -73,7 +73,9 @@ class JSOCResponse(Sequence):
         """
         Returns a set of class attributes on all the response blocks.
         """
-        warnings.warn("The JSOC client does not support response block properties.", SunpyUserWarning)
+        warnings.warn(
+            "The JSOC client does not support response block properties.",
+            SunpyUserWarning)
         return set()
 
 
@@ -483,7 +485,7 @@ class JSOCClient(BaseClient):
 
         # Add them to the response for good measure
         jsoc_response.requests = [r for r in responses]
-        time.sleep(sleep/2.)
+        time.sleep(sleep / 2.)
 
         for response in responses:
             response.wait(verbose=progress)
@@ -671,9 +673,9 @@ class JSOCClient(BaseClient):
             # either through PrimeKey() attribute or Time() attribute.
             if not any(x in PKEY_LIST_TIME for x in primekey):
                 timestr = '{start}-{end}{sample}'.format(
-                        start=start_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                        end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                        sample=sample)
+                    start=start_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                    end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                    sample=sample)
             else:
                 error_message = "Time attribute has been passed both as a Time()"\
                                 " and PrimeKey(). Please provide any one of them"\

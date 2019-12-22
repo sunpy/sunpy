@@ -17,6 +17,7 @@ from sunpy.map.sources.proba2 import SWAPMap
 path = sunpy.data.test.rootdir
 fitslist = glob.glob(os.path.join(path, "SWAP", "*"))
 
+
 @pytest.fixture(scope="module", params=fitslist)
 def createSWAP(request):
     """
@@ -25,11 +26,14 @@ def createSWAP(request):
     return Map(request.param)
 
 # SWAP Tests
+
+
 def test_fitstoSWAP(createSWAP):
     """
     Tests the creation of SWAPMap using FITS.
     """
     assert isinstance(createSWAP, SWAPMap)
+
 
 def test_is_datasource_for(createSWAP):
     """
@@ -40,11 +44,13 @@ def test_is_datasource_for(createSWAP):
     """
     assert createSWAP.is_datasource_for(createSWAP.data, createSWAP.meta)
 
+
 def test_observatory(createSWAP):
     """
     Tests the observatory property of the SWAPMap object.
     """
     assert createSWAP.observatory == "PROBA2"
+
 
 def test_measurement(createSWAP):
     """

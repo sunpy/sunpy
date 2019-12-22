@@ -330,7 +330,8 @@ class GenericTimeSeries:
         # if isinstance(self, pandas.Series):
         #    return self
         # else:
-        #    return GenericTimeSeries(self.data[column_name], TimeSeriesMetaData(self.meta.metadata.copy()))
+        # return GenericTimeSeries(self.data[column_name],
+        # TimeSeriesMetaData(self.meta.metadata.copy()))
 
         # Extract column and remove empty rows
         data = self.data[[column_name]].dropna()

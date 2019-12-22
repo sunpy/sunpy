@@ -1,4 +1,3 @@
-
 """
 ===========================================
 Drawing the AIA limb on a STEREO EUVI image

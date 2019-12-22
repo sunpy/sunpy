@@ -42,6 +42,7 @@ class BasicRegistrationFactory:
     * A valid validation function must be a classmethod of the registered widget
       and it must return a `bool`.
     """
+
     def __init__(self, default_widget_type=None,
                  additional_validation_functions=[], registry=None):
         if registry is None:

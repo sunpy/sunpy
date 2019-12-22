@@ -15,8 +15,8 @@ filenames = [{'file': '20150906SRS.txt', 'rows': 5},
              {'file': '20150306SRS.txt', 'rows': 4},
              {'file': '20150101SRS.txt', 'rows': 9}]
 
-COORDINATES = [{'text': 'N10W05', 'latitude': 10,  'longitude': 5},
-               {'text': 'N89E00', 'latitude': 89,  'longitude': 0},
+COORDINATES = [{'text': 'N10W05', 'latitude': 10, 'longitude': 5},
+               {'text': 'N89E00', 'latitude': 89, 'longitude': 0},
                {'text': 'S33E02', 'latitude': -33, 'longitude': -2},
                {'text': 'S01', 'latitude': -1, 'longitude': None}]
 

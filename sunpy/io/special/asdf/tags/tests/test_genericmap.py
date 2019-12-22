@@ -1,6 +1,7 @@
 """
 isort:skip_file.
 """
+from sunpy.tests.helpers import asdf_entry_points
 import platform
 from distutils.version import LooseVersion
 
@@ -13,7 +14,6 @@ from asdf.tests.helpers import assert_roundtrip_tree  # noqa
 
 import sunpy.map  # noqa
 from sunpy.data.test import get_test_filepath  # noqa
-from sunpy.tests.helpers import asdf_entry_points
 from sunpy.io.special.asdf.extension import SunpyExtension  # noqa
 
 

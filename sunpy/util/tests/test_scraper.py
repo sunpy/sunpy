@@ -11,10 +11,10 @@ from sunpy.time import TimeRange, parse_time
 from sunpy.util.scraper import Scraper
 
 PATTERN_EXAMPLES = [
-    ('%b%y', TimeDelta(31*u.day)),
-    ('%m%y', TimeDelta(31*u.day)),
-    ('%H%d', TimeDelta(1*u.hour)),
-    ('%y%b', TimeDelta(31*u.day)),
+    ('%b%y', TimeDelta(31 * u.day)),
+    ('%m%y', TimeDelta(31 * u.day)),
+    ('%H%d', TimeDelta(1 * u.hour)),
+    ('%y%b', TimeDelta(31 * u.day)),
 ]
 
 

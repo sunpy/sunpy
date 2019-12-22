@@ -19,7 +19,6 @@ fitspath = glob.glob(os.path.join(path, "20181209_180305_kcor_l1.5_rebinned.fits
 
 @pytest.fixture()
 def kcor():
-
     """
     Creates an KCorMap from a FITS file.
     """
