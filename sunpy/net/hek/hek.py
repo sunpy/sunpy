@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-#
-# This module was developed with funding provided by
-# the ESA Summer of Code (2011).
-#
-# pylint: disable=C0103,R0903
+# This module was developed with funding provided by the ESA Summer of Code (2011).
 
 """
 Facilities to interface with the HEK.

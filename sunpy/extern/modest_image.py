@@ -16,7 +16,6 @@ from matplotlib.transforms import Affine2D, IdentityTransform
 rcParams = matplotlib.rcParams
 
 
-
 IDENTITY_TRANSFORM = IdentityTransform()
 
 

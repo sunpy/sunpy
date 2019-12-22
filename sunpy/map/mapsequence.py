@@ -1,8 +1,6 @@
 """
 A Python MapSequence Object.
 """
-#pylint: disable=W0401,W0614,W0201,W0212,W0404
-
 from copy import deepcopy
 
 import matplotlib.animation
@@ -51,6 +49,7 @@ class MapSequence:
 
     MapSequences can be co-aligned using the routines in sunpy.image.coalignment.
     """
+
     def __init__(self, *args, sortby='date', derotate=False, **kwargs):
         """
         Creates a new Map instance.
@@ -172,7 +171,7 @@ class MapSequence:
         fig = axes.get_figure()
 
         if not plot_function:
-            plot_function = lambda fig, ax, smap: []
+            def plot_function(fig, ax, smap): return []
         removes = []
 
         # Normal plot
@@ -340,7 +339,8 @@ class MapSequence:
         the map shapes are not the same, a ValueError is thrown.
         """
         if self.all_maps_same_shape():
-            data = np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
+            data = np.swapaxes(np.swapaxes(np.asarray(
+                [m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
             if self.at_least_one_map_has_mask():
                 mask_sequence = np.zeros_like(data, dtype=bool)
                 for im, m in enumerate(self.maps):

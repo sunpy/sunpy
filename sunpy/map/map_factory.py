@@ -34,8 +34,6 @@ try:
 except ImportError:
     pass
 
-__authors__ = ["Russell Hewett, Stuart Mumford"]
-__email__ = "stuart@mumford.me.uk"
 
 __all__ = ['Map', 'MapFactory']
 

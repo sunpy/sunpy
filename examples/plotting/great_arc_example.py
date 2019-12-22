@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 =============================
 Drawing and using a Great Arc

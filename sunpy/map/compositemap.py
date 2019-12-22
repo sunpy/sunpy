@@ -14,9 +14,6 @@ from sunpy.visualization import axis_labels_from_ctype, peek_show
 
 __all__ = ['CompositeMap']
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
 
 class CompositeMap:
     """
@@ -68,13 +65,14 @@ class CompositeMap:
     >>> comp_map.add_map(sunpy.map.Map(sunpy.data.sample.RHESSI_IMAGE))  # doctest: +REMOTE_DATA
     >>> comp_map.peek()  # doctest: +SKIP
     """
+
     def __init__(self, *args, **kwargs):
         self._maps = expand_list(args)
 
         for m in self._maps:
             if not isinstance(m, GenericMap):
                 raise ValueError(
-                           'CompositeMap expects pre-constructed map objects.')
+                    'CompositeMap expects pre-constructed map objects.')
 
         # Default alpha and zorder values
         alphas = [1] * len(self._maps)
@@ -341,7 +339,7 @@ class CompositeMap:
         return self._maps[index].draw_limb(axes=axes, **kwargs)
 
     @u.quantity_input
-    def draw_grid(self, index=None, axes=None, grid_spacing: u.deg=20*u.deg, **kwargs):
+    def draw_grid(self, index=None, axes=None, grid_spacing: u.deg = 20*u.deg, **kwargs):
         """
         Draws a grid over the surface of the Sun.
 
@@ -380,8 +378,7 @@ class CompositeMap:
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
         return ax
 
-    def plot(self, axes=None, annotate=True,  # pylint: disable=W0613
-             title="SunPy Composite Plot", **matplot_args):
+    def plot(self, axes=None, annotate=True, title="SunPy Composite Plot", **matplot_args):
         """
         Plots the composite map object using matplotlib.
 
@@ -453,7 +450,8 @@ class CompositeMap:
                 if m.mask is None:
                     ret.append(axes.contour(m.data, m.levels, **params))
                 else:
-                    ret.append(axes.contour(np.ma.array(np.asarray(m.data), mask=m.mask), m.levels, **params))
+                    ret.append(axes.contour(np.ma.array(np.asarray(
+                        m.data), mask=m.mask), m.levels, **params))
 
                 # Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)

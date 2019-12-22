@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-#
-# This module was developed with funding provided by
-# the ESA Summer of Code (2011).
-
+# This module was developed with funding provided by the ESA Summer of Code (2011).
 # The template can be found in tools/hektemplate.py
 
 """
@@ -29,8 +24,6 @@ barring like.
 
 # XXX: Maybe split into three modules and import them all into one so
 # we do not need a template but generate one module in its entirety.
-
-from __future__ import absolute_import
 
 import sys
 import os
@@ -240,13 +233,15 @@ fields = {
     'WavelUnit': '_StringParamAttrWrapper'
 }
 
+
 def mk_gen(rest):
     """ Generate Misc class. """
     ret = ''
     ret += '@apply\nclass Misc(object):\n'
     for elem in sorted(rest):
-        ret += '    %s = %s(%r)\n' %(elem, fields[elem], elem)
+        ret += '    %s = %s(%r)\n' % (elem, fields[elem], elem)
     return ret
+
 
 def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'):
     if name is None:
@@ -268,6 +263,7 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'
         ret += '''    def __init__(self):
         EventType.__init__(self, %r)''' % name.lower()
     return ret
+
 
 if __name__ == '__main__':
     BUFFER = 4096

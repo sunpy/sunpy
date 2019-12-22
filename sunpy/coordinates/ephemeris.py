@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 Ephemeris calculations using SunPy coordinate frames.
 """
@@ -33,10 +33,6 @@ try:
 except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
-
-
-__author__ = "Albert Y. Shih"
-__email__ = "ayshih@gmail.com"
 
 __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
            'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
@@ -91,7 +87,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
             emitted_time = obstime - light_travel_time
 
         log.info(f"Apparent body location accounts for {light_travel_time.to('s').value:.2f}"
-                  " seconds of light travel time")
+                 " seconds of light travel time")
 
     body_hgs = ICRS(body_icrs).transform_to(HGS(obstime=obstime))
 

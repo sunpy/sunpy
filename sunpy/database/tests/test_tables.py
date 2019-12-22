@@ -1,7 +1,5 @@
-# Author: Simon Liedtke <liedtke.simon@googlemail.com>
-#
-# This module was developed with funding provided by
-# the Google Summer of Code (2013).
+# This module was developed with funding provided by the Google Summer of Code (2013).
+
 
 import os
 from datetime import datetime

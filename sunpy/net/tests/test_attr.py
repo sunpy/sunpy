@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import textwrap
 from collections import defaultdict
 

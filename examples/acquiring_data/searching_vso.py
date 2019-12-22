@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 ======================================
 Searching and downloading from the VSO

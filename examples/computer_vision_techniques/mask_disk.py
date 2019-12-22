@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 ==========================
 Masking out the solar disk

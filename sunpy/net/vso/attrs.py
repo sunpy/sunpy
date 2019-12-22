@@ -1,11 +1,4 @@
-# -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-#
-# This module was developed with funding provided by
-# the ESA Summer of Code (2011).
-#
-# pylint: disable=C0103,R0903
-
+# This module was developed with funding provided by the ESA Summer of Code (2011).
 """
 Attributes that can be used to construct VSO queries.
 
@@ -38,6 +31,7 @@ class Field(ValueAttr):
 
     Used in defining a decorator for the dummy attribute.
     """
+
     def __init__(self, fielditem):
         ValueAttr.__init__(self, {
             ('field', 'fielditem'): fielditem
@@ -66,6 +60,7 @@ class _Range:
             return self.min <= other.min and self.max >= other.max
         else:
             return self.min <= other <= self.max
+
 
 class Wavelength(Attr, _Range):
     def __init__(self, wavemin, wavemax=None):
@@ -121,8 +116,8 @@ class Wavelength(Attr, _Range):
 
     def __repr__(self):
         return "<Wavelength({!r}, {!r}, '{!s}')>".format(self.min.value,
-                                                            self.max.value,
-                                                            self.unit)
+                                                         self.max.value,
+                                                         self.unit)
 
 
 class Time(Attr, _Range):
@@ -143,6 +138,7 @@ class Time(Attr, _Range):
         inside the start and end window. Note: not all providers support this
         functionality.
     """
+
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, _TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
@@ -192,7 +188,7 @@ class Extent(Attr):
 
     Due to a bug in the VSO, the Extent attribute is not used.
     """
-    # pylint: disable=R0913
+
     def __init__(self, x, y, width, length, atype):
         super().__init__()
 
@@ -254,6 +250,7 @@ class Instrument(SimpleAttr):
     within the VSO Registry. For a list of instruments see
     https://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
+
     def __init__(self, value):
         if not isinstance(value, str):
             raise ValueError("Instrument names must be strings")
@@ -411,6 +408,7 @@ class Quicklook(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
+
     def __init__(self, value):
         super().__init__(value)
         if self.value:
@@ -440,7 +438,6 @@ walker = AttrWalker()
 
 
 @walker.add_creator(ValueAttr, AttrAnd)
-# pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """
     Implementation detail.
@@ -452,7 +449,6 @@ def _create(wlk, root, api):
 
 
 @walker.add_applier(ValueAttr)
-# pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, block):
     """
     Implementation detail.
@@ -475,7 +471,6 @@ def _apply(wlk, root, api, block):
 
 
 @walker.add_applier(AttrAnd)
-# pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
     """
     Implementation detail.
@@ -485,7 +480,6 @@ def _apply(wlk, root, api, queryblock):
 
 
 @walker.add_creator(AttrOr)
-# pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """
     Implementation detail.
@@ -508,10 +502,10 @@ walker.add_converter(Extent)(
 
 walker.add_converter(Time)(
     lambda x: ValueAttr({
-            ('time', 'start'): x.start.strftime(TIMEFORMAT),
-            ('time', 'end'): x.end.strftime(TIMEFORMAT),
-            ('time', 'near'): (
-                x.near.strftime(TIMEFORMAT) if x.near is not None else None),
+        ('time', 'start'): x.start.strftime(TIMEFORMAT),
+        ('time', 'end'): x.end.strftime(TIMEFORMAT),
+        ('time', 'near'): (
+            x.near.strftime(TIMEFORMAT) if x.near is not None else None),
     })
 )
 
@@ -521,9 +515,9 @@ walker.add_converter(SimpleAttr)(
 
 walker.add_converter(Wavelength)(
     lambda x: ValueAttr({
-            ('wave', 'wavemin'): x.min.value,
-            ('wave', 'wavemax'): x.max.value,
-            ('wave', 'waveunit'): x.unit.name,
+        ('wave', 'wavemin'): x.min.value,
+        ('wave', 'wavemax'): x.max.value,
+        ('wave', 'waveunit'): x.unit.name,
     })
 )
 

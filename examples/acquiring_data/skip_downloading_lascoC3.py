@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 ======================================
 Downloading and plotting LASCO C3 data

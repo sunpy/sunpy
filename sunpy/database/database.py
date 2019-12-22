@@ -1,7 +1,4 @@
-# Author: Simon Liedtke <liedtke.simon@googlemail.com>
-#
-# This module was developed with funding provided by
-# the Google Summer of Code (2013).
+# This module was developed with funding provided by the Google Summer of Code (2013).
 
 import os.path
 import operator
@@ -23,12 +20,6 @@ from sunpy.database.tables import _create_display_table
 from sunpy.net.attr import and_
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.vso import VSOClient
-
-__authors__ = ['Simon Liedtke', 'Rajul Srivastava']
-__emails__ = [
-    'liedtke.simon@googlemail.com',
-    'rajul09@gmail.com'
-]
 
 
 class EntryNotFoundError(Exception):

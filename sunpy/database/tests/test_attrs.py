@@ -1,7 +1,4 @@
-# Author: Simon Liedtke <liedtke.simon@googlemail.com>
-#
-# This module was developed with funding provided by
-# the Google Summer of Code (2013).
+# This module was developed with funding provided by the Google Summer of Code (2013).
 
 from datetime import datetime
 
@@ -440,12 +437,12 @@ def test_walker_create_time(vso_session):
     entries = walker.create(time, vso_session)
     assert len(entries) == 1
     expected = tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
-                                            physobs=u'intensity',
-                                            fileid=u'/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
-                                            observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
-                                            observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
-                                            instrument=u'RHESSI',
-                                            size=-1.0,
-                                            wavemin=0.4132806579880238,
-                                            wavemax=7.293188082141598e-05)
+                                    physobs=u'intensity',
+                                    fileid=u'/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
+                                    observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
+                                    observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
+                                    instrument=u'RHESSI',
+                                    size=-1.0,
+                                    wavemin=0.4132806579880238,
+                                    wavemax=7.293188082141598e-05)
     assert expected in entries

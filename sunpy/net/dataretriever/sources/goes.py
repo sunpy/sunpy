@@ -1,6 +1,4 @@
-# Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-# This module was developed under funding provided by
-# Google Summer of Code 2014
+# This module was developed with funding provided by the Google Summer of Code (2014).
 
 import os
 from datetime import datetime

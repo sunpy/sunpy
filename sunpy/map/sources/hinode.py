@@ -1,11 +1,6 @@
 """
 Hinode XRT and SOT Map subclass definitions.
 """
-#pylint: disable=W0221,W0222,E1101,E1121
-
-__author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
-__email__ = "jack.ireland@nasa.gov"
-
 from sunpy.map import GenericMap
 
 __all__ = ['XRTMap', 'SOTMap']

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import astropy.wcs.utils
 from astropy.wcs import WCS
 

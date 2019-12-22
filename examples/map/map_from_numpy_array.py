@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 ================================
 Generating a map from data array

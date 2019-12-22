@@ -1,7 +1,5 @@
-# Author: Simon Liedtke <liedtke.simon@googlemail.com>
-#
-# This module was developed with funding provided by
-# the Google Summer of Code (2013).
+# This module was developed with funding provided by the Google Summer of Code (2013).
+
 import os
 import fnmatch
 from datetime import datetime
@@ -26,16 +24,16 @@ from sunpy.util.types import DatabaseEntryType
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_HEADER = FileHeader([('SIMPLE', True),
-            ('BITPIX', 8),
-            ('NAXIS', 0),
-            ('EXTEND', True),
-            ('COMMENT', ''),
-            ('HISTORY', ''),
-            ('KEYCOMMENTS',
-            {'SIMPLE': 'conforms to FITS standard',
-            'BITPIX': 'array data type',
-            'NAXIS': 'number of array dimensions'}),
-            ('WAVEUNIT', None)])
+                             ('BITPIX', 8),
+                             ('NAXIS', 0),
+                             ('EXTEND', True),
+                             ('COMMENT', ''),
+                             ('HISTORY', ''),
+                             ('KEYCOMMENTS',
+                              {'SIMPLE': 'conforms to FITS standard',
+                               'BITPIX': 'array data type',
+                               'NAXIS': 'number of array dimensions'}),
+                             ('WAVEUNIT', None)])
 
 
 __all__ = [

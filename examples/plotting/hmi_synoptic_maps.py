@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 ==============================================
 Loading an HMI daily synoptic image into a Map

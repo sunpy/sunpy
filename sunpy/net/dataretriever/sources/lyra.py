@@ -1,7 +1,4 @@
-# Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-# This module was developed under funding provided by
-# Google Summer of Code 2014
-
+# This module was developed with funding provided by the Google Summer of Code (2014).
 
 from sunpy.util.scraper import Scraper
 from ..client import GenericClient

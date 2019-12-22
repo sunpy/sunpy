@@ -26,9 +26,6 @@ except ImportError:
     from astropy.coordinates import GeocentricTrueEcliptic as GeocentricMeanEcliptic
 
 
-__author__ = "Albert Y. Shih"
-__email__ = "ayshih@gmail.com"
-
 __all__ = [
     "angular_radius", "sky_position", "carrington_rotation_number",
     "carrington_rotation_time",
