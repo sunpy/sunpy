@@ -1,14 +1,12 @@
+import numpy as np
 import pytest
 
-import numpy as np
-
-from astropy.coordinates import SkyCoord
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
-from sunpy.coordinates import sun
-import sunpy.map as smap
 import sunpy.data.test as test
-from sunpy.coordinates import frames
+import sunpy.map as smap
+from sunpy.coordinates import frames, sun
 from sunpy.coordinates.utils import GreatArc
 
 

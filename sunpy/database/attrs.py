@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import or_, and_, not_
+from sqlalchemy import and_, not_, or_
 
-from sunpy.time import parse_time
+from sunpy.database.tables import DatabaseEntry
+from sunpy.database.tables import FitsHeaderEntry as TableFitsHeaderEntry
+from sunpy.database.tables import Tag as TableTag
+from sunpy.net.attr import Attr, AttrAnd, AttrOr, AttrWalker, SimpleAttr, ValueAttr
 from sunpy.net.vso import attrs as vso_attrs
-from sunpy.net.attr import (AttrWalker, Attr, ValueAttr,
-                            AttrAnd, AttrOr, SimpleAttr)
-from sunpy.database.tables import (DatabaseEntry,
-                                   Tag as TableTag,
-                                   FitsHeaderEntry as TableFitsHeaderEntry)
+from sunpy.time import parse_time
 
 __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']

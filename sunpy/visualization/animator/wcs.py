@@ -8,7 +8,6 @@ from astropy.wcs.wcsapi import BaseLowLevelWCS
 from sunpy.extern import modest_image
 from sunpy.visualization.animator.base import ArrayAnimator
 
-
 __all__ = ['ArrayAnimatorWCS']
 
 

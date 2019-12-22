@@ -4,7 +4,7 @@
 # the Google Summer of Code (2013).
 
 from abc import ABCMeta, abstractmethod, abstractproperty
-from collections import OrderedDict, Counter
+from collections import Counter, OrderedDict
 from collections.abc import MutableMapping
 
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']

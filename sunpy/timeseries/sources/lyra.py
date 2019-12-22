@@ -4,8 +4,8 @@ This module provies Proba-2 `~sunpy.timeseries.TimeSeries` source.
 import sys
 from collections import OrderedDict
 
-import pandas
 import matplotlib as mpl
+import pandas
 from matplotlib import pyplot as plt
 
 import astropy.units as u

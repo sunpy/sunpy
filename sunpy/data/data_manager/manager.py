@@ -1,11 +1,11 @@
-from typing import Dict
 import pathlib
-import functools
-from contextlib import contextmanager
 import warnings
+import functools
+from typing import Dict
+from contextlib import contextmanager
 
-from sunpy.util.util import hash_file
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.util import hash_file
 
 __all__ = ['DataManager']
 

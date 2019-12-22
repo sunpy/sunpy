@@ -4,12 +4,11 @@ from pathlib import Path
 from collections import OrderedDict, namedtuple
 
 import numpy as np
+import parfive
 from parfive import Downloader
 
 import astropy.table
 import astropy.units as u
-
-import parfive
 
 import sunpy
 from sunpy import config

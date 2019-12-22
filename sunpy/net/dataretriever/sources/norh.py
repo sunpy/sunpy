@@ -3,13 +3,12 @@
 #  Google Summer of Code 2014
 
 
-from astropy.time import TimeDelta
 import astropy.units as u
-
-from sunpy.time import TimeRange
-from sunpy.util.scraper import Scraper
+from astropy.time import TimeDelta
 
 from sunpy.net import attrs as a
+from sunpy.time import TimeRange
+from sunpy.util.scraper import Scraper
 from ..client import GenericClient
 
 __all__ = ['NoRHClient']

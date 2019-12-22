@@ -37,7 +37,6 @@ import logging
 import argparse
 import subprocess
 
-
 _UNIXCONFDIR = os.environ.get('UNIXCONFDIR', '/etc')
 _OS_RELEASE_BASENAME = 'os-release'
 

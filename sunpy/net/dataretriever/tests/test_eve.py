@@ -1,15 +1,14 @@
 import pytest
 
-from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
-from sunpy.net.vso import VSOClient
-from sunpy.net.vso.attrs import Time, Instrument, Source, Level
-from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.eve as eve
-from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-
+from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.fido_factory import UnifiedResponse
+from sunpy.net.vso import VSOClient
+from sunpy.net.vso.attrs import Instrument, Level, Source, Time
+from sunpy.time import parse_time
+from sunpy.time.timerange import TimeRange
 
 LCClient = eve.EVEClient()
 

@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
-import pytest
 from unittest import mock
-import astropy.units as u
+
+import pytest
 from parfive import Results
 
-from sunpy.time import TimeRange, parse_time
-from sunpy.net import vso
-from sunpy.net.vso import attrs as va
-from sunpy.net.vso.vso import VSOClient, get_online_vso_url, build_client
+import astropy.units as u
+
+from sunpy.net import attr, vso
 from sunpy.net.vso import QueryResponse
-from sunpy.net import attr
+from sunpy.net.vso import attrs as va
+from sunpy.net.vso.vso import VSOClient, build_client, get_online_vso_url
 from sunpy.tests.mocks import MockObject
+from sunpy.time import TimeRange, parse_time
 
 
 class MockQRRecord:

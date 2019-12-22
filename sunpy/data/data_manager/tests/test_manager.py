@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from sunpy.data.data_manager.tests.mocks import write_to_test_file, MOCK_HASH
+from sunpy.data.data_manager.tests.mocks import MOCK_HASH, write_to_test_file
 from sunpy.util.exceptions import SunpyUserWarning
 
 

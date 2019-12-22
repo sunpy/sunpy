@@ -1,34 +1,33 @@
 import os
-from collections import OrderedDict
-import warnings
-import pathlib
 import glob
+import pathlib
+import warnings
+from collections import OrderedDict
+from urllib.request import urlopen
 
 import numpy as np
+
 import astropy.io.fits
 from astropy.wcs import WCS
 
 import sunpy
 from sunpy import log
-from sunpy.map.mapbase import GenericMap, MapMetaValidationError
-from sunpy.map.compositemap import CompositeMap
-from sunpy.map.mapsequence import MapSequence
-
 from sunpy.data import cache
-
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
-
+from sunpy.map.compositemap import CompositeMap
+from sunpy.map.mapbase import GenericMap, MapMetaValidationError
+from sunpy.map.mapsequence import MapSequence
 from sunpy.util import expand_list
-from sunpy.util.metadata import MetaDict
+from sunpy.util.datatype_factory_base import (
+    BasicRegistrationFactory,
+    MultipleMatchError,
+    NoMatchError,
+    ValidationFunctionError,
+)
 from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
-
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory
-from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.datatype_factory_base import MultipleMatchError
-from sunpy.util.datatype_factory_base import ValidationFunctionError
-from urllib.request import urlopen
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:

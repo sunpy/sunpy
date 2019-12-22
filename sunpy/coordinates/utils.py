@@ -9,7 +9,6 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.coordinates import Heliocentric
 
-
 __all__ = ['GreatArc']
 
 

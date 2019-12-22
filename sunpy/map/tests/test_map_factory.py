@@ -5,18 +5,18 @@ Created on Fri Jun 21 15:05:09 2013
 @author: stuart
 """
 import os
-import tempfile
 import pathlib
+import tempfile
 
-import pytest
 import numpy as np
+import pytest
+
 from astropy.io import fits
 from astropy.wcs import WCS
 
 import sunpy
-import sunpy.map
 import sunpy.data.test
-
+import sunpy.map
 
 filepath = sunpy.data.test.rootdir
 a_list_of_many = [os.fspath(f) for f in pathlib.Path(filepath, "EIT").glob("*")]

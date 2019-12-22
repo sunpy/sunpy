@@ -1,19 +1,28 @@
 import os
-import pytest
 
 import numpy as np
-import astropy.units as u
-from astropy.coordinates import SkyCoord, BaseCoordinateFrame
+import pytest
 
-from sunpy.map.maputils import (all_pixel_indices_from_map,
-                                all_coordinates_from_map, map_edges, solar_angular_radius,
-                                sample_at_coords, contains_full_disk, is_all_off_disk,
-                                is_all_on_disk, contains_limb,
-                                coordinate_is_on_solar_disk, on_disk_bounding_coordinates)
-from sunpy.coordinates import HeliographicStonyhurst
-from sunpy.coordinates.utils import GreatArc
+import astropy.units as u
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord
+
 import sunpy.data.test
 import sunpy.map
+from sunpy.coordinates import HeliographicStonyhurst
+from sunpy.coordinates.utils import GreatArc
+from sunpy.map.maputils import (
+    all_coordinates_from_map,
+    all_pixel_indices_from_map,
+    contains_full_disk,
+    contains_limb,
+    coordinate_is_on_solar_disk,
+    is_all_off_disk,
+    is_all_on_disk,
+    map_edges,
+    on_disk_bounding_coordinates,
+    sample_at_coords,
+    solar_angular_radius,
+)
 
 testpath = sunpy.data.test.rootdir
 

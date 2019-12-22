@@ -15,11 +15,9 @@ import pytest
 
 import astropy.units as u
 from astropy import table
-from sunpy.time import parse_time
-from sunpy.net import hek
-from sunpy.net import vso
-from sunpy.net import hek2vso
 
+from sunpy.net import hek, hek2vso, vso
+from sunpy.time import parse_time
 
 startTime = "2011/08/09 07:23:56"
 endTime = "2011/08/09 12:40:29"

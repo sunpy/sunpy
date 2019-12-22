@@ -3,25 +3,25 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-import itertools
+import os.path
 import operator
+import itertools
 from datetime import datetime
 from contextlib import contextmanager
-import os.path
 
 from sqlalchemy import create_engine, exists
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 from astropy import units
 
 import sunpy
 from sunpy.database import commands, tables
-from sunpy.database.tables import _create_display_table
+from sunpy.database.attrs import walker
 from sunpy.database.caching import LRUCache
 from sunpy.database.commands import CompositeOperation
-from sunpy.database.attrs import walker
-from sunpy.net.hek2vso import H2VClient
+from sunpy.database.tables import _create_display_table
 from sunpy.net.attr import and_
+from sunpy.net.hek2vso import H2VClient
 from sunpy.net.vso import VSOClient
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']

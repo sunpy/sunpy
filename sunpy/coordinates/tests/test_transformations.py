@@ -3,11 +3,35 @@ import pytest
 
 import astropy
 import astropy.units as u
-from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
-from astropy.coordinates import (SkyCoord, get_body_barycentric, Angle,
-                                 ConvertError, Longitude, CartesianRepresentation,
-                                 get_body_barycentric_posvel,
-                                 CartesianDifferential, SphericalDifferential)
+from astropy.coordinates import (
+    Angle,
+    CartesianDifferential,
+    CartesianRepresentation,
+    ConvertError,
+    Longitude,
+    SkyCoord,
+    SphericalDifferential,
+    get_body_barycentric,
+    get_body_barycentric_posvel,
+)
+from astropy.tests.helper import assert_quantity_allclose, quantity_allclose
+from astropy.time import Time
+
+from sunpy.coordinates import (
+    GeocentricEarthEquatorial,
+    GeocentricSolarEcliptic,
+    Heliocentric,
+    HeliocentricEarthEcliptic,
+    HeliocentricInertial,
+    HeliographicCarrington,
+    HeliographicStonyhurst,
+    Helioprojective,
+    get_earth,
+    sun,
+)
+from sunpy.coordinates.frames import _J2000
+from sunpy.time import parse_time
+
 # Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
 # with the misleading name HeliocentricTrueEcliptic
 try:
@@ -15,16 +39,7 @@ try:
 except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
-from astropy.time import Time
 
-from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
-                               HeliographicCarrington, Heliocentric,
-                               HeliocentricEarthEcliptic, GeocentricSolarEcliptic,
-                               HeliocentricInertial, GeocentricEarthEquatorial,
-                               get_earth)
-from sunpy.coordinates import sun
-from sunpy.coordinates.frames import _J2000
-from sunpy.time import parse_time
 
 
 def test_hcc_to_hgs():

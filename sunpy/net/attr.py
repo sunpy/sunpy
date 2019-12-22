@@ -19,7 +19,7 @@ Please note that & is evaluated first, so A & B | C is equivalent to
 import re
 import keyword
 import warnings
-from collections import defaultdict, namedtuple
+from collections import namedtuple, defaultdict
 
 from astropy.utils.misc import isiterable
 

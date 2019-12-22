@@ -4,7 +4,6 @@ This module provides a JPEG 2000 file reader.
 import collections
 from xml.etree import cElementTree as ET
 
-
 from sunpy.io.header import FileHeader
 from sunpy.util.xml import xml_to_dict
 

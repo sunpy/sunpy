@@ -11,7 +11,7 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.tests.strategies import time_attr
-from sunpy.time import parse_time, TimeRange
+from sunpy.time import TimeRange, parse_time
 
 
 @pytest.fixture

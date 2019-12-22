@@ -6,9 +6,10 @@ This particular test file pertains to HMIMap.
 import os
 import glob
 
-from sunpy.map.sources.sdo import HMIMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.sdo import HMIMap
+
 #from sunpy.net import HelioviewerClient
 
 path = sunpy.data.test.rootdir

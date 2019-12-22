@@ -1,23 +1,28 @@
 import os
-import pytest
 
 import numpy as np
+import pytest
+
 import astropy.units as u
-from astropy.coordinates import SkyCoord
-from astropy.coordinates import Longitude
+from astropy.coordinates import Longitude, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import TimeDelta
 
+import sunpy.data.test
+import sunpy.map
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
 from sunpy.map.maputils import map_edges
-from sunpy.physics.differential_rotation import (diff_rot, solar_rotate_coordinate,
-                                                 differential_rotate,
-                                                 _get_new_observer, _rotate_submap_edge,
-                                                 _get_extreme_position, _get_bounding_coordinates,
-                                                 _warp_sun_coordinates)
-import sunpy.data.test
-import sunpy.map
+from sunpy.physics.differential_rotation import (
+    _get_bounding_coordinates,
+    _get_extreme_position,
+    _get_new_observer,
+    _rotate_submap_edge,
+    _warp_sun_coordinates,
+    diff_rot,
+    differential_rotate,
+    solar_rotate_coordinate,
+)
 
 # pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 

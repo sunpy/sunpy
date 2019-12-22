@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
 import textwrap
+from collections import defaultdict
 
 import pytest
 

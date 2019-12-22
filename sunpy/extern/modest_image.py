@@ -4,17 +4,18 @@ set_extent.
 """
 # This file is copied from glue under the terms of the 3 Clause BSD licence. See licenses/GLUE.rst
 
-from __future__ import print_function, division
+from __future__ import division, print_function
 
 import matplotlib
+import matplotlib.cbook as cbook
+import matplotlib.colors as mcolors
+import matplotlib.image as mi
+import numpy as np
+from matplotlib.transforms import Affine2D, IdentityTransform
+
 rcParams = matplotlib.rcParams
 
-import matplotlib.image as mi
-import matplotlib.colors as mcolors
-import matplotlib.cbook as cbook
-from matplotlib.transforms import IdentityTransform, Affine2D
 
-import numpy as np
 
 IDENTITY_TRANSFORM = IdentityTransform()
 

@@ -17,8 +17,8 @@ __version__ = "1.4.4"
 __version_info__ = tuple(int(segment) for segment in __version__.split("."))
 
 
-import sys
 import os
+import sys
 
 PY3 = sys.version_info[0] == 3
 

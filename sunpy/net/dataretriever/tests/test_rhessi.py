@@ -1,18 +1,18 @@
 import socket
 from datetime import datetime
+from unittest import mock
 from urllib.error import URLError
 from urllib.request import urlretrieve
 
-from unittest import mock
 import pytest
 
 import sunpy.instr.rhessi
 import sunpy.net.dataretriever.sources.rhessi as rhessi
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-from sunpy.time import TimeRange, parse_time
-from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.fido_factory import UnifiedResponse
+from sunpy.time import TimeRange, parse_time
 
 LCClient = rhessi.RHESSIClient()
 

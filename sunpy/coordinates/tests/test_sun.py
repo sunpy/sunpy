@@ -1,12 +1,11 @@
-import pytest
-
 import numpy as np
+import pytest
 from numpy.testing import assert_allclose
 
-from astropy.coordinates import Angle, EarthLocation, SkyCoord
-from astropy.time import Time
 import astropy.units as u
+from astropy.coordinates import Angle, EarthLocation, SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import Time
 from astropy.utils.exceptions import ErfaWarning
 
 from sunpy.coordinates import sun

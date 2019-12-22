@@ -15,22 +15,21 @@ from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
 import zeep
+from parfive import Downloader, Results
 from zeep.helpers import serialize_object
 
 import astropy.units as u
 from astropy.table import QTable as Table
-from parfive import Downloader, Results
 
 from sunpy import config
-from sunpy.time import TimeRange, parse_time
-from sunpy.net.vso import attrs
 from sunpy.net.attr import and_
-from sunpy.util.net import slugify, get_content_disposition
-from sunpy.net.vso.attrs import TIMEFORMAT, walker
 from sunpy.net.base_client import BaseClient
+from sunpy.net.vso import attrs
+from sunpy.net.vso.attrs import TIMEFORMAT, walker
+from sunpy.time import TimeRange, parse_time
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
-
+from sunpy.util.net import get_content_disposition, slugify
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
 TIME_FORMAT = config.get("general", "time_format")

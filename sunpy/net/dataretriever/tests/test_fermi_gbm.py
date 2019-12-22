@@ -1,14 +1,14 @@
 import pytest
+from hypothesis import given
 
-from sunpy.time import parse_time
-from sunpy.time.timerange import TimeRange
-from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.fermi_gbm as fermi_gbm
-from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import time_attr
-from hypothesis import given
+from sunpy.time import parse_time
+from sunpy.time.timerange import TimeRange
 
 LCClient = fermi_gbm.GBMClient()
 

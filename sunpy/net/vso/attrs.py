@@ -19,11 +19,10 @@ import collections
 
 import astropy.units as u
 
+from sunpy.net.attr import Attr, AttrAnd, AttrOr, AttrWalker, DummyAttr, SimpleAttr, ValueAttr
 from sunpy.time import TimeRange as _TimeRange
-from sunpy.net.attr import (Attr, AttrWalker, AttrAnd,
-                            AttrOr, DummyAttr, ValueAttr, SimpleAttr)
-from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
+from sunpy.util.multimethod import MultiMethod
 
 __all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',

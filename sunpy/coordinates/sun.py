@@ -6,8 +6,18 @@ import warnings
 import numpy as np
 
 import astropy.units as u
-from astropy.time import Time
+from astropy import _erfa as erfa
 from astropy.coordinates import Angle, Latitude, Longitude, SkyCoord
+from astropy.coordinates.builtin_frames.utils import get_jd12
+from astropy.time import Time
+
+from sunpy import log
+from sunpy.sun import constants
+from sunpy.time import parse_time
+from sunpy.time.time import _variables_for_parse_time_docstring
+from sunpy.util.decorators import add_common_docstring
+from .ephemeris import _B0, _L0, _P, _earth_distance, _orientation, get_earth
+
 # Versions of Astropy that do not have *MeanEcliptic frames have the same frames
 # with the misleading names *TrueEcliptic
 try:
@@ -15,15 +25,7 @@ try:
 except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
     from astropy.coordinates import GeocentricTrueEcliptic as GeocentricMeanEcliptic
-from astropy import _erfa as erfa
-from astropy.coordinates.builtin_frames.utils import get_jd12
 
-from sunpy import log
-from sunpy.sun import constants
-from sunpy.time import parse_time
-from sunpy.time.time import _variables_for_parse_time_docstring
-from sunpy.util.decorators import add_common_docstring
-from .ephemeris import get_earth, _B0, _L0, _P, _earth_distance, _orientation
 
 __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"

@@ -4,8 +4,8 @@ This module provies a RHESSI `~sunpy.timeseries.TimeSeries` source.
 import datetime
 from collections import OrderedDict
 
-import matplotlib.dates
 import matplotlib as mpl
+import matplotlib.dates
 import matplotlib.pyplot as plt
 from pandas import DataFrame
 

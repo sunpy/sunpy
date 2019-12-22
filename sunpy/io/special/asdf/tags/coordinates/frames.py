@@ -4,10 +4,10 @@ import glob
 from astropy.io.misc.asdf.tags.coordinates.frames import BaseCoordType
 
 from sunpy.coordinates import frames
+from ...types import SunPyType
 
 sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
 
-from ...types import SunPyType
 
 __all__ = ['SunPyCoordType']
 

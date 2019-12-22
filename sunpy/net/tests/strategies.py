@@ -3,10 +3,10 @@ Provide a set of Hypothesis Strategies for various Fido related tests.
 """
 import datetime
 
-import numpy as np
 import hypothesis.strategies as st
+import numpy as np
 from hypothesis import assume
-from hypothesis.strategies import one_of, datetimes, sampled_from
+from hypothesis.strategies import datetimes, one_of, sampled_from
 
 import astropy.time
 from astropy.time import Time

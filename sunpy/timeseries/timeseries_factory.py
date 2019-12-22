@@ -24,8 +24,12 @@ from sunpy.io.header import FileHeader
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import expand_list
 from sunpy.util.config import get_and_create_download_dir
-from sunpy.util.datatype_factory_base import (BasicRegistrationFactory, MultipleMatchError,
-                                              NoMatchError, ValidationFunctionError)
+from sunpy.util.datatype_factory_base import (
+    BasicRegistrationFactory,
+    MultipleMatchError,
+    NoMatchError,
+    ValidationFunctionError,
+)
 from sunpy.util.metadata import MetaDict
 from sunpy.util.net import download_file
 

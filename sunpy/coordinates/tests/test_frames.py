@@ -1,25 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-
 import pytest
 
-from sunpy.time import parse_time
-
 import astropy.units as u
-
+from astropy.coordinates import (
+    CartesianRepresentation,
+    SkyCoord,
+    SphericalRepresentation,
+    UnitSphericalRepresentation,
+)
 from astropy.tests.helper import assert_quantity_allclose
 
-from astropy.coordinates import (UnitSphericalRepresentation,
-                                 SphericalRepresentation,
-                                 CartesianRepresentation,
-                                 SkyCoord)
-
+from sunpy.time import parse_time
 from ... import sun
-from ..frames import (Helioprojective,
-                      HeliographicStonyhurst,
-                      Heliocentric,
-                      HeliographicCarrington)
+from ..frames import Heliocentric, HeliographicCarrington, HeliographicStonyhurst, Helioprojective
 
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)

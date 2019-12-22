@@ -2,12 +2,17 @@
 
 import numpy as np
 
-import sunpy.map
 from astropy.coordinates import BaseCoordinateFrame
 from astropy.wcs import WCS
 
-from sunpy.coordinates.frames import Helioprojective, Heliocentric, HeliographicStonyhurst, HeliographicCarrington
-from ..wcs_utils import solar_wcs_frame_mapping, solar_frame_to_wcs_mapping
+import sunpy.map
+from sunpy.coordinates.frames import (
+    Heliocentric,
+    HeliographicCarrington,
+    HeliographicStonyhurst,
+    Helioprojective,
+)
+from ..wcs_utils import solar_frame_to_wcs_mapping, solar_wcs_frame_mapping
 
 
 def test_hpc():

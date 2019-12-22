@@ -6,23 +6,23 @@ import os
 import tempfile
 import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-import matplotlib.pyplot as plt
 
-import astropy.wcs
 import astropy.units as u
-from astropy.io import fits
-from astropy.time import Time
+import astropy.wcs
 from astropy.coordinates import SkyCoord
+from astropy.io import fits
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import Time
 from astropy.visualization import wcsaxes
 
 import sunpy
+import sunpy.coordinates
+import sunpy.data.test
 import sunpy.map
 import sunpy.sun
-import sunpy.data.test
-import sunpy.coordinates
 from sunpy.coordinates import sun
 from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning

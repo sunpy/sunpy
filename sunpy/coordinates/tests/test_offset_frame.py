@@ -1,11 +1,11 @@
-import pytest
 import hypothesis.strategies as st
-from hypothesis import given, settings
 import numpy as np
+import pytest
+from hypothesis import given, settings
 
 import astropy.units as u
-from astropy.tests.helper import assert_quantity_allclose
 from astropy.coordinates import SkyCoord, SkyOffsetFrame
+from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.coordinates import NorthOffsetFrame
 

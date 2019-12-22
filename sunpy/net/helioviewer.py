@@ -13,8 +13,8 @@ from astropy.utils.decorators import lazyproperty
 
 import sunpy
 from sunpy.time import parse_time
-from sunpy.util.xml import xml_to_dict
 from sunpy.util.util import partial_key_match
+from sunpy.util.xml import xml_to_dict
 
 __all__ = ['HelioviewerClient']
 

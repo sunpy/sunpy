@@ -3,14 +3,14 @@
 import pytest
 
 import astropy.units as u
-from astropy.time import Time
-from astropy.tests.helper import assert_quantity_allclose
 from astropy.coordinates import ICRS, get_body_barycentric
+from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import Time
 
+from sunpy.coordinates import frames, get_earth
 from sunpy.time import parse_time
-from ..frames import Helioprojective, HeliographicStonyhurst, HeliocentricInertial
-from ..frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
-from sunpy.coordinates import get_earth, frames
+from ..frameattributes import ObserverCoordinateAttribute, TimeFrameAttributeSunPy
+from ..frames import HeliocentricInertial, HeliographicStonyhurst, Helioprojective
 
 
 @pytest.fixture

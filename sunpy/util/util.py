@@ -2,8 +2,8 @@
 This module provides general utility functions.
 """
 import os
-from itertools import chain, count
 import hashlib
+from itertools import chain, count
 from collections import UserList
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
