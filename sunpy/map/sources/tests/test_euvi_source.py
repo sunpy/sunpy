@@ -1,6 +1,7 @@
 """
-Test cases for STEREO Map subclasses. This particular test file pertains to
-EUVIMap.
+Test cases for STEREO Map subclasses.
+
+This particular test file pertains to EUVIMap.
 """
 
 import os
@@ -65,4 +66,4 @@ def test_rsun_missing():
 
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
-    assert euvi.plot_settings['norm'].clip is False
+    assert not euvi.plot_settings['norm'].clip

@@ -1,6 +1,7 @@
 """
-Test cases for SDO Map subclasses. This particular test file pertains to
-HMIMap.
+Test cases for SDO Map subclasses.
+
+This particular test file pertains to HMIMap.
 """
 
 import os

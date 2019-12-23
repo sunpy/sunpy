@@ -59,4 +59,4 @@ def test_observatory(kcor):
 
 def test_norm_clip(kcor):
     # Tests that the default normalizer has clipping disabled
-    assert kcor.plot_settings['norm'].clip is False
+    assert not kcor.plot_settings['norm'].clip

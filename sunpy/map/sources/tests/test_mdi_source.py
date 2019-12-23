@@ -1,6 +1,7 @@
 """
-Test cases for SOHO Map subclasses. This particular test file pertains to
-MDIMap.
+Test cases for SOHO Map subclasses.
+
+This particular test file pertains to MDIMap.
 """
 
 import os

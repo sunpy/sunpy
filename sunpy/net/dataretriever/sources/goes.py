@@ -23,8 +23,7 @@ __all__ = ["XRSClient", "SUVIClient"]
 
 class XRSClient(GenericClient):
     """
-    Provides access to the GOES XRS fits files `archive
-    <https://umbra.nascom.nasa.gov/goes/fits/>`__ hosted by the `Solar Data
+    Provides access to the GOES XRS fits files archive hosted by the `Solar Data
     Analysis Center <https://umbra.nascom.nasa.gov/index.html/>`__.
 
     Examples
@@ -45,6 +44,10 @@ class XRSClient(GenericClient):
     2016-01-02 00:00:00 2016-01-02 23:59:59   nasa       goes        nan
     <BLANKLINE>
     <BLANKLINE>
+
+    References
+    ----------
+    * https://umbra.nascom.nasa.gov/goes/fits/
     """
 
     def _get_goes_sat_num(self, date):

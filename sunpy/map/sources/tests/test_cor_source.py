@@ -1,6 +1,7 @@
 """
-Test cases for STEREO Map subclasses. This particular test file pertains to
-CORMap.
+Test cases for STEREO Map subclasses.
+
+This particular test file pertains to CORMap.
 """
 
 import os
@@ -48,4 +49,4 @@ def test_observatory():
 
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
-    assert cor.plot_settings['norm'].clip is False
+    assert not cor.plot_settings['norm'].clip

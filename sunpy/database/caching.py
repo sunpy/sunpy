@@ -224,9 +224,6 @@ class LRUCache(BaseCache):
 
 
 class LFUCache(BaseCache):
-    """
-    LFUCache.
-    """
 
     def __init__(self, maxsize=float('inf')):
         self.usage_counter = Counter()

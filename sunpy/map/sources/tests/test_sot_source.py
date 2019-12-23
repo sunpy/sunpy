@@ -1,6 +1,7 @@
 """
-Test cases for HINODE Map subclasses. This particular test file pertains to
-SOTMap.
+Test cases for HINODE Map subclasses.
+
+This particular test file pertains to SOTMap.
 """
 
 import os

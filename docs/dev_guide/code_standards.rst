@@ -33,12 +33,14 @@ Coding Style/Conventions
   Please try to maintain the style when adding or modifying code.
 
 * Following PEP8's recommendation, absolute imports are to be used in general.
+  This is enforced by a continuous integration build that checks for most PEP8 violations and we want this to always pass.
+  So any failures should be addressed or a ``# NOQA`` must be added (with a good reason).
   We allow relative imports within a module to avoid circular import chains.
 
 * The ``import numpy as np``, ``import matplotlib as mpl``, and ``import matplotlib.pyplot as plt`` naming conventions should be used wherever relevant.
   ``from packagename import *`` should never be used (expect in ``__init__.py``)
 
-* Classes should either use direct variable access, or Python’s property mechanism for setting object instance variables.
+* Classes should either use direct variable access, or Python's property mechanism for setting object instance variables.
 
 * Classes should use the builtin :func:`super` function when making calls to methods in their super-class(es) unless there are specific reasons not to.
   :func:`super` should be used consistently in all subclasses since it does not work otherwise.
@@ -48,19 +50,6 @@ Coding Style/Conventions
 * ``__init__.py`` files for modules should not contain any significant implementation code. ``__init__.py`` can contain docstrings and code for organizing the module layout.
 
 * General utilities necessary for but not specific to the package should be placed in the ``sunpy.utils`` module.
-
-Formatting
-==========
-
-**This is optional and we do not enforce, check or expect you to do this.**
-
-We have pre-commit hooks in our repository if you would rather let these tools do the work for you.
-You will need to:
-
-* Install pre-commit: ``pip install pre-commit``
-* Execute pre-commit: ``pre-commit install``
-
-Now each time on a commit, the tools defined in ``.pre-commit-config.yaml`` will run and their changes either be added to the commit or you have to re-add them.
 
 Documentation and Testing
 =========================

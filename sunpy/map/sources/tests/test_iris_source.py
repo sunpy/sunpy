@@ -1,5 +1,7 @@
 """
-Test cases for SJIMap. This particular test file pertains to SJIMap.
+Test cases for SJIMap.
+
+This particular test file pertains to SJIMap.
 """
 
 import os

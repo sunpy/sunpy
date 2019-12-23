@@ -1,6 +1,7 @@
 """
-Test cases for PROBA2 Map subclasses. This particular test file pertains to
-SWAPMap.
+Test cases for PROBA2 Map subclasses.
+
+This particular test file pertains to SWAPMap.
 """
 
 import os

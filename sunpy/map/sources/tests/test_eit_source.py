@@ -1,6 +1,7 @@
 """
-Test cases for SOHO Map subclasses. This particular test file pertains to
-EITMap.
+Test cases for SOHO Map subclasses.
+
+This particular test file pertains to EITMap.
 """
 
 import os
@@ -66,4 +67,4 @@ def test_rsun(createEIT):
 
 def test_norm_clip(createEIT):
     # Tests that the default normalizer has clipping disabled
-    assert createEIT.plot_settings['norm'].clip is False
+    assert not createEIT.plot_settings['norm'].clip

@@ -1,6 +1,7 @@
 """
-Test cases for SOHO Map subclasses. This particular test file pertains to
-LASCOMap.
+Test cases for SOHO Map subclasses.
+
+This particular test file pertains to LASCOMap.
 """
 
 import os
@@ -48,4 +49,4 @@ def test_observatory():
 
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
-    assert lasco.plot_settings['norm'].clip is False
+    assert not lasco.plot_settings['norm'].clip

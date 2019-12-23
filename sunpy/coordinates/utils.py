@@ -224,8 +224,8 @@ class GreatArc:
 
     def coordinates(self, points=None):
         """
-        Calculates the co-ordinates on the sphere from the start to the end co-
-        ordinate for all the parameterized points.  Co-ordinates are returned
+        Calculates the co-ordinates on the sphere from the start to the end
+        co-ordinate for all the parameterized points. Co-ordinates are returned
         in the frame of the start coordinate.
 
         Parameters
