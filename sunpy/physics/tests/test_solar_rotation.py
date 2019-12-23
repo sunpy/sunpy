@@ -25,7 +25,7 @@ def aia171_test_map():
 
 @pytest.fixture
 def aia171_test_submap(aia171_test_map):
-    return aia171_test_map.submap(SkyCoord(((0, 0), (400, 500)) * u.arcsec,
+    return aia171_test_map.submap(SkyCoord(((0, 0), (400, 500))*u.arcsec,
                                            frame=aia171_test_map.coordinate_frame))
 
 

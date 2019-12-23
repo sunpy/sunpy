@@ -74,9 +74,9 @@ class NoRHClient(GenericClient):
             raise ValueError(f"Wavelength to NORH must be one value not {wavelength}.")
 
         wavelength = wavelength.to(u.GHz, equivalencies=u.spectral())
-        if wavelength == 34 * u.GHz:
+        if wavelength == 34*u.GHz:
             freq = 'tcz'
-        elif wavelength == 17 * u.GHz:
+        elif wavelength == 17*u.GHz:
             freq = 'tca'
         else:
             raise ValueError("NORH Data can be downloaded for 17GHz or 34GHz,"
@@ -103,7 +103,7 @@ class NoRHClient(GenericClient):
         for url in urls:
             t0 = crawler._extractDateURL(url)
             # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + TimeDelta(1 * u.day)))
+            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
         return times
 
     def _makeimap(self):

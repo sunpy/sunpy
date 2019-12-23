@@ -74,10 +74,10 @@ def test_vso_attribute_parse(hek_client):
     assert vso_query[2].value == hek_query[0]["obs_instrument"]
 
     # Checking Wavelength
-    assert vso_query[3].min == hek_query[0]["obs_meanwavel"] * u.Unit(
+    assert vso_query[3].min == hek_query[0]["obs_meanwavel"]*u.Unit(
         hek_query[0]["obs_wavelunit"]
     )
-    assert vso_query[3].max == hek_query[0]["obs_meanwavel"] * u.Unit(
+    assert vso_query[3].max == hek_query[0]["obs_meanwavel"]*u.Unit(
         hek_query[0]["obs_wavelunit"]
     )
     assert vso_query[3].unit == u.Unit("Angstrom")

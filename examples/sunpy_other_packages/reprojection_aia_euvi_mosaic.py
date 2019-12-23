@@ -34,10 +34,10 @@ stereo = (a.Instrument('EUVI') &
           a.Time('2011-11-01', '2011-11-01T00:10:00'))
 
 aia = (a.Instrument('AIA') &
-       a.vso.Sample(24 * u.hour) &
+       a.vso.Sample(24*u.hour) &
        a.Time('2011-11-01', '2011-11-02'))
 
-wave = a.Wavelength(19.5 * u.nm, 19.5 * u.nm)
+wave = a.Wavelength(19.5*u.nm, 19.5*u.nm)
 
 res = Fido.search(wave, aia | stereo)
 
@@ -100,8 +100,8 @@ header = sunpy.map.make_fitswcs_header(shape_out,
                                                 frame="heliographic_stonyhurst",
                                                 obstime=maps[0].date),
                                        scale=[180 / shape_out[0],
-                                              360 / shape_out[1]] * u.deg / u.pix,
-                                       wavelength=int(maps[0].meta['wavelnth']) * u.AA,
+                                              360 / shape_out[1]]*u.deg / u.pix,
+                                       wavelength=int(maps[0].meta['wavelnth'])*u.AA,
                                        projection_code="CAR")
 out_wcs = WCS(header)
 

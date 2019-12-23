@@ -54,7 +54,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     nt = len(mc.maps)
 
     # Storage for the shifts in arcseconds
-    xshift_arcseconds = np.zeros(nt) * u.arcsec
+    xshift_arcseconds = np.zeros(nt)*u.arcsec
     yshift_arcseconds = np.zeros_like(xshift_arcseconds)
 
     # Layer that
@@ -127,7 +127,7 @@ def mapsequence_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwarg
     nt = len(mc.maps)
 
     # Storage for the pixel shifts and the shifts in arcseconds
-    xshift_keep = np.zeros(nt) * u.pix
+    xshift_keep = np.zeros(nt)*u.pix
     yshift_keep = np.zeros_like(xshift_keep)
 
     # If no shifts are passed in, calculate them.  Otherwise,

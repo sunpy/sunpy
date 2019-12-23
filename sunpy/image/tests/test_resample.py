@@ -27,22 +27,22 @@ def resample_meta(aia171_test_map, dimensions, method, center, minusone):
 
 
 def resample_method(aia171_test_map, method):
-    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, False, False) == (512, 512)
+    assert resample_meta(aia171_test_map, (512, 512)*u.pix, method, False, False) == (512, 512)
     assert resample_meta(
         aia171_test_map,
         (2056,
-         2056) * u.pix,
+         2056)*u.pix,
         method,
         False,
         False) == (
         2056,
         2056)
-    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, False, True) == (512, 512)
-    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix, method, False, True) == (2056, 2056)
-    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, True, False) == (512, 512)
-    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix, method, True, False) == (2056, 2056)
-    assert resample_meta(aia171_test_map, (512, 512) * u.pix, method, True, True) == (512, 512)
-    assert resample_meta(aia171_test_map, (2056, 2056) * u.pix, method, True, True) == (2056, 2056)
+    assert resample_meta(aia171_test_map, (512, 512)*u.pix, method, False, True) == (512, 512)
+    assert resample_meta(aia171_test_map, (2056, 2056)*u.pix, method, False, True) == (2056, 2056)
+    assert resample_meta(aia171_test_map, (512, 512)*u.pix, method, True, False) == (512, 512)
+    assert resample_meta(aia171_test_map, (2056, 2056)*u.pix, method, True, False) == (2056, 2056)
+    assert resample_meta(aia171_test_map, (512, 512)*u.pix, method, True, True) == (512, 512)
+    assert resample_meta(aia171_test_map, (2056, 2056)*u.pix, method, True, True) == (2056, 2056)
 
 
 def test_resample_neighbor(aia171_test_map):

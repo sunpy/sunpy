@@ -53,7 +53,7 @@ def test_split_series_using_lytaf():
     # construct a dummy signal for testing purposes
     basetime = parse_time('2010-06-13 02:00')
     seconds = 3600
-    dummy_time = [basetime + TimeDelta(s * u.second) for s in range(seconds)]
+    dummy_time = [basetime + TimeDelta(s*u.second) for s in range(seconds)]
     dummy_data = np.random.random(seconds)
 
     lytaf_tmp = lyra.get_lytaf_events('2010-06-13 02:00', '2010-06-13 06:00',

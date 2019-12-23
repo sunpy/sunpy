@@ -100,7 +100,7 @@ This comes with numerous benefits:
 
     >>> Time('2016-12-31T23:59:60')
     <Time object: scale='utc' format='isot' value=2016-12-31T23:59:60.000>
-    >>> Time('2016-12-31T23:59:59') + 1 * u.s
+    >>> Time('2016-12-31T23:59:59') + 1*u.s
     <Time object: scale='utc' format='isot' value=2016-12-31T23:59:60.000>
 
 - **Support for numerous formats**

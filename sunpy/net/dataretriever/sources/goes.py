@@ -106,7 +106,7 @@ class XRSClient(GenericClient):
             else:
                 start = Time.strptime(datestamp, "%Y%m%d")
 
-            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+            almost_day = TimeDelta(1*u.day - 1*u.millisecond)
             times.append(TimeRange(start, start + almost_day))
 
         return times
@@ -295,14 +295,14 @@ class SUVIClient(GenericClient):
                     wavelength = [kwargs.get("wavelength")]
             else:  # _Range was provided
                 compress_index = [wavelength_input.wavemin <= this_wave <=
-                                  wavelength_input.wavemax for this_wave in (supported_waves * u.Angstrom)]
+                                  wavelength_input.wavemax for this_wave in (supported_waves*u.Angstrom)]
                 if not any(compress_index):
                     raise ValueError(
                         f"Wavelength {wavelength_input} not supported.")
                 else:
-                    wavelength = list(compress(supported_waves, compress_index)) * u.Angstrom
+                    wavelength = list(compress(supported_waves, compress_index))*u.Angstrom
         else:  # no wavelength provided return all of them
-            wavelength = supported_waves * u.Angstrom
+            wavelength = supported_waves*u.Angstrom
         # check that the input wavelength can be converted to angstrom
         waves = [int(this_wave.to_value('angstrom', equivalencies=u.spectral()))
                  for this_wave in wavelength]

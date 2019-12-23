@@ -19,8 +19,8 @@ from sunpy.data.sample import AIA_171_IMAGE
 ###############################################################################
 # We start with the sample data and create a cutout.
 aia = sunpy.map.Map(AIA_171_IMAGE)
-bottom_left = SkyCoord(-300 * u.arcsec, 0 * u.arcsec, frame=aia.coordinate_frame)
-top_right = SkyCoord(100 * u.arcsec, 400 * u.arcsec, frame=aia.coordinate_frame)
+bottom_left = SkyCoord(-300*u.arcsec, 0*u.arcsec, frame=aia.coordinate_frame)
+top_right = SkyCoord(100*u.arcsec, 400*u.arcsec, frame=aia.coordinate_frame)
 aia_smap = aia.submap(bottom_left, top_right)
 
 ###############################################################################
@@ -58,6 +58,6 @@ plt.show()
 fig = plt.figure()
 fig.add_subplot(projection=aia_smap)
 aia_smap.plot()
-levels = one_sigma / aia_smap.max() * u.percent * 100
+levels = one_sigma / aia_smap.max()*u.percent * 100
 aia_smap.draw_contours(levels=levels, colors=['blue'])
 plt.show()

@@ -56,7 +56,7 @@ def fido_search_result():
         net_attrs.Instrument('lyra') | net_attrs.Instrument('eve') |
         net_attrs.Instrument('XRS') | net_attrs.Instrument('noaa-indices') |
         net_attrs.Instrument('noaa-predict') |
-        (net_attrs.Instrument('norh') & net_attrs.Wavelength(17 * u.GHz)) |
+        (net_attrs.Instrument('norh') & net_attrs.Wavelength(17*u.GHz)) |
         net_attrs.Instrument('rhessi') |
         (net_attrs.Instrument('EVE') & net_attrs.Level(0))
     )
@@ -80,7 +80,7 @@ def qr_block_with_missing_physobs():
     return vso.VSOClient().search(
         vso.attrs.Time('20130805T120000', '20130805T121000'),
         vso.attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
-        vso.attrs.Provider('SSC'), vso.attrs.Wavelength(10 * u.kHz, 160 * u.kHz))[0]
+        vso.attrs.Provider('SSC'), vso.attrs.Wavelength(10*u.kHz, 160*u.kHz))[0]
 
 
 @pytest.fixture

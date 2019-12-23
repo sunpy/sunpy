@@ -22,8 +22,8 @@ m = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
 # Let's define the start and end coordinates of the arc.
-start = SkyCoord(735 * u.arcsec, -471 * u.arcsec, frame=m.coordinate_frame)
-end = SkyCoord(-100 * u.arcsec, 800 * u.arcsec, frame=m.coordinate_frame)
+start = SkyCoord(735*u.arcsec, -471*u.arcsec, frame=m.coordinate_frame)
+end = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=m.coordinate_frame)
 
 ###############################################################################
 # Create the great arc between the start and end points.

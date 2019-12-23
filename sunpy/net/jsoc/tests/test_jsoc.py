@@ -47,7 +47,7 @@ def test_empty_jsoc_response():
 def test_query():
     Jresp = client.search(
         vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
-        attrs.Series('hmi.M_45s'), vso_attrs.Sample(90 * u.second))
+        attrs.Series('hmi.M_45s'), vso_attrs.Sample(90*u.second))
     assert isinstance(Jresp, JSOCResponse)
     assert len(Jresp) == 2
 
@@ -67,8 +67,8 @@ def test_post_pass():
 def test_post_wavelength():
     responses = client.search(
         vso_attrs.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
-        attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(193 * u.AA) |
-        attrs.Wavelength(335 * u.AA), attrs.Notify('jsoc@cadair.com'))
+        attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(193*u.AA) |
+        attrs.Wavelength(335*u.AA), attrs.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses)
     [r.wait() for r in aa]
     tmpresp = aa[0]._d
@@ -96,7 +96,7 @@ def test_post_wave_series():
         client.search(
             vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
             attrs.Series('hmi.M_45s') | attrs.Series('aia.lev1_euv_12s'),
-            attrs.Wavelength(193 * u.AA) | attrs.Wavelength(335 * u.AA))
+            attrs.Wavelength(193*u.AA) | attrs.Wavelength(335*u.AA))
 
 
 @pytest.mark.remote_data
@@ -148,7 +148,7 @@ def test_lookup_records_errors():
 
     del d1['primekey']
     d1.update({'segment': 123})
-    d1.update({'wavelength': 304 * u.AA})
+    d1.update({'wavelength': 304*u.AA})
     # Segments can only be passed as a comma-separated string or a list of strings.
     with pytest.raises(TypeError):
         client._lookup_records(d1)
@@ -182,7 +182,7 @@ def test_make_recordset_errors():
     d1.update({
         'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
         'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai'),
-        'wavelength': 604 * u.AA,
+        'wavelength': 604*u.AA,
         'primekey': {'WAVELNTH': '604'}
     })
 
@@ -199,7 +199,7 @@ def test_make_recordset():
     exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'
     assert client._make_recordset(**d1) == exp
 
-    d1.update({'wavelength': 604 * u.AA})
+    d1.update({'wavelength': 604*u.AA})
     exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI][604]'
     assert client._make_recordset(**d1) == exp
 
@@ -242,7 +242,7 @@ def test_make_recordset():
 @pytest.mark.remote_data
 def test_search_metadata():
     metadata = client.search_metadata(vso_attrs.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
-                                      attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(304 * u.AA))
+                                      attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(304*u.AA))
     assert isinstance(metadata, pd.DataFrame)
     assert metadata.shape == (11, 176)
     for i in metadata.index.values:

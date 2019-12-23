@@ -142,13 +142,13 @@ time-equivalent `astropy.units.Quantity` or `datetime.timedelta` object
 example: ::
 
     >>> import astropy.units as u
-    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.second)
+    >>> time_range = TimeRange('2010/03/04 00:10', 400*u.second)
 
 or: ::
 
     >>> import astropy.units as u
     >>> from astropy.time import TimeDelta
-    >>> time_range = TimeRange('2010/03/04 00:10', TimeDelta(400 * u.second))
+    >>> time_range = TimeRange('2010/03/04 00:10', TimeDelta(400*u.second))
 
 or: ::
 

@@ -104,7 +104,7 @@ class ESPTimeSeries(GenericTimeSeries):
         header.update({'TELESCOP': hdulist[1].header['TELESCOP'].split()[0]})
 
         start_time = parse_time(hdulist[1].header['T_OBS'])
-        times = start_time + TimeDelta(hdulist[1].data['SOD'] * u.second)
+        times = start_time + TimeDelta(hdulist[1].data['SOD']*u.second)
 
         colnames = ['QD', 'CH_18', 'CH_26', 'CH_30', 'CH_36']
 

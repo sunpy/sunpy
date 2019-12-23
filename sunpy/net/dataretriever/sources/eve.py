@@ -69,7 +69,7 @@ class EVEClient(GenericClient):
         for url in urls:
             t0 = eve._extractDateURL(url)
             # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + TimeDelta(1 * u.day)))
+            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
         return times
 
     def _makeimap(self):

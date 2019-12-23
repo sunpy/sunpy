@@ -156,7 +156,7 @@ contours on the Map:
     aia_map.draw_limb()
 
     # let's add contours as well
-    aia_map.draw_contours([10,20,30,40,50,60,70,80,90] * u.percent)
+    aia_map.draw_contours([10,20,30,40,50,60,70,80,90]*u.percent)
 
     plt.colorbar()
     plt.show()
@@ -187,8 +187,8 @@ then used to modify the plot:
     # Prevent the image from being re-scaled while overplotting.
     ax.set_autoscale_on(False)
 
-    xc = [0,100,1000] * u.arcsec
-    yc = [0,100,1000] * u.arcsec
+    xc = [0,100,1000]*u.arcsec
+    yc = [0,100,1000]*u.arcsec
 
     coords = SkyCoord(xc, yc, frame=smap.coordinate_frame)
 
@@ -223,8 +223,8 @@ rotation and plotting in different coordinate systems.
     # Prevent the image from being re-scaled while overplotting.
     ax.set_autoscale_on(False)
 
-    xc = [0,100,1000] * u.arcsec
-    yc = [0,100,1000] * u.arcsec
+    xc = [0,100,1000]*u.arcsec
+    yc = [0,100,1000]*u.arcsec
 
     p = plt.plot(xc, yc, 'o')
 
@@ -278,9 +278,9 @@ units to plot a AIA image and a zoomed in view of an active region.
 
 
     # Define a region of interest
-    length = 250 * u.arcsec
-    x0 = -100 * u.arcsec
-    y0 = -400 * u.arcsec
+    length = 250*u.arcsec
+    x0 = -100*u.arcsec
+    y0 = -400*u.arcsec
 
     # Create a SunPy Map, and a second submap over the region of interest.
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)

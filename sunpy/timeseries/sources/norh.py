@@ -118,7 +118,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         cadence = np.float(header['CDELT1'])
         sec_array = np.linspace(0, length - 1, int(length / cadence))
 
-        norh_time = obs_start_time + TimeDelta(sec_array * u.second)
+        norh_time = obs_start_time + TimeDelta(sec_array*u.second)
         norh_time.precision = 9
         norh_time = norh_time.isot.astype('datetime64')
 

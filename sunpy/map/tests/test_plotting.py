@@ -47,7 +47,7 @@ def test_plot_aia171(aia171_test_map):
 
 @figure_test
 def test_plot_aia171_clip(aia171_test_map):
-    aia171_test_map.plot(clip_interval=(5., 99.) * u.percent)
+    aia171_test_map.plot(clip_interval=(5., 99.)*u.percent)
 
 
 @figure_test
@@ -62,7 +62,7 @@ def test_peek_grid_aia171(aia171_test_map):
 
 @figure_test
 def test_peek_grid_spacing_aia171(aia171_test_map):
-    aia171_test_map.peek(draw_grid=(5, 5) * u.deg)
+    aia171_test_map.peek(draw_grid=(5, 5)*u.deg)
 
 
 @figure_test
@@ -73,7 +73,7 @@ def test_peek_limb_aia171(aia171_test_map):
 @figure_test
 def test_draw_grid_aia171(aia171_test_map):
     aia171_test_map.plot()
-    aia171_test_map.draw_grid(grid_spacing=(30, 40) * u.deg)
+    aia171_test_map.draw_grid(grid_spacing=(30, 40)*u.deg)
 
 
 @figure_test
@@ -91,9 +91,9 @@ def test_plot_aia171_nowcsaxes(aia171_test_map):
 def test_rectangle_aia171(aia171_test_map):
     aia171_test_map.plot()
     bottom_left = SkyCoord(
-        0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
-    w = 100 * u.arcsec
-    h = 100 * u.arcsec
+        0*u.arcsec, 0*u.arcsec, frame=aia171_test_map.coordinate_frame)
+    w = 100*u.arcsec
+    h = 100*u.arcsec
     aia171_test_map.draw_rectangle(bottom_left, w, h)
 
 
@@ -110,27 +110,27 @@ def test_plot_masked_aia171_nowcsaxes(aia171_test_map_with_mask):
 
 @figure_test
 def test_plot_aia171_superpixel(aia171_test_map):
-    aia171_test_map.superpixel((9, 7) * u.pix, offset=(4, 4) * u.pix).plot()
+    aia171_test_map.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot()
 
 
 @figure_test
 def test_plot_aia171_superpixel_nowcsaxes(aia171_test_map):
     ax = plt.gca()
     aia171_test_map.superpixel(
-        (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
+        (9, 7)*u.pix, offset=(4, 4)*u.pix).plot(axes=ax)
 
 
 @figure_test
 def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
     aia171_test_map_with_mask.superpixel(
-        (9, 7) * u.pix, offset=(4, 4) * u.pix).plot()
+        (9, 7)*u.pix, offset=(4, 4)*u.pix).plot()
 
 
 @figure_test
 def test_plot_masked_aia171_superpixel_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
     aia171_test_map_with_mask.superpixel(
-        (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
+        (9, 7)*u.pix, offset=(4, 4)*u.pix).plot(axes=ax)
 
 
 @figure_test
@@ -148,7 +148,7 @@ def test_heliographic_peek(heliographic_test_map):
 def test_heliographic_rectangle(heliographic_test_map):
     heliographic_test_map.plot()
     bottom = SkyCoord(
-        60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
-    w = 13 * u.deg
-    h = 13 * u.deg
+        60*u.deg, 50*u.deg, frame=heliographic_test_map.coordinate_frame)
+    w = 13*u.deg
+    h = 13*u.deg
     heliographic_test_map.draw_rectangle(bottom, w, h, color='cyan')

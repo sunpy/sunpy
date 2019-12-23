@@ -101,7 +101,7 @@ def test_wcs(aia171_test_map):
                [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
     assert u.allclose(wcs.wcs.cdelt * (u.Unit(wcs.wcs.cunit[0]) / u.pix),
                       u.Quantity(aia171_test_map.scale))
-    assert u.allclose(wcs.wcs.crval * u.Unit(wcs.wcs.cunit[0]),
+    assert u.allclose(wcs.wcs.crval*u.Unit(wcs.wcs.cunit[0]),
                       u.Quantity([aia171_test_map._reference_longitude, aia171_test_map._reference_latitude]))
     assert set(wcs.wcs.ctype) == {
         aia171_test_map.coordinate_system.axis1, aia171_test_map.coordinate_system.axis2}
@@ -118,7 +118,7 @@ def test_dtype(generic_map):
 
 
 def test_size(generic_map):
-    assert generic_map.size == 36 * u.pix
+    assert generic_map.size == 36*u.pix
 
 
 def test_min(generic_map):
@@ -358,8 +358,8 @@ def test_shift_applied(generic_map):
     """
     original_reference_coord = (generic_map.reference_coordinate.Tx,
                                 generic_map.reference_coordinate.Ty)
-    x_shift = 5 * u.arcsec
-    y_shift = 13 * u.arcsec
+    x_shift = 5*u.arcsec
+    y_shift = 13*u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
     assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
     assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
@@ -375,8 +375,8 @@ def test_set_shift(generic_map):
     """
     Test that previously applied shift is stored in the shifted_value property.
     """
-    x_shift = 5 * u.arcsec
-    y_shift = 13 * u.arcsec
+    x_shift = 5*u.arcsec
+    y_shift = 13*u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
     resultant_shift = shifted_map.shifted_value
     assert resultant_shift[0] == x_shift
@@ -387,12 +387,12 @@ def test_shift_history(generic_map):
     """
     Test the shifted_value is added to a non-zero previous shift.
     """
-    x_shift1 = 5 * u.arcsec
-    y_shift1 = 13 * u.arcsec
+    x_shift1 = 5*u.arcsec
+    y_shift1 = 13*u.arcsec
     shifted_map1 = generic_map.shift(x_shift1, y_shift1)
 
-    x_shift2 = -28.5 * u.arcsec
-    y_shift2 = 120 * u.arcsec
+    x_shift2 = -28.5*u.arcsec
+    y_shift2 = 120*u.arcsec
     final_shifted_map = shifted_map1.shift(x_shift2, y_shift2)
 
     resultant_shift = final_shifted_map.shifted_value
@@ -408,7 +408,7 @@ def test_submap(generic_map):
     height = generic_map.data.shape[0]
 
     # Create a submap of the top-right quadrant of the image
-    submap = generic_map.submap([width / 2., height / 2.] * u.pix, [width, height] * u.pix)
+    submap = generic_map.submap([width / 2., height / 2.]*u.pix, [width, height]*u.pix)
 
     # Check to see if submap properties were updated properly
     assert submap.reference_pixel.x.value == generic_map.meta['crpix1'] - width / 2.
@@ -424,8 +424,8 @@ def test_submap(generic_map):
     assert (generic_map.data[height // 2:height, width // 2:width] == submap.data).all()
 
 
-resample_test_data = [('linear', (100, 200) * u.pixel), ('neighbor', (128, 256) * u.pixel),
-                      ('nearest', (512, 128) * u.pixel), ('spline', (200, 200) * u.pixel)]
+resample_test_data = [('linear', (100, 200)*u.pixel), ('neighbor', (128, 256)*u.pixel),
+                      ('nearest', (512, 128)*u.pixel), ('spline', (200, 200)*u.pixel)]
 
 
 @pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
@@ -458,21 +458,21 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
 
 
 def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
-    dimensions = (2, 2) * u.pix
+    dimensions = (2, 2)*u.pix
     superpixel_map_sum = aia171_test_map.superpixel(dimensions)
     assert_quantity_allclose(superpixel_map_sum.dimensions[1],
-                             aia171_test_map.dimensions[1] / dimensions[1] * u.pix)
+                             aia171_test_map.dimensions[1] / dimensions[1]*u.pix)
     assert_quantity_allclose(superpixel_map_sum.dimensions[0],
-                             aia171_test_map.dimensions[0] / dimensions[0] * u.pix)
+                             aia171_test_map.dimensions[0] / dimensions[0]*u.pix)
     assert_quantity_allclose(superpixel_map_sum.data[0][0],
                              (aia171_test_map.data[0][0] + aia171_test_map.data[0][1] +
                               aia171_test_map.data[1][0] + aia171_test_map.data[1][1]))
 
     superpixel_map_avg = aia171_test_map.superpixel(dimensions, func=np.mean)
     assert_quantity_allclose(superpixel_map_avg.dimensions[1],
-                             aia171_test_map.dimensions[1] / dimensions[1] * u.pix)
+                             aia171_test_map.dimensions[1] / dimensions[1]*u.pix)
     assert_quantity_allclose(superpixel_map_avg.dimensions[0],
-                             aia171_test_map.dimensions[0] / dimensions[0] * u.pix)
+                             aia171_test_map.dimensions[0] / dimensions[0]*u.pix)
     assert_quantity_allclose(superpixel_map_avg.data[0][0],
                              (aia171_test_map.data[0][0] + aia171_test_map.data[0][1] +
                               aia171_test_map.data[1][0] + aia171_test_map.data[1][1]) / 4.0)
@@ -486,20 +486,20 @@ def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
                              aia171_test_map.dimensions[0] / dimensions[0])
 
     # Test that the offset is respected
-    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1) * u.pix)
+    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1)*u.pix)
     assert_quantity_allclose(superpixel_map_sum.dimensions[1],
-                             aia171_test_map.dimensions[1] / dimensions[1] * u.pix - 1 * u.pix)
+                             aia171_test_map.dimensions[1] / dimensions[1]*u.pix - 1*u.pix)
     assert_quantity_allclose(superpixel_map_sum.dimensions[0],
-                             aia171_test_map.dimensions[0] / dimensions[0] * u.pix - 1 * u.pix)
+                             aia171_test_map.dimensions[0] / dimensions[0]*u.pix - 1*u.pix)
 
-    dimensions = (7, 9) * u.pix
-    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
+    dimensions = (7, 9)*u.pix
+    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4)*u.pix)
     assert_quantity_allclose(
         superpixel_map_sum.dimensions[0],
-        np.int((aia171_test_map.dimensions[0] / dimensions[0]).value) * u.pix - 1 * u.pix)
+        np.int((aia171_test_map.dimensions[0] / dimensions[0]).value)*u.pix - 1*u.pix)
     assert_quantity_allclose(
         superpixel_map_sum.dimensions[1],
-        np.int((aia171_test_map.dimensions[1] / dimensions[1]).value) * u.pix - 1 * u.pix)
+        np.int((aia171_test_map.dimensions[1] / dimensions[1]).value)*u.pix - 1*u.pix)
 
 
 def calc_new_matrix(angle):
@@ -509,8 +509,8 @@ def calc_new_matrix(angle):
 
 
 def test_rotate(aia171_test_map):
-    rotated_map_1 = aia171_test_map.rotate(20 * u.deg)
-    rotated_map_2 = rotated_map_1.rotate(20 * u.deg)
+    rotated_map_1 = aia171_test_map.rotate(20*u.deg)
+    rotated_map_2 = rotated_map_1.rotate(20*u.deg)
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
                                np.dot(aia171_test_map.rotation_matrix, calc_new_matrix(20).T))
     np.testing.assert_allclose(rotated_map_2.rotation_matrix,
@@ -524,38 +524,38 @@ def test_rotate(aia171_test_map):
     np.testing.assert_allclose(rotated_map_2.data[0, 0], 0., atol=1e-7)
     assert rotated_map_2.mean() < rotated_map_1.mean() < aia171_test_map.mean()
 
-    rotated_map_3 = aia171_test_map.rotate(0 * u.deg, scale=1.5)
+    rotated_map_3 = aia171_test_map.rotate(0*u.deg, scale=1.5)
     assert rotated_map_3.mean() > aia171_test_map.mean()
 
     # Mean and std should be equal when angle of rotation is integral multiple
     # of 90 degrees for a square map
-    rotated_map_4 = aia171_test_map.rotate(90 * u.deg, scale=1.5)
+    rotated_map_4 = aia171_test_map.rotate(90*u.deg, scale=1.5)
     np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_4.mean(), rtol=1e-3)
     np.testing.assert_allclose(rotated_map_3.std(), rotated_map_4.std(), rtol=1e-3)
-    rotated_map_5 = aia171_test_map.rotate(180 * u.deg, scale=1.5)
+    rotated_map_5 = aia171_test_map.rotate(180*u.deg, scale=1.5)
     np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_5.mean(), rtol=1e-3)
     np.testing.assert_allclose(rotated_map_3.std(), rotated_map_5.std(), rtol=2e-3)
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
     aia171_test_map_crop = aia171_test_map.submap(
         SkyCoord(
-            [[0, 0], [1000, 400]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
+            [[0, 0], [1000, 400]]*u.arcsec, frame=aia171_test_map.coordinate_frame))
 
-    aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
+    aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60*u.deg)
     assert aia171_test_map_crop.data.shape[0] < aia171_test_map_crop.data.shape[1]
     assert aia171_test_map_crop_rot.data.shape[0] > aia171_test_map_crop_rot.data.shape[1]
 
     # Same test as above, to test the other direction
     aia171_test_map_crop = aia171_test_map.submap(
         SkyCoord(
-            [[0, 0], [400, 1000]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
-    aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
+            [[0, 0], [400, 1000]]*u.arcsec, frame=aia171_test_map.coordinate_frame))
+    aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60*u.deg)
     assert aia171_test_map_crop.data.shape[0] > aia171_test_map_crop.data.shape[1]
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
 def test_rotate_pad_crpix(generic_map):
-    rotated_map = generic_map.rotate(30 * u.deg)
+    rotated_map = generic_map.rotate(30*u.deg)
     # This tests that the reference pixel of the map is in the expected place.
     assert rotated_map.data.shape != generic_map.data.shape
     assert_quantity_allclose(u.Quantity(rotated_map.reference_pixel),
@@ -563,11 +563,11 @@ def test_rotate_pad_crpix(generic_map):
 
 
 def test_rotate_recenter(generic_map):
-    rotated_map = generic_map.rotate(20 * u.deg, recenter=True)
+    rotated_map = generic_map.rotate(20*u.deg, recenter=True)
     pixel_array_center = (np.flipud(rotated_map.data.shape) - 1) / 2.0
 
     assert_quantity_allclose(
-        (pixel_array_center + 1) * u.pix,  # FITS indexes from 1
+        (pixel_array_center + 1)*u.pix,  # FITS indexes from 1
         u.Quantity(rotated_map.reference_pixel))
 
 
@@ -613,9 +613,9 @@ def test_as_mpl_axes_aia171(aia171_test_map):
 
 
 def test_pixel_to_world_no_projection(generic_map):
-    out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel) + 1 * u.pix, origin=1)
-    assert_quantity_allclose(out.Tx, -10 * u.arcsec)
-    assert_quantity_allclose(out.Ty, 10 * u.arcsec)
+    out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel) + 1*u.pix, origin=1)
+    assert_quantity_allclose(out.Tx, -10*u.arcsec)
+    assert_quantity_allclose(out.Ty, 10*u.arcsec)
 
 
 def test_validate_meta(generic_map):
@@ -660,19 +660,19 @@ def test_hg_coord(heliographic_test_map):
 
 
 def test_hg_pix_to_data(heliographic_test_map):
-    out = heliographic_test_map.pixel_to_world(180 * u.pix, 90 * u.pix)
+    out = heliographic_test_map.pixel_to_world(180*u.pix, 90*u.pix)
     assert isinstance(out, SkyCoord)
     assert isinstance(out.frame, sunpy.coordinates.HeliographicCarrington)
-    assert_quantity_allclose(out.lon, 0 * u.deg)
-    assert_quantity_allclose(out.lat, 0 * u.deg)
+    assert_quantity_allclose(out.lon, 0*u.deg)
+    assert_quantity_allclose(out.lat, 0*u.deg)
 
 
 def test_hg_data_to_pix(heliographic_test_map):
     out = heliographic_test_map.world_to_pixel(
         SkyCoord(
-            0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
-    assert_quantity_allclose(out[0], 180 * u.pix)
-    assert_quantity_allclose(out[1], 90 * u.pix)
+            0*u.deg, 0*u.deg, frame=heliographic_test_map.coordinate_frame))
+    assert_quantity_allclose(out[0], 180*u.pix)
+    assert_quantity_allclose(out[1], 90*u.pix)
 
 # Heliocentric Map Tests
 
@@ -727,7 +727,7 @@ def test_more_than_two_dimensions():
         bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim == 2
-    assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
+    assert_quantity_allclose(bad_map.dimensions, (5, 3)*u.pix)
 
 
 def test_missing_metadata_warnings():

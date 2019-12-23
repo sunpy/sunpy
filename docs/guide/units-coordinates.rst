@@ -29,7 +29,7 @@ import units as ``u``::
 Once we have imported units we can create a quantity by multiplying a number by
 a unit::
 
-   >>> length = 10 * u.meter
+   >>> length = 10*u.meter
    >>> length
    <Quantity 10. m>
 
@@ -53,13 +53,13 @@ unit systems::
 Probably most usefully, `~astropy.units.Quantity` objects will propogate units
 through arithmetic operations when appropriate::
 
-  >>> distance_start = 10 * u.mm
-  >>> distance_end = 23 * u.km
+  >>> distance_start = 10*u.mm
+  >>> distance_end = 23*u.km
   >>> length = distance_end - distance_start
   >>> length
   <Quantity 22.99999 km>
 
-  >>> time = 15 * u.minute
+  >>> time = 15*u.minute
   >>> speed = length / time
   >>> speed
   <Quantity 1.53333267 km / min>
@@ -216,7 +216,7 @@ Using Coordinates with SunPy Map
 
    >>> from astropy.coordinates import SkyCoord
    >>> import astropy.units as u
-   >>> c = SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame)  # doctest: +REMOTE_DATA
+   >>> c = SkyCoord(100*u.arcsec, 10*u.arcsec, frame=m.coordinate_frame)  # doctest: +REMOTE_DATA
    >>> c  # doctest: +REMOTE_DATA
    <SkyCoord (Helioprojective: obstime=2011-06-07T06:33:02.770, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770): (lon, lat, radius) in (deg, deg, m)
        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec

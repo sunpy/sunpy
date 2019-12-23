@@ -55,7 +55,7 @@ stereo_to_sun = SkyCoord(-sun_to_stereo.data, obstime=sun_to_stereo.obstime, fra
 
 vv = Vizier(columns=['**'], row_limit=-1, column_filters={'Gmag': '<7'}, timeout=1200)
 vv.ROW_LIMIT = -1
-result = vv.query_region(stereo_to_sun, radius=4 * u.deg, catalog='I/345/gaia2')
+result = vv.query_region(stereo_to_sun, radius=4*u.deg, catalog='I/345/gaia2')
 
 ###############################################################################
 # Let's see how many stars we've found.
@@ -69,8 +69,8 @@ print(len(result[0]))
 
 hpc_coords = []
 for this_object in result[0]:
-    tbl_crds = SkyCoord(this_object['RA_ICRS'] * u.deg, this_object['DE_ICRS'] * u.deg,
-                        1e12 * u.km, frame='icrs', obstime=cor2.date)
+    tbl_crds = SkyCoord(this_object['RA_ICRS']*u.deg, this_object['DE_ICRS']*u.deg,
+                        1e12*u.km, frame='icrs', obstime=cor2.date)
     hpc_coords.append(tbl_crds.transform_to(cor2.coordinate_frame))
 
 ###############################################################################

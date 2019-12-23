@@ -145,7 +145,7 @@ class GreatArc:
 
         # Inner angle between v1 and v2 in radians
         self.inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)),
-                                      np.dot(self.v1, self.v2)) * u.rad
+                                      np.dot(self.v1, self.v2))*u.rad
 
         # Radius of the sphere
         self.radius = self._r * self.distance_unit

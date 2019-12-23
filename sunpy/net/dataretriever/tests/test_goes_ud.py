@@ -91,7 +91,7 @@ def test_query(LCClient, time):
     # start of the day.
     assert qr1.time_range().start.strftime('%Y-%m-%d') == time.start.strftime('%Y-%m-%d')
 
-    almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
     end = parse_time(time.end.strftime('%Y-%m-%d')) + almost_day
     assert is_time_equal(qr1.time_range().end, end)
 
@@ -139,7 +139,7 @@ def test_fido(time, instrument):
 @given(goes_time())
 def test_time_for_url(LCClient, time):
     time = time.start.strftime("%Y/%m/%d")
-    almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
 
     tr = TimeRange(time, almost_day)
     url = LCClient._get_url_for_timerange(tr)

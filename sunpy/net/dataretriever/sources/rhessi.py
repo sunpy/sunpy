@@ -164,7 +164,7 @@ class RHESSIClient(GenericClient):
     def _get_time_for_url(self, urls):
         ts = [datetime.strptime(url.split("hsi_obssumm_")[1].split("_")[0],
                                 "%Y%m%d") for url in urls]
-        return [TimeRange(t, (1 * u.day - 1 * u.ms)) for t in ts]
+        return [TimeRange(t, (1*u.day - 1*u.ms)) for t in ts]
 
     def _makeimap(self):
         """

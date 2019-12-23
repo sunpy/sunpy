@@ -26,10 +26,10 @@ stereo = (a.vso.Source('STEREO_B') &
           a.Time('2011-01-01', '2011-01-01T00:10:00'))
 
 aia = (a.Instrument('AIA') &
-       a.vso.Sample(24 * u.hour) &
+       a.vso.Sample(24*u.hour) &
        a.Time('2011-01-01', '2011-01-02'))
 
-wave = a.Wavelength(30 * u.nm, 31 * u.nm)
+wave = a.Wavelength(30*u.nm, 31*u.nm)
 result = Fido.search(wave, aia | stereo)
 
 ###############################################################################
@@ -51,9 +51,9 @@ maps = {m.detector: m.submap(SkyCoord([-1100, 1100], [-1100, 1100],
 # Next, let's calculate points on the limb in the AIA image for the half that
 # can be seen from STEREO's point of view.
 
-r = maps['AIA'].rsun_obs - 1 * u.arcsec  # remove one arcsec so it's on disk.
+r = maps['AIA'].rsun_obs - 1*u.arcsec  # remove one arcsec so it's on disk.
 # Adjust the following range if you only want to plot on STEREO_A
-th = np.linspace(-180 * u.deg, 0 * u.deg)
+th = np.linspace(-180*u.deg, 0*u.deg)
 x = r * np.sin(th)
 y = r * np.cos(th)
 coords = SkyCoord(x, y, frame=maps['AIA'].coordinate_frame)

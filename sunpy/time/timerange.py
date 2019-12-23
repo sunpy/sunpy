@@ -43,8 +43,8 @@ class TimeRange:
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
     >>> import astropy.units as u
-    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.s)
-    >>> TimeRange('2010/03/04 00:10', 400 * u.day)
+    >>> time_range = TimeRange('2010/03/04 00:10', 400*u.s)
+    >>> TimeRange('2010/03/04 00:10', 400*u.day)
        <sunpy.time.timerange.TimeRange object at ...>
         Start: 2010-03-04 00:10:00
         End:   2011-04-08 00:10:00
@@ -396,7 +396,7 @@ class TimeRange:
         """
         dates = []
         dates = [
-            parse_time(self.start.strftime('%Y-%m-%d')) + TimeDelta(i * u.day)
+            parse_time(self.start.strftime('%Y-%m-%d')) + TimeDelta(i*u.day)
             for i in range(int(self.days.value) + 1)
         ]
         return dates

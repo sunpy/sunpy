@@ -74,7 +74,7 @@ def mapsequence_different(aia_map):
 
     This mapsequence contains such maps.
     """
-    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4) * u.pix)], sequence=True)
+    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4)*u.pix)], sequence=True)
 
 
 def test_all_maps_same_shape(mapsequence_all_the_same, mapsequence_different):

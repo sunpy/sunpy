@@ -133,7 +133,7 @@ def make_fitswcs_header(data, coordinate,
     meta_wcs.update(meta_instrument)
 
     if reference_pixel is None:
-        reference_pixel = u.Quantity([(shape[1] + 1) / 2. * u.pixel, (shape[0] + 1) / 2. * u.pixel])
+        reference_pixel = u.Quantity([(shape[1] + 1) / 2.*u.pixel, (shape[0] + 1) / 2.*u.pixel])
     if scale is None:
         scale = [1., 1.] * (u.arcsec / u.pixel)
 

@@ -54,11 +54,11 @@ class NorthOffsetFrame:
         m.plot()
 
         overlay = ax.get_coords_overlay('heliographic_stonyhurst')
-        overlay[0].set_ticks(spacing=30. * u.deg, color='white')
+        overlay[0].set_ticks(spacing=30.*u.deg, color='white')
         overlay.grid(ls='-', color='white')
 
         overlay = ax.get_coords_overlay(new_frame)
-        overlay[0].set_ticks(spacing=30. * u.deg)
+        overlay[0].set_ticks(spacing=30.*u.deg)
         overlay.grid(ls='-', color='blue')
 
     Notes
@@ -84,13 +84,13 @@ class NorthOffsetFrame:
 
         lon = rep.lon
         lat = rep.lat
-        if lat > 0 * u.deg:
-            lat = lat - 90 * u.deg
+        if lat > 0*u.deg:
+            lat = lat - 90*u.deg
             rotation = None
         else:
-            lon = lon - 180 * u.deg
-            lat = -90 * u.deg - lat
-            rotation = 180 * u.deg
+            lon = lon - 180*u.deg
+            lat = -90*u.deg - lat
+            rotation = 180*u.deg
 
         new_rep = SphericalRepresentation(lon=lon,
                                           lat=lat,

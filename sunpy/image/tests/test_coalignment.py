@@ -201,14 +201,14 @@ def test_upper_clip(aia171_test_clipping):
 
 
 def test_calculate_clipping(aia171_test_clipping):
-    answer = calculate_clipping(aia171_test_clipping * u.pix, aia171_test_clipping * u.pix)
-    assert_array_almost_equal(answer, ([2.0, 1.0] * u.pix, [2.0, 1.0] * u.pix))
+    answer = calculate_clipping(aia171_test_clipping*u.pix, aia171_test_clipping*u.pix)
+    assert_array_almost_equal(answer, ([2.0, 1.0]*u.pix, [2.0, 1.0]*u.pix))
 
 
 def test_clip_edges():
     a = np.zeros(shape=(341, 156))
-    yclip = [4, 0] * u.pix
-    xclip = [1, 2] * u.pix
+    yclip = [4, 0]*u.pix
+    xclip = [1, 2]*u.pix
     new_a = clip_edges(a, yclip, xclip)
     assert(a.shape[0] - (yclip[0].value + yclip[1].value) == new_a.shape[0])
     assert(a.shape[1] - (xclip[0].value + xclip[1].value) == new_a.shape[1])
@@ -229,8 +229,8 @@ def aia171_test_mc_pixel_displacements():
 
 @pytest.fixture
 def aia171_mc_arcsec_displacements(aia171_test_mc_pixel_displacements, aia171_test_map):
-    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map.scale[0].value]) * u.arcsec,
-            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map.scale[1].value]) * u.arcsec}
+    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map.scale[0].value])*u.arcsec,
+            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map.scale[1].value])*u.arcsec}
 
 
 @pytest.fixture
@@ -267,7 +267,7 @@ def test_calculate_match_template_shift(aia171_test_mc,
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
 
     # Test setting the template as GenericMap
-    submap = aia171_test_map.submap([nx / 4, ny / 4] * u.pix, [3 * nx / 4, 3 * ny / 4] * u.pix)
+    submap = aia171_test_map.submap([nx / 4, ny / 4]*u.pix, [3 * nx / 4, 3 * ny / 4]*u.pix)
     with pytest.warns(SunpyDeprecationWarning):
         test_displacements = calculate_match_template_shift(aia171_test_mc, template=submap)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
@@ -373,8 +373,8 @@ def test_apply_shifts(aia171_test_map):
 
     # Pixel displacements have the y-displacement as the first entry
     numerical_displacements = {"x": np.asarray([0.0, -2.7]), "y": np.asarray([0.0, -10.4])}
-    astropy_displacements = {"x": numerical_displacements["x"] * u.pix,
-                             "y": numerical_displacements["y"] * u.pix}
+    astropy_displacements = {"x": numerical_displacements["x"]*u.pix,
+                             "y": numerical_displacements["y"]*u.pix}
 
     # Test to see if the code can detect the fact that the input shifts are not
     # astropy quantities

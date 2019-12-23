@@ -20,7 +20,7 @@ delta = end - start
 @pytest.mark.parametrize("inputs", [
     (tbegin_str, tfin_str),
     (tbegin_str, dt),
-    (tbegin_str, TimeDelta(1 * u.day)),
+    (tbegin_str, TimeDelta(1*u.day)),
     (tbegin_str, timedelta(days=1))
 ])
 def test_timerange_inputs(inputs):
@@ -116,7 +116,7 @@ def test_get_dates():
 @pytest.mark.parametrize("ainput", [
     (tbegin_str, tfin_str),
     (tbegin_str, dt),
-    (tbegin_str, TimeDelta(1 * u.day)),
+    (tbegin_str, TimeDelta(1*u.day)),
     (tbegin_str, timedelta(days=1)),
     (sunpy.time.TimeRange(tbegin_str, tfin_str))
 ])
@@ -182,7 +182,7 @@ def test_window(timerange_a):
 
 
 @pytest.mark.parametrize("td1,td2", [
-    (TimeDelta(12 * u.hour), TimeDelta(10 * u.second)),
+    (TimeDelta(12*u.hour), TimeDelta(10*u.second)),
     (timedelta(hours=12), timedelta(seconds=10))
 ])
 def test_window_timedelta(timerange_a, td1, td2):

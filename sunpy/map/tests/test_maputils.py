@@ -34,28 +34,28 @@ def aia171_test_map():
 
 @pytest.fixture
 def all_off_disk_map(aia171_test_map):
-    return aia171_test_map.submap((1, 1) * u.pix, (11, 12) * u.pix)
+    return aia171_test_map.submap((1, 1)*u.pix, (11, 12)*u.pix)
 
 
 @pytest.fixture
 def all_on_disk_map(aia171_test_map):
-    return aia171_test_map.submap((30, 60) * u.pix, (50, 85) * u.pix)
+    return aia171_test_map.submap((30, 60)*u.pix, (50, 85)*u.pix)
 
 
 @pytest.fixture
 def straddles_limb_map(aia171_test_map):
-    return aia171_test_map.submap((64, 80) * u.pix, (120, 127) * u.pix)
+    return aia171_test_map.submap((64, 80)*u.pix, (120, 127)*u.pix)
 
 
 @pytest.fixture
 def sub_smap(aia171_test_map):
-    return aia171_test_map.submap((0, 0) * u.pix, (50, 60) * u.pix)
+    return aia171_test_map.submap((0, 0)*u.pix, (50, 60)*u.pix)
 
 
 @pytest.fixture
 def aia_test_arc(aia171_test_map):
-    start = SkyCoord(735 * u.arcsec, -471 * u.arcsec, frame=aia171_test_map.coordinate_frame)
-    end = SkyCoord(-100 * u.arcsec, 800 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    start = SkyCoord(735*u.arcsec, -471*u.arcsec, frame=aia171_test_map.coordinate_frame)
+    end = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=aia171_test_map.coordinate_frame)
     return GreatArc(start, end)
 
 
@@ -66,10 +66,10 @@ def test_all_pixel_indices_from_map(sub_smap):
     nx = shape[1]
     assert np.all(pixel_indices.shape == (2, ny, nx))
     assert np.all(pixel_indices.unit == u.pix)
-    assert np.all(pixel_indices[:, 0, 0] == [0., 0.] * u.pix)
-    assert np.all(pixel_indices[:, 0, nx - 1] == [nx - 1, 0.] * u.pix)
-    assert np.all(pixel_indices[:, ny - 1, 0] == [0., ny - 1] * u.pix)
-    assert np.all(pixel_indices[:, ny - 1, nx - 1] == [nx - 1, ny - 1] * u.pix)
+    assert np.all(pixel_indices[:, 0, 0] == [0., 0.]*u.pix)
+    assert np.all(pixel_indices[:, 0, nx - 1] == [nx - 1, 0.]*u.pix)
+    assert np.all(pixel_indices[:, ny - 1, 0] == [0., ny - 1]*u.pix)
+    assert np.all(pixel_indices[:, ny - 1, nx - 1] == [nx - 1, ny - 1]*u.pix)
 
 
 def test_all_coordinates_from_map(sub_smap):
@@ -85,20 +85,20 @@ def test_map_edges(all_off_disk_map):
     edges = map_edges(all_off_disk_map)
     assert isinstance(edges, tuple)
     assert len(edges[2]) == 11
-    assert np.all(edges[2][0] == [0, 0] * u.pix)
-    assert np.all(edges[2][10] == [0, 10] * u.pix)
+    assert np.all(edges[2][0] == [0, 0]*u.pix)
+    assert np.all(edges[2][10] == [0, 10]*u.pix)
 
     assert len(edges[3]) == 11
-    assert np.all(edges[3][0] == [9, 0] * u.pix)
-    assert np.all(edges[3][10] == [9, 10] * u.pix)
+    assert np.all(edges[3][0] == [9, 0]*u.pix)
+    assert np.all(edges[3][10] == [9, 10]*u.pix)
 
     assert len(edges[1]) == 10
-    assert np.all(edges[1][0] == [0, 0] * u.pix)
-    assert np.all(edges[1][9] == [9, 0] * u.pix)
+    assert np.all(edges[1][0] == [0, 0]*u.pix)
+    assert np.all(edges[1][9] == [9, 0]*u.pix)
 
     assert len(edges[0]) == 10
-    assert np.all(edges[0][0] == [0, 10] * u.pix)
-    assert np.all(edges[0][9] == [9, 10] * u.pix)
+    assert np.all(edges[0][0] == [0, 10]*u.pix)
+    assert np.all(edges[0][9] == [9, 10]*u.pix)
 
 
 def test_solar_angular_radius(aia171_test_map):

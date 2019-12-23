@@ -25,7 +25,7 @@ aia = sunpy.map.Map(AIA_171_IMAGE)
 ###############################################################################
 # To find the brightest pixel, we find the maximum in the AIA image data
 # then transform that pixel coordinate to a map coordinate.
-pixel_pos = np.argwhere(aia.data == aia.data.max()) * u.pixel
+pixel_pos = np.argwhere(aia.data == aia.data.max())*u.pixel
 hpc_max = aia.pixel_to_world(pixel_pos[:, 1], pixel_pos[:, 0])
 
 ###############################################################################

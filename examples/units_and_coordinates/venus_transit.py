@@ -39,7 +39,7 @@ venus_hpc = venus.transform_to(aiamap.coordinate_frame)
 
 ###############################################################################
 # Let's crop the image with Venus at its center.
-fov = 100 * u.arcsec
+fov = 100*u.arcsec
 top_right = SkyCoord(venus_hpc.Tx + fov, venus_hpc.Ty + fov, frame=aiamap.coordinate_frame)
 bottom_left = SkyCoord(venus_hpc.Tx - fov, venus_hpc.Ty - fov, frame=aiamap.coordinate_frame)
 smap = aiamap.submap(top_right, bottom_left)

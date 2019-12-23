@@ -999,11 +999,11 @@ def _calc_rad_loss(temp: u.MK, em: u.cm**-3, obstime=None, force_download=False,
         obstime_seconds = (obstime - obstime[0]).sec
         # Finally, integrate using trapezoid rule
         rad_loss_int = trapz(rad_loss.value, obstime_seconds)
-        rad_loss_int = u.Quantity(rad_loss_int, unit=rad_loss.unit * u.s)
+        rad_loss_int = u.Quantity(rad_loss_int, unit=rad_loss.unit*u.s)
         # Calculate cumulative radiated energy in each GOES channel as
         # a function of time.
         rad_loss_cumul = cumtrapz(rad_loss, obstime_seconds)
-        rad_loss_cumul = u.Quantity(rad_loss_cumul, unit=rad_loss.unit * u.s)
+        rad_loss_cumul = u.Quantity(rad_loss_cumul, unit=rad_loss.unit*u.s)
         # Enter results into output dictionary.
         rad_loss_out = {"rad_loss_rate": rad_loss,
                         "rad_loss_cumul": rad_loss_cumul,
@@ -1195,16 +1195,16 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
 
         # Finally, integrate using trapezoid rule
         longlum_int = trapz(longlum.value, obstime_seconds)
-        longlum_int = u.Quantity(longlum_int, unit=longlum.unit * u.s)
+        longlum_int = u.Quantity(longlum_int, unit=longlum.unit*u.s)
         shortlum_int = trapz(shortlum.value, obstime_seconds)
-        shortlum_int = u.Quantity(shortlum_int, unit=shortlum.unit * u.s)
+        shortlum_int = u.Quantity(shortlum_int, unit=shortlum.unit*u.s)
         # Calculate cumulative radiated energy in each GOES channel as
         # a function of time.
         longlum_cumul = cumtrapz(longlum.value, obstime_seconds)
-        longlum_cumul = u.Quantity(longlum_cumul, unit=longlum.unit * u.s)
+        longlum_cumul = u.Quantity(longlum_cumul, unit=longlum.unit*u.s)
         shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
         shortlum_cumul = u.Quantity(shortlum_cumul,
-                                    unit=shortlum.unit * u.s)
+                                    unit=shortlum.unit*u.s)
         lx_out = {"longlum": longlum, "shortlum": shortlum,
                   "longlum_cumul": longlum_cumul,
                   "shortlum_cumul": shortlum_cumul,
@@ -1326,15 +1326,15 @@ def flux_to_flareclass(goesflux: u.watt / u.m**2):
     --------
     >>> from sunpy.instr.goes import flux_to_flareclass
     >>> import astropy.units as u
-    >>> flux_to_flareclass(1e-08 * u.watt/u.m**2)
+    >>> flux_to_flareclass(1e-08*u.watt/u.m**2)
     'A1'
-    >>> flux_to_flareclass(4.7e-06 * u.watt/u.m**2)
+    >>> flux_to_flareclass(4.7e-06*u.watt/u.m**2)
     'C4.7'
-    >>> flux_to_flareclass(0.00024 * u.watt/u.m**2)
+    >>> flux_to_flareclass(0.00024*u.watt/u.m**2)
     'X2.4'
-    >>> flux_to_flareclass(7.8e-09 * u.watt/u.m**2)
+    >>> flux_to_flareclass(7.8e-09*u.watt/u.m**2)
     'A0.78'
-    >>> flux_to_flareclass(0.00682 * u.watt/u.m**2)
+    >>> flux_to_flareclass(0.00682*u.watt/u.m**2)
     'X68.2'
     """
 
@@ -1359,5 +1359,5 @@ def flux_to_flareclass(goesflux: u.watt / u.m**2):
 def _assert_chrono_order(obstime):
     chrono_check = np.array(obstime) - np.roll(obstime, 1)
     chrono_check = chrono_check[1:]
-    if not all(val > TimeDelta(0 * u.day) for val in chrono_check):
+    if not all(val > TimeDelta(0*u.day) for val in chrono_check):
         raise ValueError("Elements of obstime must be in chronological order.")

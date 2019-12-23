@@ -18,31 +18,31 @@ def map_data():
 
 @pytest.fixture
 def hpc_test_header():
-    return SkyCoord(0 * u.arcsec, 0 * u.arcsec, observer='earth',
+    return SkyCoord(0*u.arcsec, 0*u.arcsec, observer='earth',
                     obstime='2013-10-28 00:00', frame=frames.Helioprojective)
 
 
 @pytest.fixture
 def hgc_test_header():
-    return SkyCoord(70 * u.deg, -30 * u.deg, observer='earth',
+    return SkyCoord(70*u.deg, -30*u.deg, observer='earth',
                     obstime='2013-10-28 00:00', frame=frames.HeliographicCarrington)
 
 
 @pytest.fixture
 def hgs_test_header():
-    return SkyCoord(-50 * u.deg, 50 * u.deg, observer='earth',
+    return SkyCoord(-50*u.deg, 50*u.deg, observer='earth',
                     obstime='2013-10-28 00:00', frame=frames.HeliographicStonyhurst)
 
 
 @pytest.fixture
 def hcc_test_header():
-    return SkyCoord(-72241 * u.km, 361206.1 * u.km, 589951.4 * u.km,
+    return SkyCoord(-72241*u.km, 361206.1*u.km, 589951.4*u.km,
                     obstime='2013-10-28 00:00', frame=frames.Heliocentric)
 
 
 @pytest.fixture
 def hpc_test_header_notime():
-    return SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame=frames.Helioprojective)
+    return SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective)
 
 
 # tests
@@ -53,7 +53,7 @@ def test_metakeywords():
 
 def test_rotation_angle(map_data, hpc_test_header):
     header = sunpy.map.make_fitswcs_header(map_data, hpc_test_header,
-                                           rotation_angle=90 * u.deg)
+                                           rotation_angle=90*u.deg)
     wcs = WCS(header)
     np.testing.assert_allclose(wcs.wcs.pc, [[0, -1], [1, 0]], atol=1e-5)
 
@@ -112,7 +112,7 @@ def test_make_fits_header(map_data, hpc_test_header, hgc_test_header,
             map_data, hpc_test_header, reference_pixel=u.Quantity([0, 0]))
         header = sunpy.map.make_fitswcs_header(map_data, hpc_test_header, scale=u.Quantity([0, 0]))
         header = sunpy.map.make_fitswcs_header(
-            map_data, hpc_test_header, scale=u.Quantity([0, 0] * u.arcsec))
+            map_data, hpc_test_header, scale=u.Quantity([0, 0]*u.arcsec))
 
     # Check keyword helper arguments
     header = sunpy.map.make_fitswcs_header(map_data, hpc_test_header, instrument='test name')
@@ -127,12 +127,12 @@ def test_HGS_CAR_header():
     # This tests both non-HPC and non-TAN header generation.
     new_data = np.empty((72, 144))
     new_frame = SkyCoord(
-        0 * u.deg,
-        0 * u.deg,
+        0*u.deg,
+        0*u.deg,
         obstime="2019-06-16",
         frame="heliographic_stonyhurst")
     new_header = sunpy.map.make_fitswcs_header(new_data, new_frame,
-                                               scale=[2.5, 2.5] * u.deg / u.pix,
+                                               scale=[2.5, 2.5]*u.deg / u.pix,
                                                projection_code="CAR")
 
     assert new_header['ctype1'] == "HGLN-CAR"
@@ -160,7 +160,7 @@ def test_HGS_CAR_header():
 def test_latlon_order():
     # This tests that CRVAL1, CRVAL2 (i.e. lon,lat) correspond to CTYPE1, CTYPE2 (i.e. HGLN, HGLT)
     data = np.zeros((100, 100))
-    coord = SkyCoord(20 * u.arcsec, -10 * u.arcsec,
+    coord = SkyCoord(20*u.arcsec, -10*u.arcsec,
                      obstime='2013-10-28', frame=frames.Helioprojective)
     header = sunpy.map.make_fitswcs_header(data, coord)
     # check LON

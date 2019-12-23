@@ -13,7 +13,7 @@ import astropy.units as u
 ######################################################################################
 # We use `~astropy.coordinates.SkyCoord` to define the center of the Sun
 obstime = "2013-09-21 16:00:00"
-c = SkyCoord(0 * u.arcsec, 0 * u.arcsec, obstime=obstime,
+c = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime=obstime,
              observer="earth", frame=frames.Helioprojective)
 
 ######################################################################################

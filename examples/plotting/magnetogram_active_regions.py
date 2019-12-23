@@ -24,7 +24,7 @@ start_time = parse_time("2017-01-25")
 end_time = start_time + TimeDelta(23*u.hour + 59*u.minute + 59*u.second)
 results = Fido.search(a.Time(start_time, end_time),
                       a.Instrument('HMI') & a.vso.Physobs("LOS_magnetic_field"),
-                      a.vso.Sample(60 * u.second))
+                      a.vso.Sample(60*u.second))
 
 ##############################################################################
 # Let's select only the first file, download it and create a map.

@@ -99,7 +99,7 @@ def make_table(header, section_lines):
     a = {}
     u.def_unit(
         "SH",
-        represents=(2 * np.pi * u.solRad**2),
+        represents=(2 * np.pi*u.solRad**2),
         prefixes=True,
         namespace=a,
         doc="A solar hemisphere is the area of the visible solar disk.")

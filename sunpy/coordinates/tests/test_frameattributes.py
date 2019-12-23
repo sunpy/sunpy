@@ -97,7 +97,7 @@ def test_string_coord(oca):
 
 
 def test_observer_not_hgs(oca):
-    observer = HeliocentricInertial(0 * u.deg, 0 * u.deg, 1 * u.AU, obstime='2001-01-01')
+    observer = HeliocentricInertial(0*u.deg, 0*u.deg, 1*u.AU, obstime='2001-01-01')
     result, converted = oca.convert_input(observer)
 
     assert isinstance(result, HeliographicStonyhurst)

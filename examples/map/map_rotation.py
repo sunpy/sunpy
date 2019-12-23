@@ -23,7 +23,7 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 # lost due to clipping. Note that subsequent rotations are not compounded.
 # The map is only rotated by the specified amount from the original maps
 # orientation.
-aia_rotated = aia_map.rotate(angle=30 * u.deg)
+aia_rotated = aia_map.rotate(angle=30*u.deg)
 
 ###############################################################################
 # Let's now plot the results.

@@ -44,7 +44,7 @@ frame_out = SkyCoord(0, 0, unit=u.deg,
 header = sunpy.map.make_fitswcs_header(shape_out,
                                        frame_out,
                                        scale=[180 / shape_out[0],
-                                              360 / shape_out[1]] * u.deg / u.pix,
+                                              360 / shape_out[1]]*u.deg / u.pix,
                                        projection_code="CAR")
 
 out_wcs = WCS(header)

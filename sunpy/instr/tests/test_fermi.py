@@ -56,4 +56,4 @@ def test_detector_angles():
 
 def test_met_to_utc():
     time = fermi.met_to_utc(500000000)
-    assert (time - parse_time('2016-11-05T00:53:16.000')) < 1e-7 * u.s
+    assert (time - parse_time('2016-11-05T00:53:16.000')) < 1e-7*u.s

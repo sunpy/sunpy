@@ -23,10 +23,10 @@ def test_can_handle_query(suvi_client, time):
     ans1 = suvi_client._can_handle_query(time, a.Instrument('suvi'))
     assert ans1 is True
     ans2 = suvi_client._can_handle_query(time, a.Instrument('suvi'),
-                                         a.Wavelength(131 * u.Angstrom))
+                                         a.Wavelength(131*u.Angstrom))
     assert ans2 is True
     ans3 = suvi_client._can_handle_query(time, a.Instrument('suvi'),
-                                         a.Wavelength(131 * u.Angstrom),
+                                         a.Wavelength(131*u.Angstrom),
                                          a.Level(2))
     assert ans3 is True
     ans4 = suvi_client._can_handle_query(time)
@@ -59,7 +59,7 @@ def test_get_url_for_timerange_errors(suvi_client):
     with pytest.raises(ValueError):
         suvi_client._get_url_for_timerange(tr, level=0)
     with pytest.raises(ValueError):
-        suvi_client._get_url_for_timerange(tr, wavelength=100 * u.Angstrom)
+        suvi_client._get_url_for_timerange(tr, wavelength=100*u.Angstrom)
     with pytest.raises(ValueError):
         suvi_client._get_url_for_timerange(tr, satellitenumber=1)
 
@@ -127,7 +127,7 @@ def test_fetch_working(suvi_client):
                          )
 def test_get_url_for_time_range_level2(suvi_client, start, end, wave, expected_num_files):
     urls = suvi_client._get_url_for_timerange(TimeRange(start, end),
-                                              wavelength=wave * u.Angstrom,
+                                              wavelength=wave*u.Angstrom,
                                               level=2)
     assert isinstance(urls, list)
     assert len(urls) == expected_num_files
@@ -160,7 +160,7 @@ def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_
     check that we get all wavelengths if no wavelength is given.
     """
     urls = suvi_client._get_url_for_timerange(TimeRange(start, end),
-                                              wavelength=wave * u.Angstrom,
+                                              wavelength=wave*u.Angstrom,
                                               level='1b')
     assert isinstance(urls, list)
     assert len(urls) == expected_num_files
@@ -177,7 +177,7 @@ def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_
                          )
 def test_fido_onewave_level1b(start, end, wave, expected_num_files):
     result = Fido.search(a.Time(start, end), a.Instrument('suvi'),
-                         a.Wavelength(wave * u.Angstrom), a.Level('1b'))
+                         a.Wavelength(wave*u.Angstrom), a.Level('1b'))
     assert result.file_num == expected_num_files
 
 
@@ -195,7 +195,7 @@ def test_fido_waverange_level1b(start, end, wave1, wave2, expected_num_files):
     check that we get all wavelengths if no wavelength is given.
     """
     result = Fido.search(a.Time(start, end), a.Instrument('suvi'),
-                         a.Wavelength(wave1 * u.Angstrom, wave2 * u.Angstrom),
+                         a.Wavelength(wave1*u.Angstrom, wave2*u.Angstrom),
                          a.Level('1b'))
     assert result.file_num == expected_num_files
 

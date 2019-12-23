@@ -33,7 +33,7 @@ def all_pixel_indices_from_map(smap):
         A `numpy.array` with the all the pixel indices built from the
         dimensions of the map.
     """
-    return np.meshgrid(*[np.arange(v.value) for v in smap.dimensions]) * u.pix
+    return np.meshgrid(*[np.arange(v.value) for v in smap.dimensions])*u.pix
 
 
 def all_coordinates_from_map(smap):
@@ -74,10 +74,10 @@ def map_edges(smap):
     """
     # Calculate all the edge pixels
     nx, ny = smap.dimensions.x.value, smap.dimensions.y.value
-    top = list(product(np.arange(nx), [ny - 1])) * u.pix
-    bottom = list(product(np.arange(nx), [0])) * u.pix
-    left_hand_side = list(product([0], np.arange(ny))) * u.pix
-    right_hand_side = list(product([nx - 1], np.arange(ny))) * u.pix
+    top = list(product(np.arange(nx), [ny - 1]))*u.pix
+    bottom = list(product(np.arange(nx), [0]))*u.pix
+    left_hand_side = list(product([0], np.arange(ny)))*u.pix
+    right_hand_side = list(product([nx - 1], np.arange(ny)))*u.pix
     return top, bottom, left_hand_side, right_hand_side
 
 
@@ -157,8 +157,8 @@ def contains_full_disk(smap):
     # Calculate all the edge pixels
     edges = map_edges(smap)
     edge_pixels = list(chain.from_iterable([edges[0], edges[1], edges[2], edges[3]]))
-    x = [p[0] for p in edge_pixels] * u.pix
-    y = [p[1] for p in edge_pixels] * u.pix
+    x = [p[0] for p in edge_pixels]*u.pix
+    y = [p[1] for p in edge_pixels]*u.pix
 
     # Calculate the edge of the world
     edge_of_world = smap.pixel_to_world(x, y)
@@ -321,6 +321,6 @@ def on_disk_bounding_coordinates(smap):
     # the on disk coordinates.
     tx = on_disk_coordinates.Tx.value
     ty = on_disk_coordinates.Ty.value
-    return SkyCoord([np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
-                    [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
+    return SkyCoord([np.nanmin(tx), np.nanmax(tx)]*u.arcsec,
+                    [np.nanmin(ty), np.nanmax(ty)]*u.arcsec,
                     frame=Helioprojective, observer=smap.observer_coordinate)

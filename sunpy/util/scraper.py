@@ -272,17 +272,17 @@ class Scraper:
         """
         try:
             if "%S" in directoryPattern:
-                return TimeDelta(1 * u.second)
+                return TimeDelta(1*u.second)
             elif "%M" in directoryPattern:
-                return TimeDelta(1 * u.minute)
+                return TimeDelta(1*u.minute)
             elif any(hour in directoryPattern for hour in ["%H", "%I"]):
-                return TimeDelta(1 * u.hour)
+                return TimeDelta(1*u.hour)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
-                return TimeDelta(1 * u.day)
+                return TimeDelta(1*u.day)
             elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
-                return TimeDelta(31 * u.day)
+                return TimeDelta(31*u.day)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
-                return TimeDelta(365 * u.day)
+                return TimeDelta(365*u.day)
             else:
                 return None
         except Exception:

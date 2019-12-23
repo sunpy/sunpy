@@ -29,10 +29,10 @@ from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinat
 # Next lets explore solar differential rotation by replicating Figure 1
 # in Beck 1999
 
-latitudes = np.arange(0, 90, 1) * u.deg
-dt = 1 * u.day
+latitudes = np.arange(0, 90, 1)*u.deg
+dt = 1*u.day
 rotation_rate = [diff_rot(dt, this_lat) / dt for this_lat in latitudes]
-rotation_period = [360 * u.deg / this_rate for this_rate in rotation_rate]
+rotation_period = [360*u.deg / this_rate for this_rate in rotation_rate]
 
 fig = plt.figure()
 plt.plot(np.sin(latitudes), [this_period.value for this_period in rotation_period])
@@ -50,7 +50,7 @@ aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 ##############################################################################
 # Let's define our starting coordinates
 
-hpc_y = np.arange(-700, 800, 100) * u.arcsec
+hpc_y = np.arange(-700, 800, 100)*u.arcsec
 hpc_x = np.zeros_like(hpc_y)
 
 ##############################################################################

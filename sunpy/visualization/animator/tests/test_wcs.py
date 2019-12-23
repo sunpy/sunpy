@@ -66,7 +66,7 @@ def test_construct_array_animator(wcs_4d, data, slices, dim):
             a = arange(0)
             if "pos" in wcs_4d.world_axis_physical_types[i]:
                 assert isinstance(a, u.Quantity)
-                assert u.allclose(a, 0 * u.pix)
+                assert u.allclose(a, 0*u.pix)
             else:
                 assert isinstance(a, u.Quantity)
                 assert a.value == wcs_4d.pixel_to_world_values(*[0] * wcs_4d.world_n_dim)[i]
@@ -170,7 +170,7 @@ def test_array_animator_wcs_coord_params(wcs_4d):
             'format_unit': u.deg,
             'major_formatter': 'hh:mm:ss',
             'axislabel': 'Longitude',
-            'ticks': {'spacing': 10 * u.arcsec}
+            'ticks': {'spacing': 10*u.arcsec}
         }
     }
 

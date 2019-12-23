@@ -23,7 +23,7 @@ cache = Cache(
     ParfiveDownloader(),
     SqliteStorage(CACHE_DIR + '/cache.db'),
     CACHE_DIR,
-    expiry=int(config.get('downloads', 'cache_expiry')) * u.day
+    expiry=int(config.get('downloads', 'cache_expiry'))*u.day
 )
 
 __all__ = ["download_sample_data", "manager", "cache"]

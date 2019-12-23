@@ -29,27 +29,27 @@ def aia171_test_map():
                                         ((-20, -50), (-20, -5)),
                                         ((10, -50), (87.53163324626676, -55))])
 def test_great_arc_calculable(start, end):
-    c = SkyCoord(start[0] * u.degree, start[1] * u.degree, frame=frames.HeliographicStonyhurst,
-                 observer=frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, 1 * u.AU))
-    d = SkyCoord(end[0] * u.degree, end[1] * u.degree, frame=frames.HeliographicStonyhurst,
-                 observer=frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, 1 * u.AU))
+    c = SkyCoord(start[0]*u.degree, start[1]*u.degree, frame=frames.HeliographicStonyhurst,
+                 observer=frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
+    d = SkyCoord(end[0]*u.degree, end[1]*u.degree, frame=frames.HeliographicStonyhurst,
+                 observer=frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
     gc = GreatArc(c, d)
 
     c_trans = c.transform_to(frames.Heliocentric)
     assert gc.start.x == c_trans.x
     assert gc.start.y == c_trans.y
     assert gc.start.z == c_trans.z
-    assert gc.start.observer.lat == 0 * u.deg
-    assert gc.start.observer.lon == 0 * u.deg
-    assert gc.start.observer.radius == 1 * u.AU
+    assert gc.start.observer.lat == 0*u.deg
+    assert gc.start.observer.lon == 0*u.deg
+    assert gc.start.observer.radius == 1*u.AU
 
     d_trans = d.transform_to(frames.Heliocentric(observer=c.observer))
     assert gc.end.x == d_trans.x
     assert gc.end.y == d_trans.y
     assert gc.end.z == d_trans.z
-    assert gc.end.observer.lat == 0 * u.deg
-    assert gc.end.observer.lon == 0 * u.deg
-    assert gc.end.observer.radius == 1 * u.AU
+    assert gc.end.observer.lat == 0*u.deg
+    assert gc.end.observer.lon == 0*u.deg
+    assert gc.end.observer.radius == 1*u.AU
 
     np.testing.assert_almost_equal(gc.inner_angle.to('deg').value, 45.0)
     np.testing.assert_almost_equal(gc.radius.to('km').value, sun.constants.radius.to('km').value)
@@ -82,8 +82,8 @@ def test_great_arc_calculable(start, end):
 def test_great_arc_coordinates(points_requested, points_expected, first_point,
                                last_point, last_inner_angle, last_distance, aia171_test_map):
     coordinate_frame = aia171_test_map.coordinate_frame
-    a = SkyCoord(600 * u.arcsec, -600 * u.arcsec, frame=coordinate_frame)
-    b = SkyCoord(-100 * u.arcsec, 800 * u.arcsec, frame=coordinate_frame)
+    a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
+    b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
     gc = GreatArc(a, b, points=points_requested)
     coordinates = gc.coordinates()
     inner_angles = gc.inner_angles()
@@ -103,23 +103,23 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
     assert gc.end.z == b_trans.z
     assert gc.distance_unit == u.m
     assert gc.observer == a.observer
-    assert gc.center.x == 0 * u.m
-    assert gc.center.y == 0 * u.m
-    assert gc.center.z == 0 * u.m
+    assert gc.center.x == 0*u.m
+    assert gc.center.y == 0*u.m
+    assert gc.center.z == 0*u.m
 
-    assert u.allclose(gc.start_cartesian * u.m, np.asarray(
-        [428721.0913539, -428722.9051924, 341776.0910214]) * u.km)
-    assert u.allclose(gc.end_cartesian * u.m, np.asarray(
-        [-71429.5229381, 571439.071248, 390859.5797815]) * u.km)
-    assert u.allclose(gc.center_cartesian * u.m, np.asarray([0, 0, 0]) * u.km)
+    assert u.allclose(gc.start_cartesian*u.m, np.asarray(
+        [428721.0913539, -428722.9051924, 341776.0910214])*u.km)
+    assert u.allclose(gc.end_cartesian*u.m, np.asarray(
+        [-71429.5229381, 571439.071248, 390859.5797815])*u.km)
+    assert u.allclose(gc.center_cartesian*u.m, np.asarray([0, 0, 0])*u.km)
 
-    assert u.allclose(gc.v1 * u.m, np.asarray(
-        [428721.0913539, -428722.9051924, 341776.0910214]) * u.km)
+    assert u.allclose(gc.v1*u.m, np.asarray(
+        [428721.0913539, -428722.9051924, 341776.0910214])*u.km)
     assert u.allclose(gc._r, 696000000.0015007)
-    assert u.allclose(gc.v2 * u.m, np.asarray(
-        [-71429.5229381, 571439.071248, 390859.5797815]) * u.km)
-    assert u.allclose(gc.v3 * u.m, np.asarray(
-        [56761.6265851, 466230.7005856, 513637.0815867]) * u.km)
+    assert u.allclose(gc.v2*u.m, np.asarray(
+        [-71429.5229381, 571439.071248, 390859.5797815])*u.km)
+    assert u.allclose(gc.v3*u.m, np.asarray(
+        [56761.6265851, 466230.7005856, 513637.0815867])*u.km)
 
     # Inner angle
     assert gc.inner_angle.unit == u.rad
@@ -131,7 +131,7 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
 
     # Radius of the sphere
     assert gc.radius.unit == u.m
-    assert u.isclose(gc.radius.value * u.m, 696000.000001501 * u.km)
+    assert u.isclose(gc.radius.value*u.m, 696000.000001501*u.km)
 
     # Test the calculation of the SkyCoords
     # Coordinates method
@@ -151,7 +151,7 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
 
     # Distances method
     assert len(distances) == points_expected
-    assert u.isclose(distances[-1].value * u.m, last_distance * u.km)
+    assert u.isclose(distances[-1].value*u.m, last_distance*u.km)
 
 
 # Test that the great arc code rejects wrongly formatted points
@@ -161,8 +161,8 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
                                     'strings_not_permitted'])
 def test_great_arc_wrongly_formatted_points(points, aia171_test_map):
     coordinate_frame = aia171_test_map.coordinate_frame
-    a = SkyCoord(600 * u.arcsec, -600 * u.arcsec, frame=coordinate_frame)
-    b = SkyCoord(-100 * u.arcsec, 800 * u.arcsec, frame=coordinate_frame)
+    a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
+    b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
     with pytest.raises(ValueError):
         GreatArc(a, b, points=points)
 
@@ -183,8 +183,8 @@ def test_great_arc_wrongly_formatted_points(points, aia171_test_map):
 # points and the requested points
 def test_great_arc_points_differentiates(aia171_test_map):
     coordinate_frame = aia171_test_map.coordinate_frame
-    a = SkyCoord(600 * u.arcsec, -600 * u.arcsec, frame=coordinate_frame)
-    b = SkyCoord(-100 * u.arcsec, 800 * u.arcsec, frame=coordinate_frame)
+    a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
+    b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
     gc = GreatArc(a, b)
     coordinates = gc.coordinates(10)
     inner_angles = gc.inner_angles(11)
@@ -197,11 +197,11 @@ def test_great_arc_points_differentiates(aia171_test_map):
 # Test that the great arc code properly understands different observers
 # for the start and end points
 def test_great_arc_different_observer(aia171_test_map):
-    a = SkyCoord(600 * u.arcsec, -600 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=aia171_test_map.coordinate_frame)
 
-    observer = SkyCoord(-10.0 * u.deg, 83 * u.deg, radius=0.9 * u.au,
+    observer = SkyCoord(-10.0*u.deg, 83*u.deg, radius=0.9*u.au,
                         frame=frames.HeliographicStonyhurst, obstime=aia171_test_map.date)
-    b = SkyCoord(400 * u.arcsec, 600 * u.arcsec, observer=observer, frame=frames.Helioprojective)
+    b = SkyCoord(400*u.arcsec, 600*u.arcsec, observer=observer, frame=frames.Helioprojective)
 
     # Test that the input observers are indeed different
     assert a.observer.lon != b.observer.lon

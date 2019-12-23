@@ -70,7 +70,7 @@ def is_time_equal(t1, t2):
 
     Remove the usage of this function once the fix is in place.
     """
-    if abs(t1 - t2) < 1 * u.nanosecond:
+    if abs(t1 - t2) < 1*u.nanosecond:
         return True
     return False
 
@@ -100,15 +100,15 @@ def _regex_parse_time(inp, format):
     try:
         hour = match.group("hour")
     except IndexError:
-        return inp, astropy.time.TimeDelta(0 * u.day)
+        return inp, astropy.time.TimeDelta(0*u.day)
     if hour == "24":
         if not all(
                 _n_or_eq(_group_or_none(match, g, int), 00)
                 for g in ["minute", "second", "microsecond"]):
             raise ValueError
         from_, to = match.span("hour")
-        return inp[:from_] + "00" + inp[to:], astropy.time.TimeDelta(1 * u.day)
-    return inp, astropy.time.TimeDelta(0 * u.day)
+        return inp[:from_] + "00" + inp[to:], astropy.time.TimeDelta(1*u.day)
+    return inp, astropy.time.TimeDelta(0*u.day)
 
 
 def find_time(string, format):

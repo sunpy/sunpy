@@ -29,12 +29,12 @@ The decorator ensures that the units of the input to the function are convertibl
 This function only accepts arguments that are convertible to arcseconds.
 Therefore::
 
-    >>> myfunction(20 * u.degree)
+    >>> myfunction(20*u.degree)
     <Quantity 400. deg2>
 
 returns the expected answer but::
 
-    >>> myfunction(20 * u.km)
+    >>> myfunction(20*u.km)
     Traceback (most recent call last):
     ...
     astropy.units.core.UnitsError: Argument 'myangle' to function 'myfunction' must be in units convertible to 'arcsec'.

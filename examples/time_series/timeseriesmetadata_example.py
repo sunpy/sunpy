@@ -18,7 +18,7 @@ from sunpy.time import TimeRange, parse_time
 
 goes_res = Fido.search(a.Time("2010-11-02", "2010-11-07"), a.Instrument('XRS'))
 norh_res = Fido.search(a.Time("2010-11-02", "2010-11-07"), a.Instrument('norh'),
-                       a.Wavelength(17 * u.GHz))
+                       a.Wavelength(17*u.GHz))
 ##############################################################################
 # Download the data and load it
 goes_files = Fido.fetch(goes_res)

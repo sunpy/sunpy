@@ -192,7 +192,7 @@ class GenericMap(NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate_meta()
-        self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
+        self._shift = SpatialPair(0*u.arcsec, 0*u.arcsec)
 
         if self.dtype == np.uint8:
             norm = None
@@ -478,7 +478,7 @@ class GenericMap(NDData):
         """
         Exposure time of the image in seconds.
         """
-        return self.meta.get('exptime', 0.0) * u.s
+        return self.meta.get('exptime', 0.0)*u.s
 
     @property
     def instrument(self):
@@ -533,7 +533,7 @@ class GenericMap(NDData):
         """
         The physical coordinate for the bottom left [0,0] pixel.
         """
-        return self.pixel_to_world(0 * u.pix, 0 * u.pix)
+        return self.pixel_to_world(0*u.pix, 0*u.pix)
 
     @property
     def top_right_coord(self):
@@ -738,9 +738,9 @@ class GenericMap(NDData):
         Reference point axes in pixels (i.e. crpix1, crpix2).
         """
         return PixelPair(self.meta.get('crpix1',
-                                       (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
+                                       (self.meta.get('naxis1') + 1) / 2.)*u.pixel,
                          self.meta.get('crpix2',
-                                       (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
+                                       (self.meta.get('naxis2') + 1) / 2.)*u.pixel)
 
     @property
     def scale(self):
@@ -910,7 +910,7 @@ class GenericMap(NDData):
         lon, lat = u.Quantity(self._get_lon_lat(native_frame)).to(u.deg)
         x, y = self.wcs.wcs_world2pix(lon, lat, origin)
 
-        return PixelPair(x * u.pixel, y * u.pixel)
+        return PixelPair(x*u.pixel, y*u.pixel)
 
     @u.quantity_input
     def pixel_to_world(self, x: u.pixel, y: u.pixel, origin=0):
@@ -1398,7 +1398,7 @@ class GenericMap(NDData):
         return new_map
 
     @u.quantity_input
-    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0) * u.pixel, func=np.sum):
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum):
         """
         Returns a new map consisting of superpixels formed by applying 'func'
         to the original map data.
@@ -1504,7 +1504,7 @@ class GenericMap(NDData):
         return cmap
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg = 15 * u.deg, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.

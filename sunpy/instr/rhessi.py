@@ -131,7 +131,7 @@ def parse_observing_summary_hdulist(hdulist):
     dim = np.array(countrate[:, 0]).size
 
     time_array = parse_time(reference_time_ut) + \
-        TimeDelta(time_interval_sec * np.arange(dim) * u.second)
+        TimeDelta(time_interval_sec * np.arange(dim)*u.second)
 
     #  TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
@@ -248,8 +248,8 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
 
 
 @u.quantity_input
-def backprojection(calibrated_event_list, pixel_size: u.arcsec = (1., 1.) * u.arcsec,
-                   image_dim: u.pix = (64, 64) * u.pix):
+def backprojection(calibrated_event_list, pixel_size: u.arcsec = (1., 1.)*u.arcsec,
+                   image_dim: u.pix = (64, 64)*u.pix):
     """
     Given a stacked calibrated event list fits file create a back projection
     image.
@@ -264,10 +264,10 @@ def backprojection(calibrated_event_list, pixel_size: u.arcsec = (1., 1.) * u.ar
         Filename of a RHESSI calibrated event list.
     pixel_size : `tuple`, optional
         A length 2 tuple with the size of the pixels in arcsecond
-        `~astropy.units.Quantity`. Defaults to  ``(1, 1) * u.arcsec``.
+        `~astropy.units.Quantity`. Defaults to  ``(1, 1)*u.arcsec``.
     image_dim : `tuple`, optional
         A length 2 tuple with the size of the output image in number of pixel
-        `~astropy.units.Quantity` Defaults to ``(64, 64) * u.pix``.
+        `~astropy.units.Quantity` Defaults to ``(64, 64)*u.pix``.
 
     Returns
     -------

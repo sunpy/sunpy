@@ -36,9 +36,9 @@ stereo = (a.vso.Source('STEREO_A') &
           a.Instrument('EUVI') &
           a.Time('2010-08-19', '2010-08-19T00:10:00'))
 aia = (a.Instrument('AIA') &
-       a.vso.Sample(24 * u.hour) &
+       a.vso.Sample(24*u.hour) &
        a.Time('2010-08-19', '2010-08-19T00:10:00'))
-wave = a.Wavelength(17 * u.nm, 18 * u.nm)
+wave = a.Wavelength(17*u.nm, 18*u.nm)
 
 res = Fido.search(wave, aia | stereo)
 files = Fido.fetch(res)

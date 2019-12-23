@@ -278,7 +278,7 @@ def hcc_to_hpc(helioccoord, heliopframe):
 
     # Shift the origin from the Sun to the observer
     distance = int_coord.observer.radius
-    newrepr = int_coord.cartesian - CartesianRepresentation(0 * u.m, 0 * u.m, distance)
+    newrepr = int_coord.cartesian - CartesianRepresentation(0*u.m, 0*u.m, distance)
 
     # Permute/swap axes from HCC to HPC equivalent Cartesian
     newrepr = newrepr.transform(_matrix_hcc_to_hpc())
@@ -307,7 +307,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
 
     # Shift the origin from the observer to the Sun
     distance = observer.radius
-    newrepr += CartesianRepresentation(0 * u.m, 0 * u.m, distance)
+    newrepr += CartesianRepresentation(0*u.m, 0*u.m, distance)
 
     # Complete the conversion of HPC to HCC at the obstime and observer of the HPC coord
     int_coord = Heliocentric(newrepr, obstime=observer.obstime, observer=observer)
@@ -457,7 +457,7 @@ def _sun_earth_icrf(time):
 # (See Archinal et al. 2011,
 #   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
 # The orientation of the north pole in ICRS/HCRS is assumed to be constant in time
-_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13 * u.deg, lat=63.87 * u.deg)
+_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87*u.deg)
 
 
 # Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
@@ -732,7 +732,7 @@ def _rotation_matrix_hgs_to_hci(obstime):
     """
     Return the rotation matrix from HGS to HCI at the same observation time.
     """
-    z_axis = CartesianRepresentation(0, 0, 1) * u.m
+    z_axis = CartesianRepresentation(0, 0, 1)*u.m
     if not obstime.isscalar:
         z_axis = z_axis._apply('repeat', obstime.size)
 
@@ -743,7 +743,7 @@ def _rotation_matrix_hgs_to_hci(obstime):
     # Rotate the ecliptic pole to the -YZ plane, which aligns the solar ascending node with the X
     # axis
     rot_matrix = _rotation_matrix_reprs_to_xz_about_z(ecliptic_pole_hgs.cartesian)
-    xz_to_yz_matrix = rotation_matrix(-90 * u.deg, 'z')
+    xz_to_yz_matrix = rotation_matrix(-90*u.deg, 'z')
 
     return xz_to_yz_matrix @ rot_matrix
 
@@ -800,7 +800,7 @@ def _rotation_matrix_obliquity(time):
     """
     Return the rotation matrix from Earth equatorial to ecliptic coordinates.
     """
-    return rotation_matrix(obl06(*get_jd12(time, 'tt')) * u.radian, 'x')
+    return rotation_matrix(obl06(*get_jd12(time, 'tt'))*u.radian, 'x')
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,

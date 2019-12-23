@@ -155,7 +155,7 @@ def get_detector_sun_angles_for_date(date, file):
     """
 
     date = parse_time(date)
-    tran = TimeRange(date, date + TimeDelta(1 * u.day))
+    tran = TimeRange(date, date + TimeDelta(1*u.day))
     scx, scz, times = get_scx_scz_in_timerange(tran, file)
 
     # retrieve the detector angle information in spacecraft coordinates
@@ -186,7 +186,7 @@ def get_detector_sun_angles_for_date(date, file):
     for i in range(13):
         if not key_list[i] == 'time':
             angles[key_list[i]] = [item[key_list[i]].value
-                                   for item in detector_to_sun_angles] * u.deg
+                                   for item in detector_to_sun_angles]*u.deg
         else:
             angles[key_list[i]] = [item[key_list[i]]
                                    for item in detector_to_sun_angles]
@@ -253,10 +253,10 @@ def get_scx_scz_at_time(time, file):
         timesinutc.append(met_to_utc(tim))
     ind = np.searchsorted(timesinutc, time)
 
-    scx_radec = (Longitude(hdulist[1].data['RA_SCX'][ind] * u.deg),
-                 Latitude(hdulist[1].data['DEC_SCX'][ind] * u.deg))
-    scz_radec = (Longitude(hdulist[1].data['RA_SCZ'][ind] * u.deg),
-                 Latitude(hdulist[1].data['DEC_SCZ'][ind] * u.deg))
+    scx_radec = (Longitude(hdulist[1].data['RA_SCX'][ind]*u.deg),
+                 Latitude(hdulist[1].data['DEC_SCX'][ind]*u.deg))
+    scz_radec = (Longitude(hdulist[1].data['RA_SCZ'][ind]*u.deg),
+                 Latitude(hdulist[1].data['DEC_SCZ'][ind]*u.deg))
 
     return scx_radec, scz_radec, timesinutc[ind]
 
@@ -292,10 +292,10 @@ def get_scx_scz_in_timerange(timerange, file):
     scx_radec = []
     scz_radec = []
     for i in range(startind, endind):
-        scx_radec.append((Longitude(hdulist[1].data['RA_SCX'][i] * u.deg),
-                          Latitude(hdulist[1].data['DEC_SCX'][i] * u.deg)))
-        scz_radec.append((Longitude(hdulist[1].data['RA_SCZ'][i] * u.deg),
-                          Latitude(hdulist[1].data['DEC_SCZ'][i] * u.deg)))
+        scx_radec.append((Longitude(hdulist[1].data['RA_SCX'][i]*u.deg),
+                          Latitude(hdulist[1].data['DEC_SCX'][i]*u.deg)))
+        scz_radec.append((Longitude(hdulist[1].data['RA_SCZ'][i]*u.deg),
+                          Latitude(hdulist[1].data['DEC_SCZ'][i]*u.deg)))
     return scx_radec, scz_radec, timesinutc[startind:endind]
 
 
@@ -314,18 +314,18 @@ def nai_detector_angles():
     """
 
     # angles listed as [azimuth, zenith]
-    detectors = {'n0': [45.89 * u.deg, 20.58 * u.deg],
-                 'n1': [45.11 * u.deg, 45.31 * u.deg],
-                 'n2': [58.44 * u.deg, 90.21 * u.deg],
-                 'n3': [314.87 * u.deg, 45.24 * u.deg],
-                 'n4': [303.15 * u.deg, 90.27 * u.deg],
-                 'n5': [3.35 * u.deg, 89.79 * u.deg],
-                 'n6': [224.93 * u.deg, 20.43 * u.deg],
-                 'n7': [224.62 * u.deg, 46.18 * u.deg],
-                 'n8': [236.61 * u.deg, 89.97 * u.deg],
-                 'n9': [135.19 * u.deg, 45.55 * u.deg],
-                 'n10': [123.73 * u.deg, 90.42 * u.deg],
-                 'n11': [183.74 * u.deg, 90.32 * u.deg]}
+    detectors = {'n0': [45.89*u.deg, 20.58*u.deg],
+                 'n1': [45.11*u.deg, 45.31*u.deg],
+                 'n2': [58.44*u.deg, 90.21*u.deg],
+                 'n3': [314.87*u.deg, 45.24*u.deg],
+                 'n4': [303.15*u.deg, 90.27*u.deg],
+                 'n5': [3.35*u.deg, 89.79*u.deg],
+                 'n6': [224.93*u.deg, 20.43*u.deg],
+                 'n7': [224.62*u.deg, 46.18*u.deg],
+                 'n8': [236.61*u.deg, 89.97*u.deg],
+                 'n9': [135.19*u.deg, 45.55*u.deg],
+                 'n10': [123.73*u.deg, 90.42*u.deg],
+                 'n11': [183.74*u.deg, 90.32*u.deg]}
 
     return detectors
 
@@ -392,8 +392,8 @@ def nai_detector_radecs(detectors, scx, scz, time):
 
         # now we should be pointing at the new RA/DEC.
         ra = Longitude(
-            np.degrees(np.arctan2(vz_primed[1], vz_primed[0])) * u.deg)
-        dec = Latitude(np.degrees(np.arcsin(vz_primed[2])) * u.deg)
+            np.degrees(np.arctan2(vz_primed[1], vz_primed[0]))*u.deg)
+        dec = Latitude(np.degrees(np.arcsin(vz_primed[2]))*u.deg)
 
         # save the RA/DEC in a dictionary
         detector_radecs[l] = [ra, dec]
@@ -476,10 +476,10 @@ def separation_angle(radec1, radec2):
     """
 
     cosine_of_angle = (
-        (np.cos(((90 * u.deg) - radec1[1].to('degree')).to('rad')) *
-         np.cos((90 * u.deg - radec2[1].to('degree')).to('rad'))) +
-        (np.sin(((90 * u.deg) - radec1[1].to('degree')).to('rad')) *
-         np.sin(((90 * u.deg) - radec2[1].to('degree')).to('rad')) *
+        (np.cos(((90*u.deg) - radec1[1].to('degree')).to('rad')) *
+         np.cos((90*u.deg - radec2[1].to('degree')).to('rad'))) +
+        (np.sin(((90*u.deg) - radec1[1].to('degree')).to('rad')) *
+         np.sin(((90*u.deg) - radec2[1].to('degree')).to('rad')) *
          np.cos((radec1[0].to('degree') - radec2[0].to('degree')).to('rad'))))
 
     angle = (np.arccos(cosine_of_angle)).to('degree')
@@ -507,7 +507,7 @@ def met_to_utc(timeinsec):
     # The reference time for this is 2001-Jan-01 00:00.
     met_ref_time = parse_time('2001-01-01 00:00')
 
-    return met_ref_time + timeinsec * u.second
+    return met_ref_time + timeinsec*u.second
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())

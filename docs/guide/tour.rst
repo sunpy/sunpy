@@ -48,8 +48,8 @@ TimeSeries
 SunPy handles time series data, fundamental to the study of any real world
 phenomenon, by creating a TimeSeries object. A timeseries consists of two parts;
 times and measurements taken at those times. The data can either be in your
-current Python session, alternatively within a local or remote file. 
-In the code block that follows, data is taken from a file containing samples 
+current Python session, alternatively within a local or remote file.
+In the code block that follows, data is taken from a file containing samples
 from a file containing samples from the GOES satellite's X-ray Sensors (XRS).
 
 
@@ -229,24 +229,24 @@ it does this, it tracks the units of the input and propagates them through
 the calculation. Therefore, if we define the radius in meters, the area will
 be in meters squared::
 
-    >>> circle_area(4 * u.m)
+    >>> circle_area(4*u.m)
     <Quantity 50.26548246 m2>
 
 This also works with different units, for example ::
 
-    >>> circle_area(4 * u.imperial.foot)
+    >>> circle_area(4*u.imperial.foot)
     <Quantity 50.26548246 ft2>
 
 As demonstrated above, we can convert between different systems of measurement.
 For example, if you want the area of a circle in square feet, but were given
 the radius in meters, then you can convert it before passing it into the function::
 
-    >>> circle_area((4 * u.m).to(u.imperial.foot))
+    >>> circle_area((4*u.m).to(u.imperial.foot))
     <Quantity 541.05315022 ft2>
 
 or you can convert the output::
 
-    >>> circle_area(4 * u.m).to(u.imperial.foot ** 2)
+    >>> circle_area(4*u.m).to(u.imperial.foot ** 2)
     <Quantity 541.05315022 ft2>
 
 

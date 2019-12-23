@@ -47,7 +47,7 @@ def test_measurement(kcor):
     """
     Tests the measurement property of the KCorMap object.
     """
-    assert kcor.measurement == 735 * u.nm
+    assert kcor.measurement == 735*u.nm
 
 
 def test_observatory(kcor):

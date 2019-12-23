@@ -19,8 +19,8 @@ from sunpy.data.sample import AIA_171_IMAGE
 # We start with the sample data and crop it down to a region featuring coronal
 # loops.
 aia = sunpy.map.Map(AIA_171_IMAGE)
-bottom_left = SkyCoord(750 * u.arcsec, -200 * u.arcsec, frame=aia.coordinate_frame)
-top_right = SkyCoord(1500 * u.arcsec, 550 * u.arcsec, frame=aia.coordinate_frame)
+bottom_left = SkyCoord(750*u.arcsec, -200*u.arcsec, frame=aia.coordinate_frame)
+top_right = SkyCoord(1500*u.arcsec, 550*u.arcsec, frame=aia.coordinate_frame)
 aia_smap = aia.submap(bottom_left, top_right)
 
 ###############################################################################

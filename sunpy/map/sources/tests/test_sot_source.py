@@ -46,7 +46,7 @@ def test_measurement():
     """
     Tests the measurement property of the SOTMap object.
     """
-    assert sot.measurement == 0 * u.one
+    assert sot.measurement == 0*u.one
 
 
 def test_instruments():

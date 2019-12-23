@@ -148,8 +148,8 @@ def calculate_clipping(y: u.pix, x: u.pix):
         columns). The parameters ``y0, y1, x0, x1`` have the type
         `~astropy.units.Quantity`.
     """
-    return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix,
-            [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
+    return ([_lower_clip(y.value), _upper_clip(y.value)]*u.pix,
+            [_lower_clip(x.value), _upper_clip(x.value)]*u.pix)
 
 
 def _upper_clip(z):
@@ -223,8 +223,8 @@ def find_best_match_location(corr):
     y_shift_maximum, x_shift_maximum = get_correlation_shifts(array_maximum)
 
     # Get shift relative to correlation array
-    y_shift_correlation_array = y_shift_maximum + cor_max_y * u.pix
-    x_shift_correlation_array = x_shift_maximum + cor_max_x * u.pix
+    y_shift_correlation_array = y_shift_maximum + cor_max_y*u.pix
+    x_shift_correlation_array = x_shift_maximum + cor_max_x*u.pix
 
     return y_shift_correlation_array, x_shift_correlation_array
 
@@ -271,7 +271,7 @@ def get_correlation_shifts(array):
     else:
         x_location = 1.0 * x_max_location
 
-    return y_location * u.pix, x_location * u.pix
+    return y_location*u.pix, x_location*u.pix
 
 
 def parabolic_turning_point(y):
@@ -492,11 +492,11 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     tplate = func(tplate)
 
     # Storage for the pixel shift
-    xshift_keep = np.zeros(nt) * u.pix
+    xshift_keep = np.zeros(nt)*u.pix
     yshift_keep = np.zeros_like(xshift_keep)
 
     # Storage for the arcsecond shift
-    xshift_arcseconds = np.zeros(nt) * u.arcsec
+    xshift_arcseconds = np.zeros(nt)*u.arcsec
     yshift_arcseconds = np.zeros_like(xshift_arcseconds)
 
     # Match the template and calculate shifts
@@ -601,7 +601,7 @@ def mapsequence_coalign_by_match_template(mc, template=None, layer_index=0,
     nt = len(mc.maps)
 
     # Storage for the pixel shifts and the shifts in arcseconds
-    xshift_keep = np.zeros(nt) * u.pix
+    xshift_keep = np.zeros(nt)*u.pix
     yshift_keep = np.zeros_like(xshift_keep)
 
     if shift is None:

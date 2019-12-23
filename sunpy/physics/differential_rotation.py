@@ -67,15 +67,15 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     >>> import numpy as np
     >>> import astropy.units as u
     >>> from sunpy.physics.differential_rotation import diff_rot
-    >>> rotation = diff_rot(2 * u.day, 30 * u.deg)
+    >>> rotation = diff_rot(2*u.day, 30*u.deg)
 
     Default rotation over two days for a number of latitudes:
 
-    >>> rotation = diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
+    >>> rotation = diff_rot(2*u.day, np.linspace(-70, 70, 20)*u.deg)
 
     With rotation type 'allen':
 
-    >>> rotation = diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg, 'allen')
+    >>> rotation = diff_rot(2*u.day, np.linspace(-70, 70, 20)*u.deg, 'allen')
     """
 
     latitude = latitude.to(u.deg)
@@ -83,9 +83,9 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     sin2l = (np.sin(latitude))**2
     sin4l = sin2l**2
 
-    rot_params = {'howard': [2.894, -0.428, -0.370] * u.urad / u.second,
-                  'snodgrass': [2.851, -0.343, -0.474] * u.urad / u.second,
-                  'allen': [14.44, -3.0, 0] * u.deg / u.day
+    rot_params = {'howard': [2.894, -0.428, -0.370]*u.urad / u.second,
+                  'snodgrass': [2.851, -0.343, -0.474]*u.urad / u.second,
+                  'allen': [14.44, -3.0, 0]*u.deg / u.day
                   }
 
     if rot_type not in ['howard', 'allen', 'snodgrass']:
@@ -101,7 +101,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
     # and that the Earth is at the same distance from the Sun at all times
     # during the year.
     if frame_time == 'synodic':
-        rotation -= 0.9856 * u.deg / u.day * duration
+        rotation -= 0.9856*u.deg / u.day * duration
 
     return Longitude(rotation.to(u.deg))
 
@@ -363,8 +363,8 @@ def _get_bounding_coordinates(coords):
     rotated_x_max = _get_extreme_position(coords, "Tx", operator=np.nanmax)
     rotated_y_min = _get_extreme_position(coords, "Ty", operator=np.nanmin)
     rotated_y_max = _get_extreme_position(coords, "Ty", operator=np.nanmax)
-    return SkyCoord([rotated_x_min, rotated_x_max] * u.arcsec,
-                    [rotated_y_min, rotated_y_max] * u.arcsec,
+    return SkyCoord([rotated_x_min, rotated_x_max]*u.arcsec,
+                    [rotated_y_min, rotated_y_max]*u.arcsec,
                     frame=Helioprojective, observer=coords[0].observer)
 
 
@@ -406,7 +406,7 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
         # using the output map, and then replace the observer in place before
         # transforming to HGS. This is acceptable because the pixel -> world
         # transformation is independent of the observer.
-        input_pixels = xy.T * u.pix
+        input_pixels = xy.T*u.pix
         map_coord = smap.pixel_to_world(*input_pixels)
         output_hpc_coords = SkyCoord(map_coord.Tx,
                                      map_coord.Ty,
@@ -599,7 +599,7 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         out_meta.pop(key)
 
     # Add a new HGS observer
-    out_meta.update(get_observer_meta(new_observer, out_meta['rsun_ref'] * u.m))
+    out_meta.update(get_observer_meta(new_observer, out_meta['rsun_ref']*u.m))
 
     if is_sub_full_disk:
         # Define a new reference pixel and the value at the reference pixel.

@@ -156,9 +156,9 @@ def true_longitude(t='now'):
 
     # Calculate Earth's true geometric longitude and add 180 degrees for the Sun's longitude.
     # This approach is used because Astropy's GeocentricMeanEcliptic includes aberration.
-    earth = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame='gcrs', obstime=time)
+    earth = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='gcrs', obstime=time)
     coord = earth.transform_to(HeliocentricMeanEcliptic(equinox=time))
-    lon = coord.lon + 180 * u.deg
+    lon = coord.lon + 180*u.deg
 
     return Longitude(lon)
 
@@ -179,12 +179,12 @@ def apparent_longitude(t='now'):
     The nutation model is IAU 2000A nutation with adjustments to match IAU 2006 precession.
     """
     time = parse_time(t)
-    sun = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame='hcrs', obstime=time)
+    sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
     coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
 
     # Astropy's GeocentricMeanEcliptic already includes aberration, so only add nutation
     jd1, jd2 = get_jd12(time, 'tt')
-    nut_lon, _ = erfa.nut06a(jd1, jd2) * u.radian
+    nut_lon, _ = erfa.nut06a(jd1, jd2)*u.radian
     lon = coord.lon + nut_lon
 
     return Longitude(lon)
@@ -202,7 +202,7 @@ def true_latitude(t='now'):
         Time to use in a parse-time-compatible format
     """
     time = parse_time(t)
-    sun = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame='hcrs', obstime=time)
+    sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
     coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
 
     # Astropy's GeocentricMeanEcliptic includes aberration from Earth motion, but the contribution
@@ -224,7 +224,7 @@ def apparent_latitude(t='now'):
         Time to use in a parse-time-compatible format
     """
     time = parse_time(t)
-    sun = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame='hcrs', obstime=time)
+    sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=time)
     coord = sun.transform_to(GeocentricMeanEcliptic(equinox=time))
 
     # Astropy's GeocentricMeanEcliptic does not include nutation, but the contribution is negligible
@@ -246,7 +246,7 @@ def mean_obliquity_of_ecliptic(t='now'):
     """
     time = parse_time(t)
     jd1, jd2 = get_jd12(time, 'tt')
-    obl = erfa.obl06(jd1, jd2) * u.radian
+    obl = erfa.obl06(jd1, jd2)*u.radian
     return Angle(obl, u.arcsec)
 
 
@@ -282,8 +282,8 @@ def true_rightascension(t='now', equinox_of_date=True):
         # J2000.0 epoch
         # Calculate Earth's true geometric right ascension relative to the Sun and add 180 degrees.
         # This approach is used because Astropy's GCRS includes aberration.
-        earth = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame='gcrs', obstime=parse_time(t))
-        result = earth.hcrs.ra + 180 * u.deg
+        earth = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='gcrs', obstime=parse_time(t))
+        result = earth.hcrs.ra + 180*u.deg
 
     return Longitude(result, u.hourangle)
 
@@ -317,7 +317,7 @@ def true_declination(t='now', equinox_of_date=True):
         # J2000.0 epoch
         # Calculate Earth's true geometric declination relative to the Sun and multipy by -1.
         # This approach is used because Astropy's GCRS includes aberration.
-        earth = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame='gcrs', obstime=parse_time(t))
+        earth = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='gcrs', obstime=parse_time(t))
         result = -earth.hcrs.dec
 
     return Latitude(result, u.deg)
@@ -340,8 +340,8 @@ def true_obliquity_of_ecliptic(t='now'):
     """
     time = parse_time(t)
     jd1, jd2 = get_jd12(time, 'tt')
-    obl = erfa.obl06(jd1, jd2) * u.radian
-    _, nut_obl = erfa.nut06a(jd1, jd2) * u.radian
+    obl = erfa.obl06(jd1, jd2)*u.radian
+    _, nut_obl = erfa.nut06a(jd1, jd2)*u.radian
     obl += nut_obl
     return Angle(obl, u.arcsec)
 
@@ -374,7 +374,7 @@ def apparent_rightascension(t='now', equinox_of_date=True):
         result = np.arctan2(y, x)
     else:
         # J2000.0 epoch
-        sun = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame='hcrs', obstime=parse_time(t))
+        sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=parse_time(t))
         result = sun.gcrs.ra
 
     return Longitude(result, u.hourangle)
@@ -406,7 +406,7 @@ def apparent_declination(t='now', equinox_of_date=True):
         result = np.arcsin(np.sin(lat) * np.cos(obl) + np.cos(lat) * np.sin(obl) * np.sin(lon))
     else:
         # J2000.0 epoch
-        sun = SkyCoord(0 * u.deg, 0 * u.deg, 0 * u.AU, frame='hcrs', obstime=parse_time(t))
+        sun = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame='hcrs', obstime=parse_time(t))
         result = sun.gcrs.dec
 
     return Latitude(result, u.deg)

@@ -23,7 +23,7 @@ aia = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
 # Let's first transform a single heliographic point coordinate.
-stonyhurst_center = SkyCoord(12 * u.deg, 12 * u.deg,
+stonyhurst_center = SkyCoord(12*u.deg, 12*u.deg,
                              frame=frames.HeliographicStonyhurst)
 
 ###############################################################################
@@ -37,12 +37,12 @@ print(hpc_stonyhurst_center)
 # of latitude. We define the coordinates as we did before and then
 # transform them.
 num_points = 100
-lat_value = 12 * u.deg
-lon_value = 35 * u.deg
-lon0 = SkyCoord(np.linspace(-80, 80, num_points) * u.deg,
+lat_value = 12*u.deg
+lon_value = 35*u.deg
+lon0 = SkyCoord(np.linspace(-80, 80, num_points)*u.deg,
                 np.ones(num_points) * lon_value, frame=frames.HeliographicStonyhurst)
 lat0 = SkyCoord(np.ones(num_points) * lat_value,
-                np.linspace(-90, 90, num_points) * u.deg,
+                np.linspace(-90, 90, num_points)*u.deg,
                 frame=frames.HeliographicStonyhurst)
 
 hpc_lon0 = lon0.transform_to(aia.coordinate_frame)

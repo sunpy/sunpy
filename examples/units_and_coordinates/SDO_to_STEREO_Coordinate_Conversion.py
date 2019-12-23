@@ -26,10 +26,10 @@ stereo = (a.vso.Source('STEREO_B') &
           a.Time('2011-01-01', '2011-01-01T00:10:00'))
 
 aia = (a.Instrument('AIA') &
-       a.vso.Sample(24 * u.hour) &
+       a.vso.Sample(24*u.hour) &
        a.Time('2011-01-01', '2011-01-02'))
 
-wave = a.Wavelength(30 * u.nm, 31 * u.nm)
+wave = a.Wavelength(30*u.nm, 31*u.nm)
 
 
 res = Fido.search(wave, aia | stereo)
@@ -55,9 +55,9 @@ for i, m in enumerate(maps.values()):
 
 ###############################################################################
 # We are now going to pick out a region around the south west corner:
-aia_width = 200 * u.arcsec
-aia_height = 250 * u.arcsec
-aia_bottom_left = SkyCoord([[-800, -300]] * u.arcsec,
+aia_width = 200*u.arcsec
+aia_height = 250*u.arcsec
+aia_bottom_left = SkyCoord([[-800, -300]]*u.arcsec,
                            frame=maps['AIA'].coordinate_frame)
 aia_top_right = SkyCoord(aia_bottom_left.Tx + aia_width,
                          aia_bottom_left.Ty + aia_height,

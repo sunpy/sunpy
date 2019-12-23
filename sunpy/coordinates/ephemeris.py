@@ -75,10 +75,10 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
         observer_icrs = SkyCoord(observer).icrs.cartesian
 
         # This implementation is modeled after Astropy's `_get_apparent_body_position`
-        light_travel_time = 0. * u.s
+        light_travel_time = 0.*u.s
         emitted_time = obstime
-        delta_light_travel_time = 1. * u.s  # placeholder value
-        while np.any(np.fabs(delta_light_travel_time) > 1.0e-8 * u.s):
+        delta_light_travel_time = 1.*u.s  # placeholder value
+        while np.any(np.fabs(delta_light_travel_time) > 1.0e-8*u.s):
             body_icrs = get_body_barycentric(body, emitted_time)
             distance = (body_icrs - observer_icrs).norm()
             delta_light_travel_time = light_travel_time - distance / speed_of_light
@@ -113,7 +113,7 @@ def get_earth(time='now'):
     earth = get_body_heliographic_stonyhurst('earth', time=time)
 
     # Explicitly set the longitude to 0
-    earth = SkyCoord(0 * u.deg, earth.lat, earth.radius, frame=earth)
+    earth = SkyCoord(0*u.deg, earth.lat, earth.radius, frame=earth)
 
     return earth
 
@@ -249,7 +249,7 @@ _J2000 = Time('J2000.0', scale='tt')
 
 
 # One of the two nodes of intersection between the ICRF equator and Sun's equator in HCRS
-_NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90 * u.deg, 0 * u.deg, frame='hcrs')
+_NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90*u.deg, 0*u.deg, frame='hcrs')
 
 
 # The longitude in the de-tilted frame of the Sun's prime meridian.
@@ -257,7 +257,7 @@ _NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90 * u.deg, 0 * u.deg, frame='hcrs
 # Earth as 84.10 degrees eastward from the above-defined node of intersection.
 # Siedelmann et al. (2007) and later also define the true longitude of the meridian (i.e., without
 # light travel time to Earth) as 84.176 degrees eastward, but the apparent longitude is needed.
-_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.10 * u.deg)
+_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.10*u.deg)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -289,7 +289,7 @@ def _L0(time='now'):
     obstime = parse_time(time)
 
     # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
-    dlon_meridian = Longitude(_DLON_MERIDIAN + (obstime - _J2000) * 14.1844 * u.deg / u.day)
+    dlon_meridian = Longitude(_DLON_MERIDIAN + (obstime - _J2000) * 14.1844*u.deg / u.day)
 
     # Calculate the de-tilt longitude of the Earth
     dlon_earth = _detilt_lon(get_earth(obstime))
@@ -373,7 +373,7 @@ def _sun_north_angle_to_z(frame):
     coordinate system and observation time.
     """
     # Find the Sun center in HGS at the frame's observation time(s)
-    sun_center_repr = SphericalRepresentation(0 * u.deg, 0 * u.deg, 0 * u.km)
+    sun_center_repr = SphericalRepresentation(0*u.deg, 0*u.deg, 0*u.km)
     # The representation is repeated for as many times as are in obstime prior to transformation
     sun_center = SkyCoord(sun_center_repr._apply('repeat', frame.obstime.size),
                           frame=HGS, obstime=frame.obstime)
@@ -381,7 +381,7 @@ def _sun_north_angle_to_z(frame):
     # Find the Sun north in HGS at the frame's observation time(s)
     # Only a rough value of the solar radius is needed here because, after the cross product,
     #   only the direction from the Sun center to the Sun north pole matters
-    sun_north_repr = SphericalRepresentation(0 * u.deg, 90 * u.deg, 690000 * u.km)
+    sun_north_repr = SphericalRepresentation(0*u.deg, 90*u.deg, 690000*u.km)
     # The representation is repeated for as many times as are in obstime prior to transformation
     sun_north = SkyCoord(sun_north_repr._apply('repeat', frame.obstime.size),
                          frame=HGS, obstime=frame.obstime)

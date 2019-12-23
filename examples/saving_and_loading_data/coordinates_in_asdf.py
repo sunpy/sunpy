@@ -51,16 +51,16 @@ def semi_circular_loop(length: u.m, latitude: u.deg = 0*u.deg):
     # Find the loop radius corresponding to the loop length
     r_2 = scipy.optimize.bisect(r_2_func,
                                 length.to(u.cm).value / (2 * np.pi),
-                                length.to(u.cm).value / np.pi) * u.cm
+                                length.to(u.cm).value / np.pi)*u.cm
     alpha = np.arccos(0.5 * (r_2 / r_sun))
-    phi = np.linspace(-np.pi * u.rad + alpha, np.pi * u.rad - alpha, 2000)
+    phi = np.linspace(-np.pi*u.rad + alpha, np.pi*u.rad - alpha, 2000)
 
     hcc_frame = frames.Heliocentric(
-        observer=frames.HeliographicStonyhurst(lon=0 * u.deg, lat=latitude, radius=1 * u.AU))
+        observer=frames.HeliographicStonyhurst(lon=0*u.deg, lat=latitude, radius=1*u.AU))
 
     return SkyCoord(
         x=r_2 * np.sin(phi),
-        y=0 * u.cm,
+        y=0*u.cm,
         z=r_2 * np.cos(phi) + r_sun,
         frame=hcc_frame).transform_to('heliographic_stonyhurst')
 
@@ -80,7 +80,7 @@ print(loop_coords[[0, -1]])
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 ax = plt.subplot(projection=aiamap)
-aiamap.plot(axes=ax, clip_interval=(1, 99.5) * u.percent)
+aiamap.plot(axes=ax, clip_interval=(1, 99.5)*u.percent)
 ax.plot_coord(loop_coords.transform_to(aiamap.coordinate_frame), 'r')
 
 plt.show()

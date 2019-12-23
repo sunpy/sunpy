@@ -117,7 +117,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
 
         if out == "earth":
             rep = obscoord.spherical
-            rep.lon[()] = 0 * u.deg
+            rep.lon[()] = 0*u.deg
             obscoord = obscoord.realize_frame(rep)
 
         return obscoord

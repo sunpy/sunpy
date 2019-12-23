@@ -53,7 +53,7 @@ ch_date = parse_time(ch['event_starttime'])
 # The coronal hole was detected at different time than the AIA image was
 # taken so we need to rotate it to the map observation time.
 ch_boundary = SkyCoord(
-    [(float(v[0]), float(v[1])) * u.arcsec for v in p3],
+    [(float(v[0]), float(v[1]))*u.arcsec for v in p3],
     obstime=ch_date, observer="earth",
     frame=frames.Helioprojective)
 rotated_ch_boundary = solar_rotate_coordinate(ch_boundary, time=aia_map.date)
