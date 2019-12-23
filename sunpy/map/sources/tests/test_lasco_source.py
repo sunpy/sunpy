@@ -1,8 +1,6 @@
 """
 Test cases for SOHO Map subclasses. This particular test file pertains to
 LASCOMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 
 import os
@@ -15,8 +13,6 @@ from sunpy.map.sources.soho import LASCOMap
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "lasco_c2_25299383_s.fts"))
 lasco = Map(fitspath)
-
-# LASCO Tests
 
 
 def test_fitstoEIT():
@@ -52,4 +48,4 @@ def test_observatory():
 
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
-    assert lasco.plot_settings['norm'].clip == False
+    assert lasco.plot_settings['norm'].clip is False

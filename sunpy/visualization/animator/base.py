@@ -519,16 +519,17 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             raise ValueError("Length of axis_ranges must equal number of axes")
 
         # Define error message for incompatible axis_range input.
-        def incompatible_axis_ranges_error_message(j): return \
-            (f"Unrecognized format for {j}th entry in axis_ranges: {axis_ranges[j]}"
-             "axis_ranges must be None, a ``[min, max]`` pair, or "
-             "an array-like giving the edge values of each pixel, "
-             "i.e. length must be length of axis + 1.")
+        def incompatible_axis_ranges_error_message(j):
+            return (f"Unrecognized format for {j}th entry in axis_ranges: {axis_ranges[j]}"
+                    "axis_ranges must be None, a ``[min, max]`` pair, or "
+                    "an array-like giving the edge values of each pixel, "
+                    "i.e. length must be length of axis + 1.")
 
         # If axis range not given, define a function such that the range goes
         # from -0.5 to number of pixels-0.5.  Thus, the center of the pixels
         # along the axis will correspond to integer values.
-        def none_image_axis_range(j): return [-0.5, data_shape[j] - 0.5]
+        def none_image_axis_range(j):
+            return [-0.5, data_shape[j] - 0.5]
 
         # For each axis validate and translate the axis_ranges. For image axes,
         # also determine the plot extent.  To do this, iterate through image and slider

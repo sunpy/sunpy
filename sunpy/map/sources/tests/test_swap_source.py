@@ -1,8 +1,6 @@
 """
 Test cases for PROBA2 Map subclasses. This particular test file pertains to
 SWAPMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 
 import os
@@ -24,8 +22,6 @@ def createSWAP(request):
     Creates an SWAPMap from a FITS file.
     """
     return Map(request.param)
-
-# SWAP Tests
 
 
 def test_fitstoSWAP(createSWAP):

@@ -214,7 +214,9 @@ def wsdl_retriever(service='HEC'):
         this function to take a while to return. Timeout duration can be
         controlled through the LINK_TIMEOUT value
     """
-    def fail(): raise ValueError("No online HELIO servers can be found.")
+    def fail():
+        raise ValueError("No online HELIO servers can be found.")
+
     service_links = webservice_parser(service=service)
     wsdl = None
     wsdl_links = None

@@ -210,7 +210,7 @@ walker = attr.AttrWalker()
 @walker.add_applier(Contains)
 def _a(wlk, root, state, dct):
     dct['type'] = 'contains'
-    if not Contains in state:
+    if Contains not in state:
         state[Contains] = 1
 
     nid = state[Contains]
@@ -256,7 +256,7 @@ def _a(wlk, root, state, dct):
 
 @walker.add_applier(_ParamAttr)
 def _a(wlk, root, state, dct):
-    if not _ParamAttr in state:
+    if _ParamAttr not in state:
         state[_ParamAttr] = 0
 
     nid = state[_ParamAttr]

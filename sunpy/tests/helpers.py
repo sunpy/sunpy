@@ -29,7 +29,7 @@ else:
         SKIP_GLYMUR = True
 
 try:
-    from sunpy.io import _pyana  # noqa
+    from sunpy.io import _pyana  # NOQA
 except ImportError:
     SKIP_ANA = True
 else:

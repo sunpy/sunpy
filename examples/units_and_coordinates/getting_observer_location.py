@@ -41,7 +41,7 @@ ax = plt.subplot(projection='polar')
 circle = plt.Circle((0.0, 0.0), 1.0, transform=ax.transProjectionAffine + ax.transAxes, color="green",
                     alpha=0.4, label="Earth")
 ax.add_artist(circle)
-plt.text(0.48,0.5,"Earth", transform=ax.transAxes)
+plt.text(0.48, 0.5, "Earth", transform=ax.transAxes)
 plt.polar(sdo_gcrs.ra.to('rad'), sdo_gcrs.distance / R_earth, 'o', label=f'SDO {sdo_gcrs.dec:.2f}')
 plt.polar(sun.lon.to('rad').value * np.ones(2), [1, 10], '-', label='to Sun', color='black')
 plt.legend()

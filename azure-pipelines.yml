@@ -49,6 +49,9 @@ jobs:
       - linux: py38-online
         name: py38_online
 
+      - linux: pycodestyle
+        name: pycodestyle
+
       - linux: py36-conda
         name: py36_conda
         libraries: {}

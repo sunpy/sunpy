@@ -1,8 +1,6 @@
 """
 Test cases for STEREO Map subclasses. This particular test file pertains to
 CORMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 
 import os
@@ -15,8 +13,6 @@ from sunpy.map.sources.stereo import CORMap
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "cor1_20090615_000500_s4c1A.fts"))
 cor = Map(fitspath)
-
-# COR Tests
 
 
 def test_fitstoEIT():
@@ -52,4 +48,4 @@ def test_observatory():
 
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
-    assert cor.plot_settings['norm'].clip == False
+    assert cor.plot_settings['norm'].clip is False

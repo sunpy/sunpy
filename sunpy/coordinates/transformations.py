@@ -67,7 +67,9 @@ try:
     from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
 except ImportError:
     from astropy.coordinates import make_transform_graph_docs as _make_transform_graph_docs
-    def make_transform_graph_docs(): return _make_transform_graph_docs(frame_transform_graph)
+
+    def make_transform_graph_docs():
+        return _make_transform_graph_docs(frame_transform_graph)
 
 
 RSUN_METERS = constants.get('radius').si.to(u.m)

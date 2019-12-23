@@ -534,7 +534,8 @@ class VSOClient(BaseClient):
             Matched items. Return value is of same type as the one of
             :py:class:`VSOClient.search`.
         """
-        def sdk(key): return partial(lambda key, value: {key: value}, key)
+        def sdk(key):
+            return partial(lambda key, value: {key: value}, key)
         ALIASES = {
             'wave_min': sdk('wave_wavemin'),
             'wave_max': sdk('wave_wavemax'),

@@ -171,7 +171,8 @@ class MapSequence:
         fig = axes.get_figure()
 
         if not plot_function:
-            def plot_function(fig, ax, smap): return []
+            def plot_function(fig, ax, smap):
+                return []
         removes = []
 
         # Normal plot

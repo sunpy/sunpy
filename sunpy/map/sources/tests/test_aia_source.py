@@ -1,8 +1,6 @@
 """
 Test cases for SDO Map subclasses. This particular test file pertains to
 AIAMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 import os
 import glob
@@ -69,4 +67,4 @@ def test_measurement(createAIAMap):
 
 def test_norm_clip(createAIAMap):
     # Tests that the default normalizer has clipping disabled
-    assert createAIAMap.plot_settings['norm'].clip == False
+    assert createAIAMap.plot_settings['norm'].clip is False

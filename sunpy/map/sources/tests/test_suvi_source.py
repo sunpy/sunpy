@@ -57,4 +57,4 @@ def test_detector(suvi):
 
 def test_norm_clip(suvi):
     # Tests that the default normalizer has clipping disabled
-    assert suvi.plot_settings['norm'].clip == False
+    assert suvi.plot_settings['norm'].clip is False

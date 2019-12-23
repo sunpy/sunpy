@@ -1,8 +1,6 @@
 """
 Test cases for HINODE Map subclasses. This particular test file pertains to
 XRTMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 
 import os
@@ -17,7 +15,6 @@ fitspath = glob.glob(os.path.join(path, "HinodeXRT.fits"))
 xrt = Map(fitspath)
 
 
-# XRT Tests
 def test_fitstoXRT():
     """
     Tests the creation of XRTMap using FITS.

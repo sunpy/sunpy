@@ -1,8 +1,6 @@
 """
 Test cases for STEREO Map subclasses. This particular test file pertains to
 EUVIMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 
 import os
@@ -16,8 +14,6 @@ from sunpy.map.sources.stereo import EUVIMap
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "euvi_20090615_000900_n4euA_s.fts"))
 euvi = Map(fitspath)
-
-# EUVI Tests
 
 
 def test_fitstoEIT():
@@ -69,4 +65,4 @@ def test_rsun_missing():
 
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
-    assert euvi.plot_settings['norm'].clip == False
+    assert euvi.plot_settings['norm'].clip is False

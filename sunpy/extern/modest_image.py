@@ -4,17 +4,17 @@ set_extent.
 """
 # This file is copied from glue under the terms of the 3 Clause BSD licence. See licenses/GLUE.rst
 
-from __future__ import division, print_function
+from __future__ import print_function, division
 
 import matplotlib
-import matplotlib.cbook as cbook
-import matplotlib.colors as mcolors
-import matplotlib.image as mi
-import numpy as np
-from matplotlib.transforms import Affine2D, IdentityTransform
-
 rcParams = matplotlib.rcParams
 
+import matplotlib.image as mi
+import matplotlib.colors as mcolors
+import matplotlib.cbook as cbook
+from matplotlib.transforms import IdentityTransform, Affine2D
+
+import numpy as np
 
 IDENTITY_TRANSFORM = IdentityTransform()
 
@@ -79,7 +79,7 @@ class ModestImage(mi.AxesImage):
 
     def set_data(self, A):
         """
-        Set the image array.
+        Set the image array
 
         ACCEPTS: numpy/PIL Image A
         """
@@ -121,9 +121,7 @@ class ModestImage(mi.AxesImage):
         mi.AxesImage.set_extent(self, extent)
 
     def get_array(self):
-        """
-        Override to return the full-resolution array.
-        """
+        """Override to return the full-resolution array"""
         return self._full_res
 
     @property
@@ -257,8 +255,7 @@ def imshow(axes, X, cmap=None, norm=None, aspect=None,
            interpolation=None, alpha=None, vmin=None, vmax=None,
            origin=None, extent=None, shape=None, filternorm=1,
            filterrad=4.0, imlim=None, resample=None, url=None, **kwargs):
-    """
-    Similar to matplotlib's imshow command, but produces a ModestImage.
+    """Similar to matplotlib's imshow command, but produces a ModestImage
 
     Unlike matplotlib version, must explicitly specify axes
     """
@@ -305,8 +302,7 @@ def imshow(axes, X, cmap=None, norm=None, aspect=None,
 
 def extract_matched_slices(axes=None, shape=None, extent=None,
                            transform=IDENTITY_TRANSFORM):
-    """
-    Determine the slice parameters to use, matched to the screen.
+    """Determine the slice parameters to use, matched to the screen.
 
     :param ax: Axes object to query. It's extent and pixel size
                determine the slice parameters

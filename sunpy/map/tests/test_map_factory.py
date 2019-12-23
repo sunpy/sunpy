@@ -1,9 +1,3 @@
-
-"""
-Created on Fri Jun 21 15:05:09 2013.
-
-@author: stuart
-"""
 import os
 import pathlib
 import tempfile

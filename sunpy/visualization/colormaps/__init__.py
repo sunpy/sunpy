@@ -7,7 +7,7 @@ The following colormaps are provided by this module.
     import sunpy.visualization.colormaps as cm
     cm.show_colormaps()
 """
-from sunpy.visualization.colormaps.cm import *  # noqa
+from sunpy.visualization.colormaps.cm import *  # NOQA
 
-for cmname in cmlist.keys():  # noqa
+for cmname in cmlist.keys():  # NOQA
     __doc__ += f"\n* '`~sunpy.visualisation.colormaps.{cmname}`'\n"

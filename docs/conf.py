@@ -96,7 +96,7 @@ except ImportError as e:
     raise Exception(e, 'ERROR: jplephem could not be imported. Building the documentation requires '
                     'the "jplephem" package to be installed')
 
-from pkg_resources import get_distribution  # noqa  isort:skip
+from pkg_resources import get_distribution  # NOQA  isort:skip
 versionmod = get_distribution('sunpy')
 
 # The version info for the project you're documenting, acts as replacement for
@@ -110,11 +110,11 @@ release = versionmod.version.split('+')[0]
 is_development = '.dev' in release
 
 # -- Shut up numpy warnings from WCSAxes --------------------------------------
-import numpy as np  # noqa  isort:skip
+import numpy as np  # NOQA  isort:skip
 np.seterr(invalid='ignore')
 
 # -- Download Sample Data -----------------------------------------------------
-import sunpy.data.sample  # noqa  isort:skip
+import sunpy.data.sample  # NOQA  isort:skip
 
 # -- General configuration ----------------------------------------------------
 

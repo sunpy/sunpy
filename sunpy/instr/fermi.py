@@ -336,8 +336,9 @@ def nai_detector_radecs(detectors, scx, scz, time):
     calculates the "RA/DEC" for each NaI detector given spacecraft "z" and "x"
     "RA/DEC" positions.
 
-    This routine is based on code found in `GTBURST <https://fermi.gsfc.nasa.gov/ssc/data/analysis/scitools/gtburst.html>`__, originally written by
-    Dr Giacamo Vianello for the Fermi Science Tools.
+    This routine is based on code found in
+    `GTBURST <https://fermi.gsfc.nasa.gov/ssc/data/analysis/scitools/gtburst.html>`__,
+    originally written by Dr Giacamo Vianello for the Fermi Science Tools.
 
     Parameters
     ----------
@@ -449,10 +450,10 @@ def get_detector_separation_angles(detector_radecs, sunpos):
         <Latitude 22.66 deg>]``
     """
     angles = copy.deepcopy(detector_radecs)
-    for l, d in detector_radecs.items():
-        if not l == 'time':
-            angle = separation_angle(d, sunpos)
-            angles[l] = angle
+    for key, value in detector_radecs.items():
+        if not key == 'time':
+            angle = separation_angle(value, sunpos)
+            angles[key] = angle
 
     return angles
 

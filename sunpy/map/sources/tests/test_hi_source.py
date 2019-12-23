@@ -49,4 +49,4 @@ def test_observatory():
 
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
-    assert hi.plot_settings['norm'].clip == False
+    assert hi.plot_settings['norm'].clip is False

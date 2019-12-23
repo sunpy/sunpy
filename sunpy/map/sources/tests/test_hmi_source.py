@@ -1,8 +1,6 @@
 """
 Test cases for SDO Map subclasses. This particular test file pertains to
 HMIMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 
 import os
@@ -12,13 +10,10 @@ import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.sdo import HMIMap
 
-#from sunpy.net import HelioviewerClient
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "resampled_hmi.fits"))
 hmi = Map(fitspath)
-
-# HMI Tests
 
 
 def test_fitstoHMI():

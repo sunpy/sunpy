@@ -1,2 +1,2 @@
-from .genx import *  # noqa
-from .srs import *  # noqa
+from .genx import *  # NOQA
+from .srs import *  # NOQA

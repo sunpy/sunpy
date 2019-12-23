@@ -1,8 +1,6 @@
 """
 Test cases for HINODE Map subclasses. This particular test file pertains to
 SOTMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 
 import os
@@ -17,8 +15,6 @@ from sunpy.map.sources.hinode import SOTMap
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "HinodeSOT.fits"))
 sot = Map(fitspath)
-
-# SOT Tests
 
 
 def test_fitstoSOT():

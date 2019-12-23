@@ -1,7 +1,5 @@
 """
 Test cases for SJIMap. This particular test file pertains to SJIMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 
 import os
@@ -16,7 +14,6 @@ fitspath = glob.glob(os.path.join(path, "iris_l2_20130801_074720_4040000014_SJI_
 irismap = Map(fitspath)
 
 
-# IRIS Tests
 def test_fitstoIRIS():
     """
     Tests the creation of SJIMap using FITS.

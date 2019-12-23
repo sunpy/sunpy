@@ -1,8 +1,6 @@
 """
 Test cases for SOHO Map subclasses. This particular test file pertains to
 MDIMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 
 import os
@@ -25,7 +23,6 @@ def mdi():
     return Map(fitspath)
 
 
-# MDI Tests
 def test_fitstoMDI(mdi):
     """
     Tests the creation of MDIMap using FITS.

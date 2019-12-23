@@ -13,7 +13,7 @@ import astropy.units as u
 from astropy.time import Time
 
 # This is not called but imported to register it
-from sunpy.time.utime import TimeUTime  # noqa
+from sunpy.time.utime import TimeUTime  # NOQA
 from sunpy.util.decorators import add_common_docstring
 
 __all__ = [

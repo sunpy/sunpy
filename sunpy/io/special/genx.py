@@ -169,8 +169,8 @@ def read_genx(filename):
     # run as in multi-dim structure.
 
     dim = xdrdata.unpack_int()
-    arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int)  # noqa [1, 8, 1] = Main structure for the data
-    mainsize = arr_size[2]  # noqa the number of upper level strs noqa
+    arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int)  # NOQA [1, 8, 1] = Main structure for the data
+    mainsize = arr_size[2]  # NOQA the number of upper level strs
 
     skeleton = read_struct_skeleton(xdrdata)
     struct_to_data(xdrdata, skeleton)

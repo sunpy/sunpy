@@ -1,8 +1,6 @@
 """
 Test cases for SOHO Map subclasses. This particular test file pertains to
 EITMap.
-
-@Author: Pritish C. (VaticanCameos)
 """
 
 import os
@@ -28,7 +26,6 @@ def createEIT(request):
     return Map(request.param)
 
 
-# EIT Tests
 def test_fitstoEIT(createEIT):
     """
     Tests the creation of EITMap using FITS.
@@ -69,4 +66,4 @@ def test_rsun(createEIT):
 
 def test_norm_clip(createEIT):
     # Tests that the default normalizer has clipping disabled
-    assert createEIT.plot_settings['norm'].clip == False
+    assert createEIT.plot_settings['norm'].clip is False
