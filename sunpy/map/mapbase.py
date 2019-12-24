@@ -1469,7 +1469,7 @@ class GenericMap(NDData):
     @property
     def norm(self):
         return self._norm
-    
+
     @norm.setter
     def norm(self, n):
         self._norm = n

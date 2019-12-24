@@ -56,4 +56,4 @@ def test_rsun(createEIT):
 
 def test_norm_clip(createEIT):
     # Tests that the default normalizer has clipping disabled
-    assert createEIT.norm.clip == False
+    assert createEIT.norm.clip is False

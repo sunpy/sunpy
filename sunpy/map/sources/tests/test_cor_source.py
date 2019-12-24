@@ -36,4 +36,4 @@ def test_observatory():
 
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
-    assert cor.norm.clip == False
+    assert cor.norm.clip is False
