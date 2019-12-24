@@ -1,6 +1,3 @@
-# This module was developed with funding provided by the ESA Summer of Code (2011).
-# The template can be found in tools/hektemplate.py
-
 """
 This script is used to generate sunpy.net.hek.attrs. The rationale for using
 code-generation in lieu of dynamic magic is that code-generation ensures
@@ -20,11 +17,9 @@ sets the GET parameters in a way that only active regions with only one spot
 are returned. _StringParamAttrWrapper support <, <= ,>, >=, ==, != and like.
 _ComparisonParamAttrWrapper support all the operations mentioned above
 barring like.
+
+The template can be found in tools/hektemplate.py
 """
-
-# XXX: Maybe split into three modules and import them all into one so
-# we do not need a template but generate one module in its entirety.
-
 import sys
 import os
 

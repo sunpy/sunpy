@@ -1,5 +1,3 @@
-# This module was developed with funding provided by the Google Summer of Code (2013).
-
 import os.path
 import operator
 import itertools

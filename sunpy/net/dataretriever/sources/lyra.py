@@ -1,5 +1,3 @@
-# This module was developed with funding provided by the Google Summer of Code (2014).
-
 from sunpy.util.scraper import Scraper
 from ..client import GenericClient
 

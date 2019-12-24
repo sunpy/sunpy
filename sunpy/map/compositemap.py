@@ -1,7 +1,5 @@
 """
 A Composite Map class.
-
-Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 import matplotlib.pyplot as plt
 import numpy as np

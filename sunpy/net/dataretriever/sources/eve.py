@@ -1,5 +1,3 @@
-# This module was developed with funding provided by the Google Summer of Code (2014).
-
 import astropy.units as u
 from astropy.time import TimeDelta
 

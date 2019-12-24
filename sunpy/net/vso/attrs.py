@@ -1,4 +1,3 @@
-# This module was developed with funding provided by the ESA Summer of Code (2011).
 """
 Attributes that can be used to construct VSO queries.
 

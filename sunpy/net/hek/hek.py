@@ -1,5 +1,3 @@
-# This module was developed with funding provided by the ESA Summer of Code (2011).
-
 """
 Facilities to interface with the HEK.
 """
