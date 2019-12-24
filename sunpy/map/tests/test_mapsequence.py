@@ -23,6 +23,16 @@ def aia_map():
 
 
 @pytest.fixture
+def eit_map():
+    """
+    Load SunPy's test EIT image.
+    """
+    testpath = sunpy.data.test.rootdir
+    eit_file = os.path.join(testpath, "EIT", "efz20040301.020010_s.fits")
+    return sunpy.map.Map(eit_file)
+
+
+@pytest.fixture
 def masked_aia_map(aia_map):
     """
     Put a simple mask in the test AIA image.  A rectangular (not square) block
@@ -40,6 +50,12 @@ def masked_aia_map(aia_map):
 def mapsequence_all_the_same(aia_map):
     """ Simple `sunpy.map.mapsequence` for testing."""
     return sunpy.map.Map([aia_map, aia_map], sequence=True)
+
+
+@pytest.fixture
+def mapsequence_different_maps(aia_map, eit_map):
+    """ Simple `sunpy.map.mapsequence` for testing, in which there are differnt maps"""
+    return sunpy.map.Map([aia_map, eit_map], sequence=True)
 
 
 @pytest.fixture
@@ -145,6 +161,23 @@ def test_all_meta(mapsequence_all_the_same):
     assert len(meta) == 2
     assert np.all(np.asarray([isinstance(h, MetaDict) for h in meta]))
     assert np.all(np.asarray([meta[i] == mapsequence_all_the_same[i].meta for i in range(0, len(meta))]))
+
+
+def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
+    """ Tests that overidden __repr__ functionality works as expected. Test
+    for mapsequence of same maps as well that of different maps"""
+    # Test the case of MapSequence having same maps
+    expected_out = f'MapSequence of 2 elements, with maps from AIAMap'
+    obtained_out = repr(mapsequence_all_the_same)
+    assert len(mapsequence_all_the_same) == 2
+    assert obtained_out == expected_out
+
+    # Test the case of MapSequence having different maps
+    expected_out1 = f'MapSequence of 2 elements, with maps from AIAMap, EITMap'
+    expected_out2 = f'MapSequence of 2 elements, with maps from EITMap, AIAMap'
+    obtained_out = repr(mapsequence_different_maps)
+    assert len(mapsequence_different_maps) == 2
+    assert obtained_out == expected_out1 or obtained_out == expected_out2
 
 
 def test_derotate():
