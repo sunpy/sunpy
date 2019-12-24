@@ -69,16 +69,16 @@ c2 = (np.arange(256)**2 / 255.0).astype('f')
 c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')
 
 aia_wave_dict = {
-    1600: (c3, c3, c2)*u.angstrom,
-    1700: (c1, c0, c0)*u.angstrom,
-    4500: (c0, c0, b0 / 2.0)*u.angstrom,
-    94: (c2, c3, c0)*u.angstrom,
-    131: (g0, r0, r0)*u.angstrom,
-    171: (r0, c0, b0)*u.angstrom,
-    193: (c1, c0, c2)*u.angstrom,
-    211: (c1, c0, c3)*u.angstrom,
-    304: (r0, g0, b0)*u.angstrom,
-    335: (c2, c0, c1)*u.angstrom
+    1600*u.angstrom: (c3, c3, c2),
+    1700*u.angstrom: (c1, c0, c0),
+    4500*u.angstrom: (c0, c0, b0 / 2.0),
+    94*u.angstrom: (c2, c3, c0),
+    131*u.angstrom: (g0, r0, r0),
+    171*u.angstrom: (r0, c0, b0),
+    193*u.angstrom: (c1, c0, c2),
+    211*u.angstrom: (c1, c0, c3),
+    304*u.angstrom: (r0, g0, b0),
+    335*u.angstrom: (c2, c0, c1)
 }
 
 @u.quantity_input
@@ -93,7 +93,7 @@ def aia_color_table(wavelength: u.angstrom):
 
     Parmeters
     ---------
-    wavelength : `~astropy.units.quantity.Quantity`
+    wavelength : `~astropy.units.quantity`
         Wavelength for the desired AIA color table.
     """
     try:
@@ -1290,7 +1290,10 @@ def create_cdict(r, g, b):
     return cdict
 
 
-def suvi_color_table(wavelength):
+@u.quantity_input
+
+
+def suvi_color_table(wavelength: u.angstrom):
     """Returns one of the fundamental color tables for SUVI images.
        SUVI uses AIA color tables.
     """
