@@ -96,7 +96,7 @@ class MapSequence:
 
     def _derotate(self):
         """Derotates the layers in the MapSequence"""
-        pass
+        raise NotImplementedError("This functionality has not yet been implemented.")
 
     def plot(self, axes=None, resample=None, annotate=True,
              interval=200, plot_function=None, **kwargs):

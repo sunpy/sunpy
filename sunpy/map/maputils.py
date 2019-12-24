@@ -11,9 +11,10 @@ from astropy.coordinates import SkyCoord
 from sunpy.coordinates import Helioprojective
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
-           'map_edges', 'solar_angular_radius', 'contains_full_disk',
-           'is_all_off_disk', 'is_all_on_disk', 'contains_limb',
-           'coordinate_is_on_solar_disk', 'on_disk_bounding_coordinates']
+           'map_edges', 'solar_angular_radius', 'sample_at_coords',
+           'contains_full_disk', 'is_all_off_disk', 'is_all_on_disk',
+           'contains_limb', 'coordinate_is_on_solar_disk',
+           'on_disk_bounding_coordinates']
 
 
 def all_pixel_indices_from_map(smap):
@@ -100,6 +101,27 @@ def solar_angular_radius(coordinates):
         The solar angular radius.
     """
     return np.arctan(coordinates.rsun / coordinates.observer.radius)
+
+
+def sample_at_coords(smap, coordinates):
+    """
+    Samples the data in a map at given series of coordinates.
+    Uses nearest-neighbor interpolation of coordinates in map, as
+    it effectively uses array indexing.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map.GenericMap`
+        A SunPy map.
+    coordinates : `~astropy.coordinates.SkyCoord`
+        Input coordinates.
+    Returns
+    -------
+    `numpy.array`
+        A `numpy.array` corresponding to the data obtained from the map,
+        at the input coordinates.
+    """
+    return smap.data[smap.wcs.world_to_array_index(coordinates)]
 
 
 def contains_full_disk(smap):

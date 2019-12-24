@@ -76,7 +76,7 @@ def mapsequence_all_the_same_some_have_masks(aia_map, masked_aia_map):
 def mapsequence_different(aia_map):
     """ Mapsequence allows that the size of the image data in each map be
     different.  This mapsequence contains such maps."""
-    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4)*u.pix)], sequence=True)
+    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4) * u.pix)], sequence=True)
 
 
 def test_all_maps_same_shape(mapsequence_all_the_same, mapsequence_different):
@@ -178,3 +178,8 @@ def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
     obtained_out = repr(mapsequence_different_maps)
     assert len(mapsequence_different_maps) == 2
     assert obtained_out == expected_out1 or obtained_out == expected_out2
+
+
+def test_derotate():
+    with pytest.raises(NotImplementedError):
+        mapsequence = sunpy.map.MapSequence(derotate=True)
