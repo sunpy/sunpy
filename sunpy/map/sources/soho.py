@@ -49,9 +49,8 @@ class EITMap(GenericMap):
         super().__init__(data, header, **kwargs)
 
         self._nickname = self.detector
-        self.cmap= self._get_cmap_name()
-        self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+        self.cmap = self._get_cmap_name()
+        self.norm = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
     def detector(self):
@@ -127,8 +126,7 @@ class LASCOMap(GenericMap):
             self.meta['date_obs'] = self.meta['date-obs']
         self._nickname = self.instrument + "-" + self.detector
         self.cmap = 'soholasco{det!s}'.format(det=self.detector[1])
-        self.plot_settings['norm'] = ImageNormalize(
-            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+        self.norm = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
     @property
     def measurement(self):
@@ -180,9 +178,9 @@ class MDIMap(GenericMap):
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)
         if abs(vmin) > abs(vmax):
-            self.plot_settings['norm'] = colors.Normalize(-vmin, vmin)
+            self.norm = colors.Normalize(-vmin, vmin)
         else:
-            self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
+            self.norm = colors.Normalize(-vmax, vmax)
 
     @property
     def _supported_observer_coordinates(self):

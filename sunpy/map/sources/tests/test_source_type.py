@@ -31,6 +31,6 @@ def test_source_stretch():
     Tests that the correct stretch function is returned.
     """
     hvjp2 = Map(jp2path)
-    aia_fits_stretch = aia.plot_settings['norm'].stretch
+    aia_fits_stretch = aia.norm.stretch
     assert source_stretch(aia.meta, aia_fits_stretch) is aia_fits_stretch
     assert isinstance(source_stretch(hvjp2.meta, aia_fits_stretch), LinearStretch)

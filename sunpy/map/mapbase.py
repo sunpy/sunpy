@@ -161,7 +161,7 @@ class GenericMap(NDData):
         if hasattr(cls, 'is_datasource_for'):
             cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, header, cmap='gray', plot_settings=None, **kwargs):
+    def __init__(self, data, header, cmap='gray', norm=None, plot_settings=None, **kwargs):
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim
@@ -197,18 +197,20 @@ class GenericMap(NDData):
         self._validate_meta()
         self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
 
-        if self.dtype == np.uint8:
-            norm = None
-        else:
-            # Put import here to reduce sunpy.map import time
-            from matplotlib import colors
-            norm = colors.Normalize()
-
         # Visualization attributes
         self._cmap = cmap
 
+        if norm is None:
+            if self.dtype == np.uint8:
+                self._norm = None
+            else:
+                # Put import here to reduce sunpy.map import time
+                from matplotlib import colors
+                self._norm = colors.Normalize()
+        else:
+            self._norm = norm
+
         self.plot_settings = {
-                              'norm': norm,
                               'interpolation': 'nearest',
                               'origin': 'lower'
                               }
@@ -1463,6 +1465,14 @@ class GenericMap(NDData):
             self._cmap = plt.get_cmap(n)
         else:
             self._cmap = n
+
+    @property
+    def norm(self):
+        return self._norm
+    
+    @norm.setter
+    def norm(self, n):
+        self._norm = n
 
     @u.quantity_input
     def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True, **kwargs):

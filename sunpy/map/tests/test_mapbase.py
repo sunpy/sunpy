@@ -205,6 +205,10 @@ def test_units(generic_map):
 def test_cmap(generic_map):
     assert generic_map.cmap == plt.get_cmap('gray')
 
+def test_norm(generic_map):
+    from matplotlib import colors
+    assert type(generic_map.norm) == type(colors.Normalize())
+
 
 def test_coordinate_frame(aia171_test_map):
     frame = aia171_test_map.coordinate_frame

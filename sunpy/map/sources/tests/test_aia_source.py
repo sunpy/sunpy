@@ -52,4 +52,4 @@ def test_measurement(createAIAMap):
 
 def test_norm_clip(createAIAMap):
     # Tests that the default normalizer has clipping disabled
-    assert createAIAMap.plot_settings['norm'].clip == False
+    assert createAIAMap.norm.clip == False

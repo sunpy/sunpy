@@ -47,4 +47,4 @@ def test_rsun_missing():
 
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
-    assert euvi.plot_settings['norm'].clip == False
+    assert euvi.norm.clip == False

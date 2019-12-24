@@ -41,4 +41,4 @@ def test_observatory(createTRACE):
 
 def test_norm_clip(createTRACE):
     # Tests that the default normalizer has clipping disabled
-    assert createTRACE.plot_settings['norm'].clip == False
+    assert createTRACE.norm.clip == False
