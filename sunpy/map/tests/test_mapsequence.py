@@ -54,7 +54,9 @@ def mapsequence_all_the_same(aia_map):
 
 @pytest.fixture
 def mapsequence_different_maps(aia_map, eit_map):
-    """ Simple `sunpy.map.mapsequence` for testing, in which there are differnt maps"""
+    """
+    Simple `sunpy.map.mapsequence` for testing, in which there are different maps
+    """
     return sunpy.map.Map([aia_map, eit_map], sequence=True)
 
 
@@ -164,8 +166,10 @@ def test_all_meta(mapsequence_all_the_same):
 
 
 def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
-    """ Tests that overidden __repr__ functionality works as expected. Test
-    for mapsequence of same maps as well that of different maps"""
+    """
+    Tests that overidden __repr__ functionality works as expected. Test
+    for mapsequence of same maps as well that of different maps.
+    """
     # Test the case of MapSequence having same maps
     expected_out = f'MapSequence of 2 elements, with maps from AIAMap'
     obtained_out = repr(mapsequence_all_the_same)
