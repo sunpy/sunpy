@@ -56,9 +56,6 @@ class GenericMap(NDData):
         A dictionary of the original image header tags.
     cmap : `matplotlib.colors.Colormap`, str
         Colormap of the map image
-    plot_settings : dict, optional
-        Plot settings.
-
     Other Parameters
     ----------------
     **kwargs :
@@ -198,6 +195,14 @@ class GenericMap(NDData):
         self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
 
         # Visualization attributes
+        if plot_settings:
+            warnings.warn("Handling of plot_settings is deprecated. "
+                          "Pass the plot specific settings to either peek() or show()",
+                          DeprecationWarning)
+            self.plot_settings.update(plot_settings)
+        else:
+            self.plot_settings = None
+
         self._cmap = cmap
 
         if norm is None:
@@ -209,13 +214,6 @@ class GenericMap(NDData):
                 self._norm = colors.Normalize()
         else:
             self._norm = norm
-
-        self.plot_settings = {
-                              'interpolation': 'nearest',
-                              'origin': 'lower'
-                              }
-        if plot_settings:
-            self.plot_settings.update(plot_settings)
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -252,12 +250,12 @@ class GenericMap(NDData):
                                tmf=TIME_FORMAT) + self.data.__repr__()
 
     @classmethod
-    def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
+    def _new_instance(cls, data, meta, cmap, norm, **kwargs):
         """
         Instantiate a new instance of this class using given data.
-        This is a shortcut for ``type(self)(data, meta, plot_settings)``.
+        This is a shortcut for ``type(self)(data, meta, cmap, norm)``.
         """
-        return cls(data, meta, plot_settings=plot_settings, **kwargs)
+        return cls(data, meta, cmap=cmap, norm=norm, **kwargs)
 
     def _get_lon_lat(self, frame):
         """
@@ -570,7 +568,7 @@ class GenericMap(NDData):
                                self.spatial_units[1] + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
-        new_map = self._new_instance(self.data, new_meta, self.plot_settings)
+        new_map = self._new_instance(self.data, new_meta, self._cmap, self._norm)
 
         new_map._shift = SpatialPair(self.shifted_value[0] + axis1,
                                      self.shifted_value[1] + axis2)
@@ -1007,7 +1005,7 @@ class GenericMap(NDData):
         new_meta['crval2'] = lat.value
 
         # Create new map instance
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(new_data, new_meta, self._cmap, self._norm)
         return new_map
 
     @u.quantity_input
@@ -1122,7 +1120,7 @@ class GenericMap(NDData):
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
 
         # Create a temporary map so we can use it for the data to pixel calculation.
-        temp_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        temp_map = self._new_instance(new_data, new_meta, self._cmap, self._norm)
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
         pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate,
@@ -1191,7 +1189,7 @@ class GenericMap(NDData):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(new_data, new_meta, self._cmap, self._norm)
 
         return new_map
 
@@ -1350,10 +1348,10 @@ class GenericMap(NDData):
         if self.mask is not None:
             new_mask = self.mask[yslice, xslice].copy()
             # Create new map with the modification
-            new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
+            new_map = self._new_instance(new_data, new_meta, self._cmap, self._norm, mask=new_mask)
             return new_map
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(new_data, new_meta, self._cmap, self._norm)
         return new_map
 
     @u.quantity_input
@@ -1441,7 +1439,7 @@ class GenericMap(NDData):
             new_mask = None
 
         # Create new map with the modified data
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
+        new_map = self._new_instance(new_data, new_meta, self._cmap, self._norm, mask=new_mask)
         return new_map
 
 # #### Visualization #### #
@@ -1658,7 +1656,7 @@ class GenericMap(NDData):
 
     @peek_show
     def peek(self, draw_limb=False, draw_grid=False,
-             colorbar=True, **matplot_args):
+             colorbar=True, plot_settings=None, **matplot_args):
         """
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the `~sunpy.map.GenericMap.plot`
@@ -1675,6 +1673,8 @@ class GenericMap(NDData):
             parallels and meridians.
         colorbar : bool
             Whether to display a colorbar next to the plot.
+        plot_settings : dict, optional
+            Plot settings.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting.
@@ -1682,7 +1682,7 @@ class GenericMap(NDData):
         figure = plt.figure()
         axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        im = self.plot(axes=axes, **matplot_args)
+        im = self.plot(axes=axes, plot_settings=plot_settings, **matplot_args)
 
         if colorbar:
             if draw_grid:
@@ -1706,7 +1706,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def plot(self, annotate=True, axes=None, title=True,
-             clip_interval: u.percent = None, **imshow_kwargs):
+             clip_interval: u.percent = None, plot_settings=None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
@@ -1727,6 +1727,9 @@ class GenericMap(NDData):
         clip_interval : two-element `~astropy.units.Quantity`, optional
             If provided, the data will be clipped to the percentile interval bounded by the two
             numbers.
+
+        plot_settings : dict, optional
+            Plot settings.
 
         **imshow_kwargs  : `dict`
             Any additional imshow arguments that should be used
@@ -1759,6 +1762,11 @@ class GenericMap(NDData):
                               SunpyUserWarning)
 
         # Normal plot
+        if self.plot_settings is None:
+            self.plot_settings = {'interpolation': 'nearest', 'origin': 'lower'}
+        if plot_settings:
+            self.plot_settings.update(plot_settings)
+
         imshow_args = copy.deepcopy(self.plot_settings)
         if 'title' in imshow_args:
             plot_settings_title = imshow_args.pop('title')
