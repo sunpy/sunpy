@@ -208,7 +208,7 @@ def test_cmap(generic_map):
 
 def test_norm(generic_map):
     from matplotlib import colors
-    assert isinstance(generic_map.norm, colors.Normalize())
+    assert isinstance(generic_map.norm, colors.Normalize)
 
 
 def test_coordinate_frame(aia171_test_map):

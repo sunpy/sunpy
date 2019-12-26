@@ -55,7 +55,9 @@ class GenericMap(NDData):
     header : dict
         A dictionary of the original image header tags.
     cmap : `matplotlib.colors.Colormap`, str
-        Colormap of the map image
+        Colormap of the map image. Defaults to 'grey'
+    norm : 'matplotlib.colors.Normalise`
+        Normalization function used. Defaults to None
     Other Parameters
     ----------------
     **kwargs :
@@ -250,12 +252,12 @@ class GenericMap(NDData):
                                tmf=TIME_FORMAT) + self.data.__repr__()
 
     @classmethod
-    def _new_instance(cls, data, meta, cmap, norm, **kwargs):
+    def _new_instance(cls, data, meta, **kwargs):
         """
         Instantiate a new instance of this class using given data.
         This is a shortcut for ``type(self)(data, meta, cmap, norm)``.
         """
-        return cls(data, meta, cmap=cmap, norm=norm, **kwargs)
+        return cls(data, meta, **kwargs)
 
     def _get_lon_lat(self, frame):
         """
@@ -568,7 +570,7 @@ class GenericMap(NDData):
                                self.spatial_units[1] + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
-        new_map = self._new_instance(self.data, new_meta, self._cmap, self._norm)
+        new_map = self._new_instance(self.data, new_meta)
 
         new_map._shift = SpatialPair(self.shifted_value[0] + axis1,
                                      self.shifted_value[1] + axis2)
@@ -1005,7 +1007,7 @@ class GenericMap(NDData):
         new_meta['crval2'] = lat.value
 
         # Create new map instance
-        new_map = self._new_instance(new_data, new_meta, self._cmap, self._norm)
+        new_map = self._new_instance(new_data, new_meta)
         return new_map
 
     @u.quantity_input
@@ -1120,7 +1122,7 @@ class GenericMap(NDData):
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
 
         # Create a temporary map so we can use it for the data to pixel calculation.
-        temp_map = self._new_instance(new_data, new_meta, self._cmap, self._norm)
+        temp_map = self._new_instance(new_data, new_meta)
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
         pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate,
@@ -1189,7 +1191,7 @@ class GenericMap(NDData):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self._cmap, self._norm)
+        new_map = self._new_instance(new_data, new_meta)
 
         return new_map
 
@@ -1348,10 +1350,10 @@ class GenericMap(NDData):
         if self.mask is not None:
             new_mask = self.mask[yslice, xslice].copy()
             # Create new map with the modification
-            new_map = self._new_instance(new_data, new_meta, self._cmap, self._norm, mask=new_mask)
+            new_map = self._new_instance(new_data, new_meta, mask=new_mask)
             return new_map
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self._cmap, self._norm)
+        new_map = self._new_instance(new_data, new_meta)
         return new_map
 
     @u.quantity_input
@@ -1439,7 +1441,7 @@ class GenericMap(NDData):
             new_mask = None
 
         # Create new map with the modified data
-        new_map = self._new_instance(new_data, new_meta, self._cmap, self._norm, mask=new_mask)
+        new_map = self._new_instance(new_data, new_meta, mask=new_mask)
         return new_map
 
 # #### Visualization #### #
