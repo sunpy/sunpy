@@ -38,12 +38,12 @@ Coding Style/Conventions
   We allow relative imports within a module to avoid circular import chains.
 
 * The ``import numpy as np``, ``import matplotlib as mpl``, and ``import matplotlib.pyplot as plt`` naming conventions should be used wherever relevant.
-  ``from packagename import *`` should never be used (expect in ``__init__.py``)
+  ``from packagename import *`` should never be used (expect in ``__init__.py`` and you will want to add a ``# NOQA`` after it).
 
 * Classes should either use direct variable access, or Python's property mechanism for setting object instance variables.
 
-* Classes should use the builtin :func:`super` function when making calls to methods in their super-class(es) unless there are specific reasons not to.
-  :func:`super` should be used consistently in all subclasses since it does not work otherwise.
+* Classes should use the builtin `super` function when making calls to methods in their super-class(es) unless there are specific reasons not to.
+  `super` should be used consistently in all subclasses since it does not work otherwise.
 
 * Multiple inheritance should be avoided in general without good reason.
 
@@ -70,7 +70,7 @@ Data and Configuration
 ======================
 
 * We store test data in ``sunpy/data/test`` as long as it is less than about 100 kB.
-  These data should always be accessed via the :func:`sunpy.data.test.get_test_filepath` and :func:`sunpy.data.test.test_data_filenames` functions.
+  These data should always be accessed via the `sunpy.data.test.get_test_filepath` and `sunpy.data.test.test_data_filenames` functions.
 
 * We store data used for examples in the `sample-data repository <https://github.com/sunpy/sample-data>`_.
   This data should not be used for unit tests but can be within our documentation.

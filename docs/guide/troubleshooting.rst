@@ -71,7 +71,7 @@ You can find what directory sunpy is installed in by importing it and printing t
 =================================
 
 Each user should have a :file:`.sunpy/` directory which should contain a :ref:`sunpyrc <customizing-with-sunpyrc-files>` file.
-To locate your :file:`.sunpy/` directory, use :func:`sunpy.print_config`::
+To locate your :file:`.sunpy/` directory, use `sunpy.print_config`::
 
     >>> import sunpy as sun   # doctest: +SKIP
     >>> sun.print_config()   # doctest: +SKIP

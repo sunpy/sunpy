@@ -72,9 +72,9 @@ def figure_test(test_function):
 
     Examples
     --------
-    @figure_test
-    def test_simple_plot():
-        plt.plot([0,1])
+    >>> @figure_test
+    ... def test_simple_plot():
+    ...        plt.plot([0,1])  # DOCTEST: +SKIP
     """
     @pytest.mark.figure
     @wraps(test_function)
@@ -82,7 +82,7 @@ def figure_test(test_function):
         if not os.path.exists(hash.HASH_LIBRARY_FILE):
             pytest.xfail(f'Could not find a figure hash library at {hash.HASH_LIBRARY_FILE}')
         # figure_base_dir is a pytest fixture defined on use.
-        if figure_base_dir is None:
+        if figure_base_dir is None:  # NOQA
             pytest.xfail("No directory to save figures to found")
 
         name = "{}.{}".format(test_function.__module__,
@@ -94,8 +94,8 @@ def figure_test(test_function):
             fig = plt.gcf()
 
         # Save the image that was generated
-        figure_base_dir.mkdir(exist_ok=True)
-        result_image_loc = figure_base_dir / f'{name}.png'
+        figure_base_dir.mkdir(exist_ok=True)  # NOQA
+        result_image_loc = figure_base_dir / f'{name}.png'  # NOQA
         plt.savefig(str(result_image_loc))
         plt.close()
 
@@ -179,12 +179,12 @@ table, th, td {
 
 
 def _generate_fig_html(fname):
-    generated_image = figure_base_dir / (fname + '.png')
+    generated_image = figure_base_dir / (fname + '.png')  # NOQA
 
     # Download baseline image
     baseline_url = 'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/figures/'
     baseline_image_url = baseline_url + generated_image.name
-    baseline_image = figure_base_dir / (generated_image.stem + '_baseline' + generated_image.suffix)
+    baseline_image = figure_base_dir / (generated_image.stem + '_baseline' + generated_image.suffix)  # NOQA
     baseline_image_exists = baseline_image.exists()
     if not baseline_image_exists:
         try:
@@ -194,7 +194,7 @@ def _generate_fig_html(fname):
             pass
 
     # Create diff between baseline and generated image
-    diff_image = figure_base_dir / (generated_image.stem + '_diff' + generated_image.suffix)
+    diff_image = figure_base_dir / (generated_image.stem + '_diff' + generated_image.suffix)  # NOQA
     if baseline_image_exists:
         compare.save_diff_image(str(baseline_image), str(generated_image), str(diff_image))
 
@@ -208,7 +208,7 @@ def _generate_fig_html(fname):
 
 
 def generate_figure_webpage(hash_library):
-    html_file = figure_base_dir / 'fig_comparison.html'
+    html_file = figure_base_dir / 'fig_comparison.html'  # NOQA
     with open(html_file, 'w') as f:
         f.write(html_intro)
         for fname in hash_library:

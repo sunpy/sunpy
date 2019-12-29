@@ -39,8 +39,6 @@ __all__ = ['TimeSeries', 'TimeSeriesFactory', 'NoTimeSeriesFound',
 
 class TimeSeriesFactory(BasicRegistrationFactory):
     """
-    TimeSeries(*args, **kwargs)
-
     TimeSeries factory class, used to create a variety of `~sunpy.timeseries.TimeSeries` objects.
     Valid timeseries types are specified by registering them with the factory.
 
@@ -238,15 +236,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         * lists containing any of the above.
 
         (1) header/unit are optional and in either order, but data should be the first entry in each group.
-
-        Examples
-        --------
-        self._parse_args(data, header,
-                         (data, header),
-                         ['file1', 'file2', 'file3'],
-                         'file4',
-                         'directory1',
-                         '*.fits')
         """
         data_header_unit_tuples = list()
         data_header_pairs = list()

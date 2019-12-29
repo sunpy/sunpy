@@ -5,6 +5,7 @@
 
 This module provides Sun-related parameters.
 """
+# flake8: NOQA
 from sunpy.coordinates import sun as _sun
 from sunpy.util.decorators import deprecated
 

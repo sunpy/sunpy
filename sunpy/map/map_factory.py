@@ -39,7 +39,7 @@ __all__ = ['Map', 'MapFactory']
 
 
 class MapFactory(BasicRegistrationFactory):
-    """
+    r"""
     Map(\\*args, \\*\\*kwargs)
 
     Map factory class.  Used to create a variety of Map objects.  Valid map types
@@ -166,15 +166,6 @@ class MapFactory(BasicRegistrationFactory):
         * glob, from which all files will be read
         * url, which will be downloaded and read
         * lists containing any of the above.
-
-        Example
-        -------
-        self._parse_args(data, header,
-                         (data, header),
-                         ['file1', 'file2', 'file3'],
-                         'file4',
-                         'directory1',
-                         '*.fits')
         """
 
         data_header_pairs = list()

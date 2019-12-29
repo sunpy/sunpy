@@ -52,7 +52,7 @@ class EntryAlreadyAddedError(Exception):
 class EntryAlreadyStarredError(Exception):
     """
     This exception is raised if a database entry is marked as starred using
-    :meth:`Database.star` although it was already starred before this
+    `Database.star` although it was already starred before this
     operation.
     """
 
@@ -186,21 +186,21 @@ def disable_undo(database):
 
 
 class Database:
-    """
+    r"""
     Database(url[, CacheClass[, cache_size[, default_waveunit]]])
 
     Parameters
     ----------
     url : str
         A URL describing the database. This value is simply passed to
-        :func:`sqlalchemy.create_engine`
+        `sqlalchemy.create_engine`
         If not specified the value will be read from the sunpy config file.
     CacheClass : sunpy.database.caching.BaseCache
         A concrete cache implementation of the abstract class BaseCache.
         Builtin supported values for this parameters are
-        :class:`sunpy.database.caching.LRUCache` and
-        :class:`sunpy.database.caching.LFUCache`.
-        The default value is :class:`sunpy.database.caching.LRUCache`.
+        `sunpy.database.caching.LRUCache` and
+        `sunpy.database.caching.LFUCache`.
+        The default value is `sunpy.database.caching.LRUCache`.
     cache_size : int
         The maximum number of database entries, default is no limit.
     default_waveunit : `str` or `~astropy.units.Unit`, optional
@@ -213,9 +213,8 @@ class Database:
         If an invalid string is passed, `~sunpy.database.WaveunitNotConvertibleError`
         is raised. If `None` (the default), attempting to add an entry without knowing
         the wavelength unit results in a
-        :exc:`sunpy.database.WaveunitNotFoundError`.
-    """
-    """
+        `sunpy.database.WaveunitNotFoundError`.
+
     Attributes
     ----------
     session : sqlalchemy.orm.session.Session
@@ -226,7 +225,7 @@ class Database:
     cache_size: int
         The maximum number of database entries. This attribute is read-only. To
         change this value, use the method
-        :meth:`sunpy.database.Database.set_cache_size`.
+        `sunpy.database.Database.set_cache_size`.
 
     tags : list of sunpy.database.Tag objects
         A list of all saved tags in database. This attribute is read-only.
@@ -246,7 +245,7 @@ class Database:
     get_tag(tagname)
         Get the tag which has the given unique tagname assigned. Returns None
         if no tag with the given name is saved in the database.
-    tag(entry, *tags)
+    tag(entry, \\*tags)
         Assign the given database entry the given tags. If no tags are given,
         TypeError is raised.
     star(entry, ignore_already_starred=False)
@@ -261,10 +260,10 @@ class Database:
         Add the given database entry to the database. If
         ``ignore_already_added`` is False and the given entry is already saved
         in the database, EntryAlreadyAddedError is raised.
-    edit(entry, **kwargs)
+    edit(entry, \\*\\*kwargs)
         Change the given database entry so that it interprets the passed
         key-value pairs as new values where the keys represent the attributes
-        of this entry. If no keywords arguments are given, :exc:`ValueError` is
+        of this entry. If no keywords arguments are given, `ValueError` is
         raised.
     remove(entry)
         Remove the given entry from the database.
@@ -338,8 +337,8 @@ class Database:
         entries anymore, entries are removed from the cache until the number of
         entries equals the cache size. Which entries are removed depends on the
         implementation of the cache (e.g.
-        :class:`sunpy.database.caching.LRUCache`,
-        :class:`sunpy.database.caching.LFUCache`).
+        `sunpy.database.caching.LRUCache`,
+        `sunpy.database.caching.LFUCache`).
         """
         cmds = CompositeOperation()
         # remove items from the cache if the given argument is lower than the
@@ -372,7 +371,7 @@ class Database:
         """
         Flush pending changes and commit the current transaction.
 
-        This is a shortcut for :meth:`session.commit()`.
+        This is a shortcut for `session.commit()`.
         """
         self.session.commit()
 
@@ -439,7 +438,7 @@ class Database:
         Check if the query has already been used to collect new data.
 
         If yes, query the database using the method
-        :meth:`sunpy.database.Database.search` and return the result.
+        `sunpy.database.Database.search` and return the result.
 
         Otherwise, the retrieved search result is used to download all files
         that belong to this search result. After that, all the gathered
@@ -448,7 +447,7 @@ class Database:
         is represented by one database entry.
 
         It uses the
-        :meth:`sunpy.database.Database._download_and_collect_entries` method
+        `sunpy.database.Database._download_and_collect_entries` method
         to download files, which uses query result block level caching. This
         means that files will not be downloaded for any query result block
         that had its files downloaded previously. If files for Query A were
@@ -541,9 +540,7 @@ class Database:
         self.add_many(entries)
 
     def search(self, *query, **kwargs):
-        """
-        search(*query[, sortby])
-
+        r"""
         Send the given query to the database and
         return a list of database entries that satisfy all of the given
         attributes.
@@ -551,15 +548,15 @@ class Database:
         Apart from the attributes supported by the VSO interface, the following
         attributes are supported:
 
-            - :class:`sunpy.database.attrs.Starred`
+            - `sunpy.database.attrs.Starred`
 
-            - :class:`sunpy.database.attrs.Tag`
+            - `sunpy.database.attrs.Tag`
 
-            - :class:`sunpy.database.attrs.Path`
+            - `sunpy.database.attrs.Path`
 
-            - :class:`sunpy.database.attrs.DownloadTime`
+            - `sunpy.database.attrs.DownloadTime`
 
-            - :class:`sunpy.database.attrs.FitsHeaderEntry`
+            - `sunpy.database.attrs.FitsHeaderEntry`
 
         An important difference to the VSO attributes is that these attributes
         may also be used in negated form using the tilde ~ operator.
@@ -573,7 +570,7 @@ class Database:
         sortby : `str`, optional
             The column by which to sort the returned entries. The default is to
             sort by the start of the observation. See the attributes of
-            :class:`sunpy.database.tables.DatabaseEntry` for a list of all
+            `sunpy.database.tables.DatabaseEntry` for a list of all
             possible values.
 
         Returns
@@ -617,7 +614,7 @@ class Database:
         Get a database entry by its unique ID number.
 
         If an entry with the given ID does not exist,
-        :exc:`sunpy.database.EntryNotFoundError` is raised.
+        `sunpy.database.EntryNotFoundError` is raised.
         """
         try:
             return self._cache[entry_id]
@@ -633,7 +630,7 @@ class Database:
         Get the tag which has the given name.
 
         If no such tag exists,
-        :exc:`sunpy.database.NoSuchTagError` is raised.
+        `sunpy.database.NoSuchTagError` is raised.
         """
         for tag in self.tags:
             if tag_name == tag.name:
@@ -706,7 +703,7 @@ class Database:
         If this entry is already
         marked as starred, the behaviour depends on the optional argument
         ``ignore_already_starred``: if it is ``False`` (the default),
-        :exc:`sunpy.database.EntryAlreadyStarredError` is raised. Otherwise,
+        `sunpy.database.EntryAlreadyStarredError` is raised. Otherwise,
         the entry is kept as starred and no exception is raised.
         """
         if database_entry.starred and not ignore_already_starred:
@@ -720,7 +717,7 @@ class Database:
         If this entry is not
         marked as starred, the behaviour depends on the optional argument
         ``ignore_already_unstarred``: if it is ``False`` (the default),
-        :exc:`sunpy.database.EntryAlreadyUnstarredError` is raised. Otherwise,
+        `sunpy.database.EntryAlreadyUnstarredError` is raised. Otherwise,
         the entry is kept as unstarred and no exception is raised.
         """
         if not database_entry.starred and not ignore_already_unstarred:
@@ -770,7 +767,7 @@ class Database:
 
         ignore_already_added : bool, optional
             If True, attempts to add an already existing database entry will
-            result in a :exc:`sunpy.database.EntryAlreadyAddedError`.
+            result in a `sunpy.database.EntryAlreadyAddedError`.
             Otherwise, a new entry will be added and there will be duplicates
             in the database.
         """
@@ -794,10 +791,10 @@ class Database:
         Parameters
         ----------
         query_result : list
-            The value returned by :meth:`sunpy.net.hek.HEKClient().search`
+            The value returned by `sunpy.net.hek.HEKClient().search`
 
         ignore_already_added : bool
-            See :meth:`sunpy.database.Database.add`.
+            See `sunpy.database.Database.add`.
         """
         vso_qr = itertools.chain.from_iterable(
             H2VClient().translate_and_query(query_result))
@@ -811,7 +808,7 @@ class Database:
         progress=False, ignore_already_added=False)
 
         Add new database entries from a VSO query result and download the
-        corresponding data files. See :meth:`sunpy.database.Database.download`
+        corresponding data files. See `sunpy.database.Database.download`
         for information about the caching mechanism used and about the
         parameters `client`, `path`, `progress`.
 
@@ -819,10 +816,10 @@ class Database:
         ----------
         query_result : sunpy.net.vso.QueryResponse
             A VSO query response that was returned by the ``query`` method of a
-            :class:`sunpy.net.vso.VSOClient` object.
+            `sunpy.net.vso.VSOClient` object.
 
         ignore_already_added : bool
-            See :meth:`sunpy.database.Database.add`.
+            See `sunpy.database.Database.add`.
         """
         if not query_result:
             return
@@ -839,10 +836,10 @@ class Database:
         ----------
         query_result : sunpy.net.vso.QueryResponse
             A VSO query response that was returned by the ``query`` method of a
-            :class:`sunpy.net.vso.VSOClient` object.
+            `sunpy.net.vso.VSOClient` object.
 
         ignore_already_added : bool
-            See :meth:`sunpy.database.Database.add`.
+            See `sunpy.database.Database.add`.
         """
         self.add_many(
             tables.entries_from_query_result(
@@ -860,11 +857,11 @@ class Database:
         search_result : `sunpy.net.fido_factory.UnifiedResponse`
             A UnifiedResponse object that is used to store responses from the
             unified downloader. This is returned by the ``search`` method of a
-            :class:`sunpy.net.fido_factory.UnifiedDownloaderFactory`
+            `sunpy.net.fido_factory.UnifiedDownloaderFactory`
             object.
 
         ignore_already_added : `bool`
-            See :meth:`sunpy.database.Database.add`.
+            See `sunpy.database.Database.add`.
         """
         self.add_many(tables.entries_from_fido_search_result(search_result,
                                                              self.default_waveunit),
@@ -896,11 +893,11 @@ class Database:
         pattern : string, optional
             The pattern can be used to filter the list of filenames before the
             files are attempted to be read. The default is to collect all
-            files. This value is passed to the function :func:`fnmatch.filter`,
+            files. This value is passed to the function `fnmatch.filter`,
             see its documentation for more information on the supported syntax.
 
         ignore_already_added : bool, optional
-            See :meth:`sunpy.database.Database.add`.
+            See `sunpy.database.Database.add`.
 
         time_string_parse_format : str, optional
             Fallback timestamp format which will be passed to
@@ -936,7 +933,7 @@ class Database:
             following rb, rb+, or ab+.
 
         ignore_already_added : bool, optional
-            See :meth:`sunpy.database.Database.add`.
+            See `sunpy.database.Database.add`.
         """
         self.add_many(
             tables.entries_from_file(file, self.default_waveunit),
@@ -948,7 +945,7 @@ class Database:
         value pairs as new values where the keys represent the attributes of
         this entry.
 
-        If no keywords arguments are given, :exc:`ValueError` is raised.
+        If no keywords arguments are given, `ValueError` is raised.
         """
         cmd = commands.EditEntry(database_entry, **kwargs)
         if self._enable_history:
@@ -1003,7 +1000,7 @@ class Database:
         """
         Remove all entries from the database.
 
-        This operation can be undone using the :meth:`undo` method.
+        This operation can be undone using the `undo` method.
         """
         cmds = CompositeOperation()
         for entry in self:
@@ -1032,7 +1029,7 @@ class Database:
 
         See Also
         --------
-        :meth:`sunpy.database.commands.CommandManager.clear_histories`
+        `sunpy.database.commands.CommandManager.clear_histories`
         """
         self._command_manager.clear_histories()  # pragma: no cover
 
@@ -1042,7 +1039,7 @@ class Database:
 
         See Also
         --------
-        :meth:`sunpy.database.commands.CommandManager.undo`
+        `sunpy.database.commands.CommandManager.undo`
         """
         self._command_manager.undo(n)  # pragma: no cover
 
@@ -1052,7 +1049,7 @@ class Database:
 
         See Also
         --------
-        :meth:`sunpy.database.commands.CommandManager.redo`
+        `sunpy.database.commands.CommandManager.redo`
         """
         self._command_manager.redo(n)  # pragma: no cover
 

@@ -146,7 +146,7 @@ class RemoveEntry(DatabaseOperation):
 
     If it cannot be
     removed, because it is not stored in the session,
-    :exc:`sunpy.database.NoSuchEntryError` is raised. The ``undo`` method puts
+    `sunpy.database.NoSuchEntryError` is raised. The ``undo`` method puts
     the database entry back into the session object.
     """
 
@@ -244,7 +244,7 @@ class RemoveTag(DatabaseOperation):
 
     If the tag cannot be
     removed from the database entry because it is not assigned to the entry,
-    :exc:`sunpy.database.NonRemovableTagError` is raised. The ``undo`` method
+    `sunpy.database.NonRemovableTagError` is raised. The ``undo`` method
     puts the removed tag back into the tag list of the database entry.
     """
 
@@ -329,7 +329,7 @@ class CommandManager:
         Remove the last command from the undo command stack and return it.
 
         If the command stack is empty,
-        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
+        `sunpy.database.commands.EmptyCommandStackError` is raised.
         """
         try:
             last_undo_command = self.undo_commands.pop()
@@ -348,7 +348,7 @@ class CommandManager:
         Remove the last command from the redo command stack and return it.
 
         If the command stack is empty,
-        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
+        `sunpy.database.commands.EmptyCommandStackError` is raised.
         """
         try:
             last_redo_command = self.redo_commands.pop()
@@ -377,7 +377,7 @@ class CommandManager:
         The default is to undo only the last
         command. If there is no command that can be undone because n is too big
         or because no command has been executed yet,
-        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
+        `sunpy.database.commands.EmptyCommandStackError` is raised.
         """
         for _ in range(n):
             command = self.pop_undo_command()
@@ -391,7 +391,7 @@ class CommandManager:
         The default is to redo only the last command which has been
         undone using the undo method. If there is no command that can be redone
         because n is too big or because no command has been undone yet,
-        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
+        `sunpy.database.commands.EmptyCommandStackError` is raised.
         """
         for _ in range(n):
             command = self.pop_redo_command()

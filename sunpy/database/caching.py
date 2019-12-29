@@ -38,7 +38,7 @@ class BaseCache(metaclass=ABCMeta):
     @abstractmethod
     def __getitem__(self, key):
         """
-        abstract method: this method must be overwritten by inheriting
+        Abstract method: this method must be overwritten by inheriting
         subclasses.
 
         It defines what happens if an item from the cache is attempted
@@ -49,7 +49,7 @@ class BaseCache(metaclass=ABCMeta):
     @abstractmethod
     def __setitem__(self, key, value):
         """
-        abstract method: this method must be overwritten by inheriting
+        Abstract method: this method must be overwritten by inheriting
         subclasses.
 
         It defines what happens if a new value should be assigned to the
@@ -60,7 +60,7 @@ class BaseCache(metaclass=ABCMeta):
     @abstractproperty
     def to_be_removed(self):
         """The item that will be removed on the next
-        :meth:`sunpy.database.caching.BaseCache.remove` call.
+        `sunpy.database.caching.BaseCache.remove` call.
 
         """
 
@@ -87,7 +87,7 @@ class BaseCache(metaclass=ABCMeta):
     @property
     def is_full(self):
         """
-        True if the number of items in the cache equals :attr:`maxsize`, False
+        True if the number of items in the cache equals ``maxsize``, False
         otherwise.
         """
         return len(self._dict) == self.maxsize

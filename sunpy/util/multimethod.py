@@ -72,7 +72,7 @@ class MultiMethod:
         self.methods.append((types, fun))
 
     def add_dec(self, *types, **kwargs):
-        """
+        r"""
         Return a decorator that adds the function it receives to the
         multimethod with the types passed as \\*args.
 
@@ -102,11 +102,10 @@ class MultiMethod:
                 return fun(*args, **kwargs)
         raise TypeError(f'{types!r}')
 
-    # XXX: Other Python implementations.
     def super(self, *args, **kwargs):
         """
-        Like ``__call__``, only that when you give it ``super(cls, obj)``
-        items, it will skip the multimethod for ``cls`` and use the one for its
+        Like ``__call__``, it will skip the multimethod for ``cls``
+        when you give it ``super(cls, obj)``, and use the one for its
         parent class.
 
         The normal ``__call__`` does not consider this for performance

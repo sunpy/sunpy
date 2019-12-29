@@ -1130,15 +1130,14 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     -------
     lx_out : `dict`
         dictionary containing the following fields.
-        longlum : `~astropy.units.Quantity`
-            Array of luminosity in the 1-8 angstroms range.
-
-        shortlum : `~astropy.units.Quantity`
-            Array of luminosity in the 0.5-4 angstroms range.
-
-        longlum_int : (only present if obstime kwarg is set)
-
-        shortlum_int : (only present if obstime kwarg is set)
+    longlum : `~astropy.units.Quantity`
+        Array of luminosity in the 1-8 angstroms range.
+    shortlum : `~astropy.units.Quantity`
+        Array of luminosity in the 0.5-4 angstroms range.
+    longlum_int : (only present if obstime kwarg is set)
+        What is this?
+    shortlum_int : (only present if obstime kwarg is set)
+        What is this?
 
     Notes
     -----

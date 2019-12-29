@@ -188,25 +188,22 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     -------
     clean_time : `numpy.ndarray` of `astropy.time.Time`
         time array with artifact periods removed.
-
     clean_channels : `list` ndarrays/array-likes convertible to float64
         list of irradiance arrays with artifact periods removed.
-
     artifact_status : `dict`
         List of 4 variables containing information on what artifacts were
         found, removed, etc. from the time series.
-        artifact_status["lytaf"] = artifacts found : `numpy.recarray`
-            The full LYRA annotation file for the time series time range
-            output by get_lytaf_events().
-        artifact_status["removed"] = artifacts removed : `numpy.recarray`
-            Artifacts which were found and removed from from time series.
-        artifact_status["not_removed"] = artifacts found but not removed :
-              `numpy.recarray`
-            Artifacts which were found but not removed as they were not
-            included when user defined artifacts kwarg.
-        artifact_status["not_found"] = artifacts not found : `list` of strings
-            Artifacts listed to be removed by user when defining artifacts
-            kwarg which were not found in time series time range.
+    artifact_status["lytaf"] = artifacts found : `numpy.recarray`
+        The full LYRA annotation file for the time series time range
+        output by get_lytaf_events().
+    artifact_status["removed"] = artifacts removed : `numpy.recarray`
+        Artifacts which were found and removed from from time series.
+    artifact_status["not_removed"] = artifacts found but not removed : `numpy.recarray`
+        Artifacts which were found but not removed as they were not
+        included when user defined artifacts kwarg.
+    artifact_status["not_found"] = artifacts not found : `list` of strings
+        Artifacts listed to be removed by user when defining artifacts
+        kwarg which were not found in time series time range.
 
     References
     ----------

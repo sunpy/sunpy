@@ -9,7 +9,6 @@ from astropy.time import TimeDelta
 
 from sunpy.coordinates import Heliocentric, HeliographicStonyhurst, Helioprojective
 from sunpy.map import (
-    all_coordinates_from_map,
     contains_full_disk,
     coordinate_is_on_solar_disk,
     is_all_off_disk,

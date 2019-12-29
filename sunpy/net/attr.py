@@ -96,7 +96,7 @@ class AttrMeta(type):
 
     def __dir__(self):
         """
-        To tab complete in Python we need to add to the `__dir__()` return.
+        To tab complete in Python we need to add to the `__dir__` return.
 
         So we add all the registered values for this subclass of Attr to
         the output.

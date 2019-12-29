@@ -42,7 +42,7 @@ class MapMetaValidationError(AttributeError):
 
 
 class GenericMap(NDData):
-    """
+    r"""
     A Generic spatially-aware 2D data array.
 
     Parameters
@@ -53,10 +53,7 @@ class GenericMap(NDData):
         A dictionary of the original image header tags.
     plot_settings : dict, optional
         Plot settings.
-
-    Other Parameters
-    ----------------
-    **kwargs :
+    \\*\\*kwargs : `dict`
         Additional keyword arguments are passed to `~astropy.nddata.NDData`
         init.
 
@@ -1073,10 +1070,10 @@ class GenericMap(NDData):
             Linear transformation rotation matrix.
         order : int 0-5
             Interpolation order to be used. When using scikit-image this
-            parameter is passed into :func:`skimage.transform.warp` (e.g., 4
+            parameter is passed into `skimage.transform.warp` (e.g., 4
             corresponds to bi-quartic interpolation).
             When using scipy it is passed into
-            :func:`scipy.ndimage.interpolation.affine_transform` where it
+            `scipy.ndimage.interpolation.affine_transform` where it
             controls the order of the spline. Faster performance may be
             obtained at the cost of accuracy by using lower values.
             Default: 4
@@ -1090,8 +1087,8 @@ class GenericMap(NDData):
             Default: 0.0
         use_scipy : bool
             If True, forces the rotation to use
-            :func:`scipy.ndimage.interpolation.affine_transform`, otherwise it
-            uses the :func:`skimage.transform.warp`.
+            `scipy.ndimage.interpolation.affine_transform`, otherwise it
+            uses the `skimage.transform.warp`.
             Default: False, unless scikit-image can't be imported
 
         Returns
@@ -1110,7 +1107,7 @@ class GenericMap(NDData):
         This function will remove old CROTA keywords from the header.
         This function will also convert a CDi_j matrix to a PCi_j matrix.
 
-        See :func:`sunpy.image.transform.affine_transform` for details on the
+        See `sunpy.image.transform.affine_transform` for details on the
         transformations, situations when the underlying data is modified prior
         to rotation, and differences from IDL's rot().
         """
@@ -1682,7 +1679,7 @@ class GenericMap(NDData):
     @peek_show
     def peek(self, draw_limb=False, draw_grid=False,
              colorbar=True, **matplot_args):
-        """
+        r"""
         Displays a graphical overview of the data in this object for user
         evaluation. For the creation of plots, users should instead use the
         `~sunpy.map.GenericMap.plot` method and Matplotlib's pyplot framework.
@@ -1691,14 +1688,13 @@ class GenericMap(NDData):
         ----------
         draw_limb : bool
             Whether the solar limb should be plotted.
-
         draw_grid : bool or `~astropy.units.Quantity`
             Whether solar meridians and parallels are plotted.
             If `~astropy.units.Quantity` then sets degree difference between
             parallels and meridians.
         colorbar : bool
             Whether to display a colorbar next to the plot.
-        **matplot_args : dict
+        \\*\\*matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting.
         """
@@ -1730,7 +1726,7 @@ class GenericMap(NDData):
     @u.quantity_input
     def plot(self, annotate=True, axes=None, title=True,
              clip_interval: u.percent = None, **imshow_kwargs):
-        """
+        r"""
         Plots the map object using matplotlib, in a method equivalent to
         plt.imshow() using nearest neighbour interpolation.
 
@@ -1751,7 +1747,7 @@ class GenericMap(NDData):
             If provided, the data will be clipped to the percentile interval bounded by the two
             numbers.
 
-        **imshow_kwargs  : `dict`
+        \\*\\*imshow_kwargs  : `dict`
             Any additional imshow arguments that should be used
             when plotting.
 

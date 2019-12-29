@@ -1,6 +1,5 @@
 import astropy.units as u
 
-import sunpy
 from sunpy import config
 from sunpy.data._sample import download_sample_data
 from sunpy.data.data_manager.cache import Cache

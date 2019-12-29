@@ -76,7 +76,7 @@ Testing SunPy
 .. warning::
     The tests will fail if you do not install all the optional dependencies.
 
-The easiest way to test your installed version of SunPy is running correctly is to use the :func:`sunpy.self_test()` function::
+The easiest way to test your installed version of SunPy is running correctly is to use the `sunpy.self_test()` function::
 
     import sunpy
     sunpy.self_test()

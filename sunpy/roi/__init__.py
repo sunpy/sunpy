@@ -1,2 +1,2 @@
-from sunpy.roi.chaincode import *
-from sunpy.roi.roi import *
+from sunpy.roi.chaincode import *  # NOQA
+from sunpy.roi.roi import *  # NOQA

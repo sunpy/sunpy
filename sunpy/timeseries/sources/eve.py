@@ -191,7 +191,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             The column to display. Defaults to ``None``, so it will display all.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to
-            :meth:`pandas.DataFrame.plot`.
+            `pandas.DataFrame.plot`.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()

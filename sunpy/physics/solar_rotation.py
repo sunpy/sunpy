@@ -14,7 +14,7 @@ __all__ = ['calculate_solar_rotate_shift', 'mapsequence_solar_derotate']
 
 
 def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
-    """
+    r"""
     Calculate the shift that must be applied to each map contained in a
     mapsequence in order to compensate for solar rotation.
 
@@ -39,9 +39,10 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     layer_index : int
         The index layer.  Shifts are calculated relative to the time of
         this layer.
-    ``**kwargs``
+    \\*\\*kwargs: `dict`
         These keywords are passed to the function
         `sunpy.physics.differential_rotation.solar_rotate_coordinate`.
+
     Returns
     -------
     x, y : `~astropy.units.Quantity`, ~astropy.units.Quantity`
@@ -81,7 +82,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
 
 
 def mapsequence_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
-    """
+    r"""
     Move the layers in a mapsequence according to the input shifts. If an input
     shift is not given, the shifts due to solar rotation relative to an index
     layer is calculated and applied.  When using this functionality, it is a
@@ -95,13 +96,13 @@ def mapsequence_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwarg
     mc : `sunpy.map.MapSequence`
         A mapsequence of shape (ny, nx, nt), where nt is the number of layers in
         the mapsequence.
-    layer_index : int
+    layer_index : `int`
         Solar derotation shifts of all maps in the mapsequence are assumed
         to be relative to the layer in the mapsequence indexed by layer_index.
-    clip : bool
+    clip : `bool`
         If True, then clip off x, y edges in the datasequence that are potentially
         affected by edges effects.
-    ``**kwargs``
+    \\*\\*kwargs : `dict`
         These keywords are passed to the function
         `sunpy.physics.solar_rotation.calculate_solar_rotate_shift`.
 

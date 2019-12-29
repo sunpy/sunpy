@@ -18,10 +18,10 @@ below (see `astropy.coordinates.builtin_frames`).
 
 """
 
-from . import sun, transformations
-from .ephemeris import *
-from .frames import *
-from .offset_frame import *
-from .wcs_utils import *
+from . import sun, transformations  # NOQA
+from .ephemeris import *  # NOQA
+from .frames import *  # NOQA
+from .offset_frame import *  # NOQA
+from .wcs_utils import *  # NOQA
 
 __doc__ += transformations._make_sunpy_graph()

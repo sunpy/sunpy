@@ -1,1 +1,1 @@
-from sunpy.visualization.visualization import *
+from sunpy.visualization.visualization import *  # NOQA

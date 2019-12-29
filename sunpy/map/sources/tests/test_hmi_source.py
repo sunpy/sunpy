@@ -11,7 +11,6 @@ import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.sdo import HMIMap
 
-
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "resampled_hmi.fits"))
 hmi = Map(fitspath)

@@ -1,5 +1,5 @@
 from sunpy.timeseries.metadata import TimeSeriesMetaData
-from sunpy.timeseries.sources import *
+from sunpy.timeseries.sources import *  # NOQA
 from sunpy.timeseries.timeseries_factory import TimeSeries
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 

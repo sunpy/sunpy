@@ -146,7 +146,7 @@ def dict_keys_same(list_of_dicts):
           A list containing each dictonary to parse.
 
     Returns
-    ------
+    -------
     `list`
         The list with each dict updated.
 

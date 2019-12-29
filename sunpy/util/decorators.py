@@ -17,7 +17,7 @@ def deprecated(since, message='', name='', alternative=''):
     Used to mark a function or class as deprecated.
 
     Parameters
-    ------------
+    ----------
     since : `str`
         The release at which this API became deprecated.  This is
         required.
@@ -187,7 +187,7 @@ def deprecated(since, message='', name='', alternative=''):
 
 
 class add_common_docstring:
-    """
+    r"""
     A function decorator that will append and/or prepend an addendum to the
     docstring of the target function.
 
@@ -195,11 +195,9 @@ class add_common_docstring:
     ----------
     append : `str`, optional
         A string to append to the end of the functions docstring.
-
     prepend : `str`, optional
         A string to prepend to the start of the functions docstring.
-
-    **kwargs : `dict`, optional
+    \\*\\*kwargs : `dict`, optional
         A dictionary to format append and prepend strings.
     """
 

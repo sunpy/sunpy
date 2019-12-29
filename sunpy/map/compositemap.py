@@ -17,41 +17,12 @@ class CompositeMap:
     """
     CompositeMap(map1 [,map2,..])
 
-    A Composite Map class
+    A Composite Map class.
 
     Parameters
     ----------
-    args : [`~sunpy.map.Map` | string]
-        One or more map of filepaths
-
-    Methods
-    -------
-    add_map(map, zorder=None, alpha=1, levels=False)
-        Adds a map to the CompositeMap
-    remove_map(index)
-        Removes and returns the map with the given index.
-    list_maps()
-        Prints a list of the currently included maps.
-    get_alpha(index=None)
-        Returns the alpha-channel value for a layer in the composite image
-    get_levels(index=None)
-        Returns the list of contour levels for a map within the CompositeMap.
-    get_plot_settings(index=None)
-        Returns the plot settings for a map within the CompositeMap.
-    get_zorder(index=None)
-        Returns the layering preference (z-order) for a map within the composite.
-    set_alpha(index, alpha)
-        Sets the alpha-channel value for a layer in the CompositeMap.
-    set_levels(index, levels, percent=False)
-        Sets the contour levels for a layer in the CompositeMap.
-    set_plot_settings(index, plot_setiings)
-        Set the plot settings for a map with the CompositeMap.
-    set_zorder(index, zorder)
-        Set the layering preference (z-order) for a map within the CompositeMap.
-    plot(figure=None, overlays=None, draw_limb=False,
-    draw_grid=False, colorbar=True, basic_plot=False,title="SunPy Plot",
-    matplot_args)
-        Plots the composite map object using matplotlib
+    args : {`~sunpy.map.Map` | string}
+        One or more map of filepaths.
 
     Examples
     --------
@@ -377,7 +348,7 @@ class CompositeMap:
         return ax
 
     def plot(self, axes=None, annotate=True, title="SunPy Composite Plot", **matplot_args):
-        """
+        r"""
         Plots the composite map object using matplotlib.
 
         Parameters
@@ -394,7 +365,7 @@ class CompositeMap:
         title : `str`
             Title of the composite map.
 
-        **matplot_args : `dict`
+        \\*\\*matplot_args : `dict`
             Matplotlib Any additional imshow arguments that should be used
             when plotting.
 
@@ -464,7 +435,7 @@ class CompositeMap:
     @peek_show
     def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
              draw_grid=False, **matplot_args):
-        """
+        r"""
         Displays a graphical overview of the data in this object for user
         evaluation. For the creation of plots, users should instead use the
         `~sunpy.map.CompositeMap.plot` method and Matplotlib's pyplot
@@ -486,7 +457,7 @@ class CompositeMap:
         draw_grid :  `bool`
             If true, draws a grid over the surface of the Sun.
 
-        **matplot_args : dict
+        \\*\\*matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting.
         """

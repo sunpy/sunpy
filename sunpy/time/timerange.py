@@ -406,7 +406,7 @@ class TimeRange:
         """
         Checks whether the given time lies within this range. Both limits are
         inclusive (i.e., ``__contains__(t1)`` and ``__contains__(t2)`` always
-        return `True).that.
+        return `True`).that.
 
         Parameters
         ----------

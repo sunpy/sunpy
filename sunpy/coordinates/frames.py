@@ -379,6 +379,7 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     Parameters
     ----------
     {data}
+
     Tx : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
         The theta_x coordinate for this object. Not needed if ``data`` is given.
     Ty : `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
@@ -386,11 +387,14 @@ class Helioprojective(SunPyBaseCoordinateFrame):
     distance : `~astropy.units.Quantity`
         The distance coordinate from the observer for this object.
         Not needed if ``data`` is given.
+
     {observer}
+
     rsun : `~astropy.units.Quantity`
         The physical (length) radius of the Sun. Used to calculate the position
         of the limb for calculating distance from the observer to the
         coordinate. Defaults to the solar radius.
+
     {common}
 
     Examples

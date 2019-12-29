@@ -2,6 +2,8 @@ import os
 
 from astropy.tests.runner import TestRunner, keyword
 
+# flake8: NOQA
+
 
 class SunPyTestRunner(TestRunner):
     """

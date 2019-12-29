@@ -189,7 +189,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
     """
     DatabaseEntry()
 
-    The class :class:`DatabaseEntry` represents the main table of the database
+    The class `DatabaseEntry` represents the main table of the database
     and each instance represents one record that *can* be saved in the
     database.
 
@@ -266,8 +266,8 @@ class DatabaseEntry(DatabaseEntryType, Base):
     @classmethod
     def _from_query_result_block(cls, qr_block, default_waveunit=None):
         """
-        Make a new :class:`DatabaseEntry` instance from a VSO query result
-        block. The values of :attr:`wavemin` and :attr:`wavemax` are converted
+        Make a new `DatabaseEntry` instance from a VSO query result
+        block. The values of `wavemin` and `wavemax` are converted
         to nm (nanometres).
 
         Parameters
@@ -353,7 +353,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
     @classmethod
     def _from_fido_search_result_block(cls, sr_block, default_waveunit=None):
         """
-        Make a new :class:`DatabaseEntry` instance from a Fido search result
+        Make a new `DatabaseEntry` instance from a Fido search result
         block.
 
         Parameters
@@ -451,12 +451,12 @@ class DatabaseEntry(DatabaseEntryType, Base):
 
     def _compare_attributes(self, other, attribute_list):
         """
-        Compare a given list of attributes of two :class:`DatabaseEntry`
+        Compare a given list of attributes of two `DatabaseEntry`
         instances and return True if all of them match.
 
         Parameters
         ----------
-        other : :class:`DatabaseEntry` instance
+        other : `DatabaseEntry` instance
 
         attribute_list : `list`
             The list of attributes that will be compared in both instances,
@@ -493,9 +493,9 @@ class DatabaseEntry(DatabaseEntryType, Base):
 
 def entries_from_query_result(qr, default_waveunit=None):
     """
-    Use a query response returned from :meth:`sunpy.net.vso.VSOClient.search`
-    or :meth:`sunpy.net.vso.VSOClient.query_legacy` to generate instances of
-    :class:`DatabaseEntry`. Return an iterator over those instances.
+    Use a query response returned from `sunpy.net.vso.VSOClient.search`
+    or `sunpy.net.vso.VSOClient.query_legacy` to generate instances of
+    `DatabaseEntry`. Return an iterator over those instances.
 
     Parameters
     ----------
@@ -503,7 +503,7 @@ def entries_from_query_result(qr, default_waveunit=None):
         The query response from which to build the database entries.
 
     default_waveunit : `str`, optional
-        See :meth:`sunpy.database.DatabaseEntry.from_query_result_block`.
+        See `sunpy.database.DatabaseEntry.from_query_result_block`.
 
     Examples
     --------
@@ -541,8 +541,8 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     """
     Use a `sunpy.net.dataretriever.fido_factory.UnifiedResponse`
     object returned from
-    :meth:`sunpy.net.dataretriever.fido_factory.UnifiedDownloaderFactory.search`
-    to generate instances of :class:`DatabaseEntry`. Return an iterator
+    `sunpy.net.dataretriever.fido_factory.UnifiedDownloaderFactory.search`
+    to generate instances of `DatabaseEntry`. Return an iterator
     over those instances.
 
     Parameters
@@ -550,7 +550,7 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     search_result : `sunpy.net.dataretriever.fido_factory.UnifiedResponse`
             A UnifiedResponse object that is used to store responses from the
             unified downloader. This is returned by the ``search`` method of a
-            :class:`sunpy.net.dataretriever.fido_factory.UnifiedDownloaderFactory`
+            `sunpy.net.dataretriever.fido_factory.UnifiedDownloaderFactory`
             object.
 
     default_waveunit : `str`, optional
@@ -598,7 +598,7 @@ def entries_from_file(file, default_waveunit=None,
     # Note: time_string_parse_format='' so that None won't be passed to Time.strptime
     # (which would make strptime freak out, if I remember correctly).
     """Use the headers of a FITS file to generate an iterator of
-    :class:`sunpy.database.tables.DatabaseEntry` instances. Gathered
+    `sunpy.database.tables.DatabaseEntry` instances. Gathered
     information will be saved in the attribute `fits_header_entries`. If the
     key INSTRUME, WAVELNTH or DATE-OBS / DATE_OBS is available, the attribute
     `instrument`, `wavemin` and `wavemax` or `observation_time_start` is set,
@@ -719,7 +719,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
                      default_waveunit=None, time_string_parse_format=None):
     """
     Search the given directory for FITS files and use the corresponding FITS
-    headers to generate instances of :class:`DatabaseEntry`. FITS files are
+    headers to generate instances of `DatabaseEntry`. FITS files are
     detected by reading the content of each file, the `pattern` argument may be
     used to avoid reading entire directories if one knows that all FITS files
     have the same filename extension.
@@ -738,12 +738,12 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     pattern : string, optional
         The pattern can be used to filter the list of filenames before the
         files are attempted to be read. The default is to collect all files.
-        This value is passed to the function :func:`fnmatch.filter`, see its
+        This value is passed to the function `fnmatch.filter`, see its
         documentation for more information on the supported syntax.
 
     default_waveunit : str, optional
         See
-        :meth:`sunpy.database.tables.DatabaseEntry.add_fits_header_entries_from_file`.
+        `sunpy.database.tables.DatabaseEntry.add_fits_header_entries_from_file`.
 
     time_string_parse_format : str, optional
         Fallback timestamp format which will be passed to
@@ -754,7 +754,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     -------
     generator of (DatabaseEntry, str) pairs
         A generator where each item is a tuple consisting of a
-        :class:`DatabaseEntry` instance and the absolute path to the filename
+        `DatabaseEntry` instance and the absolute path to the filename
         which was used to make the database entry.
 
     Examples
@@ -793,12 +793,12 @@ def _create_display_table(database_entries, columns=None, sort=False):
 
     Parameters
     ----------
-    database_entries : iterable of :class:`DatabaseEntry` instances
+    database_entries : iterable of `DatabaseEntry` instances
         The database entries will be the rows in the resulting table.
 
     columns : iterable of str
         The columns that will be displayed in the resulting table. Possible
-        values for the strings are all attributes of :class:`DatabaseEntry`.
+        values for the strings are all attributes of `DatabaseEntry`.
 
     sort : bool (optional)
         If True, sorts the entries before displaying them.
@@ -854,12 +854,12 @@ def display_entries(database_entries, columns=None, sort=False):
 
     Parameters
     ----------
-    database_entries : iterable of :class:`DatabaseEntry` instances
+    database_entries : iterable of `DatabaseEntry` instances
         The database entries will be the rows in the resulting table.
 
     columns : iterable of str
         The columns that will be displayed in the resulting table. Possible
-        values for the strings are all attributes of :class:`DatabaseEntry`.
+        values for the strings are all attributes of `DatabaseEntry`.
 
     sort : bool (optional)
         If True, sorts the entries before displaying them.

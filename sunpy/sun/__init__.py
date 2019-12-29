@@ -1,1 +1,1 @@
-from sunpy.sun._constants import *
+from sunpy.sun._constants import *  # NOQA

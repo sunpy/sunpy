@@ -23,7 +23,7 @@
 # be accessible, and the documentation will not build correctly.
 
 # ITS THE WILD WEST IN HERE
-# flake8: noqa
+# flake8: NOQA
 
 import os
 import sys

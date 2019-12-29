@@ -218,7 +218,7 @@ Tests that use test data
 ------------------------
 
 We store test data in "sunpy/data/test" as long as it is less than about 100 kB.
-These data should always be accessed via the :func:`sunpy.data.test.get_test_filepath` and :func:`sunpy.data.test.test_data_filenames` functions.
+These data should always be accessed via the `sunpy.data.test.get_test_filepath` and `sunpy.data.test.test_data_filenames` functions.
 This way you can use them when you create a test.
 
 You can also use our sample data but this will have to be marked as an online test (see above)::

@@ -73,7 +73,7 @@ class LYRATimeSeries(GenericTimeSeries):
             The number of columns to plot. Defaults to 3.
         **kwargs : `dict`
             Additional plot keyword arguments that are handed to
-            :meth:`pandas.DataFrame.plot`.
+            `pandas.DataFrame.plot`.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()

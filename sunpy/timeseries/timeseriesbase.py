@@ -401,7 +401,7 @@ class GenericTimeSeries:
 # #### Plotting Methods #### #
 
     def plot(self, axes=None, **plot_args):
-        """
+        r"""
         Plot a plot of the `~sunpy.timeseries.TimeSeries`.
 
         Parameters
@@ -409,9 +409,9 @@ class GenericTimeSeries:
         axes : `~matplotlib.axes.Axes`, optional
             If provided the image will be plotted on the given axes.
             Defaults to `None`, so the current axes will be used.
-        **plot_args : `dict`, optional
+        \\*\\*plot_args : `dict`, optional
             Additional plot keyword arguments that are handed to
-            :meth:`pandas.DataFrame.plot`.
+            `pandas.DataFrame.plot`.
 
         Returns
         -------
@@ -429,7 +429,7 @@ class GenericTimeSeries:
 
     @peek_show
     def peek(self, **kwargs):
-        """
+        r"""
         Displays a graphical overview of the data in this object for user
         evaluation. For the creation of plots, users should instead use the
         `~sunpy.timeseries.GenericTimeSeries.plot` method and Matplotlib's
@@ -437,7 +437,7 @@ class GenericTimeSeries:
 
         Parameters
         ----------
-        **kwargs : `dict`
+        \\*\\*kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
         """
         import matplotlib.pyplot as plt

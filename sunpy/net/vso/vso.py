@@ -368,9 +368,9 @@ class VSOClient(BaseClient):
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list)
+        out : :py`QueryResult` (enhanced list)
             Matched items. Return value is of same type as the one of
-            :py:meth:`VSOClient.search`.
+            :py`VSOClient.search`.
         """
         query = and_(*query)
         QueryRequest = self.api.get_type('VSO:QueryRequest')
@@ -530,9 +530,9 @@ class VSOClient(BaseClient):
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list)
+        out : :py`QueryResult` (enhanced list)
             Matched items. Return value is of same type as the one of
-            :py:class:`VSOClient.search`.
+            :py`VSOClient.search`.
         """
         def sdk(key):
             return partial(lambda key, value: {key: value}, key)

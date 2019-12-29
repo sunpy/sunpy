@@ -26,7 +26,7 @@ except ImportError:
     from astropy.coordinates import GeocentricTrueEcliptic as GeocentricMeanEcliptic
 
 
-__all__ = [
+__all__ = [  # NOQA
     "angular_radius", "sky_position", "carrington_rotation_number",
     "carrington_rotation_time",
     "true_longitude", "apparent_longitude", "true_latitude", "apparent_latitude",
@@ -47,7 +47,7 @@ def angular_radius(t='now'):
     t : {parse_time_types}
         Time to use in a parse-time-compatible format
     """
-    solar_semidiameter_rad = constants.radius / earth_distance(t)
+    solar_semidiameter_rad = constants.radius / earth_distance(t)  # NOQA
     return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
 
 
@@ -129,7 +129,7 @@ def carrington_rotation_number(t='now'):
 
     # The fractional rotation number from the above estimate is inaccurate, so calculate the actual
     # fractional rotation number from the longitude of the central meridian (L0)
-    actual_frac = 1 - L0(time).to('deg').value / 360
+    actual_frac = 1 - L0(time).to('deg').value / 360  # NOQA
 
     # Calculate any adjustment to the integer rotation number due to wrapping
     wrap_adjustment = np.around(estimate_frac - actual_frac)
@@ -426,7 +426,7 @@ def print_params(t='now'):
         Time to use in a parse-time-compatible format
     """
     print('Solar Ephemeris for {} UTC\n'.format(parse_time(t).utc))
-    print('Distance = {}'.format(earth_distance(t)))
+    print('Distance = {}'.format(earth_distance(t)))  # NOQA
     print('Semidiameter = {}'.format(angular_radius(t)))
     print('True (long, lat) = ({}, {})'.format(true_longitude(t).to_string(),
                                                true_latitude(t).to_string()))
@@ -436,9 +436,9 @@ def print_params(t='now'):
                                              true_declination(t).to_string()))
     print('Apparent (RA, Dec) = ({}, {})'.format(apparent_rightascension(t).to_string(),
                                                  apparent_declination(t).to_string()))
-    print('Heliographic long. and lat of disk center = ({}, {})'.format(L0(t).to_string(),
-                                                                        B0(t).to_string()))
-    print('Position angle of north pole = {}'.format(P(t)))
+    print('Heliographic long. and lat of disk center = ({}, {})'.format(L0(t).to_string(),  # NOQA
+                                                                        B0(t).to_string()))  # NOQA
+    print('Position angle of north pole = {}'.format(P(t)))  # NOQA
     print('Carrington rotation number = {}'.format(carrington_rotation_number(t)))
 
 

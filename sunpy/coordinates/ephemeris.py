@@ -33,7 +33,7 @@ except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
 
-__all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
+__all__ = ['get_body_heliographic_stonyhurst', 'get_earth',  # NOQA
            'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
            'get_sun_orientation', 'get_horizons_coord']
 

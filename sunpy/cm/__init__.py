@@ -1,9 +1,9 @@
 """
 isort:skip_file.
 """
-from sunpy.visualization.colormaps.cm import *
-from sunpy.visualization.colormaps import cm
-from sunpy.visualization.colormaps import color_tables
+from sunpy.visualization.colormaps.cm import *  # NOQA
+from sunpy.visualization.colormaps import cm  # NOQA
+from sunpy.visualization.colormaps import color_tables  # NOQA
 import sunpy.visualization.colormaps
 import sys as _sys
 
@@ -28,4 +28,4 @@ _sys.modules['sunpy.cm.color_tables'] = sunpy.visualization.colormaps.color_tabl
 # Import the two original functions in this namespace and use __all__ to keep
 # import * behaviour the same.
 
-__all__ = ['show_colormaps', 'cmlist']
+__all__ = ['show_colormaps', 'cmlist']  # NOQA

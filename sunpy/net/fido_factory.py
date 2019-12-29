@@ -19,11 +19,7 @@ from sunpy.net.base_client import BaseClient
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.vso import VSOClient
-from sunpy.util.datatype_factory_base import (
-    BasicRegistrationFactory,
-    MultipleMatchError,
-    NoMatchError,
-)
+from sunpy.util.datatype_factory_base import BasicRegistrationFactory, MultipleMatchError, NoMatchError
 
 __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
 
@@ -245,7 +241,7 @@ def _create_or(walker, query, factory):
 
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
-    """
+    r"""
     sunpy.net.Fido(\\*args, \\*\\*kwargs)
 
     Search and Download data from a variety of supported sources.

@@ -156,13 +156,13 @@ def _create(wlk, root, session):
 
 
 @walker.add_creator(AttrAnd)
-def _create(wlk, root, session):
+def _create(wlk, root, session):  # NOQA
     entries = [set(wlk.create(attr, session)) for attr in root.attrs]
     return list(set.intersection(*entries))
 
 
 @walker.add_creator(ValueAttr)
-def _create(wlk, root, session):
+def _create(wlk, root, session):  # NOQA
     query = session.query(DatabaseEntry)
     for key, value in root.attrs.items():
         typ = key[0]
@@ -227,38 +227,38 @@ def _convert(attr):
 
 
 @walker.add_converter(Starred)
-def _convert(attr):
+def _convert(attr):  # NOQA
     return ValueAttr({('starred', ): attr.value})
 
 
 @walker.add_converter(Path)
-def _convert(attr):
+def _convert(attr):  # NOQA
     return ValueAttr({('path', ): (attr.value, attr.inverted)})
 
 
 @walker.add_converter(DownloadTime)
-def _convert(attr):
+def _convert(attr):  # NOQA
     return ValueAttr({
         ('download time', ): (attr.start, attr.end, attr.inverted)})
 
 
 @walker.add_converter(FitsHeaderEntry)
-def _convert(attr):
+def _convert(attr):  # NOQA
     return ValueAttr(
         {('fitsheaderentry', ): (attr.key, attr.value, attr.inverted)})
 
 
 @walker.add_converter(SimpleAttr)
-def _convert(attr):
+def _convert(attr):  # NOQA
     return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})
 
 
 @walker.add_converter(vso_attrs.Wavelength)
-def _convert(attr):
+def _convert(attr):  # NOQA
     return ValueAttr({('wave', ): (attr.min.value, attr.max.value, str(attr.unit))})
 
 
 @walker.add_converter(vso_attrs.Time)
-def _convert(attr):
+def _convert(attr):  # NOQA
     near = None if not attr.near else attr.near.datetime
     return ValueAttr({('time', ): (attr.start.datetime, attr.end.datetime, near)})
