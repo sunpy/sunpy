@@ -422,8 +422,8 @@ class CompositeMap:
             params = {
                 "origin": "lower",
                 "extent": x_range + y_range,
-                "cmap": m.plot_settings['cmap'],
-                "norm": m.plot_settings['norm'],
+                "cmap": m.cmap,
+                "norm": m.norm,
                 "alpha": m.alpha,
                 "zorder": m.zorder,
             }

@@ -56,7 +56,7 @@ class GenericMap(NDData):
         A dictionary of the original image header tags.
     cmap : `matplotlib.colors.Colormap`, str
         Colormap of the map image. Defaults to 'grey'
-    norm : 'matplotlib.colors.Normalise`
+    norm : 'matplotlib.colors.Normalize`
         Normalization function used. Defaults to None
     Other Parameters
     ----------------
@@ -197,25 +197,9 @@ class GenericMap(NDData):
         self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
 
         # Visualization attributes
-        if plot_settings:
-            warnings.warn("Handling of plot_settings is deprecated. "
-                          "Pass the plot specific settings to either peek() or show()",
-                          DeprecationWarning)
-            self.plot_settings.update(plot_settings)
-        else:
-            self.plot_settings = None
-
-        self._cmap = cmap
-
-        if norm is None:
-            if self.dtype == np.uint8:
-                self._norm = None
-            else:
-                # Put import here to reduce sunpy.map import time
-                from matplotlib import colors
-                self._norm = colors.Normalize()
-        else:
-            self._norm = norm
+        self.plot_settings = plot_settings
+        self.cmap = cmap
+        self.norm = norm
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -255,7 +239,7 @@ class GenericMap(NDData):
     def _new_instance(cls, data, meta, **kwargs):
         """
         Instantiate a new instance of this class using given data.
-        This is a shortcut for ``type(self)(data, meta, cmap, norm)``.
+        This is a shortcut for ``type(self)(data, meta)``.
         """
         return cls(data, meta, **kwargs)
 
@@ -570,7 +554,7 @@ class GenericMap(NDData):
                                self.spatial_units[1] + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
-        new_map = self._new_instance(self.data, new_meta)
+        new_map = self._new_instance(self.data, new_meta, norm=self.norm, cmap=self.cmap)
 
         new_map._shift = SpatialPair(self.shifted_value[0] + axis1,
                                      self.shifted_value[1] + axis2)
@@ -1007,7 +991,7 @@ class GenericMap(NDData):
         new_meta['crval2'] = lat.value
 
         # Create new map instance
-        new_map = self._new_instance(new_data, new_meta)
+        new_map = self._new_instance(new_data, new_meta, norm=self.norm, cmap=self.cmap)
         return new_map
 
     @u.quantity_input
@@ -1122,7 +1106,7 @@ class GenericMap(NDData):
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
 
         # Create a temporary map so we can use it for the data to pixel calculation.
-        temp_map = self._new_instance(new_data, new_meta)
+        temp_map = self._new_instance(new_data, new_meta, norm=self.norm, cmap=self.cmap)
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
         pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate,
@@ -1191,7 +1175,7 @@ class GenericMap(NDData):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta)
+        new_map = self._new_instance(new_data, new_meta, norm=self.norm, cmap=self.cmap)
 
         return new_map
 
@@ -1350,10 +1334,11 @@ class GenericMap(NDData):
         if self.mask is not None:
             new_mask = self.mask[yslice, xslice].copy()
             # Create new map with the modification
-            new_map = self._new_instance(new_data, new_meta, mask=new_mask)
+            new_map = self._new_instance(new_data, new_meta, mask=new_mask,
+                                         norm=self.norm, cmap=self.cmap)
             return new_map
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta)
+        new_map = self._new_instance(new_data, new_meta, norm=self.norm, cmap=self.cmap)
         return new_map
 
     @u.quantity_input
@@ -1441,7 +1426,8 @@ class GenericMap(NDData):
             new_mask = None
 
         # Create new map with the modified data
-        new_map = self._new_instance(new_data, new_meta, mask=new_mask)
+        new_map = self._new_instance(new_data, new_meta, mask=new_mask,
+                                     norm=self.norm, cmap=self.cmap)
         return new_map
 
 # #### Visualization #### #
@@ -1451,13 +1437,7 @@ class GenericMap(NDData):
         """
         Return the `matplotlib.colors.Colormap` instance this map uses.
         """
-        cmap = self._cmap
-        if isinstance(cmap, str):
-            cmap = plt.get_cmap(cmap)
-            # Set the colormap to be this specific instance so we are not
-            # returning a copy
-            self._cmap = cmap
-        return cmap
+        return self._cmap
 
     @cmap.setter
     def cmap(self, n):
@@ -1472,7 +1452,33 @@ class GenericMap(NDData):
 
     @norm.setter
     def norm(self, n):
-        self._norm = n
+        if n is None:
+            if self.dtype == np.uint8:
+                self._norm = None
+            else:
+                # Put import here to reduce sunpy.map import time
+                from matplotlib import colors
+                self._norm = colors.Normalize()
+        else:
+            self._norm = n
+
+    @property
+    def plot_settings(self):
+        return self._plot_settings
+
+    @plot_settings.setter
+    def plot_settings(self, plot_settings):
+        self._plot_settings = plot_settings
+
+        if plot_settings is not None:
+            warnings.warn("Handling of plot_settings is deprecated. "
+                          "Pass the plot specific settings to either peek() or show()",
+                          DeprecationWarning)
+
+            if 'norm' in plot_settings:
+                self.norm = plot_settings['norm']
+            if 'cmap' in plot_settings:
+                self.cmap = plot_settings['cmap']
 
     @u.quantity_input
     def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True, **kwargs):
@@ -1658,7 +1664,7 @@ class GenericMap(NDData):
 
     @peek_show
     def peek(self, draw_limb=False, draw_grid=False,
-             colorbar=True, plot_settings=None, **matplot_args):
+             colorbar=True, **matplot_args):
         """
         Displays a graphical overview of the data in this object for user evaluation.
         For the creation of plots, users should instead use the `~sunpy.map.GenericMap.plot`
@@ -1675,8 +1681,6 @@ class GenericMap(NDData):
             parallels and meridians.
         colorbar : bool
             Whether to display a colorbar next to the plot.
-        plot_settings : dict, optional
-            Plot settings.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting.
@@ -1684,7 +1688,7 @@ class GenericMap(NDData):
         figure = plt.figure()
         axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        im = self.plot(axes=axes, plot_settings=plot_settings, **matplot_args)
+        im = self.plot(axes=axes, **matplot_args)
 
         if colorbar:
             if draw_grid:
@@ -1708,7 +1712,7 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def plot(self, annotate=True, axes=None, title=True,
-             clip_interval: u.percent = None, plot_settings=None, **imshow_kwargs):
+             clip_interval: u.percent = None, **imshow_kwargs):
         """
         Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
@@ -1729,9 +1733,6 @@ class GenericMap(NDData):
         clip_interval : two-element `~astropy.units.Quantity`, optional
             If provided, the data will be clipped to the percentile interval bounded by the two
             numbers.
-
-        plot_settings : dict, optional
-            Plot settings.
 
         **imshow_kwargs  : `dict`
             Any additional imshow arguments that should be used
@@ -1764,12 +1765,13 @@ class GenericMap(NDData):
                               SunpyUserWarning)
 
         # Normal plot
-        if self.plot_settings is None:
-            self.plot_settings = {'interpolation': 'nearest', 'origin': 'lower'}
-        if plot_settings:
-            self.plot_settings.update(plot_settings)
+        imshow_args = {
+                        'cmap': self.cmap,
+                        'norm': self.norm,
+                        'interpolation': 'nearest',
+                        'origin': 'lower',
+                      }
 
-        imshow_args = copy.deepcopy(self.plot_settings)
         if 'title' in imshow_args:
             plot_settings_title = imshow_args.pop('title')
         else:
