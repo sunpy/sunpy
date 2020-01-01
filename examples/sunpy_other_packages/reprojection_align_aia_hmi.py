@@ -46,8 +46,8 @@ files = Fido.fetch(res[:, 0])
 
 map_aia, map_hmi = [m.resample((1024, 1024)*u.pix) for m in sunpy.map.Map(sorted(files))]
 # Why do we have to do this?
-map_hmi.cmap = "hmimag"
-map_hmi.norm = plt.Normalize(-2000, 2000)
+map_hmi.plot_settings['cmap'] = "hmimag"
+map_hmi.plot_settings['norm'] = plt.Normalize(-2000, 2000)
 
 ######################################################################
 # Plot both images side by side.
@@ -74,8 +74,8 @@ output, footprint = reproject_interp(map_hmi, map_aia.wcs, map_aia.data.shape)
 # Construct an output map and set some nice plotting defaults.
 
 out_hmi = sunpy.map.Map(output, map_aia.wcs)
-out_hmi.cmap = "hmimag"
-out_hmi.norm = plt.Normalize(-1500, 1500)
+out_hmi.plot_settings['cmap'] = "hmimag"
+out_hmi.plot_settings['norm'] = plt.Normalize(-1500, 1500)
 
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)

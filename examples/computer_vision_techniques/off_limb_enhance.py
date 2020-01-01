@@ -72,8 +72,8 @@ scale_factor[r < 1] = 1
 # We set the normalization of the new map to be the same as the original map
 # to compare the two.
 scaled_map = sunpy.map.Map(aia.data * scale_factor, aia.meta)
-scaled_map.norm = ImageNormalize(stretch=aia.norm.stretch,
-                                 vmin=aia.data.min(), vmax=aia.data.max())
+scaled_map.plot_settings['norm'] = ImageNormalize(stretch=aia.plot_settings['norm'].stretch,
+                                                  vmin=aia.data.min(), vmax=aia.data.max())
 
 ###############################################################################
 # Let's plot the results

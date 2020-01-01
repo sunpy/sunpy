@@ -197,9 +197,25 @@ class GenericMap(NDData):
         self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
 
         # Visualization attributes
+
+        # For first time, manually set .cmap and .norm attributes (instead of using setters)
+        # This is to ensure cross compatibility among plot_settings, .cmap and .norm
+        if isinstance(cmap, str):
+            self._cmap = plt.get_cmap(cmap)
+        else:
+            self._cmap = cmap
+
+        if norm is None:
+            if self.dtype == np.uint8:
+                self._norm = None
+            else:
+                # Put import here to reduce sunpy.map import time
+                from matplotlib import colors
+                self._norm = colors.Normalize()
+        else:
+            self._norm = norm
+
         self.plot_settings = plot_settings
-        self.cmap = cmap
-        self.norm = norm
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -1445,6 +1461,7 @@ class GenericMap(NDData):
             self._cmap = plt.get_cmap(n)
         else:
             self._cmap = n
+        self.plot_settings['cmap'] = self._cmap
 
     @property
     def norm(self):
@@ -1461,6 +1478,7 @@ class GenericMap(NDData):
                 self._norm = colors.Normalize()
         else:
             self._norm = n
+        self.plot_settings['norm'] = self._norm
 
     @property
     def plot_settings(self):
@@ -1468,8 +1486,6 @@ class GenericMap(NDData):
 
     @plot_settings.setter
     def plot_settings(self, plot_settings):
-        self._plot_settings = plot_settings
-
         if plot_settings is not None:
             warnings.warn("Handling of plot_settings is deprecated. "
                           "Pass the plot specific settings to either peek() or show()",
@@ -1479,6 +1495,11 @@ class GenericMap(NDData):
                 self.norm = plot_settings['norm']
             if 'cmap' in plot_settings:
                 self.cmap = plot_settings['cmap']
+        else:
+            self._plot_settings = {
+                                    'cmap': self.cmap,
+                                    'norm': self.norm,
+                                  }
 
     @u.quantity_input
     def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True, **kwargs):
