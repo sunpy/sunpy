@@ -47,8 +47,8 @@ syn_map.meta['CDELT1'] *= -1
 
 ###############################################################################
 # Let's also fix the plot settings
-syn_map.plot_settings['cmap'] = 'hmimag'
-syn_map.plot_settings['norm'] = plt.Normalize(-1500, 1500)
+syn_map.cmap = 'hmimag'
+syn_map.norm = plt.Normalize(-1500, 1500)
 
 ###############################################################################
 # Let's plot the results

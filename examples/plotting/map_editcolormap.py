@@ -21,8 +21,8 @@ aiamap = sunpy.map.Map(AIA_171_IMAGE)
 # How a Map is displayed is determined by its colormap, which sets the colors
 # , and the normalization, which sets how data values are translated to colors.
 # Lets replace the colormap and normalization.
-aiamap.plot_settings['cmap'] = plt.get_cmap('Greys_r')
-aiamap.plot_settings['norm'] = colors.LogNorm(100, aiamap.max())
+aiamap.cmap = plt.get_cmap('Greys_r')
+aiamap.norm = colors.LogNorm(100, aiamap.max())
 
 ###############################################################################
 # To see all of the colormaps SunPy provides see `sunpy.visualization.colormaps`.
