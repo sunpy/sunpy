@@ -4,10 +4,9 @@ from sunpy.timeseries.timeseries_factory import TimeSeries
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 
 try:
-    # register pandas datetime converter with matplotlib
-    # This is to work around the change in pandas-dev/pandas#17710
-    import pandas.plotting._converter
-    pandas.plotting._converter.register()
+    # Register pandas datetime converter with matplotlib
+    import pandas.plotting
+    pandas.plotting.register_matplotlib_converters()
 except ImportError:
     pass
 
