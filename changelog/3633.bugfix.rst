@@ -1,0 +1,1 @@
+Fixed pandas plotting registration in `sunpy.timeseries`.
