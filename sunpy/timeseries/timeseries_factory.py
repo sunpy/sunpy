@@ -150,6 +150,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             return True
         elif isinstance(meta, dict):
             return True
+        elif isinstance(meta, sunpy.timeseries.TimeSeriesMetaData):
+            return True
         else:
             return False
 
@@ -287,7 +289,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                                 # to preserve multi-line comments
                                 if isinstance(args[i+1], astropy.io.fits.header.Header):
                                     args[i+1] = MetaDict(sunpy.io.header.FileHeader(args[i+1]))
-                                meta.update(args[i+1])
+                                if isinstance(args[i+1], sunpy.timeseries.TimeSeriesMetaData):
+                                    for j in args[i+1].metas:
+                                        meta.update(j)
+                                else:
+                                    meta.update(args[i+1])
                                 i += 1  # an extra increment to account for the meta
 
                 # Add a 3-tuple for this TimeSeries.
