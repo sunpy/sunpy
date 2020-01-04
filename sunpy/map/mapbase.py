@@ -1525,7 +1525,7 @@ class GenericMap(NDData):
         return [circ]
 
     @u.quantity_input
-    def draw_rectangle(self, bottom_left, top_right = None, width: u.deg = None, height: u.deg = None, axes = None, **kwargs):
+    def draw_rectangle(self, bottom_left, top_right=None, width: u.deg=None, height: u.deg=None, axes=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
 
