@@ -1541,7 +1541,7 @@ class GenericMap(NDData):
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
             The top_right coordinate of the rectangle. Can only be omitted if
             ``bottom_left`` has shape ``(2,)``.
-        
+
         width : `astropy.units.Quantity` # Depreciated
             The width of the rectangle.
 
@@ -1576,21 +1576,21 @@ class GenericMap(NDData):
             axes_unit = self.spatial_units[0]
 
         if width or height:
-            warnings.warn("Use of `width` and `height` is depreciated and these will be removed in future",Warning)
+            warnings.warn("Use of `width` and `height` is depreciated and these will be removed in future", Warning)
 
         else:
             if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
-                                    astropy.coordinates.BaseCoordinateFrame)):
+                          astropy.coordinates.BaseCoordinateFrame)):
                 if not top_right:
                     if bottom_left.shape[0] != 2:
                         raise ValueError("If top_right is not specified bottom_left must have length two.")
                     else:
                         top_right = bottom_left[1]
                         bottom_left = bottom_left[0]
-    
+
             elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
                   isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
-    
+
                 bottom_left = astropy.wcs.utils.pixel_to_skycoord(bottom_left, wcs=self.wcs)
                 top_right = astropy.wcs.utils.pixel_to_skycoord(bottom_left, wcs=self.wcs)
 
@@ -1600,12 +1600,12 @@ class GenericMap(NDData):
             bottom_left = u.Quantity(self._get_lon_lat(bottom_left))
             top_right = u.Quantity(self._get_lon_lat(top_right))
 
-            width = np.abs(top_right[1] - bottom_left[1]) * u.deg # Getting the difference in Longitudes.
-            height = np.abs(top_right[0] - bottom_left[0]) * u.deg # Getting the difference in Latitudes.
+            width = np.abs(top_right[1] - bottom_left[1]) * u.deg  # Getting the difference in Longitudes.
+            height = np.abs(top_right[0] - bottom_left[0]) * u.deg  # Getting the difference in Latitudes.
 
         coord = bottom_left.transform_to(self.coordinate_frame)
         bottom_left = u.Quantity((coord.data.lon, coord.data.lat),
-                                unit=axes_unit).value
+                                  unit=axes_unit).value
 
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
