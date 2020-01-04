@@ -1525,7 +1525,7 @@ class GenericMap(NDData):
         return [circ]
 
     @u.quantity_input
-    def draw_rectangle(self, bottom_left, top_right=None, width: u.deg=None, height: u.deg=None, axes=None, **kwargs):
+    def draw_rectangle(self, bottom_left, top_right = None, width: u.deg = None, height: u.deg = None, axes = None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
 
@@ -1604,8 +1604,7 @@ class GenericMap(NDData):
             height = np.abs(top_right[0] - bottom_left[0]) * u.deg  # Getting the difference in Latitudes.
 
         coord = bottom_left.transform_to(self.coordinate_frame)
-        bottom_left = u.Quantity((coord.data.lon, coord.data.lat),
-                                  unit=axes_unit).value
+        bottom_left = u.Quantity((coord.data.lon, coord.data.lat), unit=axes_unit).value
 
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
