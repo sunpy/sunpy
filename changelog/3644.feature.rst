@@ -1,0 +1,1 @@
+Updates ``draw_rectangle`` API to be consistent with ``submap`` API in ``mapbase.py``.
