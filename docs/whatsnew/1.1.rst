@@ -152,7 +152,10 @@ Initial Support for WISPR Images
 
 Following the first data release from Parker Solar Probe, SunPy 1.1 supports loading WISPR imaging data into a `~sunpy.map.GenericMap`.
 Due to the complex projections in the WISPR data this involved changing the way sunpy converts FITS headers into `astropy.wcs.WCS` objects.
-It is expected that sunpy 2.0 will include more complete support for WISPR and other PSP data. 
+It is expected that sunpy 2.0 will include more complete support for WISPR and other PSP data.
+
+.. image:: 1.1-wispr.png
+   :alt: A plot from SunPy of a WISPR level 3 file.
 
 .. _whatsnew-1.1-importtime:
 
