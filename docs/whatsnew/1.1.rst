@@ -137,7 +137,7 @@ Manager for Versioned Data Files
 
 Support for SUVI Data
 =====================
-
+The Solar Ultraviolet Imager (SUVI) is a EUV instrument imaging the full disk of the Sun in six passbands, and is onboard the latest of the Geostationary Operational Environmental Satellite (GOES) missions.  `~sunpy.map.SUVIMap` provides SunPy map support for SUVI FITS image data.
 
 .. _whatsnew-1.1-WISPR:
 
