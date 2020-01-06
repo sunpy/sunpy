@@ -1,0 +1,81 @@
+.. doctest-skip-all
+
+.. _whatsnew-1.1:
+
+************************
+What's New in SunPy 1.1?
+************************
+
+Overview
+========
+
+The SunPy project is pleased to announce the 1.1 release of the sunpy package.
+
+The headline changes in 1.1 are:
+
+* New coordinate frames (#3212)
+* Remote Data Manager (#3124)
+* SUVI support (#3269 / #3301)
+* Initial support for WISPR data (#3501)
+* Reduce the import time of sunpy.map by ~40%. (#3495)
+
+On this page, you can read about some of the big changes in this release:
+
+* :ref:`whatsnew-1.1-python`
+
+SunPy 1.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
+By the numbers:
+
+* XX commits have been added since 1.0
+* XX issues have been closed since 1.0
+* XX pull requests have been merged since 1.0
+* XX people have contributed since 1.0
+* XX new contributors
+
+.. _whatsnew-1.1-python:
+
+Supported versions of Python
+============================
+
+SunPy 1.1 comes with support for Python versions 3.6, 3.7 and 3.8.
+
+.. _whatsnew-1.1-coordinates:
+
+Improvements to coordinates functionality
+=========================================
+
+.. _whatsnew-1.1-dl_manager:
+
+Manager for Versioned Data Files
+================================
+
+
+.. _whatsnew-1.1-SUVI:
+
+Support for SUVI Data
+=====================
+
+
+.. _whatsnew-1.1-WISPR:
+
+Initial Support for WISPR Images
+================================
+
+.. _whatsnew-1.1-mapimport:
+
+`sunpy.map` imports ~40% faster
+===============================
+
+.. _whatsnew-1.1-renamed-removed:
+
+Notable Breaking Changes or Removed functionality
+=================================================
+
+This is just some of the renamed or removed functionality.
+
+
+Full Change Log
+===============
+
+To see a detailed list of all changes in version v1.1, including changes in API, please see the :ref:`changelog`.
