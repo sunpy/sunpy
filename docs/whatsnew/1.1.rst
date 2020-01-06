@@ -13,7 +13,7 @@ The SunPy project is pleased to announce the 1.1 release of the sunpy package.
 
 The headline changes in 1.1 are:
 
-* New coordinate frames (#3212)
+* The `~sunpy.coordinates` subpackage now supports four additional coordinate frames (HCI, HEE, GSE, and GEI).
 * Remote Data Manager (#3124)
 * SUVI support (#3269 / #3301)
 * Initial support for WISPR data (#3501)
@@ -22,6 +22,7 @@ The headline changes in 1.1 are:
 On this page, you can read about some of the big changes in this release:
 
 * :ref:`whatsnew-1.1-python`
+* :ref:`whatsnew-1.1-coordinates`
 * :ref:`whatsnew-1.1-importtime`
 
 SunPy 1.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
@@ -43,8 +44,88 @@ SunPy 1.1 comes with support for Python versions 3.6, 3.7 and 3.8.
 
 .. _whatsnew-1.1-coordinates:
 
-Improvements to coordinates functionality
-=========================================
+New coordinate frames
+=====================
+
+The `~sunpy.coordinates` subpackage now supports four additional coordinate frames of interest to solar physics:
+
+* `Heliocentric Inertial (HCI) <sunpy.coordinates.frames.HeliocentricInertial>`
+* `Heliocentric Earth Ecliptic (HEE) <sunpy.coordinates.frames.HeliocentricEarthEcliptic>`
+* `Geocentric Solar Ecliptic (GSE) <sunpy.coordinates.frames.GeocentricSolarEcliptic>`
+* `Geocentric Earth Equatorial (GEI) <sunpy.coordinates.frames.GeocentricEarthEquatorial>`
+
+The following transformation graph illustrates how all of these coordinate frames can be transformed to any other frame in `sunpy.coordinates` or `astropy.coordinates`:
+
+.. graphviz::
+
+   digraph {
+        ICRS [label=ICRS]
+        HCRS [label=HCRS]
+        HeliocentricMeanEcliptic [label="Heliocentric Aries Ecliptic (HAE)"]
+        HeliographicStonyhurst [label="Heliographic Stonyhurst (HGS)\nHeliocentric Earth Equatorial (HEEQ)"]
+        HeliocentricEarthEcliptic [label="Heliocentric Earth Ecliptic (HEE)"]
+        GeocentricEarthEquatorial [label="Geocentric Earth Equatorial (GEI)"]
+        HeliographicCarrington [label="Heliographic Carrington (HGC)"]
+        Heliocentric [label="Heliocentric Cartesian (HCC)"]
+        HeliocentricInertial [label="Heliocentric Inertial (HCI)"]
+        Helioprojective [label="Helioprojective Cartesian (HPC)"]
+        GeocentricSolarEcliptic [label="Geocentric Solar Ecliptic (GSE)"]
+        ICRS -> HCRS
+        ICRS -> HeliocentricMeanEcliptic
+        HCRS -> ICRS
+        HCRS -> HeliographicStonyhurst
+        HeliocentricMeanEcliptic -> ICRS
+        HeliocentricMeanEcliptic -> HeliocentricEarthEcliptic
+        HeliocentricMeanEcliptic -> GeocentricEarthEquatorial
+        HeliographicStonyhurst -> HeliographicCarrington
+        HeliographicStonyhurst -> Heliocentric
+        HeliographicStonyhurst -> HCRS
+        HeliographicStonyhurst -> HeliocentricInertial
+        HeliographicCarrington -> HeliographicStonyhurst
+        Heliocentric -> Helioprojective
+        Heliocentric -> HeliographicStonyhurst
+        Helioprojective -> Heliocentric
+        HeliocentricEarthEcliptic -> HeliocentricMeanEcliptic
+        HeliocentricEarthEcliptic -> GeocentricSolarEcliptic
+        GeocentricSolarEcliptic -> HeliocentricEarthEcliptic
+        HeliocentricInertial -> HeliographicStonyhurst
+        GeocentricEarthEquatorial -> HeliocentricMeanEcliptic
+        subgraph cluster_astropy {
+                color=blue
+                fontcolor=blue
+                penwidth=2
+                label=<<b>Frames implemented in Astropy</b>>
+                ICRS
+                HCRS
+                HeliocentricMeanEcliptic
+                astropy [label="Other Astropy frames" shape=box3d style=filled]
+                geocentric [label="Earth-centered frames (including GEO)" shape=box3d style=filled]
+                astropy -> ICRS
+                geocentric -> ICRS
+                ICRS -> astropy
+                ICRS -> geocentric
+        }
+        subgraph cluster_sunpy {
+                color=crimson
+                fontcolor=crimson
+                penwidth=2
+                label=<<b>Frames implemented in SunPy</b>>
+                Helioprojective
+                Heliocentric
+                HeliographicStonyhurst
+                HeliographicCarrington
+                subgraph cluster_sunpy11 {
+                        color=chocolate
+                        fontcolor=chocolate
+                        label=<<b>Requires SunPy 1.1</b>>
+                        HeliocentricInertial
+                        HeliocentricEarthEcliptic
+                        GeocentricSolarEcliptic
+                        GeocentricEarthEquatorial
+                }
+        }
+        newrank=true
+   }
 
 .. _whatsnew-1.1-dl_manager:
 
