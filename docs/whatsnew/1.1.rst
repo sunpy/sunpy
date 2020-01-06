@@ -135,7 +135,13 @@ The following transformation graph illustrates how all of these coordinate frame
 Manager for Versioned Data Files
 ================================
 
-SunPy 1.1 provides a data manager for versioning and caching remote files. Given the URL of a remote file and a SHA256 hash, the `~sunpy.data.manager.require` decorator can be added to functions that require specific data files from remote sources (e.g. computing instrument response functions). If the specified hash does not match that of the remote version, an exception is raised to make the user aware of any changes on the remote server or tampering with local files. Additionally, `~sunpy.data.cache` can be used to avoid re-downloading files that already exist on a user's local machine, thus saving disk space and internet bandwidth.
+SunPy 1.1 provides a data manager for versioning and caching remote files.
+The objective of this is provide a way for data required for functions, such as instrument correction routines, to depend on non-local data in a reliable way.
+While also providing a guarantee that a specific version of the code uses a specific data file, with the ability for users to specify updated files.
+
+This works by providing the URL of a remote file and a SHA256 hash to the `~sunpy.data.manager.require` decorator which can be added to functions that require these specific data files from remote sources (e.g. computing instrument response functions).
+If the specified hash does not match that of the remote version, an exception is raised to make the user aware of any changes on the remote server or corruption of local files.
+Additionally, `~sunpy.data.cache` can be used to avoid re-downloading files that already exist on a user's local machine, thus saving disk space and internet bandwidth.
 
 
 .. _whatsnew-1.1-SUVI:
