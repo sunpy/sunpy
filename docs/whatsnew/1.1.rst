@@ -23,6 +23,9 @@ On this page, you can read about some of the big changes in this release:
 
 * :ref:`whatsnew-1.1-python`
 * :ref:`whatsnew-1.1-coordinates`
+* :ref:`whatsnew-1.1-dl_manager`
+* :ref:`whatsnew-1.1-SUVI`
+* :ref:`whatsnew-1.1-WISPR`
 * :ref:`whatsnew-1.1-importtime`
 
 SunPy 1.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
@@ -131,6 +134,8 @@ The following transformation graph illustrates how all of these coordinate frame
 
 Manager for Versioned Data Files
 ================================
+
+SunPy 1.1 provides a data manager for versioning and caching remote files. Given the URL of a remote file and a SHA256 hash, the `~sunpy.data.manager.require` decorator can be added to functions that require specific data files from remote sources (e.g. computing instrument response functions). If the specified hash does not match that of the remote version, an exception is raised to make the user aware of any changes on the remote server or tampering with local files. Additionally, `~sunpy.data.cache` can be used to avoid re-downloading files that already exist on a user's local machine, thus saving disk space and internet bandwidth.
 
 
 .. _whatsnew-1.1-SUVI:
