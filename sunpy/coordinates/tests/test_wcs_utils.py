@@ -93,7 +93,7 @@ def test_wcs_extras():
               'NAXIS2': 6,
               'CTYPE1': 'HPLN-TAN',
               'CTYPE2': 'HPLT-TAN',
-              'date-obs': '1970/01/01T00:00:00',
+              'date-obs': '1970-01-01T00:00:00',
               'obsrvtry': 'Foo',
               'detector': 'bar',
               'wavelnth': 10,
