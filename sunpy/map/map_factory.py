@@ -37,9 +37,6 @@ try:
 except ImportError:
     pass
 
-__authors__ = ["Russell Hewett, Stuart Mumford"]
-__email__ = "stuart@mumford.me.uk"
-
 __all__ = ['Map', 'MapFactory']
 
 
@@ -286,13 +283,11 @@ class MapFactory(BasicRegistrationFactory):
             try:
                 new_map = self._check_registered_widgets(data, meta, **kwargs)
                 new_maps.append(new_map)
-            except (NoMatchError, MultipleMatchError, ValidationFunctionError):
+            except (NoMatchError, MultipleMatchError,
+                    ValidationFunctionError, MapMetaValidationError) as e:
                 if not silence_errors:
                     raise
-            except MapMetaValidationError as e:
                 warnings.warn(f"One of the data, header pairs failed to validate with: {e}")
-            except Exception:
-                raise
 
         new_maps += already_maps
 

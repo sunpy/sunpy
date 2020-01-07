@@ -1,0 +1,4 @@
+`sunpy.map.Map` is now more strict when the metadata of a map cannot be validated, and
+an error is now thrown instead of a warning if metadata cannot be validated. In order to
+load maps that previously loaded without error you may need to pass ``silence_errors=True``
+to `sunpy.map.Map`.

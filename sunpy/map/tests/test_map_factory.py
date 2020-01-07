@@ -152,6 +152,17 @@ class TestMap:
             # Check a random unsupported type (int) fails
             sunpy.map.Map(78)
 
+    @pytest.mark.parametrize('silence,error,match',
+                             [(True, RuntimeError, 'No maps loaded'),
+                              (False, sunpy.map.mapbase.MapMetaValidationError,
+                               'Image coordinate units for axis 1 not present in metadata.')])
+    def test_silence_errors(self, silence, error, match):
+        # Check that the correct errors are raised depending on silence_errors value
+        data = np.arange(0, 100).reshape(10, 10)
+        header = {}
+        with pytest.raises(error, match=match):
+            pair_map = sunpy.map.Map(data, header, silence_errors=silence)
+
     # requires dask array to run properly
     def test_dask_array(self):
         dask_array = pytest.importorskip('dask.array')
