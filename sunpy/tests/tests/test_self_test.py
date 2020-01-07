@@ -1,4 +1,4 @@
-import imp
+import importlib
 import os.path
 import warnings
 
@@ -20,7 +20,7 @@ def test_import_runner():
     measured we force the interpreter to reload it here while coverage
     is watching.
     """
-    imp.reload(sunpy.tests.runner)
+    importlib.reload(sunpy.tests.runner)
 
 
 def test_main_nonexisting_module():
