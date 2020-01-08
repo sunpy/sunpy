@@ -146,3 +146,12 @@ def test_warn_nonascii():
                                'good': 'test'})
     assert 'GOOD' in fits.keys()
     assert 'BAD' not in fits.keys()
+
+
+def test_warn_longkey():
+    # Check that a key that is too long raises a warning and not an error
+    with pytest.warns(SunpyUserWarning, match='The meta key badlongkey is too long'):
+        fits = header_to_fits({'badlongkey': 'test',
+                               'goodkey': 'test'})
+    assert 'GOODKEY' in fits.keys()
+    assert 'BADLONGKEY' not in fits.keys()
