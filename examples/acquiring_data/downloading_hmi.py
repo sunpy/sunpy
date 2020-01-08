@@ -15,10 +15,10 @@ from sunpy.net import Fido, attrs as a
 # `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`, a downloader client,
 # to query the Joint Science Operations Center, or JSOC, where HMI data are stored.
 # First define the search variables, a timerange,
-# a [data series](http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html),
+# a `data series <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`_,
 # keywords, and your e-mail address (to notify you when the download is complete).
 # See the JSOC e-mail address registration page
-# [here](http://jsoc.stanford.edu/ajax/register_email.html).
+# `here <http://jsoc.stanford.edu/ajax/register_email.html>`_.
 
 result = Fido.search(a.Time('2014/11/20 00:00:00', '2014/11/20 00:04:00'),
                      a.jsoc.Series("hmi.M_720s"),
@@ -52,9 +52,17 @@ hmi_map.plot()
 plt.show()
 
 ###############################################################################
-# Rotate the image such that solar North is pointed up.
-# The order specifies the type of interpolation; in this case, 3 refers to
-# bi-cubic.
+# Now rotate the image such that solar North is pointed up. 
+# We have to do this because the HMI instrument is mounted upside-down 
+# relative to the AIA instrument on the SDO satellite, which means most 
+# of the images are taken with solar North pointed up. 
+# The roll angle of the instrument is reported in the FITS header
+# keyword `CROTA2` (see Figure 17 of 
+# `Couvidat et al. (2016)<https://dx.doi.org/10.1007/s11207-016-0957-3>`_, 
+# which states that # "the nominal CROTA2 for HMI is ≈179.93".
+#
+# The order keyword, below, specifies the type of interpolation; 
+# in this case, 3 refers to bi-cubic.
 hmi_rotated = hmi_map.rotate(order=3)
 hmi_rotated.plot()
 plt.show()
