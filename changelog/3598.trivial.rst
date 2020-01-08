@@ -1,0 +1,5 @@
+Removed ``astropy_helpers`` and this means that ``python setup.py <test,build_docs>`` no longer works.
+So if you want to:
+
+* Run the tests: Use ``tox -e <env name>`` or call ``pytest`` directly
+* Build the docs: Use ``tox -e docs`` or cd into the docs folder and run ``make html`` or ``sphinx-build docs docs/_build/html -W -b html -d docs/_build/.doctrees``

@@ -13,7 +13,7 @@ import sunpy.data.test
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits"))
-irismap = Map(fitspath)
+irismap = Map(fitspath, silence_errors=True)
 
 
 # IRIS Tests

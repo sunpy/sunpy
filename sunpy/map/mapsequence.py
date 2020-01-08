@@ -28,8 +28,10 @@ class MapSequence:
     ----------
     args : `list`
         A list of Map instances
-    sortby : `datetime.datetime`
+    sortby : { "date" | `None`}
         Method by which the MapSequence should be sorted along the z-axis.
+        Defaults to sorting by: "date" and is the only supported sorting strategy.
+        Passing `None` will disable sorting.
     derotate : `bool`
         Apply a derotation to the data. Default to False.
 
@@ -81,6 +83,10 @@ class MapSequence:
         """Return the number of maps in a mapsequence."""
         return len(self.maps)
 
+    def __repr__(self):
+        names = set([m.__class__.__name__ for m in self.maps])
+        return f'MapSequence of {len(self.maps)} elements, with maps from {", ".join(names)}'
+
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
@@ -88,7 +94,7 @@ class MapSequence:
 
     def _derotate(self):
         """Derotates the layers in the MapSequence"""
-        pass
+        raise NotImplementedError("This functionality has not yet been implemented.")
 
     def plot(self, axes=None, resample=None, annotate=True,
              interval=200, plot_function=None, **kwargs):

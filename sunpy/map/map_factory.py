@@ -37,9 +37,6 @@ try:
 except ImportError:
     pass
 
-__authors__ = ["Russell Hewett, Stuart Mumford"]
-__email__ = "stuart@mumford.me.uk"
-
 __all__ = ['Map', 'MapFactory']
 
 
@@ -203,22 +200,9 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs.append(pair)
                     i += 1    # an extra increment to account for the data-header pairing
 
-            # File system path (file or directory)
-            elif _is_path(arg):
-                path = pathlib.Path(arg).expanduser()
-                if path.is_file():
-                    pairs = self._read_file(path, **kwargs)
-                    data_header_pairs += pairs
-                elif path.is_dir():
-                    for afile in sorted(path.glob('*')):
-                        data_header_pairs += self._read_file(afile, **kwargs)
-                else:
-                    raise ValueError(f'{path} is neither a file nor a directory')
-
-            # Glob
-            elif isinstance(arg, str) and glob.glob(os.path.expanduser(arg)):
-                for afile in sorted(glob.glob(os.path.expanduser(arg))):
-                    data_header_pairs += self._read_file(afile, **kwargs)
+            # A database Entry
+            elif isinstance(arg, DatabaseEntryType):
+                data_header_pairs += self._read_file(arg.path, **kwargs)
 
             # Already a Map
             elif isinstance(arg, GenericMap):
@@ -231,12 +215,24 @@ class MapFactory(BasicRegistrationFactory):
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
-            # A database Entry
-            elif isinstance(arg, DatabaseEntryType):
-                data_header_pairs += self._read_file(arg.path, **kwargs)
+            # File system path (file or directory or glob)
+            elif _possibly_a_path(arg):
+                path = pathlib.Path(arg).expanduser()
+                if _is_file(path):
+                    pairs = self._read_file(path, **kwargs)
+                    data_header_pairs += pairs
+                elif _is_dir(path):
+                    for afile in sorted(path.glob('*')):
+                        data_header_pairs += self._read_file(afile, **kwargs)
+                elif glob.glob(os.path.expanduser(arg)):
+                    for afile in sorted(glob.glob(os.path.expanduser(arg))):
+                        data_header_pairs += self._read_file(afile, **kwargs)
+
+                else:
+                    raise ValueError(f'Did not find any files at {arg}')
 
             else:
-                raise ValueError("File not found or invalid input")
+                raise ValueError(f"Invalid input: {arg}")
 
             i += 1
 
@@ -287,13 +283,11 @@ class MapFactory(BasicRegistrationFactory):
             try:
                 new_map = self._check_registered_widgets(data, meta, **kwargs)
                 new_maps.append(new_map)
-            except (NoMatchError, MultipleMatchError, ValidationFunctionError):
+            except (NoMatchError, MultipleMatchError,
+                    ValidationFunctionError, MapMetaValidationError) as e:
                 if not silence_errors:
                     raise
-            except MapMetaValidationError as e:
                 warnings.warn(f"One of the data, header pairs failed to validate with: {e}")
-            except Exception:
-                raise
 
         new_maps += already_maps
 
@@ -349,13 +343,34 @@ def _is_url(arg):
     return True
 
 
-def _is_path(arg):
+def _possibly_a_path(arg):
+    """
+    Check if arg can be coerced into a Path object.
+    Does *not* check if the path exists.
+    """
     try:
-        is_path = pathlib.Path(arg).expanduser().exists()
+        is_path = pathlib.Path(arg)
+        return True
     except Exception:
         return False
-    else:
-        return is_path
+
+
+# In python<3.8 paths with un-representable chars (ie. '*' on windows)
+# raise an error, so make our own version that returns False instead of
+# erroring. These can be removed when we support python >= 3.8
+# https://docs.python.org/3/library/pathlib.html#methods
+def _is_file(path):
+    try:
+        return path.is_file()
+    except Exception:
+        return False
+
+
+def _is_dir(path):
+    try:
+        return path.is_dir()
+    except Exception:
+        return False
 
 
 class InvalidMapInput(ValueError):

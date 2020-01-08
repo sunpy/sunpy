@@ -229,7 +229,7 @@ class GenericMap(NDData):
                    Observation Date:\t {date}
                    Exposure Time:\t\t {dt:f}
                    Dimension:\t\t {dim}
-                   Coordinate System:\t {coord.name}
+                   Coordinate System:\t {coord}
                    Scale:\t\t\t {scale}
                    Reference Pixel:\t {refpix}
                    Reference Coord:\t {refcoord}
@@ -239,7 +239,7 @@ class GenericMap(NDData):
                                dt=self.exposure_time,
                                dim=u.Quantity(self.dimensions),
                                scale=u.Quantity(self.scale),
-                               coord=self.coordinate_frame,
+                               coord=self._coordinate_frame_name,
                                refpix=u.Quantity(self.reference_pixel),
                                refcoord=u.Quantity((self.reference_coordinate.data.lon,
                                                     self.reference_coordinate.data.lat)),
@@ -266,8 +266,6 @@ class GenericMap(NDData):
         """
         The `~astropy.wcs.WCS` property of the map.
         """
-
-
         # Construct the WCS based on the FITS header, but don't "do_set" which
         # analyses the FITS header for correctness.
         with warnings.catch_warnings():
@@ -322,9 +320,20 @@ class GenericMap(NDData):
     def coordinate_frame(self):
         """
         An `astropy.coordinates.BaseFrame` instance created from the coordinate
-        information for this Map.
+        information for this Map, or None if the frame cannot be determined.
         """
-        return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
+        try:
+            return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
+        except ValueError as e:
+            warnings.warn(f'Could not determine coordinate frame from map metadata',
+                          SunpyUserWarning)
+            return None
+
+    @property
+    def _coordinate_frame_name(self):
+        if self.coordinate_frame is None:
+            return 'Unknown'
+        return self.coordinate_frame.name
 
     def _as_mpl_axes(self):
         """
@@ -632,27 +641,27 @@ class GenericMap(NDData):
 
     @property
     def heliographic_latitude(self):
-        """Heliographic latitude."""
+        """Observer heliographic latitude."""
         return self.observer_coordinate.lat
 
     @property
     def heliographic_longitude(self):
-        """Heliographic longitude."""
+        """Observer heliographic longitude."""
         return self.observer_coordinate.lon
 
     @property
     def carrington_latitude(self):
-        """Carrington latitude."""
+        """Observer Carrington latitude."""
         return self.observer_coordinate.heliographic_carrington.lat
 
     @property
     def carrington_longitude(self):
-        """Carrington longitude."""
+        """Observer Carrington longitude."""
         return self.observer_coordinate.heliographic_carrington.lon
 
     @property
     def dsun(self):
-        """The observer distance from the center of the Sun."""
+        """Observer distance from the center of the Sun."""
         return self.observer_coordinate.radius.to('m')
 
     @property

@@ -331,9 +331,12 @@ def test_hgc_hgc():
     old = SkyCoord(90*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicCarrington(obstime=obstime))
     new = old.transform_to(HeliographicCarrington(obstime=obstime + 1*u.day))
 
-    assert_quantity_allclose(new.lon, old.lon - 14.1844*u.deg, atol=1e-4*u.deg)  # solar rotation
-    assert_quantity_allclose(new.lat, old.lat, atol=1e-4*u.deg)
-    assert_quantity_allclose(new.radius, old.radius, atol=1e-5*u.AU)
+    assert_quantity_allclose(new.lon, 75.815607 * u.deg, atol=1e-7*u.deg)  # solar rotation
+    # These are not equal to the old values, because the coordinates stay fixed
+    # in inertial space, whilst the frame (fixed to the center of the Sun)
+    # moves slightly.
+    assert_quantity_allclose(new.lat, 9.999963 * u.deg, atol=1e-7*u.deg)
+    assert_quantity_allclose(new.radius, 1.000009 * u.AU, atol=1e-7*u.AU)
 
 
 def test_hcc_hcc():
@@ -713,3 +716,22 @@ def test_array_obstime():
 
     t2 = a.transform_to(Helioprojective(obstime=["2019-01-03", "2019-01-04"]))
     assert isinstance(t2.frame, Helioprojective)
+
+
+_frameset1 = [HeliographicStonyhurst, HeliographicCarrington, HeliocentricInertial]
+_frameset2 = [Heliocentric, Helioprojective]
+
+
+@pytest.mark.parametrize("start_class", _frameset1 + _frameset2)
+@pytest.mark.parametrize("end_class", _frameset1)
+def test_no_obstime_on_one_end(start_class, end_class):
+    start_obstime = Time("2001-01-01")
+
+    if hasattr(start_class, 'observer'):
+        coord = start_class(CartesianRepresentation(0, 0, 0)*u.km,
+                            obstime=start_obstime, observer="earth")
+    else:
+        coord = start_class(CartesianRepresentation(0, 0, 0)*u.km, obstime=start_obstime)
+
+    result = coord.transform_to(end_class)
+    assert result.obstime == start_obstime
