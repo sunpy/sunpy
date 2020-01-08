@@ -1,0 +1,2 @@
+Correctly catch and emit a warning when a .fits file contains a key word with
+non-ascii characters.
