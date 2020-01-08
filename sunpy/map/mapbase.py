@@ -58,8 +58,9 @@ class GenericMap(NDData):
         Colormap of the map image. Defaults to 'grey'
     norm : `matplotlib.colors.Normalize`
         Normalization function used. Defaults to None
-    plot_settings : dict, optional
-        Plot settings (Deprecated, will be removed in 2.1)
+    plot_settings : `dict`, optional
+        Keyword arguments to be passed to `~matplotlib.pyplot.imshow`
+        (Deprecated, will be removed in 2.1)
     Other Parameters
     ----------------
     **kwargs :
@@ -204,7 +205,7 @@ class GenericMap(NDData):
         if plot_settings:
             self.plot_settings = plot_settings
             warnings.warn("Handling of ``plot_settings`` is deprecated."
-                          "Subsequently, setting ``plot_settings`` will have no effect on the plot."
+                          "Subsequently setting ``plot_settings`` will have no effect on the plot."
                           "Pass the plot specific settings to either ``.peek()`` or ``.show()``",
                           DeprecationWarning)
             if 'norm' in self.plot_settings:

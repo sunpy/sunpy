@@ -57,7 +57,8 @@ out_wcs = WCS(header)
 
 array, footprint = reproject_interp(aia_map, out_wcs, shape_out=shape_out)
 outmap = sunpy.map.Map((array, header))
-outmap.plot_settings = aia_map.plot_settings
+outmap.cmap = aia_map.cmap
+outmap.norm = aia_map.norm
 
 ###############################################################################
 # Plot the result.

@@ -98,7 +98,8 @@ output, footprint = reproject_interp(map_stereo, out_wcs, out_shape)
 # to the AIA image.
 
 outmap = sunpy.map.Map(output, out_header)
-outmap.plot_settings = map_stereo.plot_settings
+outmap.cmap = map_stereo.cmap
+outmap.norm = map_stereo.norm
 
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
@@ -138,6 +139,7 @@ mars_header = sunpy.map.make_fitswcs_header(
     scale=u.Quantity(map_aia.scale)*4,
     rotation_matrix=map_aia.rotation_matrix,
     instrument="AIA",
+    telescope=map_aia.observatory,
     wavelength=map_aia.wavelength
 )
 
@@ -145,6 +147,7 @@ mars_header = sunpy.map.make_fitswcs_header(
 # Once again we need to generate a `~astropy.wcs.WCS` and then manually
 # set the observer location.
 
+print('header:', mars_header)
 mars_wcs = WCS(mars_header)
 mars_wcs.heliographic_observer = mars
 
@@ -154,7 +157,8 @@ output, footprint = reproject_interp(map_aia, mars_wcs, out_shape)
 # We generate the output map and plot it next to the original image.
 
 outmap = sunpy.map.Map((output, mars_header))
-outmap.plot_settings = map_aia.plot_settings
+outmap.cmap = map_aia.cmap
+outmap.norm = map_aia.norm
 
 fig = plt.figure()
 

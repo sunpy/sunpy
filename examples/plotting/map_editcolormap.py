@@ -17,12 +17,12 @@ from sunpy.data.sample import AIA_171_IMAGE
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
-# All plot settings for a map are stored in the `plot_settings` attribute.
+# The Colormap and Normalization attributes for a map are accessed as a property of the map.
 # How a Map is displayed is determined by its colormap, which sets the colors
 # , and the normalization, which sets how data values are translated to colors.
 # Lets replace the colormap and normalization.
-aiamap.plot_settings['cmap'] = plt.get_cmap('Greys_r')
-aiamap.plot_settings['norm'] = colors.LogNorm(100, aiamap.max())
+aiamap.cmap = plt.get_cmap('Greys_r')
+aiamap.norm = colors.LogNorm(100, aiamap.max())
 
 ###############################################################################
 # To see all of the colormaps SunPy provides see `sunpy.visualization.colormaps`.
