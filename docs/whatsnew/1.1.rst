@@ -102,7 +102,7 @@ The following transformation graph illustrates how all of these coordinate frame
                 HCRS
                 HeliocentricMeanEcliptic
                 astropy [label="Other Astropy frames" shape=box3d style=filled]
-                geocentric [label="Earth-centered frames (including GEO)" shape=box3d style=filled]
+                geocentric [label="Earth-centered frames\n(including GEO)" shape=box3d style=filled]
                 astropy -> ICRS
                 geocentric -> ICRS
                 ICRS -> astropy
@@ -120,7 +120,7 @@ The following transformation graph illustrates how all of these coordinate frame
                 subgraph cluster_sunpy11 {
                         color=chocolate
                         fontcolor=chocolate
-                        label=<<b>Requires SunPy 1.1</b>>
+                        label=<<b>Added in SunPy 1.1</b>>
                         HeliocentricInertial
                         HeliocentricEarthEcliptic
                         GeocentricSolarEcliptic
@@ -129,6 +129,8 @@ The following transformation graph illustrates how all of these coordinate frame
         }
         newrank=true
    }
+
+See our :ref:`coordinates documentation <sunpy-coordinates>` for a table of the currently supported coordinate systems and the corresponding frame classes.
 
 .. _whatsnew-1.1-dl_manager:
 
