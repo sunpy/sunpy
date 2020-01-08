@@ -56,8 +56,10 @@ class GenericMap(NDData):
         A dictionary of the original image header tags.
     cmap : `matplotlib.colors.Colormap`, str
         Colormap of the map image. Defaults to 'grey'
-    norm : 'matplotlib.colors.Normalize`
+    norm : `matplotlib.colors.Normalize`
         Normalization function used. Defaults to None
+    plot_settings : dict, optional
+        Plot settings (Deprecated, will be removed in 2.1)
     Other Parameters
     ----------------
     **kwargs :
@@ -197,25 +199,20 @@ class GenericMap(NDData):
         self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
 
         # Visualization attributes
-
-        # For first time, manually set .cmap and .norm attributes (instead of using setters)
-        # This is to ensure cross compatibility among plot_settings, .cmap and .norm
-        if isinstance(cmap, str):
-            self._cmap = plt.get_cmap(cmap)
+        self.cmap = cmap
+        self.norm = norm
+        if plot_settings:
+            self.plot_settings = plot_settings
+            warnings.warn("Handling of ``plot_settings`` is deprecated."
+                          "Subsequently, setting ``plot_settings`` will have no effect on the plot."
+                          "Pass the plot specific settings to either ``.peek()`` or ``.show()``",
+                          DeprecationWarning)
+            if 'norm' in self.plot_settings:
+                self.norm = self.plot_settings['norm']
+            if 'cmap' in self.plot_settings:
+                self.cmap = self.plot_settings['cmap']
         else:
-            self._cmap = cmap
-
-        if norm is None:
-            if self.dtype == np.uint8:
-                self._norm = None
-            else:
-                # Put import here to reduce sunpy.map import time
-                from matplotlib import colors
-                self._norm = colors.Normalize()
-        else:
-            self._norm = norm
-
-        self.plot_settings = plot_settings
+            self.plot_settings = {}
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -1461,7 +1458,6 @@ class GenericMap(NDData):
             self._cmap = plt.get_cmap(n)
         else:
             self._cmap = n
-        self.plot_settings['cmap'] = self._cmap
 
     @property
     def norm(self):
@@ -1478,28 +1474,6 @@ class GenericMap(NDData):
                 self._norm = colors.Normalize()
         else:
             self._norm = n
-        self.plot_settings['norm'] = self._norm
-
-    @property
-    def plot_settings(self):
-        return self._plot_settings
-
-    @plot_settings.setter
-    def plot_settings(self, plot_settings):
-        if plot_settings is not None:
-            warnings.warn("Handling of plot_settings is deprecated. "
-                          "Pass the plot specific settings to either peek() or show()",
-                          DeprecationWarning)
-
-            if 'norm' in plot_settings:
-                self.norm = plot_settings['norm']
-            if 'cmap' in plot_settings:
-                self.cmap = plot_settings['cmap']
-        else:
-            self._plot_settings = {
-                                    'cmap': self.cmap,
-                                    'norm': self.norm,
-                                  }
 
     @u.quantity_input
     def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True, **kwargs):
@@ -1792,6 +1766,8 @@ class GenericMap(NDData):
                         'interpolation': 'nearest',
                         'origin': 'lower',
                       }
+
+        imshow_args.update(self.plot_settings)
 
         if 'title' in imshow_args:
             plot_settings_title = imshow_args.pop('title')
