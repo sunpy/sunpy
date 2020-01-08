@@ -59,7 +59,7 @@ plt.show()
 # The roll angle of the instrument is reported in the FITS header
 # keyword `CROTA2` (see Figure 17 of 
 # `Couvidat et al. (2016) <https://dx.doi.org/10.1007/s11207-016-0957-3>`_, 
-# which states that "the nominal CROTA2 for HMI is ≈179.93".
+# which states that "the nominal CROTA2 for HMI is ≈179.93").
 #
 # The order keyword, below, specifies the type of interpolation; 
 # in this case, 3 refers to bi-cubic.
