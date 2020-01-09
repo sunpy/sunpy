@@ -271,7 +271,11 @@ class GenericMap(NDData):
         with warnings.catch_warnings():
             # Ignore warnings we may raise when constructing the fits header about dropped keys.
             warnings.simplefilter("ignore", SunpyUserWarning)
-            w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
+            try:
+                w2 = astropy.wcs.WCS(header=self.fits_header, _do_set=False)
+            except Exception:
+                warnings.warn("Unable to treat `.meta` as a FITS header, assuming a simple WCS.")
+                w2 = astropy.wcs.WCS(naxis=2)
 
         # If the FITS header is > 2D pick the first 2 and move on.
         # This will require the FITS header to be valid.
