@@ -48,6 +48,11 @@ files = Fido.fetch(res)
 
 map_aia, map_stereo = sunpy.map.Map(sorted(files))
 
+# We downsample these maps to reduce memory consumption, you can comment this
+# out.
+map_aia = map_aia.resample((512, 512) * u.pix)
+map_stereo = map_stereo.resample((512, 512) * u.pix)
+
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
 map_aia.plot(axes=ax1)
@@ -62,7 +67,7 @@ map_stereo.plot(axes=ax2)
 # and make the scale 4x larger to compensate for the fact we are making
 # the resolution 4x lower.
 
-out_shape = (1024, 1024)
+out_shape = (512, 512)
 out_header = sunpy.map.make_fitswcs_header(
     out_shape,
     map_aia.reference_coordinate,
@@ -126,7 +131,7 @@ mars_ref_coord = SkyCoord(map_aia.reference_coordinate.Tx,
 ######################################################################
 # then a header
 
-out_shape = (1024, 1024)
+out_shape = (512, 512)
 mars_header = sunpy.map.make_fitswcs_header(
     out_shape,
     mars_ref_coord,
