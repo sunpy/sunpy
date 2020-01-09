@@ -1,0 +1,2 @@
+Correctly catch and emit a warning when converting a map metadata to a FITS
+header and it contains a keyword with non-ascii characters.

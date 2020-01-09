@@ -725,3 +725,22 @@ def test_bad_coordframe_repr(generic_map):
     generic_map.meta['CTYPE1'] = "STUART1"
     generic_map.meta['CTYPE2'] = "STUART2"
     assert 'Unknown' in generic_map.__repr__()
+
+
+def test_bad_header_final_fallback():
+    # Checks that if a WCS cannot be constructed from the
+    # header, a warning is raised and a simple WCS is created
+    # instead
+    header = {'cunit1': 'arcsec',
+              'cunit2': 'arcsec',
+              None: None,  # Cannot parse this into WCS
+              }
+    m = sunpy.map.GenericMap(np.zeros((10, 10)), header)
+    with pytest.warns(UserWarning,
+                      match="Unable to treat `.meta` as a FITS header, assuming a simple WCS."):
+        m.wcs
+    # Simple WCS validation
+    assert list(m.wcs.wcs.ctype) == ['HPLN-', 'HPLT-']
+    assert (m.wcs.wcs.crval == [0.0, 0.0]).all()
+    assert (m.wcs.wcs.crpix == [5.5, 5.5]).all()
+    assert (m.wcs.wcs.cdelt == [1.0, 1.0]).all()
