@@ -154,7 +154,7 @@ Support for SUVI Data
 =====================
 
 The Solar Ultraviolet Imager (SUVI) is a EUV instrument imaging the full disk of the Sun in six passbands, and is onboard the latest of the Geostationary Operational Environmental Satellite (GOES) missions.
-`~sunpy.map.SUVIMap` provides SunPy map support for SUVI FITS image data, and the `~sunpy.net.sources.goes.SUVIClient` adds support for search SUVI data directly from NOAA via `Fido <sunpy.net.fido_factory.UnifiedDownloader>`.
+`~sunpy.map.SUVIMap` provides SunPy map support for loading SUVI FITS image data, and the `~sunpy.net.sources.goes.SUVIClient` adds support to search for SUVI data hosted by NOAA via `Fido <sunpy.net.fido_factory.UnifiedDownloader>`. It supports searching for wavelength, level of data (level 2 data which consists of stacked level 1b images and original level 1b files), as well as GOES satellite number (>= GOES 16).
 
 .. _whatsnew-1.1-WISPR:
 
@@ -176,8 +176,8 @@ Speeding up import times
 We know that the initial import of `sunpy` or its subpackages can feel like it takes a long time, particularly on slower machines.
 Some of that import time can be the result of importing other modules or external packages that are required for specialized functionality that a user may not ever actually use.
 We have identified the most egregious cases and deferred those imports of dependencies to when they are actually needed.
-For example. the initial import of `sunpy.map` was sped up by ~40%(!), with no loss of functionality.
-We will continue to look for ways to improve our import times.
+For example, the initial import of `sunpy.map` is now ~40% faster, with no loss of functionality.
+We will continue to look for ways to improve import times.
 
 .. _whatsnew-1.1-renamed-removed:
 
@@ -194,10 +194,10 @@ Notable Breaking Changes or Removed functionality
   object. To get the full `Colormap` object use the new attribute
   ``map.cmap``. (`#3412 <https://github.com/sunpy/sunpy/pull/3412>`__)
 - Fix a warning in `sunpy.map.GenericMap.rotate` where the truth value of an array
-  was being calculated. This changes the behaviour of
+  was being calculated. This changes the behavior of
   `~sunpy.map.GenericMap.rotate` when the ``angle=`` parameter is not an
   `~astropy.units.Quantity` object to raise `TypeError` rather than `ValueError`. (`#3456 <https://github.com/sunpy/sunpy/pull/3456>`__)
-- Removed the step of reparing images (replacing non-finite entries with local mean) before coaligning them. The user is expected to do this themselves before coaligning images. If NaNs/non-finite entries are present, a warning is thrown.
+- Removed the step of repairing images (replacing non-finite entries with local mean) before coaligning them. The user is expected to do this themselves before coaligning images. If NaNs/non-finite entries are present, a warning is thrown.
   The function `sunpy.image.coalignment.repair_image_nonfinite` is deprecated. (`#3287 <https://github.com/sunpy/sunpy/pull/3287>`__)
 - The method to convert a `~sunpy.coordinates.frames.Helioprojective` frame from 2D to 3D has been renamed from `~sunpy.coordinates.frames.Helioprojective.calculate_distance` to `~sunpy.coordinates.frames.Helioprojective.make_3d`.  This method is not typically directly called by users. (`#3389 <https://github.com/sunpy/sunpy/pull/3389>`__)
 - `sunpy.visualization.animator.ImageAnimatorWCS` is now deprecated in favour of
