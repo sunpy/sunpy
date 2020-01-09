@@ -728,7 +728,7 @@ def test_bad_coordframe_repr(generic_map):
 
 
 def test_bad_header_final_fallback():
-    # Checks that if a WCS cannot be constructed from the 
+    # Checks that if a WCS cannot be constructed from the
     # header, a warning is raised and a simple WCS is created
     # instead
     header = {'cunit1': 'arcsec',
