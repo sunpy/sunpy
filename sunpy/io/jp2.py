@@ -31,7 +31,9 @@ def read(filepath, **kwargs):
     from glymur import Jp2k
     header = get_header(filepath)
 
-    data = Jp2k(filepath).read()[::-1]
+    data = Jp2k(filepath)[...]
+    # For some reason Jp2k doesn't like [::-1], so do directly on the array
+    data = data[::-1]
 
     return [HDPair(data, header[0])]
 
