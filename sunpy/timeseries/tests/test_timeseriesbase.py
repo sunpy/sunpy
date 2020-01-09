@@ -498,6 +498,11 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
     assert_frame_equal(concatenation_different_data_test_ts.data, comined_df)
 
 
+def test_concatenation_of_self(eve_test_ts):
+    # Check that a self concatenation returns the original timeseries
+    assert eve_test_ts.concatenate(eve_test_ts) == eve_test_ts
+
+
 def test_concatenation_different_data_error(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate but set with the same_source
     # kwarg as true, this should not concatenate.
