@@ -37,6 +37,6 @@ docs/code_ref/timeseries.rst      @sunpy/timeseries
 sunpy/visualization/              @sunpy/visualization
 docs/code_ref/visualization.rst   @sunpy/visualization
 
-docs/guide            @sunpy/documentation/user
-docs/dev_guide        @sunpy/documentation/developer
-examples/             @sunpy/documentation/gallery
+docs/guide            @sunpy/documentation-user
+docs/dev_guide        @sunpy/documentation-developer
+examples/             @sunpy/documentation-gallery
