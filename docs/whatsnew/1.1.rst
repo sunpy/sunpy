@@ -147,7 +147,6 @@ Additionally, `sunpy.data.cache <sunpy.data.data_manager.Cache>` can be used to 
 
 See :ref:`remote_data` for more details.
 
-
 .. _whatsnew-1.1-SUVI:
 
 Support for SUVI Data
