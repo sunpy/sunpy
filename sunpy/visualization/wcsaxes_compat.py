@@ -128,7 +128,7 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=
         Spacing for longitude and latitude grid in degrees.
     annotate : `bool`
         Passing `False` disables the axes labels and the ticks on the top and right axes.
-    
+
     Returns
     -------
     `~astropy.visualization.wcsaxes.WCSAxes`
