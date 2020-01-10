@@ -1,1 +1,0 @@
-`sunpy.io.write_file()` now accepts `~pathlib.Path` objects as filename inputs.

@@ -1,2 +1,0 @@
-Fixes bold type and extra line breaks of remote data manager example
-in `remote_data_manager.py`.

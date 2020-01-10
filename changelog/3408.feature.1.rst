@@ -1,2 +1,0 @@
-The returned list of `~sunpy.map.Map` objects is now sorted by filename when
-passing a directory or glob pattern to `~sunpy.map.MapFactory`.
