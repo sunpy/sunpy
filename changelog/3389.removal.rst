@@ -1,1 +1,0 @@
-The method to convert a `~sunpy.coordinates.frames.Helioprojective` frame from 2D to 3D has been renamed from `~sunpy.coordinates.frames.Helioprojective.calculate_distance` to `~sunpy.coordinates.frames.Helioprojective.make_3d`.  This method is not typically directly called by users.

@@ -1,1 +1,0 @@
-Fixed all coordinate transformations to properly handle a change in observation time.

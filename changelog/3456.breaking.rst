@@ -1,4 +1,0 @@
-Fix a warning in `sunpy.map.GenericMap.rotate` where the truth value of an array
-was being calculated. This changes the behaviour of
-`~sunpy.map.GenericMap.rotate` when the ``angle=`` parameter is not an
-`~astropy.units.Quantity` object to raise `TypeError` rather than `ValueError`.

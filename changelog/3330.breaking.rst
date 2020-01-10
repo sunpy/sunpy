@@ -1,2 +1,0 @@
-The `sunpy.net.vso.vso.get_online_vso_url` function has been broken into two components, the new `sunpy.net.vso.vso.get_online_vso_url` function takes no arguments (it used to take three) and now only returns an online VSO mirror or None.
-The construction of a `zeep.Client` object is now handled by `sunpy.net.vso.vso.build_client` which has a more flexible API for customising the `zeep.Client` interface.
