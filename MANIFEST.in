@@ -1,7 +1,6 @@
 include README.rst
 include CHANGELOG.rst
 
-include ah_bootstrap.py
 include setup.py
 include setup.cfg
 include pyproject.toml
