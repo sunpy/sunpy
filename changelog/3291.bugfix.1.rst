@@ -1,1 +1,0 @@
-Fixed a `sunpy.coordinates` bug where a frame using the default observer of Earth could have its observer overwritten during a transformation.

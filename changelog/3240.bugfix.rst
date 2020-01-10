@@ -1,1 +1,0 @@
-Fixed a bug with `sunpy.net.hek.HEKClient` when the results returned were a mixed dataset.

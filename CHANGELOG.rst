@@ -1,14 +1,5 @@
-Sunpy v1.1rc2 (2019-11-30)
-==========================
-
-Trivial/Internal Changes
-------------------------
-
-- Fix tests for `sunpy.data.data_manager` and ensure they are correctly executed with pytest. (`#3550 <https://github.com/sunpy/sunpy/pull/3550>`__)
-
-
-Sunpy v1.1rc1 (2019-11-22)
-==========================
+Sunpy v1.1.0 (2020-01-10)
+=========================
 
 Backwards Incompatible Changes
 ------------------------------
@@ -71,12 +62,12 @@ Features
   ability to customise the plot by specifying arguments to
   `~astropy.visualization.wcsaxes.WCSAxes` methods and supports animation of
   WCS aware line plots with Astroy 4.0. (`#3407 <https://github.com/sunpy/sunpy/pull/3407>`__)
-- `~sunpy.map.Map` now accepts filenames and directories as `pathlib.Path`
-  objects. (`#3408 <https://github.com/sunpy/sunpy/pull/3408>`__)
 - The returned list of `~sunpy.map.Map` objects is now sorted by filename when
   passing a directory or glob pattern to `~sunpy.map.MapFactory`. (`#3408 <https://github.com/sunpy/sunpy/pull/3408>`__)
 - Single character wildcards and character ranges can now be passed as
   glob patterns to `~sunpy.map.Map`. (`#3408 <https://github.com/sunpy/sunpy/pull/3408>`__)
+- `~sunpy.map.Map` now accepts filenames and directories as `pathlib.Path`
+  objects. (`#3408 <https://github.com/sunpy/sunpy/pull/3408>`__)
 - `~sunpy.map.GenericMap` objects now have a ``.cmap`` attribute, which returns the full `~matplotlib.colormap.Colormap`.
   object. (`#3412 <https://github.com/sunpy/sunpy/pull/3412>`__)
 - `sunpy.io.write_file()` now accepts `~pathlib.Path` objects as filename inputs. (`#3469 <https://github.com/sunpy/sunpy/pull/3469>`__)
@@ -91,6 +82,10 @@ Features
 - `sunpy.visualization.animator.BaseFuncAnimator` now takes an optional
   ``slider_labels`` keyword argument which draws text labels in the center of the
   sliders. (`#3504 <https://github.com/sunpy/sunpy/pull/3504>`__)
+- Added a more helpful error message when trying to load a file or directory
+  that doesn't exist with `Map`. (`#3568 <https://github.com/sunpy/sunpy/pull/3568>`__)
+- Add ``__repr__`` for `~sunpy.map.MapSequence` objects  so that users can view the
+  critical information of all the ``Map`` objects, in a concise manner. (`#3636 <https://github.com/sunpy/sunpy/pull/3636>`__)
 
 
 Bug Fixes
@@ -122,9 +117,9 @@ Bug Fixes
 - Fixed the handling of coordinates with velocity information when transforming between Astropy frames and SunPy frames. (`#3247 <https://github.com/sunpy/sunpy/pull/3247>`__)
 - Fixed `~sunpy.physics.solar_rotation.calculate_solar_rotate_shift` so that it does not calculate a shift between the reference layer and itself, which would sometimes incorrectly result in a shift of a pixel due to numerical precision. (`#3255 <https://github.com/sunpy/sunpy/pull/3255>`__)
 - Stop crash when ``LineAnimator`` ``axes_ranges`` entry given as ``1D`` array when data is ``>1D``, i.e. as an independent axis. (`#3283 <https://github.com/sunpy/sunpy/pull/3283>`__)
+- Fixed a `sunpy.coordinates` bug where a frame using the default observer of Earth could have its observer overwritten during a transformation. (`#3291 <https://github.com/sunpy/sunpy/pull/3291>`__)
 - Fixed a bug where the transformation from `~sunpy.coordinates.frames.Helioprojective` to `~sunpy.coordinates.frames.Heliocentric` used the Sun-observer distance from the wrong frame when shifting the origin, and thus might not give the correct answer if the observer was not the same for the two frames. (`#3291 <https://github.com/sunpy/sunpy/pull/3291>`__)
 - Fixed a bug with the transformations between `~sunpy.coordinates.frames.Heliocentric` and `~sunpy.coordinates.frames.HeliographicStonyhurst` when the frame observation time was not the same as the observer observation time.  The most common way to encounter this bug was when transforming from `~sunpy.coordinates.frames.Helioprojective` to any non-observer-based frame while also changing the observation time. (`#3291 <https://github.com/sunpy/sunpy/pull/3291>`__)
-- Fixed a `sunpy.coordinates` bug where a frame using the default observer of Earth could have its observer overwritten during a transformation. (`#3291 <https://github.com/sunpy/sunpy/pull/3291>`__)
 - VSO client `fetch` should not download when `wait` keyword argument is specified. (`#3298 <https://github.com/sunpy/sunpy/pull/3298>`__)
 - Fixed a bug with `~sunpy.coordinates.wcs_utils.solar_frame_to_wcs_mapping` that assumed that the supplied frame was a SunPy frame. (`#3305 <https://github.com/sunpy/sunpy/pull/3305>`__)
 - Fixed bugs with `~sunpy.coordinates.wcs_utils.solar_frame_to_wcs_mapping` if the input frame does not include an observation time or an observer. (`#3305 <https://github.com/sunpy/sunpy/pull/3305>`__)
@@ -150,6 +145,14 @@ Bug Fixes
 - Fix multiple instances of `sunpy.map.sources` assuming the type of FITS Header
   values. (`#3497 <https://github.com/sunpy/sunpy/pull/3497>`__)
 - Fixed a bug with `~sunpy.coordinates.NorthOffsetFrame` where non-spherical representations for the north pole produced an error. (`#3517 <https://github.com/sunpy/sunpy/pull/3517>`__)
+- Fixed ``map.__repr__`` when the coordinate system information contained in the
+  ``CUNIT1/2`` metadata is not set to a known value. (`#3569 <https://github.com/sunpy/sunpy/pull/3569>`__)
+- Fixed bugs with some coordinate transformations when ``obstime`` is ``None`` on the destination frame but can be assumed to be the same as the ``obstime`` of the source frame. (`#3576 <https://github.com/sunpy/sunpy/pull/3576>`__)
+- Updated `sunpy.map.mapsequence.MapSequence` so that calling ``_derotate()`` raises ``NotImplementedError``.
+  Added associated tests. (`#3613 <https://github.com/sunpy/sunpy/pull/3613>`__)
+- Fixed pandas plotting registration in `sunpy.timeseries`. (`#3633 <https://github.com/sunpy/sunpy/pull/3633>`__)
+- Correctly catch and emit a warning when converting a map metadata to a FITS
+  header and it contains a keyword with non-ascii characters. (`#3645 <https://github.com/sunpy/sunpy/pull/3645>`__)
 
 
 Improved Documentation
@@ -172,6 +175,13 @@ Improved Documentation
 - Fixed various issues with the gallery example of saving/loading coordinates using `asdf`. (`#3473 <https://github.com/sunpy/sunpy/pull/3473>`__)
 - Added ``sunpy.__citation__`` with a BibTex entry for citing sunpy. (`#3478 <https://github.com/sunpy/sunpy/pull/3478>`__)
 - Added an example showing how to display two maps and fade between them. (`#3488 <https://github.com/sunpy/sunpy/pull/3488>`__)
+- Clarified the meaning of some `GenericMap` observer properties. (`#3585 <https://github.com/sunpy/sunpy/pull/3585>`__)
+- Added inherited members of `sunpy.map` classes to the docs. (`#3587 <https://github.com/sunpy/sunpy/pull/3587>`__)
+- Fixed documentation of `sunpy.database.Database.search` by adding ``Returns`` docstring. (`#3593 <https://github.com/sunpy/sunpy/pull/3593>`__)
+- Updated the docstring for the parameter ``sortby`` in `~sunpy.map.MapSequence` with the default value, valid value and how to disable sorting. (`#3601 <https://github.com/sunpy/sunpy/pull/3601>`__)
+- Updated the tour guide to reflect that the time series is not random data. (`#3603 <https://github.com/sunpy/sunpy/pull/3603>`__)
+- Fixes bold type and extra line breaks of remote data manager example
+  in `remote_data_manager.py`. (`#3615 <https://github.com/sunpy/sunpy/pull/3615>`__)
 
 
 Trivial/Internal Changes
@@ -185,9 +195,10 @@ Trivial/Internal Changes
   3.0.3 to 3.1.1. (`#3406 <https://github.com/sunpy/sunpy/pull/3406>`__)
 - Corrected spelling of 'plotting' in timeseries method (changed 'ploting' to 'plotting'). (`#3429 <https://github.com/sunpy/sunpy/pull/3429>`__)
 - Switched to "importlib_metadata" to get package version to speed up import of SunPy. (`#3449 <https://github.com/sunpy/sunpy/pull/3449>`__)
+- Fix tests for `sunpy.data.data_manager` and ensure they are correctly executed with pytest. (`#3550 <https://github.com/sunpy/sunpy/pull/3550>`__)
 
 
-Sunpy 1.0.0 (2019-06-01)
+sunpy 1.0.0 (2019-06-01)
 ========================
 
 Backwards Incompatible Changes
