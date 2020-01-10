@@ -145,7 +145,7 @@ This works by providing the URL of a remote file and a SHA256 hash to the `sunpy
 If the specified hash does not match that of the remote version, an exception is raised to make the user aware of any changes on the remote server or corruption of local files.
 Additionally, `sunpy.data.cache <sunpy.data.data_manager.Cache>` can be used to avoid re-downloading files that already exist on a user's local machine, thus saving disk space and internet bandwidth.
 
-See :ref:`remote_data` for more details.
+See `Remote Data Manager <https://docs.sunpy.org/en/latest/dev_guide/remote_data.html>`__ for more details.
 
 .. _whatsnew-1.1-SUVI:
 
