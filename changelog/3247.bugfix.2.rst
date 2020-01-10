@@ -1,1 +1,0 @@
-Fixed the handling of coordinates with velocity information when transforming between Astropy frames and SunPy frames.

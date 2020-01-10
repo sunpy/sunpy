@@ -1,1 +1,0 @@
-Added an example showing how to display two maps and fade between them.

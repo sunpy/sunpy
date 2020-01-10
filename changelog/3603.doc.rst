@@ -1,1 +1,0 @@
-Updated the tour guide to reflect that the time series is not random data. 

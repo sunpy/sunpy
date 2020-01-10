@@ -1,2 +1,0 @@
-Single character wildcards and character ranges can now be passed as
-glob patterns to `~sunpy.map.Map`.

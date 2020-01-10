@@ -1,2 +1,0 @@
-Importing `sunpy.timeseries.timeseriesbase` no longer automatically imports
-Matplotlib.
