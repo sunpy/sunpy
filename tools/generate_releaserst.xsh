@@ -43,16 +43,8 @@ def get_credentials(username=None, password=None):
     else:
         auth = my_netrc.authenticators("api.github.com")
         if auth:
-            response = 'NONE'  # to allow enter to be default Y
-            while response.lower() not in ('y', 'n', ''):
-                warnings.warn('Using the following GitHub credentials from '
-                              '~/.netrc: {0}/{1}'.format(auth[0], '*' * 8))
-                response = input(
-                    'Use these credentials (if not you will be prompted '
-                    'for new credentials)? [Y/n] ')
-            if response.lower() == 'y' or response == '':
-                username = auth[0]
-                password = auth[2]
+            username = auth[0]
+            password = auth[2]
 
     if not (username or password):
         warnings.warn("Enter your GitHub username and password so that API "
@@ -86,7 +78,7 @@ def paginate_list_request(req, verbose=False, auth=None):
     return elems
 
 
-def count_issues_since(dt, repo, auth=None, verbose=True, cacheto=None):
+def count_issues_since(since, upto, repo, auth=None, verbose=True, cacheto=None):
     if cacheto and os.path.exists(cacheto):
         with open(cacheto) as f:
             isslst = json.load(f)
@@ -105,21 +97,21 @@ def count_issues_since(dt, repo, auth=None, verbose=True, cacheto=None):
     nopened = nclosed = 0
 
     for entry in isslst:
-        if not isinstance(entry, dict):
+        if not isinstance(entry, dict) or 'pull_request' in entry:
             continue
         createddt = datetime.datetime.strptime(entry['created_at'],  ISO_FORMAT)
-        if createddt > dt:
+        if createddt > since and createddt < upto:
             nopened += 1
 
         if entry['closed_at']:
             closeddt = datetime.datetime.strptime(entry['closed_at'],  ISO_FORMAT)
-            if closeddt > dt:
+            if closeddt > since and closeddt < upto:
                 nclosed += 1
 
     return {'opened': nopened, 'closed': nclosed}
 
 
-def count_prs_since(dt, repo, auth=None, verbose=True, cacheto=None):
+def count_prs_since(since, upto, repo, auth=None, verbose=True, cacheto=None):
     if cacheto and os.path.exists(cacheto):
         with open(cacheto) as f:
             prlst = json.load(f)
@@ -138,11 +130,13 @@ def count_prs_since(dt, repo, auth=None, verbose=True, cacheto=None):
     usersopened = []
     usersclosed = []
 
+    skip_users = ['sunpy-backport[bot]']
+
     for entry in prlst:
-        if not isinstance(entry, dict):
+        if not isinstance(entry, dict) or entry['user']['login'] in skip_users:
             continue
         createddt = datetime.datetime.strptime(entry['created_at'],  ISO_FORMAT)
-        if createddt > dt:
+        if createddt > since and createddt < upto:
             nopened += 1
             user = entry['user']
             if user is not None:
@@ -150,7 +144,7 @@ def count_prs_since(dt, repo, auth=None, verbose=True, cacheto=None):
 
         if entry['merged_at']:
             closeddt = datetime.datetime.strptime(entry['merged_at'],  ISO_FORMAT)
-            if closeddt > dt:
+            if closeddt > since and closeddt < upto:
                 nclosed += 1
                 user = entry['user']
                 if user is not None:
@@ -222,7 +216,8 @@ shortlog = list(map(lambda x: '    ' + x, shortlog))
 
 # Get PR info
 
-pkgdt = get_datetime_of_pypi_version(args['--project-name'], prev_version)
+since = get_datetime_of_pypi_version(args['--project-name'], prev_version)
+upto = datetime.datetime.fromisoformat($(git show -s --format=%cI HEAD).strip()).astimezone().replace(tzinfo=None)
 
 mkdir -p .github_cache
 icache = '.github_cache/issues.json'
@@ -230,8 +225,8 @@ prcache = '.github_cache/prs.json'
 
 verbose = False
 repo = f"{args['--project-name']}/{args['--project-name']}" if not args['--repo'] else args['--repo']
-icnt = count_issues_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=icache)
-prcnt = count_prs_since(pkgdt, repo, auth=auth, verbose=verbose, cacheto=prcache)
+icnt = count_issues_since(since, upto, repo, auth=auth, verbose=verbose, cacheto=icache)
+prcnt = count_prs_since(since, upto, repo, auth=auth, verbose=verbose, cacheto=prcache)
 
 # Build output
 output = '\n'.join(shortlog)
@@ -239,7 +234,6 @@ output = '\n'.join(shortlog)
 
 pretty_project_name = args["--pretty-project-name"] if args["--pretty-project-name"] else args["--project-name"]
 
-print("-"*80)
 print()
 print(f"This release of {pretty_project_name} contains {ncommits} commits in {prcnt['merged']} merged pull requests closing {icnt['closed']} issues from {npeople} people, {nnew} of which are first time contributors to {pretty_project_name}.")
 print()
