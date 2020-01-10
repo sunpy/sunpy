@@ -1,0 +1,2 @@
+Removed obselete `Astropy Helpers` submodule section in `CONTRIBUTING.rst`;
+Also removed mentions of `astropy_helpers` in all files of the project.
