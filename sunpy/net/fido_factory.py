@@ -159,6 +159,24 @@ class UnifiedResponse(Sequence):
         return s
 
     @property
+    def table(self):
+        """
+        Returns `astopy.table.Table` for all responses present in a specific
+        `~sunpy.net.fido_factory.UnifiedResponse` object. They can then be used
+        to perform key-based indexing of QueryResponses
+
+        Returns
+        -------
+        tables : `astropy.table.Table`, list
+            a list or a single table consisting of data from the QueryResponse
+        """
+
+        tables = []
+        for block in self.responses:
+            tables.append(block.build_table())
+        return tables[0] if len(tables) == 1 else tables
+
+    @property
     def responses(self):
         """
         A generator of all the `sunpy.net.dataretriever.client.QueryResponse`

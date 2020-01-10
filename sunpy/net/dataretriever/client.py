@@ -85,15 +85,15 @@ class QueryResponse(list):
         return s
 
     def __repr__(self):
-        return repr(type(self)) + repr(self._build_table())
+        return repr(type(self)) + repr(self.build_table())
 
     def __str__(self):
-        return str(self._build_table())
+        return str(self.build_table())
 
     def _repr_html_(self):
-        return self._build_table()._repr_html_()
+        return self.build_table()._repr_html_()
 
-    def _build_table(self):
+    def build_table(self):
         columns = OrderedDict((('Start Time', []), ('End Time', []),
                                ('Source', []), ('Instrument', []),
                                ('Wavelength', [])))
