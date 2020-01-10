@@ -1,2 +1,0 @@
-Added the `sunpy.coordinates.sun.carrington_rotation_time` function to
-compute the time of a given Carrington rotation number.

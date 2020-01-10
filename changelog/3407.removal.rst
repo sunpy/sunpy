@@ -1,2 +1,0 @@
-`sunpy.visualization.animator.ImageAnimatorWCS` is now deprecated in favour of
-`~sunpy.visualization.animator.ArrayAnimatorWCS`.

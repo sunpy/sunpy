@@ -1,1 +1,0 @@
-Fixed `~sunpy.physics.solar_rotation.calculate_solar_rotate_shift` so that it does not calculate a shift between the reference layer and itself, which would sometimes incorrectly result in a shift of a pixel due to numerical precision.
