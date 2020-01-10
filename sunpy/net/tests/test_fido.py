@@ -12,6 +12,7 @@ from parfive import Results
 from parfive.utils import FailedDownload
 
 import astropy.units as u
+from astropy.table import Table
 
 from sunpy import config
 from sunpy.net import Fido, attr
@@ -221,6 +222,17 @@ def test_unifiedresponse_slicing_reverse():
     assert len(results[::-1]) == len(results)
     assert isinstance(results[0, ::-1], UnifiedResponse)
     assert results[0, ::-1]._list[0] == results._list[0][::-1]
+
+
+@pytest.mark.remote_data
+def test_table():
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+    table = results.table
+    assert isinstance(table, Table)
+    columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    assert columns == table.colnames
+    assert len(table) == 5
 
 
 def test_vso_unifiedresponse():
