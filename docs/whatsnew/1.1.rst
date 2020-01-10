@@ -32,11 +32,11 @@ SunPy 1.1 also includes a large number of smaller improvements and bug fixes, wh
 
 By the numbers:
 
-* XX commits have been added since 1.0
-* XX issues have been closed since 1.0
-* XX pull requests have been merged since 1.0
-* XX people have contributed since 1.0
-* XX new contributors
+* 1137 commits have been added since 1.0
+* 106 issues have been closed since 1.0
+* 242 pull requests have been merged since 1.0
+* 24 people have contributed since 1.0
+* 10 new contributors
 
 .. _whatsnew-1.1-python:
 
