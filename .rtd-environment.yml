@@ -5,7 +5,6 @@ dependencies:
   - python
   - pip
   - openjpeg
-  - jsonschema=2.6.0
   - numpy
   - scipy
   - matplotlib
@@ -34,4 +33,3 @@ dependencies:
     - sunpy-sphinx-theme
     - jplephem
     - astroquery
-    - semantic-version==2.6.0
