@@ -70,10 +70,13 @@ The `make_fitswcs_header <sunpy.map.header_helper.make_fitswcs_header>` function
 
 Here's an example of creating a header from some generic data and an `astropy.coordinate.SkyCoord`::
 
+
     >>> import numpy as np
     >>> import astropy.units as u
     >>> from sunpy.coordinates import frames
     >>> from astropy.coordinates import SkyCoord
+
+.. doctest-requires:: astropy<=4.0
 
     >>> data = np.arange(0,100).reshape(10,10)
     >>> coord = SkyCoord(0*u.arcsec, 0*u.arcsec, obstime = '2013-10-28', observer = 'earth', frame = frames.Helioprojective)
@@ -109,6 +112,8 @@ values of ``crpix`` and ``cdelt`` were set to the default values.
 These keywords can be passed to the function in the form of an `astropy.units.Quanity` with associated units.
 Here's another example of passing ``reference_pixel`` and ``scale`` to the function::
 
+.. doctest-requires:: astropy<=4.0
+
     >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
     ...                                                      reference_pixel=u.Quantity([5, 5]*u.pixel),
     ...                                                      scale=u.Quantity([2, 2] *u.arcsec/u.pixel))
@@ -142,6 +147,8 @@ Furthermore, the following observation keywords can be passed to the `make_fitsw
 function and will be translated to the FITS standard: ``observtory``, ``instrument``,``telescope``, ``wavelength``, ``exposure``.
 
 An example of creating a header with these additional keywords::
+
+.. doctest-requires:: astropy<=4.0
 
     >>> header = sunpy.map.header_helper.make_fitswcs_header(data, coord,
     ...                                                      reference_pixel = u.Quantity([5, 5]*u.pixel),
