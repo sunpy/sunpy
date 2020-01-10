@@ -2,8 +2,6 @@ pycodestyle:
   max-line-length: 100
   exclude:
     - setup.py
-    - ez_setup.py
-    - ah_bootstrap.py
     - docs/conf.py
     - sunpy/cm/color_tables.py
   descending_issues_order: True
