@@ -1469,7 +1469,7 @@ class GenericMap(NDData):
 
         annotate : `bool`
             Passing `False` disables the axes labels and the ticks on the top and right axes.
-    
+
         Returns
         -------
         overlay: `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap`
@@ -1486,7 +1486,7 @@ class GenericMap(NDData):
             raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
-                                                           annotate=annotate, 
+                                                           annotate=annotate,
                                                            **kwargs)
 
     def draw_limb(self, axes=None, **kwargs):
