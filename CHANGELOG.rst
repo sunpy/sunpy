@@ -1,3 +1,25 @@
+Sunpy v1.0.7 (2020-01-10)
+=========================
+
+Bug Fixes
+---------
+
+- Fixed bugs with some coordinate transformations when ``obstime`` is ``None`` on the destination frame but can be assumed to be the same as the ``obstime`` of the source frame. (`#3576 <https://github.com/sunpy/sunpy/pull/3576>`__)
+- Updated `sunpy.map.mapsequence.MapSequence` so that calling ``_derotate()`` raises ``NotImplementedError``.
+  Added associated tests. (`#3613 <https://github.com/sunpy/sunpy/pull/3613>`__)
+- Fixed pandas plotting registration in `sunpy.timeseries`. (`#3633 <https://github.com/sunpy/sunpy/pull/3633>`__)
+
+
+Improved Documentation
+----------------------
+
+- Clarified the meaning of some `GenericMap` observer properties. (`#3585 <https://github.com/sunpy/sunpy/pull/3585>`__)
+- Added inherited members of `sunpy.map` classes to the docs. (`#3587 <https://github.com/sunpy/sunpy/pull/3587>`__)
+- Fixed documentation of `sunpy.database.Database.search` by adding ``Returns`` docstring. (`#3593 <https://github.com/sunpy/sunpy/pull/3593>`__)
+- Updated the docstring for the parameter ``sortby`` in `~sunpy.map.MapSequence` with the default value, valid value and how to disable sorting. (`#3601 <https://github.com/sunpy/sunpy/pull/3601>`__)
+- Updated the tour guide to reflect that the time series is not random data. (`#3603 <https://github.com/sunpy/sunpy/pull/3603>`__)
+
+
 Sunpy v1.0.6 (2019-11-20)
 =========================
 
