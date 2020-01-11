@@ -1712,65 +1712,79 @@ class GenericMap(NDData):
         return [circ]
 
     @u.quantity_input
-    def draw_rectangle(self, bottom_left, width: u.deg, height: u.deg, axes=None, **kwargs):
+    def draw_rectangle(self, bottom_left, top_right=None, width: u.deg=None, height: u.deg=None, axes=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
-
         Parameters
         ----------
-
-        bottom_left : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
-            The bottom left corner of the rectangle.
-
-        width : `astropy.units.Quantity`
+        bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
+            The bottom_left coordinate of the rectangle. If a `SkyCoord` it can
+            have shape ``(2,)`` and also define ``top_right``. If specifying
+            pixel coordinates it must be given as an `~astropy.units.Quantity`
+            object with units of `~astropy.units.pixel`.
+        top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
+            The top_right coordinate of the rectangle. Can only be omitted if
+            ``bottom_left`` has shape ``(2,)``.
+        width : `astropy.units.Quantity` # Depreciated
             The width of the rectangle.
-
-        height : `astropy.units.Quantity`
+        height : `astropy.units.Quantity` # Depreciated
             The height of the rectangle.
-
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current
             axes.
-
         Returns
         -------
-
         rect : `list`
             A list containing the `~matplotlib.patches.Rectangle` object, after
             it has been added to ``axes``.
-
         Notes
         -----
-
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
-
         """
-
         if not axes:
             axes = plt.gca()
-
         if wcsaxes_compat.is_wcsaxes(axes):
             axes_unit = u.deg
         else:
             axes_unit = self.spatial_units[0]
 
+        if width or height:
+            warnings.warn("Use of `width` and `height` is depreciated and these will be removed in future", Warning)
+
+        else:
+            if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
+                          astropy.coordinates.BaseCoordinateFrame)):
+                if not top_right:
+                    if bottom_left.shape[0] != 2:
+                        raise ValueError("If top_right is not specified bottom_left must have length two.")
+                    else:
+                        top_right = bottom_left[1]
+                        bottom_left = bottom_left[0]
+
+            elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
+                  isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
+
+                bottom_left = astropy.wcs.utils.pixel_to_skycoord(bottom_left, wcs=self.wcs)
+                top_right = astropy.wcs.utils.pixel_to_skycoord(bottom_left, wcs=self.wcs)
+
+            else:
+                raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
+
+            width = np.abs(top_right.spherical.lon - bottom_left.spherical.lon).to(u.deg)  # Getting the difference in Longitudes.
+            height = np.abs(top_right.spherical.lat - bottom_left.spherical.lat).to(u.deg)  # Getting the difference in Latitudes.
+
         coord = bottom_left.transform_to(self.coordinate_frame)
-        bottom_left = u.Quantity((coord.data.lon, coord.data.lat),
-                                 unit=axes_unit).value
+        bottom_left = u.Quantity((coord.data.lon, coord.data.lat), unit=axes_unit).value
 
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
-
         kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
                   'color': 'white',
                   'fill': False}
         kwergs.update(kwargs)
-
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
-
         axes.add_artist(rect)
-
         return [rect]
 
     @u.quantity_input
