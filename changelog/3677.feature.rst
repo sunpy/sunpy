@@ -1,0 +1,1 @@
+Updates ``map.draw_rectangle`` API to be consistent with ``map.submap``
