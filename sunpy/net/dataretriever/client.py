@@ -97,7 +97,7 @@ class QueryResponse(list):
         columns = OrderedDict((('Start Time', []), ('End Time', []),
                                ('Source', []), ('Instrument', []),
                                ('Wavelength', [])))
-        for i, qrblock in enumerate(self):
+        for qrblock in self:
             columns['Start Time'].append(
                 (qrblock.time.start).strftime(TIME_FORMAT))
             columns['End Time'].append(

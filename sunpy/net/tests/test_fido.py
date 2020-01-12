@@ -235,6 +235,22 @@ def test_table():
     assert len(table) == 5
 
 
+@pytest.mark.remote_data
+def test_table_multiple_response():
+    results = Fido.search(a.Time('2012/3/4', '2012/3/6'),
+                          a.Instrument('lyra') | a.Instrument('rhessi'))  
+    table = results.table
+    assert isinstance(table, list)
+    assert isinstance(table[0], Table)
+    assert len(table) == 2
+
+    columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    assert columns == table[0].colnames and columns == table[1].colnames
+
+    assert all(entry == 'lyra' for entry in table[0]['Instrument'])
+    assert all(entry == 'rhessi' for entry in table[1]['Instrument'])
+
+
 def test_vso_unifiedresponse():
     vrep = vsoQueryResponse([])
     vrep.client = True
