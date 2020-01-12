@@ -65,8 +65,16 @@ def overlap_and_interleave_with_basic_1_md():
 def test_create_mithout_metadata():
     tr = TimeRange('2010-01-01 13:59:57.468999', '2010-01-02 13:59:56.091999')
     colnames = ['column1', 'column2']
-    with pytest.raises(ValueError):
-        tsmd_1 = TimeSeriesMetaData(timerange=tr, colnames=colnames)
+    tsmd_1 = TimeSeriesMetaData(timerange=tr, colnames=colnames)
+    assert isinstance(tsmd_1, TimeSeriesMetaData)
+    assert tsmd_1.metadata[0][1] == colnames
+    with pytest.warns(SunpyUserWarning, match='No time range given for metadata'):
+        tsmd_2 = TimeSeriesMetaData(timerange=tr)
+    assert isinstance(tsmd_1, TimeSeriesMetaData)
+    assert tsmd_2.metadata[0][1] == []
+    assert tsmd_1.metadata[0][0] == tsmd_2.metadata[0][0] == tr
+    assert tsmd_1.metadata[0][2] == tsmd_2.metadata[0][2] == MetaDict()
+    assert len(tsmd_1.metadata) == len(tsmd_2.metadata) == 1
 
 
 def test_create_mithout_metadata_or_timerange():
@@ -77,11 +85,6 @@ def test_create_mithout_metadata_or_timerange():
     with pytest.raises(ValueError):
         TimeSeriesMetaData()
 
-def test_create_mithout_colnames():
-    tr = TimeRange('2010-01-01 13:59:57.468999', '2010-01-02 13:59:56.091999')
-    metadict = MetaDict(OrderedDict([('other_key1', 'value1'), ('other_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_5')]))
-    with pytest.raises(ValueError):
-        tsmd_1 = TimeSeriesMetaData(timerange=tr, meta=metadict)
 
 # =============================================================================
 # Test Appending TimeSeriesMetaData Objects
