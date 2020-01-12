@@ -225,30 +225,34 @@ def test_unifiedresponse_slicing_reverse():
 
 
 @pytest.mark.remote_data
-def test_table():
+def test_tables_single_response():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
-    table = results.table
-    assert isinstance(table, Table)
+    tables = results.tables
+
+    assert isinstance(tables, list)
+    assert isinstance(tables[0], Table)
+    assert len(tables) == 1
+
     columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
-    assert columns == table.colnames
-    assert len(table) == 5
+    assert columns == tables[0].colnames
+    assert len(tables[0]) == 5
 
 
 @pytest.mark.remote_data
-def test_table_multiple_response():
+def test_tables_multiple_response():
     results = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                          a.Instrument('lyra') | a.Instrument('rhessi'))  
-    table = results.table
-    assert isinstance(table, list)
-    assert isinstance(table[0], Table)
-    assert len(table) == 2
+                          a.Instrument('lyra') | a.Instrument('rhessi'))
+    tables = results.tables
+    assert isinstance(tables, list)
+    assert isinstance(tables[0], Table) and isinstance(tables[1], Table)
+    assert len(tables) == 2
 
     columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
-    assert columns == table[0].colnames and columns == table[1].colnames
+    assert columns == tables[0].colnames and columns == tables[1].colnames
 
-    assert all(entry == 'lyra' for entry in table[0]['Instrument'])
-    assert all(entry == 'rhessi' for entry in table[1]['Instrument'])
+    assert all(entry == 'lyra' for entry in tables[0]['Instrument'])
+    assert all(entry == 'rhessi' for entry in tables[1]['Instrument'])
 
 
 def test_vso_unifiedresponse():
