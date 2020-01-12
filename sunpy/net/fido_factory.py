@@ -161,13 +161,14 @@ class UnifiedResponse(Sequence):
     @property
     def table(self):
         """
-        Returns `astopy.table.Table` for all responses present in a specific
+        Returns an `astropy.table.Table` for all responses present in a specific
         `~sunpy.net.fido_factory.UnifiedResponse` object. They can then be used
-        to perform key-based indexing of QueryResponses
+        to perform key-based indexing of `sunpy.net.dataretriever.client.QueryResponse`
+        objects.
 
         Returns
         -------
-        tables : `astropy.table.Table`, list
+        `astropy.table.Table`, list
             a list or a single table consisting of data from the QueryResponse
         """
 
