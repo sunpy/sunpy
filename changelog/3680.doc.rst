@@ -1,1 +1,1 @@
-Updates TimeSeriesMeta docs to make passing all parameters mandatory.
+Corrected misleading `~sunpy.timeseries.metadata.TimeSeriesMetaData` documentation about optional parameters.
