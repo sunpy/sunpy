@@ -17,7 +17,7 @@ import sunpy.map
 
 ###########################################################################
 # First we'll download a couple images and store them in a
-# sunpy.map.MapSequence(). This could be from whatever imager.
+# `sunpy.map.MapSequence`. This could be from any channel of any imager.
 # Here, we use SDO/AIA 304 Å.
 
 instrument = a.Instrument('AIA')
