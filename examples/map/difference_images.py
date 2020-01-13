@@ -55,7 +55,7 @@ diff_map = sunpy.map.Map(diff, meta)
 
 plt.figure()
 ax_diff = plt.subplot(projection=diff_map)
-diff_map.plot(cmap=plt.get_cmap('Greys_r'),
+diff_map.plot(cmap='Greys_r',
               norm=colors.Normalize(vmin=-50, vmax=50))
 plt.show()
 
