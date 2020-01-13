@@ -249,17 +249,17 @@ The current figure at the end of the unit test, or an explicitly returned figure
 If the hashes do not match, the figure has changed, and thus the test is considered to have failed.
 
 To run the figure tests you need to be very careful, as any pixel that has changed, will change the hash.
-In order to avoid changes due to package versions, we recommend using tox::
+In order to avoid changes due to different package versions, we recommend using tox::
 
     $ tox -e figure
 
-This will ensure that any figures created are checked using the current packages we test against.
-Running this will create a folder, "figure_test_images", within your work folder ("<local clone location>/figure_test_images") and this is ignored by git.
-Inside this folder will be all the images created as well as a json file with the hashes of the figures created by the test run.
+This will ensure that any figures created are checked using the package versions that were used to create the original figure hashes.
+Running this will create a folder, "figure_test_images", within your work folder ("<local clone location>/figure_test_images"), which is ignored by git.
+Inside this folder will be all the images created, as well as a json file with the hashes of the figures created by the test run.
 So if you have created a new figure test, by running the tox command, it will create the figure and the corresponding hash for you to use.
-The current hashes are located within "sunpy/tests/figure_tests_env_py36.json" and this will be where you will update old hashes or create new figure entries.
+The current hashes are located within "sunpy/tests/figure_tests_env_py36.json" and this will be where you will need to update old hashes or create new figure entries if anything changes.
 
-If you are adding a new figure test, you will need to update this `repository <https://github.com/sunpy/sunpy-figure-tests>`__ that stores the current figure tests, we use this for a visual comparison of figure tests.
+If you are adding a new figure test, you will also need to update this `repository <https://github.com/sunpy/sunpy-figure-tests>`__ that stores the current figure tests, which we use for a visual comparison of figure tests.
 
 Writing doctests
 ----------------
