@@ -256,7 +256,6 @@ In order to avoid changes due to different package versions, we recommend using 
 This will ensure that any figures created are checked using the package versions that were used to create the original figure hashes.
 Running this will create a folder, "figure_test_images", within your work folder ("<local clone location>/figure_test_images"), which is ignored by git.
 Inside this folder will be all the images created, as well as a json file with the hashes of the figures created by the test run.
-So if you have created a new figure test, by running the tox command, it will create the figure and the corresponding hash for you to use.
 The current hashes are located within "sunpy/tests/figure_tests_env_py36.json" and this will be where you will need to update old hashes or create new figure entries if anything changes.
 
 If you are adding a new figure test, you will also need to update this `repository <https://github.com/sunpy/sunpy-figure-tests>`__ that stores the current figure tests, which we use for a visual comparison of figure tests.
