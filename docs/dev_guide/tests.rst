@@ -245,11 +245,11 @@ Here is a simple example::
     def test_simple_plot():
         plt.plot([0,1])
 
-The current figure at the end of the unit test, or an explicitly returned figure, has its hash compared against an established hash library (more on this below).
+The current figure at the end of the unit test, or an explicitly returned figure, has its hash (currently ``SHA256``) compared against an established hash collection (more on this below).
 If the hashes do not match, the figure has changed, and thus the test is considered to have failed.
 
 To run the figure tests you need to be very careful, as any pixel that has changed, will change the hash.
-TO avoid changes due to package versions, we recommend using tox::
+In order to avoid changes due to package versions, we recommend using tox::
 
     $ tox -e figure
 
