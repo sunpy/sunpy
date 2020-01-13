@@ -9,8 +9,6 @@ you're subtracting the previous image or the first image in a sequence.
 """
 ###########################################################################
 
-#sphinx_gallery_thumbnail_number = 2
-
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import astropy.units as u
@@ -60,3 +58,5 @@ ax_diff = plt.subplot(projection=diff_map)
 diff_map.plot(cmap=plt.get_cmap('Greys_r'),
               norm=colors.Normalize(vmin=-50, vmax=50))
 plt.show()
+
+#sphinx_gallery_thumbnail_number = 2
