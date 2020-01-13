@@ -236,7 +236,7 @@ Figure unit tests
 -----------------
 
 You can write SunPy unit tests that test the generation of matplotlib figures by adding the decorator `sunpy.tests.helpers.figure_test`.
-Here is a simple example: ::
+Here is a simple example::
 
     import matplotlib.pyplot as plt
     from sunpy.tests.helpers import figure_test
@@ -248,28 +248,18 @@ Here is a simple example: ::
 The current figure at the end of the unit test, or an explicitly returned figure, has its hash compared against an established hash library (more on this below).
 If the hashes do not match, the figure has changed, and thus the test is considered to have failed.
 
-You will need to update the library of figure hashes after you create a new figure test or after a figure has intentionally changed due to code improvement.
-The file is located at "sunpy/tests/figure_tests_env_py36.json".
-
-Furthermore, to run the figure tests, you need to have the same Python version as the figure environment.
-Otherwise, the tests will be skipped.
-Since the hashes are checked, we test figures against a fixed set of packages and the best way to check this is to use tox::
+To run the figure tests you need to be very careful, as any pixel that has changed, will change the hash.
+TO avoid changes due to package versions, we recommend using tox::
 
     $ tox -e figure
 
-or::
+This will ensure that any figures created are checked using the current packages we test against.
+Running this will create a folder, "figure_test_images", within your work folder ("<local clone location>/figure_test_images") and this is ignored by git.
+Inside this folder will be all the images created as well as a json file with the hashes of the figures created by the test run.
+So if you have created a new figure test, by running the tox command, it will create the figure and the corresponding hash for you to use.
+The current hashes are located within "sunpy/tests/figure_tests_env_py36.json" and this will be where you will update old hashes or create new figure entries.
 
-    $ pytest -m "figure"
-
-These will only run the figure tests and nothing else.
-
-If you have a Python environment that matches the base Python version used in the figure environment, these tests will run and probably fail.
-To avoid running the tests::
-
-    $ pytest -m "not figure"
-
-The output (regardless if via ``tox`` or ``pytest``) of these figure tests will be in a "figure_test_images" folder within your work folder.
-For example, "<local clone location>/figure_test_images" which is ignored by git.
+If you are adding a new figure test, you will need to update this `repository <https://github.com/sunpy/sunpy-figure-tests>`__ that stores the current figure tests, we use this for a visual comparison of figure tests.
 
 Writing doctests
 ----------------
