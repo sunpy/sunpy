@@ -509,16 +509,22 @@ class GenericMap(NDData):
     @property
     def bottom_left_coord(self):
         """
-        The physical coordinate for the bottom left [0,0] pixel.
+        The physical coordinate for the bottom left corner of the [0,0] pixel.
         """
-        return self.pixel_to_world(0*u.pix, 0*u.pix)
+        # (0, 0) is the centre of the pixel, so offset by half a pixel to get
+        # corner.
+        return self.pixel_to_world(-0.5*u.pix, -0.5*u.pix)
 
     @property
     def top_right_coord(self):
         """
-        The physical coordinate for the top left pixel.
+        The physical coordinate for the top right corner of the top right ([-1, -1]) pixel.
         """
-        return self.pixel_to_world(*self.dimensions)
+        # self.dimensions is the centre of the pixel, so offset by half a pixel to get
+        # corner.
+        x, y = self.dimensions
+        x, y = x + 0.5 * u.pix, y + 0.5 * u.pix
+        return self.pixel_to_world(x, y)
 
     @property
     def center(self):
