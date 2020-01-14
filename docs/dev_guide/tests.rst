@@ -26,7 +26,7 @@ Since the testing dependencies are not actually required to install or use SunPy
 
 Developers who want to run the test suite will need to install the testing packages using pip::
 
-    $ pip intall -e .[tests]
+    $ pip install -e .[tests]
 
 If you want to see the current test dependencies, you check "extras_require" in "setup.cfg".
 
