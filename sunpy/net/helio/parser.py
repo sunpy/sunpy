@@ -46,7 +46,6 @@ def webservice_parser(service='HEC'):
      'http://festung3.oats.inaf.it:8080/helio-hec/HelioLongQueryService',
      'http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService',
      'http://hec.helio-vo.eu/helio_hec/HelioLongQueryService']
-
     """
     link = RL.LINK + '/' + service.lower()
     xml = link_test(link)

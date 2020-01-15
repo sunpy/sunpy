@@ -31,10 +31,7 @@ except NameError:
     import builtins
     builtins._SUNPY_SETUP_ = False
 
-try:
-    from .version import version as __version__
-except ImportError:
-    __version__ = ''
+from .version import version as __version__
 
 
 def _get_bibtex():

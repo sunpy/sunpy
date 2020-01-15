@@ -86,23 +86,23 @@ def parsed_dbase():
     only using the first two rows of data.
     """
 
-    return {'filename': ['hsi_obssumm_20031101_139.fit',
-                         'hsi_obssumm_20031102_144.fit',
-                         'hsi_obssumm_20031103_148.fit',
-                         'hsi_obssumm_20031104_150.fit',
-                         'hsi_obssumm_20031105_138.fit'],
-            'orb_st': [0, 0, 0, 0, 0],
-            'orb_end': [0, 0, 0, 0, 0],
-            'start_time': [datetime(2003, 11, 1, 0, 0),
-                           datetime(2003, 11, 2, 0, 0),
-                           datetime(2003, 11, 3, 0, 0),
-                           datetime(2003, 11, 4, 0, 0),
-                           datetime(2003, 11, 5, 0, 0)],
-            'end_time': [datetime(2003, 11, 2, 0, 0),
-                         datetime(2003, 11, 3, 0, 0),
-                         datetime(2003, 11, 4, 0, 0),
-                         datetime(2003, 11, 5, 0, 0),
-                         datetime(2003, 11, 6, 0, 0)],
+    return {'filename': ['hsi_obssumm_20031101_157.fit',
+                         'hsi_obssumm_20031102_161.fit',
+                         'hsi_obssumm_20031103_165.fit',
+                         'hsi_obssumm_20031104_168.fit',
+                         'hsi_obssumm_20031105_156.fit'],
+            'orb_st': [65536, 65536, 65536, 65536, 65536],
+            'orb_end': [65536, 65536, 65536, 65536, 65536],
+            'start_time': [parse_time('2003-11-01T00:00:00.000'),
+                           parse_time('2003-11-02T00:00:00.000'),
+                           parse_time('2003-11-03T00:00:00.000'),
+                           parse_time('2003-11-04T00:00:00.000'),
+                           parse_time('2003-11-05T00:00:00.000')],
+            'end_time': [parse_time('2003-11-02T00:00:00.000'),
+                         parse_time('2003-11-03T00:00:00.000'),
+                         parse_time('2003-11-04T00:00:00.000'),
+                         parse_time('2003-11-05T00:00:00.000'),
+                         parse_time('2003-11-06T00:00:00.000')],
             'status_flag': [0, 0, 0, 0, 0],
             'npackets': [0, 0, 0, 0, 0]}
 
@@ -133,7 +133,7 @@ def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase
     filename = LCClient.get_observing_summary_filename(('2003-11-01', '2003-11-01T23:59:59'))
 
     assert len(filename) == 1
-    assert filename[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_139.fits'
+    assert filename[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_157.fits'
 
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
@@ -149,8 +149,8 @@ def test_get_observing_summary_filename_two_days(mock_get_observing_summary_dbas
     filenames = LCClient.get_observing_summary_filename(('2003-11-01', '2003-11-02T23:59:59'))
 
     assert len(filenames) == 2
-    assert filenames[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_139.fits'
-    assert filenames[1] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031102_144.fits'
+    assert filenames[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_157.fits'
+    assert filenames[1] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031102_161.fits'
 
 
 def test_can_handle_query():
@@ -170,8 +170,8 @@ def test_query(mock_get_observing_summary_dbase_file,
     qr1 = LCClient.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument('rhessi'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 3
-    assert qr1.time_range().start.datetime == parse_time('2003/11/01')
-    assert qr1.time_range().end.datetime == parse_time('2003/11/03T23:59:59.999')
+    assert qr1.time_range().start.datetime == parse_time('2003/11/01').datetime
+    assert qr1.time_range().end.datetime == parse_time('2003/11/03T23:59:59.999').datetime
 
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')

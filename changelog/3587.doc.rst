@@ -1,1 +1,0 @@
-Added inherited members of `sunpy.map` classes to the docs.

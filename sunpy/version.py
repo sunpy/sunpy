@@ -1,4 +1,3 @@
-# This file is for compatibility with astropy_helpers
 version = 'unknown.dev'
 try:
     from importlib_metadata import version as _version, PackageNotFoundError

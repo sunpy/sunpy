@@ -1,1 +1,0 @@
-Fix tests for `sunpy.data.data_manager` and ensure they are correctly executed with pytest.

@@ -1,1 +1,0 @@
-Cleaned and expanded upon the docstrings for each Fido Client.

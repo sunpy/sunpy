@@ -1,1 +1,0 @@
-Added a table of supported coordinate systems and other miscellaneous improvements to the :ref:`coordinates documentation <sunpy-coordinates>`.

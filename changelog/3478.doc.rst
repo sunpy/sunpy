@@ -1,1 +1,0 @@
-Added ``sunpy.__citation__`` with a BibTex entry for citing sunpy.

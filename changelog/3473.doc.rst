@@ -1,1 +1,0 @@
-Fixed various issues with the gallery example of saving/loading coordinates using `asdf`.

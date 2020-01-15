@@ -13,7 +13,7 @@ dependencies:
   - parfive
   - sqlalchemy
   - scikit-image
-  - glymur
+  - glymur<0.9
   - beautifulsoup4
   - drms
   - python-dateutil
@@ -35,3 +35,4 @@ dependencies:
     - jplephem
     - astroquery
     - reproject
+    - extension_helpers
