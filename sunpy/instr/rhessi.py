@@ -71,11 +71,12 @@ flagid2flag = {
 }
 
 fits_rec_keys = [
-    'ID_NUMBER', 'START_TIME', 'END_TIME', 'PEAK_TIME', 'BCK_TIME', 'IMAGE_TIME', 'ENERGY_RANGE_FOUND', 'ENERGY_HI',
-    'PEAK_COUNTRATE', 'BCK_COUNTRATE', 'TOTAL_COUNTS', 'PEAK_CORRECTION', 'TOTAL_CORRECTION', 'POSITION',
-    'FILENAME', 'FLAGS', 'SEG_INDEX_MASK', 'EXTRA_BCK', 'SFLAG1', 'ACTIVE_REGION', 'GOES_CLASS', 'RADIAL_OFFSET',
-    'PEAK_PHFLUX', 'TOT_PHFLUENCE', 'E_PHFLUENCE', 'PEAK_PHFLUX_SIGMA', 'TOT_PHFLUENCE_SIGMA', 'E_PHFLUENCE_SIGMA',
-    'GOES_LEVEL_PK', 'ALT_ID'
+    'ID_NUMBER', 'START_TIME', 'END_TIME', 'PEAK_TIME', 'BCK_TIME', 'IMAGE_TIME',
+    'ENERGY_RANGE_FOUND', 'ENERGY_HI', 'PEAK_COUNTRATE', 'BCK_COUNTRATE', 'TOTAL_COUNTS',
+    'PEAK_CORRECTION', 'TOTAL_CORRECTION', 'POSITION', 'FILENAME', 'FLAGS', 'SEG_INDEX_MASK',
+    'EXTRA_BCK', 'SFLAG1', 'ACTIVE_REGION', 'GOES_CLASS', 'RADIAL_OFFSET', 'PEAK_PHFLUX',
+    'TOT_PHFLUENCE', 'E_PHFLUENCE', 'PEAK_PHFLUX_SIGMA', 'TOT_PHFLUENCE_SIGMA',
+    'E_PHFLUENCE_SIGMA', 'GOES_LEVEL_PK', 'ALT_ID'
 ]
 
 
@@ -401,7 +402,8 @@ def _build_energy_bands(label, bands):
     return [f'{band} {unit}' for band in bands]
 
 
-def read_flare_list(start, end, source='NASA', file_format="hessi_flare_list_%Y%m.fits", inc=relativedelta(months=+1)):
+def read_flare_list(start, end, source='NASA', file_format="hessi_flare_list_%Y%m.fits",
+                    inc=relativedelta(months=+1)):
     """
     Read and combine RHESSI flare lists from .fits files as specified with further parameters
     Dates are allowed in the following formats:
@@ -475,8 +477,8 @@ def read_flare_list(start, end, source='NASA', file_format="hessi_flare_list_%Y%
 
 def read_flare_file(file):
     """
-    Read RHESSI flare list .fits file into ``pandas.DataFrame``.
-    TIME values are parsed with format 'utime', which is the same as Unix timestamp but starts 9 years later.
+    Read RHESSI flare list .fits file into ``pandas.DataFrame``. TIME values are parsed with
+    format 'utime', which is the same as Unix timestamp but starts 9 years later.
     FLAGS are assigned their respective label (FLAG ID) and returned as `dict`.
 
     Parameters
@@ -491,8 +493,8 @@ def read_flare_file(file):
 
     Examples
     --------
-    >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.read_flare_file("https://hesperia.gsfc.nasa.gov/hessidata/dbase/hessi_flare_list_201802.fits")
+    >>> from sunpy.instr.rhessi as read_flare_file as rff
+    >>> rff("https://hesperia.gsfc.nasa.gov/hessidata/dbase/hessi_flare_list_201802.fits")
 
     References
     ----------
@@ -534,20 +536,21 @@ def print_flare_list(data_frame):
 
     for idx, row in data_frame.iterrows():
         print(
-            "{id:9} {st} {pt} {et} {dur:5} {peak:6} {n:9} {e:>11} {x:5} {y:5} {r:6} {ar:4}  {flags}".format(
+            "{id:9} {st} {pt} {et} {dur:5} {p:6} {n:9} {e:>11} {x:5} {y:5} {r:6} {ar:4}  {f}"
+            .format(
                 id=row['ID_NUMBER'],
                 st=row['START_TIME'].strftime('%e-%b-%Y %H:%M:%S'),
                 pt=row['PEAK_TIME'].strftime('%H:%M:%S'),
                 et=row['END_TIME'].strftime('%H:%M:%S'),
                 dur=int(round((row['END_TIME'] - row['START_TIME']).to_value("sec"))),
-                peak=int(row['PEAK_COUNTRATE']),
+                p=int(row['PEAK_COUNTRATE']),
                 n=int(row['TOTAL_COUNTS']),
                 e=str(int(row['ENERGY_HI'][0])) + "-" + str(int(row['ENERGY_HI'][1])),
                 x=int(round(row['POSITION'][0])),
                 y=int(round(row['POSITION'][1])),
                 r=int(round((row['POSITION'][0] ** 2 + row['POSITION'][1] ** 2) ** 0.5)),
                 ar=row['ACTIVE_REGION'],
-                flags=" ".join(convert_flag_dict(row['FLAGS'])),
+                f=" ".join(convert_flag_dict(row['FLAGS'])),
             )
         )
 
@@ -559,12 +562,14 @@ def convert_flag_dict(flags_dict):
     Parameters
     ----------
     flags_dict : `dict`
-        Dictionary containing the flags where key is the flag id and value the value from the byte mask.
+        Dictionary containing the flags where key is the flag id and value the
+        original value from the byte mask.
 
     Returns
     -------
     `list`
-        out : `list` of 2-character strings, each representing a present flag (as in available .txt lists).
+        out : `list` of 2-character strings, each representing a present flag
+        (as in available .txt lists).
 
     """
     flags = []
