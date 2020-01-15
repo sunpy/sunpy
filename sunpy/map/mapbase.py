@@ -637,7 +637,7 @@ class GenericMap(NDData):
 
         meta_present = set(self.meta.keys())
         supported_meta = self._supported_observer_coordinates
-        frame_meta = {supported_meta[i][1]['frame'] : set(supported_meta[i][0]) for i in range(len(supported_meta))}
+        frame_meta = {supported_meta[i][1]['frame']: set(supported_meta[i][0]) for i in range(len(supported_meta))}
         meta_absent = (set().union(*frame_meta.values())).difference(meta_present)
 
         missing_msg = ""
