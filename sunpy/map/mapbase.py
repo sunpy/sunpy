@@ -636,8 +636,8 @@ class GenericMap(NDData):
             if all([k in self.meta for k in keys]):
                 return SkyCoord(obstime=self.date, **kwargs).heliographic_stonyhurst
             elif any([k in self.meta for k in keys]) and not set(keys).isdisjoint(self.meta.keys()):
-                    warning_message += "For frame '{:s}' the following metadata is missing : ".format(str(kwargs['frame'])) + \
-                                       " ".join(["'" + key + "'" for key in set(keys).difference(self.meta.keys())]) + "\n"
+                warning_message += "For frame '{:s}' the following metadata is missing : ".format(str(kwargs['frame'])) + \
+                                   " ".join(["'" + key + "'" for key in set(keys).difference(self.meta.keys())]) + "\n"
 
         warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
         warnings.warn(warning_message, SunpyUserWarning)
