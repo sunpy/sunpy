@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 
 import numpy as np
@@ -263,7 +265,11 @@ def test_carrington_rotation_number(date, day_fraction, rotation_number):
                           ])
 def test_carrington_rotation_starttime(crot, julian_days):
     # Stated precision in the docstring is 0.11 seconds
-    assert_quantity_allclose(sun.carrington_rotation_time(crot).tt.jd * u.day, julian_days * u.day, atol=0.11*u.s)
+    with warnings.catch_warnings():
+        # Filter warnings caused by very old dates
+        warnings.filterwarnings("ignore", category=ErfaWarning)
+        assert_quantity_allclose(sun.carrington_rotation_time(crot).tt.jd * u.day,
+                                 julian_days * u.day, atol=0.11*u.s)
 
 
 def test_carrington_rotation_roundtrip():
