@@ -172,7 +172,7 @@ def test_make_recordset_errors():
         'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
         'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai'),
         'primekey': {'T_REC': '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'}
-        })
+    })
 
     with pytest.raises(ValueError):
         client._make_recordset(**d1)
@@ -182,7 +182,7 @@ def test_make_recordset_errors():
         'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai'),
         'wavelength': 604*u.AA,
         'primekey': {'WAVELNTH': '604'}
-        })
+    })
 
     with pytest.raises(ValueError):
         client._make_recordset(**d1)
