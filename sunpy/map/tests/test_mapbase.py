@@ -226,7 +226,17 @@ def test_remove_observers(aia171_test_map):
                       match='Missing metadata for observer: assuming Earth-based observer.*'):
         aia171_test_map.observer_coordinate
 
-
+def test_partially_missing_observers(aia171_test_map):
+    del aia171_test_map.meta['dsun_obs']
+    del aia171_test_map.meta['haex_obs']
+    with pytest.warns(SunpyUserWarning,
+                      match="Missing metadata for observer: assuming Earth-based observer.\n" +
+                            "For frame '<class 'astropy.coordinates.builtin_frames.ecliptic.HeliocentricMeanEcliptic'>' " +
+                            "the following metadata is missing :{'haex_obs'}\n" +
+                            "For frame 'heliographic_stonyhurst' the following metadata is missing :{'dsun_obs'}\n" + 
+                            "For frame 'heliographic_carrington' the following metadata is missing :{'dsun_obs'}\n"):
+        aia171_test_map.observer_coordinate
+    
 # ==============================================================================
 # Test Rotation WCS conversion
 # ==============================================================================
