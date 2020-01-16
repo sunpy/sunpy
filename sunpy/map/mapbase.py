@@ -631,14 +631,15 @@ class GenericMap(NDData):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
         """
-        warning_message = ""
+        missing_meta = {}
         for keys, kwargs in self._supported_observer_coordinates:
-            if all([k in self.meta for k in keys]):
+            meta_list = [k in self.meta for k in keys]
+            if all(meta_list):
                 return SkyCoord(obstime=self.date, **kwargs).heliographic_stonyhurst
-            elif any([k in self.meta for k in keys]) and not set(keys).isdisjoint(self.meta.keys()):
-                warning_message += "For frame '{:s}' the following metadata is missing : ".format(str(kwargs['frame'])) + \
-                                   " ".join(["'" + key + "'" for key in set(keys).difference(self.meta.keys())]) + "\n"
-
+            elif any(meta_list) and not set(keys).isdisjoint(self.meta.keys()):
+                missing_meta[kwargs['frame']] = [key for key in set(keys).difference(self.meta.keys())]
+        
+        warning_message = "".join([f"For frame '{frame}' the following metadata is missing :{missing_meta[frame]}\n" for frame in missing_meta])
         warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
         warnings.warn(warning_message, SunpyUserWarning)
 
