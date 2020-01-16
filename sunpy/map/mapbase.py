@@ -639,7 +639,7 @@ class GenericMap(NDData):
             elif any(meta_list) and not set(keys).isdisjoint(self.meta.keys()):
                 missing_meta[kwargs['frame']] = set(keys).difference(self.meta.keys())
 
-        warning_message = "".join([f"For frame '{frame}' the following metadata is missing :{','.join(keys)}\n" for frame, keys in missing_meta.items()])
+        warning_message = "".join([f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
         warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
         warnings.warn(warning_message, SunpyUserWarning)
 
