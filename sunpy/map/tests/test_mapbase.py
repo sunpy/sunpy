@@ -232,9 +232,9 @@ def test_partially_missing_observers(aia171_test_map):
     with pytest.warns(SunpyUserWarning,
                       match="Missing metadata for observer: assuming Earth-based observer.\n" +
                             "For frame '<class 'astropy.coordinates.builtin_frames.ecliptic.HeliocentricMeanEcliptic'>' " +
-                            "the following metadata is missing :{'haex_obs'}\n" +
-                            "For frame 'heliographic_stonyhurst' the following metadata is missing :{'dsun_obs'}\n" + 
-                            "For frame 'heliographic_carrington' the following metadata is missing :{'dsun_obs'}\n"):
+                            "the following metadata is missing :haex_obs\n" +
+                            "For frame 'heliographic_stonyhurst' the following metadata is missing :dsun_obs\n" + 
+                            "For frame 'heliographic_carrington' the following metadata is missing :dsun_obs\n"):
         aia171_test_map.observer_coordinate
     
 # ==============================================================================
