@@ -2,6 +2,7 @@
 ===========================
 Plotting a difference image
 ===========================
+
 How to compute and plot a difference image.
 The example uses `sunpy.map.MapSequence` to compute a difference image and then plot it.
 This basic method works for base difference or running difference. Just change whether
