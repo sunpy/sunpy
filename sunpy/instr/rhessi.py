@@ -20,7 +20,7 @@ from sunpy.time import TimeRange, parse_time
 
 __all__ = [
     'parse_observing_summary_hdulist', 'backprojection', 'parse_observing_summary_dbase_file',
-    'read_flare_list', 'read_flare_file', 'print_flare_list', 'convert_flag_dict'
+    'get_flare_list', 'read_flare_list_file', 'print_flare_list', 'convert_flag_dict'
 ]
 
 
@@ -69,15 +69,6 @@ FLAGID2FLAG = {
     'SOLAR_UNCONFIRMED': 'PS',
     'SOLAR': ''
 }
-
-FITS_REC_KEYS = [
-    'ID_NUMBER', 'START_TIME', 'END_TIME', 'PEAK_TIME', 'BCK_TIME', 'IMAGE_TIME',
-    'ENERGY_RANGE_FOUND', 'ENERGY_HI', 'PEAK_COUNTRATE', 'BCK_COUNTRATE', 'TOTAL_COUNTS',
-    'PEAK_CORRECTION', 'TOTAL_CORRECTION', 'POSITION', 'FILENAME', 'FLAGS', 'SEG_INDEX_MASK',
-    'EXTRA_BCK', 'SFLAG1', 'ACTIVE_REGION', 'GOES_CLASS', 'RADIAL_OFFSET', 'PEAK_PHFLUX',
-    'TOT_PHFLUENCE', 'E_PHFLUENCE', 'PEAK_PHFLUX_SIGMA', 'TOT_PHFLUENCE_SIGMA',
-    'E_PHFLUENCE_SIGMA', 'GOES_LEVEL_PK', 'ALT_ID'
-]
 
 
 def parse_observing_summary_dbase_file(filename):
@@ -402,11 +393,11 @@ def _build_energy_bands(label, bands):
     return [f'{band} {unit}' for band in bands]
 
 
-def read_flare_list(start: str,
-                    end: str,
-                    source: str='NASA',
-                    file_format: str="hessi_flare_list_%Y%m.fits",
-                    inc=relativedelta(months=+1)):
+def get_flare_list(start: str,
+                   end: str,
+                   source: str='NASA',
+                   file_format: str="hessi_flare_list_%Y%m.fits",
+                   inc=relativedelta(months=+1)):
     """
     Read and combine RHESSI flare lists from .fits files as specified with further parameters
     Supported date formats are the same as in ``sunpy.time``.
@@ -436,8 +427,8 @@ def read_flare_list(start: str,
 
     Examples
     --------
-    >>> from sunpy.instr.rhessi import read_flare_list
-    >>> read_flare_list("2018-01-06 16:32:57", "2018-01-22 02:43:27")  # doctest: +REMOTE_DATA
+    >>> from sunpy.instr.rhessi import get_flare_list
+    >>> fl = get_flare_list("2018-01-06 16:32:57", "2018-01-22 02:43:27")  # doctest: +REMOTE_DATA
     """
 
     start_dt = parse_time(start).to_datetime()
@@ -453,7 +444,7 @@ def read_flare_list(start: str,
     result = pd.DataFrame()
     while cur_format <= end_format:
         file = file_format.replace(format_str, cur_format)
-        result = result.append(read_flare_file(source + file), ignore_index=True)
+        result = result.append(read_flare_list_file(source + file), ignore_index=True)
         cur_dt = cur_dt + inc
         cur_format = cur_dt.strftime(format_str)
 
@@ -468,7 +459,7 @@ def read_flare_list(start: str,
     return result
 
 
-def read_flare_file(file):
+def read_flare_list_file(file):
     """
     Read RHESSI flare list .fits file into ``pandas.DataFrame``. TIME values are parsed with
     format 'utime', which is the same as Unix timestamp but starts 9 years later.
@@ -486,9 +477,9 @@ def read_flare_file(file):
 
     Examples
     --------
-    >>> from sunpy.instr.rhessi import read_flare_file
+    >>> from sunpy.instr.rhessi import read_flare_list_file
     >>> url = "https://hesperia.gsfc.nasa.gov/hessidata/dbase/hessi_flare_list_201802.fits"
-    >>> read_flare_file(url)  # doctest: +REMOTE_DATA
+    >>> fl = read_flare_list_file(url)  # doctest: +REMOTE_DATA
 
     References
     ----------
@@ -502,7 +493,7 @@ def read_flare_file(file):
     results = []
     for row in fits[3].data:
         result_row = {}
-        for k in FITS_REC_KEYS:
+        for k in fits[3].data.columns.names:
             if k.endswith('_TIME'):
                 result_row[k] = parse_time(row[k], format="utime")
                 result_row[k].format = "datetime"  # for human readable display inside the DF
