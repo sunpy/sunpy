@@ -34,7 +34,8 @@ class SWEPAMClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'), a.Instrument('swepam'))
+    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
+    ...                       a.Instrument('swepam'))
     >>> print(results)
     [<Table length=3>
          Start Time           End Time      Source Instrument
@@ -54,7 +55,8 @@ class SWEPAMClient(GenericClient):
         START_DATE = datetime.datetime(2015, 7, 29)
         if timerange.start < START_DATE:
             raise ValueError(
-                'Earliest date for which SWEPAM data is available is {:%Y-%m-%d}'.format(START_DATE))
+                'Earliest date for which SWEPAM data is available is '
+                '{:%Y-%m-%d}'.format(START_DATE))
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
@@ -118,7 +120,8 @@ class EPAMClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'), a.Instrument('epam'))
+    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
+    ...                       a.Instrument('epam'))
     >>> print(results)
     [<Table length=3>
          Start Time           End Time      Source Instrument
@@ -136,7 +139,8 @@ class EPAMClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         if timerange.start < START_DATE:
             raise ValueError(
-                "The earliest date for which EPAM data is available is {:%Y-%m-%d}".format(START_DATE))
+                "The earliest date for which EPAM data is available is "
+                "{:%Y-%m-%d}".format(START_DATE))
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
         result = [
@@ -199,7 +203,8 @@ class MAGClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'), a.Instrument('mag'))
+    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
+    ...                       a.Instrument('mag'))
     >>> print(results)
     [<Table length=3>
          Start Time           End Time      Source Instrument
@@ -283,7 +288,8 @@ class SISClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'), a.Instrument('sis'))
+    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
+    ...                       a.Instrument('sis'))
     >>> print(results)
     [<Table length=3>
          Start Time           End Time      Source Instrument
