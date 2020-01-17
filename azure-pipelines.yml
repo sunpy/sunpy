@@ -12,7 +12,7 @@ resources:
     type: github
     endpoint: sunpy
     name: OpenAstronomy/azure-pipelines-templates
-    ref: latest-images
+    ref: master
 
 trigger:
   branches:
