@@ -49,6 +49,19 @@ Coding Style/Conventions
 
 * General utilities necessary for but not specific to the package should be placed in the ``sunpy.utils`` module.
 
+Formatting
+==========
+
+**This is optional and we do not enforce, check or expect you to do this.**
+
+We have pre-commit hooks in our repository if you would rather let these tools do the work for you.
+You will need to:
+
+* Install pre-commit: ``pip install pre-commit``
+* Execute pre-commit: ``pre-commit install``
+
+Now each time on a commit, the tools defined in ``.pre-commit-config.yaml`` will run and their changes either be added to the commit or you have to re-add them.
+
 Documentation and Testing
 =========================
 
