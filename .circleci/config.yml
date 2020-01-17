@@ -83,7 +83,7 @@ jobs:
             apt-get update
             apt-get install -y libfreetype6 libfreetype6-dev libpng-dev tk pkg-config python3-pip git openssh-client
       - run: pip3 install tox | cat
-      - run: PYTHONHASHSEED=42 tox -e py36-offline -- -n=4
+      - run: PYTHONHASHSEED=42 tox -e py36-test -- -n=4
 
   figure-tests-36:
     docker:
