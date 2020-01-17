@@ -6,7 +6,6 @@ data.
 import re
 import csv
 
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 import numpy as np
@@ -34,12 +33,13 @@ grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647,
 lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                  'navy', 'orange', 'green')
 
-known_flare_list_sources = {
+KNOWN_FLARE_LIST_SOURCES = {
     "NASA": "https://hesperia.gsfc.nasa.gov/hessidata/dbase/",
+    "Berkeley": "http://hessi.ssl.berkeley.edu/hessidata/dbase/",
     "i4DS": "http://soleil.i4ds.ch/hessidata/dbase/",
 }
 
-flagid2flag = {
+FLAGID2FLAG = {
     'SAA_AT_START': 'SS',
     'SAA_AT_END': 'SE',
     'SAA_DURING_FLARE': 'SD',
@@ -70,7 +70,7 @@ flagid2flag = {
     'SOLAR': ''
 }
 
-fits_rec_keys = [
+FITS_REC_KEYS = [
     'ID_NUMBER', 'START_TIME', 'END_TIME', 'PEAK_TIME', 'BCK_TIME', 'IMAGE_TIME',
     'ENERGY_RANGE_FOUND', 'ENERGY_HI', 'PEAK_COUNTRATE', 'BCK_COUNTRATE', 'TOTAL_COUNTS',
     'PEAK_CORRECTION', 'TOTAL_CORRECTION', 'POSITION', 'FILENAME', 'FLAGS', 'SEG_INDEX_MASK',
@@ -402,12 +402,14 @@ def _build_energy_bands(label, bands):
     return [f'{band} {unit}' for band in bands]
 
 
-def read_flare_list(start, end, source='NASA', file_format="hessi_flare_list_%Y%m.fits",
+def read_flare_list(start: str,
+                    end: str,
+                    source: str='NASA',
+                    file_format: str="hessi_flare_list_%Y%m.fits",
                     inc=relativedelta(months=+1)):
     """
     Read and combine RHESSI flare lists from .fits files as specified with further parameters
-    Dates are allowed in the following formats:
-        'YY-mm', 'YYYYmm', 'YYYY-mm', 'YYYYmmdd', 'YYYY-mm-dd', 'YYYY-mm-ddThh:MM:ss'
+    Supported date formats are the same as in ``sunpy.time``.
 
     Parameters
     ----------
@@ -417,7 +419,7 @@ def read_flare_list(start, end, source='NASA', file_format="hessi_flare_list_%Y%
         End date of period within which flares should be loaded.
     source : `str`, optional
         Source from where .fits files should be loaded. Can be an URL or a local folder.
-        Known sources are "NASA" and "i4DS".
+        Known sources are "NASA", "Berkeley" and "i4DS".
         Defaults to ``"NASA"``.
     file_format : `str`, optional
         Specifies the naming convention of the files available in the source folder.
@@ -431,28 +433,21 @@ def read_flare_list(start, end, source='NASA', file_format="hessi_flare_list_%Y%
     -------
     ``pandas.DataFrame``
         out : ``pandas.DataFrame`` containing the flares within the given time constraints
+
+    Examples
+    --------
+    >>> from sunpy.instr.rhessi import read_flare_list
+    >>> read_flare_list("2018-01-06 16:32:57", "2018-01-22 02:43:27")  # doctest: +REMOTE_DATA
     """
 
-    formats = {
-        5: "%y-%m",  # YY-mm
-        6: "%Y%m",  # YYYYmm
-        7: "%Y-%m",  # YYYY-mm
-        8: "%Y%m%d",  # YYYYmmdd
-        10: "%Y-%m-%d",  # YYYY-mm-dd
-        19: "%Y-%m-%dT%H:%M:%S",  # YYYY-mm-ddThh:MM:ss
-    }
-    try:
-        start_dt = datetime.strptime(start, formats[len(start)])
-        end_dt = datetime.strptime(end, formats[len(end)])
-    except (KeyError, ValueError):
-        raise ValueError("invalid datetime")
-
+    start_dt = parse_time(start).to_datetime()
+    end_dt = parse_time(end).to_datetime()
     format_str = file_format[file_format.index("%"):file_format.rindex("%") + 2]
     cur_format = start_dt.strftime(format_str)
     end_format = end_dt.strftime(format_str)
 
-    if source in known_flare_list_sources:
-        source = known_flare_list_sources[source]
+    if source in KNOWN_FLARE_LIST_SOURCES:
+        source = KNOWN_FLARE_LIST_SOURCES[source]
 
     cur_dt = start_dt
     result = pd.DataFrame()
@@ -463,10 +458,8 @@ def read_flare_list(start, end, source='NASA', file_format="hessi_flare_list_%Y%
         cur_format = cur_dt.strftime(format_str)
 
     # filter results for more detailed time constraints (if applicable)
-    if len(end) < 8:
-        end_dt += relativedelta(months=+1)  # add month if no further constraints were defined
-    elif len(end) <= 10:
-        end_dt += relativedelta(days=+1)  # add day if end date was specified on a day-basis
+    if len(end) <= 12:  # formats that do specify a time are at least 14 chars
+        end_dt += relativedelta(days=+1)  # add day if end date was specified without time
     else:
         end_dt += relativedelta(microsecond=+1)  # add 1ms so "smaller" operator works as intended
 
@@ -493,8 +486,9 @@ def read_flare_file(file):
 
     Examples
     --------
-    >>> from sunpy.instr.rhessi as read_flare_file as rff
-    >>> rff("https://hesperia.gsfc.nasa.gov/hessidata/dbase/hessi_flare_list_201802.fits")
+    >>> from sunpy.instr.rhessi import read_flare_file
+    >>> url = "https://hesperia.gsfc.nasa.gov/hessidata/dbase/hessi_flare_list_201802.fits"
+    >>> read_flare_file(url)  # doctest: +REMOTE_DATA
 
     References
     ----------
@@ -506,9 +500,9 @@ def read_flare_file(file):
         raise RuntimeError("couldn't load file " + file)
 
     results = []
-    for row in fits[3].data[0:20]:
+    for row in fits[3].data:
         result_row = {}
-        for k in fits_rec_keys:
+        for k in FITS_REC_KEYS:
             if k.endswith('_TIME'):
                 result_row[k] = parse_time(row[k], format="utime")
                 result_row[k].format = "datetime"  # for human readable display inside the DF
@@ -575,10 +569,10 @@ def convert_flag_dict(flags_dict):
     flags = []
     for k in flags_dict:
         # note: as of now the Q-flag is missing if the flag DATA_QUALITY is 0
-        if flags_dict[k] > 0 and flagid2flag[k] != '':
+        if flags_dict[k] > 0 and FLAGID2FLAG[k] != '':
             if k.startswith('ATTEN_') and int(k[-1:]) == flags_dict['ATT_STATE_AT_PEAK']:
-                flags.append(flagid2flag[k].upper())
+                flags.append(FLAGID2FLAG[k].upper())
             else:
-                flags.append(flagid2flag[k].replace("n", str(flags_dict[k])))
+                flags.append(FLAGID2FLAG[k].replace("n", str(flags_dict[k])))
     flags.sort(key=str.lower)
     return flags
