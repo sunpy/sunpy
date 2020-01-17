@@ -1,16 +1,24 @@
+from hypothesis import given, settings
 import pytest
 
 import astropy.units as u
-from astropy.coordinates import BaseCoordinateFrame, SkyCoord, frame_transform_graph
+from astropy.coordinates import (BaseCoordinateFrame, SkyCoord, frame_transform_graph,
+                                 Longitude)
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
 import sunpy.coordinates.frames as f
 from sunpy.coordinates.metaframes import RotatedSunFrame, _rotatedsun_cache
+from sunpy.physics.differential_rotation import diff_rot
+from .strategies import longitudes, latitudes, times
 
 
 # NorthOffsetFrame is tested in test_offset_frame.py
 
+
+###########################
+# Tests for RotatedSunFrame
+###########################
 
 @pytest.fixture
 def rot_frames():
@@ -153,3 +161,50 @@ def test_alternate_rotation_model():
     r = RotatedSunFrame(base=f.HeliographicStonyhurst(obstime='2001-01-01'),
                         rotation_model="allen")
     assert r.rotation_model == "allen"
+
+
+@pytest.mark.parametrize("frame", [f.HeliographicStonyhurst,
+                                   f.HeliographicCarrington,
+                                   f.HeliocentricInertial])
+@given(lon=longitudes(), lat=latitudes(),
+       obstime=times(), rotated_time1=times(), rotated_time2=times())
+@settings(deadline=2000)
+def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_time2):
+    # Tests the transformations (to, from, and loopback) for consistency with `diff_rot` output
+
+    base = frame(lon=lon, lat=lat, obstime=obstime)
+
+    # Test the RotatedSunFrame->base transformation
+    rsf1 = RotatedSunFrame(base=base, rotated_time=rotated_time1)
+    result1 = rsf1.transform_to(base)
+
+    desired_delta_lon1 = diff_rot((rotated_time1 - obstime).to(u.day), lat)
+    difference1 = Longitude(result1.lon - rsf1.lon - desired_delta_lon1, wrap_angle=180*u.deg)
+
+    assert_quantity_allclose(difference1, 0*u.deg, atol=1e-5*u.deg)
+    assert_quantity_allclose(base.lat, result1.lat)
+    # Use the `spherical` property since the name of the component varies with frame
+    assert_quantity_allclose(base.spherical.distance, result1.spherical.distance)
+
+    # Test the base->RotatedSunFrame transformation
+    rsf2 = RotatedSunFrame(base=base, rotated_time=rotated_time2)
+    result2 = base.transform_to(rsf2)
+
+    desired_delta_lon2 = -diff_rot((rotated_time2 - obstime).to(u.day), lat)
+    difference2 = Longitude(result2.lon - base.lon - desired_delta_lon2, wrap_angle=180*u.deg)
+
+    assert_quantity_allclose(difference2, 0*u.deg, atol=1e-5*u.deg)
+    assert_quantity_allclose(base.lat, result2.lat)
+    # Use the `spherical` property since the name of the component varies with frame
+    assert_quantity_allclose(base.spherical.distance, result2.spherical.distance)
+
+    # Test the RotatedSunFrame->RotatedSunFrame transformation
+    result3 = rsf1.transform_to(rsf2)
+
+    desired_delta_lon3 = desired_delta_lon1 + desired_delta_lon2
+    difference3 = Longitude(result3.lon - rsf1.lon - desired_delta_lon3, wrap_angle=180*u.deg)
+
+    assert_quantity_allclose(difference3, 0*u.deg, atol=1e-5*u.deg)
+    assert_quantity_allclose(result3.lat, result1.lat)
+    # Use the `spherical` property since the name of the component varies with frame
+    assert_quantity_allclose(result3.spherical.distance, result1.spherical.distance)
