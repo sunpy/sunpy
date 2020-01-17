@@ -1,8 +1,8 @@
 """
 This module implements SWEPAM, MAG, SIS and EPAM Clients.
 """
-#This module was developed with funding provided by
-#the Google Summer of Code 2016.
+# This module was developed with funding provided by
+# the Google Summer of Code 2016.
 
 __author__ = "Sudarshan Konge"
 __email__ = "sudk1896@gmail.com"
@@ -11,6 +11,7 @@ import datetime
 from sunpy.net.dataretriever.client import GenericClient
 
 __all__ = ['SWEPAMClient', 'EPAMClient', 'MAGClient', 'SISClient']
+
 
 class SWEPAMClient(GenericClient):
     """
@@ -45,17 +46,22 @@ class SWEPAMClient(GenericClient):
 
     >>> response = Fido.fetch(results)
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """ returns list of urls corresponding
         to given TimeRange. """
 
         START_DATE = datetime.datetime(2015, 7, 29)
         if timerange.start < START_DATE:
-            raise ValueError('Earliest date for which SWEPAM data is available is {:%Y-%m-%d}'.format(START_DATE))
+            raise ValueError(
+                'Earliest date for which SWEPAM data is available is {:%Y-%m-%d}'.format(START_DATE))
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = [base_url + '{date:%Y%m%d}_ace_swepam_1m.txt'.format(date=day.end) for day in all_days]
+        result = [
+            base_url +
+            '{date:%Y%m%d}_ace_swepam_1m.txt'.format(
+                date=day.end) for day in all_days]
         if (datetime.datetime.now() - timerange.end).days == 0:
             url = base_url + 'ace_swepam_1m.txt'
             result.append(url)
@@ -70,7 +76,6 @@ class SWEPAMClient(GenericClient):
         self.map_['phyobs'] = 'PARTICLE_FLUX'
 
     @classmethod
-
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
@@ -125,14 +130,19 @@ class EPAMClient(GenericClient):
 
     >>> response = Fido.fetch(results)
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         START_DATE = datetime.datetime(2015, 7, 29)
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         if timerange.start < START_DATE:
-            raise ValueError("The earliest date for which EPAM data is available is {:%Y-%m-%d}".format(START_DATE))
+            raise ValueError(
+                "The earliest date for which EPAM data is available is {:%Y-%m-%d}".format(START_DATE))
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = [base_url + '{date:%Y%m%d}_ace_epam_5m.txt'.format(date=day.end) for day in all_days]
+        result = [
+            base_url +
+            '{date:%Y%m%d}_ace_epam_5m.txt'.format(
+                date=day.end) for day in all_days]
         if (datetime.datetime.now() - timerange.end).days == 0:
             url = base_url + 'ace_epam_5m.txt'
             result.append(url)
@@ -201,17 +211,22 @@ class MAGClient(GenericClient):
 
     >>> response = Fido.fetch(results)
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """ returns list of urls corresponding
         to given TimeRange. """
 
         START_DATE = datetime.datetime(2015, 7, 29)
         if timerange.start < START_DATE:
-            raise ValueError('Earliest date for which MAG data is available is {:%Y-%m-%d}'.format(START_DATE))
+            raise ValueError(
+                'Earliest date for which MAG data is available is {:%Y-%m-%d}'.format(START_DATE))
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = [base_url +  '{date:%Y%m%d}_ace_mag_1m.txt'.format(date=day.end) for day in all_days]
+        result = [
+            base_url +
+            '{date:%Y%m%d}_ace_mag_1m.txt'.format(
+                date=day.end) for day in all_days]
         if (datetime.datetime.now() - timerange.end).days == 0:
             url = base_url + 'ace_mag_1m.txt'
             result.append(url)
@@ -246,6 +261,7 @@ class MAGClient(GenericClient):
                 return all(chklist)
         return False
 
+
 class SISClient(GenericClient):
     """
     Returns a list of URLS to ACE SIS files corresponding to value of input timerange.
@@ -279,17 +295,22 @@ class SISClient(GenericClient):
 
     >>> response = Fido.fetch(results)
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """ returns list of urls corresponding
         to given TimeRange. """
 
         START_DATE = datetime.datetime(2015, 7, 29)
         if timerange.start < START_DATE:
-            raise ValueError('Earliest date for which SIS data is available is {:%Y-%m-%d}'.format(START_DATE))
+            raise ValueError(
+                'Earliest date for which SIS data is available is {:%Y-%m-%d}'.format(START_DATE))
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = [base_url +  '{date:%Y%m%d}_ace_sis_5m.txt'.format(date=day.end) for day in all_days]
+        result = [
+            base_url +
+            '{date:%Y%m%d}_ace_sis_5m.txt'.format(
+                date=day.end) for day in all_days]
         for day in all_days:
             url = base_url + '{date:%Y%m%d}_ace_sis_5m.txt'.format(date=day.end)
             result.append(url)
