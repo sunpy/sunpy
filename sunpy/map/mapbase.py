@@ -474,14 +474,14 @@ class GenericMap(NDData):
     @property
     def bottom_left_coord(self):
         """
-        The physical coordinate for the bottom left [0,0] pixel.
+        The physical coordinate at the center of the bottom left ([0, 0]) pixel.
         """
         return self.pixel_to_world(0*u.pix, 0*u.pix)
 
     @property
     def top_right_coord(self):
         """
-        The physical coordinate for the top left pixel.
+        The physical coordinate at the center of the the top left ([-1, -1]) pixel.
         """
         return self.pixel_to_world(*self.dimensions)
 
