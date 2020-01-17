@@ -13,7 +13,7 @@ dependencies:
   - parfive
   - sqlalchemy
   - scikit-image
-  - glymur<0.9
+  - glymur
   - beautifulsoup4
   - drms
   - python-dateutil
