@@ -637,6 +637,8 @@ class GenericMap(NDData):
             if all(meta_list):
                 return SkyCoord(obstime=self.date, **kwargs).heliographic_stonyhurst
             elif any(meta_list) and not set(keys).isdisjoint(self.meta.keys()):
+                if type(kwargs['frame']) is not str:
+                    kwargs['frame'] = kwargs['frame'].name
                 missing_meta[kwargs['frame']] = set(keys).difference(self.meta.keys())
 
         warning_message = "".join([f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
