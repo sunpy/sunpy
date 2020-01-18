@@ -63,8 +63,8 @@ class SWEPAMClient(GenericClient):
         all_days = timerange.split(total_days)
         result = [
             base_url +
-            '{date:%Y%m%d}_ace_swepam_1m.txt'.format(
-                date=day.end) for day in all_days]
+            '{date}_ace_swepam_1m.txt'.format(
+                date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
         if (datetime.datetime.now() - timerange.end).days == 0:
             url = base_url + 'ace_swepam_1m.txt'
             result.append(url)
@@ -146,8 +146,8 @@ class EPAMClient(GenericClient):
         all_days = timerange.split(total_days)
         result = [
             base_url +
-            '{date:%Y%m%d}_ace_epam_5m.txt'.format(
-                date=day.end) for day in all_days]
+            '{date}_ace_swepam_1m.txt'.format(
+                date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
         if (datetime.datetime.now() - timerange.end).days == 0:
             url = base_url + 'ace_epam_5m.txt'
             result.append(url)
@@ -230,9 +230,8 @@ class MAGClient(GenericClient):
         total_days = int(timerange.days/u.d + 1)
         all_days = timerange.split(total_days)
         result = [
-            base_url +
-            '{date:%Y%m%d}_ace_mag_1m.txt'.format(
-                date=day.end) for day in all_days]
+            '{date}_ace_swepam_1m.txt'.format(
+                date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
         if (datetime.datetime.now() - timerange.end).days == 0:
             url = base_url + 'ace_mag_1m.txt'
             result.append(url)
@@ -316,8 +315,8 @@ class SISClient(GenericClient):
         all_days = timerange.split(total_days)
         result = [
             base_url +
-            '{date:%Y%m%d}_ace_sis_5m.txt'.format(
-                date=day.end) for day in all_days]
+            '{date}_ace_swepam_1m.txt'.format(
+                date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
         for day in all_days:
             url = base_url + '{date:%Y%m%d}_ace_sis_5m.txt'.format(date=day.end)
             result.append(url)
