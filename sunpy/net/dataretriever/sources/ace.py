@@ -9,6 +9,7 @@ __email__ = "sudk1896@gmail.com"
 
 import datetime
 from sunpy.net.dataretriever.client import GenericClient
+import astropy.units as u
 
 __all__ = ['SWEPAMClient', 'EPAMClient', 'MAGClient', 'SISClient']
 
@@ -58,7 +59,7 @@ class SWEPAMClient(GenericClient):
                 'Earliest date for which SWEPAM data is available is '
                 '{:%Y-%m-%d}'.format(START_DATE))
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
-        total_days = (timerange.end - timerange.start).days + 1
+        total_days = int(timerange.days/u.d + 1)
         all_days = timerange.split(total_days)
         result = [
             base_url +
@@ -141,7 +142,7 @@ class EPAMClient(GenericClient):
             raise ValueError(
                 "The earliest date for which EPAM data is available is "
                 "{:%Y-%m-%d}".format(START_DATE))
-        total_days = (timerange.end - timerange.start).days + 1
+        total_days = int(timerange.days/u.d + 1)
         all_days = timerange.split(total_days)
         result = [
             base_url +
@@ -226,7 +227,7 @@ class MAGClient(GenericClient):
             raise ValueError(
                 'Earliest date for which MAG data is available is {:%Y-%m-%d}'.format(START_DATE))
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
-        total_days = (timerange.end - timerange.start).days + 1
+        total_days = int(timerange.days/u.d + 1)
         all_days = timerange.split(total_days)
         result = [
             base_url +
@@ -311,7 +312,7 @@ class SISClient(GenericClient):
             raise ValueError(
                 'Earliest date for which SIS data is available is {:%Y-%m-%d}'.format(START_DATE))
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
-        total_days = (timerange.end - timerange.start).days + 1
+        total_days = int(timerange.days/u.d + 1)
         all_days = timerange.split(total_days)
         result = [
             base_url +
