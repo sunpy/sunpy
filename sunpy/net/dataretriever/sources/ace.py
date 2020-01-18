@@ -10,6 +10,7 @@ __email__ = "sudk1896@gmail.com"
 import datetime
 from sunpy.net.dataretriever.client import GenericClient
 import astropy.units as u
+from astropy.time import Time
 
 __all__ = ['SWEPAMClient', 'EPAMClient', 'MAGClient', 'SISClient']
 
@@ -65,7 +66,9 @@ class SWEPAMClient(GenericClient):
             base_url +
             '{date}_ace_swepam_1m.txt'.format(
                 date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
-        if (datetime.datetime.now() - timerange.end).days == 0:
+        time_dif = Time(datetime.datetime.now()) - timerange.end
+        time_dif.format = 'datetime'
+        if time_dif.value.days == 0:
             url = base_url + 'ace_swepam_1m.txt'
             result.append(url)
         return result
@@ -148,7 +151,9 @@ class EPAMClient(GenericClient):
             base_url +
             '{date}_ace_swepam_1m.txt'.format(
                 date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
-        if (datetime.datetime.now() - timerange.end).days == 0:
+        time_dif = Time(datetime.datetime.now()) - timerange.end
+        time_dif.format = 'datetime'
+        if time_dif.value.days == 0:
             url = base_url + 'ace_epam_5m.txt'
             result.append(url)
         return result
@@ -232,7 +237,9 @@ class MAGClient(GenericClient):
         result = [
             '{date}_ace_swepam_1m.txt'.format(
                 date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
-        if (datetime.datetime.now() - timerange.end).days == 0:
+        time_dif = Time(datetime.datetime.now()) - timerange.end
+        time_dif.format = 'datetime'
+        if time_dif.value.days == 0:
             url = base_url + 'ace_mag_1m.txt'
             result.append(url)
         return result
@@ -318,9 +325,12 @@ class SISClient(GenericClient):
             '{date}_ace_swepam_1m.txt'.format(
                 date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
         for day in all_days:
-            url = base_url + '{date:%Y%m%d}_ace_sis_5m.txt'.format(date=day.end)
+            url = base_url + '{date}_ace_sis_5m.txt'.format(
+                date = str(day.end).split('T')[0].replace('-',''))
             result.append(url)
-        if (datetime.datetime.now() - timerange.end).days == 0:
+        time_dif = Time(datetime.datetime.now()) - timerange.end
+        time_dif.format = 'datetime'
+        if time_dif.value.days == 0:
             url = base_url + 'ace_sis_5m.txt'
             result.append(url)
         return result

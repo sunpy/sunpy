@@ -58,9 +58,9 @@ def test_query():
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument",
                          [(Time('2015/12/27', '2015/12/30'), Instrument('swepam'))])
-def test_get(time, instrument):
+def test_fetch(time, instrument):
     qr = SWEPAMClient.search(time, instrument)
-    res = SWEPAMClient.get(qr)
+    res = SWEPAMClient.fetch(qr)
     download_list = res.wait()
     assert len(download_list) == len(qr)
 
