@@ -37,7 +37,7 @@ class SWEPAMClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
-    ...                       a.Instrument('swepam'))
+    ...                       a.Instrument('swepam'))   #doctest: +REMOTE_DATA
     >>> print(results)
     [<Table length=3>
          Start Time           End Time      Source Instrument
@@ -125,7 +125,7 @@ class EPAMClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
-    ...                       a.Instrument('epam'))
+    ...                       a.Instrument('epam')) #doctest: +REMOTE_DATA
     >>> print(results)
     [<Table length=3>
          Start Time           End Time      Source Instrument
@@ -210,7 +210,7 @@ class MAGClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
-    ...                       a.Instrument('mag'))
+    ...                       a.Instrument('mag'))  #doctest: +REMOTE_DATA
     >>> print(results)
     [<Table length=3>
          Start Time           End Time      Source Instrument
@@ -296,7 +296,7 @@ class SISClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
-    ...                       a.Instrument('sis'))
+    ...                       a.Instrument('sis'))  #doctest: +REMOTE_DATA
     >>> print(results)
     [<Table length=3>
          Start Time           End Time      Source Instrument

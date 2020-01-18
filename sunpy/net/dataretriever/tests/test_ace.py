@@ -20,7 +20,7 @@ MAGClient = ace.MAGClient()
 SClient = ace.SISClient()
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("timerange, url_start, url_end",
                          [(TimeRange('2015/12/27', '2015/12/30'),
                            'ftp://ftp.swpc.noaa.gov/pub/lists/ace/20151227_ace_swepam_1m.txt',
@@ -45,8 +45,7 @@ TRANGE = Time('2015/12/30', '2015/12/31')
 def test_can_handle_query(client, time, instrument, expected):
     assert client._can_handle_query(time, instrument) is expected
 
-
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_query():
     qr = SWEPAMClient.search(Time('2015/12/27', '2015/12/30'), a.Instrument('swepam'))
     assert isinstance(qr, QueryResponse)
@@ -55,7 +54,7 @@ def test_query():
     assert qr.time_range()[1] == '2015/12/30'
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("time, instrument",
                          [(Time('2015/12/27', '2015/12/30'), a.Instrument('swepam'))])
 def test_get(time, instrument):
@@ -64,7 +63,7 @@ def test_get(time, instrument):
     assert len(download_list) == len(qr)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_fido_query():
     qr = Fido.search(a.Time('2015/12/27', '2015/12/30'), a.Instrument('epam'))
     assert isinstance(qr, UnifiedResponse)
