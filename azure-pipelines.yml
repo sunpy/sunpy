@@ -49,8 +49,9 @@ jobs:
       - linux: py38-test-online
         name: py38_test_online
 
-      - linux: pycodestyle
-        name: pycodestyle
+     # Enable this when the code base has been linited
+     # - linux: pycodestyle
+     #   name: pycodestyle
 
       - linux: py36-conda
         name: py36_conda
