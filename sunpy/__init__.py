@@ -9,6 +9,7 @@ An open-source Python library for Solar Physics data analysis.
 """
 # Enforce Python version check during package import.
 # This is the same check as the one at the top of setup.py
+from .version import __version__
 import os
 import sys
 
@@ -30,8 +31,6 @@ try:
 except NameError:
     import builtins
     builtins._SUNPY_SETUP_ = False
-
-from .version import version as __version__
 
 
 def _get_bibtex():
