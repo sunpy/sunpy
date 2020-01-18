@@ -38,7 +38,7 @@ class SWEPAMClient(GenericClient):
     >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
     ...                       a.Instrument('swepam'))   #doctest: +REMOTE_DATA
-    >>> print(results)
+    >>> print(results)  #doctest: +REMOTE_DATA
     [<Table length=3>
          Start Time           End Time      Source Instrument
             str19               str19         str3     str6
@@ -47,7 +47,7 @@ class SWEPAMClient(GenericClient):
     2016-05-19 00:00:00 2016-05-20 00:00:00    ACE     swepam
     2016-05-20 00:00:00 2016-05-21 00:00:00    ACE     swepam]
 
-    >>> response = Fido.fetch(results)
+    >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -60,12 +60,12 @@ class SWEPAMClient(GenericClient):
                 'Earliest date for which SWEPAM data is available is '
                 '{:%Y-%m-%d}'.format(START_DATE))
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
-        total_days = int(timerange.days/u.d + 1)
+        total_days = int(timerange.days / u.d + 1)
         all_days = timerange.split(total_days)
         result = [
             base_url +
             '{date}_ace_swepam_1m.txt'.format(
-                date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
+                date=str(day.end).split('T')[0].replace('-', '')) for day in all_days]
         time_dif = Time(datetime.datetime.now()) - timerange.end
         time_dif.format = 'datetime'
         if time_dif.value.days == 0:
@@ -126,7 +126,7 @@ class EPAMClient(GenericClient):
     >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
     ...                       a.Instrument('epam')) #doctest: +REMOTE_DATA
-    >>> print(results)
+    >>> print(results)  #doctest: +REMOTE_DATA
     [<Table length=3>
          Start Time           End Time      Source Instrument
            str19               str19         str3     str4
@@ -135,7 +135,7 @@ class EPAMClient(GenericClient):
     2016-05-19 00:00:00 2016-05-20 00:00:00    ACE       epam
     2016-05-20 00:00:00 2016-05-21 00:00:00    ACE       epam]
 
-    >>> response = Fido.fetch(results)
+    >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -145,12 +145,12 @@ class EPAMClient(GenericClient):
             raise ValueError(
                 "The earliest date for which EPAM data is available is "
                 "{:%Y-%m-%d}".format(START_DATE))
-        total_days = int(timerange.days/u.d + 1)
+        total_days = int(timerange.days / u.d + 1)
         all_days = timerange.split(total_days)
         result = [
             base_url +
             '{date}_ace_swepam_1m.txt'.format(
-                date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
+                date=str(day.end).split('T')[0].replace('-', '')) for day in all_days]
         time_dif = Time(datetime.datetime.now()) - timerange.end
         time_dif.format = 'datetime'
         if time_dif.value.days == 0:
@@ -211,7 +211,7 @@ class MAGClient(GenericClient):
     >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
     ...                       a.Instrument('mag'))  #doctest: +REMOTE_DATA
-    >>> print(results)
+    >>> print(results)  #doctest: +REMOTE_DATA
     [<Table length=3>
          Start Time           End Time      Source Instrument
             str19               str19         str3     str6
@@ -220,7 +220,7 @@ class MAGClient(GenericClient):
     2016-05-19 00:00:00 2016-05-20 00:00:00    ACE     mag
     2016-05-20 00:00:00 2016-05-21 00:00:00    ACE     mag]
 
-    >>> response = Fido.fetch(results)
+    >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -232,11 +232,12 @@ class MAGClient(GenericClient):
             raise ValueError(
                 'Earliest date for which MAG data is available is {:%Y-%m-%d}'.format(START_DATE))
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
-        total_days = int(timerange.days/u.d + 1)
+        total_days = int(timerange.days / u.d + 1)
         all_days = timerange.split(total_days)
         result = [
+            base_url +
             '{date}_ace_swepam_1m.txt'.format(
-                date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
+                date=str(day.end).split('T')[0].replace('-', '')) for day in all_days]
         time_dif = Time(datetime.datetime.now()) - timerange.end
         time_dif.format = 'datetime'
         if time_dif.value.days == 0:
@@ -297,7 +298,7 @@ class SISClient(GenericClient):
     >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
     ...                       a.Instrument('sis'))  #doctest: +REMOTE_DATA
-    >>> print(results)
+    >>> print(results)  #doctest: +REMOTE_DATA
     [<Table length=3>
          Start Time           End Time      Source Instrument
             str19               str19         str3     str6
@@ -306,7 +307,7 @@ class SISClient(GenericClient):
     2016-05-19 00:00:00 2016-05-20 00:00:00    ACE     sis
     2016-05-20 00:00:00 2016-05-21 00:00:00    ACE     sis]
 
-    >>> response = Fido.fetch(results)
+    >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -318,15 +319,15 @@ class SISClient(GenericClient):
             raise ValueError(
                 'Earliest date for which SIS data is available is {:%Y-%m-%d}'.format(START_DATE))
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
-        total_days = int(timerange.days/u.d + 1)
+        total_days = int(timerange.days / u.d + 1)
         all_days = timerange.split(total_days)
         result = [
             base_url +
             '{date}_ace_swepam_1m.txt'.format(
-                date = str(day.end).split('T')[0].replace('-','')) for day in all_days]
+                date=str(day.end).split('T')[0].replace('-', '')) for day in all_days]
         for day in all_days:
             url = base_url + '{date}_ace_sis_5m.txt'.format(
-                date = str(day.end).split('T')[0].replace('-',''))
+                date=str(day.end).split('T')[0].replace('-', ''))
             result.append(url)
         time_dif = Time(datetime.datetime.now()) - timerange.end
         time_dif.format = 'datetime'

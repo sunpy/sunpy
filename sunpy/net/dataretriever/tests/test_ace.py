@@ -6,6 +6,7 @@ This module tests ACE Client.
 import pytest
 
 from sunpy.time.timerange import TimeRange
+from sunpy.time import parse_time
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
@@ -45,13 +46,14 @@ TRANGE = Time('2015/12/30', '2015/12/31')
 def test_can_handle_query(client, time, instrument, expected):
     assert client._can_handle_query(time, instrument) is expected
 
+
 @pytest.mark.remote_data
 def test_query():
     qr = SWEPAMClient.search(Time('2015/12/27', '2015/12/30'), a.Instrument('swepam'))
     assert isinstance(qr, QueryResponse)
     assert len(qr) == 4
-    assert qr.time_range()[0] == '2015/12/27'
-    assert qr.time_range()[1] == '2015/12/30'
+    assert qr.time_range().start == parse_time('2015/12/27')
+    assert qr.time_range().end == parse_time('2015/12/30')
 
 
 @pytest.mark.remote_data
