@@ -48,7 +48,7 @@ def test_can_handle_query(client, time, instrument, expected):
 
 @pytest.mark.online
 def test_query():
-    qr = SWEPAMClient.search(Time('2015/12/27', '2015/12/30'), Instrument='swepam')
+    qr = SWEPAMClient.search(Time('2015/12/27', '2015/12/30'), a.Instrument('swepam'))
     assert isinstance(qr, QueryResponse)
     assert len(qr) == 4
     assert qr.time_range()[0] == '2015/12/27'
@@ -57,11 +57,10 @@ def test_query():
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument",
-                         [(Time('2015/12/27', '2015/12/30'), Instrument('swepam'))])
-def test_fetch(time, instrument):
+                         [(Time('2015/12/27', '2015/12/30'), a.Instrument('swepam'))])
+def test_get(time, instrument):
     qr = SWEPAMClient.search(time, instrument)
-    res = SWEPAMClient.fetch(qr)
-    download_list = res.wait()
+    download_list = SWEPAMClient.fetch(qr)
     assert len(download_list) == len(qr)
 
 
