@@ -40,27 +40,26 @@ jobs:
       brew:
         - openjpeg
     envs:
-      - macos: py36-test
+      - macos: py36
         name: py36_test
 
-      - windows: py37-test
+      - windows: py37
         name: py37_test
 
-      - linux: py38-test-online
+      - linux: py38-online
         name: py38_test_online
 
-     # Enable this when the code base has been linited
-     # - linux: pycodestyle
-     #   name: pycodestyle
+      - linux: codestyle
+        name: python_codestyle
 
       - linux: py36-conda
         name: py36_conda
         libraries: {}
 
-      - linux: py36-test-oldestdeps
+      - linux: py36-oldestdeps
         name: py36_test_oldestdeps
 
-      - linux: py38-test-devdeps
+      - linux: py38-devdeps
         name: py38_test_devdeps
 
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags

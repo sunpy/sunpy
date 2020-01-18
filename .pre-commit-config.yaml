@@ -1,21 +1,17 @@
 repos:
--   repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.4.4
-    hooks:
-    -   id: autopep8
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
     hooks:
-    - id: check-ast
-    - id: flake8
-    - id: check-case-conflict
-    - id: trailing-whitespace
-    - id: mixed-line-ending
-    - id: end-of-file-fixer
-    - id: check-yaml
-    - id: debug-statements
--   repo: https://github.com/timothycrosley/isort
-    rev: 4.3.21-2
-    hooks:
-    - id: isort
-      args: ["-sp setup.cfg"]
+      - id: check-ast
+      - id: flake8
+        args: ['--select', 'E101,W191,W291,W292,W293,W391,E111,E112,E113,E901,E902']
+      - id: check-case-conflict
+      - id: trailing-whitespace
+        exclude: ".*fits"
+      - id: mixed-line-ending
+        files: ".*.py"
+      - id: end-of-file-fixer
+        exclude: ".*fits"
+      - id: check-yaml
+      - id: debug-statements
+      - id: check-added-large-files
