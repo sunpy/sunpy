@@ -45,7 +45,6 @@ files = Fido.fetch(res[:, 0])
 # reduce the computation time.
 
 map_aia, map_hmi = [m.resample((1024, 1024)*u.pix) for m in sunpy.map.Map(sorted(files))]
-# Why do we have to do this?
 map_hmi.cmap = "hmimag"
 map_hmi.norm = plt.Normalize(-2000, 2000)
 

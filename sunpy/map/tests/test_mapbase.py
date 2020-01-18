@@ -25,7 +25,7 @@ import sunpy.data.test
 import sunpy.coordinates
 from sunpy.coordinates import sun
 from sunpy.time import parse_time
-from sunpy.util import SunpyUserWarning
+from sunpy.util import SunpyUserWarning, SunpyDeprecationWarning
 
 testpath = sunpy.data.test.rootdir
 
@@ -285,9 +285,9 @@ def test_rotation_matrix_cd_cdelt_square():
         'CRPIX1': 5,
         'CRPIX2': 5,
         'CDELT1': 10,
-        'CDELT2': 10,
+        'CDELT2': 9,
         'CD1_1': 0,
-        'CD1_2': -10,
+        'CD1_2': -9,
         'CD2_1': 10,
         'CD2_2': 0,
         'NAXIS1': 6,
@@ -297,6 +297,27 @@ def test_rotation_matrix_cd_cdelt_square():
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1], [1., 0]]))
+
+
+def test_norm_cmap_kwargs(generic_map):
+    cmap = 'cool'
+    from matplotlib import colors, pyplot as plt
+    norm = colors.Normalize(vmin=1., vmax=1.)
+    smap = sunpy.map.Map(generic_map.data, generic_map.meta, cmap=cmap, norm=norm)
+    assert smap.cmap == plt.get_cmap(cmap)
+    assert smap.norm == norm
+
+
+def test_plot_settings_deprecate(generic_map):
+    cmap = 'cool'
+    from matplotlib import colors, pyplot as plt
+    norm = colors.Normalize(vmin=1., vmax=1.)
+    plot_settings = {'cmap': cmap, 'norm': norm}
+
+    with pytest.warns(SunpyDeprecationWarning):
+        smap = sunpy.map.Map(generic_map.data, generic_map.meta, plot_settings=plot_settings)
+        assert smap.cmap == plt.get_cmap(cmap)
+        assert smap.norm == norm
 
 
 def test_swap_cd():

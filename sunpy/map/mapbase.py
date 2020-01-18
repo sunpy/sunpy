@@ -29,7 +29,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_earth
 from sunpy.util import expand_list
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyUserWarning, SunpyDeprecationWarning
 
 from astropy.nddata import NDData
 
@@ -54,13 +54,13 @@ class GenericMap(NDData):
         A 2d list or ndarray containing the map data.
     header : dict
         A dictionary of the original image header tags.
-    cmap : `matplotlib.colors.Colormap`, str
-        Colormap of the map image. Defaults to 'grey'
+    cmap : `matplotlib.colors.Colormap`, `str`
+        Colormap of the map image. Defaults to 'grey'.
     norm : `matplotlib.colors.Normalize`
-        Normalization function used. Defaults to None
+        Normalization function used. Defaults to None.
     plot_settings : `dict`, optional
         Keyword arguments to be passed to `~matplotlib.pyplot.imshow`
-        (Deprecated, will be removed in 2.1)
+        (Deprecated, will be removed in sunpy 2.1)
     Other Parameters
     ----------------
     **kwargs :
@@ -202,18 +202,17 @@ class GenericMap(NDData):
         # Visualization attributes
         self.cmap = cmap
         self.norm = norm
-        if plot_settings:
-            self.plot_settings = plot_settings
+        self.plot_settings = plot_settings
+
+        if self.plot_settings:
             warnings.warn("Handling of ``plot_settings`` is deprecated."
                           "Subsequently setting ``plot_settings`` will have no effect on the plot."
                           "Pass the plot specific settings to either ``.peek()`` or ``.show()``",
-                          DeprecationWarning)
+                          SunpyDeprecationWarning)
             if 'norm' in self.plot_settings:
                 self.norm = self.plot_settings['norm']
             if 'cmap' in self.plot_settings:
                 self.cmap = self.plot_settings['cmap']
-        else:
-            self.plot_settings = {}
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -1768,7 +1767,8 @@ class GenericMap(NDData):
                         'origin': 'lower',
                       }
 
-        imshow_args.update(self.plot_settings)
+        if self.plot_settings:
+            imshow_args.update(self.plot_settings)
 
         if 'title' in imshow_args:
             plot_settings_title = imshow_args.pop('title')
