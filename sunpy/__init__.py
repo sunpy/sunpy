@@ -7,17 +7,17 @@ An open-source Python library for Solar Physics data analysis.
 * Homepage: https://sunpy.org
 * Documentation: https://docs.sunpy.org/en/stable/
 """
-# Enforce Python version check during package import.
-# This is the same check as the one at the top of setup.py
-from sunpy.util.logger import _init_log
+import os
+import sys
 import logging
+
 from sunpy.tests.runner import SunPyTestRunner
 from sunpy.util import system_info
 from sunpy.util.config import load_config, print_config
+from sunpy.util.logger import _init_log
 from .version import __version__
-import os
-import sys
 
+# Enforce Python version check during package import.
 __minimum_python_version__ = "3.6"
 
 
