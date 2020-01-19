@@ -43,17 +43,21 @@ class SWEPAMClient(GenericClient):
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
     ...                       a.Instrument('swepam'))   #doctest: +REMOTE_DATA
     >>> print(results)  #doctest: +REMOTE_DATA
-    [<Table length=3>
-         Start Time           End Time      Source Instrument
-            str19               str19         str3     str6
-    ------------------- ------------------- ------ ----------
-    2016-05-18 00:00:00 2016-05-19 00:00:00    ACE     swepam
-    2016-05-19 00:00:00 2016-05-20 00:00:00    ACE     swepam
-    2016-05-20 00:00:00 2016-05-21 00:00:00    ACE     swepam]
+    Results from 1 Provider:
+    <BLANKLINE>
+    3 Results from the SWEPAMClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str3     str6       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-05-18 00:00:00 2016-05-18 23:59:59    ACE     swepam        nan
+    2016-05-19 00:00:00 2016-05-19 23:59:59    ACE     swepam        nan
+    2016-05-20 00:00:00 2016-05-20 23:59:59    ACE     swepam        nan
+    <BLANKLINE>
+    <BLANKLINE>
 
     >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
-    
+
     def _get_time_for_url(self, urls):
         times = []
         for uri in urls:
@@ -145,13 +149,17 @@ class EPAMClient(GenericClient):
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
     ...                       a.Instrument('epam')) #doctest: +REMOTE_DATA
     >>> print(results)  #doctest: +REMOTE_DATA
-    [<Table length=3>
-         Start Time           End Time      Source Instrument
-           str19               str19         str3     str4
-    ------------------- ------------------- ------ ----------
-    2016-05-18 00:00:00 2016-05-19 00:00:00    ACE       epam
-    2016-05-19 00:00:00 2016-05-20 00:00:00    ACE       epam
-    2016-05-20 00:00:00 2016-05-21 00:00:00    ACE       epam]
+    Results from 1 Provider:
+    <BLANKLINE>
+    3 Results from the EPAMClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str3     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-05-18 00:00:00 2016-05-18 23:59:59    ACE       epam        nan
+    2016-05-19 00:00:00 2016-05-19 23:59:59    ACE       epam        nan
+    2016-05-20 00:00:00 2016-05-20 23:59:59    ACE       epam        nan
+    <BLANKLINE>
+    <BLANKLINE>
 
     >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
@@ -244,17 +252,21 @@ class MAGClient(GenericClient):
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
     ...                       a.Instrument('mag'))  #doctest: +REMOTE_DATA
     >>> print(results)  #doctest: +REMOTE_DATA
-    [<Table length=3>
-         Start Time           End Time      Source Instrument
-            str19               str19         str3     str6
-    ------------------- ------------------- ------ ----------
-    2016-05-18 00:00:00 2016-05-19 00:00:00    ACE     mag
-    2016-05-19 00:00:00 2016-05-20 00:00:00    ACE     mag
-    2016-05-20 00:00:00 2016-05-21 00:00:00    ACE     mag]
+    Results from 1 Provider:
+    <BLANKLINE>
+    3 Results from the MAGClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str3     str3       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-05-18 00:00:00 2016-05-18 23:59:59    ACE        mag        nan
+    2016-05-19 00:00:00 2016-05-19 23:59:59    ACE        mag        nan
+    2016-05-20 00:00:00 2016-05-20 23:59:59    ACE        mag        nan
+    <BLANKLINE>
+    <BLANKLINE>
 
     >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
-    
+
     def _get_time_for_url(self, urls):
         times = []
         for uri in urls:
@@ -345,17 +357,21 @@ class SISClient(GenericClient):
     >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'),
     ...                       a.Instrument('sis'))  #doctest: +REMOTE_DATA
     >>> print(results)  #doctest: +REMOTE_DATA
-    [<Table length=3>
-         Start Time           End Time      Source Instrument
-            str19               str19         str3     str6
-    ------------------- ------------------- ------ ----------
-    2016-05-18 00:00:00 2016-05-19 00:00:00    ACE     sis
-    2016-05-19 00:00:00 2016-05-20 00:00:00    ACE     sis
-    2016-05-20 00:00:00 2016-05-21 00:00:00    ACE     sis]
+    Results from 1 Provider:
+    <BLANKLINE>
+    3 Results from the SISClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str3     str3       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-05-18 00:00:00 2016-05-18 23:59:59    ACE        sis        nan
+    2016-05-19 00:00:00 2016-05-19 23:59:59    ACE        sis        nan
+    2016-05-20 00:00:00 2016-05-20 23:59:59    ACE        sis        nan
+    <BLANKLINE>
+    <BLANKLINE>
 
     >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
-    
+
     def _get_time_for_url(self, urls):
         times = []
         for uri in urls:
