@@ -7,10 +7,14 @@ This module implements SWEPAM, MAG, SIS and EPAM Clients.
 __author__ = "Sudarshan Konge"
 __email__ = "sudk1896@gmail.com"
 
+import os
 import datetime
-from sunpy.net.dataretriever.client import GenericClient
+from urllib.parse import urlsplit
+
 import astropy.units as u
-from astropy.time import Time
+from astropy.time import Time, TimeDelta
+from sunpy.time import TimeRange
+from sunpy.net.dataretriever.client import GenericClient
 
 __all__ = ['SWEPAMClient', 'EPAMClient', 'MAGClient', 'SISClient']
 
@@ -49,6 +53,20 @@ class SWEPAMClient(GenericClient):
 
     >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
+    
+    def _get_time_for_url(self, urls):
+        times = []
+        for uri in urls:
+            uripath = urlsplit(uri).path
+
+            # Extract the yymmdd or yyyymmdd timestamp
+            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][:8]
+
+            start = Time.strptime(datestamp, "%Y%m%d")
+            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+            times.append(TimeRange(start, start + almost_day))
+
+        return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """ returns list of urls corresponding
@@ -69,7 +87,7 @@ class SWEPAMClient(GenericClient):
         time_dif = Time(datetime.datetime.now()) - timerange.end
         time_dif.format = 'datetime'
         if time_dif.value.days == 0:
-            url = base_url + 'ace_swepam_1m.txt'
+            url = base_url + '_ace_swepam_1m.txt'
             result.append(url)
         return result
 
@@ -138,6 +156,20 @@ class EPAMClient(GenericClient):
     >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
 
+    def _get_time_for_url(self, urls):
+        times = []
+        for uri in urls:
+            uripath = urlsplit(uri).path
+
+            # Extract the yymmdd or yyyymmdd timestamp
+            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][:8]
+
+            start = Time.strptime(datestamp, "%Y%m%d")
+            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+            times.append(TimeRange(start, start + almost_day))
+
+        return times
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         START_DATE = datetime.datetime(2015, 7, 29)
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
@@ -149,12 +181,12 @@ class EPAMClient(GenericClient):
         all_days = timerange.split(total_days)
         result = [
             base_url +
-            '{date}_ace_swepam_1m.txt'.format(
+            '{date}_ace_epam_5m.txt'.format(
                 date=str(day.end).split('T')[0].replace('-', '')) for day in all_days]
         time_dif = Time(datetime.datetime.now()) - timerange.end
         time_dif.format = 'datetime'
         if time_dif.value.days == 0:
-            url = base_url + 'ace_epam_5m.txt'
+            url = base_url + '_ace_epam_5m.txt'
             result.append(url)
         return result
 
@@ -222,6 +254,20 @@ class MAGClient(GenericClient):
 
     >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
+    
+    def _get_time_for_url(self, urls):
+        times = []
+        for uri in urls:
+            uripath = urlsplit(uri).path
+
+            # Extract the yymmdd or yyyymmdd timestamp
+            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][:8]
+
+            start = Time.strptime(datestamp, "%Y%m%d")
+            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+            times.append(TimeRange(start, start + almost_day))
+
+        return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """ returns list of urls corresponding
@@ -236,12 +282,12 @@ class MAGClient(GenericClient):
         all_days = timerange.split(total_days)
         result = [
             base_url +
-            '{date}_ace_swepam_1m.txt'.format(
+            '{date}_ace_mag_1m.txt'.format(
                 date=str(day.end).split('T')[0].replace('-', '')) for day in all_days]
         time_dif = Time(datetime.datetime.now()) - timerange.end
         time_dif.format = 'datetime'
         if time_dif.value.days == 0:
-            url = base_url + 'ace_mag_1m.txt'
+            url = base_url + '_ace_mag_1m.txt'
             result.append(url)
         return result
 
@@ -309,6 +355,20 @@ class SISClient(GenericClient):
 
     >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
     """
+    
+    def _get_time_for_url(self, urls):
+        times = []
+        for uri in urls:
+            uripath = urlsplit(uri).path
+
+            # Extract the yymmdd or yyyymmdd timestamp
+            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][:8]
+
+            start = Time.strptime(datestamp, "%Y%m%d")
+            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+            times.append(TimeRange(start, start + almost_day))
+
+        return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """ returns list of urls corresponding
@@ -321,10 +381,7 @@ class SISClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = int(timerange.days / u.d + 1)
         all_days = timerange.split(total_days)
-        result = [
-            base_url +
-            '{date}_ace_swepam_1m.txt'.format(
-                date=str(day.end).split('T')[0].replace('-', '')) for day in all_days]
+        result = []
         for day in all_days:
             url = base_url + '{date}_ace_sis_5m.txt'.format(
                 date=str(day.end).split('T')[0].replace('-', ''))

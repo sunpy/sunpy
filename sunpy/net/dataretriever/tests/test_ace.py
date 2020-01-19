@@ -12,6 +12,8 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+import astropy.units as u
+from astropy.time import TimeDelta
 
 import sunpy.net.dataretriever.sources.ace as ace
 
@@ -53,7 +55,8 @@ def test_query():
     assert isinstance(qr, QueryResponse)
     assert len(qr) == 4
     assert qr.time_range().start == parse_time('2015/12/27')
-    assert qr.time_range().end == parse_time('2015/12/30')
+    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
+    assert qr.time_range().end == parse_time('2015/12/30') + almost_day
 
 
 @pytest.mark.remote_data
