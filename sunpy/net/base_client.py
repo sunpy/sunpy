@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import importlib
 
 
 __all__ = ['BaseClient']
@@ -31,9 +32,27 @@ class BaseClient(ABC):
         This means that Fido can use the clients internally.
         """
         super().__init_subclass__(**kwargs)
+
         # We do not want to register GenericClient since its a dummy client.
-        if cls.__name__ != 'GenericClient':
-            cls._registry[cls] = cls._can_handle_query
+        if cls.__name__ in ('GenericClient'):
+            return
+
+        cls._registry[cls] = cls._can_handle_query
+
+        if hasattr(cls, "_attrs_module"):
+            from sunpy.net import attrs
+
+            name, module = cls._attrs_module()
+            module_obj = importlib.import_module(module)
+
+            existing_mod = getattr(attrs, name, None)
+            if existing_mod and existing_mod is not module_obj:
+                raise NameError(f"{name} has already been registered as an attrs name.")
+
+            setattr(attrs, name, module_obj)
+
+            if name not in attrs.__all__:
+                attrs.__all__.append(name)
 
     @abstractmethod
     def search(self, *args, **kwargs):
