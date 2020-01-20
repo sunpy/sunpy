@@ -28,8 +28,8 @@ from sunpy.util.multimethod import MultiMethod
 _ATTR_TUPLE = namedtuple("attr", "name name_long desc")
 _REGEX = re.compile(r"^[\d]([^\d].*)?$")
 
-__all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'AttrAnd',
-           'AttrOr', 'ValueAttr', 'and_', 'or_']
+__all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
+           'ValueAttr', 'and_', 'or_']
 
 
 def make_tuple():

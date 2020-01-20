@@ -5,7 +5,7 @@ from astropy.time import TimeDelta
 import astropy.units as u
 
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time, Instrument
+from sunpy.net._attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.goes as goes
 from sunpy.net.fido_factory import UnifiedResponse

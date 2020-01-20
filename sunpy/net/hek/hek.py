@@ -20,6 +20,7 @@ from sunpy.net import attr
 from sunpy.util import dict_keys_same, unique
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
+import sunpy.net._attrs as core_attrs
 from sunpy.util.xml import xml_to_dict
 
 
@@ -130,7 +131,7 @@ class HEKRow(Row):
     """
     @property
     def vso_time(self):
-        return v_attrs.Time(
+        return core_attrs.Time(
             Time.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
             Time.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
         )
@@ -139,7 +140,7 @@ class HEKRow(Row):
     def vso_instrument(self):
         if self['obs_instrument'] == 'HEK':
             raise ValueError("No instrument contained.")
-        return v_attrs.Instrument(self['obs_instrument'])
+        return core_attrs.Instrument(self['obs_instrument'])
 
     @property
     def vso_all(self):

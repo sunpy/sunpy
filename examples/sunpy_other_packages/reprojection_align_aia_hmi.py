@@ -29,7 +29,7 @@ plt.rcParams['figure.figsize'] = (16, 8)
 ######################################################################
 # We are going to download one AIA and one HMI magnetogram image.
 
-time = (a.vso.Sample(24 * u.hour) &
+time = (a.Sample(24 * u.hour) &
         a.Time('2010-08-19', '2010-08-19T00:10:00', '2010-08-19') &
         a.vso.Extent(0, 0, 0, 0, "FULLDISK"))
 aia = a.Instrument('AIA') & a.Wavelength(17 * u.nm, 18 * u.nm)
