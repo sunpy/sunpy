@@ -273,7 +273,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
         ...                        a.Instrument('AIA'),
         ...                        a.Wavelength(304*u.angstrom, 304*u.angstrom),
-        ...                        a.vso.Sample(10*u.minute))  # doctest: +REMOTE_DATA
+        ...                        a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
 
         Parameters
         ----------
@@ -339,7 +339,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Examples
         --------
-        >>> from sunpy.net.vso.attrs import Time, Instrument
+        >>> from sunpy.net.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
         >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
 

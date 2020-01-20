@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from astropy.time import Time as astropyTime
 
-from sunpy.net.vso.attrs import Wavelength
-from sunpy.net.vso.attrs import Time as VSO_Time
+from sunpy.net._attrs import Wavelength, Time
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr, SimpleAttr
 
 
@@ -84,7 +83,7 @@ class Notify(SimpleAttr):
 walker = AttrWalker()
 
 
-@walker.add_creator(AttrAnd, SimpleAttr, VSO_Time)
+@walker.add_creator(AttrAnd, SimpleAttr, Time)
 def _create(wlk, query):
 
     map_ = {}
@@ -125,7 +124,7 @@ def _apply1(wlk, query, imap):
         imap[key] = [query.value]
 
 
-@walker.add_applier(VSO_Time)
+@walker.add_applier(Time)
 def _apply2(wlk, query, imap):
     imap['start_time'] = query.start
     imap['end_time'] = query.end

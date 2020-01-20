@@ -2,7 +2,7 @@
 from sqlalchemy import or_, and_, not_
 
 from sunpy.time import parse_time
-from sunpy.net.vso import attrs as vso_attrs
+from sunpy.net import _attrs as core_attrs
 from sunpy.net.attr import (AttrWalker, Attr, ValueAttr,
                             AttrAnd, AttrOr, SimpleAttr, Range)
 from sunpy.database.tables import (DatabaseEntry,
@@ -254,12 +254,12 @@ def _convert(attr):
     return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})
 
 
-@walker.add_converter(vso_attrs.Wavelength)
+@walker.add_converter(core_attrs.Wavelength)
 def _convert(attr):
     return ValueAttr({('wave', ): (attr.min.value, attr.max.value, str(attr.unit))})
 
 
-@walker.add_converter(vso_attrs.Time)
+@walker.add_converter(core_attrs.Time)
 def _convert(attr):
     near = None if not attr.near else attr.near.datetime
     return ValueAttr({('time', ): (attr.start.datetime, attr.end.datetime, near)})

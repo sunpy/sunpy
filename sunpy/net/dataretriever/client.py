@@ -15,7 +15,7 @@ import sunpy
 from sunpy import config
 from sunpy.net.base_client import BaseClient
 from sunpy.net.attr import Range
-from sunpy.net.vso.attrs import Time, Wavelength
+from sunpy.net._attrs import Time, Wavelength
 from sunpy.time import TimeRange
 
 TIME_FORMAT = config.get("general", "time_format")

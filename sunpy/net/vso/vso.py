@@ -33,6 +33,7 @@ from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import get_content_disposition, slugify
 
+from .. import _attrs as core_attrs
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -338,11 +339,11 @@ class VSOClient(BaseClient):
         2010-01-01T01:00.
 
         >>> from datetime import datetime
-        >>> from sunpy.net import vso
+        >>> from sunpy.net import vso, attrs as a
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> client.search(
-        ...    vso.attrs.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest:  +REMOTE_DATA
+        ...    a.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
+        ...    a.Instrument('eit') | a.Instrument('aia'))   # doctest:  +REMOTE_DATA
         <QTable length=5>
            Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
                                                        ...             Angstrom
@@ -918,4 +919,4 @@ class VSOClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        return all([x.__class__.__name__ in attrs.__all__ for x in query])
+        return all([x.__class__.__name__ in core_attrs.__all__ + attrs.__all__ for x in query])

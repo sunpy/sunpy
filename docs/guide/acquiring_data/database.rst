@@ -257,7 +257,7 @@ though. If you want to add new entries using the VSO and also want to
 download files at the same time, take a look at the following two
 sections.
 
-    >>> from sunpy.net import vso
+    >>> from sunpy.net import vso, attrs as a
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
 
 .. testsetup:: *
@@ -276,8 +276,8 @@ sections.
 After initialising the VSO client:
 
     >>> qr = client.search(
-    ...     vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'),
-    ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
+    ...     a.Time('2011-05-08', '2011-05-08 00:00:05'),
+    ...     a.Instrument('AIA'))  # doctest: +REMOTE_DATA
     >>> len(qr)  # doctest: +REMOTE_DATA
     4
     >>> database.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
@@ -308,8 +308,8 @@ In the next code snippet new data is downloaded as this query
 has not been downloaded before.
 
     >>> entries = database.fetch(
-    ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
-    ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
+    ...     a.Time('2012-08-05', '2012-08-05 00:00:05'),
+    ...     a.Instrument('AIA'))  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
     67
 
@@ -317,8 +317,8 @@ Any more identical fetch calls don't add any new entries to the database
 because they have already been downloaded.
 
     >>> entries = database.fetch(
-    ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
-    ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
+    ...     a.Time('2012-08-05', '2012-08-05 00:00:05'),
+    ...     a.Instrument('AIA'))  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
     67
 
@@ -326,8 +326,8 @@ However, this different fetch call downloads new files because there is a
 new date range whose files have not been downloaded yet.
 
     >>> entries = database.fetch(
-    ...     vso.attrs.Time('2013-08-05', '2013-08-05 00:00:05'),
-    ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
+    ...     a.Time('2013-08-05', '2013-08-05 00:00:05'),
+    ...     a.Instrument('AIA'))  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
     71
 
@@ -337,8 +337,8 @@ following example, the query is new, but all of it's files have already been
 downloaded. This means no new files are downloaded.
 
     >>> entries = database.fetch(
-    ...     vso.attrs.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
-    ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
+    ...     a.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
+    ...     a.Instrument('AIA'))  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
     71
 
@@ -681,19 +681,19 @@ with the EIT.
 
 7.1 Using VSO attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~
-Using the attributes from :mod:`sunpy.net.vso.attrs` is quite intuitive:
+Using the attributes from :mod:`sunpy.net.attrs` is quite intuitive:
 the simple attributes and the Time attribute work exactly as you expect.
 
 .. note::
 
-  The `near` parameter of :class:`sunpy.net.vso.attrs.Time` is ignored, because
+  The `near` parameter of :class:`sunpy.net.attrs.Time` is ignored, because
   it's behaviour is not documented and it is different depending on the
   server which is requested.
 
 The following query returns the data that was added in section 2.3.2:
 
     >>> print(display_entries(
-    ...     database.search(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'), vso.attrs.Instrument('AIA')),
+    ...     database.search(a.Time('2012-08-05', '2012-08-05 00:00:05'), a.Instrument('AIA')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
     ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end instrument wavemin wavemax
@@ -707,7 +707,7 @@ The following query returns the data that was added in section 2.3.2:
     in sunpy.util.unit_conversion.to_angstrom (this is called by the
     __init__ of the Wave attribute)
 
-When using the :class:`sunpy.net.vso.attrs.Wave` attribute, you have to
+When using the :class:`sunpy.net.attrs.Wavelength` attribute, you have to
 specify a unit using `astropy.units.Quantity`. If not an error is
 raised. This also means that there is no default unit that is
 used by the class. To know how you can specify a detail using astropy
@@ -715,7 +715,7 @@ check `astropy.units`.
 
     >>> import astropy.units as u
     >>> print(display_entries(
-    ...     database.search(vso.attrs.Wavelength(1.0*u.nm, 2.0*u.nm)),
+    ...     database.search(a.Wavelength(1.0*u.nm, 2.0*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end',
     ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest:  +REMOTE_DATA
      id observation_time_start ...      wavemin            wavemax
