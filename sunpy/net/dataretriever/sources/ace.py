@@ -1,11 +1,6 @@
 """
 This module implements SWEPAM, MAG, SIS and EPAM Clients.
 """
-# This module was developed with funding provided by
-# the Google Summer of Code 2016.
-
-__author__ = "Sudarshan Konge"
-__email__ = "sudk1896@gmail.com"
 
 import os
 import datetime
@@ -13,6 +8,7 @@ from urllib.parse import urlsplit
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
+
 from sunpy.time import TimeRange
 from sunpy.net.dataretriever.client import GenericClient
 
@@ -23,19 +19,18 @@ class SWEPAMClient(GenericClient):
     """
     Returns a list of URLS to ACE SWEPAM files corresponding to value of input timerange.
     URL source: `ftp://ftp.swpc.noaa.gov/pub/lists/ace/`.
-    The earliest date available is from 29-Jul-2015
+    The earliest date available is from 29th July 2015.
+
     Parameters
     ----------
-    timerange: sunpy.time.TimeRange
-        time range for which data is to be downloaded.
-        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-
-    Instrument: Fixed argument = 'swepam'
+    timerange : `sunpy.time.TimeRange`
+        Time range for which data is to be downloaded.
 
     Returns
     -------
-    urls: list
-          list of urls corresponding to requested time range.
+    `list`
+          List of urls corresponding to requested time range.
+
     Examples
     --------
     >>> from sunpy.net import Fido
@@ -54,8 +49,7 @@ class SWEPAMClient(GenericClient):
     2016-05-20 00:00:00 2016-05-20 23:59:59    ACE     swepam        nan
     <BLANKLINE>
     <BLANKLINE>
-
-    >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
+    >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
 
     def _get_time_for_url(self, urls):
@@ -73,9 +67,19 @@ class SWEPAMClient(GenericClient):
         return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
-        """ returns list of urls corresponding
-        to given TimeRange. """
+        """
+        Return URL(s) for corresponding timerange.
 
+        Parameters
+        ----------
+        timerange : `~sunpy.time.TimeRange`
+            The time range you want the files for.
+
+        Returns
+        -------
+        `list`
+            The URL(s) for the corresponding timerange.
+        """
         START_DATE = datetime.datetime(2015, 7, 29)
         if timerange.start < START_DATE:
             raise ValueError(
@@ -110,11 +114,12 @@ class SWEPAMClient(GenericClient):
 
         Parameters
         ----------
-        query : list of query objects
-
+        query : `list`
+        A list of query objects.
         Returns
         -------
-        boolean: answer as to whether client can service the query
+        `bool` :
+            Answer as to whether client can service the query
 
         """
         chkattr = ['Time', 'Instrument']
@@ -129,19 +134,18 @@ class EPAMClient(GenericClient):
     """
     Returns a list of URLS to ACE EPAM files corresponding to value of input timerange.
     URL source: `ftp://ftp.swpc.noaa.gov/pub/lists/ace/`.
-    The earliest date available is from 29-Jul-2015
+    The earliest date available is from 29th July 2015.
+
     Parameters
     ----------
-    timerange: sunpy.time.TimeRange
-        time range for which data is to be downloaded.
-        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-
-    Instrument: Fixed argument = 'epam'
+    timerange : `sunpy.time.TimeRange`
+        Time range for which data is to be downloaded.
 
     Returns
     -------
-    urls: list
-          list of urls corresponding to requested time range.
+    `list`
+          List of urls corresponding to requested time range.
+
     Examples
     --------
     >>> from sunpy.net import Fido
@@ -160,8 +164,7 @@ class EPAMClient(GenericClient):
     2016-05-20 00:00:00 2016-05-20 23:59:59    ACE       epam        nan
     <BLANKLINE>
     <BLANKLINE>
-
-    >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
+    >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
 
     def _get_time_for_url(self, urls):
@@ -179,6 +182,19 @@ class EPAMClient(GenericClient):
         return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
+        """
+        Return URL(s) for corresponding timerange.
+
+        Parameters
+        ----------
+        timerange : `~sunpy.time.TimeRange`
+            The time range you want the files for.
+
+        Returns
+        -------
+        `list`
+            The URL(s) for the corresponding timerange.
+        """
         START_DATE = datetime.datetime(2015, 7, 29)
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         if timerange.start < START_DATE:
@@ -213,11 +229,12 @@ class EPAMClient(GenericClient):
 
         Parameters
         ----------
-        query : list of query objects
-
+        query : `list`
+        A list of query objects.
         Returns
         -------
-        boolean: answer as to whether client can service the query
+        `bool` :
+            Answer as to whether client can service the query
 
         """
         chkattr = ['Time', 'Instrument']
@@ -232,19 +249,18 @@ class MAGClient(GenericClient):
     """
     Returns a list of URLS to ACE MAG files corresponding to value of input timerange.
     URL source: `ftp://ftp.swpc.noaa.gov/pub/lists/ace/`.
-    The earliest date available is from 29-Jul-2015
+    The earliest date available is from 29th July 2015.
+
     Parameters
     ----------
-    timerange: sunpy.time.TimeRange
-        time range for which data is to be downloaded.
-        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-
-    Instrument: Fixed argument = 'mag'
+    timerange : `sunpy.time.TimeRange`
+        Time range for which data is to be downloaded.
 
     Returns
     -------
-    urls: list
-          list of urls corresponding to requested time range.
+    `list`
+          List of urls corresponding to requested time range.
+
     Examples
     --------
     >>> from sunpy.net import Fido
@@ -263,8 +279,7 @@ class MAGClient(GenericClient):
     2016-05-20 00:00:00 2016-05-20 23:59:59    ACE        mag        nan
     <BLANKLINE>
     <BLANKLINE>
-
-    >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
+    >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
 
     def _get_time_for_url(self, urls):
@@ -282,9 +297,19 @@ class MAGClient(GenericClient):
         return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
-        """ returns list of urls corresponding
-        to given TimeRange. """
+        """
+        Return URL(s) for corresponding timerange.
 
+        Parameters
+        ----------
+        timerange : `~sunpy.time.TimeRange`
+            The time range you want the files for.
+
+        Returns
+        -------
+        `list`
+            The URL(s) for the corresponding timerange.
+        """
         START_DATE = datetime.datetime(2015, 7, 29)
         if timerange.start < START_DATE:
             raise ValueError(
@@ -318,11 +343,12 @@ class MAGClient(GenericClient):
 
         Parameters
         ----------
-        query : list of query objects
-
+        query : `list`
+        A list of query objects.
         Returns
         -------
-        boolean: answer as to whether client can service the query
+        `bool` :
+            Answer as to whether client can service the query
 
         """
         chkattr = ['Time', 'Instrument']
@@ -337,19 +363,18 @@ class SISClient(GenericClient):
     """
     Returns a list of URLS to ACE SIS files corresponding to value of input timerange.
     URL source: `ftp://ftp.swpc.noaa.gov/pub/lists/ace/`.
-    The earliest date available is from 29-Jul-2015
+    The earliest date available is from 29th July 2015.
+
     Parameters
     ----------
-    timerange: sunpy.time.TimeRange
-        time range for which data is to be downloaded.
-        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-
-    Instrument: Fixed argument = 'sis'
+    timerange : `sunpy.time.TimeRange`
+        Time range for which data is to be downloaded.
 
     Returns
     -------
-    urls: list
-          list of urls corresponding to requested time range.
+    `list`
+          List of urls corresponding to requested time range.
+
     Examples
     --------
     >>> from sunpy.net import Fido
@@ -368,8 +393,7 @@ class SISClient(GenericClient):
     2016-05-20 00:00:00 2016-05-20 23:59:59    ACE        sis        nan
     <BLANKLINE>
     <BLANKLINE>
-
-    >>> response = Fido.fetch(results)  #doctest: +REMOTE_DATA
+    >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
 
     def _get_time_for_url(self, urls):
@@ -387,9 +411,19 @@ class SISClient(GenericClient):
         return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
-        """ returns list of urls corresponding
-        to given TimeRange. """
+        """
+        Return URL(s) for corresponding timerange.
 
+        Parameters
+        ----------
+        timerange : `~sunpy.time.TimeRange`
+            The time range you want the files for.
+
+        Returns
+        -------
+        `list`
+            The URL(s) for the corresponding timerange.
+        """
         START_DATE = datetime.datetime(2015, 7, 29)
         if timerange.start < START_DATE:
             raise ValueError(
@@ -424,11 +458,12 @@ class SISClient(GenericClient):
 
         Parameters
         ----------
-        query : list of query objects
-
+        query : `list`
+        A list of query objects.
         Returns
         -------
-        boolean: answer as to whether client can service the query
+        `bool` :
+            Answer as to whether client can service the query
 
         """
         chkattr = ['Time', 'Instrument']
