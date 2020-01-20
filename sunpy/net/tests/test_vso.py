@@ -68,7 +68,7 @@ def client(request):
 def test_simpleattr_apply():
     a = attr.ValueAttr({('test', ): 1})
     dct = {}
-    va.walker.apply(a, None, dct)
+    va._walker.apply(a, None, dct)
     assert dct['test'] == 1
 
 
@@ -87,7 +87,7 @@ def test_input_error():
 @pytest.mark.remote_data
 def test_simpleattr_create(client):
     a = attr.ValueAttr({('instrument', ): 'eit'})
-    assert va.walker.create(a, client.api)[0].instrument == 'eit'
+    assert va._walker.create(a, client.api)[0].instrument == 'eit'
 
 
 def test_simpleattr_and_duplicate():
@@ -113,14 +113,14 @@ def test_complexattr_apply():
     tst = {('test', 'foo'): 'a', ('test', 'bar'): 'b'}
     a = attr.ValueAttr(tst)
     dct = {'test': {}}
-    va.walker.apply(a, None, dct)
+    va._walker.apply(a, None, dct)
     assert dct['test'] == {'foo': 'a', 'bar': 'b'}
 
 
 @pytest.mark.remote_data
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
-    assert va.walker.create(a, client.api)[0].time['start'] == 'test'
+    assert va._walker.create(a, client.api)[0].time['start'] == 'test'
 
 
 def test_complexattr_and_duplicate():
@@ -225,12 +225,12 @@ def test_wave_xor():
 
 def test_err_dummyattr_create():
     with pytest.raises(TypeError):
-        va.walker.create(attr.DummyAttr(), None, {})
+        va._walker.create(attr.DummyAttr(), None, {})
 
 
 def test_err_dummyattr_apply():
     with pytest.raises(TypeError):
-        va.walker.apply(attr.DummyAttr(), None, {})
+        va._walker.apply(attr.DummyAttr(), None, {})
 
 
 def test_wave_repr():
@@ -382,7 +382,7 @@ def test_QueryResponse_build_table_with_no_start_time():
     """
     a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
-    records = (MockQRRecord(end_time=a_st.strftime(va.TIMEFORMAT)),)
+    records = (MockQRRecord(end_time=a_st.strftime(va._TIMEFORMAT)),)
 
     qr = vso.QueryResponse(records)
     table = qr.build_table()
@@ -404,7 +404,7 @@ def test_QueryResponse_build_table_with_no_end_time():
     """
     a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
-    records = (MockQRRecord(start_time=a_st.strftime(va.TIMEFORMAT)),)
+    records = (MockQRRecord(start_time=a_st.strftime(va._TIMEFORMAT)),)
 
     qr = vso.QueryResponse(records)
     table = qr.build_table()

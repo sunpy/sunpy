@@ -18,36 +18,32 @@ AND-expression, if you still attempt to do so it is called a collision. For a
 quick example think about how the system should handle Instrument('aia') &
 Instrument('eit').
 """
-import collections
 
 import astropy.units as u
 
-from sunpy.net.attr import (Attr, AttrAnd, AttrOr, AttrWalker,
-                            DummyAttr, Range, SimpleAttr, ValueAttr)
-from sunpy.time import TimeRange as _TimeRange
-from sunpy.time import parse_time
-from sunpy.util.multimethod import MultiMethod
+from sunpy.util.multimethod import MultiMethod as _MultiMethod
 
+from .. import attr as _attr
 from .. import _attrs
 
 __all__ = ['Extent', 'Field', 'Provider', 'Source', 'Physobs', 'Pixels',
            'Filter', 'Quicklook', 'PScale']
 
-TIMEFORMAT = '%Y%m%d%H%M%S'
+_TIMEFORMAT = '%Y%m%d%H%M%S'
 
 
-class Field(ValueAttr):
+class Field(_attr.ValueAttr):
     """
     A subclass of the value attribute.  Used in defining a decorator for the
     dummy attribute.
     """
     def __init__(self, fielditem):
-        ValueAttr.__init__(self, {
+        _attr.ValueAttr.__init__(self, {
             ('field', 'fielditem'): fielditem
         })
 
 
-class Extent(Attr):
+class Extent(_attr.Attr):
     """
     Specify the spatial field-of-view of the query. Due to a bug in the VSO,
     the Extent attribute is not used.
@@ -67,7 +63,7 @@ class Extent(Attr):
         return isinstance(other, self.__class__)
 
 
-class Provider(SimpleAttr):
+class Provider(_attr.SimpleAttr):
     """
     Specifies the VSO data provider to search for data for.
 
@@ -81,10 +77,9 @@ class Provider(SimpleAttr):
     For a list of sources see
     https://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
     """
-    pass
 
 
-class Source(SimpleAttr):
+class Source(_attr.SimpleAttr):
     """
     Data sources that VSO can search on.
 
@@ -100,10 +95,9 @@ class Source(SimpleAttr):
     what the VSO Data Model refers to as 'Observatory'.  For a list of sources
     see https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
     """
-    pass
 
 
-class Physobs(SimpleAttr):
+class Physobs(_attr.SimpleAttr):
     """
     Specifies the physical observable the VSO can search for.
 
@@ -117,10 +111,9 @@ class Physobs(SimpleAttr):
     Registry.  For a list of physical observables see
     https://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
     """
-    pass
 
 
-class Pixels(SimpleAttr):
+class Pixels(_attr.SimpleAttr):
     """
     Pixels are (currently) limited to a single dimension (and only implemented
     for SDO data)  We hope to change this in the future to support TRACE,
@@ -130,10 +123,9 @@ class Pixels(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
-    pass
 
 
-class PScale(SimpleAttr):
+class PScale(_attr.SimpleAttr):
     """
     Pixel Scale (PSCALE) is in arc seconds.
 
@@ -155,9 +147,8 @@ class PScale(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
-    pass
 
-class Quicklook(SimpleAttr):
+class Quicklook(_attr.SimpleAttr):
     """
     Retrieve 'quicklook' data if available.
 
@@ -184,7 +175,7 @@ class Quicklook(SimpleAttr):
             self.value = 0
 
 
-class Filter(SimpleAttr):
+class Filter(_attr.SimpleAttr):
     """
     This attribute is a placeholder for the future.
 
@@ -193,12 +184,11 @@ class Filter(SimpleAttr):
     value : str
 
     """
-    pass
 
 
 # The walker specifies how the Attr-tree is converted to a query the
 # server can handle.
-walker = AttrWalker()
+_walker = _attr.AttrWalker()
 
 # The _create functions make a new VSO query from the attribute tree,
 # the _apply functions take an existing query-block and update it according
@@ -206,7 +196,7 @@ walker = AttrWalker()
 # different functions for conversion into query blocks.
 
 
-@walker.add_creator(ValueAttr, AttrAnd)
+@_walker.add_creator(_attr.ValueAttr, _attr.AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """ Implementation detail. """
@@ -216,7 +206,7 @@ def _create(wlk, root, api):
     return [value]
 
 
-@walker.add_applier(ValueAttr)
+@_walker.add_applier(_attr.ValueAttr)
 # pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, block):
     """ Implementation detail. """
@@ -237,7 +227,7 @@ def _apply(wlk, root, api, block):
             block[name] = v
 
 
-@walker.add_applier(AttrAnd)
+@_walker.add_applier(_attr.AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
@@ -245,7 +235,7 @@ def _apply(wlk, root, api, queryblock):
         wlk.apply(attr, api, queryblock)
 
 
-@walker.add_creator(AttrOr)
+@_walker.add_creator(_attr.AttrOr)
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """ Implementation detail. """
@@ -259,27 +249,27 @@ def _create(wlk, root, api):
 # known to it. All of those convert types into ValueAttrs, which are
 # handled above by just assigning according to the keys and values of the
 # attrs member.
-walker.add_converter(Extent)(
-    lambda x: ValueAttr(
+_walker.add_converter(Extent)(
+    lambda x: _attr.ValueAttr(
         {('extent', k): v for k, v in vars(x).items()}
     )
 )
 
-walker.add_converter(_attrs.Time)(
-    lambda x: ValueAttr({
-            ('time', 'start'): x.start.strftime(TIMEFORMAT),
-            ('time', 'end'): x.end.strftime(TIMEFORMAT),
+_walker.add_converter(_attrs.Time)(
+    lambda x: _attr.ValueAttr({
+            ('time', 'start'): x.start.strftime(_TIMEFORMAT),
+            ('time', 'end'): x.end.strftime(_TIMEFORMAT),
             ('time', 'near'): (
-                x.near.strftime(TIMEFORMAT) if x.near is not None else None),
+                x.near.strftime(_TIMEFORMAT) if x.near is not None else None),
     })
 )
 
-walker.add_converter(SimpleAttr)(
-    lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
+_walker.add_converter(_attr.SimpleAttr)(
+    lambda x: _attr.ValueAttr({(x.__class__.__name__.lower(), ): x.value})
 )
 
-walker.add_converter(_attrs.Wavelength)(
-    lambda x: ValueAttr({
+_walker.add_converter(_attrs.Wavelength)(
+    lambda x: _attr.ValueAttr({
             ('wave', 'wavemin'): x.min.value,
             ('wave', 'wavemax'): x.max.value,
             ('wave', 'waveunit'): x.unit.name,
@@ -292,34 +282,34 @@ walker.add_converter(_attrs.Wavelength)(
 # AttrAnd and AttrOr obviously are - in the HEK module). If we defined the
 # filter method as a member of the attribute classes, we could only filter
 # one type of data (that is, VSO data).
-filter_results = MultiMethod(lambda *a, **kw: (a[0], ))
+_filter_results = _MultiMethod(lambda *a, **kw: (a[0], ))
 
 
 # If we filter with ANDed together attributes, the only items are the ones
 # that match all of them - this is implementing  by ANDing the pool of items
 # with the matched items - only the ones that match everything are there
 # after this.
-@filter_results.add_dec(AttrAnd)
+@_filter_results.add_dec(_attr.AttrAnd)
 def _(attr, results):
     res = set(results)
     for elem in attr.attrs:
-        res &= filter_results(elem, res)
+        res &= _filter_results(elem, res)
     return res
 
 
 # If we filter with ORed attributes, the only attributes that should be
 # removed are the ones that match none of them. That's why we build up the
 # resulting set by ORing all the matching items.
-@filter_results.add_dec(AttrOr)
+@_filter_results.add_dec(_attr.AttrOr)
 def _(attr, results):
     res = set()
     for elem in attr.attrs:
-        res |= filter_results(elem, results)
+        res |= _filter_results(elem, results)
     return res
 
 
 # Filter out items by comparing attributes.
-@filter_results.add_dec(SimpleAttr)
+@_filter_results.add_dec(_attr.SimpleAttr)
 def _(attr, results):
     attrname = attr.__class__.__name__.lower()
     return {
@@ -331,12 +321,12 @@ def _(attr, results):
 
 
 # The dummy attribute does not filter at all.
-@filter_results.add_dec(DummyAttr, Field)
+@_filter_results.add_dec(_attr.DummyAttr, Field)
 def _(attr, results):
     return set(results)
 
 
-@filter_results.add_dec(_attrs.Wavelength)
+@_filter_results.add_dec(_attrs.Wavelength)
 def _(attr, results):
     return {
         it for it in results
@@ -351,22 +341,22 @@ def _(attr, results):
     }
 
 
-@filter_results.add_dec(_attrs.Time)
+@_filter_results.add_dec(_attrs.Time)
 def _(attr, results):
     return {
         it for it in results
         if
         it.time.end is not None
         and
-        attr.min <= _attrs.Time.strptime(it.time.end, TIMEFORMAT)
+        attr.min <= _attrs.Time.strptime(it.time.end, _TIMEFORMAT)
         and
         it.time.start is not None
         and
-        attr.max >= _attrs.Time.strptime(it.time.start, TIMEFORMAT)
+        attr.max >= _attrs.Time.strptime(it.time.start, _TIMEFORMAT)
     }
 
 
-@filter_results.add_dec(Extent)
+@_filter_results.add_dec(Extent)
 def _(attr, results):
     return {
         it for it in results
