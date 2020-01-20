@@ -864,3 +864,7 @@ class JSOCClient(BaseClient):
                    'Segment', 'Keys', 'PrimeKey', 'Sample']
 
         return all([x.__class__.__name__ in chkattr for x in query])
+
+    @classmethod
+    def _attrs_module(cls):
+        return 'jsoc', 'sunpy.net.jsoc.attrs'
