@@ -27,7 +27,8 @@ from sunpy import config
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient
 from sunpy.net.vso import attrs
-from sunpy.net.vso.attrs import TIMEFORMAT, walker
+from sunpy.net.vso.attrs import _TIMEFORMAT as TIMEFORMAT
+from sunpy.net.vso.attrs import _walker as walker
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
