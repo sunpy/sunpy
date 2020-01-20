@@ -250,7 +250,7 @@ class SimpleAttr(Attr):
        The value for the attribute to hold.
     """
     def __init__(self, value):
-        Attr.__init__(self)
+        super().__init__()
         self.value = value
 
     def collides(self, other):
@@ -259,6 +259,45 @@ class SimpleAttr(Attr):
     def __repr__(self):
         return "<{cname!s}({val!r})>".format(
             cname=self.__class__.__name__, val=self.value)
+
+
+class Range(Attr):
+    """
+    An attribute that represents a range of a value.
+
+    This type of attribute would be applicable for types like Wavelength or Time.
+    The range is inclusive of both the min and ma
+
+    Parameters
+    ----------
+    min_ : `object`
+        The lower bound of the range.
+
+    max_ : `object`
+        The upper bound of the range.
+    """
+    def __init__(self, min_, max_):
+        self.min = min_
+        self.max = max_
+
+        super().__init__()
+
+    def __xor__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+
+        new = DummyAttr()
+        if self.min < other.min:
+            new |= type(self)(self.min, min(other.min, self.max))
+        if other.max < self.max:
+            new |= type(self)(other.max, self.max)
+        return new
+
+    def __contains__(self, other):
+        if isinstance(other, Range):
+            return self.min <= other.min and self.max >= other.max
+        else:
+            return self.min <= other <= self.max
 
 
 class AttrAnd(Attr):
