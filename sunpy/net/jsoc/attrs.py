@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from astropy.time import Time as astropyTime
 
-from sunpy.net.vso.attrs import _Range
 from sunpy.net.vso.attrs import Wavelength
 from sunpy.net.vso.attrs import Time as VSO_Time
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr, SimpleAttr

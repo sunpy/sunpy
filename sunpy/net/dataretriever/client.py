@@ -14,7 +14,8 @@ import parfive
 import sunpy
 from sunpy import config
 from sunpy.net.base_client import BaseClient
-from sunpy.net.vso.attrs import Time, Wavelength, _Range
+from sunpy.net.attr import Range
+from sunpy.net.vso.attrs import Time, Wavelength
 from sunpy.time import TimeRange
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -150,7 +151,7 @@ class GenericClient(BaseClient):
                 self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
                 self.map_['Time_start'] = elem.start
                 self.map_['Time_end'] = elem.end
-            elif isinstance(elem, _Range):
+            elif isinstance(elem, Range):
                 a_min = elem.min
                 a_max = elem.max
                 if a_min == a_max:

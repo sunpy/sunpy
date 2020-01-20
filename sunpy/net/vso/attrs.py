@@ -21,7 +21,7 @@ import astropy.units as u
 
 from sunpy.time import TimeRange as _TimeRange
 from sunpy.net.attr import (Attr, AttrWalker, AttrAnd,
-                            AttrOr, DummyAttr, ValueAttr, SimpleAttr)
+                            AttrOr, DummyAttr, ValueAttr, SimpleAttr, Range)
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
 
@@ -43,30 +43,7 @@ class Field(ValueAttr):
         })
 
 
-class _Range:
-    def __init__(self, min_, max_, create):
-        self.min = min_
-        self.max = max_
-        self.create = create
-
-    def __xor__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-
-        new = DummyAttr()
-        if self.min < other.min:
-            new |= self.create(self.min, min(other.min, self.max))
-        if other.max < self.max:
-            new |= self.create(other.max, self.max)
-        return new
-
-    def __contains__(self, other):
-        if isinstance(other, _Range):
-            return self.min <= other.min and self.max >= other.max
-        else:
-            return self.min <= other <= self.max
-
-class Wavelength(Attr, _Range):
+class Wavelength(Range):
     def __init__(self, wavemin, wavemax=None):
         """
         Specifies the wavelength or spectral energy range of the detector.
@@ -109,11 +86,10 @@ class Wavelength(Attr, _Range):
         if unit is None:
             raise u.UnitsError(f"This unit is not convertable to any of {supported_units}")
 
-        self.min, self.max = sorted([wavemin.to(unit), wavemax.to(unit)])
+        wavemin, wavemax = sorted([wavemin.to(unit), wavemax.to(unit)])
         self.unit = unit
 
-        Attr.__init__(self)
-        _Range.__init__(self, self.min, self.max, self.__class__)
+        super().__init__(wavemin, wavemax)
 
     def collides(self, other):
         return isinstance(other, self.__class__)
@@ -124,7 +100,7 @@ class Wavelength(Attr, _Range):
                                                             self.unit)
 
 
-class Time(Attr, _Range):
+class Time(Range):
     """
     Specify the time range of the query.
 
@@ -157,8 +133,7 @@ class Time(Attr, _Range):
             raise ValueError("End time must be after start time.")
         self.near = None if near is None else parse_time(near)
 
-        _Range.__init__(self, self.start, self.end, self.__class__)
-        Attr.__init__(self)
+        super().__init__(self.start, self.end)
 
     def __hash__(self):
         if not (isinstance(self.start, collections.Hashable) and
@@ -177,7 +152,7 @@ class Time(Attr, _Range):
             raise TypeError
         if self.near is not None or other.near is not None:
             raise TypeError
-        return _Range.__xor__(self, other)
+        return Range.__xor__(self, other)
 
     def pad(self, timedelta):
         return Time(self.start - timedelta, self.start + timedelta)

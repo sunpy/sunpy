@@ -294,7 +294,7 @@ class SUVIClient(GenericClient):
                     raise ValueError(f"Wavelength {kwargs.get('wavelength')} not supported.")
                 else:
                     wavelength = [kwargs.get("wavelength")]
-            else:  # _Range was provided
+            else:  # Range was provided
                 compress_index = [wavelength_input.wavemin <= this_wave <=
                                   wavelength_input.wavemax for this_wave in (supported_waves * u.Angstrom)]
                 if not any(compress_index):
