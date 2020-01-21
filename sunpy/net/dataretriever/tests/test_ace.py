@@ -67,15 +67,64 @@ def test_query():
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time, instrument",
                          [(Time('2015/12/27', '2015/12/30'), a.Instrument('swepam'))])
-def test_get(time, instrument):
+def test_get_swepam(time, instrument):
     qr = SWEPAMClient.search(time, instrument)
     download_list = SWEPAMClient.fetch(qr)
     assert len(download_list) == len(qr)
 
 
 @pytest.mark.remote_data
-def test_fido_query():
+def test_fido_query_swepam():
+    qr = Fido.search(a.Time('2015/12/27', '2015/12/30'), a.Instrument('swepam'))
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize("time, instrument",
+                         [(Time('2015/12/27', '2015/12/30'), a.Instrument('epam'))])
+def test_get_epam(time, instrument):
+    qr = EPAMClient.search(time, instrument)
+    download_list = EPAMClient.fetch(qr)
+    assert len(download_list) == len(qr)
+
+
+@pytest.mark.remote_data
+def test_fido_query_epam():
     qr = Fido.search(a.Time('2015/12/27', '2015/12/30'), a.Instrument('epam'))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize("time, instrument",
+                         [(Time('2015/12/27', '2015/12/30'), a.Instrument('mag'))])
+def test_get_mag(time, instrument):
+    qr = MAGClient.search(time, instrument)
+    download_list = MAGClient.fetch(qr)
+    assert len(download_list) == len(qr)
+
+
+@pytest.mark.remote_data
+def test_fido_query_mag():
+    qr = Fido.search(a.Time('2015/12/27', '2015/12/30'), a.Instrument('mag'))
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
+
+@pytest.mark.remote_data
+@pytest.mark.parametrize("time, instrument",
+                         [(Time('2015/12/27', '2015/12/30'), a.Instrument('sis'))])
+def test_get_sis(time, instrument):
+    qr = SISClient.search(time, instrument)
+    download_list = SISClient.fetch(qr)
+    assert len(download_list) == len(qr)
+
+
+@pytest.mark.remote_data
+def test_fido_query_sis():
+    qr = Fido.search(a.Time('2015/12/27', '2015/12/30'), a.Instrument('sis'))
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
+    
