@@ -21,72 +21,89 @@ from .strategies import longitudes, latitudes, times
 ###########################
 
 @pytest.fixture
-def rot_frames():
-    return {'hgs': RotatedSunFrame(lon=1*u.deg, lat=2*u.deg, radius=3*u.AU,
-                   base=f.HeliographicStonyhurst(obstime='2001-01-01'),
-                   duration=4*u.day),
-            'hgc': RotatedSunFrame(lon=1*u.deg, lat=2*u.deg, radius=3*u.AU,
-                   base=f.HeliographicCarrington(obstime='2001-01-01'),
-                   duration=4*u.day),
-            'hci': RotatedSunFrame(lon=1*u.deg, lat=2*u.deg, distance=3*u.AU,
-                   base=f.HeliocentricInertial(obstime='2001-01-01'),
-                   duration=4*u.day),
-            'hcc': RotatedSunFrame(x=1*u.AU, y=2*u.AU, z=3*u.AU,
-                   base=f.Heliocentric(observer='earth', obstime='2001-01-01'),
-                   duration=4*u.day),
-            'hpc': RotatedSunFrame(Tx=1*u.deg, Ty=2*u.deg, distance=3*u.AU,
-                   base=f.Helioprojective(observer='earth', obstime='2001-01-01'),
-                   duration=4*u.day),
-           }
+def indirect_fixture(request):
+    return request.getfixturevalue(request.param)
 
 
 @pytest.fixture
-def base_classes():
-    return {'hgs': f.HeliographicStonyhurst,
-            'hgc': f.HeliographicCarrington,
-            'hci': f.HeliocentricInertial,
-            'hcc': f.Heliocentric,
-            'hpc': f.Helioprojective,
-            }
+def rot_hgs():
+    return (f.HeliographicStonyhurst,
+            RotatedSunFrame(lon=1*u.deg, lat=2*u.deg, radius=3*u.AU,
+                            base=f.HeliographicStonyhurst(obstime='2001-01-01'),
+                            duration=4*u.day))
 
 
-def test_class_creation(rot_frames, base_classes):
-    for rot_frame, base_class in [(rot_frames[key], base_classes[key]) for key in rot_frames.keys()]:
-        rot_class = type(rot_frame)
-
-        # Check that that the RotatedSunFrame metaclass is derived from the frame's metaclass
-        assert issubclass(type(rot_class), type(base_class))
-
-        # Check that the RotatedSunFrame class name has both 'RotatedSun' and the name of the base
-        assert 'RotatedSun' in rot_class.__name__
-        assert base_class.__name__ in rot_class.__name__
-
-        # Check that the base class is in fact the spcified class
-        assert type(rot_frame.base) == base_class
-
-        # Check that one-leg transformations have been created
-        assert len(frame_transform_graph.get_transform(rot_class, rot_class).transforms) == 1
-        assert len(frame_transform_graph.get_transform(base_class, rot_class).transforms) == 1
-        assert len(frame_transform_graph.get_transform(rot_class, base_class).transforms) == 1
-
-        # Check that the base frame is in the cache
-        assert base_class in _rotatedsun_cache
-
-        # Check that the component data has been migrated
-        assert rot_frame.has_data
-        assert not rot_frame.base.has_data
+@pytest.fixture
+def rot_hgc():
+    return (f.HeliographicCarrington,
+            RotatedSunFrame(lon=1*u.deg, lat=2*u.deg, radius=3*u.AU,
+                            base=f.HeliographicCarrington(obstime='2001-01-01'),
+                            duration=4*u.day))
 
 
-def test_as_base(rot_frames):
+@pytest.fixture
+def rot_hci():
+    return (f.HeliocentricInertial,
+            RotatedSunFrame(lon=1*u.deg, lat=2*u.deg, distance=3*u.AU,
+                            base=f.HeliocentricInertial(obstime='2001-01-01'),
+                            duration=4*u.day))
+
+
+@pytest.fixture
+def rot_hcc():
+    return (f.Heliocentric,
+            RotatedSunFrame(x=1*u.AU, y=2*u.AU, z=3*u.AU,
+                            base=f.Heliocentric(observer='earth', obstime='2001-01-01'),
+                            duration=4*u.day))
+
+
+@pytest.fixture
+def rot_hpc():
+    return (f.Helioprojective,
+            RotatedSunFrame(Tx=1*u.deg, Ty=2*u.deg, distance=3*u.AU,
+                            base=f.Helioprojective(observer='earth', obstime='2001-01-01'),
+                            duration=4*u.day))
+
+
+@pytest.mark.parametrize("indirect_fixture",
+                         ["rot_hgs", "rot_hgc", "rot_hci", "rot_hcc", "rot_hpc"], indirect=True)
+def test_class_creation(indirect_fixture):
+    base_class, rot_frame = indirect_fixture
+
+    rot_class = type(rot_frame)
+
+    # Check that that the RotatedSunFrame metaclass is derived from the frame's metaclass
+    assert issubclass(type(rot_class), type(base_class))
+
+    # Check that the RotatedSunFrame class name has both 'RotatedSun' and the name of the base
+    assert 'RotatedSun' in rot_class.__name__
+    assert base_class.__name__ in rot_class.__name__
+
+    # Check that the base class is in fact the specified class
+    assert type(rot_frame.base) == base_class
+
+    # Check that one-leg transformations have been created
+    assert len(frame_transform_graph.get_transform(rot_class, rot_class).transforms) == 1
+    assert len(frame_transform_graph.get_transform(base_class, rot_class).transforms) == 1
+    assert len(frame_transform_graph.get_transform(rot_class, base_class).transforms) == 1
+
+    # Check that the base frame is in the cache
+    assert base_class in _rotatedsun_cache
+
+    # Check that the component data has been migrated
+    assert rot_frame.has_data
+    assert not rot_frame.base.has_data
+
+
+def test_as_base(rot_hgs):
     # Check the as_base() method
-    rot_hgs = rot_frames['hgs']
-    a = rot_hgs.as_base()
+    a = rot_hgs[1].as_base()
 
-    assert type(a) == type(rot_hgs.base)
+    assert type(a) == type(rot_hgs[1].base)
 
-    assert_quantity_allclose(a.lon, rot_hgs.lon)
-    assert_quantity_allclose(a.lat, rot_hgs.lat)
-    assert_quantity_allclose(a.radius, rot_hgs.radius)
+    assert_quantity_allclose(a.lon, rot_hgs[1].lon)
+    assert_quantity_allclose(a.lat, rot_hgs[1].lat)
+    assert_quantity_allclose(a.radius, rot_hgs[1].radius)
 
 
 def test_no_base():
@@ -138,12 +155,12 @@ def test_scalar_base_and_array_duration():
     assert_quantity_allclose(r.cartesian[1].xyz, scalar_base.cartesian.xyz)
 
 
-def test_base_skycoord(rot_frames):
+def test_base_skycoord(rot_hgs):
     # Check that RotatedSunFrame can be instantiated from a SkyCoord
     s = SkyCoord(1*u.deg, 2*u.deg, 3*u.AU, frame=f.HeliographicStonyhurst, obstime='2001-01-01')
     r = RotatedSunFrame(base=s)
 
-    assert type(r) == type(rot_frames['hgs'])
+    assert type(r) == type(rot_hgs[1])
     assert r.has_data
     assert not r.base.has_data
 
