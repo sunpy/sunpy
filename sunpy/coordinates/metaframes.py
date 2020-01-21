@@ -41,24 +41,20 @@ def _make_rotatedsun_cls(framecls):
     actually gets created in any given Python session.
     """
     # This code reuses significant code from Astropy's implementation of SkyOffsetFrame
+    # See licenses/ASTROPY.rst
 
     if framecls in _rotatedsun_cache:
         return _rotatedsun_cache[framecls]
 
-    # the class of a class object is the metaclass
+    # Obtain the base frame's metaclass by getting the type of the base frame's class
     framemeta = type(framecls)
 
+    # Subclass the metaclass for the RotatedSunFrame from the base frame's metaclass
     class RotatedSunMeta(framemeta):
         """
         This metaclass renames the class to be "RotatedSun<framecls>".
         """
         def __new__(cls, name, bases, members):
-            # This has to be done because FrameMeta will set these attributes
-            # to the defaults from BaseCoordinateFrame when it creates the base
-            # RotatedSunFrame class initially.
-            members['_default_representation'] = framecls._default_representation
-            members['_default_differential'] = framecls._default_differential
-
             newname = name[:-5] if name.endswith('Frame') else name
             newname += framecls.__name__
 
@@ -159,8 +155,13 @@ class RotatedSunFrame:
     of ``base``.
     """
     # This code reuses significant code from Astropy's implementation of SkyOffsetFrame
+    # See licenses/ASTROPY.rst
 
-    base = Attribute()  # cannot use CoordinateAttribute here
+    # Even though the frame attribute `base` is a coordinate frame, we use `Attribute` instead of
+    # `CoordinateAttribute` because we are preserving the supplied frame rather than converting to
+    # a common frame.
+    base = Attribute()
+
     duration = QuantityAttribute(default=0*u.day)
     rotation_model = Attribute(default='howard')
 
