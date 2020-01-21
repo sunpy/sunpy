@@ -1,8 +1,3 @@
-"""
-This module tests ACE Client.
-"""
-# This module was developed with funding provided by
-# the Google Summer of Code 2016.
 import pytest
 
 from sunpy.time.timerange import TimeRange
@@ -17,11 +12,21 @@ from astropy.time import TimeDelta
 
 import sunpy.net.dataretriever.sources.ace as ace
 
-SWEPAMClient = ace.SWEPAMClient()
-EPAMClient = ace.EPAMClient()
-MAGClient = ace.MAGClient()
-SClient = ace.SISClient()
+@pytest.fixture
+def SWEPAMClient():
+    return ace.SWEPAMClient()
 
+@pytest.fixture
+def EPAMClient():
+    return ace.EPAMClient()
+
+@pytest.fixture
+def MAGClient():
+    return ace.MAGClient()
+
+@pytest.fixture
+def SISClient():
+    return ace.SISClient()
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange, url_start, url_end",
@@ -42,7 +47,7 @@ TRANGE = Time('2015/12/30', '2015/12/31')
                          [(SWEPAMClient, TRANGE, Instrument('swepam'), True),
                           (EPAMClient, TRANGE, Instrument('epam'), True),
                           (MAGClient, TRANGE, Instrument('mag'), True),
-                          (SClient, TRANGE, Instrument('sis'), True),
+                          (SISClient, TRANGE, Instrument('sis'), True),
                           (SWEPAMClient, TRANGE, Instrument('swap'), False),
                           (EPAMClient, TRANGE, None, False)])
 def test_can_handle_query(client, time, instrument, expected):
