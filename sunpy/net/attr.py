@@ -29,7 +29,7 @@ _ATTR_TUPLE = namedtuple("attr", "name name_long desc")
 _REGEX = re.compile(r"^[\d]([^\d].*)?$")
 
 __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
-           'ValueAttr', 'and_', 'or_']
+           'ValueAttr', 'and_', 'or_', 'AttrWalker']
 
 
 def make_tuple():
@@ -303,7 +303,7 @@ class Range(Attr):
 class AttrAnd(Attr):
     """ Attribute representing attributes ANDed together. """
     def __init__(self, attrs):
-        Attr.__init__(self)
+        super().__init__()
         self.attrs = attrs
 
     def __and__(self, other):
@@ -335,7 +335,7 @@ class AttrAnd(Attr):
 class AttrOr(Attr):
     """ Attribute representing attributes ORed together. """
     def __init__(self, attrs):
-        Attr.__init__(self)
+        super().__init__()
         self.attrs = attrs
 
     def __or__(self, other):
@@ -383,9 +383,12 @@ class AttrOr(Attr):
         return all(elem.collides(other) for elem in self.attrs)
 
 
+# This appears to only be used as a base type for the Walker, i.e. a common
+# denominator for the walker to convert to whatever the output of the walker is
+# going to be.
 class ValueAttr(Attr):
     def __init__(self, attrs):
-        Attr.__init__(self)
+        super().__init__()
         self.attrs = attrs
 
     def __repr__(self):
@@ -406,11 +409,46 @@ class ValueAttr(Attr):
 
 
 class AttrWalker:
+    """
+    Traverse the Attr tree and convert it to a different representation.
+
+    The ``AttrWalker`` can walk a complex tree of attrs and represent that tree
+    in a way that is useful to the client using the attrs. For the VSO client
+    it generates a ``VSO:QueryResponseBlock`` object, for the database module
+    it performs database queries and returns results from the database.
+
+    The walker has three core operations that can be applied to the tree, all
+    of these are functions which are applied to one or more
+    `~sunpy.net.attr.Attr` types, using conditional dispatch based on type.
+
+    * creators: Creators when given an `~sunpy.net.attr.Attr` return a new object.
+    * appliers: Appliers process an `~sunpy.net.attr.Attr` type and modify any
+      arguments passed.
+    * converters: Converters convert types unknown to any other creator or
+      appliers to types known by them. They take in an `~sunpy.net.attr.Attr`
+      type and return a different one.
+
+    """
     def __init__(self):
         self.applymm = MultiMethod(lambda *a, **kw: (a[1], ))
         self.createmm = MultiMethod(lambda *a, **kw: (a[1], ))
 
+    def create(self, *args, **kwargs):
+        """
+        Call the create function(s) matching the arguments to this method.
+        """
+        return self.createmm(self, *args, **kwargs)
+
+    def apply(self, *args, **kwargs):
+        """
+        Call the apply function(s) matching the arguments to this method.
+        """
+        return self.applymm(self, *args, **kwargs)
+
     def add_creator(self, *types):
+        """
+        Register all specified types with this function for the ``.create`` method.
+        """
         def _dec(fun):
             for type_ in types:
                 self.createmm.add(fun, (type_, ))
@@ -418,6 +456,9 @@ class AttrWalker:
         return _dec
 
     def add_applier(self, *types):
+        """
+        Register all specified types with this function for the ``.apply`` method.
+        """
         def _dec(fun):
             for type_ in types:
                 self.applymm.add(fun, (type_, ))
@@ -425,38 +466,37 @@ class AttrWalker:
         return _dec
 
     def add_converter(self, *types):
+        """
+        Register a function to convert the specified type into a known type for create and apply.
+
+        After a converter is run, create or apply will be called again with the new types.
+        """
         def _dec(fun):
             for type_ in types:
-                self.applymm.add(self.cv_apply(fun), (type_, ))
-                self.createmm.add(self.cv_create(fun), (type_, ))
+                self.applymm.add(self._cv_apply(fun), (type_, ))
+                self.createmm.add(self._cv_create(fun), (type_, ))
             return fun
         return _dec
 
-    def cv_apply(self, fun):
+    def _cv_apply(self, fun):
+        """
+        Call the converter and then re-call apply.
+        """
         def _fun(*args, **kwargs):
             args = list(args)
             args[1] = fun(args[1])
             return self.applymm(*args, **kwargs)
         return _fun
 
-    def cv_create(self, fun):
+    def _cv_create(self, fun):
+        """
+        Call the converter and then re-call convert.
+        """
         def _fun(*args, **kwargs):
             args = list(args)
             args[1] = fun(args[1])
             return self.createmm(*args, **kwargs)
         return _fun
-
-    def create(self, *args, **kwargs):
-        return self.createmm(self, *args, **kwargs)
-
-    def apply(self, *args, **kwargs):
-        return self.applymm(self, *args, **kwargs)
-
-    def super_create(self, *args, **kwargs):
-        return self.createmm.super(self, *args, **kwargs)
-
-    def super_apply(self, *args, **kwargs):
-        return self.applymm.super(self, *args, **kwargs)
 
 
 def and_(*args):

@@ -16,8 +16,8 @@ specification and a sample cadence using:
     >>> Fido.search(a.Time("2011/01/01", "2011/01/02") & (a.Instrument("AIA") | a.Instrument("HMI")) & a.Sample(1*u.day))  # doctest: +SKIP
 
 
-In addition to the core attrs defined here, clients also provide attrs specific
-to them, under:
+In addition to the core attrs defined here, other sunpy clients also provide
+attrs specific to them, under:
 
 * `a.vso <sunpy.net.vso.attrs>`
 * `a.jsoc <sunpy.net.jsoc.attrs>`
