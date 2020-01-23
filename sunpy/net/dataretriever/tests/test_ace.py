@@ -41,8 +41,10 @@ def client(request):
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange, url_start, url_end",
                          [(TimeRange('2015/12/27', '2015/12/30'),
-                           'ftp://ftp.swpc.noaa.gov/pub/lists/ace/20151227_ace_swepam_1m.txt',
-                           'ftp://ftp.swpc.noaa.gov/pub/lists/ace/20151230_ace_swepam_1m.txt')])
+                           'ftp://anonymous:data@sunpy.org@'
+                           'ftp.swpc.noaa.gov/pub/lists/ace/20151227_ace_swepam_1m.txt',
+                           'ftp://anonymous:data@sunpy.org@'
+                           'ftp.swpc.noaa.gov/pub/lists/ace/20151230_ace_swepam_1m.txt')])
 def test_get_url_for_timerange(SWEPAMClient, timerange, url_start, url_end):
     urls = SWEPAMClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
