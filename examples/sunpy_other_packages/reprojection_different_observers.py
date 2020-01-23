@@ -147,7 +147,6 @@ mars_header = sunpy.map.make_fitswcs_header(
 # Once again we need to generate a `~astropy.wcs.WCS` and then manually
 # set the observer location.
 
-print('header:', mars_header)
 mars_wcs = WCS(mars_header)
 mars_wcs.heliographic_observer = mars
 

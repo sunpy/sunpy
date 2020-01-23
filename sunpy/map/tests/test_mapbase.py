@@ -9,6 +9,7 @@ import warnings
 import numpy as np
 import pytest
 import matplotlib.pyplot as plt
+from matplotlib import colors
 
 import astropy.wcs
 import astropy.units as u
@@ -207,7 +208,6 @@ def test_cmap(generic_map):
 
 
 def test_norm(generic_map):
-    from matplotlib import colors
     assert isinstance(generic_map.norm, colors.Normalize)
 
 
@@ -285,9 +285,9 @@ def test_rotation_matrix_cd_cdelt_square():
         'CRPIX1': 5,
         'CRPIX2': 5,
         'CDELT1': 10,
-        'CDELT2': 9,
+        'CDELT2': 10,
         'CD1_1': 0,
-        'CD1_2': -9,
+        'CD1_2': -10,
         'CD2_1': 10,
         'CD2_2': 0,
         'NAXIS1': 6,
@@ -301,7 +301,6 @@ def test_rotation_matrix_cd_cdelt_square():
 
 def test_norm_cmap_kwargs(generic_map):
     cmap = 'cool'
-    from matplotlib import colors, pyplot as plt
     norm = colors.Normalize(vmin=1., vmax=1.)
     smap = sunpy.map.Map(generic_map.data, generic_map.meta, cmap=cmap, norm=norm)
     assert smap.cmap == plt.get_cmap(cmap)
@@ -310,7 +309,6 @@ def test_norm_cmap_kwargs(generic_map):
 
 def test_plot_settings_deprecate(generic_map):
     cmap = 'cool'
-    from matplotlib import colors, pyplot as plt
     norm = colors.Normalize(vmin=1., vmax=1.)
     plot_settings = {'cmap': cmap, 'norm': norm}
 

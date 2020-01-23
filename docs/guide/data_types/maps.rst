@@ -358,11 +358,8 @@ dictionary. In the following example we change the title of the plot by changing
     import sunpy.data.sample
     import matplotlib.pyplot as plt
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    plot_settings = {}
-    plot_settings['title'] = "My Second SunPy Plot"
-    plot_settings['cmap'] = plt.cm.Blues_r
     fig = plt.figure()
-    smap.plot()
+    smap.plot(cmap="Blues_r", title="My Second Plot")
     plt.colorbar()
     plt.show()
 
