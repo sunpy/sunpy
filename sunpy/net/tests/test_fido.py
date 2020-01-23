@@ -25,6 +25,7 @@ from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.datatype_factory_base import MultipleMatchError
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.tests.helpers import skip_windows
 
 TIMEFORMAT = config.get("general", "time_format")
@@ -227,6 +228,18 @@ def test_vso_unifiedresponse():
     vrep.client = True
     uresp = UnifiedResponse(vrep)
     assert isinstance(uresp, UnifiedResponse)
+
+
+@pytest.mark.remote_data
+def test_vso_error():
+    with pytest.warns(SunpyUserWarning,
+        match="VSO-D404 Bad Request -- Invalid Time \
+Sample : contains non digit"
+    ):
+        Fido.search(
+            a.Time('2012-03-04','2012-03-06'),
+            a.Instrument("EUVI"),
+            a.Wavelength(304*u.AA), a.Sample(100*u.min))
 
 
 @pytest.mark.remote_data
