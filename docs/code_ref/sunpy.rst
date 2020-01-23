@@ -2,4 +2,3 @@ SunPy
 =====
 
 .. automodapi:: sunpy
-

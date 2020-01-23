@@ -54,7 +54,7 @@ def deprecated(since, message='', name='', alternative=''):
         minor = 1
     removal_version = f"{major}.{minor}"
     message += f" This is scheduled for removal in {removal_version}."
-    
+
     method_types = (classmethod, staticmethod, types.MethodType)
 
     def deprecate_doc(old_doc, message):
