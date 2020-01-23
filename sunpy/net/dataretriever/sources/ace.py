@@ -10,9 +10,12 @@ import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 from sunpy.time import TimeRange
+from sunpy.util.scraper import Scraper
 from sunpy.net.dataretriever.client import GenericClient
 
 __all__ = ['SWEPAMClient', 'EPAMClient', 'MAGClient', 'SISClient']
+
+BASEURL_PREFIX = ("ftp://ftp.swpc.noaa.gov/pub/lists/ace/%Y%m%d")
 
 
 class SWEPAMClient(GenericClient):
@@ -52,18 +55,15 @@ class SWEPAMClient(GenericClient):
     >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
 
+    BASEURL = BASEURL_PREFIX + "_ace_swepam_1m.txt"
+
     def _get_time_for_url(self, urls):
-        times = []
-        for uri in urls:
-            uripath = urlsplit(uri).path
-
-            # Extract the yymmdd or yyyymmdd timestamp
-            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][:8]
-
-            start = Time.strptime(datestamp, "%Y%m%d")
+        swepam = Scraper(self.BASEURL)
+        times = list()
+        for url in urls:
+            t0 = swepam._extractDateURL(url)
             almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-            times.append(TimeRange(start, start + almost_day))
-
+            times.append(TimeRange(t0, t0 + almost_day))
         return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -85,19 +85,8 @@ class SWEPAMClient(GenericClient):
             raise ValueError(
                 'Earliest date for which SWEPAM data is available is '
                 '{:%Y-%m-%d}'.format(START_DATE))
-        base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
-        total_days = int(timerange.days / u.d + 1)
-        all_days = timerange.split(total_days)
-        result = [
-            base_url +
-            '{date}_ace_swepam_1m.txt'.format(
-                date=str(day.end).split('T')[0].replace('-', '')) for day in all_days]
-        time_dif = Time(datetime.datetime.now()) - timerange.end
-        time_dif.format = 'datetime'
-        if time_dif.value.days == 0:
-            url = base_url + '_ace_swepam_1m.txt'
-            result.append(url)
-        return result
+        swepam = Scraper(self.BASEURL)
+        return swepam.filelist(timerange)
 
     def _makeimap(self):
         """
@@ -167,18 +156,15 @@ class EPAMClient(GenericClient):
     >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
 
+    BASEURL = BASEURL_PREFIX + "_ace_epam_5m.txt"
+
     def _get_time_for_url(self, urls):
-        times = []
-        for uri in urls:
-            uripath = urlsplit(uri).path
-
-            # Extract the yymmdd or yyyymmdd timestamp
-            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][:8]
-
-            start = Time.strptime(datestamp, "%Y%m%d")
+        epam = Scraper(self.BASEURL)
+        times = list()
+        for url in urls:
+            t0 = epam._extractDateURL(url)
             almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-            times.append(TimeRange(start, start + almost_day))
-
+            times.append(TimeRange(t0, t0 + almost_day))
         return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -196,23 +182,12 @@ class EPAMClient(GenericClient):
             The URL(s) for the corresponding timerange.
         """
         START_DATE = datetime.datetime(2015, 7, 29)
-        base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         if timerange.start < START_DATE:
             raise ValueError(
-                "The earliest date for which EPAM data is available is "
-                "{:%Y-%m-%d}".format(START_DATE))
-        total_days = int(timerange.days / u.d + 1)
-        all_days = timerange.split(total_days)
-        result = [
-            base_url +
-            '{date}_ace_epam_5m.txt'.format(
-                date=str(day.end).split('T')[0].replace('-', '')) for day in all_days]
-        time_dif = Time(datetime.datetime.now()) - timerange.end
-        time_dif.format = 'datetime'
-        if time_dif.value.days == 0:
-            url = base_url + '_ace_epam_5m.txt'
-            result.append(url)
-        return result
+                'Earliest date for which SWEPAM data is available is '
+                '{:%Y-%m-%d}'.format(START_DATE))
+        epam = Scraper(self.BASEURL)
+        return epam.filelist(timerange)
 
     def _makeimap(self):
         """
@@ -282,18 +257,15 @@ class MAGClient(GenericClient):
     >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
 
+    BASEURL = BASEURL_PREFIX + "_ace_mag_1m.txt"
+
     def _get_time_for_url(self, urls):
-        times = []
-        for uri in urls:
-            uripath = urlsplit(uri).path
-
-            # Extract the yymmdd or yyyymmdd timestamp
-            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][:8]
-
-            start = Time.strptime(datestamp, "%Y%m%d")
+        mag = Scraper(self.BASEURL)
+        times = list()
+        for url in urls:
+            t0 = mag._extractDateURL(url)
             almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-            times.append(TimeRange(start, start + almost_day))
-
+            times.append(TimeRange(t0, t0 + almost_day))
         return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -313,20 +285,10 @@ class MAGClient(GenericClient):
         START_DATE = datetime.datetime(2015, 7, 29)
         if timerange.start < START_DATE:
             raise ValueError(
-                'Earliest date for which MAG data is available is {:%Y-%m-%d}'.format(START_DATE))
-        base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
-        total_days = int(timerange.days / u.d + 1)
-        all_days = timerange.split(total_days)
-        result = [
-            base_url +
-            '{date}_ace_mag_1m.txt'.format(
-                date=str(day.end).split('T')[0].replace('-', '')) for day in all_days]
-        time_dif = Time(datetime.datetime.now()) - timerange.end
-        time_dif.format = 'datetime'
-        if time_dif.value.days == 0:
-            url = base_url + '_ace_mag_1m.txt'
-            result.append(url)
-        return result
+                'Earliest date for which SWEPAM data is available is '
+                '{:%Y-%m-%d}'.format(START_DATE))
+        mag = Scraper(self.BASEURL)
+        return mag.filelist(timerange)
 
     def _makeimap(self):
         """
@@ -396,18 +358,15 @@ class SISClient(GenericClient):
     >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
 
+    BASEURL = BASEURL_PREFIX + "_ace_sis_5m.txt"
+
     def _get_time_for_url(self, urls):
-        times = []
-        for uri in urls:
-            uripath = urlsplit(uri).path
-
-            # Extract the yymmdd or yyyymmdd timestamp
-            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][:8]
-
-            start = Time.strptime(datestamp, "%Y%m%d")
+        sis = Scraper(self.BASEURL)
+        times = list()
+        for url in urls:
+            t0 = sis._extractDateURL(url)
             almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-            times.append(TimeRange(start, start + almost_day))
-
+            times.append(TimeRange(t0, t0 + almost_day))
         return times
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -427,21 +386,10 @@ class SISClient(GenericClient):
         START_DATE = datetime.datetime(2015, 7, 29)
         if timerange.start < START_DATE:
             raise ValueError(
-                'Earliest date for which SIS data is available is {:%Y-%m-%d}'.format(START_DATE))
-        base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
-        total_days = int(timerange.days / u.d + 1)
-        all_days = timerange.split(total_days)
-        result = []
-        for day in all_days:
-            url = base_url + '{date}_ace_sis_5m.txt'.format(
-                date=str(day.end).split('T')[0].replace('-', ''))
-            result.append(url)
-        time_dif = Time(datetime.datetime.now()) - timerange.end
-        time_dif.format = 'datetime'
-        if time_dif.value.days == 0:
-            url = base_url + 'ace_sis_5m.txt'
-            result.append(url)
-        return result
+                'Earliest date for which SWEPAM data is available is '
+                '{:%Y-%m-%d}'.format(START_DATE))
+        sis = Scraper(self.BASEURL)
+        return sis.filelist(timerange)
 
     def _makeimap(self):
         """
