@@ -1,5 +1,0 @@
-The callback functions provided to
-`~sunpy.visualization.animator.BaseFuncAnimator` ``button_func`` keyword
-argument now take two positional arguments rather than one. The function
-signature is now ``(animator, event)`` where the first arg is the animator
-object, and the second is the matplotlib mouse event.
