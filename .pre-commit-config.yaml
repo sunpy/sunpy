@@ -1,17 +1,21 @@
 repos:
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.7.9
+    hooks:
+      - id: flake8
+        args: ['--select', 'E101,W191,W291,W292,W293,W391,E111,E112,E113,E901,E902']
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
     hooks:
       - id: check-ast
-      - id: flake8
-        args: ['--select', 'E101,W191,W291,W292,W293,W391,E111,E112,E113,E901,E902']
       - id: check-case-conflict
       - id: trailing-whitespace
-        exclude: ".*fits"
-      - id: mixed-line-ending
-        files: ".*.py"
-      - id: end-of-file-fixer
-        exclude: ".*fits"
+        exclude: ".*(.fits|.fts|.fit|.txt|.c|.h)$"
       - id: check-yaml
       - id: debug-statements
       - id: check-added-large-files
+      - id: end-of-file-fixer
+        exclude: ".*(.fits|.fts|.fit|.txt|tca.*)$"
+      - id: mixed-line-ending
+        exclude: ".*(.fits|.fts|.fit|.txt|tca.*)$"
