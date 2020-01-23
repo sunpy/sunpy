@@ -1,3 +1,0 @@
-`sunpy.visualization.animator.BaseFuncAnimator` now takes an optional
-``slider_labels`` keyword argument which draws text labels in the center of the
-sliders.

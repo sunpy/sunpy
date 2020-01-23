@@ -509,14 +509,14 @@ class GenericMap(NDData):
     @property
     def bottom_left_coord(self):
         """
-        The physical coordinate for the bottom left [0,0] pixel.
+        The physical coordinate at the center of the bottom left ([0, 0]) pixel.
         """
         return self.pixel_to_world(0*u.pix, 0*u.pix)
 
     @property
     def top_right_coord(self):
         """
-        The physical coordinate for the top left pixel.
+        The physical coordinate at the center of the the top left ([-1, -1]) pixel.
         """
         return self.pixel_to_world(*self.dimensions)
 
@@ -631,14 +631,18 @@ class GenericMap(NDData):
         """
         The Heliographic Stonyhurst Coordinate of the observer.
         """
+        missing_meta = {}
         for keys, kwargs in self._supported_observer_coordinates:
-            if all([k in self.meta for k in keys]):
+            meta_list = [k in self.meta for k in keys]
+            if all(meta_list):
                 return SkyCoord(obstime=self.date, **kwargs).heliographic_stonyhurst
+            elif any(meta_list) and not set(keys).isdisjoint(self.meta.keys()):
+                if not isinstance(kwargs['frame'], str):
+                    kwargs['frame'] = kwargs['frame'].name
+                missing_meta[kwargs['frame']] = set(keys).difference(self.meta.keys())
 
-        all_keys = [str(e[0]) for e in self._supported_observer_coordinates]
-        all_keys = '\n'.join(all_keys)
-        warning_message = ("Missing metadata for observer: assuming Earth-based observer."
-                           "The following sets of keys were checked:\n" + all_keys)
+        warning_message = "".join([f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
+        warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
         warnings.warn(warning_message, SunpyUserWarning)
 
         return get_earth(self.date)

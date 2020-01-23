@@ -1,2 +1,0 @@
-``sunpy.cm`` has been moved to `sunpy.visualization.colormaps` and will be
-removed in a future version.

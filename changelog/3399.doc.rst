@@ -1,1 +1,0 @@
-Removing `.fits` from the end of path kwargs in `sunpy.net.FIDO.fetch` docs to change output file extension from `{file}.fits.fits` to `{file}.fits`.
