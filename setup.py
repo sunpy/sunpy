@@ -1,5 +1,10 @@
 #!/usr/bin/env python
+from extension_helpers import get_extensions
+from setuptools.config import read_configuration
+from setuptools import setup
+from itertools import chain
 import sys
+import os
 
 ################################################################################
 # Raise helpful messages for test and build_docs commands
@@ -40,12 +45,17 @@ if 'build_docs' in sys.argv or 'build_sphinx' in sys.argv:
 ################################################################################
 # Actual setup.py content
 ################################################################################
-from itertools import chain
 
-from setuptools import setup
-from setuptools.config import read_configuration
-
-from extension_helpers import get_extensions
+VERSION_TEMPLATE = """
+# Note that we need to fall back to the hard-coded version if either
+# setuptools_scm can't be imported or setuptools_scm can't determine the
+# version, so we catch the generic 'Exception'.
+try:
+    from setuptools_scm import get_version
+    __version__ = get_version(root='..', relative_to=__file__)
+except Exception:
+    __version__ = '{version}'
+""".lstrip()
 
 ################################################################################
 # Programmatically generate some extras combos.
@@ -61,4 +71,7 @@ ex_extras = dict(filter(lambda i: i[0] not in exclude_keys, extras.items()))
 # Concatenate all the values together for 'all'
 extras['all'] = list(chain.from_iterable(ex_extras.values()))
 
-setup(extras_require=extras, use_scm_version=True, ext_modules=get_extensions())
+setup(extras_require=extras,
+      use_scm_version={'write_to': os.path.join('sunpy', 'version.py'),
+                       'write_to_template': VERSION_TEMPLATE},
+      ext_modules=get_extensions())
