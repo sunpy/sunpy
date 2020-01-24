@@ -1,0 +1,1 @@
+Adds a Unit Range Object class that can handle any kind of quantities such as wavelength, dimensions (e.g. arcsec).

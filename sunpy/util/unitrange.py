@@ -20,10 +20,9 @@ class UnitRange:
 
     """
     def __init__(self, *, a, b, unit, format=None):
-        # If a is a TimeRange object, copy attributes to new instance.
-        self._u  = unit
+        self._u = unit
         self._t1 = a * self.unit
-        self._t2 = self._t1 + b * self.unit 
+        self._t2 = self._t1 + b * self.unit
 
     @property
     def start(self):
