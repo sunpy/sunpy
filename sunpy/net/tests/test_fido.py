@@ -233,8 +233,7 @@ def test_vso_unifiedresponse():
 @pytest.mark.remote_data
 def test_vso_error():
     with pytest.warns(SunpyUserWarning,
-        match="VSO-D404 Bad Request -- Invalid Time \
-Sample : contains non digit"):
+        match="VSO-D404 Bad Request -- Invalid Time Sample : contains non digit"):
         Fido.search(
             a.Time('2012-03-04','2012-03-06'),
             a.Instrument("EUVI"),
