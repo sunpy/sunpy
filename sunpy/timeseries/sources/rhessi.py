@@ -62,7 +62,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     _source = 'rhessi'
 
     @peek_show
-    def peek(self, title="RHESSI Observing Summary Count Rate"):
+    def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
         """
         Plots RHESSI Count Rate light curve. An example is shown below:
 

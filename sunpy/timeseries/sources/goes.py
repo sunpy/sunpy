@@ -54,7 +54,7 @@ class XRSTimeSeries(GenericTimeSeries):
     _source = 'xrs'
 
     @peek_show
-    def peek(self, title="GOES Xray Flux"):
+    def peek(self, title="GOES Xray Flux", **kwargs):
         """
         Plots GOES XRS light curve is the usual manner. An example is shown
         below:
