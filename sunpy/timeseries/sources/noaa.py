@@ -52,7 +52,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     _source = 'noaaindices'
 
     @peek_show
-    def peek(self, type='sunspot SWO'):
+    def peek(self, type='sunspot SWO', **kwargs):
         """
         Plots NOAA Indices as a function of time. An example is shown below.
 

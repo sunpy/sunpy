@@ -61,7 +61,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     _source = 'gbmsummary'
 
     @peek_show
-    def peek(self):
+    def peek(self, **kwargs):
         """
         Plots the GBM lightcurve TimeSeries. An example can be seen below:
 
