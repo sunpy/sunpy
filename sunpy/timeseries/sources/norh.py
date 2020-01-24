@@ -84,7 +84,6 @@ class NoRHTimeSeries(GenericTimeSeries):
 
         return figure
 
-
     @classmethod
     def _parse_file(cls, filepath):
         """

@@ -96,16 +96,15 @@ except ImportError as e:
     raise Exception(e, 'ERROR: jplephem could not be imported. Building the documentation requires '
                     'the "jplephem" package to be installed')
 
-from pkg_resources import get_distribution  # noqa  isort:skip
-versionmod = get_distribution('sunpy')
-
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 # The short X.Y version.
-version = '.'.join(versionmod.version.split('.')[:3])
+from sunpy import __version__
+# The short X.Y version.
+version = '.'.join(__version__.split('.')[:3])
 # The full version, including alpha/beta/rc tags.
-release = versionmod.version.split('+')[0]
+release = __version__
 # Is this version a development release
 is_development = '.dev' in release
 

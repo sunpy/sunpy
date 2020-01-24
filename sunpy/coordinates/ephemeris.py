@@ -2,6 +2,9 @@
 """
 Ephemeris calculations using SunPy coordinate frames
 """
+# Skip checking the __all__ here as we are making deprecated versions
+# flake8: noqa F822
+
 import datetime
 import warnings
 

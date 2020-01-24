@@ -215,6 +215,7 @@ examples/**/*.asdf
 # This is incase you run the figure tests
 figure_test_images*
 tags
+sunpy/version.py
 
 ### Pycharm(?)
 .idea
