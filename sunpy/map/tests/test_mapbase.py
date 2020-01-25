@@ -236,7 +236,7 @@ def test_partially_missing_observers(generic_map):
                             "For frame 'heliographic_stonyhurst' the following metadata is missing: dsun_obs\n" +
                             "For frame 'heliographic_carrington' the following metadata is missing: dsun_obs\n"):
         generic_map.observer_coordinate
-    
+
 # ==============================================================================
 # Test Rotation WCS conversion
 # ==============================================================================

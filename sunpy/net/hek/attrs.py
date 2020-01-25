@@ -271,7 +271,6 @@ def _c(wlk, root, state):
     return blocks
 
 
-
 @apply
 class AR(EventType):
     CompactnessCls = _StringParamAttrWrapper('AR_CompactnessCls')
