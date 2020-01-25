@@ -16,6 +16,7 @@ from astropy.wcs import WCS
 import sunpy
 import sunpy.map
 import sunpy.data.test
+from sunpy.util import SunpyUserWarning
 
 
 filepath = sunpy.data.test.rootdir
@@ -151,6 +152,15 @@ class TestMap:
         with pytest.raises(ValueError, match='Invalid input: 78'):
             # Check a random unsupported type (int) fails
             sunpy.map.Map(78)
+
+        # If one file failed to load, make sure it's listed in warning msg
+        nonexist_file = os.path.join(filepath, 'nonexist.fits')
+        files = [AIA_171_IMAGE, nonexist_file]
+        with pytest.warns(SunpyUserWarning, match='Error reading file {0}'.format(nonexist_file)):
+            try:
+                sunpy.map.Map(files)
+            except Exception:
+                pass
 
     @pytest.mark.parametrize('silence,error,match',
                              [(True, RuntimeError, 'No maps loaded'),
