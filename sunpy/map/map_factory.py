@@ -19,6 +19,7 @@ from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
 from sunpy.util import expand_list
+from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
 
@@ -184,55 +185,58 @@ class MapFactory(BasicRegistrationFactory):
         # For each of the arguments, handle each of the cases
         i = 0
         while i < len(args):
+            try:
+                arg = args[i]
 
-            arg = args[i]
+                # Data-header or data-WCS pair
+                if isinstance(arg, SUPPORTED_ARRAY_TYPES):
+                    arg_header = args[i+1]
+                    if isinstance(arg_header, WCS):
+                        arg_header = args[i+1].to_header()
 
-            # Data-header or data-WCS pair
-            if isinstance(arg, SUPPORTED_ARRAY_TYPES):
-                arg_header = args[i+1]
-                if isinstance(arg_header, WCS):
-                    arg_header = args[i+1].to_header()
+                    if self._validate_meta(arg_header):
+                        pair = (args[i], OrderedDict(arg_header))
+                        data_header_pairs.append(pair)
+                        i += 1    # an extra increment to account for the data-header pairing
 
-                if self._validate_meta(arg_header):
-                    pair = (args[i], OrderedDict(arg_header))
-                    data_header_pairs.append(pair)
-                    i += 1    # an extra increment to account for the data-header pairing
+                # A database Entry
+                elif isinstance(arg, DatabaseEntryType):
+                    data_header_pairs += self._read_file(arg.path, **kwargs)
 
-            # A database Entry
-            elif isinstance(arg, DatabaseEntryType):
-                data_header_pairs += self._read_file(arg.path, **kwargs)
+                # Already a Map
+                elif isinstance(arg, GenericMap):
+                    already_maps.append(arg)
 
-            # Already a Map
-            elif isinstance(arg, GenericMap):
-                already_maps.append(arg)
-
-            # URL
-            elif isinstance(arg, str) and _is_url(arg):
-                url = arg
-                path = str(cache.download(url).absolute())
-                pairs = self._read_file(path, **kwargs)
-                data_header_pairs += pairs
-
-            # File system path (file or directory or glob)
-            elif _possibly_a_path(arg):
-                path = pathlib.Path(arg).expanduser()
-                if _is_file(path):
+                # URL
+                elif isinstance(arg, str) and _is_url(arg):
+                    url = arg
+                    path = str(cache.download(url).absolute())
                     pairs = self._read_file(path, **kwargs)
                     data_header_pairs += pairs
-                elif _is_dir(path):
-                    for afile in sorted(path.glob('*')):
-                        data_header_pairs += self._read_file(afile, **kwargs)
-                elif glob.glob(os.path.expanduser(arg)):
-                    for afile in sorted(glob.glob(os.path.expanduser(arg))):
-                        data_header_pairs += self._read_file(afile, **kwargs)
+
+                # File system path (file or directory or glob)
+                elif _possibly_a_path(arg):
+                    path = pathlib.Path(arg).expanduser()
+                    if _is_file(path):
+                        pairs = self._read_file(path, **kwargs)
+                        data_header_pairs += pairs
+                    elif _is_dir(path):
+                        for afile in sorted(path.glob('*')):
+                            data_header_pairs += self._read_file(afile, **kwargs)
+                    elif glob.glob(os.path.expanduser(arg)):
+                        for afile in sorted(glob.glob(os.path.expanduser(arg))):
+                            data_header_pairs += self._read_file(afile, **kwargs)
+
+                    else:
+                        raise ValueError(f'Did not find any files at {arg}')
 
                 else:
-                    raise ValueError(f'Did not find any files at {arg}')
+                    raise ValueError(f"Invalid input: {arg}")
 
-            else:
-                raise ValueError(f"Invalid input: {arg}")
-
-            i += 1
+                i += 1
+            except Exception as e:
+                warnings.warn(f'Error reading file {arg}', SunpyUserWarning)
+                raise
 
         # TODO:
         # In the end, if there are already maps it should be put in the same
