@@ -152,3 +152,8 @@ def test_heliographic_rectangle(heliographic_test_map):
     w = 13 * u.deg
     h = 13 * u.deg
     heliographic_test_map.draw_rectangle(bottom, w, h, color='cyan')
+
+@figure_test
+def test_heliographic_grid_annotations(heliographic_test_map):
+    heliographic_test_map.plot()
+    heliographic_test_map.draw_grid(annotate=False)
