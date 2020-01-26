@@ -273,6 +273,7 @@ class TestTimeSeries:
         base = parse_time(datetime.datetime.today())
         times = base - TimeDelta(np.arange(24 * 60)*u.minute)
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        tr = sunpy.time.TimeRange(times[0], times[-1])
 
         # Create the data DataFrame, header MetaDict and units OrderedDict
         data = DataFrame(intensity, index=times, columns=['intensity'])
@@ -280,13 +281,16 @@ class TestTimeSeries:
         meta_md = MetaDict({'key': 'value'})
         meta_di = {'key': 'value'}
         meta_od = OrderedDict({'key': 'value'})
+        meta_obj = sunpy.timeseries.TimeSeriesMetaData(timerange=tr, colnames=['GOES'],
+                                                       meta=MetaDict({'key': 'value'}))
 
         # Create TS using different dictionary meta types
         ts_md = sunpy.timeseries.TimeSeries(data, meta_md, units)
         ts_di = sunpy.timeseries.TimeSeries(data, meta_di, units)
         ts_od = sunpy.timeseries.TimeSeries(data, meta_od, units)
-        assert ts_md == ts_di == ts_od
-        assert ts_md.meta.metadata[0][2] == ts_di.meta.metadata[0][2] == ts_od.meta.metadata[0][2]
+        ts_obj = sunpy.timeseries.TimeSeries(data, meta_obj, units)
+        assert ts_md == ts_di == ts_od == ts_obj
+        assert ts_md.meta.metadata[0][2] == ts_di.meta.metadata[0][2] == ts_od.meta.metadata[0][2] == ts_obj.meta.metadata[0][2]
 
     def test_generic_construction_ts_list(self):
         # Generate the data and the corrisponding dates
@@ -431,6 +435,9 @@ class TestTimeSeries:
         assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_1)
         valid_meta_2 = OrderedDict({'key': 'value'})
         assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_2)
+        time_range = sunpy.time.TimeRange('2020-01-01 12:00', '2020-01-02 12:00')
+        valid_meta_3 = sunpy.timeseries.TimeSeriesMetaData(time_range)
+        assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_3)
         invalid_meta = []
         assert not sunpy.timeseries.TimeSeries._validate_meta(invalid_meta)
 
