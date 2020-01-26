@@ -239,6 +239,12 @@ def test_vso_error():
             a.Instrument("EUVI"),
             a.Wavelength(304*u.AA), a.Sample(100*u.min))
 
+    with pytest.warns(SunpyUserWarning,
+        match="VSO-C500 :soap:Server.Transport : 404 Not Found"):
+        Fido.search(
+            a.Time('2019/12/30', '2019/12/31'),
+            a.Instrument('ovsa'))
+
 
 @pytest.mark.remote_data
 def test_responses():
