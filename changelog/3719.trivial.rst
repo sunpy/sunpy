@@ -1,1 +1,1 @@
-Added support to return errors from VSO as warnings in `sunpy.net.vso`
+Errors from a VSO search will now be raised to the user.
