@@ -1454,7 +1454,7 @@ class GenericMap(NDData):
         return cmap
 
     @u.quantity_input
-    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing: u.deg = 15*u.deg, annotate=True, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1470,6 +1470,9 @@ class GenericMap(NDData):
         grid_spacing: `~astropy.units.Quantity`
             Spacing for longitude and latitude grid, if length two it specifies
             (lon, lat) spacing.
+
+        annotate : `bool`
+            Passing `False` disables the axes labels and the ticks on the top and right axes.
 
         Returns
         -------
@@ -1487,6 +1490,7 @@ class GenericMap(NDData):
             raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
                                                            grid_spacing=grid_spacing,
+                                                           annotate=annotate,
                                                            **kwargs)
 
     def draw_limb(self, axes=None, **kwargs):

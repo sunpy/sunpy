@@ -113,7 +113,7 @@ def default_wcs_grid(axes):
 
 
 @u.quantity_input
-def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs):
+def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, annotate=True, **kwargs):
     """
     Create a heliographic overlay using
     `~astropy.visualization.wcsaxes.WCSAxes`.
@@ -126,6 +126,8 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs)
         The `~astropy.visualization.wcsaxes.WCSAxes` object to create the HGS overlay on.
     grid_spacing: `~astropy.units.Quantity`
         Spacing for longitude and latitude grid in degrees.
+    annotate : `bool`
+        Passing `False` disables the axes labels and the ticks on the top and right axes.
 
     Returns
     -------
@@ -158,11 +160,16 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing: u.deg = 10*u.deg, **kwargs)
     lon.coord_wrap = 180
     lon.set_major_formatter('dd')
 
-    lon.set_axislabel('Solar Longitude', minpad=0.8)
-    lat.set_axislabel('Solar Latitude', minpad=0.9)
-
-    lon.set_ticks_position('tr')
-    lat.set_ticks_position('tr')
+    if annotate:
+        lon.set_axislabel('Solar Longitude', minpad=0.8)
+        lat.set_axislabel('Solar Latitude', minpad=0.9)
+        lon.set_ticks_position('tr')
+        lat.set_ticks_position('tr')
+    else:
+        lat.set_ticks_visible(False)
+        lon.set_ticks_visible(False)
+        lat.set_ticklabel_visible(False)
+        lon.set_ticklabel_visible(False)
 
     grid_kw = {'color': 'white', 'zorder': 100, 'alpha': 0.5}
     grid_kw.update(kwargs)
