@@ -56,7 +56,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         super().__init__(data, header, units, **kwargs)
 
     @peek_show
-    def peek(self):
+    def peek(self, **kwargs):
         """
         Plot the NoRH lightcurve TimeSeries.
 
@@ -74,7 +74,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes = plt.gca()
         data_lab = str(self.meta.get('OBS-FREQ').values()).replace('[', '').replace(
             ']', '').replace('\'', '')
-        axes.plot(self.data.index, self.data, label=data_lab)
+        axes.plot(self.data.index, self.data, label=data_lab, **kwargs)
         axes.set_yscale("log")
         axes.set_ylim(1e-4, 1)
         axes.set_title('Nobeyama Radioheliograph')

@@ -80,9 +80,9 @@ class XRSTimeSeries(GenericTimeSeries):
         dates = matplotlib.dates.date2num(parse_time(self.data.index).datetime)
 
         axes.plot_date(dates, self.data['xrsa'], '-',
-                       label=r'0.5--4.0 $\AA$', color='blue', lw=2)
+                       label=r'0.5--4.0 $\AA$', color='blue', lw=2, **kwargs)
         axes.plot_date(dates, self.data['xrsb'], '-',
-                       label=r'1.0--8.0 $\AA$', color='red', lw=2)
+                       label=r'1.0--8.0 $\AA$', color='red', lw=2, **kwargs)
 
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)

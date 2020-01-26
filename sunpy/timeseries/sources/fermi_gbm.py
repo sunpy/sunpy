@@ -80,7 +80,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         data_lab = self.data.columns.values
 
         for d in data_lab:
-            axes.plot(self.data.index, self.data[d], label=d)
+            axes.plot(self.data.index, self.data[d], label=d, **kwargs)
 
         axes.set_yscale("log")
         axes.set_title('Fermi GBM Summary data ' + str(self.meta.get(
