@@ -1,0 +1,1 @@
+Adds a limb darkening correction function (`sunpy.physics.correct_limb_darkening`) that can be used on sunpy maps.
