@@ -90,7 +90,7 @@ class SWEPAMClient(GenericClient):
 
     def _makeimap(self):
         """
-        Helper Function:used to hold information about source.
+        Used to add information about the source.
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'swepam'
@@ -104,11 +104,12 @@ class SWEPAMClient(GenericClient):
         Parameters
         ----------
         query : `list`
-        A list of query objects.
+            A list of query objects.
+
         Returns
         -------
         `bool` :
-            Answer as to whether client can service the query
+            Answer as to whether client can service the query.
 
         """
         chkattr = ['Time', 'Instrument']
@@ -191,7 +192,7 @@ class EPAMClient(GenericClient):
 
     def _makeimap(self):
         """
-        Helper Function:used to hold information about source.
+        Used to add information about the source.
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'epam'
@@ -205,11 +206,12 @@ class EPAMClient(GenericClient):
         Parameters
         ----------
         query : `list`
-        A list of query objects.
+            A list of query objects.
+
         Returns
         -------
         `bool` :
-            Answer as to whether client can service the query
+            Answer as to whether client can service the query.
 
         """
         chkattr = ['Time', 'Instrument']
@@ -292,7 +294,7 @@ class MAGClient(GenericClient):
 
     def _makeimap(self):
         """
-        Helper Function:used to hold information about source.
+        Used to add information about the source.
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'mag'
@@ -306,11 +308,12 @@ class MAGClient(GenericClient):
         Parameters
         ----------
         query : `list`
-        A list of query objects.
+            A list of query objects.
+
         Returns
         -------
         `bool` :
-            Answer as to whether client can service the query
+            Answer as to whether client can service the query.
 
         """
         chkattr = ['Time', 'Instrument']
@@ -393,7 +396,7 @@ class SISClient(GenericClient):
 
     def _makeimap(self):
         """
-        Helper Function:used to hold information about source.
+        Used to add information about the source.
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'sis'
@@ -407,11 +410,12 @@ class SISClient(GenericClient):
         Parameters
         ----------
         query : `list`
-        A list of query objects.
+            A list of query objects.
+        
         Returns
         -------
         `bool` :
-            Answer as to whether client can service the query
+            Answer as to whether client can service the query.
 
         """
         chkattr = ['Time', 'Instrument']
