@@ -411,7 +411,7 @@ class SISClient(GenericClient):
         ----------
         query : `list`
             A list of query objects.
-        
+
         Returns
         -------
         `bool` :
