@@ -411,11 +411,11 @@ def get_flare_list(start: str,
     source : `str`, optional
         Source from where .fits files should be loaded. Can be an URL or a local folder.
         Known sources are "NASA", "Berkeley" and "i4DS".
-        Defaults to ``"NASA"``.
+        Defaults to "NASA".
     file_format : `str`, optional
         Specifies the naming convention of the files available in the source folder.
         The changing parts should be given as format string as in ``strftime``.
-        Defaults to ``"hessi_flare_list_%Y%m.fits"``.
+        Defaults to "hessi_flare_list_%Y%m.fits".
     inc : `timedelta`, `relativedelta`, optional
         Specifies by how much time the single files are separated.
         Defaults to ``relativedelta(months=+1)``.
@@ -423,12 +423,16 @@ def get_flare_list(start: str,
     Returns
     -------
     ``pandas.DataFrame``
-        out : ``pandas.DataFrame`` containing the flares within the given time constraints
+        A dataframe containing the flares within the given time constraints
 
     Examples
     --------
     >>> from sunpy.instr.rhessi import get_flare_list
     >>> fl = get_flare_list("2018-01-06 16:32:57", "2018-01-22 02:43:27")  # doctest: +REMOTE_DATA
+
+    References
+    ----------
+    http://sprg.ssl.berkeley.edu/~jimm/hessi/hsi_flare_list.html
     """
 
     start_dt = parse_time(start).to_datetime()
@@ -473,7 +477,7 @@ def read_flare_list_file(file):
     Returns
     -------
     ``pandas.DataFrame``
-        out : ``pandas.DataFrame`` containing the parsed flares.
+        A dataframe containing the parsed flares.
 
     Examples
     --------
