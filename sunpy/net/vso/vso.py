@@ -364,11 +364,15 @@ class VSOClient(BaseClient):
         responses = []
         for block in walker.create(query, self.api):
             try:
+                query_response = self.api.service.Query(
+                    QueryRequest(block=block)
+                    )
+                for resp in query_response:
+                    if resp["error"]:
+                        warnings.warn(resp["error"], SunpyUserWarning)
                 responses.append(
-                    VSOQueryResponse(self.api.service.Query(
-                        QueryRequest(block=block)
-                    ))
-                )
+                    VSOQueryResponse(query_response)
+                    )
             except Exception as ex:
                 response = QueryResponse.create(self.merge(responses))
                 response.add_error(ex)
