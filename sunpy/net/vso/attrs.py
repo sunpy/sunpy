@@ -21,7 +21,7 @@ Instrument('eit').
 
 import astropy.units as u
 
-from sunpy.util.multimethod import MultiMethod as _MultiMethod
+from functools import singledispatch as _singledispatch
 
 from .. import attr as _attr
 from .. import _attrs
@@ -282,14 +282,17 @@ _walker.add_converter(_attrs.Wavelength)(
 # AttrAnd and AttrOr obviously are - in the HEK module). If we defined the
 # filter method as a member of the attribute classes, we could only filter
 # one type of data (that is, VSO data).
-_filter_results = _MultiMethod(lambda *a, **kw: (a[0], ))
+
+@_singledispatch
+def _filter_results(*args, **kwargs):
+    raise TypeError(f"a[0] is not a type that can filter QueryResponse objects.")
 
 
 # If we filter with ANDed together attributes, the only items are the ones
 # that match all of them - this is implementing  by ANDing the pool of items
 # with the matched items - only the ones that match everything are there
 # after this.
-@_filter_results.add_dec(_attr.AttrAnd)
+@_filter_results.register(_attr.AttrAnd)
 def _(attr, results):
     res = set(results)
     for elem in attr.attrs:
@@ -300,7 +303,7 @@ def _(attr, results):
 # If we filter with ORed attributes, the only attributes that should be
 # removed are the ones that match none of them. That's why we build up the
 # resulting set by ORing all the matching items.
-@_filter_results.add_dec(_attr.AttrOr)
+@_filter_results.register(_attr.AttrOr)
 def _(attr, results):
     res = set()
     for elem in attr.attrs:
@@ -309,7 +312,7 @@ def _(attr, results):
 
 
 # Filter out items by comparing attributes.
-@_filter_results.add_dec(_attr.SimpleAttr)
+@_filter_results.register(_attr.SimpleAttr)
 def _(attr, results):
     attrname = attr.__class__.__name__.lower()
     return {
@@ -321,12 +324,12 @@ def _(attr, results):
 
 
 # The dummy attribute does not filter at all.
-@_filter_results.add_dec(_attr.DummyAttr, Field)
+@_filter_results.register(_attr.DummyAttr, Field)
 def _(attr, results):
     return set(results)
 
 
-@_filter_results.add_dec(_attrs.Wavelength)
+@_filter_results.register(_attrs.Wavelength)
 def _(attr, results):
     return {
         it for it in results
@@ -341,7 +344,7 @@ def _(attr, results):
     }
 
 
-@_filter_results.add_dec(_attrs.Time)
+@_filter_results.register(_attrs.Time)
 def _(attr, results):
     return {
         it for it in results
@@ -356,7 +359,7 @@ def _(attr, results):
     }
 
 
-@_filter_results.add_dec(Extent)
+@_filter_results.register(Extent)
 def _(attr, results):
     return {
         it for it in results

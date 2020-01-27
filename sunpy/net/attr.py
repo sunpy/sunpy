@@ -23,7 +23,7 @@ from collections import defaultdict, namedtuple
 
 from astropy.utils.misc import isiterable
 
-from sunpy.util.multimethod import MultiMethod
+from sunpy.util.functools import seconddispatch
 
 _ATTR_TUPLE = namedtuple("attr", "name name_long desc")
 _REGEX = re.compile(r"^[\d]([^\d].*)?$")
@@ -429,9 +429,12 @@ class AttrWalker:
       type and return a different one.
 
     """
+    @staticmethod
+    def _unknown_type(*args, **kwargs):
+        raise TypeError(f"{args[1]} or any of its parents have not been registered with the AttrWalker")
     def __init__(self):
-        self.applymm = MultiMethod(lambda *a, **kw: (a[1], ))
-        self.createmm = MultiMethod(lambda *a, **kw: (a[1], ))
+        self.applymm = seconddispatch(self._unknown_type)
+        self.createmm = seconddispatch(self._unknown_type)
 
     def create(self, *args, **kwargs):
         """
@@ -451,7 +454,7 @@ class AttrWalker:
         """
         def _dec(fun):
             for type_ in types:
-                self.createmm.add(fun, (type_, ))
+                self.createmm.register(type_, fun)
             return fun
         return _dec
 
@@ -461,7 +464,7 @@ class AttrWalker:
         """
         def _dec(fun):
             for type_ in types:
-                self.applymm.add(fun, (type_, ))
+                self.applymm.register(type_, fun)
             return fun
         return _dec
 
@@ -473,8 +476,8 @@ class AttrWalker:
         """
         def _dec(fun):
             for type_ in types:
-                self.applymm.add(self._cv_apply(fun), (type_, ))
-                self.createmm.add(self._cv_create(fun), (type_, ))
+                self.applymm.register(type_, self._cv_apply(fun))
+                self.createmm.register(type_, self._cv_create(fun))
             return fun
         return _dec
 
