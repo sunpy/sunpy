@@ -3,13 +3,14 @@ import textwrap
 from unittest import mock
 from distutils.version import LooseVersion
 
+from os.path import sep
 import numpy as np
 import pytest
 
 import sunpy.instr.rhessi as rhessi
 import sunpy.io
 import sunpy.map
-from sunpy.data.test import get_test_filepath
+from sunpy.data.test import get_test_filepath, rootdir
 from sunpy.time import is_time_equal, parse_time
 
 
@@ -190,3 +191,59 @@ def test_build_energy_bands(raw_bands):
                             '25 - 50 keV', '50 - 100 keV', '100 - 300 keV',
                             '300 - 800 keV', '800 - 7000 keV',
                             '7000 - 20000 keV']
+
+
+def test_get_flare_list():
+    src = rootdir if rootdir.endswith(sep) else (rootdir + sep)
+    fa = 0.001  # float accuracy
+
+    fl = rhessi.get_flare_list("2018-01-01", "2018-03-31", source=src)
+    assert len(fl) == 24
+    assert fl.loc[0]['ID_NUMBER'] == 18010601
+    assert fl.loc[1]['START_TIME'].strftime("%Y-%m-%d %H:%M:%S") == "2018-01-18 07:29:24"
+    assert fl.loc[2]['END_TIME'].strftime("%Y-%m-%d %H:%M:%S") == "2018-01-18 08:16:16"
+    assert fl.loc[3]['PEAK_TIME'].strftime("%Y-%m-%d %H:%M:%S") == "2018-01-20 04:51:58"
+    assert fl.loc[4]['BCK_TIME'][0].strftime("%Y-%m-%d %H:%M:%S") == "2018-01-20 04:52:28"
+    assert fl.loc[5]['BCK_TIME'][1].strftime("%Y-%m-%d %H:%M:%S") == "2018-01-22 02:43:28"
+    assert fl.loc[6]['IMAGE_TIME'][0].strftime("%Y-%m-%d %H:%M:%S") == "2018-02-04 21:14:12"
+    assert fl.loc[7]['IMAGE_TIME'][1].strftime("%Y-%m-%d %H:%M:%S") == "2018-02-04 21:33:12"
+    assert fl.loc[8]['ENERGY_RANGE_FOUND'][0] == pytest.approx(6.0, fa)
+    assert fl.loc[9]['ENERGY_RANGE_FOUND'][1] == pytest.approx(12.0, fa)
+    assert fl.loc[10]['ENERGY_HI'][0] == pytest.approx(6.0, fa)
+    assert fl.loc[11]['ENERGY_HI'][1] == pytest.approx(50.0, fa)
+    assert fl.loc[12]['PEAK_COUNTRATE'] == pytest.approx(6.0, fa)
+    assert fl.loc[13]['BCK_COUNTRATE'] == pytest.approx(3.6386773586273193, fa)
+    assert fl.loc[14]['TOTAL_COUNTS'] == pytest.approx(9808.0, fa)
+    assert fl.loc[15]['PEAK_CORRECTION'] == pytest.approx(1.0, fa)
+    assert fl.loc[16]['TOTAL_CORRECTION'] == pytest.approx(1.7999998331069946, fa)
+    assert fl.loc[17]['POSITION'][0] == pytest.approx(-345.6, fa)
+    assert fl.loc[18]['POSITION'][1] == 0
+    assert fl.loc[19]['FILENAME'] == "hsi_20180209_152720_001.fits"
+    assert fl.loc[20]['SFLAG1'] == 1
+    assert fl.loc[21]['ACTIVE_REGION'] == 2699
+    assert fl.loc[22]['GOES_CLASS'] == "B3.3"
+    assert fl.loc[23]['ALT_ID'] == "20180303_040408"
+
+    fl = rhessi.get_flare_list("2018-01-06 16:32:56", "2018-01-22 02:43:28", source=src)
+    assert len(fl) == 6
+    fl = rhessi.get_flare_list("2018-01-06 16:32:57", "2018-01-22 02:43:27", source=src)
+    assert len(fl) == 4
+
+
+def test_read_flare_list_file():
+    src = (rootdir if rootdir.endswith(sep) else (rootdir + sep)) + "hessi_flare_list_201801.fits"
+    fa = 0.001  # float accuracy
+    fl = rhessi.read_flare_list_file(src)
+    assert len(fl) == 6
+    assert fl.loc[0]['PEAK_PHFLUX'] == pytest.approx(0.0, fa)
+    assert fl.loc[1]['TOT_PHFLUENCE'] == pytest.approx(92538.421875, fa)
+    assert fl.loc[2]['E_PHFLUENCE'] == pytest.approx(12945.400390625, fa)
+    assert fl.loc[3]['PEAK_PHFLUX_SIGMA'] == pytest.approx(37513084.0, fa)
+    assert fl.loc[4]['TOT_PHFLUENCE_SIGMA'] == pytest.approx(354753760.0, fa)
+    assert fl.loc[5]['E_PHFLUENCE_SIGMA'] == pytest.approx(24626434.0, fa)
+
+
+@pytest.mark.remote_data
+def test_get_flare_list_remote():
+    fl = rhessi.get_flare_list("2017-11-16", "2018-02-04")
+    assert len(fl) == pytest.approx(13, 2)  # list may change in the future
