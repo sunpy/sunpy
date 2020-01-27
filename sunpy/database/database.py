@@ -805,7 +805,7 @@ class Database:
         """download(query_result, client=sunpy.net.vso.VSOClient(),
         path=None, progress=False, ignore_already_added=False)
 
-        Add new database entries from a hek query result by converting it 
+        Add new database entries from a hek query result by converting it
         into vso query and download the corresponding data files.
         See :meth:`sunpy.database.Database.download`
         for information about the caching mechanism used and about the
@@ -826,7 +826,7 @@ class Database:
         iterator = itertools.chain.from_iterable(
             H2VClient().translate_and_query(query_result))
 
-        vso_qr=[]
+        vso_qr = []
 
         for query in iterator:
             vso_qr.append(query)
