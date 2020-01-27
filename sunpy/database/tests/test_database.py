@@ -440,6 +440,7 @@ def test_add_entry_from_hek_qr(database):
     # *something*
     assert len(database) > 1
 
+
 @pytest.mark.remote_data
 def test_hek_query_download(database, tmpdir):
 
