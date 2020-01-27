@@ -1,0 +1,1 @@
+`sunpy.util.multimethod.MultiMethod` is deprecated, `functools.singledispatch` provides equivalent functionality in the standard library.
