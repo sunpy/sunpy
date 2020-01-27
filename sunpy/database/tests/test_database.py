@@ -440,6 +440,25 @@ def test_add_entry_from_hek_qr(database):
     # *something*
     assert len(database) > 1
 
+@pytest.mark.remote_data
+def test_hek_query_download(database, tmpdir):
+
+    assert len(database) == 0
+
+    query = hek.HEKClient().search(
+        hek.attrs.Time('2019/03/10 14:40:10', '2019/04/11 16:40:50'),
+        hek.attrs.EventType('FL')
+    )
+
+    database.download_from_hek_query_result(
+        query[4], path=str(tmpdir.join('{file}.fits')))
+
+    fits_file_pattern = str(tmpdir.join('*.fits'))
+    num_of_fits_headers = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_file_pattern))
+
+    assert len(database) > 0 and len(database) == num_of_fits_headers
+
 
 def num_entries_from_vso_query(db, query, path=None, file_pattern='',
                                overwrite=False):
