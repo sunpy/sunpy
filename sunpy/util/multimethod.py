@@ -3,6 +3,8 @@ This module provides multimethod implementation in pure Python.
 """
 from warnings import warn
 
+from sunpy.util.exceptions import SunpyDeprecationWarning
+
 __all__ = ['TypeWarning', 'MultiMethod']
 
 SILENT = 0
@@ -29,6 +31,7 @@ class MultiMethod:
         The function which receives args and kwargs and returns a tuple of values to consider for dispatch.
     """
     def __init__(self, get):
+        warn("MultiMethod is deprecated and will be removed in sunpy 2.1", SunpyDeprecationWarning)
         self.get = get
 
         self.methods = []
