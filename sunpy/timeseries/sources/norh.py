@@ -70,7 +70,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         Parameters
         ----------
         **kwargs : `dict`
-        Additional plot keyword arguments that are handed to `axes.plot` functions
+            Additional plot keyword arguments that are handed to `axes.plot` functions
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
