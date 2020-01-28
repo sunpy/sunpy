@@ -9,7 +9,7 @@ from sunpy.coordinates import sun
 import sunpy.map as smap
 import sunpy.data.test as test
 from sunpy.coordinates import frames
-from sunpy.coordinates.utils import GreatArc
+from sunpy.coordinates.utils import GreatArc, get_rectangle_coordinates
 
 
 @pytest.fixture
@@ -237,3 +237,90 @@ def test_great_arc_different_observer(aia171_test_map):
     np.testing.assert_almost_equal(end.x.value, b2h.x.value)
     np.testing.assert_almost_equal(end.y.value, b2h.y.value)
     np.testing.assert_almost_equal(end.z.value, b2h.z.value)
+
+
+@pytest.fixture
+def rectangle_args():
+    bottom_left = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame='heliographic_stonyhurst')
+    top_right = SkyCoord(10 * u.arcsec, 10 * u.arcsec, frame='heliographic_stonyhurst')
+    width = 10 * u.arcsec
+    height = 10 * u.arcsec
+
+    return bottom_left, top_right, width, height
+
+
+def test_rectangle_incomplete_input(rectangle_args):
+    bottom_left, top_right, width, height = rectangle_args
+
+    with pytest.raises(ValueError):
+        get_rectangle_coordinates(bottom_left, height=height)
+
+
+def test_rectangle_invalid_input(rectangle_args):
+    bottom_left, top_right, width, height = rectangle_args
+
+    with pytest.raises(TypeError):
+        get_rectangle_coordinates(width, height=height)
+
+
+def test_rectangle_all_parameters_passed(rectangle_args):
+    bottom_left, top_right, width, height = rectangle_args
+
+    with pytest.raises(ValueError):
+        get_rectangle_coordinates(bottom_left, width=width, top_right=top_right, height=height)
+
+
+def test_rectangle_width_height(rectangle_args):
+    bottom_left, top_right, width, height = rectangle_args
+
+    bottom_left_1, top_right_1 = get_rectangle_coordinates(bottom_left, width=width, height=height)
+
+    assert bottom_left.spherical.lon + width == top_right_1.spherical.lon
+    assert bottom_left.spherical.lat + height == top_right_1.spherical.lat
+
+
+def test_rectangle_mismatching_frames_missing_parameters(rectangle_args):
+    bottom_left, top_right, width, height = rectangle_args
+    top_right = SkyCoord(10 * u.arcsec, 10 * u.arcsec, frame='heliographic_carrington')
+
+    with pytest.raises(ValueError):
+        bottom_left, top_right = get_rectangle_coordinates(bottom_left, top_right=top_right)
+
+
+def test_rectangle_top_right(rectangle_args):
+    bottom_left, top_right, width, height = rectangle_args
+
+    bottom_left_1, top_right_1 = get_rectangle_coordinates(bottom_left, top_right=top_right)
+
+    assert bottom_left.spherical.lon == bottom_left_1.spherical.lon
+    assert bottom_left.spherical.lat == bottom_left_1.spherical.lat
+    assert top_right.spherical.lon == top_right_1.spherical.lon
+    assert top_right.spherical.lat == top_right_1.spherical.lat
+
+
+def test_rectangle_bottom_left_different_types(rectangle_args):
+    bottom_left, top_right, width, height = rectangle_args
+
+    bottom_left_1, top_right_1 = get_rectangle_coordinates(bottom_left.frame, width=width, height=height)
+
+    assert bottom_left.spherical.lon + width == top_right_1.spherical.lon
+    assert bottom_left.spherical.lat + height == top_right_1.spherical.lat
+    assert type(bottom_left_1) == type(top_right_1) == type(bottom_left.frame)
+
+    bottom_left_2, top_right_2 = get_rectangle_coordinates(bottom_left, width=width, height=height)
+
+    assert bottom_left.spherical.lon + width == top_right_2.spherical.lon
+    assert bottom_left.spherical.lat + height == top_right_2.spherical.lat
+    assert type(bottom_left_2) == type(top_right_2) == type(bottom_left)
+
+
+def test_rectangle_bottom_left_vector():
+    bottom_left_vector = SkyCoord([0 * u.arcsec, 10 * u.arcsec], [0 * u.arcsec, 10 * u.arcsec],
+                                  frame='heliographic_stonyhurst')
+
+    bottom_left, top_right = get_rectangle_coordinates(bottom_left_vector)
+
+    assert bottom_left.spherical.lon == bottom_left_vector[0].spherical.lon
+    assert bottom_left.spherical.lat == bottom_left_vector[0].spherical.lat
+    assert top_right.spherical.lon == bottom_left_vector[1].spherical.lon
+    assert top_right.spherical.lat == bottom_left_vector[1].spherical.lat

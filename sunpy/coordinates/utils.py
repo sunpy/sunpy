@@ -5,7 +5,7 @@
 import numpy as np
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import SkyCoord, BaseCoordinateFrame
 
 from sunpy.coordinates import Heliocentric
 
@@ -265,3 +265,70 @@ class GreatArc:
                         obstime=self.obstime,
                         observer=self.observer,
                         frame=Heliocentric).transform_to(self.start_frame)
+
+
+def get_rectangle_coordinates(bottom_left, *, top_right = None, width: u.deg = None, height: u.deg = None):
+    """
+    Specify a rectangular region of interest in longitude and latitude in a given coordinate frame.
+
+    Parameters
+    ----------
+    bottom_left : `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
+        The bottom-left coordinate of the rectangle.
+        Supports passing both the bottom left and top right coordinates by passing with a shape of ``(2,)``.
+    top_right : `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
+        The top-right coordinate of the rectangle.
+        If in a different frame than ``bottom_left`` and all required metadata for frame conversion is present,
+        ``top_right`` will be transformed to ``bottom_left`` frame.
+    width : `~astropy.units.Quantity`
+        The width of the rectangle.
+        Must be omitted if the coordinates of both corners have been specified.
+    height : `~astropy.units.Quantity`
+        The height of the rectangle.
+        Must be omitted if the coordinates of both corners have been specified.
+
+    Returns
+    -------
+    `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
+        The bottom left coordinate of the rectangular region of interest.
+    `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
+        The top right coordinate of the rectangular region of interest.
+    """
+    if not (hasattr(bottom_left, 'transform_to') and
+            hasattr(bottom_left, 'shape') and
+            hasattr(bottom_left, 'spherical')):
+        raise TypeError("Invalid input, bottom_left must be of type SkyCoord or BaseCoordinateFrame.")
+
+    if (top_right is not None and not ((hasattr(top_right, 'transform_to') and
+                                        hasattr(top_right, 'shape') and
+                                        hasattr(top_right, 'spherical')))):
+        raise TypeError("Invalid input, top_right must be of type SkyCoord or BaseCoordinateFrame.")
+
+    if bottom_left.shape == (2,) and any((x is not None for x in (width, height, top_right))):
+        raise ValueError("Invalid input, if bottom_left.shape == (2,) "
+                         "other parameters should not be passed.")
+
+    if all(x is not None for x in (width, height, top_right)):
+        raise ValueError("Invalid input, width, height and top_right "
+                         "parameters should not be passed simultaneously.")
+
+    if top_right is None and bottom_left.shape != (2,) and not all((width, height)):
+        raise ValueError("Invalid input, either bottom_left and top_right "
+                         "or bottom_left and height and width should be provided.")
+
+    if bottom_left.shape == (2,):
+        top_right = bottom_left[1]
+        bottom_left = bottom_left[0]
+
+    elif top_right is not None:
+        top_right = top_right.transform_to(bottom_left)
+
+    else:
+        top_right = SkyCoord(bottom_left.spherical.lon + width,
+                            bottom_left.spherical.lat + height,
+                            frame=bottom_left)
+
+        if isinstance(bottom_left, BaseCoordinateFrame):
+            top_right = top_right.frame
+
+    return bottom_left, top_right
