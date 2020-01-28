@@ -445,8 +445,7 @@ class BaseClient(ABC):
         """
 
     @abstractmethod
-    def fetch(self, *query_results, path=None, overwrite=False, progress=True,
-              max_conn=5, downloader=None, wait=True, **kwargs):
+    def fetch(self, query_results, *, path, downloader, **kwargs):
         """
         This enables the user to fetch the data using the client, after a search.
 
@@ -456,22 +455,14 @@ class BaseClient(ABC):
             Results to download.
         path : `str` or `pathlib.Path`, optional
             Path to the download directory
-        overwrite : `bool`, optional
-            Replace files with the same name if True.
-        progress : `bool`, optional
-            Print progress info to terminal.
-        max_conns : `int`, optional
-            Maximum number of download connections.
-        downloader : `parfive.Downloader`, optional
+        downloader : `parfive.Downloader`
             The download manager to use.
-        wait : `bool`, optional
-           If `False` ``downloader.download()`` will not be called. Only has
-           any effect if `downloader` is not `None`.
 
         Returns
         -------
         `parfive.Results`
-            The results object, can be `None` if ``wait`` is `False`.
+            The results object, can be `None` if ``wait`` is `False` and
+            ``downloader`` is not None.
         """
 
     @classmethod

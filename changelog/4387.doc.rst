@@ -1,0 +1,1 @@
+Added a developer guide for writing a new ``Fido`` client.
