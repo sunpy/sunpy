@@ -282,7 +282,7 @@ class Range(DataAttr):
     An attribute that represents a range of a value.
 
     This type of attribute would be applicable for types like Wavelength or Time.
-    The range is inclusive of both the min and ma
+    The range is inclusive of both the min and max
 
     Parameters
     ----------

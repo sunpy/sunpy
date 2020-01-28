@@ -21,6 +21,7 @@ This goes over the basics and has links to useful tutorials on git.
    example_gallery
    units_quantities
    new_objects
+   extending_fido
    maintainer_workflow
    logger
    remote_data

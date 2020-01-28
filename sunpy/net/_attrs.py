@@ -130,8 +130,8 @@ class Wavelength(Range):
 
     def __repr__(self):
         return "<Wavelength({!r}, {!r}, '{!s}')>".format(self.min.value,
-                                                            self.max.value,
-                                                            self.unit)
+                                                         self.max.value,
+                                                         self.unit)
 
 
 class Instrument(SimpleAttr):
