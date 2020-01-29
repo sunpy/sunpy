@@ -20,13 +20,19 @@ try:
 except ImportError:
     ana = None
 
+try:
+    from . import netcdf
+except ImportError:
+    netcdf = None
+
 __all__ = ['read_file', 'read_file_header', 'write_file']
 
 # File formats supported by SunPy
 _known_extensions = {
     ('fts', 'fits'): 'fits',
     ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
-    ('fz', 'f0'): 'ana'
+    ('fz', 'f0'): 'ana',
+    ('nc'): 'netcdf'
 }
 
 
@@ -48,7 +54,8 @@ class Readers(dict):
 _readers = Readers({
             'fits': fits,
             'jp2': jp2,
-            'ana': ana
+            'ana': ana,
+            'netcdf': netcdf
 })
 
 
