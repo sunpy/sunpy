@@ -347,21 +347,9 @@ plot changes the default AIA color table to use an inverse Grey color table.
     plt.colorbar()
     plt.show()
 
-You can view or make changes to the default settings through the `~sunpy.map.GenericMap.plot_settings`
-dictionary. In the following example we change the title of the plot by changing the
-`~sunpy.map.GenericMap.plot_settings` property.
-
-.. plot::
-    :include-source:
-
-    import sunpy.map
-    import sunpy.data.sample
-    import matplotlib.pyplot as plt
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    fig = plt.figure()
-    smap.plot(cmap="Blues_r", title="My Second Plot")
-    plt.colorbar()
-    plt.show()
+Earlier, you had and option to view or make changes to the default settings through
+the `~sunpy.map.GenericMap.plot_settings` dictionary, but now it is deprecated, and
+will be removed in the future.
 
 
 Colormaps and Normalization
@@ -429,10 +417,6 @@ do so as follows.
     plt.colorbar()
     plt.show()
 
-or you can just change the colormap for the map itself as follows::
-
-    >>> smap.plot_settings['cmap'] = plt.get_cmap('sohoeit171')  # doctest: +SKIP
-
 The normalization is also set automatically and is chosen so that all the
 data from minimum to maximum is displayed as best as possible for most cases.
 This means that it is never necessary to touch the data such as applying a function
@@ -469,6 +453,13 @@ a linear and logarithmic normalization on an AIA image.
 Note how the color in the colorbar does not change since these two maps share
 the same colormap while the data values associated with each color do because
 the normalization is different.
+
+Since, both colormap and the normalization are map-source specific, there is an option to change
+then from the map itself as follows::
+
+    >>> smap.cmap = plt.get_cmap('sohoeit171')  # doctest: +SKIP
+    >>> smap.norm = colors.LogNorm()            # doctest: +SKIP
+
 
 Masking and Clipping Data
 -------------------------
