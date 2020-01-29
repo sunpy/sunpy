@@ -231,22 +231,6 @@ def test_vso_unifiedresponse():
 
 
 @pytest.mark.remote_data
-def test_vso_error():
-    with pytest.warns(SunpyUserWarning,
-        match="VSO-D404 Bad Request -- Invalid Time Sample : contains non digit"):
-        Fido.search(
-            a.Time('2012-03-04','2012-03-06'),
-            a.Instrument("EUVI"),
-            a.Wavelength(304*u.AA), a.Sample(100*u.min))
-
-    with pytest.warns(SunpyUserWarning,
-        match="VSO-C500 :soap:Server.Transport : 404 Not Found"):
-        Fido.search(
-            a.Time('2019/12/30', '2019/12/31'),
-            a.Instrument('ovsa'))
-
-
-@pytest.mark.remote_data
 def test_responses():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
