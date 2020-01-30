@@ -809,20 +809,15 @@ class Database:
         ----------
         query_result : `HEKTable` or `HEKRow`
             The value returned by :meth:`sunpy.net.hek.HEKClient().search`
-
         client : `sunpy.net.vso.VSOClient`, optional
             VSO Client instance to use for search and download.
             If not specified a new instance will be created.
-
         path : `str`
             Path to download the files.
-
         progress : `bool`
             If True, displays the progress bar during file download.
-
         ignore_already_added : `bool`
             See :meth:`sunpy.database.Database.add`.
-
         overwrite : `bool`, optional
             If True, matching database entries from the query results will be
             deleted and replaced with new database entries, with all files

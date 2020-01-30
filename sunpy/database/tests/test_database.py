@@ -488,7 +488,7 @@ def test_hek_query_download(monkeypatch, database, tmpdir):
 
     database.download_from_hek_query_result(query[4], path=str(tmpdir))
 
-    assert len(database) > 0 and len(database) == 10
+    assert len(database) == 10
 
 
 def num_entries_from_vso_query(db, query, path=None, file_pattern='',
