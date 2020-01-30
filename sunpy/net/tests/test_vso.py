@@ -476,6 +476,7 @@ def test_vso_error(client):
             va.Time('2019/12/30', '2019/12/31'),
             va.Instrument('ovsa'))
 
+
 @pytest.mark.remote_data
 def test_incorrect_content_disposition(client):
     results = client.search(
