@@ -420,7 +420,7 @@ class VSOClient(BaseClient):
         Generate the best possible (or least-worse) filename for a VSO download.
 
         * Use the ``content-disposition`` header.
-        * Use `providerid_fileid` to generate a unique file ID if content-disposition fails
+        * Use `fileid` to generate a file name if content-disposition fails
         * If everything else fails use the last segment of the URL and hope.
         """
         name = None
@@ -434,7 +434,13 @@ class VSOClient(BaseClient):
                     name = name.split('"')[1]
 
         if name is None:
-            # Fallback to providerid + fileid
+            # Advice from the VSO is to allback to providerid + fileid
+            # As it's possible multiple providers give the same fileid.
+            # However, I haven't implemented this yet as it would be a breaking
+            # change to the filenames we expect.
+
+            # I don't know if we still need this bytes check in Python 3 only
+            # land, but I don't dare remove it.
             if isinstance(queryresponse.fileid, bytes):
                 fileid = queryresponse.fileid.decode("ascii", "ignore")
             else:
@@ -442,7 +448,7 @@ class VSOClient(BaseClient):
 
             # Some providers make fileid a path
             # Some also don't specify a file extension, but not a lot we can do
-            # about that?!
+            # about that.
             name = fileid.split("/")[-1]
 
         # If somehow we have got this far with an empty string, fallback to url segment
