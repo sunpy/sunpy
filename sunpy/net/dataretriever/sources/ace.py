@@ -86,7 +86,7 @@ class SWEPAMClient(GenericClient):
                 'Earliest date for which SWEPAM data is available is '
                 '{:%Y-%m-%d}'.format(START_DATE))
         swepam = Scraper(self.BASEURL)
-        return sorted(swepam.filelist(timerange))
+        return list(sorted(swepam.filelist(timerange)))
 
     def _makeimap(self):
         """
@@ -188,7 +188,7 @@ class EPAMClient(GenericClient):
                 'Earliest date for which SWEPAM data is available is '
                 '{:%Y-%m-%d}'.format(START_DATE))
         epam = Scraper(self.BASEURL)
-        return sorted(epam.filelist(timerange))
+        return list(sorted(epam.filelist(timerange)))
 
     def _makeimap(self):
         """
@@ -290,7 +290,7 @@ class MAGClient(GenericClient):
                 'Earliest date for which SWEPAM data is available is '
                 '{:%Y-%m-%d}'.format(START_DATE))
         mag = Scraper(self.BASEURL)
-        return sorted(mag.filelist(timerange))
+        return list(sorted(mag.filelist(timerange)))
 
     def _makeimap(self):
         """
@@ -392,7 +392,7 @@ class SISClient(GenericClient):
                 'Earliest date for which SWEPAM data is available is '
                 '{:%Y-%m-%d}'.format(START_DATE))
         sis = Scraper(self.BASEURL)
-        return sorted(sis.filelist(timerange))
+        return list(sorted(sis.filelist(timerange)))
 
     def _makeimap(self):
         """
