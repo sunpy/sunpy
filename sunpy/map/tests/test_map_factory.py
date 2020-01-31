@@ -17,6 +17,7 @@ import sunpy
 import sunpy.map
 import sunpy.data.test
 from sunpy.util import SunpyUserWarning
+from sunpy.io.file_tools import UnrecognizedFileTypeError
 
 
 filepath = sunpy.data.test.rootdir
@@ -154,13 +155,11 @@ class TestMap:
             sunpy.map.Map(78)
 
         # If one file failed to load, make sure it's listed in warning msg
-        nonexist_file = os.path.join(filepath, 'nonexist.fits')
-        files = [AIA_171_IMAGE, nonexist_file]
-        with pytest.warns(SunpyUserWarning, match='Error reading file {0}'.format(nonexist_file)):
-            try:
+        test_file = os.path.join(filepath, 'data_map_factory.txt')
+        files = [AIA_171_IMAGE, test_file]
+        with pytest.raises(UnrecognizedFileTypeError, match='The requested filetype is not currently supported by SunPy.'):
+            with pytest.warns(SunpyUserWarning, match=f'failed to read {test_file}'):
                 sunpy.map.Map(files)
-            except Exception:
-                pass
 
     @pytest.mark.parametrize('silence,error,match',
                              [(True, RuntimeError, 'No maps loaded'),
