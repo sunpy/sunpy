@@ -205,6 +205,22 @@ class Attr(metaclass=AttrMeta):
                                   "The value is not iterable or just a string.")
 
 
+class DataAttr(Attr):
+    """
+    A base class for attributes classes which contain data.
+
+    This is to differentiate them from classes like `sunpy.net.attr.AttrAnd` or
+    the base `sunpy.net.attr.Attr` class which do not. The motivation for this
+    distinction is to make it easier for walkers to match all classes which are
+    not user specified Attrs.
+    """
+    def __new__(cls, *args, **kwargs):
+        if cls is DataAttr:
+            raise TypeError("You should not directly instantiate DataAttr, only it's subclasses.")
+
+        return super().__new__(cls)
+
+
 class DummyAttr(Attr):
     """
     Empty attribute. Useful for building up queries. Returns other
@@ -237,7 +253,7 @@ class DummyAttr(Attr):
         return isinstance(other, DummyAttr)
 
 
-class SimpleAttr(Attr):
+class SimpleAttr(DataAttr):
     """
     An attribute that only has a single value.
 
@@ -261,7 +277,7 @@ class SimpleAttr(Attr):
             cname=self.__class__.__name__, val=self.value)
 
 
-class Range(Attr):
+class Range(DataAttr):
     """
     An attribute that represents a range of a value.
 
@@ -386,7 +402,7 @@ class AttrOr(Attr):
 # This appears to only be used as a base type for the Walker, i.e. a common
 # denominator for the walker to convert to whatever the output of the walker is
 # going to be.
-class ValueAttr(Attr):
+class ValueAttr(DataAttr):
     def __init__(self, attrs):
         super().__init__()
         self.attrs = attrs

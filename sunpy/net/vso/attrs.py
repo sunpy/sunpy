@@ -43,7 +43,7 @@ class Field(_attr.ValueAttr):
         })
 
 
-class Extent(_attr.Attr):
+class Extent(_attr.DataAttr):
     """
     Specify the spatial field-of-view of the query. Due to a bug in the VSO,
     the Extent attribute is not used.
