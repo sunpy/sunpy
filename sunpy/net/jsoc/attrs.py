@@ -2,7 +2,7 @@
 from astropy.time import Time as astropyTime
 
 from sunpy.net._attrs import Wavelength, Time
-from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr, SimpleAttr
+from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr, SimpleAttr
 
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
@@ -24,12 +24,12 @@ class Keys(SimpleAttr):
     pass
 
 
-class PrimeKey(Attr):
+class PrimeKey(DataAttr):
     """
     Prime Keys
     """
     def __init__(self, label, value):
-        Attr.__init__(self)
+        super().__init()
         self.label = label
         self.value = value
 
@@ -41,13 +41,13 @@ class PrimeKey(Attr):
         return False
 
 
-class Segment(Attr):
+class Segment(SimpleAttr):
     """
     Segments choose which files to download when there are more than
     one present for each record e.g. 'image'.
     """
     def __init__(self, value):
-        Attr.__init__(self)
+        super().__init__()
         self.value = value
 
     def __repr__(self):
@@ -83,7 +83,17 @@ class Notify(SimpleAttr):
 walker = AttrWalker()
 
 
-@walker.add_creator(AttrAnd, SimpleAttr, Time)
+@walker.add_creator(AttrOr)
+def _create1(wlk, query):
+
+    qblocks = []
+    for iattr in query.attrs:
+        qblocks.extend(wlk.create(iattr))
+
+    return qblocks
+
+
+@walker.add_creator(AttrAnd, DataAttr)
 def _create(wlk, query):
 
     map_ = {}
@@ -137,13 +147,3 @@ def _apply_wave(wlk, query, imap):
             "For JSOC queries Wavelength.min must equal Wavelength.max")
 
     imap[query.__class__.__name__.lower()] = query.min
-
-
-@walker.add_creator(AttrOr)
-def _create1(wlk, query):
-
-    qblocks = []
-    for iattr in query.attrs:
-        qblocks.extend(wlk.create(iattr))
-
-    return qblocks
