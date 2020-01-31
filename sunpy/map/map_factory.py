@@ -42,79 +42,50 @@ __all__ = ['Map', 'MapFactory']
 class MapFactory(BasicRegistrationFactory):
     """
     Map(\\*args, \\*\\*kwargs)
-
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
-
-
     Examples
     --------
     >>> import sunpy.map
     >>> from astropy.io import fits
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-
     The SunPy Map factory accepts a wide variety of inputs for creating maps
-
     * Preloaded tuples of (data, header) pairs
-
     >>> mymap = sunpy.map.Map((data, header))   # doctest: +SKIP
-
     headers are some base of `dict` or `collections.OrderedDict`, including
     `sunpy.io.header.FileHeader` or `sunpy.util.metadata.MetaDict` classes.
-
     * data, header pairs, not in tuples
-
     >>> mymap = sunpy.map.Map(data, header)   # doctest: +SKIP
-
     * data, wcs object, in tuple
-
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_ROLL_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_ROLL_IMAGE)    # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA
-
     * data, wcs object, not in tuple
-
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_ROLL_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_ROLL_IMAGE)    # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA
-
     * File names
-
     >>> mymap = sunpy.map.Map('file1.fits')   # doctest: +SKIP
-
     * All fits files in a directory by giving a directory
-
     >>> mymap = sunpy.map.Map('local_dir/sub_dir')   # doctest: +SKIP
-
     * A filesystem path expressed as a `pathlib.Path`
-
     >>> import pathlib
     >>> mymap = sunpy.map.Map(pathlib.Path('file1.fits'))   # doctest: +SKIP
     >>> sub_dir = pathlib.Path('local_dir/sub_dir')
     >>> mymap = sunpy.map.Map(sub_dir)   # doctest: +SKIP
     >>> mymap = sunpy.map.Map(sub_dir / 'file3.fits')   # doctest: +SKIP
-
     * Some regex globs
-
     >>> mymap = sunpy.map.Map('eit_*.fits')   # doctest: +SKIP
-
     * URLs
-
     >>> mymap = sunpy.map.Map(url_str)   # doctest: +SKIP
-
     * DatabaseEntry
-
     >>> mymap = sunpy.map.Map(db_result)   # doctest: +SKIP
-
     * Lists of any of the above
-
     >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])  # doctest: +SKIP
-
     * Any mixture of the above not in a list
-
     >>> mymap = sunpy.map.Map(((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits'))  # doctest: +SKIP
     """  # noqa
 
@@ -127,7 +98,11 @@ class MapFactory(BasicRegistrationFactory):
         # NOTE: use os.fspath so that fname can be either a str or pathlib.Path
         # This can be removed once read_file supports pathlib.Path
         log.debug(f'Reading {fname}')
-        pairs = read_file(os.fspath(fname), **kwargs)
+        try:
+            pairs = read_file(os.fspath(fname), **kwargs)
+        except Exception as e:
+            warnings.warn(f'failed to read {fname}',SunpyUserWarning)
+            raise
 
         new_pairs = []
         for pair in pairs:
@@ -164,7 +139,6 @@ class MapFactory(BasicRegistrationFactory):
         * glob, from which all files will be read
         * url, which will be downloaded and read
         * lists containing any of the above.
-
         Example
         -------
         self._parse_args(data, header,
@@ -173,7 +147,6 @@ class MapFactory(BasicRegistrationFactory):
                          'file4',
                          'directory1',
                          '*.fits')
-
         """
 
         data_header_pairs = list()
@@ -185,58 +158,55 @@ class MapFactory(BasicRegistrationFactory):
         # For each of the arguments, handle each of the cases
         i = 0
         while i < len(args):
-            try:
-                arg = args[i]
 
-                # Data-header or data-WCS pair
-                if isinstance(arg, SUPPORTED_ARRAY_TYPES):
-                    arg_header = args[i+1]
-                    if isinstance(arg_header, WCS):
-                        arg_header = args[i+1].to_header()
+            arg = args[i]
 
-                    if self._validate_meta(arg_header):
-                        pair = (args[i], OrderedDict(arg_header))
-                        data_header_pairs.append(pair)
-                        i += 1    # an extra increment to account for the data-header pairing
+            # Data-header or data-WCS pair
+            if isinstance(arg, SUPPORTED_ARRAY_TYPES):
+                arg_header = args[i+1]
+                if isinstance(arg_header, WCS):
+                    arg_header = args[i+1].to_header()
 
-                # A database Entry
-                elif isinstance(arg, DatabaseEntryType):
-                    data_header_pairs += self._read_file(arg.path, **kwargs)
+                if self._validate_meta(arg_header):
+                    pair = (args[i], OrderedDict(arg_header))
+                    data_header_pairs.append(pair)
+                    i += 1    # an extra increment to account for the data-header pairing
 
-                # Already a Map
-                elif isinstance(arg, GenericMap):
-                    already_maps.append(arg)
+            # A database Entry
+            elif isinstance(arg, DatabaseEntryType):
+                data_header_pairs += self._read_file(arg.path, **kwargs)
 
-                # URL
-                elif isinstance(arg, str) and _is_url(arg):
-                    url = arg
-                    path = str(cache.download(url).absolute())
+            # Already a Map
+            elif isinstance(arg, GenericMap):
+                already_maps.append(arg)
+
+            # URL
+            elif isinstance(arg, str) and _is_url(arg):
+                url = arg
+                path = str(cache.download(url).absolute())
+                pairs = self._read_file(path, **kwargs)
+                data_header_pairs += pairs
+
+            # File system path (file or directory or glob)
+            elif _possibly_a_path(arg):
+                path = pathlib.Path(arg).expanduser()
+                if _is_file(path):
                     pairs = self._read_file(path, **kwargs)
                     data_header_pairs += pairs
-
-                # File system path (file or directory or glob)
-                elif _possibly_a_path(arg):
-                    path = pathlib.Path(arg).expanduser()
-                    if _is_file(path):
-                        pairs = self._read_file(path, **kwargs)
-                        data_header_pairs += pairs
-                    elif _is_dir(path):
-                        for afile in sorted(path.glob('*')):
-                            data_header_pairs += self._read_file(afile, **kwargs)
-                    elif glob.glob(os.path.expanduser(arg)):
-                        for afile in sorted(glob.glob(os.path.expanduser(arg))):
-                            data_header_pairs += self._read_file(afile, **kwargs)
-
-                    else:
-                        raise ValueError(f'Did not find any files at {arg}')
+                elif _is_dir(path):
+                    for afile in sorted(path.glob('*')):
+                        data_header_pairs += self._read_file(afile, **kwargs)
+                elif glob.glob(os.path.expanduser(arg)):
+                    for afile in sorted(glob.glob(os.path.expanduser(arg))):
+                        data_header_pairs += self._read_file(afile, **kwargs)
 
                 else:
-                    raise ValueError(f"Invalid input: {arg}")
+                    raise ValueError(f'Did not find any files at {arg}')
 
-                i += 1
-            except Exception as e:
-                warnings.warn(f'Error reading file {arg}', SunpyUserWarning)
-                raise
+            else:
+                raise ValueError(f"Invalid input: {arg}")
+
+            i += 1
 
         # TODO:
         # In the end, if there are already maps it should be put in the same
@@ -247,25 +217,20 @@ class MapFactory(BasicRegistrationFactory):
         """ Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
         to determine which is the correct Map-type to build.
-
         Arguments args and kwargs are passed through to the validation
         function and to the constructor for the final type.  For Map types,
         validation function must take a data-header pair as an argument.
-
         Parameters
         ----------
         composite : `bool`, optional
             Indicates if collection of maps should be returned as a `~sunpy.map.CompositeMap`.
             Default is `False`.
-
         sequence : `bool`, optional
             Indicates if collection of maps should be returned as a `sunpy.map.MapSequence`.
             Default is `False`.
-
         silence_errors : `bool`, optional
             If set, ignore data-header pairs which cause an exception.
             Default is ``False``.
-
         Notes
         -----
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
