@@ -47,8 +47,8 @@ VClient2 = vsm.VSMClient()
 def test_query_2():
     qr = VClient2.search(trange, Instrument('vsm'), Wavelength(6302 * u.AA))
     assert len(qr) == 9
-    assert qr.time_range().start.date() == datetime.date(2014, 6, 1)
-    assert qr.time_range().end.date() == datetime.date(2014, 6, 4)
+    assert qr.time_range().start == datetime.datetime(2014, 6, 1)
+    assert qr.time_range().end == datetime.datetime(2014, 6, 4)
 
 
 # FDISK files for VECTOR_MAGNETIC_FIELD
