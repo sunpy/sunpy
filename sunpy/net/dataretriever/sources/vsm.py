@@ -41,19 +41,20 @@ class VSMClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Instrument('vsm'),
+    >>> res = Fido.search(a.Time('2016/6/4', '2016/6/8 00:10:00'), a.Instrument('vsm'),
     ...                   a.Wavelength(6302*u.AA), a.Physobs('VECTOR_MAGNETIC_FIELD'))  #doctest: +REMOTE_DATA
     >>> print(res)  #doctest: +REMOTE_DATA
-    [<Table length=6>
-         Start Time           End Time      Source Instrument
-           str19               str19         str5     str3
-    ------------------- ------------------- ------ ----------
-    2015-01-03 00:00:00 2015-01-04 00:00:00  SOLIS        vsm
-    2015-01-04 00:00:00 2015-01-05 00:00:00  SOLIS        vsm
-    2015-01-05 00:00:00 2015-01-06 00:00:00  SOLIS        vsm
-    2015-01-06 00:00:00 2015-01-07 00:00:00  SOLIS        vsm
-    2015-01-07 00:00:00 2015-01-08 00:00:00  SOLIS        vsm
-    2015-01-08 00:00:00 2015-01-09 00:00:00  SOLIS        vsm]
+    Results from 1 Provider:
+    <BLANKLINE>
+    3 Results from the VSMClient:
+        Start Time           End Time      Source Instrument       Wavelength      
+        str19               str19         str5     str3            str22         
+    ------------------- ------------------- ------ ---------- ----------------------
+    2016-06-04 00:00:00 2016-06-08 00:10:00  SOLIS        vsm [6302. 6302.] Angstrom
+    2016-06-04 00:00:00 2016-06-08 00:10:00  SOLIS        vsm [6302. 6302.] Angstrom
+    2016-06-04 00:00:00 2016-06-08 00:10:00  SOLIS        vsm [6302. 6302.] Angstrom
+    <BLANKLINE>
+    <BLANKLINE>
     """
 
     def _get_url_for_timerange(self, timerange, **kwargs):
