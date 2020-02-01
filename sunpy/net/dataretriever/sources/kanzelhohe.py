@@ -9,6 +9,8 @@ __email__ = "sudk1896@gmail.com"
 import datetime
 import numpy as np
 
+import astropy.units as u
+
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
 from sunpy.net import attrs as a
@@ -46,15 +48,15 @@ class KanzelhoheClient(GenericClient):
     --------
     >>> from sunpy.net import Fido, attrs as a
     >>> timerange = a.Time('2015/12/28 00:00:00','2015/12/28 00:03:00')
-    >>> results = Fido.search(timerange, a.Instrument('kanzelhohe'), a.Wavelength(6563*u.AA))
-    >>> print(results)
+    >>> results = Fido.search(timerange, a.Instrument('kanzelhohe'), a.Wavelength(6563*u.AA))   #doctest: +REMOTE_DATA
+    >>> print(results)  #doctest: +REMOTE_DATA
     [<Table length=1>
         Start Time           End Time              Source        Instrument
         str19               str19                str21           str10
     ------------------- ------------------- --------------------- ----------
     2015-12-28 00:00:00 2015-12-29 00:00:00 Global Halpha Network Kanzelhohe]
 
-    >>> response = Fido.fetch(results)
+    >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """

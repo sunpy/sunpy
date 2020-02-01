@@ -40,8 +40,8 @@ class BBSOClient(GenericClient):
     >>> from sunpy.net import attrs as a
 
     >>> results = Fido.search(a.Time('2016/5/18 15:28:00','2016/5/18 16:30:00'),
-                              a.Instrument('bbso'), a.Level('fr'))
-    >>> print(results)
+    ...                       a.Instrument('bbso'), a.Level('fr'))  #doctest: +REMOTE_DATA
+    >>> print(results)  #doctest: +REMOTE_DATA
     [<Table length=2>
          Start Time           End Time              Source        Instrument
            str19               str19                str21            str4
@@ -49,7 +49,7 @@ class BBSOClient(GenericClient):
     2016-05-18 00:00:00 2016-05-19 00:00:00 Global Halpha Network       bbso
     2016-05-19 00:00:00 2016-05-20 00:00:00 Global Halpha Network       bbso]
 
-    >>> response = Fido.fetch(results)
+    >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
 
     def _get_url_for_timerange(self, timerange, **kwargs):

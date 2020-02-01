@@ -38,8 +38,8 @@ class GONGClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Physobs('intensity'))
-    >>> print(res)
+    >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Physobs('intensity'))  #doctest: +REMOTE_DATA
+    >>> print(res)  #doctest: +REMOTE_DATA
     [<Table length=32>
      Start Time           End Time      Source     Instrument
        str19               str19         str4        str18
@@ -203,8 +203,8 @@ class FARSIDEClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(Time('2015/4/2','2015/4/4'), a.Instrument('farside'))
-    >>> print(results)
+    >>> results = Fido.search(a.Time('2015/4/2','2015/4/4'), a.Instrument('farside')) #doctest: +REMOTE_DATA
+    >>> print(results)  #doctest: +REMOTE_DATA
     [<Table length=4>
          Start Time           End Time      Source Instrument
            str19               str19         str4     str7
@@ -214,7 +214,7 @@ class FARSIDEClient(GenericClient):
     2015-04-04 00:00:00 2015-04-05 00:00:00   GONG    farside
     2015-04-05 00:00:00 2015-04-06 00:00:00   GONG    farside]
 
-    >>> response = Fido.fetch(results)
+    >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
