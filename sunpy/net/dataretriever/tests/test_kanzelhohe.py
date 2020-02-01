@@ -17,7 +17,7 @@ import sunpy.net.dataretriever.sources.kanzelhohe as kanzelhohe
 KClient = kanzelhohe.KanzelhoheClient()
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("timerange, wavelength, url_start, url_end",
                          [(TimeRange('2015/01/10 00:00:00', '2015/01/10 12:00:00'),
                            a.Wavelength(6563 * u.AA),
@@ -42,7 +42,7 @@ def test_can_handle_query(time, instrument, wavelength, expected):
     assert KClient._can_handle_query(time, instrument, wavelength) is expected
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_query():
     qr = KClient.search(a.Time('2015/01/10 00:00:00', '2015/01/10 12:00:00'),
                         a.Wavelength(6563 * u.AA))
@@ -55,7 +55,7 @@ def test_query():
 # This test downloads 3 files
 # Each file is 4.5MB, total size
 # is 13.4MB
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("time, wavelength",
                          [(a.Time('2015/01/02 07:30:00', '2015/01/02 07:38:00'),
                            a.Wavelength(3276.8 * u.nm))])
@@ -69,7 +69,7 @@ def test_get(time, wavelength):
 # This test downloads 3 files
 # Each file is 4.5MB, total size
 # is 13.4MB
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_fido_query():
     qr = Fido.search(a.Time('2016/01/05 07:30:00', '2016/01/05 07:38:00'),
                      a.Instrument('kanzelhohe'), a.Wavelength(546.0 * u.nm))

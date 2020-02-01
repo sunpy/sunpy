@@ -15,7 +15,7 @@ import sunpy.net.dataretriever.sources.bbso as bbso
 BClient = bbso.BBSOClient()
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end, level", [(
     TimeRange('2016/4/4 15:28:00', '2016/4/4 16:40:00'),
     'http://www.bbso.njit.edu/pub/archive/2016/04/04/bbso_halph_fl_20160404_152959.fts',
@@ -39,7 +39,7 @@ def test_can_handle_query():
     assert not BClient._can_handle_query(trange, Level('mag'))
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_query():
     qr = BClient.query(
         Time('2016/5/18 15:28:00', '2016/5/18 16:30:00'),
@@ -53,7 +53,7 @@ def test_query():
 
 # This test downloads 2 fits files
 # each of size 8.4MB, total size 16.8MB
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("time, instrument, level",
                          [(Time('2016/5/18 15:28:00', '2016/5/18 16:30:00'),
                            Instrument('bbso'), Level('fr'))])
@@ -66,7 +66,7 @@ def test_get(time, instrument, level):
 
 # This test downloads 2 fits files
 # each of size 8MB, total size 16MB
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_fido_query():
     qr = Fido.search(
         a.Time('2016/03/02 17:00:00', '2016/03/02 17:35:00'),

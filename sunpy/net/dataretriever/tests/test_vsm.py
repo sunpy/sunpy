@@ -17,7 +17,7 @@ trange = Time('2014/6/1', '2014/6/4')
 
 # Not downloading fits files since
 # they are very huge ranging from 75MB-100MB
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("time, instrument, wavelength, physobs",
                          [(trange, a.Instrument('vsm'), a.Wavelength(6302 * u.AA),
                            Physobs("LOS_MAGNETIC_FIELD"))])
@@ -43,7 +43,7 @@ def test_can_handle_query(timerange, instrument, wavelength, physobs,
 VClient2 = vsm.VSMClient()
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_query_2():
     qr = VClient2.search(trange, Instrument('vsm'), Wavelength(6302 * u.AA))
     assert len(qr) == 9
@@ -53,7 +53,7 @@ def test_query_2():
 
 # FDISK files for VECTOR_MAGNETIC_FIELD
 # For wavelength 6302 Angstroms.
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_fido_query():
     qr = Fido.search(
         a.Time('2015/1/3', '2015/1/6'),
