@@ -4,6 +4,8 @@ import datetime
 
 import numpy as np
 
+import astropy.units as u
+
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
 from sunpy.net import attrs as a
@@ -40,8 +42,8 @@ class VSMClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
     >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Instrument('vsm'),
-                          a.Wavelength(6302*u.AA), a.Physobs('VECTOR_MAGNETIC_FIELD'))
-    >>> print(res)
+    ...                   a.Wavelength(6302*u.AA), a.Physobs('VECTOR_MAGNETIC_FIELD'))  #doctest: +REMOTE_DATA
+    >>> print(res)  #doctest: +REMOTE_DATA
     [<Table length=6>
          Start Time           End Time      Source Instrument
            str19               str19         str5     str3
