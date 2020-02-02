@@ -36,27 +36,31 @@ jobs:
     posargs: -n=4
     libraries:
       apt:
-        - libopenjpeg5
+        - libopenjp2-7
       brew:
         - openjpeg
     envs:
-      - macos: py36-offline
-        name: py36_offline
+      - macos: py36
+        name: py36_test
 
-      - windows: py37-offline
-        name: py37_offline
+      - windows: py37
+        name: py37_test
 
       - linux: py38-online
-        name: py38_online
+        name: py38_test_online
+
+      - linux: codestyle
+        name: python_codestyle
 
       - linux: py36-conda
         name: py36_conda
         libraries: {}
 
-      - linux: py36-astropy31
-        name: py36_astropy31
+      - linux: py36-oldestdeps
+        name: py36_test_oldestdeps
 
-      - linux: py37-astropydev
+      - linux: py38-devdeps
+        name: py38_test_devdeps
 
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
 - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
@@ -73,8 +77,8 @@ jobs:
         - wheels_macos
         - sdist
       dependsOn:
-        - py36_offline
-        - py37_offline
-        - py38_online
+        - py36_test
+        - py37_test
+        - py38_test_online
+        - py36_test_oldestdeps
         - py36_conda
-        - py36_astropy31

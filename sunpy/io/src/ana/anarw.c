@@ -1,22 +1,16 @@
-#include <errno.h>  
-#include <stdlib.h>  
-#include <string.h>  
-#include <sys/stat.h>  
-#include <stdio.h>  
-#include <stdarg.h>  
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <stdarg.h>
 #include <stdint.h>
-#include "types.h"  
+#include <math.h>
 
-#include "anadecompress.h"  
+#include "types.h"
+#include "anadecompress.h"
 #include "anacompress.h"
-
 #include "anarw.h"
-
-
-static __inline int min(int a,int b)
-{
-  return (a<b)?a:b;
-}
 
 static __inline void swap(char *a,char *b)
 {
@@ -74,7 +68,7 @@ int ck_synch_hd(FILE *fin,fzhead_t *fh,int t_endian)
   }
   if(syncpat==t_endian){
     fprintf(stderr,"ck_synch_hd: warning: reversed F0 synch pattern\n");
-    wwflag=1; 
+    wwflag=1;
   }
   if(fh->nhb>1){                     // if the header is long, read in the rest now
     if(fh->nhb>15){
@@ -88,19 +82,19 @@ int ck_synch_hd(FILE *fin,fzhead_t *fh,int t_endian)
     free(buf); // not very useful?
   }
   if(t_endian) bswapi32(fh->dim,fh->ndim); // for big endian machines
-  return wwflag; 
+  return wwflag;
 }
 
-char *ana_fzhead(char *file_name) // fzhead subroutine	
+char *ana_fzhead(char *file_name) // fzhead subroutine
 {
   struct stat stat_buf;
   if(stat(file_name,&stat_buf)<0){
-    fprintf(stderr,"ana_fzhead: error: file \"%s\" not found.\n",file_name); 
+    fprintf(stderr,"ana_fzhead: error: file \"%s\" not found.\n",file_name);
     return 0;
   }
 
   int one=1;
-  int t_endian=(*(char*)&one==0);                      // an endian detector, taken from SL's tiff library 
+  int t_endian=(*(char*)&one==0);                      // an endian detector, taken from SL's tiff library
 //
   FILE *fin=fopen(file_name,"r");
   if(!fin){
@@ -113,22 +107,22 @@ char *ana_fzhead(char *file_name) // fzhead subroutine
 
   char *header=strcpy(malloc(strlen(fh.txt)+1),fh.txt);
   fclose(fin);
-  return header; 
+  return header;
 }
 
 
-uint8_t *ana_fzread(char *file_name,int **ds,int *nd,char **header,int *type,int *osz) // fzread subroutine	
+uint8_t *ana_fzread(char *file_name,int **ds,int *nd,char **header,int *type,int *osz) // fzread subroutine
 {
 
   struct stat stat_buf;
   if(stat(file_name,&stat_buf)<0){
-    fprintf(stderr,"ana_fzread: error: file \"%s\" not found.\n",file_name); 
+    fprintf(stderr,"ana_fzread: error: file \"%s\" not found.\n",file_name);
     return 0;
   }
 
   int type_sizes[]=ANA_VAR_SZ;
   int one=1;
-  int t_endian=(*(char*)&one==0);                      // an endian detector, taken from SL's tiff library 
+  int t_endian=(*(char*)&one==0);                      // an endian detector, taken from SL's tiff library
 //
   FILE *fin=fopen(file_name,"r");
   if(!fin){
@@ -166,13 +160,13 @@ uint8_t *ana_fzread(char *file_name,int **ds,int *nd,char **header,int *type,int
     }
 // read data
     int size=ch.tsize-14;
-	// Tim van Werkhoven, 20090327: 
-	// Add 4 to the malloc because anadecrunch() might read some data 
-	// beyond the current pixel it's investigating. If the pixel is the last 
-	// pixel, it will try to read beyond the malloc'ed area, giving trouble. 
-	// This should help prevent that. Problem arises around y.b[1]=x[i+1]; in 
-	// anadecrunch(), see Valgrind for more info. Maximum read-ahead is 4 
-	// bytes (set by nb), so 4 bytes extra in the malloc should be sufficient.
+  // Tim van Werkhoven, 20090327:
+  // Add 4 to the malloc because anadecrunch() might read some data
+  // beyond the current pixel it's investigating. If the pixel is the last
+  // pixel, it will try to read beyond the malloc'ed area, giving trouble.
+  // This should help prevent that. Problem arises around y.b[1]=x[i+1]; in
+  // anadecrunch(), see Valgrind for more info. Maximum read-ahead is 4
+  // bytes (set by nb), so 4 bytes extra in the malloc should be sufficient.
     uint8_t *buf=malloc(size+4);
     if(fread(buf,1,size,fin)<size) fprintf(stderr,"error reading in compressed data\n");
     fclose(fin);
@@ -205,13 +199,13 @@ uint8_t *ana_fzread(char *file_name,int **ds,int *nd,char **header,int *type,int
     fclose(fin);
     if(swap_endian) // endianness is wrong
       switch(*type){
-        case(INT16): bswapi16((int16_t*)out,n_elem); break;
-        case(INT32):
-        case(FLOAT32): bswapi32((int32_t*)out,n_elem); break;
-        case(FLOAT64): bswapi64((int64_t*)out,n_elem); break;
+        case(INT16_ana): bswapi16((int16_t*)out,n_elem); break;
+        case(INT32_ana):
+        case(FLOAT32_ana): bswapi32((int32_t*)out,n_elem); break;
+        case(FLOAT64_ana): bswapi64((int64_t*)out,n_elem); break;
       }
     *osz=size;
-    return out; 
+    return out;
   } // end if(compressed)
 }
 
@@ -221,7 +215,7 @@ void ana_fzwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int t
   fzhead_t fh;
   memset(&fh,0,sizeof(fzhead_t));
   int one=1;
-  int t_endian=(*(char*)&one==0);    // an endian detector, taken from SL's tiff library 
+  int t_endian=(*(char*)&one==0);    // an endian detector, taken from SL's tiff library
   // switch(idl_type){
   //   case(IDL_TYP_BYTE): type=INT8; break;
   //   case(IDL_TYP_INT):  type=INT16; break;
@@ -233,7 +227,7 @@ void ana_fzwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int t
   //     return;
   //   }
   // }
-  
+
   if(t_endian){ // BIG_ENDIAN
     fh.synch_pattern=0xaaaa5555;
   }else{        // LITTLE_ENDIAN
@@ -252,16 +246,16 @@ void ana_fzwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int t
   int size=n_elem*type_sizes[type];
   if(t_endian){ // big endian platform
     switch(type){
-      case(INT16): bswapi16((int16_t*)data,n_elem); break;
-      case(INT32):
-      case(FLOAT32): bswapi32((int32_t*)data,n_elem); break;
-      case(FLOAT64): bswapi64((int64_t*)data,n_elem); break;
+      case(INT16_ana): bswapi16((int16_t*)data,n_elem); break;
+      case(INT32_ana):
+      case(FLOAT32_ana): bswapi32((int32_t*)data,n_elem); break;
+      case(FLOAT64_ana): bswapi64((int64_t*)data,n_elem); break;
 //      case(INT64): fprintf(stderr,"ana_fzwrite: error: ana_fzwrite: unknown variable type!\n");
     }
     bswapi32(fh.dim,nd);
   }
   if(header){
-    int len=min(strlen(header),255);
+    int len=fmin(strlen(header),255);
     strncpy(fh.txt,header,len);
     fh.txt[len]=0;
   }
@@ -274,10 +268,10 @@ void ana_fzwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int t
   fclose(f);
   if(t_endian){ // big endian platform: swap back
     switch(type){
-      case(INT16): bswapi16((int16_t*)data,n_elem); break;
-      case(INT32):
-      case(FLOAT32): bswapi32((int32_t*)data,n_elem); break;
-      case(FLOAT64): bswapi64((int64_t*)data,n_elem); break;
+      case(INT16_ana): bswapi16((int16_t*)data,n_elem); break;
+      case(INT32_ana):
+      case(FLOAT32_ana): bswapi32((int32_t*)data,n_elem); break;
+      case(FLOAT64_ana): bswapi64((int64_t*)data,n_elem); break;
     }
   }
 }
@@ -288,7 +282,7 @@ void ana_fcwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int t
   fzhead_t fh;
   memset(&fh,0,sizeof(fzhead_t));
   int one=1;
-  int t_endian=(*(char*)&one==0);    // an endian detector, taken from SL's tiff library 
+  int t_endian=(*(char*)&one==0);    // an endian detector, taken from SL's tiff library
 
   if(t_endian){ // BIG_ENDIAN
     fh.synch_pattern=0xaaaa5555;
@@ -320,7 +314,7 @@ void ana_fcwrite(uint8_t *data,char *file_name,int *ds,int nd,char *header,int t
     bswapi32(fh.dim,nd);
   }
   if(header){
-    int len=min(strlen(header),255);
+    int len=fmin(strlen(header),255);
     strncpy(fh.txt,header,len);
     fh.txt[len]=0;
   }

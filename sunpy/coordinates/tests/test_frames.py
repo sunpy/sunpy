@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import warnings
+
 import numpy as np
 
 import pytest
@@ -411,7 +413,14 @@ def test_skycoord_hpc(args, kwargs):
     sc = SkyCoord(*args, **kwargs, frame="helioprojective",
                   observer='earth', obstime="2011-01-01T00:00:00")
     # Test the transform to HGS because it will force a `make_3d` call.
-    hgs = sc.transform_to("heliographic_stonyhurst")
+    #
+    # astropy emits some warnings here because of invalid NaN comparisons,
+    # which will be removed in a future astropy release
+    # (see https://github.com/astropy/astropy/pull/9843), so filter the warnings out.
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message='invalid value encountered',
+                                category=RuntimeWarning)
+        hgs = sc.transform_to("heliographic_stonyhurst")
 
     assert isinstance(hgs.frame, HeliographicStonyhurst)
 

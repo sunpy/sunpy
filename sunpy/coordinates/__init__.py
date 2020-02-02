@@ -20,10 +20,10 @@ below (see `astropy.coordinates.builtin_frames`).
 
 from .frames import *
 from .offset_frame import *
-from . import transformations
+from .transformations import transform_with_sun_center, _make_sunpy_graph
 from .ephemeris import *
 from . import sun
 
 from .wcs_utils import *
 
-__doc__ += transformations._make_sunpy_graph()
+__doc__ += _make_sunpy_graph()

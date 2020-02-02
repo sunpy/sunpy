@@ -24,6 +24,7 @@ from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
                                get_earth)
 from sunpy.coordinates import sun
 from sunpy.coordinates.frames import _J2000
+from sunpy.coordinates.transformations import transform_with_sun_center
 from sunpy.time import parse_time
 
 
@@ -735,3 +736,53 @@ def test_no_obstime_on_one_end(start_class, end_class):
 
     result = coord.transform_to(end_class)
     assert result.obstime == start_obstime
+
+
+def test_transform_with_sun_center():
+    sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU,
+                          frame=HeliographicStonyhurst(obstime="2001-01-01"))
+
+    with transform_with_sun_center():
+        result1 = sun_center.transform_to(HeliographicStonyhurst(obstime="2001-02-01"))
+
+    # The coordinate should stay pointing at Sun center
+    assert_quantity_allclose(result1.lon, sun_center.lon)
+    assert_quantity_allclose(result1.lat, sun_center.lat)
+    assert_quantity_allclose(result1.radius, sun_center.radius)
+
+    other = SkyCoord(10*u.deg, 20*u.deg, 1*u.AU,
+                     frame=HeliographicStonyhurst(obstime="2001-01-01"))
+
+    with transform_with_sun_center():
+        result2 = other.transform_to(HeliographicCarrington(obstime="2001-02-01"))
+
+    # The coordinate should stay at the same latitude and the same distance from Sun center
+    assert_quantity_allclose(result2.lat, other.lat)
+    assert_quantity_allclose(result2.radius, other.radius)
+
+
+def test_transform_with_sun_center_reset():
+    # This test sequence ensures that the context manager does not change anything permanently
+
+    sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU,
+                          frame=HeliographicStonyhurst(obstime="2001-01-01"))
+    end_frame = HeliocentricInertial(obstime="2001-02-01")
+
+    # Without the context manager, the coordinate should not point at Sun center
+    result1 = sun_center.transform_to(end_frame)
+    assert result1.lon != sun_center.lon
+    assert result1.lat != sun_center.lat
+    assert result1.distance != sun_center.radius
+
+    # Using the context manager, the coordinate should point at Sun center
+    with transform_with_sun_center():
+        result2 = sun_center.transform_to(end_frame)
+    assert_quantity_allclose(result2.lon, sun_center.lon)
+    assert_quantity_allclose(result2.lat, sun_center.lat)
+    assert_quantity_allclose(result2.distance, sun_center.radius)
+
+    # After the context manager, the coordinate should have the same result as the first transform
+    result3 = sun_center.transform_to(end_frame)
+    assert_quantity_allclose(result3.lon, result1.lon)
+    assert_quantity_allclose(result3.lat, result1.lat)
+    assert_quantity_allclose(result3.distance, result1.distance)
