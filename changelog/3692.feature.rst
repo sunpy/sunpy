@@ -1,0 +1,2 @@
+Updates the `~sunpy.map.mapbase.observer_coordinate` property to warn the user of specific missing metadata for each frame.
+Omits warning about frames where all metadata is missing or all meta is present.

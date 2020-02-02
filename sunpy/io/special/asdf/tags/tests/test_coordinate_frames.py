@@ -4,16 +4,16 @@ from distutils.version import LooseVersion
 import numpy as np
 import pytest
 
-from astropy.coordinates import CartesianRepresentation
 import astropy.units as u
-from asdf.tests.helpers import assert_roundtrip_tree
+from astropy.coordinates import CartesianRepresentation
 
-from sunpy.tests.helpers import asdf_entry_points
 import sunpy.coordinates.frames as frames
-
-sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
+from sunpy.tests.helpers import asdf_entry_points
 
 asdf = pytest.importorskip('asdf', '2.0.2')
+from asdf.tests.helpers import assert_roundtrip_tree  # isort:skip
+
+sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
 
 
 @pytest.fixture(params=sunpy_frames)

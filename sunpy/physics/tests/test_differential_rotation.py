@@ -147,13 +147,15 @@ def test_solar_rotate_coordinate():
 
     # Test that the code properly filters the time keyword
     with pytest.raises(ValueError):
-        d = solar_rotate_coordinate(c, time='noon')
+        with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+            d = solar_rotate_coordinate(c, time='noon')
 
     # Test that the code gives the same output for multiple different inputs
     # that define the same observer location and time.
     for i, definition in enumerate((1 * u.day, TimeDelta(1*u.day), new_time, new_observer)):
         if i in (0, 1, 2):
-            d = solar_rotate_coordinate(c, time=definition)
+            with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+                d = solar_rotate_coordinate(c, time=definition)
         else:
             d = solar_rotate_coordinate(c, observer=definition)
 
@@ -234,7 +236,8 @@ def test_get_new_observer(aia171_test_map):
 
     # When the time is set, a coordinate for Earth comes back out
     for time in (rotation_interval, new_time, time_delta):
-        new_observer = _get_new_observer(initial_obstime, None, time)
+        with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+            new_observer = _get_new_observer(initial_obstime, None, time)
         assert isinstance(new_observer, SkyCoord)
 
         np.testing.assert_almost_equal(new_observer.transform_to(frames.HeliographicStonyhurst).lon.to(u.deg).value,
@@ -289,11 +292,12 @@ def test_rotate_submap_edge(aia171_test_map, all_off_disk_map, all_on_disk_map, 
 def test_get_extreme_position():
     coords = SkyCoord([-1, 0, 1, np.nan]*u.arcsec, [-2, 0, 2, -np.nan]*u.arcsec, frame=frames.Helioprojective)
 
-    assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1
-    assert _get_extreme_position(coords, 'Ty', operator=np.nanmin) == -2
+    with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
+        assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1
+        assert _get_extreme_position(coords, 'Ty', operator=np.nanmin) == -2
 
-    assert _get_extreme_position(coords, 'Tx', operator=np.nanmax) == 1
-    assert _get_extreme_position(coords, 'Ty', operator=np.nanmax) == 2
+        assert _get_extreme_position(coords, 'Tx', operator=np.nanmax) == 1
+        assert _get_extreme_position(coords, 'Ty', operator=np.nanmax) == 2
 
     with pytest.raises(ValueError):
         _get_extreme_position(coords, 'lon', operator=np.nanmax)
@@ -334,5 +338,6 @@ def test_warp_sun_coordinates(all_on_disk_map):
 
 @pytest.mark.array_compare
 def test_differential_rotation(aia171_test_map):
-    rot_map = differential_rotate(aia171_test_map, time=2*u.day)
+    with pytest.warns(UserWarning, match="Using 'time' assumes an Earth-based observer"):
+        rot_map = differential_rotate(aia171_test_map, time=2*u.day)
     return rot_map.data

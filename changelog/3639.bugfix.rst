@@ -1,0 +1,1 @@
+Added support for passing ``TimeSeriesMetaData`` object to ``timeseries_factory`` and associated validation tests.

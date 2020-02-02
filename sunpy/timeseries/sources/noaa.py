@@ -52,7 +52,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     _source = 'noaaindices'
 
     @peek_show
-    def peek(self, type='sunspot SWO'):
+    def peek(self, type='sunspot SWO', **kwargs):
         """
         Plots NOAA Indices as a function of time. An example is shown below.
 
@@ -67,6 +67,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         ----------
         type : {'sunspot SWO', 'sunspot RI', 'sunspot compare', 'radio', 'geo'}, optional
             The type of plot required. Defaults to "sunspot SWO".
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `axes.plot` functions
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
@@ -75,24 +77,24 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes = plt.gca()
 
         if type == 'sunspot SWO':
-            axes = self.data['sunspot SWO'].plot()
-            self.data['sunspot SWO smooth'].plot()
+            axes = self.data['sunspot SWO'].plot(**kwargs)
+            self.data['sunspot SWO smooth'].plot(**kwargs)
             axes.set_ylabel('Sunspot Number')
         elif type == 'sunspot RI':
-            axes = self.data['sunspot RI'].plot()
-            self.data['sunspot RI smooth'].plot()
+            axes = self.data['sunspot RI'].plot(**kwargs)
+            self.data['sunspot RI smooth'].plot(**kwargs)
             axes.set_ylabel('Sunspot Number')
         elif type == 'sunspot compare':
-            axes = self.data['sunspot RI'].plot()
-            self.data['sunspot SWO'].plot()
+            axes = self.data['sunspot RI'].plot(**kwargs)
+            self.data['sunspot SWO'].plot(**kwargs)
             axes.set_ylabel('Sunspot Number')
         elif type == 'radio':
-            axes = self.data['radio flux'].plot()
-            self.data['radio flux smooth'].plot()
+            axes = self.data['radio flux'].plot(**kwargs)
+            self.data['radio flux smooth'].plot(**kwargs)
             axes.set_ylabel('Radio Flux [sfu]')
         elif type == 'geo':
-            axes = self.data['geomagnetic ap'].plot()
-            self.data['geomagnetic ap smooth'].plot()
+            axes = self.data['geomagnetic ap'].plot(**kwargs)
+            self.data['geomagnetic ap smooth'].plot(**kwargs)
             axes.set_ylabel('Geomagnetic AP Index')
         else:
             raise ValueError(f'Got unknown plot type "{type}"')
@@ -207,7 +209,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         Parameters
         ----------
         **plot_args : `dict`
-            Unused.
+            Additional plot keyword arguments that are handed to `axes.plot` functions
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
@@ -215,9 +217,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         figure = plt.figure()
         axes = plt.gca()
 
-        axes = self.data['sunspot'].plot(color='b')
-        self.data['sunspot low'].plot(linestyle='--', color='b')
-        self.data['sunspot high'].plot(linestyle='--', color='b')
+        axes = self.data['sunspot'].plot(color='b', **plot_args)
+        self.data['sunspot low'].plot(linestyle='--', color='b', **plot_args)
+        self.data['sunspot high'].plot(linestyle='--', color='b', **plot_args)
 
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Sunspot Number Prediction')
