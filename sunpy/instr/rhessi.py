@@ -5,8 +5,10 @@ data.
 
 import re
 import csv
+import warnings
 
 from dateutil.relativedelta import relativedelta
+from urllib.error import HTTPError
 
 import numpy as np
 import pandas as pd
@@ -393,6 +395,7 @@ def _build_energy_bands(label, bands):
     return [f'{band} {unit}' for band in bands]
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 def get_flare_list(start: str,
                    end: str,
                    source: str='NASA',
@@ -401,13 +404,14 @@ def get_flare_list(start: str,
     """
     Read and combine RHESSI flare lists from .fits files as specified with further parameters
     Supported date formats are the same as in ``sunpy.time``.
+    If a file can't be found, it is skipped and a warning is generated.
 
     Parameters
     ----------
-    start : `str`
-        Start date of period within which flares should be loaded.
-    end : `str`
-        End date of period within which flares should be loaded.
+    start : {parse_time_types}
+        Start date of period within which flares should be loaded in a parse-time-compatible format.
+    end : {parse_time_types}
+        End date of period within which flares should be loaded in a parse-time-compatible format.
     source : `str`, optional
         Source from where .fits files should be loaded. Can be an URL or a local folder.
         Known sources are "NASA", "Berkeley" and "i4DS".
@@ -448,9 +452,17 @@ def get_flare_list(start: str,
     result = pd.DataFrame()
     while cur_format <= end_format:
         file = file_format.replace(format_str, cur_format)
-        result = result.append(read_flare_list_file(source + file), ignore_index=True)
         cur_dt = cur_dt + inc
         cur_format = cur_dt.strftime(format_str)
+
+        # allow missing files with a warning, e.g. there is no file for 2014-07
+        try:
+            result = result.append(read_flare_list_file(source + file), ignore_index=True)
+        except HTTPError as e:
+            if e.code == 404:
+                warnings.warn("Skipped: " + file + " (" + e.code + " " + e.msg + ")")
+            else:
+                raise
 
     # filter results for more detailed time constraints (if applicable)
     if len(end) <= 12:  # formats that do specify a time are at least 14 chars
@@ -458,6 +470,11 @@ def get_flare_list(start: str,
     else:
         end_dt += relativedelta(microsecond=+1)  # add 1ms so "smaller" operator works as intended
 
+    # TODO as the data is sorted we can use the much faster searchsorted func
+    # sth like this:
+    # left_bound = fl['END_TIME'].searchsorted(flares[0], 'left')
+    # right_bound = fl['START_TIME'].searchsorted(flares[0], 'right')
+    # fl[left_bound:right_bound]
     result = result[result['END_TIME'] >= start_dt]
     result = result[result['START_TIME'] < end_dt]
     return result
@@ -489,10 +506,7 @@ def read_flare_list_file(file):
     ----------
     https://hesperia.gsfc.nasa.gov/rhessi3/data-access/rhessi-data/flare-list/index.html
     """
-    try:
-        fits = sunpy.io.fits.read(file)
-    except Exception:
-        raise RuntimeError("couldn't load file " + file)
+    fits = sunpy.io.fits.read(file)
 
     results = []
     for row in fits[3].data:
