@@ -19,6 +19,8 @@ from astropy.time import Time, TimeDelta
 import sunpy.io
 from sunpy.coordinates import sun
 from sunpy.time import TimeRange, parse_time
+from sunpy.time.time import _variables_for_parse_time_docstring
+from sunpy.util.decorators import add_common_docstring
 
 __all__ = [
     'parse_observing_summary_hdulist', 'backprojection', 'parse_observing_summary_dbase_file',
