@@ -434,7 +434,7 @@ class VSOClient(BaseClient):
                     name = name.split('"')[1]
 
         if name is None:
-            # Advice from the VSO is to allback to providerid + fileid
+            # Advice from the VSO is to fallback to providerid + fileid
             # As it's possible multiple providers give the same fileid.
             # However, I haven't implemented this yet as it would be a breaking
             # change to the filenames we expect.
