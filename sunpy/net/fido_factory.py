@@ -18,9 +18,8 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 
-from sunpy.net.base_client import BaseClient
-from sunpy.net.dataretriever.client import QueryResponse
-from sunpy.net.vso import VSOClient, QueryResponse as vsoQueryResponse
+from sunpy.net.base_client import BaseClient, BaseQueryResponse
+from sunpy.net import vso
 
 from sunpy.net import attr
 from sunpy.net import attrs as a
@@ -41,67 +40,27 @@ class UnifiedResponse(Sequence):
     index the second dimension with ``::2``.
     """
 
-    def __init__(self, lst):
+    def __init__(self, *results):
         """
         Parameters
         ----------
-        lst : `object`
-            A single instance or an iterable of ``(QueryResponse, client)``
-            pairs or ``QueryResponse`` objects with a ``.client`` attribute.
+        results : `sunpy.net.base_client.BaseQueryResponse`
+            One or more QueryResponse objects.
         """
-
-        tmplst = []
-        # numfile is the number of files not the number of results.
+        self._list = []
         self._numfile = 0
-        if isinstance(lst, (QueryResponse, vsoQueryResponse)):
-            if not hasattr(lst, 'client'):
-                raise ValueError(
-                    ("A {} object is only a valid input to UnifiedResponse "
-                     "if it has a client attribute.").
-                    format(type(lst).__name__))
-            tmplst.append(lst)
-            self._numfile = len(lst)
-        else:
-            for block in lst:
-                if isinstance(block, tuple) and len(block) == 2:
-                    block[0].client = block[1]
-                    tmplst.append(block[0])
-                    self._numfile += len(block[0])
-                elif hasattr(block, 'client'):
-                    tmplst.append(block)
-                    self._numfile += len(block)
-                else:
-                    raise ValueError(
-                        "{} is not a valid input to UnifiedResponse.".format(type(lst)))
-        self._list = tmplst
+        for result in results:
+            if not isinstance(result, BaseQueryResponse):
+                raise TypeError(f"{type(result)} is not derived from sunpy.net.base_client.BaseQueryResponse")
+
+            self._list.append(result)
+            self._numfile = len(result)
 
     def __len__(self):
         return len(self._list)
 
     def __iter__(self):
         return self.responses
-
-    def _handle_record_slice(self, client_resp, record_slice):
-        """
-        Given a slice to be applied to the results from a single client, return
-        an object of the same type as client_resp.
-        """
-        # When we subindex, we want to persist the type of the response object.
-        resp_type = type(client_resp)
-
-        # Make sure we always have an iterable, as most of the response objects
-        # expect one.
-        if isinstance(record_slice, int):
-            resp = [client_resp[record_slice]]
-        else:
-            resp = client_resp[record_slice]
-
-        # Reconstruct a response object with the sub-indexed records.
-        ret = resp_type(resp)
-        # Make sure we pass the client back out again.
-        ret.client = client_resp.client
-
-        return ret
 
     def __getitem__(self, aslice):
         """
@@ -111,7 +70,9 @@ class UnifiedResponse(Sequence):
         returned from those clients.
         """
         # Just a single int as a slice, we are just indexing client.
-        if isinstance(aslice, (int, slice)):
+        if isinstance(aslice, int):
+            ret = [self._list[aslice]]
+        elif isinstance(aslice, slice):
             ret = self._list[aslice]
 
         # Make sure we only have a length two slice.
@@ -123,20 +84,19 @@ class UnifiedResponse(Sequence):
             # Indexing both client and records, but only for one client.
             if isinstance(aslice[0], int):
                 client_resp = self._list[aslice[0]]
-                ret = self._handle_record_slice(client_resp, aslice[1])
+                ret = [client_resp[aslice[1]]]
 
             # Indexing both client and records for multiple clients.
             else:
                 intermediate = self._list[aslice[0]]
                 ret = []
                 for client_resp in intermediate:
-                    resp = self._handle_record_slice(client_resp, aslice[1])
-                    ret.append(resp)
+                    ret.append(client_resp[aslice[1]])
 
         else:
             raise IndexError("UnifiedResponse objects must be sliced with integers.")
 
-        return UnifiedResponse(ret)
+        return UnifiedResponse(*ret)
 
     def get_response(self, i):
         """
@@ -208,10 +168,7 @@ class UnifiedResponse(Sequence):
         return ret
 
     def __repr__(self):
-        ret = super().__repr__()
-        ret += '\n' + str(self)
-
-        return ret
+        return object.__repr__(self) + "\n" + str(self)
 
     def __str__(self):
         nprov = len(self)
@@ -317,7 +274,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         parts individually.
         """  # noqa
         query = attr.and_(*query)
-        return UnifiedResponse(query_walker.create(query, self))
+        return UnifiedResponse(*query_walker.create(query, self))
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):
@@ -425,7 +382,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """Factory helper function"""
         candidate_widget_types = list()
         for key in self.registry:
-
             if self.registry[key](*args):
                 candidate_widget_types.append(key)
 
@@ -436,8 +392,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         elif n_matches == 2:
             # If two clients have reported they understand this query, and one
             # of them is the VSOClient, then we ignore VSOClient.
-            if VSOClient in candidate_widget_types:
-                candidate_widget_types.remove(VSOClient)
+            if vso.VSOClient in candidate_widget_types:
+                candidate_widget_types.remove(vso.VSOClient)
 
         # Finally check that we only have one match.
         if len(candidate_widget_types) > 1:
@@ -465,7 +421,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         candidate_widget_types = self._check_registered_widgets(*query)
         tmpclient = candidate_widget_types[0]()
-        return tmpclient.search(*query), tmpclient
+        return tmpclient.search(*query)
 
 
 Fido = UnifiedDownloaderFactory(

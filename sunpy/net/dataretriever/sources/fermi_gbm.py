@@ -37,12 +37,10 @@ class GBMClient(GenericClient):
     <BLANKLINE>
     3 Results from the GBMClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str5     str3       str3
     ------------------- ------------------- ------ ---------- ----------
     2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
     2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
     2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
-    <BLANKLINE>
     <BLANKLINE>
     <BLANKLINE>
     """

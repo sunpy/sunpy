@@ -41,7 +41,6 @@ class XRSClient(GenericClient):
     <BLANKLINE>
     2 Results from the XRSClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str4     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2016-01-01 00:00:00 2016-01-01 23:59:59   nasa       goes        nan
     2016-01-02 00:00:00 2016-01-02 23:59:59   nasa       goes        nan

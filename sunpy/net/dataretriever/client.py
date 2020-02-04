@@ -13,7 +13,7 @@ import parfive
 
 import sunpy
 from sunpy import config
-from sunpy.net.base_client import BaseClient
+from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.attr import Range
 from sunpy.net._attrs import Time, Wavelength
 from sunpy.time import TimeRange
@@ -53,19 +53,46 @@ def iter_urls(amap, url_list, time):
         yield tmp
 
 
-class QueryResponse(list):
+class QueryResponse(BaseQueryResponse):
     """
     Container of QueryResponseBlocks
     """
 
-    def __init__(self, lst):
-        super().__init__(lst)
+    def __init__(self, lst, client=None):
+        super().__init__()
+        self._data = lst
+        self._client = client
+
+    @property
+    def blocks(self):
+        return self._data
+
+    @property
+    def client(self):
+        return self._client
+
+    @client.setter
+    def client(self, client):
+        self._client = client
+
+    def __len__(self):
+        return len(self._data)
+
+    def __getitem__(self, item):
+        # Always index so a list comes back
+        if isinstance(item, int):
+            item = slice(item, item+1)
+        return type(self)(self._data[item], client=self.client)
+
+    def __iter__(self):
+        for block in self._data:
+            yield block
 
     @classmethod
-    def create(cls, amap, lst, time=None):
+    def create(cls, amap, lst, time=None, *, client):
         if time is None:
             time = [None] * len(lst)
-        return cls(iter_urls(amap, lst, time))
+        return cls(list(iter_urls(amap, lst, time)), client=client)
 
     def time_range(self):
         """
@@ -84,15 +111,6 @@ class QueryResponse(list):
 
         s.remove(None)
         return s
-
-    def __repr__(self):
-        return repr(type(self)) + repr(self.build_table())
-
-    def __str__(self):
-        return str(self.build_table())
-
-    def _repr_html_(self):
-        return self.build_table()._repr_html_()
 
     def build_table(self):
         columns = OrderedDict((('Start Time', []), ('End Time', []),
@@ -243,7 +261,7 @@ class GenericClient(BaseClient):
             elif '{file}' not in str(path):
                 fname = path / '{file}'
 
-            temp_dict = qres[i]._map.copy()
+            temp_dict = qres.blocks[i]._map.copy()
             temp_dict['file'] = str(filename)
             fname = fname.expanduser()
             fname = Path(str(fname).format(**temp_dict))
@@ -279,8 +297,8 @@ class GenericClient(BaseClient):
         if urls:
             times = self._get_time_for_url(urls)
             if times and times is not NotImplemented:
-                return QueryResponse.create(self.map_, urls, times)
-        return QueryResponse.create(self.map_, urls)
+                return QueryResponse.create(self.map_, urls, times, client=self)
+        return QueryResponse.create(self.map_, urls, client=self)
 
     def fetch(self, qres, path=None, overwrite=False,
               progress=True, downloader=None, wait=True):
@@ -323,7 +341,7 @@ class GenericClient(BaseClient):
         if path is not None:
             path = Path(path)
 
-        urls = [qrblock.url for qrblock in qres]
+        urls = [qrblock.url for qrblock in qres.blocks]
 
         filenames = [url.split('/')[-1] for url in urls]
 
