@@ -1,0 +1,1 @@
+Work around incorrect Content-Disposition headers in some VSO downloads, which were leading to mangled filenames.

@@ -1,6 +1,6 @@
 name: sunpy
 channels:
-  - conda-forge
+  - sunpy
 dependencies:
   - python
   - pip

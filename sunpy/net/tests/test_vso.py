@@ -475,3 +475,15 @@ def test_vso_error(client):
         client.search(
             va.Time('2019/12/30', '2019/12/31'),
             va.Instrument('ovsa'))
+
+
+@pytest.mark.remote_data
+def test_incorrect_content_disposition(client):
+    results = client.search(
+        va.Time('2011/1/1 01:00', '2011/1/1 01:02'),
+        va.Instrument('mdi'))
+    files = client.fetch(results[0:1])
+
+    assert len(files) == 1
+    assert  files[0].endswith("mdi_vw_v_9466622_9466622.tar")
+    assert "Content" not in files[0]
