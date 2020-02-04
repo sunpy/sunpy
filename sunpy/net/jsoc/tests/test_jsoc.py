@@ -62,6 +62,18 @@ def test_post_pass():
 
 
 @pytest.mark.remote_data
+def test_build_table():
+    responses = client.search(
+        vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+    table = responses.build_table()
+    assert isinstance(table, astropy.table.Table)
+
+    columns = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT']
+    assert columns == table.colnames
+
+
+@pytest.mark.remote_data
 def test_post_wavelength():
     responses = client.search(
         vso_attrs.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
