@@ -90,7 +90,7 @@ jobs:
           COLUMNS: 180
     steps:
       - restore_cache:
-          keys: sample-data-v1
+          keys: sample-data-v2
       - checkout
       - run: *skip-check
       - run:
@@ -142,7 +142,7 @@ jobs:
       - image: circleci/python:3.7
     steps:
       - restore_cache:
-          keys: sample-data-v1
+          keys: sample-data-v2
       - checkout
       - run: *skip-check
       - run: *merge-check
@@ -167,7 +167,7 @@ jobs:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/docs/_build/html/index.html"; echo $DOCS_URL
       - save_cache:
-          key: sample-data-v1
+          key: sample-data-v2
           paths:
             - ~/sunpy/data/sample_data
 
