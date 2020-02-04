@@ -42,6 +42,7 @@ jobs:
     envs:
       - macos: py36-offline
         name: py36_offline
+        posargs: -n=1
 
       - windows: py37-offline
         name: py37_offline
