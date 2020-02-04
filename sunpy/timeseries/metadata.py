@@ -84,10 +84,17 @@ class TimeSeriesMetaData:
                 self.metadata.append((timerange, colnames, meta))
             elif isinstance(meta, tuple):
                 # Given a single metadata entry as a tuple.
-                self.metadata.append(meta)
+                if isinstance(meta[0], TimeRange) and isinstance(meta[1], list) and isinstance(meta[2], (dict, MetaDict)):
+                    self.metadata.append(meta)
+                else:
+                    raise ValueError("Invalid parameters passed in the meta")
             elif isinstance(meta, list):
                 # Given a complex metadata list (of tuples)
-                self.metadata = copy.copy(meta)
+                for meta_tuple in meta:
+                    if isinstance(meta_tuple[0], TimeRange) and isinstance(meta_tuple[1], list) and isinstance(meta_tuple[2], (dict, MetaDict)):
+                        self.metadata.append(meta_tuple)
+                    else:
+                        raise ValueError("Invalid parameters passed in the meta")
         else:
             # In the event no metadata dictionary is sent we default to something usable
             if isinstance(timerange, TimeRange) and isinstance(colnames, list):
