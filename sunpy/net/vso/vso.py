@@ -5,8 +5,10 @@ This module provides a wrapper around the VSO API.
 
 import os
 import re
+import cgi
 import sys
 import socket
+import datetime
 import warnings
 import itertools
 from functools import partial
@@ -15,21 +17,21 @@ from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
 import zeep
+from parfive import Downloader, Results
 from zeep.helpers import serialize_object
 
 import astropy.units as u
 from astropy.table import QTable as Table
-from parfive import Downloader, Results
 
 from sunpy import config
-from sunpy.time import TimeRange, parse_time
-from sunpy.net.vso import attrs
 from sunpy.net.attr import and_
-from sunpy.util.net import slugify, get_content_disposition
-from sunpy.net.vso.attrs import TIMEFORMAT, walker
 from sunpy.net.base_client import BaseClient
+from sunpy.net.vso import attrs
+from sunpy.net.vso.attrs import TIMEFORMAT, walker
+from sunpy.time import TimeRange, parse_time
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.net import get_content_disposition, slugify
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -360,26 +362,51 @@ class VSOClient(BaseClient):
 
     @staticmethod
     def mk_filename(pattern, queryresponse, resp, url):
+        """
+        Generate the best possible (or least-worse) filename for a VSO download.
+
+        * Use the ``content-disposition`` header.
+        * Use `fileid` to generate a file name if content-disposition fails
+        * If everything else fails use the last segment of the URL and hope.
+        """
         name = None
-        url_filename = url.split('/')[-1]
         if resp:
-            name = resp.headers.get("Content-Disposition", url_filename)
-            if name:
-                name = get_content_disposition(name)
-        if not name:
+            cdheader = resp.headers.get("Content-Disposition", None)
+            if cdheader:
+                value, params = cgi.parse_header(cdheader)
+                name = params.get('filename', "")
+                # Work around https://github.com/sunpy/sunpy/issues/3372
+                if name.count('"') >= 2:
+                    name = name.split('"')[1]
+
+        if name is None:
+            # Advice from the VSO is to fallback to providerid + fileid
+            # As it's possible multiple providers give the same fileid.
+            # However, I haven't implemented this yet as it would be a breaking
+            # change to the filenames we expect.
+
+            # I don't know if we still need this bytes check in Python 3 only
+            # land, but I don't dare remove it.
             if isinstance(queryresponse.fileid, bytes):
-                name = queryresponse.fileid.decode("ascii", "ignore")
+                fileid = queryresponse.fileid.decode("ascii", "ignore")
             else:
-                name = queryresponse.fileid
+                fileid = queryresponse.fileid
 
-        fs_encoding = sys.getfilesystemencoding()
-        if fs_encoding is None:
-            fs_encoding = "ascii"
+            # Some providers make fileid a path
+            # Some also don't specify a file extension, but not a lot we can do
+            # about that.
+            name = fileid.split("/")[-1]
 
+        # If somehow we have got this far with an empty string, fallback to url segment
+        if not name:
+            name = url.split('/')[-1]
+
+        # Remove any not-filename appropriate characters
         name = slugify(name)
 
+        # If absolutely everything else fails make a filename based on download time
         if not name:
-            name = "file"
+            name = f"vso_file_{datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')}"
 
         fname = pattern.format(file=name, **serialize_object(queryresponse))
 
