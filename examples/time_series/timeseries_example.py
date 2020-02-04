@@ -141,7 +141,7 @@ ts_goes_trunc.plot()
 
 ##############################################################################
 # You can use Pandas resample method, for example to downsample:
-df_downsampled = ts_goes_trunc.data.resample('10T', 'mean')
+df_downsampled = ts_goes_trunc.data.resample('10T').mean()
 # To get this into a similar TimeSeries we can copy the original:
 ts_downsampled = copy.deepcopy(ts_goes_trunc)
 ts_downsampled.data = df_downsampled
@@ -154,7 +154,7 @@ ts_downsampled.plot()
 
 ##############################################################################
 # Similarly, to upsample:
-df_upsampled = ts_downsampled.data.resample('1T', 'ffill')
+df_upsampled = ts_downsampled.data.resample('1T').ffill()
 # And this can be made into a TimeSeries using:
 ts_upsampled = copy.deepcopy(ts_downsampled)
 ts_upsampled.data = df_upsampled
