@@ -22,7 +22,7 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, time_attr
-from sunpy.net.vso import QueryResponse as vsoQueryResponse
+from sunpy.net.vso import QueryResponse as vsoQueryResponse, attrs as va
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.datatype_factory_base import MultipleMatchError
@@ -253,6 +253,31 @@ def test_tables_multiple_response():
 
     assert all(entry == 'lyra' for entry in tables[0]['Instrument'])
     assert all(entry == 'rhessi' for entry in tables[1]['Instrument'])
+
+
+@pytest.mark.remote_data
+def test_tables_all_types():
+    # Data retriver response objects
+    drclient = Fido.search(a.Time('2012/3/4', '2012/3/6'),
+                           a.Instrument('lyra') | a.Instrument('rhessi'))
+    drtables = drclient.tables
+    assert isinstance(drtables, list)
+    assert isinstance(drtables[0], Table)
+
+    # VSO response objects
+    vsoclient = Fido.search(va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
+                            va.Instrument('aia'), va.Wavelength(171 * u.AA))
+    vsotables = vsoclient.tables
+    assert isinstance(vsotables, list)
+    assert isinstance(vsotables[0], Table)
+
+    # JSOC response objects
+    jsocclient = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+                             a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))
+    jsoctables = jsocclient.tables
+
+    assert isinstance(jsoctables, list)
+    assert isinstance(jsoctables[0], Table)
 
 
 def test_vso_unifiedresponse():

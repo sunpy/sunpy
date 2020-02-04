@@ -163,8 +163,9 @@ class UnifiedResponse(Sequence):
         """
         Returns a list of `astropy.table.Table` for all responses present in a specific
         `~sunpy.net.fido_factory.UnifiedResponse` object. They can then be used
-        to perform key-based indexing of `sunpy.net.dataretriever.client.QueryResponse`
-        objects.
+        to perform key-based indexing of objects of either type
+        `sunpy.net.dataretriever.client.QueryResponse`, `sunpy.net.vso.QueryResponse` or
+        `sunpy.net.jsoc.JSOCClient`
 
         Returns
         -------
