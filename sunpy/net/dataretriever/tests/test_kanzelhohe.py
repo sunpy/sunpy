@@ -48,8 +48,8 @@ def test_query():
                         a.Wavelength(6563 * u.AA))
     assert isinstance(qr, QueryResponse)
     assert len(qr) == 2
-    assert qr.time_range().start.date() == datetime.date(2015, 1, 10)
-    assert qr.time_range().end.date() == datetime.date(2015, 1, 10)
+    assert qr.time_range().start == datetime.datetime(2015, 1, 10)
+    assert qr.time_range().end == datetime.datetime(2015, 1, 10, 12, 0, 0)
 
 
 # This test downloads 3 files
@@ -61,8 +61,7 @@ def test_query():
                            a.Wavelength(3276.8 * u.nm))])
 def test_get(time, wavelength):
     qr = KClient.search(time, wavelength)
-    res = KClient.get(qr)
-    download_list = res.wait()
+    download_list = KClient.fetch(qr)
     assert len(download_list) == len(qr)
 
 

@@ -47,15 +47,18 @@ class KanzelhoheClient(GenericClient):
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
-    >>> timerange = a.Time('2015/12/28 00:00:00','2015/12/28 00:03:00')
+    >>> timerange = a.Time('2015/12/28 00:00:00','2015/12/28 09:03:00')
     >>> results = Fido.search(timerange, a.Instrument('kanzelhohe'), a.Wavelength(6563*u.AA))   #doctest: +REMOTE_DATA
     >>> print(results)  #doctest: +REMOTE_DATA
-    [<Table length=1>
-        Start Time           End Time              Source        Instrument
-        str19               str19                str21           str10
-    ------------------- ------------------- --------------------- ----------
-    2015-12-28 00:00:00 2015-12-29 00:00:00 Global Halpha Network Kanzelhohe]
-
+    Results from 1 Provider:
+    <BLANKLINE>
+    1 Results from the KanzelhoheClient:
+         Start Time           End Time      ...       Wavelength      
+           str19               str19        ...         str22         
+    ------------------- ------------------- ... ----------------------
+    2015-12-28 00:00:00 2015-12-28 09:03:00 ... [6563. 6563.] Angstrom
+    <BLANKLINE>
+    <BLANKLINE>
     >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
     def _get_url_for_timerange(self, timerange, **kwargs):
