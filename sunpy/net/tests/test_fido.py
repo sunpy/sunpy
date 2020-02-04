@@ -221,7 +221,7 @@ def test_unifiedresponse_slicing_reverse():
     assert isinstance(results[::-1], UnifiedResponse)
     assert len(results[::-1]) == len(results)
     assert isinstance(results[0, ::-1], UnifiedResponse)
-    assert results[0, ::-1]._list[0] == results._list[0][::-1]
+    assert all(results._list[0][::-1].build_table() == results[0, ::-1]._list[0].build_table())
 
 
 @pytest.mark.remote_data
@@ -265,8 +265,8 @@ def test_tables_all_types():
     assert isinstance(drtables[0], Table)
 
     # VSO response objects
-    vsoclient = Fido.search(va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
-                            va.Instrument('aia'), va.Wavelength(171 * u.AA))
+    vsoclient = Fido.search(a.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
+                            a.Instrument('aia'), a.Wavelength(171 * u.AA))
     vsotables = vsoclient.tables
     assert isinstance(vsotables, list)
     assert isinstance(vsotables[0], Table)
@@ -306,7 +306,7 @@ def test_repr():
     rep = repr(results)
     rep = rep.split('\n')
     # 6 header lines, the results table and two blank lines at the end
-    assert len(rep) == 7 + len(list(results.responses)[0]) + 2
+    assert len(rep) == 6 + len(list(results.responses)[0]) + 2
 
 
 def filter_queries(queries):
@@ -478,3 +478,14 @@ def test_client_fetch_wrong_type(mock_fetch):
 
     with pytest.raises(TypeError):
         Fido.fetch(qr)
+
+@pytest.mark.remote_data
+def test_vso_fetch_hmi(tmpdir):
+    start_time = "2017-01-25"
+    end_time = "2017-01-25T23:59:59"
+    results = Fido.search(a.Time(start_time, end_time),
+                          a.Instrument('HMI') & a.Physobs("LOS_magnetic_field"),
+                          a.Sample(1 * u.minute))
+
+    files = Fido.fetch(results[0, 0], path=tmpdir)
+    assert len(files) == 1

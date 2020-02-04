@@ -36,7 +36,6 @@ class EVEClient(GenericClient):
     <BLANKLINE>
     2 Results from the EVEClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str3     str3       str3
     ------------------- ------------------- ------ ---------- ----------
     2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve        nan
     2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve        nan

@@ -204,7 +204,7 @@ def test_entries_from_fido_search_result_JSOC():
 @pytest.mark.remote_data
 def test_from_fido_search_result_block(fido_search_result):
     entry = DatabaseEntry._from_fido_search_result_block(
-        fido_search_result[0, 0][0].get_response(0)[0])
+        fido_search_result[0, 0][0].get_response(0).blocks[0])
     expected_entry = DatabaseEntry(
         source='Proba2', provider='esa', physobs='irradiance',
         fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
@@ -217,7 +217,7 @@ def test_from_fido_search_result_block(fido_search_result):
 
 @pytest.mark.remote_data
 def test_entry_from_qr_block(query_result):
-    entry = DatabaseEntry._from_query_result_block(query_result[0])
+    entry = DatabaseEntry._from_query_result_block(query_result.blocks[0])
     expected_entry = DatabaseEntry(
         source='SOHO', provider='SDAC', physobs='intensity',
         fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042',
@@ -230,7 +230,7 @@ def test_entry_from_qr_block(query_result):
 @pytest.mark.remote_data
 def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs):
     entry = DatabaseEntry._from_query_result_block(
-        qr_block_with_missing_physobs)
+        qr_block_with_missing_physobs.blocks[0])
     expected_entry = DatabaseEntry(
         source='STEREO_A', provider='SSC',
         fileid='swaves/2013/swaves_average_20130805_a_hfr.dat',
@@ -243,7 +243,7 @@ def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs)
 @pytest.mark.remote_data
 def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     # See issue #766.
-    entry = DatabaseEntry._from_query_result_block(qr_block_with_kev_unit)
+    entry = DatabaseEntry._from_query_result_block(qr_block_with_kev_unit.blocks[0])
     assert entry.source == 'RHESSI'
     assert entry.provider == 'LSSP'
     assert entry.fileid == '/hessidata/2011/09/19/hsi_20110919_233340_002.fits'

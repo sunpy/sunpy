@@ -46,7 +46,6 @@ variable set to the Fido search, in this case, result::
     <BLANKLINE>
     3 Results from the LYRAClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
@@ -67,7 +66,6 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
     <BLANKLINE>
     3 Results from the NoRHClient:
          Start Time           End Time      Source Instrument   Wavelength
-           str19               str19         str4     str4        str14
     ------------------- ------------------- ------ ---------- --------------
     2012-03-04 00:00:00 2012-03-05 00:00:00   NAOJ       NORH 17000000.0 kHz
     2012-03-05 00:00:00 2012-03-06 00:00:00   NAOJ       NORH 17000000.0 kHz
@@ -92,7 +90,6 @@ client for results, in this case VSO.::
     289 Results from the VSOClient:
        Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
                                                    ...             Angstrom
-           str19               str19         str3  ...   str8      float64
     ------------------- ------------------- ------ ... -------- --------------
     2012-03-05 04:30:00 2012-03-05 04:30:01    SDO ... FULLDISK 171.0 .. 171.0
     2012-03-04 09:10:00 2012-03-04 09:10:01    SDO ... FULLDISK 171.0 .. 171.0
@@ -114,6 +111,7 @@ client for results, in this case VSO.::
     2012-03-05 15:20:00 2012-03-05 15:20:01    SDO ... FULLDISK 171.0 .. 171.0
     2012-03-05 08:10:00 2012-03-05 08:10:01    SDO ... FULLDISK 171.0 .. 171.0
     2012-03-04 02:50:00 2012-03-04 02:50:01    SDO ... FULLDISK 171.0 .. 171.0
+    Length = 289 rows
     <BLANKLINE>
     <BLANKLINE>
 
@@ -128,7 +126,6 @@ operator would::
     <BLANKLINE>
     3 Results from the LYRAClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
@@ -136,14 +133,12 @@ operator would::
     <BLANKLINE>
     3 Results from the RHESSIClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str6     str6       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-03-04 00:00:00 2012-03-04 23:59:59 rhessi     rhessi        nan
     2012-03-05 00:00:00 2012-03-05 23:59:59 rhessi     rhessi        nan
     2012-03-06 00:00:00 2012-03-06 23:59:59 rhessi     rhessi        nan
     <BLANKLINE>
     <BLANKLINE>
-
 
 Indexing search results
 -----------------------
@@ -172,7 +167,6 @@ results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
     <BLANKLINE>
     2 Results from the LYRAClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
     2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
@@ -187,7 +181,6 @@ Or, equivalently::
     <BLANKLINE>
     2 Results from the LYRAClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
     2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan

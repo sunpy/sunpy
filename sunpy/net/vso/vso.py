@@ -6,7 +6,6 @@ This module provides a wrapper around the VSO API.
 import os
 import re
 import cgi
-import sys
 import socket
 import datetime
 import warnings
@@ -25,14 +24,14 @@ from astropy.table import QTable as Table
 
 from sunpy import config
 from sunpy.net.attr import and_
-from sunpy.net.base_client import BaseClient
+from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import _TIMEFORMAT as TIMEFORMAT
 from sunpy.net.vso.attrs import _walker as walker
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
-from sunpy.util.net import get_content_disposition, slugify
+from sunpy.util.net import slugify
 
 from .. import _attrs as core_attrs
 from .zeep_plugins import SunPyLoggingZeepPlugin
@@ -142,16 +141,42 @@ def build_client(url=None, port_name=None, **kwargs):
     return client
 
 
-class QueryResponse(list):
+class QueryResponse(BaseQueryResponse):
     """
     A container for VSO Records returned from VSO Searches.
     """
 
-    def __init__(self, lst, queryresult=None, table=None):
-        super().__init__(lst)
+    def __init__(self, lst, queryresult=None):
+        super().__init__()
+        self._data = lst
         self.queryresult = queryresult
         self.errors = []
-        self.table = None
+        self._client = VSOClient()
+
+    def __getitem__(self, item):
+        # Always index so a list comes back
+        if isinstance(item, int):
+            item = slice(item, item+1)
+        return type(self)(self._data[item], queryresult=self.queryresult)
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        for block in self._data:
+            yield block
+
+    @property
+    def blocks(self):
+        return self._data
+
+    @property
+    def client(self):
+        return self._client
+
+    @client.setter
+    def client(self, client):
+        self._client = client
 
     def search(self, *query):
         """ Furtherly reduce the query response by matching it against
@@ -163,7 +188,7 @@ class QueryResponse(list):
 
     @classmethod
     def create(cls, queryresult):
-        return cls(iter_records(queryresult), queryresult)
+        return cls(list(iter_records(queryresult)), queryresult)
 
     def total_size(self):
         """ Total size of data in KB. May be less than the actual
@@ -251,17 +276,6 @@ class QueryResponse(list):
         s.remove(None)
         return s
 
-    def __str__(self):
-        """Print out human-readable summary of records retrieved"""
-        return str(self.build_table())
-
-    def __repr__(self):
-        """Print out human-readable summary of records retrieved"""
-        return repr(self.build_table())
-
-    def _repr_html_(self):
-        return self.build_table()._repr_html_()
-
 
 class VSOClient(BaseClient):
     """
@@ -314,10 +328,9 @@ class VSOClient(BaseClient):
         >>> client.search(
         ...    a.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
         ...    a.Instrument('eit') | a.Instrument('aia'))   # doctest:  +REMOTE_DATA
-        <QTable length=5>
+        <sunpy.net.vso.vso.QueryResponse object at ...>
            Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
                                                        ...             Angstrom
-               str19               str19         str4  ...   str8      float64
         ------------------- ------------------- ------ ... -------- --------------
         2010-01-01 00:00:08 2010-01-01 00:00:20   SOHO ... FULLDISK 195.0 .. 195.0
         2010-01-01 00:12:08 2010-01-01 00:12:20   SOHO ... FULLDISK 195.0 .. 195.0
@@ -864,7 +877,6 @@ class VSOClient(BaseClient):
         Returns a dictionary of fileids
         corresponding to records in the response.
         """
-
         return {
             record.fileid: record for record in response
         }

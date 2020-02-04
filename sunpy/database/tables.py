@@ -292,7 +292,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
         >>> qr = client.search(
         ...     a.Time('2001/1/1', '2001/1/2'),
         ...     a.Instrument('eit'))  # doctest: +REMOTE_DATA
-        >>> entry = DatabaseEntry._from_query_result_block(qr[0])  # doctest: +REMOTE_DATA
+        >>> entry = DatabaseEntry._from_query_result_block(qr.blocks[0])  # doctest: +REMOTE_DATA
         >>> entry.source  # doctest: +REMOTE_DATA
         'SOHO'
         >>> entry.provider  # doctest: +REMOTE_DATA

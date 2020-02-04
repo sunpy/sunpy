@@ -17,7 +17,7 @@ from astropy.utils.misc import isiterable
 from parfive import Downloader, Results
 
 from sunpy import config
-from sunpy.net.base_client import BaseClient
+from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
 from sunpy.util.exceptions import SunpyUserWarning
@@ -33,24 +33,28 @@ class NotExportedError(Exception):
     pass
 
 
-class JSOCResponse(Sequence):
-    def __init__(self, table=None):
+class JSOCResponse(BaseQueryResponse):
+    def __init__(self, table=None, client=None):
         """
         table : `astropy.table.Table`
         """
-
-        self.table = table
+        super().__init__()
+        self.table = table or astropy.table.QTable()
         self.query_args = None
         self.requests = None
+        self._client = client
 
-    def __str__(self):
-        return str(self.table)
+    @property
+    def client(self):
+        return self._client
 
-    def __repr__(self):
-        return repr(self.table)
+    @client.setter
+    def client(self, client):
+        self._client = client
 
-    def _repr_html_(self):
-        return self.table._repr_html_()
+    @property
+    def blocks(self):
+        return list(self.table.iterrows)
 
     def __len__(self):
         if self.table is None:
@@ -327,7 +331,7 @@ class JSOCClient(BaseClient):
 
         """
 
-        return_results = JSOCResponse()
+        return_results = JSOCResponse(client=self)
         query = and_(*query)
         blocks = []
         for block in walker.create(query):

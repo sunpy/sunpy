@@ -249,7 +249,7 @@ def test_str():
 
 def test_repr():
     qr = QueryResponse([])
-    assert "Start Time End Time  Source Instrument   Type" in repr(qr)
+    assert "Start Time End Time Source Instrument Type" in repr(qr)
 
 
 @pytest.mark.remote_data

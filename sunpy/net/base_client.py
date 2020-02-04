@@ -1,8 +1,82 @@
-from abc import ABC, abstractmethod
 import importlib
+from abc import ABC, abstractmethod
+from collections.abc import Sequence
+
+__all__ = ['BaseQueryResponse', 'BaseClient']
 
 
-__all__ = ['BaseClient']
+class BaseQueryResponse(Sequence):
+    """
+    An Abstract Base Class for results returned from BaseClient.
+
+    Notes
+    -----
+    * A QueryResponse object must be able to be instantiated with only one iterable argument.
+    * The `client` property must be settable.
+    * The base class does not prescribe how you store the results from your
+      client, only that it must be possible to represent them as an astropy
+      table.
+    * `__getitem__` **must** return an instance of the type it was called on.
+      I.e. it must always return an object of ``type(self)``.
+
+    """
+
+    @abstractmethod
+    def build_table(self):
+        """
+        Return an `astropy.table.Table` representation of the query response.
+        """
+
+    @property
+    @abstractmethod
+    def client(self):
+        """
+        An instance of BaseClient used to generate the results.
+
+        Generally this is used to fetch the results later.
+
+        .. note::
+
+            In general, this doesn't have to be the same instance of
+            ``BaseClient``, this is left to the client developer. If there is a
+            significant connection overhead in creating an instance of a client
+            you might want it to be the same instance as used for the search.
+        """
+
+    @client.setter
+    @abstractmethod
+    def client(self, value):
+        pass
+
+    @property
+    @abstractmethod
+    def blocks(self):
+        """
+        A `collections.abc.Sequence` object which contains the records
+        contained within the Query Response.
+        """
+
+    @abstractmethod
+    def response_block_properties(self):
+        """
+        Returns a set of class attributes on all the response blocks.
+
+        Returns
+        -------
+        s : `set`
+            List of strings, containing attribute names in the response blocks.
+        """
+
+    def __str__(self):
+        """Print out human-readable summary of records retrieved"""
+        return '\n'.join(self.build_table().pformat(show_dtype=False))
+
+    def __repr__(self):
+        """Print out human-readable summary of records retrieved"""
+        return object.__repr__(self) + "\n" + str(self)
+
+    def _repr_html_(self):
+        return self.build_table()._repr_html_()
 
 
 class BaseClient(ABC):
