@@ -36,3 +36,5 @@ The `~sunpy.timeseries.TimeSeries` factory will load the file and create the tim
 instance. The following instrument classes are supported.
 
 .. automodapi:: sunpy.timeseries
+    :no-inheritance-diagram:
+.. automodapi:: sunpy.timeseries.sources
