@@ -81,6 +81,14 @@ class Notify(SimpleAttr):
         self.value = value
 
 
+class Quality(SimpleAttr):
+    """
+    A quality flag
+
+    """
+    pass
+
+
 walker = AttrWalker()
 
 

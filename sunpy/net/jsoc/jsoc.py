@@ -19,6 +19,7 @@ from parfive import Downloader, Results
 from sunpy import config
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.attr import and_
+from sunpy.net.jsoc import attrs
 from sunpy.net.jsoc.attrs import walker
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -687,6 +688,11 @@ class JSOCClient(BaseClient):
         if sample:
             sample = f'@{sample}s'
 
+        # Extract and format quality
+        quality = kwargs.get('quality', '>= 0')
+        if quality:
+            quality = f'[? QUALITY {quality}?]'
+
         # Populate primekeys dict with Time and Wavelength values
         if start_time and end_time:
             # Check whether any primekey listed in PKEY_LIST_TIME has been passed through
@@ -768,8 +774,9 @@ class JSOCClient(BaseClient):
             error_message = "Atleast one PrimeKey must be passed."
             raise ValueError(error_message)
 
-        dataset = '{series}{primekey}{segment}'.format(series=series,
+        dataset = '{series}{primekey}{quality}{segment}'.format(series=series,
                                                        primekey=pkstr,
+                                                       quality=quality,
                                                        segment=segment)
 
         return dataset
@@ -869,7 +876,8 @@ class JSOCClient(BaseClient):
 
         required = {a.jsoc.Series}
         optional = {a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
-                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample}
+                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample
+                    a.jsoc.Quality}
         query_attrs = {type(x) for x in query}
         all_attrs = required.union(optional)
 
