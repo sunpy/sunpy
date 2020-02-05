@@ -125,6 +125,14 @@ class SunPyBaseCoordinateFrame(BaseCoordinateFrame):
             data.lon.wrap_angle = self._wrap_angle
         return data
 
+    @property
+    def size(self):
+        """
+        Returns the size of the underlying data if it exists, else returns 0.  This overrides the
+        property in `~astropy.coordinates.BaseCoordinateFrame`.
+        """
+        return self.data.size if self.has_data else 0
+
     def __str__(self):
         """
         We override this here so that when you print a SkyCoord it shows the

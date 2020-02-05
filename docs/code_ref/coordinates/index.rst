@@ -311,59 +311,27 @@ then transform to a projective frame with an ``rsun`` attribute, it will not
 match the ``radius`` coordinate in the Heliographic frame. This is because you may
 mean to be describing a point above the defined 'surface' of the Sun.
 
+More Detailed Information
+-------------------------
 
-Coordinates and WCS
--------------------
+.. toctree::
+   :maxdepth: 1
 
-The `sunpy.coordinates` sub-package provides a mapping between FITS-WCS CTYPE
-convention and the coordinate frames as defined in `sunpy.coordinates`. This is
-used via the `astropy.wcs.utils.wcs_to_celestial_frame` function, with which the
-SunPy frames are registered upon being imported. This list is used by packages
-such as ``wcsaxes`` to convert from `astropy.wcs.WCS` objects to coordinate
-frames.
+   rotatedsunframe
+   wcs
+   other_api
 
-The `sunpy.map.GenericMap` class creates `astropy.wcs.WCS` objects as
-``amap.wcs``, however, it adds some extra attributes to the `~astropy.wcs.WCS`
-object to be able to fully specify the coordinate frame. It adds
-``heliographic_observer`` and ``rsun``.
 
-If you want to obtain a un-realized coordinate frame corresponding to a
-`~sunpy.map.GenericMap` object you can do the following::
-
-  >>> import sunpy.map
-  >>> from sunpy.data.sample import AIA_171_IMAGE  # doctest: +REMOTE_DATA
-  >>> amap = sunpy.map.Map(AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-  >>> amap.observer_coordinate  # doctest: +REMOTE_DATA
-    <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07T06:33:02.770): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>
-
-which is equivalent to::
-
-  >>> from astropy.wcs.utils import wcs_to_celestial_frame # doctest: +REMOTE_DATA
-  >>> wcs_to_celestial_frame(amap.wcs)  # doctest: +REMOTE_DATA
-    <Helioprojective Frame (obstime=2011-06-07T06:33:02.770, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07T06:33:02.770): (lon, lat, radius) in (deg, deg, m)
-        (-0.00406308, 0.04787238, 1.51846026e+11)>)>
-
+Reference/API
+-------------
 
 .. automodapi:: sunpy.coordinates
-    :headings: ^#
-
-.. automodapi:: sunpy.coordinates.frames
-    :headings: ^#
-
-.. automodapi:: sunpy.coordinates.transformations
     :headings: ^#
 
 .. automodapi:: sunpy.coordinates.ephemeris
     :headings: ^#
 
 .. automodapi:: sunpy.coordinates.sun
-    :headings: ^#
-
-.. automodapi:: sunpy.coordinates.offset_frame
-    :headings: ^#
-
-.. automodapi:: sunpy.coordinates.wcs_utils
     :headings: ^#
 
 
