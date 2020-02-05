@@ -172,7 +172,6 @@ class UnifiedResponse(Sequence):
         list
             a list of `astropy.table.Table`, consisting of data from the QueryResponse
         """
-
         tables = []
         for block in self.responses:
             tables.append(block.build_table())
