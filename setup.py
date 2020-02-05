@@ -1,7 +1,7 @@
 #!/usr/bin/env python
+from setuptools import setup  # isort:skip
 from extension_helpers import get_extensions
 from setuptools.config import read_configuration
-from setuptools import setup
 from itertools import chain
 import sys
 import os

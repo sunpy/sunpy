@@ -32,7 +32,7 @@ def test_i8c():
 def test_i8u():
     # Test int 8 uncompressed functions
     afilename = tempfile.NamedTemporaryFile().name
-    ana.write(afilename, img_i8, 'testcase', 0)
+    ana.write(afilename, img_i8, 'testcase', 1)
     img_i8u_rec = ana.read(afilename)
     assert np.sum(img_i8u_rec[0][0] - img_i8) == 0
 
@@ -41,7 +41,7 @@ def test_i8u():
 def test_i16c():
     # Test int 16 compressed functions
     afilename = tempfile.NamedTemporaryFile().name
-    ana.write(afilename, img_i16, 'testcase', 0)
+    ana.write(afilename, img_i16, 'testcase', 1)
     img_i16c_rec = ana.read(afilename)
     assert np.sum(img_i16c_rec[0][0] - img_i16) == 0
 

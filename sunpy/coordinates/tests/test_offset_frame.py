@@ -1,6 +1,5 @@
 import pytest
-import hypothesis.strategies as st
-from hypothesis import given, settings
+from hypothesis import given
 import numpy as np
 
 import astropy.units as u
@@ -8,18 +7,7 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.coordinates import SkyCoord, SkyOffsetFrame
 
 from sunpy.coordinates import NorthOffsetFrame
-
-
-@st.composite
-def latitude(draw, lat=st.floats(min_value=-90, max_value=90,
-                                 allow_nan=False, allow_infinity=False)):
-    return draw(lat) * u.deg
-
-
-@st.composite
-def longitude(draw, lon=st.floats(min_value=-180, max_value=180,
-                                 allow_nan=False, allow_infinity=False)):
-    return draw(lon) * u.deg
+from .strategies import longitudes, latitudes
 
 
 def test_null():
@@ -33,8 +21,7 @@ def test_null():
     assert off.origin.lon == 0*u.deg
 
 
-@given(lon=longitude(), lat=latitude())
-@settings(deadline=5000)
+@given(lon=longitudes(), lat=latitudes())
 def test_transform(lon, lat):
     """
     Test that the north pole in the new frame transforms back to the given

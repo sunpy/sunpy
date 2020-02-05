@@ -42,6 +42,7 @@ jobs:
     envs:
       - macos: py36
         name: py36_test
+        posargs: -n=1
 
       - windows: py37
         name: py37_test
