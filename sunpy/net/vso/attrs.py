@@ -376,7 +376,8 @@ def _(attr, results):
 class _DeprecatedAttr:
     def __init__(self, *args, **kwargs):
         name = type(self).__name__
-        warnings.warn(f"sunpy.net.vso.attrs.{name} is deprecated, please use sunpy.net.attrs.{name}", SunpyDeprecationWarning)
+        warnings.warn(f"sunpy.net.vso.attrs.{name} is deprecated, please use sunpy.net.attrs.{name}",
+                      SunpyDeprecationWarning)
         super().__init__(*args, **kwargs)
 
 _deprecated_names = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution']
