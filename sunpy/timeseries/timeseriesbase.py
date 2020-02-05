@@ -121,8 +121,8 @@ class GenericTimeSeries:
 
     @property
     def data(self):
-        warnings.warn("Using .data to access the dataframe is discouraged; use .to_dataframe() instead.",
-                                SunpyUserWarning)
+        warnings.warn("Using .data to access the dataframe is discouraged;"
+                      "use .to_dataframe() instead.", SunpyUserWarning)
         return self._data
 
     @data.setter
