@@ -42,13 +42,16 @@ class BBSOClient(GenericClient):
     >>> results = Fido.search(a.Time('2016/5/18 15:28:00','2016/5/18 16:30:00'),
     ...                       a.Instrument('bbso'), a.Level('fr'))  #doctest: +REMOTE_DATA
     >>> print(results)  #doctest: +REMOTE_DATA
-    [<Table length=2>
-         Start Time           End Time              Source        Instrument
-           str19               str19                str21            str4
-    ------------------- ------------------- --------------------- ----------
-    2016-05-18 00:00:00 2016-05-19 00:00:00 Global Halpha Network       bbso
-    2016-05-19 00:00:00 2016-05-20 00:00:00 Global Halpha Network       bbso]
-
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the BBSOClient:
+         Start Time           End Time      ... Instrument    Wavelength
+           str19               str19        ...    str4         str15
+    ------------------- ------------------- ... ---------- ---------------
+    2016-05-18 15:30:25 2016-05-18 15:30:25 ...       BBSO 6562.8 Angstrom
+    2016-05-18 16:00:33 2016-05-18 16:00:33 ...       BBSO 6562.8 Angstrom
+    <BLANKLINE>
+    <BLANKLINE>
     >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
 

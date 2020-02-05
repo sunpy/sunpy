@@ -41,10 +41,10 @@ def test_can_handle_query():
 
 @pytest.mark.remote_data
 def test_query():
-    qr = BClient.query(
-        Time('2016/5/18 15:28:00', '2016/5/18 16:30:00'),
-        Instrument='bbso',
-        Level='fr')
+    qr = BClient.search(
+        a.Time('2016/5/18 15:28:00', '2016/5/18 16:30:00'),
+        a.Instrument('bbso'),
+        a.Level('fr'))
     assert isinstance(qr, QueryResponse)
     assert len(qr) == 2
     assert qr.time_range().start == parse_time('2016/05/18 15:30:25')
@@ -58,9 +58,8 @@ def test_query():
                          [(Time('2016/5/18 15:28:00', '2016/5/18 16:30:00'),
                            Instrument('bbso'), Level('fr'))])
 def test_get(time, instrument, level):
-    qr = BClient.query(time, instrument, level)
-    res = BClient.get(qr)
-    download_list = res.wait()
+    qr = BClient.search(time, instrument, level)
+    download_list = BClient.fetch(qr)
     assert len(download_list) == len(qr)
 
 
