@@ -824,7 +824,6 @@ class Database:
             getting downloaded.
             Otherwise, no new file download and update of matching database
             entries takes place.
-
         """
         if not query_result:
             return
