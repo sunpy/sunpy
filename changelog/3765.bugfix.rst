@@ -1,0 +1,1 @@
+JSOC requests fail when there are entries in the database but the underling file/s are not present. Added logic to skip missing files where possible by using a `Quality` attribute and add `~sunpy.net.jsoc.attrs.Quality` for use access to this attribute
