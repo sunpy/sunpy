@@ -288,7 +288,6 @@ class Range(DataAttr):
     ----------
     min_ : `object`
         The lower bound of the range.
-
     max_ : `object`
         The upper bound of the range.
     """
@@ -448,6 +447,7 @@ class AttrWalker:
     @staticmethod
     def _unknown_type(*args, **kwargs):
         raise TypeError(f"{args[1]} or any of its parents have not been registered with the AttrWalker")
+
     def __init__(self):
         self.applymm = seconddispatch(self._unknown_type)
         self.createmm = seconddispatch(self._unknown_type)

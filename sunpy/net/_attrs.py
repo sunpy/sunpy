@@ -25,10 +25,8 @@ class Time(Range):
     start : SunPy time string or `~sunpy.time.TimeRange`.
         The start time in a format parseable by `~sunpy.time.parse_time` or
         a `sunpy.time.TimeRange` object.
-
     end : SunPy Time String
         The end time of the range.
-
     near : SunPy Time String
         Return a singular record closest in time to this value as possible,
         inside the start and end window. Note: not all providers support this
@@ -86,7 +84,6 @@ class Wavelength(Range):
         ----------
         wavemin : `~astropy.units.Quantity`
             The lower bounds of the range.
-
         wavemax : `~astropy.units.Quantity`
             The upper bound of the range, if not specified it will default to
             the lower bound.
@@ -140,7 +137,7 @@ class Instrument(SimpleAttr):
 
     Parameters
     ----------
-    value : str
+    value : `str`
 
     Notes
     -----
@@ -162,7 +159,7 @@ class Level(SimpleAttr):
 
     Parameters
     ----------
-    value : float or str
+    value : `float` or `str`
 
         The value can be entered in of three ways:
 
@@ -196,7 +193,7 @@ class Detector(SimpleAttr):
 
     Parameters
     ----------
-    value : str
+    value : `str`
     """
     pass
 
@@ -207,7 +204,7 @@ class Resolution(SimpleAttr):
 
     Parameters
     ----------
-    value : float or str
+    value : `float` or `str`
 
         The value can be entered in of three ways:
 
