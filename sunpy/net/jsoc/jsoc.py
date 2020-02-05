@@ -19,7 +19,6 @@ from parfive import Downloader, Results
 from sunpy import config
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.attr import and_
-from sunpy.net.jsoc import attrs
 from sunpy.net.jsoc.attrs import walker
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -421,10 +420,19 @@ class JSOCClient(BaseClient):
             Request status can be accessed by requests.status
 
         """
-
         requests = []
+        missing = jsoc_response.table['INSTRUME'] == 'MISSING'
+        if any(missing):
+            warnings.warn(f'Some of the requested data is not available and can not be downloaded:'
+                          f'\n{jsoc_response[missing]}', SunpyUserWarning)
+
         self.query_args = jsoc_response.query_args
         for block in jsoc_response.query_args:
+            if any(missing) and 'quality' not in block:
+                block['quality'] = '>= 0'
+            else:
+                raise ValueError(f'Quality attribute {block["quality"]} has resulted in missing '
+                                 f'data which will cause this request to fail')
 
             ds = self._make_recordset(**block)
             cd = drms.Client(email=block.get('notify', ''))
@@ -689,7 +697,7 @@ class JSOCClient(BaseClient):
             sample = f'@{sample}s'
 
         # Extract and format quality
-        quality = kwargs.get('quality', '>= 0')
+        quality = kwargs.get('quality', '')
         if quality:
             quality = f'[? QUALITY {quality}?]'
 
