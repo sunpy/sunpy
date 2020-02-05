@@ -65,7 +65,18 @@ class KanzelhoheClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        returns list of urls corresponding to given TimeRange.
+        Return list of URLS corresponding to value of input timerange.
+
+        Parameters
+        ----------
+        timerange: `sunpy.time.TimeRange`
+            time range for which data is to be downloaded.
+
+        Returns
+        -------
+        urls : list
+            list of URLs corresponding to the requested time range
+
         """
         wave = kwargs['wavelength']
         wave_float = (wave.min if isinstance(wave, a.Wavelength) else wave.wavemin).value

@@ -55,9 +55,19 @@ class GONGClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        returns list of urls corresponding to given TimeRange.
-        """
+        Return list of URLS corresponding to value of input timerange.
 
+        Parameters
+        ----------
+        timerange: `sunpy.time.TimeRange`
+            time range for which data is to be downloaded.
+
+        Returns
+        -------
+        urls : list
+            list of URLs corresponding to the requested time range
+
+        """
         table_physobs = {'INTENSITY': 'i', 'LOS_MAGNETIC_FIELD': 'b'}
         table_instruments = {'bigbear': 'bb', 'cerrotololo': 'ct', 'learmonth': 'le',
                              'maunaloa': 'ml', 'teide': 'td', 'udaipur': 'ud', 'tucson': 'z'}
