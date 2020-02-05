@@ -8,7 +8,7 @@ Code Reference
    :maxdepth: 2
 
    sunpy
-   coordinates
+   coordinates/index
    data
    database
    image

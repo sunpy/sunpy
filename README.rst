@@ -6,7 +6,7 @@
 
 .. |Latest Version| image:: https://img.shields.io/pypi/v/sunpy.svg
    :target: https://pypi.python.org/pypi/sunpy/
-.. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=matrix.openastronomy.org
+.. |matrix| image:: https://img.shields.io/matrix/sunpy:openastronomy.org.svg?colorB=%23FE7900&label=Chat&logo=matrix&server_fqdn=openastronomy.modular.im
    :target: https://openastronomy.riot.im/#/room/#sunpy:openastronomy.org
 .. |codecov| image:: https://codecov.io/gh/sunpy/sunpy/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/sunpy/sunpy
