@@ -47,20 +47,22 @@ class KanzelhoheClient(GenericClient):
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
-    >>> timerange = a.Time('2015/12/28 00:00:00','2015/12/28 09:03:00')
-    >>> results = Fido.search(timerange, a.Instrument('kanzelhohe'), a.Wavelength(6563*u.AA))   #doctest: +REMOTE_DATA
+    >>> timerange = a.Time('2015/12/28 00:00:00','2015/12/28 09:03:00'),
+    >>> results = Fido.search(timerange, a.Instrument('kanzelhohe'),
+    ...                       a.Wavelength(6563*u.AA))   #doctest: +REMOTE_DATA
     >>> print(results)  #doctest: +REMOTE_DATA
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the KanzelhoheClient:
-         Start Time           End Time      ...       Wavelength      
-           str19               str19        ...         str22         
+         Start Time           End Time      ...       Wavelength
+           str19               str19        ...         str22
     ------------------- ------------------- ... ----------------------
     2015-12-28 00:00:00 2015-12-28 09:03:00 ... [6563. 6563.] Angstrom
     <BLANKLINE>
     <BLANKLINE>
     >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         returns list of urls corresponding to given TimeRange.
@@ -103,7 +105,7 @@ class KanzelhoheClient(GenericClient):
                 return []
             result = crawler.filelist(timerange)
             return result
-        except:
+        except BaseException:
             raise ValueError("Enter wavelength with proper values and units")
 
     def _makeimap(self):
@@ -131,7 +133,8 @@ class KanzelhoheClient(GenericClient):
         """
         chk_var = 0
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and type(x.value) is str and x.value.lower() == 'kanzelhohe':
+            if x.__class__.__name__ == 'Instrument' and isinstance(
+                    x.value, str) and x.value.lower() == 'kanzelhohe':
                 chk_var += 1
             if x.__class__.__name__ == 'Wavelength':
                 chk_var += 1

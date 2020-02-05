@@ -111,8 +111,8 @@ class BBSOClient(GenericClient):
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'bbso':
                 chk_var += 1
-            if x.__class__.__name__ == 'Level' and type(
-                    x.value) is str and x.value.lower() in ('fl', 'fr'):
+            if x.__class__.__name__ == 'Level' and isinstance(
+                    x.value, str) and x.value.lower() in ('fl', 'fr'):
                 chk_var += 1
         if (chk_var == 2):
             return True

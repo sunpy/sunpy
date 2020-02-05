@@ -26,9 +26,9 @@ TRANGE = a.Time('2014/6/4 00:00:00', '2014/6/4 00:07:00')
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time, physobs, instrument, wavelength",
                          [(TRANGE, a.Physobs('INTENSITY'),
-                           a.Instrument('maunaloa'), a.Wavelength(656.3*u.nm)),
+                           a.Instrument('maunaloa'), a.Wavelength(656.3 * u.nm)),
                           (TRANGE, a.Physobs('INTENSITY'),
-                           a.Instrument(''), a.Wavelength(6563*u.AA))])
+                           a.Instrument(''), a.Wavelength(6563 * u.AA))])
 def test_query(time, physobs, instrument, wavelength):
     qr = GONGClient.search(time, physobs, instrument, wavelength)
     download_list = GONGClient.fetch(qr)
@@ -40,7 +40,7 @@ def test_query(time, physobs, instrument, wavelength):
                           (TRANGE, None, a.Physobs('LOS_MAGNETIC_FIELD'), None, True),
                           (TRANGE, a.Instrument('tucson'), None, None, True),
                           (TRANGE, a.Instrument('cerrotololo'), a.Physobs('INTENSITY'),
-                           a.Wavelength(6563*u.AA), True),
+                           a.Wavelength(6563 * u.AA), True),
                           (TRANGE, None, None, None, False)])
 def test_can_handle_query(time, instrument, physobs, wavelength, expected):
     assert GONGClient._can_handle_query(time, instrument, physobs, wavelength) is expected
@@ -60,7 +60,7 @@ def test_query_range():
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time, physobs, instrument, wavelength",
                          [(a.Time('2016/6/13 03:00', '2016/6/13 04:00'), a.Physobs('INTENSITY'),
-                           a.Instrument('udaipur'), a.Wavelength(676.8*u.nm))])
+                           a.Instrument('udaipur'), a.Wavelength(676.8 * u.nm))])
 def test_get(time, physobs, instrument, wavelength):
     qr = GONGClient.search(time, physobs, instrument, wavelength)
     download_list = GONGClient.fetch(qr)
@@ -72,7 +72,7 @@ def test_get(time, physobs, instrument, wavelength):
 @pytest.mark.remote_data
 def test_fido_query():
     qr = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Physobs('INTENSITY'),
-                     a.Wavelength(6768*u.AA))
+                     a.Wavelength(6768 * u.AA))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile

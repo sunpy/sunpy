@@ -34,10 +34,10 @@ TRANGE = a.Time('2015/12/30 00:00:00', '2015/12/31 00:05:00')
 
 
 @pytest.mark.parametrize("time, instrument, wavelength, expected",
-                         [(TRANGE, a.Instrument('kanzelhohe'), a.Wavelength(6563*u.AA), True),
+                         [(TRANGE, a.Instrument('kanzelhohe'), a.Wavelength(6563 * u.AA), True),
                           (TRANGE, a.Instrument('swap'), None, False),
                           (TRANGE, None, None, False),
-                          (TRANGE, a.Instrument('kanzelhohe'), a.Wavelength(32768*u.AA), True)])
+                          (TRANGE, a.Instrument('kanzelhohe'), a.Wavelength(32768 * u.AA), True)])
 def test_can_handle_query(time, instrument, wavelength, expected):
     assert KClient._can_handle_query(time, instrument, wavelength) is expected
 

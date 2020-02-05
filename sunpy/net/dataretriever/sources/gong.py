@@ -38,19 +38,21 @@ class GONGClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 02:00:00'), a.Instrument('udaipur'), a.Physobs('LOS_MAGNETIC_FIELD'))  #doctest: +REMOTE_DATA
+    >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 02:00:00'), a.Instrument('udaipur'),
+    ...                   a.Physobs('LOS_MAGNETIC_FIELD'))  #doctest: +REMOTE_DATA
     >>> print(res)  #doctest: +REMOTE_DATA
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the GONGClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str4     str7       str3   
+           str19               str19         str4     str7       str3
     ------------------- ------------------- ------ ---------- ----------
     2016-06-04 00:00:00 2016-06-04 02:00:00   GONG    udaipur        nan
     2016-06-04 00:00:00 2016-06-04 02:00:00   GONG    udaipur        nan
     <BLANKLINE>
     <BLANKLINE>
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         returns list of urls corresponding to given TimeRange.
@@ -63,10 +65,12 @@ class GONGClient(GenericClient):
         # Is PhysObs entered?
         physobs_in = ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs.keys())
         # Is instrument entered?
-        instrument_in = ('instrument' in kwargs.keys() and kwargs['instrument'] in table_instruments.keys())
+        instrument_in = ('instrument' in kwargs.keys()
+                         and kwargs['instrument'] in table_instruments.keys())
         wavelength_in = ('wavelength' in kwargs.keys())
 
-        url_pattern_1 = 'ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}{id}qa%y%m%d/{ObsID}{id}qa%y%m%dt%H%M.fits.gz'
+        url_pattern_1 = ('ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}{id}qa%y%m%d/'
+                         '{ObsID}{id}qa%y%m%dt%H%M.fits.gz')
         url_pattern_2 = 'http://gong2.nso.edu/HA/haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz'
 
         pattern_table = {6562: url_pattern_1, 6563: url_pattern_1, 6768: url_pattern_2}
@@ -91,7 +95,9 @@ class GONGClient(GenericClient):
                 else:
                     try:
                         wave = kwargs['wavelength']
-                        wave_float = (wave.min if isinstance(wave, a.Wavelength) else wave.wavemin).value
+                        wave_float = (
+                            wave.min if isinstance(
+                                wave, a.Wavelength) else wave.wavemin).value
                         da = list()
                         da.append(wave_float)
                         for wave_nums in pattern_table.keys():
@@ -101,7 +107,7 @@ class GONGClient(GenericClient):
                                 wave = wave_nums
                                 break
                         patterns.append(pattern_table[wave])
-                    except:
+                    except BaseException:
                         raise NameError("Enter correct wavelength range and units")
         # All valid patterns to be downloaded are in the patterns list.
         instruments_to = list()  # The instruments from which user wants to download
@@ -121,7 +127,9 @@ class GONGClient(GenericClient):
                         urls.extend(arr)
                 else:
                     for instr in instruments_to:
-                        arr = Scraper(pattern_, id=table_physobs[kwargs['physobs']], ObsID=instr).filelist(timerange)
+                        arr = Scraper(pattern_,
+                                      id=table_physobs[kwargs['physobs']],
+                                      ObsID=instr).filelist(timerange)
                         urls.extend(arr)
                 result.extend(urls)
             elif pattern_ == url_pattern_2:
@@ -188,13 +196,14 @@ class FARSIDEClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(a.Time('2015/4/2','2015/4/4'), a.Instrument('farside')) #doctest: +REMOTE_DATA
+    >>> results = Fido.search(a.Time('2015/4/2','2015/4/4'),
+    ...                       a.Instrument('farside')) #doctest: +REMOTE_DATA
     >>> print(results)  #doctest: +REMOTE_DATA
     Results from 1 Provider:
     <BLANKLINE>
     5 Results from the FARSIDEClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str4     str7       str3   
+           str19               str19         str4     str7       str3
     ------------------- ------------------- ------ ---------- ----------
     2015-04-02 00:00:00 2015-04-04 00:00:00   GONG    farside        nan
     2015-04-02 00:00:00 2015-04-04 00:00:00   GONG    farside        nan
@@ -205,6 +214,7 @@ class FARSIDEClient(GenericClient):
     <BLANKLINE>
     >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         returns list of urls corresponding to given TimeRange.
