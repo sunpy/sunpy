@@ -1,1 +1,0 @@
-Added clarifying hyperlinks to the gallery example `getting_lasco_observer_location` to link to `astroquery` docs page.

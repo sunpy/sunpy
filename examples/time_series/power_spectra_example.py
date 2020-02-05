@@ -5,7 +5,7 @@ Making a power spectrum from a TimeSeries
 
 How to estimate the power spectrum of a TimeSeries.
 """
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 from scipy import signal
 import astropy.units as u
 
@@ -19,7 +19,7 @@ from sunpy.data.sample import RHESSI_TIMESERIES
 ts = sunpy.timeseries.TimeSeries(RHESSI_TIMESERIES)
 
 ###############################################################################
-# We now use SciPy's `~scipy.signal.periodogram` to estimate the 
+# We now use SciPy's `~scipy.signal.periodogram` to estimate the
 # power spectra of the first column of the Timeseries. The first column contains
 # X-Ray emmisions in the range of 3-6 keV. An alternative version is Astropy's
 # `~astropy.stats.LombScargle` periodogram.

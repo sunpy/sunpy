@@ -18,7 +18,7 @@ Although this document mainly focuses on how to make contributions to SunPy's co
 
 If you have any questions, comments or just want to say hello, we have online chat on `Matrix`_ which requires no registration or a `Google Group`_ which you message.
 
-.. _Matrix: https://riot.im/app/#/room/#sunpy-general:matrix.org
+.. _Matrix: https://openastronomy.riot.im/#/room/#sunpy:openastronomy.org
 .. _Google Group: https://groups.google.com/forum/#!forum/sunpy
 
 How to Contribute to SunPy
@@ -182,31 +182,6 @@ If you get stuck or want help, just `ask here`_!
 .. _fork: https://guides.github.com/activities/forking/
 .. _SunPy repository: https://github.com/sunpy/sunpy
 .. _ask here: https://riot.im/app/#/room/#sunpy-general:matrix.org
-
-Astropy helpers
-^^^^^^^^^^^^^^^
-
-.. warning::
-
-    This is a common issue, so please be aware of this.
-
-Within SunPy is a folder called `astropy_helpers`_ and this is a git submodule.
-It is very common issue that this not setup correctly and gets added to your commits.
-
-So we recommend that you always run this at the start:
-
-.. code:: bash
-
-    $ git submodule update --init
-
-This should resolve any differences in the `astropy_helpers`_ folder on your machine.
-If you use::
-
-    $ git status
-
-you should hopefully see no changes for the ``astropy_helpers`` folder.
-
-.. _astropy_helpers: https://github.com/astropy/astropy-helpers
 
 Checking the code you have written
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

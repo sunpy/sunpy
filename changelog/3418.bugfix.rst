@@ -1,1 +1,0 @@
-Fixed a malformed call to `astropy.time.Time` in a test, which resulted in an incorrect time scale (UTC instead of TT).

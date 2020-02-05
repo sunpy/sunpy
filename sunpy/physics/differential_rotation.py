@@ -222,7 +222,7 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     >>> end_time = parse_time('2010-09-11 13:34:56')
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=start_time,
     ...              observer="earth", frame=Helioprojective)
-    >>> solar_rotate_coordinate(c, time=end_time)
+    >>> solar_rotate_coordinate(c, time=end_time)  # doctest: +IGNORE_WARNINGS
     <SkyCoord (Helioprojective: obstime=2010-09-11T13:34:56.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-11T13:34:56.000): (lon, lat, radius) in (deg, deg, AU)
         (9.40248797e-16, 7.24318962, 1.00669016)>): (Tx, Ty, distance) in (arcsec, arcsec, AU)
         (-363.04027419, 104.87807178, 1.00241935)>

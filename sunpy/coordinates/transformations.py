@@ -14,6 +14,7 @@ This module contains the functions for converting one
 
 """
 import logging
+from contextlib import contextmanager
 from copy import deepcopy
 from functools import wraps
 
@@ -55,7 +56,8 @@ except ImportError:
 
 RSUN_METERS = constants.get('radius').si.to(u.m)
 
-__all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
+__all__ = ['transform_with_sun_center',
+           'hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
            'hpc_to_hpc',
            'hcrs_to_hgs', 'hgs_to_hcrs',
@@ -64,6 +66,69 @@ __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hee_to_gse', 'gse_to_hee', 'gse_to_gse',
            'hgs_to_hci', 'hci_to_hgs', 'hci_to_hci',
            'hme_to_gei', 'gei_to_hme', 'gei_to_gei']
+
+
+# Boolean flag for whether to ignore the motion of the center of the Sun in inertial space
+_ignore_sun_motion = False
+
+
+@contextmanager
+def transform_with_sun_center():
+    """
+    Context manager for coordinate transformations to ignore the motion of the center of the Sun.
+
+    Normally, coordinates refer to a point in inertial space (relative to the barycenter of the
+    solar system).  Transforming to a different observation time does not move the point at all,
+    but rather only updates the coordinate representation as needed for the origin and axis
+    orientations at the new observation time.  However, the center of the Sun moves over time.
+    Thus, for example, a coordinate that lies on the surface of the Sun at one observation time
+    will not continue to lie on the surface of the Sun at other observation times.
+
+    Under this context manager, transformations will instead move the coordinate over time to
+    "follow" the translational motion of the center of Sun, thus maintaining the position of the
+    coordinate relative to the center of the Sun.
+
+    Examples
+    --------
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import HeliographicStonyhurst, transform_with_sun_center
+    >>> import astropy.units as u
+    >>> start_frame = HeliographicStonyhurst(obstime="2001-01-01")
+    >>> end_frame = HeliographicStonyhurst(obstime="2001-02-01")
+    >>> sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU, frame=start_frame)
+    >>> sun_center
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-01-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+        (0., 0., 0.)>
+    >>> sun_center.transform_to(end_frame)  # transformations do not normally follow Sun center
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+        (-156.66825767, 5.96399877, 0.00027959)>
+    >>> with transform_with_sun_center():
+    ...     sun_center.transform_to(end_frame)  # now following Sun center
+    <SkyCoord (HeliographicStonyhurst: obstime=2001-02-01T00:00:00.000): (lon, lat, radius) in (deg, deg, AU)
+        (0., 0., 0.)>
+
+    Notes
+    -----
+    This context manager accounts only for the motion of the center of the Sun, i.e.,
+    translational motion.  The motion of solar features due to any rotation of the Sun about its
+    rotational axis is not accounted for.
+
+    Due to the implementation approach, this context manager modifies transformations between only
+    these five coordinate frames:
+    `~sunpy.coordinates.frames.HeliographicStonyhurst`,
+    `~sunpy.coordinates.frames.HeliographicCarrington`,
+    `~sunpy.coordinates.frames.HeliocentricInertial`,
+    `~sunpy.coordinates.frames.Heliocentric`, and
+    `~sunpy.coordinates.frames.Helioprojective`.
+    """
+    try:
+        global _ignore_sun_motion
+
+        log.debug("Ignore the motion of the center of the Sun for transformations")
+        _ignore_sun_motion = True
+        yield
+    finally:
+        _ignore_sun_motion = False
 
 
 # Global counter to keep track of the layer of transformation
@@ -481,7 +546,7 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
 
     # All of the above is calculated for the HGS observation time
     # If the HCRS observation time is different, calculate the translation in origin
-    if np.any(hcrscoord.obstime != hgsframe.obstime):
+    if not _ignore_sun_motion and np.any(hcrscoord.obstime != hgsframe.obstime):
         sun_pos_old_icrs = get_body_barycentric('sun', hcrscoord.obstime)
         offset_icrf = sun_pos_icrs - sun_pos_old_icrs
     else:

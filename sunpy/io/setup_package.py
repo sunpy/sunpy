@@ -1,19 +1,19 @@
 import os
-import platform
 from glob import glob
+from collections import defaultdict
 from distutils.core import Extension
 
-from astropy_helpers import setup_helpers
+import numpy
+from extension_helpers import get_compiler
 
 
 def get_extensions():
 
-    if platform.system() == 'Windows':
+    if get_compiler() == 'msvc':
         return list()
     else:
-        # 'numpy' will be replaced with the proper path to the numpy includes
-        cfg = setup_helpers.DistutilsExtensionArgs()
-        cfg['include_dirs'].append('numpy')
+        cfg = defaultdict(list)
+        cfg['include_dirs'].append(numpy.get_include())
         cfg['sources'].extend(sorted(glob(
             os.path.join(os.path.dirname(__file__), 'src', 'ana', '*.c'))))
         cfg['extra_compile_args'].extend(['-std=c99', '-O3'])

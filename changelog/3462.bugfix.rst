@@ -1,3 +1,0 @@
-`sunpy.map.GenericMap` will no longer raise a warning if the posisition of the
-observer is not known for frames that don't need an observer, i.e. heliographic
-frames.

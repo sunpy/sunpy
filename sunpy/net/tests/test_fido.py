@@ -25,6 +25,7 @@ from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.datatype_factory_base import MultipleMatchError
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.tests.helpers import skip_windows
 
 TIMEFORMAT = config.get("general", "time_format")

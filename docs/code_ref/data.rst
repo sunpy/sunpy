@@ -9,3 +9,5 @@ for running the SunPy test suite.
 .. automodapi:: sunpy.data.sample
 
 .. automodapi:: sunpy.data.test
+
+.. automodapi:: sunpy.data.data_manager

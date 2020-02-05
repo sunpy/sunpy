@@ -56,7 +56,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         super().__init__(data, header, units, **kwargs)
 
     @peek_show
-    def peek(self):
+    def peek(self, **kwargs):
         """
         Plot the NoRH lightcurve TimeSeries.
 
@@ -66,6 +66,11 @@ class NoRHTimeSeries(GenericTimeSeries):
             import sunpy.timeseries
             norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_TIMESERIES, source='NoRH')
             norh.peek()
+
+        Parameters
+        ----------
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `axes.plot` functions
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
@@ -74,7 +79,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes = plt.gca()
         data_lab = str(self.meta.get('OBS-FREQ').values()).replace('[', '').replace(
             ']', '').replace('\'', '')
-        axes.plot(self.data.index, self.data, label=data_lab)
+        axes.plot(self.data.index, self.data, label=data_lab, **kwargs)
         axes.set_yscale("log")
         axes.set_ylim(1e-4, 1)
         axes.set_title('Nobeyama Radioheliograph')
@@ -83,7 +88,6 @@ class NoRHTimeSeries(GenericTimeSeries):
         axes.legend()
 
         return figure
-
 
     @classmethod
     def _parse_file(cls, filepath):
