@@ -14,14 +14,12 @@ class Series(SimpleAttr):
 
     This is the list of `Series <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`__.
     """
-    pass
 
 
 class Keys(SimpleAttr):
     """
     Keys choose which keywords to fetch while making a query request.
     """
-    pass
 
 
 class PrimeKey(DataAttr):
@@ -29,7 +27,7 @@ class PrimeKey(DataAttr):
     Prime Keys
     """
     def __init__(self, label, value):
-        super().__init()
+        super().__init__(label, value)
         self.label = label
         self.value = value
 
@@ -47,7 +45,7 @@ class Segment(SimpleAttr):
     one present for each record e.g. 'image'.
     """
     def __init__(self, value):
-        super().__init__()
+        super().__init__(value)
         self.value = value
 
     def __repr__(self):
@@ -64,14 +62,12 @@ class Protocol(SimpleAttr):
     ("FITS", "JPEG", "MPG", "MP4", or "as-is").
     Only FITS is supported, the others will require extra keywords.
     """
-    pass
 
 
 class Notify(SimpleAttr):
     """
     An email address to get a notification to when JSOC has staged your request.
     """
-
     def __init__(self, value):
         super().__init__(value)
         if value.find('@') == -1:
