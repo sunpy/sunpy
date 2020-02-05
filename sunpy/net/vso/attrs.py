@@ -18,13 +18,15 @@ AND-expression, if you still attempt to do so it is called a collision. For a
 quick example think about how the system should handle Instrument('aia') &
 Instrument('eit').
 """
+import sys
+import warnings
+from functools import singledispatch as _singledispatch
 
 import astropy.units as u
 
-from functools import singledispatch as _singledispatch
-
-from .. import attr as _attr
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .. import _attrs
+from .. import attr as _attr
 
 __all__ = ['Extent', 'Field', 'Provider', 'Source', 'Physobs', 'Pixels',
            'Filter', 'Quicklook', 'PScale']
@@ -368,3 +370,23 @@ def _(attr, results):
         and
         it.extent.type.lower() == attr.type.lower()
     }
+
+
+# Deprecate old classes
+class _DeprecatedAttr:
+    def __init__(self, *args, **kwargs):
+        name = type(self).__name__
+        warnings.warn(f"sunpy.net.vso.attrs.{name} is deprecated, please use sunpy.net.attrs.{name}", SunpyDeprecationWarning)
+        super().__init__(*args, **kwargs)
+
+_deprecated_names = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution']
+
+for _name in _deprecated_names:
+    # Dynamically construct a class which inherits the class with the
+    # deprecation warning in the __init__ first and the class it's deprecating
+    # second.
+    cls = type(_name, (_DeprecatedAttr, getattr(_attrs, _name)), {})
+    # Add the new class to the modules namespace
+    setattr(sys.modules[__name__], _name, cls)
+
+__all__ += _deprecated_names
