@@ -31,8 +31,7 @@ TRANGE = a.Time('2014/6/4 00:00:00', '2014/6/4 00:07:00')
                            a.Instrument(''), a.Wavelength(6563*u.AA))])
 def test_query(time, physobs, instrument, wavelength):
     qr = GONGClient.search(time, physobs, instrument, wavelength)
-    res = GONGClient.get(qr)
-    download_list = res.wait()
+    download_list = GONGClient.fetch(qr)
     assert len(download_list) == len(qr)
 
 
@@ -50,10 +49,10 @@ def test_can_handle_query(time, instrument, physobs, wavelength, expected):
 @pytest.mark.remote_data
 def test_query_range():
     qr = GONGClient.search(a.Time('2016/6/4 00:00:00', '2016/6/4 00:30:00'),
-                           physobs='LOS_MAGNETIC_FIELD', instrument='bigbear')
+                           a.Physobs('LOS_MAGNETIC_FIELD'), a.Instrument('bigbear'))
     assert len(qr) == 3
-    assert qr.time_range().start.date() == datetime.date(2016, 6, 4)
-    assert qr.time_range().end.date() == datetime.date(2016, 6, 4)
+    assert qr.time_range().start.datetime == datetime.datetime(2016, 6, 4)
+    assert qr.time_range().end.datetime == datetime.datetime(2016, 6, 4, 0, 30, 0)
 
 
 # Downloads 4 fits files each of
@@ -64,8 +63,7 @@ def test_query_range():
                            a.Instrument('udaipur'), a.Wavelength(676.8*u.nm))])
 def test_get(time, physobs, instrument, wavelength):
     qr = GONGClient.search(time, physobs, instrument, wavelength)
-    res = GONGClient.get(qr)
-    download_list = res.wait()
+    download_list = GONGClient.fetch(qr)
     assert len(qr) == len(download_list)
 
 
@@ -102,11 +100,11 @@ def test_farside_can_handle_query():
 
 @pytest.mark.remote_data
 def test_farside_query():
-    qr = FClient.search(a.Time('2016/1/1', '2016/1/5'), instrument='farside')
+    qr = FClient.search(a.Time('2016/1/1', '2016/1/5'), a.Instrument('farside'))
     assert isinstance(qr, QueryResponse)
     assert len(qr) == 9
-    assert qr.time_range().start.date() == datetime.date(2016, 1, 1)
-    assert qr.time_range().end.date() == datetime.date(2016, 1, 5)
+    assert qr.time_range().start == datetime.datetime(2016, 1, 1)
+    assert qr.time_range().end == datetime.datetime(2016, 1, 5)
 
 
 # Downloads 7 fits files each of size
@@ -117,8 +115,7 @@ def test_farside_query():
                            a.Instrument('farside'))])
 def test_farside_get(time, instrument):
     qr = FClient.search(time, instrument)
-    res = FClient.get(qr)
-    download_list = res.wait()
+    download_list = FClient.fetch(qr)
     assert len(download_list) == len(qr)
 
 

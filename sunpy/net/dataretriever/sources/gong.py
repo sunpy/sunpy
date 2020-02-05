@@ -38,33 +38,18 @@ class GONGClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Physobs('intensity'))  #doctest: +REMOTE_DATA
+    >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 02:00:00'), a.Instrument('udaipur'), a.Physobs('LOS_MAGNETIC_FIELD'))  #doctest: +REMOTE_DATA
     >>> print(res)  #doctest: +REMOTE_DATA
-    [<Table length=32>
-     Start Time           End Time      Source     Instrument
-       str19               str19         str4        str18
-    ------------------- ------------------- ------ ------------------
-    2016-06-04 00:00:00 2016-06-05 00:00:00   GONG Data not Available
-    2016-06-05 00:00:00 2016-06-06 00:00:00   GONG Data not Available
-    2016-06-06 00:00:00 2016-06-07 00:00:00   GONG Data not Available
-    2016-06-07 00:00:00 2016-06-08 00:00:00   GONG Data not Available
-    2016-06-08 00:00:00 2016-06-09 00:00:00   GONG Data not Available
-    2016-06-09 00:00:00 2016-06-10 00:00:00   GONG Data not Available
-    2016-06-10 00:00:00 2016-06-11 00:00:00   GONG Data not Available
-    2016-06-11 00:00:00 2016-06-12 00:00:00   GONG Data not Available
-    2016-06-12 00:00:00 2016-06-13 00:00:00   GONG Data not Available
-    2016-06-13 00:00:00 2016-06-14 00:00:00   GONG Data not Available
-                    ...                 ...    ...                ...
-    2016-06-26 00:00:00 2016-06-27 00:00:00   GONG Data not Available
-    2016-06-27 00:00:00 2016-06-28 00:00:00   GONG Data not Available
-    2016-06-28 00:00:00 2016-06-29 00:00:00   GONG Data not Available
-    2016-06-29 00:00:00 2016-06-30 00:00:00   GONG Data not Available
-    2016-06-30 00:00:00 2016-07-01 00:00:00   GONG Data not Available
-    2016-07-01 00:00:00 2016-07-02 00:00:00   GONG Data not Available
-    2016-07-02 00:00:00 2016-07-03 00:00:00   GONG Data not Available
-    2016-07-03 00:00:00 2016-07-04 00:00:00   GONG Data not Available
-    2016-07-04 00:00:00 2016-07-05 00:00:00   GONG Data not Available
-    2016-07-05 00:00:00 2016-07-06 00:00:00   GONG Data not Available]
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the GONGClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str4     str7       str3   
+    ------------------- ------------------- ------ ---------- ----------
+    2016-06-04 00:00:00 2016-06-04 02:00:00   GONG    udaipur        nan
+    2016-06-04 00:00:00 2016-06-04 02:00:00   GONG    udaipur        nan
+    <BLANKLINE>
+    <BLANKLINE>
     """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
@@ -91,7 +76,7 @@ class GONGClient(GenericClient):
         if not physobs_in:
             patterns = [url_pattern_1, url_pattern_2]
         else:
-            if kwargs['physobs'] == 'LOS_MAGNETIC_FIELD':
+            if kwargs['physobs'].lower() in ['intensity', 'los_magnetic_field']:
                 patterns.append(url_pattern_1)
             else:
                 # Differentiate on basis of wavelength
@@ -130,9 +115,9 @@ class GONGClient(GenericClient):
             if (pattern_ == url_pattern_1):
                 if not physobs_in:
                     for instr in instruments_to:
-                        arr = Scraper(pattern_, id='i', ObsId=instr).filelist(timerange)
+                        arr = Scraper(pattern_, id='i', ObsID=instr).filelist(timerange)
                         urls.extend(arr)
-                        arr = Scraper(pattern_, id='b', ObsId=instr).filelist(timerange)
+                        arr = Scraper(pattern_, id='b', ObsID=instr).filelist(timerange)
                         urls.extend(arr)
                 else:
                     for instr in instruments_to:
@@ -205,15 +190,19 @@ class FARSIDEClient(GenericClient):
     >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2015/4/2','2015/4/4'), a.Instrument('farside')) #doctest: +REMOTE_DATA
     >>> print(results)  #doctest: +REMOTE_DATA
-    [<Table length=4>
-         Start Time           End Time      Source Instrument
-           str19               str19         str4     str7
-    ------------------- ------------------- ------ ----------
-    2015-04-02 00:00:00 2015-04-03 00:00:00   GONG    farside
-    2015-04-03 00:00:00 2015-04-04 00:00:00   GONG    farside
-    2015-04-04 00:00:00 2015-04-05 00:00:00   GONG    farside
-    2015-04-05 00:00:00 2015-04-06 00:00:00   GONG    farside]
-
+    Results from 1 Provider:
+    <BLANKLINE>
+    5 Results from the FARSIDEClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str4     str7       str3   
+    ------------------- ------------------- ------ ---------- ----------
+    2015-04-02 00:00:00 2015-04-04 00:00:00   GONG    farside        nan
+    2015-04-02 00:00:00 2015-04-04 00:00:00   GONG    farside        nan
+    2015-04-02 00:00:00 2015-04-04 00:00:00   GONG    farside        nan
+    2015-04-02 00:00:00 2015-04-04 00:00:00   GONG    farside        nan
+    2015-04-02 00:00:00 2015-04-04 00:00:00   GONG    farside        nan
+    <BLANKLINE>
+    <BLANKLINE>
     >>> response = Fido.fetch(results)  #doctest: +SKIP
     """
     def _get_url_for_timerange(self, timerange, **kwargs):
