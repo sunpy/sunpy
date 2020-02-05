@@ -169,8 +169,10 @@ class UnifiedResponse(Sequence):
 
         Returns
         -------
-        list
-            a list of `astropy.table.Table`, consisting of data from the QueryResponse
+        `list`
+            A list of `astropy.table.Table`, consisting of data either from the
+            `sunpy.net.dataretriever.client.QueryResponse`, `sunpy.net.vso.QueryResponse` or
+            `sunpy.net.jsoc.JSOCClient`.
         """
         tables = []
         for block in self.responses:
