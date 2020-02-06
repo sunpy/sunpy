@@ -2,7 +2,7 @@ import pytest
 
 from sunpy.time.timerange import TimeRange
 from sunpy.time import parse_time
-from sunpy.net.vso.attrs import Time, Instrument
+from sunpy.net._attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.lyra as lyra
 from sunpy.net.fido_factory import UnifiedResponse

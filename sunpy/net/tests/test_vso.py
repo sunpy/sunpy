@@ -7,6 +7,7 @@ from parfive import Results
 
 import astropy.units as u
 
+from sunpy.net import _attrs as core_attrs
 from sunpy.net import attr, vso
 from sunpy.net.vso import QueryResponse
 from sunpy.net.vso import attrs as va
@@ -26,7 +27,7 @@ class MockQRRecord:
         self.size = size
         self.time = MockObject(start=start_time, end=end_time)
         self.source = va.Source(source)
-        self.instrument = va.Instrument(instrument)
+        self.instrument = core_attrs.Instrument(instrument)
         self.extent = MockObject(type=None if extent_type is None else extent_type.type)
 
 
@@ -56,7 +57,7 @@ def mock_response():
 
 @pytest.fixture
 def eit(request):
-    return va.Instrument('eit')
+    return core_attrs.Instrument('eit')
 
 
 @pytest.fixture
@@ -67,92 +68,92 @@ def client(request):
 def test_simpleattr_apply():
     a = attr.ValueAttr({('test', ): 1})
     dct = {}
-    va.walker.apply(a, None, dct)
+    va._walker.apply(a, None, dct)
     assert dct['test'] == 1
 
 
 def test_Time_timerange():
-    t = va.Time(TimeRange('2012/1/1', '2012/1/2'))
-    assert isinstance(t, va.Time)
+    t = core_attrs.Time(TimeRange('2012/1/1', '2012/1/2'))
+    assert isinstance(t, core_attrs.Time)
     assert t.min == parse_time((2012, 1, 1))
     assert t.max == parse_time((2012, 1, 2))
 
 
 def test_input_error():
     with pytest.raises(ValueError):
-        va.Time('2012/1/1')
+        core_attrs.Time('2012/1/1')
 
 
 @pytest.mark.remote_data
 def test_simpleattr_create(client):
     a = attr.ValueAttr({('instrument', ): 'eit'})
-    assert va.walker.create(a, client.api)[0].instrument == 'eit'
+    assert va._walker.create(a, client.api)[0].instrument == 'eit'
 
 
 def test_simpleattr_and_duplicate():
-    attr = va.Instrument('foo')
-    pytest.raises(TypeError, lambda: attr & va.Instrument('bar'))
+    attr = core_attrs.Instrument('foo')
+    pytest.raises(TypeError, lambda: attr & core_attrs.Instrument('bar'))
     attr |= va.Source('foo')
-    pytest.raises(TypeError, lambda: attr & va.Instrument('bar'))
-    otherattr = va.Instrument('foo') | va.Source('foo')
+    pytest.raises(TypeError, lambda: attr & core_attrs.Instrument('bar'))
+    otherattr = core_attrs.Instrument('foo') | va.Source('foo')
     pytest.raises(TypeError, lambda: attr & otherattr)
-    pytest.raises(TypeError, lambda: (attr | otherattr) & va.Instrument('bar'))
-    tst = va.Instrument('foo') & va.Source('foo')
+    pytest.raises(TypeError, lambda: (attr | otherattr) & core_attrs.Instrument('bar'))
+    tst = core_attrs.Instrument('foo') & va.Source('foo')
     pytest.raises(TypeError, lambda: tst & tst)
 
 
 def test_simpleattr_or_eq():
-    attr = va.Instrument('eit')
+    attr = core_attrs.Instrument('eit')
 
     assert attr | attr == attr
-    assert attr | va.Instrument('eit') == attr
+    assert attr | core_attrs.Instrument('eit') == attr
 
 
 def test_complexattr_apply():
     tst = {('test', 'foo'): 'a', ('test', 'bar'): 'b'}
     a = attr.ValueAttr(tst)
     dct = {'test': {}}
-    va.walker.apply(a, None, dct)
+    va._walker.apply(a, None, dct)
     assert dct['test'] == {'foo': 'a', 'bar': 'b'}
 
 
 @pytest.mark.remote_data
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
-    assert va.walker.create(a, client.api)[0].time['start'] == 'test'
+    assert va._walker.create(a, client.api)[0].time['start'] == 'test'
 
 
 def test_complexattr_and_duplicate():
-    attr = va.Time((2011, 1, 1), (2011, 1, 1, 1))
+    attr = core_attrs.Time((2011, 1, 1), (2011, 1, 1, 1))
     pytest.raises(TypeError,
-                  lambda: attr & va.Time((2011, 2, 1), (2011, 2, 1, 1)))
+                  lambda: attr & core_attrs.Time((2011, 2, 1), (2011, 2, 1, 1)))
     attr |= va.Source('foo')
     pytest.raises(TypeError,
-                  lambda: attr & va.Time((2011, 2, 1), (2011, 2, 1, 1)))
+                  lambda: attr & core_attrs.Time((2011, 2, 1), (2011, 2, 1, 1)))
 
 
 def test_complexattr_or_eq():
-    attr = va.Time((2011, 1, 1), (2011, 1, 1, 1))
+    attr = core_attrs.Time((2011, 1, 1), (2011, 1, 1, 1))
 
     assert attr | attr == attr
-    assert attr | va.Time((2011, 1, 1), (2011, 1, 1, 1)) == attr
+    assert attr | core_attrs.Time((2011, 1, 1), (2011, 1, 1, 1)) == attr
 
 
 def test_attror_and():
-    attr = va.Instrument('foo') | va.Instrument('bar')
+    attr = core_attrs.Instrument('foo') | core_attrs.Instrument('bar')
     one = attr & va.Source('bar')
-    other = ((va.Instrument('foo') & va.Source('bar')) |
-             (va.Instrument('bar') & va.Source('bar')))
+    other = ((core_attrs.Instrument('foo') & va.Source('bar')) |
+             (core_attrs.Instrument('bar') & va.Source('bar')))
     assert one == other
 
 
 def test_wave_inputQuantity():
     wrong_type_mesage = "Wave inputs must be astropy Quantities"
     with pytest.raises(TypeError) as excinfo:
-        va.Wavelength(10, 23)
+        core_attrs.Wavelength(10, 23)
         assert excinfo.value.message == wrong_type_mesage
     with pytest.raises(TypeError) as excinfo:
-        va.Wavelength(10 * u.AA, 23)
+        core_attrs.Wavelength(10 * u.AA, 23)
         assert excinfo.value.message == wrong_type_mesage
 
 
@@ -169,73 +170,73 @@ def test_wave_toangstrom():
               (1e6, 1 * u.MeV)]
 
     for factor, unit in energy:
-        w = va.Wavelength((62 / factor) * unit, (62 / factor) * unit)
+        w = core_attrs.Wavelength((62 / factor) * unit, (62 / factor) * unit)
         assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
 
-    w = va.Wavelength(62 * u.eV, 62 * u.eV)
+    w = core_attrs.Wavelength(62 * u.eV, 62 * u.eV)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-    w = va.Wavelength(62e-3 * u.keV, 62e-3 * u.keV)
+    w = core_attrs.Wavelength(62e-3 * u.keV, 62e-3 * u.keV)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
 
     for factor, unit in frequency:
-        w = va.Wavelength((1.506e16 / factor) * unit, (1.506e16 / factor) * unit)
+        w = core_attrs.Wavelength((1.506e16 / factor) * unit, (1.506e16 / factor) * unit)
         assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
 
-    w = va.Wavelength(1.506e16 * u.Hz, 1.506e16 * u.Hz)
+    w = core_attrs.Wavelength(1.506e16 * u.Hz, 1.506e16 * u.Hz)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-    w = va.Wavelength(1.506e7 * u.GHz, 1.506e7 * u.GHz)
+    w = core_attrs.Wavelength(1.506e7 * u.GHz, 1.506e7 * u.GHz)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
 
     with pytest.raises(u.UnitsError) as excinfo:
-        va.Wavelength(10 * u.g, 23 * u.g)
+        core_attrs.Wavelength(10 * u.g, 23 * u.g)
     assert ('This unit is not convertable to any of [Unit("Angstrom"), Unit("kHz"), '
             'Unit("keV")]' in str(excinfo.value))
 
 
 def test_time_xor():
-    one = va.Time((2010, 1, 1), (2010, 1, 2))
-    a = one ^ va.Time((2010, 1, 1, 1), (2010, 1, 1, 2))
+    one = core_attrs.Time((2010, 1, 1), (2010, 1, 2))
+    a = one ^ core_attrs.Time((2010, 1, 1, 1), (2010, 1, 1, 2))
 
     assert a == attr.AttrOr(
-        [va.Time((2010, 1, 1), (2010, 1, 1, 1)),
-         va.Time((2010, 1, 1, 2), (2010, 1, 2))])
+        [core_attrs.Time((2010, 1, 1), (2010, 1, 1, 1)),
+         core_attrs.Time((2010, 1, 1, 2), (2010, 1, 2))])
 
-    a ^= va.Time((2010, 1, 1, 4), (2010, 1, 1, 5))
+    a ^= core_attrs.Time((2010, 1, 1, 4), (2010, 1, 1, 5))
     assert a == attr.AttrOr([
-        va.Time((2010, 1, 1), (2010, 1, 1, 1)),
-        va.Time((2010, 1, 1, 2), (2010, 1, 1, 4)),
-        va.Time((2010, 1, 1, 5), (2010, 1, 2))
+        core_attrs.Time((2010, 1, 1), (2010, 1, 1, 1)),
+        core_attrs.Time((2010, 1, 1, 2), (2010, 1, 1, 4)),
+        core_attrs.Time((2010, 1, 1, 5), (2010, 1, 2))
     ])
 
 
 def test_wave_xor():
-    one = va.Wavelength(0 * u.AA, 1000 * u.AA)
-    a = one ^ va.Wavelength(200 * u.AA, 400 * u.AA)
+    one = core_attrs.Wavelength(0 * u.AA, 1000 * u.AA)
+    a = one ^ core_attrs.Wavelength(200 * u.AA, 400 * u.AA)
 
-    assert a == attr.AttrOr([va.Wavelength(0 * u.AA, 200 * u.AA),
-                             va.Wavelength(400 * u.AA, 1000 * u.AA)])
+    assert a == attr.AttrOr([core_attrs.Wavelength(0 * u.AA, 200 * u.AA),
+                             core_attrs.Wavelength(400 * u.AA, 1000 * u.AA)])
 
-    a ^= va.Wavelength(600 * u.AA, 800 * u.AA)
+    a ^= core_attrs.Wavelength(600 * u.AA, 800 * u.AA)
 
     assert a == attr.AttrOr(
-        [va.Wavelength(0 * u.AA, 200 * u.AA), va.Wavelength(400 * u.AA, 600 * u.AA),
-         va.Wavelength(800 * u.AA, 1000 * u.AA)])
+        [core_attrs.Wavelength(0 * u.AA, 200 * u.AA), core_attrs.Wavelength(400 * u.AA, 600 * u.AA),
+         core_attrs.Wavelength(800 * u.AA, 1000 * u.AA)])
 
 
 def test_err_dummyattr_create():
     with pytest.raises(TypeError):
-        va.walker.create(attr.DummyAttr(), None, {})
+        va._walker.create(attr.DummyAttr(), None, {})
 
 
 def test_err_dummyattr_apply():
     with pytest.raises(TypeError):
-        va.walker.apply(attr.DummyAttr(), None, {})
+        va._walker.apply(attr.DummyAttr(), None, {})
 
 
 def test_wave_repr():
     """Tests the __repr__ method of class vso.attrs.Wave"""
-    wav = vso.attrs.Wavelength(12 * u.AA, 16 * u.AA)
-    moarwav = vso.attrs.Wavelength(15 * u.AA, 12 * u.AA)
+    wav = core_attrs.Wavelength(12 * u.AA, 16 * u.AA)
+    moarwav = core_attrs.Wavelength(15 * u.AA, 12 * u.AA)
     assert repr(wav) == "<Wavelength(12.0, 16.0, 'Angstrom')>"
     assert repr(moarwav) == "<Wavelength(12.0, 15.0, 'Angstrom')>"
 
@@ -258,8 +259,8 @@ def test_path(client, tmpdir):
     it is not specified.
     """
     qr = client.search(
-        va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
-        va.Instrument('aia'), va.Wavelength(171 * u.AA))
+        core_attrs.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
+        core_attrs.Instrument('aia'), core_attrs.Wavelength(171 * u.AA))
     tmp_dir = tmpdir / "{file}"
     files = client.fetch(qr, path=tmp_dir)
 
@@ -286,9 +287,9 @@ def test_no_download(client):
             download_called = True
 
     # this should fail
-    stereo = (va.Detector('STEREO_B') &
-              va.Instrument('EUVI') &
-              va.Time('1900-01-01', '1900-01-01T00:10:00'))
+    stereo = (core_attrs.Detector('STEREO_B') &
+              core_attrs.Instrument('EUVI') &
+              core_attrs.Time('1900-01-01', '1900-01-01T00:10:00'))
     qr = client.search(stereo)
     downloader = MockDownloader()
     res = client.fetch(qr, wait=False, downloader=downloader)
@@ -298,10 +299,10 @@ def test_no_download(client):
 
 def test_non_str_instrument():
     # Sanity Check
-    assert isinstance(va.Instrument("lyra"), va.Instrument)
+    assert isinstance(core_attrs.Instrument("lyra"), core_attrs.Instrument)
 
     with pytest.raises(ValueError):
-        va.Instrument(1234)
+        core_attrs.Instrument(1234)
 
 
 @pytest.mark.parametrize("waverange, as_dict", [
@@ -357,7 +358,7 @@ def test_QueryResponse_build_table_defaults():
 
     instrument_ = table['Instrument'].data
     assert len(instrument_) == 1
-    assert instrument_[0] == str(va.Instrument('aia'))
+    assert instrument_[0] == str(core_attrs.Instrument('aia'))
 
 
 def test_QueryResponse_build_table_with_extent_type():
@@ -381,7 +382,7 @@ def test_QueryResponse_build_table_with_no_start_time():
     """
     a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
-    records = (MockQRRecord(end_time=a_st.strftime(va.TIMEFORMAT)),)
+    records = (MockQRRecord(end_time=a_st.strftime(va._TIMEFORMAT)),)
 
     qr = vso.QueryResponse(records)
     table = qr.build_table()
@@ -403,7 +404,7 @@ def test_QueryResponse_build_table_with_no_end_time():
     """
     a_st = parse_time((2016, 2, 14, 8, 8, 12))
 
-    records = (MockQRRecord(start_time=a_st.strftime(va.TIMEFORMAT)),)
+    records = (MockQRRecord(start_time=a_st.strftime(va._TIMEFORMAT)),)
 
     qr = vso.QueryResponse(records)
     table = qr.build_table()
@@ -422,8 +423,8 @@ def test_vso_hmi(client, tmpdir):
     """
     This is a regression test for https://github.com/sunpy/sunpy/issues/2284
     """
-    res = client.search(va.Time('2017-09-02 23:52:00', '2017-09-02 23:54:00'),
-                        va.Instrument('HMI') | va.Instrument('AIA'))
+    res = client.search(core_attrs.Time('2017-09-02 23:52:00', '2017-09-02 23:54:00'),
+                        core_attrs.Instrument('HMI') | core_attrs.Instrument('AIA'))
 
     dr = client.make_getdatarequest(res)
 
@@ -473,15 +474,15 @@ def test_vso_error(client):
     with pytest.warns(SunpyUserWarning,
         match="VSO-C500 :soap:Server.Transport : 404 Not Found"):
         client.search(
-            va.Time('2019/12/30', '2019/12/31'),
-            va.Instrument('ovsa'))
+            core_attrs.Time('2019/12/30', '2019/12/31'),
+            core_attrs.Instrument('ovsa'))
 
 
 @pytest.mark.remote_data
 def test_incorrect_content_disposition(client):
     results = client.search(
-        va.Time('2011/1/1 01:00', '2011/1/1 01:02'),
-        va.Instrument('mdi'))
+        core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
+        core_attrs.Instrument('mdi'))
     files = client.fetch(results[0:1])
 
     assert len(files) == 1

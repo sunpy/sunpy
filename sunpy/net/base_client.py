@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 
 
+__all__ = ['BaseClient']
+
+
 class BaseClient(ABC):
     """
     This defines the Abstract Base Class for each download client.
@@ -9,11 +12,11 @@ class BaseClient(ABC):
     These are `search`, `fetch` and `_can_handle_query`.
     The last one ensures that each download client can be registered with Fido.
 
-    All download clients should subclass `~sunpy.net.dataretriever.GenericClient`.
+    Most download clients should subclass `~sunpy.net.dataretriever.GenericClient`.
     If the structure of `~sunpy.net.dataretriever.GenericClient`
     is not useful you should use `~sunpy.net.BaseClient`.
     `~sunpy.net.vso.VSOClient` and `~sunpy.net.jsoc.JSOCClient`
-    are examples of download clients that subclass `BaseClient`.
+    are examples of download clients that subclass ``BaseClient``.
     """
 
     _registry = dict()
