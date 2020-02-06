@@ -1,0 +1,2 @@
+A new example gallery example "Plotting a difference image" has been added,
+which can be used for base difference or running difference images.
