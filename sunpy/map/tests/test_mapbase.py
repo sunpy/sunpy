@@ -310,6 +310,21 @@ def test_norm_cmap_setters(generic_map):
     assert smap.norm == norm
 
 
+def test_norm_cmap_new_instance(generic_map):
+    cmap = 'cool'
+    norm = colors.Normalize(vmin=1., vmax=1.)
+    plot_settings = {'title': 'Generic Map'}
+
+    smap = sunpy.map.Map(generic_map.data, generic_map.meta)
+    with pytest.warns(SunpyDeprecationWarning):
+        new_smap = smap._new_instance(smap.data, smap.meta, cmap=cmap,
+                                      norm=norm, plot_settings=plot_settings)
+
+        assert new_smap.cmap == plt.get_cmap(cmap)
+        assert new_smap.norm == norm
+        assert new_smap.plot_settings == plot_settings
+
+
 def test_plot_settings_deprecate(generic_map):
     cmap = 'cool'
     norm = colors.Normalize(vmin=1., vmax=1.)

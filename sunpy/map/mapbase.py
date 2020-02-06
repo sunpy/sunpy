@@ -174,9 +174,6 @@ class GenericMap(NDData):
             warnings.warn("This file contains more than 2 dimensions. "
                           "Data will be truncated to the first two dimensions.", SunpyUserWarning)
 
-        cmap = kwargs.pop('cmap', 'gray')
-        norm = kwargs.pop('norm', None)
-
         super().__init__(data, meta=header, **kwargs)
 
         # Correct possibly missing meta keywords
@@ -199,8 +196,9 @@ class GenericMap(NDData):
         self._shift = SpatialPair(0 * u.arcsec, 0 * u.arcsec)
 
         # Visualization attributes
-        self.cmap = cmap
-        self.norm = norm
+        self.cmap = 'gray'
+        self.norm = None
+        
         self.plot_settings = plot_settings
 
         if self.plot_settings:
@@ -248,12 +246,15 @@ class GenericMap(NDData):
                                tmf=TIME_FORMAT) + self.data.__repr__()
 
     @classmethod
-    def _new_instance(cls, data, meta, **kwargs):
+    def _new_instance(cls, data, meta, cmap='gray', norm=None, plot_settings=None, **kwargs):
         """
         Instantiate a new instance of this class using given data.
         This is a shortcut for ``type(self)(data, meta)``.
         """
-        return cls(data, meta, **kwargs)
+        new = cls(data, meta, plot_settings=plot_settings, **kwargs)
+        new.cmap = cmap
+        new.norm = norm
+        return new
 
     def _get_lon_lat(self, frame):
         """
