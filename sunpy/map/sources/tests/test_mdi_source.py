@@ -53,5 +53,5 @@ def test_waveunit(mdi):
 def test_observer(mdi):
     assert isinstance(mdi.observer_coordinate.frame, frames.HeliographicStonyhurst)
     assert u.allclose(mdi.observer_coordinate.lat, -5.774028172878*u.deg)
-    assert u.allclose(mdi.observer_coordinate.lon, -0.10181577*u.deg)
+    assert u.allclose(mdi.observer_coordinate.lon, -0.10071469*u.deg)
     assert u.allclose(mdi.observer_coordinate.radius, 0.9739569156244*u.AU)
