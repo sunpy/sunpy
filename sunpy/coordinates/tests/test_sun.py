@@ -194,9 +194,30 @@ def test_L0():
 
 def test_L0_array_time():
     # Validate against published values from the Astronomical Almanac (2013)
-    sun_L0 = sun.L0(Time(['2013-04-01', '2013-12-01'], scale='tt'))
-    assert_quantity_allclose(sun_L0[0], 221.44*u.deg, atol=5e-3*u.deg)
-    assert_quantity_allclose(sun_L0[1], 237.83*u.deg, atol=5e-3*u.deg)
+    sun_L0 = sun.L0(Time(['2013-01-01',
+                          '2013-02-01',
+                          '2013-03-01',
+                          '2013-04-01',
+                          '2013-05-01',
+                          '2013-06-01',
+                          '2013-07-01',
+                          '2013-08-01',
+                          '2013-09-01',
+                          '2013-10-01',
+                          '2013-11-01',
+                          '2013-12-01'], scale='tt'))
+    assert_quantity_allclose(sun_L0, [326.98,
+                                      278.78,
+                                      270.07,
+                                      221.44,
+                                      185.30,
+                                      135.30,
+                                      98.22,
+                                      48.03,
+                                      358.28,
+                                      322.22,
+                                      273.31,
+                                      237.83]*u.deg, atol=5e-3*u.deg)
 
 
 def test_P():
