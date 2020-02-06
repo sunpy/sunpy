@@ -1,0 +1,9 @@
+Added support to various Ground Clients for sunpy.
+
+1) `GONGClient` and `FARSIDEClient` in `~sunpy.net.dataretriever.sources.gong`.
+
+2) `VSMClient` in `~sunpy.net.dataretriever.sources.vsm`.
+
+3) `KanzelhoheClient` in `~sunpy.net.dataretriever.sources.kanzelhohe`.
+
+4) `BBSOClient` in `~sunpy.net.dataretriever.sources.bbso`.
