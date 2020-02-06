@@ -420,7 +420,7 @@ affiliations:
   index: 51
 date: 3 October 2019
 bibliography: paper.bib
-aas-doi: Add DOI HERE
+aas-doi: 10.3847/1538-4357/ab4f7a
 aas-journal: The Astrophysical Journal
 ...
 
