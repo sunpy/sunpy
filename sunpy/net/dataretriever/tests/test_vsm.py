@@ -4,7 +4,7 @@ import pytest
 import datetime
 
 from astropy import units as u
-from sunpy.net.vso.attrs import Time, Instrument, Physobs, Wavelength
+from sunpy.net.attrs import Time, Instrument, Physobs, Wavelength
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
