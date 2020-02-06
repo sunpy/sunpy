@@ -45,8 +45,6 @@ files = Fido.fetch(res[:, 0])
 # reduce the computation time.
 
 map_aia, map_hmi = [m.resample((1024, 1024)*u.pix) for m in sunpy.map.Map(sorted(files))]
-map_hmi.cmap = "hmimag"
-map_hmi.norm = plt.Normalize(-2000, 2000)
 
 ######################################################################
 # Plot both images side by side.
@@ -57,7 +55,7 @@ ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
 map_aia.plot(axes=ax1)
 
 ax2 = fig.add_subplot(1, 2, 2, projection=map_hmi)
-map_hmi.plot(axes=ax2)
+map_hmi.plot(axes=ax2, cmap="hmimag", norm=plt.Normalize(-2000, 2000))
 
 ######################################################################
 # We can now reproject the HMI image to the WCS of the AIA image. We are using
@@ -73,15 +71,12 @@ output, footprint = reproject_interp(map_hmi, map_aia.wcs, map_aia.data.shape)
 # Construct an output map and set some nice plotting defaults.
 
 out_hmi = sunpy.map.Map(output, map_aia.wcs)
-out_hmi.cmap = "hmimag"
-out_hmi.norm = plt.Normalize(-1500, 1500)
 
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
 map_aia.plot(axes=ax1)
 ax2 = fig.add_subplot(1, 2, 2, projection=out_hmi)
-out_hmi.plot(axes=ax2)
-
+out_hmi.plot(axes=ax2, cmap="hmimag", norm=plt.Normalize(-1500, 1500))
 
 ######################################################################
 # As both of these images are now on the same pixel grid we can directly plot

@@ -114,13 +114,11 @@ array, footprint = reproject_and_coadd(maps, out_wcs, shape_out,
 
 ######################################################################
 # To display the output we construct a new map using the new array and our
-# generated header. We also borrow the colormap and normalization attributes from the AIA map.
+# generated header.
 
 outmap = sunpy.map.Map((array, header))
-outmap.cmap = maps[0].cmap
-outmap.norm = maps[0].norm
 
-outmap.plot()
+outmap.plot(cmap=maps[0].cmap, norm=maps[0].norm)
 plt.show()
 
 ######################################################################
@@ -184,13 +182,13 @@ array, _ = reproject_and_coadd(maps, out_wcs, shape_out,
 # little.
 
 outmap = sunpy.map.Map((array, header))
-outmap.cmap = maps[0].cmap
-outmap.norm = maps[0].norm
+norm = maps[0].norm
+norm.vmin = 400
 outmap.nickname = 'AIA + EUVI/A + EUVI/B'
 
 plt.figure(figsize=(10, 5))
 ax = plt.subplot(projection=out_wcs)
-im = outmap.plot(vmin=400)
+im = outmap.plot(cmap=maps[0].cmap, norm=norm))
 
 lon, lat = ax.coords
 

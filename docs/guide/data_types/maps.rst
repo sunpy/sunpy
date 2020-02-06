@@ -347,10 +347,6 @@ plot changes the default AIA color table to use an inverse Grey color table.
     plt.colorbar()
     plt.show()
 
-Earlier, you had and option to view or make changes to the default settings through
-the `~sunpy.map.GenericMap.plot_settings` dictionary, but now it is deprecated, and
-will be removed in the future.
-
 
 Colormaps and Normalization
 ***************************
@@ -454,8 +450,7 @@ Note how the color in the colorbar does not change since these two maps share
 the same colormap while the data values associated with each color do because
 the normalization is different.
 
-Since, both colormap and the normalization are map-source specific, there is an option to change
-then from the map itself as follows::
+You may also explicitly set both the colormap and normalization::
 
     >>> smap.cmap = plt.get_cmap('sohoeit171')  # doctest: +SKIP
     >>> smap.norm = colors.LogNorm()            # doctest: +SKIP

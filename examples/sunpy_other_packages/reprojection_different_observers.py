@@ -98,14 +98,12 @@ output, footprint = reproject_interp(map_stereo, out_wcs, out_shape)
 # to the AIA image.
 
 outmap = sunpy.map.Map(output, out_header)
-outmap.cmap = map_stereo.cmap
-outmap.norm = map_stereo.norm
 
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
 map_aia.plot(axes=ax1)
 ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
-outmap.plot(axes=ax2)
+outmap.plot(axes=ax2, cmap=map_stereo.cmap, norm=map_stereo.norm)
 
 ######################################################################
 # AIA as Seen from Mars
@@ -156,9 +154,6 @@ output, footprint = reproject_interp(map_aia, mars_wcs, out_shape)
 # We generate the output map and plot it next to the original image.
 
 outmap = sunpy.map.Map((output, mars_header))
-outmap.cmap = map_aia.cmap
-outmap.norm = map_aia.norm
-
 fig = plt.figure()
 
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
@@ -166,7 +161,7 @@ map_aia.plot(axes=ax1)
 outmap.draw_grid(color='w')
 
 ax2 = fig.add_subplot(1, 2, 2, projection=outmap)
-outmap.plot(axes=ax2)
+outmap.plot(axes=ax2, cmap=map_aia.cmap, norm=map_aia.norm)
 outmap.draw_grid(color='w')
 
 plt.show()

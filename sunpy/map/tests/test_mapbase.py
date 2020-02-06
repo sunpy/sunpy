@@ -299,10 +299,13 @@ def test_rotation_matrix_cd_cdelt_square():
     np.testing.assert_allclose(cd_map.rotation_matrix, np.array([[0., -1], [1., 0]]))
 
 
-def test_norm_cmap_kwargs(generic_map):
+def test_norm_cmap_setters(generic_map):
     cmap = 'cool'
     norm = colors.Normalize(vmin=1., vmax=1.)
-    smap = sunpy.map.Map(generic_map.data, generic_map.meta, cmap=cmap, norm=norm)
+    smap = sunpy.map.Map(generic_map.data, generic_map.meta)
+    smap.cmap = cmap
+    smap.norm = norm
+
     assert smap.cmap == plt.get_cmap(cmap)
     assert smap.norm == norm
 

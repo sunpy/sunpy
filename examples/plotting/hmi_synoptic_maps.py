@@ -46,15 +46,10 @@ syn_map.meta['CDELT2'] = 180 / np.pi * syn_map.meta['CDELT2']
 syn_map.meta['CDELT1'] *= -1
 
 ###############################################################################
-# Let's also fix the plot settings
-syn_map.cmap = 'hmimag'
-syn_map.norm = plt.Normalize(-1500, 1500)
-
-###############################################################################
 # Let's plot the results
 fig = plt.figure(figsize=(12, 5))
 axes = plt.subplot(projection=syn_map)
-im = syn_map.plot()
+im = syn_map.plot(cmap='hmimag', norm=plt.Normalize(-1500, 1500))
 
 # Set up the Sine Latitude Grid
 x = axes.coords[0]

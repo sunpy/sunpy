@@ -54,10 +54,6 @@ class GenericMap(NDData):
         A 2d list or ndarray containing the map data.
     header : dict
         A dictionary of the original image header tags.
-    cmap : `matplotlib.colors.Colormap`, `str`
-        Colormap of the map image. Defaults to 'grey'.
-    norm : `matplotlib.colors.Normalize`
-        Normalization function used. Defaults to None.
     plot_settings : `dict`, optional
         Keyword arguments to be passed to `~matplotlib.pyplot.imshow`
         (Deprecated, will be removed in sunpy 2.1)
@@ -163,7 +159,7 @@ class GenericMap(NDData):
         if hasattr(cls, 'is_datasource_for'):
             cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, header, cmap='gray', norm=None, plot_settings=None, **kwargs):
+    def __init__(self, data, header, plot_settings=None, **kwargs):
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim
@@ -177,6 +173,9 @@ class GenericMap(NDData):
             # Warn the user that the data has been truncated
             warnings.warn("This file contains more than 2 dimensions. "
                           "Data will be truncated to the first two dimensions.", SunpyUserWarning)
+
+        cmap = kwargs.pop('cmap', 'gray')
+        norm = kwargs.pop('norm', None)
 
         super().__init__(data, meta=header, **kwargs)
 
