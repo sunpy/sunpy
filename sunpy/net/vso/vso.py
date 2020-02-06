@@ -165,7 +165,7 @@ class QueryResponse(list):
         another query, e.g. response.search(attrs.Instrument('aia')). """
         query = and_(*query)
         return QueryResponse(
-            attrs.filter_results(query, self), self.queryresult
+            attrs._filter_results(query, self), self.queryresult
         )
 
     @classmethod
@@ -248,7 +248,7 @@ class QueryResponse(list):
 
         Returns
         -------
-        s : list
+        s : `set`
             List of strings, containing attribute names in the response blocks.
         """
         s = {a if not a.startswith('_') else None for a in dir(self[0])}
