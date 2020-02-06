@@ -12,22 +12,25 @@ from sunpy.time import parse_time, TimeRange
 
 from .attr import Range, SimpleAttr
 
+from sunpy.util.decorators import add_common_docstring
+from sunpy.time.time import _variables_for_parse_time_docstring
 
 __all__ = ['Resolution', 'Detector', 'Sample', 'Level', 'Instrument', 'Wavelength', 'Time']
 
 
+@add_common_docstring(**_variables_for_parse_time_docstring())
 class Time(Range):
     """
     Specify the time range of the query.
 
     Parameters
     ----------
-    start : SunPy time string or `~sunpy.time.TimeRange`.
+    start : {parse_time_types}
         The start time in a format parseable by `~sunpy.time.parse_time` or
         a `sunpy.time.TimeRange` object.
-    end : SunPy Time String
+    end : {parse_time_types}
         The end time of the range.
-    near : SunPy Time String
+    near : {parse_time_types}
         Return a singular record closest in time to this value as possible,
         inside the start and end window. Note: not all providers support this
         functionality.
