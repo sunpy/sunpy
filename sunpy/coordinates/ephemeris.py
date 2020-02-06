@@ -249,11 +249,9 @@ _NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90*u.deg, 0*u.deg, frame='hcrs')
 
 
 # The longitude in the de-tilted frame of the Sun's prime meridian.
-# Siedelmann et al. (2007) and earlier define the apparent longitude of the meridian as seen from
-# Earth as 84.10 degrees eastward from the above-defined node of intersection.
-# Siedelmann et al. (2007) and later also define the true longitude of the meridian (i.e., without
-# light travel time to Earth) as 84.176 degrees eastward, but the apparent longitude is needed.
-_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.10*u.deg)
+# The IAU (Seidelmann et al. 2007 and later) defines the true longitude of the meridian (i.e.,
+# without light travel time to Earth and aberration effects) as 84.176 degrees eastward at J2000.
+_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.176*u.deg)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -274,21 +272,38 @@ def _L0(time='now'):
 
     Notes
     -----
-    This longitude is calculated using the values from Siedelmann et al. (2007), with care taken to
-    use the longitude as seen from Earth (see that paper's Appendix).
+    This longitude is calculated using current IAU values (Seidelmann et al. 2007 and later), which
+    exclude the effects of light travel time and aberration due to Earth's motion (see that paper's
+    Appendix).  This function then applies the effects of light travel time and aberration, which is
+    the approach of the Astronomial Almanac.  Applying the aberration due to Earth's motion (~20.5
+    arcseconds) is required because the IAU values were tuned under the assumption that it would be
+    done (see Urban & Kaplan 2007).
 
     References
     ----------
-    * Siedelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates
-      and rotational elements: 2006" `(link) <http://dx.doi.org/10.1007/s10569-007-9072-y>`_
+    * Seidelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates
+      and rotational elements: 2006" `(link) <http://dx.doi.org/10.1007/s10569-007-9072-y>`__
+    * Urban & Kaplan (2007), "Investigation of Change in the Computational Technique of the Sun's
+      Physical Ephemeris in The Astronomical Alamanac"
+      `(link) <http://asa.hmnao.com/static/files/sun_rotation_change.pdf>`__
     """
     obstime = parse_time(time)
-
-    # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
-    dlon_meridian = Longitude(_DLON_MERIDIAN + (obstime - _J2000) * 14.1844*u.deg/u.day)
+    earth = get_earth(obstime)
 
     # Calculate the de-tilt longitude of the Earth
-    dlon_earth = _detilt_lon(get_earth(obstime))
+    dlon_earth = _detilt_lon(earth)
+
+    # Apply a correction for aberration due to Earth motion
+    # This expression is an approximation to reduce computations (e.g., it does not account for the
+    # inclination of the Sun's rotation axis relative to the ecliptic), but the estimated error is
+    # <0.2 arcseconds
+    dlon_earth -= 20.496*u.arcsec * 1*u.AU / earth.radius
+
+    # Antedate the observation time to account for light travel time for the Sun-Earth distance
+    antetime = obstime - earth.radius / speed_of_light
+
+    # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
+    dlon_meridian = Longitude(_DLON_MERIDIAN + (antetime - _J2000) * 14.1844*u.deg/u.day)
 
     return Longitude(dlon_earth - dlon_meridian)
 

@@ -4,6 +4,7 @@ import pytest
 import astropy
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
+from astropy.constants import c as speed_of_light
 from astropy.coordinates import (SkyCoord, get_body_barycentric, Angle,
                                  ConvertError, Longitude, CartesianRepresentation,
                                  get_body_barycentric_posvel,
@@ -422,9 +423,8 @@ def test_hgs_hcrs_sunspice():
 def test_hgs_hgc_sunspice():
     # Compare our HGS->HGC transformation against SunSPICE
     # "HEQ" is another name for HEEQ, which is equivalent to Heliographic Stonyhurst
-    # "Carrington" is offset by 0.076 degrees in longitude from our Heliographic Carrington (HGC)
-    #   because "Carrington" does not include light travel time to the observer, while our
-    #   HGC includes the light travel time to Earth (see Seidelmann et al. 2007).
+    # "Carrington" does not include light travel time to the observer or aberration due to observer
+    #   motion, while our HGC includes both effects.
     #
     # IDL> coord = [1.d, 0.d, 10.d]
     # IDL> convert_sunspice_lonlat, '2019-06-01', coord, 'HEQ', 'Carrington', /au, /degrees
@@ -434,7 +434,15 @@ def test_hgs_hgc_sunspice():
     old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime='2019-06-01'))
     new = old.heliographic_carrington
 
-    assert_quantity_allclose(new.lon, 16.688242*u.deg + 0.076*u.deg, atol=1e-2*u.arcsec, rtol=0)
+    # Calculate the difference in longitude due to light travel time from the Sun to the Earth
+    delta_lon = (14.1844*u.deg/u.day) * (sun.earth_distance(old.obstime) / speed_of_light)
+
+    # Calculate the difference in longitude due to aberration due to Earth motion
+    # This approximation should be replaced with a more accurate calcuation, but for now it simply
+    # uses the same approximation as in our implementation.
+    delta_lon -= 20.496*u.arcsec * 1*u.AU / sun.earth_distance(old.obstime)
+
+    assert_quantity_allclose(new.lon, 16.688242*u.deg + delta_lon, atol=1e-2*u.arcsec, rtol=0)
     assert_quantity_allclose(new.lat, old.lat)
     assert_quantity_allclose(new.radius, old.radius)
 
