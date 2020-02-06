@@ -286,12 +286,12 @@ class DatabaseEntry(DatabaseEntryType, Base):
 
         Examples
         --------
-        >>> from sunpy.net import vso
+        >>> from sunpy.net import vso, attrs as a
         >>> from sunpy.database.tables import DatabaseEntry
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> qr = client.search(
-        ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
-        ...     vso.attrs.Instrument('eit'))  # doctest: +REMOTE_DATA
+        ...     a.Time('2001/1/1', '2001/1/2'),
+        ...     a.Instrument('eit'))  # doctest: +REMOTE_DATA
         >>> entry = DatabaseEntry._from_query_result_block(qr[0])  # doctest: +REMOTE_DATA
         >>> entry.source  # doctest: +REMOTE_DATA
         'SOHO'
@@ -513,12 +513,12 @@ def entries_from_query_result(qr, default_waveunit=None):
 
     Examples
     --------
-    >>> from sunpy.net import vso
+    >>> from sunpy.net import vso, attrs as a
     >>> from sunpy.database.tables import entries_from_query_result
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
     >>> qr = client.search(
-    ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
-    ...     vso.attrs.Instrument('eit'))  # doctest: +REMOTE_DATA
+    ...     a.Time('2001/1/1', '2001/1/2'),
+    ...     a.Instrument('eit'))  # doctest: +REMOTE_DATA
     >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
     >>> entry = next(entries)  # doctest: +REMOTE_DATA
     >>> entry.source  # doctest: +REMOTE_DATA

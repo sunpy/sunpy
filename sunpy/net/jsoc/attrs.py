@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from astropy.time import Time as astropyTime
 
-from sunpy.net.vso.attrs import _Range
-from sunpy.net.vso.attrs import Wavelength
-from sunpy.net.vso.attrs import Time as VSO_Time
-from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr, SimpleAttr
+from sunpy.net._attrs import Wavelength, Time
+from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr, SimpleAttr
 
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
@@ -16,22 +14,20 @@ class Series(SimpleAttr):
 
     This is the list of `Series <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`__.
     """
-    pass
 
 
 class Keys(SimpleAttr):
     """
     Keys choose which keywords to fetch while making a query request.
     """
-    pass
 
 
-class PrimeKey(Attr):
+class PrimeKey(DataAttr):
     """
     Prime Keys
     """
     def __init__(self, label, value):
-        Attr.__init__(self)
+        super().__init__(label, value)
         self.label = label
         self.value = value
 
@@ -43,13 +39,13 @@ class PrimeKey(Attr):
         return False
 
 
-class Segment(Attr):
+class Segment(SimpleAttr):
     """
     Segments choose which files to download when there are more than
     one present for each record e.g. 'image'.
     """
     def __init__(self, value):
-        Attr.__init__(self)
+        super().__init__(value)
         self.value = value
 
     def __repr__(self):
@@ -66,14 +62,12 @@ class Protocol(SimpleAttr):
     ("FITS", "JPEG", "MPG", "MP4", or "as-is").
     Only FITS is supported, the others will require extra keywords.
     """
-    pass
 
 
 class Notify(SimpleAttr):
     """
     An email address to get a notification to when JSOC has staged your request.
     """
-
     def __init__(self, value):
         super().__init__(value)
         if value.find('@') == -1:
@@ -85,7 +79,17 @@ class Notify(SimpleAttr):
 walker = AttrWalker()
 
 
-@walker.add_creator(AttrAnd, SimpleAttr, VSO_Time)
+@walker.add_creator(AttrOr)
+def _create1(wlk, query):
+
+    qblocks = []
+    for iattr in query.attrs:
+        qblocks.extend(wlk.create(iattr))
+
+    return qblocks
+
+
+@walker.add_creator(AttrAnd, DataAttr)
 def _create(wlk, query):
 
     map_ = {}
@@ -126,7 +130,7 @@ def _apply1(wlk, query, imap):
         imap[key] = [query.value]
 
 
-@walker.add_applier(VSO_Time)
+@walker.add_applier(Time)
 def _apply2(wlk, query, imap):
     imap['start_time'] = query.start
     imap['end_time'] = query.end
@@ -139,13 +143,3 @@ def _apply_wave(wlk, query, imap):
             "For JSOC queries Wavelength.min must equal Wavelength.max")
 
     imap[query.__class__.__name__.lower()] = query.min
-
-
-@walker.add_creator(AttrOr)
-def _create1(wlk, query):
-
-    qblocks = []
-    for iattr in query.attrs:
-        qblocks.extend(wlk.create(iattr))
-
-    return qblocks

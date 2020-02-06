@@ -14,3 +14,5 @@ SunPy util
 .. automodapi:: sunpy.util.xml
 
 .. automodapi:: sunpy.util.scraper
+
+.. automodapi:: sunpy.util.functools

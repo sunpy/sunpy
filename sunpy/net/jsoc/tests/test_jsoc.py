@@ -9,8 +9,7 @@ import pytest
 from parfive import Results
 
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
-import sunpy.net.jsoc.attrs as attrs
-import sunpy.net.vso.attrs as vso_attrs
+import sunpy.net.attrs as a
 
 client = JSOCClient()
 
@@ -44,8 +43,8 @@ def test_empty_jsoc_response():
 @pytest.mark.remote_data
 def test_query():
     Jresp = client.search(
-        vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
-        attrs.Series('hmi.M_45s'), vso_attrs.Sample(90 * u.second))
+        a.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
+        a.jsoc.Series('hmi.M_45s'), a.Sample(90 * u.second))
     assert isinstance(Jresp, JSOCResponse)
     assert len(Jresp) == 2
 
@@ -53,8 +52,8 @@ def test_query():
 @pytest.mark.remote_data
 def test_post_pass():
     responses = client.search(
-        vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
-        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+        a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses)
     tmpresp = aa._d
     assert tmpresp['protocol'] == 'fits'
@@ -76,9 +75,9 @@ def test_build_table():
 @pytest.mark.remote_data
 def test_post_wavelength():
     responses = client.search(
-        vso_attrs.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
-        attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(193 * u.AA) |
-        attrs.Wavelength(335 * u.AA), attrs.Notify('jsoc@cadair.com'))
+        a.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
+        a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(193 * u.AA) |
+        a.jsoc.Wavelength(335 * u.AA), a.jsoc.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses)
     [r.wait() for r in aa]
     tmpresp = aa[0]._d
@@ -94,8 +93,8 @@ def test_post_wavelength():
 @pytest.mark.remote_data
 def test_post_notify_fail():
     responses = client.search(
-        vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
-        attrs.Series('hmi.M_45s'))
+        a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+        a.jsoc.Series('hmi.M_45s'))
     with pytest.raises(ValueError):
         client.request_data(responses)
 
@@ -104,16 +103,16 @@ def test_post_notify_fail():
 def test_post_wave_series():
     with pytest.raises(TypeError):
         client.search(
-            vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
-            attrs.Series('hmi.M_45s') | attrs.Series('aia.lev1_euv_12s'),
-            attrs.Wavelength(193 * u.AA) | attrs.Wavelength(335 * u.AA))
+            a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+            a.jsoc.Series('hmi.M_45s') | a.jsoc.Series('aia.lev1_euv_12s'),
+            a.jsoc.Wavelength(193 * u.AA) | a.jsoc.Wavelength(335 * u.AA))
 
 
 @pytest.mark.remote_data
 def test_wait_get():
     responses = client.search(
-        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
     path = tempfile.mkdtemp()
     res = client.fetch(responses, path=path)
     assert isinstance(res, Results)
@@ -123,8 +122,8 @@ def test_wait_get():
 @pytest.mark.remote_data
 def test_get_request():
     responses = client.search(
-        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
 
     bb = client.request_data(responses)
     path = tempfile.mkdtemp()
@@ -135,7 +134,7 @@ def test_get_request():
 @pytest.mark.remote_data
 def test_invalid_query():
     with pytest.raises(ValueError):
-        client.search(vso_attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
+        client.search(a.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
 
 
 @pytest.mark.remote_data
@@ -251,8 +250,8 @@ def test_make_recordset():
 
 @pytest.mark.remote_data
 def test_search_metadata():
-    metadata = client.search_metadata(vso_attrs.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
-                                      attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(304*u.AA))
+    metadata = client.search_metadata(a.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
+                                      a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
     assert isinstance(metadata, pd.DataFrame)
     assert metadata.shape == (11, 176)
     for i in metadata.index.values:
@@ -262,9 +261,9 @@ def test_search_metadata():
 @pytest.mark.remote_data
 def test_request_data_error():
     responses = client.search(
-        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
-        attrs.Protocol('foo'))
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
+        a.jsoc.Protocol('foo'))
     with pytest.raises(TypeError):
         req = client.request_data(responses)
 
@@ -272,26 +271,26 @@ def test_request_data_error():
 @pytest.mark.remote_data
 def test_request_data_protocol():
     responses = client.search(
-        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
     req.wait()
     assert req._d['method'] == 'url'
     assert req._d['protocol'] == 'fits'
 
     responses = client.search(
-        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
-        attrs.Protocol('fits'))
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
+        a.jsoc.Protocol('fits'))
     req = client.request_data(responses)
     req.wait()
     assert req._d['method'] == 'url'
     assert req._d['protocol'] == 'fits'
 
     responses = client.search(
-        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
-        attrs.Protocol('as-is'))
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
+        a.jsoc.Protocol('as-is'))
     req = client.request_data(responses)
     req.wait()
     assert req._d['method'] == 'url_quick'
@@ -301,8 +300,8 @@ def test_request_data_protocol():
 @pytest.mark.remote_data
 def test_check_request():
     responses = client.search(
-        vso_attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
-        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
     req.wait()
     assert req.status == 0
@@ -311,8 +310,8 @@ def test_check_request():
 @pytest.mark.remote_data
 def test_results_filenames():
     responses = client.search(
-        vso_attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
-        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+        a.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
     path = tempfile.mkdtemp()
     files = client.fetch(responses, path=path)
     assert isinstance(files, Results)

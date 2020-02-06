@@ -2,14 +2,12 @@
 #  This Module was developed under funding provided by
 #  Google Summer of Code 2014
 
-
-from astropy.time import TimeDelta
 import astropy.units as u
+from astropy.time import TimeDelta
 
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
 
-from sunpy.net import attrs as a
 from ..client import GenericClient
 
 __all__ = ['NoRHClient']
@@ -132,6 +130,9 @@ class NoRHClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
+        # Import here to prevent circular imports
+        from sunpy.net import attrs as a
+
         required = {a.Time, a.Instrument}
         optional = {a.Wavelength}
         all_attrs = {type(x) for x in query}

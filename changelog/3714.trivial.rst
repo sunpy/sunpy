@@ -1,0 +1,1 @@
+`sunpy.net.attr.AttrWalker` no longer uses `sunpy.util.multimethod.MultiMethod` it uses a derivative of `functools.singledispatch` `sunpy.util.functools.seconddispatch` which dispatches on the second argument.

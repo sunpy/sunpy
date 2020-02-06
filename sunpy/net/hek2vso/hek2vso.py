@@ -19,6 +19,7 @@ from tqdm import tqdm
 
 from sunpy.net import hek
 from sunpy.net import vso
+from sunpy.net import attrs as a
 
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'
@@ -92,12 +93,12 @@ def vso_attribute_parse(phrase):
     [<Time(<Time object: scale='utc' format='isot' value=2011-08-09T07:22:38.000>, <Time object: scale='utc' format='isot' value=2011-08-09T08:32:02.000>, None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
-        query = [vso.attrs.Time(phrase['event_starttime'],
+        query = [a.Time(phrase['event_starttime'],
                                 phrase['event_endtime']),
-                 vso.attrs.Source(phrase['obs_observatory']),
-                 vso.attrs.Instrument(phrase['obs_instrument'])]
+                 a.vso.Source(phrase['obs_observatory']),
+                 a.Instrument(phrase['obs_instrument'])]
         avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
-        query.append(vso.attrs.Wavelength(avg_wave_len, avg_wave_len))
+        query.append(a.Wavelength(avg_wave_len, avg_wave_len))
     except (KeyError, TypeError):
         raise TypeError("'{dtype!s}' is an improper data type".format(dtype=type(phrase)))
     return query
