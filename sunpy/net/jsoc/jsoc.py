@@ -62,6 +62,9 @@ class JSOCResponse(Sequence):
     def __iter__(self):
         return (t for t in [self])
 
+    def build_table(self):
+        return self.table
+
     def append(self, table):
         if self.table is None:
             self.table = table
