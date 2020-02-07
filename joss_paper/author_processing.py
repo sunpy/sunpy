@@ -1,5 +1,8 @@
 import io
-# import yaml
+import copy
+import json
+from pathlib import Path
+
 from ruamel.yaml import YAML
 yaml = YAML()
 
@@ -7,6 +10,29 @@ with open("metadata.yml") as fd:
     data = yaml.load(fd)
 
 authors = data['authors']
+
+# Convert to a zenodo JSON
+
+creators = []
+
+for author in authors:
+    creators.append(copy.deepcopy(author))
+    if isinstance(author.get('affiliation', ''), list):
+        new_affiliation = ''
+        for i, affil in enumerate((author['affiliation'])):
+            new_affiliation += f"{i + 1} - {affil} "
+        creators[-1]['affiliation'] = new_affiliation
+
+with open(Path("../.zenodo.json").resolve(), "r") as fobj:
+    zenodo = json.load(fobj)
+
+zenodo['creators'] = creators
+
+with open(Path("../.zenodo.json").resolve(), "w") as fobj:
+    json.dump(zenodo, fobj, indent=4, ensure_ascii=False)
+
+
+# Convert to JOSS metadata
 
 # Create a list of all affiliations and make the affiliation key a list (and always present)
 affiliations = []

@@ -5,10 +5,11 @@ tags:
   - Astronomy
   - Solar physics
 authors:
-  - name: Stuart J. Mumford
+  - name: "Stuart J. Mumford[^*]"
     orcid: 0000-0003-4217-4642
     affiliation:
       - "SP2RC, School of Mathematics and Statistics, The University of Sheffield, UK"
+      - "National Solar Observatory, 3665 Discovery Drive, Boulder, CO 80303"
       - "Aperio Software Ltd., Headingley Enterprise and Arts Centre, Bennett Road, Leeds LS6 3HN"
   - name: Nabil Freij
     orcid: 0000-0002-6253-082X
@@ -258,6 +259,6 @@ authors:
 affiliations: []
 date: 3 October 2019
 bibliography: paper.bib
-aas-doi: "Add DOI HERE"
+aas-doi: "10.3847/1538-4357/ab4f7a"
 aas-journal: "The Astrophysical Journal"
 ...
