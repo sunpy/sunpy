@@ -430,7 +430,7 @@ aas-journal: The Astrophysical Journal
 
 The Sun, our nearest star, is a local laboratory for studying universal physical processes. Solar physics as a discipline includes studying the Sun both as a star and as the primary driver of space weather throughout the heliosphere. Due to the Sun's proximity, the temporal and spatial resolution of solar observations are orders of magnitude larger than those of other stars. This leads to significant differences in the data-analysis software needs of solar physicists compared with astrophysicists.
 
-The `sunpy` Python package is a community-developed, free, and open-source solar data analysis environment for Python that provides a comprehensive set of tools for performing common tasks in solar data analysis. It is managed by the SunPy Project, an organization that facilitates and promotes the use of open development and open source packages like `sunpy` through community engagement and tools such as [GitHub](https://github.com/sunpy/sunpy/), [mailing lists](https://groups.google.com/forum/#!forum/sunpy), and [matrix](https://matrix.to/#/#sunpy:openastronomy.org).
+The `sunpy` Python package is a community-developed, free, and open-source solar data analysis environment for Python. It is managed by the SunPy Project, an organization that facilitates and promotes the use of open development and open source packages like `sunpy` through community engagement and tools such as [GitHub](https://github.com/sunpy/sunpy/), [mailing lists](https://groups.google.com/forum/#!forum/sunpy), and [matrix](https://matrix.to/#/#sunpy:openastronomy.org).
 
 The four most significant subpackages of `sunpy` are described below.
 
@@ -448,7 +448,7 @@ The `sunpy` package is designed to be extensible, which means that it is easy to
 
 A more complete description of the SunPy Project and the `sunpy` package, including the methodology, development model, and implementation, as well as a comparison with other commonly-used packages in solar physics, can be found in [@sunpy_community2019].
 
-The SunPy Project supports affiliated packages, which build upon or extends the functionality of `sunpy`. Current affiliated packages are [`drms`](https://docs.sunpy.org/projects/drms) [@Glogowski2019drms], [`ndcube`](https://docs.sunpy.org/projects/ndcube), [`radiospectra`](https://docs.sunpy.org/projects/radiospectra) and [`IRISPy`](https://docs.sunpy.org/projects/irispy). The Project is also a member of the Python in Heliophysics community [PyHC, @annex], whose mission is to enable interdisciplinary analysis across all sub-disciplines of heliophysics by adhering to standards for code development and interoperability.
+The SunPy Project supports affiliated packages, which build upon or extend the functionality of `sunpy`. The current affiliated packages are [`drms`](https://docs.sunpy.org/projects/drms) [@Glogowski2019drms], [`ndcube`](https://docs.sunpy.org/projects/ndcube), [`radiospectra`](https://docs.sunpy.org/projects/radiospectra) and [`IRISPy`](https://docs.sunpy.org/projects/irispy). The Project is also a member of the Python in Heliophysics community [PyHC, @annex], whose mission is to enable interdisciplinary analysis across all sub-disciplines of heliophysics by adhering to standards for code development and interoperability.
 
 
 # Acknowledgements
