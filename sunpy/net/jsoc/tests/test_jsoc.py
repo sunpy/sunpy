@@ -63,8 +63,8 @@ def test_post_pass():
 @pytest.mark.remote_data
 def test_build_table():
     responses = client.search(
-        vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
-        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+        a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
     table = responses.build_table()
     assert isinstance(table, astropy.table.Table)
 
