@@ -27,7 +27,7 @@ class PrimeKey(DataAttr):
     Prime Keys
     """
     def __init__(self, label, value):
-        super().__init__(label, value)
+        super().__init__()
         self.label = label
         self.value = value
 
