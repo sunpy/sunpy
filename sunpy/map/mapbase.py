@@ -198,7 +198,7 @@ class GenericMap(NDData):
         # Visualization attributes
         self.cmap = 'gray'
         self.norm = None
-        
+
         self.plot_settings = plot_settings
 
         if self.plot_settings:
