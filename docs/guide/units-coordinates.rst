@@ -231,5 +231,39 @@ Using Coordinates with SunPy Map
    <matplotlib.image.AxesImage object at ...>
    >>> _ = ax.plot_coord(c, 'o')  # doctest: +REMOTE_DATA
 
+Using the shared Python interface for World Coordinate System
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Let's start off by looking at the shared Python interface for WCS by using a simple image with two celestial axes (Right Ascension and Declination):
+
+    >>> from astropy.wcs import WCS
+    >>> from astropy.utils.data import get_pkg_data_filename
+    >>> from astropy.io import fits
+    >>> filename = get_pkg_data_filename('galactic_center/gc_2mass_k.fits')
+    >>> hdu = fits.open(filename)[0]
+    >>> wcs = WCS(hdu.header)
+    >>> wcs
+    WCS Keywords
+    Number of WCS axes: 2
+    CTYPE : 'RA---TAN'  'DEC--TAN'
+    CRVAL : 266.4  -28.93333
+    CRPIX : 361.0  360.5
+    NAXIS : 721  720
+
+The main part of this interface defines standard methods for transforming coordinates. The most convenient way is to use high-level methods `~astropy.wcs.wcsapi.BaseHighLevelWCS.pixel_to_world` and `~astropy.wcs.wcsapi.BaseHighLevelWCS.world_to_pixel`, which can transform directly to astropy objects.
+
+    >>> coord = wcs.pixel_to_world([1,2], [4,3])
+    >>> coord
+    <SkyCoord (FK5: equinox=2000.0): (ra, dec) in deg
+        [(266.97242993, -29.42584415), (266.97084321, -29.42723968)]>
+
+Similarly, we can transform astropy objects back - we can test this by creating Galactic coordinates and these will automatically be converted:
+
+    >>> from astropy.coordinates import SkyCoord
+    >>> coord = SkyCoord('00h00m00s +00d00m00s', frame='galactic')
+    >>> pixels = wcs.world_to_pixel(coord)
+    >>> pixels
+    (array(356.85179997), array(357.45340331))
+
 For more information on coordinates see :ref:`sunpy-coordinates` section of
 the :ref:`reference`.
