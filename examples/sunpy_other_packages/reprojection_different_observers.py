@@ -46,7 +46,7 @@ files = Fido.fetch(res)
 ######################################################################
 # Create a map for each image.
 
-map_aia, map_stereo = sunpy.map.Map(sorted(files))
+map_stereo, map_aia = sunpy.map.Map(sorted(files))
 
 # We downsample these maps to reduce memory consumption, you can comment this
 # out.
