@@ -1,0 +1,1 @@
+Added a :ref:`page <sunpy-coordinates-carrington>` describing how SunPy calculates Carrington longitudes.
