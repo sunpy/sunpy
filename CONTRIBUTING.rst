@@ -249,3 +249,12 @@ Just remember, if you have any problems get in touch!
 .. _PEP8: https://realpython.com/python-pep8/
 .. _Google Group: https://groups.google.com/forum/#!forum/sunpy
 .. _a SunPy contributor: stuart@mumford.me.uk
+
+Summer of Code(s)
+^^^^^^^^^^^^^^^^^
+
+If you are interested in a "Summer of Code" project with sunpy, we have information on our `wiki`_ which has guidelines, advice, application templates and more!
+Our projects are on our umbrella's origination website, `OpenAstronomy`_.
+
+.. _wiki: https://github.com/sunpy/sunpy/wiki#summer-of-codes
+.. _OpenAstronomy: https://openastronomy.org/gsoc/
