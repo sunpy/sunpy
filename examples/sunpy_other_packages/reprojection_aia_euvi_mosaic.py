@@ -34,7 +34,7 @@ stereo = (a.Instrument('EUVI') &
           a.Time('2011-11-01', '2011-11-01T00:10:00'))
 
 aia = (a.Instrument('AIA') &
-       a.vso.Sample(24 * u.hour) &
+       a.Sample(24 * u.hour) &
        a.Time('2011-11-01', '2011-11-02'))
 
 wave = a.Wavelength(19.5 * u.nm, 19.5 * u.nm)

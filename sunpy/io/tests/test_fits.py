@@ -123,10 +123,14 @@ def test_write_with_metadict_header_astropy(tmpdir):
     data, header = fits_file[0].data, fits_file[0].header
     meta_header = MetaDict(OrderedDict(header))
     temp_file = tmpdir / "temp.fits"
-    sunpy.io.fits.write(str(temp_file), data, meta_header)
+    with pytest.warns(SunpyUserWarning, match='The meta key comment is not valid ascii'):
+        sunpy.io.fits.write(str(temp_file), data, meta_header)
     assert temp_file.exists()
 
 
+# Various warnings are thrown in this test, but we just want to check that the code
+# works without exceptions
+@pytest.mark.filterwarnings('ignore')
 def test_fitsheader():
     """Test that all test data can be converted back to a FITS header."""
     extensions = ('fts', 'fits')
@@ -137,6 +141,7 @@ def test_fitsheader():
             data, header = fits_file[0].data, fits_file[0].header
             meta_header = MetaDict(OrderedDict(header))
             sunpy.io.fits.header_to_fits(meta_header)
+            fits_file.close()
 
 
 def test_warn_nonascii():

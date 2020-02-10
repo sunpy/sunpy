@@ -12,6 +12,7 @@ from parfive import Results
 from parfive.utils import FailedDownload
 
 import astropy.units as u
+from astropy.table import Table
 
 from sunpy import config
 from sunpy.net import Fido, attr
@@ -21,10 +22,11 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, time_attr
-from sunpy.net.vso import QueryResponse as vsoQueryResponse
+from sunpy.net.vso import QueryResponse as vsoQueryResponse, attrs as va
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.datatype_factory_base import MultipleMatchError
+from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.tests.helpers import skip_windows
 
 TIMEFORMAT = config.get("general", "time_format")
@@ -156,7 +158,7 @@ def test_no_time_error():
 def test_no_match():
     with pytest.raises(DrmsQueryError):
         Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
-                    a.vso.Sample(10*u.s))
+                    a.Sample(10*u.s))
 
 
 def test_call_error():
@@ -220,6 +222,62 @@ def test_unifiedresponse_slicing_reverse():
     assert len(results[::-1]) == len(results)
     assert isinstance(results[0, ::-1], UnifiedResponse)
     assert results[0, ::-1]._list[0] == results._list[0][::-1]
+
+
+@pytest.mark.remote_data
+def test_tables_single_response():
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+    tables = results.tables
+
+    assert isinstance(tables, list)
+    assert isinstance(tables[0], Table)
+    assert len(tables) == 1
+
+    columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    assert columns == tables[0].colnames
+    assert len(tables[0]) == 5
+
+
+@pytest.mark.remote_data
+def test_tables_multiple_response():
+    results = Fido.search(a.Time('2012/3/4', '2012/3/6'),
+                          a.Instrument('lyra') | a.Instrument('rhessi'))
+    tables = results.tables
+    assert isinstance(tables, list)
+    assert isinstance(tables[0], Table) and isinstance(tables[1], Table)
+    assert len(tables) == 2
+
+    columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
+    assert columns == tables[0].colnames and columns == tables[1].colnames
+
+    assert all(entry == 'lyra' for entry in tables[0]['Instrument'])
+    assert all(entry == 'rhessi' for entry in tables[1]['Instrument'])
+
+
+@pytest.mark.remote_data
+def test_tables_all_types():
+    # Data retriver response objects
+    drclient = Fido.search(a.Time('2012/3/4', '2012/3/6'),
+                           a.Instrument('lyra') | a.Instrument('rhessi'))
+    drtables = drclient.tables
+    assert isinstance(drtables, list)
+    assert isinstance(drtables[0], Table)
+
+    # VSO response objects
+    vsoclient = Fido.search(va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
+                            va.Instrument('aia'), va.Wavelength(171 * u.AA))
+    vsotables = vsoclient.tables
+    assert isinstance(vsotables, list)
+    assert isinstance(vsotables[0], Table)
+
+    # JSOC response objects
+    jsocclient = Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+                             a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))
+    jsoctables = jsocclient.tables
+
+    assert isinstance(jsoctables, list)
+    assert isinstance(jsoctables[0], Table)
 
 
 def test_vso_unifiedresponse():

@@ -23,4 +23,3 @@ aiamap.plot()
 aiamap.draw_limb()
 aiamap.draw_grid()
 plt.show()
-

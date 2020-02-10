@@ -3,25 +3,25 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-import itertools
+import os.path
 import operator
+import itertools
 from datetime import datetime
 from contextlib import contextmanager
-import os.path
 
 from sqlalchemy import create_engine, exists
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 from astropy import units
 
 import sunpy
 from sunpy.database import commands, tables
-from sunpy.database.tables import _create_display_table
+from sunpy.database.attrs import walker
 from sunpy.database.caching import LRUCache
 from sunpy.database.commands import CompositeOperation
-from sunpy.database.attrs import walker
-from sunpy.net.hek2vso import H2VClient
+from sunpy.database.tables import _create_display_table
 from sunpy.net.attr import and_
+from sunpy.net.hek2vso import H2VClient
 from sunpy.net.vso import VSOClient
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
@@ -142,19 +142,19 @@ def split_database(source_database, destination_database, *query_string):
     Examples
     --------
     The function call in the following example moves those entries from
-    database1 to database2 which have `~sunpy.net.vso.attrs.Instrument` = 'AIA' or
+    database1 to database2 which have `~sunpy.net.attrs.Instrument` = 'AIA' or
     'ERNE'.
 
     >>> from sunpy.database import Database, split_database
     >>> from sunpy.database.tables import display_entries
-    >>> from sunpy.net import vso
+    >>> from sunpy.net import vso, attrs as a
     >>> database1 = Database('sqlite:///:memory:')
     >>> database2 = Database('sqlite:///:memory:')
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
-    >>> qr = client.search(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))  # doctest: +REMOTE_DATA
+    >>> qr = client.search(a.Time('2011-05-08', '2011-05-08 00:00:05'))  # doctest: +REMOTE_DATA
     >>> database1.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
     >>> database1, database2 = split_database(database1, database2,
-    ...            vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))  # doctest: +REMOTE_DATA
+    ...            a.Instrument('AIA') | a.Instrument('ERNE'))  # doctest: +REMOTE_DATA
     """
 
     query_string = and_(*query_string)
@@ -498,10 +498,10 @@ class Database:
 
         >>> from sunpy.database import Database
         >>> from sunpy.database.tables import display_entries
-        >>> from sunpy.net import vso
+        >>> from sunpy.net import vso, attrs as a
         >>> database = Database('sqlite:///:memory:')
-        >>> database.fetch(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
-        ...                vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
+        >>> database.fetch(a.Time('2012-08-05', '2012-08-05 00:00:05'),
+        ...                a.Instrument('AIA'))  # doctest: +REMOTE_DATA
         >>> print(display_entries(database,
         ...                       ['id', 'observation_time_start', 'observation_time_end',
         ...                        'instrument', 'wavemin', 'wavemax']))  # doctest: +REMOTE_DATA
@@ -511,8 +511,8 @@ class Database:
               2    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
               3    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
               4    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
-        >>> database.fetch(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:01'),
-        ...                vso.attrs.Instrument('AIA'), overwrite=True)  # doctest: +REMOTE_DATA
+        >>> database.fetch(a.Time('2012-08-05', '2012-08-05 00:00:01'),
+        ...                a.Instrument('AIA'), overwrite=True)  # doctest: +REMOTE_DATA
         >>> print(display_entries(database,
         ...                       ['id', 'observation_time_start', 'observation_time_end',
         ...                        'instrument', 'wavemin', 'wavemax']))  # doctest: +REMOTE_DATA

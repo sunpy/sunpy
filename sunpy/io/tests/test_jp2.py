@@ -14,7 +14,7 @@ def test_read_data():
     Tests the reading of the JP2 data.
     """
     import glymur
-    data = glymur.Jp2k(AIA_193_JP2).read()
+    data = glymur.Jp2k(AIA_193_JP2)[...]
     assert isinstance(data, np.ndarray)
 
 

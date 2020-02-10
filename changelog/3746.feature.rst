@@ -1,0 +1,1 @@
+Add a ``.data`` property in `~sunpy.timeseries.GenericTimeSeries`, so that users are encouraged to use `to_dataframe` to get the data of the timeseries.

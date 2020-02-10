@@ -18,7 +18,7 @@ Although this document mainly focuses on how to make contributions to SunPy's co
 
 If you have any questions, comments or just want to say hello, we have online chat on `Matrix`_ which requires no registration or a `Google Group`_ which you message.
 
-.. _Matrix: https://riot.im/app/#/room/#sunpy-general:matrix.org
+.. _Matrix: https://openastronomy.riot.im/#/room/#sunpy:openastronomy.org
 .. _Google Group: https://groups.google.com/forum/#!forum/sunpy
 
 How to Contribute to SunPy

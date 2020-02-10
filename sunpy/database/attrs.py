@@ -2,9 +2,9 @@
 from sqlalchemy import or_, and_, not_
 
 from sunpy.time import parse_time
-from sunpy.net.vso import attrs as vso_attrs
+from sunpy.net import _attrs as core_attrs
 from sunpy.net.attr import (AttrWalker, Attr, ValueAttr,
-                            AttrAnd, AttrOr, SimpleAttr)
+                            AttrAnd, AttrOr, SimpleAttr, Range)
 from sunpy.database.tables import (DatabaseEntry,
                                    Tag as TableTag,
                                    FitsHeaderEntry as TableFitsHeaderEntry)
@@ -105,13 +105,13 @@ class Path(Attr):
 
 
 # TODO: support excluding ranges as soon as
-# vso_attrs._Range.__xor__ is fixed / renamed
-class DownloadTime(Attr, vso_attrs._Range):
+# attr.Range.__xor__ is fixed / renamed
+class DownloadTime(Range):
     def __init__(self, start, end):
         self.start = parse_time(start).datetime
         self.end = parse_time(end).datetime
         self.inverted = False
-        vso_attrs._Range.__init__(self, start, end, self.__class__)
+        super().__init__(start, end)
 
     def __invert__(self):
         download_time = self.__class__(self.start, self.end)
@@ -254,12 +254,12 @@ def _convert(attr):
     return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})
 
 
-@walker.add_converter(vso_attrs.Wavelength)
+@walker.add_converter(core_attrs.Wavelength)
 def _convert(attr):
     return ValueAttr({('wave', ): (attr.min.value, attr.max.value, str(attr.unit))})
 
 
-@walker.add_converter(vso_attrs.Time)
+@walker.add_converter(core_attrs.Time)
 def _convert(attr):
     near = None if not attr.near else attr.near.datetime
     return ValueAttr({('time', ): (attr.start.datetime, attr.end.datetime, near)})

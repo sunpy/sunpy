@@ -48,8 +48,8 @@ TimeSeries
 SunPy handles time series data, fundamental to the study of any real world
 phenomenon, by creating a TimeSeries object. A timeseries consists of two parts;
 times and measurements taken at those times. The data can either be in your
-current Python session, alternatively within a local or remote file. 
-In the code block that follows, data is taken from a file containing samples 
+current Python session, alternatively within a local or remote file.
+In the code block that follows, data is taken from a file containing samples
 from a file containing samples from the GOES satellite's X-ray Sensors (XRS).
 
 
@@ -319,7 +319,7 @@ A simple example of this is shown below::
 
   >>> db = Database()
   >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
-  ...          a.Instrument('AIA'), a.vso.Sample(15*u.min))  # doctest: +REMOTE_DATA
+  ...          a.Instrument('AIA'), a.Sample(15*u.min))  # doctest: +REMOTE_DATA
   >>> db.commit()  # doctest: +REMOTE_DATA
 
   >>> db  # doctest: +SKIP
@@ -341,7 +341,7 @@ A simple example of this is shown below::
 If you then do a second query::
 
   >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:15:00"),
-  ...          a.Instrument('AIA'), a.vso.Sample(15*u.min))  # doctest: +REMOTE_DATA
+  ...          a.Instrument('AIA'), a.Sample(15*u.min))  # doctest: +REMOTE_DATA
   >>> db.commit()  # doctest: +REMOTE_DATA
   >>> db  # doctest: +SKIP
   <Table length=12>

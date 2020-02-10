@@ -27,7 +27,7 @@ stereo = (a.vso.Source('STEREO_B') &
           a.Time('2011-01-01', '2011-01-01T00:10:00'))
 
 aia = (a.Instrument('AIA') &
-       a.vso.Sample(24 * u.hour) &
+       a.Sample(24 * u.hour) &
        a.Time('2011-01-01', '2011-01-02'))
 
 wave = a.Wavelength(30 * u.nm, 31 * u.nm)

@@ -1,6 +1,9 @@
 """
 Sun-specific coordinate calculations
 """
+# Skip checking the __all__ here as we are making deprecated versions
+# flake8: noqa F822
+
 import warnings
 
 import numpy as np

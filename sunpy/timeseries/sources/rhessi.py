@@ -62,7 +62,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     _source = 'rhessi'
 
     @peek_show
-    def peek(self, title="RHESSI Observing Summary Count Rate"):
+    def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
         """
         Plots RHESSI Count Rate light curve. An example is shown below:
 
@@ -77,6 +77,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         ----------
         title : `str`
             The title of the plot.
+        **kwargs : `dict`
+            Additional plot keyword arguments that are handed to `axes.plot` functions
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_plotting()
@@ -87,7 +89,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         lc_linecolors = rhessi.hsi_linecolors()
 
         for lc_color, (item, frame) in zip(lc_linecolors, self.data.items()):
-            axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2, color=lc_color)
+            axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2, color=lc_color, **kwargs)
 
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])

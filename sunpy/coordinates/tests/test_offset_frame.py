@@ -1,5 +1,4 @@
 import pytest
-import hypothesis.strategies as st
 from hypothesis import given, settings
 import numpy as np
 
@@ -8,18 +7,7 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.coordinates import SkyCoord, SkyOffsetFrame
 
 from sunpy.coordinates import NorthOffsetFrame
-
-
-@st.composite
-def latitude(draw, lat=st.floats(min_value=-90, max_value=90,
-                                 allow_nan=False, allow_infinity=False)):
-    return draw(lat) * u.deg
-
-
-@st.composite
-def longitude(draw, lon=st.floats(min_value=-180, max_value=180,
-                                 allow_nan=False, allow_infinity=False)):
-    return draw(lon) * u.deg
+from .strategies import longitudes, latitudes
 
 
 def test_null():
@@ -33,8 +21,8 @@ def test_null():
     assert off.origin.lon == 0*u.deg
 
 
-@given(lon=longitude(), lat=latitude())
-@settings(deadline=5000)
+@given(lon=longitudes(), lat=latitudes())
+@settings(deadline=1000)
 def test_transform(lon, lat):
     """
     Test that the north pole in the new frame transforms back to the given
@@ -44,8 +32,8 @@ def test_transform(lon, lat):
     off = NorthOffsetFrame(north=north)
     t_north = SkyCoord(lon=0*u.deg, lat=90*u.deg, frame=off)
     t_north = t_north.transform_to('heliographic_stonyhurst')
-    assert_quantity_allclose(north.lon, t_north.lon, atol=1e6*u.deg)
-    assert_quantity_allclose(north.lat, t_north.lat, atol=1e6*u.deg)
+    assert_quantity_allclose(north.lon, t_north.lon, atol=1e-6*u.deg)
+    assert_quantity_allclose(north.lat, t_north.lat, atol=1e-6*u.deg)
 
 
 def test_south_pole():

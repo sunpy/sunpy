@@ -95,14 +95,12 @@ class ArrayAnimatorWCS(ArrayAnimator):
         if "slider_functions" in kwargs and "slider_labels" not in kwargs:
             extra_slider_labels = [a.__name__ for a in kwargs['slider_functions']]
 
-
         slider_labels = [w for i, w in enumerate(self._get_wcs_labels()) if not slices[i]][::-1] + extra_slider_labels
         slider_labels = kwargs.pop("slider_labels", slider_labels)
 
         super().__init__(data, image_axes=image_axes, axis_ranges=None,
                          slider_labels=slider_labels,
                          **kwargs)
-
 
     def _get_wcs_labels(self):
         """

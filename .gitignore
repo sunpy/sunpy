@@ -199,6 +199,7 @@ $RECYCLE.BIN/
 
 ### VScode: https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore
 .vscode/*
+.vs/*
 
 ### Extra Python Items and SunPy Specific
 .hypothesis
@@ -215,6 +216,7 @@ examples/**/*.asdf
 # This is incase you run the figure tests
 figure_test_images*
 tags
+sunpy/version.py
 
 ### Pycharm(?)
 .idea
