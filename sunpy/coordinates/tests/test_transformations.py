@@ -165,7 +165,7 @@ def test_hgs_hgc_roundtrip():
     obstime = "2011-01-01"
 
     hgsin = HeliographicStonyhurst(lat=10*u.deg, lon=20*u.deg, obstime=obstime)
-    hgcout = hgsin.transform_to(HeliographicCarrington(obstime=obstime))
+    hgcout = hgsin.transform_to(HeliographicCarrington(observer='earth', obstime=obstime))
 
     assert_quantity_allclose(hgsin.lat, hgcout.lat)
     assert_quantity_allclose(hgsin.lon + sun.L0(obstime), hgcout.lon)
@@ -226,8 +226,9 @@ def test_hgs_cartesian_rep_to_hgc():
     hgscoord_sph = hgscoord_cart.copy()
     hgscoord_sph.representation_type = 'spherical'
     # HGC
-    hgccoord_cart = hgscoord_cart.transform_to(HeliographicCarrington(obstime=obstime))
-    hgccoord_sph = hgscoord_sph.transform_to(HeliographicCarrington(obstime=obstime))
+    hgcframe = HeliographicCarrington(observer='earth', obstime=obstime)
+    hgccoord_cart = hgscoord_cart.transform_to(hgcframe)
+    hgccoord_sph = hgscoord_sph.transform_to(hgcframe)
     assert_quantity_allclose(hgccoord_cart.lat, hgccoord_sph.lat)
     assert_quantity_allclose(hgccoord_cart.lon, hgccoord_sph.lon)
     assert_quantity_allclose(hgccoord_cart.radius, hgccoord_sph.radius)
@@ -330,8 +331,9 @@ def test_hgs_hgs():
 def test_hgc_hgc():
     # Test HGC loopback transformation
     obstime = Time('2001-01-01')
-    old = SkyCoord(90*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicCarrington(obstime=obstime))
-    new = old.transform_to(HeliographicCarrington(obstime=obstime + 1*u.day))
+    old = SkyCoord(90*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicCarrington(observer='earth',
+                                                                            obstime=obstime))
+    new = old.transform_to(HeliographicCarrington(observer='earth', obstime=obstime + 1*u.day))
 
     assert_quantity_allclose(new.lon, 75.815607 * u.deg, atol=1e-7*u.deg)  # solar rotation
     # These are not equal to the old values, because the coordinates stay fixed
@@ -339,6 +341,26 @@ def test_hgc_hgc():
     # moves slightly.
     assert_quantity_allclose(new.lat, 9.999963 * u.deg, atol=1e-7*u.deg)
     assert_quantity_allclose(new.radius, 1.000009 * u.AU, atol=1e-7*u.AU)
+
+
+def test_hgc_hgc_different_observers():
+    obstime = Time('2001-01-01')
+    hgc_earth = HeliographicCarrington(observer='earth', obstime=obstime)
+    hgc_mars = HeliographicCarrington(observer='mars', obstime=obstime)
+    hgc_sun = HeliographicCarrington(observer='sun', obstime=obstime)
+
+    sc = SkyCoord(10*u.deg, 20*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime=obstime))
+    sc_hgc_earth = sc.transform_to(hgc_earth)
+
+    sc_hgc_mars = sc_hgc_earth.transform_to(hgc_mars)
+
+    sc_hgc_sun = sc_hgc_mars.transform_to(hgc_sun)
+
+    ltt_earth = hgc_earth.observer.radius / speed_of_light
+    assert_quantity_allclose(sc_hgc_earth.lon - sc_hgc_sun.lon, ltt_earth * 14.1844*u.deg/u.day)
+
+    ltt_mars = hgc_mars.observer.radius / speed_of_light
+    assert_quantity_allclose(sc_hgc_mars.lon - sc_hgc_sun.lon, ltt_mars * 14.1844*u.deg/u.day)
 
 
 def test_hcc_hcc():
@@ -436,7 +458,7 @@ def test_hgs_hgc_sunspice():
     #        1.0000000       16.688242       10.000000
 
     old = SkyCoord(0*u.deg, 10*u.deg, 1*u.AU, frame=HeliographicStonyhurst(obstime='2019-06-01'))
-    new = old.heliographic_carrington
+    new = old.transform_to(HeliographicCarrington(observer='earth'))
 
     # Calculate the difference in longitude due to light travel time from the Sun to the Earth
     delta_lon = (14.1844*u.deg/u.day) * (sun.earth_distance(old.obstime) / speed_of_light)
@@ -521,7 +543,8 @@ def test_velocity_hgs_hgc():
 
     # The induced velocity in HGC should be entirely longitudinal, and approximately equal to one
     # full rotation every mean synodic period (27.2753 days)
-    new = coord.heliographic_carrington
+    hgc_frame = HeliographicCarrington(observer='earth', obstime=obstime)
+    new = coord.transform_to(hgc_frame)
     new_vel = new.data.differentials['s'].represent_as(SphericalDifferential, new.data)
     assert_quantity_allclose(new_vel.d_lon, -360*u.deg / (27.27253*u.day), rtol=1e-2)
     assert_quantity_allclose(new_vel.d_lat, 0*u.deg/u.s)
@@ -727,8 +750,8 @@ def test_array_obstime():
     assert isinstance(t2.frame, Helioprojective)
 
 
-_frameset1 = [HeliographicStonyhurst, HeliographicCarrington, HeliocentricInertial]
-_frameset2 = [Heliocentric, Helioprojective]
+_frameset1 = [HeliographicStonyhurst, HeliocentricInertial]
+_frameset2 = [HeliographicCarrington, Heliocentric, Helioprojective]
 
 
 @pytest.mark.parametrize("start_class", _frameset1 + _frameset2)
@@ -762,7 +785,7 @@ def test_transform_with_sun_center():
                      frame=HeliographicStonyhurst(obstime="2001-01-01"))
 
     with transform_with_sun_center():
-        result2 = other.transform_to(HeliographicCarrington(obstime="2001-02-01"))
+        result2 = other.transform_to(HeliographicCarrington(observer='earth', obstime="2001-02-01"))
 
     # The coordinate should stay at the same latitude and the same distance from Sun center
     assert_quantity_allclose(result2.lat, other.lat)

@@ -53,5 +53,10 @@ def test_waveunit(mdi):
 def test_observer(mdi):
     assert isinstance(mdi.observer_coordinate.frame, frames.HeliographicStonyhurst)
     assert u.allclose(mdi.observer_coordinate.lat, -5.774028172878*u.deg)
-    assert u.allclose(mdi.observer_coordinate.lon, -0.10071469*u.deg)
+    assert u.allclose(mdi.observer_coordinate.lon, -0.09982352*u.deg)
     assert u.allclose(mdi.observer_coordinate.radius, 0.9739569156244*u.AU)
+
+
+def test_carrington(mdi):
+    assert u.allclose(mdi.carrington_longitude, mdi.meta['obs_l0']*u.deg)
+    assert u.allclose(mdi.carrington_latitude, mdi.meta['obs_b0']*u.deg)
