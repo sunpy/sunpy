@@ -22,6 +22,7 @@ import numpy as np
 
 import astropy.units as u
 from astropy._erfa import obl06
+from astropy.constants import c as speed_of_light
 from astropy.coordinates import (HCRS, ICRS, BaseCoordinateFrame, ConvertError,
                                  get_body_barycentric, get_body_barycentric_posvel)
 from astropy.coordinates.baseframe import frame_transform_graph
@@ -239,7 +240,7 @@ def _transform_obstime(frame, obstime):
         return new_frame
 
 
-def _rotation_matrix_hgs_to_hgc(obstime):
+def _rotation_matrix_hgs_to_hgc(obstime, observer_distance_from_sun):
     """
     Return the rotation matrix from HGS to HGC at the same observation time
     """
@@ -248,10 +249,17 @@ def _rotation_matrix_hgs_to_hgc(obstime):
                            " frame needs a specified `obstime`.")
 
     # Import here to avoid a circular import
-    from .sun import L0
+    from .sun import L0, earth_distance
+
+    # Calculate the difference in light travel time if the observer is at a different distance from
+    # the Sun than the Earth is
+    delta_time = (observer_distance_from_sun - earth_distance(obstime)) / speed_of_light
+
+    # Calculate the corresponding difference in apparent longitude
+    delta_lon = delta_time * 14.1844*u.deg/u.day
 
     # Rotation is only in longitude, so only around the Z axis
-    return rotation_matrix(-L0(obstime), 'z')
+    return rotation_matrix(-(L0(obstime) + delta_lon), 'z')
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,
@@ -261,11 +269,13 @@ def hgs_to_hgc(hgscoord, hgcframe):
     """
     Convert from Heliographic Stonyhurst to Heliographic Carrington.
     """
+    _check_observer_defined(hgcframe)
+
     # First transform the HGS coord to the HGC obstime
     int_coord = _transform_obstime(hgscoord, hgcframe.obstime)
 
     # Rotate from HGS to HGC
-    total_matrix = _rotation_matrix_hgs_to_hgc(int_coord.obstime)
+    total_matrix = _rotation_matrix_hgs_to_hgc(int_coord.obstime, hgcframe.observer.radius)
     newrepr = int_coord.cartesian.transform(total_matrix)
 
     return hgcframe._replicate(newrepr, obstime=int_coord.obstime)
@@ -278,11 +288,14 @@ def hgc_to_hgs(hgccoord, hgsframe):
     """
     Convert from Heliographic Carrington to Heliographic Stonyhurst.
     """
+    _check_observer_defined(hgccoord)
+
     # First transform the HGC coord to the HGS obstime
     int_coord = _transform_obstime(hgccoord, hgsframe.obstime)
 
     # Rotate from HGC to HGS
-    total_matrix = matrix_transpose(_rotation_matrix_hgs_to_hgc(int_coord.obstime))
+    total_matrix = matrix_transpose(_rotation_matrix_hgs_to_hgc(int_coord.obstime,
+                                                                hgccoord.observer.radius))
     newrepr = int_coord.cartesian.transform(total_matrix)
 
     return hgsframe._replicate(newrepr, obstime=int_coord.obstime)
@@ -606,11 +619,17 @@ def hgc_to_hgc(from_coo, to_frame):
     """
     Convert between two Heliographic Carrington frames.
     """
-    if np.all(from_coo.obstime == to_frame.obstime):
+    if _observers_are_equal(from_coo.observer, to_frame.observer) and \
+       np.all(from_coo.obstime == to_frame.obstime):
         return to_frame.realize_frame(from_coo.data)
-    else:
-        return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
-               transform_to(to_frame)
+
+    _check_observer_defined(from_coo)
+    _check_observer_defined(to_frame)
+
+    # Convert through HGS
+    hgscoord = from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime))
+
+    return hgscoord.transform_to(to_frame)
 
 
 @frame_transform_graph.transform(FunctionTransformWithFiniteDifference,

@@ -120,11 +120,6 @@ def test_wcs(aia171_test_map):
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
 
 
-def test_no_observer_wcs(heliographic_test_map):
-    assert isinstance(heliographic_test_map.wcs, astropy.wcs.WCS)
-    assert not hasattr(heliographic_test_map.wcs, "heliographic_observer")
-
-
 def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
 
@@ -181,7 +176,7 @@ def test_detector(generic_map):
 
 def test_dsun(generic_map):
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer: assuming Earth-based observer.*'):
-        assert generic_map.dsun == sun.earth_distance(generic_map.date).to(u.m)
+        assert_quantity_allclose(generic_map.dsun, sun.earth_distance(generic_map.date))
 
 
 def test_rsun_meters(generic_map):
@@ -231,7 +226,8 @@ def test_coordinate_frame(aia171_test_map):
 
 def test_heliographic_longitude_crln(hmi_test_map):
     assert_quantity_allclose(hmi_test_map.heliographic_longitude,
-                             hmi_test_map.carrington_longitude - sun.L0(hmi_test_map.date))
+                             hmi_test_map.carrington_longitude - sun.L0(hmi_test_map.date),
+                             rtol=1e-3)  # A tolerance is needed because L0 is for Earth, not SDO
 
 
 def test_remove_observers(aia171_test_map):

@@ -23,7 +23,7 @@ import sunpy.visualization.colormaps
 from sunpy import config
 from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype, peek_show
 from sunpy.sun import constants
-from sunpy.coordinates import sun
+from sunpy.coordinates import sun, HeliographicCarrington, HeliographicStonyhurst
 from sunpy.time import parse_time, is_time
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
@@ -313,7 +313,7 @@ class GenericMap(NDData):
         # need to do this only based on .meta.
         ctypes = {c[:4] for c in w2.wcs.ctype}
         # Check that the ctypes contains one of these two pairs of axes.
-        if {'HPLN', 'HPLT'} <= ctypes or {'SOLX', 'SOLY'} <= ctypes:
+        if ({'HPLN', 'HPLT'} <= ctypes or {'SOLX', 'SOLY'} <= ctypes or {'CRLN', 'CRLT'} <= ctypes):
             w2.heliographic_observer = self.observer_coordinate
 
         # Validate the WCS here.
@@ -637,7 +637,26 @@ class GenericMap(NDData):
         for keys, kwargs in self._supported_observer_coordinates:
             meta_list = [k in self.meta for k in keys]
             if all(meta_list):
-                return SkyCoord(obstime=self.date, **kwargs).heliographic_stonyhurst
+                sc = SkyCoord(obstime=self.date, **kwargs)
+
+                # We need to specially handle an observer location provided in Carrington
+                # coordinates.  To create the observer coordinate, we need to specify the
+                # frame, but defining a Carrington frame normally requires specifying the
+                # frame's observer.  This loop is the problem.  Instead, since the
+                # Carrington frame needs only the Sun-observer distance component from the
+                # frame's observer, we create the same frame using a fake observer that has
+                # the same Sun-observer distance.
+                if isinstance(sc.frame, HeliographicCarrington):
+                    fake_observer = HeliographicStonyhurst(0*u.deg, 0*u.deg, sc.radius,
+                                                           obstime=sc.obstime)
+                    fake_frame = sc.frame.replicate(observer=fake_observer)
+                    hgs = fake_frame.transform_to(HeliographicStonyhurst)
+
+                    # HeliographicStonyhurst doesn't need an observer, but adding the observer
+                    # facilitates a conversion back to HeliographicCarrington
+                    return SkyCoord(hgs, observer=hgs)
+
+                return sc.heliographic_stonyhurst
             elif any(meta_list) and not set(keys).isdisjoint(self.meta.keys()):
                 if not isinstance(kwargs['frame'], str):
                     kwargs['frame'] = kwargs['frame'].name
@@ -662,12 +681,14 @@ class GenericMap(NDData):
     @property
     def carrington_latitude(self):
         """Observer Carrington latitude."""
-        return self.observer_coordinate.heliographic_carrington.lat
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date)
+        return self.observer_coordinate.transform_to(hgc_frame).lat
 
     @property
     def carrington_longitude(self):
         """Observer Carrington longitude."""
-        return self.observer_coordinate.heliographic_carrington.lon
+        hgc_frame = HeliographicCarrington(observer=self.observer_coordinate, obstime=self.date)
+        return self.observer_coordinate.transform_to(hgc_frame).lon
 
     @property
     def dsun(self):

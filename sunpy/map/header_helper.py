@@ -126,7 +126,7 @@ def make_fitswcs_header(data, coordinate,
     meta_wcs = _get_wcs_meta(coordinate, projection_code)
 
     if hasattr(coordinate, "observer") and isinstance(coordinate.observer, frames.BaseCoordinateFrame):
-        meta_observer = get_observer_meta(coordinate.observer, coordinate.rsun)
+        meta_observer = get_observer_meta(coordinate.observer, getattr(coordinate, 'rsun', None))
         meta_wcs.update(meta_observer)
 
     meta_instrument = _get_instrument_meta(instrument, telescope, observatory, wavelength, exposure)
@@ -196,7 +196,7 @@ def _get_wcs_meta(coordinate, projection_code):
 
 
 @u.quantity_input
-def get_observer_meta(observer, rsun: u.Mm):
+def get_observer_meta(observer, rsun: (u.Mm, None)):
     """
     Function to get observer meta from coordinate frame.
 
@@ -223,8 +223,9 @@ def get_observer_meta(observer, rsun: u.Mm):
     coord_meta['hgln_obs'] = observer.lon.to_value(u.deg)
     coord_meta['hglt_obs'] = observer.lat.to_value(u.deg)
     coord_meta['dsun_obs'] = observer.radius.to_value(u.m)
-    coord_meta['rsun_ref'] = rsun.to_value(u.m)
-    coord_meta['rsun_obs'] = np.arctan(rsun / observer.radius).to_value(u.arcsec)
+    if rsun:
+        coord_meta['rsun_ref'] = rsun.to_value(u.m)
+        coord_meta['rsun_obs'] = np.arctan(rsun / observer.radius).to_value(u.arcsec)
 
     return coord_meta
 
