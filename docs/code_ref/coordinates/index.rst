@@ -317,6 +317,7 @@ More Detailed Information
 .. toctree::
    :maxdepth: 1
 
+   carrington
    rotatedsunframe
    wcs
    other_api
