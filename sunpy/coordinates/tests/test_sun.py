@@ -12,6 +12,7 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.utils.exceptions import ErfaWarning
 
 from sunpy.coordinates import sun
+from .helpers import assert_longitude_allclose
 
 
 @pytest.fixture
@@ -205,7 +206,10 @@ def test_L0_array_time():
                           '2013-09-01',
                           '2013-10-01',
                           '2013-11-01',
-                          '2013-12-01'], scale='tt'))
+                          '2013-12-01'], scale='tt'),
+                    light_travel_time_correction=True,
+                    aberration_correction=True,
+                    nearest_point=False)
     assert_quantity_allclose(sun_L0, [326.98,
                                       278.78,
                                       270.07,
@@ -218,6 +222,81 @@ def test_L0_array_time():
                                       322.22,
                                       273.31,
                                       237.83]*u.deg, atol=5e-3*u.deg)
+
+
+def test_L0_no_aberration():
+    # Validate against values from JPL Horizons, which does not apply the aberration correction
+    # for observer motion.
+    # https://ssd.jpl.nasa.gov/horizons_batch.cgi?batch=1&TABLE_TYPE=OBSERVER&OBJ_DATA=NO&QUANTITIES=%2714%27&COMMAND=%22Sun%22&CENTER=%27Geocentric%27&START_TIME=%222013-01-01+TT%22&STOP_TIME=%222013-12-31%22&STEP_SIZE=%221d%22
+    sun_L0 = sun.L0(Time(['2013-01-01',
+                          '2013-02-01',
+                          '2013-03-01',
+                          '2013-04-01',
+                          '2013-05-01',
+                          '2013-06-01',
+                          '2013-07-01',
+                          '2013-08-01',
+                          '2013-09-01',
+                          '2013-10-01',
+                          '2013-11-01',
+                          '2013-12-01'], scale='tt'),
+                    light_travel_time_correction=True,
+                    aberration_correction=False,
+                    nearest_point=True)
+    assert_quantity_allclose(sun_L0, [326.990733,
+                                      278.790656,
+                                      270.072948,
+                                      221.441361,
+                                      185.307239,
+                                      135.303859,
+                                       98.222569,
+                                       48.036714,
+                                      358.290683,
+                                      322.226771,
+                                      273.315968,
+                                      237.837721]*u.deg, atol=3*u.arcsec)
+
+
+def test_L0_sunspice():
+    # Validate against values from SunSPICE (including calling CSPICE functions)
+
+    # With the aberration correction for observer motion (specify 'LT+S')
+    #
+    # IDL> load_sunspice_gen
+    # IDL> cspice_str2et, '2013-01-01', et
+    # IDL> cspice_subpnt, 'Intercept/Ellipsoid', 'Sun', et, 'IAU_Sun', 'LT+S', 'Earth', spoint1, trgepc1, srfvec1
+    # IDL> cspice_reclat, spoint1, spcrad1, spclon1, spclat1
+    # IDL> print, spclon1 * cspice_dpr()
+    #       -33.025998
+    assert_longitude_allclose(sun.L0('2013-01-01',
+                                     light_travel_time_correction=True,
+                                     aberration_correction=True,
+                                     nearest_point=True),
+                              -33.025998*u.deg, atol=0.3*u.arcsec)
+
+    # Without the aberration correction for observer motion (specify 'LT')
+    #
+    # IDL> cspice_subpnt, 'Intercept/Ellipsoid', 'Sun', et, 'IAU_Sun', 'LT', 'Earth', spoint2, trgepc2, srfvec2
+    # IDL> cspice_reclat, spoint2, spcrad2, spclon2, spclat2
+    # IDL> print, spclon2 * cspice_dpr()
+    #       -33.020271
+    assert_longitude_allclose(sun.L0('2013-01-01',
+                                     light_travel_time_correction=True,
+                                     aberration_correction=False,
+                                     nearest_point=True),
+                              -33.020271*u.deg, atol=0.01*u.arcsec)
+
+    # Without any corrections (do a straight conversion from 'HEQ' to 'Carrington')
+    #
+    # IDL> coord = [1.d, 0.d, 10.d]
+    # IDL> convert_sunspice_lonlat, '2013-01-01', coord, 'HEQ', 'Carrington', /au, /degrees
+    # IDL> print, coord
+    #        1.0000000       326.89956       10.000000
+    assert_longitude_allclose(sun.L0('2013-01-01',
+                                     light_travel_time_correction=False,
+                                     aberration_correction=False,
+                                     nearest_point=True),
+                              326.89956*u.deg, atol=0.01*u.arcsec)
 
 
 def test_P():
