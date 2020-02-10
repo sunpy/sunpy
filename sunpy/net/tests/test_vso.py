@@ -38,6 +38,7 @@ class MockQRResponse:
     >>> res.provideritem[1].record.recorditem  # doctest: +SKIP
     [2]
     """
+
     def __init__(self, records=None, errors=None):
 
         self.provideritem = list()
@@ -469,15 +470,6 @@ def test_build_client_params():
 
 
 @pytest.mark.remote_data
-def test_vso_error(client):
-    with pytest.warns(SunpyUserWarning,
-        match="VSO-C500 :soap:Server.Transport : 404 Not Found"):
-        client.search(
-            va.Time('2019/12/30', '2019/12/31'),
-            va.Instrument('ovsa'))
-
-
-@pytest.mark.remote_data
 def test_incorrect_content_disposition(client):
     results = client.search(
         va.Time('2011/1/1 01:00', '2011/1/1 01:02'),
@@ -485,5 +477,5 @@ def test_incorrect_content_disposition(client):
     files = client.fetch(results[0:1])
 
     assert len(files) == 1
-    assert  files[0].endswith("mdi_vw_v_9466622_9466622.tar")
+    assert files[0].endswith("mdi_vw_v_9466622_9466622.tar")
     assert "Content" not in files[0]
