@@ -34,7 +34,7 @@ def test_null():
 
 
 @given(lon=longitude(), lat=latitude())
-@settings(deadline=5000)
+@settings(deadline=1000)
 def test_transform(lon, lat):
     """
     Test that the north pole in the new frame transforms back to the given
@@ -44,8 +44,8 @@ def test_transform(lon, lat):
     off = NorthOffsetFrame(north=north)
     t_north = SkyCoord(lon=0*u.deg, lat=90*u.deg, frame=off)
     t_north = t_north.transform_to('heliographic_stonyhurst')
-    assert_quantity_allclose(north.lon, t_north.lon, atol=1e6*u.deg)
-    assert_quantity_allclose(north.lat, t_north.lat, atol=1e6*u.deg)
+    assert_quantity_allclose(north.lon, t_north.lon, atol=1e-6*u.deg)
+    assert_quantity_allclose(north.lat, t_north.lat, atol=1e-6*u.deg)
 
 
 def test_south_pole():
