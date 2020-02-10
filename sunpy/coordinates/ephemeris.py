@@ -26,6 +26,7 @@ except ImportError:
 
 from sunpy.time import parse_time
 from sunpy import log
+from sunpy.sun.constants import radius as _RSUN
 from sunpy.util.decorators import add_common_docstring, deprecated
 from sunpy.time.time import _variables_for_parse_time_docstring
 
@@ -263,7 +264,10 @@ _DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.176*u.deg)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
-def _L0(time='now'):
+def _L0(time='now',
+        light_travel_time_correction=True,
+        aberration_correction=True,
+        nearest_point=False):
     """
     Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the
     Sun-disk center as seen from Earth.
@@ -272,6 +276,15 @@ def _L0(time='now'):
     ----------
     time : {parse_time_types}
         Time to use in a parse_time-compatible format
+    light_travel_time_correction : `bool`
+        If True, apply the correction for light travel time from Sun to Earth.  Defaults to True.
+    aberration_correction : `bool`
+        If True, apply an aberration correction in the manner of the Astronomical Almanac.  Defaults
+        to True.
+    nearest_point : `bool`
+        If True, calculate the light travel time to the nearest point on the Sun's surface rather
+        than the light travel time to the center of the Sun (i.e., a difference of the solar
+        radius).  Defaults to False.
 
     Returns
     -------
@@ -292,7 +305,7 @@ def _L0(time='now'):
     * Seidelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates
       and rotational elements: 2006" `(link) <http://dx.doi.org/10.1007/s10569-007-9072-y>`__
     * Urban & Kaplan (2007), "Investigation of Change in the Computational Technique of the Sun's
-      Physical Ephemeris in The Astronomical Alamanac"
+      Physical Ephemeris in The Astronomical Almanac"
       `(link) <http://asa.hmnao.com/static/files/sun_rotation_change.pdf>`__
     """
     obstime = parse_time(time)
@@ -301,14 +314,18 @@ def _L0(time='now'):
     # Calculate the de-tilt longitude of the Earth
     dlon_earth = _detilt_lon(earth)
 
+    # Calculate the distance to the nearest point on the Sun's surface
+    distance = earth.radius - _RSUN if nearest_point else earth.radius
+
     # Apply a correction for aberration due to Earth motion
     # This expression is an approximation to reduce computations (e.g., it does not account for the
     # inclination of the Sun's rotation axis relative to the ecliptic), but the estimated error is
     # <0.2 arcseconds
-    dlon_earth -= 20.496*u.arcsec * 1*u.AU / earth.radius
+    if aberration_correction:
+        dlon_earth -= 20.496*u.arcsec * 1*u.AU / earth.radius
 
     # Antedate the observation time to account for light travel time for the Sun-Earth distance
-    antetime = obstime - earth.radius / speed_of_light
+    antetime = obstime - distance / speed_of_light if light_travel_time_correction else obstime
 
     # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
     dlon_meridian = Longitude(_DLON_MERIDIAN + (antetime - _J2000) * 14.1844*u.deg/u.day)
