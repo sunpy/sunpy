@@ -252,19 +252,23 @@ class HeliographicCarrington(BaseHeliographic):
     - The Z-axis (+90 degrees latitude) is aligned with the Sun's north pole.
     - The X-axis and Y-axis rotate with a period of 25.38 days.
 
-    This system differs from Stonyhurst Heliographic (HGS) in its definition of longitude.
+    This system differs from Stonyhurst Heliographic (HGS) in its definition of longitude.  This
+    longitude is an "apparent" longitude because it takes into account the time it takes for light
+    to travel from the Sun to the observer.  Thus, the observer needs to be specified to be able to
+    transform to any other coordinate frame.
 
     A new instance can be created using the following signatures
-    (note that if supplied, ``obstime`` must be a keyword argument)::
+    (note that if supplied, ``obstime`` and ``observer`` must be a keyword argument)::
 
-        HeliographicCarrington(lon, lat, obstime=obstime)
-        HeliographicCarrington(lon, lat, radius, obstime=obstime)
+        HeliographicCarrington(lon, lat, obstime=obstime, observer=observer)
+        HeliographicCarrington(lon, lat, radius, obstime=obstime, observer=observer)
 
     Parameters
     ----------
     {data}
     {lonlat}
     {radius}
+    {observer}
     {common}
 
     Examples
@@ -274,26 +278,29 @@ class HeliographicCarrington(BaseHeliographic):
     >>> import astropy.units as u
     >>> sc = SkyCoord(1*u.deg, 2*u.deg, 3*u.km,
     ...               frame="heliographic_carrington",
+    ...               observer="earth",
     ...               obstime="2010/01/01T00:00:30")
     >>> sc
-    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:30.000): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:30.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
         (1., 2., 3.)>
 
     >>> sc = SkyCoord([1,2,3]*u.deg, [4,5,6]*u.deg, [5,6,7]*u.km,
     ...               obstime="2010/01/01T00:00:45", frame="heliographic_carrington")
     >>> sc
-    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:45.000): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicCarrington: obstime=2010-01-01T00:00:45.000, observer=None): (lon, lat, radius) in (deg, deg, km)
         [(1., 4., 5.), (2., 5., 6.), (3., 6., 7.)]>
 
     >>> sc = SkyCoord(CartesianRepresentation(0*u.km, 45*u.km, 2*u.km),
     ...               obstime="2011/01/05T00:00:50",
     ...               frame="heliographic_carrington")
     >>> sc
-    <SkyCoord (HeliographicCarrington: obstime=2011-01-05T00:00:50.000): (lon, lat, radius) in (deg, deg, km)
+    <SkyCoord (HeliographicCarrington: obstime=2011-01-05T00:00:50.000, observer=None): (lon, lat, radius) in (deg, deg, km)
         (90., 2.54480438, 45.04442252)>
     """
     name = "heliographic_carrington"
     _wrap_angle = 360*u.deg
+
+    observer = ObserverCoordinateAttribute(HeliographicStonyhurst)
 
 
 @add_common_docstring(**_frame_parameters())

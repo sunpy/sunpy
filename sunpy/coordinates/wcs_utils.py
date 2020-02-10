@@ -42,7 +42,7 @@ def solar_wcs_frame_mapping(wcs):
         return HeliographicStonyhurst(obstime=dateobs)
 
     if {'CRLN', 'CRLT'} <= ctypes:
-        return HeliographicCarrington(obstime=dateobs)
+        return HeliographicCarrington(obstime=dateobs, observer=observer)
 
     if {'SOLX', 'SOLY'} <= ctypes:
         return Heliocentric(obstime=dateobs, observer=observer)

@@ -38,7 +38,7 @@ def rot_hgs():
 def rot_hgc():
     return (f.HeliographicCarrington,
             RotatedSunFrame(lon=1*u.deg, lat=2*u.deg, radius=3*u.AU,
-                            base=f.HeliographicCarrington(obstime='2001-01-01'),
+                            base=f.HeliographicCarrington(observer='earth', obstime='2001-01-01'),
                             duration=4*u.day))
 
 
@@ -190,7 +190,10 @@ def test_alternate_rotation_model():
 def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_time2):
     # Tests the transformations (to, from, and loopback) for consistency with `diff_rot` output
 
-    base = frame(lon=lon, lat=lat, obstime=obstime)
+    if hasattr(frame, 'observer'):
+        base = frame(lon=lon, lat=lat, observer='earth', obstime=obstime)
+    else:
+        base = frame(lon=lon, lat=lat, obstime=obstime)
 
     # Test the RotatedSunFrame->base transformation
     rsf1 = RotatedSunFrame(base=base, rotated_time=rotated_time1)
