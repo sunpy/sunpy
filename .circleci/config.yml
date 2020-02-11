@@ -22,7 +22,7 @@ permission-run: &permission-run
   name: Fix permssions for installing
   command: |
     sudo chown -R circleci:circleci /usr/local/bin
-    sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+    sudo chown -R circleci:circleci /usr/local/lib/python3.*/site-packages
     sudo chown -R circleci:circleci /usr/local/share/
 
 apt-run: &apt-install
@@ -79,7 +79,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            yum install -y gcc gcc-c++ freetype-devel
+            yum install -y gcc gcc-c++ freetype-devel openssl-devel
       - run:
           name: Install dependencies for Python 3.6
           command: /opt/python/cp36-cp36m/bin/pip install tox | cat
@@ -124,7 +124,7 @@ jobs:
 
   html-docs:
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
     steps:
       - restore_cache:
           keys: sample-data-v1
