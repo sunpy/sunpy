@@ -91,6 +91,10 @@ def carrington_rotation_time(crot):
     ----------
     crot : float
         Carrington rotation number. Can be a fractional cycle number.
+
+    Returns
+    -------
+    astropy.time.Time
     """
     estimate = (_CARRINGTON_ROTATION_PERIOD * (crot - 1)) + _FIRST_CROT_JD
 
