@@ -1,0 +1,1 @@
+Updated `sunpy.map.compositemap` to support linewidths argument.

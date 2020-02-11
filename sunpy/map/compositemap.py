@@ -434,6 +434,11 @@ class CompositeMap:
             # rendered using imshow.
             if m.levels is False:
                 # Check for the presence of masked map data
+
+                # Check if the linewidths argument is provided, if so, then delete it from params.
+                if matplot_args.get('linewidths', -1) != -1:
+                    del params['linewidths']
+
                 if m.mask is None:
                     ret.append(axes.imshow(m.data, **params))
                 else:
