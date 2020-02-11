@@ -254,7 +254,7 @@ Summer of Code(s)
 ^^^^^^^^^^^^^^^^^
 
 If you are interested in a "Summer of Code" project with sunpy, we have information on our `wiki`_ which has guidelines, advice, application templates and more!
-Our projects are on our umbrella's origination website, `OpenAstronomy`_.
+Our projects are located on our umbrella's organization website, `OpenAstronomy`_.
 
 .. _wiki: https://github.com/sunpy/sunpy/wiki#summer-of-codes
 .. _OpenAstronomy: https://openastronomy.org/gsoc/
