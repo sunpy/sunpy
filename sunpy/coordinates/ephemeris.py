@@ -11,7 +11,7 @@ import warnings
 import numpy as np
 import astropy.units as u
 from astropy.time import Time
-from astropy.coordinates import (SkyCoord, Angle, Longitude,
+from astropy.coordinates import (SkyCoord, Angle, Longitude, Distance,
                                  ICRS, ITRS, AltAz,
                                  get_body_barycentric)
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
@@ -356,7 +356,9 @@ def _earth_distance(time='now'):
     out : `~astropy.coordinates.Distance`
         The Sun-Earth distance
     """
-    return get_earth(time).radius
+    obstime = parse_time(time)
+    vector = get_body_barycentric('earth', obstime) - get_body_barycentric('sun', obstime)
+    return Distance(vector.norm())
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
