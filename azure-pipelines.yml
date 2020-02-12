@@ -40,12 +40,12 @@ jobs:
       brew:
         - openjpeg
     envs:
-      - macos: py36-offline
-        name: py36_offline
+      - macos: py36
+        name: py36
         posargs: -n=1
 
-      - windows: py37-offline
-        name: py37_offline
+      - windows: py37
+        name: py37
 
       - linux: py38-online
         name: py38_online
@@ -54,10 +54,11 @@ jobs:
         name: py36_conda
         libraries: {}
 
-      - linux: py36-astropy31
-        name: py36_astropy31
+      - linux: py36-oldestdeps
+        name: py36_oldestdeps
 
-      - linux: py37-astropydev
+      - linux: py37-devdeps
+        name: py37_devdeps
 
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
 - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
