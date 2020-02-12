@@ -1,7 +1,7 @@
 no-backports: &no-backports
-  name: Skip any branches called backport* but not PRs
+  name: Skip any branches called backport*
   command: |
-    if [[ -z "${CIRCLE_PULL_REQUEST}" && "${CIRCLE_BRANCH}" = *"backport"* ]]; then
+    if [[ "${CIRCLE_BRANCH}" = *"backport"* ]]; then
       circleci step halt
     fi
 
@@ -18,49 +18,36 @@ merge-check: &merge-check
       git checkout -qf pr/$CIRCLE_PR_NUMBER/merge
     fi
 
-permission-run: &permission-run
-  name: Fix permssions for installing
-  command: |
-    sudo chown -R circleci:circleci /usr/local/bin
-    sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
-    sudo chown -R circleci:circleci /usr/local/share/
-
 apt-run: &apt-install
   name: Install apt packages
   command: |
     apt update
     apt install -y graphviz build-essential libopenjp2-7
 
-sudo-apt-run: &sudo-apt-install
-  name: Install apt packages
-  command: |
-    sudo apt update
-    sudo apt install -y graphviz build-essential libopenjp2-7 git
-
 version: 2
 jobs:
   twine-check:
     docker:
-      - image: circleci/python:3.7
+      - image: continuumio/miniconda3
     steps:
       - checkout
+      - run: *no-backports
       - run: *skip-check
       - run: *merge-check
-      - run: *permission-run
-      - run: pip install pep517
+      - run: pip install -U pep517
       - run: python -m pep517.build --source .
       - run: python -m pip install -U --user --force-reinstall twine
       - run: python -m twine check dist/*
 
   pip-install:
     docker:
-      - image: circleci/python:3.7
+      - image: continuumio/miniconda3
     steps:
       - checkout
+      - run: *no-backports
       - run: *skip-check
       - run: *merge-check
-      - run: *permission-run
-      - run: *sudo-apt-install
+      - run: *apt-install
       - run: pip install -U pip
       - run: pip install --progress-bar off .[all,dev]
       - run: pip install -e .[all,dev]
@@ -75,11 +62,12 @@ jobs:
       - restore_cache:
           keys: sample-data-v1
       - checkout
+      - run: *no-backports
       - run: *skip-check
       - run:
           name: install dependencies
           command: |
-            yum install -y gcc gcc-c++ freetype-devel
+            yum install -y gcc gcc-c++ freetype-devel openssl-devel
       - run:
           name: Install dependencies for Python 3.6
           command: /opt/python/cp36-cp36m/bin/pip install tox | cat
@@ -92,6 +80,7 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - run: *no-backports
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
@@ -109,8 +98,8 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
-      - run: *skip-check
       - run: *no-backports
+      - run: *skip-check
       - run: *merge-check
       - run: *apt-install
       - run: pip install -U tox tox-conda codecov
@@ -124,15 +113,15 @@ jobs:
 
   html-docs:
     docker:
-      - image: circleci/python:3.7
+      - image: continuumio/miniconda3
     steps:
       - restore_cache:
           keys: sample-data-v1
       - checkout
+      - run: *no-backports
       - run: *skip-check
       - run: *merge-check
-      - run: *permission-run
-      - run: *sudo-apt-install
+      - run: *apt-install
       - run: pip install -U tox
       - run: tox -e build_docs
       - run:
