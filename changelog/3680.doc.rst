@@ -1,0 +1,1 @@
+Corrected misleading `~sunpy.timeseries.metadata.TimeSeriesMetaData` documentation about optional parameters.
