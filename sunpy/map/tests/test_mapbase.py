@@ -95,9 +95,7 @@ def generic_map():
 
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same in pyfits and SunPy"""
-    with warnings.catch_warnings():
-        warnings.filterwarnings('ignore', category=VerifyWarning,
-                                message="Invalid 'BLANK' keyword in header.")
+    with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
         data = fits.open(os.path.join(testpath, 'aia_171_level1.fits'))[0].data
     np.testing.assert_allclose(aia171_test_map.data, data)
 
