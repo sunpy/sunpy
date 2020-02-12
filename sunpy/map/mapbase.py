@@ -203,8 +203,8 @@ class GenericMap(NDData):
 
         if self.plot_settings:
             warnings.warn("Handling of ``plot_settings`` is deprecated."
-                          "Subsequently setting ``plot_settings`` will have no effect on the plot."
-                          "Pass the plot specific settings to either ``.peek()`` or ``.show()``",
+                          "In the future setting ``plot_settings`` will have no effect on the plot."
+                          "Pass the plot specific settings to either ``.peek()`` or ``.plot()``",
                           SunpyDeprecationWarning)
             if 'norm' in self.plot_settings:
                 self.norm = self.plot_settings['norm']

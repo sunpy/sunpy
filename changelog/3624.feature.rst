@@ -1,1 +1,0 @@
-Creates sources-specific ``.cmap`` and ``.norm`` attributes in ``sunpy.map.GenericMap.__init__``, and deprecate handling of ``.plot_settings``, while shifting it to ``peek()`` and ``show()``, so as to provide for a cleaner API.

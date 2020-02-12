@@ -17,19 +17,19 @@ from sunpy.data.sample import AIA_171_IMAGE
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
-# The colormap and normalization for a map are accessed as a property of the map.
 # How a Map is displayed is determined by its colormap, which sets the colors
 # , and the normalization, which sets how data values are translated to colors.
-# Lets replace the colormap and normalization.
-aiamap.cmap = plt.get_cmap('Greys_r')
-aiamap.norm = colors.LogNorm(100, aiamap.max())
+# Lets set the colormap and normalization, to replace them later.
+cmap = plt.get_cmap('Greys_r')
+norm = colors.LogNorm(100, aiamap.max())
 
 ###############################################################################
 # To see all of the colormaps SunPy provides see `sunpy.visualization.colormaps`.
 # Matplotlib provides a number of `colormaps <https://matplotlib.org/examples/color/colormaps_reference.html>`_
 # and `normalizations <https://matplotlib.org/users/colormapnorms.html>`_.
 # For more advanced normalizations see `astropy.visualization`.
+# The colormap and normalization for a map are passed on as attributes to `plot`
 ax = plt.subplot(projection=aiamap)
-aiamap.plot()
+aiamap.plot(cmap=cmap, norm=norm)
 plt.colorbar()
 plt.show()

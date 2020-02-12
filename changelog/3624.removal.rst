@@ -1,0 +1,1 @@
+`sunpy.map.GenericMap.plot_settings` is now deprecated in favour of passing keyword arguments to the `sunpy.map.GenericMap.plot` method. New properties `~sunpy.map.GenericMap.cmap` and `~sunpy.map.GenericMap.norm` properties contain the source specific colormap and norm settings. These properties are settable so can be overridden.
