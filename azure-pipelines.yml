@@ -75,8 +75,8 @@ jobs:
         - wheels_macos
         - sdist
       dependsOn:
-        - py36_offline
-        - py37_offline
+        - py36
+        - py37
         - py38_online
         - py36_conda
-        - py36_astropy31
+        - py36_oldestdeps
