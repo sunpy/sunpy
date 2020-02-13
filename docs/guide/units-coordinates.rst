@@ -237,4 +237,3 @@ Using Coordinates with SunPy Map
    >>> pixel_obj = m.world_to_pixel(c) # doctest: +REMOTE_DATA
    >>> pixel_obj # doctest: +REMOTE_DATA
    PixelPair(x=<Quantity 551.7680511 pix>, y=<Quantity 515.18266871 pix>)
-
