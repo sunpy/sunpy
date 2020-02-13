@@ -404,7 +404,7 @@ def test_walker_create_fitsheader_inverted(session):
 
 @pytest.mark.remote_data
 def test_walker_create_vso_instrument(vso_session):
-    entries = walker.create(a.Instrument('RHESSI'), vso_session)
+    entries = walker.create(vso.attrs.Instrument('RHESSI'), vso_session)
     expected = [tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
                                      physobs=u'intensity',
                                      fileid=u'/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
