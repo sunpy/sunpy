@@ -1,1 +1,0 @@
-Fixed the transformation test for `~sunpy.coordinates.metaframes.NorthOffsetFrame`, which would intermittently fail.

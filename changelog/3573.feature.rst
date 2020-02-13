@@ -1,1 +1,0 @@
-Updated the gallery example titled 'Downloading and plotting an HMI magnetogram' to rotate the HMI magnetogram such that solar North is pointed up.

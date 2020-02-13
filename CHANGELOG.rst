@@ -1,3 +1,36 @@
+Sunpy v1.1.1 (2020-02-13)
+=========================
+
+Features
+--------
+
+- Updated the gallery example titled 'Downloading and plotting an HMI magnetogram' to rotate the HMI magnetogram such that solar North is pointed up. (`#3573 <https://github.com/sunpy/sunpy/pull/3573>`__)
+
+
+Bug Fixes
+---------
+
+- Added support for passing ``TimeSeriesMetaData`` object to ``timeseries_factory`` and associated validation tests. (`#3639 <https://github.com/sunpy/sunpy/pull/3639>`__)
+- Work around incorrect Content-Disposition headers in some VSO downloads, which were leading to mangled filenames. (`#3740 <https://github.com/sunpy/sunpy/pull/3740>`__)
+- Fixed a bug with the calculation of Carrington longitude as seen from Earth where it was using an old approach instead of the current approach (for example, the varying Sun-Earth distance is now taken into account).
+  The old approach resulted in errors no greater than 7 arcseconds in Carrington longitude when using `~sunpy.coordinates.sun.L0` and `~sunpy.coordinates.frames.HeliographicCarrington`. (`#3772 <https://github.com/sunpy/sunpy/pull/3772>`__)
+
+
+Improved Documentation
+----------------------
+
+- A new example gallery example "Plotting a difference image" has been added,
+  which can be used for base difference or running difference images. (`#3627 <https://github.com/sunpy/sunpy/pull/3627>`__)
+- Corrected misleading `~sunpy.timeseries.metadata.TimeSeriesMetaData` documentation about optional parameters. (`#3680 <https://github.com/sunpy/sunpy/pull/3680>`__)
+
+
+Trivial/Internal Changes
+------------------------
+
+- Fix Python version for requiring importlib_resources (`#3683 <https://github.com/sunpy/sunpy/pull/3683>`__)
+- Fixed the transformation test for `~sunpy.coordinates.metaframes.NorthOffsetFrame`, which would intermittently fail. (`#3775 <https://github.com/sunpy/sunpy/pull/3775>`__)
+
+
 Sunpy v1.1.0 (2020-01-10)
 =========================
 
