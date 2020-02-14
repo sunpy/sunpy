@@ -222,7 +222,14 @@ Using Coordinates with SunPy Map
        (-0.00406308, 0.04787238, 1.51846026e+11)>): (Tx, Ty) in arcsec
        (100., 10.)>
 
-   This `~astropy.coordinates.SkyCoord` object could then be used to plot a point
+   The `~astropy.coordinates.SkyCoord` object can be converted to a PixelPair object
+   using `~sunpy.map.GenericMap.world_to_pixel`:
+
+   >>> pixel_obj = m.world_to_pixel(c) # doctest: +REMOTE_DATA
+   >>> pixel_obj # doctest: +REMOTE_DATA
+   PixelPair(x=<Quantity 551.7680511 pix>, y=<Quantity 515.18266871 pix>)
+
+   This `~astropy.coordinates.SkyCoord` object could also be used to plot a point
    on top of the map:
 
    >>> import matplotlib.pyplot as plt
@@ -231,11 +238,4 @@ Using Coordinates with SunPy Map
    <matplotlib.image.AxesImage object at ...>
    >>> _ = ax.plot_coord(c, 'o')  # doctest: +REMOTE_DATA
 
-   Additionally, we can also convert the `~astropy.coordinates.SkyCoord` object to a PixelPair object
-   using `~sunpy.map.GenericMap.world_to_pixel`:
-
-   >>> pixel_obj = m.world_to_pixel(c) # doctest: +REMOTE_DATA
-   >>> pixel_obj # doctest: +REMOTE_DATA
-   PixelPair(x=<Quantity 551.7680511 pix>, y=<Quantity 515.18266871 pix>)
-
-   For more information on coordinates see :ref:`sunpy-coordinates` section of the :ref:`reference`.
+For more information on coordinates see :ref:`sunpy-coordinates` section of the :ref:`reference`.
