@@ -8,6 +8,7 @@ from astropy.tests.helper import assert_quantity_allclose
 from astropy.coordinates import SkyCoord, SkyOffsetFrame
 
 from sunpy.coordinates import NorthOffsetFrame
+from .helpers import assert_longitude_allclose
 
 
 @st.composite
@@ -44,14 +45,14 @@ def test_transform(lon, lat):
     off = NorthOffsetFrame(north=north)
     t_north = SkyCoord(lon=0*u.deg, lat=90*u.deg, frame=off)
     t_north = t_north.transform_to('heliographic_stonyhurst')
-    assert_quantity_allclose(north.lon, t_north.lon, atol=1e-6*u.deg)
+    assert_longitude_allclose(north.lon, t_north.lon, atol=1e-6*u.deg)
     assert_quantity_allclose(north.lat, t_north.lat, atol=1e-6*u.deg)
 
 
 def test_south_pole():
     s = SkyCoord(-10*u.deg, 0*u.deg, frame='heliographic_stonyhurst')
     off = NorthOffsetFrame(north=s)
-    assert_quantity_allclose(off.origin.lon, 170*u.deg)
+    assert_longitude_allclose(off.origin.lon, 170*u.deg)
     assert_quantity_allclose(off.origin.lat, -90*u.deg)
 
 
@@ -60,7 +61,7 @@ def test_cartesian():
     s = SkyCoord(1, 2, 3, unit=u.m,
                  representation_type='cartesian', frame='heliographic_stonyhurst')
     off = NorthOffsetFrame(north=s)
-    assert_quantity_allclose(off.origin.lon, np.arctan2(s.y, s.x))
+    assert_longitude_allclose(off.origin.lon, np.arctan2(s.y, s.x))
     assert_quantity_allclose(off.origin.lat, np.arctan2(s.z, np.sqrt(s.x**2 + s.y**2)) - 90*u.deg)
 
 
