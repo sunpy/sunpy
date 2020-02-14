@@ -51,7 +51,7 @@ def fido_search_result():
         net_attrs.Instrument('XRS') | net_attrs.Instrument('noaa-indices') |
         net_attrs.Instrument('noaa-predict') |
         (net_attrs.Instrument('norh') & net_attrs.Wavelength(17 * u.GHz)) |
-        net_attrs.Instrument('rhessi') |
+        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve"))|
         (net_attrs.Instrument('EVE') & net_attrs.Level(0))
     )
 

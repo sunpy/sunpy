@@ -185,37 +185,28 @@ class UnifiedResponse(Sequence):
         return ret
 
 
-"""
-Construct a simple AttrWalker to split up searches into blocks of attrs being
-'anded' with AttrAnd.
-
-This pipeline only understands AttrAnd and AttrOr, Fido.search passes in an
-AttrAnd object of all the query parameters, if an AttrOr is encountered the
-query is split into the component parts of the OR, which at somepoint will end
-up being an AttrAnd object, at which point it is passed into
-_get_registered_widget.
-"""
 query_walker = attr.AttrWalker()
+"""
+We construct an `AttrWalker` which calls `_make_query_to_client` for each
+logical component of the query, i.e. any block which are ANDed together.
+"""
+
+
+@query_walker.add_creator(attr.DataAttr)
+def _create_data(walker, query, factory):
+    return factory._make_query_to_client(query)
 
 
 @query_walker.add_creator(attr.AttrAnd)
 def _create_and(walker, query, factory):
-    is_time = any([isinstance(x, a.Time) for x in query.attrs])
-    if not is_time:
-        error = "The following part of the query did not have a time specified:\n"
-        for at in query.attrs:
-            error += str(at) + ', '
-        raise ValueError(error)
-
-    # Return the response and the client
-    return [factory._make_query_to_client(*query.attrs)]
+    return factory._make_query_to_client(*query.attrs)
 
 
 @query_walker.add_creator(attr.AttrOr)
 def _create_or(walker, query, factory):
     qblocks = []
     for attrblock in query.attrs:
-        qblocks.extend(walker.create(attr.and_(attrblock), factory))
+        qblocks += walker.create(attrblock, factory)
 
     return qblocks
 
@@ -274,7 +265,17 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         parts individually.
         """  # noqa
         query = attr.and_(*query)
-        return UnifiedResponse(*query_walker.create(query, self))
+        results = query_walker.create(query, self)
+
+        # If we have searched the VSO but no results were returned, but another
+        # client generated results, we drop the empty VSO results for tidiness.
+        if len(results) > 1:
+            vso_results = list(filter(lambda r: isinstance(r, vso.QueryResponse), results))
+            for vres in vso_results:
+                if len(vres) == 0:
+                    results.remove(vres)
+
+        return UnifiedResponse(*results)
 
     def fetch(self, *query_results, path=None, max_conn=5, progress=True,
               overwrite=False, downloader=None, **kwargs):
@@ -389,18 +390,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         if n_matches == 0:
             # There is no default client
             raise NoMatchError("This query was not understood by any clients. Did you miss an OR?")
-        elif n_matches == 2:
-            # If two clients have reported they understand this query, and one
-            # of them is the VSOClient, then we ignore VSOClient.
-            if vso.VSOClient in candidate_widget_types:
-                candidate_widget_types.remove(vso.VSOClient)
-
-        # Finally check that we only have one match.
-        if len(candidate_widget_types) > 1:
-            candidate_names = [cls.__name__ for cls in candidate_widget_types]
-            raise MultipleMatchError("The following clients matched this query. "
-                                     "Please make your query more specific.\n"
-                                     "{}".format(candidate_names))
 
         return candidate_widget_types
 
@@ -414,14 +403,20 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Returns
         -------
-        response : `~sunpy.net.dataretriever.client.QueryResponse`
+        results : `list`
 
         client : `object`
             Instance of client class
         """
         candidate_widget_types = self._check_registered_widgets(*query)
-        tmpclient = candidate_widget_types[0]()
-        return tmpclient.search(*query)
+        results = []
+        for client in candidate_widget_types:
+            tmpclient = client()
+            results.append(tmpclient.search(*query))
+
+        # This method is called by `search` and the results are fed into a
+        # UnifiedResponse object.
+        return results
 
 
 Fido = UnifiedDownloaderFactory(

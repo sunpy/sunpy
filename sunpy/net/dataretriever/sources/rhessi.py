@@ -50,7 +50,7 @@ class RHESSIClient(GenericClient):
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('RHESSI'))  #doctest: +REMOTE_DATA
+    ...                       a.Instrument("RHESSI"), a.Physobs("summary_lightcurve"))  #doctest: +REMOTE_DATA
     >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -192,9 +192,23 @@ class RHESSIClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr = ['Time', 'Instrument']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
+        from sunpy.net import attrs as a
+
+        required = {a.Time, a.Instrument}
+        optional = {a.Physobs}
+
+        all_attrs = {type(x) for x in query}
+
+        query_attrs = set(type(x) for x in query)
+
+        if not required.issubset(query_attrs) or not all_attrs.issubset(query_attrs):
+            return False
+
+        matches = True
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'rhessi':
-                return all(chklist)
-        return False
+            if isinstance(x, a.Instrument) and x.value.lower() != 'rhessi':
+                matches = False
+            if isinstance(x, a.Physobs) and x.value.lower() != 'summary_lightcurve':
+                matches = False
+
+        return matches

@@ -901,6 +901,9 @@ class VSOClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
+        # VSO Queries must have time
+        if not core_attrs.Time in [type(a) for a in query]:
+            return False
         return all([x.__class__.__name__ in core_attrs.__all__ + attrs.__all__ for x in query])
 
     @classmethod

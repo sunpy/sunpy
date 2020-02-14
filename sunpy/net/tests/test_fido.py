@@ -15,7 +15,7 @@ import astropy.units as u
 from astropy.table import Table
 
 from sunpy import config
-from sunpy.net import Fido, attr
+from sunpy.net import Fido, attr, jsoc
 from sunpy.net import attrs as a
 from sunpy.net.base_client import BaseClient
 from sunpy.net.dataretriever.client import QueryResponse
@@ -27,7 +27,7 @@ from sunpy.net.vso.vso import DownloadFailed
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.exceptions import SunpyUserWarning
-from sunpy.tests.helpers import skip_windows
+from sunpy.tests.helpers import skip_windows, no_vso
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -58,6 +58,7 @@ def online_query(draw, instrument=online_instruments()):
     return query
 
 
+@no_vso
 @settings(deadline=50000)
 @given(offline_query())
 def test_offline_fido(query):
@@ -138,22 +139,6 @@ def test_unified_response():
     assert all(s in qr._repr_html_() for s in strings)
 
 
-def test_no_time_error():
-    # TODO: work out why this is failing sometimes.
-    from sunpy.net import attrs as a
-    query = (a.Instrument('EVE'), a.Level(0))
-    with pytest.raises(ValueError) as excinfo:
-        Fido.search(*query)
-    assert all(str(a) in str(excinfo.value) for a in query)
-
-    query1 = (a.Instrument('EVE') & a.Level(0))
-    query2 = (a.Time("2012/1/1", "2012/1/2") & a.Instrument("AIA"))
-    with pytest.raises(ValueError) as excinfo:
-        Fido.search(query1 | query2)
-    assert all(str(a) in str(excinfo.value) for a in query1.attrs)
-    assert all(str(a) not in str(excinfo.value) for a in query2.attrs)
-
-
 @pytest.mark.remote_data
 def test_no_match():
     with pytest.raises(DrmsQueryError):
@@ -167,27 +152,6 @@ def test_call_error():
     # Explicitly test all this error message as it's a copy of the one in
     # Python core.
     assert "'UnifiedDownloaderFactory' object is not callable" in str(excinfo.value)
-
-
-@pytest.mark.remote_data
-def test_multiple_match():
-    """
-    Using the builtin clients a multiple match is not possible so we create a
-    dummy class.
-    """
-    new_registry = copy.deepcopy(Fido.registry)
-    Fido.registry = new_registry
-
-    class DummyClient():
-        @classmethod
-        def _can_handle_query(cls, *query):
-            return True
-    Fido.registry.update({DummyClient: DummyClient._can_handle_query})
-
-    with pytest.raises(MultipleMatchError):
-        Fido.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('lyra'))
-
-    Fido.registry = BaseClient._registry
 
 
 @pytest.mark.remote_data
@@ -242,10 +206,10 @@ def test_tables_single_response():
 @pytest.mark.remote_data
 def test_tables_multiple_response():
     results = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                          a.Instrument('lyra') | a.Instrument('rhessi'))
+                           a.Instrument('lyra') | (a.Instrument('rhessi') & a.Physobs("summary_lightcurve")))
     tables = results.tables
     assert isinstance(tables, list)
-    assert isinstance(tables[0], Table) and isinstance(tables[1], Table)
+    assert all(isinstance(t, Table) for t in tables)
     assert len(tables) == 2
 
     columns = ['Start Time', 'End Time', 'Source', 'Instrument', 'Wavelength']
@@ -259,7 +223,7 @@ def test_tables_multiple_response():
 def test_tables_all_types():
     # Data retriver response objects
     drclient = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                           a.Instrument('lyra') | a.Instrument('rhessi'))
+                           a.Instrument('lyra') | (a.Instrument('rhessi') & a.Physobs("summary_lightcurve")))
     drtables = drclient.tables
     assert isinstance(drtables, list)
     assert isinstance(drtables[0], Table)
@@ -280,7 +244,8 @@ def test_tables_all_types():
     assert isinstance(jsoctables[0], Table)
 
 
-def test_vso_unifiedresponse():
+@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
+def test_vso_unifiedresponse(mock_build_client):
     vrep = vsoQueryResponse([])
     vrep.client = True
     uresp = UnifiedResponse(vrep)
@@ -335,6 +300,7 @@ def test_path_read_only(tmp_path):
             Fido.fetch(results, path=tmp_path / "{file}")
 
 
+@no_vso
 @settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_indexing(queries):
@@ -374,6 +340,7 @@ def test_fido_indexing(queries):
         res[1.0132]
 
 
+@no_vso
 @settings(deadline=50000)
 @given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_iter(queries):
@@ -389,6 +356,7 @@ def test_fido_iter(queries):
         assert isinstance(resp, QueryResponse)
 
 
+@no_vso
 @settings(deadline=50000)
 @given(offline_query())
 def test_repr2(query):
@@ -479,6 +447,7 @@ def test_client_fetch_wrong_type(mock_fetch):
     with pytest.raises(TypeError):
         Fido.fetch(qr)
 
+
 @pytest.mark.remote_data
 def test_vso_fetch_hmi(tmpdir):
     start_time = "2017-01-25"
@@ -489,3 +458,12 @@ def test_vso_fetch_hmi(tmpdir):
 
     files = Fido.fetch(results[0, 0], path=tmpdir)
     assert len(files) == 1
+
+
+def test_fido_no_time(mocker):
+    jsoc_mock = mocker.patch("sunpy.net.jsoc.JSOCClient.search")
+    jsoc_mock.return_value = jsoc.JSOCResponse()
+
+    Fido.search(a.jsoc.Series("test"))
+
+    jsoc_mock.assert_called_once()

@@ -291,6 +291,9 @@ class SRSClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
+        from sunpy.net import attrs as a
+        if not a.Time in [type(at) for at in query]:
+            return False
         for x in query:
             if (x.__class__.__name__ == "Instrument" and
                     str(x.value).lower() in ["soon", "srs_table"]):

@@ -216,3 +216,20 @@ def generate_figure_webpage(hash_library):
         f.write('</table>')
         f.write('</body>')
         f.write('</html>')
+
+
+def no_vso(f):
+    """
+    Disable the VSO client from returning results via Fido during this test.
+    """
+    from sunpy.net import Fido
+    from sunpy.net.vso import VSOClient
+
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        Fido.registry[VSOClient] = lambda *args: False
+        res = f(*args, **kwargs)
+        Fido.registry[VSOClient] = VSOClient._can_handle_query
+        return res
+
+    return wrapper
