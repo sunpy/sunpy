@@ -99,14 +99,36 @@ class EVEClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chk_var = 0
+        from sunpy.net import attrs as a
+
+        required = {a.Time, a.Instrument, a.Level}
+        optional = {}  # Level should really be in here
+        all_attrs = required.union(optional)
+
+        query_attrs = set(type(x) for x in query)
+
+        if not required.issubset(query_attrs) or not all_attrs.issubset(query_attrs):
+            return False
+
+        matches = True
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'eve':
-                chk_var += 1
+            if isinstance(x, a.Instrument) and x.value.lower() != 'eve':
+                matches = False
+            if isinstance(x, a.Level):
+                # Level can be basically anything, this function should never
+                # really error. If level is a string we try and convert it to
+                # an int, if it's the string "0CS" we match it. Otherwise we
+                # check it's equal to 0
+                value = x.value
+                if isinstance(value, str):
+                    if value.lower() == '0cs':
+                        value = 0
+                    else:
+                        try:
+                            value = int(value)
+                        except ValueError:
+                            matches = False
+                if value != 0:
+                    matches = False
 
-            elif x.__class__.__name__ == 'Level' and x.value == 0:
-                chk_var += 1
-
-        if chk_var == 2:
-            return True
-        return False
+        return matches

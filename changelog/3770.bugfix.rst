@@ -1,0 +1,1 @@
+``Fido.search`` can now service queries without ``a.Time`` being specified. This is currently only used by the `sunpy.net.jsoc.JSOCClient`.

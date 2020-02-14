@@ -122,7 +122,7 @@ operator would::
     >>> Fido.search(a.Time('2012/3/4', '2012/3/6'),
     ...             a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
-    Results from 2 Providers:
+    Results from 3 Providers:
     <BLANKLINE>
     3 Results from the LYRAClient:
          Start Time           End Time      Source Instrument Wavelength
@@ -130,6 +130,33 @@ operator would::
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    <BLANKLINE>
+    56 Results from the VSOClient:
+       Start Time [1]       End Time [1]    Source ...     Type    Wavelength [2]
+                                                   ...                  keV
+    ------------------- ------------------- ------ ... ----------- --------------
+    2012-03-05 21:11:20 2012-03-05 21:21:00 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-04 11:19:40 2012-03-04 11:42:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-05 01:06:00 2012-03-05 02:03:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-05 13:13:00 2012-03-05 14:48:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-05 19:35:40 2012-03-05 19:45:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-04 02:09:00 2012-03-04 03:43:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-04 22:52:20 2012-03-05 00:28:00 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-04 11:13:40 2012-03-04 11:15:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-04 06:37:00 2012-03-04 06:55:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-05 19:45:20 2012-03-05 20:59:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+                    ...                 ...    ... ...         ...            ...
+    2012-03-04 21:16:40 2012-03-04 22:52:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-04 11:15:40 2012-03-04 11:17:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-05 21:21:00 2012-03-05 22:34:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-05 22:34:20 2012-03-05 22:44:00 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-04 14:54:00 2012-03-04 16:29:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-05 21:09:00 2012-03-05 21:11:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-05 10:01:40 2012-03-05 11:37:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-04 11:04:40 2012-03-04 11:06:00 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-05 22:56:40 2012-03-05 23:44:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-05 18:00:00 2012-03-05 19:32:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    Length = 56 rows
     <BLANKLINE>
     3 Results from the RHESSIClient:
          Start Time           End Time      Source Instrument Wavelength

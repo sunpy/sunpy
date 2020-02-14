@@ -7,6 +7,7 @@ from parfive import Results
 
 import astropy.units as u
 
+from sunpy.net import attrs as a
 from sunpy.net import _attrs as core_attrs
 from sunpy.net import attr, vso
 from sunpy.net.vso import QueryResponse
@@ -241,13 +242,15 @@ def test_wave_repr():
     assert repr(moarwav) == "<Wavelength(12.0, 15.0, 'Angstrom')>"
 
 
-def test_str():
+@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
+def test_str(mock_build_client):
     qr = QueryResponse([])
     assert str(qr) == ('Start Time End Time Source Instrument Type\n'
                        '---------- -------- ------ ---------- ----')
 
 
-def test_repr():
+@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
+def test_repr(mock_build_client):
     qr = QueryResponse([])
     assert "Start Time End Time Source Instrument Type" in repr(qr)
 
@@ -333,7 +336,8 @@ def test_iter_errors(mock_response):
     assert prov_item[0].error == 'FAILED'
 
 
-def test_QueryResponse_build_table_defaults():
+@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
+def test_QueryResponse_build_table_defaults(mock_build_client):
     records = (MockQRRecord(),)
 
     qr = vso.QueryResponse(records)
@@ -361,7 +365,8 @@ def test_QueryResponse_build_table_defaults():
     assert instrument_[0] == str(core_attrs.Instrument('aia'))
 
 
-def test_QueryResponse_build_table_with_extent_type():
+@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
+def test_QueryResponse_build_table_with_extent_type(mock_build_client):
     """
     When explcitley suppling an 'Extent' only the 'type' is stored
     in the built table.
@@ -376,7 +381,8 @@ def test_QueryResponse_build_table_with_extent_type():
     assert extent[0] == e_type.type
 
 
-def test_QueryResponse_build_table_with_no_start_time():
+@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
+def test_QueryResponse_build_table_with_no_start_time(mock_build_client):
     """
     Only the 'end' time set, no 'start' time
     """
@@ -398,7 +404,8 @@ def test_QueryResponse_build_table_with_no_start_time():
     assert end_time_[0] == 'N/A'
 
 
-def test_QueryResponse_build_table_with_no_end_time():
+@mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
+def test_QueryResponse_build_table_with_no_end_time(mock_build_client):
     """
     Only the 'start' time is set, no 'end' time
     """
@@ -488,3 +495,13 @@ def test_incorrect_content_disposition(client):
     assert len(files) == 1
     assert  files[0].endswith("mdi_vw_v_9466622_9466622.tar")
     assert "Content" not in files[0]
+
+
+@pytest.mark.parametrize("query, handle", [
+    ((a.Time("2011/01/01", "2011/01/02"),), True),
+    ((a.Physobs("LOS_magnetic_field"),), False),
+    ((a.Time("2011/01/01", "2011/01/02"), a.vso.Provider("SDAC"),), True),
+    ((a.jsoc.Series("wibble"), a.Physobs("LOS_magnetic_field"),), False),
+    ])
+def test_can_handle_query(query, handle):
+    assert VSOClient._can_handle_query(*query) is handle
