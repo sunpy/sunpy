@@ -33,8 +33,7 @@ from .vso.attrs import Source, Physobs, Filter
 from .base_client import BaseClient
 
 # Trick the docs into thinking these attrs are defined in here.
-for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution,
-           Source, Physobs, Filter):
+for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution):
     _a.__module__ = __name__
 
 

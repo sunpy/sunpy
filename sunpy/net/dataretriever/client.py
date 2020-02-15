@@ -154,12 +154,15 @@ class GenericClient(BaseClient):
             elif isinstance(elem, Range):
                 a_min = elem.min
                 a_max = elem.max
-                if isinstance(elem, Wavelength):
-                    prefix = 'wave'
+                if a_min == a_max:
+                    self.map_[elem.__class__.__name__.lower()] = a_min
                 else:
-                    prefix = ''
-                minmax = namedtuple("minmax", "{0}min {0}max".format(prefix))
-                self.map_[elem.__class__.__name__.lower()] = minmax(a_min, a_max)
+                    if isinstance(elem, Wavelength):
+                        prefix = 'wave'
+                    else:
+                        prefix = ''
+                    minmax = namedtuple("minmax", "{0}min {0}max".format(prefix))
+                    self.map_[elem.__class__.__name__.lower()] = minmax(a_min, a_max)
             else:
                 if hasattr(elem, 'value'):
                     self.map_[elem.__class__.__name__.lower()] = elem.value
@@ -268,6 +271,7 @@ class GenericClient(BaseClient):
             `sunpy.net.attrs` objects representing the query.
         """
         GenericClient._makeargs(self, *args, **kwargs)
+
         kwergs = copy.copy(self.map_)
         kwergs.update(kwargs)
         urls = self._get_url_for_timerange(
