@@ -47,7 +47,7 @@ class KanzelhoheClient(GenericClient):
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
-    >>> timerange = a.Time('2015/12/28 00:00:00','2015/12/28 09:03:00'),
+    >>> timerange = a.Time('2015/12/28 00:00:00','2015/12/28 09:03:00')
     >>> results = Fido.search(timerange, a.Instrument('kanzelhohe'),
     ...                       a.Wavelength(6563*u.AA))   #doctest: +REMOTE_DATA
     >>> print(results)  #doctest: +REMOTE_DATA
@@ -79,7 +79,7 @@ class KanzelhoheClient(GenericClient):
 
         """
         wave = kwargs['wavelength']
-        wave_float = (wave.min if isinstance(wave, a.Wavelength) else wave.wavemin).value
+        wave_float = (wave.min if isinstance(wave, a.Wavelength) else wave.min()).value
         table = {6563: ['halpha2k/recent', 'halph_fr'],
                  32768: ['caiia', 'caiik_fi'],
                  5460: ['phokada', 'bband_fi']}

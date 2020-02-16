@@ -84,7 +84,7 @@ class VSMClient(GenericClient):
         url_pattern = domain + '{dtype}/%Y%m/k4{dtype}%y%m%d/k4{dtype}%y%m%dt%H%M%S{suffix}.fts.gz'
 
         wave = kwargs['wavelength']
-        wave_float = (wave.min if isinstance(wave, a.Wavelength) else wave.wavemin).value
+        wave_float = (wave.min if isinstance(wave, a.Wavelength) else wave.min()).value
 
         # The isclose function in numpy can only check two arrays if they are
         # close to each other within some precision. Standalone values such as
