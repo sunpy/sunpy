@@ -251,7 +251,9 @@ class BaseFuncAnimator:
         """
         Allow replacement of main axes by subclassing.
         """
-        return self.fig.add_subplot(111)
+        if not len(self.fig.axes):
+            self.fig.add_subplot(111)
+        return self.fig.axes[0]
 
     def _make_axes_grid(self):
         self.axes = self._get_main_axes()
