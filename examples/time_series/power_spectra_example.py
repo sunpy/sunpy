@@ -26,7 +26,7 @@ ts = sunpy.timeseries.TimeSeries(RHESSI_TIMESERIES)
 
 x_ray = ts.columns[0]
 # The suitable value for fs would be 0.25 Hz as the time step is 4 s.
-freq, spectra = signal.periodogram(ts.data[x_ray], fs=0.25)
+freq, spectra = signal.periodogram(ts.quantity(x_ray), fs=0.25)
 
 ###############################################################################
 # Let's plot the results
