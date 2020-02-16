@@ -54,10 +54,10 @@ class KanzelhoheClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the KanzelhoheClient:
-         Start Time           End Time      ...       Wavelength
-           str19               str19        ...         str22
-    ------------------- ------------------- ... ----------------------
-    2015-12-28 00:00:00 2015-12-28 09:03:00 ... [6563. 6563.] Angstrom
+         Start Time           End Time      ...   Instrument      Wavelength
+           str19               str19        ...     str14           str15
+    ------------------- ------------------- ... -------------- ---------------
+    2015-12-28 00:00:00 2015-12-28 09:03:00 ... Kanzelhohe HA2 6563.0 Angstrom
     <BLANKLINE>
     <BLANKLINE>
     >>> response = Fido.fetch(results)  #doctest: +SKIP
