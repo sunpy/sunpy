@@ -1,0 +1,1 @@
+Add ``contains(time)`` method to `TimeRange`.
