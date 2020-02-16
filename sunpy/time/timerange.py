@@ -405,7 +405,8 @@ class TimeRange:
         """
         Checks whether the given time lies within this range. Both limits are
         inclusive (i.e., ``__contains__(t1)`` and ``__contains__(t2)`` always
-        return `True).that.
+        return `True`, where ``t1, t2`` are the start and end times of the
+        range.
 
         Parameters
         ----------
@@ -414,7 +415,7 @@ class TimeRange:
 
         Returns
         -------
-        `bool`
+        bool
             `True` if time lies between start and end, `False` otherwise.
 
         Examples
@@ -431,4 +432,5 @@ class TimeRange:
         this_time = parse_time(time)
         return this_time >= self.start and this_time <= self.end
 
+    # Create TimeRange.contains, so it shows up in the docs.
     contains = __contains__
