@@ -3,7 +3,7 @@ import copy
 import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal, assert_array_equal
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
