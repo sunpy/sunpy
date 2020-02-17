@@ -1,0 +1,1 @@
+Implemented ``BBSOClient`` in `~sunpy.net.dataretriever.sources.bbso`.
