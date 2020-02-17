@@ -1,0 +1,2 @@
+Implemented ``KanzelhoheClient``
+in `~sunpy.net.dataretriever.sources.kanzelhohe`.
