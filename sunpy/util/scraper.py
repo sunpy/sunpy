@@ -29,20 +29,17 @@ TIME_CONVERSIONS = {'%Y': r'\d{4}', '%y': r'\d{2}',
 class Scraper:
     """
     A Scraper to scrap web data archives based on dates.
-
     Parameters
     ----------
     pattern : `str`
         A string containing the url with the date encoded as datetime formats,
         and any other parameter as ``kwargs`` as a string format.
-
     Attributes
     ----------
     pattern : `str`
         A converted string with the kwargs.
     now : `datetime.datetime`
         The pattern with the actual date.
-
     Examples
     --------
     >>> # Downloading data from SolarMonitor.org
@@ -55,16 +52,17 @@ class Scraper:
     http://solarmonitor.org/data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz
     >>> print(solmon.now)  # doctest: +SKIP
     http://solarmonitor.org/data/2017/11/20/fits/swap/swap_00174_fd_20171120_193933.fts.gz
-
     Notes
     -----
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
+
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
         milliseconds = re.search(r'\%e', self.pattern)
+        self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
         if not milliseconds:
             self.now = datetime.datetime.now().strftime(self.pattern)
         else:
@@ -82,12 +80,10 @@ class Scraper:
     def range(self, timerange):
         """
         Gets the directories for a certain range of time.
-
         Parameters
         ----------
         timerange : `~sunpy.time.timerange.TimeRange`
             Time interval where to find the directories for a given pattern.
-
         Returns
         -------
         `list` of `str`
@@ -103,7 +99,7 @@ class Scraper:
             return [directorypattern]
         else:
             # Number of elements in the time range (including end)
-            n_steps = rangedelta.sec/timestep.sec
+            n_steps = rangedelta.sec / timestep.sec
             TotalTimeElements = int(round(n_steps)) + 1
             directories = [(timerange.start + n * timestep).strftime(directorypattern)
                            for n in range(TotalTimeElements)]  # TODO if date <= endate
@@ -185,17 +181,14 @@ class Scraper:
         """
         Returns the list of existent files in the archive for the given time
         range.
-
         Parameters
         ----------
         timerange : `~sunpy.time.TimeRange`
             Time interval where to find the directories for a given pattern.
-
         Returns
         -------
         filesurls : `list` of `str`
             List of all the files found between the time range given.
-
         Examples
         --------
         >>> from sunpy.util.scraper import Scraper
@@ -210,10 +203,8 @@ class Scraper:
          'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_061145.fts.gz',
          'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_093037.fts.gz',
          'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_124927.fts.gz']
-
         Note
         ----
-
         The search is strict with the time range, so if the archive scraped contains daily files,
         but the range doesn't start from the beginning of the day, then the file for that day
         won't be selected. The end of the timerange will normally be OK as includes the file
@@ -240,8 +231,8 @@ class Scraper:
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
                                 if (datehref.to_datetime() >= timerange.start.to_datetime() and
-                                    datehref.to_datetime() <= timerange.end.to_datetime()):
-                                        filesurls.append(fullpath)
+                                        datehref.to_datetime() <= timerange.end.to_datetime()):
+                                    filesurls.append(fullpath)
                 finally:
                     opn.close()
             except HTTPError as http_err:
@@ -301,17 +292,17 @@ class Scraper:
         """
         try:
             if "%S" in directoryPattern:
-                return TimeDelta(1*u.second)
+                return TimeDelta(1 * u.second)
             elif "%M" in directoryPattern:
-                return TimeDelta(1*u.minute)
+                return TimeDelta(1 * u.minute)
             elif any(hour in directoryPattern for hour in ["%H", "%I"]):
-                return TimeDelta(1*u.hour)
+                return TimeDelta(1 * u.hour)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
-                return TimeDelta(1*u.day)
+                return TimeDelta(1 * u.day)
             elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
-                return TimeDelta(31*u.day)
+                return TimeDelta(31 * u.day)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
-                return TimeDelta(365*u.day)
+                return TimeDelta(365 * u.day)
             else:
                 return None
         except Exception:
