@@ -1,0 +1,2 @@
+Implemented ``VSMClient``
+in `~sunpy.net.dataretriever.sources.vsm`.
