@@ -1,0 +1,2 @@
+Implemented ``GONGClient`` and ``FARSIDEClient`` in
+`~sunpy.net.dataretriever.sources.gong`.
