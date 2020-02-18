@@ -116,8 +116,6 @@ class MapSequenceAnimator(imageanimator.BaseFuncAnimator):
         else:
             return self.fig.add_subplot(111, projection=self.mapsequence[0].wcs)
 
-
-
     def plot_start_image(self, ax):
         im = self.mapsequence[0].plot(
             annotate=self.annotate, axes=ax, **self.imshow_kwargs)
