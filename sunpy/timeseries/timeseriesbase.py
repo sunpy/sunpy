@@ -388,7 +388,7 @@ class GenericTimeSeries:
         # Concatenate the metadata and data
         kwargs['sort'] = kwargs.pop('sort', False)
         meta = self.meta.concatenate(otherts.meta)
-        data = pd.concat([self._data.copy(), otherts.data], **kwargs)
+        data = pd.concat([self._data.copy(), otherts.to_dataframe()], **kwargs)
 
         # Add all the new units to the dictionary.
         units = OrderedDict()
@@ -634,7 +634,7 @@ class GenericTimeSeries:
         """
         match = True
         if isinstance(other, type(self)):
-            if ((not self._data.equals(other.data)) or
+            if ((not self._data.equals(other.to_dataframe())) or
                     (self.meta != other.meta) or
                     (self.units != other.units)):
                 match = False

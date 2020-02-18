@@ -71,12 +71,12 @@ combined_goes_ts.plot()
 
 ##############################################################################
 # The TimeSeries object has 3 primary data storage components:
-# data (pandas.DataFrame): stores the data.
+#
+# data: to get the underlying data, use to_dataframe()
 # meta (OrderedDict): stores the metadata (like the Map)
 # units (OrderedDict): stores the units for each column, with keys that match
 # the name of each column.
-# These can be accessed like on the map:
-ts_lyra.data
+ts_lyra.to_dataframe()
 ts_lyra.meta
 ts_lyra.units
 # There are a couple of other useful properties you can quickly get:
@@ -97,12 +97,12 @@ combined_goes_ts.meta.get('telescop').values()
 # You can access a specific value within the TimeSeries data DataFrame using
 # all the normal Pandas methods.
 # For example, the row with the index of 2015-01-01 00:02:00.008000:
-ts_lyra.data.loc[parse_time('2011-06-07 00:02:00.010').datetime]
+ts_lyra.to_dataframe().loc[parse_time('2011-06-07 00:02:00.010').datetime]
 # Pandas will actually parse a string to a datetime automatically if it can:
-ts_lyra.data.loc['2011-06-07 00:02:00.010']
+ts_lyra.to_dataframe().loc['2011-06-07 00:02:00.010']
 # Pandas includes methods to find the indexes of the max/min values in a dataframe:
-lyra_ch1_max_index = ts_lyra.data['CHANNEL1'].idxmax()
-lyra_ch1_min_index = ts_lyra.data['CHANNEL1'].idxmin()
+lyra_ch1_max_index = ts_lyra.to_dataframe()['CHANNEL1'].idxmax()
+lyra_ch1_min_index = ts_lyra.to_dataframe()['CHANNEL1'].idxmin()
 
 ##############################################################################
 # The TimeSeriesMetaData can be summarised:
@@ -141,10 +141,10 @@ ts_goes_trunc.plot()
 
 ##############################################################################
 # You can use Pandas resample method, for example to downsample:
-df_downsampled = ts_goes_trunc.data.resample('10T').mean()
-# To get this into a similar TimeSeries we can copy the original:
-ts_downsampled = copy.deepcopy(ts_goes_trunc)
-ts_downsampled.data = df_downsampled
+df_downsampled = ts_goes_trunc.to_dataframe().resample('10T').mean()
+ts_downsampled = sunpy.timeseries.TimeSeries(df_downsampled,
+                                             ts_goes_trunc.meta,
+                                             ts_goes_trunc.units)
 fig, ax = plt.subplots()
 ts_downsampled.plot()
 # You can use 'mean', 'sum' and 'std' methods and any other methods in Pandas.
@@ -154,10 +154,11 @@ ts_downsampled.plot()
 
 ##############################################################################
 # Similarly, to upsample:
-df_upsampled = ts_downsampled.data.resample('1T').ffill()
+df_upsampled = ts_downsampled.to_dataframe().resample('1T').ffill()
 # And this can be made into a TimeSeries using:
-ts_upsampled = copy.deepcopy(ts_downsampled)
-ts_upsampled.data = df_upsampled
+ts_upsampled = sunpy.timeseries.TimeSeries(df_upsampled,
+                                           ts_downsampled.meta,
+                                           ts_downsampled.units)
 fig, ax = plt.subplots()
 ts_upsampled.plot()
 # Note: 'ffill', 'bfill' and 'pad' methods work, and as before others should also.
