@@ -22,7 +22,7 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, time_attr
-from sunpy.net.vso import QueryResponse as vsoQueryResponse, attrs as va
+from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.datatype_factory_base import MultipleMatchError
@@ -265,8 +265,8 @@ def test_tables_all_types():
     assert isinstance(drtables[0], Table)
 
     # VSO response objects
-    vsoclient = Fido.search(va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
-                            va.Instrument('aia'), va.Wavelength(171 * u.AA))
+    vsoclient = Fido.search(a.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
+                            a.Instrument('aia'), a.Wavelength(171 * u.AA))
     vsotables = vsoclient.tables
     assert isinstance(vsotables, list)
     assert isinstance(vsotables[0], Table)
