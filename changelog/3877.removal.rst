@@ -1,0 +1,1 @@
+`sunpy.net.vso.attrs.Physobs` has been moved to `sunpy.net.attrs.Physobs` and the original deprecated.

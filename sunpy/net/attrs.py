@@ -24,10 +24,10 @@ attrs specific to them, under:
 * `a.goes <sunpy.net.dataretriever.attrs.goes>`
 
 """
-from ._attrs import Time, Instrument, Wavelength, Level, Sample, Detector, Resolution
+from ._attrs import Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs
 
 # Trick the docs into thinking these attrs are defined in here.
-for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution):
+for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs):
     _a.__module__ = __name__
 
-__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution']
+__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution', 'Physobs']
