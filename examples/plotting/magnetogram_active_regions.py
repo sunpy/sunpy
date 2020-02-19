@@ -23,7 +23,7 @@ from sunpy.net import Fido, attrs as a
 start_time = parse_time("2017-01-25")
 end_time = start_time + TimeDelta(23*u.hour + 59*u.minute + 59*u.second)
 results = Fido.search(a.Time(start_time, end_time),
-                      a.Instrument('HMI') & a.vso.Physobs("LOS_magnetic_field"),
+                      a.Instrument('HMI') & a.Physobs("LOS_magnetic_field"),
                       a.Sample(60 * u.second))
 
 ##############################################################################
