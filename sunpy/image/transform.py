@@ -8,15 +8,6 @@ import scipy.ndimage.interpolation
 
 from sunpy.util.exceptions import SunpyUserWarning
 
-try:
-    import skimage.transform
-    scikit_image_not_found = False
-except ImportError:
-    warnings.warn("scikit-image could not be imported. Image rotation will use scipy",
-                  ImportWarning)
-    scikit_image_not_found = True
-
-
 __all__ = ['affine_transform']
 
 
@@ -84,7 +75,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     algorithm to map the original to target pixel values.
     """
     rmatrix = rmatrix / scale
-    array_center = (np.array(image.shape)[::-1]-1)/2.0
+    array_center = (np.array(image.shape)[::-1] - 1) / 2.0
 
     # Make sure the image center is an array and is where it's supposed to be
     if image_center is not None:
@@ -100,14 +91,22 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     displacement = np.dot(rmatrix, rot_center)
     shift = image_center - displacement
-
+    scikit_image_not_found = True
+    if not use_scipy:
+        try:
+            import skimage.transform
+            scikit_image_not_found = False
+        except ImportError:
+            warnings.warn("scikit-image could not be imported. Image rotation will use scipy",
+                          ImportWarning)
+            scikit_image_not_found = True
     if use_scipy or scikit_image_not_found:
         if np.any(np.isnan(image)):
             warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
         # Transform the image using the scipy affine transform
         rotated_image = scipy.ndimage.interpolation.affine_transform(
-                np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
-                mode='constant', cval=missing).T
+            np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
+            mode='constant', cval=missing).T
     else:
         # Make the rotation matrix 3x3 to include translation of the image
         skmatrix = np.zeros((3, 3))
