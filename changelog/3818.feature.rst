@@ -1,0 +1,1 @@
+Made skimage.transform import lazy to reduce import time by ~50%
