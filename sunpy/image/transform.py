@@ -91,16 +91,14 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     displacement = np.dot(rmatrix, rot_center)
     shift = image_center - displacement
-    scikit_image_not_found = True
     if not use_scipy:
         try:
             import skimage.transform
-            scikit_image_not_found = False
         except ImportError:
             warnings.warn("scikit-image could not be imported. Image rotation will use scipy",
                           ImportWarning)
-            scikit_image_not_found = True
-    if use_scipy or scikit_image_not_found:
+            use_scipy = True
+    if use_scipy:
         if np.any(np.isnan(image)):
             warnings.warn("Setting NaNs to 0 for SciPy rotation.", SunpyUserWarning)
         # Transform the image using the scipy affine transform
