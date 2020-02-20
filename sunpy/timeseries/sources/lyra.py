@@ -85,16 +85,16 @@ class LYRATimeSeries(GenericTimeSeries):
         plt.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
         axes = plt.gca()
 
-        axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
+        axes = self.to_dataframe().plot(ax=axes, subplots=True, sharex=True, **kwargs)
 
-        for i, name in enumerate(self.data.columns):
+        for i, name in enumerate(self.to_dataframe().columns):
             if names < 3:
                 name = lyranames[names][i]
             else:
                 name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
             axes[i].set_ylabel(f"{name} \n (W/m**2)", fontsize=9.5)
 
-        axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0], TIME_FORMAT))
+        axes[0].set_title("LYRA ({0:{1}})".format(self.to_dataframe().index[0], TIME_FORMAT))
         axes[-1].set_xlabel("Time")
         for axe in axes:
             axe.locator_params(axis='y', nbins=6)
