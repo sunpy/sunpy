@@ -408,7 +408,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 # If no specific classes have been found we can read the data
                 # if we only have one data header pair:
                 if len(pairs) == 1:
-                    already_timeseries.append(GenericTimeSeries(pairs[0].data,
+                    already_timeseries.append(GenericTimeSeries(pairs[0]._data,
                                                                 pairs[0].header))
                 else:
                     raise NoMatchError("Input read by sunpy.io can not find a "

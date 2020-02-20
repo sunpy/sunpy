@@ -88,11 +88,11 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
         lc_linecolors = rhessi.hsi_linecolors()
 
-        for lc_color, (item, frame) in zip(lc_linecolors, self.data.items()):
-            axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2, color=lc_color, **kwargs)
+        for lc_color, (item, frame) in zip(lc_linecolors, self.to_dataframe().items()):
+            axes.plot_date(self.to_dataframe().index, frame.values, '-', label=item, lw=2, color=lc_color, **kwargs)
 
         axes.set_yscale("log")
-        axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
+        axes.set_xlabel(datetime.datetime.isoformat(self.to_dataframe().index[0])[0:10])
 
         axes.set_title(title)
         axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')

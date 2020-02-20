@@ -76,14 +76,14 @@ class ESPTimeSeries(GenericTimeSeries):
 
         figure = plt.figure()
         axes = plt.gca()
-        axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
-        plt.xlim(self.data.index[0], self.data.index[-1])
+        axes = self.to_dataframe().plot(ax=axes, subplots=True, sharex=True, **kwargs)
+        plt.xlim(self.to_dataframe().index[0], self.to_dataframe().index[-1])
 
         axes[0].set_title(title)
         for i, ax in enumerate(axes):
             ax.set_ylabel(names[i])
             ax.legend(loc='upper right')
-        axes[-1].set_xlabel('Time (UT) ' + str(self.data.index[0])[0:11])
+        axes[-1].set_xlabel('Time (UT) ' + str(self.to_dataframe().index[0])[0:11])
         axes[-1].xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
         plt.tight_layout()
         plt.subplots_adjust(hspace=0.05)
@@ -200,7 +200,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         figure = plt.figure()
         # Choose title if none was specified
         if "title" not in kwargs and column is None:
-            if len(self.data.columns) > 1:
+            if len(self.to_dataframe().columns) > 1:
                 kwargs['title'] = 'EVE (1 minute data)'
             else:
                 if self._filename is not None:
@@ -212,7 +212,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         if column is None:
             self.plot(**kwargs)
         else:
-            data = self.data[column]
+            data = self.to_dataframe()[column]
             if "title" not in kwargs:
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
             data.plot(**kwargs)
