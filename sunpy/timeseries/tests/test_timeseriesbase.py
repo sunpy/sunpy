@@ -60,6 +60,7 @@ def esp_test_ts():
     # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='ESP')
     return sunpy.timeseries.TimeSeries(esp_filepath, source='ESP')
 
+
 @pytest.fixture
 def fermi_gbm_test_ts():
     # TODO: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
@@ -192,17 +193,17 @@ def test_meta_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, go
 def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts,
                    lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts,
                    noaa_pre_test_ts, generic_ts, table_ts):
-    assert isinstance(eve_test_ts.data, DataFrame)
-    assert isinstance(esp_test_ts.data, DataFrame)
-    assert isinstance(fermi_gbm_test_ts.data, DataFrame)
-    assert isinstance(norh_test_ts.data, DataFrame)
-    assert isinstance(goes_test_ts.data, DataFrame)
-    assert isinstance(lyra_test_ts.data, DataFrame)
-    assert isinstance(rhessi_test_ts.data, DataFrame)
-    assert isinstance(noaa_ind_test_ts.data, DataFrame)
-    assert isinstance(noaa_pre_test_ts.data, DataFrame)
-    assert isinstance(generic_ts.data, DataFrame)
-    assert isinstance(table_ts.data, DataFrame)
+    assert isinstance(eve_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(esp_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(fermi_gbm_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(norh_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(goes_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(lyra_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(rhessi_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(noaa_ind_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(noaa_pre_test_ts.to_dataframe(), DataFrame)
+    assert isinstance(generic_ts.to_dataframe(), DataFrame)
+    assert isinstance(table_ts.to_dataframe(), DataFrame)
 
     # TODO: check length? (should match the number of columns)
 
@@ -214,32 +215,40 @@ def test_data_type(eve_test_ts, esp_test_ts, fermi_gbm_test_ts, norh_test_ts, go
 @pytest.fixture
 def truncation_slice_test_ts_1(eve_test_ts):
     # Truncate by slicing the second half off.
-    return eve_test_ts.truncate(0, int(len(eve_test_ts.data) / 2), None)
+    return eve_test_ts.truncate(0, int(len(eve_test_ts.to_dataframe()) / 2), None)
 
 
 @pytest.fixture
 def truncation_slice_test_ts_2(eve_test_ts):
     # Truncate by slicing the first half off.
     return eve_test_ts.truncate(
-        int(len(eve_test_ts.data) / 2), len(eve_test_ts.data), None)
+        int(len(eve_test_ts.to_dataframe()) / 2), len(eve_test_ts.to_dataframe()), None)
 
 
 def test_truncation_slices(eve_test_ts, truncation_slice_test_ts_1,
                            truncation_slice_test_ts_2):
     # Test resulting DataFrame are similar
-    assert len(eve_test_ts.data) == (len(truncation_slice_test_ts_1.data) +
-                                     len(truncation_slice_test_ts_2.data))
+    assert len(eve_test_ts.to_dataframe()) == (len(truncation_slice_test_ts_1.to_dataframe()) +
+                                               len(truncation_slice_test_ts_2.to_dataframe()))
     # Test column lists and unit dictionaries match
-    assert eve_test_ts.columns == truncation_slice_test_ts_1.columns == truncation_slice_test_ts_2.columns
-    assert eve_test_ts.meta.columns == truncation_slice_test_ts_1.meta.columns == truncation_slice_test_ts_2.meta.columns
+    assert (eve_test_ts.columns ==
+            truncation_slice_test_ts_1.columns ==
+            truncation_slice_test_ts_2.columns)
+    assert (eve_test_ts.meta.columns ==
+            truncation_slice_test_ts_1.meta.columns ==
+            truncation_slice_test_ts_2.meta.columns)
     assert eve_test_ts.units == truncation_slice_test_ts_1.units == truncation_slice_test_ts_2.units
     # Test MetaDict match
-    assert eve_test_ts.meta.metadata[0][
-        2] == truncation_slice_test_ts_1.meta.metadata[0][
-            2] == truncation_slice_test_ts_2.meta.metadata[0][2]
+    assert (eve_test_ts.meta.metadata[0][2] ==
+            truncation_slice_test_ts_1.meta.metadata[0][2] ==
+            truncation_slice_test_ts_2.meta.metadata[0][2])
     # For TS and meta, Test time ranges match for the start and end of the TS.
-    assert truncation_slice_test_ts_1.time_range.start == truncation_slice_test_ts_1.meta.time_range.start == eve_test_ts.time_range.start
-    assert truncation_slice_test_ts_2.time_range.end == truncation_slice_test_ts_2.meta.time_range.end == eve_test_ts.time_range.end
+    assert (truncation_slice_test_ts_1.time_range.start ==
+            truncation_slice_test_ts_1.meta.time_range.start ==
+            eve_test_ts.time_range.start)
+    assert (truncation_slice_test_ts_2.time_range.end ==
+            truncation_slice_test_ts_2.meta.time_range.end ==
+            eve_test_ts.time_range.end)
 
 
 @pytest.fixture
@@ -250,8 +259,9 @@ def truncation_timerange_test_ts(eve_test_ts):
 
 def test_truncation_timerange(eve_test_ts, truncation_timerange_test_ts):
     # Check the resulting timerange in both TS and TSMD
-    assert truncation_timerange_test_ts.time_range == truncation_timerange_test_ts.meta.time_range == eve_test_ts.time_range.split(
-        3)[1]
+    assert (truncation_timerange_test_ts.time_range ==
+            truncation_timerange_test_ts.meta.time_range ==
+            eve_test_ts.time_range.split(3)[1])
 
 
 @pytest.fixture
@@ -264,8 +274,9 @@ def truncation_dates_test_ts(eve_test_ts):
 
 def test_truncation_dates(eve_test_ts, truncation_dates_test_ts):
     # Check the resulting timerange in both TS and TSMD
-    assert truncation_dates_test_ts.time_range == truncation_dates_test_ts.meta.time_range == eve_test_ts.time_range.split(
-        3)[1]
+    assert (truncation_dates_test_ts.time_range ==
+            truncation_dates_test_ts.meta.time_range ==
+            eve_test_ts.time_range.split(3)[1])
 
 # =============================================================================
 # Test Basic Single-Timeseries Truncation Operations
@@ -275,10 +286,8 @@ def test_truncation_dates(eve_test_ts, truncation_dates_test_ts):
 @pytest.fixture
 def truncated_none_ts(concatenate_multi_files_ts):
     # This timerange covers the whole range of metadata, so no change is expected
-    a = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - TimeDelta(1*u.day)
-    b = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + TimeDelta(1*u.day)
+    a = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
+    b = concatenate_multi_files_ts.meta.metadata[-1][0].end + TimeDelta(1*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -293,8 +302,7 @@ def test_truncated_none_ts(concatenate_multi_files_ts, truncated_none_ts):
 def truncated_start_ts(concatenate_multi_files_ts):
     # This time range starts after the original, so expect truncation
     a = concatenate_multi_files_ts.meta.metadata[1][0].center
-    b = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + TimeDelta(1*u.day)
+    b = concatenate_multi_files_ts.meta.metadata[-1][0].end + TimeDelta(1*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -319,8 +327,7 @@ def test_truncated_start_ts(concatenate_multi_files_ts, truncated_start_ts):
 @pytest.fixture
 def truncated_end_ts(concatenate_multi_files_ts):
     # This time range ends before the original, so expect truncation
-    a = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - TimeDelta(1*u.day)
+    a = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
     b = concatenate_multi_files_ts.meta.metadata[-2][0].center
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
@@ -330,9 +337,7 @@ def truncated_end_ts(concatenate_multi_files_ts):
 
 def test_truncated_end_ts(concatenate_multi_files_ts, truncated_end_ts):
     # Check the 3 untouched metadata entries match
-    assert concatenate_multi_files_ts.meta.metadata[:
-                                                    -2] == truncated_end_ts.meta.metadata[:
-                                                                                          3]
+    assert concatenate_multi_files_ts.meta.metadata[:-2] == truncated_end_ts.meta.metadata[:3]
     # Now check the truncated (but not truncated out) meta entry
     assert concatenate_multi_files_ts.meta.metadata[-2][
         0].start == truncated_end_ts.meta.metadata[-1][0].start
@@ -382,10 +387,8 @@ def test_truncated_both_ts(concatenate_multi_files_ts, truncated_both_ts):
 @pytest.fixture
 def truncated_new_tr_all_before_ts(concatenate_multi_files_ts):
     # Time range begins and ends before the data
-    a = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - TimeDelta(2*u.day)
-    b = concatenate_multi_files_ts.meta.metadata[0][
-        0].start - TimeDelta(1*u.day)
+    a = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(2*u.day)
+    b = concatenate_multi_files_ts.meta.metadata[0][0].start - TimeDelta(1*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -395,10 +398,8 @@ def truncated_new_tr_all_before_ts(concatenate_multi_files_ts):
 @pytest.fixture
 def truncated_new_tr_all_after_ts(concatenate_multi_files_ts):
     # Time range begins and ends after the data
-    a = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + TimeDelta(1*u.day)
-    b = concatenate_multi_files_ts.meta.metadata[-1][
-        0].end + TimeDelta(2*u.day)
+    a = concatenate_multi_files_ts.meta.metadata[-1][0].end + TimeDelta(1*u.day)
+    b = concatenate_multi_files_ts.meta.metadata[-1][0].end + TimeDelta(2*u.day)
     tr = TimeRange(a, b)
     truncated = copy.deepcopy(concatenate_multi_files_ts)
     truncated = truncated.truncate(tr)
@@ -407,8 +408,9 @@ def truncated_new_tr_all_after_ts(concatenate_multi_files_ts):
 
 def test_truncated_outside_tr_ts(truncated_new_tr_all_before_ts,
                                  truncated_new_tr_all_after_ts):
-    assert truncated_new_tr_all_before_ts.meta.metadata == truncated_new_tr_all_after_ts.meta.metadata == []
-
+    assert (truncated_new_tr_all_before_ts.meta.metadata ==
+            truncated_new_tr_all_after_ts.meta.metadata ==
+            [])
 # =============================================================================
 # Test Extraction Operations
 # =============================================================================
@@ -422,18 +424,18 @@ def extraction_test_ts(eve_test_ts):
 
 def test_extraction(eve_test_ts, extraction_test_ts):
     # Test there's only one column in the data, metadata and units
-    assert len(extraction_test_ts.data.columns) == 1
+    assert len(extraction_test_ts.to_dataframe().columns) == 1
     assert len(extraction_test_ts.meta.columns) == 1
     assert len(extraction_test_ts.units) == 1
 
     # Test this column name matches
-    assert eve_test_ts.data.columns[0] == eve_test_ts.data.columns[0] == list(
+    assert eve_test_ts.to_dataframe().columns[0] == eve_test_ts.to_dataframe().columns[0] == list(
         eve_test_ts.units.keys())[0]
 
     # Test the data matches
-    extracted_df = DataFrame(eve_test_ts.data['CMLon']).dropna()
+    extracted_df = DataFrame(eve_test_ts.to_dataframe()['CMLon']).dropna()
     extracted_df = extracted_df.sort_index()
-    assert_frame_equal(extraction_test_ts.data, extracted_df)
+    assert_frame_equal(extraction_test_ts.to_dataframe(), extracted_df)
 
 # =============================================================================
 # Test Concatenation Operations
@@ -449,7 +451,7 @@ def concatenated_slices_test_ts(truncation_slice_test_ts_1,
 
 def test_concatenation_of_slices(eve_test_ts, concatenated_slices_test_ts):
     # Test resulting DataFrame is similar to the original
-    assert_frame_equal(concatenated_slices_test_ts.data, eve_test_ts.data)
+    assert_frame_equal(concatenated_slices_test_ts.to_dataframe(), eve_test_ts.to_dataframe())
     # Otherwise: concatenated_ts.data.equals(eve_test_ts)
     # Compare timeranges from before and after match for both metadata and TS
     assert eve_test_ts.meta.time_range == concatenated_slices_test_ts.meta.time_range
@@ -493,9 +495,10 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts,
         comined_units)
 
     # Test data is the concatenation
-    comined_df = pd.concat([eve_test_ts.data, fermi_gbm_test_ts.data], sort=False)
+    comined_df = pd.concat([eve_test_ts.to_dataframe(), fermi_gbm_test_ts.to_dataframe()],
+                           sort=False)
     comined_df = comined_df.sort_index()
-    assert_frame_equal(concatenation_different_data_test_ts.data, comined_df)
+    assert_frame_equal(concatenation_different_data_test_ts.to_dataframe(), comined_df)
 
 
 def test_concatenation_of_self(eve_test_ts):
@@ -531,7 +534,7 @@ def test_generic_construction_concatenation():
     ts_concat = ts_1.concatenate(ts_2, axis=1)
     assert isinstance(ts_concat,
                       sunpy.timeseries.timeseriesbase.GenericTimeSeries)
-    assert len(ts_concat.data) == len(times)
+    assert len(ts_concat.to_dataframe()) == len(times)
     assert ts_concat.columns == ['intensity', 'intensity2']
     assert len(ts_concat.meta.metadata) == 2
 
@@ -549,8 +552,8 @@ def column_quantity(eve_test_ts):
 def test_column_quantity(eve_test_ts, column_quantity):
     # Test the units and values match
     assert eve_test_ts.units['CMLon'] == column_quantity.unit
-    assert ((eve_test_ts.data['CMLon'].values == column_quantity.value) |
-            (np.isnan(eve_test_ts.data['CMLon'].values) &
+    assert ((eve_test_ts.to_dataframe()['CMLon'].values == column_quantity.value) |
+            (np.isnan(eve_test_ts.to_dataframe()['CMLon'].values) &
              np.isnan(column_quantity.value))).all()
 
 
@@ -567,8 +570,8 @@ def test_add_column_from_quantity(eve_test_ts, add_column_from_quantity_ts,
         add_column_from_quantity_ts.quantity('quantity_added'),
         column_quantity)
     # Test the full list of columns are pressent
-    assert set(add_column_from_quantity_ts.data.columns) == set(
-        eve_test_ts.data.columns) | {'quantity_added'}
+    assert set(add_column_from_quantity_ts.to_dataframe().columns) == set(
+        eve_test_ts.to_dataframe().columns) | {'quantity_added'}
 
 
 def test_remove_column(eve_test_ts):
@@ -582,7 +585,7 @@ def test_remove_column(eve_test_ts):
     assert len(removed.columns) == len(removed.units)
 
     # Check data updated correctly
-    assert len(removed.columns) == removed.data.shape[1]
+    assert len(removed.columns) == removed.to_dataframe().shape[1]
 
     # Check that removing a non-existant column errors
     with pytest.raises(ValueError):
@@ -603,8 +606,8 @@ def test_add_column_from_array(eve_test_ts, add_column_from_array_ts,
         add_column_from_array_ts.quantity('array_added'), column_quantity)
 
     # Test the full list of columns are pressent
-    assert set(add_column_from_array_ts.data.columns) == set(
-        eve_test_ts.data.columns) | {'array_added'}
+    assert set(add_column_from_array_ts.to_dataframe().columns) == set(
+        eve_test_ts.to_dataframe().columns) | {'array_added'}
 
 
 def test_add_column_from_array_no_units(eve_test_ts, column_quantity):
@@ -620,7 +623,7 @@ def test_ts_to_table(generic_ts):
     tbl = generic_ts.to_table()
     assert isinstance(tbl, Table)
     assert tbl.keys() == ['date', generic_ts.columns[0]]
-    assert len(tbl) == len(generic_ts.data)
+    assert len(tbl) == len(generic_ts.to_dataframe())
     assert (tbl[generic_ts.columns[0]].quantity ==
             generic_ts.quantity(generic_ts.columns[0])).all()
 
@@ -628,13 +631,13 @@ def test_ts_to_table(generic_ts):
 def test_ts_to_dataframe(generic_ts):
     df = generic_ts.to_dataframe()
     assert isinstance(df, DataFrame)
-    assert_frame_equal(df, generic_ts.data)
+    assert_frame_equal(df, generic_ts.to_dataframe())
 
 
 def test_ts_to_array(generic_ts):
     arr = generic_ts.to_array()
     assert isinstance(arr, np.ndarray)
-    assert len(arr) == len(generic_ts.data)
+    assert len(arr) == len(generic_ts.to_dataframe())
 
 # =============================================================================
 # Test Basic Working Peek
@@ -791,15 +794,15 @@ def test_equality_different_ts_types(generic_ts, table_ts):
 
 
 def test_ts_index(generic_ts):
-    assert (generic_ts.index == generic_ts.data.index).all()
+    assert (generic_ts.index == generic_ts.to_dataframe().index).all()
 
 
 def test_ts_shape(generic_ts):
-    assert generic_ts.shape == generic_ts.data.shape
+    assert generic_ts.shape == generic_ts.to_dataframe().shape
 
 
 def test_ts_sort_index(generic_ts):
-    assert generic_ts.sort_index().data.equals(generic_ts.data.sort_index())
+    assert generic_ts.sort_index().to_dataframe().equals(generic_ts.to_dataframe().sort_index())
 
 
 # TODO:
