@@ -2,18 +2,18 @@
 Acknowledging or Citing SunPy
 *****************************
 
-If you have used SunPy in your scientific work we would appreciate it if you would acknowledge it.
+If you use SunPy in your scientific work, we would appreciate citing it in your publications.
 The continued growth and development of SunPy is dependent on the community being aware of SunPy.
 
-Publications
-============
+Citing SunPy in Publications
+============================
 
 Please add the following line within your methods, conclusion or acknowledgements sections:
 
-   *This research has made use of SunPy vX.Y (version citation), an open-source and free
-   community-developed solar data analysis Python package (citation).*
+   *This research has made use of SunPy vX.Y (software citation), an open-source and free
+   community-developed solar data analysis Python package (project citation).*
 
-The citation should be to the `SunPy paper`_, and the version number should cite the specific `Zenodo DOI`_ for the version used in your work.
+The project citation should be to the `SunPy paper`_, and the software citation should be the specific `Zenodo DOI`_ for the version used in your work.
 
 .. code:: bibtex
 
@@ -58,8 +58,8 @@ A paper about version v0.5 of SunPy was published in `Computational Science & Di
 
 
 
-Posters and talks
-=================
+Acknowledging SunPy in Posters and Talks
+========================================
 
 Please include the `Sunpy logo`_ on the title, conclusion slide, or about page.
 For websites please link the image to `sunpy.org`_.
