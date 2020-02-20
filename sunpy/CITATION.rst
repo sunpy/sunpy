@@ -13,7 +13,7 @@ Please add the following line within your methods, conclusion or acknowledgement
    *This research has made use of SunPy vX.Y (version citation), an open-source and free
    community-developed solar data analysis Python package (citation).*
 
-The citation should be to the `SunPy paper`_, the `SunPy JOSS paper`_ and the version number should cite the specific `Zenodo DOI`_ for the version used in your work.
+The citation should be to the `SunPy paper`_, and the version number should cite the specific `Zenodo DOI`_ for the version used in your work.
 
 .. code:: bibtex
 
@@ -30,6 +30,16 @@ The citation should be to the `SunPy paper`_, the `SunPy JOSS paper`_ and the ve
       year = {2020}
     }
 
+You can also get this information with ``sunpy.__citation__``.
+
+
+Other SunPy publications
+------------------------
+
+The SunPy v1.0.8 code was reviewed by `The Journal of Open Source Software (JOSS) <https://joss.theoj.org/papers/10.21105/joss.01832>`__.
+
+.. code:: bibtex
+
     @ARTICLE{Mumford2020,
       doi = {10.21105/joss.01832},
       url = {https://doi.org/10.21105/joss.01832},
@@ -44,7 +54,9 @@ The citation should be to the `SunPy paper`_, the `SunPy JOSS paper`_ and the ve
     }
 
 
-You can also get this information with ``sunpy.__citation__``.
+A paper about version v0.5 of SunPy was published in `Computational Science & Discovery <https://iopscience.iop.org/article/10.1088/1749-4699/8/1/014009>`__.
+
+
 
 Posters and talks
 =================
