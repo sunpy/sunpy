@@ -243,14 +243,6 @@ query_walker = attr.AttrWalker()
 
 @query_walker.add_creator(attr.AttrAnd)
 def _create_and(walker, query, factory):
-    is_time = any([isinstance(x, a.Time) for x in query.attrs])
-    if not is_time:
-        error = "The following part of the query did not have a time specified:\n"
-        for at in query.attrs:
-            error += str(at) + ', '
-        raise ValueError(error)
-
-    # Return the response and the client
     return [factory._make_query_to_client(*query.attrs)]
 
 
