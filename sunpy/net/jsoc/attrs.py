@@ -25,6 +25,11 @@ class Keys(SimpleAttr):
 class PrimeKey(DataAttr):
     """
     Prime Keys
+
+    Parameters
+    ----------
+    label : str
+    value : str
     """
     def __init__(self, label, value):
         super().__init__()
