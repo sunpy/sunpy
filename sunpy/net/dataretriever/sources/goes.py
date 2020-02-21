@@ -3,7 +3,7 @@
 # Google Summer of Code 2014
 
 import os
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 from itertools import compress
 from urllib.parse import urlsplit
 
@@ -11,11 +11,10 @@ import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 from sunpy import config, log
-from sunpy.net import attrs as a
 from sunpy.time import TimeRange, parse_time
-from sunpy.util.scraper import Scraper
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
+from sunpy.util.scraper import Scraper
 
 from ..client import GenericClient
 
@@ -294,7 +293,7 @@ class SUVIClient(GenericClient):
                     raise ValueError(f"Wavelength {kwargs.get('wavelength')} not supported.")
                 else:
                     wavelength = [kwargs.get("wavelength")]
-            else:  # _Range was provided
+            else:  # Range was provided
                 compress_index = [wavelength_input.wavemin <= this_wave <=
                                   wavelength_input.wavemax for this_wave in (supported_waves * u.Angstrom)]
                 if not any(compress_index):
@@ -367,6 +366,8 @@ class SUVIClient(GenericClient):
         `bool`
             answer as to whether client can service the query.
         """
+        # Import here to prevent circular imports
+        from sunpy.net import attrs as a
 
         required = {a.Time, a.Instrument}
         optional = {a.Wavelength, a.Level, a.goes.SatelliteNumber}

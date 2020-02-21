@@ -14,7 +14,8 @@ import parfive
 import sunpy
 from sunpy import config
 from sunpy.net.base_client import BaseClient
-from sunpy.net.vso.attrs import Time, Wavelength, _Range
+from sunpy.net.attr import Range
+from sunpy.net._attrs import Time, Wavelength
 from sunpy.time import TimeRange
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -85,19 +86,19 @@ class QueryResponse(list):
         return s
 
     def __repr__(self):
-        return repr(type(self)) + repr(self._build_table())
+        return repr(type(self)) + repr(self.build_table())
 
     def __str__(self):
-        return str(self._build_table())
+        return str(self.build_table())
 
     def _repr_html_(self):
-        return self._build_table()._repr_html_()
+        return self.build_table()._repr_html_()
 
-    def _build_table(self):
+    def build_table(self):
         columns = OrderedDict((('Start Time', []), ('End Time', []),
                                ('Source', []), ('Instrument', []),
                                ('Wavelength', [])))
-        for i, qrblock in enumerate(self):
+        for qrblock in self:
             columns['Start Time'].append(
                 (qrblock.time.start).strftime(TIME_FORMAT))
             columns['End Time'].append(
@@ -150,7 +151,7 @@ class GenericClient(BaseClient):
                 self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
                 self.map_['Time_start'] = elem.start
                 self.map_['Time_end'] = elem.end
-            elif isinstance(elem, _Range):
+            elif isinstance(elem, Range):
                 a_min = elem.min
                 a_max = elem.max
                 if a_min == a_max:

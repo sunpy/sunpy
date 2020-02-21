@@ -10,6 +10,7 @@ from astropy.time import Time
 import sunpy.coordinates.frames as f
 from sunpy.coordinates.metaframes import RotatedSunFrame, _rotatedsun_cache
 from sunpy.physics.differential_rotation import diff_rot
+from .helpers import assert_longitude_allclose
 from .strategies import longitudes, latitudes, times
 
 
@@ -101,7 +102,7 @@ def test_as_base(rot_hgs):
 
     assert type(a) == type(rot_hgs[1].base)
 
-    assert_quantity_allclose(a.lon, rot_hgs[1].lon)
+    assert_longitude_allclose(a.lon, rot_hgs[1].lon)
     assert_quantity_allclose(a.lat, rot_hgs[1].lat)
     assert_quantity_allclose(a.radius, rot_hgs[1].radius)
 
@@ -164,7 +165,7 @@ def test_base_skycoord(rot_hgs):
     assert r.has_data
     assert not r.base.has_data
 
-    assert_quantity_allclose(r.lon, s.lon)
+    assert_longitude_allclose(r.lon, s.lon)
     assert_quantity_allclose(r.lat, s.lat)
     assert_quantity_allclose(r.radius, s.radius)
 
@@ -196,9 +197,8 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
     result1 = rsf1.transform_to(base)
 
     desired_delta_lon1 = diff_rot((rotated_time1 - obstime).to(u.day), lat)
-    difference1 = Longitude(result1.lon - rsf1.lon - desired_delta_lon1, wrap_angle=180*u.deg)
 
-    assert_quantity_allclose(difference1, 0*u.deg, atol=1e-5*u.deg)
+    assert_longitude_allclose(result1.lon, rsf1.lon + desired_delta_lon1, atol=1e-5*u.deg)
     assert_quantity_allclose(base.lat, result1.lat)
     # Use the `spherical` property since the name of the component varies with frame
     assert_quantity_allclose(base.spherical.distance, result1.spherical.distance)
@@ -208,9 +208,8 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
     result2 = base.transform_to(rsf2)
 
     desired_delta_lon2 = -diff_rot((rotated_time2 - obstime).to(u.day), lat)
-    difference2 = Longitude(result2.lon - base.lon - desired_delta_lon2, wrap_angle=180*u.deg)
 
-    assert_quantity_allclose(difference2, 0*u.deg, atol=1e-5*u.deg)
+    assert_longitude_allclose(result2.lon, rsf2.lon + desired_delta_lon2, atol=1e-5*u.deg)
     assert_quantity_allclose(base.lat, result2.lat)
     # Use the `spherical` property since the name of the component varies with frame
     assert_quantity_allclose(base.spherical.distance, result2.spherical.distance)
@@ -219,9 +218,8 @@ def test_rotatedsun_transforms(frame, lon, lat, obstime, rotated_time1, rotated_
     result3 = rsf1.transform_to(rsf2)
 
     desired_delta_lon3 = desired_delta_lon1 + desired_delta_lon2
-    difference3 = Longitude(result3.lon - rsf1.lon - desired_delta_lon3, wrap_angle=180*u.deg)
 
-    assert_quantity_allclose(difference3, 0*u.deg, atol=1e-5*u.deg)
+    assert_longitude_allclose(result3.lon, rsf1.lon + desired_delta_lon3, atol=1e-5*u.deg)
     assert_quantity_allclose(result3.lat, result1.lat)
     # Use the `spherical` property since the name of the component varies with frame
     assert_quantity_allclose(result3.spherical.distance, result1.spherical.distance)

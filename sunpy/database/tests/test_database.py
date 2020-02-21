@@ -77,29 +77,29 @@ def fido_search_result():
 @pytest.fixture
 def query_result():
     return vso.VSOClient().search(
-        vso.attrs.Time('20130801T200000', '20130801T200030'),
-        vso.attrs.Instrument('PLASTIC'))
+        net_attrs.Time('20130801T200000', '20130801T200030'),
+        net_attrs.Instrument('PLASTIC'))
 
 
 @pytest.fixture
 def download_qr():
     return vso.VSOClient().search(
-        vso.attrs.Time('2012-03-29', '2012-03-29'),
-        vso.attrs.Instrument('AIA'))
+        net_attrs.Time('2012-03-29', '2012-03-29'),
+        net_attrs.Instrument('AIA'))
 
 
 @pytest.fixture
 def empty_query():
     return [
-        vso.attrs.Time((2012, 7, 3), (2012, 7, 4)),
-        vso.attrs.Instrument('EIT')]
+        net_attrs.Time((2012, 7, 3), (2012, 7, 4)),
+        net_attrs.Instrument('EIT')]
 
 
 @pytest.fixture
 def download_query():
     return [
-        vso.attrs.Time((2013, 5, 19, 2), (2013, 5, 19, 2), (2013, 5, 19, 2)),
-        vso.attrs.Instrument('VIRGO') | vso.attrs.Instrument('SECCHI')]
+        net_attrs.Time((2013, 5, 19, 2), (2013, 5, 19, 2), (2013, 5, 19, 2)),
+        net_attrs.Instrument('VIRGO') | net_attrs.Instrument('SECCHI')]
 
 
 @pytest.fixture
@@ -1000,8 +1000,8 @@ def test_fetch_separate_filenames():
     db = Database('sqlite:///')
 
     download_query = [
-        vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
-        vso.attrs.Instrument('AIA')
+        net_attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
+        net_attrs.Instrument('AIA')
     ]
 
     tmp_test_dir = os.path.join(
@@ -1095,7 +1095,7 @@ def split_function_database():
 def test_split_database(split_function_database, database):
     # Send all entries with instrument='EIA' to destination_database
     split_function_database, database = split_database(
-        split_function_database, database, vso.attrs.Instrument('EIA'))
+        split_function_database, database, net_attrs.Instrument('EIA'))
 
     observed_source_entries = split_function_database.search(
         vso.attrs.Provider('xyz'), sortby='id')

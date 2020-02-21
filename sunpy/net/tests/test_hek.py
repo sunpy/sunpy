@@ -2,7 +2,7 @@ import pytest
 
 from sunpy.time import parse_time
 from sunpy.net import hek
-from sunpy.net import attr, vso
+from sunpy.net import attr, vso, attrs
 
 
 @pytest.fixture
@@ -144,7 +144,7 @@ def test_get_voevent(hek_client_creator):
 def test_vso_time(hek_client_creator):
     hc = hek_client_creator
     ve = hc[0].vso_time
-    assert type(ve) == vso.attrs.Time
+    assert type(ve) == attrs.Time
 
 
 @pytest.mark.remote_data
@@ -152,7 +152,7 @@ def test_vso_instrument(hek_client_creator):
     hc = hek_client_creator
     try:
         vc = hc[1].vso_instrument
-        assert type(vc) == vso.attrs.Instrument
+        assert type(vc) == attrs.Instrument
     except ValueError:
         assert 1
 

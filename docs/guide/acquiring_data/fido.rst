@@ -57,7 +57,7 @@ variable set to the Fido search, in this case, result::
 Queries can be made more flexible or specific by adding more attrs objects to
 the `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` search. Specific
 passbands can be searched for by supplying an `~astropy.units.Quantity` to the
-`a.Wavelength <sunpy.net.vso.attrs.Wavelength>` attribute::
+`a.Wavelength <sunpy.net.attrs.Wavelength>` attribute::
 
     >>> import astropy.units as u
     >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('norh'),
@@ -77,15 +77,15 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
 
 Data of a given cadence can also be specified using the Sample attribute. To
 search for data at a given cadence use the
-`a.vso.Sample <sunpy.net.vso.attrs.Sample>` attribute.
-`a.vso.Sample <sunpy.net.vso.attrs.Sample>` is only supported by the
+`a.Sample <sunpy.net.attrs.Sample>` attribute.
+`a.Sample <sunpy.net.attrs.Sample>` is only supported by the
 `sunpy.net.vso.VSOClient` hence it has the ``a.vso`` prefix. Attributes
 like this which are client specific will result in
 `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` only searching that
 client for results, in this case VSO.::
 
     >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
-    ...             a.Wavelength(171*u.angstrom), a.vso.Sample(10*u.minute))  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...             a.Wavelength(171*u.angstrom), a.Sample(10*u.minute))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>

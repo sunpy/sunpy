@@ -1,0 +1,1 @@
+Creates a ``tables`` property for `~sunpy.net.fido_factory.UnifiedResponse`, which allows to access the `QueryResponse` as an `~astropy.table.Table`, which then can be used for indexing of results.

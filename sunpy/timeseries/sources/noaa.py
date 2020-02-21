@@ -77,24 +77,24 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes = plt.gca()
 
         if type == 'sunspot SWO':
-            axes = self.data['sunspot SWO'].plot(**kwargs)
-            self.data['sunspot SWO smooth'].plot(**kwargs)
+            axes = self.to_dataframe()['sunspot SWO'].plot(**kwargs)
+            self.to_dataframe()['sunspot SWO smooth'].plot(**kwargs)
             axes.set_ylabel('Sunspot Number')
         elif type == 'sunspot RI':
-            axes = self.data['sunspot RI'].plot(**kwargs)
-            self.data['sunspot RI smooth'].plot(**kwargs)
+            axes = self.to_dataframe()['sunspot RI'].plot(**kwargs)
+            self.to_dataframe()['sunspot RI smooth'].plot(**kwargs)
             axes.set_ylabel('Sunspot Number')
         elif type == 'sunspot compare':
-            axes = self.data['sunspot RI'].plot(**kwargs)
-            self.data['sunspot SWO'].plot(**kwargs)
+            axes = self.to_dataframe()['sunspot RI'].plot(**kwargs)
+            self.to_dataframe()['sunspot SWO'].plot(**kwargs)
             axes.set_ylabel('Sunspot Number')
         elif type == 'radio':
-            axes = self.data['radio flux'].plot(**kwargs)
-            self.data['radio flux smooth'].plot(**kwargs)
+            axes = self.to_dataframe()['radio flux'].plot(**kwargs)
+            self.to_dataframe()['radio flux smooth'].plot(**kwargs)
             axes.set_ylabel('Radio Flux [sfu]')
         elif type == 'geo':
-            axes = self.data['geomagnetic ap'].plot(**kwargs)
-            self.data['geomagnetic ap smooth'].plot(**kwargs)
+            axes = self.to_dataframe()['geomagnetic ap'].plot(**kwargs)
+            self.to_dataframe()['geomagnetic ap smooth'].plot(**kwargs)
             axes.set_ylabel('Geomagnetic AP Index')
         else:
             raise ValueError(f'Got unknown plot type "{type}"')
@@ -217,9 +217,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         figure = plt.figure()
         axes = plt.gca()
 
-        axes = self.data['sunspot'].plot(color='b', **plot_args)
-        self.data['sunspot low'].plot(linestyle='--', color='b', **plot_args)
-        self.data['sunspot high'].plot(linestyle='--', color='b', **plot_args)
+        axes = self.to_dataframe()['sunspot'].plot(color='b', **plot_args)
+        self.to_dataframe()['sunspot low'].plot(linestyle='--', color='b', **plot_args)
+        self.to_dataframe()['sunspot high'].plot(linestyle='--', color='b', **plot_args)
 
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Sunspot Number Prediction')

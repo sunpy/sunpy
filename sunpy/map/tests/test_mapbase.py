@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import astropy.wcs
 import astropy.units as u
 from astropy.io import fits
+from astropy.io.fits.verify import VerifyWarning
 from astropy.time import Time
 from astropy.coordinates import SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
@@ -37,12 +38,23 @@ def hmi_test_map():
 
 @pytest.fixture
 def aia171_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+    map = sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+
+    # Get rid of the blank keyword to prevent some astropy fits fixing warnings
+    header = dict(map.meta)
+    header.pop('blank')
+    return sunpy.map.Map((map.data, header))
 
 
 @pytest.fixture
 def heliographic_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+    map = sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+
+    # Fix unit strings to prevent some astropy fits fixing warnings
+    header = dict(map.meta)
+    header['cunit1'] = 'deg'
+    header['cunit2'] = 'deg'
+    return sunpy.map.Map((map.data, header))
 
 
 @pytest.fixture
@@ -71,7 +83,8 @@ def generic_map():
         'PC2_2': 0,
         'NAXIS1': 6,
         'NAXIS2': 6,
-        'date-obs': '1970/01/01T00:00:00',
+        'date-obs': '1970-01-01T00:00:00',
+        'mjd-obs': 40587.0,
         'obsrvtry': 'Foo',
         'detector': 'bar',
         'wavelnth': 10,
@@ -82,7 +95,8 @@ def generic_map():
 
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same in pyfits and SunPy"""
-    data = fits.open(os.path.join(testpath, 'aia_171_level1.fits'))[0].data
+    with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
+        data = fits.open(os.path.join(testpath, 'aia_171_level1.fits'))[0].data
     np.testing.assert_allclose(aia171_test_map.data, data)
 
 
@@ -302,8 +316,9 @@ def test_swap_cd():
 def test_world_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is internally
     consistent"""
-    # Note: FITS pixels start from 1,1
-    test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate, origin=1)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        # Note: FITS pixels start from 1,1
+        test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate, origin=1)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
 
 
@@ -355,13 +370,15 @@ def test_default_shift():
 
 def test_shift_applied(generic_map):
     """Test that adding a shift actually updates the reference coordinate"""
-    original_reference_coord = (generic_map.reference_coordinate.Tx,
-                                generic_map.reference_coordinate.Ty)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        original_reference_coord = (generic_map.reference_coordinate.Tx,
+                                    generic_map.reference_coordinate.Ty)
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
-    assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
-    assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
+        assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
     crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units[0] +
                shifted_map.shifted_value[0]).to(shifted_map.spatial_units[0])).value
     assert shifted_map.meta.get('crval1') == crval1
@@ -424,7 +441,8 @@ resample_test_data = [('linear', (100, 200) * u.pixel), ('neighbor', (128, 256) 
 @pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     """Check that resampled map has expected dimensions."""
-    resampled_map = generic_map.resample(new_dimensions, method=sample_method)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        resampled_map = generic_map.resample(new_dimensions, method=sample_method)
     assert resampled_map.dimensions[0] == new_dimensions[0]
     assert resampled_map.dimensions[1] == new_dimensions[1]
 
@@ -434,15 +452,17 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
     """
     Check that the resampled map has correctly adjusted metadata.
     """
-    resampled_map = generic_map.resample(new_dimensions, method=sample_method)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        resampled_map = generic_map.resample(new_dimensions, method=sample_method)
     assert float(resampled_map.meta['cdelt1']) / generic_map.meta['cdelt1'] \
         == float(generic_map.data.shape[1]) / resampled_map.data.shape[1]
     assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
         == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
     assert resampled_map.meta['crpix1'] == (resampled_map.data.shape[1] + 1) / 2.
     assert resampled_map.meta['crpix2'] == (resampled_map.data.shape[0] + 1) / 2.
-    assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
-    assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
+        assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
     for key in generic_map.meta:
         if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2', 'crval1', 'crval2'):
             assert resampled_map.meta[key] == generic_map.meta[key]
@@ -546,7 +566,8 @@ def test_rotate(aia171_test_map):
 
 
 def test_rotate_pad_crpix(generic_map):
-    rotated_map = generic_map.rotate(30*u.deg)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        rotated_map = generic_map.rotate(30*u.deg)
     # This tests that the reference pixel of the map is in the expected place.
     assert rotated_map.data.shape != generic_map.data.shape
     assert_quantity_allclose(u.Quantity(rotated_map.reference_pixel),
@@ -554,7 +575,8 @@ def test_rotate_pad_crpix(generic_map):
 
 
 def test_rotate_recenter(generic_map):
-    rotated_map = generic_map.rotate(20 * u.deg, recenter=True)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        rotated_map = generic_map.rotate(20 * u.deg, recenter=True)
     pixel_array_center = (np.flipud(rotated_map.data.shape) - 1) / 2.0
 
     assert_quantity_allclose(
@@ -569,14 +591,16 @@ def test_rotate_crota_remove(aia171_test_map):
 
 
 def test_rotate_scale_cdelt(generic_map):
-    rot_map = generic_map.rotate(scale=10.)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        rot_map = generic_map.rotate(scale=10.)
     assert rot_map.meta['CDELT1'] == generic_map.meta['CDELT1'] / 10.
     assert rot_map.meta['CDELT2'] == generic_map.meta['CDELT2'] / 10.
 
 
 def test_rotate_new_matrix(generic_map):
     # Rotate by CW90 to go from CCW 90 in generic map to CCW 180
-    rot_map = generic_map.rotate(rmatrix=np.array([[0, 1], [-1, 0]]))
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        rot_map = generic_map.rotate(rmatrix=np.array([[0, 1], [-1, 0]]))
     np.testing.assert_allclose(rot_map.rotation_matrix, np.array([[-1, 0], [0, -1]]))
 
 
@@ -604,14 +628,15 @@ def test_as_mpl_axes_aia171(aia171_test_map):
 
 
 def test_pixel_to_world_no_projection(generic_map):
-    out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel)+1*u.pix, origin=1)
+    with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
+        out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel)+1*u.pix, origin=1)
     assert_quantity_allclose(out.Tx, -10*u.arcsec)
     assert_quantity_allclose(out.Ty, 10*u.arcsec)
 
 
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
-    with warnings.catch_warnings(record=True) as w:
+    with pytest.warns(SunpyUserWarning) as w:
         bad_header = {
             'CRVAL1': 0,
             'CRVAL2': 0,
