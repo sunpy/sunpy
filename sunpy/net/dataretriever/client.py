@@ -274,6 +274,11 @@ class GenericClient(BaseClient):
 
         kwergs = copy.copy(self.map_)
         kwergs.update(kwargs)
+        timerange = self.map_.get('TimeRange')
+        if timerange is None:
+            raise ValueError(f'The following part of the query did not have a time specified:\n'
+                             f'{args}')
+
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
         if urls:
