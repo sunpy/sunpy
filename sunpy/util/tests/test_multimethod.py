@@ -4,13 +4,18 @@ import sys
 import pytest
 
 from sunpy.util.multimethod import FAIL, WARN, MultiMethod, TypeWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
-def test_super():
+@pytest.fixture
+def mm():
+    with pytest.warns(SunpyDeprecationWarning):
+        return MultiMethod(lambda *a: a)
+
+
+def test_super(mm):
     class String(str):
         pass
-
-    mm = MultiMethod(lambda *a: a)
 
     with pytest.raises(TypeError):
         mm.super()
@@ -28,11 +33,9 @@ def test_super():
     assert mm(String('foo'), 'bar') == ('Fancy', 'String')
 
 
-def test_override(recwarn):
+def test_override(recwarn, mm):
     class String(str):
         pass
-
-    mm = MultiMethod(lambda *a: a)
 
     @mm.add_dec(str, str)
     def foo(foo, bar):
@@ -52,25 +55,22 @@ def test_override(recwarn):
     )
 
 
-def test_invalid_arg_for_override_to_add_method():
+def test_invalid_arg_for_override_to_add_method(mm):
 
     def dummy_validator():
         pass
-
-    mm = MultiMethod(lambda *a: a)
 
     # See #1991
     with pytest.raises(ValueError):
         mm.add(dummy_validator, tuple(), override=sys.maxsize)
 
 
-def test_call_cached():
+def test_call_cached(mm):
 
     def sum_together(first, second):
         return first + second
 
     # Setup
-    mm = MultiMethod(lambda *a: a)
     mm.add(sum_together, (int, int, ))
     assert mm(3, 4) == 7
 
@@ -79,9 +79,6 @@ def test_call_cached():
     assert mm(1, 2) == 3
 
 
-def test_no_registered_methods():
-
-    mm = MultiMethod(lambda *a: a)
-
+def test_no_registered_methods(mm):
     with pytest.raises(TypeError):
         mm(2)

@@ -159,6 +159,27 @@ class UnifiedResponse(Sequence):
         return s
 
     @property
+    def tables(self):
+        """
+        Returns a list of `astropy.table.Table` for all responses present in a specific
+        `~sunpy.net.fido_factory.UnifiedResponse` object. They can then be used
+        to perform key-based indexing of objects of either type
+        `sunpy.net.dataretriever.client.QueryResponse`, `sunpy.net.vso.QueryResponse` or
+        `sunpy.net.jsoc.JSOCClient`
+
+        Returns
+        -------
+        `list`
+            A list of `astropy.table.Table`, consisting of data either from the
+            `sunpy.net.dataretriever.client.QueryResponse`, `sunpy.net.vso.QueryResponse` or
+            `sunpy.net.jsoc.JSOCClient`.
+        """
+        tables = []
+        for block in self.responses:
+            tables.append(block.build_table())
+        return tables
+
+    @property
     def responses(self):
         """
         A generator of all the `sunpy.net.dataretriever.client.QueryResponse`
@@ -273,7 +294,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
         ...                        a.Instrument('AIA'),
         ...                        a.Wavelength(304*u.angstrom, 304*u.angstrom),
-        ...                        a.vso.Sample(10*u.minute))  # doctest: +REMOTE_DATA
+        ...                        a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
 
         Parameters
         ----------
@@ -339,7 +360,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Examples
         --------
-        >>> from sunpy.net.vso.attrs import Time, Instrument
+        >>> from sunpy.net.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
         >>> filepaths = Fido.fetch(unifresp)  # doctest: +SKIP
 

@@ -5,9 +5,9 @@ import pytest
 
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+from sunpy.net._attrs import Instrument, Time
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources import noaa
-from sunpy.net.vso.attrs import Instrument, Time
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 

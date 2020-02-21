@@ -65,23 +65,23 @@ def query_result():
 @pytest.fixture
 def qr_with_none_waves():
     return vso.VSOClient().search(
-        vso.attrs.Time('20121224T120049.8', '20121224T120049.8'),
-        vso.attrs.Provider('SDAC'), vso.attrs.Instrument('VIRGO'))
+        net_attrs.Time('20121224T120049.8', '20121224T120049.8'),
+        vso.attrs.Provider('SDAC'), net_attrs.Instrument('VIRGO'))
 
 
 @pytest.fixture
 def qr_block_with_missing_physobs():
     return vso.VSOClient().search(
-        vso.attrs.Time('20130805T120000', '20130805T121000'),
-        vso.attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
-        vso.attrs.Provider('SSC'), vso.attrs.Wavelength(10 * u.kHz, 160 * u.kHz))[0]
+        net_attrs.Time('20130805T120000', '20130805T121000'),
+        net_attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
+        vso.attrs.Provider('SSC'), net_attrs.Wavelength(10 * u.kHz, 160 * u.kHz))[0]
 
 
 @pytest.fixture
 def qr_block_with_kev_unit():
     return vso.VSOClient().search(
-        vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
-        vso.attrs.Instrument('RHESSI'))[0]
+        net_attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
+        net_attrs.Instrument('RHESSI'))[0]
 
 
 def test_fits_header_entry_equality():

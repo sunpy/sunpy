@@ -32,15 +32,18 @@ if sys.version_info < tuple(int(val) for val in __minimum_python_version__.split
 
 
 def _get_bibtex():
+    import textwrap
     # Set the bibtex entry to the article referenced in CITATION.rst
     citation_file = os.path.join(os.path.dirname(__file__), 'CITATION.rst')
 
     with open(citation_file, 'r') as citation:
-        refs = citation.read().split('@ARTICLE')[1:]
-        if len(refs) == 0:
-            return ''
-        bibtexreference = r"@ARTICLE{}".format(refs[0])
-    return bibtexreference
+        # Extract the first bibtex block:
+        ref = citation.read().partition(".. code:: bibtex\n\n")[2]
+        lines = ref.split("\n")
+        # Only read the lines which are indented
+        lines = lines[:[l.startswith("    ") for l in lines].index(False)]
+        ref = textwrap.dedent('\n'.join(lines))
+    return ref
 
 
 __citation__ = __bibtex__ = _get_bibtex()

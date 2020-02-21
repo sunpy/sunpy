@@ -1,0 +1,1 @@
+Fido search attrs available as `sunpy.net.attrs` i.e, ``a.Time``, ``a.Instrument`` etc are now deprecated as VSO attrs (`sunpy.net.vso.attrs`).
