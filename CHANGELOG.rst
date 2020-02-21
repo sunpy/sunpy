@@ -153,7 +153,6 @@ Bug Fixes
 - Fixed pandas plotting registration in `sunpy.timeseries`. (`#3633 <https://github.com/sunpy/sunpy/pull/3633>`__)
 - Correctly catch and emit a warning when converting a map metadata to a FITS
   header and it contains a keyword with non-ascii characters. (`#3645 <https://github.com/sunpy/sunpy/pull/3645>`__)
-- Fixed the issue of broken link. Details of the issue can be found at #3744. (`#3744 https://github.com/sunpy/sunpy/pull/3828`__)
 
 
 Improved Documentation
