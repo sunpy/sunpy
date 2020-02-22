@@ -22,7 +22,6 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, time_attr
-from sunpy.net.vso import QueryResponse as vsoQueryResponse, attrs as va
 from sunpy.net.vso.vso import DownloadFailed
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.datatype_factory_base import MultipleMatchError
