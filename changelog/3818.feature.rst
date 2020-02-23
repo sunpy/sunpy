@@ -1,0 +1,1 @@
+Made skimage.transform import lazy to reduce import time of `sunpy.image.transform` by ~50%
