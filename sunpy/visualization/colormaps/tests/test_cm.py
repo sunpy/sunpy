@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import pytest
 
+import astropy.units as u
+
 import sunpy.visualization.colormaps as cm
 import sunpy.visualization.colormaps.color_tables as ct
 
@@ -33,4 +35,4 @@ def test_invalid_show_cmaps():
 def test_invalid_wavelengths(f, match):
     # Check that accessing non-existent color table values raises a ValueError
     with pytest.raises(ValueError, match=match):
-        f(-100)
+        f(-100*u.m)
