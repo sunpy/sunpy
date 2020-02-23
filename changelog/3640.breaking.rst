@@ -1,0 +1,1 @@
+`aia_color_table`, `eit_color_table` and `suvi_color_table` now only take `astropy.units` quantities instead of strings.
