@@ -143,23 +143,23 @@ class TestMap:
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
-    def test_errors(self):
+    def test_errors(self, tmpdir):
         # If directory doesn't exist, make sure it's listed in the error msg
         nonexist_dir = 'nonexist'
         directory = pathlib.Path(filepath, nonexist_dir)
         with pytest.raises(ValueError, match=nonexist_dir):
-            maps = sunpy.map.Map(os.fspath(directory))
+            sunpy.map.Map(os.fspath(directory))
 
         with pytest.raises(ValueError, match='Invalid input: 78'):
             # Check a random unsupported type (int) fails
             sunpy.map.Map(78)
 
-        # If one file failed to load, make sure it's listed in warning msg
-        test_file = os.path.join(filepath, 'data_map_factory.txt')
-        files = [AIA_171_IMAGE, test_file]
-        with pytest.raises(UnrecognizedFileTypeError, match='The requested filetype is not currently supported by SunPy.'):
-            with pytest.warns(SunpyUserWarning, match=f'failed to read {test_file}'):
-                sunpy.map.Map(files)
+        # If one file failed to load, make sure it's raised as an expection.
+        p = tmpdir.mkdir("sub").join("hello.fits")
+        p.write("content")
+        files = [AIA_171_IMAGE, p.strpath]
+        with pytest.raises(OSError, match=(fr"Failed to read *")):
+            sunpy.map.Map(files)
 
     @pytest.mark.parametrize('silence,error,match',
                              [(True, RuntimeError, 'No maps loaded'),
