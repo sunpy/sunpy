@@ -227,7 +227,8 @@ class TestMap:
         # Test save out
         eitmap = sunpy.map.Map(a_fname)
         afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-        eitmap.save(afilename, filetype='fits', overwrite=True)
+        with pytest.warns(SunpyUserWarning, match='The meta key  is not valid ascii'):
+            eitmap.save(afilename, filetype='fits', overwrite=True)
         backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)
 
