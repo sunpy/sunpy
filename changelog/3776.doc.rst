@@ -1,0 +1,1 @@
+Added an example for `~sunpy.map.GenericMap.world_to_pixel` function in the Units & Coordinates guide.
