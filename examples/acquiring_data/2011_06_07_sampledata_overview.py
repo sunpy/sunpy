@@ -78,7 +78,7 @@ ax = fig.add_subplot(616, projection=aia_1600_map)
 aia_1600_map.plot(clip_interval=(0.5, 99.9)*u.percent)
 aia_1600_map.draw_grid()
 
-fig.tight_layout(pad=6.50)
+fig.tight_layout(pad=8.50)
 plt.show()
 
 ###############################################################################
