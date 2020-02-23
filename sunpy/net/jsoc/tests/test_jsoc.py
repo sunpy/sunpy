@@ -120,6 +120,18 @@ def test_wait_get():
 
 
 @pytest.mark.remote_data
+def test_wait_get_as_is():
+    responses = client.search(
+        a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
+        a.jsoc.Protocol('as-is'))
+    path = tempfile.mkdtemp()
+    res = client.fetch(responses, path=path)
+    assert isinstance(res, Results)
+    assert len(res) == 1
+
+
+@pytest.mark.remote_data
 def test_get_request():
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -312,6 +324,20 @@ def test_results_filenames():
     responses = client.search(
         a.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
+    path = tempfile.mkdtemp()
+    files = client.fetch(responses, path=path)
+    assert isinstance(files, Results)
+    assert len(files) == len(responses)
+    for hmiurl in files:
+        assert os.path.isfile(hmiurl)
+
+
+@pytest.mark.remote_data
+def test_results_filenames_as_is():
+    responses = client.search(
+        a.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
+        a.jsoc.Protocol('as-is'))
     path = tempfile.mkdtemp()
     files = client.fetch(responses, path=path)
     assert isinstance(files, Results)
