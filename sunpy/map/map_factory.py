@@ -42,58 +42,87 @@ __all__ = ['Map', 'MapFactory']
 class MapFactory(BasicRegistrationFactory):
     """
     Map(\\*args, \\*\\*kwargs)
+
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
+
+
     Examples
     --------
     >>> import sunpy.map
     >>> from astropy.io import fits
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+
     The SunPy Map factory accepts a wide variety of inputs for creating maps
+
     * Preloaded tuples of (data, header) pairs
+
     >>> mymap = sunpy.map.Map((data, header))   # doctest: +SKIP
+
     headers are some base of `dict` or `collections.OrderedDict`, including
     `sunpy.io.header.FileHeader` or `sunpy.util.metadata.MetaDict` classes.
+
     * data, header pairs, not in tuples
+
     >>> mymap = sunpy.map.Map(data, header)   # doctest: +SKIP
+
     * data, wcs object, in tuple
+
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_ROLL_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_ROLL_IMAGE)    # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map((data, wcs))    # doctest: +REMOTE_DATA
+
     * data, wcs object, not in tuple
+
     >>> from astropy.wcs import WCS
     >>> wcs = WCS(sunpy.data.sample.AIA_171_ROLL_IMAGE)     # doctest: +REMOTE_DATA
     >>> data = fits.getdata(sunpy.data.sample.AIA_171_ROLL_IMAGE)    # doctest: +REMOTE_DATA
     >>> mymap = sunpy.map.Map(data, wcs)   # doctest: +REMOTE_DATA
+
     * File names
+
     >>> mymap = sunpy.map.Map('file1.fits')   # doctest: +SKIP
+
     * All fits files in a directory by giving a directory
+
     >>> mymap = sunpy.map.Map('local_dir/sub_dir')   # doctest: +SKIP
+
     * A filesystem path expressed as a `pathlib.Path`
+
     >>> import pathlib
     >>> mymap = sunpy.map.Map(pathlib.Path('file1.fits'))   # doctest: +SKIP
     >>> sub_dir = pathlib.Path('local_dir/sub_dir')
     >>> mymap = sunpy.map.Map(sub_dir)   # doctest: +SKIP
     >>> mymap = sunpy.map.Map(sub_dir / 'file3.fits')   # doctest: +SKIP
+
     * Some regex globs
+
     >>> mymap = sunpy.map.Map('eit_*.fits')   # doctest: +SKIP
+
     * URLs
+
     >>> mymap = sunpy.map.Map(url_str)   # doctest: +SKIP
+
     * DatabaseEntry
+
     >>> mymap = sunpy.map.Map(db_result)   # doctest: +SKIP
+
     * Lists of any of the above
+
     >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])  # doctest: +SKIP
+
     * Any mixture of the above not in a list
+
     >>> mymap = sunpy.map.Map(((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits'))  # doctest: +SKIP
     """  # noqa
 
     def _read_file(self, fname, **kwargs):
-        """ Read in a file name and return the list of (data, meta) pairs in
-            that file. """
-
-        # File gets read here.  This needs to be generic enough to seamlessly
+        """
+        Read in a file name and return the list of (data, meta) pairs in that file.
+        """
+        # File gets read here. This needs to be generic enough to seamlessly
         # call a fits file or a jpeg2k file, etc
         # NOTE: use os.fspath so that fname can be either a str or pathlib.Path
         # This can be removed once read_file supports pathlib.Path
@@ -101,8 +130,8 @@ class MapFactory(BasicRegistrationFactory):
         try:
             pairs = read_file(os.fspath(fname), **kwargs)
         except Exception as e:
-            warnings.warn(f'failed to read {fname}',SunpyUserWarning)
-            raise
+            msg = f"Failed to read {fname}."
+            raise IOError(msg) from e
 
         new_pairs = []
         for pair in pairs:
@@ -128,8 +157,9 @@ class MapFactory(BasicRegistrationFactory):
 
     def _parse_args(self, *args, **kwargs):
         """
-        Parses an args list for data-header pairs.  args can contain any
-        mixture of the following entries:
+        Parses an args list for data-header pairs.
+
+        args can contain any mixture of the following entries:
         * tuples of data,header
         * data, header not in a tuple
         * data, wcs object in a tuple
@@ -139,6 +169,7 @@ class MapFactory(BasicRegistrationFactory):
         * glob, from which all files will be read
         * url, which will be downloaded and read
         * lists containing any of the above.
+
         Example
         -------
         self._parse_args(data, header,
@@ -148,7 +179,6 @@ class MapFactory(BasicRegistrationFactory):
                          'directory1',
                          '*.fits')
         """
-
         data_header_pairs = list()
         already_maps = list()
 
@@ -217,9 +247,11 @@ class MapFactory(BasicRegistrationFactory):
         """ Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
         to determine which is the correct Map-type to build.
+
         Arguments args and kwargs are passed through to the validation
-        function and to the constructor for the final type.  For Map types,
+        function and to the constructor for the final type. For Map types,
         validation function must take a data-header pair as an argument.
+
         Parameters
         ----------
         composite : `bool`, optional
@@ -231,6 +263,7 @@ class MapFactory(BasicRegistrationFactory):
         silence_errors : `bool`, optional
             If set, ignore data-header pairs which cause an exception.
             Default is ``False``.
+
         Notes
         -----
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
@@ -316,7 +349,7 @@ def _possibly_a_path(arg):
     Does *not* check if the path exists.
     """
     try:
-        is_path = pathlib.Path(arg)
+        pathlib.Path(arg)
         return True
     except Exception:
         return False

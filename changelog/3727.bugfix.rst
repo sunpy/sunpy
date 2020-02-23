@@ -1,0 +1,1 @@
+Now when `~sunpy.map.GenericMap` fails to load a file, it will raise the filename.
