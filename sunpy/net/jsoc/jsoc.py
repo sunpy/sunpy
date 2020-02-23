@@ -584,9 +584,13 @@ class JSOCClient(BaseClient):
         urls = []
         for request in requests:
             if request.status == 0:
-                for index, data in request.data.iterrows():
-                    url_dir = request.request_url + '/'
-                    urls.append(urllib.parse.urljoin(url_dir, data['filename']))
+                if request.protocol == 'as-is':
+                    urls.extend(list(request.urls.url))
+                else:
+                    for index, data in request.data.iterrows():
+                        url_dir = request.request_url + '/'
+                        urls.append(urllib.parse.urljoin(url_dir, data['filename']))
+
         if urls:
             if progress:
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"
