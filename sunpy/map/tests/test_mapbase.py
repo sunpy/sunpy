@@ -880,7 +880,9 @@ def test_fits_header(aia171_test_map):
 def test_bad_coordframe_repr(generic_map):
     generic_map.meta['CTYPE1'] = "STUART1"
     generic_map.meta['CTYPE2'] = "STUART2"
-    assert 'Unknown' in generic_map.__repr__()
+    with pytest.warns(UserWarning,
+                      match="Could not determine coordinate frame from map metadata"):
+        assert 'Unknown' in generic_map.__repr__()
 
 
 def test_bad_header_final_fallback():
@@ -895,7 +897,6 @@ def test_bad_header_final_fallback():
     with pytest.warns(UserWarning,
                       match="Unable to treat `.meta` as a FITS header, assuming a simple WCS."):
         m.wcs
-    # Simple WCS validation
     assert list(m.wcs.wcs.ctype) == ['HPLN-', 'HPLT-']
     assert (m.wcs.wcs.crval == [0.0, 0.0]).all()
     assert (m.wcs.wcs.crpix == [5.5, 5.5]).all()
