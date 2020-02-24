@@ -47,7 +47,7 @@ def test_return_query_args():
                         a.jsoc.Series('hmi.sharp_cea_720s'),
                         a.jsoc.Segment('Bp') & a.jsoc.Segment('magnetogram'),
                         a.jsoc.Notify('sunpy@sunpy.net'))
-    #Because res.query_args is list that containes set
+    #Because res.query_args is list that contains dict
     assert 'primekey' in res.query_args[0]
 
 @pytest.mark.remote_data
