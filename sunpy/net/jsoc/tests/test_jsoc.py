@@ -42,6 +42,15 @@ def test_empty_jsoc_response():
 
 
 @pytest.mark.remote_data
+def test_return_query_args():
+    res = client.search(a.jsoc.PrimeKey('HARPNUM', 3604),
+                        a.jsoc.Series('hmi.sharp_cea_720s'),
+                        a.jsoc.Segment('Bp') & a.jsoc.Segment('magnetogram'),
+                        a.jsoc.Notify('sunpy@sunpy.net'))
+    #Because res.query_args is list that containes set
+    assert 'primekey' in res.query_args[0]
+
+@pytest.mark.remote_data
 def test_query():
     Jresp = client.search(
         vso_attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
