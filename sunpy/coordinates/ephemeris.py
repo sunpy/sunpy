@@ -88,7 +88,7 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
             emitted_time = obstime - light_travel_time
 
         log.info(f"Apparent body location accounts for {light_travel_time.to('s').value:.2f}"
-                  " seconds of light travel time")
+                 " seconds of light travel time")
 
     body_hgs = ICRS(body_icrs).transform_to(HGS(obstime=obstime))
 
@@ -221,7 +221,12 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
 def _B0(time='now'):
     """
     Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the
-    Sun-disk center as seen from Earth.  The range of B0 is +/-7.23 degrees.
+    of the center of the disk of the Sun as seen from Earth. The range of B0 is +/-7.23 degrees.
+
+    Equivalent definitions include:
+        * The heliographic latitude of Earth
+        * The tilt of the solar North rotational axis toward Earth
+
 
     Parameters
     ----------
