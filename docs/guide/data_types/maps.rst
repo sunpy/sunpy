@@ -427,7 +427,7 @@ do so as follows.
     cmap = plt.get_cmap('sohoeit171')
 
     fig = plt.figure()
-    smap.plot(cmap=cmap)
+    smap.plot_settings['cmap']
     plt.colorbar()
     plt.show()
 
@@ -487,7 +487,7 @@ This clips out the dimmest 1% of pixels and the brightest 0.5% of pixels.  With 
 pixels clipped, the resulting image makes better use of the full range of colors.
 If you'd like to see what areas of your images got clipped, you can modify the colormap::
 
-    >>> cmap = map.cmap  # doctest: +SKIP
+    >>> cmap = map.plot_settings['cmap']  # doctest: +SKIP
     >>> cmap.set_over('blue')  # doctest: +SKIP
     >>> cmap.set_under('green')  # doctest: +SKIP
 
@@ -509,7 +509,7 @@ Here is an example of this put to use on an AIA image.
     import sunpy.data.sample
 
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    cmap = smap.cmap
+    cmap = smap.plot_settings['cmap']
     cmap.set_over('blue')
     cmap.set_under('green')
 
@@ -579,7 +579,7 @@ See `this example <https://docs.sunpy.org/en/stable/generated/gallery/computer_v
     cmap.set_under('purple', 1.0)
     norm = colors.Normalize(vmin=smap.min(), vmax=smap.mean() + 3 *smap.std())
     smap = sunpy.map.Map('/Users/schriste/Desktop/sunpy_test_img/XRT20141211_184221.9.fits')
-    smap.plot(norm=norm)
+    smap.plot(plot_settings['norm'])
     plt.colorbar(extend='both')
     plt.show()
 
@@ -601,7 +601,7 @@ See `this example <https://docs.sunpy.org/en/stable/generated/gallery/computer_v
                                                                        std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     norm = colors.Normalize()
-    smap.plot(norm = norm)
+    smap.plot(plot_settings['norm'])
     plt.colorbar(extend='both')
 
 .. This plot shows a very similar effect to clipping but note that the array properties such as max and min have changed. That's because numpy is now ignoring those masked values. With a masked array
@@ -625,7 +625,7 @@ See `this example <https://docs.sunpy.org/en/stable/generated/gallery/computer_v
                                                                        std=int(smap.std()))
     plt.text(-600, 1500, txt, color='white')
     norm = colors.Normalize()
-    smap.plot(norm = norm)
+    smap.plot(plot_settings['norm'])
     plt.colorbar(extend='both')
 
 
