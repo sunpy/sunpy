@@ -220,9 +220,9 @@ def _B0(time='now'):
     Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the
     of the center of the disk of the Sun as seen from Earth. The range of B0 is +/-7.23 degrees.
 
-    Table 1 of `Thompson, A&A 449, 791-803 (2006) <https://doi.org/10.1051/0004-6361:20054262>__`
-    defines it as: "Tilt of the solar North rotational axis toward the
-    observer (heliographic latitude of the observer)"
+    Equivalent definitions include:
+        * The heliographic latitude of Earth
+        * The tilt of the solar North rotational axis toward Earth
 
 
     Parameters
