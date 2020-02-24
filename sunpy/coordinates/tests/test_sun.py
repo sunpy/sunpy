@@ -268,11 +268,33 @@ def test_L0_sunspice():
     # IDL> cspice_reclat, spoint1, spcrad1, spclon1, spclat1
     # IDL> print, spclon1 * cspice_dpr()
     #       -33.025998
-    assert_longitude_allclose(sun.L0('2013-01-01',
+    assert_longitude_allclose(sun.L0(Time(['2013-01-01',
+                                           '2013-02-01',
+                                           '2013-03-01',
+                                           '2013-04-01',
+                                           '2013-05-01',
+                                           '2013-06-01',
+                                           '2013-07-01',
+                                           '2013-08-01',
+                                           '2013-09-01',
+                                           '2013-10-01',
+                                           '2013-11-01',
+                                           '2013-12-01'], scale='utc'),
                                      light_travel_time_correction=True,
                                      aberration_correction=True,
                                      nearest_point=True),
-                              -33.025998*u.deg, atol=0.3*u.arcsec)
+                              [-33.025998,
+                               -81.226108,
+                               -89.943817,
+                               -138.57536,
+                               -174.70941,
+                                135.28726,
+                                98.205970,
+                                48.020071,
+                               -1.7260099,
+                               -37.789945,
+                               -86.700744,
+                               -122.17899]*u.deg, atol=0.3*u.arcsec)
 
     # Without the aberration correction for observer motion (specify 'LT')
     #
@@ -280,11 +302,33 @@ def test_L0_sunspice():
     # IDL> cspice_reclat, spoint2, spcrad2, spclon2, spclat2
     # IDL> print, spclon2 * cspice_dpr()
     #       -33.020271
-    assert_longitude_allclose(sun.L0('2013-01-01',
+    assert_longitude_allclose(sun.L0(Time(['2013-01-01',
+                                           '2013-02-01',
+                                           '2013-03-01',
+                                           '2013-04-01',
+                                           '2013-05-01',
+                                           # '2013-06-01',  # skipping due to low precision in comparison
+                                           '2013-07-01',
+                                           '2013-08-01',
+                                           '2013-09-01',
+                                           '2013-10-01',
+                                           '2013-11-01',
+                                           '2013-12-01'], scale='utc'),
                                      light_travel_time_correction=True,
                                      aberration_correction=False,
                                      nearest_point=True),
-                              -33.020271*u.deg, atol=0.01*u.arcsec)
+                              [-33.020271,
+                               -81.220344,
+                               -89.938057,
+                               -138.56966,
+                               -174.70380,
+                               #  135.29281,  # skipping due to low precision in comparison
+                                98.211514,
+                                48.025667,
+                               -1.7203500,
+                               -37.784252,
+                               -86.695047,
+                               -122.17329]*u.deg, atol=0.01*u.arcsec)
 
     # Without any corrections (do a straight conversion from 'HEQ' to 'Carrington')
     #
@@ -292,11 +336,33 @@ def test_L0_sunspice():
     # IDL> convert_sunspice_lonlat, '2013-01-01', coord, 'HEQ', 'Carrington', /au, /degrees
     # IDL> print, coord
     #        1.0000000       326.89956       10.000000
-    assert_longitude_allclose(sun.L0('2013-01-01',
+    assert_longitude_allclose(sun.L0(Time(['2013-01-01',
+                                           '2013-02-01',
+                                           '2013-03-01',
+                                           '2013-04-01',
+                                           '2013-05-01',
+                                           '2013-06-01',
+                                           '2013-07-01',
+                                           '2013-08-01',
+                                           '2013-09-01',
+                                           '2013-10-01',
+                                           '2013-11-01',
+                                           '2013-12-01'], scale='utc'),
                                      light_travel_time_correction=False,
                                      aberration_correction=False,
                                      nearest_point=True),
-                              326.89956*u.deg, atol=0.01*u.arcsec)
+                              [326.89956,
+                               278.69932,
+                               269.98115,
+                               221.34886,
+                               185.21404,
+                               135.21012,
+                               98.128607,
+                               47.942897,
+                               358.19735,
+                               322.13410,
+                               273.22402,
+                               237.74631]*u.deg, atol=0.02*u.arcsec)
 
 
 def test_P():
