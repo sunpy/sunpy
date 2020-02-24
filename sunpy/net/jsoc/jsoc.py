@@ -4,6 +4,7 @@ import time
 import urllib
 import warnings
 from collections.abc import Sequence
+from sunpy.map import Map
 
 import drms
 import numpy as np
@@ -598,6 +599,15 @@ class JSOCClient(BaseClient):
             return Results()
 
         results = downloader.download()
+
+        #Checking if the downloaded files are valid fits files.
+        for file in results:
+            if file[-4:] == "fits":
+                try:
+                    Map(file)
+                except OSError:
+                    raise SunpyUserWarning(f"`{file}` is an empty or corrupt FITS file") from None
+
         return results
 
     def _make_recordset(self, series, start_time='', end_time='', wavelength='',
