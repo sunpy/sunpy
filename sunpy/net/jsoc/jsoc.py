@@ -3,6 +3,7 @@ import os
 import time
 import urllib
 import warnings
+import copy
 from collections.abc import Sequence
 
 import drms
@@ -331,7 +332,8 @@ class JSOCClient(BaseClient):
         for block in walker.create(query):
             iargs = kwargs.copy()
             iargs.update(block)
-            blocks.append(iargs)
+            # Update blocks with deep copy of iargs because in _make_recordset we use .pop() on element from iargs
+            blocks.append(copy.deepcopy(iargs))
             return_results.append(self._lookup_records(iargs))
 
         return_results.query_args = blocks
