@@ -452,7 +452,9 @@ class GenericMap(NDData):
         time = self.meta.get('date-obs', None)
         if time is None:
             if self._default_time is None:
-                warnings.warn("Missing metadata for observation time: setting observation time to current time.",
+                warnings.warn("Missing metadata for observation time, "
+                              "setting observation time to current time. "
+                              "Set the 'DATE-OBS' FITS keyword to prevent this warning.",
                               SunpyUserWarning)
                 self._default_time = parse_time('now')
             time = self._default_time
