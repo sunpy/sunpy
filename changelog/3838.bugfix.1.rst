@@ -1,0 +1,1 @@
+Add support for passing paths of type `pathlib.Path` in `sunpy.net.jsoc.JSOCClient.fetch`.

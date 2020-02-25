@@ -307,3 +307,17 @@ def test_results_filenames():
     assert len(files) == len(responses)
     for hmiurl in files:
         assert os.path.isfile(hmiurl)
+
+
+@pytest.mark.remote_data
+def test_results_filenames_as_is(tmp_path):
+    responses = client.search(
+        a.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
+        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
+        a.jsoc.Protocol('as-is'))
+    assert len(responses) == 2
+    files = client.fetch(responses, path=tmp_path)
+    assert isinstance(files, Results)
+    assert len(files) == len(responses)
+    for hmiurl in files:
+        assert os.path.isfile(hmiurl)
