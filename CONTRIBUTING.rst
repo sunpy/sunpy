@@ -203,7 +203,6 @@ We provide more more detail about our :ref:`test suite and how to write tests <t
 
 Send it back to us
 ^^^^^^^^^^^^^^^^^^
- 
 Once you have some changes you would like to submit, you will need to commit the changes.
 This is a three stage process:
 
