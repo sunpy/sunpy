@@ -197,13 +197,12 @@ You will need to check two things:
    We follow the `PEP8`_ style for all Python code and depending on your setup, you can use a `linter program <https://realpython.com/python-code-quality/#how-to-improve-python-code-quality>`_ to check your code.
    For documentation, we follow the `numpydoc style <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_.
 
-We provide more more detail about our :ref: `test suite and how to write tests <testing>`, and how to :ref: `create and style documentation <docs_guidelines>`.
+We provide more more detail about our :ref:`test suite and how to write tests <testing>`, and how to :ref:`create and style documentation <docs_guidelines>`.
 
 .. _pytest: https://docs.pytest.org/en/latest/
 
 Send it back to us
 ^^^^^^^^^^^^^^^^^^
-
 Once you have some changes you would like to submit, you will need to commit the changes.
 This is a three stage process:
 
@@ -226,10 +225,10 @@ Please fill this in and title the pull request.
 Now the final step is to press the green "Create pull request" button.
 
 As soon as you do this, you will be greeted by a message from the "sunpy bot" as well as several continuous integration checks.
-These are explained on our :ref: `Pull Request Review <pr_review>` page.
+These are explained on our :ref:`Pull Request Review <pr_review>` page.
 But what is important to know is that these run a series of tests to make sure that the changes do not cause any new errors.
 We strongly recommend that any code changes you have had, follow the `PEP8`_ style and that you have ran the code locally to make sure any changes do not break any existing code.
-We provide an overview on how to run the test suite :ref: `here <testing>`.
+We provide an overview on how to run the test suite :ref:`here <testing>`.
 Now we (the SunPy community) can review the code and offer suggestions and once we are happy, we can merge in the pull request.
 
 If you do not have time to finish what you started on or ran out of time during a sprint and do not want to submit a pull request, you can create a git patch instead:
