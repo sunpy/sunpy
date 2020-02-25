@@ -4,6 +4,7 @@ import time
 import urllib
 import warnings
 from collections.abc import Sequence
+from pathlib import Path
 
 import drms
 import numpy as np
@@ -560,7 +561,10 @@ class JSOCClient(BaseClient):
         if path is None:
             default_dir = config.get("downloads", "download_dir")
             path = os.path.join(default_dir, '{file}')
-        elif isinstance(path, str) and '{file}' not in path:
+        elif isinstance(path, Path):
+            path = str(path)
+
+        if isinstance(path, str) and '{file}' not in path:
             path = os.path.join(path, '{file}')
 
         paths = []
@@ -584,9 +588,13 @@ class JSOCClient(BaseClient):
         urls = []
         for request in requests:
             if request.status == 0:
-                for index, data in request.data.iterrows():
-                    url_dir = request.request_url + '/'
-                    urls.append(urllib.parse.urljoin(url_dir, data['filename']))
+                if request.protocol == 'as-is':
+                    urls.extend(list(request.urls.url))
+                else:
+                    for index, data in request.data.iterrows():
+                        url_dir = request.request_url + '/'
+                        urls.append(urllib.parse.urljoin(url_dir, data['filename']))
+
         if urls:
             if progress:
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"
