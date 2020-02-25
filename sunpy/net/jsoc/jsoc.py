@@ -453,7 +453,7 @@ class JSOCClient(BaseClient):
         return requests
 
     def fetch(self, jsoc_response, path=None, progress=True, overwrite=False,
-              downloader=None, wait=True, sleep=10):
+              downloader=None, wait=True, sleep=10, max_conn=4, **kwargs):
         """
         Make the request for the data in a JSOC response and wait for it to be
         staged and then download the data.
@@ -477,7 +477,7 @@ class JSOCClient(BaseClient):
             and the existing file will be overwritten, if `'unique'` the filename
             will be modified to be unique.
 
-        max_conns : `int`
+        max_conn : `int`
             Maximum number of download connections.
 
         downloader : `parfive.Downloader`, optional
@@ -500,6 +500,9 @@ class JSOCClient(BaseClient):
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
 
+        defaults = {'max_splits': 2}
+        defaults.update(kwargs)
+
         # Make response iterable
         if not isiterable(responses):
             responses = [responses]
@@ -513,10 +516,10 @@ class JSOCClient(BaseClient):
 
         return self.get_request(responses, path=path, overwrite=overwrite,
                                 progress=progress, downloader=downloader,
-                                wait=wait)
+                                wait=wait, max_conn=max_conn, **defaults)
 
     def get_request(self, requests, path=None, overwrite=False, progress=True,
-                    downloader=None, wait=True):
+                    downloader=None, wait=True, max_conn=4, **kwargs):
         """
         Query JSOC to see if the request(s) is ready for download.
 
@@ -557,6 +560,8 @@ class JSOCClient(BaseClient):
         """
         c = drms.Client()
 
+        kwargs['max_splits'] = kwargs.get('max_splits', 2)
+
         # Convert Responses to a list if not already
         if isinstance(requests, str) or not isiterable(requests):
             requests = [requests]
@@ -595,10 +600,18 @@ class JSOCClient(BaseClient):
                 fname = os.path.expanduser(fname)
                 paths.append(fname)
 
+        if max_conn * kwargs['max_splits'] > 10:
+            warnings.warn(("JSOC does not support more than 10 parallel connections. " +
+                           "Changing the number of parallel connections to 8."), SunpyUserWarning)
+            kwargs['max_splits'] = 2
+            max_conn = 4
+
         dl_set = True
         if not downloader:
             dl_set = False
-            downloader = Downloader(progress=progress, overwrite=overwrite)
+            downloader = Downloader(progress=progress, overwrite=overwrite, max_conn=max_conn)
+        else:
+            downloader.max_conn = max_conn
 
         urls = []
         for request in requests:
@@ -615,7 +628,7 @@ class JSOCClient(BaseClient):
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"
                 print(print_message.format(len(urls), request._d['size']))
             for aurl, fname in zip(urls, paths):
-                downloader.enqueue_file(aurl, filename=fname)
+                downloader.enqueue_file(aurl, filename=fname, **kwargs)
 
         if dl_set and not wait:
             return Results()
