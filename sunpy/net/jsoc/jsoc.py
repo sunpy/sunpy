@@ -40,8 +40,8 @@ class JSOCResponse(BaseQueryResponse):
         """
         super().__init__()
         self.table = table or astropy.table.QTable()
-        self.query_args = None
-        self.requests = None
+        self.query_args = getattr(table, 'query_args', None)
+        self.requests = getattr(table, 'requests', None)
         self._client = client
 
     @property
@@ -63,7 +63,16 @@ class JSOCResponse(BaseQueryResponse):
             return len(self.table)
 
     def __getitem__(self, item):
-        return type(self)(self.table[item])
+        if isinstance(item, int):
+            item = slice(item, item + 1)
+        ret = type(self)(self.table[item])
+        ret.query_args = self.query_args
+        ret.requests = self.requests
+
+        warnings.warn("Downloading of sliced JSOC results is not supported. "
+                      "All the files present in the original response will be downloaded.",
+                      SunpyUserWarning)
+        return ret
 
     def __iter__(self):
         return (t for t in [self])
