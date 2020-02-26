@@ -1,1 +1,1 @@
-This patch fixes query_args in JSOCClient return object. For formating dataset query, .pop method was used for extracting primekeys from input arguments list and that led to invalidating shalow copy of iargs object. This patch forces deepcopy of object so that primekeys persists.
+JSOCClient now works with non-time primekeys.
