@@ -267,7 +267,7 @@ _DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.176*u.deg)
 def _L0(time='now',
         light_travel_time_correction=True,
         aberration_correction=True,
-        nearest_point=False):
+        nearest_point=True):
     """
     Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the
     Sun-disk center as seen from Earth.
@@ -284,7 +284,7 @@ def _L0(time='now',
     nearest_point : `bool`
         If True, calculate the light travel time to the nearest point on the Sun's surface rather
         than the light travel time to the center of the Sun (i.e., a difference of the solar
-        radius).  Defaults to False.
+        radius).  Defaults to True.
 
     Returns
     -------

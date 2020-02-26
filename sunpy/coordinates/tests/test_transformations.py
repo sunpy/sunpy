@@ -26,6 +26,7 @@ from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
 from sunpy.coordinates import sun
 from sunpy.coordinates.frames import _J2000
 from sunpy.coordinates.transformations import transform_with_sun_center
+from sunpy.sun.constants import radius as _RSUN
 from sunpy.time import parse_time
 
 
@@ -461,7 +462,7 @@ def test_hgs_hgc_sunspice():
     new = old.transform_to(HeliographicCarrington(observer='earth'))
 
     # Calculate the difference in longitude due to light travel time from the Sun to the Earth
-    delta_lon = (14.1844*u.deg/u.day) * (sun.earth_distance(old.obstime) / speed_of_light)
+    delta_lon = (14.1844*u.deg/u.day) * (sun.earth_distance(old.obstime) - _RSUN) / speed_of_light
 
     # Calculate the difference in longitude due to aberration due to Earth motion
     # This approximation should be replaced with a more accurate calcuation, but for now it simply
