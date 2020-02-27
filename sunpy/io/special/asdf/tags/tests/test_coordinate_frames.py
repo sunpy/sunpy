@@ -1,3 +1,4 @@
+import os
 import platform
 from distutils.version import LooseVersion
 
@@ -40,6 +41,19 @@ def coordframe_array(request):
         data = np.random.random((2, 10)) * u.arcsec
 
     return frame(*data, obstime='2018-01-01T00:00:00')
+
+
+def test_hgc_100():
+    # Test that HeliographicCarrington is populated with Earth as the observer when loading a
+    # older schema (1.0.0)
+    test_file = os.path.join(os.path.dirname(__file__), "hgc_100.asdf")
+    with asdf.open(test_file) as input_asdf:
+        hgc = input_asdf['hgc']
+        assert isinstance(hgc, frames.HeliographicCarrington)
+        if hgc.obstime is None:
+            assert hgc.observer == 'earth'
+        else:
+            assert hgc.observer.object_name == 'earth'
 
 
 # Skip these two tests on windows due to a weird interaction with atomicfile
