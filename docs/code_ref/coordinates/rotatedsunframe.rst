@@ -143,17 +143,17 @@ Using the context manager, the ``radius`` component stays as the solar radius as
   >>> with transform_with_sun_center():
   ...     print(meridian.transform_to(f.HeliographicCarrington(observer="earth", obstime="2001-01-02")))
   <HeliographicCarrington Coordinate (obstime=2001-01-02T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
-      [( 96.57064602, -75., 695700.),
-       ( 97.52257032, -60., 695700.),
-       ( 98.62464318, -45., 695700.),
-       ( 99.49776211, -30., 695700.),
-       ( 99.99177854, -15., 695700.),
-       (100.1419271 ,   0., 695700.),
-       ( 99.99177854,  15., 695700.),
-       ( 99.49776211,  30., 695700.),
-       ( 98.62464318,  45., 695700.),
-       ( 97.52257032,  60., 695700.),
-       ( 96.57064602,  75., 695700.)]>
+      [( 96.5706461 , -75., 695700.),
+       ( 97.52257041, -60., 695700.),
+       ( 98.62464327, -45., 695700.),
+       ( 99.49776219, -30., 695700.),
+       ( 99.99177863, -15., 695700.),
+       (100.14192718,   0., 695700.),
+       ( 99.99177863,  15., 695700.),
+       ( 99.49776219,  30., 695700.),
+       ( 98.62464327,  45., 695700.),
+       ( 97.52257041,  60., 695700.),
+       ( 96.5706461 ,  75., 695700.)]>
 
 
 Transforming multiple durations of rotation
