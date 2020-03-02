@@ -188,12 +188,15 @@ def test_B0_array_time():
     assert_quantity_allclose(sun_B0[1], 0.88*u.deg, atol=5e-3*u.deg)
 
 
-def test_L0():
-    # Validate against a published value from Astronomical Algorithms (Meeus 1998, p.191)
-    assert_quantity_allclose(sun.L0('1992-Oct-13'), 238.63*u.deg, atol=2e-2*u.deg)
+def test_L0_defaults():
+    assert_quantity_allclose(sun.L0('1992-Oct-13'),
+                             sun.L0('1992-Oct-13',
+                                    light_travel_time_correction=True,
+                                    aberration_correction=False,
+                                    nearest_point=True))
 
 
-def test_L0_array_time():
+def test_L0_astronomical_almanac():
     # Validate against published values from the Astronomical Almanac (2013)
     sun_L0 = sun.L0(Time(['2013-01-01',
                           '2013-02-01',
@@ -224,7 +227,7 @@ def test_L0_array_time():
                                       237.83]*u.deg, atol=5e-3*u.deg)
 
 
-def test_L0_no_aberration():
+def test_L0_jpl_horizons():
     # Validate against values from JPL Horizons, which does not apply the aberration correction
     # for observer motion.
     # https://ssd.jpl.nasa.gov/horizons_batch.cgi?batch=1&TABLE_TYPE=OBSERVER&OBJ_DATA=NO&QUANTITIES=%2714%27&COMMAND=%22Sun%22&CENTER=%27Geocentric%27&START_TIME=%222013-01-01+TT%22&STOP_TIME=%222013-12-31%22&STEP_SIZE=%221d%22

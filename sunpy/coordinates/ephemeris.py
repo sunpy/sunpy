@@ -266,11 +266,11 @@ _DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.176*u.deg)
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def _L0(time='now',
         light_travel_time_correction=True,
-        aberration_correction=True,
-        nearest_point=True):
+        nearest_point=True,
+        aberration_correction=False):
     """
-    Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the
-    Sun-disk center as seen from Earth.
+    Return the L0 angle for the Sun at a specified time, which is the apparent Carrington longitude
+    of the Sun-disk center as seen from Earth.
 
     Parameters
     ----------
@@ -278,13 +278,12 @@ def _L0(time='now',
         Time to use in a parse_time-compatible format
     light_travel_time_correction : `bool`
         If True, apply the correction for light travel time from Sun to Earth.  Defaults to True.
-    aberration_correction : `bool`
-        If True, apply an aberration correction in the manner of the Astronomical Almanac.  Defaults
-        to True.
     nearest_point : `bool`
         If True, calculate the light travel time to the nearest point on the Sun's surface rather
         than the light travel time to the center of the Sun (i.e., a difference of the solar
         radius).  Defaults to True.
+    aberration_correction : `bool`
+        If True, apply the stellar-aberration correction due to Earth's motion.  Defaults to False.
 
     Returns
     -------
@@ -294,11 +293,19 @@ def _L0(time='now',
     Notes
     -----
     This longitude is calculated using current IAU values (Seidelmann et al. 2007 and later), which
-    exclude the effects of light travel time and aberration due to Earth's motion (see that paper's
-    Appendix).  This function then applies the effects of light travel time and aberration, which is
-    the approach of the Astronomial Almanac.  Applying the aberration due to Earth's motion (~20.5
-    arcseconds) is required because the IAU values were tuned under the assumption that it would be
-    done (see Urban & Kaplan 2007).
+    do not include the effects of light travel time and aberration due to Earth's motion (see that
+    paper's Appendix).  This function then, by default, applies the light-travel-time correction
+    for the nearest point on the Sun's surface, but does not apply the stellar-aberration correction
+    due to Earth's motion.
+
+    We do not apply the stellar-abberation correction by default because it should not be applied
+    for purposes such as co-aligning images that are each referenced to Sun-disk center.  Stellar
+    aberration does not shift the apparent positions of solar features relative to the Sun-disk
+    center.
+
+    The Astronomical Almanac applies the stellar-aberration correction in their printed published
+    L0 values (see also Urban & Kaplan 2007).  Applying the stellar-aberration correction due to
+    Earth's motion decreases the apparent Carrington longitude by ~20.5 arcseconds.
 
     References
     ----------
