@@ -817,10 +817,9 @@ class VSOClient(BaseClient):
         # Now to traverse the return and create attrs out of them.
         attrs = {}
         for key, value in keyword_info.items():
-            try:
-                attr = getattr(a, key.capitalize())
-            except AttributeError:
-                attr = getattr(a.vso, key.capitalize())
+            attr = getattr(a, key.capitalize(), None)
+            if attr is None:
+                attr = getattr(a.vso, key.capitalize())     
             attrs[attr] = []
             for item in value:
                 if item:

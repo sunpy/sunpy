@@ -98,7 +98,7 @@ class AttrMeta(type):
         """
         Returns the normal repr plus the pretty attr __str__.
         """
-        return object.__repr__(self) + "\n" + str(self)
+        return type.__repr__(self) + "\n" + str(self)
 
     def __str__(self):
         """
@@ -110,7 +110,7 @@ class AttrMeta(type):
         clients = [x for _, x in sorted(zip(attrs.name, attrs.client), key=lambda pair: pair[0])]
         names_long = [x for _, x in sorted(
             zip(attrs.name, attrs.name_long), key=lambda pair: pair[0])]
-        descs = [x for _, x in sorted(zip(attrs.name, attrs.name_long), key=lambda pair: pair[0])]
+        descs = [x for _, x in sorted(zip(attrs.name, attrs.desc), key=lambda pair: pair[0])]
         lines = []
         t = Table(names=["Attribute Name", "Client", "Full Name",
                          "Description"], dtype=[str, str, str, str])
