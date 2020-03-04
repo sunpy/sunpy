@@ -181,11 +181,76 @@ def test_B0():
     assert_quantity_allclose(sun.B0('1992-Oct-13'), 5.99*u.deg, atol=5e-3*u.deg)
 
 
-def test_B0_array_time():
+def test_B0_astronomical_almanac():
     # Validate against published values from the Astronomical Almanac (2013)
     sun_B0 = sun.B0(Time(['2013-04-01', '2013-12-01'], scale='tt'))
     assert_quantity_allclose(sun_B0[0], -6.54*u.deg, atol=5e-3*u.deg)
     assert_quantity_allclose(sun_B0[1], 0.88*u.deg, atol=5e-3*u.deg)
+
+
+def test_B0_jpl_horizons():
+    # Validate against values from JPL Horizons, which does not apply the aberration correction
+    # for observer motion.
+    # https://ssd.jpl.nasa.gov/horizons_batch.cgi?batch=1&TABLE_TYPE=OBSERVER&OBJ_DATA=NO&QUANTITIES=%2714%27&COMMAND=%22Sun%22&CENTER=%27Geocentric%27&START_TIME=%222013-01-01+TT%22&STOP_TIME=%222013-12-31%22&STEP_SIZE=%221d%22
+    sun_B0 = sun.B0(Time(['2013-01-01',
+                          '2013-02-01',
+                          '2013-03-01',
+                          '2013-04-01',
+                          '2013-05-01',
+                          '2013-06-01',
+                          '2013-07-01',
+                          '2013-08-01',
+                          '2013-09-01',
+                          '2013-10-01',
+                          '2013-11-01',
+                          '2013-12-01'], scale='tt'))
+    assert_quantity_allclose(sun_B0, [-3.034687,
+                                      -6.031910,
+                                      -7.219984,
+                                      -6.543092,
+                                      -4.168016,
+                                      -0.663804,
+                                       2.873030,
+                                       5.784693,
+                                       7.194559,
+                                       6.719875,
+                                       4.378979,
+                                       0.881068]*u.deg, atol=0.01*u.arcsec, rtol=0)
+
+
+def test_B0_sunspice():
+    # Validate against values from SunSPICE (including calling CSPICE functions)
+    # Without the aberration correction for observer motion (specify 'LT')
+    #
+    # IDL> load_sunspice_gen
+    # IDL> cspice_str2et, '2013-01-01', et
+    # IDL> cspice_subpnt, 'Intercept/Ellipsoid', 'Sun', et, 'IAU_Sun', 'LT', 'Earth', spoint, trgepc, srfvec
+    # IDL> print, spclat * cspice_dpr()
+    #       -3.0347784
+    assert_quantity_allclose(sun.B0(Time(['2013-01-01',
+                                          '2013-02-01',
+                                          '2013-03-01',
+                                          '2013-04-01',
+                                          '2013-05-01',
+                                          '2013-06-01',
+                                          '2013-07-01',
+                                          '2013-08-01',
+                                          '2013-09-01',
+                                          '2013-10-01',
+                                          '2013-11-01',
+                                          '2013-12-01'], scale='utc')),
+                             [-3.0347784,
+                              -6.0319658,
+                              -7.2199937,
+                              -6.5430498,
+                              -4.1679382,
+                              -0.66371004,
+                               2.8731155,
+                               5.7847503,
+                               7.1945709,
+                               6.7198381,
+                               4.3789008,
+                               0.88096965]*u.deg, atol=0.005*u.arcsec, rtol=0)
 
 
 def test_L0_defaults():
