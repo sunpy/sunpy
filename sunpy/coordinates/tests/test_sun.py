@@ -246,18 +246,18 @@ def test_L0_jpl_horizons():
                     light_travel_time_correction=True,
                     aberration_correction=False,
                     nearest_point=True)
-    assert_quantity_allclose(sun_L0, [326.990733,
-                                      278.790656,
-                                      270.072948,
-                                      221.441361,
-                                      185.307239,
-                                      135.303859,
-                                       98.222569,
-                                       48.036714,
-                                      358.290683,
-                                      322.226771,
-                                      273.315968,
-                                      237.837721]*u.deg, atol=3*u.arcsec)
+    assert_longitude_allclose(sun_L0, [326.989970,
+                                       278.789894,
+                                       270.072186,
+                                       221.440599,
+                                       185.306476,
+                                       135.303097,
+                                        98.221806,
+                                        48.035951,
+                                       358.289921,
+                                       322.226009,
+                                       273.315206,
+                                       237.836959]*u.deg, atol=0.01*u.arcsec)
 
 
 def test_L0_sunspice():
