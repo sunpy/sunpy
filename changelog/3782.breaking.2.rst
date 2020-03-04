@@ -1,0 +1,3 @@
+To enable the precise co-alignment of solar images from different observatories, the calculation of Carrington coordinates now ignores the stellar-aberration correction due to observer motion.
+For an Earth observer, this change results in an increase in Carrington longitude of ~20 arcseconds.
+See :ref:`sunpy-coordinates-carrington` for more information.

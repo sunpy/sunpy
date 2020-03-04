@@ -104,8 +104,7 @@ Compared to JPL Horizons
 
 In `JPL Horizons <https://ssd.jpl.nasa.gov/?horizons>`_, one can request the "Obs sub-long & sub-lat".
 JPL Horizons appears to start from the IAU parameters and to include the correction for light travel time but not the correction for observer motion (i.e., equivalent to specifying "LT" to `subpnt`_ in `SPICE`_).
-The discrepancy between SunPy values and JPL Horizons values is no greater than 3 arcseconds.
-It is currently unknown why this discrepancy is larger than the discrepancy between SunPy and SPICE.
+The discrepancy between SunPy values and JPL Horizons values is no greater than 0.01 arcseconds.
 
 Compared to SunSPICE
 ^^^^^^^^^^^^^^^^^^^^
