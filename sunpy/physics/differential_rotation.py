@@ -242,25 +242,28 @@ def solar_rotate_coordinate(coordinate, observer=None, time=None, **diff_rot_kwa
     # Calculate the interval between the start and end time
     interval = (new_observer.obstime - coordinate.obstime).to(u.s)
 
-    # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
-    # latitude). Points off the limb are returned as nan.
-    heliographic_coordinate = coordinate.transform_to(HeliographicStonyhurst)
+    # Ignore some invalid NaN comparisions within astropy
+    # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
+    with np.errstate(invalid='ignore'):
+        # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
+        # latitude). Points off the limb are returned as nan.
+        heliographic_coordinate = coordinate.transform_to(HeliographicStonyhurst)
 
-    # Compute the differential rotation
-    drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
+        # Compute the differential rotation
+        drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
-    # Rotate the input co-ordinate as seen by the original observer
-    heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
-                                    heliographic_coordinate.lat,
-                                    heliographic_coordinate.radius,
-                                    obstime=new_observer.obstime,
-                                    observer=new_observer,
-                                    frame=HeliographicStonyhurst)
+        # Rotate the input co-ordinate as seen by the original observer
+        heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
+                                        heliographic_coordinate.lat,
+                                        heliographic_coordinate.radius,
+                                        obstime=new_observer.obstime,
+                                        observer=new_observer,
+                                        frame=HeliographicStonyhurst)
 
-    # Calculate where the rotated co-ordinate appears as seen by new observer,
-    # and then transform it into the co-ordinate system of the input
-    # co-ordinate.
-    return heliographic_rotated.transform_to(coordinate.frame.name)
+        # Calculate where the rotated co-ordinate appears as seen by new observer,
+        # and then transform it into the co-ordinate system of the input
+        # co-ordinate.
+        return heliographic_rotated.transform_to(coordinate.frame.name)
 
 
 def _rotate_submap_edge(smap, pixels, observer, **diff_rot_kwargs):
