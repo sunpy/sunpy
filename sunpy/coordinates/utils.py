@@ -293,6 +293,30 @@ def get_rectangle_coordinates(bottom_left, *, top_right = None, width: u.deg = N
         The bottom left coordinate of the rectangular region of interest.
     `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
         The top right coordinate of the rectangular region of interest.
+
+    Examples
+    --------
+    >>> import astropy.units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates.frames import HeliographicStonyhurst
+    >>> from sunpy.coordinates.utils import get_rectangle_coordinates
+
+    # With bottom left as a SkyCoord, width and height
+    >>> bottom_left = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame='heliographic_stonyhurst')
+    >>> width = 10 * u.arcsec
+    >>> height = 10 * u.arcsec
+    >>> bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=width, height=height)
+
+    #With bottom left of shape (2,)
+    >>> bottom_left_vector = SkyCoord([0 * u.arcsec, 10 * u.arcsec], [0 * u.arcsec, 10 * u.arcsec], frame='heliographic_stonyhurst')
+    >>> bottom_left, top_right = get_rectangle_coordinates(bottom_left_vector)
+
+    # With bottom left as a BaseCoordinateFrame instance, width and height
+    >>> bottom_left =  HeliographicStonyhurst(0 * u.arcsec, 0 * u.arcsec)
+    >>> width = 10 * u.arcsec
+    >>> height = 10 * u.arcsec
+    >>> bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=width, height=height)
+
     """
     if not (hasattr(bottom_left, 'transform_to') and
             hasattr(bottom_left, 'shape') and
@@ -324,6 +348,11 @@ def get_rectangle_coordinates(bottom_left, *, top_right = None, width: u.deg = N
         top_right = top_right.transform_to(bottom_left)
 
     else:
+        # If bottom left is a ``SkyCoord``, top right is constructed
+        # as a SkyCoord using width and height. If bottom left is a
+        # ``frame``, the top right is typecasted to its respective
+        # frame. This is done to ensure that the output coordinates
+        # are of the same type.
         top_right = SkyCoord(bottom_left.spherical.lon + width,
                             bottom_left.spherical.lat + height,
                             frame=bottom_left)
