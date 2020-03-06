@@ -1723,7 +1723,10 @@ class GenericMap(NDData):
             x_range = list(u.Quantity([bl[0], tr[0]]).to(self.spatial_units[0]).value)
             y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units[1]).value)
             imshow_args.update({'extent': x_range + y_range})
-        imshow_args.update(imshow_kwargs)
+
+        # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
+        # by setting it's vmin and vmax
+        imshow_args.update(copy.deepcopy(imshow_kwargs))
 
         if clip_interval is not None:
             if len(clip_interval) == 2:
