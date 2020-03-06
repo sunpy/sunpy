@@ -189,11 +189,22 @@ class HelioviewerClient:
         if source_id is None:
             source_id = self._get_source_id((observatory, instrument, detector, measurement))
 
-        params = {
-            "action": "getJP2Image",
-            "date": self._format_date(date),
-            "sourceId": source_id,
-        }
+        params = []
+        if isinstance(date, list):
+            for i in date:
+                params.append({
+                                "action": "getJP2Image",
+                                "date": self._format_date(i),
+                                "sourceId": source_id,
+                              }
+                )
+        else:
+            params.append({
+                            "action": "getJP2Image",
+                            "date": self._format_date(date),
+                            "sourceId": source_id,
+                          }
+            )
 
         return self._get_file(params, progress=progress, directory=directory, overwrite=overwrite, downloader=None)
 
@@ -428,10 +439,11 @@ class HelioviewerClient:
         if not downloader:
             downloader = parfive.Downloader(progress=progress, overwrite=overwrite)
 
-        url = urllib.parse.urljoin(self._api,
-                                   "?" + urllib.parse.urlencode(params))
-        downloader.enqueue_file(url, path=directory)
-
+        for i in params:
+            url = urllib.parse.urljoin(self._api,
+                                    "?" + urllib.parse.urlencode(i))
+            downloader.enqueue_file(url, path=directory)
+        
         res = downloader.download()
 
         if len(res) == 1:
