@@ -129,7 +129,7 @@ class HelioviewerClient:
         return response
 
     def download_jp2(self, date, progress=True, observatory=None, instrument=None, detector=None,
-                     measurement=None, source_id=None, directory=None, overwrite=False, downloader=None):
+                     measurement=None, source_id=None, directory=None, overwrite=False):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and
         data source.
@@ -165,9 +165,6 @@ class HelioviewerClient:
         overwrite : `bool`
             Defaults to False.
             If set to True, will overwrite any files with the same name.
-        downloader : `parfive.Downloader`
-            Custom parfive downloader.
-            Can be passed to use specific features of parfive.
 
         Returns
         -------
@@ -206,7 +203,7 @@ class HelioviewerClient:
                           }
             )
 
-        return self._get_file(params, progress=progress, directory=directory, overwrite=overwrite, downloader=None)
+        return self._get_file(params, progress=progress, directory=directory, overwrite=overwrite)
 
     def get_jp2_header(self, date, observatory=None, instrument=None, detector=None, measurement=None, jp2_id=None):
         """
@@ -429,15 +426,14 @@ class HelioviewerClient:
         response = self._request(params)
         return json.load(reader(response))
 
-    def _get_file(self, params, progress=True, directory=None, overwrite=False, downloader=None):
+    def _get_file(self, params, progress=True, directory=None, overwrite=False):
         """Downloads a file and return the filepath to that file."""
         if directory is None:
             directory = Path(sunpy.config.get('downloads', 'download_dir'))
         else:
             directory = Path(directory).expanduser().absolute()
 
-        if not downloader:
-            downloader = parfive.Downloader(progress=progress, overwrite=overwrite)
+        downloader = parfive.Downloader(progress=progress, overwrite=overwrite)
 
         for i in params:
             url = urllib.parse.urljoin(self._api,
