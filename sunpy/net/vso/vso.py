@@ -36,6 +36,7 @@ from sunpy.util.net import get_content_disposition, slugify
 
 from .. import _attrs as core_attrs
 from .zeep_plugins import SunPyLoggingZeepPlugin
+from .exceptions import *
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -45,14 +46,6 @@ DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.
                      'port': 'sdacVSOi'}]
 
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
-
-
-# TODO: Name
-class NoData(Exception):
-
-    """ Risen for callbacks of VSOClient that are unable to supply
-    information for the request. """
-    pass
 
 
 class _Str(str):
@@ -268,30 +261,6 @@ class QueryResponse(list):
 
     def _repr_html_(self):
         return self.build_table()._repr_html_()
-
-
-class DownloadFailed(Exception):
-    pass
-
-
-class MissingInformation(Exception):
-    pass
-
-
-class UnknownMethod(Exception):
-    pass
-
-
-class MultipleChoices(Exception):
-    pass
-
-
-class UnknownVersion(Exception):
-    pass
-
-
-class UnknownStatus(Exception):
-    pass
 
 
 class VSOClient(BaseClient):
