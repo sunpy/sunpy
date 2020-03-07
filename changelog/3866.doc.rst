@@ -1,0 +1,1 @@
+Clarified some inputs to `sunpy.map.GenericMap.plot`.
