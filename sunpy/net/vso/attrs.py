@@ -23,9 +23,9 @@ import warnings
 from functools import singledispatch as _singledispatch
 
 import astropy.units as u
+from astropy.time import Time as AstropyTime
 
 from sunpy.util.exceptions import SunpyDeprecationWarning
-from sunpy.time import parse_time
 
 from .. import _attrs
 from .. import attr as _attr
@@ -339,11 +339,11 @@ def _(attr, results):
         if
         it.time.end is not None
         and
-        attr.min <= parse_time(it.time.end)
+        attr.min <= AstropyTime.strptime(it.time.end, _TIMEFORMAT)
         and
         it.time.start is not None
         and
-        attr.max >= parse_time(it.time.start)
+        attr.max >= AstropyTime.strptime(it.time.start, _TIMEFORMAT)
     }
 
 
