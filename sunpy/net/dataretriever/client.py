@@ -8,6 +8,7 @@ from parfive import Downloader
 
 import astropy.table
 import astropy.units as u
+from astropy.time import TimeDelta
 
 import parfive
 
@@ -132,6 +133,7 @@ class GenericClient(BaseClient):
 
     def __init__(self):
         self.map_ = {}
+        self.crawler = None
 
     def _makeargs(self, *args):
         """
@@ -259,7 +261,16 @@ class GenericClient(BaseClient):
 
         It should return a sunpy.time.TimeRange object per URL.
         """
-        return NotImplemented
+        if self.crawler is None:
+            return NotImplemented
+        else:
+            crawler = self.crawler
+            times = list()
+            for url in urls:
+                t0 = crawler._extractDateURL(url)
+                almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+                times.append(TimeRange(t0, t0 + almost_day))
+            return times
 
     def search(self, *args, **kwargs):
         """
