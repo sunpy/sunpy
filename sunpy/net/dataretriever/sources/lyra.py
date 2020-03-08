@@ -28,8 +28,8 @@ class LYRAClient(GenericClient):
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00 Proba2       lyra        nan
-    2016-01-01 00:00:00 2016-01-02 00:00:00 Proba2       lyra        nan
+    2016-01-01 00:00:00 2016-01-01 23:59:59 Proba2       lyra        nan
+    2016-01-02 00:00:00 2016-01-02 23:59:59 Proba2       lyra        nan
     <BLANKLINE>
     <BLANKLINE>
 
@@ -51,8 +51,8 @@ class LYRAClient(GenericClient):
         """
         lyra_pattern = ('http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
                         'lyra_%Y%m%d-000000_lev{level}_std.fits')
-        lyra_files = Scraper(lyra_pattern, level=kwargs.get('level', 2))
-        urls = lyra_files.filelist(timerange)
+        self.crawler = Scraper(lyra_pattern, level=kwargs.get('level', 2))
+        urls = self.crawler.filelist(timerange)
 
         return urls
 

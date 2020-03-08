@@ -1,5 +1,8 @@
 import pytest
 
+import astropy.units as u
+from astropy.time import TimeDelta
+
 from sunpy.time.timerange import TimeRange
 from sunpy.time import parse_time
 from sunpy.net._attrs import Time, Instrument
@@ -54,7 +57,8 @@ def test_query(time):
     qr1 = LCClient.search(time, Instrument('lyra'))
     assert isinstance(qr1, QueryResponse)
     assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
+    almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+    assert qr1.time_range().end == time.end + almost_day
 
 
 @pytest.mark.remote_data
