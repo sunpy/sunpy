@@ -1,5 +1,8 @@
 import pytest
 
+from astropy.time import TimeDelta
+import astropy.units as u
+
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 from sunpy.net.dataretriever.client import QueryResponse
@@ -55,7 +58,8 @@ def test_query(time, instrument):
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
+    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
+    assert qr1.time_range().end == time.end + almost_day
 
 
 @pytest.mark.remote_data

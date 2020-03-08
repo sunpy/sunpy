@@ -39,9 +39,9 @@ class GBMClient(GenericClient):
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str5     str3       str3
     ------------------- ------------------- ------ ---------- ----------
-    2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
-    2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
-    2015-06-21 00:00:00 2015-06-23 23:59:00  FERMI        GBM        nan
+    2015-06-21 00:00:00 2015-06-21 23:59:59  FERMI        GBM        nan
+    2015-06-22 00:00:00 2015-06-22 23:59:59  FERMI        GBM        nan
+    2015-06-23 00:00:00 2015-06-23 23:59:59  FERMI        GBM        nan
     <BLANKLINE>
     <BLANKLINE>
     <BLANKLINE>
@@ -77,8 +77,8 @@ class GBMClient(GenericClient):
 
         gbm_pattern = ('https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
                        '%Y/%m/%d/current/glg_{data_type}_{det}_%y%m%d_v00.pha')
-        gbm_files = Scraper(gbm_pattern, data_type=data_type, det=det)
-        urls = gbm_files.filelist(timerange)
+        self.crawler = Scraper(gbm_pattern, data_type=data_type, det=det)
+        urls = self.crawler.filelist(timerange)
 
         return urls
 
