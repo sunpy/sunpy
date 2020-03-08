@@ -92,25 +92,6 @@ class XRSClient(GenericClient):
                 )
             )
 
-    def _get_time_for_url(self, urls):
-        times = []
-        for uri in urls:
-            uripath = urlsplit(uri).path
-
-            # Extract the yymmdd or yyyymmdd timestamp
-            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][4:]
-
-            # 1999-01-15 as an integer.
-            if int(datestamp) <= 990115:
-                start = Time.strptime(datestamp, "%y%m%d")
-            else:
-                start = Time.strptime(datestamp, "%Y%m%d")
-
-            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-            times.append(TimeRange(start, start + almost_day))
-
-        return times
-
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns a URL to the GOES data for the specified date.
@@ -134,9 +115,9 @@ class XRSClient(GenericClient):
 
         goes_pattern = f"https://umbra.nascom.nasa.gov/goes/fits/{goes_file}"
         satellitenumber = kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start))
-        goes_files = Scraper(goes_pattern, satellitenumber=satellitenumber)
+        self.crawler = Scraper(goes_pattern, satellitenumber=satellitenumber)
 
-        return goes_files.filelist(timerange)
+        return self.crawler.filelist(timerange)
 
     def _get_overlap_urls(self, timerange):
         """
@@ -249,22 +230,6 @@ class SUVIClient(GenericClient):
             # if no satellites were found then raise an exception
             raise ValueError(f"No operational SUVI instrument on {date.strftime(TIME_FORMAT)}")
 
-    def _get_time_for_url(self, urls):
-        these_timeranges = []
-
-        for this_url in urls:
-            if this_url.count('/l2/') > 0:  # this is a level 2 data file
-                start_time = parse_time(os.path.basename(this_url).split('_s')[2].split('Z')[0])
-                end_time = parse_time(os.path.basename(this_url).split('_e')[1].split('Z')[0])
-                these_timeranges.append(TimeRange(start_time, end_time))
-            if this_url.count('/l1b/') > 0:  # this is a level 1b data file
-                start_time = datetime.strptime(os.path.basename(this_url).split('_s')[
-                                               1].split('_e')[0][:-1], '%Y%j%H%M%S')
-                end_time = datetime.strptime(os.path.basename(this_url).split('_e')[
-                                             1].split('_c')[0][:-1], '%Y%j%H%M%S')
-                these_timeranges.append(TimeRange(start_time, end_time))
-        return these_timeranges
-
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns urls to the SUVI data for the specified time range.
@@ -334,12 +299,12 @@ class SUVIClient(GenericClient):
                         'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
 
             if search_pattern.count('wave_minus1'):
-                scraper = Scraper(search_pattern, level=level, wave=this_wave,
+                self.crawler = Scraper(search_pattern, level=level, wave=this_wave,
                                   goes_number=satellitenumber, wave_minus1=this_wave-1)
             else:
-                scraper = Scraper(search_pattern, level=level, wave=this_wave,
+                self.crawler = Scraper(search_pattern, level=level, wave=this_wave,
                                   goes_number=satellitenumber)
-            results.extend(scraper.filelist(timerange))
+            results.extend(self.crawler.filelist(timerange))
         return results
 
     def _makeimap(self):
