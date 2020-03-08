@@ -38,8 +38,8 @@ class EVEClient(GenericClient):
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str3     str3       str3
     ------------------- ------------------- ------ ---------- ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve        nan
-    2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve        nan
+    2016-01-01 00:00:00 2016-01-01 23:59:59    SDO        eve        nan
+    2016-01-02 00:00:00 2016-01-02 23:59:59    SDO        eve        nan
     <BLANKLINE>
     <BLANKLINE>
 
@@ -60,22 +60,8 @@ class EVEClient(GenericClient):
             list of URLs corresponding to the requested time range
 
         """
-        # If start of time range is before 00:00, converted to such, so
-        # files of the requested time ranger are included.
-        # This is done because the archive contains daily files.
-        if timerange.start.strftime('%M-%S') != '00-00':
-            timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'), timerange.end)
-        eve = Scraper(BASEURL)
-        return eve.filelist(timerange)
-
-    def _get_time_for_url(self, urls):
-        eve = Scraper(BASEURL)
-        times = list()
-        for url in urls:
-            t0 = eve._extractDateURL(url)
-            # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
-        return times
+        self.crawler = Scraper(BASEURL)
+        return self.crawler.filelist(timerange)
 
     def _makeimap(self):
         """

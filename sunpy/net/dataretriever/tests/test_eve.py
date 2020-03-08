@@ -1,5 +1,8 @@
 import pytest
 
+from astropy.time import TimeDelta
+import astropy.units as u
+
 import sunpy.net.dataretriever.sources.eve as eve
 from sunpy.net import Fido
 from sunpy.net import attrs as a
@@ -53,7 +56,9 @@ def test_query():
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range().start == parse_time('2012/08/09')
-    assert qr1.time_range().end == parse_time('2012/08/11')  # includes end.
+    almost_day = TimeDelta(1*u.day - 1*u.millisecond)
+    end = parse_time('2012/08/10') + almost_day
+    assert qr1.time_range().end == end
 
 
 @pytest.mark.remote_data
