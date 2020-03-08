@@ -64,7 +64,8 @@ def test_query(time, wave):
         assert qr1.time_range().start.strftime('%Y-%m-%d') >= time.start.strftime('%Y-%m-%d')
         #  and the end time equal or smaller.
         # hypothesis can give same start-end, but the query will give you from start to end (so +1)
-        assert qr1.time_range().end <= time.end + TimeDelta(1*u.day)
+        almost_day = TimeDelta(1*u.day - 1*u.millisecond)
+        assert qr1.time_range().end <= time.end + almost_day
 
 
 # Don't use time_attr here for speed.

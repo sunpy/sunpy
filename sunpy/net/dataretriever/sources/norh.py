@@ -39,8 +39,8 @@ class NoRHClient(GenericClient):
          Start Time           End Time      Source Instrument   Wavelength
            str19               str19         str4     str4        str14
     ------------------- ------------------- ------ ---------- --------------
-    2016-01-01 00:00:00 2016-01-02 00:00:00   NAOJ       NORH 17000000.0 kHz
-    2016-01-02 00:00:00 2016-01-03 00:00:00   NAOJ       NORH 17000000.0 kHz
+    2016-01-01 00:00:00 2016-01-01 23:59:59   NAOJ       NORH 17000000.0 kHz
+    2016-01-02 00:00:00 2016-01-02 23:59:59   NAOJ       NORH 17000000.0 kHz
     <BLANKLINE>
     <BLANKLINE>
 
@@ -90,22 +90,12 @@ class NoRHClient(GenericClient):
             timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'),
                                   timerange.end)
 
-        norh = Scraper(BASEURL, freq=freq)
+        self.crawler = Scraper(BASEURL, freq=freq)
         # TODO: warn user that some files may have not been listed, like for example:
         #       tca160504_224657 on ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/05/
         #       as it doesn't follow pattern.
 
-        return norh.filelist(timerange)
-
-    def _get_time_for_url(self, urls):
-        freq = urls[0].split('/')[-1][0:3]  # extract the frequency label
-        crawler = Scraper(BASEURL, freq=freq)
-        times = list()
-        for url in urls:
-            t0 = crawler._extractDateURL(url)
-            # hard coded full day as that's the normal.
-            times.append(TimeRange(t0, t0 + TimeDelta(1*u.day)))
-        return times
+        return self.crawler.filelist(timerange)
 
     def _makeimap(self):
         """
