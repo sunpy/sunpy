@@ -1,0 +1,1 @@
+Changed the format of DATE-OBS in `GenericMap.wcs` from iso to isot (ie. with a "T" between the date and time) to conform with the FITS standard.
