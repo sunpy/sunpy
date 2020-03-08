@@ -580,7 +580,7 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     >>> entry.fileid # doctest: +REMOTE_DATA
     'http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits'
     >>> entry.observation_time_start, entry.observation_time_end # doctest: +REMOTE_DATA
-    (datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0))
+    (datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 1, 23, 59, 59, 999000))
     >>> entry.instrument # doctest: +REMOTE_DATA
     'lyra'
 

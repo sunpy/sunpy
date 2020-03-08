@@ -122,7 +122,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         source='Proba2', provider='esa', physobs='irradiance',
         fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
         instrument='lyra')
     # 54 entries from EVE
@@ -164,7 +164,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid=("ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/"
                 "pub/nsro/norh/data/tcx/2012/01/tca120101"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=17634850.470588233, wavemax=17634850.470588233,
         instrument='NORH')
     # 1 entry from rhessi
@@ -182,7 +182,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid=("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook"
                 "/L0CS/SpWx/2012/20120101_EVE_L0CS_DIODES_1m.txt"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
         instrument='eve')
 
@@ -209,7 +209,7 @@ def test_from_fido_search_result_block(fido_search_result):
         source='Proba2', provider='esa', physobs='irradiance',
         fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
-        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
         instrument='lyra')
     assert entry == expected_entry
