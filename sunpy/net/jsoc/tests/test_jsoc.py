@@ -340,3 +340,9 @@ def test_results_filenames_as_is(tmp_path):
     assert len(files) == len(responses)
     for hmiurl in files:
         assert os.path.isfile(hmiurl)
+
+
+def test_can_handle_query_no_series():
+    assert not JSOCClient._can_handle_query(a.Time("2020/01/02", "2020/01/03"))
+    assert not JSOCClient._can_handle_query(a.Wavelength(17.1*u.nm))
+    assert JSOCClient._can_handle_query(a.jsoc.Series("hmi.M_45s"))
