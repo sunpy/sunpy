@@ -296,7 +296,7 @@ class GenericMap(NDData):
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.spatial_units
-        w2.wcs.dateobs = self.date.iso
+        w2.wcs.dateobs = self.date.isot
         w2.rsun = self.rsun_meters
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and

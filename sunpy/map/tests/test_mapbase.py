@@ -744,3 +744,8 @@ def test_bad_header_final_fallback():
     assert (m.wcs.wcs.crval == [0.0, 0.0]).all()
     assert (m.wcs.wcs.crpix == [5.5, 5.5]).all()
     assert (m.wcs.wcs.cdelt == [1.0, 1.0]).all()
+
+
+def test_wcs_isot(aia171_test_map):
+    # Check that a Map WCS returns the time as isot format
+    assert aia171_test_map.wcs.to_header()['DATE-OBS'] == '2011-02-15T00:00:00.340'
