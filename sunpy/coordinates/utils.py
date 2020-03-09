@@ -1,16 +1,16 @@
-#
-# Calculates the co-ordinates along great arcs between two specified points
-# which are assumed to be on disk.
-#
+"""
+Miscellaneous utilities related to coordinates
+"""
 import numpy as np
 
-import astropy.units as u
+from astropy.constants import R_earth
 from astropy.coordinates import SkyCoord
+import astropy.units as u
 
 from sunpy.coordinates import Heliocentric
 
 
-__all__ = ['GreatArc']
+__all__ = ['GreatArc', 'to_spacepy']
 
 
 class GreatArc:
@@ -265,3 +265,58 @@ class GreatArc:
                         obstime=self.obstime,
                         observer=self.observer,
                         frame=Heliocentric).transform_to(self.start_frame)
+
+
+def to_spacepy(astropy_coord):
+    """
+    Returns a SpacePy
+    `Coords <https://spacepy.github.io/autosummary/spacepy.coordinates.Coords.html#spacepy.coordinates.Coords>`_
+    instance based on an Astropy `~astropy.coordinates.SkyCoord` instance.
+
+    .. note::
+       This function requires the SpacePy package to be installed.
+
+    .. warning::
+       The accuracy of this function has not been verified (see notes).
+
+    Parameters
+    ----------
+    astropy_coord : `~astropy.coordinates.SkyCoord`
+        The coordinate to be transformed.  There must be sufficient information to transform to
+        `~sunpy.coordinates.frames.GeocentricSolarEcliptic`.
+
+    Returns
+    -------
+    `Coords`_
+        The equivalent coordinate for use in SpacePy
+
+    Notes
+    -----
+    SpacePy's definitions of coordinate systems and transformations depend on the IRBEM-LIB
+    library.
+
+    This function uses the "Geocentric Solar Ecliptic" frame that is available in both SunPy
+    (`~sunpy.coordinates.frames.GeocentricSolarEcliptic`) and SpacePy.  The precise definition of
+    the frame may differ between the two libraries.
+
+    SpacePy uses a coordinate representation in units of the radius of the Earth, but the precise
+    definition of the radius of the Earth may not agree with SunPy's.
+
+    References
+    ----------
+    * `SpacePy <https://spacepy.github.io/>`__
+    * `IRBEM-LIB <https://sourceforge.net/projects/irbem/>`__
+
+    """
+    from spacepy.coordinates import Coords
+    from spacepy.time import Ticktock
+
+    astropy_coord = SkyCoord(astropy_coord).geocentricsolarecliptic
+
+    # Convert the SkyCoord's data to a Cartesian representation with units of R_earth
+    data = (astropy_coord.cartesian.xyz / R_earth).to_value(u.one).T
+
+    # Convert the SkyCoord's obstime to a SpacePy Ticktock instance
+    ticks = Ticktock(astropy_coord.obstime.utc.isot, 'ISO')
+
+    return Coords(data, 'GSE', 'car', ticks=ticks)

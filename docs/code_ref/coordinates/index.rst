@@ -334,6 +334,9 @@ Reference/API
 .. automodapi:: sunpy.coordinates.sun
     :headings: ^#
 
+.. automodapi:: sunpy.coordinates.utils
+    :headings: ^#
+
 
 Attribution
 -----------
