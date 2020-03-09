@@ -1,0 +1,3 @@
+Fido clients (subclasses of `sunpy.net.base_client.BaseClient`) can now register their own attrs modules with `sunpy.net.attrs`.
+This allows clients which require attr classes specific to that client to register modules that can be used by the user i.e. ``a.vso``.
+It also allows clients implemented externally to sunpy to register attrs.
