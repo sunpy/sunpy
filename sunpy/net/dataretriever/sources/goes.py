@@ -191,6 +191,10 @@ class XRSClient(GenericClient):
                 return all(chklist)
         return False
 
+    @classmethod
+    def _attrs_module(cls):
+        return 'goes', 'sunpy.net.dataretriever.attrs.goes'
+
 
 class SUVIClient(GenericClient):
     """
@@ -389,3 +393,7 @@ class SUVIClient(GenericClient):
             return True
         else:
             return False
+
+    @classmethod
+    def _attrs_module(cls):
+        return 'goes', 'sunpy.net.dataretriever.attrs.goes'

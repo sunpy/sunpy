@@ -24,17 +24,10 @@ attrs specific to them, under:
 * `a.goes <sunpy.net.dataretriever.attrs.goes>`
 
 """
-from .vso import attrs as vso
-from .jsoc import attrs as jsoc
-from .dataretriever.attrs import goes
-
 from ._attrs import Time, Instrument, Wavelength, Level, Sample, Detector, Resolution
-from .base_client import BaseClient
 
 # Trick the docs into thinking these attrs are defined in here.
 for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution):
     _a.__module__ = __name__
 
-
-__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution',
-           'vso', 'jsoc', 'goes']
+__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution']
