@@ -48,9 +48,9 @@ variable set to the Fido search, in this case, result::
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    2012-03-04 00:00:00 2012-03-04 23:59:59 Proba2       lyra        nan
+    2012-03-05 00:00:00 2012-03-05 23:59:59 Proba2       lyra        nan
+    2012-03-06 00:00:00 2012-03-06 23:59:59 Proba2       lyra        nan
     <BLANKLINE>
     <BLANKLINE>
 
@@ -69,9 +69,9 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
          Start Time           End Time      Source Instrument   Wavelength
            str19               str19         str4     str4        str14
     ------------------- ------------------- ------ ---------- --------------
-    2012-03-04 00:00:00 2012-03-05 00:00:00   NAOJ       NORH 17000000.0 kHz
-    2012-03-05 00:00:00 2012-03-06 00:00:00   NAOJ       NORH 17000000.0 kHz
-    2012-03-06 00:00:00 2012-03-07 00:00:00   NAOJ       NORH 17000000.0 kHz
+    2012-03-04 00:00:00 2012-03-04 23:59:59   NAOJ       NORH 17000000.0 kHz
+    2012-03-05 00:00:00 2012-03-05 23:59:59   NAOJ       NORH 17000000.0 kHz
+    2012-03-06 00:00:00 2012-03-06 23:59:59   NAOJ       NORH 17000000.0 kHz
     <BLANKLINE>
     <BLANKLINE>
 
@@ -130,9 +130,9 @@ operator would::
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    2012-03-04 00:00:00 2012-03-04 23:59:59 Proba2       lyra        nan
+    2012-03-05 00:00:00 2012-03-05 23:59:59 Proba2       lyra        nan
+    2012-03-06 00:00:00 2012-03-06 23:59:59 Proba2       lyra        nan
     <BLANKLINE>
     3 Results from the RHESSIClient:
          Start Time           End Time      Source Instrument Wavelength
@@ -174,8 +174,8 @@ results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+    2012-01-01 00:00:00 2012-01-01 23:59:59 Proba2       lyra        nan
+    2012-01-02 00:00:00 2012-01-02 23:59:59 Proba2       lyra        nan
     <BLANKLINE>
     <BLANKLINE>
 
@@ -189,8 +189,8 @@ Or, equivalently::
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
-    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+    2012-01-01 00:00:00 2012-01-01 23:59:59 Proba2       lyra        nan
+    2012-01-02 00:00:00 2012-01-02 23:59:59 Proba2       lyra        nan
     <BLANKLINE>
     <BLANKLINE>
 
