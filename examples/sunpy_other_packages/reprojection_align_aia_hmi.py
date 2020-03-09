@@ -33,7 +33,7 @@ time = (a.Sample(24 * u.hour) &
         a.Time('2010-08-19', '2010-08-19T00:10:00', '2010-08-19') &
         a.vso.Extent(0, 0, 0, 0, "FULLDISK"))
 aia = a.Instrument('AIA') & a.Wavelength(17 * u.nm, 18 * u.nm)
-hmi = a.Instrument('HMI') & a.vso.Physobs("LOS_magnetic_field")
+hmi = a.Instrument('HMI') & a.Physobs("LOS_magnetic_field")
 
 
 res = Fido.search(time, aia | hmi)

@@ -28,7 +28,7 @@ from sunpy.util.exceptions import SunpyDeprecationWarning
 from .. import _attrs
 from .. import attr as _attr
 
-__all__ = ['Extent', 'Field', 'Provider', 'Source', 'Physobs', 'Pixels',
+__all__ = ['Extent', 'Field', 'Provider', 'Source', 'Pixels',
            'Filter', 'Quicklook', 'PScale']
 
 _TIMEFORMAT = '%Y%m%d%H%M%S'
@@ -96,22 +96,6 @@ class Source(_attr.SimpleAttr):
     UTF-8. Please note that 'Source' is used internally by VSO to represent
     what the VSO Data Model refers to as 'Observatory'.  For a list of sources
     see https://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
-    """
-
-
-class Physobs(_attr.SimpleAttr):
-    """
-    Specifies the physical observable the VSO can search for.
-
-    Parameters
-    ----------
-    value : str
-
-    Notes
-    -----
-    More information about each instrument may be found within the VSO
-    Registry.  For a list of physical observables see
-    https://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
     """
 
 
@@ -380,7 +364,7 @@ class _DeprecatedAttr:
                       SunpyDeprecationWarning)
         super().__init__(*args, **kwargs)
 
-_deprecated_names = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution']
+_deprecated_names = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution', 'Physobs']
 
 for _name in _deprecated_names:
     # Dynamically construct a class which inherits the class with the

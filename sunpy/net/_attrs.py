@@ -15,7 +15,7 @@ from .attr import Range, SimpleAttr
 from sunpy.util.decorators import add_common_docstring
 from sunpy.time.time import _variables_for_parse_time_docstring
 
-__all__ = ['Resolution', 'Detector', 'Sample', 'Level', 'Instrument', 'Wavelength', 'Time']
+__all__ = ['Physobs', 'Resolution', 'Detector', 'Sample', 'Level', 'Instrument', 'Wavelength', 'Time']
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -227,3 +227,20 @@ class Resolution(SimpleAttr):
     Documentation in SSWIDL routine vso_search.pro.
     """
     pass
+
+
+class Physobs(SimpleAttr):
+    """
+    Specifies the physical observable the VSO can search for.
+
+    Parameters
+    ----------
+    value : `str`
+        A keyword describing the observable in the data.
+
+    Notes
+    -----
+    More information about the values of physobs used by the VSO
+    registry can be found at
+    https://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
+    """
