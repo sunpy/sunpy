@@ -1,0 +1,1 @@
+Implemented `_get_time_for_url` function in ~sunpy.net.dataretriever.client.GenericClient` so as to avoid its implementation in every client.
