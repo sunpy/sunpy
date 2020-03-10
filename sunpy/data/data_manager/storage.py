@@ -124,13 +124,15 @@ class SqliteStorage(StorageProviderBase):
         if not self._db_path.exists():
             # setup database
             self._setup()
+        # Connect to database
+        self._conn = sqlite3.connect(str(self._db_path))
 
     def _setup(self):
         schema = ' text, '.join(self.COLUMN_NAMES) + ' text'
-        with self.connection(commit=True) as conn:
+        with self.connection(commit=True) as self._conn:
             # Do this in a try...except to prevent race conditions in the tests
             try:
-                conn.execute(f'''CREATE TABLE {self._table_name}
+                self._conn.execute(f'''CREATE TABLE {self._table_name}
                                 ({schema})''')
             except sqlite3.OperationalError as exc:
                 if "cache_storage already exists" in str(exc):
@@ -147,19 +149,18 @@ class SqliteStorage(StorageProviderBase):
         commit: `bool`
             Whether to commit after succesful execution of db command.
         """
-        conn = sqlite3.connect(str(self._db_path))
         try:
-            yield conn
+            yield self._conn
             if commit:
-                conn.commit()
+                self._conn.commit()
         finally:
-            conn.close()
+            self._conn.close()
 
     def find_by_key(self, key, value):
         if key not in self.COLUMN_NAMES:
             raise KeyError
-        with self.connection() as conn:
-            cursor = conn.cursor()
+        with self.connection() as self._conn:
+            cursor = self._conn.cursor()
             cursor.execute(f'''SELECT * FROM {self._table_name}
                                       WHERE {key}="{value}"''')
             row = cursor.fetchone()
@@ -170,8 +171,8 @@ class SqliteStorage(StorageProviderBase):
     def delete_by_key(self, key, value):
         if key not in self.COLUMN_NAMES:
             raise KeyError
-        with self.connection(commit=True) as conn:
-            cursor = conn.cursor()
+        with self.connection(commit=True) as self._conn:
+            cursor = self._conn.cursor()
             cursor.execute(f'''DELETE FROM {self._table_name}
                                       WHERE {key}="{value}"''')
 
@@ -179,6 +180,6 @@ class SqliteStorage(StorageProviderBase):
         values = [details[k] for k in self.COLUMN_NAMES]
         placeholder = '?,' * len(values)
         placeholder = placeholder[:-1]
-        with self.connection(commit=True) as conn:
-            conn.execute(f'''INSERT INTO {self._table_name}
+        with self.connection(commit=True) as self._conn:
+            self._conn.execute(f'''INSERT INTO {self._table_name}
                              VALUES ({placeholder})''', list(values))
