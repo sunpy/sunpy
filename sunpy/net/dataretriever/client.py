@@ -89,14 +89,14 @@ class QueryResponse(BaseQueryResponse):
             yield block
 
     @classmethod
-    def create(cls, amap, lst, time=None, *, client):
+    def create(cls, amap, lst, time=None, client=None):
         if time is None:
             time = [None] * len(lst)
         return cls(list(iter_urls(amap, lst, time)), client=client)
 
     def time_range(self):
         """
-        Returns the time-span for which records are available
+        Returns the time-span for which records are available.
         """
         return TimeRange(min(qrblock.time.start for qrblock in self),
                          max(qrblock.time.end for qrblock in self))
