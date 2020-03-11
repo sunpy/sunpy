@@ -60,8 +60,8 @@ class EVEClient(GenericClient):
             list of URLs corresponding to the requested time range
 
         """
-        self.crawler = Scraper(BASEURL)
-        return self.crawler.filelist(timerange)
+        self.scraper = Scraper(BASEURL)
+        return self.scraper.filelist(timerange)
 
     def _makeimap(self):
         """

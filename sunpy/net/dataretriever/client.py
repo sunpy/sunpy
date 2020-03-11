@@ -133,7 +133,7 @@ class GenericClient(BaseClient):
 
     def __init__(self):
         self.map_ = {}
-        self.crawler = None
+        self.scraper = None
 
     def _makeargs(self, *args):
         """
@@ -261,13 +261,13 @@ class GenericClient(BaseClient):
 
         It should return a sunpy.time.TimeRange object per URL.
         """
-        if self.crawler is None:
+        if self.scraper is None:
             return NotImplemented
         else:
-            crawler = self.crawler
+            scraper = self.scraper
             times = list()
             for url in urls:
-                t0 = crawler._extractDateURL(url)
+                t0 = scraper._extractDateURL(url)
                 almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
                 times.append(TimeRange(t0, t0 + almost_day))
             return times

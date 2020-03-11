@@ -115,9 +115,9 @@ class XRSClient(GenericClient):
 
         goes_pattern = f"https://umbra.nascom.nasa.gov/goes/fits/{goes_file}"
         satellitenumber = kwargs.get("satellitenumber", self._get_goes_sat_num(timerange.start))
-        self.crawler = Scraper(goes_pattern, satellitenumber=satellitenumber)
+        self.scraper = Scraper(goes_pattern, satellitenumber=satellitenumber)
 
-        return self.crawler.filelist(timerange)
+        return self.scraper.filelist(timerange)
 
     def _get_overlap_urls(self, timerange):
         """
@@ -299,12 +299,12 @@ class SUVIClient(GenericClient):
                         'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
 
             if search_pattern.count('wave_minus1'):
-                self.crawler = Scraper(search_pattern, level=level, wave=this_wave,
+                self.scraper = Scraper(search_pattern, level=level, wave=this_wave,
                                   goes_number=satellitenumber, wave_minus1=this_wave-1)
             else:
-                self.crawler = Scraper(search_pattern, level=level, wave=this_wave,
+                self.scraper = Scraper(search_pattern, level=level, wave=this_wave,
                                   goes_number=satellitenumber)
-            results.extend(self.crawler.filelist(timerange))
+            results.extend(self.scraper.filelist(timerange))
         return results
 
     def _makeimap(self):

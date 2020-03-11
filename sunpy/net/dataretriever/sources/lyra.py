@@ -51,8 +51,8 @@ class LYRAClient(GenericClient):
         """
         lyra_pattern = ('http://proba2.oma.be/lyra/data/bsd/%Y/%m/%d/'
                         'lyra_%Y%m%d-000000_lev{level}_std.fits')
-        self.crawler = Scraper(lyra_pattern, level=kwargs.get('level', 2))
-        urls = self.crawler.filelist(timerange)
+        self.scraper = Scraper(lyra_pattern, level=kwargs.get('level', 2))
+        urls = self.scraper.filelist(timerange)
 
         return urls
 

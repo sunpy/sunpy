@@ -90,12 +90,12 @@ class NoRHClient(GenericClient):
             timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'),
                                   timerange.end)
 
-        self.crawler = Scraper(BASEURL, freq=freq)
+        self.scraper = Scraper(BASEURL, freq=freq)
         # TODO: warn user that some files may have not been listed, like for example:
         #       tca160504_224657 on ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/05/
         #       as it doesn't follow pattern.
 
-        return self.crawler.filelist(timerange)
+        return self.scraper.filelist(timerange)
 
     def _makeimap(self):
         """
