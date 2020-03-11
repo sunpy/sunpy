@@ -265,11 +265,8 @@ class GenericClient(BaseClient):
             return NotImplemented
         else:
             scraper = self.scraper
-            times = list()
-            for url in urls:
-                t0 = scraper._extractDateURL(url)
-                almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
-                times.append(TimeRange(t0, t0 + almost_day))
+            almost_day = TimeDelta(1 * u.day - 1 * u.millisecond)
+            times = [TimeRange(t0, t0 + almost_day) for t0 in map(scraper._extractDateURL, urls)]
             return times
 
     def search(self, *args, **kwargs):
