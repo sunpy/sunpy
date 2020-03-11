@@ -1,0 +1,1 @@
+`~sunpy.visualization.cm.color_tables.aia_color_table`, `~sunpy.visualization.cm.color_tables.eit_color_table` and `~sunpy.visualization.cm.color_tables.suvi_color_table` now only take `astropy.units` quantities instead of strings.
