@@ -12,15 +12,17 @@ class GONGClient(GenericClient):
     """
     Returns a list of URLS to GONG files corresponding to value of input timerange.
     URL source: `ftp://gong2.nso.edu/QR/` and `http://gong2.nso.edu/HA/haf/`.
+
     Parameters
     ----------
-    timerange: sunpy.time.TimeRange
+    timerange: `~sunpy.time.TimeRange`
         time range for which data is to be downloaded.
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
     Instrument: Arguments are any one from ['bigbear', 'cerrotelolo',
                 'learmonth', 'maunaloa', 'teide', 'udaipur','tucson']
     Physobs: Two arguments or none 'intensity' and 'los_magnetic_field'
     GONGClient expects at least one argument from Physobs or Instrument
+
     Examples
     --------
     >>> from sunpy.net import Fido
@@ -43,13 +45,15 @@ class GONGClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Return list of URLS corresponding to value of input timerange.
+
         Parameters
         ----------
-        timerange: `sunpy.time.TimeRange`
+        timerange: `~sunpy.time.TimeRange`
             time range for which data is to be downloaded.
+
         Returns
         -------
-        urls : list
+        urls : `list`
             list of URLs corresponding to the requested time range
         """
         table_physobs = {'INTENSITY': 'i', 'LOS_MAGNETIC_FIELD': 'b'}
@@ -145,9 +149,11 @@ class GONGClient(GenericClient):
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
+
         Parameters
         ----------
         query : list of query objects
+
         Returns
         -------
         boolean: answer as to whether client can service the query
@@ -170,16 +176,19 @@ class FARSIDEClient(GenericClient):
     """
     Returns a list of URLS to FARSIDE files corresponding to value of input timerange.
     URL source: `http://farside.nso.edu/oQR/fqo/`.
+
     Parameters
     ----------
-    timerange: sunpy.time.TimeRange
+    timerange: `~sunpy.time.TimeRange`
         time range for which data is to be downloaded.
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
     Instrument: Fixed argument = 'farside'
+
     Returns
     -------
-    urls: list
+    urls: `list`
     list of urls corresponding to requested time range.
+
     Examples
     --------
     >>> from sunpy.net import Fido
@@ -205,12 +214,22 @@ class FARSIDEClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        returns list of urls corresponding to given TimeRange.
+        Return list of URLS corresponding to value of input timerange.
+
+        Parameters
+        ----------
+        timerange: `~sunpy.time.TimeRange`
+            time range for which data is to be downloaded.
+
+        Returns
+        -------
+        urls : `list`
+            list of URLs corresponding to the requested time range
         """
-        START_DATE = datetime.datetime(2006, 5, 13, 12, 0, 0)
-        if timerange.start < START_DATE:
+        start_date = datetime.datetime(2006, 5, 13, 12, 0, 0)
+        if timerange.start < start_date:
             msg = 'Earliest date for which FARSIDE data is available is {:%Y-%m-%d}'
-            raise ValueError(msg.format(START_DATE))
+            raise ValueError(msg.format(start_date))
         if not timerange:
             return []
         url_pattern = 'http://farside.nso.edu/oQR/fqo/%Y%m/mrfqo%y%m%d/mrfqo%y%m%dt%H%M.fits'
@@ -229,9 +248,11 @@ class FARSIDEClient(GenericClient):
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
+
         Parameters
         ----------
         query : list of query objects
+
         Returns
         -------
         boolean: answer as to whether client can service the query
