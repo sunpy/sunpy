@@ -72,6 +72,7 @@ class GONGClient(GenericClient):
         url_pattern_2 = 'http://gong2.nso.edu/HA/haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz'
 
         pattern_table = {6562: url_pattern_1, 6563: url_pattern_1, 6768: url_pattern_2}
+        wavelengths = pattern_table.keys()
 
         result = list()  # final list of urls
         patterns = list()
@@ -95,7 +96,7 @@ class GONGClient(GenericClient):
                     wave_float = (
                         wave.min if isinstance(
                             wave, a.Wavelength) else wave.wavemin).value
-                    wave_list = list(filter(lambda x: np.isclose(x, wave_float), pattern_table.keys()))
+                    wave_list = list(filter(lambda x: np.isclose(x, wave_float), wavelengths))
                     if len(wave_list == 0):
                         raise ValueError("no value is enough closer to allowed wavelengths")
                     wave = wave_list[0]
