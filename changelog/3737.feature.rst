@@ -1,0 +1,1 @@
+Added a helper function (`~sunpy.coordinates.util.get_rectangle_coordinates`) for defining a rectangle in longitude and latitude coordinates.
