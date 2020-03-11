@@ -70,9 +70,11 @@ class UnifiedResponse(Sequence):
         returned from those clients.
         """
         # Just a single int as a slice, we are just indexing client.
+        # Convert it to a slice so we still return a list.
         if isinstance(aslice, int):
-            ret = [self._list[aslice]]
-        elif isinstance(aslice, slice):
+            aslice = slice(aslice, aslice + 1)
+
+        if isinstance(aslice, slice):
             ret = self._list[aslice]
 
         # Make sure we only have a length two slice.
@@ -106,7 +108,7 @@ class UnifiedResponse(Sequence):
 
     def response_block_properties(self):
         """
-        Returns a set of class attributes on all the response blocks.
+        A set of class attributes on all the response blocks.
 
         Returns
         -------
@@ -269,6 +271,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         # If we have searched the VSO but no results were returned, but another
         # client generated results, we drop the empty VSO results for tidiness.
+        # This is because the VSO _can_handle_query is very broad because we
+        # don't know the full list of supported values we can search for (yet).
         if len(results) > 1:
             vso_results = list(filter(lambda r: isinstance(r, vso.QueryResponse), results))
             for vres in vso_results:

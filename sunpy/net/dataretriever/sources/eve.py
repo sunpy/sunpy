@@ -102,7 +102,9 @@ class EVEClient(GenericClient):
         from sunpy.net import attrs as a
 
         required = {a.Time, a.Instrument, a.Level}
-        optional = {}  # Level should really be in here
+        # Level should really be in here, but VSO doesn't correctly provide
+        # Level information currently.
+        optional = {}
         all_attrs = required.union(optional)
 
         query_attrs = set(type(x) for x in query)

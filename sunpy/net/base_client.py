@@ -11,11 +11,13 @@ class BaseQueryResponse(Sequence):
 
     Notes
     -----
-    * A QueryResponse object must be able to be instantiated with only one iterable argument.
+    * A QueryResponse object must be able to be instantiated with only one
+      iterable argument. (i.e. the ``__init__`` must only have one required
+      argument).
     * The `client` property must be settable.
     * The base class does not prescribe how you store the results from your
       client, only that it must be possible to represent them as an astropy
-      table.
+      table in the ``build_table`` method.
     * `__getitem__` **must** return an instance of the type it was called on.
       I.e. it must always return an object of ``type(self)``.
 
