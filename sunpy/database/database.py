@@ -799,6 +799,47 @@ class Database:
             H2VClient().translate_and_query(query_result))
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
 
+    def download_from_hek_query_result(self, query_result, client=None, path=None, progress=False,
+                                       ignore_already_added=False, overwrite=False):
+        """
+        Add new database entries from a hek query result by converting it
+        into vso query and download the corresponding data files.
+
+        Parameters
+        ----------
+        query_result : `HEKTable` or `HEKRow`
+            The value returned by :meth:`sunpy.net.hek.HEKClient().search`
+        client : `sunpy.net.vso.VSOClient`, optional
+            VSO Client instance to use for search and download.
+            If not specified a new instance will be created.
+        path : `str`
+            Path to download the files.
+        progress : `bool`
+            If True, displays the progress bar during file download.
+        ignore_already_added : `bool`
+            See :meth:`sunpy.database.Database.add`.
+        overwrite : `bool`, optional
+            If True, matching database entries from the query results will be
+            deleted and replaced with new database entries, with all files
+            getting downloaded.
+            Otherwise, no new file download and update of matching database
+            entries takes place.
+        """
+        if not query_result:
+            return
+
+        iterator = itertools.chain.from_iterable(
+            H2VClient().translate_and_query(query_result))
+
+        vso_qr = []
+
+        for query in iterator:
+            vso_qr.append(query)
+
+        self.download_from_vso_query_result(vso_qr, client, path,
+                                            progress, ignore_already_added,
+                                            overwrite)
+
     def download_from_vso_query_result(self, query_result, client=None,
                                        path=None, progress=False,
                                        ignore_already_added=False, overwrite=False):
