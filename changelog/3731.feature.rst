@@ -1,0 +1,1 @@
+``sunpy.database`` now supports adding database entries and downloading data from ``HEK`` query
