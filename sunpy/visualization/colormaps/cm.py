@@ -7,32 +7,33 @@ import matplotlib.cm as mplcm
 import matplotlib.pyplot as plt
 import numpy as np
 
+import astropy.units as u
 from sunpy.visualization.colormaps import color_tables as ct
 
 __all__ = ['show_colormaps', 'cmlist']
 
-sdoaia94 = ct.aia_color_table(94)
-sdoaia131 = ct.aia_color_table(131)
-sdoaia171 = ct.aia_color_table(171)
-sdoaia193 = ct.aia_color_table(193)
-sdoaia211 = ct.aia_color_table(211)
-sdoaia304 = ct.aia_color_table(304)
-sdoaia335 = ct.aia_color_table(335)
-sdoaia1600 = ct.aia_color_table(1600)
-sdoaia1700 = ct.aia_color_table(1700)
-sdoaia4500 = ct.aia_color_table(4500)
+sdoaia94 = ct.aia_color_table(94*u.angstrom)
+sdoaia131 = ct.aia_color_table(131*u.angstrom)
+sdoaia171 = ct.aia_color_table(171*u.angstrom)
+sdoaia193 = ct.aia_color_table(193*u.angstrom)
+sdoaia211 = ct.aia_color_table(211*u.angstrom)
+sdoaia304 = ct.aia_color_table(304*u.angstrom)
+sdoaia335 = ct.aia_color_table(335*u.angstrom)
+sdoaia1600 = ct.aia_color_table(1600*u.angstrom)
+sdoaia1700 = ct.aia_color_table(1700*u.angstrom)
+sdoaia4500 = ct.aia_color_table(4500*u.angstrom)
 
-sohoeit171 = ct.eit_color_table(171)
-sohoeit195 = ct.eit_color_table(195)
-sohoeit284 = ct.eit_color_table(284)
-sohoeit304 = ct.eit_color_table(304)
+sohoeit171 = ct.eit_color_table(171*u.angstrom)
+sohoeit195 = ct.eit_color_table(195*u.angstrom)
+sohoeit284 = ct.eit_color_table(284*u.angstrom)
+sohoeit304 = ct.eit_color_table(304*u.angstrom)
 
-goesrsuvi94 = ct.suvi_color_table(94)
-goesrsuvi131 = ct.suvi_color_table(131)
-goesrsuvi171 = ct.suvi_color_table(171)
-goesrsuvi195 = ct.suvi_color_table(195)
-goesrsuvi284 = ct.suvi_color_table(284)
-goesrsuvi304 = ct.suvi_color_table(304)
+goesrsuvi94 = ct.suvi_color_table(94*u.angstrom)
+goesrsuvi131 = ct.suvi_color_table(131*u.angstrom)
+goesrsuvi171 = ct.suvi_color_table(171*u.angstrom)
+goesrsuvi195 = ct.suvi_color_table(195*u.angstrom)
+goesrsuvi284 = ct.suvi_color_table(284*u.angstrom)
+goesrsuvi304 = ct.suvi_color_table(304*u.angstrom)
 
 
 # The color tables below returns one of the fundamental color tables for SOHO
