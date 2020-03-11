@@ -363,6 +363,9 @@ which is equivalent to::
 .. automodapi:: sunpy.coordinates.offset_frame
     :headings: ^#
 
+.. automodapi:: sunpy.coordinates.utils
+    :headings: ^#
+
 .. automodapi:: sunpy.coordinates.wcs_utils
     :headings: ^#
 
