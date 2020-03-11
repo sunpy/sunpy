@@ -91,22 +91,15 @@ class GONGClient(GenericClient):
                 if not wavelength_in:
                     patterns.extend([url_pattern_1, url_pattern_2])
                 else:
-                    try:
-                        wave = kwargs['wavelength']
-                        wave_float = (
-                            wave.min if isinstance(
-                                wave, a.Wavelength) else wave.wavemin).value
-                        da = list()
-                        da.append(wave_float)
-                        for wave_nums in pattern_table.keys():
-                            db = list()
-                            db.append(wave_nums)
-                            if np.isclose(da, db, 1e-10, 1e-10):
-                                wave = wave_nums
-                                break
-                        patterns.append(pattern_table[wave])
-                    except BaseException:
-                        raise NameError("Enter correct wavelength range and units")
+                    wave = kwargs['wavelength']
+                    wave_float = (
+                        wave.min if isinstance(
+                            wave, a.Wavelength) else wave.wavemin).value
+                    wave_list = list(filter(lambda x: np.isclose(x, wave_float), pattern_table.keys()))
+                    if len(wave_list == 0):
+                        raise ValueError("no value is enough closer to allowed wavelengths")
+                    wave = wave_list[0]
+                    patterns.append(pattern_table[wave])
         # All valid patterns to be downloaded are in the patterns list.
         instruments_to = list()  # The instruments from which user wants to download
         if not instrument_in:
