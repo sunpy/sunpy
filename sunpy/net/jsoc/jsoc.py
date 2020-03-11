@@ -860,10 +860,19 @@ class JSOCClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        chkattr = ['Series', 'Protocol', 'Notify', 'Wavelength', 'Time',
-                   'Segment', 'Keys', 'PrimeKey', 'Sample']
+        # Import here to prevent circular imports
+        from sunpy.net import attrs as a
 
-        return all([x.__class__.__name__ in chkattr for x in query])
+        required = {a.jsoc.Series}
+        optional = {a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
+                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample}
+        query_attrs = {type(x) for x in query}
+        all_attrs = required.union(optional)
+
+        if not required.issubset(query_attrs) or not query_attrs.issubset(all_attrs):
+            return False
+
+        return True
 
     @classmethod
     def _attrs_module(cls):
