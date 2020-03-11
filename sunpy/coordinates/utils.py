@@ -1,7 +1,6 @@
-#
-# Calculates the co-ordinates along great arcs between two specified points
-# which are assumed to be on disk.
-#
+"""
+Miscellaneous utilities related to coordinates
+"""
 import numpy as np
 
 import astropy.units as u
@@ -10,7 +9,7 @@ from astropy.coordinates import SkyCoord, BaseCoordinateFrame
 from sunpy.coordinates import Heliocentric
 
 
-__all__ = ['GreatArc']
+__all__ = ['GreatArc', 'get_rectangle_coordinates']
 
 
 class GreatArc:
