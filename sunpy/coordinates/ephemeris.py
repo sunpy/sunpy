@@ -12,7 +12,7 @@ import numpy as np
 import astropy.units as u
 from astropy.time import Time
 from astropy.coordinates import (SkyCoord, Angle, Longitude,
-                                 ICRS, PrecessedGeocentric, AltAz,
+                                 ICRS, ITRS, AltAz,
                                  get_body_barycentric)
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 from astropy._erfa.core import ErfaWarning
@@ -336,7 +336,7 @@ def _P(time='now'):
     obstime = parse_time(time)
 
     # Define the frame where its Z axis is aligned with geocentric north
-    geocentric = PrecessedGeocentric(equinox=obstime, obstime=obstime)
+    geocentric = ITRS(obstime=obstime)
 
     return _sun_north_angle_to_z(geocentric)
 
