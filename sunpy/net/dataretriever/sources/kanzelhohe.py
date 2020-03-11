@@ -42,10 +42,9 @@ class KanzelhoheClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the KanzelhoheClient:
-         Start Time           End Time      ...   Instrument      Wavelength
-           str19               str19        ...     str14           str15
-    ------------------- ------------------- ... -------------- ---------------
-    2015-12-28 00:00:00 2015-12-28 09:03:00 ... Kanzelhohe HA2 6563.0 Angstrom
+         Start Time           End Time      Source   Instrument      Wavelength
+    ------------------- ------------------- ------ -------------- ---------------
+    2015-12-28 00:00:00 2015-12-28 09:03:00    KSO Kanzelhohe HA2 6563.0 Angstrom
     <BLANKLINE>
     <BLANKLINE>
     >>> response = Fido.fetch(results)  #doctest: +SKIP
@@ -78,7 +77,8 @@ class KanzelhoheClient(GenericClient):
         wavelengths = table.keys()
         wave_list = list(filter(lambda x: np.isclose(x, wave_float), wavelengths))
         if(len(wave_list) == 0):
-            raise ValueError("no value is enough closer to allowed wavelengths")
+            raise ValueError("no value is enough closer to allowed wavelengths: "
+                             + ",".join(map(str, table.keys())) + " angstroms")
         wave = wave_list[0]
         start_date = table[wave]['start_time']
         if timerange.start < start_date:
@@ -100,10 +100,10 @@ class KanzelhoheClient(GenericClient):
         """
         Helper Function:used to hold information about source.
         """
-        self.map_['source'] = 'Global Halpha Network'  # TODO: check with kanzelhohe
+        self.map_['source'] = 'KSO'  # TODO: check with kanzelhohe
         self.map_['instrument'] = 'Kanzelhohe HA2'
         self.map_['phyobs'] = 'irradiance'
-        self.map_['provider'] = 'Kanzelhohe'
+        self.map_['provider'] = 'KSO'
 
     @classmethod
     def _can_handle_query(cls, *query):
