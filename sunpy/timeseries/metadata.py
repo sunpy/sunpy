@@ -20,6 +20,14 @@ class TimeSeriesMetaData:
     multiple `sunpy.timeseries.TimeSeries` metadata to be concatenated in an
     organized fashion.
 
+    Possible signatures::
+
+        TimeSeriesMetaData(meta=dict, timerange=TimeRange, colnames=list)
+        TimeSeriesMetaData(meta=tuple)
+        TimeSeriesMetaData(meta=list(tuples))
+        TimeSeriesMetaData(timerange=TimeRange)
+        TimeSeriesMetaData(timerange=TimeRange, colnames=list)
+
     Parameters
     ----------
     meta : `dict`, `MetaDict`, `tuple`, `list`
@@ -78,8 +86,10 @@ class TimeSeriesMetaData:
     def __init__(self, meta=None, timerange=None, colnames=None):
         self.metadata = []
         # Parse in arguments
-        if not isinstance(meta, type(None)):
-            if isinstance(meta, (dict, MetaDict)) and isinstance(timerange, TimeRange) and isinstance(colnames, list):
+        if meta is not None:
+            if (isinstance(meta, (dict, MetaDict)) and
+                isinstance(timerange, TimeRange) and
+                    isinstance(colnames, list)):
                 # Given a single metadata entry as a dictionary with additional timerange and colnames.
                 self.metadata.append((timerange, colnames, meta))
             elif isinstance(meta, tuple):
@@ -97,13 +107,14 @@ class TimeSeriesMetaData:
                         raise ValueError("Invalid parameters passed in the meta")
         else:
             # In the event no metadata dictionary is sent we default to something usable
-            if isinstance(timerange, TimeRange) and isinstance(colnames, list):
-                self.metadata.append((timerange, colnames, MetaDict()))
-            elif isinstance(timerange, TimeRange):
-                self.metadata.append((timerange, [], MetaDict()))
-                warnings.warn("No time range given for metadata. "
-                              "This will mean the metadata can't be linked "
-                              "to columns in data.", SunpyUserWarning)
+            if isinstance(timerange, TimeRange):
+                if isinstance(colnames, list):
+                    self.metadata.append((timerange, colnames, MetaDict()))
+                else:
+                    self.metadata.append((timerange, [], MetaDict()))
+                    warnings.warn("No time range given for metadata. "
+                                  "This will mean the metadata can't be linked "
+                                  "to columns in data.", SunpyUserWarning)
             else:
                 raise ValueError("You cannot create a TimeSeriesMetaData "
                                  "object without specifying a TimeRange")
