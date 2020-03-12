@@ -2,7 +2,7 @@ import pytest
 
 import numpy as np
 
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import SkyCoord, ConvertError
 import astropy.units as u
 
 from sunpy.coordinates import sun
@@ -283,7 +283,7 @@ def test_rectangle_mismatching_frames_missing_parameters(rectangle_args):
     bottom_left, top_right, width, height = rectangle_args
     top_right = SkyCoord(10 * u.arcsec, 10 * u.arcsec, frame='heliographic_carrington')
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ConvertError):
         bottom_left, top_right = get_rectangle_coordinates(bottom_left, top_right=top_right)
 
 
