@@ -51,11 +51,11 @@ Supported Coordinate Systems
      - HGRTN
      - similar to `~sunpy.coordinates.frames.Heliocentric`
      - The axes are permuted, with HCC X, Y, Z equivalent respectively to HGRTN Y, Z, X
-   * - Heliocentric Carrington
+   * - Heliographic Carrington
      - HGC
      - `~sunpy.coordinates.frames.HeliographicCarrington`
      -
-   * - Heliocentric Stonyhurst
+   * - Heliographic Stonyhurst
      - HGS
      - `~sunpy.coordinates.frames.HeliographicStonyhurst`
      -
