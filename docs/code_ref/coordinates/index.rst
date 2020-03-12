@@ -224,13 +224,11 @@ It is also possible to transform to any coordinate system implemented in Astropy
 Observer Location Information
 -----------------------------
 
-Both `~sunpy.coordinates.frames.Helioprojective` and
-`~sunpy.coordinates.frames.Heliocentric` frames are defined by the location of
+The `~sunpy.coordinates.frames.Helioprojective`, `~sunpy.coordinates.frames.Heliocentric`
+and `~sunpy.coordinates.frames.HeliographicCarrington` frames are defined by the location of
 the observer. For example in `~sunpy.coordinates.frames.Helioprojective` the
 observer is at the origin of the coordinate system. This information is encoded
-in the `~sunpy.coordinates.frames.Helioprojective` and
-`~sunpy.coordinates.frames.Heliocentric` frames as the ``observer`` attribute,
-which is itself an instance of the
+in such observer-based frames as the ``observer`` attribute, which is itself an instance of the
 `~sunpy.coordinates.frames.HeliographicStonyhurst` frame.
 The ``observer`` can be a string for a solar-system body (e.g., "earth" or
 "mars"), and

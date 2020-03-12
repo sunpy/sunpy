@@ -272,6 +272,9 @@ def _L0(time='now',
     Return the L0 angle for the Sun at a specified time, which is the apparent Carrington longitude
     of the Sun-disk center as seen from Earth.
 
+    Observer corrections can be disabled, and then this function will instead return the true
+    Carrington longitude.
+
     Parameters
     ----------
     time : {parse_time_types}
