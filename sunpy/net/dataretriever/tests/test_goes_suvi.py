@@ -77,8 +77,7 @@ def mock_querry_object(suvi_client, start, end):
         'physobs': 'flux',
         'provider': 'NOAA'
     }
-    results = QueryResponse.create(obj, suvi_client._get_url_for_timerange(TimeRange(start, end)))
-    results.client = suvi_client
+    results = QueryResponse.create(obj, suvi_client._get_url_for_timerange(TimeRange(start, end)), client=suvi_client)
     return results
 
 
@@ -97,8 +96,8 @@ def test_fetch_working(suvi_client):
 
     # Compare if two objects have the same attribute
 
-    mock_qr = mock_qr[0]
-    qr = qr1[0]
+    mock_qr = mock_qr.blocks[0]
+    qr = qr1.blocks[0]
 
     assert mock_qr.source == qr.source
     assert mock_qr.provider == qr.provider

@@ -45,6 +45,15 @@ def test_can_handle_query():
     ans3 = eve.EVEClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'), Source('sdo'))
     assert ans3 is False
+    ans4 = eve.EVEClient._can_handle_query(
+        Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level('0CS'))
+    assert ans4 is True
+    ans5 = eve.EVEClient._can_handle_query(
+        Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level('wibble'))
+    assert ans5 is False
+    ans6 = eve.EVEClient._can_handle_query(
+        Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level(0.5))
+    assert ans6 is False
 
 
 @pytest.mark.remote_data
@@ -85,18 +94,19 @@ def test_fido(query):
     [(a.Time('2012/10/4', '2012/10/6')), (a.Time('2012/11/27', '2012/11/27'))])
 def test_levels(time):
     """
-    Test the correct handling of level 0 / 1.
-    The default should be level 1 from VSO, level 0 comes from EVEClient.
+    Test the correct handling of level
+    Level 0 comes from EVEClient, other levels from EVE.
     """
     eve_a = a.Instrument('EVE')
     qr = Fido.search(time, eve_a)
-    client = qr.get_response(0).client
-    assert isinstance(client, VSOClient)
+    clients = {type(a.client) for a in qr.responses}
+    assert clients == {VSOClient}
 
     qr = Fido.search(time, eve_a, a.Level(0))
-    client = qr.get_response(0).client
-    assert isinstance(client, eve.EVEClient)
-
-    qr = Fido.search(time, eve_a, a.Level(0) | a.Level(1))
     clients = {type(a.client) for a in qr.responses}
-    assert clients.symmetric_difference({VSOClient, eve.EVEClient}) == set()
+    assert clients == {eve.EVEClient}
+
+    # This is broken because the VSO Eve client doesn't provide a way of allowing Level.
+    #qr = Fido.search(time, eve_a, a.Level(0) | a.Level(1))
+    #clients = {type(a.client) for a in qr.responses}
+    #assert clients == {eve.EVEClient}
