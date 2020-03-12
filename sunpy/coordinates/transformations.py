@@ -244,8 +244,8 @@ def _rotation_matrix_hgs_to_hgc(obstime):
     Return the rotation matrix from HGS to HGC at the same observation time
     """
     if obstime is None:
-        raise ValueError("To perform this transformation the coordinate"
-                         " Frame needs an obstime Attribute")
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
 
     # Import here to avoid a circular import
     from .sun import L0
@@ -518,8 +518,8 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     vector.
     """
     if hgsframe.obstime is None:
-        raise ValueError("To perform this transformation the coordinate"
-                         " Frame needs an obstime Attribute")
+        raise ConvertError("To perform this transformation, the coordinate"
+                           " frame needs a specified `obstime`.")
 
     # Check whether differentials are involved on either end
     has_differentials = ((hcrscoord._data is not None and hcrscoord.data.differentials) or
