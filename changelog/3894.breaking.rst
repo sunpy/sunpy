@@ -1,0 +1,1 @@
+Fixed a bug where some of the coordinate transformations could raise `ValueError` instead of `~astropy.coordinates.ConvertError` when the transformation could not be performed.
