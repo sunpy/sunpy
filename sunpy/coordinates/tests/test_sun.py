@@ -192,30 +192,20 @@ def test_B0_jpl_horizons():
     # Validate against values from JPL Horizons, which does not apply the aberration correction
     # for observer motion.
     # https://ssd.jpl.nasa.gov/horizons_batch.cgi?batch=1&TABLE_TYPE=OBSERVER&OBJ_DATA=NO&QUANTITIES=%2714%27&COMMAND=%22Sun%22&CENTER=%27Geocentric%27&START_TIME=%222013-01-01+TT%22&STOP_TIME=%222013-12-31%22&STEP_SIZE=%221d%22
-    sun_B0 = sun.B0(Time(['2013-01-01',
-                          '2013-02-01',
-                          '2013-03-01',
-                          '2013-04-01',
-                          '2013-05-01',
-                          '2013-06-01',
-                          '2013-07-01',
-                          '2013-08-01',
-                          '2013-09-01',
-                          '2013-10-01',
-                          '2013-11-01',
-                          '2013-12-01'], scale='tt'))
-    assert_quantity_allclose(sun_B0, [-3.034687,
-                                      -6.031910,
-                                      -7.219984,
-                                      -6.543092,
-                                      -4.168016,
-                                      -0.663804,
-                                       2.873030,
-                                       5.784693,
-                                       7.194559,
-                                       6.719875,
-                                       4.378979,
-                                       0.881068]*u.deg, atol=0.01*u.arcsec, rtol=0)
+    jpl_values = {'2013-01-01': -3.034687,
+                  '2013-02-01': -6.031910,
+                  '2013-03-01': -7.219984,
+                  '2013-04-01': -6.543092,
+                  '2013-05-01': -4.168016,
+                  '2013-06-01': -0.663804,
+                  '2013-07-01':  2.873030,
+                  '2013-08-01':  5.784693,
+                  '2013-09-01':  7.194559,
+                  '2013-10-01':  6.719875,
+                  '2013-11-01':  4.378979,
+                  '2013-12-01':  0.881068}
+    sun_B0 = sun.B0(Time(list(jpl_values.keys()), scale='tt'))
+    assert_quantity_allclose(sun_B0, list(jpl_values.values()) * u.deg, atol=0.01*u.arcsec, rtol=0)
 
 
 def test_B0_sunspice():
@@ -227,102 +217,74 @@ def test_B0_sunspice():
     # IDL> cspice_subpnt, 'Intercept/Ellipsoid', 'Sun', et, 'IAU_Sun', 'LT', 'Earth', spoint, trgepc, srfvec
     # IDL> print, spclat * cspice_dpr()
     #       -3.0347784
-    assert_quantity_allclose(sun.B0(Time(['2013-01-01',
-                                          '2013-02-01',
-                                          '2013-03-01',
-                                          '2013-04-01',
-                                          '2013-05-01',
-                                          '2013-06-01',
-                                          '2013-07-01',
-                                          '2013-08-01',
-                                          '2013-09-01',
-                                          '2013-10-01',
-                                          '2013-11-01',
-                                          '2013-12-01'], scale='utc')),
-                             [-3.0347784,
-                              -6.0319658,
-                              -7.2199937,
-                              -6.5430498,
-                              -4.1679382,
-                              -0.66371004,
-                               2.8731155,
-                               5.7847503,
-                               7.1945709,
-                               6.7198381,
-                               4.3789008,
-                               0.88096965]*u.deg, atol=0.005*u.arcsec, rtol=0)
+    jpl_values = {'2013-01-01': -3.0347784,
+                  '2013-02-01': -6.0319658,
+                  '2013-03-01': -7.2199937,
+                  '2013-04-01': -6.5430498,
+                  '2013-05-01': -4.1679382,
+                  '2013-06-01': -0.66371004,
+                  '2013-07-01':  2.8731155,
+                  '2013-08-01':  5.7847503,
+                  '2013-09-01':  7.1945709,
+                  '2013-10-01':  6.7198381,
+                  '2013-11-01':  4.3789008,
+                  '2013-12-01':  0.88096965}
+    sun_B0 = sun.B0(Time(list(jpl_values.keys()), scale='utc'))
+    assert_quantity_allclose(sun_B0, list(jpl_values.values()) * u.deg, atol=0.005*u.arcsec, rtol=0)
 
 
 def test_L0_defaults():
-    assert_quantity_allclose(sun.L0('1992-Oct-13'),
-                             sun.L0('1992-Oct-13',
-                                    light_travel_time_correction=True,
-                                    aberration_correction=False,
-                                    nearest_point=True))
+    # Confirm that the output is the same when the default settings are explicitly set
+    defaults = sun.L0('1992-Oct-13')
+    explicit = sun.L0('1992-Oct-13',
+                      light_travel_time_correction=True,
+                      aberration_correction=False,
+                      nearest_point=True)
+    assert defaults == explicit
 
 
 def test_L0_astronomical_almanac():
     # Validate against published values from the Astronomical Almanac (2013)
-    sun_L0 = sun.L0(Time(['2013-01-01',
-                          '2013-02-01',
-                          '2013-03-01',
-                          '2013-04-01',
-                          '2013-05-01',
-                          '2013-06-01',
-                          '2013-07-01',
-                          '2013-08-01',
-                          '2013-09-01',
-                          '2013-10-01',
-                          '2013-11-01',
-                          '2013-12-01'], scale='tt'),
+    aa_values = {'2013-01-01': 326.98,
+                 '2013-02-01': 278.78,
+                 '2013-03-01': 270.07,
+                 '2013-04-01': 221.44,
+                 '2013-05-01': 185.30,
+                 '2013-06-01': 135.30,
+                 '2013-07-01':  98.22,
+                 '2013-08-01':  48.03,
+                 '2013-09-01': 358.28,
+                 '2013-10-01': 322.22,
+                 '2013-11-01': 273.31,
+                 '2013-12-01': 237.83}
+    sun_L0 = sun.L0(Time(list(aa_values.keys()), scale='tt'),
                     light_travel_time_correction=True,
                     aberration_correction=True,
                     nearest_point=False)
-    assert_quantity_allclose(sun_L0, [326.98,
-                                      278.78,
-                                      270.07,
-                                      221.44,
-                                      185.30,
-                                      135.30,
-                                      98.22,
-                                      48.03,
-                                      358.28,
-                                      322.22,
-                                      273.31,
-                                      237.83]*u.deg, atol=5e-3*u.deg)
+    assert_longitude_allclose(sun_L0, list(aa_values.values()) * u.deg, atol=5e-3*u.deg)
 
 
 def test_L0_jpl_horizons():
     # Validate against values from JPL Horizons, which does not apply the aberration correction
     # for observer motion.
     # https://ssd.jpl.nasa.gov/horizons_batch.cgi?batch=1&TABLE_TYPE=OBSERVER&OBJ_DATA=NO&QUANTITIES=%2714%27&COMMAND=%22Sun%22&CENTER=%27Geocentric%27&START_TIME=%222013-01-01+TT%22&STOP_TIME=%222013-12-31%22&STEP_SIZE=%221d%22
-    sun_L0 = sun.L0(Time(['2013-01-01',
-                          '2013-02-01',
-                          '2013-03-01',
-                          '2013-04-01',
-                          '2013-05-01',
-                          '2013-06-01',
-                          '2013-07-01',
-                          '2013-08-01',
-                          '2013-09-01',
-                          '2013-10-01',
-                          '2013-11-01',
-                          '2013-12-01'], scale='tt'),
+    jpl_values = {'2013-01-01': 326.989970,
+                  '2013-02-01': 278.789894,
+                  '2013-03-01': 270.072186,
+                  '2013-04-01': 221.440599,
+                  '2013-05-01': 185.306476,
+                  '2013-06-01': 135.303097,
+                  '2013-07-01':  98.221806,
+                  '2013-08-01':  48.035951,
+                  '2013-09-01': 358.289921,
+                  '2013-10-01': 322.226009,
+                  '2013-11-01': 273.315206,
+                  '2013-12-01': 237.836959}
+    sun_L0 = sun.L0(Time(list(jpl_values.keys()), scale='tt'),
                     light_travel_time_correction=True,
                     aberration_correction=False,
                     nearest_point=True)
-    assert_longitude_allclose(sun_L0, [326.989970,
-                                       278.789894,
-                                       270.072186,
-                                       221.440599,
-                                       185.306476,
-                                       135.303097,
-                                        98.221806,
-                                        48.035951,
-                                       358.289921,
-                                       322.226009,
-                                       273.315206,
-                                       237.836959]*u.deg, atol=0.01*u.arcsec)
+    assert_longitude_allclose(sun_L0, list(jpl_values.values()) * u.deg, atol=0.01*u.arcsec)
 
 
 def test_L0_sunspice():
@@ -336,33 +298,23 @@ def test_L0_sunspice():
     # IDL> cspice_reclat, spoint1, spcrad1, spclon1, spclat1
     # IDL> print, spclon1 * cspice_dpr()
     #       -33.025998
-    assert_longitude_allclose(sun.L0(Time(['2013-01-01',
-                                           '2013-02-01',
-                                           '2013-03-01',
-                                           '2013-04-01',
-                                           '2013-05-01',
-                                           '2013-06-01',
-                                           '2013-07-01',
-                                           '2013-08-01',
-                                           '2013-09-01',
-                                           '2013-10-01',
-                                           '2013-11-01',
-                                           '2013-12-01'], scale='utc'),
-                                     light_travel_time_correction=True,
-                                     aberration_correction=True,
-                                     nearest_point=True),
-                              [-33.025998,
-                               -81.226108,
-                               -89.943817,
-                               -138.57536,
-                               -174.70941,
-                                135.28726,
-                                98.205970,
-                                48.020071,
-                               -1.7260099,
-                               -37.789945,
-                               -86.700744,
-                               -122.17899]*u.deg, atol=0.3*u.arcsec)
+    values1 = {'2013-01-01': -33.025998,
+               '2013-02-01': -81.226108,
+               '2013-03-01': -89.943817,
+               '2013-04-01': -138.57536,
+               '2013-05-01': -174.70941,
+               '2013-06-01':  135.28726,
+               '2013-07-01':  98.205970,
+               '2013-08-01':  48.020071,
+               '2013-09-01': -1.7260099,
+               '2013-10-01': -37.789945,
+               '2013-11-01': -86.700744,
+               '2013-12-01': -122.17899}
+    sun_L0 = sun.L0(Time(list(values1.keys()), scale='utc'),
+                    light_travel_time_correction=True,
+                    aberration_correction=True,
+                    nearest_point=True)
+    assert_longitude_allclose(sun_L0, list(values1.values()) * u.deg, atol=0.3*u.arcsec)
 
     # Without the aberration correction for observer motion (specify 'LT')
     #
@@ -370,33 +322,23 @@ def test_L0_sunspice():
     # IDL> cspice_reclat, spoint2, spcrad2, spclon2, spclat2
     # IDL> print, spclon2 * cspice_dpr()
     #       -33.020271
-    assert_longitude_allclose(sun.L0(Time(['2013-01-01',
-                                           '2013-02-01',
-                                           '2013-03-01',
-                                           '2013-04-01',
-                                           '2013-05-01',
-                                           # '2013-06-01',  # skipping due to low precision in comparison
-                                           '2013-07-01',
-                                           '2013-08-01',
-                                           '2013-09-01',
-                                           '2013-10-01',
-                                           '2013-11-01',
-                                           '2013-12-01'], scale='utc'),
-                                     light_travel_time_correction=True,
-                                     aberration_correction=False,
-                                     nearest_point=True),
-                              [-33.020271,
-                               -81.220344,
-                               -89.938057,
-                               -138.56966,
-                               -174.70380,
-                               #  135.29281,  # skipping due to low precision in comparison
-                                98.211514,
-                                48.025667,
-                               -1.7203500,
-                               -37.784252,
-                               -86.695047,
-                               -122.17329]*u.deg, atol=0.01*u.arcsec)
+    values2 = {'2013-01-01': -33.020271,
+               '2013-02-01': -81.220344,
+               '2013-03-01': -89.938057,
+               '2013-04-01': -138.56966,
+               '2013-05-01': -174.70380,
+               # '2013-06-01':  135.29281,  # skipping due to low precision in comparison
+               '2013-07-01':  98.211514,
+               '2013-08-01':  48.025667,
+               '2013-09-01': -1.7203500,
+               '2013-10-01': -37.784252,
+               '2013-11-01': -86.695047,
+               '2013-12-01': -122.17329}
+    sun_L0 = sun.L0(Time(list(values2.keys()), scale='utc'),
+                    light_travel_time_correction=True,
+                    aberration_correction=False,
+                    nearest_point=True)
+    assert_longitude_allclose(sun_L0, list(values2.values()) * u.deg, atol=0.01*u.arcsec)
 
     # Without any corrections (do a straight conversion from 'HEQ' to 'Carrington')
     #
@@ -404,33 +346,23 @@ def test_L0_sunspice():
     # IDL> convert_sunspice_lonlat, '2013-01-01', coord, 'HEQ', 'Carrington', /au, /degrees
     # IDL> print, coord
     #        1.0000000       326.89956       10.000000
-    assert_longitude_allclose(sun.L0(Time(['2013-01-01',
-                                           '2013-02-01',
-                                           '2013-03-01',
-                                           '2013-04-01',
-                                           '2013-05-01',
-                                           '2013-06-01',
-                                           '2013-07-01',
-                                           '2013-08-01',
-                                           '2013-09-01',
-                                           '2013-10-01',
-                                           '2013-11-01',
-                                           '2013-12-01'], scale='utc'),
-                                     light_travel_time_correction=False,
-                                     aberration_correction=False,
-                                     nearest_point=True),
-                              [326.89956,
-                               278.69932,
-                               269.98115,
-                               221.34886,
-                               185.21404,
-                               135.21012,
-                               98.128607,
-                               47.942897,
-                               358.19735,
-                               322.13410,
-                               273.22402,
-                               237.74631]*u.deg, atol=0.02*u.arcsec)
+    values3 = {'2013-01-01': 326.89956,
+               '2013-02-01': 278.69932,
+               '2013-03-01': 269.98115,
+               '2013-04-01': 221.34886,
+               '2013-05-01': 185.21404,
+               '2013-06-01': 135.21012,
+               '2013-07-01': 98.128607,
+               '2013-08-01': 47.942897,
+               '2013-09-01': 358.19735,
+               '2013-10-01': 322.13410,
+               '2013-11-01': 273.22402,
+               '2013-12-01': 237.74631}
+    sun_L0 = sun.L0(Time(list(values3.keys()), scale='utc'),
+                    light_travel_time_correction=False,
+                    aberration_correction=False,
+                    nearest_point=True)
+    assert_longitude_allclose(sun_L0, list(values3.values()) * u.deg, atol=0.02*u.arcsec)
 
 
 def test_P():

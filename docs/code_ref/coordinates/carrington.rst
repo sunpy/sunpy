@@ -4,12 +4,12 @@ Calculating Carrington longitude
 ================================
 
 Carrington coordinates are a heliographic coordinate system, where the longitude is determined assuming that the Sun has rotated at a sidereal period of ~25.38 days starting at zero longitude at a specific time on 1853 November 9.
-For a given observer at a given observation time, the center of the disk of the Sun as seen by that observer (also known as the apparent sub-observer point) has a Carrington latitude and longitude.
+For a given observer at a given observation time, the center of the disk of the Sun as seen by that observer (also known as the apparent [#apparent]_ sub-observer point) has a Carrington latitude and longitude.
 When the observer is at Earth, the apparent sub-Earth Carrington latitude and longitude are also known as |B0| and |L0|, respectively.
 
 Quick summary
 -------------
-SunPy calculates the sub-observer Carrington longitude in a manner that enables co-alignment of images from different observatories at different locations/velocities in the solar system, but that results in a ~20-arcsecond discrepancy with |AA|.
+SunPy calculates the sub-observer Carrington longitude in a manner that enables co-alignment of images of the Sun's surface from different observatories at different locations/velocities in the solar system, but that results in a ~20-arcsecond discrepancy with |AA|.
 
 Observer effects
 ----------------
@@ -22,7 +22,7 @@ It takes time for light to travel from the Sun to any observer (e.g., ~500 secon
 Thus, the farther the observer is from the Sun, the farther back in time the Sun will appear to be.
 This effect is sometimes called "planetary aberration".
 
-As an additional detail, the observer is closer to the sub-observer point than to the center of the Sun (i.e., the radius of the Sun), which corresponds to ~2.3 lightseconds.
+As an additional detail, the observer is closer to the sub-observer point on the Sun's surface than to the center of the Sun (i.e., by the radius of the Sun), which corresponds to ~2.3 lightseconds.
 
 Observer motion
 ^^^^^^^^^^^^^^^
@@ -84,7 +84,7 @@ Consequently, SunPy values will be consistently ~0.006 degrees (~20 arcseconds) 
 Since |AA| specifically tuned the IAU parameters to minimize the discrepancies with older methods of calulation under their prescription that includes the stellar-aberration correction, SunPy values will also be ~20 arcseconds greater than values calculated using older methods.
 Be aware that older methods of calculation may not have accounted for the variable light travel time between the Sun and the Earth, which can cause additional discrepancies of up to ~5 arcseconds.
 
-|AA| does not appear to account for the difference in light travel time between the sub-Earth point and the center of the Sun (~2.3 lightseconds), which results in a fixed discrepancy of ~1.4 arcseconds in |L0|.
+|AA| does not appear to account for the difference in light travel time between the sub-Earth point on the Sun's surface and the center of the Sun (~2.3 lightseconds), which results in a fixed discrepancy of ~1.4 arcseconds in |L0|.
 However, this additional discrepancy is much smaller than the difference in treatment of stellar aberration.
 
 Compared to SPICE
@@ -116,6 +116,7 @@ Thus, SunPy values will be consistently greater than SunSPICE's coordinate trans
 Footnotes
 ---------
 
+.. [#apparent] The term "apparent" (as opposed to "true") is used to indicate that the observer perceives the locations and orientations of objects different from how they truly are due to effects that include light travel time.
 .. [#Carrington] Carrington (1863), *Observations of the Spots on the Sun*, p. 244
 .. [#IAU] Seidelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates and rotational elements: 2006", `<http://dx.doi.org/10.1007/s10569-007-9072-y>`__
 .. [#AA] Urban & Kaplan (2007), "Investigation of Change in the Computational Technique of the Sun’s Physical Ephemeris in The Astronomical Almanac", `<http://asa.hmnao.com/static/files/sun_rotation_change.pdf>`__
