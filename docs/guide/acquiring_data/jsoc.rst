@@ -80,7 +80,6 @@ variable set to the Fido search, in this case, res::
     <BLANKLINE>
     81 Results from the JSOCClient:
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-             str23            str7     str10    float64   int64
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -103,6 +102,7 @@ variable set to the Fido search, in this case, res::
     2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    Length = 81 rows
     <BLANKLINE>
     <BLANKLINE>
 
@@ -244,7 +244,6 @@ To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`
     <BLANKLINE>
     61 Results from the JSOCClient:
              T_REC          TELESCOP  INSTRUME WAVELNTH CAR_ROT
-             str23            str7      str9   float64   int64
     ----------------------- -------- --------- -------- -------
     2014.01.01_00:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:12:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
@@ -267,6 +266,7 @@ To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`
     2014.01.01_00:36:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_00:48:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
     2014.01.01_01:00:00_TAI  SDO/HMI HMI_SIDE1   6173.0    2145
+    Length = 61 rows
     <BLANKLINE>
     <BLANKLINE>
 
@@ -285,7 +285,6 @@ between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
     <BLANKLINE>
     7 Results from the JSOCClient:
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-             str23            str7     str10    float64   int64
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_00:10:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -314,7 +313,6 @@ Let's look for 2 different series data at the same time::
     <BLANKLINE>
     81 Results from the JSOCClient:
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-             str23            str7     str10    float64   int64
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -337,10 +335,10 @@ Let's look for 2 different series data at the same time::
     2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    Length = 81 rows
     <BLANKLINE>
     2107 Results from the JSOCClient:
            T_REC         TELESCOP INSTRUME WAVELNTH CAR_ROT
-           str20           str7     str5    int64    int64
     -------------------- -------- -------- -------- -------
     2014-01-01T00:00:01Z  SDO/AIA    AIA_4       94    2145
     2014-01-01T00:00:01Z  SDO/AIA    AIA_1      131    2145
@@ -363,6 +361,7 @@ Let's look for 2 different series data at the same time::
     2014-01-01T01:00:01Z  SDO/AIA    AIA_2      211    2145
     2014-01-01T01:00:01Z  SDO/AIA    AIA_4      304    2145
     2014-01-01T01:00:01Z  SDO/AIA    AIA_1      335    2145
+    Length = 2107 rows
     <BLANKLINE>
     <BLANKLINE>
 
@@ -379,7 +378,6 @@ of conditions which get passed to the JSOC.  Let's say you want all the
     <BLANKLINE>
     81 Results from the JSOCClient:
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-             str23            str7     str10    float64   int64
     ----------------------- -------- ---------- -------- -------
     2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -402,10 +400,10 @@ of conditions which get passed to the JSOC.  Let's say you want all the
     2014.01.01_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.01_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    Length = 81 rows
     <BLANKLINE>
     81 Results from the JSOCClient:
              T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
-             str23            str7     str10    float64   int64
     ----------------------- -------- ---------- -------- -------
     2014.01.02_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.02_00:01:30_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -428,6 +426,7 @@ of conditions which get passed to the JSOC.  Let's say you want all the
     2014.01.02_00:59:15_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.02_01:00:00_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
     2014.01.02_01:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
+    Length = 81 rows
     <BLANKLINE>
     <BLANKLINE>
 

@@ -10,6 +10,8 @@ from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources import noaa
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
+from sunpy.tests.helpers import no_vso
+
 
 LCClient = noaa.NOAAIndicesClient()
 
@@ -30,9 +32,7 @@ def mock_query_object(start_date, end_date):
         'provider': 'swpc'
     }
 
-    resp = QueryResponse.create(map_, LCClient._get_url_for_timerange(None))
-    # Attach the client with the QueryResponse
-    resp.client = LCClient
+    resp = QueryResponse.create(map_, LCClient._get_url_for_timerange(None), client=LCClient)
     return resp
 
 
@@ -50,8 +50,8 @@ def test_fetch_working(tmpdir):
 
     # Compare if two objects have the same attribute
 
-    mock_qr = mock_qr[0]
-    qr = qr1[0]
+    mock_qr = mock_qr.blocks[0]
+    qr = qr1.blocks[0]
 
     assert mock_qr.source == qr.source
     assert mock_qr.provider == qr.provider
@@ -128,6 +128,7 @@ def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path):
                                           path / "RecentIndices.txt"))
 
 
+@no_vso
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
             return_value=mock_query_object('2012/10/4', '2012/10/6'))
 # The return value of download is irrelevant

@@ -37,7 +37,6 @@ class NoRHClient(GenericClient):
     <BLANKLINE>
     2 Results from the NoRHClient:
          Start Time           End Time      Source Instrument   Wavelength
-           str19               str19         str4     str4        str14
     ------------------- ------------------- ------ ---------- --------------
     2016-01-01 00:00:00 2016-01-02 00:00:00   NAOJ       NORH 17000000.0 kHz
     2016-01-02 00:00:00 2016-01-03 00:00:00   NAOJ       NORH 17000000.0 kHz

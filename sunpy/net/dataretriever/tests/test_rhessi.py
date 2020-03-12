@@ -13,6 +13,7 @@ from sunpy.net import attrs as a
 from sunpy.time import TimeRange, parse_time
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.tests.helpers import no_vso
 
 LCClient = rhessi.RHESSIClient()
 
@@ -174,6 +175,7 @@ def test_query(mock_get_observing_summary_dbase_file,
     assert qr1.time_range().end.datetime == parse_time('2003/11/03T23:59:59.999').datetime
 
 
+@no_vso
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
 @mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))

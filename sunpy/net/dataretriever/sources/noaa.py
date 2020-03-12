@@ -34,7 +34,6 @@ class NOAAIndicesClient(GenericClient):
     <BLANKLINE>
     1 Results from the NOAAIndicesClient:
          Start Time           End Time      Source  Instrument  Wavelength
-           str19               str19         str4     str12        str3
     ------------------- ------------------- ------ ------------ ----------
     2016-01-01 00:00:00 2016-01-02 00:00:00   sdic noaa-indices        nan
     <BLANKLINE>
@@ -98,8 +97,7 @@ class NOAAPredictClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     1 Results from the NOAAPredictClient:
-     Start Time           End Time      Source  Instrument  Wavelength
-       str19               str19         str4     str12        str3
+         Start Time           End Time      Source  Instrument  Wavelength
     ------------------- ------------------- ------ ------------ ----------
     2016-01-01 00:00:00 2016-01-02 00:00:00   ises noaa-predict        nan
     <BLANKLINE>
@@ -164,8 +162,7 @@ class SRSClient(GenericClient):
     Results from 1 Provider:
     <BLANKLINE>
     2 Results from the SRSClient:
-     Start Time           End Time        Source  Instrument Wavelength
-       str19               str19           str9      str4       str3
+         Start Time           End Time        Source  Instrument Wavelength
     ------------------- ------------------- --------- ---------- ----------
     2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
     2016-01-01 00:00:00 2016-01-02 00:00:00 NOAA/USAF       SOON        nan
@@ -294,6 +291,9 @@ class SRSClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
+        from sunpy.net import attrs as a
+        if not a.Time in [type(at) for at in query]:
+            return False
         for x in query:
             if (x.__class__.__name__ == "Instrument" and
                     str(x.value).lower() in ["soon", "srs_table"]):

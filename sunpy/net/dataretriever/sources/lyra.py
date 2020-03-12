@@ -26,7 +26,6 @@ class LYRAClient(GenericClient):
     <BLANKLINE>
     2 Results from the LYRAClient:
          Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2016-01-01 00:00:00 2016-01-02 00:00:00 Proba2       lyra        nan
     2016-01-01 00:00:00 2016-01-02 00:00:00 Proba2       lyra        nan
