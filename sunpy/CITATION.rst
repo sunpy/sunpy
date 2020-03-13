@@ -9,8 +9,8 @@ Citing SunPy in Publications
 
 Please add the following line within your methods, conclusion or acknowledgements sections:
 
-   *This research has made use of SunPy vX.Y (software citation), an open-source and free
-   community-developed solar data analysis Python package (project citation).*
+   *This research used version vX.Y.Z (software citation) of the SunPy open source
+   software package (project citation).*
 
 The project citation should be to the `SunPy paper`_, and the software citation should be the specific `Zenodo DOI`_ for the version used in your work.
 
