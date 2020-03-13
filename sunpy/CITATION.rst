@@ -1,12 +1,11 @@
-*****************************
 Acknowledging or Citing SunPy
-*****************************
+=============================
 
 If you use SunPy in your scientific work, we would appreciate citing it in your publications.
 The continued growth and development of SunPy is dependent on the community being aware of SunPy.
 
 Citing SunPy in Publications
-============================
+----------------------------
 
 Please add the following line within your methods, conclusion or acknowledgements sections:
 
@@ -34,7 +33,7 @@ You can also get this information with ``sunpy.__citation__``.
 
 
 Other SunPy publications
-------------------------
+########################
 
 The SunPy v1.0.8 code was reviewed by `The Journal of Open Source Software (JOSS) <https://joss.theoj.org/papers/10.21105/joss.01832>`__.
 
@@ -59,7 +58,7 @@ A paper about version v0.5 of SunPy was published in `Computational Science & Di
 
 
 Acknowledging SunPy in Posters and Talks
-========================================
+----------------------------------------
 
 Please include the `Sunpy logo`_ on the title, conclusion slide, or about page.
 For websites please link the image to `sunpy.org`_.
