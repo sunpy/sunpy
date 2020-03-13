@@ -35,6 +35,7 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_earth
+from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.util import expand_list
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -1362,7 +1363,8 @@ class GenericMap(NDData):
 
         return new_map
 
-    def submap(self, bottom_left, top_right=None):
+
+    def submap(self, bottom_left, *, top_right=None, width: u.deg=None, height: u.deg=None):
         """
         Returns a submap of the map defined by the rectangle given by the
         ``[bottom_left, top_right]`` coordinates.
@@ -1450,19 +1452,14 @@ class GenericMap(NDData):
             [-95.92475   ,   6.028058  ,  -4.9797    ,  -1.0483578 ,
                 -3.9313421 ]], dtype=float32)
         """
+        if not (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix)):
+            bottom_left, top_right = get_rectangle_coordinates(bottom_left,
+                                                               top_right=top_right,
+                                                               width=width,
+                                                               height=height)
 
-        if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
-                                    astropy.coordinates.BaseCoordinateFrame)):
-            if not top_right:
-                if bottom_left.shape[0] != 2:
-                    raise ValueError("If top_right is not specified bottom_left must have length two.")
-                else:
-                    lon, lat = self._get_lon_lat(bottom_left)
-                    top_right = u.Quantity([lon[1], lat[1]])
-                    bottom_left = u.Quantity([lon[0], lat[0]])
-            else:
-                bottom_left = u.Quantity(self._get_lon_lat(bottom_left))
-                top_right = u.Quantity(self._get_lon_lat(top_right))
+            bottom_left = u.Quantity(self._get_lon_lat(bottom_left))
+            top_right = u.Quantity(self._get_lon_lat(top_right))
 
             top_left = u.Quantity([bottom_left[0], top_right[1]])
             bottom_right = u.Quantity([top_right[0], bottom_left[1]])
@@ -1712,7 +1709,7 @@ class GenericMap(NDData):
         return [circ]
 
     @u.quantity_input
-    def draw_rectangle(self, bottom_left, top_right=None, width: u.deg=None, height: u.deg=None, axes=None, **kwargs):
+    def draw_rectangle(self, bottom_left, *, top_right=None, width: u.deg=None, height: u.deg=None, axes=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
         Parameters
@@ -1742,6 +1739,15 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
         """
+        if any(x is None for x in (width, height)):
+            bottom_left, top_right = get_rectangle_coordinates(bottom_left,
+                                                               top_right=top_right,
+                                                               width=width,
+                                                               height=height)
+
+            width = np.abs(top_right.spherical.lon - bottom_left.spherical.lon).to(u.deg)
+            height = np.abs(top_right.spherical.lat - bottom_left.spherical.lat).to(u.deg)
+
         if not axes:
             axes = plt.gca()
         if wcsaxes_compat.is_wcsaxes(axes):
@@ -1749,30 +1755,6 @@ class GenericMap(NDData):
         else:
             axes_unit = self.spatial_units[0]
 
-        if width or height:
-            warnings.warn("Use of `width` and `height` is depreciated and these will be removed in future", Warning)
-
-        else:
-            if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
-                          astropy.coordinates.BaseCoordinateFrame)):
-                if not top_right:
-                    if bottom_left.shape[0] != 2:
-                        raise ValueError("If top_right is not specified bottom_left must have length two.")
-                    else:
-                        top_right = bottom_left[1]
-                        bottom_left = bottom_left[0]
-
-            elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
-                  isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
-
-                bottom_left = astropy.wcs.utils.pixel_to_skycoord(bottom_left, wcs=self.wcs)
-                top_right = astropy.wcs.utils.pixel_to_skycoord(bottom_left, wcs=self.wcs)
-
-            else:
-                raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
-
-            width = np.abs(top_right.spherical.lon - bottom_left.spherical.lon).to(u.deg)  # Getting the difference in Longitudes.
-            height = np.abs(top_right.spherical.lat - bottom_left.spherical.lat).to(u.deg)  # Getting the difference in Latitudes.
 
         coord = bottom_left.transform_to(self.coordinate_frame)
         bottom_left = u.Quantity((coord.data.lon, coord.data.lat), unit=axes_unit).value
