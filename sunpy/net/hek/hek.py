@@ -61,7 +61,7 @@ class HEKClient:
             try:
                 result = json.load(fd)
             except Exception as e:
-                raise IOError(f"Failed to load return from the HEKClient due to {e}")
+                raise IOError("Failed to load return from the HEKClient.") from e
             finally:
                 fd.close()
             results.extend(result['result'])
