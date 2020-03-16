@@ -169,4 +169,21 @@ def test_mixed_results_get():
     # To check that the following bug is fixed:
     # https://github.com/sunpy/sunpy/issues/3238
     client = hek.HEKClient()
-    client.search(hek.attrs.Time(parse_time('2013/02/01 00:00:00'), parse_time('2013/02/01 23:30:00')), hek.attrs.FRM.Name == 'SPoCA')
+    result = client.search(hek.attrs.Time(parse_time('2013/02/01 00:00:00'),
+                                          parse_time('2013/02/01 23:30:00')), hek.attrs.FRM.Name == 'SPoCA')
+    assert isinstance(result, hek.hek.HEKTable)
+    assert len(result) == 89
+    assert result[0]["SOL_standard"] == 'SOL2013-01-31T20:13:31L219C160'
+
+
+@pytest.mark.remote_data
+def test_mixed_results_get_2():
+    # To check that the following bug is fixed:
+    # # https://github.com/sunpy/sunpy/issues/3898
+    client = hek.HEKClient()
+    result = client.search(hek.attrs.Time(parse_time('2011/08/09 07:23:56'),
+                                          parse_time('2011/08/09 12:40:29')),
+                           hek.attrs.EventType("FL"))
+    assert isinstance(result, hek.hek.HEKTable)
+    assert len(result) == 19
+    assert result[0]["SOL_standard"] == 'SOL2011-08-08T01:30:04L247C075'
