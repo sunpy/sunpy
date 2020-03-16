@@ -1,0 +1,1 @@
+`~sunpy.net.hek.HEKClient` was returning HTML and not JSON.

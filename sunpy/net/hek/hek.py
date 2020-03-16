@@ -1,15 +1,9 @@
-# -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
-#
-# This module was developed with funding provided by
-# the ESA Summer of Code (2011).
-#
-# pylint: disable=C0103,R0903
-
-""" Facilities to interface with the HEK. """
+"""
+Facilities to interface with the Heliophysics Events Knowledgebase.
+"""
 
 import json
-import codecs
+
 import urllib
 from itertools import chain
 
@@ -19,14 +13,13 @@ from astropy.time import Time
 from sunpy.net import attr
 from sunpy.util import dict_keys_same, unique
 from sunpy.net.hek import attrs
-from sunpy.net.vso import attrs as v_attrs
 import sunpy.net._attrs as core_attrs
 from sunpy.util.xml import xml_to_dict
 
 
 __all__ = ['HEKClient']
 
-DEFAULT_URL = 'http://www.lmsal.com/hek/her'
+DEFAULT_URL = 'http://www.lmsal.com/hek/her?'
 
 
 def _freeze(obj):
@@ -61,14 +54,14 @@ class HEKClient:
         """ Download all data, even if paginated. """
         page = 1
         results = []
-        reader = codecs.getreader("utf-8")
 
         while True:
             data['page'] = page
-            fd = urllib.request.urlopen(
-                self.url, urllib.parse.urlencode(data).encode('utf-8'))
+            fd = urllib.request.urlopen(self.url+urllib.parse.urlencode(data))
             try:
-                result = json.load(reader(fd))
+                result = json.load(fd)
+            except Exception as e:
+                raise IOError("Failed to load return from the HEKClient.") from e
             finally:
                 fd.close()
             results.extend(result['result'])
