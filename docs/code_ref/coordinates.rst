@@ -289,6 +289,10 @@ which is equivalent to::
 .. automodapi:: sunpy.coordinates.wcs_utils
     :headings: ^#
 
+.. automodapi:: sunpy.coordinates.utils
+    :headings: ^#
+    :no-inheritance-diagram:
+
 
 Attribution
 -----------
