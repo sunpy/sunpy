@@ -1,1 +1,1 @@
-Added methods (`~sunpy.instr.rhessi.get_flare_list`, `~sunpy.instr.rhessi.read_flare_list_file`, `~sunpy.instr.rhessi.print_flare_list`, `~sunpy.instr.rhessi.convert_flag_dict`) to read, format and print RHESSI flare events from *FITS* files.
+Added methods `~sunpy.instr.rhessi.get_flare_list` and `~sunpy.instr.rhessi.read_flare_list_file` to read, format and print RHESSI flare events from *FITS* files.

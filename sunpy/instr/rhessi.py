@@ -24,7 +24,7 @@ from sunpy.util.decorators import add_common_docstring
 
 __all__ = [
     'parse_observing_summary_hdulist', 'backprojection', 'parse_observing_summary_dbase_file',
-    'get_flare_list', 'read_flare_list_file', 'print_flare_list', 'convert_flag_dict'
+    'get_flare_list', 'read_flare_list_file'
 ]
 
 
@@ -43,6 +43,8 @@ KNOWN_FLARE_LIST_SOURCES = {
     "i4DS": "http://soleil.i4ds.ch/hessidata/dbase/",
 }
 
+# dictionary to map raw flagIDs provided by fits to a more readable string indicating
+# presence/absence of the flags - in the same way as in the available .txt flare lists.
 FLAGID2FLAG = {
     'SAA_AT_START': 'SS',
     'SAA_AT_END': 'SE',
@@ -512,55 +514,29 @@ def read_flare_list_file(file):
 
     results = []
     for row in fits[3].data:
-        result_row = {}
+        row2 = {}
         for k in fits[3].data.columns.names:
             if k.endswith('_TIME'):
-                result_row[k] = parse_time(row[k], format="utime")
-                result_row[k].format = "datetime"  # for human readable display inside the DF
+                row2[k] = parse_time(row[k], format="utime")
+                row2[k].format = "datetime"  # for human readable display inside the DF
             elif k == 'FLAGS':
                 flags = {}
                 for i, fid in zip(row[k], fits[2].data['FLAG_IDS'][0]):
                     flags[fid] = i
-                result_row[k] = flags
+                row2[k] = flags
             else:
-                result_row[k] = row[k]
-        results.append(result_row)
+                row2[k] = row[k]
+
+        # add reformatted and calculated fields
+        row2["FLAGS_FORMATTED"] = _convert_flag_dict(row2['FLAGS'])
+        row2["DURATION"] = int(round((row2['END_TIME'] - row2['START_TIME']).to_value("sec")))
+        row2["POS_RADIAL"] = int(round((row2['POSITION'][0] ** 2 + row2['POSITION'][1] ** 2) ** 0.5)),
+        results.append(row2)
 
     return pd.DataFrame(results)
 
 
-def print_flare_list(data_frame):
-    """
-    Convert and print flares similar to the available .txt flare lists.
-
-    Parameters
-    ----------
-    data_frame : ``pandas.DataFrame``
-        DataFrame containing the flares to print.
-    """
-
-    for idx, row in data_frame.iterrows():
-        print(
-            "{id:9} {st} {pt} {et} {dur:5} {p:6} {n:9} {e:>11} {x:5} {y:5} {r:6} {ar:4}  {f}"
-            .format(
-                id=row['ID_NUMBER'],
-                st=row['START_TIME'].strftime('%e-%b-%Y %H:%M:%S'),
-                pt=row['PEAK_TIME'].strftime('%H:%M:%S'),
-                et=row['END_TIME'].strftime('%H:%M:%S'),
-                dur=int(round((row['END_TIME'] - row['START_TIME']).to_value("sec"))),
-                p=int(row['PEAK_COUNTRATE']),
-                n=int(row['TOTAL_COUNTS']),
-                e=str(int(row['ENERGY_HI'][0])) + "-" + str(int(row['ENERGY_HI'][1])),
-                x=int(round(row['POSITION'][0])),
-                y=int(round(row['POSITION'][1])),
-                r=int(round((row['POSITION'][0] ** 2 + row['POSITION'][1] ** 2) ** 0.5)),
-                ar=row['ACTIVE_REGION'],
-                f=" ".join(convert_flag_dict(row['FLAGS'])),
-            )
-        )
-
-
-def convert_flag_dict(flags_dict):
+def _convert_flag_dict(flags_dict):
     """
     Convert flag dictionary into array of short abbreviations (as in available .txt lists).
 
