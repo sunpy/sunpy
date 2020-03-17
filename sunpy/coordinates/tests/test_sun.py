@@ -224,9 +224,30 @@ def test_P():
 
 def test_P_array_time():
     # Validate against published values from the Astronomical Almanac (2013)
-    sun_P = sun.P(Time(['2013-04-01', '2013-12-01'], scale='tt'))
-    assert_quantity_allclose(sun_P[0], -26.15*u.deg, atol=1e-2*u.deg)
-    assert_quantity_allclose(sun_P[1], 16.05*u.deg, atol=1e-2*u.deg)
+    sun_P = sun.P(Time(['2013-01-01',
+                        '2013-02-01',
+                        '2013-03-01',
+                        '2013-04-01',
+                        '2013-05-01',
+                        '2013-06-01',
+                        '2013-07-01',
+                        '2013-08-01',
+                        '2013-09-01',
+                        '2013-10-01',
+                        '2013-11-01',
+                        '2013-12-01'], scale='tt'))
+    assert_quantity_allclose(sun_P, [  1.98,
+                                     -12.23,
+                                     -21.55,
+                                     -26.15,
+                                     -24.11,
+                                     -15.39,
+                                      -2.64,
+                                      10.85,
+                                      21.08,
+                                      25.97,
+                                      24.47,
+                                      16.05]*u.deg, atol=5e-3*u.deg)
 
 
 def test_earth_distance():
