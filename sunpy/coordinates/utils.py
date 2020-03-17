@@ -335,7 +335,7 @@ def get_rectangle_coordinates(bottom_left, *, top_right = None, width: u.deg = N
         raise ValueError("Invalid input, width, height and top_right "
                          "parameters should not be passed simultaneously.")
 
-    if top_right is None and bottom_left.shape != (2,) and not all((width, height)):
+    if top_right is None and bottom_left.shape != (2,) and (width is None or height is None):
         raise ValueError("Invalid input, either bottom_left and top_right "
                          "or bottom_left and height and width should be provided.")
 
