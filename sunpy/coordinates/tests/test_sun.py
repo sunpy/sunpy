@@ -14,6 +14,9 @@ from astropy.utils.exceptions import ErfaWarning
 from sunpy.coordinates import sun
 from .helpers import assert_longitude_allclose
 
+# Ignore warnings that astropy throws when trying and failing to update ephemeris
+pytestmark = pytest.mark.filterwarnings("ignore:failed to download")
+
 
 @pytest.fixture
 def t1():
@@ -171,6 +174,8 @@ def test_sky_position(t1, t2):
     assert_quantity_allclose(pos2, (ra2, dec2))
 
 
+@pytest.mark.filterwarnings('ignore:Tried to get polar motions for times after IERS data is valid')
+@pytest.mark.filterwarnings(r'ignore:\(some\) times are outside of range covered by IERS table')
 def test_print_params():
     # Test only for any issues with printing; accuracy is covered by other tests
     sun.print_params()
