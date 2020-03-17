@@ -43,11 +43,12 @@ def test_empty_jsoc_response():
 
 @pytest.mark.remote_data
 def test_return_query_args():
-    res = client.search(a.jsoc.PrimeKey('HARPNUM', 3604),
-                        a.jsoc.Series('hmi.sharp_cea_720s'),
-                        a.jsoc.Segment('Bp') & a.jsoc.Segment('magnetogram'))
+    res = client.search(attrs.PrimeKey('HARPNUM', 3604),
+                        attrs.Series('hmi.sharp_cea_720s'),
+                        attrs.Segment('Bp') & attrs.Segment('magnetogram'))
     #Because res.query_args is list that contains dict
     assert 'primekey' in res.query_args[0]
+
 
 @pytest.mark.remote_data
 def test_query():
