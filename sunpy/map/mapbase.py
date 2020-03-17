@@ -1692,16 +1692,15 @@ class GenericMap(NDData):
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
-        title : `bool`, optional
-            If `True`, include the title.
+        title : `str`, `bool`, optional
+            The plot title. If `True`, uses the default title for this map.
 
         clip_interval : two-element `~astropy.units.Quantity`, optional
             If provided, the data will be clipped to the percentile interval bounded by the two
             numbers.
 
         **imshow_kwargs  : `dict`
-            Any additional imshow arguments that should be used
-            when plotting.
+            Any additional imshow arguments are passed to `~matplotlib.axes.Axes.imshow`.
 
         Examples
         --------
@@ -1730,12 +1729,14 @@ class GenericMap(NDData):
                               SunpyUserWarning)
 
         # Normal plot
-        imshow_args = copy.deepcopy(self.plot_settings)
-        if 'title' in imshow_args:
-            plot_settings_title = imshow_args.pop('title')
+        plot_settings = copy.deepcopy(self.plot_settings)
+        if 'title' in plot_settings:
+            plot_settings_title = plot_settings.pop('title')
         else:
             plot_settings_title = self.latex_name
 
+        # Anything left in plot_settings is given to imshow
+        imshow_args = plot_settings
         if annotate:
             if title is True:
                 title = plot_settings_title
