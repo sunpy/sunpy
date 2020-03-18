@@ -5,7 +5,7 @@ Calculating Carrington longitude
 
 Carrington coordinates are a heliographic coordinate system, where the longitude is determined assuming that the Sun has rotated at a sidereal period of ~25.38 days starting at zero longitude at a specific time on 1853 November 9.
 For a given observer at a given observation time, the center of the disk of the Sun as seen by that observer (also known as the apparent [#apparent]_ sub-observer point) has a Carrington latitude and longitude.
-When the observer is at Earth, the apparent sub-Earth Carrington latitude and longitude are also known as |B0| and |L0|, respectively.
+When the observer is at Earth, the apparent sub-Earth [#subEarth]_ Carrington latitude and longitude are also known as |B0| and |L0|, respectively.
 
 Quick summary
 -------------
@@ -13,6 +13,7 @@ SunPy calculates the sub-observer Carrington longitude in a manner that enables 
 
 Observer effects
 ----------------
+An observer will perceive the locations and orientations of solar-system objects different from how they truly are.
 There are two primary effects for why the apparent sub-observer point is not the same as the "true" sub-observer point.
 
 Light travel time
@@ -111,13 +112,14 @@ Compared to SunSPICE
 
 In `SunSPICE <https://stereo-ssc.nascom.nasa.gov/sunspice.shtml>`_, one can convert to and from the "Carrington" coordinate system using the function `convert_sunspice_coord <https://hesperia.gsfc.nasa.gov/ssw/packages/sunspice/idl/convert_sunspice_coord.pro>`_.
 However, these Carrington longitudes are "true" rather than "apparent" because the observer is not specified, so there are no corrections for light travel time or for observer motion.
-Thus, SunPy values will be consistently greater than SunSPICE's coordinate transformation by ~0.82 degrees.
+For example, for an Earth observer, SunPy values will be consistently greater than SunSPICE's coordinate transformation by ~0.82 degrees.
 
 Footnotes
 ---------
 
 .. [#apparent] The term "apparent" (as opposed to "true") is used to indicate that the observer perceives the locations and orientations of objects different from how they truly are due to effects that include light travel time.
-.. [#Carrington] Carrington (1863), *Observations of the Spots on the Sun*, p. 244
+.. [#subEarth] "Sub-Earth" is a special case of "sub-observer", where the observer is at Earth (specifically, Earth center).  That is, the sub-Earth point is the point on the Sun's surface "below" the center of the Earth along the Sun-Earth line.
+.. [#Carrington] Carrington (1863), *Observations of the Spots on the Sun*, p. 16 (`<https://archive.org/details/observationsofsp00carr/page/16/mode/1up>`__) and p.27 (`<https://archive.org/details/observationsofsp00carr/page/27/mode/1up>`__)
 .. [#IAU] Seidelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates and rotational elements: 2006", `<http://dx.doi.org/10.1007/s10569-007-9072-y>`__
 .. [#AA] Urban & Kaplan (2007), "Investigation of Change in the Computational Technique of the Sun’s Physical Ephemeris in The Astronomical Almanac", `<http://asa.hmnao.com/static/files/sun_rotation_change.pdf>`__
 
