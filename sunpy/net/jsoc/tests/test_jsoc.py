@@ -110,18 +110,6 @@ def test_quality_attr():
 
 
 @pytest.mark.remote_data
-def test_quality_attr_missing_data():
-    series_name = "hmi.B_720s"
-    series = attrs.Series(series_name)
-    segments = attrs.Segment('field') & attrs.Segment('inclination') & attrs.Segment('azimuth') & \
-               attrs.Segment('disambig')
-    attrs_time = vso_attrs.Time('2017/09/06 05:40', '2017/09/06 06:30')
-    result = client.search(attrs_time, series, segments, attrs.Quality('<=0'))
-    with pytest.raises(ValueError):
-        client.fetch(result)
-
-
-@pytest.mark.remote_data
 def test_post_notify_fail():
     responses = client.search(
         a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),

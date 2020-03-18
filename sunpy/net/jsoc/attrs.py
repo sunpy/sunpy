@@ -83,7 +83,7 @@ class Notify(SimpleAttr):
 
 class Quality(SimpleAttr):
     """
-    A quality flag
+    A comparison to run again the quality value e.g. '>= 0'
 
     """
     pass

@@ -103,6 +103,15 @@ class JSOCClient(BaseClient):
         JSOC requires you to register your email address before requesting
         data. `See this on how to register <http://jsoc.stanford.edu/ajax/register_email.html>`__.
 
+    .. note::
+
+        Not all data returned by a `~sunpy.net.jsoc.JSOCClient.search` is available for download.
+        The status of data is encoded into the `Quality` attribute and its interpretation varies
+        by series see
+        `MDI <http://jsoc.stanford.edu/MDI/MDI_Global.html>`_,
+        `HMI <http://jsoc.stanford.edu/doc/data/hmi/Quality_Bits/quallev1.html>`_,
+        `AIA <http://jsoc.stanford.edu/~jsoc/keywords/AIA/AIA02840_K_AIA-SDO_FITS_Keyword_Document.pdf>`_.
+
     Notes
     -----
     The full list of ``Series`` is available through this `site <http://jsoc.stanford.edu>`_.
@@ -421,19 +430,8 @@ class JSOCClient(BaseClient):
 
         """
         requests = []
-        missing = jsoc_response.table['INSTRUME'] == 'MISSING'
-        if any(missing):
-            warnings.warn(f'Some of the requested data is not available and can not be downloaded:'
-                          f'\n{jsoc_response[missing]}', SunpyUserWarning)
-
         self.query_args = jsoc_response.query_args
         for block in jsoc_response.query_args:
-            if any(missing) and 'quality' not in block:
-                block['quality'] = '>= 0'
-            else:
-                raise ValueError(f'Quality attribute {block["quality"]} has resulted in missing '
-                                 f'data which will cause this request to fail')
-
             ds = self._make_recordset(**block)
             cd = drms.Client(email=block.get('notify', ''))
             protocol = block.get('protocol', 'fits')
@@ -783,9 +781,9 @@ class JSOCClient(BaseClient):
             raise ValueError(error_message)
 
         dataset = '{series}{primekey}{quality}{segment}'.format(series=series,
-                                                       primekey=pkstr,
-                                                       quality=quality,
-                                                       segment=segment)
+                                                                primekey=pkstr,
+                                                                quality=quality,
+                                                                segment=segment)
 
         return dataset
 
@@ -884,7 +882,7 @@ class JSOCClient(BaseClient):
 
         required = {a.jsoc.Series}
         optional = {a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
-                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample
+                    a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample,
                     a.jsoc.Quality}
         query_attrs = {type(x) for x in query}
         all_attrs = required.union(optional)
