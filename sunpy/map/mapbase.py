@@ -312,7 +312,7 @@ class GenericMap(NDData):
         # GenericMap.coordinate_frame is implemented using this method, so we
         # need to do this only based on .meta.
         ctypes = {c[:4] for c in w2.wcs.ctype}
-        # Check that the ctypes contains one of these two pairs of axes.
+        # Check that the ctypes contains one of these three pairs of axes.
         if ({'HPLN', 'HPLT'} <= ctypes or {'SOLX', 'SOLY'} <= ctypes or {'CRLN', 'CRLT'} <= ctypes):
             w2.heliographic_observer = self.observer_coordinate
 

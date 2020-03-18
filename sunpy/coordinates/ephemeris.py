@@ -335,7 +335,7 @@ def _L0(time='now',
         dlon_earth -= 20.496*u.arcsec * 1*u.AU / earth.radius
 
     # Antedate the observation time to account for light travel time for the Sun-Earth distance
-    antetime = obstime - distance / speed_of_light if light_travel_time_correction else obstime
+    antetime = (obstime - distance / speed_of_light) if light_travel_time_correction else obstime
 
     # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
     dlon_meridian = Longitude(_DLON_MERIDIAN + (antetime - _J2000) * 14.1844*u.deg/u.day)
