@@ -5,7 +5,7 @@ from sunpy.net._attrs import Wavelength, Time
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr, SimpleAttr
 
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
+__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey', 'Quality']
 
 
 class Series(SimpleAttr):
@@ -83,10 +83,14 @@ class Notify(SimpleAttr):
 
 class Quality(SimpleAttr):
     """
-    A comparison to run again the quality value e.g. '>= 0'
+    A comparison test to run again the quality value (e.g. '>= 0').
 
+    Quality information is encoded into a  bit mask represented as a number (i.e [1,0,0,0,1] = 2**4
+    + 2**0 = 17). The exact meaning of each bit in the bit mask differs from series to series see
+    `MDI <http://jsoc.stanford.edu/MDI/MDI_Global.html>`_,
+    `HMI <http://jsoc.stanford.edu/doc/data/hmi/Quality_Bits/quallev1.html>`_, and
+    `AIA <http://jsoc.stanford.edu/~jsoc/keywords/AIA/AIA02840_K_AIA-SDO_FITS_Keyword_Document.pdf>`_.
     """
-    pass
 
 
 walker = AttrWalker()

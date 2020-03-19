@@ -106,11 +106,8 @@ class JSOCClient(BaseClient):
     .. note::
 
         Not all data returned by a `~sunpy.net.jsoc.JSOCClient.search` is available for download.
-        The status of data is encoded into the `Quality` attribute and its interpretation varies
-        by series see
-        `MDI <http://jsoc.stanford.edu/MDI/MDI_Global.html>`_,
-        `HMI <http://jsoc.stanford.edu/doc/data/hmi/Quality_Bits/quallev1.html>`_,
-        `AIA <http://jsoc.stanford.edu/~jsoc/keywords/AIA/AIA02840_K_AIA-SDO_FITS_Keyword_Document.pdf>`_.
+        The status of data is encoded into the `Quality` key and its interpretation varies
+        by series and can be filtered using `~sunpy.net.jsoc.attrs.Quality` see Example 3 below.
 
     Notes
     -----
@@ -235,6 +232,48 @@ class JSOCClient(BaseClient):
 
         >>> res.wait(progress=True)   # doctest: +SKIP
 
+    *Example 3*
+
+    Handling missing dataQuery JSOC for some HMI observables and specif keys
+
+        >>> from sunpy.net import jsoc
+        >>> from sunpy.net import attrs as a
+        >>> client = jsoc.JSOCClient()
+        >>> segments = a.jsoc.Segment('field') & jsoc.Segment('inclination') & a.jsoc.Segment('azimuth') & a.jsoc.Segment('disambig')
+        >>> keys = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT', 'QUALITY']
+        >>> response = client.search(a.Time('2017/09/06 05:40', '2017/09/06 06:30'),
+        ...                          a.jsoc.Series('hmi.B_720s'), segments, a.jsoc.Keys(keys),
+        ...                          a.jsoc.Notify("sunpy@sunpy.org")) # doctest: +REMOTE_DATA
+
+        The response object holds the records notice the last record
+
+        >>> print(response)  # doctest: +ELLIPSIS  +REMOTE_DATA
+                 T_REC          TELESCOP   INSTRUME   WAVELNTH CAR_ROT  QUALITY
+        ----------------------- -------- ------------ -------- ------- ----------
+        2017.09.06_05:36:00_TAI  SDO/HMI HMI_COMBINED   6173.0  2194.0          0
+        2017.09.06_05:48:00_TAI  SDO/HMI HMI_COMBINED   6173.0  2194.0          0
+        2017.09.06_06:00:00_TAI  SDO/HMI HMI_COMBINED   6173.0  2194.0      65536
+        2017.09.06_06:12:00_TAI  SDO/HMI      MISSING   6173.0      -- 3221225472
+
+    Attempting to download this data with `client.fetch(response)` will result in an error as the
+    underling data file for the last entry is missing. We can use the `sunpy.net.jsoc.attrs.Quality`
+    to filter out data with a non-zero quality flag.
+
+        >>> response = client.search(a.Time('2017/09/06 05:40', '2017/09/06 06:30'),
+        ...                          a.jsoc.Series('hmi.B_720s'), segments, a.jsoc.Keys(keys),
+        ...                          a.jsoc.Quality('>= 0'), a.jsoc.Notify("sunpy@sunpy.org")) # doctest: +REMOTE_DATA
+
+        This time the last response is not included.
+
+        >>> print(response)  # doctest: +ELLIPSIS  +REMOTE_DATA
+                 T_REC          TELESCOP   INSTRUME   WAVELNTH CAR_ROT QUALITY
+        ----------------------- -------- ------------ -------- ------- -------
+        2017.09.06_05:36:00_TAI  SDO/HMI HMI_COMBINED   6173.0    2194       0
+        2017.09.06_05:48:00_TAI  SDO/HMI HMI_COMBINED   6173.0    2194       0
+        2017.09.06_06:00:00_TAI  SDO/HMI HMI_COMBINED   6173.0    2194   65536
+
+    This data can be successfully downloaded using `client.fetch(response)` see the
+    `sunpy.net.jsoc.attrs.Quality` documentation for further information.
     """
 
     def search(self, *query, **kwargs):
@@ -780,10 +819,7 @@ class JSOCClient(BaseClient):
             error_message = "Atleast one PrimeKey must be passed."
             raise ValueError(error_message)
 
-        dataset = '{series}{primekey}{quality}{segment}'.format(series=series,
-                                                                primekey=pkstr,
-                                                                quality=quality,
-                                                                segment=segment)
+        dataset = f'{series}{pkstr}{quality}{segment}'
 
         return dataset
 
