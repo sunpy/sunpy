@@ -56,7 +56,7 @@ lon.coord_wrap = 180
 lon.set_major_formatter('dd')
 
 # Plot the Heliographic Stonyhurst grid
-overlay.grid(color='blue', linewidth=2, linestyle='dashed')
+overlay.grid(color='tab:blue', linewidth=2, linestyle='dashed')
 # Switch off the helioprojective grid
 ax.grid(False)
 
