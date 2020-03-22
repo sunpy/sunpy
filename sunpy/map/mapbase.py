@@ -460,6 +460,11 @@ class GenericMap(NDData):
             time = self._default_time
         return parse_time(time)
 
+    @date.setter
+    def date(self, val):
+        val = parse_time(val)
+        self.meta['date-obs'] = val.isot
+
     @property
     def detector(self):
         """Detector name."""

@@ -175,6 +175,12 @@ def test_date_aia(aia171_test_map):
     assert aia171_test_map.date == parse_time('2011-02-15T00:00:00.34')
 
 
+def test_date_setter(generic_map):
+    dtime_old = generic_map.date
+    generic_map.date = '2011-02-15T00:00:00.34'
+    assert generic_map.date == parse_time('2011-02-15T00:00:00.34') != dtime_old
+
+
 def test_detector(generic_map):
     assert generic_map.detector == 'bar'
 
