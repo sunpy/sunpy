@@ -83,13 +83,40 @@ class Notify(SimpleAttr):
 
 class Quality(SimpleAttr):
     """
-    A comparison test to run again the quality value (e.g. '>= 0').
+    A comparison test and number to run against the quality value (e.g. `>= 0`).
 
-    Quality information is encoded into a  bit mask represented as a number (i.e [1,0,0,0,1] = 2**4
-    + 2**0 = 17). The exact meaning of each bit in the bit mask differs from series to series see
+    Quality information is encoded into 32 bit flags e.g. `0b01010101010101010101010101010101`
+    which can be represented in hexadecimal as `0x55555555`,  or as in integer `1431655765`.
+    The exact meaning of each bit defers from series to series see
     `MDI <http://jsoc.stanford.edu/MDI/MDI_Global.html>`_,
-    `HMI <http://jsoc.stanford.edu/doc/data/hmi/Quality_Bits/quallev1.html>`_, and
+    `HMI <http://jsoc.stanford.edu/doc/data/hmi/Quality_Bits/quallev1.txt>`_, and
     `AIA <http://jsoc.stanford.edu/~jsoc/keywords/AIA/AIA02840_K_AIA-SDO_FITS_Keyword_Document.pdf>`_.
+
+    .. warning::
+        The quality field is returned as an **unsigned 32 bit** integer representation of the bit
+        flags but the attribute expects a **signed 32 bit**  integer representation of the bit
+        flags.
+
+    For example the bit flags `0b10000000000000000000000000000000` or `0x80000000` in hex have an
+    unsigned 32 bit integer value of `2147483648` or a signed 32 bit integer value of `-2147483648`.
+
+    For HMI the missing data flag is `0x80000000` or `0b10000000000000000000000000000000` this can
+    be converted to a signed int using::
+
+        import numpy as np
+        np.array(0x80000000).astype(np.int32)
+        array(-2147483648, dtype=int32)
+
+    This value could then be used with the quality attribute `Quality('>-2147483648)` however this
+    may not remove all missing data as other flag or bits may be set. For singed 32 bit these
+    numbers would be smaller (`0x80000000 < 0x88000000`, `-2147483648 < -2013265920`) and so the
+    comparision test would be false. In this case it is important to note all signed 32 bit numbers
+    with the top bit set (`0x80000000`) are negative so it is sufficient to query for quality values
+    the are greater than or equal to zero `Quality('>=0')`
+
+    Another example with HMI the QUAL_ECLIPSE flag (`0x00000200`) as a signed 32 bit number is `512`
+    setting any additional flags can only increase this value so to filter out any results with the
+    QUAL_ECLIPSE flag `Quality( < 512)` would be used.
     """
 
 

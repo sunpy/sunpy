@@ -107,7 +107,8 @@ class JSOCClient(BaseClient):
 
         Not all data returned by a `~sunpy.net.jsoc.JSOCClient.search` is available for download.
         The status of data is encoded into the `Quality` key and its interpretation varies
-        by series and can be filtered using `~sunpy.net.jsoc.attrs.Quality` see Example 3 below.
+        by series and can be filtered using the `sunpy.net.jsoc.attrs.Quality` attribute
+        see Example 3 below.
 
     Notes
     -----
@@ -234,18 +235,20 @@ class JSOCClient(BaseClient):
 
     *Example 3*
 
-    Handling missing dataQuery JSOC for some HMI observables and specif keys
+    Handling missing data, first query JSOC for some HMI observables and specif keys with known
+    missing data::
 
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> segments = a.jsoc.Segment('field') & jsoc.Segment('inclination') & a.jsoc.Segment('azimuth') & a.jsoc.Segment('disambig')
+        >>> segments = (a.jsoc.Segment('field') & jsoc.Segment('inclination')
+        ...             & a.jsoc.Segment('azimuth') & a.jsoc.Segment('disambig'))
         >>> keys = ['T_REC', 'TELESCOP', 'INSTRUME', 'WAVELNTH', 'CAR_ROT', 'QUALITY']
         >>> response = client.search(a.Time('2017/09/06 05:40', '2017/09/06 06:30'),
-        ...                          a.jsoc.Series('hmi.B_720s'), segments, a.jsoc.Keys(keys),
-        ...                          a.jsoc.Notify("sunpy@sunpy.org")) # doctest: +REMOTE_DATA
+        ...                          a.jsoc.Series('hmi.B_720s'), segments, a.jsoc.Keys(keys)) # doctest: +REMOTE_DATA
 
-        The response object holds the records notice the last record
+    The response object holds the records, the last record has some empty (`--`) values and others
+    contain `MISSING`::
 
         >>> print(response)  # doctest: +ELLIPSIS  +REMOTE_DATA
                  T_REC          TELESCOP   INSTRUME   WAVELNTH CAR_ROT  QUALITY
@@ -257,13 +260,14 @@ class JSOCClient(BaseClient):
 
     Attempting to download this data with `client.fetch(response)` will result in an error as the
     underling data file for the last entry is missing. We can use the `sunpy.net.jsoc.attrs.Quality`
-    to filter out data with a non-zero quality flag.
+    to filter data. In the case of HMI this can be accomplished by adding `Quality('>= 0')`
+    to the query::
 
         >>> response = client.search(a.Time('2017/09/06 05:40', '2017/09/06 06:30'),
         ...                          a.jsoc.Series('hmi.B_720s'), segments, a.jsoc.Keys(keys),
-        ...                          a.jsoc.Quality('>= 0'), a.jsoc.Notify("sunpy@sunpy.org")) # doctest: +REMOTE_DATA
+        ...                          a.jsoc.Quality('>= 0')) # doctest: +REMOTE_DATA
 
-        This time the last response is not included.
+    This time the last response, with the missing data, is not included::
 
         >>> print(response)  # doctest: +ELLIPSIS  +REMOTE_DATA
                  T_REC          TELESCOP   INSTRUME   WAVELNTH CAR_ROT QUALITY
@@ -273,7 +277,7 @@ class JSOCClient(BaseClient):
         2017.09.06_06:00:00_TAI  SDO/HMI HMI_COMBINED   6173.0    2194   65536
 
     This data can be successfully downloaded using `client.fetch(response)` see the
-    `sunpy.net.jsoc.attrs.Quality` documentation for further information.
+    `~sunpy.net.jsoc.attrs.Quality` documentation for further information.
     """
 
     def search(self, *query, **kwargs):
