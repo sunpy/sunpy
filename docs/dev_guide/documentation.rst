@@ -114,6 +114,12 @@ This will generate HTML documentation for SunPy in the "docs/_build/html" direct
 You can open the "index.html" file to browse the final product.
 The gallery examples are located under "docs/_build/html/generated/gallery".
 Sphinx builds documentation iteratively, only adding things that have changed.
+
+
+To view the changes you've made locally, navigate to the "docs" directory and run::
+
+    $ make html
+
 If you'd like to start from scratch then just run::
 
     $ tox -e build_docs -- -aE
