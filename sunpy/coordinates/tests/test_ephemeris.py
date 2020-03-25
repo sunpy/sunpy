@@ -1,16 +1,27 @@
 # -*- coding: utf-8 -*-
 
+from hypothesis import given, settings
 import pytest
 
 import astropy.units as u
 from astropy.config.paths import set_temp_cache
 from astropy.constants import c as speed_of_light
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import SkyCoord, solar_system_ephemeris
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
 from sunpy.coordinates.ephemeris import *
 from sunpy.time import parse_time
+from .strategies import times
+
+
+@pytest.fixture(scope='function')
+def astropy_ephemeris_de432s():
+    # Temporarily set Astropy's ephemeris to DE432s
+    old_ephemeris = solar_system_ephemeris.get()
+    solar_system_ephemeris.set('de432s')
+    yield solar_system_ephemeris.get()
+    solar_system_ephemeris.set(old_ephemeris)
 
 
 def test_get_body_heliographic_stonyhurst():
@@ -100,12 +111,18 @@ def test_get_horizons_coord_array_time():
 
 
 @pytest.mark.remote_data
-def test_consistency_with_horizons():
+@given(obstime=times())
+@settings(deadline=2000, max_examples=10)
+def test_consistency_with_horizons(astropy_ephemeris_de432s, obstime):
     # get_horizons_coord() depends on astroquery
     astroquery = pytest.importorskip("astroquery")
 
     # Check whether the location of Earth is the same between Astropy and JPL HORIZONS
-    now = parse_time('now')
-    e1 = get_earth(now)
-    e2 = get_horizons_coord('Geocenter', now)
-    assert_quantity_allclose(e1.separation_3d(e2), 0*u.km, atol=35*u.km)
+    e1 = get_earth(obstime)
+    e2 = get_horizons_coord('Geocenter', obstime)
+    assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=50*u.m)
+
+    # Check whether the location of Mars is the same between Astropy and JPL HORIZONS
+    e1 = get_body_heliographic_stonyhurst('mars', obstime)
+    e2 = get_horizons_coord('Mars barycenter', obstime)
+    assert_quantity_allclose(e2.separation_3d(e1), 0*u.km, atol=500*u.m)

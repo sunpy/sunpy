@@ -1,0 +1,1 @@
+The accuracy of the output of :func:`sunpy.coordinates.ephemeris.get_horizons_coord` is significantly improved.
