@@ -25,7 +25,7 @@ from sunpy.util.xml import xml_to_dict
 
 __all__ = ['HEKClient']
 
-DEFAULT_URL = 'http://www.lmsal.com/hek/her'
+DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
 
 
 def _freeze(obj):
@@ -64,10 +64,11 @@ class HEKClient:
 
         while True:
             data['page'] = page
-            fd = urllib.request.urlopen(
-                self.url, urllib.parse.urlencode(data).encode('utf-8'))
+            fd = urllib.request.urlopen(self.url+urllib.parse.urlencode(data))
             try:
-                result = json.load(reader(fd))
+                result = json.load(fd)
+            except Exception as e:
+                raise IOError("Failed to load return from the HEKClient.") from e
             finally:
                 fd.close()
             results.extend(result['result'])

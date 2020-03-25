@@ -5,6 +5,8 @@ import urllib
 import warnings
 import copy
 from collections.abc import Sequence
+from pathlib import Path
+import copy
 
 import drms
 import numpy as np
@@ -37,10 +39,11 @@ class JSOCResponse(Sequence):
         """
         table : `astropy.table.Table`
         """
-
-        self.table = table
-        self.query_args = None
-        self.requests = None
+        if isinstance(table, list) and isinstance(table[0], type(self)):
+            table = table[0]
+        self.table = table or astropy.table.QTable()
+        self.query_args = getattr(table, 'query_args', None)
+        self.requests = getattr(table, 'requests', None)
 
     def __str__(self):
         return str(self.table)
@@ -58,7 +61,16 @@ class JSOCResponse(Sequence):
             return len(self.table)
 
     def __getitem__(self, item):
-        return type(self)(self.table[item])
+        if isinstance(item, int):
+            item = slice(item, item + 1)
+        ret = type(self)(self.table[item])
+        ret.query_args = self.query_args
+        ret.requests = self.requests
+
+        warnings.warn("Downloading of sliced JSOC results is not supported. "
+                      "All the files present in the original response will be downloaded.",
+                      SunpyUserWarning)
+        return ret
 
     def __iter__(self):
         return (t for t in [self])
@@ -559,7 +571,10 @@ class JSOCClient(BaseClient):
         if path is None:
             default_dir = config.get("downloads", "download_dir")
             path = os.path.join(default_dir, '{file}')
-        elif isinstance(path, str) and '{file}' not in path:
+        elif isinstance(path, Path):
+            path = str(path)
+
+        if isinstance(path, str) and '{file}' not in path:
             path = os.path.join(path, '{file}')
 
         paths = []
@@ -583,9 +598,13 @@ class JSOCClient(BaseClient):
         urls = []
         for request in requests:
             if request.status == 0:
-                for index, data in request.data.iterrows():
-                    url_dir = request.request_url + '/'
-                    urls.append(urllib.parse.urljoin(url_dir, data['filename']))
+                if request.protocol == 'as-is':
+                    urls.extend(list(request.urls.url))
+                else:
+                    for index, data in request.data.iterrows():
+                        url_dir = request.request_url + '/'
+                        urls.append(urllib.parse.urljoin(url_dir, data['filename']))
+
         if urls:
             if progress:
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"

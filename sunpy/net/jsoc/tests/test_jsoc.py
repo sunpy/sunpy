@@ -33,12 +33,9 @@ def test_jsocresponse_single():
 
 def test_empty_jsoc_response():
     Jresp = JSOCResponse()
-    assert Jresp.table is None
+    assert isinstance(Jresp.table,astropy.table.QTable)
     assert Jresp.query_args is None
     assert Jresp.requests is None
-    assert str(Jresp) == 'None'
-    assert repr(Jresp) == 'None'
-    assert len(Jresp) == 0
 
 
 @pytest.mark.remote_data
@@ -312,6 +309,20 @@ def test_results_filenames():
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     path = tempfile.mkdtemp()
     files = client.fetch(responses, path=path)
+    assert isinstance(files, Results)
+    assert len(files) == len(responses)
+    for hmiurl in files:
+        assert os.path.isfile(hmiurl)
+
+
+@pytest.mark.remote_data
+def test_results_filenames_as_is(tmp_path):
+    responses = client.search(
+        vso_attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
+        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
+        attrs.Protocol('as-is'))
+    assert len(responses) == 2
+    files = client.fetch(responses, path=tmp_path)
     assert isinstance(files, Results)
     assert len(files) == len(responses)
     for hmiurl in files:
