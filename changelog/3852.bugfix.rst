@@ -1,0 +1,1 @@
+Fix failing of fetching of the indexed JSOCResponses using `Fido.fetch`.
