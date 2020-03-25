@@ -1,7 +1,7 @@
 no-backports: &no-backports
-  name: Skip any branches called backport*
+  name: Skip any branches called cherry-pick
   command: |
-    if [[ "${CIRCLE_BRANCH}" = *"backport"* ]]; then
+    if [[ "${CIRCLE_BRANCH}" == *"cherry-pick"* || "${CIRCLE_BRANCH}" == *"backport"* ]]; then
       circleci step halt
     fi
 
