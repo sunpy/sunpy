@@ -717,3 +717,8 @@ def test_missing_metadata_warnings():
 
 def test_fits_header(aia171_test_map):
     assert isinstance(aia171_test_map.fits_header, fits.Header)
+
+
+def test_wcs_isot(aia171_test_map):
+    # Check that a Map WCS returns the time as isot format
+    assert aia171_test_map.wcs.to_header()['DATE-OBS'] == '2011-02-15T00:00:00.340'
