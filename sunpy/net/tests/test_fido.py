@@ -467,3 +467,16 @@ def test_fido_no_time(mocker):
     Fido.search(a.jsoc.Series("test"))
 
     jsoc_mock.assert_called_once()
+
+@pytest.mark.remote_data
+def test_slice_jsoc():
+    tstart = '2011/06/07 06:32:45'
+    tend = '2011/06/07 06:33:15'
+    res = Fido.search(a.Time(tstart, tend), a.jsoc.Series('hmi.M_45s'),
+                      a.jsoc.Notify('jsoc@cadair.com'))
+
+    with pytest.warns(SunpyUserWarning):
+        Fido.fetch(res[0, 0])
+
+    with pytest.warns(SunpyUserWarning) as record:
+        Fido.fetch(res[0, 0:1])
