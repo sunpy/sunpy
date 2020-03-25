@@ -225,7 +225,7 @@ extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphin
 # "version" configuration parameter
 edit_on_github_project = "sunpy/sunpy"
 if 'dev' not in release:
-    edit_on_github_branch = f"{version}"
+    edit_on_github_branch = f"{version.split('.')[0]}.{version.split('.')[1]}"
 else:
     edit_on_github_branch = "master"
 edit_on_github_source_root = ""
