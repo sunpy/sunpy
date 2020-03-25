@@ -33,12 +33,9 @@ def test_jsocresponse_single():
 
 def test_empty_jsoc_response():
     Jresp = JSOCResponse()
-    assert Jresp.table is None
+    assert isinstance(Jresp.table,astropy.table.QTable)
     assert Jresp.query_args is None
     assert Jresp.requests is None
-    assert str(Jresp) == 'None'
-    assert repr(Jresp) == 'None'
-    assert len(Jresp) == 0
 
 
 @pytest.mark.remote_data
