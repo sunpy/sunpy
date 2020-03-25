@@ -19,7 +19,7 @@ from sunpy.util.xml import xml_to_dict
 
 __all__ = ['HEKClient']
 
-DEFAULT_URL = 'http://www.lmsal.com/hek/her?'
+DEFAULT_URL = 'https://www.lmsal.com/hek/her?'
 
 
 def _freeze(obj):
