@@ -5,6 +5,7 @@ import urllib
 import warnings
 from collections.abc import Sequence
 from pathlib import Path
+import copy
 
 import drms
 import numpy as np
@@ -37,7 +38,8 @@ class JSOCResponse(Sequence):
         """
         table : `astropy.table.Table`
         """
-        super().__init__()
+        if isinstance(table, list) and isinstance(table[0], type(self)):
+            table = table[0]
         self.table = table or astropy.table.QTable()
         self.query_args = getattr(table, 'query_args', None)
         self.requests = getattr(table, 'requests', None)
