@@ -37,10 +37,10 @@ class JSOCResponse(Sequence):
         """
         table : `astropy.table.Table`
         """
-
-        self.table = table
-        self.query_args = None
-        self.requests = None
+        super().__init__()
+        self.table = table or astropy.table.QTable()
+        self.query_args = getattr(table, 'query_args', None)
+        self.requests = getattr(table, 'requests', None)
 
     def __str__(self):
         return str(self.table)
@@ -58,7 +58,16 @@ class JSOCResponse(Sequence):
             return len(self.table)
 
     def __getitem__(self, item):
-        return type(self)(self.table[item])
+        if isinstance(item, int):
+            item = slice(item, item + 1)
+        ret = type(self)(self.table[item])
+        ret.query_args = self.query_args
+        ret.requests = self.requests
+
+        warnings.warn("Downloading of sliced JSOC results is not supported. "
+                      "All the files present in the original response will be downloaded.",
+                      SunpyUserWarning)
+        return ret
 
     def __iter__(self):
         return (t for t in [self])
@@ -329,7 +338,8 @@ class JSOCClient(BaseClient):
         for block in walker.create(query):
             iargs = kwargs.copy()
             iargs.update(block)
-            blocks.append(iargs)
+            # Update blocks with deep copy of iargs because in _make_recordset we use .pop() on element from iargs
+            blocks.append(copy.deepcopy(iargs))
             return_results.append(self._lookup_records(iargs))
 
         return_results.query_args = blocks
