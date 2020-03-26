@@ -118,8 +118,8 @@ If you'd like to start from scratch (i.e., remove the tox cache) then just run::
 
     $ tox -e build_docs -- -aE
 
-To build the documentation locally you must have all the dependencies (``pip install -e .[docs]``) specified in ``setup.cfg`` installed on your computer.
-Then go into to the"docs" directory and run::
+To build the documentation in your current python environment you must have all the dependencies specified in ``setup.cfg`` installed (``pip install -e .[docs]``).
+Then change to the :file:`docs/` directory and run::
 
     $ make html
 
