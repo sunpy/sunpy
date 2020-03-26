@@ -1686,6 +1686,14 @@ class GenericMap(NDData):
 
         im = self.plot(axes=axes, **matplot_args)
 
+        grid_spacing = None
+        # Handle case where draw_grid is actually the grid sapcing
+        if isinstance(draw_grid, u.Quantity):
+            grid_spacing = draw_grid
+            draw_grid = True
+        elif not isinstance(draw_grid, bool):
+            raise TypeError("draw_grid should be a bool or an astropy Quantity.")
+
         if colorbar:
             if draw_grid:
                 pad = 0.12  # Pad to compensate for ticks and axes labels
@@ -1696,13 +1704,11 @@ class GenericMap(NDData):
         if draw_limb:
             self.draw_limb(axes=axes)
 
-        if isinstance(draw_grid, bool):
-            if draw_grid:
+        if draw_grid:
+            if grid_spacing is None:
                 self.draw_grid(axes=axes)
-        elif isinstance(draw_grid, u.Quantity):
-            self.draw_grid(axes=axes, grid_spacing=draw_grid)
-        else:
-            raise TypeError("draw_grid should be a bool or an astropy Quantity.")
+            else:
+                self.draw_grid(axes=axes, grid_spacing=grid_spacing)
 
         return figure
 
