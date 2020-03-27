@@ -75,6 +75,10 @@ class Scraper:
                 end=self.pattern[milliseconds.end():]
             ))
 
+        self.append_login = True
+        if 'append_login' in kwargs:
+            self.append_login = kwargs['append_login']
+
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
 
@@ -263,8 +267,13 @@ class Scraper:
                         if (datehref >= timerange.start and
                                 datehref <= timerange.end):
                             filesurls.append(fullpath)
-        filesurls = ['ftp://anonymous:data@sunpy.org@' + "{0.netloc}{0.path}".format(urlsplit(url))
+
+        login = ''
+        if self.append_login:
+            login = "anonymous:data@sunpy.org@"
+        filesurls = [f'ftp://{login}' + "{0.netloc}{0.path}".format(urlsplit(url))
                      for url in filesurls]
+
         return filesurls
 
     def _localfilelist(self, timerange):
