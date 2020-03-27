@@ -65,11 +65,16 @@ def test_goes_event_list():
     assert result[0]['noaa_active_region'] == 11226
 
 
+@pytest.fixture
+def goeslc():
+    with pytest.warns(UserWarning, match='Discarding nonzero nanoseconds'):
+        return timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
+
+
 @pytest.mark.remote_data
-def test_calculate_temperature_em():
+def test_calculate_temperature_em(goeslc):
     # Create XRSTimeSeries object, then create new one with
     # temperature & EM using with calculate_temperature_em().
-    goeslc = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     goeslc_new = goes.calculate_temperature_em(goeslc)
     # Test correct exception is raised if a XRSTimeSeries object is
     # not inputted.
@@ -231,9 +236,8 @@ def test_goes_chianti_tem_case8():
 
 @pytest.mark.remote_data
 @pytest.mark.array_compare(file_format='text', reference_dir='./')
-def test_calculate_radiative_loss_rate():
+def test_calculate_radiative_loss_rate(goeslc):
     # Define input variables.
-    goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
     not_goeslc = []
     goeslc_no_em = goes.calculate_temperature_em(goeslc_input)
     del goeslc_no_em.data["em"]
@@ -343,14 +347,13 @@ def test_calc_rad_loss_obstime():
 
 
 @pytest.mark.remote_data
-def test_calculate_xray_luminosity():
+def test_calculate_xray_luminosity(goeslc):
     # Check correct exceptions are raised to incorrect inputs
     not_goeslc = []
     with pytest.raises(TypeError):
         goes.calculate_xray_luminosity(not_goeslc)
     # Check function gives correct results.
-    goeslc_input = timeseries.TimeSeries(get_test_filepath("go1520110607.fits"))
-    goeslc_test = goes.calculate_xray_luminosity(goeslc_input)
+    goeslc_test = goes.calculate_xray_luminosity(goeslc)
     exp_xrsa = u.Quantity([2.8962085e+14, 2.8962085e+14, 2.8962085e+14, 2.8962085e+14,
                            2.8962085e+14], "W")
     exp_xrsb = u.Quantity([5.4654352e+16, 5.3133844e+16, 5.3895547e+16, 5.2375035e+16,
