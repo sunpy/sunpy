@@ -92,7 +92,7 @@ class NoRHClient(GenericClient):
             timerange = TimeRange(timerange.start.strftime('%Y-%m-%d'),
                                   timerange.end)
 
-        norh = Scraper(BASEURL, freq=freq)
+        norh = Scraper(BASEURL, freq=freq, append_login=False)
         # TODO: warn user that some files may have not been listed, like for example:
         #       tca160504_224657 on ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/05/
         #       as it doesn't follow pattern.
@@ -101,7 +101,7 @@ class NoRHClient(GenericClient):
 
     def _get_time_for_url(self, urls):
         freq = urls[0].split('/')[-1][0:3]  # extract the frequency label
-        crawler = Scraper(BASEURL, freq=freq)
+        crawler = Scraper(BASEURL, freq=freq, append_login=False)
         times = list()
         for url in urls:
             t0 = crawler._extractDateURL(url)
