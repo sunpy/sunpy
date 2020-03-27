@@ -121,26 +121,34 @@ To search for data from multiple instruments, wavelengths, times etc., use the
 pipe ``|`` operator. This joins queries together just as the logical ``OR``
 operator would::
 
-    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'),
-    ...             a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA +ELLIPSIS
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/4 02:00'),
+    ...             a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA +ELLIPSIS +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
-    3 Results from the LYRAClient:
+    1 Results from the LYRAClient:
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    2012-03-04 00:00:00 2012-03-04 02:00:00 Proba2       lyra        nan
     <BLANKLINE>
+<<<<<<< HEAD
     3 Results from the RHESSIClient:
+=======
+    3 Results from the VSOClient:
+       Start Time [1]       End Time [1]    Source ...     Type    Wavelength [2]
+                                                   ...                  keV
+    ------------------- ------------------- ------ ... ----------- --------------
+    2012-03-03 22:57:40 2012-03-04 00:33:20 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-04 01:45:40 2012-03-04 02:09:00 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    2012-03-04 00:33:20 2012-03-04 01:45:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
+    <BLANKLINE>
+    1 Results from the RHESSIClient:
+>>>>>>> a7a040412... Skip the problematic VSO doctest
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str6       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-03-04 00:00:00 2012-03-04 23:59:59 rhessi     rhessi        nan
-    2012-03-05 00:00:00 2012-03-05 23:59:59 rhessi     rhessi        nan
-    2012-03-06 00:00:00 2012-03-06 23:59:59 rhessi     rhessi        nan
     <BLANKLINE>
     <BLANKLINE>
 
