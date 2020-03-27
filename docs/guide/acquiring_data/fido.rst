@@ -132,9 +132,6 @@ operator would::
     ------------------- ------------------- ------ ---------- ----------
     2012-03-04 00:00:00 2012-03-04 02:00:00 Proba2       lyra        nan
     <BLANKLINE>
-<<<<<<< HEAD
-    3 Results from the RHESSIClient:
-=======
     3 Results from the VSOClient:
        Start Time [1]       End Time [1]    Source ...     Type    Wavelength [2]
                                                    ...                  keV
@@ -144,7 +141,6 @@ operator would::
     2012-03-04 00:33:20 2012-03-04 01:45:40 RHESSI ... PARTIAL_SUN 3.0 .. 17000.0
     <BLANKLINE>
     1 Results from the RHESSIClient:
->>>>>>> a7a040412... Skip the problematic VSO doctest
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str6       str3
     ------------------- ------------------- ------ ---------- ----------
