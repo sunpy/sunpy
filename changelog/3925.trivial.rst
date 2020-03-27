@@ -1,0 +1,1 @@
+Bump the astropy version figure tests are run with from 3.1.2 to 3.2.3
