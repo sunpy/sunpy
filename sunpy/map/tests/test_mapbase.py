@@ -53,6 +53,8 @@ def heliographic_test_map():
     header = dict(map.meta)
     header['cunit1'] = 'deg'
     header['cunit2'] = 'deg'
+    # Set observer location to avoid warnings later
+    header['hgln_obs'] = 0.0
     return sunpy.map.Map((map.data, header))
 
 
@@ -897,10 +899,10 @@ def test_bad_header_final_fallback():
     with pytest.warns(UserWarning,
                       match="Unable to treat `.meta` as a FITS header, assuming a simple WCS."):
         m.wcs
-    assert list(m.wcs.wcs.ctype) == ['HPLN-', 'HPLT-']
-    assert (m.wcs.wcs.crval == [0.0, 0.0]).all()
-    assert (m.wcs.wcs.crpix == [5.5, 5.5]).all()
-    assert (m.wcs.wcs.cdelt == [1.0, 1.0]).all()
+        assert list(m.wcs.wcs.ctype) == ['HPLN-', 'HPLT-']
+        assert (m.wcs.wcs.crval == [0.0, 0.0]).all()
+        assert (m.wcs.wcs.crpix == [5.5, 5.5]).all()
+        assert (m.wcs.wcs.cdelt == [1.0, 1.0]).all()
 
 
 def test_wcs_isot(aia171_test_map):
