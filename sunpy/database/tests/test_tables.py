@@ -162,7 +162,7 @@ def test_entries_from_fido_search_result(fido_search_result):
     # 2 entries from norh
     assert entries[60] == DatabaseEntry(
         source='NAOJ', provider='NRO', physobs="",
-        fileid=("ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/"
+        fileid=("ftp://solar-pub.nao.ac.jp/"
                 "pub/nsro/norh/data/tcx/2012/01/tca120101"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
