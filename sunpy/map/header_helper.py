@@ -222,7 +222,7 @@ def get_observer_meta(observer, rsun: (u.Mm, None)):
     coord_meta['hgln_obs'] = observer.lon.to_value(u.deg)
     coord_meta['hglt_obs'] = observer.lat.to_value(u.deg)
     coord_meta['dsun_obs'] = observer.radius.to_value(u.m)
-    if rsun:
+    if rsun is not None:
         coord_meta['rsun_ref'] = rsun.to_value(u.m)
         coord_meta['rsun_obs'] = sun._angular_radius(rsun, observer.radius).to_value(u.arcsec)
 
