@@ -745,7 +745,7 @@ class JSOCClient(BaseClient):
             else:
                 timestr = ''
 
-        if wavelength:
+        if wavelength is not '':
             if not primekey.get('WAVELNTH', ''):
                 if isinstance(wavelength, list):
                     wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
@@ -768,7 +768,7 @@ class JSOCClient(BaseClient):
         # Populate primekey dict with formatted Time and Wavlength.
         if timestr:
             primekey['TIME'] = timestr
-        if wavelength:
+        if wavelength is not '':
             primekey['WAVELNTH'] = wavelength
 
         # Extract and format primekeys
@@ -838,7 +838,7 @@ class JSOCClient(BaseClient):
 
         # Raise errors for wavelength
         wavelength = iargs.get('wavelength', '')
-        if wavelength:
+        if wavelength is not '':
             if 'WAVELNTH' not in pkeys:
                 error_message = "The series {series} does not support wavelength attribute."\
                                 "The following primekeys are supported {pkeys}"
