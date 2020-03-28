@@ -1,6 +1,9 @@
 {
+    "sunpy.map.tests.test_compositemap.test_plot_composite_map": "be9eabc2f0bfa85eeb8dd9ddb2aab141f1937a3f206b234f47b33934e7d7c7fc",
+    "sunpy.map.tests.test_compositemap.test_plot_composite_map_linewidths": "be9eabc2f0bfa85eeb8dd9ddb2aab141f1937a3f206b234f47b33934e7d7c7fc",
     "sunpy.map.tests.test_plotting.test_draw_contours_aia": "4256007c254efdb03dd6b6bd9a53ad89e695a8f4c22a016ba3bfcefe109f61fd",
     "sunpy.map.tests.test_plotting.test_draw_grid_aia171": "79fc8e423bb83d9b0cb164fe91e635f3c1b3e6fd98ca320752888f563f3184ac",
+    "sunpy.map.tests.test_plotting.test_heliographic_grid_annotations": "83b3e21c8b421789ed69c7b17175394f740621cf097b028d9e9122db057c3f58",
     "sunpy.map.tests.test_plotting.test_heliographic_peek": "3ad7bada31398662c0852f3819937a6bc0df415a589354ab0703e87780e21d42",
     "sunpy.map.tests.test_plotting.test_heliographic_rectangle": "13080ad768f6b1e026433889673fe9432a43596dcbb8ff45171d46db8ead4c1b",
     "sunpy.map.tests.test_plotting.test_peek_aia171": "0a9603c94583a0e36ee01f10a7c8d639ec95c786624d9c222cd178d7b8c73818",
@@ -18,7 +21,6 @@
     "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel": "40d053eca1d23a24bec6b282978a30e0410b8a4e82286ace848b3c382c731c69",
     "sunpy.map.tests.test_plotting.test_plot_masked_aia171_superpixel_nowcsaxes": "0f0225378d2bd9820af2d2d526a804296496dcffa4e9a7659fc2bb91223a138b",
     "sunpy.map.tests.test_plotting.test_rectangle_aia171": "b59915b551c809d66149c7ea3687c01b186138f0c6893d9c308bf06850b089cc",
-    "sunpy.map.tests.test_plotting.test_heliographic_grid_annotations":"83b3e21c8b421789ed69c7b17175394f740621cf097b028d9e9122db057c3f58",
     "sunpy.timeseries.tests.test_timeseriesbase.test_esp_peek": "c25e927aaa39d576482a35438acee56fab915aede44e62744eb0bf2cefc889b4",
     "sunpy.timeseries.tests.test_timeseriesbase.test_eve_peek": "d2e7093fa95dc1a4bbde958275bba31d9061967ab5ef003d1af4f9519658d14b",
     "sunpy.timeseries.tests.test_timeseriesbase.test_fermi_gbm_peek": "dda01d15a769a3334e5254a93fd7bf8d16341f0e11cbd069f6738d8680bf6f96",
@@ -38,6 +40,5 @@
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_2d_transpose_update_plot": "f3718611649b9caf4faaa1f296822e847ea56f863e8178232f8e9a40a792415b",
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_2d_update_plot": "121f8b14743c103edb253fdf1514910ff1295c4d3df106a33f1ce320b0befd71",
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params": "e77f3ad73bcdeaf5e8ee4062989a9fa47a394ae1a71ee37cd3e0f9348c6ca053",
-    "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params_grid": "21f4e8100552d4d45e9496526c8e321754fad2b71428361f0007c42f0b08711d",
-    "sunpy.map.tests.test_compositemap.test_plot_composite_map": "6c979670684d970f8ba934bf9b7bf42e77c30a22eb96af1f30a039b484719159"
+    "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_coord_params_grid": "21f4e8100552d4d45e9496526c8e321754fad2b71428361f0007c42f0b08711d"
 }
