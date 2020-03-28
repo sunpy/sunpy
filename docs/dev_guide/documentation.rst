@@ -102,9 +102,8 @@ In fact, in addition to what you are reading right now, the `Python documentatio
 Usage
 -----
 
-All of the SunPy documentation is contained in the "docs" folder and code docstings/comments.
+All of the SunPy documentation is contained in the "docs" folder and code documentation strings.
 The examples from the example gallery can be found in the "examples" folder.
-To build the documentation locally you must have all the dependencies (``pip install -e .[docs]``) specified in ``setup.cfg`` installed on your computer.
 
 In the root directory run::
 
@@ -114,9 +113,15 @@ This will generate HTML documentation for SunPy in the "docs/_build/html" direct
 You can open the "index.html" file to browse the final product.
 The gallery examples are located under "docs/_build/html/generated/gallery".
 Sphinx builds documentation iteratively, only adding things that have changed.
-If you'd like to start from scratch then just run::
+
+If you'd like to start from scratch (i.e., remove the tox cache) then run::
 
     $ tox -e build_docs -- -aE
+
+To build the documentation in your current python environment you must have all the dependencies specified in ``setup.cfg`` installed (``pip install -e .[docs]``).
+Then change to the :file:`docs/` directory and run::
+
+    $ make html
 
 For more information on how to use Sphinx, consult the `Sphinx documentation <http://www.sphinx-doc.org/en/stable/contents.html>`_.
 
