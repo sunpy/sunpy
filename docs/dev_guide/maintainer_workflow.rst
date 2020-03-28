@@ -194,10 +194,9 @@ This is built and embedded into our documentation.
 Towncrier will automatically reflow your text, so it will work best if you stick to a single paragraph, but multiple sentences and links are OK and encouraged.
 You can install towncrier and then run `towncrier --draft` if you want to get a preview of how your change will look in the final release notes.
 
-Instructions on how to write a changelog can be found `here`_.
+`Instructions on how to write a changelog. <https://github.com/sunpy/sunpy/blob/master/changelog/README.rst>`__.
 
 .. _towncrier: https://pypi.org/project/towncrier/
-.. _here: https://github.com/sunpy/sunpy/blob/master/changelog/README.rst
 
 Releasing SunPy
 ===============
