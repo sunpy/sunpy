@@ -7,7 +7,7 @@ import pytest
 
 import sunpy.data.test
 import sunpy.map
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import figure_test, fix_map_wcs
 
 testpath = sunpy.data.test.rootdir
 
