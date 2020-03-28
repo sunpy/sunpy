@@ -114,7 +114,7 @@ You can open the "index.html" file to browse the final product.
 The gallery examples are located under "docs/_build/html/generated/gallery".
 Sphinx builds documentation iteratively, only adding things that have changed.
 
-If you'd like to start from scratch (i.e., remove the tox cache) then just run::
+If you'd like to start from scratch (i.e., remove the tox cache) then run::
 
     $ tox -e build_docs -- -aE
 
