@@ -30,8 +30,8 @@ jobs:
     docker:
       - image: continuumio/miniconda3
     steps:
-      - checkout
       - run: *no-backports
+      - checkout
       - run: *skip-check
       - run: *merge-check
       - run: pip install -U pep517
@@ -43,8 +43,8 @@ jobs:
     docker:
       - image: continuumio/miniconda3
     steps:
-      - checkout
       - run: *no-backports
+      - checkout
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
@@ -61,8 +61,8 @@ jobs:
     steps:
       - restore_cache:
           keys: sample-data-v1
-      - checkout
       - run: *no-backports
+      - checkout
       - run: *skip-check
       - run:
           name: install dependencies
@@ -79,8 +79,8 @@ jobs:
     docker:
       - image: continuumio/miniconda3
     steps:
-      - checkout
       - run: *no-backports
+      - checkout
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
@@ -97,8 +97,8 @@ jobs:
     docker:
       - image: continuumio/miniconda3
     steps:
-      - checkout
       - run: *no-backports
+      - checkout
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
@@ -117,8 +117,8 @@ jobs:
     steps:
       - restore_cache:
           keys: sample-data-v1
-      - checkout
       - run: *no-backports
+      - checkout
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
@@ -139,11 +139,11 @@ jobs:
           path: docs/_build/html
       - run:
           name: "Built documentation is available at:"
-          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/docs/_build/html/index.html"; echo $DOCS_URL
+          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/docs/_build/html/index.html"; echo $DOCS_URL
       - save_cache:
           key: sample-data-v1
           paths:
-            - /root/project/.tox/build_docs/tmp/sunpy/data
+            - /root/project/.tox/build_docs/sample_data
 
 workflows:
   version: 2
