@@ -1,3 +1,4 @@
+import os
 import warnings
 from pathlib import Path
 from collections import namedtuple
@@ -5,7 +6,7 @@ from urllib.parse import urljoin
 
 import parfive
 
-from sunpy.util.config import get_and_create_sample_dir
+from sunpy.util.config import get_and_create_sample_dir, _is_writable_dir
 from sunpy.util.exceptions import SunpyUserWarning
 
 _base_urls = (
@@ -72,8 +73,14 @@ def download_sample_data(overwrite=False):
     overwrite: `bool`
         Overwrite existing sample data.
     """
-    # Creating the directory for sample files to be downloaded
-    sampledata_dir = Path(get_and_create_sample_dir())
+    # Workaround for tox only. This is not supported as a user option
+    sampledata_dir = os.environ.get("SUNPY_SAMPLEDIR", False)
+    if sampledata_dir:
+        sampledata_dir = Path(sampledata_dir).expanduser().resolve()
+        _is_writable_dir(sampledata_dir)
+    else:
+        # Creating the directory for sample files to be downloaded
+        sampledata_dir = Path(get_and_create_sample_dir())
 
     dl = parfive.Downloader(overwrite=overwrite)
 
