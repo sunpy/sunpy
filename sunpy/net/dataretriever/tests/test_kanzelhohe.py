@@ -45,7 +45,7 @@ def test_query():
     assert len(qr) == 2
     assert qr.time_range().start == datetime.datetime(2015, 1, 10)
     assert qr.time_range().end == datetime.datetime(2015, 1, 10, 12, 0, 0)
-    with pytest.raises(ValueError, match="no value is enough closer to allowed wavelengths: "
+    with pytest.raises(ValueError, match="no value is closer enough to the available wavelengths: "
                                          "6563,32768,5460 angstroms"):
         KClient.search(TRANGE, a.Wavelength(6000 * u.AA))
 

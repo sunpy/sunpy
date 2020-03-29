@@ -12,7 +12,7 @@ __all__ = ['KanzelhoheClient']
 
 class KanzelhoheClient(GenericClient):
     """
-    Returns a list of URLS to Kanzelhohe H-alpha files corresponding to value of input timerange.
+    Returns a list of URLS to Kanzelhöhe H-alpha files corresponding to value of input timerange.
     URL source: `http://cesar.kso.ac.at/`.
     The earliest data for H-alpha 2k - 20-Jul-2000
                           Ca-II k - 31-Jul-2010
@@ -44,7 +44,7 @@ class KanzelhoheClient(GenericClient):
     1 Results from the KanzelhoheClient:
          Start Time           End Time      Source   Instrument      Wavelength
     ------------------- ------------------- ------ -------------- ---------------
-    2015-12-28 00:00:00 2015-12-28 09:03:00    KSO Kanzelhohe HA2 6563.0 Angstrom
+    2015-12-28 00:00:00 2015-12-28 09:03:00    KSO Kanzelhöhe HA2 6563.0 Angstrom
     <BLANKLINE>
     <BLANKLINE>
     >>> response = Fido.fetch(results)  #doctest: +SKIP
@@ -76,13 +76,13 @@ class KanzelhoheClient(GenericClient):
         # Converting from one unit to other introduces precision errors.
         wavelengths = table.keys()
         wave_list = list(filter(lambda x: np.isclose(x, wave_float), wavelengths))
-        if(len(wave_list) == 0):
-            raise ValueError("no value is enough closer to allowed wavelengths: "
+        if len(wave_list) == 0:
+            raise ValueError("no value is closer enough to the available wavelengths: "
                              + ",".join(map(str, table.keys())) + " angstroms")
         wave = wave_list[0]
         start_date = table[wave]['start_time']
         if timerange.start < start_date:
-            msg = 'Earliest date for which Kanzelhohe data is available is {:%Y-%m-%d}'
+            msg = 'Earliest date for which Kanzelhöhe data is available is {:%Y-%m-%d}'
             raise ValueError(msg.format(start_date))
         prefix = "http://cesar.kso.ac.at/{datatype}/%Y/"
         suffix = ""
@@ -101,7 +101,7 @@ class KanzelhoheClient(GenericClient):
         Helper Function:used to hold information about source.
         """
         self.map_['source'] = 'KSO'  # TODO: check with kanzelhohe
-        self.map_['instrument'] = 'Kanzelhohe HA2'
+        self.map_['instrument'] = 'Kanzelhöhe HA2'
         self.map_['phyobs'] = 'irradiance'
         self.map_['provider'] = 'KSO'
 
@@ -121,7 +121,8 @@ class KanzelhoheClient(GenericClient):
         chk_var = 0
         for x in query:
             if x.__class__.__name__ == 'Instrument' and isinstance(
-                    x.value, str) and x.value.lower() == 'kanzelhohe':
+                    x.value, str) and x.value.lower() in [
+                        'kanzelhohe', 'kanzelhoehe', 'kanzelhöhe']:
                 chk_var += 1
             if x.__class__.__name__ == 'Wavelength':
                 chk_var += 1
