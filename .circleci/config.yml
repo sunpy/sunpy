@@ -143,7 +143,7 @@ jobs:
       - save_cache:
           key: sample-data-v1
           paths:
-            - ~/sunpy/data/sample_data
+            - /root/project/.tox/build_docs/tmp/sunpy/data
 
 workflows:
   version: 2
