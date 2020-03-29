@@ -49,8 +49,10 @@ def load_config():
     remote_data_manager_dir = Path(config.get('downloads', 'remote_data_manager_dir'))
     sample_dir = config.get('downloads', 'sample_dir', fallback=dirs.user_data_dir)
     config.set('downloads', 'sample_dir', Path(sample_dir).expanduser().resolve().as_posix())
-    config.set('downloads', 'download_dir', (working_dir / download_dir).expanduser().resolve().as_posix())
-    config.set('downloads', 'remote_data_manager_dir', (working_dir / remote_data_manager_dir).expanduser().resolve().as_posix())
+    config.set('downloads', 'download_dir', (working_dir /
+                                             download_dir).expanduser().resolve().as_posix())
+    config.set('downloads', 'remote_data_manager_dir', (working_dir /
+                                                        remote_data_manager_dir).expanduser().resolve().as_posix())
 
     return config
 
