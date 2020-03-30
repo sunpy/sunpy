@@ -23,7 +23,7 @@ try:
     from .version import __version__
 except ImportError:
     print("version.py not found, please reinstall sunpy.")
-    __version__ = "0.0.0"
+    __version__ = "unknown"
 
 class UnsupportedPythonError(Exception):
     pass
