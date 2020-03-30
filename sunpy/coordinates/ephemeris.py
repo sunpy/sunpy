@@ -23,6 +23,7 @@ try:
     from astropy.coordinates import HeliocentricMeanEcliptic
 except ImportError:
     from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
+from astropy.coordinates import HeliocentricEclipticIAU76
 
 from sunpy.time import parse_time
 from sunpy import log
@@ -169,21 +170,21 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     >>> get_horizons_coord('Venus barycenter', '2001-02-03 04:05:06')  # doctest: +REMOTE_DATA
     INFO: Obtained JPL HORIZONS location for Venus Barycenter (2) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=2001-02-03T04:05:06.000): (lon, lat, radius) in (deg, deg, AU)
-        (-33.93155883, -1.64998481, 0.71915147)>
+        (-33.93155836, -1.64998443, 0.71915147)>
 
     Query the location of the SDO spacecraft
 
     >>> get_horizons_coord('SDO', '2011-11-11 11:11:11')  # doctest: +REMOTE_DATA
     INFO: Obtained JPL HORIZONS location for Solar Dynamics Observatory (spac [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=2011-11-11T11:11:11.000): (lon, lat, radius) in (deg, deg, AU)
-        (0.01018888, 3.29640407, 0.99011042)>
+        (0.01019118, 3.29640728, 0.99011042)>
 
     Query the location of the SOHO spacecraft via its ID number (-21)
 
     >>> get_horizons_coord(-21, '2004-05-06 11:22:33', 'id')  # doctest: +REMOTE_DATA
     INFO: Obtained JPL HORIZONS location for SOHO (spacecraft) (-21) [sunpy.coordinates.ephemeris]
     <SkyCoord (HeliographicStonyhurst: obstime=2004-05-06T11:22:33.000): (lon, lat, radius) in (deg, deg, AU)
-        (0.2523461, -3.55863351, 0.99923086)>
+        (0.25234902, -3.55863633, 0.99923086)>
     """
     obstime = parse_time(time)
     array_time = np.reshape(obstime, (-1,))  # Convert to an array, even if scalar
@@ -211,7 +212,7 @@ def get_horizons_coord(body, time='now', id_type='majorbody'):
     result = result[unsorted_indices]
 
     vector = CartesianRepresentation(result['x'], result['y'], result['z'])
-    coord = SkyCoord(vector, frame=HeliocentricMeanEcliptic, obstime=obstime)
+    coord = SkyCoord(vector, frame=HeliocentricEclipticIAU76, obstime=obstime)
 
     return coord.transform_to(HGS).reshape(obstime.shape)
 
