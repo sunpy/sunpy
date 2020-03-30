@@ -19,6 +19,7 @@ from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
+pytestmark = pytest.mark.filterwarnings('ignore:Missing metadata')
 
 
 @pytest.fixture
