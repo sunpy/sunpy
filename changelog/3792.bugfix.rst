@@ -1,0 +1,1 @@
+Updated `sunpy.map.compositemap.plot` to support a linewidths argument.
