@@ -1,0 +1,1 @@
+Astropy 3.2 is now the minimum required version of that dependency.

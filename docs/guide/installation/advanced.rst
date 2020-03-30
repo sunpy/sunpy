@@ -96,7 +96,7 @@ SunPy has the following strict requirements:
 
 - `SciPy <https://www.scipy.org/>`__ 1.0.0 or later.
 
-- `Astropy <https://www.astropy.org/>`__ 3.1.0 or later.
+- `Astropy <https://www.astropy.org/>`__ 3.2.0 or later.
 
 - `pandas <https://pandas.pydata.org/>`__ 0.10 or later.
 
