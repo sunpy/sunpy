@@ -16,6 +16,7 @@ import sunpy.map
 import sunpy.coordinates
 import sunpy.data.test
 from sunpy.tests.helpers import figure_test
+from sunpy.util.exceptions import SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
 
@@ -37,7 +38,7 @@ def aia171_test_map_with_mask(aia171_test_map):
     mask[0:shape[0] // 2, 0:shape[1] // 2] = True
     return sunpy.map.Map(np.ma.array(
         aia171_test_map.data, mask=mask),
-                         aia171_test_map.meta)
+        aia171_test_map.meta)
 
 
 @figure_test
@@ -84,7 +85,8 @@ def test_peek_grid_limb_aia171(aia171_test_map):
 @figure_test
 def test_plot_aia171_nowcsaxes(aia171_test_map):
     ax = plt.gca()
-    aia171_test_map.plot(axes=ax)
+    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+        aia171_test_map.plot(axes=ax)
 
 
 @figure_test
@@ -105,7 +107,8 @@ def test_plot_masked_aia171(aia171_test_map_with_mask):
 @figure_test
 def test_plot_masked_aia171_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
-    aia171_test_map_with_mask.plot(axes=ax)
+    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+        aia171_test_map_with_mask.plot(axes=ax)
 
 
 @figure_test
@@ -116,8 +119,9 @@ def test_plot_aia171_superpixel(aia171_test_map):
 @figure_test
 def test_plot_aia171_superpixel_nowcsaxes(aia171_test_map):
     ax = plt.gca()
-    aia171_test_map.superpixel(
-        (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
+    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+        aia171_test_map.superpixel(
+            (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
 
 
 @figure_test
@@ -129,8 +133,9 @@ def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
 @figure_test
 def test_plot_masked_aia171_superpixel_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
-    aia171_test_map_with_mask.superpixel(
-        (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
+    with pytest.warns(SunpyUserWarning, match='WCSAxes not being used as the axes'):
+        aia171_test_map_with_mask.superpixel(
+            (9, 7) * u.pix, offset=(4, 4) * u.pix).plot(axes=ax)
 
 
 @figure_test
@@ -152,6 +157,7 @@ def test_heliographic_rectangle(heliographic_test_map):
     w = 13 * u.deg
     h = 13 * u.deg
     heliographic_test_map.draw_rectangle(bottom, w, h, color='cyan')
+
 
 @figure_test
 def test_heliographic_grid_annotations(heliographic_test_map):
