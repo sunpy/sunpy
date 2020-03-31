@@ -198,7 +198,6 @@ Trivial/Internal Changes
 - Fix tests for `sunpy.data.data_manager` and ensure they are correctly executed with pytest. (`#3550 <https://github.com/sunpy/sunpy/pull/3550>`__)
 
 
-
 sunpy 1.0.0 (2019-06-01)
 ========================
 
