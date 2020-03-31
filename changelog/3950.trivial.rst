@@ -1,0 +1,1 @@
+Modified the `search_metadata` function inside `sunpy.net.jsoc` to return the Astropy.Table instead of pandas dataframe.

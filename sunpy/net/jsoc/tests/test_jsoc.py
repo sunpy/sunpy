@@ -259,8 +259,8 @@ def test_search_metadata():
     metadata = client.search_metadata(a.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
                                       a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
     assert isinstance(metadata, astropy.table.Table)
-    assert (len(metadata), len(metadata.colnames)) == (11, 176)
-    assert metadata.primary_key[0] == 'T_REC'
+    assert (len(metadata), len(metadata.colnames)) == (11, 177)
+    assert metadata.primary_key[0] == 'Index'
 
 
 @pytest.mark.remote_data

@@ -866,7 +866,9 @@ class JSOCClient(BaseClient):
 
         if isMeta:
             tbl = astropy.table.Table.from_pandas(r)
-            tbl.add_index('T_REC')
+            index = astropy.table.Column(r.index.values)
+            tbl.add_column(index, name='Index', index = 0)
+            tbl.add_index('Index')
             return tbl
 
         if r is None or r.empty:
