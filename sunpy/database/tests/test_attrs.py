@@ -414,7 +414,7 @@ def test_walker_create_vso_instrument(vso_session):
                                      size=-1.0,
                                      wavemin=0.4132806579880238,
                                      wavemax=7.293188082141598e-05),
-                 tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
+                tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
                                      physobs=u'intensity',
                                      fileid=u'/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
                                      observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
