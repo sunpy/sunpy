@@ -1,7 +1,10 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
+from base64 import b64encode
 import copy
+import html
+from io import BytesIO
 import warnings
 from collections import namedtuple
 import textwrap
@@ -9,10 +12,12 @@ import textwrap
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from matplotlib.backend_bases import FigureCanvasBase
+from matplotlib.figure import Figure
 
 import astropy.wcs
 import astropy.units as u
-from astropy.visualization import AsymmetricPercentileInterval
+from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
@@ -69,6 +74,7 @@ class GenericMap(NDData):
     >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
     >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> aia   # doctest: +REMOTE_DATA
+    <sunpy.map.sources.sdo.AIAMap object at 0x...>
     SunPy Map
     ---------
     Observatory:		 SDO
@@ -217,7 +223,7 @@ class GenericMap(NDData):
             "The ability to index Map by physical"
             " coordinate is not yet implemented.")
 
-    def __repr__(self):
+    def _text_summary(self):
         return textwrap.dedent("""\
                    SunPy Map
                    ---------
@@ -232,7 +238,7 @@ class GenericMap(NDData):
                    Coordinate System:\t {coord}
                    Scale:\t\t\t {scale}
                    Reference Pixel:\t {refpix}
-                   Reference Coord:\t {refcoord}
+                   Reference Coord:\t {refcoord}\
                    """).format(obs=self.observatory, inst=self.instrument, det=self.detector,
                                meas=self.measurement, wave=self.wavelength,
                                date=self.date.strftime(TIME_FORMAT),
@@ -243,7 +249,112 @@ class GenericMap(NDData):
                                refpix=u.Quantity(self.reference_pixel),
                                refcoord=u.Quantity((self._reference_longitude,
                                                     self._reference_latitude)),
-                               tmf=TIME_FORMAT) + self.data.__repr__()
+                               tmf=TIME_FORMAT)
+
+    def __repr__(self):
+        return object.__repr__(self) + "\n" + self._text_summary() + "\n" + self.data.__repr__()
+
+    def _repr_html_(self):
+        """
+        Produce an HTML summary with plots for use in Jupyter notebooks.
+        """
+        # Convert the text repr to an HTML table
+        partial_html = self._text_summary()[20:].replace('\n', '</td></tr><tr><th>')\
+                                                .replace(':\t', '</th><td>')
+        text_to_table = textwrap.dedent(f"""\
+            <table style='text-align:left'>
+                <tr><th>{partial_html}</td></tr>
+            </table>""").replace('\n', '')
+
+        # Handle bad values (infinite and NaN) in the data array
+        finite_data = self.data[np.isfinite(self.data)]
+        count_nan = np.isnan(self.data).sum()
+        count_inf = np.isinf(self.data).sum()
+
+        # Assemble an informational string with the counts of bad pixels
+        bad_pixel_text = ""
+        if count_nan + count_inf > 0:
+            bad_pixel_text = "Bad pixels are shown in red: "
+            text_list = []
+            if count_nan > 0:
+                text_list.append(f"{count_nan} NaN")
+            if count_inf > 0:
+                text_list.append(f"{count_inf} infinite")
+            bad_pixel_text += ", ".join(text_list)
+
+        # Use a grayscale colormap with histogram equalization (and red for bad values)
+        cmap = cm.get_cmap('gray')
+        cmap.set_bad(color='red')
+        norm = ImageNormalize(stretch=HistEqStretch(finite_data))
+
+        # Plot the image in pixel space
+        fig = Figure(figsize=(5.2, 4.8))
+        # Figure instances in matplotlib<3.1 do not create a canvas by default
+        if fig.canvas is None:
+            FigureCanvasBase(fig)
+        ax = fig.subplots()
+        ax.imshow(self.data, origin='lower', interpolation='nearest', cmap=cmap, norm=norm)
+        ax.set_xlabel('X pixel')
+        ax.set_ylabel('Y pixel')
+        ax.set_title('In pixel space')
+        pixel_src = _figure_to_base64(fig)
+        bounds = ax.get_position().bounds  # save these axes bounds for later use
+
+        # Plot the image using WCS information, with the same axes bounds as above
+        fig = Figure(figsize=(5.2, 4.8))
+        # Figure instances in matplotlib<3.1 do not create a canvas by default
+        if fig.canvas is None:
+            FigureCanvasBase(fig)
+        # Create the WCSAxes manually because we need to avoid using pyplot
+        ax = WCSAxes(fig, bounds, aspect='equal', wcs=self.wcs)
+        fig.add_axes(ax)
+        self.plot(axes=ax, cmap=cmap, norm=norm)
+        ax.set_title('In coordinate space using WCS information')
+        wcs_src = _figure_to_base64(fig)
+
+        # Plot the histogram of pixel values
+        fig = Figure(figsize=(4.8, 2.4), constrained_layout=True)
+        # Figure instances in matplotlib<3.1 do not create a canvas by default
+        if fig.canvas is None:
+            FigureCanvasBase(fig)
+        ax = fig.subplots()
+        ax.hist(finite_data.ravel(), bins=100, histtype='stepfilled')
+        ax.set_facecolor('white')
+        ax.semilogy()
+        # Explicitly set the power limits for the X axis formatter to avoid text overlaps
+        ax.xaxis.get_major_formatter().set_powerlimits((-3, 4))
+        ax.set_xlabel('Pixel value')
+        ax.set_ylabel('# of pixels')
+        ax.set_title('Distribution of pixels with finite values')
+        hist_src = _figure_to_base64(fig)
+
+        return textwrap.dedent(f"""\
+            <pre>{html.escape(object.__repr__(self))}</pre>
+            <table>
+                <tr>
+                    <td>{text_to_table}</td>
+                    <td rowspan=3>
+                        <div align=center>
+                            Image colormap uses histogram equalization<br>
+                            Click on the image to toggle between units
+                        </div>
+                        <img src='data:image/png;base64,{wcs_src}'
+                             src2='data:image/png;base64,{pixel_src}'
+                             onClick='var temp = this.src;
+                                      this.src = this.getAttribute("src2");
+                                      this.setAttribute("src2", temp)'
+                        />
+                        <div align=center>
+                            {bad_pixel_text}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                    <td><img src='data:image/png;base64,{hist_src}'/></td>
+                </tr>
+            </table>""")
 
     @classmethod
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
@@ -1244,6 +1355,7 @@ class GenericMap(NDData):
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
         >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
         >>> aia.submap(bl, tr)   # doctest: +REMOTE_DATA
+        <sunpy.map.sources.sdo.AIAMap object at 0x...>
         SunPy Map
         ---------
         Observatory:		 SDO
@@ -1273,6 +1385,7 @@ class GenericMap(NDData):
                 591.2992 ]], dtype=float32)
 
         >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +REMOTE_DATA
+        <sunpy.map.sources.sdo.AIAMap object at 0x...>
         SunPy Map
         ---------
         Observatory:		 SDO
@@ -1815,9 +1928,11 @@ class GenericMap(NDData):
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes)
 
-        # Set current image (makes colorbar work)
-        plt.sca(axes)
-        plt.sci(ret)
+        # Set current axes/image if pyplot is being used (makes colorbar work)
+        for i in plt.get_fignums():
+            if axes in plt.figure(i).axes:
+                plt.sca(axes)
+                plt.sci(ret)
 
         return ret
 
@@ -1826,3 +1941,10 @@ class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
+
+
+def _figure_to_base64(fig):
+    # Converts a matplotlib Figure to a base64 UTF-8 string
+    buf = BytesIO()
+    fig.savefig(buf, format='png', facecolor='none')  # works better than transparent=True
+    return b64encode(buf.getvalue()).decode('utf-8')

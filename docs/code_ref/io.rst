@@ -60,6 +60,7 @@ file
   ...     asdf_file.write_to("sunpy_map.asdf")  # doctest: +REMOTE_DATA
   >>> input_asdf = asdf.open("sunpy_map.asdf")  # doctest: +REMOTE_DATA
   >>> input_asdf['amap']  # doctest: +REMOTE_DATA
+   <sunpy.map.sources.sdo.AIAMap object at 0x...>
    SunPy Map
    ---------
    Observatory:		 SDO
