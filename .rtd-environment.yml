@@ -5,31 +5,32 @@ dependencies:
   - python
   - pip
   - openjpeg
-  - numpy
-  - scipy
-  - matplotlib
-  - pandas
-  - astropy
-  - parfive
-  - sqlalchemy
-  - scikit-image
-  - glymur
-  - beautifulsoup4
-  - drms
-  - python-dateutil
-  - zeep
-  - tqdm
-  - asdf
-  - hypothesis
-  - pytest-astropy
-  - pytest-cov
-  - pytest-mock
-  - ruamel.yaml
-  - sphinx
-  - sphinx-astropy
-  - sphinx-gallery
-  - towncrier
+  - graphviz!=2.42.*
   - pip:
-    - sunpy-sphinx-theme
-    - jplephem
+    - asdf
+    - astropy!=4.0.1
     - astroquery
+    - beautifulsoup4
+    - drms
+    - extension_helpers
+    - glymur
+    - hypothesis
+    - jplephem
+    - matplotlib
+    - numpy
+    - pandas
+    - parfive
+    - pytest
+    - python-dateutil
+    - reproject
+    - ruamel.yaml
+    - scikit-image
+    - scipy
+    - sphinx
+    - sphinx-astropy
+    - sphinx-gallery
+    - sqlalchemy
+    - sunpy-sphinx-theme
+    - towncrier
+    - tqdm
+    - zeep
