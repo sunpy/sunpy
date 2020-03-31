@@ -51,7 +51,7 @@ def fido_search_result():
         net_attrs.Instrument('XRS') | net_attrs.Instrument('noaa-indices') |
         net_attrs.Instrument('noaa-predict') |
         (net_attrs.Instrument('norh') & net_attrs.Wavelength(17 * u.GHz)) |
-        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve"))|
+        (net_attrs.Instrument('rhessi') & net_attrs.Physobs("summary_lightcurve")) |
         (net_attrs.Instrument('EVE') & net_attrs.Level(0))
     )
 
@@ -246,9 +246,12 @@ def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     entry = DatabaseEntry._from_query_result_block(qr_block_with_kev_unit.blocks[0])
     assert entry.source == 'RHESSI'
     assert entry.provider == 'LSSP'
-    assert entry.fileid == '/hessidata/2011/09/19/hsi_20110919_233340_002.fits'
-    assert entry.observation_time_start == datetime(2011, 9, 19, 23, 33, 40)
-    assert entry.observation_time_end == datetime(2011, 9, 20, 1, 9, 20)
+    assert entry.fileid in ['/hessidata/2011/09/19/hsi_20110919_233340_002.fits',
+                            "/hessidata/2011/09/20/hsi_20110920_010920_001.fits"]
+    assert entry.observation_time_start in [
+        datetime(2011, 9, 19, 23, 33, 40), datetime(2011, 9, 20, 1, 9, 20)]
+    assert entry.observation_time_end in [
+        datetime(2011, 9, 20, 1, 9, 20), datetime(2011, 9, 20, 2, 27, 40)]
     assert entry.instrument == 'RHESSI'
     assert round(entry.wavemin, 3) == 0.413
     assert round(entry.wavemax, 7) == 0.0000729
