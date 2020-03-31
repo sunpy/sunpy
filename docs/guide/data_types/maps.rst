@@ -192,6 +192,7 @@ your map simply type::
 
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
     >>> my_map  # doctest: +REMOTE_DATA
+    <sunpy.map.sources.sdo.AIAMap object at 0x...>
     SunPy Map
     ---------
     Observatory:		 SDO
