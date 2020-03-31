@@ -8,7 +8,7 @@ dependencies:
   - graphviz!=2.42.*
   - pip:
     - asdf
-    - astropy
+    - astropy!=4.0.1
     - astroquery
     - beautifulsoup4
     - drms
@@ -20,6 +20,7 @@ dependencies:
     - numpy
     - pandas
     - parfive
+    - pytest
     - python-dateutil
     - reproject
     - ruamel.yaml
