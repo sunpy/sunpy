@@ -400,13 +400,13 @@ class JSOCClient(BaseClient):
         """
         query = and_(*query)
         blocks = []
-        res = pd.DataFrame()
+        res = astropy.table.Table()
         for block in walker.create(query):
             iargs = kwargs.copy()
             iargs.update(block)
             iargs.update({'meta': True})
             blocks.append(iargs)
-            res = res.append(self._lookup_records(iargs))
+            res = astropy.table.vstack(self._lookup_records(iargs))
 
         return res
 
@@ -863,8 +863,6 @@ class JSOCClient(BaseClient):
 
         # If the method was called from search_metadata(), return a Pandas Dataframe,
         # otherwise return astropy.table
-        if isMeta:
-            return r
 
         if r is None or r.empty:
             return astropy.table.Table()
