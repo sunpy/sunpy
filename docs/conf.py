@@ -254,9 +254,7 @@ if has_sphinx_gallery:
     path = pathlib.Path.cwd()
     example_dir = path.parent.joinpath('examples')
     sphinx_gallery_conf = {
-        'backreferences_dir':
-        path.joinpath('generated', 'modules'),  # path to store the module using example template
-        # execute all examples except those that start with "skip_"
+        'backreferences_dir': str(path.joinpath('generated', 'modules')),
         'filename_pattern': '^((?!skip_).)*$',
         'examples_dirs': example_dir,  # path to the examples scripts
         'subsection_order': ExplicitOrder([(os.path.join('..', 'examples/acquiring_data')),
