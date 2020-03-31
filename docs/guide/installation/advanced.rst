@@ -92,17 +92,17 @@ SunPy has the following strict requirements:
 
 - `Python <https://www.python.org/>`__ 3.6.x or later.
 
-- `NumPy <https://www.numpy.org/>`__  1.14.5 or later.
+- `NumPy <https://www.numpy.org/>`__  1.15.0 or later.
 
 - `SciPy <https://www.scipy.org/>`__ 1.0.0 or later.
 
 - `Astropy <https://www.astropy.org/>`__ 3.2.0 or later.
 
-- `pandas <https://pandas.pydata.org/>`__ 0.10 or later.
+- `pandas <https://pandas.pydata.org/>`__ 0.23.0 or later.
 
 - `parfive <https://pypi.org/project/parfive/>`__ 1.0 or later.
 
-- `matplotlib <https://matplotlib.org/>`__ 1.3.0 or later.
+- `matplotlib <https://matplotlib.org/>`__ 2.1.2 or later.
 
 SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features are needed.
