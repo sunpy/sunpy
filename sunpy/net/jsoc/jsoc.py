@@ -864,6 +864,11 @@ class JSOCClient(BaseClient):
         # If the method was called from search_metadata(), return a Pandas Dataframe,
         # otherwise return astropy.table
 
+        if isMeta:
+            tbl = astropy.table.Table.from_pandas(r)
+            tbl.add_index('T_REC')
+            return tbl
+
         if r is None or r.empty:
             return astropy.table.Table()
         else:
