@@ -196,6 +196,7 @@ Trivial/Internal Changes
 - Corrected spelling of 'plotting' in timeseries method (changed 'ploting' to 'plotting'). (`#3429 <https://github.com/sunpy/sunpy/pull/3429>`__)
 - Switched to "importlib_metadata" to get package version to speed up import of SunPy. (`#3449 <https://github.com/sunpy/sunpy/pull/3449>`__)
 - Fix tests for `sunpy.data.data_manager` and ensure they are correctly executed with pytest. (`#3550 <https://github.com/sunpy/sunpy/pull/3550>`__)
+- Modified the `search_metadata` function inside `sunpy.net.jsoc` to return the Astropy.Table instead of pandas dataframe. (`#3950 <https://github.com/sunpy/sunpy/pull/3950>`__)
 
 
 sunpy 1.0.0 (2019-06-01)
