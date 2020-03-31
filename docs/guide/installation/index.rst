@@ -16,7 +16,7 @@ If you need a Python 2 compatible version, you have to install SunPy v0.9.X.
 
 .. _main-install:
 
-Installing Scientific python and sunpy
+Installing Scientific Python and sunpy
 --------------------------------------
 
 sunpy is part of the wider ecosystem of scientific Python packages for solar physics.
