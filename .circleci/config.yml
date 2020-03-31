@@ -145,7 +145,6 @@ workflows:
   figure-tests:
     jobs:
       - figure-tests-36
-      - figure-tests-37-astropydev
 
   test-documentation:
     jobs:
