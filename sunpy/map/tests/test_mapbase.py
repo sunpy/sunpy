@@ -177,8 +177,9 @@ def test_date_aia(aia171_test_map):
 
 def test_date_setter(generic_map):
     dtime_old = generic_map.date
-    generic_map.date = '2011-02-15T00:00:00.34'
-    assert generic_map.date == parse_time('2011-02-15T00:00:00.34') != dtime_old
+    new_date = '2011-02-15T00:00:00.34'
+    generic_map.date = new_date
+    assert generic_map.date == parse_time(new_date) != dtime_old
 
 
 def test_detector(generic_map):
