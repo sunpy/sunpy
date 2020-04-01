@@ -1,0 +1,1 @@
+Used `urllib.parse.urlsplit` in `~sunpy.util.scraper` for file scraping functionalities.
