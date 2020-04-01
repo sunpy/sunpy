@@ -462,6 +462,13 @@ class GenericMap(NDData):
 
     @date.setter
     def date(self, val):
+        """
+        Set the image observation time.
+
+        Notes
+        -----
+        This sets the DATE-OBS fits keyword in the map metadata.
+        """
         val = parse_time(val)
         self.meta['date-obs'] = val.isot
 
