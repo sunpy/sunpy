@@ -5,7 +5,9 @@ from base64 import b64encode
 import copy
 import html
 from io import BytesIO
+from tempfile import NamedTemporaryFile
 import warnings
+import webbrowser
 from collections import namedtuple
 import textwrap
 
@@ -355,6 +357,34 @@ class GenericMap(NDData):
                     <td><img src='data:image/png;base64,{hist_src}'/></td>
                 </tr>
             </table>""")
+
+    def quicklook(self):
+        """
+        Display a quicklook summary of the Map instance using the default web browser.
+
+        Notes
+        -----
+        The image colormap uses
+        `histogram equalization <https://en.wikipedia.org/wiki/Histogram_equalization>`__.
+
+        Clicking on the image to switch between pixel space and coordinate space requires
+        Javascript to be supported by the web browser.
+
+        Examples
+        --------
+        >>> import sunpy.map
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
+        >>> smap.quicklook()  # doctest: +REMOTE_DATA
+        """
+        with NamedTemporaryFile('w', delete=False, prefix='sunpy.map.', suffix='.html') as f:
+            url = 'file://' + f.name
+            f.write(textwrap.dedent(f"""\
+                <html>
+                    <title>Quicklook summary for {html.escape(object.__repr__(self))}</title>
+                    <body>{self._repr_html_()}</body>
+                </html>"""))
+        webbrowser.open_new_tab(url)
 
     @classmethod
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
