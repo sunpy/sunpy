@@ -1,0 +1,1 @@
+Fixed a bug where the longitude value for the reference coordinate in the Map repr would be displayed with the unintended longitude wrapping.
