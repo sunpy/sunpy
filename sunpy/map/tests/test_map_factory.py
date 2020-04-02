@@ -47,6 +47,11 @@ class TestMap:
         eitmap = sunpy.map.Map(a_fname)
         assert isinstance(eitmap, sunpy.map.GenericMap)
 
+        # File handler
+        with open(a_fname) as a_file:
+            eitmap = sunpy.map.Map(a_file)
+        assert isinstance(eitmap, sunpy.map.GenericMap)
+
         # Directory
         directory = pathlib.Path(filepath, "EIT")
         maps = sunpy.map.Map(os.fspath(directory))

@@ -3,6 +3,7 @@ from collections import OrderedDict
 import warnings
 import pathlib
 import glob
+import io
 
 import numpy as np
 import astropy.io.fits
@@ -188,6 +189,11 @@ class MapFactory(BasicRegistrationFactory):
         while i < len(args):
 
             arg = args[i]
+
+            # File object
+            if isinstance(arg, io.IOBase):
+                # Extract the name and then rely on the filename logic below
+                arg = arg.name
 
             # Data-header or data-WCS pair
             if isinstance(arg, SUPPORTED_ARRAY_TYPES):
