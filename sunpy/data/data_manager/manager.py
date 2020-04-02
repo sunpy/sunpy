@@ -1,11 +1,12 @@
-from typing import Dict
 import pathlib
-import functools
-from contextlib import contextmanager
 import warnings
+import functools
+from typing import Dict
+from contextlib import contextmanager
+from urllib.parse import urlparse
 
-from sunpy.util.util import hash_file
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.util import hash_file
 
 __all__ = ['DataManager']
 
@@ -50,8 +51,14 @@ class DataManager:
             def wrapper(*args, **kwargs):
                 replace = self._skip_file.get(name, None)
                 if replace:
-                    if replace['uri'].startswith('file://'):
-                        file_path = replace['uri'][len('file://'):]
+                    uri_parse = urlparse(replace['uri'])
+                    if uri_parse.scheme in ("", "file"):
+                        # If a relative file uri is specified (i.e.
+                        # `file://sunpy/test`) this maintains compatibility
+                        # with the original behaviour where this would be
+                        # interpreted as `./sunpy/test` if no scheme is
+                        # specified netloc will be '' by default.
+                        file_path = uri_parse.netloc + uri_parse.path
                         file_hash = hash_file(file_path)
                     else:
                         file_path, file_hash, _ = self._cache._download_and_hash([replace['uri']])
@@ -74,11 +81,13 @@ class DataManager:
                         if hash_file(file_path) != sha_hash:
                             # the hash of the file downloaded does not match provided hash
                             # this means the file has changed on the server.
-                            # the function should be updated to use the new hash. Raise an error to notify.
+                            # the function should be updated to use the new
+                            # hash. Raise an error to notify.
                             raise RuntimeError(
                                 "Remote file on the server has changed. Update hash of the function.")
                     else:
-                        # This is to handle the case when the local file appears to be tampered/corrupted
+                        # This is to handle the case when the local file
+                        # appears to be tampered/corrupted
                         if hash_file(details['file_path']) != details['file_hash']:
                             warnings.warn("Hashes do not match, the file will be redownloaded (could be be tampered/corrupted)",
                                           SunpyUserWarning)
@@ -106,8 +115,10 @@ class DataManager:
         name: `str`
             Name of the file provided in the `require` decorator.
         uri: `str`
-            URI of the file which replaces original file. Scheme should be
-            one of ``http``, ``https``, ``ftp`` or ``file``.
+            URI of the file which replaces original file. Scheme should be one
+            of ``http``, ``https``, ``ftp`` or ``file``. If no scheme is given
+            the uri will be interpreted as a local path. i.e.
+            ``file:///tmp/test`` and ``/tmp/test`` are the same.
         sha_hash: `str`, optional
             SHA256 hash of the file to compared to after downloading.
         """
