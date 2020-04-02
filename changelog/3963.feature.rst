@@ -1,0 +1,1 @@
+Add the ability for `~sunpy.map.Map` to be used inside ``with open(file) as f:; Map(f)`` blocks.
