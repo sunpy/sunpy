@@ -38,7 +38,6 @@ class VSMClient(GenericClient):
     <BLANKLINE>
     3 Results from the VSMClient:
          Start Time           End Time      Source Instrument    Wavelength
-           str19               str19         str5     str3         str15
     ------------------- ------------------- ------ ---------- ---------------
     2016-06-04 00:00:00 2016-06-08 00:10:00  SOLIS        vsm 6302.0 Angstrom
     2016-06-04 00:00:00 2016-06-08 00:10:00  SOLIS        vsm 6302.0 Angstrom
