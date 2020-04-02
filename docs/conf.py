@@ -234,12 +234,12 @@ if has_sphinx_gallery:
         'subsection_order': ExplicitOrder([
             '../examples/acquiring_data',
             '../examples/map',
+            '../examples/map_transformations',
             '../examples/time_series',
             '../examples/units_and_coordinates',
             '../examples/plotting',
             '../examples/saving_and_loading_data',
             '../examples/computer_vision_techniques',
-            '../examples/sunpy_other_packages',
         ]),
         'within_subsection_order': ExampleTitleSortKey,
         'gallery_dirs': path.joinpath('generated', 'gallery'),
