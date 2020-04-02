@@ -460,6 +460,16 @@ def test_vso_fetch_hmi(tmpdir):
     assert len(files) == 1
 
 
+@pytest.mark.remote_data
+def test_unclosedSocket_warning():
+    with pytest.warns(None) as record:
+        attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
+        result = Fido.search(attrs_time, a.Instrument('eit'))
+        _ = Fido.fetch(result)
+
+    assert len(record) == 0
+
+
 def test_fido_no_time(mocker):
     jsoc_mock = mocker.patch("sunpy.net.jsoc.JSOCClient.search")
     jsoc_mock.return_value = jsoc.JSOCResponse()
