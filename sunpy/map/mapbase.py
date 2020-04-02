@@ -240,8 +240,8 @@ class GenericMap(NDData):
                                scale=u.Quantity(self.scale),
                                coord=self.coordinate_frame,
                                refpix=u.Quantity(self.reference_pixel),
-                               refcoord=u.Quantity((self.reference_coordinate.data.lon,
-                                                    self.reference_coordinate.data.lat)),
+                               refcoord=u.Quantity((self._reference_longitude,
+                                                    self._reference_latitude)),
                                tmf=TIME_FORMAT) + self.data.__repr__()
 
     @classmethod
