@@ -253,7 +253,7 @@ class Scraper:
         ftpurl = urlsplit(directories[0]).netloc
         with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
             for directory in directories:
-                ftp.cwd("/{0.netloc}{0.path}".format(urlsplit(directory)))
+                ftp.cwd(urlsplit(directory).path)
                 for file_i in ftp.nlst():
                     fullpath = directory + file_i
                     if self._URL_followsPattern(fullpath):
