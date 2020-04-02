@@ -1,0 +1,3 @@
+Deprecate `sunpy.instr.aia.aiaprep` in favor of the `register` function in the
+[aiapy](https://gitlab.com/LMSAL_HUB/aia_hub/aiapy) package.
+`sunpy.instr.aia.aiaprep` will be removed in version 2.1
