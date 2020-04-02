@@ -78,6 +78,13 @@ def iter_records(response):
         yield from prov_item.record.recorditem
 
 
+def iter_sort_response(response):
+    for prov_item in response.provideritem:
+        if not hasattr(prov_item, 'record') or not prov_item.record:
+            continue
+        yield from sorted(prov_item.record.recorditem, key=lambda x: x.time.start)
+
+
 def iter_errors(response):
     for prov_item in response.provideritem:
         if not hasattr(prov_item, 'record') or not prov_item.record:
@@ -189,7 +196,8 @@ class QueryResponse(BaseQueryResponse):
 
     @classmethod
     def create(cls, queryresult):
-        return cls(list(iter_records(queryresult)), queryresult)
+        res = list(iter_sort_response(queryresult))
+        return cls(res, queryresult)
 
     def total_size(self):
         """ Total size of data in KB. May be less than the actual

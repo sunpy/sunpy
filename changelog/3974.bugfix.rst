@@ -1,0 +1,1 @@
+Fixed a bug of inconsistent ordering of results in `~sunpy.net.vso.vso.QueryResponse` by sorting the results by start time.
