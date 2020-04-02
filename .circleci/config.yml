@@ -59,11 +59,11 @@ jobs:
           MPLBACKEND: agg
           COLUMNS: 180
     steps:
-      - restore_cache:
-          keys: sample-data-v1
       - run: *no-backports
       - checkout
       - run: *skip-check
+      - restore_cache:
+          keys: sample-data-v1
       - run:
           name: install dependencies
           command: |
@@ -89,10 +89,9 @@ jobs:
       - run: codecov
       - store_artifacts:
           path:  .tmp/figure/figure_test_images
-
       - run:
           name: "Image comparison page is available at: "
-          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
+          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
 
   figure-tests-37-astropydev:
     docker:
@@ -110,17 +109,17 @@ jobs:
           path: .tmp/figure/figure_test_images
       - run:
           name: "Image comparison page is available at: "
-          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
+          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
 
   html-docs:
     docker:
       - image: continuumio/miniconda3
     steps:
-      - restore_cache:
-          keys: sample-data-v1
       - run: *no-backports
       - checkout
       - run: *skip-check
+      - restore_cache:
+          keys: sample-data-v10
       - run: *merge-check
       - run: *apt-install
       - run: pip install -U tox
@@ -142,7 +141,7 @@ jobs:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/docs/_build/html/index.html"; echo $DOCS_URL
       - save_cache:
-          key: sample-data-v1
+          key: sample-data-v10
           paths:
             - /root/project/.tox/build_docs/sample_data
 

@@ -17,7 +17,7 @@ from sunpy.io.file_tools import read_file
 # `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`, a downloader client.
 # We define two search variables:
 # a timerange and the instrument.
-timerange = a.Time('1998/05/24 11:00', '1998/05/24 11:20')
+timerange = a.Time('1998/05/24 11:19', '1998/05/24 11:20')
 instrument = a.Instrument('LASCO')
 detector = a.Detector('C3')
 result = Fido.search(timerange, instrument)
@@ -36,7 +36,7 @@ print(downloaded_files)
 ###############################################################################
 # The downloaded file lacks the correct meta. We want to open the file and
 # access both the data and the header information.
-data, header = read_file(downloaded_files[0])[0]
+data, header = read_file(downloaded_files[-1])[0]
 
 # Add the missing meta information to the header
 header['CUNIT1'] = 'arcsec'
