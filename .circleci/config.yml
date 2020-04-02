@@ -88,10 +88,11 @@ jobs:
       - run: tox -e figure
       - run: codecov
       - store_artifacts:
-          path: figure_test_images
+          path:  .tmp/figure/figure_test_images
+
       - run:
           name: "Image comparison page is available at: "
-          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/figure_test_images/fig_comparison.html"; echo $FIGS_URL
+          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
 
   figure-tests-37-astropydev:
     docker:
@@ -106,10 +107,10 @@ jobs:
       - run: tox -e figure_astropydev
       - run: codecov
       - store_artifacts:
-          path: figure_test_images
+          path: .tmp/figure/figure_test_images
       - run:
           name: "Image comparison page is available at: "
-          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/figure_test_images/fig_comparison.html"; echo $FIGS_URL
+          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
 
   html-docs:
     docker:
