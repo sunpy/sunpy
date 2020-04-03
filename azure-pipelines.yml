@@ -22,7 +22,7 @@ resources:
     type: github
     endpoint: sunpy
     name: OpenAstronomy/azure-pipelines-templates
-    ref: toxdeps
+    ref: master
 
 trigger:
   branches:
