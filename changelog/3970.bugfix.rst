@@ -1,0 +1,3 @@
+It is now possible to specify a local file path to
+`sunpy.data.data_manager.DataManager.override_file` without having to prefix it
+with ``file://``.
