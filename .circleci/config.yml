@@ -113,7 +113,7 @@ jobs:
     docker:
       - image: continuumio/miniconda3
     environment:
-      SUNPY_SAMPLEDIR=$HOME/sunpy/data/sample_data
+      SUNPY_SAMPLEDIR=/root/sunpy/data/sample_data
     steps:
       - run: *no-backports
       - checkout
@@ -124,7 +124,7 @@ jobs:
       - run: *apt-install
       - run: pip install -U tox
       - run: tox -e build_docs
-      - run: tree $HOME/sunpy/data/sample_data
+      - run: ls $HOME/sunpy/data/sample_data
       - save_cache:
           key: sample-data-v11
           paths:
