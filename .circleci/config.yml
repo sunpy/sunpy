@@ -62,8 +62,6 @@ jobs:
       - run: *no-backports
       - checkout
       - run: *skip-check
-      - restore_cache:
-          keys: sample-data-v1
       - run:
           name: install dependencies
           command: |
@@ -114,12 +112,14 @@ jobs:
   html-docs:
     docker:
       - image: continuumio/miniconda3
+    environment:
+      SUNPY_SAMPLEDIR=$HOME/sunpy/data/sample_data
     steps:
       - run: *no-backports
       - checkout
       - run: *skip-check
       - restore_cache:
-          keys: sample-data-v10
+          keys: sample-data-v11
       - run: *merge-check
       - run: *apt-install
       - run: pip install -U tox
@@ -141,9 +141,9 @@ jobs:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/docs/_build/html/index.html"; echo $DOCS_URL
       - save_cache:
-          key: sample-data-v10
+          key: sample-data-v11
           paths:
-            - /root/project/.tox/build_docs/sample_data
+            - ~/sunpy/data/sample_data
 
 workflows:
   version: 2
