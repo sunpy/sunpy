@@ -59,8 +59,6 @@ jobs:
           MPLBACKEND: agg
           COLUMNS: 180
     steps:
-      - restore_cache:
-          keys: sample-data-v1
       - run: *no-backports
       - checkout
       - run: *skip-check
@@ -84,7 +82,7 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install -U tox tox-conda codecov
+      - run: pip install -U tox tox-conda codecov git+https://github.com/astrofrog/tox-pypi-filter
       - run: tox -e figure
       - run: codecov
       - store_artifacts:
@@ -103,7 +101,7 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install -U tox tox-conda codecov
+      - run: pip install -U tox tox-conda codecov git+https://github.com/astrofrog/tox-pypi-filter
       - run: tox -e figure_astropydev
       - run: codecov
       - store_artifacts:
@@ -116,14 +114,12 @@ jobs:
     docker:
       - image: continuumio/miniconda3
     steps:
-      - restore_cache:
-          keys: sample-data-v1
       - run: *no-backports
       - checkout
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install -U tox
+      - run: pip install -U tox git+https://github.com/astrofrog/tox-pypi-filter
       - run: tox -e build_docs
       - run:
           name: Prepare for upload
