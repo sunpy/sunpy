@@ -82,7 +82,7 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install -U tox tox-conda codecov git+https://github.com/astrofrog/tox-pypi-filter
+      - run: pip install -U tox tox-conda codecov git+https://github.com/Cadair/tox-pypi-filter
       - run: tox -e figure
       - run: codecov
       - store_artifacts:
@@ -101,7 +101,7 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install -U tox tox-conda codecov git+https://github.com/astrofrog/tox-pypi-filter
+      - run: pip install -U tox tox-conda codecov git+https://github.com/Cadair/tox-pypi-filter
       - run: tox -e figure_astropydev
       - run: codecov
       - store_artifacts:
@@ -119,7 +119,7 @@ jobs:
       - run: *skip-check
       - run: *merge-check
       - run: *apt-install
-      - run: pip install -U tox git+https://github.com/astrofrog/tox-pypi-filter
+      - run: pip install -U tox git+https://github.com/Cadair/tox-pypi-filter
       - run: tox -e build_docs
       - run:
           name: Prepare for upload
