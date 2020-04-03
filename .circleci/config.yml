@@ -119,14 +119,14 @@ jobs:
       - checkout
       - run: *skip-check
       - restore_cache:
-          keys: sample-data-v11
+          keys: sample-data-v12
       - run: *merge-check
       - run: *apt-install
       - run: pip install -U tox
       - run: tox -e build_docs
       - run: ls $HOME/sunpy/data/sample_data
       - save_cache:
-          key: sample-data-v11
+          key: sample-data-v12
           paths:
             - $HOME/sunpy/data/sample_data
       - run:
