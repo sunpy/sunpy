@@ -1,0 +1,3 @@
+Fixes two bugs in `sunpy.util.decorator.deprecated`: correctly calculates the 
+removal version and does not override the default and/or alternative functionality
+message.
