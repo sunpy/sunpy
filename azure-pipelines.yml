@@ -22,7 +22,7 @@ resources:
     type: github
     endpoint: sunpy
     name: OpenAstronomy/azure-pipelines-templates
-    ref: master
+    ref: toxdeps
 
 trigger:
   branches:
@@ -43,6 +43,7 @@ jobs:
   parameters:
     submodules: false
     coverage: codecov
+    toxdeps: tox-pypi-filter
     posargs: -n=4
     libraries:
       apt:
