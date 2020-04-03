@@ -1,0 +1,2 @@
+Added the methods :meth:`sunpy.map.GenericMap.quicklook` and :meth:`sunpy.map.MapSequence.quicklook` to display an HTML summary of the instance, including interactive controls.
+When using Jupyter notebooks, this HTML summary is automatically shown instead of a text-only representation.
