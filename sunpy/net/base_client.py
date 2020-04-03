@@ -33,7 +33,7 @@ class BaseQueryResponse(Sequence):
     @abstractmethod
     def client(self):
         """
-        An instance of BaseClient used to generate the results.
+        An instance of `BaseClient` used to generate the results.
 
         Generally this is used to fetch the results later.
 
@@ -134,6 +134,8 @@ class BaseClient(ABC):
     def search(self, *args, **kwargs):
         """
         This enables the user to search for data using the client.
+
+        Must return a subclass of `BaseQueryResponse`.
         """
 
     @abstractmethod
