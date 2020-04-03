@@ -124,10 +124,11 @@ jobs:
       - run: *apt-install
       - run: pip install -U tox
       - run: tox -e build_docs
+      - run: tree $HOME/sunpy/data/sample_data
       - save_cache:
           key: sample-data-v11
           paths:
-            - ~/sunpy/data/sample_data
+            - $HOME/sunpy/data/sample_data
       - run:
           name: Prepare for upload
           command: |
