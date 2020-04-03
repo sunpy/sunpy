@@ -124,6 +124,10 @@ jobs:
       - run: *apt-install
       - run: pip install -U tox
       - run: tox -e build_docs
+      - save_cache:
+          key: sample-data-v11
+          paths:
+            - ~/sunpy/data/sample_data
       - run:
           name: Prepare for upload
           command: |
@@ -140,10 +144,6 @@ jobs:
       - run:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/docs/_build/html/index.html"; echo $DOCS_URL
-      - save_cache:
-          key: sample-data-v11
-          paths:
-            - ~/sunpy/data/sample_data
 
 workflows:
   version: 2
