@@ -445,8 +445,8 @@ class AttrWalker:
 
     """
     def __repr__(self):
-        creators = [key for key in self.createmm.registry.keys()]
-        appliers = [key for key in self.applymm.registry.keys()]
+        creators = list(self.createmm.registry.keys())
+        appliers = list(self.applymm.registry.keys())
         return f"""{super().__repr__()}
 Registered creators: {creators}
 Registered appliers: {appliers}"""
