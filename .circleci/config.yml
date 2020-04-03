@@ -68,7 +68,7 @@ jobs:
             yum install -y gcc gcc-c++ freetype-devel openssl-devel
       - run:
           name: Install dependencies for Python 3.6
-          command: /opt/python/cp36-cp36m/bin/pip install tox | cat
+          command: /opt/python/cp36-cp36m/bin/pip install tox git+https://github.com/Cadair/tox-pypi-filter | cat
       - run:
           name: Run tests for Python 3.6
           command: PYTHONHASHSEED=42 /opt/python/cp36-cp36m/bin/python -m tox -e py36 -- -n=4
