@@ -206,7 +206,7 @@ def test_tables_single_response():
 @pytest.mark.remote_data
 def test_tables_multiple_response():
     results = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                           a.Instrument('lyra') | (a.Instrument('rhessi') & a.Physobs("summary_lightcurve")))
+                          a.Instrument('lyra') | (a.Instrument('rhessi') & a.Physobs("summary_lightcurve")))
     tables = results.tables
     assert isinstance(tables, list)
     assert all(isinstance(t, Table) for t in tables)
@@ -462,12 +462,10 @@ def test_vso_fetch_hmi(tmpdir):
 
 @pytest.mark.remote_data
 def test_unclosedSocket_warning():
-    with pytest.warns(None) as record:
+    with pytest.warns(None):
         attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
         result = Fido.search(attrs_time, a.Instrument('eit'))
-        _ = Fido.fetch(result)
-
-    assert len(record) == 0
+        Fido.fetch(result)
 
 
 def test_fido_no_time(mocker):
@@ -477,6 +475,7 @@ def test_fido_no_time(mocker):
     Fido.search(a.jsoc.Series("test"))
 
     jsoc_mock.assert_called_once()
+
 
 @pytest.mark.remote_data
 def test_slice_jsoc():
