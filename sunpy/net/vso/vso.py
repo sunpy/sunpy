@@ -152,11 +152,19 @@ class QueryResponse(list):
     A container for VSO Records returned from VSO Searches.
     """
 
-    def __init__(self, lst, queryresult=None, table=None):
-        super().__init__(lst)
+    def __init__(self, lst, queryresult=None):
+        super().__init__()
+        self._data = lst
         self.queryresult = queryresult
         self.errors = []
-        self.table = None
+        self._client = VSOClient()
+
+    def __getitem__(self, item):
+        # Always index so a list comes back
+        if isinstance(item, int):
+            item = slice(item, item+1)
+        return type(self)(self._data[item], queryresult=self.queryresult)
+
 
     def search(self, *query):
         """ Furtherly reduce the query response by matching it against
@@ -915,3 +923,6 @@ class VSOClient(BaseClient):
     @classmethod
     def _can_handle_query(cls, *query):
         return all([x.__class__.__name__ in attrs.__all__ for x in query])
+
+    def __del__(self):
+        self.api.transport.session.close()
