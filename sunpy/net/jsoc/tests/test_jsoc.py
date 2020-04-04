@@ -293,6 +293,7 @@ def test_check_request():
     assert req.status == 0
 
 
+@pytest.mark.flaky(reruns_delay=30)
 @pytest.mark.remote_data
 def test_results_filenames():
     responses = client.search(
@@ -306,6 +307,7 @@ def test_results_filenames():
         assert os.path.isfile(hmiurl)
 
 
+@pytest.mark.flaky(reruns_delay=30)
 @pytest.mark.remote_data
 def test_results_filenames_as_is(tmp_path):
     responses = client.search(
