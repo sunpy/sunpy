@@ -1,6 +1,6 @@
 ---
-name: Feature request
-about: Suggest an idea to improve sunpy
+name: Issue report
+about: Create a report to help us work on sunpy
 ---
 
 <!--
@@ -19,9 +19,7 @@ If not please go ahead and open an issue!
 
 ### Description
 <!--
-Provide a general description of the feature you would like.
-If you prefer, you can also suggest a draft design or API.
-This way we have a deeper discussion on the feature.
+Provide a general description of the issue.
 -->
 
 ### Additional context
