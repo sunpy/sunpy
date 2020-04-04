@@ -26,7 +26,8 @@ If not please go ahead and open an issue!
 ### Actual behavior
 <!--
 What actually happened.
-Was the output confusing or poorly described? -->
+Was the output confusing or poorly described?
+-->
 
 ### Steps to Reproduce
 <!--

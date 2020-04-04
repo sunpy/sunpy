@@ -18,9 +18,7 @@ If not please go ahead and open an issue!
 -->
 
 ### Description
-<!--
-Provide a general description of the issue.
--->
+<!-- Provide a general description of the issue. -->
 
 ### Additional context
 <!--
