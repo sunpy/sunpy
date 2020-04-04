@@ -444,6 +444,13 @@ class AttrWalker:
       type and return a different one.
 
     """
+    def __repr__(self):
+        creators = list(self.createmm.registry.keys())
+        appliers = list(self.applymm.registry.keys())
+        return f"""{super().__repr__()}
+Registered creators: {creators}
+Registered appliers: {appliers}"""
+
     @staticmethod
     def _unknown_type(*args, **kwargs):
         raise TypeError(f"{args[1]} or any of its parents have not been registered with the AttrWalker")
