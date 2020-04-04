@@ -227,3 +227,4 @@ sunpy/version.py
 # Misc Stuff
 .history
 *.orig
+.tmp

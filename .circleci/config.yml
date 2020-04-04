@@ -59,8 +59,6 @@ jobs:
           MPLBACKEND: agg
           COLUMNS: 180
     steps:
-      - restore_cache:
-          keys: sample-data-v1
       - run: *no-backports
       - checkout
       - run: *skip-check
@@ -70,7 +68,7 @@ jobs:
             yum install -y gcc gcc-c++ freetype-devel openssl-devel
       - run:
           name: Install dependencies for Python 3.6
-          command: /opt/python/cp36-cp36m/bin/pip install tox | cat
+          command: /opt/python/cp36-cp36m/bin/pip install tox tox-pypi-filter>=0.12 | cat
       - run:
           name: Run tests for Python 3.6
           command: PYTHONHASHSEED=42 /opt/python/cp36-cp36m/bin/python -m tox -e py36 -- -n=4
@@ -89,10 +87,9 @@ jobs:
       - run: codecov
       - store_artifacts:
           path:  .tmp/figure/figure_test_images
-
       - run:
           name: "Image comparison page is available at: "
-          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
+          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
 
   figure-tests-37-astropydev:
     docker:
@@ -110,21 +107,27 @@ jobs:
           path: .tmp/figure/figure_test_images
       - run:
           name: "Image comparison page is available at: "
-          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
+          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
 
   html-docs:
     docker:
       - image: continuumio/miniconda3
+    environment:
+      SUNPY_SAMPLEDIR=/root/sunpy/data/sample_data/
     steps:
-      - restore_cache:
-          keys: sample-data-v1
       - run: *no-backports
       - checkout
       - run: *skip-check
+      - restore_cache:
+          keys: sample-data-v12
       - run: *merge-check
       - run: *apt-install
-      - run: pip install -U tox
+      - run: pip install -U tox tox-pypi-filter>=0.12
       - run: tox -e build_docs
+      - save_cache:
+          key: sample-data-v12
+          paths:
+            - /root/sunpy/data/sample_data/
       - run:
           name: Prepare for upload
           command: |
@@ -141,10 +144,6 @@ jobs:
       - run:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/docs/_build/html/index.html"; echo $DOCS_URL
-      - save_cache:
-          key: sample-data-v1
-          paths:
-            - /root/project/.tox/build_docs/sample_data
 
 workflows:
   version: 2
