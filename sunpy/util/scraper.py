@@ -7,6 +7,7 @@ import datetime
 from ftplib import FTP
 from urllib.error import HTTPError
 from urllib.request import urlopen
+from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup
 
@@ -219,7 +220,7 @@ class Scraper:
         """
         directories = self.range(timerange)
         filesurls = []
-        if directories[0][0:3] == "ftp":  # TODO use urlsplit from pr #1807
+        if urlsplit(directories[0]).scheme == "ftp":
             return self._ftpfileslist(timerange)
         for directory in directories:
             try:
@@ -249,12 +250,10 @@ class Scraper:
     def _ftpfileslist(self, timerange):
         directories = self.range(timerange)
         filesurls = list()
-        domain = directories[0].find('//')
-        domain_slash = directories[0].find('/', 6)  # TODO: Use also urlsplit from pr #1807
-        ftpurl = directories[0][domain + 2:domain_slash]
+        ftpurl = urlsplit(directories[0]).netloc
         with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
             for directory in directories:
-                ftp.cwd(directory[domain_slash:])
+                ftp.cwd(urlsplit(directory).path)
                 for file_i in ftp.nlst():
                     fullpath = directory + file_i
                     if self._URL_followsPattern(fullpath):
@@ -262,7 +261,8 @@ class Scraper:
                         if (datehref >= timerange.start and
                                 datehref <= timerange.end):
                             filesurls.append(fullpath)
-        filesurls = ['ftp://anonymous:data@sunpy.org@' + url[domain + 2:] for url in filesurls]
+        filesurls = ['ftp://anonymous:data@sunpy.org@' + "{0.netloc}{0.path}".format(urlsplit(url))
+                     for url in filesurls]
         return filesurls
 
     def _smallerPattern(self, directoryPattern):
