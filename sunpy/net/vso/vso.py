@@ -865,3 +865,6 @@ class VSOClient(BaseClient):
     @classmethod
     def _can_handle_query(cls, *query):
         return all([x.__class__.__name__ in attrs.__all__ for x in query])
+
+    def __del__(self):
+        self.api.transport.session.close()
