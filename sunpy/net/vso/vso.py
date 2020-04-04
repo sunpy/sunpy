@@ -909,3 +909,6 @@ class VSOClient(BaseClient):
     @classmethod
     def _attrs_module(cls):
         return 'vso', 'sunpy.net.vso.attrs'
+
+    def __del__(self):
+        self.api.transport.session.close()
