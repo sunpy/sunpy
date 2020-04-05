@@ -152,19 +152,11 @@ class QueryResponse(list):
     A container for VSO Records returned from VSO Searches.
     """
 
-    def __init__(self, lst, queryresult=None):
-        super().__init__()
-        self._data = lst
+    def __init__(self, lst, queryresult=None, table=None):
+        super().__init__(lst)
         self.queryresult = queryresult
         self.errors = []
-        self._client = VSOClient()
-
-    def __getitem__(self, item):
-        # Always index so a list comes back
-        if isinstance(item, int):
-            item = slice(item, item+1)
-        return type(self)(self._data[item], queryresult=self.queryresult)
-
+        self.table = None
 
     def search(self, *query):
         """ Furtherly reduce the query response by matching it against
@@ -748,7 +740,7 @@ class VSOClient(BaseClient):
 
         return self.create_getdatarequest(
             {k: [x.fileid for x in v]
-                 for k, v in self.by_provider(response).items()},
+             for k, v in self.by_provider(response).items()},
             methods, info
         )
 
