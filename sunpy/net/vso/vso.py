@@ -72,6 +72,19 @@ def _parse_date(string):
 
 
 def iter_sort_response(response):
+    """
+    Sorts the VSO queryresults by their start time.
+
+    Parameters
+    ----------
+    response : `zeep.objects.QueryResponse`
+        A SOAP Object of a VSO queryresult
+
+    Returns
+    -------
+    `generator`
+    Sorted recorditems w.r.t. their start time.
+    """
     for prov_item in response.provideritem:
         if not hasattr(prov_item, 'record') or not prov_item.record:
             continue
