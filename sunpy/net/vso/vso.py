@@ -71,13 +71,6 @@ def _parse_date(string):
     return {'time_start': start.strip(), 'time_end': end.strip()}
 
 
-def iter_records(response):
-    for prov_item in response.provideritem:
-        if not hasattr(prov_item, 'record') or not prov_item.record:
-            continue
-        yield from prov_item.record.recorditem
-
-
 def iter_sort_response(response):
     for prov_item in response.provideritem:
         if not hasattr(prov_item, 'record') or not prov_item.record:
