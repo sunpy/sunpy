@@ -1,0 +1,1 @@
+Add example of how to use SunPy's HEK client to search for the GOES flare event list.
