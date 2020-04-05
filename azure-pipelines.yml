@@ -51,10 +51,10 @@ jobs:
       brew:
         - openjpeg
     envs:
-      - macos: py36-offline
+      - macos: py36
         name: py36_offline
 
-      - windows: py37-offline
+      - windows: py37
         name: py37_offline
 
       - linux: py38-online
@@ -63,9 +63,6 @@ jobs:
       - linux: py36-conda
         name: py36_conda
         libraries: {}
-
-      - linux: py36-astropy31
-        name: py36_astropy31
 
       - linux: py37-oldestdeps
 
