@@ -105,11 +105,7 @@ class EVEClient(GenericClient):
         # Level should really be in here, but VSO doesn't correctly provide
         # Level information currently.
         optional = {}
-        all_attrs = required.union(optional)
-
-        query_attrs = set(type(x) for x in query)
-
-        if not required.issubset(query_attrs) or not all_attrs.issubset(query_attrs):
+        if not cls.check_attr_types_in_query(query, required, optional):
             return False
 
         matches = True

@@ -10,6 +10,7 @@ import socket
 import datetime
 import warnings
 import itertools
+import inspect
 from functools import partial
 from collections import defaultdict
 from urllib.error import URLError, HTTPError
@@ -901,10 +902,13 @@ class VSOClient(BaseClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        # VSO Queries must have time
-        if not core_attrs.Time in [type(a) for a in query]:
-            return False
-        return all([x.__class__.__name__ in core_attrs.__all__ + attrs.__all__ for x in query])
+        required = {core_attrs.Time}
+        # Get all classes in core_attrs and attrs
+        optional = {value for (name, value) in inspect.getmembers(core_attrs) if
+                    name in core_attrs.__all__}
+        optional.update(value for (name, value) in inspect.getmembers(attrs) if
+                        name in attrs.__all__)
+        return cls.check_attr_types_in_query(query, required, optional)
 
     @classmethod
     def _attrs_module(cls):

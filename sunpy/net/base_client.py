@@ -176,3 +176,16 @@ class BaseClient(ABC):
         """
         This enables the client to register what kind of searches it can handle, to prevent Fido using the incorrect client.
         """
+
+    @staticmethod
+    def check_attr_types_in_query(query, required_attrs={}, optional_attrs={}):
+        """
+        Check a query againsted required and optional attributes.
+
+        Returns `True` if *query* contains all the attrs in *required_attrs*,
+        and if *query* contains only attrs in both *required_attrs* and *optional_attrs*.
+        """
+        query_attrs = {type(x) for x in query}
+        all_attrs = required_attrs.union(optional_attrs)
+
+        return required_attrs.issubset(query_attrs) and query_attrs.issubset(all_attrs)
