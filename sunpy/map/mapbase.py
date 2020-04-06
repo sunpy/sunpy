@@ -1460,8 +1460,8 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        axes: `~matplotlib.axes` or None
-        Axes to plot limb on or None to use current axes.
+        axes: `~matplotlib.axes` or `None`
+            Axes to plot limb on, or `None` to use current axes.
 
         grid_spacing: `~astropy.units.Quantity`
             Spacing for longitude and latitude grid, if length two it specifies
