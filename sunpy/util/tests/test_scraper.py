@@ -160,11 +160,7 @@ def testURL_patternMillisecondsZeroPadded():
     assert s.now == 'fd_20190419_000000_004.fts'
 
 
-# TODO: Fix this
-@pytest.mark.xfail
 def testFilesRange_sameDirectory_local():
-    # Fails due to an IsADirectoryError, wrapped in a URLError, after `requests`
-    # tries to open a directory as a binary file.
     s = Scraper('/'.join(['file:/', rootdir,
                           'EIT', 'efz%Y%m%d.%H%M%S_s.fits']))
     startdate = parse_time((2004, 3, 1, 4, 0))
