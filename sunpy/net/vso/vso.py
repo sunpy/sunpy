@@ -303,9 +303,12 @@ class QueryResponse(BaseQueryResponse):
         """
         s = {a if not a.startswith('_') else None for a in dir(self[0])}
         for resp in self[1:]:
+            if len(s) == 0:
+                break
             s = s.intersection({a if not a.startswith('_') else None for a in dir(resp)})
 
-        s.remove(None)
+        if None in s:
+            s.remove(None)
         return s
 
 
