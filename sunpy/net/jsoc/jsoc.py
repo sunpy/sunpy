@@ -879,13 +879,7 @@ class JSOCClient(BaseClient):
         required = {a.jsoc.Series}
         optional = {a.jsoc.Protocol, a.jsoc.Notify, a.Wavelength, a.Time,
                     a.jsoc.Segment, a.jsoc.Keys, a.jsoc.PrimeKey, a.Sample}
-        query_attrs = {type(x) for x in query}
-        all_attrs = required.union(optional)
-
-        if not required.issubset(query_attrs) or not query_attrs.issubset(all_attrs):
-            return False
-
-        return True
+        return cls.check_attr_types_in_query(query, required, optional)
 
     @classmethod
     def _attrs_module(cls):
