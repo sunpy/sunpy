@@ -222,6 +222,8 @@ class Scraper:
         filesurls = []
         if urlsplit(directories[0]).scheme == "ftp":
             return self._ftpfileslist(timerange)
+        if urlsplit(directories[0]).scheme == "file":
+            return self._localfilelist(timerange)
         for directory in directories:
             try:
                 opn = urlopen(directory)
@@ -264,6 +266,20 @@ class Scraper:
         filesurls = ['ftp://anonymous:data@sunpy.org@' + "{0.netloc}{0.path}".format(urlsplit(url))
                      for url in filesurls]
         return filesurls
+
+    def _localfilelist(self, timerange):
+        directories = self.range(timerange)
+        filepaths = list()
+        for directory in directories:
+            for file_i in os.listdir(directory.replace('file://','')):
+                fullpath = directory + file_i
+                if self._URL_followsPattern(fullpath):
+                    datehref = self._extractDateURL(fullpath)
+                    if (datehref >= timerange.start and datehref <= timerange.end):
+                        filepaths.append(fullpath)
+        filepaths = ['file://' + "{0.netloc}{0.path}".format(urlsplit(path))
+                     for path in filepaths]
+        return filepaths
 
     def _smallerPattern(self, directoryPattern):
         """
