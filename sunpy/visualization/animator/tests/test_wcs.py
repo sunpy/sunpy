@@ -49,6 +49,7 @@ def wcs_4d():
     (np.arange(120).reshape((5, 4, 3, 2)), [0, 'x', 0, 'y'], 2),
     (np.arange(120).reshape((5, 4, 3, 2)), ['x', 0, 0, 'y'], 2),
     (np.arange(120).reshape((5, 4, 3, 2)), ['y', 0, 'x', 0], 2),
+    (np.arange(120).reshape((5, 4, 3, 2)), ['x', 'y', 0, 0], 2),
     (np.arange(120).reshape((5, 4, 3, 2)), [0, 0, 0, 'x'], 1),
 ))
 def test_construct_array_animator(wcs_4d, data, slices, dim):
