@@ -1,0 +1,3 @@
+Added `sunpy.net.base_client.BaseClient.check_attr_types_in_query` as a helper method
+to check if a query contains a set of required attributes, and is a subset of optional
+attributes.
