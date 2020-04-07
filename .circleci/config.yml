@@ -104,7 +104,7 @@ jobs:
       - run: tox -e figure_astropydev
       - run: codecov
       - store_artifacts:
-          path: .tmp/figure/figure_test_images
+          path: .tmp/figure_astropydev/figure_test_images
       - run:
           name: "Image comparison page is available at: "
           command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
