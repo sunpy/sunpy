@@ -95,8 +95,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         if "slider_functions" in kwargs and "slider_labels" not in kwargs:
             extra_slider_labels = [a.__name__ for a in kwargs['slider_functions']]
 
-        slider_labels = [w for i, w in enumerate(self._get_wcs_labels()) if not slices[i]][::-1] + extra_slider_labels
-        slider_labels = kwargs.pop("slider_labels", slider_labels)
+        slider_labels = self._compute_slider_labels_from_wcs(slices) + extra_slider_labels
 
         super().__init__(data, image_axes=image_axes, axis_ranges=None,
                          slider_labels=slider_labels,
@@ -110,6 +109,21 @@ class ArrayAnimatorWCS(ArrayAnimator):
         world_axis_names = getattr(self.wcs, "world_axis_names", [''] * self.wcs.world_n_dim)
         # Return the name if it is set, or the physical type if it is not.
         return [l or t for l, t in zip(world_axis_names, self.wcs.world_axis_physical_types)]
+
+    def _compute_slider_labels_from_wcs(self, slices):
+        """
+        For each pixel dimension, not used in the plot, calculate the world
+        names which are correlated with that pixel dimension. This can return
+        more than one world name per pixel dimension (i.e. lat & lon) so join
+        them if there are.
+        """
+        labels = []
+        wal = np.array(self._get_wcs_labels())
+        pixel_indicies = np.array([a not in ['x', 'y'] for a in slices])
+        for sliced_axis in self.wcs.axis_correlation_matrix[:, pixel_indicies].T:
+            labels.append(" / ".join(list(map(str, wal[sliced_axis]))))
+
+        return labels[::-1]
 
     def _partial_pixel_to_world(self, pixel_dimension, pixel_coord):
         """

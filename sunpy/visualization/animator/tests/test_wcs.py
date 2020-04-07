@@ -13,9 +13,6 @@ from sunpy.visualization.animator.wcs import ArrayAnimatorWCS
 
 @pytest.fixture
 def wcs_4d():
-    # This is weirdly indented and with line continuations to make it a valid
-    # FITS header string so that no warnings are logged during WCS
-    # construction.
     header = dedent("""\
         WCSAXES =                    4 / Number of coordinate axes
         CRPIX1  =                  0.0 / Pixel coordinate of reference point
@@ -49,6 +46,7 @@ def wcs_4d():
     (np.arange(120).reshape((5, 4, 3, 2)), [0, 'x', 0, 'y'], 2),
     (np.arange(120).reshape((5, 4, 3, 2)), ['x', 0, 0, 'y'], 2),
     (np.arange(120).reshape((5, 4, 3, 2)), ['y', 0, 'x', 0], 2),
+    (np.arange(120).reshape((5, 4, 3, 2)), ['x', 'y', 0, 0], 2),
     (np.arange(120).reshape((5, 4, 3, 2)), [0, 0, 0, 'x'], 1),
 ))
 def test_construct_array_animator(wcs_4d, data, slices, dim):
@@ -69,7 +67,7 @@ def test_construct_array_animator(wcs_4d, data, slices, dim):
                 assert u.allclose(a, 0 * u.pix)
             else:
                 assert isinstance(a, u.Quantity)
-                assert a.value == wcs_4d.pixel_to_world_values(*[0]*wcs_4d.world_n_dim)[i]
+                assert a.value == wcs_4d.pixel_to_world_values(*[0] * wcs_4d.world_n_dim)[i]
                 assert a.unit == wcs_4d.world_axis_units[i]
         else:
             assert arange is None
@@ -101,6 +99,13 @@ def test_array_animator_wcs_2d_simple_plot(wcs_4d):
 
 
 @figure_test
+def test_array_animator_wcs_2d_celestial_sliders(wcs_4d):
+    data = np.arange(120).reshape((5, 4, 3, 2))
+    a = ArrayAnimatorWCS(data, wcs_4d, ['x', 'y', 0, 0])
+    return a.fig
+
+
+@figure_test
 def test_array_animator_wcs_2d_update_plot(wcs_4d):
     data = np.arange(120).reshape((5, 4, 3, 2))
     a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 'y'])
@@ -119,8 +124,8 @@ def test_array_animator_wcs_2d_transpose_update_plot(wcs_4d):
 @figure_test
 def test_array_animator_wcs_2d_colorbar_buttons(wcs_4d):
     data = np.arange(120).reshape((5, 4, 3, 2))
-    bf = [lambda x: x]*10
-    bl = ['h']*10
+    bf = [lambda x: x] * 10
+    bl = ['h'] * 10
     a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'y', 'x'],
                          colorbar=True, button_func=bf, button_labels=bl)
     a.update_plot(1, a.im, a.sliders[0]._slider)
@@ -130,8 +135,7 @@ def test_array_animator_wcs_2d_colorbar_buttons(wcs_4d):
 @figure_test
 def test_array_animator_wcs_2d_colorbar_buttons_default_labels(wcs_4d):
     data = np.arange(120).reshape((5, 4, 3, 2))
-    bf = [lambda x: x]*10
-    bl = ['h']*10
+    bf = [lambda x: x] * 10
     a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'y', 'x'], colorbar=True, button_func=bf)
     a.update_plot(1, a.im, a.sliders[0]._slider)
     return a.fig
