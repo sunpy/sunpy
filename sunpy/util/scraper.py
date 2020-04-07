@@ -268,17 +268,25 @@ class Scraper:
         return filesurls
 
     def _localfilelist(self, timerange):
+        pattern = self.pattern
+        pattern_temp = pattern.replace('file://','')
+        if os.name == 'nt':
+            pattern_temp = pattern_temp.replace('\\','/')
+            prefix = 'file:///'
+        else:
+            prefix = 'file://'
+        self.pattern = pattern_temp
         directories = self.range(timerange)
         filepaths = list()
         for directory in directories:
-            for file_i in os.listdir(directory.replace('file://', '')):
+            for file_i in os.listdir(directory):
                 fullpath = directory + file_i
                 if self._URL_followsPattern(fullpath):
                     datehref = self._extractDateURL(fullpath)
                     if (datehref >= timerange.start and datehref <= timerange.end):
                         filepaths.append(fullpath)
-        filepaths = ['file://' + "{0.netloc}{0.path}".format(urlsplit(path))
-                     for path in filepaths]
+        filepaths = [prefix + path for path in filepaths]
+        self.pattern = pattern
         return filepaths
 
     def _smallerPattern(self, directoryPattern):
