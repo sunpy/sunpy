@@ -123,7 +123,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
         for sliced_axis in self.wcs.axis_correlation_matrix[:, pixel_indicies].T:
             labels.append(" / ".join(list(map(str, wal[sliced_axis]))))
 
-        return labels
+        return labels[::-1]
 
     def _partial_pixel_to_world(self, pixel_dimension, pixel_coord):
         """
