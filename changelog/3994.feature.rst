@@ -1,0 +1,1 @@
+Added `_localfilelist` method in `~sunpy.util.scraper.Scraper` to scrap local data archives.
