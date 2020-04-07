@@ -1,0 +1,3 @@
+Correctly generate labels for sliders in
+`~sunpy.visualization.animators.ArrayAnimatorWCS` when the number of pixel
+dimensions and the number of world dimensions are not the same in the WCS.
