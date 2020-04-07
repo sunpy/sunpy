@@ -271,7 +271,7 @@ class Scraper:
         directories = self.range(timerange)
         filepaths = list()
         for directory in directories:
-            for file_i in os.listdir(directory.replace('file://','')):
+            for file_i in os.listdir(directory.replace('file://', '')):
                 fullpath = directory + file_i
                 if self._URL_followsPattern(fullpath):
                     datehref = self._extractDateURL(fullpath)
