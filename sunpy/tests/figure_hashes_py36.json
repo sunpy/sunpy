@@ -32,6 +32,7 @@
     "sunpy.timeseries.tests.test_timeseriesbase.test_rhessi_peek": "fcd235c9627ad38afd1ca90605bbfed05e5c6fb299c3afcd5dced78de06a061b",
     "sunpy.visualization.animator.tests.test_basefuncanimator.test_imageanimator_figure": "34d3270476b918f284f21906d46e2160c973179c36b1d67d62bfa6dc51f19362",
     "sunpy.visualization.animator.tests.test_basefuncanimator.test_lineanimator_figure": "80dd2032071f977fc82230d67832c90d047aa29769c4916bc85259782f084d5d",
+    "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_2d_celestial_sliders": "783225ffe7bcbeca2c58a7e4f60b7fd3a8722c089ec32bebdda6d7f36a0f56db",
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_2d_colorbar_buttons": "4ea4dc1e1dbee8e085c20990a80e67c329ae0cf98e9c790ce9d3965b65e701f0",
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_2d_colorbar_buttons_default_labels": "23f8b75b0644233968c6d9c3f12c43810758eca79b301f672720f9308e8647ec",
     "sunpy.visualization.animator.tests.test_wcs.test_array_animator_wcs_2d_extra_sliders": "0722e91c2d0a0d02d04d5ba3f81fc94a73f3d9d472bab782591ef58e0287ee78",
