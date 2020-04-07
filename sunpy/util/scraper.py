@@ -269,9 +269,9 @@ class Scraper:
 
     def _localfilelist(self, timerange):
         pattern = self.pattern
-        pattern_temp = pattern.replace('file://','')
+        pattern_temp = pattern.replace('file://', '')
         if os.name == 'nt':
-            pattern_temp = pattern_temp.replace('\\','/')
+            pattern_temp = pattern_temp.replace('\\', '/')
             prefix = 'file:///'
         else:
             prefix = 'file://'
