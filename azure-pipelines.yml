@@ -60,7 +60,7 @@ jobs:
       - linux: py38-online
         name: py38_test_online
 
-      - linux32: py38
+      - linux32: py38-32bit
         name: py38_test_32bit
 
       - linux: codestyle
