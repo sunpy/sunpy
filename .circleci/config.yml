@@ -123,6 +123,10 @@ jobs:
       - attach_workspace:
           at: .tmp
       - run: ls -la .tmp/
+      #- run: git clone https://github.com/sunpy/sunpy-figure-tests.git -b sunpy-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
+      - run: git clone https://github.com/sunpy/sunpy-figure-tests.git -b sunpy-test ~/sunpy-figure-tests/
+      - run: cp -r .tmp/figure_py36/figure_test_images/*.png ~/sunpy-figure-tests/figures/figure_py36/
+      - run: cp -r .tmp/figure_py37_astropydev/figure_test_images/*.png ~/sunpy-figure-tests/figures/figure_py37_astropydev/
 
 workflows:
   version: 2
