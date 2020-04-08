@@ -121,7 +121,7 @@ pipe ``|`` operator. This joins queries together just as the logical ``OR``
 operator would::
 
     >>> Fido.search(a.Time('2012/3/4', '2012/3/4 02:00'),
-    ...             a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA +ELLIPSIS +SKIP
+    ...             a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA +ELLIPSIS
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 3 Providers:
     <BLANKLINE>

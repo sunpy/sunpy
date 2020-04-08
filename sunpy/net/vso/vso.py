@@ -82,13 +82,25 @@ def iter_sort_response(response):
 
     Returns
     -------
-    `generator`
-    Sorted recorditems w.r.t. their start time.
+    `list`
+        Sorted record items w.r.t. their start time.
     """
+    has_time_recs = list()
+    has_notime_recs = list()
     for prov_item in response.provideritem:
         if not hasattr(prov_item, 'record') or not prov_item.record:
             continue
-        yield from sorted(prov_item.record.recorditem, key=lambda x: x.time.start)
+        if not hasattr(prov_item.record, 'recorditem') or not prov_item.record.recorditem:
+            continue
+        rec_item = prov_item.record.recorditem
+        for rec in rec_item:
+            if hasattr(rec, 'time') and hasattr(rec.time, 'start') and rec.time.start is not None:
+                has_time_recs.append(rec)
+            else:
+                has_notime_recs.append(rec)
+    has_time_recs = sorted(has_time_recs, key=lambda x: x.time.start)
+    all_recs = has_time_recs + has_notime_recs
+    return all_recs
 
 
 def iter_errors(response):
