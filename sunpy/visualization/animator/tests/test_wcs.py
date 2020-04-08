@@ -41,6 +41,40 @@ def wcs_4d():
     return WCS(header=fits.Header.fromstring(header, sep='\n'))
 
 
+@pytest.fixture
+def wcs_3d():
+    header = dedent("""\
+        NAXIS   =                    3 / Number of data axes
+        NAXIS1  =                  205 /
+        NAXIS2  =                   77 /
+        NAXIS3  =                   64 /
+        CDELT1  =      0.0129800001159 /
+        CDELT2  =             0.166350 /
+        CDELT3  =        1.99544040740 /
+        CRPIX1  =              1.00000 /
+        CRPIX2  =              386.500 /
+        CRPIX3  =              32.0000 /
+        CRVAL1  =        1331.68328015 /
+        CRVAL2  =             -107.579 /
+        CRVAL3  =              817.863 /
+        CTYPE1  = 'WAVE    '           /
+        CTYPE2  = 'HPLT-TAN'           /
+        CTYPE3  = 'HPLN-TAN'           /
+        CUNIT1  = 'Angstrom'           /
+        CUNIT2  = 'arcsec  '           /
+        CUNIT3  = 'arcsec  '           /
+        PC1_1   =        1.00000000000 /
+        PC1_2   =        0.00000000000 /
+        PC2_1   =        0.00000000000 /
+        PC2_2   =       0.999988496304 /
+        PC3_1   =        0.00000000000 /
+        PC3_2   =    0.000939457726278 /
+        PC3_3   =       0.999988496304 /
+        PC2_3   =      -0.135178965950 /
+    """)
+    return WCS(header=fits.Header.fromstring(header, sep='\n'))
+
+
 @pytest.mark.parametrize("data, slices, dim", (
     (np.arange(120).reshape((5, 4, 3, 2)), [0, 0, 'x', 'y'], 2),
     (np.arange(120).reshape((5, 4, 3, 2)), [0, 'x', 0, 'y'], 2),
@@ -162,7 +196,28 @@ def test_array_animator_wcs_1d_update_plot(wcs_4d):
     pytest.importorskip("astropy", minversion="4.0dev26173")
     data = np.arange(120).reshape((5, 4, 3, 2))
     a = ArrayAnimatorWCS(data, wcs_4d, [0, 0, 'x', 0], ylabel="Y axis!")
-    a.update_plot(1, a.im, a.sliders[0]._slider)
+    a.sliders[0]._slider.set_val(1)
+    return a.fig
+
+
+@figure_test
+def test_array_animator_wcs_1d_update_plot_masked(wcs_3d):
+    """
+    This test ensures the x axis of the line plot is correct even if the whole
+    of the initial line plotted at construction of the animator is masked out.
+    """
+    pytest.importorskip("astropy", minversion="4.0dev26173")
+
+    nelem = np.prod(wcs_3d.array_shape)
+    data = np.arange(nelem, dtype=np.float64).reshape(wcs_3d.array_shape)
+    data = np.ma.MaskedArray(data, data < nelem / 2)
+
+    # Check that the generated data satisfies the test condition
+    assert data.mask[0, 0].all()
+
+    a = ArrayAnimatorWCS(data, wcs_3d, ['x', 0, 0], ylabel="Y axis!")
+    a.sliders[0]._slider.set_val(wcs_3d.array_shape[0] / 2)
+
     return a.fig
 
 
