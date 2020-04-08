@@ -1,3 +1,5 @@
+version: 2.1
+
 no-backports: &no-backports
   name: Skip any branches called cherry-pick
   command: |
@@ -24,7 +26,6 @@ apt-run: &apt-install
     apt update
     apt install -y graphviz build-essential libopenjp2-7
 
-version: 2
 jobs:
   twine-check:
     docker:
@@ -51,42 +52,6 @@ jobs:
       - run: pip install -U pip
       - run: pip install --progress-bar off .[all,dev]
       - run: pip install -e .[all,dev]
-
-  figure-tests-36:
-    docker:
-      - image: continuumio/miniconda3
-    steps:
-      - run: *no-backports
-      - checkout
-      - run: *skip-check
-      - run: *merge-check
-      - run: *apt-install
-      - run: pip install -U tox tox-conda codecov
-      - run: tox -e figure
-      - run: codecov
-      - store_artifacts:
-          path:  .tmp/figure/figure_test_images
-      - run:
-          name: "Image comparison page is available at: "
-          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
-
-  figure-tests-37-astropydev:
-    docker:
-      - image: continuumio/miniconda3
-    steps:
-      - run: *no-backports
-      - checkout
-      - run: *skip-check
-      - run: *merge-check
-      - run: *apt-install
-      - run: pip install -U tox tox-conda codecov
-      - run: tox -e figure_astropydev
-      - run: codecov
-      - store_artifacts:
-          path: .tmp/figure_astropydev/figure_test_images
-      - run:
-          name: "Image comparison page is available at: "
-          command: FIGS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/figure/figure_test_images/fig_comparison.html"; echo $FIGS_URL
 
   html-docs:
     docker:
@@ -124,6 +89,54 @@ jobs:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/docs/_build/html/index.html"; echo $DOCS_URL
 
+  figure:
+    parameters:
+      jobname:
+        type: string
+    docker:
+      - image: continuumio/miniconda3
+    environment:
+      TOXENV=<< parameters.jobname >>
+    steps:
+      - run: *no-backports
+      - checkout
+      - run: *skip-check
+      - run: *merge-check
+      - run: *apt-install
+      - run: pip install -U tox tox-conda codecov
+      - run: tox
+      - run: codecov
+      - store_artifacts:
+          path: .tmp/<< parameters.jobname >>/figure_test_images
+      - run:
+          name: "Image comparison page is available at: "
+          command: echo "${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/${TOXENV}/figure_test_images/fig_comparison.html"
+      - persist_to_workspace:
+          root: .tmp/
+          paths: << parameters.jobname >>/figure_test_images
+
+  deploy-reference-images:
+    docker:
+      - image: cimg/base:2020.01
+    environment:
+      GIT_SSH_COMMAND=ssh -i ~/.ssh/id_rsa_7b8fc81c13a3b446ec9aa50d3f626978
+    steps:
+      - attach_workspace:
+          at: .tmp
+      # Clear out all the ssh keys so that it always uses the write deploy key
+      - run: ssh-add -D
+      # Add private key for deploying to the figure tests repo
+      - add_ssh_keys:
+          fingerprints: "7b:8f:c8:1c:13:a3:b4:46:ec:9a:a5:0d:3f:62:69:78"
+      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run: git clone git@github.com:sunpy/sunpy-figure-tests.git -b sunpy-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
+      - run: cp -r .tmp/figure_py36/figure_test_images/*.png ~/sunpy-figure-tests/figures/figure_py36/
+      - run: cp -r .tmp/figure_py37_astropydev/figure_test_images/*.png ~/sunpy-figure-tests/figures/figure_py37_astropydev/
+      - run: git config --global user.email "sunpy@circleci" && git config --global user.name "SunPy Circle CI"
+      - run: echo "Hello World" > ~/sunpy-figure-tests/hello
+      - deploy:
+          command: cd ~/sunpy-figure-tests/; git add . && git commit -m "Update reference figures from ${CIRCLE_BRANCH}" && git push
+
 workflows:
   version: 2
 
@@ -134,8 +147,25 @@ workflows:
 
   figure-tests:
     jobs:
-      - figure-tests-36
-      - figure-tests-37-astropydev
+      - figure:
+          name: << matrix.jobname >>
+          matrix:
+            parameters:
+              jobname:
+                - "figure_py36"
+                - "figure_py37_astropydev"
+
+      - deploy-reference-images:
+          requires:
+            - "figure_py36"
+            - "figure_py37_astropydev"
+          filters:
+            branches:
+              only:
+                - master
+                # - 1.1
+                # - 1.0
+
 
   test-documentation:
     jobs:
