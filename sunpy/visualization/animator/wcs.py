@@ -242,7 +242,12 @@ class ArrayAnimatorWCS(ArrayAnimator):
         if self.ylabel:
             ax.set_ylabel(self.ylabel)
 
-        line, = ax.plot(self.data[self.frame_index], **self.imshow_kwargs)
+        ydata = self.data[self.frame_index]
+        line, = ax.plot(ydata, **self.imshow_kwargs)
+
+        if isinstance(self.data, np.ma.MaskedArray):
+            ax.set_xlim((0, ydata.shape[0]))
+
         return line
 
     @property
