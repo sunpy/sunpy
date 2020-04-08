@@ -52,27 +52,6 @@ jobs:
       - run: pip install --progress-bar off .[all,dev]
       - run: pip install -e .[all,dev]
 
-  32bit:
-    docker:
-      - image: quay.io/pypa/manylinux2014_i686
-    environment:
-          MPLBACKEND: agg
-          COLUMNS: 180
-    steps:
-      - run: *no-backports
-      - checkout
-      - run: *skip-check
-      - run:
-          name: install dependencies
-          command: |
-            yum install -y gcc gcc-c++ freetype-devel openssl-devel
-      - run:
-          name: Install dependencies for Python 3.6
-          command: /opt/python/cp36-cp36m/bin/pip install tox tox-pypi-filter>=0.12 | cat
-      - run:
-          name: Run tests for Python 3.6
-          command: PYTHONHASHSEED=42 /opt/python/cp36-cp36m/bin/python -m tox -e py36 -- -n=4
-
   figure-tests-36:
     docker:
       - image: continuumio/miniconda3
@@ -148,17 +127,10 @@ jobs:
 workflows:
   version: 2
 
-  twine-check:
+  packaging:
     jobs:
       - twine-check
-
-  pip-install:
-    jobs:
       - pip-install
-
-  build-32:
-    jobs:
-      - 32bit
 
   figure-tests:
     jobs:

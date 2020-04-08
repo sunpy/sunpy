@@ -50,6 +50,10 @@ jobs:
         - libopenjp2-7
       brew:
         - openjpeg
+      yum:
+        - openssl-devel
+        - freetype-devel
+        - libpng-devel
     envs:
       - macos: py36
         name: py36_test
@@ -60,6 +64,9 @@ jobs:
 
       - linux: py38-online
         name: py38_test_online
+
+      - linux32: py38-32bit
+        name: py38_test_32bit
 
       - linux: codestyle
         name: python_codestyle
@@ -72,7 +79,6 @@ jobs:
         name: py36_test_oldestdeps
 
       - linux: py38-devdeps
-        name: py38_test_devdeps
 
 # On branches which aren't master, and not Pull Requests, build the wheels but only upload them on tags
 - ${{ if and(ne(variables['Build.Reason'], 'PullRequest'), not(contains(variables['Build.SourceBranch'], 'master'))) }}:
@@ -92,5 +98,6 @@ jobs:
         - py36_test
         - py37_test
         - py38_test_online
+        - py38_test_32bit
         - py36_test_oldestdeps
         - py36_conda
