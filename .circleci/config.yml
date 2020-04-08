@@ -53,41 +53,6 @@ jobs:
       - run: pip install --progress-bar off .[all,dev]
       - run: pip install -e .[all,dev]
 
-  figure:
-    parameters:
-      jobname:
-        type: string
-    docker:
-      - image: continuumio/miniconda3
-    environment:
-      TOXENV=<< parameters.jobname >>
-    steps:
-      - run: *no-backports
-      - checkout
-      - run: *skip-check
-      - run: *merge-check
-      - run: *apt-install
-      - run: pip install -U tox tox-conda codecov
-      - run: tox
-      - run: codecov
-      - store_artifacts:
-          path: .tmp/<< parameters.jobname >>/figure_test_images
-      - run:
-          name: "Image comparison page is available at: "
-          command: echo "${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/${TOXENV}/figure_test_images/fig_comparison.html"
-      - persist_to_workspace:
-          root: .tmp/
-          paths: << parameters.jobname >>/figure_test_images
-
-  deploy-reference-images:
-    docker:
-      - image: cimg/base:2020.01
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .tmp
-      - run: ls -la .tmp/
-
   html-docs:
     docker:
       - image: continuumio/miniconda3
@@ -124,6 +89,41 @@ jobs:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/docs/_build/html/index.html"; echo $DOCS_URL
 
+  figure:
+    parameters:
+      jobname:
+        type: string
+    docker:
+      - image: continuumio/miniconda3
+    environment:
+      TOXENV=<< parameters.jobname >>
+    steps:
+      - run: *no-backports
+      - checkout
+      - run: *skip-check
+      - run: *merge-check
+      - run: *apt-install
+      - run: pip install -U tox tox-conda codecov
+      - run: tox
+      - run: codecov
+      - store_artifacts:
+          path: .tmp/<< parameters.jobname >>/figure_test_images
+      - run:
+          name: "Image comparison page is available at: "
+          command: echo "${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/${TOXENV}/figure_test_images/fig_comparison.html"
+      - persist_to_workspace:
+          root: .tmp/
+          paths: << parameters.jobname >>/figure_test_images
+
+  deploy-reference-images:
+    docker:
+      - image: cimg/base:2020.01
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .tmp
+      - run: ls -la .tmp/
+
 workflows:
   version: 2
 
@@ -138,8 +138,14 @@ workflows:
           name: << matrix.jobname >>
           matrix:
             parameters:
-              jobname: ["figure_py36", "figure_py37_astropydev"]
-      - deploy-reference-images
+              jobname:
+                - "figure_py36"
+                - "figure_py37_astropydev"
+
+      - deploy-reference-images:
+          requires:
+            - "figure_py36"
+            - "figure_py37_astropydev"
 
   test-documentation:
     jobs:
