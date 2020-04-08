@@ -75,6 +75,18 @@ jobs:
       - run:
           name: "Image comparison page is available at: "
           command: echo "${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/${TOXENV}/figure_test_images/fig_comparison.html"
+      - persist_to_workspace:
+          root: .tmp/
+          paths: << parameters.jobname >>/figure_test_images
+
+  deploy-reference-images:
+    docker:
+      - image: cimg/base:2020.01
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .tmp
+      - run: ls -la .tmp/
 
   html-docs:
     docker:
@@ -127,6 +139,7 @@ workflows:
           matrix:
             parameters:
               jobname: ["figure_py36", "figure_py37_astropydev"]
+      - deploy-reference-images
 
   test-documentation:
     jobs:
