@@ -1,3 +1,5 @@
+version: 2.1
+
 no-backports: &no-backports
   name: Skip any branches called cherry-pick
   command: |
@@ -24,7 +26,6 @@ apt-run: &apt-install
     apt update
     apt install -y graphviz build-essential libopenjp2-7
 
-version: 2
 jobs:
   twine-check:
     docker:
@@ -53,8 +54,13 @@ jobs:
       - run: pip install -e .[all,dev]
 
   figure:
+    parameters:
+      jobname:
+        type: string
     docker:
       - image: continuumio/miniconda3
+    environment:
+      TOXENV=<< parameters.jobname >>
     steps:
       - run: *no-backports
       - checkout
@@ -65,7 +71,7 @@ jobs:
       - run: tox
       - run: codecov
       - store_artifacts:
-          path: .tmp/$TOXENV/figure_test_images
+          path: .tmp/<< parameters.jobname >>/figure_test_images
       - run:
           name: "Image comparison page is available at: "
           command: echo "${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/.tmp/${TOXENV}/figure_test_images/fig_comparison.html"
@@ -117,11 +123,10 @@ workflows:
   figure-tests:
     jobs:
       - figure:
+          name: << matrix.jobname >>
           matrix:
             parameters:
-              environment:
-                - TOXENV=figure_py36
-                - TOXENV=figure_py37_astropydev
+              jobname: ["figure_py36", "figure_py37_astropydev"]
 
   test-documentation:
     jobs:
