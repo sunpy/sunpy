@@ -119,14 +119,21 @@ jobs:
     docker:
       - image: cimg/base:2020.01
     steps:
-      - checkout
       - attach_workspace:
           at: .tmp
-      - run: ls -la .tmp/
+
       #- run: git clone https://github.com/sunpy/sunpy-figure-tests.git -b sunpy-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
       - run: git clone https://github.com/sunpy/sunpy-figure-tests.git -b sunpy-test ~/sunpy-figure-tests/
       - run: cp -r .tmp/figure_py36/figure_test_images/*.png ~/sunpy-figure-tests/figures/figure_py36/
       - run: cp -r .tmp/figure_py37_astropydev/figure_test_images/*.png ~/sunpy-figure-tests/figures/figure_py37_astropydev/
+
+      # Add private key for deploying to the figure tests repo
+      - add_ssh_keys:
+          fingerprints: "7b:8f:c8:1c:13:a3:b4:46:ec:9a:a5:0d:3f:62:69:78"
+
+      - run: git config --global user.email "sunpy@circleci" && git config --global user.name "SunPy Circle CI"
+
+      - run: cd ~/sunpy-figure-tests/; git add . && git commit -m "Update reference figures from ${CIRCLE_BRANCH}" && git push
 
 workflows:
   version: 2
