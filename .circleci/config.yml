@@ -130,12 +130,10 @@ jobs:
           fingerprints: "7b:8f:c8:1c:13:a3:b4:46:ec:9a:a5:0d:3f:62:69:78"
       - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run: git clone git@github.com:sunpy/sunpy-figure-tests.git -b sunpy-${CIRCLE_BRANCH} ~/sunpy-figure-tests/
-      - run: cp -r .tmp/figure_py36/figure_test_images/*.png ~/sunpy-figure-tests/figures/figure_py36/
-      - run: cp -r .tmp/figure_py37_astropydev/figure_test_images/*.png ~/sunpy-figure-tests/figures/figure_py37_astropydev/
+      - run: cd .tmp/ && find . -maxdepth 1 -name "figure_*" -type d -exec bash -c 'mkdir ~/sunpy-figure-tests/figures/$1; cp -v "$1"/figure_test_images/*png "/home/circleci/sunpy-figure-tests/figures/$1"' Cp {} \;
       - run: git config --global user.email "sunpy@circleci" && git config --global user.name "SunPy Circle CI"
-      - run: echo "Hello World" > ~/sunpy-figure-tests/hello
       - deploy:
-          command: cd ~/sunpy-figure-tests/; git add . && git commit -m "Update reference figures from ${CIRCLE_BRANCH}" && git push
+          command: cd ~/sunpy-figure-tests/; git add . && git commit -m "Update reference figures from ${CIRCLE_BRANCH}" || echo "No changes to reference images to deploy" && git push
 
 workflows:
   version: 2
