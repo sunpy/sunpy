@@ -10,14 +10,8 @@ import numpy as np
 
 import astropy.units as u
 from astropy.time import Time
-from astropy.coordinates import Angle, Latitude, Longitude, SkyCoord
-# Versions of Astropy that do not have *MeanEcliptic frames have the same frames
-# with the misleading names *TrueEcliptic
-try:
-    from astropy.coordinates import HeliocentricMeanEcliptic, GeocentricMeanEcliptic
-except ImportError:
-    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
-    from astropy.coordinates import GeocentricTrueEcliptic as GeocentricMeanEcliptic
+from astropy.coordinates import (Angle, Latitude, Longitude, SkyCoord,
+                                 HeliocentricMeanEcliptic, GeocentricMeanEcliptic)
 from astropy import _erfa as erfa
 from astropy.coordinates.builtin_frames.utils import get_jd12
 

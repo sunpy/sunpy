@@ -14,7 +14,7 @@ storing complex Astropy and SunPy objects in a way that can be loaded back into
 the same form as they were saved.
 
 .. note::
-    This example requires Astropy 3.1 and asdf 2.3.0
+    This example requires Astropy 3.2 and asdf 2.3.0
 
 """
 
@@ -90,17 +90,12 @@ plt.show()
 # We can now save these loop points to an asdf file to use later. The advantage
 # of saving them to asdf is that all the metadata about the coordinates will be
 # preserved, and when we load the asdf, we will get back an identical
-# `~sunpy.coordinates.frames.HeliographicStonyhurst` object.
+# `~astropy.coordinates.SkyCoord` object.
 #
 # asdf files save a dictionary to a file, so to save the loop coordinates we
 # need to put them into a dictionary. This becomes what asdf calls a tree.
-#
-# The asdf file can not save the `~astropy.coordinates.SkyCoord` object in
-# versions of Astropy prior to 3.2, but it
-# can save the underlying frame. Therefore we construct a tree with the frame.
 
-
-tree = {'loop_points': loop_coords.frame}
+tree = {'loop_points': loop_coords}
 
 with asdf.AsdfFile(tree) as asdf_file:
     asdf_file.write_to("loop_coords.asdf")
@@ -111,8 +106,7 @@ with asdf.AsdfFile(tree) as asdf_file:
 # Astropy and SunPy installed. We can reload the file like so:
 
 with asdf.open("loop_coords.asdf") as input_asdf:
-    coords = input_asdf['loop_points']
-    new_coords = SkyCoord(coords)
+    new_coords = input_asdf['loop_points']
 
 print(new_coords.shape)
 # print the first and last coordinate point
