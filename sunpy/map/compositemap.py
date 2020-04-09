@@ -31,35 +31,6 @@ class CompositeMap:
     args : [`~sunpy.map.Map` | string]
         One or more map of filepaths
 
-    Methods
-    -------
-    add_map(map, zorder=None, alpha=1, levels=False)
-        Adds a map to the CompositeMap
-    remove_map(index)
-        Removes and returns the map with the given index.
-    list_maps()
-        Prints a list of the currently included maps.
-    get_alpha(index=None)
-        Returns the alpha-channel value for a layer in the composite image
-    get_levels(index=None)
-        Returns the list of contour levels for a map within the CompositeMap.
-    get_plot_settings(index=None)
-        Returns the plot settings for a map within the CompositeMap.
-    get_zorder(index=None)
-        Returns the layering preference (z-order) for a map within the composite.
-    set_alpha(index, alpha)
-        Sets the alpha-channel value for a layer in the CompositeMap.
-    set_levels(index, levels, percent=False)
-        Sets the contour levels for a layer in the CompositeMap.
-    set_plot_settings(index, plot_setiings)
-        Set the plot settings for a map with the CompositeMap.
-    set_zorder(index, zorder)
-        Set the layering preference (z-order) for a map within the CompositeMap.
-    plot(figure=None, overlays=None, draw_limb=False,
-    draw_grid=False, colorbar=True, basic_plot=False,title="SunPy Plot",
-    matplot_args)
-        Plots the composite map object using matplotlib
-
     Examples
     --------
     >>> import sunpy.map
@@ -71,13 +42,14 @@ class CompositeMap:
     >>> comp_map.peek()  # doctest: +SKIP
 
     """
+
     def __init__(self, *args, **kwargs):
         self._maps = expand_list(args)
 
         for m in self._maps:
             if not isinstance(m, GenericMap):
                 raise ValueError(
-                           'CompositeMap expects pre-constructed map objects.')
+                    'CompositeMap expects pre-constructed map objects.')
 
         # Default alpha and zorder values
         alphas = [1] * len(self._maps)
@@ -333,7 +305,7 @@ class CompositeMap:
         return self._maps[index].draw_limb(axes=axes, **kwargs)
 
     @u.quantity_input
-    def draw_grid(self, index=None, axes=None, grid_spacing: u.deg=20*u.deg, **kwargs):
+    def draw_grid(self, index=None, axes=None, grid_spacing: u.deg = 20*u.deg, **kwargs):
         """Draws a grid over the surface of the Sun.
 
         Parameters
@@ -443,7 +415,8 @@ class CompositeMap:
                 if m.mask is None:
                     ret.append(axes.contour(m.data, m.levels, **params))
                 else:
-                    ret.append(axes.contour(np.ma.array(np.asarray(m.data), mask=m.mask), m.levels, **params))
+                    ret.append(axes.contour(np.ma.array(np.asarray(
+                        m.data), mask=m.mask), m.levels, **params))
 
                 # Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)
