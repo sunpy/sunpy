@@ -8,14 +8,8 @@ from astropy.constants import c as speed_of_light
 from astropy.coordinates import (SkyCoord, get_body_barycentric, Angle,
                                  ConvertError, Longitude, CartesianRepresentation,
                                  get_body_barycentric_posvel,
-                                 CartesianDifferential, SphericalDifferential)
-# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
-# with the misleading name HeliocentricTrueEcliptic
-try:
-    from astropy.coordinates import HeliocentricMeanEcliptic
-except ImportError:
-    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
-
+                                 CartesianDifferential, SphericalDifferential,
+                                 HeliocentricMeanEcliptic)
 from astropy.time import Time
 
 from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,

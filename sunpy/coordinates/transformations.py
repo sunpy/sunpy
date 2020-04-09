@@ -24,8 +24,10 @@ import astropy.units as u
 from astropy._erfa import obl06
 from astropy.constants import c as speed_of_light
 from astropy.coordinates import (HCRS, ICRS, BaseCoordinateFrame, ConvertError,
-                                 get_body_barycentric, get_body_barycentric_posvel)
+                                 get_body_barycentric, get_body_barycentric_posvel,
+                                 HeliocentricMeanEcliptic)
 from astropy.coordinates.baseframe import frame_transform_graph
+from astropy.coordinates.builtin_frames import make_transform_graph_docs
 from astropy.coordinates.builtin_frames.utils import get_jd12
 from astropy.coordinates.matrix_utilities import matrix_product, matrix_transpose, rotation_matrix
 from astropy.coordinates.representation import (CartesianDifferential, CartesianRepresentation,
@@ -40,19 +42,6 @@ from sunpy.sun import constants
 from .frames import (_J2000, GeocentricEarthEquatorial, GeocentricSolarEcliptic,
                      Heliocentric, HeliocentricEarthEcliptic, HeliocentricInertial,
                      HeliographicCarrington, HeliographicStonyhurst, Helioprojective)
-
-# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
-# with the incorrect name HeliocentricTrueEcliptic
-try:
-    from astropy.coordinates import HeliocentricMeanEcliptic
-except ImportError:
-    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
-
-try:
-    from astropy.coordinates.builtin_frames import _make_transform_graph_docs as make_transform_graph_docs
-except ImportError:
-    from astropy.coordinates import make_transform_graph_docs as _make_transform_graph_docs
-    make_transform_graph_docs = lambda: _make_transform_graph_docs(frame_transform_graph)
 
 
 RSUN_METERS = constants.get('radius').si.to(u.m)
@@ -958,10 +947,7 @@ def _make_sunpy_graph():
 
     _add_astropy_node(small_graph)
 
-    # Overwrite the main transform graph
-    frame_transform_graph = small_graph
-
-    docstr = make_transform_graph_docs()
+    docstr = make_transform_graph_docs(small_graph)
 
     # Restore the main transform graph
     frame_transform_graph = backup_graph

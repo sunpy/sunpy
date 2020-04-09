@@ -4,19 +4,12 @@ import numpy as np
 from matplotlib import colors
 
 import astropy.units as u
-from astropy.coordinates import CartesianRepresentation, SkyCoord
+from astropy.coordinates import CartesianRepresentation, SkyCoord, HeliocentricMeanEcliptic
 from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
-
-# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
-# with the misleading name HeliocentricTrueEcliptic
-try:
-    from astropy.coordinates import HeliocentricMeanEcliptic
-except ImportError:
-    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
 
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']

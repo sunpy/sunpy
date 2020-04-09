@@ -13,17 +13,11 @@ import astropy.units as u
 from astropy.time import Time
 from astropy.coordinates import (SkyCoord, Angle, Longitude, Distance,
                                  ICRS, ITRS, AltAz,
-                                 get_body_barycentric)
+                                 get_body_barycentric,
+                                 HeliocentricEclipticIAU76)
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 from astropy._erfa.core import ErfaWarning
 from astropy.constants import c as speed_of_light
-# Versions of Astropy that do not have HeliocentricMeanEcliptic have the same frame
-# with the misleading name HeliocentricTrueEcliptic
-try:
-    from astropy.coordinates import HeliocentricMeanEcliptic
-except ImportError:
-    from astropy.coordinates import HeliocentricTrueEcliptic as HeliocentricMeanEcliptic
-from astropy.coordinates import HeliocentricEclipticIAU76
 
 from sunpy.time import parse_time
 from sunpy import log
