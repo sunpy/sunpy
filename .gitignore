@@ -221,3 +221,5 @@ tags
 # Release script
 .github_cache
 .history
+*.orig
+.tmp

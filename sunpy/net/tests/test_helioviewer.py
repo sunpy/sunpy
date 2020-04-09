@@ -29,6 +29,7 @@ def client():
 @pytest.mark.remote_data
 class TestHelioviewerClient:
     """Tests the Helioviewer.org API Client class"""
+
     def test_get_datasources(self, client):
         """
         Tests get_data_sources and data_sources and that they match.
@@ -79,8 +80,8 @@ class TestHelioviewerClient:
         Tests getJP2Header API method
         """
         header1 = client.get_jp2_header('1994/01/01', observatory='SOHO',
-                                              instrument='EIT', measurement='304')
-        header2 = client.get_jp2_header('1994/01/01', jp2_id = 1795504)
+                                        instrument='EIT', measurement='304')
+        header2 = client.get_jp2_header('1994/01/01', jp2_id=1795504)
         assert header1 == header2
         assert len(header1) == len(header2) == 1
         assert ('fits' in header1.keys()) and ('fits' in header2.keys())
@@ -146,30 +147,32 @@ class TestHelioviewerClient:
         """
         Tests if progress bars are disabled when running `download_jp2()`.
         """
+        msg = "\rFiles Downloaded:"
         client = HelioviewerClient()
         client.download_jp2("2012/01/01", observatory="SOHO",
                             instrument="MDI", measurement="continuum",
                             progress=False)
-        out, err = capsys.readouterr()
-        assert err == ""
+        _, err = capsys.readouterr()
+        assert msg not in err
         client.download_jp2("2012/01/01", observatory="SOHO",
                             instrument="MDI", measurement="continuum")
-        out, err = capsys.readouterr()
-        assert err != ""
+        _, err = capsys.readouterr()
+        assert msg in err
 
     def test_progress_png(self, client, capsys):
         """
         Tests if progress bars are disabled when running `download_png()`.
         """
+        msg = "\rFiles Downloaded:"
         client = HelioviewerClient()
         client.download_png('2012/07/16 10:08:00', 2.4,
                             "[SDO,AIA,AIA,171,1,100]",
                             x0=0, y0=0, width=1024, height=1024,
                             progress=False)
-        out, err = capsys.readouterr()
-        assert err == ""
+        _, err = capsys.readouterr()
+        assert msg not in err
         client.download_png('2012/07/16 10:08:00', 2.4,
                             "[SDO,AIA,AIA,171,1,100]",
                             x0=0, y0=0, width=1024, height=1024)
-        out, err = capsys.readouterr()
-        assert err != ""
+        _, err = capsys.readouterr()
+        assert msg in err

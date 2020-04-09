@@ -413,6 +413,15 @@ def test_client_fetch_wrong_type(mock_fetch):
     with pytest.raises(TypeError):
         Fido.fetch(qr)
 
+
+@pytest.mark.remote_data
+def test_unclosedSocket_warning():
+    with pytest.warns(None):
+        attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
+        result = Fido.search(attrs_time, a.Instrument('eit'))
+        Fido.fetch(result)
+
+
 @pytest.mark.remote_data
 def test_slice_jsoc():
     tstart = '2011/06/07 06:32:45'

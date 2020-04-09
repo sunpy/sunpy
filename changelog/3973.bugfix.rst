@@ -1,0 +1,1 @@
+Closed the session in the destructor of VSOClient thus solving the problem of socket being left open
