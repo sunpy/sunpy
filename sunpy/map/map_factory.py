@@ -8,7 +8,6 @@ import numpy as np
 import astropy.io.fits
 from astropy.wcs import WCS
 
-import sunpy
 from sunpy import log
 from sunpy.map.mapbase import GenericMap, MapMetaValidationError
 from sunpy.map.compositemap import CompositeMap
@@ -21,7 +20,6 @@ from sunpy.io.header import FileHeader
 
 from sunpy.util import expand_list
 from sunpy.util.metadata import MetaDict
-from sunpy.util.exceptions import SunpyDeprecationWarning
 from sunpy.util.types import DatabaseEntryType
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
