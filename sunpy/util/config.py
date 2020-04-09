@@ -154,16 +154,20 @@ def _get_user_configdir():
 
 def write_config(overwrite=False):
     """
-    Copies default config file to user config directory.
+    Copies the default sunpy config file to the user's config directory.
+
+    Parameters
+    ----------
+    overwrite : `bool`
+        If True, existing config file will be overwritten.
     """
     config_filename = 'sunpyrc'
-    module_dir = Path(sunpy.__file__).parent
-    config_file = module_dir / 'data' / config_filename
+    config_file = Path(sunpy.__file__).parent / 'data' / config_filename
     user_config_dir = Path(_get_user_configdir())
     user_config_file = user_config_dir / config_filename
 
     if not _is_writable_dir(user_config_dir):
-        raise RuntimeError(f'Could not write to SunPy config directory="{user_config_dir}"')
+        raise RuntimeError(f'Could not write to SunPy config directory {user_config_dir}')
 
     if user_config_file.exists():
         if overwrite:

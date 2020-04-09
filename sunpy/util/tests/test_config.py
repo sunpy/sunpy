@@ -1,12 +1,16 @@
 import io
 import os
-from contextlib import redirect_stdout
+import sys
 from pathlib import Path
+import sunpy
+import pytest
+import shutil
+from sunpy.util import SunpyUserWarning
 
 from sunpy import config
-from sunpy.util.config import (CONFIG_DIR, _find_config_files, _get_user_configdir,
-                               _is_writable_dir, dirs, get_and_create_download_dir,
-                               get_and_create_sample_dir, print_config)
+from sunpy.util.config import (get_and_create_sample_dir, get_and_create_download_dir,
+                               CONFIG_DIR, print_config,
+                               _find_config_files, _get_user_configdir, _is_writable_dir, write_config)
 
 USER = os.path.expanduser('~')
 
@@ -80,3 +84,67 @@ def test_get_and_create_sample_dir():
     # Set the config back
     os.rmdir(new_path)
     config.set('downloads', 'sample_dir', os.path.join(USER, 'sunpy', 'data', 'sample_data'))
+
+
+def test_write_config_create_new_config(tmpdir, undo_config_dir_patch):
+    config_filename = 'sunpyrc'
+
+    # Try to set a manual one (already created)
+    tmp_config_dir = tmpdir.mkdir("sunpy_test_configdir")
+    os.environ["SUNPY_CONFIGDIR"] = tmp_config_dir.strpath
+
+    assert tmp_config_dir == _get_user_configdir()
+
+    config_file = Path(sunpy.__file__).parent / 'data' / config_filename
+    user_config_file = tmp_config_dir / config_filename
+
+    #Create a new config file
+    write_config()
+    assert open(user_config_file, 'r').read() == open(config_file, 'r').read()
+
+    if os.name != "nt":
+        os.unsetenv("SUNPY_CONFIGDIR")
+    del os.environ["SUNPY_CONFIGDIR"]
+
+
+def test_write_config_without_overwrite(tmpdir, undo_config_dir_patch):
+
+    # Try to set a manual one (already created)
+    tmp_config_dir = tmpdir.mkdir("sunpy_test_configdir")
+    os.environ["SUNPY_CONFIGDIR"] = tmp_config_dir.strpath
+
+    assert tmp_config_dir == _get_user_configdir()
+
+    # Create a new config file
+    write_config()
+
+    # Without the `overwrite` parameter 
+    # the function should raise an error.
+    with pytest.warns(SunpyUserWarning):
+        write_config()
+
+    # Bypass this under windows.
+    if os.name != "nt":
+        os.unsetenv("SUNPY_CONFIGDIR")
+    del os.environ["SUNPY_CONFIGDIR"]
+
+
+def test_write_config_with_overwrite(tmpdir, undo_config_dir_patch):
+
+    # Try to set a manual one (already created)
+    tmp_config_dir = tmpdir.mkdir("sunpy_test_configdir")
+    os.environ["SUNPY_CONFIGDIR"] = tmp_config_dir.strpath
+
+    assert tmp_config_dir == _get_user_configdir()
+
+    # Create a new config file
+    write_config()
+
+    # With the `overwrite` parameter 
+    # the function does not raise any error.
+    write_config(overwrite=False)
+
+    # Bypass this under windows.
+    if os.name != "nt":
+        os.unsetenv("SUNPY_CONFIGDIR")
+    del os.environ["SUNPY_CONFIGDIR"]
