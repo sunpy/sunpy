@@ -196,12 +196,7 @@ class RHESSIClient(GenericClient):
 
         required = {a.Time, a.Instrument}
         optional = {a.Physobs}
-
-        all_attrs = {type(x) for x in query}
-
-        query_attrs = set(type(x) for x in query)
-
-        if not required.issubset(query_attrs) or not all_attrs.issubset(query_attrs):
+        if not cls.check_attr_types_in_query(query, required, optional):
             return False
 
         matches = True

@@ -134,12 +134,7 @@ class NoRHClient(GenericClient):
 
         required = {a.Time, a.Instrument}
         optional = {a.Wavelength}
-        all_attrs = {type(x) for x in query}
-
-        ops = all_attrs - required
-        # If ops is empty or equal to optional we are ok, otherwise we don't
-        # match
-        if ops and ops != optional:
+        if not cls.check_attr_types_in_query(query, required, optional):
             return False
 
         # if we get this far we have either Instrument and Time
