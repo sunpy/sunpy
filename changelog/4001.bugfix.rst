@@ -1,0 +1,3 @@
+Fix a bug with `sunpy.visualization.animator.ArrayAnimatorWCS` where animating
+a line with a masked array with the whole of the initial line masked out the
+axes limits for the x axis were not correctly set.
