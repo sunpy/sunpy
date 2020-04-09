@@ -740,7 +740,7 @@ class VSOClient(BaseClient):
 
         return self.create_getdatarequest(
             {k: [x.fileid for x in v]
-                 for k, v in self.by_provider(response).items()},
+             for k, v in self.by_provider(response).items()},
             methods, info
         )
 
@@ -915,3 +915,6 @@ class VSOClient(BaseClient):
     @classmethod
     def _can_handle_query(cls, *query):
         return all([x.__class__.__name__ in attrs.__all__ for x in query])
+
+    def __del__(self):
+        self.api.transport.session.close()

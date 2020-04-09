@@ -225,3 +225,4 @@ tags
 # Misc Stuff
 .history
 *.orig
+.tmp
