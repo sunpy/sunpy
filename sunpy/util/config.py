@@ -171,7 +171,10 @@ def write_config(overwrite=False):
 
     if user_config_file.exists():
         if overwrite:
-            os.remove(user_config_file)
+            message = "User config file already exists. " \
+                      "This will be overwritten with a backup written in the same location."
+            warnings.warn(message, SunpyUserWarning)
+            os.rename(str(user_config_file), str(user_config_file) + ".bak")
             shutil.copyfile(config_file, user_config_file)
         else:
             message = "User config file already exists. " \

@@ -1,16 +1,16 @@
 import io
 import os
-import sys
 from pathlib import Path
-import sunpy
-import pytest
-import shutil
-from sunpy.util import SunpyUserWarning
+from contextlib import redirect_stdout
 
+import pytest
+
+import sunpy
 from sunpy import config
+from sunpy.util import SunpyUserWarning
 from sunpy.util.config import (get_and_create_sample_dir, get_and_create_download_dir,
-                               CONFIG_DIR, print_config,
-                               _find_config_files, _get_user_configdir, _is_writable_dir, write_config)
+                               CONFIG_DIR, print_config, _find_config_files, dirs,
+                               _get_user_configdir, _is_writable_dir, write_config)
 
 USER = os.path.expanduser('~')
 
@@ -98,7 +98,7 @@ def test_write_config_create_new_config(tmpdir, undo_config_dir_patch):
     config_file = Path(sunpy.__file__).parent / 'data' / config_filename
     user_config_file = tmp_config_dir / config_filename
 
-    #Create a new config file
+    # Create a new config file
     write_config()
     assert open(user_config_file, 'r').read() == open(config_file, 'r').read()
 
@@ -118,7 +118,7 @@ def test_write_config_without_overwrite(tmpdir, undo_config_dir_patch):
     # Create a new config file
     write_config()
 
-    # Without the `overwrite` parameter 
+    # Without the `overwrite` parameter
     # the function should raise an error.
     with pytest.warns(SunpyUserWarning):
         write_config()
@@ -140,9 +140,10 @@ def test_write_config_with_overwrite(tmpdir, undo_config_dir_patch):
     # Create a new config file
     write_config()
 
-    # With the `overwrite` parameter 
+    # With the `overwrite` parameter
     # the function does not raise any error.
-    write_config(overwrite=False)
+    with pytest.warns(SunpyUserWarning):
+        write_config(overwrite=True)
 
     # Bypass this under windows.
     if os.name != "nt":
