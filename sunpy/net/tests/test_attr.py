@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
 from collections import defaultdict
-import textwrap
 
 import pytest
 
 from sunpy.net import attr
 from sunpy.net.attr import make_tuple
-
-# TODO: Refactor the Attr tests, its too cluttered.
+from sunpy.net.dataretriever import GenericClient
 
 
 class Instrument(attr.SimpleAttr):
@@ -205,7 +202,8 @@ def test_or_nesting():
 
 
 def test_attr_metamagic(AIA, HMI):
-    attr.Attr.update_values({Instrument: [('AIA', 'This is AIA, it takes data')]})
+    # {cls: cls.register_values()}
+    attr.Attr.update_values({GenericClient: {Instrument: [('AIA', 'This is AIA, it takes data')]}})
     # .name is the attribute name return
     assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower()]
     # .name_long is the original name
@@ -214,15 +212,15 @@ def test_attr_metamagic(AIA, HMI):
     assert attr.Attr._attr_registry[Instrument].desc == ['This is AIA, it takes data']
     # The _value_registry on the Attr object does not get cleaned.
     # So by adding it again to the same type, in this case Instrument the list is appended.
-    attr.Attr.update_values({Instrument: [('HMI', 'This is HMI, it lives next to AIA')]})
+    attr.Attr.update_values(
+        {GenericClient: {Instrument: [('HMI', 'This is HMI, it lives next to AIA')]}})
     assert attr.Attr._attr_registry[Instrument].name == [AIA.value.lower(), HMI.value.lower()]
     assert attr.Attr._attr_registry[Instrument].name_long == [AIA.value, HMI.value]
     assert attr.Attr._attr_registry[Instrument].desc == [
         'This is AIA, it takes data', 'This is HMI, it lives next to AIA']
 
     # Tests the print out for the first two inputs only
-    output = 'Instrument\n\nDummy Instrument Class.\n\n\nAttribute Name Full Name            Description           \n-------------- --------- ---------------------------------\n           aia       AIA        This is AIA, it takes data\n           hmi       HMI This is HMI, it lives next to AIA'  # NOQA
-
+    output = 'Instrument\n\nDummy Instrument Class.\n\n\nAttribute Name  Client Full Name            Description           \n-------------- ------- --------- ---------------------------------\n           aia Generic       AIA        This is AIA, it takes data\n           hmi Generic       HMI This is HMI, it lives next to AIA'  # NOQA
     assert str(Instrument) == output
 
     # Clean Registry
@@ -231,8 +229,9 @@ def test_attr_metamagic(AIA, HMI):
 
 def test_attr_dynamic(AIA, HMI):
     # This checks the dynamic attribute creation.
-    attr.Attr.update_values({Instrument: [('AIA', 'This is AIA, it takes data')]})
-    attr.Attr.update_values({Instrument: [('HMI', 'This is HMI, it lives next to AIA')]})
+    attr.Attr.update_values({GenericClient: {Instrument: [('AIA', 'This is AIA, it takes data')]}})
+    attr.Attr.update_values(
+        {GenericClient: {Instrument: [('HMI', 'This is HMI, it lives next to AIA')]}})
     assert Instrument.aia == AIA
     assert Instrument.hmi == HMI
     # Clean Registry
@@ -241,8 +240,10 @@ def test_attr_dynamic(AIA, HMI):
 
 def test_attr_dir(AIA, HMI):
     # Test for __dir__
-    attr.Attr.update_values({Instrument: [('AIA', 'This is AIA, it takes data')]})
-    attr.Attr.update_values({Instrument: [('HMI', 'This is HMI, it lives next to AIA')]})
+    attr.Attr.update_values({GenericClient: {Instrument: [('AIA', 'This is AIA, it takes data')]}})
+    attr.Attr.update_values(
+        {GenericClient: {Instrument: [('HMI', 'This is HMI, it lives next to AIA')]}})
+
     assert 'aia' in dir(Instrument)
     assert 'hmi' in dir(Instrument)
     # Clean Registry
@@ -251,7 +252,7 @@ def test_attr_dir(AIA, HMI):
 
 def test_attr_sanity(SPEC):
     attr.Attr.update_values(
-        {Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]})
+        {GenericClient: {Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]}})
     # This checks for sanitization of names.
     assert attr.Attr._attr_registry[Instrument].name == ['thisnameisspecial']
     assert attr.Attr._attr_registry[Instrument].name_long == ['_!£!THIS_NAME!"!ISSPECIAL~~##']
@@ -262,7 +263,7 @@ def test_attr_sanity(SPEC):
 
 
 def test_attr_keyword(KEYWORD):
-    attr.Attr.update_values({Instrument: [('class', 'Keyword checking.')]})
+    attr.Attr.update_values({GenericClient: {Instrument: [('class', 'Keyword checking.')]}})
     # This checks for sanitization of names.
     assert attr.Attr._attr_registry[Instrument].name == ['class_']
     assert attr.Attr._attr_registry[Instrument].name_long == ['class']
@@ -273,7 +274,7 @@ def test_attr_keyword(KEYWORD):
 
 
 def test_attr_num(NUM):
-    attr.Attr.update_values({Instrument: [('1', 'One')]})
+    attr.Attr.update_values({GenericClient: {Instrument: [('1', 'One')]}})
     # This checks for sanitization of names.
     assert attr.Attr._attr_registry[Instrument].name == ['one']
     assert attr.Attr._attr_registry[Instrument].name_long == ['1']
@@ -285,7 +286,7 @@ def test_attr_num(NUM):
 
 
 def test_attr_number(NUMBER):
-    attr.Attr.update_values({Instrument: [('1AIA', 'One Number first.')]})
+    attr.Attr.update_values({GenericClient: {Instrument: [('1AIA', 'One Number first.')]}})
     # This checks for sanitization of names.
     assert attr.Attr._attr_registry[Instrument].name == ['one_aia']
     assert attr.Attr._attr_registry[Instrument].name_long == ['1AIA']
@@ -297,7 +298,7 @@ def test_attr_number(NUMBER):
 
 
 def test_attr_numbes(NUMBERS):
-    attr.Attr.update_values({Instrument: [('12AIAs', 'That is too many AIAs')]})
+    attr.Attr.update_values({GenericClient: {Instrument: [('12AIAs', 'That is too many AIAs')]}})
     # This checks for sanitization of names.
     assert attr.Attr._attr_registry[Instrument].name == ['12aias']
     assert attr.Attr._attr_registry[Instrument].name_long == ['12AIAs']
@@ -311,10 +312,11 @@ def test_attr_numbes(NUMBERS):
 def test_attr_iterable_length(AIA):
     # not iterable
     with pytest.raises(ValueError):
-        attr.Attr.update_values({Instrument: 'AIA'})
+        attr.Attr.update_values({GenericClient: {Instrument: 'AIA'}})
     # too many items
     with pytest.raises(ValueError):
-        attr.Attr.update_values({Instrument: [('AIA', 'AIA is Nice', 'Error now')]})
+        attr.Attr.update_values(
+            {GenericClient: {Instrument: [('AIA', 'AIA is Nice', 'Error now')]}})
 
     # Clean Registry
     EmptyAttr()

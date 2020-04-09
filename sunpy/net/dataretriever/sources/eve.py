@@ -136,4 +136,4 @@ class EVEClient(GenericClient):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('EVE', 'Extreme ultraviolet Variability Experiment, which is part of the NASA Solar Dynamics Observatory mission.')],
                  attrs.Level: [('0', 'EVE: The specific EVE client can only return Level 0C data. Any other number will use the VSO Client.')]}
-        return {cls: adict}
+        return adict

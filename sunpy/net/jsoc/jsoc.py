@@ -907,4 +907,4 @@ class JSOCClient(BaseClient):
         from sunpy.net import attrs
         # TODO Implement this
         adict = {}
-        return {cls: adict}
+        return adict
