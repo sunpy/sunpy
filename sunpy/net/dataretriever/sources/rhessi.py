@@ -213,4 +213,4 @@ class RHESSIClient(GenericClient):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('RHESSI',
                                      'Reuven Ramaty High Energy Solar Spectroscopic Imager.')]}
-        return {cls: adict}
+        return adict

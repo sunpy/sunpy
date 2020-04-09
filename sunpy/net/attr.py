@@ -55,6 +55,38 @@ def strtonum(value):
             'seven', 'eight', 'nine')[value]
 
 
+def _print_attrs(attr):
+    """
+    Given a Attr class will print out each registered attribute.
+
+    Parameters
+    ----------
+    attr : `sunpy.net.attr.Attr`
+        [description]
+
+    Returns
+    -------
+    `str`
+        String with the registered attributes.
+    """
+    class_name = attr.__name__
+    attrs = attr._attr_registry[attr]
+    names = [x for _, x in sorted(zip(attrs.name, attrs.name), key=lambda pair: pair[0])]
+    clients = [x for _, x in sorted(zip(attrs.name, attrs.client), key=lambda pair: pair[0])]
+    names_long = [x for _, x in sorted(
+        zip(attrs.name, attrs.name_long), key=lambda pair: pair[0])]
+    descs = [x for _, x in sorted(zip(attrs.name, attrs.desc), key=lambda pair: pair[0])]
+    lines = []
+    t = Table(names=["Attribute Name", "Client", "Full Name",
+                     "Description"], dtype=[str, str, str, str])
+    for name, client, name_long, desc in zip(names, clients, names_long, descs):
+        t.add_row((name, client, name_long, desc))
+    lines.insert(0, class_name)
+    lines.insert(1, dedent(attr.__doc__.partition("\n\n")[0])+"\n")
+    lines.extend(t.pformat_all(show_dtype=False))
+    return '\n'.join(lines)
+
+
 class AttrMeta(type):
     """
     We want to enable discovery, by tab completion, of values for all subclasses of Attr.
@@ -104,22 +136,7 @@ class AttrMeta(type):
         """
         This enables the "pretty" printing of Attrs.
         """
-        class_name = self.__name__
-        attrs = self._attr_registry[self]
-        names = [x for _, x in sorted(zip(attrs.name, attrs.name), key=lambda pair: pair[0])]
-        clients = [x for _, x in sorted(zip(attrs.name, attrs.client), key=lambda pair: pair[0])]
-        names_long = [x for _, x in sorted(
-            zip(attrs.name, attrs.name_long), key=lambda pair: pair[0])]
-        descs = [x for _, x in sorted(zip(attrs.name, attrs.desc), key=lambda pair: pair[0])]
-        lines = []
-        t = Table(names=["Attribute Name", "Client", "Full Name",
-                         "Description"], dtype=[str, str, str, str])
-        for name, client, name_long, desc in zip(names, clients, names_long, descs):
-            t.add_row((name, client, name_long, desc))
-        lines.insert(0, class_name)
-        lines.insert(1, dedent(self.__doc__.partition("\n\n")[0])+"\n")
-        lines.extend(t.pformat_all(show_dtype=False))
-        return '\n'.join(lines)
+        return _print_attrs(self)
 
 
 class Attr(metaclass=AttrMeta):
@@ -167,8 +184,7 @@ class Attr(metaclass=AttrMeta):
 
         Parameters
         ----------
-
-        adcit : `dict`
+        adict : `dict`
             A dictionary that has keys of `~sunpy.net.attr.Attr`.
             Each key should have a list of tuples as it value.
             Each tuple should be a pair of strings.
@@ -465,6 +481,7 @@ class AttrWalker:
       type and return a different one.
 
     """
+
     def __repr__(self):
         creators = list(self.createmm.registry.keys())
         appliers = list(self.applymm.registry.keys())

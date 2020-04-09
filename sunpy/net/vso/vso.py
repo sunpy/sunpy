@@ -795,6 +795,14 @@ class VSOClient(BaseClient):
     def __del__(self):
         self.api.transport.session.close()
 
+    @classmethod
+    def register_values(cls):
+        try:
+            return cls.get_vso_values()
+        except Exception as e:
+            warnings.warn(f'Fetching VSO attrs failed with {e}')
+            return {}
+
     def get_vso_values():
         """
         Reads the VSO keywords and returns a dict with them for the attrs we support.
@@ -802,7 +810,7 @@ class VSOClient(BaseClient):
         from sunpy.net import attrs as a
 
         # Keywords we are after
-        keywords = ["+detector", "+instrument", "+source", "+provider", "+physobs"]
+        keywords = ["+detector", "+instrument", "+source", "+provider", "+physobs", "+level"]
 
         # Construct and format the request
         keyword_info = {}
@@ -819,9 +827,12 @@ class VSOClient(BaseClient):
         for key, value in keyword_info.items():
             attr = getattr(a, key.capitalize(), None)
             if attr is None:
-                attr = getattr(a.vso, key.capitalize())     
+                attr = getattr(a.vso, key.capitalize())
             attrs[attr] = []
             for item in value:
                 if item:
-                    attrs[attr].append((str(item[key]), str(item[key+"_long"])))
+                    if key == "level":
+                        attrs[attr].append((str(item[key]), str(item[key])))
+                    else:
+                        attrs[attr].append((str(item[key]), str(item[key+"_long"])))
         return attrs

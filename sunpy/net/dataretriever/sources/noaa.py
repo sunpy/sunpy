@@ -81,7 +81,7 @@ class NOAAIndicesClient(GenericClient):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [
             ('NOAA-Indices', 'Recent Solar Indices of Observed Monthly Mean Values')]}
-        return {cls: adict}
+        return adict
 
 
 class NOAAPredictClient(GenericClient):
@@ -156,7 +156,7 @@ class NOAAPredictClient(GenericClient):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [
             ('NOAA-Predict', 'Predicted Sunspot Number And Radio Flux Values With Expected Ranges.')]}
-        return {cls: adict}
+        return adict
 
 
 class SRSClient(GenericClient):
@@ -318,4 +318,4 @@ class SRSClient(GenericClient):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [("soon", "Solar Region Summary."),
                                     ("srs_table", "Solar Region Summary.")]}
-        return {cls: adict}
+        return adict

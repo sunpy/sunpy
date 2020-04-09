@@ -40,6 +40,7 @@ class MockQRResponse:
     >>> res.provideritem[1].record.recorditem  # doctest: +SKIP
     [2]
     """
+
     def __init__(self, records=None, errors=None):
 
         self.provideritem = list()
@@ -495,7 +496,7 @@ def test_build_client_params():
 @pytest.mark.remote_data
 def test_vso_error(client):
     with pytest.warns(SunpyUserWarning,
-        match="VSO-C500 :soap:Server.Transport : 404 Not Found"):
+                      match="VSO-C500 :soap:Server.Transport : 404 Not Found"):
         client.search(
             core_attrs.Time('2019/12/30', '2019/12/31'),
             core_attrs.Instrument('ovsa'))
@@ -518,9 +519,10 @@ def test_incorrect_content_disposition(client):
     ((a.Physobs("LOS_magnetic_field"),), False),
     ((a.Time("2011/01/01", "2011/01/02"), a.vso.Provider("SDAC"),), True),
     ((a.jsoc.Series("wibble"), a.Physobs("LOS_magnetic_field"),), False),
-    ])
+])
 def test_can_handle_query(query, handle):
     assert VSOClient._can_handle_query(*query) is handle
+
 
 @pytest.mark.remote_data
 def test_vso_attr():
@@ -529,7 +531,7 @@ def test_vso_attr():
     """
     adict = vso.VSOClient.get_vso_values()
     assert isinstance(adict, dict)
-    assert len(adict.keys()) == 5
+    assert len(adict.keys()) == 6
     for key, value in adict.items():
         assert isinstance(key, attr.AttrMeta)
         assert isinstance(adict[key], list)

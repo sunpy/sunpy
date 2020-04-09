@@ -151,4 +151,4 @@ class NoRHClient(GenericClient):
         adict = {attrs.Instrument: [('NORH',
                                      ('Nobeyama Radio Heliograph is an imaging radio telescope at 17 '
                                       'or 34GHz located at the Nobeyama Solar Radio Observatory.'))]}
-        return {cls: adict}
+        return adict

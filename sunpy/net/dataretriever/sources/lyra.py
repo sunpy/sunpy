@@ -92,4 +92,4 @@ class LYRAClient(GenericClient):
                  attrs.Level: [('1', 'LYRA: Metadata and uncalibrated data daily fits.'),
                                ('2', 'LYRA: Calibrated data, provided as daily fits.'),
                                ('3', 'LYRA: Same as level 2 but the calibrated data is averaged over 1 min.')]}
-        return {cls: adict}
+        return adict

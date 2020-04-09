@@ -202,7 +202,7 @@ class XRSClient(GenericClient):
             ("GOES", "The Geostationary Operational Environmental Satellite Program."),
             ("XRS", "GOES X-ray Flux")],
             attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
-        return {cls: adict}
+        return adict
 
 
 class SUVIClient(GenericClient):
@@ -414,4 +414,4 @@ class SUVIClient(GenericClient):
         adict = {attrs.Instrument: [
             ("SUVI",  "The Geostationary Operational Environmental Satellite Program.")],
             attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number for SUVI {x}") for x in goes_number]}
-        return {cls: adict}
+        return adict

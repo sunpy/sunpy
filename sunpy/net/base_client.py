@@ -135,7 +135,10 @@ class BaseClient(ABC):
 
         # Register client attrs after it has regsitered its own attrs
         from sunpy.net import attr
-        attr.Attr.update_values(cls.register_values())
+        values = cls.register_values()
+        # If the client has no support, we won't try to register attrs
+        if values:
+            attr.Attr.update_values({cls: cls.register_values()})
 
     def __repr__(self):
         """
@@ -206,7 +209,8 @@ class BaseClient(ABC):
     @abstractmethod
     def _can_handle_query(cls, *query):
         """
-        This enables the client to register what kind of searches it can handle, to prevent Fido using the incorrect client.
+        This enables the client to register what kind of searches it can handle, to prevent Fido
+        using the incorrect client.
         """
 
     @staticmethod
@@ -227,4 +231,10 @@ class BaseClient(ABC):
     def register_values(cls, *query):
         """
         This enables the client to register what kind of Attrs it can use directly.
+
+        Returns
+        -------
+        `dict`
+            A dictionary with key values of Attrs and the values are a tuple of
+            ("Attr Type", "Name", "Description").
         """

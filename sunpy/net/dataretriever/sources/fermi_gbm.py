@@ -117,7 +117,7 @@ class GBMClient(GenericClient):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [
             ('GBM', 'Gamma-Ray Burst Monitor on board the Fermi satellite.')]}
-        return {cls: adict}
+        return adict
 
 
 def _check_detector(detector, **kwargs):
