@@ -181,12 +181,14 @@ table, th, td {
 def _generate_fig_html(fname):
     generated_image = figure_base_dir / (fname + '.png')
 
+    envname = os.environ.get("TOXENV", "figure_py36")
     # Download baseline image
-    baseline_url = 'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/figures/'
+    baseline_url = f'https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/sunpy-master/figures/{envname}/'
     baseline_image_url = baseline_url + generated_image.name
-    baseline_image = figure_base_dir / (generated_image.stem + '_baseline' + generated_image.suffix)
+    baseline_image = figure_base_dir / "reference_images" / generated_image.name
     baseline_image_exists = baseline_image.exists()
     if not baseline_image_exists:
+        baseline_image.parent.mkdir(parents=True, exist_ok=True)
         try:
             urllib.request.urlretrieve(baseline_image_url, baseline_image)
             baseline_image_exists = True
@@ -194,15 +196,16 @@ def _generate_fig_html(fname):
             pass
 
     # Create diff between baseline and generated image
-    diff_image = figure_base_dir / (generated_image.stem + '_diff' + generated_image.suffix)
+    diff_image = figure_base_dir / "difference_images" / generated_image.name
+    diff_image.parent.mkdir(parents=True, exist_ok=True)
     if baseline_image_exists:
         compare.save_diff_image(str(baseline_image), str(generated_image), str(diff_image))
 
     html_block = ('<tr>'
                   '<td>{}\n'.format(generated_image.stem) +
-                  f'<td><img src="{baseline_image.name}"></td>\n' +
-                  f'<td><img src="{diff_image.name}"></td>\n' +
-                  f'<td><img src="{generated_image.name}"></td>\n' +
+                  f'<td><img src="{baseline_image.relative_to(figure_base_dir)}"></td>\n' +
+                  f'<td><img src="{diff_image.relative_to(figure_base_dir)}"></td>\n' +
+                  f'<td><img src="{generated_image.relative_to(figure_base_dir)}"></td>\n' +
                   '</tr>\n\n')
     return html_block
 
