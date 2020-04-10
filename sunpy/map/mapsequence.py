@@ -105,21 +105,25 @@ class MapSequence:
         return textwrap.dedent(f"""\
             <pre>{html.escape(self.__repr__())}</pre>
             <form cur_index=0 max_index={len(repr_list) - 1}>
-                <!-- Button to decrement index -->
-                <input type=button value='<' onClick='
+                <!-- Button to decrement index (always starts disabled) -->
+                <input type=button value='&larr;' style='font-weight: bold' disabled onClick='
                     var form = this.parentElement;
 
                     // Decrement index if allowed
-                    form.setAttribute(
-                        "cur_index",
-                        Math.max(
-                            parseInt(form.getAttribute("cur_index")) - 1,
-                            0
-                        )
-                    );
+                    var cur_index = Math.max(
+                                        parseInt(form.getAttribute("cur_index")) - 1,
+                                        0
+                                    );
+                    form.setAttribute("cur_index", cur_index);
+
+                    // Enable the decrement button if and only if this is not the first Map
+                    form.children[0].disabled = (cur_index == 0);
+
+                    // Always enable the increment button (because we just decremented)
+                    form.children[1].disabled = false;
 
                     // Update string (which is children[2] of the form)
-                    form.children[2].innerHTML = "Map at index " + form.getAttribute("cur_index");
+                    form.children[2].innerHTML = "Map at index " + cur_index;
 
                     // Update visibilities to show only the current index
                     // This avoids for...of syntax to retain support for ES5 browsers (e.g., IE11)
@@ -134,21 +138,27 @@ class MapSequence:
                     );
                 '/>
 
-                <!-- Button to increment index -->
-                <input type=button value='>' onClick='
+                <!-- Button to increment index (starts enabled if there is more than one Map) -->
+                <input type=button value='&rarr;' style='font-weight: bold'
+                    {"" if len(repr_list) > 1 else "disabled"} onClick='
+
                     var form = this.parentElement;
 
                     // Increment index if allowed
-                    form.setAttribute(
-                        "cur_index",
-                        Math.min(
-                            parseInt(form.getAttribute("cur_index")) + 1,
-                            form.getAttribute("max_index")
-                        )
-                    );
+                    var cur_index = Math.min(
+                                        parseInt(form.getAttribute("cur_index")) + 1,
+                                        form.getAttribute("max_index")
+                                    );
+                    form.setAttribute("cur_index", cur_index);
+
+                    // Always enable the decrement button (because we just incremented)
+                    form.children[0].disabled = false;
+
+                    // Enable the increment button if and only if this is not the last Map
+                    form.children[1].disabled = (cur_index == form.getAttribute("max_index"));
 
                     // Update string (which is children[2] of the form)
-                    form.children[2].innerHTML = "Map at index " + form.getAttribute("cur_index");
+                    form.children[2].innerHTML = "Map at index " + cur_index;
 
                     // Update visibilities to show only the current index
                     // This avoids for...of syntax to retain support for ES5 browsers (e.g., IE11)
