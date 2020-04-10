@@ -20,7 +20,7 @@ def LCClient():
     return goes.XRSClient()
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
     [(TimeRange('1995/06/03', '1995/06/05'),
@@ -36,7 +36,7 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 @pytest.mark.parametrize("timerange, url_start, url_end",
                          [(TimeRange('1999/01/10', '1999/01/20'),
                            'https://umbra.nascom.nasa.gov/goes/fits/1999/go10990110.fits',
@@ -58,13 +58,13 @@ def test_can_handle_query(time):
     assert ans3 is False
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_no_satellite(LCClient):
     with pytest.raises(ValueError):
         LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('XRS'))
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_fixed_satellite(LCClient):
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
                            a.Instrument('XRS'))
@@ -83,7 +83,7 @@ def test_fixed_satellite(LCClient):
 @pytest.mark.parametrize("time", [
     Time('2005/4/27', '2005/4/27'),
     Time('2016/2/4', '2016/2/10')])
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_query(LCClient, time):
     qr1 = LCClient.search(time, Instrument('XRS'))
     assert isinstance(qr1, QueryResponse)
@@ -96,7 +96,7 @@ def test_query(LCClient, time):
     assert is_time_equal(qr1.time_range().end, end)
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_query_error(LCClient):
     times = [a.Time("1983-05-01", "1983-05-02")]
     for time in times:

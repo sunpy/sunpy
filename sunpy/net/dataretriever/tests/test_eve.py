@@ -14,7 +14,7 @@ from sunpy.time.timerange import TimeRange
 LCClient = eve.EVEClient()
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/4/21', '2012/4/21'),
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
@@ -56,7 +56,7 @@ def test_can_handle_query():
     assert ans6 is False
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_query():
     qr1 = LCClient.search(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
     assert isinstance(qr1, QueryResponse)
@@ -88,7 +88,7 @@ def test_fido(query):
     assert len(response) == qr._numfile
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 @pytest.mark.parametrize(
     'time',
     [(a.Time('2012/10/4', '2012/10/6')), (a.Time('2012/11/27', '2012/11/27'))])

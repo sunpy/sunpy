@@ -14,6 +14,7 @@ import sunpy.net.attrs as a
 client = JSOCClient()
 
 
+# noinspection PyUnresolvedReferences
 def test_jsocresponse_double():
     j1 = JSOCResponse(table=astropy.table.Table(data=[[1, 2, 3, 4]]))
     j1.append(astropy.table.Table(data=[[1, 2, 3, 4]]))
@@ -38,7 +39,7 @@ def test_empty_jsoc_response():
     assert len(Jresp) == 0
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_return_query_args():
     res = client.search(a.jsoc.PrimeKey('HARPNUM', 3604),
                         a.jsoc.Series('hmi.sharp_cea_720s'),
@@ -46,7 +47,7 @@ def test_return_query_args():
     #Because res.query_args is list that contains dict
     assert 'primekey' in res.query_args[0]
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_query():
     Jresp = client.search(
         a.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
@@ -55,7 +56,7 @@ def test_query():
     assert len(Jresp) == 2
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_post_pass():
     responses = client.search(
         a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
@@ -66,7 +67,7 @@ def test_post_pass():
     assert tmpresp['method'] == 'url'
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_build_table():
     responses = client.search(
         a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
@@ -78,7 +79,7 @@ def test_build_table():
     assert columns == table.colnames
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_post_wavelength():
     responses = client.search(
         a.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
@@ -96,7 +97,7 @@ def test_post_wavelength():
     assert tmpresp['count'] == '302'
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_post_notify_fail():
     responses = client.search(
         a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
@@ -105,7 +106,7 @@ def test_post_notify_fail():
         client.request_data(responses)
 
 
-@pytest.mark.remote_data()
+@pytest.mark.vcr()
 def test_post_wave_series():
     with pytest.raises(TypeError):
         client.search(
@@ -137,13 +138,13 @@ def test_get_request():
     assert isinstance(aa, Results)
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_invalid_query():
     with pytest.raises(ValueError):
         client.search(a.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_lookup_records_errors():
     d1 = {'end_time': astropy.time.Time('2014-01-01 01:00:35'),
           'start_time': astropy.time.Time('2014-01-01 00:00:35')}
@@ -179,7 +180,7 @@ def test_lookup_records_errors():
         client._lookup_records(d1)
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_make_recordset_errors():
     d1 = {'series': 'aia.lev1_euv_12s'}
     with pytest.raises(ValueError):
@@ -205,7 +206,7 @@ def test_make_recordset_errors():
         client._make_recordset(**d1)
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_make_recordset():
     d1 = {'series': 'aia.lev1_euv_12s',
           'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
@@ -254,7 +255,7 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_search_metadata():
     metadata = client.search_metadata(a.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
                                       a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
@@ -264,7 +265,7 @@ def test_search_metadata():
         assert (i.startswith('aia.lev1_euv_12s') and i.endswith('[304]'))
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_request_data_error():
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -274,7 +275,7 @@ def test_request_data_error():
         req = client.request_data(responses)
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_request_data_protocol():
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -303,7 +304,7 @@ def test_request_data_protocol():
     assert req._d['protocol'] == 'as-is'
 
 
-@pytest.mark.remote_data
+@pytest.mark.vcr()
 def test_check_request():
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
