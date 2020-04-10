@@ -1,0 +1,2 @@
+Fixed unhashable type `zeep.objects.QueryResponseBlock` error while post search filtering of 
+VSO results using `~sunpy.net.vso.vso.HashedResponse` class by implementing `__has__` method using fileid.
