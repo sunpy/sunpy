@@ -214,3 +214,13 @@ def test_quicklook(mapsequence_all_the_same):
 
         for m in mapsequence_all_the_same.maps:
             assert m._repr_html_() in html_string
+
+@pytest.mark.remote_data
+def test_append_quicklook_example_to_docstring():
+    old_docstring = sunpy.map.MapSequence.quicklook.__doc__
+
+    sunpy.map.MapSequence._append_quicklook_example_to_docstring()
+
+    assert sunpy.map.MapSequence.quicklook.__doc__ != old_docstring
+
+    sunpy.map.MapSequence.quicklook.__doc__ = old_docstring
