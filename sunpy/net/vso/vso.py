@@ -11,7 +11,6 @@ import inspect
 import datetime
 import warnings
 import itertools
-import json
 from functools import partial
 from collections import defaultdict
 from urllib.error import URLError, HTTPError

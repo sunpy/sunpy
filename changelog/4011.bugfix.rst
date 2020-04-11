@@ -1,2 +1,2 @@
-Fixed unhashable type `zeep.objects.QueryResponseBlock` error while post search filtering of 
-VSO results using `~sunpy.net.vso.vso.HashedResponse` class by implementing `__has__` method using fileid.
+When sunpy moved to using Zeep for 1.0, we broke the ability to filter search results from the `sunpy.net.vso.VSOClient`.
+This feature has been restored by enabling the hashing of the the results from the `sunpy.net.vso.VSOClient` using the "fileid".

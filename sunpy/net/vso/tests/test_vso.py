@@ -12,7 +12,7 @@ from sunpy.net import attrs as a
 from sunpy.net import vso
 from sunpy.net.vso import QueryResponse
 from sunpy.net.vso import attrs as va
-from sunpy.net.vso.vso import VSOClient, build_client, get_online_vso_url, HashableResponse
+from sunpy.net.vso.vso import HashableResponse, VSOClient, build_client, get_online_vso_url
 from sunpy.tests.mocks import MockObject
 from sunpy.time import TimeRange, parse_time
 

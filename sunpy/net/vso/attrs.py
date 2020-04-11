@@ -321,12 +321,12 @@ def _(attr, results):
         it.wave.wavemax is not None
         and
         attr.min <= u.Quantity(it.wave.wavemax, unit=it.wave.waveunit).to(
-                               u.angstrom, equivalencies=u.spectral())
+            u.angstrom, equivalencies=u.spectral())
         and
         it.wave.wavemin is not None
         and
         attr.max >= u.Quantity(it.wave.wavemin, unit=it.wave.waveunit).to(
-                               u.angstrom, equivalencies=u.spectral())
+            u.angstrom, equivalencies=u.spectral())
     }
 
 
