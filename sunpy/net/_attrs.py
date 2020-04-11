@@ -15,7 +15,8 @@ from .attr import Range, SimpleAttr
 from sunpy.util.decorators import add_common_docstring
 from sunpy.time.time import _variables_for_parse_time_docstring
 
-__all__ = ['Physobs', 'Resolution', 'Detector', 'Sample', 'Level', 'Instrument', 'Wavelength', 'Time']
+__all__ = ['Physobs', 'Resolution', 'Detector', 'Sample',
+           'Level', 'Instrument', 'Wavelength', 'Time']
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -36,6 +37,7 @@ class Time(Range):
         functionality.
 
     """
+
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
@@ -133,8 +135,8 @@ class Wavelength(Range):
 
     def __repr__(self):
         return "<Wavelength({!r}, {!r}, '{!s}')>".format(self.min.value,
-                                                            self.max.value,
-                                                            self.unit)
+                                                         self.max.value,
+                                                         self.unit)
 
 
 class Instrument(SimpleAttr):
@@ -151,6 +153,7 @@ class Instrument(SimpleAttr):
     within the VSO Registry. For a list of instruments see
     https://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
+
     def __init__(self, value):
         if not isinstance(value, str):
             raise ValueError("Instrument names must be strings")

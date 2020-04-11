@@ -5,12 +5,9 @@
 # the ESA Summer of Code (2011).
 #
 # pylint: disable=C0103,R0903
-
 """
 Attributes that can be used to construct VSO queries.
-"""
 
-"""
 Attributes are the fundamental building blocks of queries that, together with
 the two operations of AND and OR (and in some rare cases XOR) can be used to
 construct complex queries. Most attributes can only be used once in an
@@ -41,6 +38,7 @@ class Field(_attr.ValueAttr):
     A subclass of the value attribute.  Used in defining a decorator for the
     dummy attribute.
     """
+
     def __init__(self, fielditem):
         _attr.ValueAttr.__init__(self, {
             ('field', 'fielditem'): fielditem
@@ -54,6 +52,7 @@ class Extent(_attr.DataAttr):
 
     """
     # pylint: disable=R0913
+
     def __init__(self, x, y, width, length, atype):
         super().__init__()
 
@@ -136,6 +135,7 @@ class PScale(_attr.SimpleAttr):
     Documentation in SSWIDL routine vso_search.pro.
     """
 
+
 class Quicklook(_attr.SimpleAttr):
     """
     Retrieve 'quicklook' data if available.
@@ -155,6 +155,7 @@ class Quicklook(_attr.SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
+
     def __init__(self, value):
         super().__init__(value)
         if self.value:
@@ -245,10 +246,10 @@ _walker.add_converter(Extent)(
 
 _walker.add_converter(_attrs.Time)(
     lambda x: _attr.ValueAttr({
-            ('time', 'start'): x.start.strftime(_TIMEFORMAT),
-            ('time', 'end'): x.end.strftime(_TIMEFORMAT),
-            ('time', 'near'): (
-                x.near.strftime(_TIMEFORMAT) if x.near is not None else None),
+        ('time', 'start'): x.start.strftime(_TIMEFORMAT),
+        ('time', 'end'): x.end.strftime(_TIMEFORMAT),
+        ('time', 'near'): (
+            x.near.strftime(_TIMEFORMAT) if x.near is not None else None),
     })
 )
 
@@ -258,9 +259,9 @@ _walker.add_converter(_attr.SimpleAttr)(
 
 _walker.add_converter(_attrs.Wavelength)(
     lambda x: _attr.ValueAttr({
-            ('wave', 'wavemin'): x.min.value,
-            ('wave', 'wavemax'): x.max.value,
-            ('wave', 'waveunit'): x.unit.name,
+        ('wave', 'wavemin'): x.min.value,
+        ('wave', 'wavemax'): x.max.value,
+        ('wave', 'waveunit'): x.unit.name,
     })
 )
 
@@ -270,6 +271,7 @@ _walker.add_converter(_attrs.Wavelength)(
 # AttrAnd and AttrOr obviously are - in the HEK module). If we defined the
 # filter method as a member of the attribute classes, we could only filter
 # one type of data (that is, VSO data).
+
 
 @_singledispatch
 def _filter_results(*args, **kwargs):
@@ -366,7 +368,9 @@ class _DeprecatedAttr:
                       SunpyDeprecationWarning)
         super().__init__(*args, **kwargs)
 
-_deprecated_names = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution', 'Physobs']
+
+_deprecated_names = ['Time', 'Instrument', 'Wavelength',
+                     'Level', 'Sample', 'Detector', 'Resolution', 'Physobs']
 
 for _name in _deprecated_names:
     # Dynamically construct a class which inherits the class with the
