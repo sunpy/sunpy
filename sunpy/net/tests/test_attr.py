@@ -3,7 +3,7 @@ from collections import defaultdict
 import pytest
 
 from sunpy.net import attr
-from sunpy.net.attr import make_tuple
+from sunpy.net.attr import make_tuple, AttrMeta
 from sunpy.net.dataretriever import GenericClient
 
 
@@ -12,13 +12,14 @@ class Instrument(attr.SimpleAttr):
     Dummy Instrument Class.
     """
 
-    def __init__(self, value):
-        super().__init__(value)
-
 
 def EmptyAttr():
-    attr.Attr._attr_registry = defaultdict(make_tuple)
-    return attr.Attr
+    AttrMeta._attr_registry = defaultdict(make_tuple)
+
+
+@pytest.fixture
+def ALL():
+    return Instrument('all')
 
 
 @pytest.fixture
@@ -234,11 +235,12 @@ def test_attr_dynamic(AIA, HMI):
         {GenericClient: {Instrument: [('HMI', 'This is HMI, it lives next to AIA')]}})
     assert Instrument.aia == AIA
     assert Instrument.hmi == HMI
+
     # Clean Registry
     EmptyAttr()
 
 
-def test_attr_dir(AIA, HMI):
+def test_attr_dir():
     # Test for __dir__
     attr.Attr.update_values({GenericClient: {Instrument: [('AIA', 'This is AIA, it takes data')]}})
     attr.Attr.update_values(
@@ -246,11 +248,12 @@ def test_attr_dir(AIA, HMI):
 
     assert 'aia' in dir(Instrument)
     assert 'hmi' in dir(Instrument)
+
     # Clean Registry
     EmptyAttr()
 
 
-def test_attr_sanity(SPEC):
+def test_attr_sanity():
     attr.Attr.update_values(
         {GenericClient: {Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]}})
     # This checks for sanitization of names.
@@ -262,7 +265,7 @@ def test_attr_sanity(SPEC):
     EmptyAttr()
 
 
-def test_attr_keyword(KEYWORD):
+def test_attr_keyword():
     attr.Attr.update_values({GenericClient: {Instrument: [('class', 'Keyword checking.')]}})
     # This checks for sanitization of names.
     assert attr.Attr._attr_registry[Instrument].name == ['class_']
@@ -297,7 +300,7 @@ def test_attr_number(NUMBER):
     EmptyAttr()
 
 
-def test_attr_numbes(NUMBERS):
+def test_attr_numbes():
     attr.Attr.update_values({GenericClient: {Instrument: [('12AIAs', 'That is too many AIAs')]}})
     # This checks for sanitization of names.
     assert attr.Attr._attr_registry[Instrument].name == ['12aias']
@@ -309,7 +312,7 @@ def test_attr_numbes(NUMBERS):
     EmptyAttr()
 
 
-def test_attr_iterable_length(AIA):
+def test_attr_iterable_length():
     # not iterable
     with pytest.raises(ValueError):
         attr.Attr.update_values({GenericClient: {Instrument: 'AIA'}})
@@ -317,6 +320,16 @@ def test_attr_iterable_length(AIA):
     with pytest.raises(ValueError):
         attr.Attr.update_values(
             {GenericClient: {Instrument: [('AIA', 'AIA is Nice', 'Error now')]}})
+
+    # Clean Registry
+    EmptyAttr()
+
+
+def test_asterisk_attrs(ALL):
+    # This checks we can submit * to mean all attrs.
+    attr.Attr.update_values({GenericClient: {Instrument: [('*')]}})
+    assert Instrument.all == ALL
+    assert "Instrument(all: All values of this type are supported.)" in repr(Instrument.all)
 
     # Clean Registry
     EmptyAttr()

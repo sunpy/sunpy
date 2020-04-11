@@ -18,9 +18,9 @@ Please note that & is evaluated first, so A & B | C is equivalent to
 """
 import re
 import keyword
-import warnings
 from collections import defaultdict, namedtuple
 from textwrap import dedent
+import textwrap
 
 from astropy.utils.misc import isiterable
 from astropy.table import Table
@@ -62,7 +62,7 @@ def _print_attrs(attr):
     Parameters
     ----------
     attr : `sunpy.net.attr.Attr`
-        [description]
+        The attr class/type to print for.
 
     Returns
     -------
@@ -71,14 +71,14 @@ def _print_attrs(attr):
     """
     class_name = attr.__name__
     attrs = attr._attr_registry[attr]
-    names = [x for _, x in sorted(zip(attrs.name, attrs.name), key=lambda pair: pair[0])]
-    clients = [x for _, x in sorted(zip(attrs.name, attrs.client), key=lambda pair: pair[0])]
-    names_long = [x for _, x in sorted(
+    names = [str(x) for _, x in sorted(zip(attrs.name, attrs.name), key=lambda pair: pair[0])]
+    clients = [str(x) for _, x in sorted(zip(attrs.name, attrs.client), key=lambda pair: pair[0])]
+    names_long = [str(x) for _, x in sorted(
         zip(attrs.name, attrs.name_long), key=lambda pair: pair[0])]
-    descs = [x for _, x in sorted(zip(attrs.name, attrs.desc), key=lambda pair: pair[0])]
+    descs = [str(x) for _, x in sorted(zip(attrs.name, attrs.desc), key=lambda pair: pair[0])]
     lines = []
     t = Table(names=["Attribute Name", "Client", "Full Name",
-                     "Description"], dtype=[str, str, str, str])
+                     "Description"], dtype=["U256", "U256", "U256", "U256"])
     for name, client, name_long, desc in zip(names, clients, names_long, descs):
         t.add_row((name, client, name_long, desc))
     lines.insert(0, class_name)
@@ -213,25 +213,32 @@ class Attr(metaclass=AttrMeta):
                 if isiterable(value) and not isinstance(value, str):
                     for pair in value:
                         if len(pair) != 2:
-                            raise ValueError(f'Invalid length (!=2) for values: {value}.')
-                        else:
-                            # Sanitize name, we remove all special characters and make it all lower case
-                            name = ''.join(char for char in pair[0] if char.isalnum()).lower()
-                            if keyword.iskeyword(name):
-                                # Attribute name has been appended with `_`
-                                # to make it a valid identifier since its a python keyword.
-                                name = name + '_'
-                            if not name.isidentifier():
-                                # This should account for names with one number first.
-                                # We match for single digits at the start only.
-                                if _REGEX.match(name):
-                                    # This turns that digit into its name
-                                    number = strtonum(name[0])
-                                    name = number + ("_" + name[1:] if len(name) > 1 else "")
-                            cls._attr_registry[key][0].append(name)
-                            cls._attr_registry[key][1].append(client.__name__.replace("Client", ""))
-                            cls._attr_registry[key][2].append(pair[0])
-                            cls._attr_registry[key][3].append(pair[1])
+                            if len(pair) == 1:
+                                # Special case handling for * aka all values allowed.
+                                if pair[0] == "*":
+                                    pair = ["all", "All values of this type are supported."]
+                                else:
+                                    raise ValueError(
+                                        f'Invalid value given for * registration: {value}.')
+                            else:
+                                raise ValueError(f'Invalid length (!=2) for values: {value}.')
+                        # Sanitize name, we remove all special characters and make it all lower case
+                        name = ''.join(char for char in pair[0] if char.isalnum()).lower()
+                        if keyword.iskeyword(name):
+                            # Attribute name has been appended with `_`
+                            # to make it a valid identifier since its a python keyword.
+                            name = name + '_'
+                        if not name.isidentifier():
+                            # This should account for names with one number first.
+                            # We match for single digits at the start only.
+                            if _REGEX.match(name):
+                                # This turns that digit into its name
+                                number = strtonum(name[0])
+                                name = number + ("_" + name[1:] if len(name) > 1 else "")
+                        cls._attr_registry[key][0].append(name)
+                        cls._attr_registry[key][1].append(client.__name__.replace("Client", ""))
+                        cls._attr_registry[key][2].append(pair[0])
+                        cls._attr_registry[key][3].append(pair[1])
                 else:
                     raise ValueError(f"Invalid input value: {value} for key: {repr(key)}. "
                                      "The value is not iterable or just a string.")
@@ -307,8 +314,17 @@ class SimpleAttr(DataAttr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<{cname!s}({val!r})>".format(
-            cname=self.__class__.__name__, val=self.value)
+        attr_reg = AttrMeta._attr_registry[self.__class__]
+        new_repr = object.__repr__(self).split(" object ")
+        # If somehow the idx isn't in the attr reg, we still want it to print it
+        # repr without error.
+        try:
+            idx = attr_reg.name_long.index(self.value)
+            new_repr.insert(1, f"({self.value}: {attr_reg.desc[idx]})")
+        except ValueError:
+            new_repr.insert(1, f": {self.value}")
+        new_repr.insert(2, " object ")
+        return textwrap.fill("".join(new_repr), 100)
 
 
 class Range(DataAttr):

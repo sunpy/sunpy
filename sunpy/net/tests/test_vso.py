@@ -57,15 +57,15 @@ def mock_response():
     # defining unsorted queryresult to mock test `iter_sort_response()`.
     # Incorporated cases with no None start time and without time attribute too.
     recs = [MockObject(record=MockObject(recorditem=[
-                                          MockObject(time=MockObject(start=4), fileid='t4'),
-                                          MockObject(time=MockObject(start=1), fileid='t1'),
-                                          MockObject(time=MockObject(start=2), fileid='t2')
-                                          ]))]
+        MockObject(time=MockObject(start=4), fileid='t4'),
+        MockObject(time=MockObject(start=1), fileid='t1'),
+        MockObject(time=MockObject(start=2), fileid='t2')
+    ]))]
     rec = MockObject(record=MockObject(recorditem=[
-                                        MockObject(time=MockObject(start=None), fileid='f1'),
-                                        MockObject(fileid='f2'),
-                                        MockObject(time=MockObject(start=3), fileid='t3')
-                                        ]))
+        MockObject(time=MockObject(start=None), fileid='f1'),
+        MockObject(fileid='f2'),
+        MockObject(time=MockObject(start=3), fileid='t3')
+    ]))
     recs.append(rec)
     return MockQRResponse(records=recs, errors=['FAILED'])
 
@@ -375,11 +375,11 @@ def test_QueryResponse_build_table_defaults(mock_build_client):
     # Check values we did set by default in 'MockQRRecord'
     source_ = table['Source'].data
     assert len(source_) == 1
-    assert source_[0] == str(va.Source('SOHO'))
+    assert source_[0][:-16] == str(va.Source('SOHO'))[:-16]
 
     instrument_ = table['Instrument'].data
     assert len(instrument_) == 1
-    assert instrument_[0] == str(core_attrs.Instrument('aia'))
+    assert instrument_[0][:-16] == str(core_attrs.Instrument('aia'))[:-16]
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)

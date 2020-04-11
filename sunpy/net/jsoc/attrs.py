@@ -31,6 +31,7 @@ class PrimeKey(DataAttr):
     label : str
     value : str
     """
+
     def __init__(self, label, value):
         super().__init__()
         self.label = label
@@ -49,13 +50,6 @@ class Segment(SimpleAttr):
     Segments choose which files to download when there are more than
     one present for each record e.g. 'image'.
     """
-    def __init__(self, value):
-        super().__init__(value)
-        self.value = value
-
-    def __repr__(self):
-        return "<{cname!s}({val!r})>".format(
-            cname=self.__class__.__name__, val=self.value)
 
     def collides(self, other):
         return False
@@ -73,6 +67,7 @@ class Notify(SimpleAttr):
     """
     An email address to get a notification to when JSOC has staged your request.
     """
+
     def __init__(self, value):
         super().__init__(value)
         if value.find('@') == -1:
