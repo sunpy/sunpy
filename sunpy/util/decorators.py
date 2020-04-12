@@ -12,6 +12,19 @@ from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecati
 __all__ = ['deprecated']
 
 
+def get_removal_version(since):
+    # Work out which version this will be removed in
+    since_major, since_minor = since.split('.')[:2]
+    since_lts = since_minor == '0'
+    if since_lts:
+        major = int(since_major)
+        minor = int(since_minor) + 1
+    else:
+        major = int(since_major) + 1
+        minor = 1
+    return major, minor
+
+
 def deprecated(since, message='', name='', alternative='', pending=False,
                obj_type=None, warning_type=SunpyDeprecationWarning):
     """
@@ -64,17 +77,8 @@ def deprecated(since, message='', name='', alternative='', pending=False,
 
     method_types = (classmethod, staticmethod, types.MethodType)
 
-    # Work out which version this will be removed in
-    since_major, since_minor = since.split('.')[:2]
-    since_lts = since_minor == '0'
-    if since_lts:
-        major = int(since_major)
-        minor = int(since_minor) + 1
-    else:
-        major = int(since_major) + 1
-        minor = 1
-    removal_version = f"{major}.{minor}"
-    removal_message = f" This is scheduled for removal in {removal_version}."
+    major, minor = get_removal_version(since)
+    removal_message = f" This is scheduled for removal in {major}.{minor}."
 
     def deprecate_doc(old_doc, message):
         """
