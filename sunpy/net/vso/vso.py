@@ -742,29 +742,21 @@ class VSOClient(BaseClient):
         if 'email' not in info:
             info['email'] = 'sunpy'
 
-        # For the JSOC provider we need to make a DataRequestItem for each
-        # series, not just one for the whole provider.
+        """ Create datarequest from maps mapping data provider to
+        fileids and methods, """
+        if info is None:
+            info = {}
 
-        # Remove JSOC provider items from the map
-        jsoc = maps.pop('JSOC', [])
-        # Make DRIs for everything that's not JSOC one per provider
+        if 'email' not in info:
+            info['email'] = 'sunpy'
+
+        reqitems = []
+        for k in maps.keys():
+            for ids in maps[k]:
+                reqitems.append([k, ids])
+
         dris = [self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
-                for k, v in maps.items()]
-
-        def series_func(x):
-            """ Extract the series from the fileid. """
-            return x.split(':')[0]
-
-        # Sort the JSOC fileids by series
-        # This is a precursor to groupby as recommended by the groupby docs
-        series_sorted = sorted(jsoc, key=series_func)
-        # Iterate over the series and make a DRI for each.
-        # groupby creates an iterator based on a key function, in this case
-        # based on the series (the part before the first ':')
-        for series, fileids in itertools.groupby(series_sorted, key=series_func):
-            dris.append(self.make('DataRequestItem',
-                                  provider='JSOC',
-                                  fileiditem={'fileid': list(fileids)}))
+                for k, v in reqitems]
 
         request = {'method': {'methodtype': methods},
                    'info': info,
