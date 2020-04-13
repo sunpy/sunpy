@@ -1,0 +1,2 @@
+Fixed a bug with :func:`~sunpy.coordinates.transformations.transform_with_sun_center` where the global variable was sometimes restored incorrectly.
+This bug was most likely encountered if there was a nested use of this context manager.

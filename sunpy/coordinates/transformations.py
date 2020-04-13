@@ -114,11 +114,13 @@ def transform_with_sun_center():
     try:
         global _ignore_sun_motion
 
+        old_ignore_sun_motion = _ignore_sun_motion  # nominally False
+
         log.debug("Ignore the motion of the center of the Sun for transformations")
         _ignore_sun_motion = True
         yield
     finally:
-        _ignore_sun_motion = False
+        _ignore_sun_motion = old_ignore_sun_motion
 
 
 # Global counter to keep track of the layer of transformation
