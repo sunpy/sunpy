@@ -438,8 +438,7 @@ def test_vso_hmi(client, tmpdir):
     # Extract the DRIs from the request
     dris = dr.request.datacontainer.datarequestitem
 
-    # 3 HMI series and one AIA
-    assert len(dris) == 4
+    assert len(dris) == 90
 
     # For each DataRequestItem assert that there is only one series in it.
     for dri in dris:
