@@ -8,13 +8,13 @@ from sunpy.sun import constants as con
 
 def test_find_all():
     assert isinstance(con.find(), list)
-    assert len(con.find()) == 28
+    assert len(con.find()) == 35
 
 
 def test_print_all():
     table = con.print_all()
     assert isinstance(table, Table)
-    assert len(table) == 28
+    assert len(table) == 35
 
 
 @pytest.mark.parametrize('this_constant', [value for key, value in con.constants.items()])
