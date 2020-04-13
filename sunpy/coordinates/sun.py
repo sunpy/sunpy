@@ -1,26 +1,27 @@
 """
 Sun-specific coordinate calculations
 """
-# Skip checking the __all__ here as we are making deprecated versions
-# flake8: noqa F822
-
-import warnings
-
 import numpy as np
 
-import astropy.units as u
-from astropy.time import Time
-from astropy.coordinates import (Angle, Latitude, Longitude, SkyCoord,
-                                 HeliocentricMeanEcliptic, GeocentricMeanEcliptic)
 from astropy import _erfa as erfa
+from astropy.constants import c as speed_of_light
+from astropy.coordinates import (SkyCoord, Angle, Latitude, Longitude, Distance,
+                                 HeliocentricMeanEcliptic, GeocentricMeanEcliptic,
+                                 ITRS, AltAz, get_body_barycentric)
 from astropy.coordinates.builtin_frames.utils import get_jd12
+from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
+from astropy.time import Time
+import astropy.units as u
 
 from sunpy import log
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-from .ephemeris import get_earth, _B0, _L0, _P, _earth_distance, _orientation
+
+from .ephemeris import get_earth
+from .frames import HeliographicStonyhurst
+from .transformations import _SUN_DETILT_MATRIX, _SOLAR_NORTH_POLE_HCRS
 
 __author__ = "Albert Y. Shih"
 __email__ = "ayshih@gmail.com"
@@ -440,11 +441,240 @@ def print_params(t='now'):
     print('Carrington rotation number = {}'.format(carrington_rotation_number(t)))
 
 
-# The following functions belong to this module, but their code is still in the old location of
-# sunpy.coordinates.ephemeris.  That code should be moved here after the deprecation period.
+@add_common_docstring(**_variables_for_parse_time_docstring())
+def B0(time='now'):
+    """
+    Return the B0 angle for the Sun at a specified time, which is the heliographic latitude of the
+    of the center of the disk of the Sun as seen from Earth. The range of B0 is +/-7.23 degrees.
 
-# Create functions that call the appropriate private functions in sunpy.coordinates.ephemeris
-_functions = ['B0', 'L0', 'P', 'earth_distance', 'orientation']
-for func in _functions:
-    vars()[func] = vars()['_' + func]
-    vars()[func].__module__ = __name__  # so that docs think that the function is local
+    Equivalent definitions include:
+        * The heliographic latitude of Earth
+        * The tilt of the solar North rotational axis toward Earth
+
+
+    Parameters
+    ----------
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
+
+    Returns
+    -------
+    out : `~astropy.coordinates.Angle`
+        The position angle
+    """
+    return Angle(get_earth(time).lat)
+
+
+# Function returns a SkyCoord's longitude in the de-tilted frame (HCRS rotated so that the Sun's
+# rotation axis is aligned with the Z axis)
+def _detilt_lon(coord):
+    coord_detilt = coord.hcrs.cartesian.transform(_SUN_DETILT_MATRIX)
+    return coord_detilt.represent_as(SphericalRepresentation).lon.to('deg')
+
+
+# J2000.0 epoch
+_J2000 = Time('J2000.0', scale='tt')
+
+
+# One of the two nodes of intersection between the ICRF equator and Sun's equator in HCRS
+_NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90*u.deg, 0*u.deg, frame='hcrs')
+
+
+# The longitude in the de-tilted frame of the Sun's prime meridian.
+# The IAU (Seidelmann et al. 2007 and later) defines the true longitude of the meridian (i.e.,
+# without light travel time to Earth and aberration effects) as 84.176 degrees eastward at J2000.
+_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.176*u.deg)
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
+def L0(time='now',
+        light_travel_time_correction=True,
+        nearest_point=True,
+        aberration_correction=False):
+    """
+    Return the L0 angle for the Sun at a specified time, which is the apparent Carrington longitude
+    of the Sun-disk center as seen from Earth.
+
+    Observer corrections can be disabled, and then this function will instead return the true
+    Carrington longitude.
+
+    Parameters
+    ----------
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
+    light_travel_time_correction : `bool`
+        If True, apply the correction for light travel time from Sun to Earth.  Defaults to True.
+    nearest_point : `bool`
+        If True, calculate the light travel time to the nearest point on the Sun's surface rather
+        than the light travel time to the center of the Sun (i.e., a difference of the solar
+        radius).  Defaults to True.
+    aberration_correction : `bool`
+        If True, apply the stellar-aberration correction due to Earth's motion.  Defaults to False.
+
+    Returns
+    -------
+    `~astropy.coordinates.Longitude`
+        The Carrington longitude
+
+    Notes
+    -----
+    This longitude is calculated using current IAU values (Seidelmann et al. 2007 and later), which
+    do not include the effects of light travel time and aberration due to Earth's motion (see that
+    paper's Appendix).  This function then, by default, applies the light-travel-time correction
+    for the nearest point on the Sun's surface, but does not apply the stellar-aberration correction
+    due to Earth's motion.
+
+    We do not apply the stellar-abberation correction by default because it should not be applied
+    for purposes such as co-aligning images that are each referenced to Sun-disk center.  Stellar
+    aberration does not shift the apparent positions of solar features relative to the Sun-disk
+    center.
+
+    The Astronomical Almanac applies the stellar-aberration correction in their printed published
+    L0 values (see also Urban & Kaplan 2007).  Applying the stellar-aberration correction due to
+    Earth's motion decreases the apparent Carrington longitude by ~20.5 arcseconds.
+
+    References
+    ----------
+    * Seidelmann et al. (2007), "Report of the IAU/IAG Working Group on cartographic coordinates
+      and rotational elements: 2006" `(link) <http://dx.doi.org/10.1007/s10569-007-9072-y>`__
+    * Urban & Kaplan (2007), "Investigation of Change in the Computational Technique of the Sun's
+      Physical Ephemeris in The Astronomical Almanac"
+      `(link) <http://asa.hmnao.com/static/files/sun_rotation_change.pdf>`__
+    """
+    obstime = parse_time(time)
+    earth = get_earth(obstime)
+
+    # Calculate the de-tilt longitude of the Earth
+    dlon_earth = _detilt_lon(earth)
+
+    # Calculate the distance to the nearest point on the Sun's surface
+    distance = earth.radius - constants.radius if nearest_point else earth.radius
+
+    # Apply a correction for aberration due to Earth motion
+    # This expression is an approximation to reduce computations (e.g., it does not account for the
+    # inclination of the Sun's rotation axis relative to the ecliptic), but the estimated error is
+    # <0.2 arcseconds
+    if aberration_correction:
+        dlon_earth -= 20.496*u.arcsec * 1*u.AU / earth.radius
+
+    # Antedate the observation time to account for light travel time for the Sun-Earth distance
+    antetime = (obstime - distance / speed_of_light) if light_travel_time_correction else obstime
+
+    # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
+    dlon_meridian = Longitude(_DLON_MERIDIAN + (antetime - _J2000) * 14.1844*u.deg/u.day)
+
+    return Longitude(dlon_earth - dlon_meridian)
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
+def P(time='now'):
+    """
+    Return the position (P) angle for the Sun at a specified time, which is the angle between
+    geocentric north and solar north as seen from Earth, measured eastward from geocentric north.
+    The range of P is +/-26.3 degrees.
+
+    Parameters
+    ----------
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
+
+    Returns
+    -------
+    out : `~astropy.coordinates.Angle`
+        The position angle
+    """
+    obstime = parse_time(time)
+
+    # Define the frame where its Z axis is aligned with geocentric north
+    geocentric = ITRS(obstime=obstime)
+
+    return _sun_north_angle_to_z(geocentric)
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
+def earth_distance(time='now'):
+    """
+    Return the distance between the Sun and the Earth at a specified time.
+
+    Parameters
+    ----------
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
+
+    Returns
+    -------
+    out : `~astropy.coordinates.Distance`
+        The Sun-Earth distance
+    """
+    obstime = parse_time(time)
+    vector = get_body_barycentric('earth', obstime) - get_body_barycentric('sun', obstime)
+    return Distance(vector.norm())
+
+
+@add_common_docstring(**_variables_for_parse_time_docstring())
+def orientation(location, time='now'):
+    """
+    Return the orientation angle for the Sun from a specified Earth location and time.  The
+    orientation angle is the angle between local zenith and solar north, measured eastward from
+    local zenith.
+
+    Parameters
+    ----------
+    location : `~astropy.coordinates.EarthLocation`
+        Observer location on Earth
+    time : {parse_time_types}
+        Time to use in a parse_time-compatible format
+
+    Returns
+    -------
+    out : `~astropy.coordinates.Angle`
+        The orientation of the Sun
+    """
+    obstime = parse_time(time)
+
+    # Define the frame where its Z axis is aligned with local zenith
+    local_frame = AltAz(obstime=obstime, location=location)
+
+    return _sun_north_angle_to_z(local_frame)
+
+
+def _sun_north_angle_to_z(frame):
+    """
+    Return the angle between solar north and the Z axis of the provided frame's coordinate system
+    and observation time.
+    """
+    # Find the Sun center in HGS at the frame's observation time(s)
+    sun_center_repr = SphericalRepresentation(0*u.deg, 0*u.deg, 0*u.km)
+    # The representation is repeated for as many times as are in obstime prior to transformation
+    sun_center = SkyCoord(sun_center_repr._apply('repeat', frame.obstime.size),
+                          frame=HeliographicStonyhurst, obstime=frame.obstime)
+
+    # Find the Sun north pole in HGS at the frame's observation time(s)
+    sun_north_repr = SphericalRepresentation(0*u.deg, 90*u.deg, constants.radius)
+    # The representation is repeated for as many times as are in obstime prior to transformation
+    sun_north = SkyCoord(sun_north_repr._apply('repeat', frame.obstime.size),
+                         frame=HeliographicStonyhurst, obstime=frame.obstime)
+
+    # Find the Sun center and Sun north in the frame's coordinate system
+    sky_normal = sun_center.transform_to(frame).data.to_cartesian()
+    sun_north = sun_north.transform_to(frame).data.to_cartesian()
+
+    # Use cross products to obtain the sky projections of the two vectors (rotated by 90 deg)
+    sun_north_in_sky = sun_north.cross(sky_normal)
+    z_in_sky = CartesianRepresentation(0, 0, 1).cross(sky_normal)
+
+    # Normalize directional vectors
+    sky_normal /= sky_normal.norm()
+    sun_north_in_sky /= sun_north_in_sky.norm()
+    z_in_sky /= z_in_sky.norm()
+
+    # Calculate the signed angle between the two projected vectors
+    cos_theta = sun_north_in_sky.dot(z_in_sky)
+    sin_theta = sun_north_in_sky.cross(z_in_sky).dot(sky_normal)
+    angle = np.arctan2(sin_theta, cos_theta).to('deg')
+
+    # If there is only one time, this function's output should be scalar rather than array
+    if angle.size == 1:
+        angle = angle[0]
+
+    return Angle(angle)
