@@ -20,7 +20,7 @@ from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
 from sunpy.coordinates import sun
 from sunpy.coordinates.frames import _J2000
 from sunpy.coordinates.transformations import transform_with_sun_center
-from sunpy.sun.constants import radius as _RSUN
+from sunpy.sun.constants import radius as _RSUN, sidereal_rotation_rate
 from sunpy.time import parse_time
 
 
@@ -352,10 +352,10 @@ def test_hgc_hgc_different_observers():
     sc_hgc_sun = sc_hgc_mars.transform_to(hgc_sun)
 
     ltt_earth = hgc_earth.observer.radius / speed_of_light
-    assert_quantity_allclose(sc_hgc_earth.lon - sc_hgc_sun.lon, ltt_earth * 14.1844*u.deg/u.day)
+    assert_quantity_allclose(sc_hgc_earth.lon - sc_hgc_sun.lon, ltt_earth * sidereal_rotation_rate)
 
     ltt_mars = hgc_mars.observer.radius / speed_of_light
-    assert_quantity_allclose(sc_hgc_mars.lon - sc_hgc_sun.lon, ltt_mars * 14.1844*u.deg/u.day)
+    assert_quantity_allclose(sc_hgc_mars.lon - sc_hgc_sun.lon, ltt_mars * sidereal_rotation_rate)
 
 
 def test_hcc_hcc():
@@ -455,7 +455,7 @@ def test_hgs_hgc_sunspice():
     new = old.transform_to(HeliographicCarrington(observer='earth'))
 
     # Calculate the difference in longitude due to light travel time from the Sun to the Earth
-    delta_lon = (14.1844*u.deg/u.day) * (sun.earth_distance(old.obstime) - _RSUN) / speed_of_light
+    delta_lon = sidereal_rotation_rate * (sun.earth_distance(old.obstime) - _RSUN) / speed_of_light
 
     assert_quantity_allclose(new.lon, 16.688242*u.deg + delta_lon, atol=1e-2*u.arcsec, rtol=0)
     assert_quantity_allclose(new.lat, old.lat)

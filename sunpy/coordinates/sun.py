@@ -72,12 +72,6 @@ def sky_position(t='now', equinox_of_date=True):
     return ra, dec
 
 
-# Time in Julian Days (TT) of the start of the first Carrington rotation
-_FIRST_CROT_JD = 2398167.4
-# Length of a Carrington rotation in days
-_CARRINGTON_ROTATION_PERIOD = 27.2753
-
-
 def carrington_rotation_time(crot):
     """
     Return the time of a given Carrington rotation.
@@ -94,7 +88,7 @@ def carrington_rotation_time(crot):
     -------
     astropy.time.Time
     """
-    estimate = (_CARRINGTON_ROTATION_PERIOD * (crot - 1)) + _FIRST_CROT_JD
+    estimate = (constants.crot_period.value * (crot - 1)) + constants.first_crot_jd.value
 
     # The above estimate is inaccurate (see comments below in carrington_rotation_number),
     # so put the estimate into carrington_rotation_number to determine a correction amount
@@ -102,7 +96,7 @@ def carrington_rotation_time(crot):
         crot_estimate = carrington_rotation_number(t=Time(estimate, scale='tt', format='jd'))
         dcrot = crot - crot_estimate
         # Correct the estimate using a linear fraction of the Carrington rotation period
-        return estimate + (dcrot * _CARRINGTON_ROTATION_PERIOD)
+        return estimate + (dcrot * constants.crot_period.value)
 
     # Perform two iterations of the correction to achieve sub-second accuracy
     estimate = refine(estimate)
@@ -127,7 +121,7 @@ def carrington_rotation_number(t='now'):
     # Estimate the Carrington rotation number by dividing the time that has elapsed since
     # JD 2398167.4 (late in the day on 1853 Nov 9), see Astronomical Algorithms (Meeus 1998, p.191),
     # by the mean synodic period (27.2753 days)
-    estimate = (time.tt.jd - _FIRST_CROT_JD) / _CARRINGTON_ROTATION_PERIOD + 1
+    estimate = (time.tt.jd - constants.first_crot_jd.value) / constants.crot_period.value + 1
     estimate_int, estimate_frac = divmod(estimate, 1)
 
     # The fractional rotation number from the above estimate is inaccurate, so calculate the actual

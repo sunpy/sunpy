@@ -9,7 +9,8 @@ __all__ = [
     'get', 'find', 'print_all', 'spectral_classification', 'au', 'mass', 'equatorial_radius',
     'volume', 'surface_area', 'average_density', 'equatorial_surface_gravity',
     'effective_temperature', 'luminosity', 'mass_conversion_rate', 'escape_velocity', 'sfu',
-    'average_angular_size'
+    'average_angular_size', 'meridian_lon', 'sidereal_rotation_rate', 'first_crot_jd',
+    'first_crot_jd_tt', 'crot_period', 'sun_north_pole_lon', 'sun_north_pole_lat'
 ]
 
 constants = _con.physical_constants
@@ -92,9 +93,9 @@ def print_all():
 # Add a list of constants to the docs
 _lines = [
     'The following constants are available:\n',
-    '====================== ============== ================ =================================',
-    '         Name              Value            Unit                 Description',
-    '====================== ============== ================ =================================',
+    '========================== ============== ================ =================================',
+    '           Name                Value            Unit                 Description',
+    '========================== ============== ================ =================================',
 ]
 for key, const in constants.items():
     _lines.append('{:^22} {:^14.9g} {:^16} {}'.format(
@@ -121,3 +122,10 @@ escape_velocity = get('escape velocity')
 sfu = get('solar flux unit')
 # Observable parameters
 average_angular_size = get('average angular size')
+meridian_lon = get('true longitude of meridian')
+sidereal_rotation_rate = get('sidereal rotation rate')
+first_crot_jd = get('first Carrington rotation')
+first_crot_jd_tt = get('first Carrington rotation (JD TT)')
+crot_period = get('mean synodic period')
+sun_north_pole_lon = get('right ascension (RA) of the north pole at epoch J2000.0')
+sun_north_pole_lat = get('declination of the north pole at epoch J2000.0')
