@@ -782,7 +782,7 @@ def test_transform_with_sun_center():
 
 
 def test_transform_with_sun_center_reset():
-    # This test sequence ensures that the context manager does not change anything permanently
+    # This test sequence ensures that the context manager resets propoerly
 
     sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.AU,
                           frame=HeliographicStonyhurst(obstime="2001-01-01"))
@@ -800,6 +800,15 @@ def test_transform_with_sun_center_reset():
     assert_quantity_allclose(result2.lon, sun_center.lon)
     assert_quantity_allclose(result2.lat, sun_center.lat)
     assert_quantity_allclose(result2.distance, sun_center.radius)
+
+    # Exiting a nested context manager should not affect the outer context manager
+    with transform_with_sun_center():
+        with transform_with_sun_center():
+            pass
+        result2a = sun_center.transform_to(end_frame)
+    assert_quantity_allclose(result2a.lon, result2.lon)
+    assert_quantity_allclose(result2a.lat, result2.lat)
+    assert_quantity_allclose(result2a.distance, result2.distance)
 
     # After the context manager, the coordinate should have the same result as the first transform
     result3 = sun_center.transform_to(end_frame)
