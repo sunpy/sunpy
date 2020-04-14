@@ -1,0 +1,1 @@
+Fixed passing in a list of URLs into `sunpy.map.GenericMap`, before it caused an error due to the wrong type being returned.

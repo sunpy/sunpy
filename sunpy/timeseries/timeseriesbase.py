@@ -45,8 +45,6 @@ class GenericTimeSeries:
 
     Attributes
     ----------
-    data : `~pandas.DataFrame`
-        A `pandas.DataFrame` representing one or more fields as a function of time.
     meta : `~sunpy.timeseries.metadata.TimeSeriesMetaData`
         The metadata giving details about the time series data/instrument.
     units : `dict`
@@ -121,6 +119,9 @@ class GenericTimeSeries:
 
     @property
     def data(self):
+        """
+        A `pandas.DataFrame` representing one or more fields as a function of time.
+        """
         warnings.warn("Using .data to access the dataframe is discouraged; "
                       "use .to_dataframe() instead.", SunpyUserWarning)
         return self._data
