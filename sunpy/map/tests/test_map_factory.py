@@ -250,3 +250,14 @@ class TestMap:
         assert isinstance(xrt, sunpy.map.sources.XRTMap)
 
     # TODO: Test SXTMap
+
+
+@pytest.mark.remote_data
+def test_map_list_urls_cache():
+    """
+    Test for https://github.com/sunpy/sunpy/issues/4006
+    """
+    urls = ['http://jsoc.stanford.edu/SUM80/D136597189/S00000/image_lev1.fits',
+            'http://jsoc.stanford.edu/SUM79/D136597240/S00000/image_lev1.fits']
+
+    sunpy.map.Map(urls)
