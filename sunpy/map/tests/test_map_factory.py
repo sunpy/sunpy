@@ -20,13 +20,36 @@ from sunpy.util import SunpyUserWarning
 from sunpy.io.file_tools import UnrecognizedFileTypeError
 
 
-filepath = sunpy.data.test.rootdir
+filepath = pathlib.Path(sunpy.data.test.rootdir)
 a_list_of_many = [os.fspath(f) for f in pathlib.Path(filepath, "EIT").glob("*")]
 a_fname = a_list_of_many[0]
+
 
 AIA_171_IMAGE = os.path.join(filepath, 'aia_171_level1.fits')
 RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
 
+amap = sunpy.map.Map(AIA_171_IMAGE)
+
+valid_map_inputs = [(a_fname, ),
+                    (pathlib.Path(a_fname), ),
+                    (filepath / "EIT", ),
+                    (os.fspath(filepath / "EIT"), ),
+                    (filepath / "EIT" / "*", ),
+                    (amap, ),
+                    (amap.data, amap.meta),
+                    ((amap.data, amap.meta), ),
+                    ]
+
+
+@pytest.mark.parametrize('args1', valid_map_inputs)
+@pytest.mark.parametrize('args2', valid_map_inputs)
+def test_two_map_inputs(args1, args2):
+    out = sunpy.map.Map(*args1, *args2)
+    if isinstance(out, list):
+        for m in out:
+            assert isinstance(m, sunpy.map.GenericMap)
+    else:
+        assert isinstance(out, sunpy.map.GenericMap)
 
 # ==============================================================================
 # Map Factory Tests
