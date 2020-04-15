@@ -742,20 +742,12 @@ class VSOClient(BaseClient):
         if 'email' not in info:
             info['email'] = 'sunpy'
 
-        """ Create datarequest from maps mapping data provider to
-        fileids and methods, """
-        if info is None:
-            info = {}
-
-        if 'email' not in info:
-            info['email'] = 'sunpy'
-
         reqitems = []
         for k in maps.keys():
             for ids in maps[k]:
                 reqitems.append([k, ids])
 
-        dris = [self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
+        dris = [self.make('DataRequestItem', provider=k, fileiditem={'fileid': [v]})
                 for k, v in reqitems]
 
         request = {'method': {'methodtype': methods},
