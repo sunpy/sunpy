@@ -48,7 +48,7 @@ Developing
 ==========
 
 If you want to develop SunPy you will need to install from GitHub.
-For detailed installation instructions, see the `Newcomers' guide`_ in the SunPy docs.
+For detailed installation instructions, see `Development installation`_ in the SunPy docs.
 
 Usage
 =====
@@ -94,6 +94,7 @@ For more information on contributing to SunPy, please read our `Newcomers' guide
 .. _`#sunpy:openastronomy.org`: https://chat.openastronomy.org/#/room/#sunpy:openastronomy.org
 .. _issues page: https://github.com/sunpy/sunpy/issues
 .. _Newcomers' guide: https://docs.sunpy.org/en/latest/dev_guide/newcomers.html
+.. _Development installation:  https://docs.sunpy.org/en/latest/dev_guide/newcomers.html#setting-up-a-development-environment
 
 Code of Conduct
 ===============
