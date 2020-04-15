@@ -1,0 +1,2 @@
+Removed Sun-associated functions in `sunpy.coordinates.ephemeris`, which were deprecated in 1.0.
+Use the corresponding functions in `sunpy.coordinates.sun`.
