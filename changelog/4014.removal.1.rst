@@ -1,0 +1,2 @@
+Removed the module `sunpy.sun.sun`, which was deprecated in version 1.0.
+Use the module `sunpy.coordinates.sun` instead.
