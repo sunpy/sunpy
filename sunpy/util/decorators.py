@@ -199,15 +199,20 @@ def _deprecated(since, message='', name='', alternative='', pending=False, remov
                            'version {deprecated_version}.')
             else:
                 message = ('The {func} {obj_type} is deprecated and may '
-                           'be removed in version {future_version}.')
+                           'be removed in {future_version}.')
             if alternative:
                 altmessage = f'\n        Use {alternative} instead.'
+
+        if removal_version is None:
+            future_version = 'a future version'
+        else:
+            future_version = f'version {removal_version}'
 
         message = ((message.format(**{
             'func': name,
             'name': name,
             'deprecated_version': since,
-            'future_version': removal_version,
+            'future_version': future_version,
             'alternative': alternative,
             'obj_type': obj_type_name})) +
             altmessage)
