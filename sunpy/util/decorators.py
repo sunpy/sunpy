@@ -26,7 +26,7 @@ def get_removal_version(since):
 
 
 def deprecated(since, message='', name='', alternative='', pending=False,
-               obj_type=None, warning_type=SunpyDeprecationWarning):
+               obj_type=None):
     """
     Used to mark a function or class as deprecated.
 
@@ -75,15 +75,17 @@ def deprecated(since, message='', name='', alternative='', pending=False,
         Default is `~sunpy.utils.exceptions.SunpyDeprecationWarning`.
     """
     major, minor = get_removal_version(since)
-    removal_version = f"{major}.{minor}."
+    removal_version = f"{major}.{minor}"
     # TODO: replace this with the astropy deprecated decorator
     return _deprecated(since, message=message, name=name, alternative=alternative, pending=pending,
                        removal_version=removal_version, obj_type=obj_type,
-                       warning_type=warning_type)
+                       warning_type=SunpyDeprecationWarning,
+                       pending_warning_type=SunpyPendingDeprecationWarning)
 
 
 def _deprecated(since, message='', name='', alternative='', pending=False, removal_version=None,
-                obj_type=None, warning_type=SunpyDeprecationWarning):
+                obj_type=None, warning_type=SunpyDeprecationWarning,
+                pending_warning_type=SunpyPendingDeprecationWarning):
     # TODO: remove this once the removal_version kwarg has been added to the upstream
     # astropy deprecated decorator
     method_types = (classmethod, staticmethod, types.MethodType)
@@ -129,7 +131,7 @@ def _deprecated(since, message='', name='', alternative='', pending=False, remov
 
         def deprecated_func(*args, **kwargs):
             if pending:
-                category = SunpyPendingDeprecationWarning
+                category = pending_warning_type
             else:
                 category = warning_type
 
