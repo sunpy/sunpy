@@ -74,11 +74,19 @@ def deprecated(since, message='', name='', alternative='', pending=False,
         Warning to be issued.
         Default is `~sunpy.utils.exceptions.SunpyDeprecationWarning`.
     """
-
-    method_types = (classmethod, staticmethod, types.MethodType)
-
     major, minor = get_removal_version(since)
-    removal_message = f" This is scheduled for removal in {major}.{minor}."
+    removal_version = f"{major}.{minor}."
+    # TODO: replace this with the astropy deprecated decorator
+    return _deprecated(since, message=message, name=name, alternative=alternative, pending=pending,
+                       removal_version=removal_version, obj_type=obj_type,
+                       warning_type=warning_type)
+
+
+def _deprecated(since, message='', name='', alternative='', pending=False, removal_version=None,
+                obj_type=None, warning_type=SunpyDeprecationWarning):
+    # TODO: remove this once the removal_version kwarg has been added to the upstream
+    # astropy deprecated decorator
+    method_types = (classmethod, staticmethod, types.MethodType)
 
     def deprecate_doc(old_doc, message):
         """
@@ -185,22 +193,22 @@ def deprecated(since, message='', name='', alternative='', pending=False,
         altmessage = ''
         if not message or type(message) is type(deprecate):
             if pending:
-                message = ('The {func} {obj_type} will be deprecated in a '
-                           'future version.')
+                message = ('The {func} {obj_type} will be deprecated in '
+                           'version {deprecated_version}.')
             else:
                 message = ('The {func} {obj_type} is deprecated and may '
-                           'be removed in a future version.')
+                           'be removed in version {future_version}.')
             if alternative:
                 altmessage = f'\n        Use {alternative} instead.'
 
         message = ((message.format(**{
             'func': name,
             'name': name,
+            'deprecated_version': since,
+            'future_version': removal_version,
             'alternative': alternative,
             'obj_type': obj_type_name})) +
             altmessage)
-
-        message += removal_message
 
         if isinstance(obj, type):
             return deprecate_class(obj, message, warning_type)
