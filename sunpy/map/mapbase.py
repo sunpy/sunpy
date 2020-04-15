@@ -36,6 +36,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_earth
 from sunpy.coordinates.utils import get_rectangle_coordinates
+from sunpy.util.decorators import  deprecate_positional_args
 from sunpy.util import expand_list
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -1363,7 +1364,7 @@ class GenericMap(NDData):
 
         return new_map
 
-
+    @deprecate_positional_args
     def submap(self, bottom_left, *, top_right=None, width: u.deg=None, height: u.deg=None):
         """
         Returns a submap of the map defined by the rectangle given by the
@@ -1709,7 +1710,8 @@ class GenericMap(NDData):
         return [circ]
 
     @u.quantity_input
-    def draw_rectangle(self, bottom_left, *, top_right=None, width: u.deg=None, height: u.deg=None, axes=None, **kwargs):
+    @deprecate_positional_args
+    def draw_rectangle(self, bottom_left, *, width: u.deg=None, height: u.deg=None, axes=None, top_right=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
         Parameters
@@ -1754,7 +1756,6 @@ class GenericMap(NDData):
             axes_unit = u.deg
         else:
             axes_unit = self.spatial_units[0]
-
 
         coord = bottom_left.transform_to(self.coordinate_frame)
         bottom_left = u.Quantity((coord.data.lon, coord.data.lat), unit=axes_unit).value

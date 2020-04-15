@@ -8,7 +8,6 @@ from astropy.coordinates import SkyCoord, BaseCoordinateFrame
 
 from sunpy.coordinates import Heliocentric
 
-
 __all__ = ['GreatArc', 'get_rectangle_coordinates']
 
 
