@@ -71,6 +71,8 @@ jobs:
       - linux: codestyle
         name: python_codestyle
 
+      - linux: py38-hypothesis
+
       - linux: py36-conda
         name: py36_conda
         libraries: {}
