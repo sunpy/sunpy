@@ -1,0 +1,1 @@
+Add support for parfive 1.1. This sets a limit on the number of open connections to JSOC when downloading files to 10.
