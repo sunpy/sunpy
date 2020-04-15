@@ -48,23 +48,6 @@ Developing
 ==========
 
 If you want to develop SunPy you will need to install from GitHub.
-The best way to do this is to create a new conda environment and install the git version of SunPy in it:
-
-.. warning::
-
-    Do not clone the sunpy repository into ``$HOME/sunpy``. Depending on the operating system this location is used to store downloaded data files.
-    This will cause conflicts later on, so the last argument (``sunpy-git``) on the ``git clone`` line will become the local folder name of the cloned repository.
-
-.. code:: bash
-
-    $ conda config --append channels conda-forge
-    $ conda create -n sunpy-dev sunpy
-    $ conda activate sunpy-dev
-    $ conda remove sunpy
-    $ git clone https://github.com/sunpy/sunpy.git sunpy-git
-    $ cd sunpy-git
-    $ pip install -e .[all,dev]
-
 For detailed installation instructions, see the `Newcomers' guide`_ in the SunPy docs.
 
 Usage
