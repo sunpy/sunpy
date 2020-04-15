@@ -1,0 +1,1 @@
+Now when `~sunpy.map.GenericMap` fails to load a file, the filename that failed to load will now be part of the error message.

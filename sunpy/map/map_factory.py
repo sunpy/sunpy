@@ -19,6 +19,7 @@ from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
 from sunpy.util import expand_list
+from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
 
@@ -118,15 +119,19 @@ class MapFactory(BasicRegistrationFactory):
     """  # noqa
 
     def _read_file(self, fname, **kwargs):
-        """ Read in a file name and return the list of (data, meta) pairs in
-            that file. """
-
-        # File gets read here.  This needs to be generic enough to seamlessly
+        """
+        Read in a file name and return the list of (data, meta) pairs in that file.
+        """
+        # File gets read here. This needs to be generic enough to seamlessly
         # call a fits file or a jpeg2k file, etc
         # NOTE: use os.fspath so that fname can be either a str or pathlib.Path
         # This can be removed once read_file supports pathlib.Path
         log.debug(f'Reading {fname}')
-        pairs = read_file(os.fspath(fname), **kwargs)
+        try:
+            pairs = read_file(os.fspath(fname), **kwargs)
+        except Exception as e:
+            msg = f"Failed to read {fname}."
+            raise IOError(msg) from e
 
         new_pairs = []
         for pair in pairs:
@@ -152,8 +157,9 @@ class MapFactory(BasicRegistrationFactory):
 
     def _parse_args(self, *args, **kwargs):
         """
-        Parses an args list for data-header pairs.  args can contain any
-        mixture of the following entries:
+        Parses an args list for data-header pairs.
+
+        args can contain any mixture of the following entries:
         * tuples of data,header
         * data, header not in a tuple
         * data, wcs object in a tuple
@@ -172,9 +178,7 @@ class MapFactory(BasicRegistrationFactory):
                          'file4',
                          'directory1',
                          '*.fits')
-
         """
-
         data_header_pairs = list()
         already_maps = list()
 
@@ -245,7 +249,7 @@ class MapFactory(BasicRegistrationFactory):
         to determine which is the correct Map-type to build.
 
         Arguments args and kwargs are passed through to the validation
-        function and to the constructor for the final type.  For Map types,
+        function and to the constructor for the final type. For Map types,
         validation function must take a data-header pair as an argument.
 
         Parameters
@@ -253,11 +257,9 @@ class MapFactory(BasicRegistrationFactory):
         composite : `bool`, optional
             Indicates if collection of maps should be returned as a `~sunpy.map.CompositeMap`.
             Default is `False`.
-
         sequence : `bool`, optional
             Indicates if collection of maps should be returned as a `sunpy.map.MapSequence`.
             Default is `False`.
-
         silence_errors : `bool`, optional
             If set, ignore data-header pairs which cause an exception.
             Default is ``False``.
@@ -347,7 +349,7 @@ def _possibly_a_path(arg):
     Does *not* check if the path exists.
     """
     try:
-        is_path = pathlib.Path(arg)
+        pathlib.Path(arg)
         return True
     except Exception:
         return False
