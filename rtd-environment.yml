@@ -1,14 +1,16 @@
 name: sunpy
 channels:
   - sunpy
+  - defaults
 dependencies:
-  - python
-  - pip
-  - openjpeg
   - graphviz!=2.42.*
+  - openjpeg
+  - pip
+  - python
+  - sphinx
   - pip:
     - asdf
-    - astropy!=4.0.1
+    - astropy
     - astroquery
     - beautifulsoup4
     - drms
@@ -26,7 +28,6 @@ dependencies:
     - ruamel.yaml
     - scikit-image
     - scipy
-    - sphinx
     - sphinx-astropy
     - sphinx-gallery
     - sqlalchemy
