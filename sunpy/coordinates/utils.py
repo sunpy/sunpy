@@ -300,17 +300,17 @@ def get_rectangle_coordinates(bottom_left, *, top_right = None, width: u.deg = N
     >>> from sunpy.coordinates.frames import HeliographicStonyhurst
     >>> from sunpy.coordinates.utils import get_rectangle_coordinates
 
-    # With bottom left as a SkyCoord, width and height
+    >>> # With bottom left as a SkyCoord, width and height
     >>> bottom_left = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame='heliographic_stonyhurst')
     >>> width = 10 * u.arcsec
     >>> height = 10 * u.arcsec
     >>> bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=width, height=height)
 
-    #With bottom left of shape (2,)
+    >>> # With bottom left of shape (2,)
     >>> bottom_left_vector = SkyCoord([0 * u.arcsec, 10 * u.arcsec], [0 * u.arcsec, 10 * u.arcsec], frame='heliographic_stonyhurst')
     >>> bottom_left, top_right = get_rectangle_coordinates(bottom_left_vector)
 
-    # With bottom left as a BaseCoordinateFrame instance, width and height
+    >>> # With bottom left as a BaseCoordinateFrame instance, width and height
     >>> bottom_left =  HeliographicStonyhurst(0 * u.arcsec, 0 * u.arcsec)
     >>> width = 10 * u.arcsec
     >>> height = 10 * u.arcsec
