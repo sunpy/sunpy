@@ -268,17 +268,20 @@ class add_common_docstring:
         return func
 
 def deprecate_positional_args(f):
-    """Decorator for methods that issues warnings for positional arguments
+    """
+    Decorator for methods that issues warnings for positional arguments
     Using the keyword-only argument syntax in pep 3102, arguments after the
     * will issue a warning when passed as a positional argument.
+
     Parameters
     ----------
     f : function
-        function to check arguments on
+        Function to check arguments on.
 
     References
     ----------
-    This has been adopted from Scikit-Learn
+    Taken from from `scikit-learn <https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/utils/validation.py#L1271>`__.
+    Licensed under the BSD, see "licenses/SCIKIT-LEARN.rst".
     """
     sig = signature(f)
     kwonly_args = []

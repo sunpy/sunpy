@@ -1379,7 +1379,11 @@ class GenericMap(NDData):
             object with units of `~astropy.units.pixel`.
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
             The top_right coordinate of the rectangle. Can only be omitted if
-            ``bottom_left`` has shape ``(2,)``.
+            ``bottom_left`` has shape ``(2,)``, passing this as a positional argument is deprecated.
+        width : `astropy.units.Quantity`
+            The width of the rectangle, passing this as a positional argument is deprecated.
+        height : `astropy.units.Quantity`
+            The height of the rectangle, passing this as a positional argument is deprecated.
 
         Returns
         -------
@@ -1453,7 +1457,7 @@ class GenericMap(NDData):
             [-95.92475   ,   6.028058  ,  -4.9797    ,  -1.0483578 ,
                 -3.9313421 ]], dtype=float32)
         """
-        if not (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix)):
+        if not isinstance(bottom_left, u.Quantity):
             bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                                top_right=top_right,
                                                                width=width,
@@ -1711,7 +1715,8 @@ class GenericMap(NDData):
 
     @deprecate_positional_args
     @u.quantity_input
-    def draw_rectangle(self, bottom_left, *, width: u.deg=None, height: u.deg=None, axes=None, top_right=None, **kwargs):
+    def draw_rectangle(self, bottom_left, *, width: u.deg=None, height: u.deg=None,
+                       axes=None, top_right=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
         Parameters
@@ -1723,11 +1728,11 @@ class GenericMap(NDData):
             object with units of `~astropy.units.pixel`.
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
             The top_right coordinate of the rectangle. Can only be omitted if
-            ``bottom_left`` has shape ``(2,)``.
-        width : `astropy.units.Quantity` # Depreciated
-            The width of the rectangle.
-        height : `astropy.units.Quantity` # Depreciated
-            The height of the rectangle.
+            ``bottom_left`` has shape ``(2,)``, passing this as a positional argument is deprecated.
+        width : `astropy.units.Quantity`
+            The width of the rectangle, passing this as a positional argument is deprecated.
+        height : `astropy.units.Quantity`
+            The height of the rectangle, passing this as a positional argument is deprecated.
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current
             axes.
@@ -1748,7 +1753,7 @@ class GenericMap(NDData):
                                                                height=height)
 
             width = np.abs(top_right.spherical.lon - bottom_left.spherical.lon).to(u.deg)
-            height = np.abs(top_right.spherical.lat - bottom_left.spherical.lat).to(u.deg)
+            height = top_right.spherical.lat - bottom_left.spherical.lat
 
         if not axes:
             axes = plt.gca()
