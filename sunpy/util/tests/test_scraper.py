@@ -204,7 +204,7 @@ def test_ftp():
     s = Scraper(pattern)
     timerange = TimeRange('2016/5/18 15:28:00', '2016/5/20 16:30:50')
     urls = s.filelist(timerange)
-    assert urls[0] == ('ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp'
+    assert urls[0] == ('ftp://solar-pub.nao.ac.jp'
                        '/pub/nsro/norh/data/tcx/2016/05/tca160519')
     assert len(urls) == 2
 
