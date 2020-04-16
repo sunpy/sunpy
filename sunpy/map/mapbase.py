@@ -1709,8 +1709,8 @@ class GenericMap(NDData):
 
         return [circ]
 
-    @u.quantity_input
     @deprecate_positional_args
+    @u.quantity_input
     def draw_rectangle(self, bottom_left, *, width: u.deg=None, height: u.deg=None, axes=None, top_right=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
