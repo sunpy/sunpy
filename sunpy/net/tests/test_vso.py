@@ -447,6 +447,16 @@ def test_vso_hmi(client, tmpdir):
         assert all([s == series[0] for s in series])
 
 
+@pytest.mark.remote_data
+def test_vso_mdi(client):
+    timerange = a.Time('2005/01/01 00:12', '2005/01/01 00:21')
+    result = client.search(timerange, a.Instrument('mdi'),
+                           a.Wavelength(6768*u.angstrom) & a.Physobs('LOS_magnetic_field'))
+    assert len(result) == 3
+    files = client.fetch(result)
+    assert len(files) == 3
+
+
 @mock.patch('sunpy.net.vso.vso.check_connection', return_value=None)
 def test_get_online_vso_url(mock_urlopen):
     """
