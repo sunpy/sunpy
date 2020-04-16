@@ -14,7 +14,8 @@ Here is a brief explanation of them: https://docs.sunpy.org/en/latest/dev_guide/
 -->
 
 ### Description
-<!-- Provide a general description of what your pull request does.
+<!--
+Provide a general description of what your pull request does.
 
 If the pull request closes any open issues you can add this.
 If you replace <Issue Number> with a number GitHub will automatically link it.
