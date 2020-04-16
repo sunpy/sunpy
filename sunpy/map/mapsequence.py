@@ -194,7 +194,7 @@ class MapSequence:
         The image colormap uses
         `histogram equalization <https://en.wikipedia.org/wiki/Histogram_equalization>`__.
 
-        Interactive elements require Javascript to be supported by the web browser.
+        Interactive elements require Javascript support to be enabled in the web browser.
 
         Examples
         --------
@@ -204,7 +204,7 @@ class MapSequence:
         ...           sunpy.data.sample.AIA_1600_IMAGE,
         ...           sunpy.data.sample.EIT_195_IMAGE,
         ...           sequence=True)  # doctest: +REMOTE_DATA
-        >>> seq.quicklook()  # doctest: +REMOTE_DATA
+        >>> seq.quicklook()  # doctest: +SKIP
         """
         with NamedTemporaryFile('w', delete=False, prefix='sunpy.map.', suffix='.html') as f:
             url = 'file://' + f.name
