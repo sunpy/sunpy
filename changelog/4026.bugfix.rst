@@ -1,0 +1,2 @@
+Fixed error while fetching data from some providers through VSO by having one "fileid" per "provider"
+in `~sunpy.net.vso.vso.VSOClient.create_getdatarequest` method while making a `DataRequestItem`.
