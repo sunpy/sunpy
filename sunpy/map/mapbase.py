@@ -368,14 +368,14 @@ class GenericMap(NDData):
         `histogram equalization <https://en.wikipedia.org/wiki/Histogram_equalization>`__.
 
         Clicking on the image to switch between pixel space and coordinate space requires
-        Javascript to be supported by the web browser.
+        Javascript support to be enabled in the web browser.
 
         Examples
         --------
         >>> from sunpy.map import Map
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
-        >>> smap.quicklook()  # doctest: +REMOTE_DATA
+        >>> smap.quicklook()  # doctest: +SKIP
         """
         with NamedTemporaryFile('w', delete=False, prefix='sunpy.map.', suffix='.html') as f:
             url = 'file://' + f.name
