@@ -1,6 +1,6 @@
 
 <!--
-We know that working and submitting pull requests takes effort, and we appreciate your time.
+We know that working on sunpy and submitting pull requests takes effort, and we appreciate your time.
 Thank you.
 
 Please be aware that everyone has to follow our code of conduct:
