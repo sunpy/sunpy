@@ -45,7 +45,7 @@ class MockQRResponse:
         self.provideritem = list()
 
         if records is not None:
-            self.provideritem = [MockObject(record=MockObject(recorditem=[ri])) for ri in records]
+            self.provideritem = records
 
         if errors is not None:
             self.provideritem.extend([MockObject(error=err) for err in errors])
@@ -53,7 +53,20 @@ class MockQRResponse:
 
 @pytest.fixture
 def mock_response():
-    return MockQRResponse(records=[1, 2], errors=['FAILED'])
+    # defining unsorted queryresult to mock test `iter_sort_response()`.
+    # Incorporated cases with no None start time and without time attribute too.
+    recs = [MockObject(record=MockObject(recorditem=[
+                                          MockObject(time=MockObject(start=4), fileid='t4'),
+                                          MockObject(time=MockObject(start=1), fileid='t1'),
+                                          MockObject(time=MockObject(start=2), fileid='t2')
+                                          ]))]
+    rec = MockObject(record=MockObject(recorditem=[
+                                        MockObject(time=MockObject(start=None), fileid='f1'),
+                                        MockObject(fileid='f2'),
+                                        MockObject(time=MockObject(start=3), fileid='t3')
+                                        ]))
+    recs.append(rec)
+    return MockQRResponse(records=recs, errors=['FAILED'])
 
 
 @pytest.fixture
@@ -325,8 +338,11 @@ def test__parse_date(input, expected):
     assert vso.vso._parse_date(input) == expected
 
 
-def test_iter_records(mock_response):
-    assert list(vso.vso.iter_records(mock_response)) == [1, 2]
+def test_iter_sort_response(mock_response):
+    fileids = [i.fileid for i in vso.vso.iter_sort_response(mock_response)]
+    # the function would have sorted records w.r.t. start time,
+    # those without start time appended at last of final response.
+    assert fileids == ['t1', 't2', 't3', 't4', 'f1', 'f2']
 
 
 def test_iter_errors(mock_response):
@@ -493,7 +509,7 @@ def test_incorrect_content_disposition(client):
     files = client.fetch(results[0:1])
 
     assert len(files) == 1
-    assert  files[0].endswith("mdi_vw_v_9466622_9466622.tar")
+    assert files[0].endswith("mdi_vw_v_9466622_9466622.tar")
     assert "Content" not in files[0]
 
 

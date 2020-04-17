@@ -71,11 +71,36 @@ def _parse_date(string):
     return {'time_start': start.strip(), 'time_end': end.strip()}
 
 
-def iter_records(response):
+def iter_sort_response(response):
+    """
+    Sorts the VSO queryresults by their start time.
+
+    Parameters
+    ----------
+    response : `zeep.objects.QueryResponse`
+        A SOAP Object of a VSO queryresult
+
+    Returns
+    -------
+    `list`
+        Sorted record items w.r.t. their start time.
+    """
+    has_time_recs = list()
+    has_notime_recs = list()
     for prov_item in response.provideritem:
         if not hasattr(prov_item, 'record') or not prov_item.record:
             continue
-        yield from prov_item.record.recorditem
+        if not hasattr(prov_item.record, 'recorditem') or not prov_item.record.recorditem:
+            continue
+        rec_item = prov_item.record.recorditem
+        for rec in rec_item:
+            if hasattr(rec, 'time') and hasattr(rec.time, 'start') and rec.time.start is not None:
+                has_time_recs.append(rec)
+            else:
+                has_notime_recs.append(rec)
+    has_time_recs = sorted(has_time_recs, key=lambda x: x.time.start)
+    all_recs = has_time_recs + has_notime_recs
+    return all_recs
 
 
 def iter_errors(response):
@@ -189,7 +214,8 @@ class QueryResponse(BaseQueryResponse):
 
     @classmethod
     def create(cls, queryresult):
-        return cls(list(iter_records(queryresult)), queryresult)
+        res = list(iter_sort_response(queryresult))
+        return cls(res, queryresult)
 
     def total_size(self):
         """ Total size of data in KB. May be less than the actual
