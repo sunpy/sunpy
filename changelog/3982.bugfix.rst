@@ -1,0 +1,5 @@
+Fixes two bugs in `sunpy.util.decorator.deprecated`: correctly calculates the
+removal version and does not override the default and/or alternative functionality
+message. Providing a custom deprecation message now suppresses any
+mention of the removal version. Additionally, a `pending` keyword argument is
+provided to denote functions/classes that are pending deprecation.
