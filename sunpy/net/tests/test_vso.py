@@ -438,6 +438,7 @@ def test_vso_hmi(client, tmpdir):
     # Extract the DRIs from the request
     dris = dr.request.datacontainer.datarequestitem
 
+    # 9 HMI files and 81 AIA
     assert len(dris) == 90
 
     # For each DataRequestItem assert that there is only one series in it.
@@ -502,7 +503,7 @@ def test_incorrect_content_disposition(client):
     files = client.fetch(results[0:1])
 
     assert len(files) == 1
-    assert  files[0].endswith("mdi_vw_v_9466622_9466622.tar")
+    assert files[0].endswith("mdi_vw_v_9466622_9466622.tar")
     assert "Content" not in files[0]
 
 
