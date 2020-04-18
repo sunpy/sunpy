@@ -7,10 +7,12 @@ import astropy.time
 import astropy.units as u
 import pytest
 from parfive import Results
+from unittest import mock
 
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
 import sunpy.net.jsoc.attrs as attrs
 import sunpy.net.vso.attrs as vso_attrs
+from sunpy.util.exceptions import SunpyUserWarning
 
 client = JSOCClient()
 
@@ -33,7 +35,7 @@ def test_jsocresponse_single():
 
 def test_empty_jsoc_response():
     Jresp = JSOCResponse()
-    assert isinstance(Jresp.table,astropy.table.QTable)
+    assert isinstance(Jresp.table, astropy.table.QTable)
     assert Jresp.query_args is None
     assert Jresp.requests is None
 
@@ -334,16 +336,16 @@ def test_results_filenames_as_is(tmp_path):
 @pytest.mark.remote_data
 def test_max_parallel_connections():
     responses = client.search(
-        a.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
-        a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
-        a.jsoc.Protocol("as-is"))
+        vso_attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
+        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
+        attrs.Protocol("as-is"))
 
     path = tempfile.mkdtemp()
 
     with mock.patch(
-                    "parfive.Downloader.download",
-                    new_callable=mock.MagicMock
-                  ) as download:
+        "parfive.Downloader.download",
+        new_callable=mock.MagicMock
+    ) as download:
 
         download.side_effect = ["Mocked Downloader"]
 
