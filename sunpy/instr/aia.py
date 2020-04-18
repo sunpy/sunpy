@@ -7,10 +7,13 @@ import numpy as np
 import astropy.units as u
 
 from sunpy.map.sources.sdo import AIAMap, HMIMap
+from sunpy.util.decorators import deprecated
 
 __all__ = ['aiaprep']
 
 
+@deprecated("2.0", alternative="`register` in aiapy (https://aiapy.readthedocs.io) for converting \
+AIA images to level 1.5")
 def aiaprep(aiamap):
     """
     Processes a level 1 `~sunpy.map.sources.sdo.AIAMap` into a level 1.5
@@ -18,7 +21,8 @@ def aiaprep(aiamap):
 
     Rotates, scales and translates the image so that solar North is aligned
     with the y axis, each pixel is 0.6 arcsec across, and the center of the
-    Sun is at the center of the image. The actual transformation is done by Map's `~sunpy.map.mapbase.GenericMap.rotate` method.
+    Sun is at the center of the image. The actual transformation is done by Map's
+    `~sunpy.map.mapbase.GenericMap.rotate` method.
 
     This function is similar in functionality to ``aia_prep`` in SSWIDL, but
     it does not use the same transformation to rotate the image and it handles
