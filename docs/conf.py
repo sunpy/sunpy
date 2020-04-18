@@ -250,22 +250,25 @@ github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 
 # -- Options for the Sphinx gallery -------------------------------------------
 if has_sphinx_gallery:
+    from sphinx_gallery.sorting import ExampleTitleSortKey
     extensions += ["sphinx_gallery.gen_gallery"]
     path = pathlib.Path.cwd()
     example_dir = path.parent.joinpath('examples')
     sphinx_gallery_conf = {
         'backreferences_dir': str(path.joinpath('generated', 'modules')),
         'filename_pattern': '^((?!skip_).)*$',
-        'examples_dirs': example_dir,  # path to the examples scripts
-        'subsection_order': ExplicitOrder([(os.path.join('..', 'examples/acquiring_data')),
-                                           (os.path.join('..', 'examples/map')),
-                                           (os.path.join('..', 'examples/time_series')),
-                                           (os.path.join('..', 'examples/units_and_coordinates')),
-                                           (os.path.join('..', 'examples/plotting')),
-                                           (os.path.join('..', 'examples/saving_and_loading_data')),
-                                           (os.path.join('..', 'examples/computer_vision_techniques')),
-                                           (os.path.join('..', 'examples/sunpy_other_packages'))]),
-        # path to save gallery generated examples
+        'examples_dirs': example_dir,
+        'subsection_order': ExplicitOrder([
+            '../examples/acquiring_data',
+            '../examples/map',
+            '../examples/map_transformations',
+            '../examples/time_series',
+            '../examples/units_and_coordinates',
+            '../examples/plotting',
+            '../examples/saving_and_loading_data',
+            '../examples/computer_vision_techniques',
+        ]),
+        'within_subsection_order': ExampleTitleSortKey,
         'gallery_dirs': path.joinpath('generated', 'gallery'),
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
         'abort_on_example_error': False,

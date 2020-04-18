@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime
 from warnings import warn
 from urllib.request import urlopen
 
@@ -8,7 +8,6 @@ import astropy.units as u
 from astropy.time import TimeDelta
 
 from sunpy.time import parse_time
-from sunpy.data.data_manager.downloader import DownloaderError
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import get_filename
 from sunpy.util.util import hash_file, replacement_filename
@@ -157,7 +156,8 @@ class Cache:
         """
         def download(url):
             path = self._cache_dir / get_filename(urlopen(url), url)
-            path = replacement_filename(path)
+            # replacement_filename returns a string and we want a Path object
+            path = Path(replacement_filename(path))
             self._downloader.download(url, path)
             shahash = hash_file(path)
             return path, shahash, url
