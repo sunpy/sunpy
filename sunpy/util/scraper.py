@@ -7,6 +7,7 @@ import datetime
 from ftplib import FTP
 from urllib.error import HTTPError
 from urllib.request import urlopen
+from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup
 
@@ -74,6 +75,10 @@ class Scraper:
                 end=self.pattern[milliseconds.end():]
             ))
 
+        self.append_login = True
+        if 'append_login' in kwargs:
+            self.append_login = kwargs['append_login']
+
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
 
@@ -116,7 +121,7 @@ class Scraper:
             pattern = pattern.replace(k, v)
         matches = re.match(pattern, url)
         if matches:
-            return matches.end() == matches.endpos == len(self.now)
+            return matches.end() == matches.endpos
         return False
 
     def _extractDateURL(self, url):
@@ -219,8 +224,10 @@ class Scraper:
         """
         directories = self.range(timerange)
         filesurls = []
-        if directories[0][0:3] == "ftp":  # TODO use urlsplit from pr #1807
+        if urlsplit(directories[0]).scheme == "ftp":
             return self._ftpfileslist(timerange)
+        if urlsplit(directories[0]).scheme == "file":
+            return self._localfilelist(timerange)
         for directory in directories:
             try:
                 opn = urlopen(directory)
@@ -232,9 +239,9 @@ class Scraper:
                             fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
-                                if (datehref >= timerange.start and
-                                        datehref <= timerange.end):
-                                    filesurls.append(fullpath)
+                                if (datehref.to_datetime() >= timerange.start.to_datetime() and
+                                    datehref.to_datetime() <= timerange.end.to_datetime()):
+                                        filesurls.append(fullpath)
                 finally:
                     opn.close()
             except HTTPError as http_err:
@@ -249,12 +256,10 @@ class Scraper:
     def _ftpfileslist(self, timerange):
         directories = self.range(timerange)
         filesurls = list()
-        domain = directories[0].find('//')
-        domain_slash = directories[0].find('/', 6)  # TODO: Use also urlsplit from pr #1807
-        ftpurl = directories[0][domain + 2:domain_slash]
+        ftpurl = urlsplit(directories[0]).netloc
         with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
             for directory in directories:
-                ftp.cwd(directory[domain_slash:])
+                ftp.cwd(urlsplit(directory).path)
                 for file_i in ftp.nlst():
                     fullpath = directory + file_i
                     if self._URL_followsPattern(fullpath):
@@ -262,8 +267,36 @@ class Scraper:
                         if (datehref >= timerange.start and
                                 datehref <= timerange.end):
                             filesurls.append(fullpath)
-        filesurls = ['ftp://anonymous:data@sunpy.org@' + url[domain + 2:] for url in filesurls]
+
+        login = ''
+        if self.append_login:
+            login = "anonymous:data@sunpy.org@"
+        filesurls = [f'ftp://{login}' + "{0.netloc}{0.path}".format(urlsplit(url))
+                     for url in filesurls]
+
         return filesurls
+
+    def _localfilelist(self, timerange):
+        pattern = self.pattern
+        pattern_temp = pattern.replace('file://', '')
+        if os.name == 'nt':
+            pattern_temp = pattern_temp.replace('\\', '/')
+            prefix = 'file:///'
+        else:
+            prefix = 'file://'
+        self.pattern = pattern_temp
+        directories = self.range(timerange)
+        filepaths = list()
+        for directory in directories:
+            for file_i in os.listdir(directory):
+                fullpath = directory + file_i
+                if self._URL_followsPattern(fullpath):
+                    datehref = self._extractDateURL(fullpath)
+                    if (datehref >= timerange.start and datehref <= timerange.end):
+                        filepaths.append(fullpath)
+        filepaths = [prefix + path for path in filepaths]
+        self.pattern = pattern
+        return filepaths
 
     def _smallerPattern(self, directoryPattern):
         """
