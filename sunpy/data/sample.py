@@ -19,6 +19,7 @@ for f in files:
     setattr(sys.modules[__name__], _key, str(f))
     file_list.append(f)
     file_dict.update({_key: f})
-    __doc__ += f'* ``{_key}``\n'
+    # Add filename to the docs
+    __doc__ += f'   - ``{_key}``\n'
 
 __all__ = list(_sample_files.values()) + ['file_dict', 'file_list']
