@@ -250,6 +250,7 @@ github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 
 # -- Options for the Sphinx gallery -------------------------------------------
 if has_sphinx_gallery:
+    from sphinx_gallery.sorting import ExampleTitleSortKey
     extensions += ["sphinx_gallery.gen_gallery"]
     path = pathlib.Path.cwd()
     example_dir = path.parent.joinpath('examples')
