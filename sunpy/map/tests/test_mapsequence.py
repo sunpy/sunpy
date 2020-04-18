@@ -2,6 +2,8 @@
 """
 Test mapsequence functionality
 """
+from unittest import mock
+
 import numpy as np
 import astropy.units as u
 import sunpy
@@ -173,17 +175,52 @@ def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
     # Test the case of MapSequence having same maps
     expected_out = f'MapSequence of 2 elements, with maps from AIAMap'
     obtained_out = repr(mapsequence_all_the_same)
+    assert obtained_out.startswith(object.__repr__(mapsequence_all_the_same))
     assert len(mapsequence_all_the_same) == 2
-    assert obtained_out == expected_out
+    assert expected_out in obtained_out
 
     # Test the case of MapSequence having different maps
     expected_out1 = f'MapSequence of 2 elements, with maps from AIAMap, EITMap'
     expected_out2 = f'MapSequence of 2 elements, with maps from EITMap, AIAMap'
     obtained_out = repr(mapsequence_different_maps)
+    assert obtained_out.startswith(object.__repr__(mapsequence_different_maps))
     assert len(mapsequence_different_maps) == 2
-    assert obtained_out == expected_out1 or obtained_out == expected_out2
+    assert expected_out1 in obtained_out or expected_out2 in obtained_out
 
 
 def test_derotate():
     with pytest.raises(NotImplementedError):
         mapsequence = sunpy.map.MapSequence(derotate=True)
+
+
+def test_repr_html(mapsequence_all_the_same):
+    html_string = mapsequence_all_the_same._repr_html_()
+    for m in mapsequence_all_the_same.maps:
+        assert m._repr_html_() in html_string
+
+
+def test_quicklook(mapsequence_all_the_same):
+    with mock.patch('webbrowser.open_new_tab') as mockwbopen:
+        mapsequence_all_the_same.quicklook()
+
+    # Check that the mock web browser was opened with a file URL
+    mockwbopen.assert_called_once()
+    file_url = mockwbopen.call_args[0][0]
+    assert file_url.startswith('file://')
+
+    # Open the file specified in the URL and confirm that it contains the HTML
+    with open(file_url[7:], 'r') as f:
+        html_string = f.read()
+
+        for m in mapsequence_all_the_same.maps:
+            assert m._repr_html_() in html_string
+
+@pytest.mark.remote_data
+def test_append_quicklook_example_to_docstring():
+    old_docstring = sunpy.map.MapSequence.quicklook.__doc__
+
+    sunpy.map.MapSequence._append_quicklook_example_to_docstring()
+
+    assert sunpy.map.MapSequence.quicklook.__doc__ != old_docstring
+
+    sunpy.map.MapSequence.quicklook.__doc__ = old_docstring
