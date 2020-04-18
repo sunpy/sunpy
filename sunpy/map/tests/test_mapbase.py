@@ -4,6 +4,7 @@ Test Generic Map
 """
 import os
 import tempfile
+from unittest import mock
 import warnings
 
 import numpy as np
@@ -780,3 +781,44 @@ def test_bad_header_final_fallback():
 def test_wcs_isot(aia171_test_map):
     # Check that a Map WCS returns the time as isot format
     assert aia171_test_map.wcs.to_header()['DATE-OBS'] == '2011-02-15T00:00:00.340'
+
+
+def test_repr_html(aia171_test_map):
+    html_string = aia171_test_map._repr_html_()
+    assert isinstance(html_string, str)
+
+    # Add a NaN value and check
+    aia171_test_map.data[0, 0] = np.nan
+    html_string = aia171_test_map._repr_html_()
+    assert "Bad pixels are shown in red: 1 NaN" in html_string
+
+    # Add a infinite value and check
+    aia171_test_map.data[0, 0] = np.inf
+    html_string = aia171_test_map._repr_html_()
+    assert "Bad pixels are shown in red: 1 infinite" in html_string
+
+
+def test_quicklook(aia171_test_map):
+    with mock.patch('webbrowser.open_new_tab') as mockwbopen:
+        aia171_test_map.quicklook()
+
+    # Check that the mock web browser was opened with a file URL
+    mockwbopen.assert_called_once()
+    file_url = mockwbopen.call_args[0][0]
+    assert file_url.startswith('file://')
+
+    # Open the file specified in the URL and confirm that it contains the HTML
+    with open(file_url[7:], 'r') as f:
+        html_string = f.read()
+
+        assert aia171_test_map._repr_html_() in html_string
+
+@pytest.mark.remote_data
+def test_append_quicklook_example_to_docstring():
+    old_docstring = sunpy.map.GenericMap.quicklook.__doc__
+
+    sunpy.map.GenericMap._append_quicklook_example_to_docstring()
+
+    assert sunpy.map.GenericMap.quicklook.__doc__ != old_docstring
+
+    sunpy.map.GenericMap.quicklook.__doc__ = old_docstring

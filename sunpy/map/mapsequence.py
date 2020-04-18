@@ -2,6 +2,10 @@
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 from copy import deepcopy
+import html
+from tempfile import NamedTemporaryFile
+import textwrap
+import webbrowser
 
 import numpy as np
 import matplotlib.animation
@@ -85,7 +89,154 @@ class MapSequence:
 
     def __repr__(self):
         names = set([m.__class__.__name__ for m in self.maps])
-        return f'MapSequence of {len(self.maps)} elements, with maps from {", ".join(names)}'
+        return (object.__repr__(self) + "\n" +
+                f'MapSequence of {len(self.maps)} elements, with maps from {", ".join(names)}')
+
+    def _repr_html_(self):
+        # Assemble the individual HTML repr from each Map, all hidden initally
+        repr_list = [f"<div style='display: none' index={i}>{m._repr_html_()}</div>"
+                     for i, m in enumerate(self.maps)]
+
+        # Unhide the first Map
+        repr_list_html = "\n".join(repr_list).replace('display: none', 'display: ', 1)
+
+        # Return HTML with Javascript-powered buttons
+        # To avoid potential conflicts, the Javascript code does not use any user-defined functions
+        return textwrap.dedent(f"""\
+            <pre>{html.escape(self.__repr__())}</pre>
+            <form cur_index=0 max_index={len(repr_list) - 1}>
+                <!-- Button to decrement index (always starts disabled) -->
+                <input type=button value='&larr;' style='font-weight: bold' disabled onClick='
+                    var form = this.parentElement;
+
+                    // Decrement index if allowed
+                    var cur_index = Math.max(
+                                        parseInt(form.getAttribute("cur_index")) - 1,
+                                        0
+                                    );
+                    form.setAttribute("cur_index", cur_index);
+
+                    // Enable the decrement button if and only if this is not the first Map
+                    form.children[0].disabled = (cur_index == 0);
+
+                    // Always enable the increment button (because we just decremented)
+                    form.children[1].disabled = false;
+
+                    // Update string (which is children[2] of the form)
+                    form.children[2].innerHTML = "Map at index " + cur_index;
+
+                    // Update visibilities to show only the current index
+                    // This avoids for...of syntax to retain support for ES5 browsers (e.g., IE11)
+                    var array = Array.prototype.slice.call(form.lastElementChild.children);
+                    array.forEach(function (elem)
+                        {{
+                            var form = elem.parentElement.parentElement;
+                            elem.style.display = (elem.getAttribute("index") ==
+                                                      form.getAttribute("cur_index") ? "" : "none"
+                                                 );
+                        }}
+                    );
+                '/>
+
+                <!-- Button to increment index (starts enabled if there is more than one Map) -->
+                <input type=button value='&rarr;' style='font-weight: bold'
+                    {"" if len(repr_list) > 1 else "disabled"} onClick='
+
+                    var form = this.parentElement;
+
+                    // Increment index if allowed
+                    var cur_index = Math.min(
+                                        parseInt(form.getAttribute("cur_index")) + 1,
+                                        form.getAttribute("max_index")
+                                    );
+                    form.setAttribute("cur_index", cur_index);
+
+                    // Always enable the decrement button (because we just incremented)
+                    form.children[0].disabled = false;
+
+                    // Enable the increment button if and only if this is not the last Map
+                    form.children[1].disabled = (cur_index == form.getAttribute("max_index"));
+
+                    // Update string (which is children[2] of the form)
+                    form.children[2].innerHTML = "Map at index " + cur_index;
+
+                    // Update visibilities to show only the current index
+                    // This avoids for...of syntax to retain support for ES5 browsers (e.g., IE11)
+                    var array = Array.prototype.slice.call(form.lastElementChild.children);
+                    array.forEach(function (elem)
+                        {{
+                            var form = elem.parentElement.parentElement;
+                            elem.style.display = (elem.getAttribute("index") ==
+                                                      form.getAttribute("cur_index") ? "" : "none"
+                                                 );
+                        }}
+                    );
+
+                '/>
+
+                <!-- This string is updated as the index is changed -->
+                <span>Map at index 0</span>
+
+                <!-- This element is at the end so that lastElementChild will point to it -->
+                <div>
+                    {repr_list_html}
+                </div>
+            </form>""")
+
+    def quicklook(self):
+        """
+        Display a quicklook summary of the MapSequence instance using the default web browser.
+
+        Click on the ``<`` and ``>`` buttons to step through the individual maps.
+
+        Notes
+        -----
+        The image colormap uses
+        `histogram equalization <https://en.wikipedia.org/wiki/Histogram_equalization>`__.
+
+        Interactive elements require Javascript support to be enabled in the web browser.
+
+        Examples
+        --------
+        >>> from sunpy.map import Map
+        >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
+        >>> seq = Map(sunpy.data.sample.HMI_LOS_IMAGE,
+        ...           sunpy.data.sample.AIA_1600_IMAGE,
+        ...           sunpy.data.sample.EIT_195_IMAGE,
+        ...           sequence=True)  # doctest: +REMOTE_DATA
+        >>> seq.quicklook()  # doctest: +SKIP
+        """
+        with NamedTemporaryFile('w', delete=False, prefix='sunpy.map.', suffix='.html') as f:
+            url = 'file://' + f.name
+            f.write(textwrap.dedent(f"""\
+                <html>
+                    <title>Quicklook summary for {html.escape(object.__repr__(self))}</title>
+                    <body>{self._repr_html_()}</body>
+                </html>"""))
+        webbrowser.open_new_tab(url)
+
+    @classmethod
+    def _append_quicklook_example_to_docstring(cls):
+        """
+        Appends the HTML output for the example in the docstring for the
+        :meth:`~sunpy.map.MapSequence.quicklook` method.  This method is intended to be called only
+        during Sphinx builds of the documentation (and before `sunpy.map` is fully imported).
+        """
+        from sunpy.map.map_factory import Map  # have to import from map_factory
+        import sunpy.data.sample
+        seq = Map(sunpy.data.sample.HMI_LOS_IMAGE,
+                  sunpy.data.sample.AIA_1600_IMAGE,
+                  sunpy.data.sample.EIT_195_IMAGE,
+                  sequence=True)
+        html_string = textwrap.indent(seq._repr_html_(), ' ' * 16)
+        cls.quicklook.__doc__ += textwrap.indent(textwrap.dedent(f"""\
+            (which will open the following content in the default web browser)
+
+            .. raw:: html
+
+                <div style="border:1px solid black">{html_string}</div>
+
+            """), ' ' * 8)
 
     # Sorting methods
     @classmethod

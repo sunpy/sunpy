@@ -102,7 +102,7 @@ SunPy has the following strict requirements:
 
 - `parfive <https://pypi.org/project/parfive/>`__ 1.0 or later.
 
-- `matplotlib <https://matplotlib.org/>`__ 2.1.2 or later.
+- `matplotlib <https://matplotlib.org/>`__ 2.2.2 or later.
 
 SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features are needed.
