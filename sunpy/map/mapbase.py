@@ -21,7 +21,7 @@ import astropy.wcs
 import astropy.units as u
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
-from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
+from astropy.coordinates import SkyCoord, UnitSphericalRepresentation, Longitude, Latitude
 
 import sunpy.io as io
 # The next two are not used but are called to register functions with external modules
@@ -36,7 +36,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_earth
 from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.util.decorators import  deprecate_positional_args
+from sunpy.util.decorators import deprecate_positional_args
 from sunpy.util import expand_list
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -1719,6 +1719,7 @@ class GenericMap(NDData):
                        axes=None, top_right=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
+
         Parameters
         ----------
         bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
@@ -1736,11 +1737,14 @@ class GenericMap(NDData):
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current
             axes.
+
         Returns
         -------
+
         rect : `list`
             A list containing the `~matplotlib.patches.Rectangle` object, after
             it has been added to ``axes``.
+
         Notes
         -----
         Extra keyword arguments to this function are passed through to the
@@ -1752,8 +1756,8 @@ class GenericMap(NDData):
                                                                width=width,
                                                                height=height)
 
-            width = np.abs(top_right.spherical.lon - bottom_left.spherical.lon).to(u.deg)
-            height = top_right.spherical.lat - bottom_left.spherical.lat
+            width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
+            height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
 
         if not axes:
             axes = plt.gca()
@@ -1763,7 +1767,7 @@ class GenericMap(NDData):
             axes_unit = self.spatial_units[0]
 
         coord = bottom_left.transform_to(self.coordinate_frame)
-        bottom_left = u.Quantity((coord.data.lon, coord.data.lat), unit=axes_unit).value
+        bottom_left = u.Quantity((coord.spherical.lon, coord.spherical.lat), unit=axes_unit).value
 
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
