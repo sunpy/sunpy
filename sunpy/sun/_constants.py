@@ -166,7 +166,7 @@ physical_constants['sidereal rotation rate'] = Constant('', 'sidereal rotation r
 physical_constants['first Carrington rotation'] = Constant('', 'first Carrington rotation',
                                                            2398167.4,
                                                            'day', 0, meeus, system='si')
-first_crot_jd_tt = Time('2398167.4', format='jd').tt
+first_crot_jd_tt = Time(2398167.4, format='jd').tt
 physical_constants['first Carrington rotation (JD TT)'] = Constant('',
                                                                    'first Carrington '
                                                                    'rotation (JD TT)',
