@@ -18,6 +18,7 @@ from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
+from sunpy.sun.constants import sidereal_rotation_rate, meridian_lon
 
 from .ephemeris import get_earth
 from .frames import HeliographicStonyhurst
@@ -477,7 +478,7 @@ _NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90*u.deg, 0*u.deg, frame='hcrs')
 # The longitude in the de-tilted frame of the Sun's prime meridian.
 # The IAU (Seidelmann et al. 2007 and later) defines the true longitude of the meridian (i.e.,
 # without light travel time to Earth and aberration effects) as 84.176 degrees eastward at J2000.
-_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.176*u.deg)
+_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + meridian_lon)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -555,7 +556,7 @@ def L0(time='now',
     antetime = (obstime - distance / speed_of_light) if light_travel_time_correction else obstime
 
     # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
-    dlon_meridian = Longitude(_DLON_MERIDIAN + (antetime - _J2000) * 14.1844*u.deg/u.day)
+    dlon_meridian = Longitude(_DLON_MERIDIAN + (antetime - _J2000) * sidereal_rotation_rate)
 
     return Longitude(dlon_earth - dlon_meridian)
 

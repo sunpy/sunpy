@@ -93,12 +93,12 @@ def print_all():
 # Add a list of constants to the docs
 _lines = [
     'The following constants are available:\n',
-    '========================== ============== ================ =================================',
-    '           Name                Value            Unit                 Description',
-    '========================== ============== ================ =================================',
+    '======================================================= ============== ================ =======================================================',  # NOQA
+    '                          Name                              Value            Unit                                 Description                  ',  # NOQA
+    '======================================================= ============== ================ =======================================================',  # NOQA
 ]
 for key, const in constants.items():
-    _lines.append('{:^22} {:^14.9g} {:^16} {}'.format(
+    _lines.append('{:^55} {:^14.9g} {:^16} {:^55}'.format(
         key, const.value, const._unit_string, const.name))
 _lines.append(_lines[1])
 if __doc__ is not None:

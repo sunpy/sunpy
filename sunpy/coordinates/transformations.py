@@ -840,7 +840,7 @@ def hci_to_hci(from_coo, to_frame):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
-               transform_to(to_frame)
+            transform_to(to_frame)
 
 
 def _rotation_matrix_obliquity(time):
