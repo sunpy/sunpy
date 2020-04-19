@@ -16,9 +16,9 @@ __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
 class NOAAIndicesClient(GenericClient):
     """
-    Provides access to the NOAA solar cycle indices
-    from the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/weekly/>`__.
+    Provides access to the NOAA solar cycle indices.
 
+    Uses the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/weekly/>`__.
     This is a fixed dataset so the result is independent of the time range.
 
     Examples
@@ -86,10 +86,9 @@ class NOAAIndicesClient(GenericClient):
 
 class NOAAPredictClient(GenericClient):
     """
-    Provides access to the `NOAA SWPC <https://www.swpc.noaa.gov>`__
-    predicted sunspot Number and 10.7 cm radio flux values
-    from the `ftp archive <http://services.swpc.noaa.gov/text/>`__.
+    Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
 
+    Uses this `ftp archive <http://services.swpc.noaa.gov/text/>`__.
     This is a fixed prediction so the result is independent of the time range.
 
     Examples
@@ -161,12 +160,12 @@ class NOAAPredictClient(GenericClient):
 
 class SRSClient(GenericClient):
     """
-    Provides access to the `NOAA SWPC <https://www.swpc.noaa.gov>`__
-    solar region summary data from the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/warehouse/>`__.
+    Provides access to the NOAA SWPC solar region summary data.
+
+    Uses the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/warehouse/>`__.
 
     Examples
     --------
-
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
     ...                       a.Instrument('SOON'))  #doctest: +REMOTE_DATA
@@ -309,13 +308,13 @@ class SRSClient(GenericClient):
             return False
         for x in query:
             if (x.__class__.__name__ == "Instrument" and
-                    str(x.value).lower() in ["soon", "srs_table"]):
+                    str(x.value).lower() in ["soon", "srs-table"]):
                 return True
         return False
 
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
-        adict = {attrs.Instrument: [("soon", "Solar Region Summary."),
-                                    ("srs_table", "Solar Region Summary.")]}
+        adict = {attrs.Instrument: [("SOON", "Solar Region Summary."),
+                                    ("SRS-Table", "Solar Region Summary.")]}
         return adict

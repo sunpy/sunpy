@@ -307,7 +307,7 @@ class QueryResponse(BaseQueryResponse):
 
 class VSOClient(BaseClient):
     """
-    VSO Client
+    Allows queries and downloads from the Virtual Solar Observatory (VSO).
 
     Parameters
     ----------
@@ -795,17 +795,13 @@ class VSOClient(BaseClient):
     def __del__(self):
         self.api.transport.session.close()
 
-    @classmethod
-    def register_values(cls):
-        try:
-            return cls.get_vso_values()
-        except Exception as e:
-            warnings.warn(f'Fetching VSO attrs failed with {e}')
-            return {}
-
     def get_vso_values():
         """
-        Reads the VSO keywords and returns a dict with them for the attrs we support.
+        This is not used yet since it makes a long network call and then has to iterate
+        through the response.
+
+        Makes a network call to the VSO API that returns what keywords they support.
+        We take this list and register all the keywords as corresponding Attrs.
         """
         from sunpy.net import attrs as a
 

@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given, example, settings
+from hypothesis import given, settings
 
 from astropy.time import TimeDelta
 import astropy.units as u
@@ -125,16 +125,15 @@ def test_new_logic(LCClient):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument",
-    [(a.Time("2012/10/4", "2012/10/6"), a.Instrument("goes")),
-     (a.Time('2013/10/5', '2013/10/7'), a.Instrument("goes"))])
+    [(a.Time("2012/10/4", "2012/10/5"), a.Instrument("goes"))])
 def test_fido(time, instrument):
-    qr = Fido.search(a.Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
+    qr = Fido.search(time, Instrument('XRS'))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
 
 
-@settings(deadline=10000, max_examples=10)
+@settings(deadline=10000, max_examples=1)
 @pytest.mark.remote_data
 @given(goes_time())
 def test_time_for_url(LCClient, time):
@@ -148,6 +147,14 @@ def test_time_for_url(LCClient, time):
 
 
 def test_attr_reg():
-    a.Instrument.goes = a.Instrument("GOES")
-    a.Instrument.xrs = a.Instrument("XRS")
-    a.goes.SatelliteNumber.A2 = a.goes.SatelliteNumber("2")
+    assert a.Instrument.goes == a.Instrument("GOES")
+    assert a.Instrument.xrs == a.Instrument("XRS")
+    assert a.goes.SatelliteNumber.two == a.goes.SatelliteNumber("2")
+
+
+def test_client_repr(LCClient):
+    """
+    Repr check
+    """
+    output = str(LCClient)
+    assert output[:50] == 'XRSClient\n\nProvides access to the GOES XRS fits fi'

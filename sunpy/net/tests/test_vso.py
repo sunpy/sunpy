@@ -529,6 +529,7 @@ def test_vso_attr():
     """
     Check that the dict is correctly filled.
     """
+    client = vso.VSOClient()
     adict = vso.VSOClient.get_vso_values()
     assert isinstance(adict, dict)
     assert len(adict.keys()) == 6
@@ -539,3 +540,13 @@ def test_vso_attr():
         for val in value:
             assert isinstance(val, tuple)
             assert len(val) == 2
+
+
+@pytest.mark.remote_data
+def test_vso_repr():
+    """
+    Repr check (it is really long)
+    """
+    client = vso.VSOClient()
+    output = str(client)
+    assert output[:50] == 'VSOClient\n\nAllows queries and downloads from the V'

@@ -42,12 +42,12 @@ def get_base_url():
 
 class RHESSIClient(GenericClient):
     """
-    Provides access to the RHESSI observing summary time series data
-    from the `archive <https://hesperia.gsfc.nasa.gov/hessidata/>`__ or its mirrors.
+    Provides access to the RHESSI observing summary time series data.
+
+    Uses this `archive <https://hesperia.gsfc.nasa.gov/hessidata/>`__ or its mirrors.
 
     Examples
     --------
-
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
     ...                       a.Instrument("RHESSI"), a.Physobs("summary_lightcurve"))  #doctest: +REMOTE_DATA
@@ -212,5 +212,6 @@ class RHESSIClient(GenericClient):
     def register_values(cls):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('RHESSI',
-                                     'Reuven Ramaty High Energy Solar Spectroscopic Imager.')]}
+                                     'Reuven Ramaty High Energy Solar Spectroscopic Imager.')],
+                attrs.Physobs: [("summary_lightcurve","A summary lightcurve.")]}
         return adict

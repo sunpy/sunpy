@@ -11,7 +11,10 @@ from sunpy.net.vso import VSOClient
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 
-LCClient = eve.EVEClient()
+
+@pytest.fixture
+def LCClient():
+    return eve.EVEClient()
 
 
 @pytest.mark.remote_data
@@ -29,35 +32,35 @@ LCClient = eve.EVEClient()
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120714_EVE_L0CS_DIODES_1m.txt',
      )
 ])
-def test_get_url_for_time_range(timerange, url_start, url_end):
+def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
 
-def test_can_handle_query():
-    ans1 = eve.EVEClient._can_handle_query(
+def test_can_handle_query(LCClient):
+    ans1 = LCClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level(0))
     assert ans1 is True
-    ans2 = eve.EVEClient._can_handle_query(Time('2012/7/7', '2012/7/7'))
+    ans2 = LCClient._can_handle_query(Time('2012/7/7', '2012/7/7'))
     assert ans2 is False
-    ans3 = eve.EVEClient._can_handle_query(
+    ans3 = LCClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'), Source('sdo'))
     assert ans3 is False
-    ans4 = eve.EVEClient._can_handle_query(
+    ans4 = LCClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level('0CS'))
     assert ans4 is True
-    ans5 = eve.EVEClient._can_handle_query(
+    ans5 = LCClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level('wibble'))
     assert ans5 is False
-    ans6 = eve.EVEClient._can_handle_query(
+    ans6 = LCClient._can_handle_query(
         Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level(0.5))
     assert ans6 is False
 
 
 @pytest.mark.remote_data
-def test_query():
+def test_query(LCClient):
     qr1 = LCClient.search(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
@@ -69,7 +72,7 @@ def test_query():
 @pytest.mark.parametrize("time,instrument", [
     (Time('2012/11/27', '2012/11/27'), Instrument('eve')),
 ])
-def test_get(time, instrument):
+def test_get(LCClient, time, instrument):
     qr1 = LCClient.search(time, instrument)
     res = LCClient.fetch(qr1)
     assert len(res) == len(qr1)
@@ -78,8 +81,8 @@ def test_get(time, instrument):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     'query',
-    [(a.Time('2012/10/4', '2012/10/6') & a.Instrument('eve') & a.Level(0))])
-def test_fido(query):
+    [(a.Time('2012/10/4', '2012/10/5') & a.Instrument('eve') & a.Level(0))])
+def test_fido(LCClient, query):
     qr = Fido.search(query)
     client = qr.get_response(0).client
     assert isinstance(qr, UnifiedResponse)
@@ -91,7 +94,7 @@ def test_fido(query):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     'time',
-    [(a.Time('2012/10/4', '2012/10/6')), (a.Time('2012/11/27', '2012/11/27'))])
+    [(a.Time('2012/10/4', '2012/10/6'))])
 def test_levels(time):
     """
     Test the correct handling of level
@@ -113,5 +116,13 @@ def test_levels(time):
 
 
 def test_attr_reg():
-    a.Instrument.eve = a.Instrument('EVE')
-    a.Level.zero = a.Level('0')
+    assert a.Instrument.eve == a.Instrument('EVE')
+    assert a.Level.zero == a.Level('0')
+
+
+def test_client_repr(LCClient):
+    """
+    Repr check
+    """
+    output = str(LCClient)
+    assert output[:50] == 'EVEClient\n\nProvides access to Level 0C Extreme ult'

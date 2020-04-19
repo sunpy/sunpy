@@ -13,7 +13,9 @@ from sunpy.time.timerange import TimeRange
 from sunpy.tests.helpers import no_vso
 
 
-LCClient = noaa.NOAAIndicesClient()
+@pytest.fixture
+def LCClient():
+    return noaa.NOAAIndicesClient()
 
 
 def mock_query_object(start_date, end_date):
@@ -32,12 +34,14 @@ def mock_query_object(start_date, end_date):
         'provider': 'swpc'
     }
 
-    resp = QueryResponse.create(map_, LCClient._get_url_for_timerange(None), client=LCClient)
+    resp = QueryResponse.create(map_,
+                                noaa.NOAAIndicesClient()._get_url_for_timerange(None),
+                                client=noaa.NOAAIndicesClient())
     return resp
 
 
 @pytest.mark.remote_data
-def test_fetch_working(tmpdir):
+def test_fetch_working(LCClient, tmpdir):
     """
     Tests if the online server for noaa is working.
     Uses the url : ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
@@ -77,7 +81,7 @@ def test_fetch_working(tmpdir):
      (TimeRange('2008/06/01', '2008/06/02'),
       'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
       'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt')])
-def test_get_url_for_time_range(timerange, url_start, url_end):
+def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
     assert urls[0] == url_start
@@ -98,7 +102,7 @@ def test_can_handle_query():
 
 @mock.patch('sunpy.net.dataretriever.sources.noaa.NOAAIndicesClient.search',
             return_value=mock_query_object('2012/8/9', '2012/8/10'))
-def test_query(mock_search):
+def test_query(mock_search, LCClient):
     qr1 = LCClient.search(
         Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
     assert isinstance(qr1, QueryResponse)
@@ -113,7 +117,7 @@ def test_query(mock_search):
 @mock.patch('parfive.Downloader.download',
             return_value=None)
 @mock.patch('parfive.Downloader.enqueue_file')
-def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path):
+def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path, LCClient):
     path = tmp_path / "sub"
     path.mkdir()
     qr1 = LCClient.search(Time('2012/10/4', '2012/10/6'),
@@ -135,7 +139,7 @@ def test_fetch(mock_wait, mock_search, mock_enqueue, tmp_path):
 @mock.patch('parfive.Downloader.download',
             return_value=None)
 @mock.patch('parfive.Downloader.enqueue_file')
-def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path):
+def test_fido(mock_wait, mock_search, mock_enqueue, tmp_path, LCClient):
     path = tmp_path / "sub"
     path.mkdir()
     qr1 = Fido.search(Time('2012/10/4', '2012/10/6'),
@@ -168,7 +172,15 @@ def test_srs_current_year():
 
 
 def test_attr_reg():
-    a.Instrument.noaa_indices = a.Instrument("NOAA-Indices")
-    a.Instrument.noaa_predict = a.Instrument("NOAA-Predict")
-    a.Instrument.srs_table = a.Instrument("SRS_Table")
-    a.Instrument.soon = a.Instrument("SOON")
+    assert a.Instrument.noaaindices == a.Instrument("NOAA-Indices")
+    assert a.Instrument.noaapredict == a.Instrument("NOAA-Predict")
+    assert a.Instrument.srstable == a.Instrument("SRS-Table")
+    assert a.Instrument.soon == a.Instrument("SOON")
+
+
+def test_client_repr(LCClient):
+    """
+    Repr check
+    """
+    output = str(LCClient)
+    assert output[:50] == 'NOAAIndicesClient\n\nProvides access to the NOAA sol'

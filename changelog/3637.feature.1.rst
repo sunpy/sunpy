@@ -1,1 +1,1 @@
-Enabled the discovery of search attributes for each of our clients (expect JSOC for now).
+Enabled the discovery of search attributes for each of our clients (expect VSO and JSOC).

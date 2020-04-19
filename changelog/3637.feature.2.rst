@@ -1,1 +1,1 @@
-Printing `sunpy.net.attr.Instrument` or other attributes will print all the values that exist under the name space.
+Printing `sunpy.net.attr.Instrument` or other "attrs" will show all attributes that exist under the corresponding "attr".

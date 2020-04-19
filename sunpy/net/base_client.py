@@ -138,7 +138,7 @@ class BaseClient(ABC):
         values = cls.register_values()
         # If the client has no support, we won't try to register attrs
         if values:
-            attr.Attr.update_values({cls: cls.register_values()})
+            attr.Attr.update_values({cls: values})
 
     def __repr__(self):
         """
@@ -153,13 +153,11 @@ class BaseClient(ABC):
         class_name = self.__class__.__name__
         attrs = self.register_values()
         lines = []
-        t = Table(names=["Attr Type", "Name", "Description"], dtype=[str, str, str])
+        t = Table(names=["Attr Type", "Name", "Description"],
+                  dtype=["U256", "U256", "U256"])
         for client_key in attrs.keys():
-            for key in attrs[client_key].keys():
-                for i in range(len(attrs[client_key][key])):
-                    t.add_row((key.__name__, attrs[client_key][key][i][0],
-                               attrs[client_key][key][i][1]))
-
+            for name, desc in attrs[client_key]:
+                t.add_row((client_key.__name__, name, desc))
         lines.insert(0, class_name)
         lines.insert(1, dedent(self.__doc__.partition("\n\n")[0])+"\n")
         lines.extend(t.pformat_all(show_dtype=False))
@@ -187,10 +185,8 @@ class BaseClient(ABC):
             Path to the download directory
         overwrite : `bool`, optional
             Replace files with the same name if True.
-
         progress : `bool`, optional
             Print progress info to terminal.
-
         max_conns : `int`, optional
             Maximum number of download connections.
         downloader : `parfive.Downloader`, optional
@@ -227,7 +223,6 @@ class BaseClient(ABC):
         return required_attrs.issubset(query_attrs) and query_attrs.issubset(all_attrs)
 
     @classmethod
-    @abstractmethod
     def register_values(cls, *query):
         """
         This enables the client to register what kind of Attrs it can use directly.
@@ -238,3 +233,4 @@ class BaseClient(ABC):
             A dictionary with key values of Attrs and the values are a tuple of
             ("Attr Type", "Name", "Description").
         """
+        return {}

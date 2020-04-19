@@ -28,7 +28,8 @@ from astropy.table import Table
 from sunpy.util.functools import seconddispatch
 
 _ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
-_REGEX = re.compile(r"^[\d]([^\d].*)?$")
+# Matches any number.
+NUMBER_REGEX = re.compile(r"^[-+]?[0-9]+$")
 
 __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
            'ValueAttr', 'and_', 'or_', 'AttrWalker']
@@ -82,7 +83,11 @@ def _print_attrs(attr):
     for name, client, name_long, desc in zip(names, clients, names_long, descs):
         t.add_row((name, client, name_long, desc))
     lines.insert(0, class_name)
-    lines.insert(1, dedent(attr.__doc__.partition("\n\n")[0])+"\n")
+    # If the attr lacks a __doc__ this will error and prevent this from returning anything.
+    try:
+        lines.insert(1, dedent(attr.__doc__.partition("\n\n")[0])+"\n")
+    except AttributeError:
+        pass
     lines.extend(t.pformat_all(show_dtype=False))
     return '\n'.join(lines)
 
@@ -173,8 +178,9 @@ class Attr(metaclass=AttrMeta):
         """
         Clients will use this method to register their values for subclasses of `~sunpy.net.attr.Attr`.
 
-        The input has be a dictionary, with each key being a subclass of Attr.
-        The value for each key should be a list of tuples with each tuple of the form (`Name`, `Description`).
+        The input has to be a dictionary, with each key being an instance of a client.
+        The value for each client has to be a dictionary with each key being a subclass of Attr.
+        The value for each Attr key should be a list of tuples with each tuple of the form (`Name`, `Description`).
         If you do not want to add a description, you can put `None` or an empty string.
         We sanitize the name you provide by removing all special characters and making it all lower case.
         If it still invalid we will append to the start of the name to make it a valid attribute name.
@@ -185,7 +191,8 @@ class Attr(metaclass=AttrMeta):
         Parameters
         ----------
         adict : `dict`
-            A dictionary that has keys of `~sunpy.net.attr.Attr`.
+            The keys for this dictionary have to be an instance of a downloader client.
+            The values for each client are a dictionary that has keys of `~sunpy.net.attr.Attr`.
             Each key should have a list of tuples as it value.
             Each tuple should be a pair of strings.
             First string is the attribute name you want to register
@@ -193,25 +200,29 @@ class Attr(metaclass=AttrMeta):
 
         Example
         -------
-        >>> from sunpy.net import attr, attrs # doctest: +SKIP
-        >>> attr.Attr.update_values({attrs.Instrument: [('AIA', 'AIA is in Space.'),
-        ...                         ('HMI', 'HMI is next to AIA.')]}) # doctest: +SKIP
-        >>> attr.Attr._attr_registry[attrs.Instrument] # doctest: +SKIP
-        attr(name=['aia', 'hmi'], name_long=['AIA', 'HMI'],
-            desc=['AIA is in Space.', 'HMI is next to AIA.'])
-        >>> attr.Attr._attr_registry[attrs.Instrument].name # doctest: +SKIP
+        # The first import is to make this example work, it should not be used otherwise
+        >>> from sunpy.net.dataretriever import GenericClient
+        >>> from sunpy.net import attr, attrs
+        >>> attr.Attr.update_values({GenericClient : {
+        ...                          attrs.Instrument: [('AIA', 'AIA is in Space.'),
+        ...                                             ('HMI', 'HMI is next to AIA.')]}})   # doctest: +SKIP
+        >>> attr.Attr._attr_registry[attrs.Instrument]  # doctest: +SKIP
+        attr(name=['aia', 'hmi'], client=['Generic', 'Generic'], name_long=['AIA', 'HMI'],
+        desc=['AIA is in Space.', 'HMI is next to AIA.'])
+        >>> attr.Attr._attr_registry[attrs.Instrument].name  # doctest: +SKIP
         ['aia', 'hmi']
-        >>> attr.Attr._attr_registry[attrs.Instrument].name_long # doctest: +SKIP
+        >>> attr.Attr._attr_registry[attrs.Instrument].name_long  # doctest: +SKIP
         ['AIA', 'HMI']
-        >>> attr.Attr._attr_registry[attrs.Instrument].desc # doctest: +SKIP
+        >>> attr.Attr._attr_registry[attrs.Instrument].desc  # doctest: +SKIP
         ['AIA is in Space.', 'HMI is next to AIA.']
-        >>> attrs.Instrument.aia, attrs.Instrument.hmi # doctest: +SKIP
-        (<Instrument('AIA')>, <Instrument('HMI')>)
+        >>> attrs.Instrument.aia, attrs.Instrument.hmi  # doctest: +SKIP
+        (<sunpy.net.attrs.Instrument(AIA: AIA is in Space.) object at 0x...>,
+        <sunpy.net.attrs.Instrument(HMI: HMI is next to AIA.) object at 0x...>)
         """
         for client in adict.keys():
-            for key, value in adict[client].items():
-                if isiterable(value) and not isinstance(value, str):
-                    for pair in value:
+            for attr, attr_values in adict[client].items():
+                if isiterable(attr_values) and not isinstance(attr_values, str):
+                    for pair in attr_values:
                         if len(pair) != 2:
                             if len(pair) == 1:
                                 # Special case handling for * aka all values allowed.
@@ -219,9 +230,9 @@ class Attr(metaclass=AttrMeta):
                                     pair = ["all", "All values of this type are supported."]
                                 else:
                                     raise ValueError(
-                                        f'Invalid value given for * registration: {value}.')
+                                        f'Invalid value given for * registration: {attr_values}.')
                             else:
-                                raise ValueError(f'Invalid length (!=2) for values: {value}.')
+                                raise ValueError(f'Invalid length (!=2) for values: {attr_values}.')
                         # Sanitize name, we remove all special characters and make it all lower case
                         name = ''.join(char for char in pair[0] if char.isalnum()).lower()
                         if keyword.iskeyword(name):
@@ -231,16 +242,27 @@ class Attr(metaclass=AttrMeta):
                         if not name.isidentifier():
                             # This should account for names with one number first.
                             # We match for single digits at the start only.
-                            if _REGEX.match(name):
+                            if NUMBER_REGEX.match(name[0]):
                                 # This turns that digit into its name
-                                number = strtonum(name[0])
-                                name = number + ("_" + name[1:] if len(name) > 1 else "")
-                        cls._attr_registry[key][0].append(name)
-                        cls._attr_registry[key][1].append(client.__name__.replace("Client", ""))
-                        cls._attr_registry[key][2].append(pair[0])
-                        cls._attr_registry[key][3].append(pair[1])
+                                if len(name) == 1:
+                                    name = strtonum(name[0])
+                                else:
+                                    # If the entire name is a number.
+                                    if NUMBER_REGEX.match(name):
+                                        name = attr.__name__[0] + name
+                                    # Since it is too long, we just append the first
+                                    # letter of the attrs class to it.
+                                    else:
+                                        number = strtonum(name[0])
+                                        name = number + ("_" + name[1:] if len(name) > 1 else "")
+                            else:
+                                raise ValueError(f'Unable to figure out {pair}')
+                        cls._attr_registry[attr][0].append(name)
+                        cls._attr_registry[attr][1].append(client.__name__.replace("Client", ""))
+                        cls._attr_registry[attr][2].append(pair[0])
+                        cls._attr_registry[attr][3].append(pair[1])
                 else:
-                    raise ValueError(f"Invalid input value: {value} for key: {repr(key)}. "
+                    raise ValueError(f"Invalid input value: {attr_values} for key: {repr(attr)}. "
                                      "The value is not iterable or just a string.")
 
 

@@ -98,7 +98,7 @@ class JSOCResponse(BaseQueryResponse):
 
 class JSOCClient(BaseClient):
     """
-    This is a Client to the JSOC Data Export service.
+    This is a client to the JSOC Data Export service.
 
     It exposes a similar API to the VSO client, although the underlying model
     is more complex. The JSOC stages data before you can download it, so a JSOC
@@ -901,10 +901,3 @@ class JSOCClient(BaseClient):
     @classmethod
     def _attrs_module(cls):
         return 'jsoc', 'sunpy.net.jsoc.attrs'
-
-    @classmethod
-    def register_values(cls):
-        from sunpy.net import attrs
-        # TODO Implement this
-        adict = {}
-        return adict
