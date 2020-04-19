@@ -1,1 +1,1 @@
-Updated `sunpy.map.GenericMap.draw_rectangle` API to be consistent with `sunpy.map.GenericMap.submap`.
+Updated the APIs for :meth:`sunpy.map.GenericMap.draw_rectangle` and :meth:`sunpy.map.GenericMap.submap` to be consistent with each other when using named arguments.

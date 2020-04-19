@@ -1367,23 +1367,22 @@ class GenericMap(NDData):
     @deprecate_positional_args
     def submap(self, bottom_left, *, top_right=None, width: u.deg=None, height: u.deg=None):
         """
-        Returns a submap of the map defined by the rectangle given by the
-        ``[bottom_left, top_right]`` coordinates.
+        Returns a submap defined by a rectangle.
 
         Parameters
         ----------
         bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
-            The bottom_left coordinate of the rectangle. If a `SkyCoord` it can
-            have shape ``(2,)`` and also define ``top_right``. If specifying
+            The bottom-left coordinate of the rectangle. If a `SkyCoord` it can
+            have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
             object with units of `~astropy.units.pixel`.
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
-            The top_right coordinate of the rectangle. Can only be omitted if
-            ``bottom_left`` has shape ``(2,)``, passing this as a positional argument is deprecated.
+            The top-right coordinate of the rectangle.
+            Passing this as a positional argument is deprecated.
         width : `astropy.units.Quantity`
-            The width of the rectangle, passing this as a positional argument is deprecated.
+            The width of the rectangle. Passing this as a positional argument is deprecated.
         height : `astropy.units.Quantity`
-            The height of the rectangle, passing this as a positional argument is deprecated.
+            The height of the rectangle. Passing this as a positional argument is deprecated.
 
         Returns
         -------
@@ -1723,17 +1722,17 @@ class GenericMap(NDData):
         Parameters
         ----------
         bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
-            The bottom_left coordinate of the rectangle. If a `SkyCoord` it can
-            have shape ``(2,)`` and also define ``top_right``. If specifying
+            The bottom-left coordinate of the rectangle. If a `SkyCoord` it can
+            have shape ``(2,)`` to simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
             object with units of `~astropy.units.pixel`.
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
-            The top_right coordinate of the rectangle. Can only be omitted if
-            ``bottom_left`` has shape ``(2,)``, passing this as a positional argument is deprecated.
+            The top-right coordinate of the rectangle.
+            Passing this as a positional argument is deprecated.
         width : `astropy.units.Quantity`
-            The width of the rectangle, passing this as a positional argument is deprecated.
+            The width of the rectangle. Passing this as a positional argument is deprecated.
         height : `astropy.units.Quantity`
-            The height of the rectangle, passing this as a positional argument is deprecated.
+            The height of the rectangle. Passing this as a positional argument is deprecated.
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current
             axes.
@@ -1750,7 +1749,7 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
         """
-        if any(x is None for x in (width, height)):
+        if width is None or height is None:
             bottom_left, top_right = get_rectangle_coordinates(bottom_left,
                                                                top_right=top_right,
                                                                width=width,
