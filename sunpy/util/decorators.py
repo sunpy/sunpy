@@ -267,6 +267,7 @@ class add_common_docstring:
             func.__doc__ = func.__doc__.format(**self.kwargs)
         return func
 
+
 def deprecate_positional_args(f):
     """
     Decorator for methods that issues warnings for positional arguments
@@ -301,9 +302,10 @@ def deprecate_positional_args(f):
             args_msg = ['{}={}'.format(name, arg)
                         for name, arg in zip(kwonly_args[:extra_args],
                                              args[-extra_args:])]
-            warnings.warn("Pass {} as keyword args. From version 2.0 "
+            last_supported_version = ".".join(map(str, get_removal_version("2.0")))
+            warnings.warn("Pass {} as keyword args. From version {} "
                           "passing these as positional arguments will "
-                          "result in an error".format(", ".join(args_msg)),
+                          "result in an error".format(", ".join(args_msg), last_supported_version),
                           FutureWarning)
         kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
         return f(**kwargs)
