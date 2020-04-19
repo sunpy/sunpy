@@ -25,13 +25,12 @@ __all__ = ["XRSClient", "SUVIClient"]
 
 class XRSClient(GenericClient):
     """
-    Provides access to the GOES XRS fits files
-    `archive <https://umbra.nascom.nasa.gov/goes/fits/>`__ hosted
-    by the `Solar Data Analysis Center <https://umbra.nascom.nasa.gov/index.html/>`__.
+    Provides access to the GOES XRS fits files archive.
+
+    Searches data hosted by the `Solar Data Analysis Center <https://umbra.nascom.nasa.gov/goes/fits/>`__.
 
     Examples
     --------
-
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
     ...                       a.Instrument('XRS'))  #doctest: +REMOTE_DATA
@@ -55,7 +54,6 @@ class XRSClient(GenericClient):
 
         Parameters
         ----------
-
         date : `astropy.time.Time`
             The date to determine which satellite is active.
         """
@@ -118,6 +116,7 @@ class XRSClient(GenericClient):
         ----------
         timerange : `~sunpy.time.TimeRange`
             The time range you want the files for.
+
         Returns
         -------
         `list`

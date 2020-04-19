@@ -34,7 +34,7 @@ smap = sunpy.map.Map(file_name)
 
 ##############################################################################
 # Download the SRS file.
-srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument('SRS_TABLE'))
+srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument('SRS-TABLE'))
 srs_downloaded_files = Fido.fetch(srs_results)
 
 ##############################################################################

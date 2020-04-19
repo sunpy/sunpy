@@ -74,7 +74,6 @@ def test_attr_and():
     a2 = SA2(2)
 
     an = a1 & a2
-
     assert isinstance(an, attr.AttrAnd)
     assert a1 in an.attrs
     assert a2 in an.attrs
@@ -85,7 +84,6 @@ def test_attr_and_AttrAnd():
     a1 = SA1(1)
     a2 = SA2(2)
     a3 = SA3(3)
-
     an = a1 & (a2 & a3)
 
     assert isinstance(an, attr.AttrAnd)
@@ -99,7 +97,6 @@ def test_attr_and_AttrOr():
     a1 = SA1(1)
     a2 = SA2(2)
     a3 = SA3(3)
-
     an = a1 & (a2 | a3)
 
     assert isinstance(an, attr.AttrOr)
@@ -224,9 +221,6 @@ def test_attr_metamagic(AIA, HMI):
     output = 'Instrument\n\nDummy Instrument Class.\n\n\nAttribute Name  Client Full Name            Description           \n-------------- ------- --------- ---------------------------------\n           aia Generic       AIA        This is AIA, it takes data\n           hmi Generic       HMI This is HMI, it lives next to AIA'  # NOQA
     assert str(Instrument) == output
 
-    # Clean Registry
-    EmptyAttr()
-
 
 def test_attr_dynamic(AIA, HMI):
     # This checks the dynamic attribute creation.
@@ -235,9 +229,6 @@ def test_attr_dynamic(AIA, HMI):
         {GenericClient: {Instrument: [('HMI', 'This is HMI, it lives next to AIA')]}})
     assert Instrument.aia == AIA
     assert Instrument.hmi == HMI
-
-    # Clean Registry
-    EmptyAttr()
 
 
 def test_attr_dir():
@@ -249,67 +240,49 @@ def test_attr_dir():
     assert 'aia' in dir(Instrument)
     assert 'hmi' in dir(Instrument)
 
-    # Clean Registry
-    EmptyAttr()
-
 
 def test_attr_sanity():
     attr.Attr.update_values(
         {GenericClient: {Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]}})
     # This checks for sanitization of names.
-    assert attr.Attr._attr_registry[Instrument].name == ['thisnameisspecial']
-    assert attr.Attr._attr_registry[Instrument].name_long == ['_!£!THIS_NAME!"!ISSPECIAL~~##']
-    assert attr.Attr._attr_registry[Instrument].desc == ['To test the attribute cleaning.']
-
-    # Clean Registry
-    EmptyAttr()
+    assert 'thisnameisspecial' in attr.Attr._attr_registry[Instrument].name
+    assert '_!£!THIS_NAME!"!ISSPECIAL~~##' in attr.Attr._attr_registry[Instrument].name_long
+    assert 'To test the attribute cleaning.' in attr.Attr._attr_registry[Instrument].desc
 
 
 def test_attr_keyword():
     attr.Attr.update_values({GenericClient: {Instrument: [('class', 'Keyword checking.')]}})
     # This checks for sanitization of names.
-    assert attr.Attr._attr_registry[Instrument].name == ['class_']
-    assert attr.Attr._attr_registry[Instrument].name_long == ['class']
-    assert attr.Attr._attr_registry[Instrument].desc == ['Keyword checking.']
-
-    # Clean Registry
-    EmptyAttr()
+    assert 'class_' in attr.Attr._attr_registry[Instrument].name
+    assert 'class' in attr.Attr._attr_registry[Instrument].name_long
+    assert 'Keyword checking.' in attr.Attr._attr_registry[Instrument].desc
 
 
 def test_attr_num(NUM):
     attr.Attr.update_values({GenericClient: {Instrument: [('1', 'One')]}})
     # This checks for sanitization of names.
-    assert attr.Attr._attr_registry[Instrument].name == ['one']
-    assert attr.Attr._attr_registry[Instrument].name_long == ['1']
-    assert attr.Attr._attr_registry[Instrument].desc == ['One']
+    assert 'one' in attr.Attr._attr_registry[Instrument].name
+    assert '1' in attr.Attr._attr_registry[Instrument].name_long
+    assert 'One' in attr.Attr._attr_registry[Instrument].desc
     assert Instrument.one == NUM
-
-    # Clean Registry
-    EmptyAttr()
 
 
 def test_attr_number(NUMBER):
     attr.Attr.update_values({GenericClient: {Instrument: [('1AIA', 'One Number first.')]}})
     # This checks for sanitization of names.
-    assert attr.Attr._attr_registry[Instrument].name == ['one_aia']
-    assert attr.Attr._attr_registry[Instrument].name_long == ['1AIA']
-    assert attr.Attr._attr_registry[Instrument].desc == ['One Number first.']
+    assert 'one_aia' in attr.Attr._attr_registry[Instrument].name
+    assert '1AIA' in attr.Attr._attr_registry[Instrument].name_long
+    assert 'One Number first.' in attr.Attr._attr_registry[Instrument].desc
     assert Instrument.one_aia == NUMBER
-
-    # Clean Registry
-    EmptyAttr()
 
 
 def test_attr_numbes():
     attr.Attr.update_values({GenericClient: {Instrument: [('12AIAs', 'That is too many AIAs')]}})
     # This checks for sanitization of names.
-    assert attr.Attr._attr_registry[Instrument].name == ['12aias']
-    assert attr.Attr._attr_registry[Instrument].name_long == ['12AIAs']
-    assert attr.Attr._attr_registry[Instrument].desc == ['That is too many AIAs']
-    assert '12aias' in dir(Instrument)
-
-    # Clean Registry
-    EmptyAttr()
+    assert 'one_2aias' in attr.Attr._attr_registry[Instrument].name
+    assert '12AIAs' in attr.Attr._attr_registry[Instrument].name_long
+    assert 'That is too many AIAs' in attr.Attr._attr_registry[Instrument].desc
+    assert 'one_2aias' in dir(Instrument)
 
 
 def test_attr_iterable_length():
@@ -321,15 +294,9 @@ def test_attr_iterable_length():
         attr.Attr.update_values(
             {GenericClient: {Instrument: [('AIA', 'AIA is Nice', 'Error now')]}})
 
-    # Clean Registry
-    EmptyAttr()
-
 
 def test_asterisk_attrs(ALL):
     # This checks we can submit * to mean all attrs.
     attr.Attr.update_values({GenericClient: {Instrument: [('*')]}})
     assert Instrument.all == ALL
     assert "Instrument(all: All values of this type are supported.)" in repr(Instrument.all)
-
-    # Clean Registry
-    EmptyAttr()

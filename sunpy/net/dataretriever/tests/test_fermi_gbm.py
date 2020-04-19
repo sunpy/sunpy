@@ -1,6 +1,5 @@
 import pytest
 
-from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.fermi_gbm as fermi_gbm
@@ -10,7 +9,10 @@ from sunpy.net import attrs as a
 from sunpy.net.tests.strategies import time_attr
 from hypothesis import given
 
-LCClient = fermi_gbm.GBMClient()
+
+@pytest.fixture
+def LCClient():
+    return fermi_gbm.GBMClient()
 
 
 @pytest.mark.remote_data
@@ -19,13 +21,8 @@ LCClient = fermi_gbm.GBMClient()
                            'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/07/'
                            'current/glg_cspec_n5_110607_v00.pha',
                            'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2011/06/09/'
-                           'current/glg_cspec_n5_110609_v00.pha'),
-                          (TimeRange('2016/09/09', '2016/09/11'),
-                           'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/2016/09/09/'
-                           'current/glg_cspec_n5_160909_v00.pha',
-                           'https://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
-                           '2016/09/11/current/glg_cspec_n5_160911_v00.pha')])
-def test_get_url_for_time_range(timerange, url_start, url_end):
+                           'current/glg_cspec_n5_110609_v00.pha')])
+def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange, detector='n5', resolution='cspec')
     assert isinstance(urls, list)
     assert urls[0] == url_start
@@ -33,7 +30,7 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
 
 
 @given(time_attr())
-def test_can_handle_query(time):
+def test_can_handle_query(LCClient, time):
     ans1 = LCClient._can_handle_query(time, a.Instrument('gbm'))
     assert ans1 is True
     ans2 = LCClient._can_handle_query(time, a.Instrument('gbm'),
@@ -46,18 +43,14 @@ def test_can_handle_query(time):
     assert ans4 is False
 
 
-def test_attr_reg():
-    a.Instrument.gbm = a.Instrument('GBM')
-
-
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument", [
-    (a.Time('2012/8/9', '2012/8/10'), a.Instrument('gbm')),
+    (a.Time('2012/8/9', '2012/8/9'), a.Instrument('gbm')),
 ])
-def test_query(time, instrument):
+def test_query(LCClient, time, instrument):
     qr1 = LCClient.search(time, instrument)
     assert isinstance(qr1, QueryResponse)
-    assert len(qr1) == 2
+    assert len(qr1) == 1
     assert qr1.time_range().start == time.start
     assert qr1.time_range().end == time.end
 
@@ -66,7 +59,7 @@ def test_query(time, instrument):
 @pytest.mark.parametrize("time,instrument", [
     (a.Time('2012/11/27', '2012/11/27'), a.Instrument('gbm')),
 ])
-def test_get(time, instrument):
+def test_get(LCClient, time, instrument):
     qr1 = LCClient.search(time, instrument)
     download_list = LCClient.fetch(qr1)
     assert len(download_list) == len(qr1)
@@ -75,11 +68,23 @@ def test_get(time, instrument):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     'query',
-    [(a.Time('2012/10/4', '2012/10/6') & a.Instrument('gbm') & a.Detector('n5'))])
-def test_fido(query):
+    [(a.Time('2012/10/4', '2012/10/5') & a.Instrument('gbm') & a.Detector('n5'))])
+def test_fido(LCClient, query):
     qr = Fido.search(query)
     client = qr.get_response(0).client
     assert isinstance(qr, UnifiedResponse)
     assert type(client) == type(LCClient)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
+
+
+def test_attr_reg():
+    assert a.Instrument.gbm == a.Instrument('GBM')
+
+
+def test_client_repr(LCClient):
+    """
+    Repr check
+    """
+    output = str(LCClient)
+    assert output[:50] == 'GBMClient\n\nProvides access to data from the Gamma-'
