@@ -23,6 +23,7 @@ from sunpy.util import expand_list
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
+from sunpy.util.functools import _singledispatchmethod
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -179,14 +180,11 @@ class MapFactory(BasicRegistrationFactory):
                          'directory1',
                          '*.fits')
         """
-        # Note that this list also contains GenericMaps if they are directly given to the factory
-        data_header_pairs = list()
-
         # Account for nested lists of items
         args = expand_list(args)
 
-        # Take array, header pairs and put them in a tuple
-        # This makes each item in the args list correspond to exactly one data, header pair
+        # Sanitise the input so that each 'type' of input corresponds to a different
+        # class, so single dispatch can be used later
         nargs = len(args)
         i = 0
         while i < nargs:
@@ -201,55 +199,70 @@ class MapFactory(BasicRegistrationFactory):
                 # Repalce URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
             elif _possibly_a_path(arg):
+                # Repalce path strings with Path objects
                 args[i] = pathlib.Path(arg)
             i += 1
 
-        # For each of the arguments, handle each of the cases
+        # Parse the arguments
+        # Note that this list can also contain GenericMaps if they are directly given to the factory
+        data_header_pairs = []
         for arg in args:
-            if isinstance(arg, tuple):
-                data, header = arg
-                if isinstance(header, WCS):
-                    header = header.to_header()
-
-                if self._validate_meta(header):
-                    pair = (data, OrderedDict(header))
-                    data_header_pairs.append(pair)
-
-            # A database Entry
-            elif isinstance(arg, DatabaseEntryType):
-                data_header_pairs += self._read_file(arg.path, **kwargs)
-
-            # Already a Map
-            elif isinstance(arg, GenericMap):
-                data_header_pairs.append(arg)
-
-            # URL
-            elif isinstance(arg, Request):
-                url = arg.full_url
-                path = str(cache.download(url).absolute())
-                pairs = self._read_file(path, **kwargs)
-                data_header_pairs += pairs
-
-            # File system path (file or directory or glob)
-            elif isinstance(arg, pathlib.Path):
-                path = pathlib.Path(arg).expanduser()
-                if _is_file(path):
-                    pairs = self._read_file(path, **kwargs)
-                    data_header_pairs += pairs
-                elif _is_dir(path):
-                    for afile in sorted(path.glob('*')):
-                        data_header_pairs += self._read_file(afile, **kwargs)
-                elif glob.glob(os.path.expanduser(arg)):
-                    for afile in sorted(glob.glob(os.path.expanduser(arg))):
-                        data_header_pairs += self._read_file(afile, **kwargs)
-
-                else:
-                    raise ValueError(f'Did not find any files at {arg}')
-
-            else:
-                raise ValueError(f"Invalid input: {arg}")
+            data_header_pairs += self._parse_arg(arg, **kwargs)
 
         return data_header_pairs
+
+    @_singledispatchmethod
+    def _parse_arg(self, arg, **kwargs):
+        """
+        Take a factory input and parse into (data, header) pairs.
+        Must return a list, even if only one pair is returned.
+        """
+        raise ValueError(f"Invalid input: {arg}")
+
+    @_parse_arg.register(tuple)
+    def _parse_tuple(self, arg, **kwargs):
+        # Data-header or data-WCS pair
+        data, header = arg
+        if isinstance(header, WCS):
+            header = header.to_header()
+
+        pair = data, header
+        if self._validate_meta(header):
+            pair = (data, OrderedDict(header))
+        return [pair]
+
+    @_parse_arg.register(DatabaseEntryType)
+    def _parse_dbase(self, arg, **kwargs):
+        return self._read_file(arg.path, **kwargs)
+
+    @_parse_arg.register(GenericMap)
+    def _parse_map(self, arg, **kwargs):
+        return [arg]
+
+    @_parse_arg.register(Request)
+    def _parse_url(self, arg, **kwargs):
+        url = arg.full_url
+        path = str(cache.download(url).absolute())
+        pairs = self._read_file(path, **kwargs)
+        return pairs
+
+    @_parse_arg.register(pathlib.Path)
+    def _parse_path(self, arg, **kwargs):
+        path = arg.expanduser()
+        if _is_file(path):
+            return self._read_file(path, **kwargs)
+        elif _is_dir(path):
+            pairs = []
+            for afile in sorted(path.glob('*')):
+                pairs += self._read_file(afile, **kwargs)
+            return pairs
+        elif glob.glob(os.path.expanduser(arg)):
+            pairs = []
+            for afile in sorted(glob.glob(os.path.expanduser(arg))):
+                pairs += self._read_file(afile, **kwargs)
+            return pairs
+        else:
+            raise ValueError(f'Did not find any files at {arg}')
 
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
