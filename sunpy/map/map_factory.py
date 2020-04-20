@@ -200,11 +200,12 @@ class MapFactory(BasicRegistrationFactory):
             elif isinstance(arg, str) and _is_url(arg):
                 # Repalce URL string with a Request object to dispatch on later
                 args[i] = Request(arg)
+            elif _possibly_a_path(arg):
+                args[i] = pathlib.Path(arg)
             i += 1
 
         # For each of the arguments, handle each of the cases
         for arg in args:
-            # Data-header or data-WCS pair
             if isinstance(arg, tuple):
                 data, header = arg
                 if isinstance(header, WCS):
@@ -230,7 +231,7 @@ class MapFactory(BasicRegistrationFactory):
                 data_header_pairs += pairs
 
             # File system path (file or directory or glob)
-            elif _possibly_a_path(arg):
+            elif isinstance(arg, pathlib.Path):
                 path = pathlib.Path(arg).expanduser()
                 if _is_file(path):
                     pairs = self._read_file(path, **kwargs)
