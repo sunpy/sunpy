@@ -3,6 +3,7 @@ from collections import OrderedDict
 import warnings
 import pathlib
 import glob
+from urllib.request import urlopen, Request
 
 import numpy as np
 import astropy.io.fits
@@ -27,7 +28,6 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
-from urllib.request import urlopen
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
@@ -197,6 +197,9 @@ class MapFactory(BasicRegistrationFactory):
                 header = args.pop(i)
                 args.insert(i, (data, header))
                 nargs -= 1
+            elif isinstance(arg, str) and _is_url(arg):
+                # Repalce URL string with a Request object to dispatch on later
+                args[i] = Request(arg)
             i += 1
 
         # For each of the arguments, handle each of the cases
@@ -220,8 +223,8 @@ class MapFactory(BasicRegistrationFactory):
                 already_maps.append(arg)
 
             # URL
-            elif isinstance(arg, str) and _is_url(arg):
-                url = arg
+            elif isinstance(arg, Request):
+                url = arg.full_url
                 path = str(cache.download(url).absolute())
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
