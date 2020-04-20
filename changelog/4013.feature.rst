@@ -1,9 +1,8 @@
 Added extra constants to `sunpy.sun.constants`:
 
-- True longitude of meridian : `sunpy.sun.constants.meridian_lon`
+- Longitude of the prime meridian (epoch J2000.0) : `sunpy.sun.constants.W_0`
 - Sidereal rotation rate : `sunpy.sun.constants.sidereal_rotation_rate`
-- First Carrington rotation : `sunpy.sun.constants.first_crot_jd`
-- First Carrington rotation (JD TT) : `sunpy.sun.constants.first_crot_jd_tt`
-- Mean synodic period : `sunpy.sun.constants.crot_period`
-- Right Ascension (RA) of the north pole at epoch J2000.0 : `sunpy.sun.constants.sun_north_pole_lon`
-- Declination of the North Pole at epoch J2000.0 : `sunpy.sun.constants.sun_north_pole_lat`
+- First Carrington rotation (JD TT) : `sunpy.sun.constants.first_carrington_rotation`
+- Mean synodic period : `sunpy.sun.constants.mean_synodic_period`
+- Right ascension (RA) of the north pole (epoch J2000.0) : `sunpy.sun.constants.alpha_0`
+- Declination of the north pole (epoch J2000.0) : `sunpy.sun.constants.delta_0`

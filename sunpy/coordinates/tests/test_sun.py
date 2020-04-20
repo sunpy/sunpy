@@ -72,7 +72,8 @@ def test_angular_radius():
     # The Astronomical Almanac publishes values, but I don't know what physical radius they use
     assert_quantity_allclose(sun.angular_radius("2012/11/11"), 968.871*u.arcsec, atol=1e-3*u.arcsec)
     with pytest.warns(ErfaWarning):
-        assert_quantity_allclose(sun.angular_radius("2043/03/01"), 968.326*u.arcsec, atol=1e-3*u.arcsec)
+        assert_quantity_allclose(sun.angular_radius("2043/03/01"),
+                                 968.326*u.arcsec, atol=1e-3*u.arcsec)
     assert_quantity_allclose(sun.angular_radius("2001/07/21"), 944.039*u.arcsec, atol=1e-3*u.arcsec)
 
 
@@ -91,7 +92,8 @@ def test_true_rightascension():
     # Regression-only test
     assert_quantity_allclose(sun.true_rightascension("2012/11/11"), 226.548*u.deg, atol=1e-3*u.deg)
     with pytest.warns(ErfaWarning):
-        assert_quantity_allclose(sun.true_rightascension("2142/02/03"), 316.466*u.deg, atol=1e-3*u.deg)
+        assert_quantity_allclose(sun.true_rightascension(
+            "2142/02/03"), 316.466*u.deg, atol=1e-3*u.deg)
     assert_quantity_allclose(sun.true_rightascension("2013/12/11"), 258.150*u.deg, atol=1e-3*u.deg)
 
 
@@ -389,18 +391,18 @@ def test_P_array_time():
                         '2013-10-01',
                         '2013-11-01',
                         '2013-12-01'], scale='tt'))
-    assert_quantity_allclose(sun_P, [  1.98,
+    assert_quantity_allclose(sun_P, [1.98,
                                      -12.23,
                                      -21.55,
                                      -26.15,
                                      -24.11,
                                      -15.39,
-                                      -2.64,
-                                      10.85,
-                                      21.08,
-                                      25.97,
-                                      24.47,
-                                      16.05]*u.deg, atol=5e-3*u.deg)
+                                     -2.64,
+                                     10.85,
+                                     21.08,
+                                     25.97,
+                                     24.47,
+                                     16.05]*u.deg, atol=5e-3*u.deg)
 
 
 def test_earth_distance():
