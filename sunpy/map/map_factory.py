@@ -185,22 +185,31 @@ class MapFactory(BasicRegistrationFactory):
         # Account for nested lists of items
         args = expand_list(args)
 
-        # For each of the arguments, handle each of the cases
+        # Take array, header pairs and put them in a tuple
+        # This makes each item in the args list correspond to exactly one data, header pair
+        nargs = len(args)
         i = 0
-        while i < len(args):
-
+        while i < nargs:
             arg = args[i]
-
-            # Data-header or data-WCS pair
             if isinstance(arg, SUPPORTED_ARRAY_TYPES):
-                arg_header = args[i+1]
-                if isinstance(arg_header, WCS):
-                    arg_header = args[i+1].to_header()
+                # The next two items are data and a header
+                data = args.pop(i)
+                header = args.pop(i)
+                args.insert(i, (data, header))
+                nargs -= 1
+            i += 1
 
-                if self._validate_meta(arg_header):
-                    pair = (args[i], OrderedDict(arg_header))
+        # For each of the arguments, handle each of the cases
+        for arg in args:
+            # Data-header or data-WCS pair
+            if isinstance(arg, tuple):
+                data, header = arg
+                if isinstance(header, WCS):
+                    header = header.to_header()
+
+                if self._validate_meta(header):
+                    pair = (data, OrderedDict(header))
                     data_header_pairs.append(pair)
-                    i += 1    # an extra increment to account for the data-header pairing
 
             # A database Entry
             elif isinstance(arg, DatabaseEntryType):
@@ -235,8 +244,6 @@ class MapFactory(BasicRegistrationFactory):
 
             else:
                 raise ValueError(f"Invalid input: {arg}")
-
-            i += 1
 
         # TODO:
         # In the end, if there are already maps it should be put in the same
