@@ -12,7 +12,7 @@ import astropy.time
 from astropy.time import Time
 
 from sunpy.net import attrs as a
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 
 TimesLeapsecond = sampled_from((Time('2015-06-30T23:59:60'),
                                 Time('2012-06-30T23:59:60')))
@@ -116,9 +116,8 @@ def goes_time(draw, time=Times(
 
 def range_time(min_date, max_date=Time.now()):
     time = Times(
-        min_value=datetime.datetime(1981, 1, 1, 0, 0),
-        max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
+        min_value=parse_time(min_date).datetime,
+        max_value=parse_time(max_date).datetime
     )
-    time = time.filter(lambda x: min_date < x < max_date)
 
     return time_attr(time=time)
