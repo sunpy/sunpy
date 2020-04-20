@@ -499,8 +499,8 @@ def _sun_earth_icrf(time):
 # (See Archinal et al. 2011,
 #   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
 # The orientation of the north pole in ICRS/HCRS is assumed to be constant in time
-_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=constants.sun_north_pole_lon,
-                                                     lat=constants.sun_north_pole_lat)
+_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=constants.get('alpha_0'),
+                                                     lat=constants.get('delta_0'))
 
 
 # Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis

@@ -12,6 +12,7 @@ physical_constants = {}
 
 # references
 gsfc_fact = "https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html"
+aa = "Astronomical Almanac (2013 edition)"
 allen = "Allen's Astrophysical Quantities 4th Ed."
 archinal = 'Archinal et al. 2018'
 asplund = "Asplund et al. 2006"
@@ -148,44 +149,40 @@ physical_constants['GM'] = Constant('mu', "standard gravitational parameter",
                                     132.712e6, 'km**3 s**-2', 0,
                                     gsfc_fact, system='si')
 
-# true longitude of the meridian (i.e., without light travel time to Earth
+# longitude of the prime meridian (without light travel time to Earth
 # and aberration effects) is 84.176 degrees eastward at J2000
-physical_constants['true longitude of meridian'] = Constant('',
-                                                            'true longitude of meridian',
-                                                            84.176, 'deg',
-                                                            0, archinal,
-                                                            system='si')
+physical_constants['W_0'] = Constant('W_0',
+                                     'longitude of the prime meridian (epoch J2000.0)',
+                                     84.176, 'deg',
+                                     0, archinal,
+                                     system='si')
 
-# conversion factor for calculating the de-tilt longitude of the meridian
-# due to the Sun's sidereal rotation
+# the definitional (fixed) rotation rate of the Sun relative to the stars (i.e., sidereal rotation rate)
 physical_constants['sidereal rotation rate'] = Constant('', 'sidereal rotation rate',
                                                         14.1844, 'deg day**-1', 0,
                                                         archinal, system='si')
 
 # time in Julian Days (TT) of the start of the first Carrington rotation
-physical_constants['first Carrington rotation'] = Constant('', 'first Carrington rotation',
-                                                           2398167.4,
-                                                           'day', 0, meeus, system='si')
-first_crot_jd_tt = Time(2398167.4, format='jd').tt
+first_carrington_rotation = Time(2398167.4, format='jd', scale='tt')
 physical_constants['first Carrington rotation (JD TT)'] = Constant('',
                                                                    'first Carrington '
                                                                    'rotation (JD TT)',
-                                                                   first_crot_jd_tt.value,
+                                                                   first_carrington_rotation.tt.jd,
                                                                    'day', 0,
                                                                    meeus, system='si')
 
-# length of a Carrington rotation in days
+# length of the mean Carrington rotation as seen from Earth
 physical_constants['mean synodic period'] = Constant('',
                                                      'mean synodic period',
                                                      27.2753, 'day', 0,
-                                                     allen, system='si')
+                                                     aa, system='si')
 
 # Sun's north pole is oriented RA=286.13 deg, Dec=63.87 deg in ICRS and HCRS
-physical_constants['right ascension (RA) of the north pole at epoch J2000.0'] \
+physical_constants['alpha_0'] \
     = Constant('alpha_0',
-               'right ascension (RA) of the north pole at epoch J2000.0',
+               'right ascension (RA) of the north pole (epoch J2000.0)',
                286.13, 'deg', 0, archinal, system='si')
-physical_constants['declination of the north pole at epoch J2000.0'] \
+physical_constants['delta_0'] \
     = Constant('delta_0',
-               'declination of the north pole at epoch J2000.0',
+               'declination of the north pole (epoch J2000.0)',
                63.87, 'deg', 0, archinal, system='si')
