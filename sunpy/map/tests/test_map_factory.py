@@ -20,13 +20,36 @@ from sunpy.util import SunpyUserWarning
 from sunpy.io.file_tools import UnrecognizedFileTypeError
 
 
-filepath = sunpy.data.test.rootdir
+filepath = pathlib.Path(sunpy.data.test.rootdir)
 a_list_of_many = [os.fspath(f) for f in pathlib.Path(filepath, "EIT").glob("*")]
 a_fname = a_list_of_many[0]
+
 
 AIA_171_IMAGE = os.path.join(filepath, 'aia_171_level1.fits')
 RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
 
+amap = sunpy.map.Map(AIA_171_IMAGE)
+
+valid_map_inputs = [(a_fname, ),
+                    (pathlib.Path(a_fname), ),
+                    (filepath / "EIT", ),
+                    (os.fspath(filepath / "EIT"), ),
+                    (filepath / "EIT" / "*", ),
+                    (amap, ),
+                    (amap.data, amap.meta),
+                    ((amap.data, amap.meta), ),
+                    ]
+
+
+@pytest.mark.parametrize('args1', valid_map_inputs)
+@pytest.mark.parametrize('args2', valid_map_inputs)
+def test_two_map_inputs(args1, args2):
+    out = sunpy.map.Map(*args1, *args2)
+    if isinstance(out, list):
+        for m in out:
+            assert isinstance(m, sunpy.map.GenericMap)
+    else:
+        assert isinstance(out, sunpy.map.GenericMap)
 
 # ==============================================================================
 # Map Factory Tests
@@ -204,62 +227,6 @@ class TestMap:
         backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)
 
-# ==============================================================================
-# Sources Tests
-# ==============================================================================
-    def test_sdo(self):
-        # Test an AIAMap
-        aia = sunpy.map.Map(AIA_171_IMAGE)
-        assert isinstance(aia, sunpy.map.sources.AIAMap)
-        # TODO: Test a HMIMap
-
-    def test_soho(self):
-        # Test EITMap, LASCOMap & MDIMap
-        eit = sunpy.map.Map(os.path.join(filepath, "EIT", "efz20040301.000010_s.fits"))
-        assert isinstance(eit, sunpy.map.sources.EITMap)
-
-        lasco = sunpy.map.Map(os.path.join(filepath, "lasco_c2_25299383_s.fts"))
-        assert isinstance(lasco, sunpy.map.sources.LASCOMap)
-
-        mdi_c = sunpy.map.Map(os.path.join(filepath, "mdi_fd_Ic_6h_01d.5871.0000_s.fits"))
-        assert isinstance(mdi_c, sunpy.map.sources.MDIMap)
-
-        mdi_m = sunpy.map.Map(os.path.join(filepath, "mdi_fd_M_96m_01d.5874.0005_s.fits"))
-        assert isinstance(mdi_m, sunpy.map.sources.MDIMap)
-
-    def test_stereo(self):
-        # Test EUVIMap & CORMap & HIMap
-        euvi = sunpy.map.Map(os.path.join(filepath, "euvi_20090615_000900_n4euA_s.fts"))
-        assert isinstance(euvi, sunpy.map.sources.EUVIMap)
-
-        cor = sunpy.map.Map(os.path.join(filepath, "cor1_20090615_000500_s4c1A.fts"))
-        assert isinstance(cor, sunpy.map.sources.CORMap)
-
-        hi = sunpy.map.Map(os.path.join(filepath, "hi_20110910_114721_s7h2A.fts"))
-        assert isinstance(hi, sunpy.map.sources.HIMap)
-
-    def test_rhessi(self):
-        # Test RHESSIMap
-        rhessi = sunpy.map.Map(RHESSI_IMAGE)
-        assert isinstance(rhessi, sunpy.map.sources.RHESSIMap)
-
-    def test_sot(self):
-        # Test SOTMap
-        sot = sunpy.map.Map(os.path.join(filepath, "FGMG4_20110214_030443.7.fits"))
-        assert isinstance(sot, sunpy.map.sources.SOTMap)
-
-    def test_swap(self):
-        # Test SWAPMap
-        swap = sunpy.map.Map(os.path.join(filepath, "swap_lv1_20140606_000113.fits"))
-        assert isinstance(swap, sunpy.map.sources.SWAPMap)
-
-    def test_xrt(self):
-        # Test XRTMap
-        xrt = sunpy.map.Map(os.path.join(filepath, "HinodeXRT.fits"))
-        assert isinstance(xrt, sunpy.map.sources.XRTMap)
-
-    # TODO: Test SXTMap
-
 
 @pytest.mark.remote_data
 def test_map_list_urls_cache():
@@ -270,3 +237,24 @@ def test_map_list_urls_cache():
             'http://jsoc.stanford.edu/SUM79/D136597240/S00000/image_lev1.fits']
 
     sunpy.map.Map(urls)
+
+
+# TODO: Test HMIMap, SXTMap
+@pytest.mark.parametrize('file, mapcls',
+                         [[filepath / 'EIT' / "efz20040301.000010_s.fits",  sunpy.map.sources.EITMap],
+                          [filepath / "lasco_c2_25299383_s.fts", sunpy.map.sources.LASCOMap],
+                          [filepath / "mdi_fd_Ic_6h_01d.5871.0000_s.fits", sunpy.map.sources.MDIMap],
+                          [filepath / "mdi_fd_M_96m_01d.5874.0005_s.fits", sunpy.map.sources.MDIMap],
+                          [filepath / "euvi_20090615_000900_n4euA_s.fts", sunpy.map.sources.EUVIMap],
+                          [filepath / "cor1_20090615_000500_s4c1A.fts", sunpy.map.sources.CORMap],
+                          [filepath / "hi_20110910_114721_s7h2A.fts", sunpy.map.sources.HIMap],
+                          [AIA_171_IMAGE, sunpy.map.sources.AIAMap],
+                          [RHESSI_IMAGE, sunpy.map.sources.RHESSIMap],
+                          [filepath / "FGMG4_20110214_030443.7.fits", sunpy.map.sources.SOTMap],
+                          [filepath / "swap_lv1_20140606_000113.fits", sunpy.map.sources.SWAPMap],
+                          [filepath / "HinodeXRT.fits", sunpy.map.sources.XRTMap]
+                          ]
+                         )
+def test_sources(file, mapcls):
+    m = sunpy.map.Map(file)
+    assert isinstance(m, mapcls)
