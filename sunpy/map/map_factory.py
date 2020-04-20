@@ -157,7 +157,7 @@ class MapFactory(BasicRegistrationFactory):
 
     def _parse_args(self, *args, **kwargs):
         """
-        Parses an args list for data-header pairs.
+        Parses an args list into data-header pairs.
 
         args can contain any mixture of the following entries:
         * tuples of data,header
@@ -179,8 +179,8 @@ class MapFactory(BasicRegistrationFactory):
                          'directory1',
                          '*.fits')
         """
+        # Note that this list also contains GenericMaps if they are directly given to the factory
         data_header_pairs = list()
-        already_maps = list()
 
         # Account for nested lists of items
         args = expand_list(args)
@@ -220,7 +220,7 @@ class MapFactory(BasicRegistrationFactory):
 
             # Already a Map
             elif isinstance(arg, GenericMap):
-                already_maps.append(arg)
+                data_header_pairs.append(arg)
 
             # URL
             elif isinstance(arg, Request):
@@ -248,10 +248,7 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 raise ValueError(f"Invalid input: {arg}")
 
-        # TODO:
-        # In the end, if there are already maps it should be put in the same
-        # order as the input, currently they are not.
-        return data_header_pairs, already_maps
+        return data_header_pairs
 
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
@@ -279,14 +276,15 @@ class MapFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
         as `memmap` for FITS files.
         """
-
-        data_header_pairs, already_maps = self._parse_args(*args, **kwargs)
-
+        data_header_pairs = self._parse_args(*args, **kwargs)
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType
         # matches the arguments.  If it does, use that type.
         for pair in data_header_pairs:
+            if isinstance(pair, GenericMap):
+                new_maps.append(pair)
+                continue
             data, header = pair
             meta = MetaDict(header)
 
@@ -298,8 +296,6 @@ class MapFactory(BasicRegistrationFactory):
                 if not silence_errors:
                     raise
                 warnings.warn(f"One of the data, header pairs failed to validate with: {e}")
-
-        new_maps += already_maps
 
         if not len(new_maps):
             raise RuntimeError('No maps loaded')
