@@ -5,6 +5,7 @@ from copy import deepcopy
 import html
 from tempfile import NamedTemporaryFile
 import textwrap
+import warnings
 import webbrowser
 
 import numpy as np
@@ -17,7 +18,7 @@ from sunpy.map import GenericMap
 from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.visualization import axis_labels_from_ctype
-from sunpy.util import expand_list
+from sunpy.util import expand_list, SunpyUserWarning
 
 __all__ = ['MapSequence']
 
@@ -93,6 +94,13 @@ class MapSequence:
                 f'MapSequence of {len(self.maps)} elements, with maps from {", ".join(names)}')
 
     def _repr_html_(self):
+        nmaps = len(self)
+
+        # Output a warning about rendering time if there are more than 9 Maps
+        if nmaps > 9:
+            warnings.warn(f"Rendering the summary for a MapSequence of {nmaps} Maps "
+                          "may take a while.", SunpyUserWarning)
+
         # Assemble the individual HTML repr from each Map, all hidden initally
         repr_list = [f"<div style='display: none' index={i}>{m._repr_html_()}</div>"
                      for i, m in enumerate(self.maps)]
@@ -104,7 +112,7 @@ class MapSequence:
         # To avoid potential conflicts, the Javascript code does not use any user-defined functions
         return textwrap.dedent(f"""\
             <pre>{html.escape(self.__repr__())}</pre>
-            <form cur_index=0 max_index={len(repr_list) - 1}>
+            <form cur_index=0 max_index={nmaps - 1}>
                 <!-- Button to decrement index (always starts disabled) -->
                 <input type=button value='&larr;' style='font-weight: bold' disabled onClick='
                     var form = this.parentElement;
@@ -140,7 +148,7 @@ class MapSequence:
 
                 <!-- Button to increment index (starts enabled if there is more than one Map) -->
                 <input type=button value='&rarr;' style='font-weight: bold'
-                    {"" if len(repr_list) > 1 else "disabled"} onClick='
+                    {"" if nmaps > 1 else "disabled"} onClick='
 
                     var form = this.parentElement;
 
