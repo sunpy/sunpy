@@ -112,7 +112,7 @@ def test_get_horizons_coord_array_time():
 
 @pytest.mark.remote_data
 @given(obstime=times())
-@settings(deadline=2000, max_examples=10)
+@settings(deadline=5000, max_examples=10)
 def test_consistency_with_horizons(astropy_ephemeris_de432s, obstime):
     # get_horizons_coord() depends on astroquery
     astroquery = pytest.importorskip("astroquery")
