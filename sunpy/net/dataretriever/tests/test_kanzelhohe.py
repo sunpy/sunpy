@@ -9,7 +9,7 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 import sunpy.net.dataretriever.sources.kanzelhohe as kanzelhohe
 
-KClient = kanzelhohe.KanzelhoheClient()
+KClient = kanzelhohe.KANZClient()
 
 
 @pytest.mark.remote_data

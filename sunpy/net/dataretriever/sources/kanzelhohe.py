@@ -7,31 +7,20 @@ from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
 from sunpy.net import attrs as a
 
-__all__ = ['KanzelhoheClient']
+__all__ = ['KANZClient']
 
 
-class KanzelhoheClient(GenericClient):
+class KANZClient(GenericClient):
     """
-    Returns a list of URLS to Kanzelhöhe H-alpha files corresponding to value of input timerange.
+    Provides access to Kanzelhöhe H-alpha files corresponding to value of input timerange.
     URL source: `http://cesar.kso.ac.at/`.
     The earliest data for H-alpha 2k - 20-Jul-2000
                           Ca-II k - 31-Jul-2010
                           Continuum - 7-Jan-2011
 
-    Parameters
-    ----------
-    timerange: `~sunpy.time.TimeRange`
-        time range for which data is to be downloaded.
-        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-    Instrument: Fixed argument = 'kanzelhohe'
-    Wavelength: Fixed argument = astropy.units.quantity.Quantity
-                The physical value of wavelength will belong to any of [5460, 6563, 32768]
-                and units will be Angstroms.
+    The physical value of wavelength specified in the query to KANZClient
+    should belong to any of [5460, 6563, 32768] (in Angstroms).
 
-    Returns
-    -------
-    urls: `list`
-    list of urls corresponding to requested time range.
     Examples
     --------
     >>> from sunpy.net import Fido, attrs as a
@@ -41,7 +30,7 @@ class KanzelhoheClient(GenericClient):
     >>> print(results)  #doctest: +REMOTE_DATA
     Results from 1 Provider:
     <BLANKLINE>
-    1 Results from the KanzelhoheClient:
+    1 Results from the KANZClient:
          Start Time           End Time      Source   Instrument      Wavelength
     ------------------- ------------------- ------ -------------- ---------------
     2015-12-28 00:00:00 2015-12-28 09:03:00    KSO Kanzelhöhe HA2 6563.0 Angstrom
@@ -52,7 +41,7 @@ class KanzelhoheClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        Return list of URLS corresponding to value of input timerange.
+        Return list of URL(s) corresponding to the value of input timerange.
 
         Parameters
         ----------
@@ -62,7 +51,7 @@ class KanzelhoheClient(GenericClient):
         Returns
         -------
         urls : `list`
-            list of URLs corresponding to the requested time range
+            list of URLs corresponding to the requested time range.
         """
         wave = kwargs['wavelength']
         wave_float = (wave.min if isinstance(wave, a.Wavelength) else wave.min()).value
@@ -98,7 +87,7 @@ class KanzelhoheClient(GenericClient):
 
     def _makeimap(self):
         """
-        Helper Function:used to hold information about source.
+        Helper Function: used to hold information about source.
         """
         self.map_['source'] = 'KSO'  # TODO: check with kanzelhohe
         self.map_['instrument'] = 'Kanzelhöhe HA2'
@@ -108,21 +97,23 @@ class KanzelhoheClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Answers whether client can service the query.
+        Answers whether a client can service the query.
 
         Parameters
         ----------
-        query : list of query objects
+        query : `list`
+            A list of of query objects.
 
         Returns
         -------
-        boolean: answer as to whether client can service the query
+        `bool`
+            `True` if this client can service the query, otherwise `False`.
         """
         chk_var = 0
         for x in query:
             if x.__class__.__name__ == 'Instrument' and isinstance(
                     x.value, str) and x.value.lower() in [
-                        'kanzelhohe', 'kanzelhoehe', 'kanzelhöhe']:
+                        'kanzelhohe', 'kanzelhoehe', 'kanzelhöhe', 'kanz']:
                 chk_var += 1
             if x.__class__.__name__ == 'Wavelength':
                 chk_var += 1
