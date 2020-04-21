@@ -33,7 +33,6 @@ class BBSOClient(GenericClient):
     <BLANKLINE>
     2 Results from the BBSOClient:
          Start Time           End Time      ... Instrument    Wavelength
-           str19               str19        ...    str4         str15
     ------------------- ------------------- ... ---------- ---------------
     2016-05-18 15:30:25 2016-05-18 15:30:25 ...       BBSO 6562.8 Angstrom
     2016-05-18 16:00:33 2016-05-18 16:00:33 ...       BBSO 6562.8 Angstrom
