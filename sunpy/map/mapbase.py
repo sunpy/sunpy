@@ -899,9 +899,8 @@ class GenericMap(NDData):
 
     @u.quantity_input
     def resample(self, dimensions: u.pixel, method='linear'):
-        """Returns a new Map that has been resampled up or down
-
-        Arbitrary resampling of the Map to new dimension sizes.
+        """
+        Resample to new dimension sizes.
 
         Uses the same parameters and creates the same co-ordinate lookup points
         as IDL''s congrid routine, which apparently originally came from a
@@ -910,24 +909,23 @@ class GenericMap(NDData):
         Parameters
         ----------
         dimensions : `~astropy.units.Quantity`
-            Pixel dimensions that new Map should have.
-            Note: the first argument corresponds to the 'x' axis and the second
-            argument corresponds to the 'y' axis.
-        method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
+            Output pixel dimensions. The first argument corresponds to the 'x'
+            axis and the second argument corresponds to the 'y' axis.
+        method : str
             Method to use for resampling interpolation.
-                * neighbor - Closest value from original data
-                * nearest and linear - Uses n x 1-D interpolations using
-                  scipy.interpolate.interp1d
-                * spline - Uses ndimage.map_coordinates
+                * ``'neighbor'`` - Take closest value from original data.
+                * ``'nearest'`` and ``'linear'`` - Use n x 1-D interpolations using
+                  `scipy.interpolate.interp1d`.
+                * ``'spline'`` - Use `ndimage.map_coordinates`.
 
         Returns
         -------
         out : `~sunpy.map.GenericMap` or subclass
-            A new Map which has been resampled to the desired dimensions.
+            Resampled map
 
         References
         ----------
-        * `Rebinning <https://scipy-cookbook.readthedocs.io/items/Rebinning.html>`_
+        `Rebinning <https://scipy-cookbook.readthedocs.io/items/Rebinning.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when
