@@ -2,6 +2,7 @@
 This module provides fundamental solar physical constants.
 """
 from astropy.table import Table
+from astropy.time import Time
 
 from sunpy.sun import _constants as _con
 
@@ -9,7 +10,8 @@ __all__ = [
     'get', 'find', 'print_all', 'spectral_classification', 'au', 'mass', 'equatorial_radius',
     'volume', 'surface_area', 'average_density', 'equatorial_surface_gravity',
     'effective_temperature', 'luminosity', 'mass_conversion_rate', 'escape_velocity', 'sfu',
-    'average_angular_size'
+    'average_angular_size', 'sidereal_rotation_rate', 'first_carrington_rotation',
+    'mean_synodic_period'
 ]
 
 constants = _con.physical_constants
@@ -92,12 +94,12 @@ def print_all():
 # Add a list of constants to the docs
 _lines = [
     'The following constants are available:\n',
-    '====================== ============== ================ =================================',
-    '         Name              Value            Unit                 Description',
-    '====================== ============== ================ =================================',
+    '======================================================= ============== ================ =======================================================',  # NOQA
+    '                          Name                              Value            Unit                                 Description                  ',  # NOQA
+    '======================================================= ============== ================ =======================================================',  # NOQA
 ]
 for key, const in constants.items():
-    _lines.append('{:^22} {:^14.9g} {:^16} {}'.format(
+    _lines.append('{:^55} {:^14.9g} {:^16} {:^55}'.format(
         key, const.value, const._unit_string, const.name))
 _lines.append(_lines[1])
 if __doc__ is not None:
@@ -121,3 +123,6 @@ escape_velocity = get('escape velocity')
 sfu = get('solar flux unit')
 # Observable parameters
 average_angular_size = get('average angular size')
+sidereal_rotation_rate = get('sidereal rotation rate')
+first_carrington_rotation = Time(get('first Carrington rotation (JD TT)'), format='jd', scale='tt')
+mean_synodic_period = get('mean synodic period')

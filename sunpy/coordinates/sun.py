@@ -72,12 +72,6 @@ def sky_position(t='now', equinox_of_date=True):
     return ra, dec
 
 
-# Time in Julian Days (TT) of the start of the first Carrington rotation
-_FIRST_CROT_JD = 2398167.4
-# Length of a Carrington rotation in days
-_CARRINGTON_ROTATION_PERIOD = 27.2753
-
-
 def carrington_rotation_time(crot):
     """
     Return the time of a given Carrington rotation.
@@ -94,15 +88,16 @@ def carrington_rotation_time(crot):
     -------
     astropy.time.Time
     """
-    estimate = (_CARRINGTON_ROTATION_PERIOD * (crot - 1)) + _FIRST_CROT_JD
+    estimate = (constants.mean_synodic_period.to_value('day') *
+                (crot - 1)) + constants.first_carrington_rotation
 
     # The above estimate is inaccurate (see comments below in carrington_rotation_number),
     # so put the estimate into carrington_rotation_number to determine a correction amount
     def refine(estimate):
-        crot_estimate = carrington_rotation_number(t=Time(estimate, scale='tt', format='jd'))
+        crot_estimate = carrington_rotation_number(estimate)
         dcrot = crot - crot_estimate
         # Correct the estimate using a linear fraction of the Carrington rotation period
-        return estimate + (dcrot * _CARRINGTON_ROTATION_PERIOD)
+        return estimate + (dcrot * constants.mean_synodic_period)
 
     # Perform two iterations of the correction to achieve sub-second accuracy
     estimate = refine(estimate)
@@ -127,7 +122,7 @@ def carrington_rotation_number(t='now'):
     # Estimate the Carrington rotation number by dividing the time that has elapsed since
     # JD 2398167.4 (late in the day on 1853 Nov 9), see Astronomical Algorithms (Meeus 1998, p.191),
     # by the mean synodic period (27.2753 days)
-    estimate = (time.tt.jd - _FIRST_CROT_JD) / _CARRINGTON_ROTATION_PERIOD + 1
+    estimate = (time - constants.first_carrington_rotation) / constants.mean_synodic_period + 1
     estimate_int, estimate_frac = divmod(estimate, 1)
 
     # The fractional rotation number from the above estimate is inaccurate, so calculate the actual
@@ -141,7 +136,7 @@ def carrington_rotation_number(t='now'):
 
     log.debug(f"Carrington rotation number: estimate is {estimate}, actual is {actual}")
 
-    return actual
+    return actual.to_value(u.one)
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -483,7 +478,7 @@ _NODE = SkyCoord(_SOLAR_NORTH_POLE_HCRS.lon + 90*u.deg, 0*u.deg, frame='hcrs')
 # The longitude in the de-tilted frame of the Sun's prime meridian.
 # The IAU (Seidelmann et al. 2007 and later) defines the true longitude of the meridian (i.e.,
 # without light travel time to Earth and aberration effects) as 84.176 degrees eastward at J2000.
-_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + 84.176*u.deg)
+_DLON_MERIDIAN = Longitude(_detilt_lon(_NODE) + constants.get('W_0'))
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -561,7 +556,8 @@ def L0(time='now',
     antetime = (obstime - distance / speed_of_light) if light_travel_time_correction else obstime
 
     # Calculate the de-tilt longitude of the meridian due to the Sun's sidereal rotation
-    dlon_meridian = Longitude(_DLON_MERIDIAN + (antetime - _J2000) * 14.1844*u.deg/u.day)
+    dlon_meridian = Longitude(_DLON_MERIDIAN + (antetime - _J2000)
+                              * constants.sidereal_rotation_rate)
 
     return Longitude(dlon_earth - dlon_meridian)
 

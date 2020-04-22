@@ -247,7 +247,7 @@ def _rotation_matrix_hgs_to_hgc(obstime, observer_distance_from_sun):
     delta_time = (observer_distance_from_sun - earth_distance(obstime)) / speed_of_light
 
     # Calculate the corresponding difference in apparent longitude
-    delta_lon = delta_time * 14.1844*u.deg/u.day
+    delta_lon = delta_time * constants.sidereal_rotation_rate
 
     # Rotation is only in longitude, so only around the Z axis
     return rotation_matrix(-(L0(obstime) + delta_lon), 'z')
@@ -499,7 +499,8 @@ def _sun_earth_icrf(time):
 # (See Archinal et al. 2011,
 #   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
 # The orientation of the north pole in ICRS/HCRS is assumed to be constant in time
-_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87*u.deg)
+_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=constants.get('alpha_0'),
+                                                     lat=constants.get('delta_0'))
 
 
 # Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
@@ -839,7 +840,7 @@ def hci_to_hci(from_coo, to_frame):
         return to_frame.realize_frame(from_coo.data)
     else:
         return from_coo.transform_to(HeliographicStonyhurst(obstime=from_coo.obstime)).\
-               transform_to(to_frame)
+            transform_to(to_frame)
 
 
 def _rotation_matrix_obliquity(time):
