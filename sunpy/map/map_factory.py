@@ -23,7 +23,7 @@ from sunpy.util import expand_list
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
-from sunpy.util.functools import _singledispatchmethod
+from sunpy.util.functools import seconddispatch
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -211,7 +211,8 @@ class MapFactory(BasicRegistrationFactory):
 
         return data_header_pairs
 
-    @_singledispatchmethod
+    # Note that post python 3.8 this can be @functools.singledispatchmethod
+    @seconddispatch
     def _parse_arg(self, arg, **kwargs):
         """
         Take a factory input and parse into (data, header) pairs.

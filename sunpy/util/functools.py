@@ -27,19 +27,5 @@ def seconddispatch(func):
     return wrapper
 
 
-def _singledispatchmethod(func):
-    """
-    A variant of `functools.singledispatch` that can be used on methods.
-    As of python 3.8, this can be replaced by the stdlib `functools.singledispatchmethod` decorator.
-    """
-    dispatcher = functools.singledispatch(func)
-
-    def wrapper(*args, **kw):
-        return dispatcher.dispatch(args[1].__class__)(*args, **kw)
-    wrapper.register = dispatcher.register
-    functools.update_wrapper(wrapper, func)
-    return wrapper
-
-
 # Extend the docstring with the original docs
 seconddispatch.__doc__ += functools.singledispatch.__doc__
