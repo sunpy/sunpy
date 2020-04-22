@@ -3,6 +3,7 @@ from collections import OrderedDict
 import warnings
 import pathlib
 import glob
+from urllib.request import urlopen, Request
 
 import numpy as np
 import astropy.io.fits
@@ -22,12 +23,12 @@ from sunpy.util import expand_list
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
+from sunpy.util.functools import seconddispatch
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
-from urllib.request import urlopen
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
@@ -157,7 +158,7 @@ class MapFactory(BasicRegistrationFactory):
 
     def _parse_args(self, *args, **kwargs):
         """
-        Parses an args list for data-header pairs.
+        Parses an args list into data-header pairs.
 
         args can contain any mixture of the following entries:
         * tuples of data,header
@@ -179,14 +180,11 @@ class MapFactory(BasicRegistrationFactory):
                          'directory1',
                          '*.fits')
         """
-        data_header_pairs = list()
-        already_maps = list()
-
         # Account for nested lists of items
         args = expand_list(args)
 
-        # Take array, header pairs and put them in a tuple
-        # This makes each item in the args list correspond to exactly one data, header pair
+        # Sanitise the input so that each 'type' of input corresponds to a different
+        # class, so single dispatch can be used later
         nargs = len(args)
         i = 0
         while i < nargs:
@@ -197,58 +195,75 @@ class MapFactory(BasicRegistrationFactory):
                 header = args.pop(i)
                 args.insert(i, (data, header))
                 nargs -= 1
+            elif isinstance(arg, str) and _is_url(arg):
+                # Repalce URL string with a Request object to dispatch on later
+                args[i] = Request(arg)
+            elif _possibly_a_path(arg):
+                # Repalce path strings with Path objects
+                args[i] = pathlib.Path(arg)
             i += 1
 
-        # For each of the arguments, handle each of the cases
+        # Parse the arguments
+        # Note that this list can also contain GenericMaps if they are directly given to the factory
+        data_header_pairs = []
         for arg in args:
-            # Data-header or data-WCS pair
-            if isinstance(arg, tuple):
-                data, header = arg
-                if isinstance(header, WCS):
-                    header = header.to_header()
+            data_header_pairs += self._parse_arg(arg, **kwargs)
 
-                if self._validate_meta(header):
-                    pair = (data, OrderedDict(header))
-                    data_header_pairs.append(pair)
+        return data_header_pairs
 
-            # A database Entry
-            elif isinstance(arg, DatabaseEntryType):
-                data_header_pairs += self._read_file(arg.path, **kwargs)
+    # Note that post python 3.8 this can be @functools.singledispatchmethod
+    @seconddispatch
+    def _parse_arg(self, arg, **kwargs):
+        """
+        Take a factory input and parse into (data, header) pairs.
+        Must return a list, even if only one pair is returned.
+        """
+        raise ValueError(f"Invalid input: {arg}")
 
-            # Already a Map
-            elif isinstance(arg, GenericMap):
-                already_maps.append(arg)
+    @_parse_arg.register(tuple)
+    def _parse_tuple(self, arg, **kwargs):
+        # Data-header or data-WCS pair
+        data, header = arg
+        if isinstance(header, WCS):
+            header = header.to_header()
 
-            # URL
-            elif isinstance(arg, str) and _is_url(arg):
-                url = arg
-                path = str(cache.download(url).absolute())
-                pairs = self._read_file(path, **kwargs)
-                data_header_pairs += pairs
+        pair = data, header
+        if self._validate_meta(header):
+            pair = (data, OrderedDict(header))
+        return [pair]
 
-            # File system path (file or directory or glob)
-            elif _possibly_a_path(arg):
-                path = pathlib.Path(arg).expanduser()
-                if _is_file(path):
-                    pairs = self._read_file(path, **kwargs)
-                    data_header_pairs += pairs
-                elif _is_dir(path):
-                    for afile in sorted(path.glob('*')):
-                        data_header_pairs += self._read_file(afile, **kwargs)
-                elif glob.glob(os.path.expanduser(arg)):
-                    for afile in sorted(glob.glob(os.path.expanduser(arg))):
-                        data_header_pairs += self._read_file(afile, **kwargs)
+    @_parse_arg.register(DatabaseEntryType)
+    def _parse_dbase(self, arg, **kwargs):
+        return self._read_file(arg.path, **kwargs)
 
-                else:
-                    raise ValueError(f'Did not find any files at {arg}')
+    @_parse_arg.register(GenericMap)
+    def _parse_map(self, arg, **kwargs):
+        return [arg]
 
-            else:
-                raise ValueError(f"Invalid input: {arg}")
+    @_parse_arg.register(Request)
+    def _parse_url(self, arg, **kwargs):
+        url = arg.full_url
+        path = str(cache.download(url).absolute())
+        pairs = self._read_file(path, **kwargs)
+        return pairs
 
-        # TODO:
-        # In the end, if there are already maps it should be put in the same
-        # order as the input, currently they are not.
-        return data_header_pairs, already_maps
+    @_parse_arg.register(pathlib.Path)
+    def _parse_path(self, arg, **kwargs):
+        path = arg.expanduser()
+        if _is_file(path):
+            return self._read_file(path, **kwargs)
+        elif _is_dir(path):
+            pairs = []
+            for afile in sorted(path.glob('*')):
+                pairs += self._read_file(afile, **kwargs)
+            return pairs
+        elif glob.glob(os.path.expanduser(arg)):
+            pairs = []
+            for afile in sorted(glob.glob(os.path.expanduser(arg))):
+                pairs += self._read_file(afile, **kwargs)
+            return pairs
+        else:
+            raise ValueError(f'Did not find any files at {arg}')
 
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
@@ -276,14 +291,15 @@ class MapFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
         as `memmap` for FITS files.
         """
-
-        data_header_pairs, already_maps = self._parse_args(*args, **kwargs)
-
+        data_header_pairs = self._parse_args(*args, **kwargs)
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType
         # matches the arguments.  If it does, use that type.
         for pair in data_header_pairs:
+            if isinstance(pair, GenericMap):
+                new_maps.append(pair)
+                continue
             data, header = pair
             meta = MetaDict(header)
 
@@ -295,8 +311,6 @@ class MapFactory(BasicRegistrationFactory):
                 if not silence_errors:
                     raise
                 warnings.warn(f"One of the data, header pairs failed to validate with: {e}")
-
-        new_maps += already_maps
 
         if not len(new_maps):
             raise RuntimeError('No maps loaded')
