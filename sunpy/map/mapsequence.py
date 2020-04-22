@@ -195,7 +195,10 @@ class MapSequence:
         """
         Display a quicklook summary of the MapSequence instance using the default web browser.
 
-        Click on the ``<`` and ``>`` buttons to step through the individual maps.
+        Click on the |larr| and |rarr| buttons to step through the individual maps.
+
+        .. |larr|   unicode:: U+02190 .. LEFTWARDS ARROW
+        .. |rarr|   unicode:: U+02192 .. RIGHTWARDS ARROW
 
         Notes
         -----
@@ -213,6 +216,20 @@ class MapSequence:
         ...           sunpy.data.sample.EIT_195_IMAGE,
         ...           sequence=True)  # doctest: +REMOTE_DATA
         >>> seq.quicklook()  # doctest: +SKIP
+
+        (which will open the following content in the default web browser)
+
+        .. generate:: html
+            :html_border:
+
+            from sunpy.map import Map
+            import sunpy.data.sample
+            seq = Map(sunpy.data.sample.HMI_LOS_IMAGE,
+                      sunpy.data.sample.AIA_1600_IMAGE,
+                      sunpy.data.sample.EIT_195_IMAGE,
+                      sequence=True)
+            print(seq._repr_html_())
+
         """
         with NamedTemporaryFile('w', delete=False, prefix='sunpy.map.', suffix='.html') as f:
             url = 'file://' + f.name
@@ -222,29 +239,6 @@ class MapSequence:
                     <body>{self._repr_html_()}</body>
                 </html>"""))
         webbrowser.open_new_tab(url)
-
-    @classmethod
-    def _append_quicklook_example_to_docstring(cls):
-        """
-        Appends the HTML output for the example in the docstring for the
-        :meth:`~sunpy.map.MapSequence.quicklook` method.  This method is intended to be called only
-        during Sphinx builds of the documentation (and before `sunpy.map` is fully imported).
-        """
-        from sunpy.map.map_factory import Map  # have to import from map_factory
-        import sunpy.data.sample
-        seq = Map(sunpy.data.sample.HMI_LOS_IMAGE,
-                  sunpy.data.sample.AIA_1600_IMAGE,
-                  sunpy.data.sample.EIT_195_IMAGE,
-                  sequence=True)
-        html_string = textwrap.indent(seq._repr_html_(), ' ' * 16)
-        cls.quicklook.__doc__ += textwrap.indent(textwrap.dedent(f"""\
-            (which will open the following content in the default web browser)
-
-            .. raw:: html
-
-                <div style="border:1px solid black">{html_string}</div>
-
-            """), ' ' * 8)
 
     # Sorting methods
     @classmethod
