@@ -785,11 +785,6 @@ class JSOCClient(BaseClient):
                 # break because we can skip adding {} at the end of pkstr, if the primekey
                 # dict is empty.
 
-        if not pkstr:
-            # pkstr cannot be totally empty
-            error_message = "Atleast one PrimeKey must be passed."
-            raise ValueError(error_message)
-
         dataset = '{series}{primekey}{segment}'.format(series=series,
                                                        primekey=pkstr,
                                                        segment=segment)
