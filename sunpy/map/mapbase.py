@@ -376,6 +376,17 @@ class GenericMap(NDData):
         >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
         >>> smap = Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> smap.quicklook()  # doctest: +SKIP
+
+        (which will open the following content in the default web browser)
+
+        .. generate:: html
+            :html_border:
+
+            from sunpy.map import Map
+            import sunpy.data.sample
+            smap = Map(sunpy.data.sample.AIA_171_IMAGE)
+            print(smap._repr_html_())
+
         """
         with NamedTemporaryFile('w', delete=False, prefix='sunpy.map.', suffix='.html') as f:
             url = 'file://' + f.name
@@ -385,26 +396,6 @@ class GenericMap(NDData):
                     <body>{self._repr_html_()}</body>
                 </html>"""))
         webbrowser.open_new_tab(url)
-
-    @classmethod
-    def _append_quicklook_example_to_docstring(cls):
-        """
-        Appends the HTML output for the example in the docstring for the
-        :meth:`~sunpy.map.GenericMap.quicklook` method.  This method is intended to be called only
-        during Sphinx builds of the documentation (and before `sunpy.map` is fully imported).
-        """
-        from sunpy.map.map_factory import Map  # have to import from map_factory
-        import sunpy.data.sample
-        smap = Map(sunpy.data.sample.AIA_171_IMAGE)
-        html_string = textwrap.indent(smap._repr_html_(), ' ' * 16)
-        cls.quicklook.__doc__ += textwrap.indent(textwrap.dedent(f"""\
-            (which will open the following content in the default web browser)
-
-            .. raw:: html
-
-                <div style="border:1px solid black">{html_string}</div>
-
-            """), ' ' * 8)
 
     @classmethod
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
