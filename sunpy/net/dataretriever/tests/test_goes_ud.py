@@ -134,7 +134,7 @@ def test_fido(time, instrument):
     assert len(response) == qr._numfile
 
 
-@settings(deadline=50000)
+@settings(deadline=10000, max_examples=10)
 @pytest.mark.remote_data
 @given(goes_time())
 def test_time_for_url(LCClient, time):
