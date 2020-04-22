@@ -812,13 +812,3 @@ def test_quicklook(aia171_test_map):
         html_string = f.read()
 
         assert aia171_test_map._repr_html_() in html_string
-
-@pytest.mark.remote_data
-def test_append_quicklook_example_to_docstring():
-    old_docstring = sunpy.map.GenericMap.quicklook.__doc__
-
-    sunpy.map.GenericMap._append_quicklook_example_to_docstring()
-
-    assert sunpy.map.GenericMap.quicklook.__doc__ != old_docstring
-
-    sunpy.map.GenericMap.quicklook.__doc__ = old_docstring
