@@ -5,6 +5,7 @@ This module provies a non-comprehensive collection of solar physical constants.
 import astropy.constants.astropyconst20 as astrocon
 from astropy.constants import Constant
 from astropy.time import Time
+import astropy.units as u
 
 __all__ = ['physical_constants']
 
@@ -12,7 +13,6 @@ physical_constants = {}
 
 # references
 gsfc_fact = "https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html"
-aa = "Astronomical Almanac (2013 edition)"
 allen = "Allen's Astrophysical Quantities 4th Ed."
 archinal = 'Archinal et al. 2018'
 asplund = "Asplund et al. 2006"
@@ -168,14 +168,16 @@ physical_constants['first Carrington rotation (JD TT)'] = Constant('',
                                                                    'first Carrington '
                                                                    'rotation (JD TT)',
                                                                    first_carrington_rotation.tt.jd,
-                                                                   'day', 0,
+                                                                   'day', 0.1,
                                                                    meeus, system='si')
 
 # length of the mean Carrington rotation as seen from Earth
+# the rotation rate of the Sun appears to be slower by the rate at which the Earth orbits the Sun
+period = 1 / (physical_constants['sidereal rotation rate'] / (360*u.deg) - 1 / u.yr)
 physical_constants['mean synodic period'] = Constant('',
                                                      'mean synodic period',
-                                                     27.2753, 'day', 0,
-                                                     aa, system='si')
+                                                     period.to_value('day'), 'day', 0,
+                                                     archinal, system='si')
 
 # Sun's north pole is oriented RA=286.13 deg, Dec=63.87 deg in ICRS and HCRS
 physical_constants['alpha_0'] \
