@@ -169,7 +169,10 @@ keys.::
                'metallicity', 'sunspot cycle', 'average intensity',
                'effective temperature', 'mass conversion rate', 'center density',
                'center temperature', 'absolute magnitude', 'mean energy production',
-               'ellipticity', 'GM'])
+               'ellipticity', 'GM', 'W_0', 'sidereal rotation rate',
+               'first Carrington rotation (JD TT)',
+               'mean synodic period', 'alpha_0',
+               'delta_0'])
 
 You can also use the function `sunpy.constants.print_all()` to print out a table of all of the values
 available. These constants are provided as a convenience so that everyone is using the same
