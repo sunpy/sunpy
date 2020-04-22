@@ -1,4 +1,5 @@
 """SOHO Map subclass definitions"""
+import warnings
 
 import numpy as np
 from matplotlib import colors
@@ -10,7 +11,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
-
+from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
@@ -36,8 +37,14 @@ class EITMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        if 'cunit1' not in header:
+            warnings.warn("Could not find CUNIT1 in header, assuming CUNIT1 is 'arcsec'",
+                          SunpyUserWarning)
+            header['cunit1'] = header.get('cunit1', 'arcsec')
+        if 'cunit2' not in header:
+            warnings.warn("Could not find CUNIT2 in header, assuming CUNIT2 is 'arcsec'",
+                          SunpyUserWarning)
+            header['cunit2'] = header.get('cunit2', 'arcsec')
 
         super().__init__(data, header, **kwargs)
 
@@ -97,9 +104,15 @@ class LASCOMap(GenericMap):
     """
 
     def __init__(self, data, header, **kwargs):
-
-        header['cunit1'] = header['cunit1'].lower()
-        header['cunit2'] = header['cunit2'].lower()
+        # Assume pixel units are arcesc if not given
+        if 'cunit1' not in header:
+            warnings.warn("Could not find CUNIT1 in header, assuming CUNIT1 is 'arcsec'",
+                          SunpyUserWarning)
+            header['cunit1'] = header.get('cunit1', 'arcsec')
+        if 'cunit2' not in header:
+            warnings.warn("Could not find CUNIT2 in header, assuming CUNIT2 is 'arcsec'",
+                          SunpyUserWarning)
+            header['cunit2'] = header.get('cunit2', 'arcsec')
 
         super().__init__(data, header, **kwargs)
 
@@ -164,8 +177,14 @@ class MDIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        if 'cunit1' not in header:
+            warnings.warn("Could not find CUNIT1 in header, assuming CUNIT1 is 'arcsec'",
+                          SunpyUserWarning)
+            header['cunit1'] = header.get('cunit1', 'arcsec')
+        if 'cunit2' not in header:
+            warnings.warn("Could not find CUNIT2 in header, assuming CUNIT2 is 'arcsec'",
+                          SunpyUserWarning)
+            header['cunit2'] = header.get('cunit2', 'arcsec')
         super().__init__(data, header, **kwargs)
 
         # Fill in some missing or broken info

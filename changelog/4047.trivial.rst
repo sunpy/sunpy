@@ -1,0 +1,1 @@
+Several map sources in `sunpy.map.sources` assume 'arcsec' units. If this assumption is raised a warning is now raised, instead of the assumption happening silently.

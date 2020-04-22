@@ -1,12 +1,12 @@
 """RHESSI Map subclass definitions"""
 #pylint: disable=W0221,W0222,E1121
+import warnings
+
+from sunpy.map import GenericMap
+from sunpy.util.exceptions import SunpyUserWarning
 
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
-
-from sunpy.map import GenericMap
-
-
 __all__ = ['RHESSIMap']
 
 
@@ -37,8 +37,14 @@ class RHESSIMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        if 'cunit1' not in header:
+            warnings.warn("Could not find CUNIT1 in header, assuming CUNIT1 is 'arcsec'",
+                          SunpyUserWarning)
+            header['cunit1'] = header.get('cunit1', 'arcsec')
+        if 'cunit2' not in header:
+            warnings.warn("Could not find CUNIT2 in header, assuming CUNIT2 is 'arcsec'",
+                          SunpyUserWarning)
+            header['cunit2'] = header.get('cunit2', 'arcsec')
 
         super().__init__(data, header, **kwargs)
 

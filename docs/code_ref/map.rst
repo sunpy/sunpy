@@ -105,12 +105,11 @@ demonstrated by the following example.
 .. code-block:: python
 
     import sunpy.map
+
     class FutureMap(sunpy.map.GenericMap):
 
         def __init__(self, data, header, **kwargs):
-
-            super(FutureMap, self).__init__(data, header, **kwargs)
-
+            super().__init__(data, header, **kwargs)
             # Any Future Instrument specific keyword manipulation
 
        # Specify a classmethod that determines if the data-header pair matches

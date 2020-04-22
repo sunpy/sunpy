@@ -1,14 +1,16 @@
 """TRACE Map subclass definitions"""
 #pylint: disable=W0221,W0222,E1101,E1121
 
-__author__ = "Jack Ireland"
-__email__ = "jack.ireland@nasa.gov"
+import warnings
 
 from astropy.visualization import LogStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.util.exceptions import SunpyUserWarning
 
+__author__ = "Jack Ireland"
+__email__ = "jack.ireland@nasa.gov"
 __all__ = ['TRACEMap']
 
 
@@ -47,8 +49,14 @@ class TRACEMap(GenericMap):
 
     def __init__(self, data, header, **kwargs):
         # Assume pixel units are arcesc if not given
-        header['cunit1'] = header.get('cunit1', 'arcsec')
-        header['cunit2'] = header.get('cunit2', 'arcsec')
+        if 'cunit1' not in header:
+            warnings.warn("Could not find CUNIT1 in header, assuming CUNIT1 is 'arcsec'",
+                          SunpyUserWarning)
+            header['cunit1'] = header.get('cunit1', 'arcsec')
+        if 'cunit2' not in header:
+            warnings.warn("Could not find CUNIT2 in header, assuming CUNIT2 is 'arcsec'",
+                          SunpyUserWarning)
+            header['cunit2'] = header.get('cunit2', 'arcsec')
 
         GenericMap.__init__(self, data, header, **kwargs)
 
