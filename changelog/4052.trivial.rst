@@ -1,0 +1,1 @@
+Improved the error message raised by the Map factory when a map matches multiple source map types.
