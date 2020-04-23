@@ -16,7 +16,8 @@ from .sources.lyra import LYRAClient
 from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
+from .sources.gong_synoptic import GongSynopticClient
 
-__all__ = ['QueryResponse', 'GenericClient', 'EVEClient', 'GBMClient',
-           'XRSClient', 'SUVIClient', 'LYRAClient', 'NOAAIndicesClient',
-           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', ]
+__all__ = ['QueryResponse', 'GenericClient', 'EVEClient', 'GBMClient', 'XRSClient',
+           'GongSynopticClient', 'SUVIClient', 'LYRAClient', 'NOAAIndicesClient',
+           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient']
