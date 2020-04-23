@@ -182,16 +182,18 @@ def test_lookup_records_errors():
 
 
 @pytest.mark.remote_data
-def test_make_recordset_errors():
-    d1 = {'series': 'aia.lev1_euv_12s'}
-    with pytest.raises(ValueError):
-        client._make_recordset(**d1)
+def test_make_recordset_series():
+    # Check that a series by itself works
+    client._make_recordset(series='hmi.mrsynop_small_720s')
 
-    d1.update({
-        'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
-        'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai'),
-        'primekey': {'T_REC': '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'}
-    })
+
+@pytest.mark.remote_data
+def test_make_recordset_errors():
+    d1 = {'series': 'aia.lev1_euv_12s',
+          'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
+          'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai'),
+          'primekey': {'T_REC': '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'}
+          }
 
     with pytest.raises(ValueError):
         client._make_recordset(**d1)
