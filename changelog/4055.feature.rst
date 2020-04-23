@@ -1,0 +1,2 @@
+Created `~sunpy.net.dataretriever.sources.GongSynopticClient` for accessing merged data product
+for GONG Synoptic Maps.
