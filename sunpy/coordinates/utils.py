@@ -1,12 +1,15 @@
 """
 Miscellaneous utilities related to coordinates
 """
+import warnings
+
 import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord, BaseCoordinateFrame
 
 from sunpy.coordinates import Heliocentric
+from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['GreatArc', 'get_rectangle_coordinates']
 
@@ -338,6 +341,18 @@ def get_rectangle_coordinates(bottom_left, *, top_right = None, width: u.deg = N
         raise ValueError("Invalid input, either bottom_left and top_right "
                          "or bottom_left and height and width should be provided.")
 
+    if width is not None:
+        if width < 0*u.deg:
+            raise ValueError("The specified width cannot be negative.")
+        if width > 360*u.deg:
+            raise ValueError("The specified width cannot be greater than 360 degrees.")
+
+    if height is not None:
+        if height < 0*u.deg:
+            raise ValueError("The specified height cannot be negative.")
+        if bottom_left.spherical.lat + height > 90*u.deg:
+            raise ValueError("The specified height exceeds the maximum latitude.")
+
     if bottom_left.shape == (2,):
         top_right = bottom_left[1]
         bottom_left = bottom_left[0]
@@ -357,5 +372,14 @@ def get_rectangle_coordinates(bottom_left, *, top_right = None, width: u.deg = N
 
         if isinstance(bottom_left, BaseCoordinateFrame):
             top_right = top_right.frame
+
+    if top_right.spherical.lon < bottom_left.spherical.lon:
+        warnings.warn("The rectangle is inverted in the left/right (longitude) direction, possibly "
+                      f"due to the longitude wrap angle ({bottom_left.spherical.lon.wrap_angle}), "
+                      "and may lead to unintended behavior.", SunpyUserWarning)
+
+    if top_right.spherical.lat < bottom_left.spherical.lat:
+        warnings.warn("The rectangle is inverted in the bottom/top (latitude) direction "
+                      "and may lead to unintended behavior.", SunpyUserWarning)
 
     return bottom_left, top_right
