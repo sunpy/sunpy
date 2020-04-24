@@ -149,9 +149,24 @@ class GongSynopticClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr = ['Time', 'Instrument']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
+        from sunpy.net import attrs as a
+
+        required = {a.Time, a.Instrument}
+        optional = {a.Physobs, a.gong_synoptic.ExtentType}
+        if not cls.check_attr_types_in_query(query, required, optional):
+            return False
+
+        matches = True
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'gong':
-                return all(chklist)
-        return False
+            if isinstance(x, a.Instrument) and x.value.lower() != 'gong':
+                matches = False
+            if isinstance(x, a.Physobs) and x.value.lower() != 'los_magnetic_field':
+                matches = False
+            if isinstance(x, a.gong_synoptic.ExtentType) and x.value.lower() != 'synoptic':
+                matches = False
+
+        return matches
+
+    @classmethod
+    def _attrs_module(cls):
+        return 'gong_synoptic', 'sunpy.net.dataretriever.attrs.gong_synoptic'

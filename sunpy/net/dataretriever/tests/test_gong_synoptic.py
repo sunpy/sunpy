@@ -46,6 +46,20 @@ def test_can_handle_query(time):
     assert ans2 is False
     ans3 = gong_synoptic.GongSynopticClient._can_handle_query(time, Instrument('goes'))
     assert ans3 is False
+    ans4 = gong_synoptic.GongSynopticClient._can_handle_query(
+        time, Instrument('gong'), a.Physobs('LOS_MAGNETIC_FIELD'),
+        a.gong_synoptic.ExtentType('synoptic'))
+    assert ans4 is True
+    ans4 = gong_synoptic.GongSynopticClient._can_handle_query(
+        time, Instrument('gong'), a.Physobs('LOS_MAGNETIC_FIELD'),
+        a.gong_synoptic.ExtentType('synoptic'))
+    assert ans4 is True
+    ans5 = gong_synoptic.GongSynopticClient._can_handle_query(
+        time, Instrument('gong'), a.gong_synoptic.ExtentType('synoptic'))
+    assert ans5 is True
+    ans6 = gong_synoptic.GongSynopticClient._can_handle_query(
+        time, Instrument('gong'), a.gong_synoptic.ExtentType('FULL_DISK'))
+    assert ans6 is False
 
 
 @pytest.mark.parametrize("time", [
