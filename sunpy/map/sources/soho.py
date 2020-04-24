@@ -11,7 +11,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 
-__all__ = ['EITMap', 'LASCOMap', 'MDIMap']
+__all__ = ['EITMap', 'LASCOMap', 'MDIMap', 'MDISynopticMap']
 
 
 class EITMap(GenericMap):
@@ -172,9 +172,17 @@ class MDIMap(GenericMap):
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)
         if abs(vmin) > abs(vmax):
-            self.plot_settings['norm'] = colors.Normalize(-vmin, vmin)
+            self.plot_settings['norm'] = colors.Normalize(-abs(vmin), abs(vmin))
         else:
-            self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
+            self.plot_settings['norm'] = colors.Normalize(-abs(vmax), abs(vmax))
+
+    @staticmethod
+    def _is_mdi_map(header):
+        return header.get('instrume') == 'MDI' or header.get('camera') == 'MDI'
+
+    @staticmethod
+    def _is_synoptic_map(header):
+        return 'Synoptic Chart' in header.get('CONTENT', '')
 
     @property
     def _supported_observer_coordinates(self):
@@ -203,4 +211,29 @@ class MDIMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an MDI image"""
-        return header.get('instrume') == 'MDI' or header.get('camera') == 'MDI'
+        return cls._is_mdi_map(header) and not cls._is_synoptic_map(header)
+
+
+class MDISynopticMap(MDIMap):
+    """
+    SOHO MDI synoptic magnetogram Map.
+
+    See the docstring of `MDIMap` for information on the MDI instrument.
+    """
+    def __init__(self, data, header, **kwargs):
+        # FITS doesn't like "Degree" as a unit
+        if header['cunit1'] == 'Degree':
+            header['cunit1'] = 'deg'
+        # Sine Latitude is not a valid unit - see Thompson 2005, section 5.5
+        # for how to properly represent the cylindrical equal area (CEA) projection
+        if header['cunit2'] == 'Sine Latitude':
+            header['cdelt2'] = 180 / np.pi * header['cdelt2']
+            header['cunit2'] = 'deg'
+        if 'date-obs' not in header:
+            header['date-obs'] = header['t_obs']
+        super().__init__(data, header, **kwargs)
+
+    @classmethod
+    def is_datasource_for(cls, data, header, **kwargs):
+        """Determines if header corresponds to an MDI image"""
+        return cls._is_mdi_map(header) and cls._is_synoptic_map(header)
