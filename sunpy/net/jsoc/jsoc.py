@@ -787,8 +787,11 @@ class JSOCClient(BaseClient):
 
         if not pkstr:
             # pkstr cannot be totally empty
-            error_message = "Atleast one PrimeKey must be passed."
-            raise ValueError(error_message)
+            #
+            # Note that whilst it is technically posisble to just search by series,
+            # this is not allowed here, because some of these would be very large
+            # searches that would make JSOC sad
+            raise ValueError("At least one PrimeKey, time, or wavelength must be passed.")
 
         dataset = '{series}{primekey}{segment}'.format(series=series,
                                                        primekey=pkstr,
