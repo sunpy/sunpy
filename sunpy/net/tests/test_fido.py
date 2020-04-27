@@ -124,6 +124,15 @@ def test_save_path_pathlib(tmpdir):
         assert f"eve{os.path.sep}0" in f
 
 
+@pytest.mark.remote_data
+def test_save_path_cwd(tmpdir):
+    qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
+
+    # Test when path is ./ for current working directory
+    files = Fido.fetch(qr, path="./")
+    for f in files:
+        assert pathlib.Path.cwd().joinpath(f).exists()
+
 """
 Factory Tests
 """

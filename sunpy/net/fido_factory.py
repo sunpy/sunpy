@@ -332,7 +332,10 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         """
         if path is not None:
-            exists = list(filter(lambda p: p.exists(), Path(path).parents))
+            print(path)
+
+            exists = list(filter(lambda p: p.exists(), Path(path).resolve().parents))
+            print(exists)
             if not os.access(exists[0], os.W_OK):
                 raise PermissionError('You do not have permission to write'
                                       f' to the directory {exists[0]}.')
