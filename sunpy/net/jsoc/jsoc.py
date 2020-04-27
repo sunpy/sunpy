@@ -791,7 +791,7 @@ class JSOCClient(BaseClient):
             # Note that whilst it is technically posisble to just search by series,
             # this is not allowed here, because some of these would be very large
             # searches that would make JSOC sad
-            raise ValueError("At least one PrimeKey, time, or wavelength must be passed.")
+            raise ValueError("Time, Wavelength or an explicit PrimeKey must be specified.")
 
         dataset = '{series}{primekey}{segment}'.format(series=series,
                                                        primekey=pkstr,
