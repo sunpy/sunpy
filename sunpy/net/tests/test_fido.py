@@ -127,7 +127,7 @@ def test_save_path_cwd(tmpdir):
     qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
 
     # Test when path is ./ for current working directory
-    os.chdir(tmpdir) # move into temp directory
+    os.chdir(tmpdir)  # move into temp directory
     files = Fido.fetch(qr, path="./")
     for f in files:
         assert pathlib.Path.cwd().joinpath(f).exists()
