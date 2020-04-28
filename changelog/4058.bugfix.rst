@@ -1,0 +1,1 @@
+Fixes a bug in fido_factory to allow  path="./" in fido.fetch().
