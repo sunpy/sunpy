@@ -11,7 +11,7 @@ __all__ = ['GONGClient', 'FARSIDEClient']
 class GONGClient(GenericClient):
     """
     Returns a list of URLS to GONG files corresponding to value of input timerange.
-    URL source: `ftp://gong2.nso.edu/QR/` and `http://gong2.nso.edu/HA/haf/`.
+    URL source: `http://gong2.nso.edu/oQR/` and `http://gong2.nso.edu/HA/haf/`.
 
     Parameters
     ----------
@@ -67,7 +67,7 @@ class GONGClient(GenericClient):
                          and kwargs['instrument'] in table_instruments.keys())
         wavelength_in = ('wavelength' in kwargs.keys())
 
-        url_pattern_1 = ('ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}{id}qa%y%m%d/'
+        url_pattern_1 = ('http://gong2.nso.edu/oQR/{id}qa/%Y%m/{ObsID}{id}qa%y%m%d/'
                          '{ObsID}{id}qa%y%m%dt%H%M.fits.gz')
         url_pattern_2 = 'http://gong2.nso.edu/HA/haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz'
 
