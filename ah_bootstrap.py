@@ -79,6 +79,13 @@ CFG_OPTIONS = [
 
 # Start off by parsing the setup.cfg file
 
+_err_help_msg = """
+If the problem persists consider installing astropy_helpers manually using pip
+(`pip install astropy_helpers`) or by manually downloading the source archive,
+extracting it, and installing by running `python setup.py install` from the
+root of the extracted source code.
+"""
+
 SETUP_CFG = ConfigParser()
 
 if os.path.exists('setup.cfg'):
@@ -155,6 +162,8 @@ try:
 except (ImportError, AssertionError):
     sys.stderr.write("ERROR: setuptools 30.3 or later is required by astropy-helpers\n")
     sys.exit(1)
+
+SETUPTOOLS_LT_42 = LooseVersion(setuptools.__version__) < LooseVersion('42')
 
 # typing as a dependency for 1.6.1+ Sphinx causes issues when imported after
 # initializing submodule with ah_boostrap.py
@@ -526,7 +535,9 @@ class _Bootstrapper(object):
                         opts['find_links'] = ('setup script', find_links)
                     if index_url is not None:
                         opts['index_url'] = ('setup script', index_url)
-                    if allow_hosts is not None:
+                    # For setuptools>=42, the allow_hosts option can't
+                    # be used because pip doesn't support it.
+                    if allow_hosts is not None and SETUPTOOLS_LT_42:
                         opts['allow_hosts'] = ('setup script', allow_hosts)
                 return opts
 
@@ -919,14 +930,6 @@ def _silence():
     if not exception_occurred:
         sys.stdout = old_stdout
         sys.stderr = old_stderr
-
-
-_err_help_msg = """
-If the problem persists consider installing astropy_helpers manually using pip
-(`pip install astropy_helpers`) or by manually downloading the source archive,
-extracting it, and installing by running `python setup.py install` from the
-root of the extracted source code.
-"""
 
 
 class _AHBootstrapSystemExit(SystemExit):
