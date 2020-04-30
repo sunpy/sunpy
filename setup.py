@@ -10,7 +10,7 @@ from setuptools.config import read_configuration
 sys.path.append(os.path.abspath("."))
 import ah_bootstrap  # noqa
 
-from astropy_helpers.setup_helpers import register_commands, get_package_info # noqa
+from astropy_helpers.setup_helpers import register_commands, get_package_info  # noqa
 
 ################################################################################
 # Override the default Astropy Test Command
