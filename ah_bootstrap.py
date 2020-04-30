@@ -36,6 +36,7 @@ See https://github.com/astropy/astropy-helpers for more details, and for the
 latest version of this module.
 """
 
+from distutils.version import LooseVersion
 import contextlib
 import errno
 import io
@@ -78,6 +79,13 @@ CFG_OPTIONS = [
 ]
 
 # Start off by parsing the setup.cfg file
+
+_err_help_msg = """
+If the problem persists consider installing astropy_helpers manually using pip
+(`pip install astropy_helpers`) or by manually downloading the source archive,
+extracting it, and installing by running `python setup.py install` from the
+root of the extracted source code.
+"""
 
 SETUP_CFG = ConfigParser()
 
@@ -147,7 +155,6 @@ _str_types = (str, bytes)
 # setuptools itself is installed):
 
 # Check that setuptools 30.3 or later is present
-from distutils.version import LooseVersion
 
 try:
     import setuptools
@@ -155,6 +162,8 @@ try:
 except (ImportError, AssertionError):
     sys.stderr.write("ERROR: setuptools 30.3 or later is required by astropy-helpers\n")
     sys.exit(1)
+
+SETUPTOOLS_LT_42 = LooseVersion(setuptools.__version__) < LooseVersion('42')
 
 # typing as a dependency for 1.6.1+ Sphinx causes issues when imported after
 # initializing submodule with ah_boostrap.py
@@ -526,7 +535,9 @@ class _Bootstrapper(object):
                         opts['find_links'] = ('setup script', find_links)
                     if index_url is not None:
                         opts['index_url'] = ('setup script', index_url)
-                    if allow_hosts is not None:
+                    # For setuptools>=42, the allow_hosts option can't
+                    # be used because pip doesn't support it.
+                    if allow_hosts is not None and SETUPTOOLS_LT_42:
                         opts['allow_hosts'] = ('setup script', allow_hosts)
                 return opts
 
@@ -793,6 +804,7 @@ class _Bootstrapper(object):
                      '{0!r}:\n{1}\n{2}'.format(submodule, err_msg,
                                                _err_help_msg))
 
+
 class _CommandNotFound(OSError):
     """
     An exception raised when a command run with run_cmd is not found on the
@@ -825,7 +837,6 @@ def run_cmd(cmd):
             raise _AHBootstrapSystemExit(
                 'An unexpected error occurred when running the '
                 '`{0}` command:\n{1}'.format(' '.join(cmd), str(e)))
-
 
     # Can fail of the default locale is not configured properly.  See
     # https://github.com/astropy/astropy/issues/2749.  For the purposes under
@@ -898,6 +909,7 @@ class _DummyFile(object):
 def _verbose():
     yield
 
+
 @contextlib.contextmanager
 def _silence():
     """A context manager that silences sys.stdout and sys.stderr."""
@@ -919,14 +931,6 @@ def _silence():
     if not exception_occurred:
         sys.stdout = old_stdout
         sys.stderr = old_stderr
-
-
-_err_help_msg = """
-If the problem persists consider installing astropy_helpers manually using pip
-(`pip install astropy_helpers`) or by manually downloading the source archive,
-extracting it, and installing by running `python setup.py install` from the
-root of the extracted source code.
-"""
 
 
 class _AHBootstrapSystemExit(SystemExit):
