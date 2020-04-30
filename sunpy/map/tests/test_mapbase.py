@@ -113,6 +113,13 @@ def test_no_observer_wcs(heliographic_test_map):
     assert not hasattr(heliographic_test_map.wcs, "heliographic_observer")
 
 
+def test_header_immutability(aia171_test_map):
+    # Check that accessing the wcs of a map doesn't modify the meta data
+    assert 'KEYCOMMENTS' in aia171_test_map.meta
+    wcs = aia171_test_map.wcs
+    assert 'KEYCOMMENTS' in aia171_test_map.meta
+
+
 def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
 
