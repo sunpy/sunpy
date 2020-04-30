@@ -1,3 +1,39 @@
+Sunpy 1.1.3 (2020-04-30)
+========================
+
+Features
+--------
+
+- Add support for parfive 1.1. This sets a limit on the number of open connections to JSOC when downloading files to 10. (`#3822 <https://github.com/sunpy/sunpy/pull/3822>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed a bug where the longitude value for the reference coordinate in the Map repr would be displayed with the unintended longitude wrapping. (`#3959 <https://github.com/sunpy/sunpy/pull/3959>`__)
+- It is now possible to specify a local file path to
+  `sunpy.data.data_manager.DataManager.override_file` without having to prefix it
+  with ``file://``. (`#3970 <https://github.com/sunpy/sunpy/pull/3970>`__)
+- Closed the session in the destructor of VSOClient thus solving the problem of socket being left open (`#3973 <https://github.com/sunpy/sunpy/pull/3973>`__)
+- Fixes two bugs in `sunpy.util.decorator.deprecated`: correctly calculates the
+  removal version and does not override the default and/or alternative functionality
+  message. Providing a custom deprecation message now suppresses any
+  mention of the removal version. Additionally, a `pending` keyword argument is
+  provided to denote functions/classes that are pending deprecation. (`#3982 <https://github.com/sunpy/sunpy/pull/3982>`__)
+- Fix a bug with `sunpy.visualization.animator.ArrayAnimatorWCS` where animating
+  a line with a masked array with the whole of the initial line masked out the
+  axes limits for the x axis were not correctly set. (`#4001 <https://github.com/sunpy/sunpy/pull/4001>`__)
+- Fixed passing in a list of URLs into `sunpy.map.GenericMap`, before it caused an error due to the wrong type being returned. (`#4007 <https://github.com/sunpy/sunpy/pull/4007>`__)
+- Fixes a bug in fido_factory to allow  path="./" in fido.fetch(). (`#4058 <https://github.com/sunpy/sunpy/pull/4058>`__)
+
+
+Improved Documentation
+----------------------
+
+- Improved the doc layout of `sunpy.data.sample`. (`#4034 <https://github.com/sunpy/sunpy/pull/4034>`__)
+- Improved the documentation of `sunpy.map.GenericMap.resample`. (`#4043 <https://github.com/sunpy/sunpy/pull/4043>`__)
+
+
 Sunpy v1.1.2 (2020-03-27)
 =========================
 

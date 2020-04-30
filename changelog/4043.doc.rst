@@ -1,1 +1,0 @@
-Improved the documentation of `sunpy.map.GenericMap.resample`.
