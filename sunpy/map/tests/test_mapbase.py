@@ -121,6 +121,13 @@ def test_wcs(aia171_test_map):
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
 
 
+def test_header_immutability(aia171_test_map):
+    # Check that accessing the wcs of a map doesn't modify the meta data
+    assert 'KEYCOMMENTS' in aia171_test_map.meta
+    wcs = aia171_test_map.wcs
+    assert 'KEYCOMMENTS' in aia171_test_map.meta
+
+
 def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
 
