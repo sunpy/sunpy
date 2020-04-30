@@ -1,0 +1,1 @@
+Prevented `sunpy.io.fits.header_to_fits` modifying the passed header in-place.
