@@ -193,6 +193,8 @@ def header_to_fits(header):
     """
     Convert a header dict to a `~astropy.fits.Header`.
     """
+    # Copy the header to avoid modifying it in place
+    header = header.copy()
     # The comments need to be added to the header separately from the normal
     # kwargs. Find and deal with them:
     fits_header = fits.Header()
