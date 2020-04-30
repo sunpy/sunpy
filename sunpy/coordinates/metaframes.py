@@ -132,6 +132,8 @@ class RotatedSunFrame:
     coordinate frame) to point to a location at a different time that has been differentially
     rotated by the time difference (``duration``).
 
+    See :ref:`sunpy-coordinates-rotatedsunframe` for how to use this class.
+
     Parameters
     ----------
     representation : `~astropy.coordinates.BaseRepresentation` or ``None``

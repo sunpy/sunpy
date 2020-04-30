@@ -242,6 +242,7 @@ if has_sphinx_gallery:
             '../examples/time_series',
             '../examples/units_and_coordinates',
             '../examples/plotting',
+            '../examples/differential_rotation',
             '../examples/saving_and_loading_data',
             '../examples/computer_vision_techniques',
         ]),
@@ -249,7 +250,8 @@ if has_sphinx_gallery:
         'gallery_dirs': path.joinpath('generated', 'gallery'),
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
         'abort_on_example_error': False,
-        'plot_gallery': True
+        'plot_gallery': True,
+        'doc_module': ('sunpy')
     }
 
 """
