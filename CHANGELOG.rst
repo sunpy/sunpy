@@ -1,3 +1,33 @@
+Sunpy 1.0.10 (2020-04-30)
+=========================
+
+Features
+--------
+
+- Add support for parfive 1.1. This sets a limit on the number of open connections to JSOC when downloading files to 10. (`#3822 <https://github.com/sunpy/sunpy/pull/3822>`__)
+
+
+Bug Fixes
+---------
+
+- Fixed a bug where the longitude value for the reference coordinate in the Map repr would be displayed with the unintended longitude wrapping. (`#3959 <https://github.com/sunpy/sunpy/pull/3959>`__)
+- Closed the session in the destructor of VSOClient thus solving the problem of socket being left open (`#3973 <https://github.com/sunpy/sunpy/pull/3973>`__)
+- Fixes two bugs in `sunpy.util.decorator.deprecated`: correctly calculates the
+  removal version and does not override the default and/or alternative functionality
+  message. Providing a custom deprecation message now suppresses any
+  mention of the removal version. Additionally, a `pending` keyword argument is
+  provided to denote functions/classes that are pending deprecation. (`#3982 <https://github.com/sunpy/sunpy/pull/3982>`__)
+- Fixes a bug in fido_factory to allow  path="./" in fido.fetch(). (`#4058 <https://github.com/sunpy/sunpy/pull/4058>`__)
+- Prevented `sunpy.io.fits.header_to_fits` modifying the passed header in-place. (`#4067 <https://github.com/sunpy/sunpy/pull/4067>`__)
+
+
+Improved Documentation
+----------------------
+
+- Improved the doc layout of `sunpy.data.sample`. (`#4034 <https://github.com/sunpy/sunpy/pull/4034>`__)
+- Improved the documentation of `sunpy.map.GenericMap.resample`. (`#4043 <https://github.com/sunpy/sunpy/pull/4043>`__)
+
+
 Sunpy v1.0.9 (2020-03-27)
 =========================
 
