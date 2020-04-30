@@ -85,4 +85,3 @@ jobs:
         - py37_offline
         - py38_online
         - py36_conda
-        - py36_astropy31
