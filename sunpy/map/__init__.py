@@ -1,4 +1,6 @@
-"""SunPy Maps"""
+"""
+SunPy Maps.
+"""
 import sys
 
 from sunpy.map.mapbase import GenericMap  # isort:skip

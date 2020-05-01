@@ -1,5 +1,5 @@
 """
-Coordinate frames that are defined relative to other frames
+Coordinate frames that are defined relative to other frames.
 """
 
 from astropy import units as u
@@ -34,11 +34,11 @@ def _make_rotatedsun_cls(framecls):
     base frame. If such a class has already been created for this frame, the
     same class will be returned.
 
-    This function is necessary because frame transformations depend
-    on connection between specific frame *classes*.  So each type of frame
-    needs its own distinct rotated-Sun frame class.  This function generates
-    just that class, as well as ensuring that only one example of such a class
-    actually gets created in any given Python session.
+    This function is necessary because frame transformations depend on
+    connection between specific frame *classes*.  So each type of frame
+    needs its own distinct rotated-Sun frame class.  This function
+    generates just that class, as well as ensuring that only one example
+    of such a class actually gets created in any given Python session.
     """
     # This code reuses significant code from Astropy's implementation of SkyOffsetFrame
     # See licenses/ASTROPY.rst
@@ -69,7 +69,9 @@ def _make_rotatedsun_cls(framecls):
     @frame_transform_graph.transform(FunctionTransform, _RotatedSunFramecls, _RotatedSunFramecls)
     @_transformation_debug(f"{_RotatedSunFramecls.__name__}->{_RotatedSunFramecls.__name__}")
     def rotatedsun_to_rotatedsun(from_rotatedsun_coord, to_rotatedsun_frame):
-        """Transform between two rotated-Sun frames."""
+        """
+        Transform between two rotated-Sun frames.
+        """
         # This transform goes through the parent frames on each side.
         # from_frame -> from_frame.base -> to_frame.base -> to_frame
         intermediate_from = from_rotatedsun_coord.transform_to(from_rotatedsun_coord.base)
@@ -217,18 +219,21 @@ class RotatedSunFrame:
 
     def as_base(self):
         """
-        Returns a coordinate with the current representation and in the base coordinate frame.
+        Returns a coordinate with the current representation and in the base
+        coordinate frame.
 
         This method can be thought of as "removing" the
-        `~sunpy.coordinates.metaframe.RotatedSunFrame` layer.  Be aware that this method is not
-        merely a coordinate transformation, because this method changes the location in inertial
-        space that is being pointed to.
+        `~sunpy.coordinates.metaframe.RotatedSunFrame` layer.  Be aware
+        that this method is not merely a coordinate transformation,
+        because this method changes the location in inertial space that
+        is being pointed to.
         """
         return self.base.realize_frame(self.data)
 
     @property
     def rotated_time(self):
         """
-        Returns the sum of the base frame's observation time and the rotation of duration.
+        Returns the sum of the base frame's observation time and the rotation
+        of duration.
         """
         return self.base.obstime + self.duration

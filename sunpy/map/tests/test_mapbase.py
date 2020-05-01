@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Test Generic Map
+Test Generic Map.
 """
 import os
 import tempfile
@@ -95,7 +95,9 @@ def generic_map():
 
 
 def test_fits_data_comparison(aia171_test_map):
-    """Make sure the data is the same in pyfits and SunPy"""
+    """
+    Make sure the data is the same in pyfits and SunPy.
+    """
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
         data = fits.open(os.path.join(testpath, 'aia_171_level1.fits'))[0].data
     np.testing.assert_allclose(aia171_test_map.data, data)
@@ -318,8 +320,9 @@ def test_swap_cd():
 
 
 def test_world_to_pixel(generic_map):
-    """Make sure conversion from data units to pixels is internally
-    consistent"""
+    """
+    Make sure conversion from data units to pixels is internally consistent.
+    """
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
         # Note: FITS pixels start from 1,1
         test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate, origin=1)
@@ -327,7 +330,9 @@ def test_world_to_pixel(generic_map):
 
 
 def test_save(aia171_test_map, generic_map):
-    """Tests the map save function"""
+    """
+    Tests the map save function.
+    """
     aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
     aiamap.save(afilename, filetype='fits', overwrite=True)
@@ -338,7 +343,9 @@ def test_save(aia171_test_map, generic_map):
 
 
 def test_save_compressed(aia171_test_map, generic_map):
-    """Tests the map save function"""
+    """
+    Tests the map save function.
+    """
     aiamap = aia171_test_map
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
     aiamap.save(afilename, filetype='fits', hdu_type=fits.CompImageHDU, overwrite=True)
@@ -349,7 +356,9 @@ def test_save_compressed(aia171_test_map, generic_map):
 
 
 def test_default_shift():
-    """Test that the default shift is zero"""
+    """
+    Test that the default shift is zero.
+    """
     data = np.ones([6, 6], dtype=np.float64)
     header = {
         'CRVAL1': 0,
@@ -373,7 +382,9 @@ def test_default_shift():
 
 
 def test_shift_applied(generic_map):
-    """Test that adding a shift actually updates the reference coordinate"""
+    """
+    Test that adding a shift actually updates the reference coordinate.
+    """
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
         original_reference_coord = (generic_map.reference_coordinate.Tx,
                                     generic_map.reference_coordinate.Ty)
@@ -392,7 +403,9 @@ def test_shift_applied(generic_map):
 
 
 def test_set_shift(generic_map):
-    """Test that previously applied shift is stored in the shifted_value property"""
+    """
+    Test that previously applied shift is stored in the shifted_value property.
+    """
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
@@ -402,7 +415,9 @@ def test_set_shift(generic_map):
 
 
 def test_shift_history(generic_map):
-    """Test the shifted_value is added to a non-zero previous shift"""
+    """
+    Test the shifted_value is added to a non-zero previous shift.
+    """
     x_shift1 = 5 * u.arcsec
     y_shift1 = 13 * u.arcsec
     shifted_map1 = generic_map.shift(x_shift1, y_shift1)
@@ -417,7 +432,9 @@ def test_shift_history(generic_map):
 
 
 def test_submap(generic_map):
-    """Check data and header information for a submap"""
+    """
+    Check data and header information for a submap.
+    """
     width = generic_map.data.shape[1]
     height = generic_map.data.shape[0]
 
@@ -444,7 +461,9 @@ resample_test_data = [('linear', (100, 200) * u.pixel), ('neighbor', (128, 256) 
 
 @pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
-    """Check that resampled map has expected dimensions."""
+    """
+    Check that resampled map has expected dimensions.
+    """
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
         resampled_map = generic_map.resample(new_dimensions, method=sample_method)
     assert resampled_map.dimensions[0] == new_dimensions[0]
@@ -639,7 +658,9 @@ def test_pixel_to_world_no_projection(generic_map):
 
 
 def test_validate_meta(generic_map):
-    """Check to see if_validate_meta displays an appropriate error"""
+    """
+    Check to see if_validate_meta displays an appropriate error.
+    """
     with pytest.warns(SunpyUserWarning) as w:
         bad_header = {
             'CRVAL1': 0,
@@ -728,8 +749,12 @@ def test_hc_warn():
 
 
 def test_more_than_two_dimensions():
-    """Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
-    loaded.  We need to load a >2-dim dataset with a TELESCOP header"""
+    """
+    Checks to see if an appropriate error is raised when a FITS with more than
+    two dimensions is loaded.
+
+    We need to load a >2-dim dataset with a TELESCOP header
+    """
 
     # Data crudely represnts 4 stokes, 4 wavelengths with Y,X of 3 and 5.
     bad_data = np.random.rand(4, 4, 3, 5)

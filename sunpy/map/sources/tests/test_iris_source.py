@@ -1,5 +1,6 @@
-"""Test cases for SJIMap.
-This particular test file pertains to SJIMap.
+"""
+Test cases for SJIMap. This particular test file pertains to SJIMap.
+
 @Author: Pritish C. (VaticanCameos)
 """
 
@@ -25,17 +26,24 @@ def irismap():
 
 # IRIS Tests
 def test_fitstoIRIS(irismap):
-    """Tests the creation of SJIMap using FITS."""
+    """
+    Tests the creation of SJIMap using FITS.
+    """
     assert (isinstance(irismap, SJIMap))
 
 
 def test_is_datasource_for(irismap):
-    """Test the is_datasource_for method of SJIMap.
-    Note that header data to be provided as an argument
-    can be a MetaDict object."""
+    """
+    Test the is_datasource_for method of SJIMap.
+
+    Note that header data to be provided as an argument can be a
+    MetaDict object.
+    """
     assert irismap.is_datasource_for(irismap.data, irismap.meta)
 
 
 def test_observatory(irismap):
-    """Tests the observatory property of SJIMap."""
+    """
+    Tests the observatory property of SJIMap.
+    """
     assert irismap.observatory == "IRIS"

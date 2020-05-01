@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Ephemeris calculations using SunPy coordinate frames
+Ephemeris calculations using SunPy coordinate frames.
 """
 import numpy as np
 
@@ -28,9 +28,9 @@ __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def get_body_heliographic_stonyhurst(body, time='now', observer=None):
     """
-    Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the location of a
-    solar-system body at a specified time.  The location can be corrected for light travel time
-    to an observer.
+    Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the
+    location of a solar-system body at a specified time.  The location can be
+    corrected for light travel time to an observer.
 
     Parameters
     ----------
@@ -83,8 +83,9 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def get_earth(time='now'):
     """
-    Return a `~astropy.coordinates.SkyCoord` for the location of the Earth at a specified time in
-    the `~sunpy.coordinates.frames.HeliographicStonyhurst` frame.  The longitude will be 0 by definition.
+    Return a `~astropy.coordinates.SkyCoord` for the location of the Earth at a
+    specified time in the `~sunpy.coordinates.frames.HeliographicStonyhurst`
+    frame.  The longitude will be 0 by definition.
 
     Parameters
     ----------
@@ -107,9 +108,10 @@ def get_earth(time='now'):
 @add_common_docstring(**_variables_for_parse_time_docstring())
 def get_horizons_coord(body, time='now', id_type='majorbody'):
     """
-    Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the location of a
-    solar-system body at a specified time.  This location is the instantaneous or "true" location,
-    and is not corrected for light travel time or observer motion.
+    Queries JPL HORIZONS and returns a `~astropy.coordinates.SkyCoord` for the
+    location of a solar-system body at a specified time.  This location is the
+    instantaneous or "true" location, and is not corrected for light travel
+    time or observer motion.
 
     .. note::
         This function requires the Astroquery package to be installed and

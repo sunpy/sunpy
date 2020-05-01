@@ -1,6 +1,7 @@
 class NoData(Exception):
     """
-    Risen for callbacks of VSOClient that are unable to supply information for the request.
+    Risen for callbacks of VSOClient that are unable to supply information for
+    the request.
     """
     pass
 

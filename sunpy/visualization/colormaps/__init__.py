@@ -6,8 +6,6 @@ The following colormaps are provided by this module.
     import matplotlib.pyplot as plt
     import sunpy.visualization.colormaps as cm
     cm.show_colormaps()
-
-
 """
 from sunpy.visualization.colormaps.cm import *  # noqa
 

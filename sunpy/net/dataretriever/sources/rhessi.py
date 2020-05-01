@@ -28,7 +28,7 @@ lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
 
 def get_base_url():
     """
-    Find the first mirror which is online
+    Find the first mirror which is online.
     """
     for server in data_servers:
         try:
@@ -42,8 +42,8 @@ def get_base_url():
 
 class RHESSIClient(GenericClient):
     """
-    Provides access to the RHESSI observing summary time series data
-    from the `archive <https://hesperia.gsfc.nasa.gov/hessidata/>`__ or its mirrors.
+    Provides access to the RHESSI observing summary time series data from the
+    `archive <https://hesperia.gsfc.nasa.gov/hessidata/>`__ or its mirrors.
 
     Examples
     --------
@@ -62,7 +62,6 @@ class RHESSIClient(GenericClient):
     2016-01-02 00:00:00 2016-01-02 23:59:59 rhessi     rhessi        nan
     <BLANKLINE>
     <BLANKLINE>
-
     """
 
     def get_observing_summary_filename(self, time_range):
@@ -143,7 +142,6 @@ class RHESSIClient(GenericClient):
 
         .. note::
             This API is currently limited to providing data from whole days only.
-
         """
         _time = parse_time(time)
 

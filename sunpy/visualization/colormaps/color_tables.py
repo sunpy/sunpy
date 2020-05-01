@@ -1295,6 +1295,7 @@ def create_cdict(r, g, b):
 def suvi_color_table(wavelength: u.angstrom):
     """
     Returns one of the fundamental color tables for SUVI images.
+
     SUVI uses AIA color tables.
     """
     try:

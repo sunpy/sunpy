@@ -94,8 +94,8 @@ def test_fido(query):
     [(a.Time('2012/10/4', '2012/10/6')), (a.Time('2012/11/27', '2012/11/27'))])
 def test_levels(time):
     """
-    Test the correct handling of level
-    Level 0 comes from EVEClient, other levels from EVE.
+    Test the correct handling of level Level 0 comes from EVEClient, other
+    levels from EVE.
     """
     eve_a = a.Instrument('EVE')
     qr = Fido.search(time, eve_a)

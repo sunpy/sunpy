@@ -120,7 +120,8 @@ class GenericTimeSeries:
     @property
     def data(self):
         """
-        A `pandas.DataFrame` representing one or more fields as a function of time.
+        A `pandas.DataFrame` representing one or more fields as a function of
+        time.
         """
         warnings.warn("Using .data to access the dataframe is discouraged; "
                       "use .to_dataframe() instead.", SunpyUserWarning)
@@ -440,9 +441,10 @@ class GenericTimeSeries:
     @peek_show
     def peek(self, **kwargs):
         """
-        Displays a graphical overview of the data in this object for user evaluation.
-        For the creation of plots, users should instead use the
-        `~sunpy.timeseries.GenericTimeSeries.plot` method and Matplotlib's pyplot framework.
+        Displays a graphical overview of the data in this object for user
+        evaluation. For the creation of plots, users should instead use the
+        `~sunpy.timeseries.GenericTimeSeries.plot` method and Matplotlib's
+        pyplot framework.
 
         Parameters
         ----------

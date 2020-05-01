@@ -96,8 +96,8 @@ _DISTRO_RELEASE_IGNORE_BASENAMES = (
 
 def linux_distribution(full_distribution_name=True):
     """
-    Return information about the current OS distribution as a tuple
-    ``(id_name, version, codename)`` with items as follows:
+    Return information about the current OS distribution as a tuple ``(id_name,
+    version, codename)`` with items as follows:
 
     * ``id_name``:  If *full_distribution_name* is false, the result of
       :func:`distro.id`. Otherwise, the result of :func:`distro.name`.
@@ -124,8 +124,8 @@ def linux_distribution(full_distribution_name=True):
 
 def id():
     """
-    Return the distro ID of the current distribution, as a
-    machine-readable string.
+    Return the distro ID of the current distribution, as a machine-readable
+    string.
 
     For a number of OS distributions, the returned distro ID value is
     *reliable*, in the sense that it is documented and that it does not change
@@ -202,8 +202,7 @@ def id():
 
 def name(pretty=False):
     """
-    Return the name of the current OS distribution, as a human-readable
-    string.
+    Return the name of the current OS distribution, as a human-readable string.
 
     If *pretty* is false, the name is returned without version or codename.
     (e.g. "CentOS Linux")
@@ -285,8 +284,8 @@ def version(pretty=False, best=False):
 
 def version_parts(best=False):
     """
-    Return the version of the current OS distribution as a tuple
-    ``(major, minor, build_number)`` with items as follows:
+    Return the version of the current OS distribution as a tuple ``(major,
+    minor, build_number)`` with items as follows:
 
     * ``major``:  The result of :func:`distro.major_version`.
 
@@ -302,39 +301,36 @@ def version_parts(best=False):
 
 def major_version(best=False):
     """
-    Return the major version of the current OS distribution, as a string,
-    if provided.
-    Otherwise, the empty string is returned. The major version is the first
-    part of the dot-separated version string.
+    Return the major version of the current OS distribution, as a string, if
+    provided. Otherwise, the empty string is returned. The major version is the
+    first part of the dot-separated version string.
 
-    For a description of the *best* parameter, see the :func:`distro.version`
-    method.
+    For a description of the *best* parameter, see the
+    :func:`distro.version` method.
     """
     return _distro.major_version(best)
 
 
 def minor_version(best=False):
     """
-    Return the minor version of the current OS distribution, as a string,
-    if provided.
-    Otherwise, the empty string is returned. The minor version is the second
-    part of the dot-separated version string.
+    Return the minor version of the current OS distribution, as a string, if
+    provided. Otherwise, the empty string is returned. The minor version is the
+    second part of the dot-separated version string.
 
-    For a description of the *best* parameter, see the :func:`distro.version`
-    method.
+    For a description of the *best* parameter, see the
+    :func:`distro.version` method.
     """
     return _distro.minor_version(best)
 
 
 def build_number(best=False):
     """
-    Return the build number of the current OS distribution, as a string,
-    if provided.
-    Otherwise, the empty string is returned. The build number is the third part
-    of the dot-separated version string.
+    Return the build number of the current OS distribution, as a string, if
+    provided. Otherwise, the empty string is returned. The build number is the
+    third part of the dot-separated version string.
 
-    For a description of the *best* parameter, see the :func:`distro.version`
-    method.
+    For a description of the *best* parameter, see the
+    :func:`distro.version` method.
     """
     return _distro.build_number(best)
 
@@ -342,9 +338,9 @@ def build_number(best=False):
 def like():
     """
     Return a space-separated list of distro IDs of distributions that are
-    closely related to the current OS distribution in regards to packaging
-    and programming interfaces, for example distributions the current
-    distribution is a derivative from.
+    closely related to the current OS distribution in regards to packaging and
+    programming interfaces, for example distributions the current distribution
+    is a derivative from.
 
     **Lookup hierarchy:**
 
@@ -358,8 +354,8 @@ def like():
 
 def codename():
     """
-    Return the codename for the release of the current OS distribution,
-    as a string.
+    Return the codename for the release of the current OS distribution, as a
+    string.
 
     If the distribution does not have a codename, an empty string is returned.
 
@@ -439,8 +435,8 @@ def lsb_release_info():
     Return a dictionary containing key-value pairs for the information items
     from the lsb_release command data source of the current OS distribution.
 
-    See `lsb_release command output`_ for details about these information
-    items.
+    See `lsb_release command output`_ for details about these
+    information items.
     """
     return _distro.lsb_release_info()
 
@@ -450,7 +446,8 @@ def distro_release_info():
     Return a dictionary containing key-value pairs for the information items
     from the distro release file data source of the current OS distribution.
 
-    See `distro release file`_ for details about these information items.
+    See `distro release file`_ for details about these information
+    items.
     """
     return _distro.distro_release_info()
 
@@ -504,8 +501,8 @@ def lsb_release_attr(attribute):
 
 def distro_release_attr(attribute):
     """
-    Return a single named information item from the distro release file
-    data source of the current OS distribution.
+    Return a single named information item from the distro release file data
+    source of the current OS distribution.
 
     Parameters:
 
@@ -523,8 +520,8 @@ def distro_release_attr(attribute):
 
 def uname_attr(attribute):
     """
-    Return a single named information item from the distro release file
-    data source of the current OS distribution.
+    Return a single named information item from the distro release file data
+    source of the current OS distribution.
 
     Parameters:
 
@@ -539,9 +536,11 @@ def uname_attr(attribute):
 
 
 class cached_property(object):
-    """A version of @property which caches the value.  On access, it calls the
-    underlying function and sets the value in `__dict__` so future accesses
-    will not re-call the property.
+    """
+    A version of @property which caches the value.
+
+    On access, it calls the underlying function and sets the value in
+    `__dict__` so future accesses will not re-call the property.
     """
     def __init__(self, f):
         self._fname = f.__name__
@@ -650,7 +649,8 @@ class LinuxDistribution(object):
         self.include_uname = include_uname
 
     def __repr__(self):
-        """Return repr of all info
+        """
+        Return repr of all info.
         """
         return \
             "LinuxDistribution(" \
@@ -666,9 +666,9 @@ class LinuxDistribution(object):
 
     def linux_distribution(self, full_distribution_name=True):
         """
-        Return information about the OS distribution that is compatible
-        with Python's :func:`platform.linux_distribution`, supporting a subset
-        of its parameters.
+        Return information about the OS distribution that is compatible with
+        Python's :func:`platform.linux_distribution`, supporting a subset of
+        its parameters.
 
         For details, see :func:`distro.linux_distribution`.
         """
@@ -679,7 +679,8 @@ class LinuxDistribution(object):
         )
 
     def id(self):
-        """Return the distro ID of the OS distribution, as a string.
+        """
+        Return the distro ID of the OS distribution, as a string.
 
         For details, see :func:`distro.id`.
         """
@@ -825,8 +826,7 @@ class LinuxDistribution(object):
 
     def info(self, pretty=False, best=False):
         """
-        Return certain machine-readable information about the OS
-        distribution.
+        Return certain machine-readable information about the OS distribution.
 
         For details, see :func:`distro.info`.
         """
@@ -854,8 +854,7 @@ class LinuxDistribution(object):
     def lsb_release_info(self):
         """
         Return a dictionary containing key-value pairs for the information
-        items from the lsb_release command data source of the OS
-        distribution.
+        items from the lsb_release command data source of the OS distribution.
 
         For details, see :func:`distro.lsb_release_info`.
         """
@@ -864,8 +863,7 @@ class LinuxDistribution(object):
     def distro_release_info(self):
         """
         Return a dictionary containing key-value pairs for the information
-        items from the distro release file data source of the OS
-        distribution.
+        items from the distro release file data source of the OS distribution.
 
         For details, see :func:`distro.distro_release_info`.
         """
@@ -909,8 +907,8 @@ class LinuxDistribution(object):
 
     def uname_attr(self, attribute):
         """
-        Return a single named information item from the uname command
-        output data source of the OS distribution.
+        Return a single named information item from the uname command output
+        data source of the OS distribution.
 
         For details, see :func:`distro.uname_release_attr`.
         """

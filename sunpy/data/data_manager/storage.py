@@ -1,7 +1,6 @@
 """
-Storage module contains the abstract implementation of storage
-for `sunpy.data.data_manager.Cache` and a concrete implementation
-using sqlite.
+Storage module contains the abstract implementation of storage for
+`sunpy.data.data_manager.Cache` and a concrete implementation using sqlite.
 """
 import os
 import sqlite3
@@ -23,8 +22,8 @@ class StorageProviderBase(metaclass=ABCMeta):
     @abstractmethod
     def find_by_key(self, key, value):
         """
-        Returns the file details if value coresponding to the key
-        found in storage. Returns `None` if hash not found.
+        Returns the file details if value coresponding to the key found in
+        storage. Returns `None` if hash not found.
 
         Parameters
         ----------

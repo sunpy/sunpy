@@ -1071,7 +1071,7 @@ def test_default_waveunit(default_waveunit_database):
 @pytest.fixture
 def split_function_database():
     """
-    Generates a custom database to test the split_database function
+    Generates a custom database to test the split_database function.
     """
     database = Database('sqlite:///:memory:')
     for i in range(1, 11):

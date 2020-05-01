@@ -652,6 +652,7 @@ def edges_to_centers_nd(axis_range, edges_axis):
 def format_quantity_as_string(quantity):
     """
     An Astropy 3.1 compatibility wrapper for Quantity.to_string.
+
     Can be removed when Astropy dependency is >=3.2
     """
     to_string = getattr(quantity, "to_string", None)

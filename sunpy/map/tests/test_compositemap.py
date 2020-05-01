@@ -1,5 +1,5 @@
 """
-Test Composite Map
+Test Composite Map.
 """
 import os
 import pytest

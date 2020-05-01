@@ -22,7 +22,6 @@ attrs specific to them, under:
 * `a.vso <sunpy.net.vso.attrs>`
 * `a.jsoc <sunpy.net.jsoc.attrs>`
 * `a.goes <sunpy.net.dataretriever.attrs.goes>`
-
 """
 from ._attrs import Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs
 

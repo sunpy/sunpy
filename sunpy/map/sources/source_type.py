@@ -1,8 +1,8 @@
 """
 Source type-dependencies.
 
-Helioviewer JPEG2000 files have stretched images compared to the FITS data.
-
+Helioviewer JPEG2000 files have stretched images compared to the FITS
+data.
 """
 from astropy.visualization import LinearStretch
 # pylint: disable=W0221,W0222,E1121
@@ -26,7 +26,6 @@ def from_helioviewer_project(meta):
     -------
     If the data of the map comes from the Helioviewer Project, then True is
     returned.  If not, False is returned.
-
     """
     return 'helioviewer' in meta.keys()
 

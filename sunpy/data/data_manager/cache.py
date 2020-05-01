@@ -142,7 +142,8 @@ class Cache:
 
     def _download_and_hash(self, urls):
         """
-        Downloads the file and returns the path, hash and url it used to download.
+        Downloads the file and returns the path, hash and url it used to
+        download.
 
         Parameters
         ----------

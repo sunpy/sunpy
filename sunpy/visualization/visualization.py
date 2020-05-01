@@ -13,8 +13,8 @@ def peek_show(func):
     A decorator to place on ``peek()`` methods to show the figure.
 
     The ``peek()`` method should return the figure then this method will
-    attempt to show it in the correct way. This decorator will not return the
-    figure to the user.
+    attempt to show it in the correct way. This decorator will not
+    return the figure to the user.
     """
     @wraps(func)
     def show_figure(*args, **kwargs):

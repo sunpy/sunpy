@@ -121,7 +121,8 @@ class MapFactory(BasicRegistrationFactory):
 
     def _read_file(self, fname, **kwargs):
         """
-        Read in a file name and return the list of (data, meta) pairs in that file.
+        Read in a file name and return the list of (data, meta) pairs in that
+        file.
         """
         # File gets read here. This needs to be generic enough to seamlessly
         # call a fits file or a jpeg2k file, etc
@@ -216,6 +217,7 @@ class MapFactory(BasicRegistrationFactory):
     def _parse_arg(self, arg, **kwargs):
         """
         Take a factory input and parse into (data, header) pairs.
+
         Must return a list, even if only one pair is returned.
         """
         raise ValueError(f"Invalid input: {arg}")
@@ -266,9 +268,10 @@ class MapFactory(BasicRegistrationFactory):
             raise ValueError(f'Did not find any files at {arg}')
 
     def __call__(self, *args, composite=False, sequence=False, silence_errors=False, **kwargs):
-        """ Method for running the factory. Takes arbitrary arguments and
-        keyword arguments and passes them to a sequence of pre-registered types
-        to determine which is the correct Map-type to build.
+        """
+        Method for running the factory. Takes arbitrary arguments and keyword
+        arguments and passes them to a sequence of pre-registered types to
+        determine which is the correct Map-type to build.
 
         Arguments args and kwargs are passed through to the validation
         function and to the constructor for the final type. For Map types,
@@ -368,6 +371,7 @@ def _is_url(arg):
 def _possibly_a_path(arg):
     """
     Check if arg can be coerced into a Path object.
+
     Does *not* check if the path exists.
     """
     try:
@@ -396,19 +400,23 @@ def _is_dir(path):
 
 
 class InvalidMapInput(ValueError):
-    """Exception to raise when input variable is not a Map instance and does
-    not point to a valid Map input file."""
+    """
+    Exception to raise when input variable is not a Map instance and does not
+    point to a valid Map input file.
+    """
     pass
 
 
 class InvalidMapType(ValueError):
-    """Exception to raise when an invalid type of map is requested with Map
+    """
+    Exception to raise when an invalid type of map is requested with Map.
     """
     pass
 
 
 class NoMapsFound(ValueError):
-    """Exception to raise when input does not point to any valid maps or files
+    """
+    Exception to raise when input does not point to any valid maps or files.
     """
     pass
 

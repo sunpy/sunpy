@@ -25,7 +25,7 @@ __all__ = ['QueryResponse', 'GenericClient']
 
 class QueryResponseBlock:
     """
-    Represents url, source along with other information
+    Represents url, source along with other information.
     """
 
     def __init__(self, map0, url, time=None):
@@ -47,7 +47,9 @@ class QueryResponseBlock:
 
 
 def iter_urls(amap, url_list, time):
-    """Helper Function"""
+    """
+    Helper Function.
+    """
     for aurl, t in zip(url_list, time):
         tmp = QueryResponseBlock(amap, aurl, t)
         yield tmp
@@ -55,7 +57,7 @@ def iter_urls(amap, url_list, time):
 
 class QueryResponse(BaseQueryResponse):
     """
-    Container of QueryResponseBlocks
+    Container of QueryResponseBlocks.
     """
 
     def __init__(self, lst, client=None):
@@ -162,7 +164,6 @@ class GenericClient(BaseClient):
         ----------
         \\*args: `tuple`
             The query attributes.
-
         """
         for elem in args:
             if isinstance(elem, Time):
@@ -217,17 +218,16 @@ class GenericClient(BaseClient):
         """
         Add client specific information to the _map dict.
 
-        Normally this is extra metadata which is not downloaded, but known
-        a priori.
+        Normally this is extra metadata which is not downloaded, but
+        known a priori.
         """
         raise NotImplementedError
 
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Method the
-        `sunpy.net.fido_factory.UnifiedDownloaderFactory`
-        class uses to dispatch queries to this Client.
+        Method the `sunpy.net.fido_factory.UnifiedDownloaderFactory` class uses
+        to dispatch queries to this Client.
         """
         raise NotImplementedError
 
@@ -336,7 +336,6 @@ class GenericClient(BaseClient):
         -------
 
         results: `parfive.Results`
-
         """
         if path is not None:
             path = Path(path)
@@ -361,7 +360,9 @@ class GenericClient(BaseClient):
         return downloader.download()
 
     def _link(self, map_):
-        """Helper Function"""
+        """
+        Helper Function.
+        """
         paths = []
         for k, v in map_.items():
             paths.append(map_[k]['path'])

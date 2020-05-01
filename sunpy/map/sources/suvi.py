@@ -1,4 +1,6 @@
-"""SUVI Map subclass definitions"""
+"""
+SUVI Map subclass definitions.
+"""
 from __future__ import absolute_import, print_function, division
 
 # pylint: disable=W0221,W0222,E1101,E1121
@@ -18,7 +20,8 @@ __all__ = ["SUVIMap"]
 
 
 class SUVIMap(GenericMap):
-    """SUVI Image Map.
+    """
+    SUVI Image Map.
 
     The Solar Ultraviolet Imager (SUVI) is a normal-incidence Cassegrain EUV
     telescope onboard the latest of the Geostationary Operational Environmental
@@ -103,7 +106,9 @@ class SUVIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an AIA image"""
+        """
+        Determines if header corresponds to an AIA image.
+        """
         return str(header.get("instrume", "")).startswith(
             "GOES-R Series Solar Ultraviolet Imager"
         )

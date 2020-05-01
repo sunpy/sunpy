@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Coordinate Transformation Functions
+Coordinate Transformation Functions.
 
 This module contains the functions for converting one
 `sunpy.coordinates.frames` object to another.
@@ -11,7 +11,6 @@ This module contains the functions for converting one
   between coordinate frames should be done using the ``.transform_to`` methods
   on `~astropy.coordinates.BaseCoordinateFrame` or
   `~astropy.coordinates.SkyCoord` instances.
-
 """
 import logging
 from contextlib import contextmanager
@@ -65,7 +64,8 @@ _ignore_sun_motion = False
 @contextmanager
 def transform_with_sun_center():
     """
-    Context manager for coordinate transformations to ignore the motion of the center of the Sun.
+    Context manager for coordinate transformations to ignore the motion of the
+    center of the Sun.
 
     Normally, coordinates refer to a point in inertial space (relative to the barycenter of the
     solar system).  Transforming to a different observation time does not move the point at all,
@@ -129,8 +129,10 @@ _layer_level = 0
 
 def _transformation_debug(description):
     """
-    Decorator to produce debugging output for a transformation function: its description, inputs,
-    and output.  Unicode box-drawing characters are used.
+    Decorator to produce debugging output for a transformation function: its
+    description, inputs, and output.
+
+    Unicode box-drawing characters are used.
     """
     def decorator(func):
         @wraps(func)
@@ -215,9 +217,11 @@ def _check_observer_defined(frame):
 
 def _transform_obstime(frame, obstime):
     """
-    Transform a frame to a new obstime using the appropriate loopback transformation.
-    If the new obstime is None, no transformation is performed.
-    If the frame's obstime is None, the frame is copied with the new obstime.
+    Transform a frame to a new obstime using the appropriate loopback
+    transformation.
+
+    If the new obstime is None, no transformation is performed. If the
+    frame's obstime is None, the frame is copied with the new obstime.
     """
     # If obstime is None or the obstime matches, nothing needs to be done
     if obstime is None or np.all(frame.obstime == obstime):
@@ -233,7 +237,7 @@ def _transform_obstime(frame, obstime):
 
 def _rotation_matrix_hgs_to_hgc(obstime, observer_distance_from_sun):
     """
-    Return the rotation matrix from HGS to HGC at the same observation time
+    Return the rotation matrix from HGS to HGC at the same observation time.
     """
     if obstime is None:
         raise ConvertError("To perform this transformation, the coordinate"
@@ -432,6 +436,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
 def hpc_to_hpc(from_coo, to_frame):
     """
     This converts from HPC to HPC, with different observer location parameters.
+
     It does this by transforming through HGS.
     """
     if _observers_are_equal(from_coo.observer, to_frame.observer) and \
@@ -449,8 +454,11 @@ def hpc_to_hpc(from_coo, to_frame):
 
 def _rotation_matrix_reprs_to_reprs(start_representation, end_representation):
     """
-    Return the matrix for the direct rotation from one representation to a second representation.
-    The representations need not be normalized first, and can be arrays of representations.
+    Return the matrix for the direct rotation from one representation to a
+    second representation.
+
+    The representations need not be normalized first, and can be arrays
+    of representations.
     """
     A = start_representation.to_cartesian()
     B = end_representation.to_cartesian()
@@ -470,8 +478,8 @@ def _rotation_matrix_reprs_to_reprs(start_representation, end_representation):
 
 def _rotation_matrix_reprs_to_xz_about_z(representations):
     """
-    Return one or more matrices for rotating one or more representations around the Z axis into the
-    XZ plane.
+    Return one or more matrices for rotating one or more representations around
+    the Z axis into the XZ plane.
     """
     A = representations.to_cartesian()
 
@@ -514,13 +522,15 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     """
     Convert from HCRS to Heliographic Stonyhurst (HGS).
 
-    HGS shares the same origin (the Sun) as HCRS, but has its Z axis aligned with the Sun's
-    rotation axis and its X axis aligned with the projection of the Sun-Earth vector onto the Sun's
-    equatorial plane (i.e., the component of the Sun-Earth vector perpendicular to the Z axis).
-    Thus, the transformation matrix is the product of the matrix to align the Z axis (by de-tilting
-    the Sun's rotation axis) and the matrix to align the X axis.  The first matrix is independent
-    of time and is pre-computed, while the second matrix depends on the time-varying Sun-Earth
-    vector.
+    HGS shares the same origin (the Sun) as HCRS, but has its Z axis
+    aligned with the Sun's rotation axis and its X axis aligned with the
+    projection of the Sun-Earth vector onto the Sun's equatorial plane
+    (i.e., the component of the Sun-Earth vector perpendicular to the Z
+    axis). Thus, the transformation matrix is the product of the matrix
+    to align the Z axis (by de-tilting the Sun's rotation axis) and the
+    matrix to align the X axis.  The first matrix is independent of time
+    and is pre-computed, while the second matrix depends on the time-
+    varying Sun-Earth vector.
     """
     if hgsframe.obstime is None:
         raise ConvertError("To perform this transformation, the coordinate"
@@ -646,7 +656,7 @@ def hcc_to_hcc(from_coo, to_frame):
 
 def _rotation_matrix_hme_to_hee(hmeframe):
     """
-    Return the rotation matrix from HME to HEE at the same observation time
+    Return the rotation matrix from HME to HEE at the same observation time.
     """
     # Get the Sun-Earth vector
     sun_earth = HCRS(_sun_earth_icrf(hmeframe.obstime), obstime=hmeframe.obstime)
@@ -667,7 +677,7 @@ def _rotation_matrix_hme_to_hee(hmeframe):
 @_transformation_debug("HME->HEE")
 def hme_to_hee(hmecoord, heeframe):
     """
-    Convert from Heliocentric Mean Ecliptic to Heliocentric Earth Ecliptic
+    Convert from Heliocentric Mean Ecliptic to Heliocentric Earth Ecliptic.
     """
     # Convert to the HME frame with mean equinox of date at the HEE obstime, through HCRS
     int_frame = HeliocentricMeanEcliptic(obstime=heeframe.obstime, equinox=heeframe.obstime)
@@ -685,7 +695,7 @@ def hme_to_hee(hmecoord, heeframe):
 @_transformation_debug("HEE->HME")
 def hee_to_hme(heecoord, hmeframe):
     """
-    Convert from Heliocentric Earth Ecliptic to Heliocentric Mean Ecliptic
+    Convert from Heliocentric Earth Ecliptic to Heliocentric Mean Ecliptic.
     """
     int_frame = HeliocentricMeanEcliptic(obstime=heecoord.obstime, equinox=heecoord.obstime)
 
@@ -716,7 +726,7 @@ def hee_to_hee(from_coo, to_frame):
 @_transformation_debug("HEE->GSE")
 def hee_to_gse(heecoord, gseframe):
     """
-    Convert from Heliocentric Earth Ecliptic to Geocentric Solar Ecliptic
+    Convert from Heliocentric Earth Ecliptic to Geocentric Solar Ecliptic.
     """
     # Use an intermediate frame of HEE at the GSE observation time
     int_frame = HeliocentricEarthEcliptic(obstime=gseframe.obstime)
@@ -741,7 +751,7 @@ def hee_to_gse(heecoord, gseframe):
 @_transformation_debug("GSE->HEE")
 def gse_to_hee(gsecoord, heeframe):
     """
-    Convert from Geocentric Solar Ecliptic to Heliocentric Earth Ecliptic
+    Convert from Geocentric Solar Ecliptic to Heliocentric Earth Ecliptic.
     """
     # Use an intermediate frame of HEE at the GSE observation time
     int_frame = HeliocentricEarthEcliptic(obstime=gsecoord.obstime)
@@ -777,7 +787,7 @@ def gse_to_gse(from_coo, to_frame):
 
 def _rotation_matrix_hgs_to_hci(obstime):
     """
-    Return the rotation matrix from HGS to HCI at the same observation time
+    Return the rotation matrix from HGS to HCI at the same observation time.
     """
     z_axis = CartesianRepresentation(0, 0, 1)*u.m
     if not obstime.isscalar:
@@ -800,7 +810,7 @@ def _rotation_matrix_hgs_to_hci(obstime):
 @_transformation_debug("HGS->HCI")
 def hgs_to_hci(hgscoord, hciframe):
     """
-    Convert from Heliographic Stonyhurst to Heliocentric Inertial
+    Convert from Heliographic Stonyhurst to Heliocentric Inertial.
     """
     # First transform the HGS coord to the HCI obstime
     int_coord = _transform_obstime(hgscoord, hciframe.obstime)
@@ -817,7 +827,7 @@ def hgs_to_hci(hgscoord, hciframe):
 @_transformation_debug("HCI->HGS")
 def hci_to_hgs(hcicoord, hgsframe):
     """
-    Convert from Heliocentric Inertial to Heliographic Stonyhurst
+    Convert from Heliocentric Inertial to Heliographic Stonyhurst.
     """
     # First transform the HCI coord to the HGS obstime
     int_coord = _transform_obstime(hcicoord, hgsframe.obstime)
@@ -845,7 +855,7 @@ def hci_to_hci(from_coo, to_frame):
 
 def _rotation_matrix_obliquity(time):
     """
-    Return the rotation matrix from Earth equatorial to ecliptic coordinates
+    Return the rotation matrix from Earth equatorial to ecliptic coordinates.
     """
     return rotation_matrix(obl06(*get_jd12(time, 'tt'))*u.radian, 'x')
 
@@ -855,7 +865,7 @@ def _rotation_matrix_obliquity(time):
 @_transformation_debug("HME->GEI")
 def hme_to_gei(hmecoord, geiframe):
     """
-    Convert from Heliocentric Mean Ecliptic to Geocentric Earth Equatorial
+    Convert from Heliocentric Mean Ecliptic to Geocentric Earth Equatorial.
     """
     # Use an intermediate frame of HME at the GEI observation time, through HCRS
     int_frame = HeliocentricMeanEcliptic(obstime=geiframe.obstime, equinox=geiframe.equinox)
@@ -880,7 +890,7 @@ def hme_to_gei(hmecoord, geiframe):
 @_transformation_debug("GEI->HME")
 def gei_to_hme(geicoord, hmeframe):
     """
-    Convert from Geocentric Earth Equatorial to Heliocentric Mean Ecliptic
+    Convert from Geocentric Earth Equatorial to Heliocentric Mean Ecliptic.
     """
     # Use an intermediate frame of HME at the GEI observation time
     int_frame = HeliocentricMeanEcliptic(obstime=geicoord.obstime, equinox=geicoord.equinox)
@@ -916,7 +926,8 @@ def gei_to_gei(from_coo, to_frame):
 
 def _make_sunpy_graph():
     """
-    Culls down the full transformation graph for SunPy purposes and returns the string version
+    Culls down the full transformation graph for SunPy purposes and returns the
+    string version.
     """
     # Frames to keep in the transformation graph
     keep_list = ['icrs', 'hcrs', 'heliocentrictrueecliptic', 'heliocentricmeanecliptic',
@@ -963,7 +974,7 @@ def _make_sunpy_graph():
 
 def _add_astropy_node(graph):
     """
-    Add an 'Astropy' node that links to an ICRS node in the graph
+    Add an 'Astropy' node that links to an ICRS node in the graph.
     """
     class Astropy(BaseCoordinateFrame):
         name = "REPLACE"

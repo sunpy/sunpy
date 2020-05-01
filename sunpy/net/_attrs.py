@@ -1,8 +1,8 @@
 """
 Implementation of global attrs.
 
-These are defined in here to keep the `sunpy.net.attrs` namespace clean, and to
-prevent circular imports.
+These are defined in here to keep the `sunpy.net.attrs` namespace clean,
+and to prevent circular imports.
 """
 import collections
 
@@ -34,7 +34,6 @@ class Time(Range):
         Return a singular record closest in time to this value as possible,
         inside the start and end window. Note: not all providers support this
         functionality.
-
     """
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, TimeRange):
@@ -173,7 +172,6 @@ class Level(SimpleAttr):
         #. May be a string of the format '(min) - (max)' for range matching
         #. May be a string of the form '(operator) (number)' where operator is\
         one of: lt gt le ge < > <= >=
-
     """
     pass
 

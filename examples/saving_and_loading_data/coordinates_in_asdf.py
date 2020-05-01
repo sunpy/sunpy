@@ -41,7 +41,8 @@ from sunpy.data.sample import AIA_171_IMAGE
 @u.quantity_input
 def semi_circular_loop(length: u.m, latitude: u.deg = 0*u.deg):
     """
-    Return a Heliographic Stonyhurst coordinate object with points of a semi circular loop in it.
+    Return a Heliographic Stonyhurst coordinate object with points of a semi
+    circular loop in it.
     """
     r_sun = constants.radius
 

@@ -38,8 +38,9 @@ _TIMEFORMAT = '%Y%m%d%H%M%S'
 
 class Field(_attr.ValueAttr):
     """
-    A subclass of the value attribute.  Used in defining a decorator for the
-    dummy attribute.
+    A subclass of the value attribute.
+
+    Used in defining a decorator for the dummy attribute.
     """
     def __init__(self, fielditem):
         _attr.ValueAttr.__init__(self, {
@@ -49,9 +50,9 @@ class Field(_attr.ValueAttr):
 
 class Extent(_attr.DataAttr):
     """
-    Specify the spatial field-of-view of the query. Due to a bug in the VSO,
-    the Extent attribute is not used.
+    Specify the spatial field-of-view of the query.
 
+    Due to a bug in the VSO, the Extent attribute is not used.
     """
     # pylint: disable=R0913
     def __init__(self, x, y, width, length, atype):
@@ -170,7 +171,6 @@ class Filter(_attr.SimpleAttr):
     Parameters
     ----------
     value : str
-
     """
 
 
@@ -187,7 +187,9 @@ _walker = _attr.AttrWalker()
 @_walker.add_creator(_attr.ValueAttr, _attr.AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
-    """ Implementation detail. """
+    """
+    Implementation detail.
+    """
     api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
     value = api.get_type('VSO:QueryRequestBlock')()
     wlk.apply(root, api, value)
@@ -197,7 +199,9 @@ def _create(wlk, root, api):
 @_walker.add_applier(_attr.ValueAttr)
 # pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, block):
-    """ Implementation detail. """
+    """
+    Implementation detail.
+    """
     for k, v in root.attrs.items():
         name = k[0]
         subkey = k[1:]
@@ -218,7 +222,9 @@ def _apply(wlk, root, api, block):
 @_walker.add_applier(_attr.AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
-    """ Implementation detail. """
+    """
+    Implementation detail.
+    """
     for attr in root.attrs:
         wlk.apply(attr, api, queryblock)
 
@@ -226,7 +232,9 @@ def _apply(wlk, root, api, queryblock):
 @_walker.add_creator(_attr.AttrOr)
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
-    """ Implementation detail. """
+    """
+    Implementation detail.
+    """
     blocks = []
     for attr in root.attrs:
         blocks.extend(wlk.create(attr, api))

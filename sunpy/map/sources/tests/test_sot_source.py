@@ -1,5 +1,7 @@
-"""Test cases for HINODE Map subclasses.
-This particular test file pertains to SOTMap.
+"""
+Test cases for HINODE Map subclasses. This particular test file pertains to
+SOTMap.
+
 @Author: Pritish C. (VaticanCameos)
 """
 
@@ -25,34 +27,47 @@ def sot():
 
 # SOT Tests
 def test_fitstoSOT(sot):
-    """Tests the creation of SOTMap using FITS."""
+    """
+    Tests the creation of SOTMap using FITS.
+    """
     assert isinstance(sot, SOTMap)
 
 
 def test_is_datasource_for(sot):
-    """Test the is_datasource_for method of SOTMap.
-    Note that header data to be provided as an argument
-    can be a MetaDict object."""
+    """
+    Test the is_datasource_for method of SOTMap.
+
+    Note that header data to be provided as an argument can be a
+    MetaDict object.
+    """
     assert sot.is_datasource_for(sot.data, sot.meta)
 
 
 def test_observatory(sot):
-    """Tests the observatory property of the SOTMap object."""
+    """
+    Tests the observatory property of the SOTMap object.
+    """
     assert sot.observatory == "Hinode"
 
 def test_measurement(sot):
-    """Tests the measurement property of the SOTMap object."""
+    """
+    Tests the measurement property of the SOTMap object.
+    """
     assert sot.measurement == 0 * u.one
 
 
 def test_instruments(sot):
-    """Tests the Instruments object of SOTMap."""
+    """
+    Tests the Instruments object of SOTMap.
+    """
     assert (sot.Instruments == ['SOT/WB',
             'SOT/NB','SOT/SP','SOT/CT'])
 
 
 def test_waves(sot):
-    """Tests the Waves object of SOTMap."""
+    """
+    Tests the Waves object of SOTMap.
+    """
     assert (sot.Waves == ['6302A', 'BFI no move',
             'CN bandhead 3883', 'Ca II H line',
             'G band 4305', 'NFI no move', 'TF Fe I 6302',
@@ -62,7 +77,9 @@ def test_waves(sot):
 
 
 def test_obstype(sot):
-    """Tests the Observation_Type object of SOTMap."""
+    """
+    Tests the Observation_Type object of SOTMap.
+    """
     assert (sot.Observation_Type == ['FG (simple)',
             'FG focus scan', 'FG shuttered I and V',
             'FG shutterless I and V', 'FG shutterless I and V with 0.2s intervals',

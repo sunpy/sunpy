@@ -1,4 +1,6 @@
-"""Hinode XRT and SOT Map subclass definitions"""
+"""
+Hinode XRT and SOT Map subclass definitions.
+"""
 #pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
@@ -19,7 +21,8 @@ def _lower_list(l):
 
 
 class XRTMap(GenericMap):
-    """Hinode XRT map definition.
+    """
+    Hinode XRT map definition.
 
     The X-Ray Telescope (XRT) is a high resolution grazing incidence telescope,
     which is a succsessor to Yohkoh. It provides 2-arcsecond resolution images
@@ -72,12 +75,15 @@ class XRTMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an XRT image"""
+        """
+        Determines if header corresponds to an XRT image.
+        """
         return header.get('instrume') == 'XRT'
 
 
 class SOTMap(GenericMap):
-    """Hinode SOT Image Map definition.
+    """
+    Hinode SOT Image Map definition.
 
     The Hinode Solar Optical Telescope (SOT) consists of a 50 cm
     diffraction-limited Gregorian telescope. It is optimized for
@@ -132,5 +138,7 @@ class SOTMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an SOT image."""
+        """
+        Determines if header corresponds to an SOT image.
+        """
         return header.get('instrume') in cls.Instruments

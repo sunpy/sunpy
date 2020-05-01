@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Test mapsequence functionality
+Test mapsequence functionality.
 """
 from unittest import mock
 
@@ -37,9 +37,10 @@ def eit_map():
 @pytest.fixture
 def masked_aia_map(aia_map):
     """
-    Put a simple mask in the test AIA image.  A rectangular (not square) block
-    of True values are included to test that operations on the mask respect how
-    the mask is stored.
+    Put a simple mask in the test AIA image.
+
+    A rectangular (not square) block of True values are included to test
+    that operations on the mask respect how the mask is stored.
     """
     aia_map_data = aia_map.data
     aia_map_mask = np.zeros_like(aia_map_data)
@@ -50,41 +51,54 @@ def masked_aia_map(aia_map):
 
 @pytest.fixture
 def mapsequence_all_the_same(aia_map):
-    """ Simple `sunpy.map.mapsequence` for testing."""
+    """
+    Simple `sunpy.map.mapsequence` for testing.
+    """
     return sunpy.map.Map([aia_map, aia_map], sequence=True)
 
 
 @pytest.fixture
 def mapsequence_different_maps(aia_map, eit_map):
     """
-    Simple `sunpy.map.mapsequence` for testing, in which there are different maps
+    Simple `sunpy.map.mapsequence` for testing, in which there are different
+    maps.
     """
     return sunpy.map.Map([aia_map, eit_map], sequence=True)
 
 
 @pytest.fixture
 def mapsequence_all_the_same_all_have_masks(masked_aia_map):
-    """ Simple `sunpy.map.mapsequence` for testing, in which all the maps have
-    masks."""
+    """
+    Simple `sunpy.map.mapsequence` for testing, in which all the maps have
+    masks.
+    """
     return sunpy.map.Map([masked_aia_map, masked_aia_map], sequence=True)
 
 
 @pytest.fixture
 def mapsequence_all_the_same_some_have_masks(aia_map, masked_aia_map):
-    """ Simple `sunpy.map.mapsequence` for testing, in which at least some of the
-    maps have masks."""
+    """
+    Simple `sunpy.map.mapsequence` for testing, in which at least some of the
+    maps have masks.
+    """
     return sunpy.map.Map([masked_aia_map, masked_aia_map, aia_map], sequence=True)
 
 
 @pytest.fixture()
 def mapsequence_different(aia_map):
-    """ Mapsequence allows that the size of the image data in each map be
-    different.  This mapsequence contains such maps."""
+    """
+    Mapsequence allows that the size of the image data in each map be
+    different.
+
+    This mapsequence contains such maps.
+    """
     return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4) * u.pix)], sequence=True)
 
 
 def test_all_maps_same_shape(mapsequence_all_the_same, mapsequence_different):
-    """Make sure that Mapsequence knows if all the maps have the same shape"""
+    """
+    Make sure that Mapsequence knows if all the maps have the same shape.
+    """
     assert mapsequence_all_the_same.all_maps_same_shape()
     assert not mapsequence_different.all_maps_same_shape()
 
@@ -93,7 +107,9 @@ def test_at_least_one_map_has_mask(mapsequence_all_the_same,
                                    mapsequence_all_the_same_all_have_masks,
                                    mapsequence_all_the_same_some_have_masks
                                    ):
-    """ Test that we can detect the presence of at least one masked map."""
+    """
+    Test that we can detect the presence of at least one masked map.
+    """
     assert not mapsequence_all_the_same.at_least_one_map_has_mask()
     assert mapsequence_all_the_same_all_have_masks.at_least_one_map_has_mask()
     assert mapsequence_all_the_same_some_have_masks.at_least_one_map_has_mask()
@@ -103,9 +119,12 @@ def test_as_array(mapsequence_all_the_same,
                   mapsequence_different,
                   mapsequence_all_the_same_all_have_masks,
                   mapsequence_all_the_same_some_have_masks):
-    """Make sure the data in the mapsequence returns correctly, when all the
-    maps have the same shape.  When they don't have the same shape, make
-    sure an error is raised."""
+    """
+    Make sure the data in the mapsequence returns correctly, when all the maps
+    have the same shape.
+
+    When they don't have the same shape, make sure an error is raised.
+    """
     # Should raise a ValueError if the mapsequence has differently shaped maps in
     # it.
     with pytest.raises(ValueError):
@@ -159,8 +178,10 @@ def test_as_array(mapsequence_all_the_same,
 
 
 def test_all_meta(mapsequence_all_the_same):
-    """Tests that the correct number of map meta objects are returned, and
-    that they are all map meta objects."""
+    """
+    Tests that the correct number of map meta objects are returned, and that
+    they are all map meta objects.
+    """
     meta = mapsequence_all_the_same.all_meta()
     assert len(meta) == 2
     assert np.all(np.asarray([isinstance(h, MetaDict) for h in meta]))
@@ -169,8 +190,9 @@ def test_all_meta(mapsequence_all_the_same):
 
 def test_repr(mapsequence_all_the_same, mapsequence_different_maps):
     """
-    Tests that overidden __repr__ functionality works as expected. Test
-    for mapsequence of same maps as well that of different maps.
+    Tests that overidden __repr__ functionality works as expected.
+
+    Test for mapsequence of same maps as well that of different maps.
     """
     # Test the case of MapSequence having same maps
     expected_out = f'MapSequence of 2 elements, with maps from AIAMap'

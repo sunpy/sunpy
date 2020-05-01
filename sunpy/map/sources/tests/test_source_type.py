@@ -18,8 +18,10 @@ jp2path = glob.glob(os.path.join(path, "2013_06_24__17_31_30_84__SDO_AIA_AIA_193
 
 @skip_glymur
 def test_from_helioviewer_project():
-    """Tests if we are able to determine if a file is from the Helioviewer
-    Project or not."""
+    """
+    Tests if we are able to determine if a file is from the Helioviewer Project
+    or not.
+    """
     hvjp2 = Map(jp2path)
     assert not from_helioviewer_project(aia.meta)
     assert from_helioviewer_project(hvjp2.meta)

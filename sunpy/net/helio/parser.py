@@ -97,7 +97,6 @@ def endpoint_parser(link):
     'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_1?wsdl',
     'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0b?wsdl',
     'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl']
-
     """
     endpoint_page = link_test(link)
     if endpoint_page is None:
@@ -136,7 +135,6 @@ def taverna_parser(link):
     >>> from sunpy.net.helio import parser
     >>> parser.taverna_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
     ['http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl']
-
     """
     endpoints = endpoint_parser(link)
     taverna_links = []
@@ -184,7 +182,7 @@ def link_test(link):
 
 def wsdl_retriever(service='HEC'):
     """
-    Retrieves a link to a taverna WSDL file
+    Retrieves a link to a taverna WSDL file.
 
     This is essentially the master method, from it all the other functions get
     called and it essentially knits everything together. It gets a list of

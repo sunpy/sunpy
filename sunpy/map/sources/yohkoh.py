@@ -1,4 +1,6 @@
-"""Yohkoh SXT Map subclass definitions"""
+"""
+Yohkoh SXT Map subclass definitions.
+"""
 #pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Jack Ireland"
@@ -17,7 +19,8 @@ __all__ = ['SXTMap']
 
 
 class SXTMap(GenericMap):
-    """Yohkoh SXT Image Map
+    """
+    Yohkoh SXT Image Map.
 
     The Yohkoh Soft X-ray Telescope (SXT) the full solar disk
     (42 x 42 arcminutes)in the 0.25 - 4.0 keV range.
@@ -62,8 +65,11 @@ class SXTMap(GenericMap):
 
     @property
     def dsun(self):
-        """ For Yohkoh Maps, dsun_obs is not always defined. Uses approximation
-        defined above it is not defined."""
+        """
+        For Yohkoh Maps, dsun_obs is not always defined.
+
+        Uses approximation defined above it is not defined.
+        """
         return self.meta.get('dsun_obs', self.meta['dsun_apparent'])
 
     @property
@@ -80,5 +86,7 @@ class SXTMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an SXT image"""
+        """
+        Determines if header corresponds to an SXT image.
+        """
         return header.get('instrume') == 'SXT'

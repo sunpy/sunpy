@@ -1,12 +1,12 @@
 """
-This module provides the `Fido
+This module provides the `Fido.
+
 <sunpy.net.fido_factory.UnifiedDownloaderFactory>` instance of
 `sunpy.net.fido_factory.UnifiedDownloaderFactory` it also provides the
 `~sunpy.net.fido_factory.UnifiedResponse` class which
 `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>` returns and the
 `~sunpy.net.fido_factory.DownloadResponse` class that is returned by
 `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
-
 """
 import os
 from pathlib import Path
@@ -29,15 +29,17 @@ __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
 
 class UnifiedResponse(Sequence):
     """
-    The object used to store results from `~sunpy.net.UnifiedDownloaderFactory.search`.
+    The object used to store results from
+    `~sunpy.net.UnifiedDownloaderFactory.search`.
 
     The `~sunpy.net.Fido` object returns results from multiple different
-    clients. So it is always possible to sub-select these results, you can
-    index this object with two indices. The first index is the client index,
-    i.e. corresponding to the results from the `~sunpy.net.vso.VSOClient`. The
-    second index can be used to select records from the results returned from
-    that client, for instance if you only want every second result you could
-    index the second dimension with ``::2``.
+    clients. So it is always possible to sub-select these results, you
+    can index this object with two indices. The first index is the
+    client index, i.e. corresponding to the results from the
+    `~sunpy.net.vso.VSOClient`. The second index can be used to select
+    records from the results returned from that client, for instance if
+    you only want every second result you could index the second
+    dimension with ``::2``.
     """
 
     def __init__(self, *results):
@@ -66,8 +68,8 @@ class UnifiedResponse(Sequence):
         """
         Support slicing the UnifiedResponse as a 2D object.
 
-        The first index is to the client and the second index is the records
-        returned from those clients.
+        The first index is to the client and the second index is the
+        records returned from those clients.
         """
         # Just a single int as a slice, we are just indexing client.
         # Convert it to a slice so we still return a list.
@@ -123,11 +125,11 @@ class UnifiedResponse(Sequence):
     @property
     def tables(self):
         """
-        Returns a list of `astropy.table.Table` for all responses present in a specific
-        `~sunpy.net.fido_factory.UnifiedResponse` object. They can then be used
-        to perform key-based indexing of objects of either type
-        `sunpy.net.dataretriever.client.QueryResponse`, `sunpy.net.vso.QueryResponse` or
-        `sunpy.net.jsoc.JSOCClient`
+        Returns a list of `astropy.table.Table` for all responses present in a
+        specific `~sunpy.net.fido_factory.UnifiedResponse` object. They can
+        then be used to perform key-based indexing of objects of either type
+        `sunpy.net.dataretriever.client.QueryResponse`,
+        `sunpy.net.vso.QueryResponse` or `sunpy.net.jsoc.JSOCClient`
 
         Returns
         -------
@@ -329,7 +331,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         If any downloads fail, they can be retried by passing the `parfive.Results` object back into ``fetch``.
 
         >>> filepaths = Fido.fetch(filepaths)  # doctest: +SKIP
-
         """
         if path is not None:
             exists = list(filter(lambda p: p.exists(), Path(path).resolve().parents))
@@ -385,7 +386,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         raise TypeError(f"'{self.__class__.__name__}' object is not callable")
 
     def _check_registered_widgets(self, *args):
-        """Factory helper function"""
+        """
+        Factory helper function.
+        """
         candidate_widget_types = list()
         for key in self.registry:
             if self.registry[key](*args):

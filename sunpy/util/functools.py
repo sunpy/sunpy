@@ -1,5 +1,6 @@
 """
-This file defines wrappers and variants of things in the functools standard lib.
+This file defines wrappers and variants of things in the functools standard
+lib.
 """
 
 import functools
@@ -10,7 +11,8 @@ __all__ = ['seconddispatch']
 
 def seconddispatch(func):
     """
-    A variant of `functools.singledispatch` which dispatches on type of the second argument.
+    A variant of `functools.singledispatch` which dispatches on type of the
+    second argument.
     """
 
     dispatcher = functools.singledispatch(func)

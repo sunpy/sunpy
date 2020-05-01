@@ -20,7 +20,6 @@ class BaseQueryResponse(Sequence):
       table in the ``build_table`` method.
     * `__getitem__` **must** return an instance of the type it was called on.
       I.e. it must always return an object of ``type(self)``.
-
     """
 
     @abstractmethod
@@ -70,11 +69,15 @@ class BaseQueryResponse(Sequence):
         """
 
     def __str__(self):
-        """Print out human-readable summary of records retrieved"""
+        """
+        Print out human-readable summary of records retrieved.
+        """
         return '\n'.join(self.build_table().pformat(show_dtype=False))
 
     def __repr__(self):
-        """Print out human-readable summary of records retrieved"""
+        """
+        Print out human-readable summary of records retrieved.
+        """
         return object.__repr__(self) + "\n" + str(self)
 
     def _repr_html_(self):
@@ -100,12 +103,15 @@ class BaseClient(ABC):
 
     def __init_subclass__(cls, *args, **kwargs):
         """
-        An __init_subclass__ hook initializes all of the subclasses of a given class.
+        An __init_subclass__ hook initializes all of the subclasses of a given
+        class.
+
         So for each subclass, it will call this block of code on import.
-        This replicates some metaclass magic without the need to be aware of metaclasses.
-        Here we use this to register each subclass in a dict that has the `_can_handle_query` attribute.
-        This is then passed into the UnifiedDownloaderFactory so we can register them.
-        This means that Fido can use the clients internally.
+        This replicates some metaclass magic without the need to be
+        aware of metaclasses. Here we use this to register each subclass
+        in a dict that has the `_can_handle_query` attribute. This is
+        then passed into the UnifiedDownloaderFactory so we can register
+        them. This means that Fido can use the clients internally.
         """
         super().__init_subclass__(**kwargs)
 
@@ -142,7 +148,8 @@ class BaseClient(ABC):
     def fetch(self, *query_results, path=None, overwrite=False, progress=True,
               max_conn=5, downloader=None, wait=True, **kwargs):
         """
-        This enables the user to fetch the data using the client, after a search.
+        This enables the user to fetch the data using the client, after a
+        search.
 
         Parameters
         ----------
@@ -174,7 +181,8 @@ class BaseClient(ABC):
     @abstractmethod
     def _can_handle_query(cls, *query):
         """
-        This enables the client to register what kind of searches it can handle, to prevent Fido using the incorrect client.
+        This enables the client to register what kind of searches it can
+        handle, to prevent Fido using the incorrect client.
         """
 
     @staticmethod
@@ -182,8 +190,9 @@ class BaseClient(ABC):
         """
         Check a query againsted required and optional attributes.
 
-        Returns `True` if *query* contains all the attrs in *required_attrs*,
-        and if *query* contains only attrs in both *required_attrs* and *optional_attrs*.
+        Returns `True` if *query* contains all the attrs in
+        *required_attrs*, and if *query* contains only attrs in both
+        *required_attrs* and *optional_attrs*.
         """
         query_attrs = {type(x) for x in query}
         all_attrs = required_attrs.union(optional_attrs)

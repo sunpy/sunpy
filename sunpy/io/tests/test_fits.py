@@ -132,7 +132,9 @@ def test_write_with_metadict_header_astropy(tmpdir):
 # works without exceptions
 @pytest.mark.filterwarnings('ignore')
 def test_fitsheader():
-    """Test that all test data can be converted back to a FITS header."""
+    """
+    Test that all test data can be converted back to a FITS header.
+    """
     extensions = ('fts', 'fits')
     for ext in extensions:
         for ffile in Path(testpath).glob(f"*.{ext}*"):

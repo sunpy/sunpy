@@ -1,5 +1,5 @@
 """
-These tests are borrowed from CPython
+These tests are borrowed from CPython.
 """
 import sys
 import unittest
@@ -73,7 +73,9 @@ class TestSingleDispatch(unittest.TestCase):
     def test_wrapping_attributes(self):
         @seconddispatch
         def g(dummy, obj):
-            "Simple test"
+            """
+            Simple test.
+            """
             return "Test"
         self.assertEqual(g.__name__, "g")
         if sys.flags.optimize < 2:

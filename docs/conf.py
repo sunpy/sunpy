@@ -267,7 +267,8 @@ open(target_file, 'a').close()
 
 class Generate(Directive):
     """
-    Custom directive to include raw output generated using supplied Python code
+    Custom directive to include raw output generated using supplied Python
+    code.
 
     This directive is similar to the ``raw`` directive, except that the raw content is generated
     instead of statically provided.  As with the ``raw`` directive, the required argument specifies

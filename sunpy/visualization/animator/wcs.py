@@ -14,7 +14,8 @@ __all__ = ['ArrayAnimatorWCS']
 
 class ArrayAnimatorWCS(ArrayAnimator):
     """
-    Animate an array with associated `~astropy.wcs.wcsapi.BaseLowLevelWCS` object.
+    Animate an array with associated `~astropy.wcs.wcsapi.BaseLowLevelWCS`
+    object.
 
     The following keyboard shortcuts are defined in the viewer:
 
@@ -57,7 +58,6 @@ class ArrayAnimatorWCS(ArrayAnimator):
     ylabel: `string`, optional
        The yaxis label to use when drawing a line plot. Setting the label on
        the y-axis on an image plot should be done via ``coord_params``.
-
     """
 
     def __init__(self, data, wcs, slices, coord_params=None, ylim='dynamic', ylabel=None, **kwargs):
@@ -103,7 +103,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
     def _get_wcs_labels(self):
         """
-        Read first the axes names property of the wcs and fall back to physical types.
+        Read first the axes names property of the wcs and fall back to physical
+        types.
         """
         # world_axis_names was only added to the APE 14 API in 4.0, so do this for backwards compatibility.
         world_axis_names = getattr(self.wcs, "world_axis_names", [''] * self.wcs.world_n_dim)
@@ -113,9 +114,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
     def _compute_slider_labels_from_wcs(self, slices):
         """
         For each pixel dimension, not used in the plot, calculate the world
-        names which are correlated with that pixel dimension. This can return
-        more than one world name per pixel dimension (i.e. lat & lon) so join
-        them if there are.
+        names which are correlated with that pixel dimension.
+
+        This can return more than one world name per pixel dimension
+        (i.e. lat & lon) so join them if there are.
         """
         labels = []
         wal = np.array(self._get_wcs_labels())
@@ -127,8 +129,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
     def _partial_pixel_to_world(self, pixel_dimension, pixel_coord):
         """
-        Return the world coordinate along one axis, if it is only
-        correlated to that axis.
+        Return the world coordinate along one axis, if it is only correlated to
+        that axis.
         """
         wcs_dimension = self.wcs.pixel_n_dim - pixel_dimension - 1
         corr = self.wcs.axis_correlation_matrix[:, wcs_dimension]
@@ -211,8 +213,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         """
         Update the plot when a slider changes.
 
-        This method both updates the state of the Animator and also re-draws
-        the matplotlib artist.
+        This method both updates the state of the Animator and also re-
+        draws the matplotlib artist.
         """
         ind = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
@@ -231,7 +233,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         """
         Set up a line plot.
 
-        When plotting with WCSAxes, we always plot against pixel coordinate.
+        When plotting with WCSAxes, we always plot against pixel
+        coordinate.
         """
         if self.ylim != 'dynamic':
             ylim = self.ylim
