@@ -29,16 +29,17 @@ from sunpy.net import attrs as a
 plt.rcParams['figure.figsize'] = (16, 8)
 
 ######################################################################
-# Let’s download an EUV image from both AIA and STEREO A, when their
-# separation was around 90 degrees.
+# Let’s download an EUV image from both AIA and STEREO A
 
-stereo = (a.vso.Source('STEREO_A') &
+stereo = (a.vso.Source('STEREO_A')&
           a.Instrument('EUVI') &
-          a.Time('2010-08-19', '2010-08-19T00:10:00'))
+          a.Time('2011-11-01', '2011-11-01T00:10:00'))
+
 aia = (a.Instrument('AIA') &
        a.Sample(24 * u.hour) &
-       a.Time('2010-08-19', '2010-08-19T00:10:00'))
-wave = a.Wavelength(17 * u.nm, 18 * u.nm)
+       a.Time('2011-11-01', '2011-11-02'))
+
+wave = a.Wavelength(19.5 * u.nm, 19.5 * u.nm)
 
 res = Fido.search(wave, aia | stereo)
 files = Fido.fetch(res)
