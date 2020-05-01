@@ -52,8 +52,9 @@ map_aia, map_stereo = sunpy.map.Map(sorted(files))
 
 # We downsample these maps to reduce memory consumption, you can comment this
 # out.
-map_aia = map_aia.resample((512, 512) * u.pix)
-map_stereo = map_stereo.resample((512, 512) * u.pix)
+out_shape = (512, 512)
+map_aia = map_aia.resample(out_shape * u.pix)
+map_stereo = map_stereo.resample(out_shape * u.pix)
 
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 2, 1, projection=map_aia)
@@ -65,15 +66,12 @@ map_stereo.plot(axes=ax2)
 # We now need to construct an output WCS. Because we want to downsample
 # the image (for performance) we build a custom header using
 # ``sunpy.map.make_fitswcs_header`` but we use a lot of the ``map_aia``
-# properties to do it. We use the reference coordinate from the AIA image,
-# and make the scale 4x larger to compensate for the fact we are making
-# the resolution 4x lower.
+# properties to do it. We use the reference coordinate from the AIA image.
 
-out_shape = (512, 512)
 out_header = sunpy.map.make_fitswcs_header(
     out_shape,
     map_aia.reference_coordinate,
-    scale=u.Quantity(map_aia.scale)*4,
+    scale=u.Quantity(map_aia.scale),
     instrument="EUVI",
     observatory="AIA Observer",
     wavelength=map_stereo.wavelength
@@ -133,11 +131,10 @@ mars_ref_coord = SkyCoord(map_aia.reference_coordinate.Tx,
 ######################################################################
 # then a header
 
-out_shape = (512, 512)
 mars_header = sunpy.map.make_fitswcs_header(
     out_shape,
     mars_ref_coord,
-    scale=u.Quantity(map_aia.scale)*4,
+    scale=u.Quantity(map_aia.scale),
     rotation_matrix=map_aia.rotation_matrix,
     instrument="AIA",
     wavelength=map_aia.wavelength
