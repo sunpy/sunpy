@@ -6,11 +6,15 @@ from skimage import transform as tf
 from sunpy.image.transform import affine_transform
 from sunpy.util import SunpyUserWarning
 
-# Define test image first so it's accessible to all functions.
-original = images.camera().astype('float')
 
 # Tolerance for tests
-rtol = 1.0e-15
+RTOL = 1.0e-15
+
+
+@pytest.fixture
+def original():
+    # Test image
+    return images.camera().astype('float')
 
 
 @pytest.fixture
@@ -26,22 +30,24 @@ def compare_results(expect, result, allclose=True):
     # Outermost pixels can contain artefacts which will be ignored.
     exp = expect[1:-1, 1:-1]
     res = result[1:-1, 1:-1]
-    t1 = abs(exp.mean() - res.mean()) <= rtol*exp.mean()
+    t1 = abs(exp.mean() - res.mean()) <= RTOL*exp.mean()
 
     #Don't do the allclose test for scipy as the bicubic algorithm has edge effects
     if allclose:
-        t2 = np.allclose(exp, res, rtol=rtol)  #TODO: Develop a better way of testing this
+        t2 = np.allclose(exp, res, rtol=RTOL)  # TODO: Develop a better way of testing this
     else:
         t2 = True
 
     return t1 and t2
 
+
 @pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
                                       (-90.0, 3), (360.0, 0), (-360.0, 0)])
-def test_rotation(angle, k):
+def test_rotation(original, angle, k):
     # Test rotation against expected outcome
     angle = np.radians(angle)
-    c = np.cos(angle); s = np.sin(angle)
+    c = np.round(np.cos(angle))
+    s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
 
@@ -56,12 +62,14 @@ def test_rotation(angle, k):
     derot = affine_transform(rot, order=4, rmatrix=derot_matrix)
     assert compare_results(original, derot)
 
+
 @pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
                                       (-90.0, 3), (360.0, 0), (-360.0, 0)])
-def test_scipy_rotation(angle, k):
+def test_scipy_rotation(original, angle, k):
     # Test rotation against expected outcome
     angle = np.radians(angle)
-    c = np.cos(angle); s = np.sin(angle)
+    c = np.round(np.cos(angle))
+    s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
     rot = affine_transform(original, rmatrix=rmatrix, use_scipy=True)
@@ -74,10 +82,11 @@ def test_scipy_rotation(angle, k):
     derot = affine_transform(rot, rmatrix=derot_matrix, use_scipy=True)
     assert compare_results(original, derot, allclose=False)
 
+
 dx_values, dy_values = list(range(-100, 101, 100))*3, list(range(-100, 101, 100))*3
 dy_values.sort()
 @pytest.mark.parametrize("dx, dy", list(zip(dx_values, dy_values)))
-def test_shift(dx, dy):
+def test_shift(original, dx, dy):
     # Rotation center for all translation tests.
     image_center = np.array(original.shape)/2.0 - 0.5
 
@@ -102,7 +111,7 @@ def test_shift(dx, dy):
 
 
 @pytest.mark.parametrize("scale_factor", [0.25, 0.5, 0.75, 1.0, 1.25, 1.5])
-def test_scale(scale_factor):
+def test_scale(original, scale_factor):
     # No rotation for all scaling tests.
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
@@ -127,7 +136,7 @@ def test_scale(scale_factor):
 @pytest.mark.parametrize("angle, dx, dy, scale_factor", [(90, -100, 50, 0.25),
                                                          (-90, 50, -100, 0.75),
                                                          (180, 100, 50, 1.5)])
-def test_all(angle, dx, dy, scale_factor):
+def test_all(original, angle, dx, dy, scale_factor):
     """
     Tests to make sure that combinations of scaling, shifting and rotation
     produce the expected output.
@@ -137,8 +146,8 @@ def test_all(angle, dx, dy, scale_factor):
     image_center = np.array(original.shape) / 2.0 - 0.5
 
     # Check a shifted, rotated and scaled shape against expected outcome
-    c = np.cos(angle)
-    s = np.sin(angle)
+    c = np.round(np.cos(angle))
+    s = np.round(np.sin(angle))
     rmatrix = np.array([[c, -s], [s, c]])
     scale = tf.rescale(original / original.max(), scale_factor, order=4,
                        mode='constant', multichannel=False, anti_aliasing=False) * original.max()
@@ -192,7 +201,7 @@ def test_flat(identity):
     # Test that a flat array can be rotated using scikit-image
     in_arr = np.array([[100]], dtype=np.float64)
     out_arr = affine_transform(in_arr, rmatrix=identity)
-    assert np.allclose(in_arr, out_arr, rtol=rtol)
+    assert np.allclose(in_arr, out_arr, rtol=RTOL)
 
 
 def test_nan_skimage_low(identity):
