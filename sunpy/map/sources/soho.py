@@ -224,7 +224,7 @@ class MDISynopticMap(MDIMap):
         # FITS doesn't like "Degree" as a unit
         if header['cunit1'] == 'Degree':
             header['cunit1'] = 'deg'
-        # Sine Latitude is not a valid unit - see Thompson 2005, section 5.5
+        # Sine Latitude is not a valid unit - see Thompson 2006, section 5.5
         # for how to properly represent the cylindrical equal area (CEA) projection
         if header['cunit2'] == 'Sine Latitude':
             header['cdelt2'] = 180 / np.pi * header['cdelt2']
