@@ -164,6 +164,7 @@ project = 'SunPy'
 author = 'The SunPy Community'
 copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 
+fix_circleci = lambda x: None
 try:
     from sunpy_sphinx_theme.conf import *
 except ImportError:
@@ -299,3 +300,6 @@ def setup(app):
                       'to this.')
     if has_yaml:
         app.connect("source-read", rstjinja)
+
+    # The theme conf provides a fix for circle ci redirections
+    fix_circleci(app)
