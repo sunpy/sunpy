@@ -299,13 +299,13 @@ def deprecate_positional_args(f):
         extra_args = len(args) - len(all_args)
         if extra_args > 0:
             # ignore first 'self' argument for instance methods
-            args_msg = ['{}={}'.format(name, arg)
+            args_msg = [f'{name}={arg}'
                         for name, arg in zip(kwonly_args[:extra_args],
                                              args[-extra_args:])]
             last_supported_version = ".".join(map(str, get_removal_version("2.0")))
-            warnings.warn("Pass {} as keyword args. From version {} "
-                          "passing these as positional arguments will "
-                          "result in an error".format(", ".join(args_msg), last_supported_version),
+            warnings.warn(f"Pass {", ".join(args_msg)} as keyword args. "
+                          f"From version {last_supported_version} "
+                          "passing these as positional arguments will result in an error.",
                           FutureWarning)
         kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
         return f(**kwargs)
