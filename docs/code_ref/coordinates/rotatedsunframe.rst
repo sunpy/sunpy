@@ -10,22 +10,23 @@ Thus, a coordinate that points to a solar feature (e.g., the center of the Sun o
 
 To evolve a coordinate in time such that it accounts for the rotational motion of the Sun, one can use the `~sunpy.coordinates.metaframes.RotatedSunFrame` "metaframe" class as described below.
 This machinery will take into account the latitude-dependent rotation rate of the solar surface, also known as differential rotation.
+Multiple models for differential rotation are supported (see :func:`~sunpy.physics.differential_rotation.diff_rot` for details).
 
-In addition, one may want to account for the translational motion of the Sun as well, and that can be achieved by also using the context manager `~sunpy.coordinates.transform_with_sun_center` for desired coordinate transformations.
+In addition, one may want to account for the translational motion of the Sun as well, and that can be achieved by also using the context manager :func:`~sunpy.coordinates.transform_with_sun_center` for desired coordinate transformations.
 
 Basics of the RotatedSunFrame class
 -----------------------------------
 In a nutshell, the `~sunpy.coordinates.metaframes.RotatedSunFrame` class allows one to specify coordinates in a coordinate frame prior to an amount of solar (differential) rotation being applied.
 That is, the coordinate will point to a location in inertial space at some time, but will use a coordinate system at a *different* time to refer to that point, while accounting for the differential rotation between those two times.
 
-Technical note: ``RotatedSunFrame`` is not itself a coordinate frame, but is instead a "metaframe".
+Technical note: `~sunpy.coordinates.metaframes.RotatedSunFrame` is not itself a coordinate frame, but is instead a "metaframe".
 A new frame class is created on the fly corresponding to each base coordinate frame class.
 This tutorial will refer to these new classes as ``RotatedSun*`` frames.
 
 Creating coordinates
 ^^^^^^^^^^^^^^^^^^^^
 
-``RotatedSunFrame`` requires two inputs: the base coordinate frame and the duration of solar rotation.
+`~sunpy.coordinates.metaframes.RotatedSunFrame` requires two inputs: the base coordinate frame and the duration of solar rotation.
 The base coordinate frame needs to be fully specified, which means a defined ``obstime`` and, if relevant, a defined ``observer``.
 Note that the ``RotatedSun*`` frame that is created in this example is appropriately named ``RotatedSunHeliographicStonyhurst``::
 
@@ -68,7 +69,7 @@ If one converts the ``RotatedSun*`` coordinate to a "real" coordinate frame, eve
   <HeliographicCarrington Coordinate (obstime=2020-03-04T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
       (45.13354448, 20., 695700.)>
 
-The above examples used the default differential-rotation model, but any of the models available through `sunpy.physics.diff_rot` are selectable.
+The above examples used the default differential-rotation model, but any of the models available through :func:`sunpy.physics.differential_rotation.diff_rot` are selectable.
 For example, instead of the default ("howard"), one can specify "allen" using the keyword argument ``rotation_model``.
 Note the slight difference in the "real" longitude compared to the output above::
 
@@ -136,7 +137,7 @@ Note that equator rotates slightly faster than the Carrington rotation rate (its
 
 Be aware that transformations with a change in ``obstime`` will also contend with a translation of the center of the Sun.
 Note that the ``radius`` component above is no longer precisely on the surface of the Sun.
-For precise transformations of solar features, one should also use the context manager `~sunpy.coordinates.transformations.transform_with_sun_center` to account for the translational motion of the Sun.
+For precise transformations of solar features, one should also use the context manager :func:`~sunpy.coordinates.transformations.transform_with_sun_center` to account for the translational motion of the Sun.
 Using the context manager, the ``radius`` component stays as the solar radius as desired::
 
   >>> from sunpy.coordinates import transform_with_sun_center
@@ -190,7 +191,7 @@ Let's convert to the base coordinate frame to reveal the motion of the active re
        ( 656.65386199, 440.43943386, 0.98058459),
        ( 780.54121099, 430.77097352, 0.98141858)]>
 
-Be aware that these coordinates are represented in the ``Helioprojective`` coordinates as seen from Earth at the base time.
+Be aware that these coordinates are represented in the `~sunpy.coordinates.frames.Helioprojective` coordinates as seen from Earth at the base time.
 Since the Earth moves in its orbit around the Sun, one may be more interested in representing these coordinates as they would been seen by an Earth observer at each time step.
 Since the destination frame of the transformation will now have arrays for ``obstime`` and ``observer``, one actually has to construct the initial coordinate with an array for ``obstime`` (and ``observer``) due to a limitation in Astropy.
 Note that the active region moves slightly slower across the disk of the Sun because the Earth orbits in the same direction as the Sun rotates, thus reducing the apparent rotation of the Sun::
@@ -245,7 +246,7 @@ If we create a ``RotatedSun*`` frame for a different base time, we can represent
       (10., 20., 695700.)>
 
 There coordinates are stored in the ``RotatedSun*`` frame, but it can be useful to "pop off" this extra layer and retain only the coordinate representation in the base coordinate frame.
-There is a convenience method called `~sunpy.coordinates.metaframes.RotatedSunFrame.as_base()` to do exactly that.
+There is a convenience method called :meth:`~sunpy.coordinates.metaframes.RotatedSunFrame.as_base()` to do exactly that.
 Be aware the resulting coordinate does *not* point to the same location in inertial space, despite the superficial similarity.
 Essentially, the component values have been copied from one coordinate frame to a different coordinate frame, and thus this is not merely a transformation between coordinate frames::
 
@@ -253,143 +254,14 @@ Essentially, the component values have been copied from one coordinate frame to 
   <HeliographicCarrington Coordinate (obstime=2020-03-04T00:00:00.000, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (lon, lat, radius) in (deg, deg, km)
       (10., 20., 695700.)>
 
-Advanced uses of RotatedSunFrame
---------------------------------
+Example uses of RotatedSunFrame
+-------------------------------
 
-Here are advanced examples of how to use ``RotatedSunFrame``.
+Here are the examples in our gallery that use `~sunpy.coordinates.metaframes.RotatedSunFrame`:
 
-Plotting differentially rotated coordinates
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. include:: ../../generated/modules/sunpy.coordinates.RotatedSunFrame.examples
+    :start-line: 5
 
-Coordinates in a ``RotatedSun*`` frame can be plotted onto a map in the same manner as a normal coordinate.
-Here, we plot the differentially rotated locations of a solar feature from -5 days to +5 days.
+.. raw:: html
 
-.. plot::
-   :include-source:
-
-   from astropy.coordinates import SkyCoord
-   import astropy.units as u
-   import matplotlib.pyplot as plt
-
-   from sunpy.coordinates import RotatedSunFrame
-   from sunpy.data.sample import AIA_171_IMAGE
-   from sunpy.map import Map
-
-   m = Map(AIA_171_IMAGE)
-
-   fig = plt.figure()
-   ax = plt.subplot(projection=m)
-   m.plot(clip_interval=(1., 99.95)*u.percent)
-
-   durations = range(-5, 6, 1)*u.day
-   point = SkyCoord(187*u.arcsec, 283*u.arcsec, frame=m.coordinate_frame)
-   diffrot_point = RotatedSunFrame(base=point, duration=durations)
-
-   middle = len(durations) // 2
-   ax.plot_coord(diffrot_point[middle], 'ro', fillstyle='none')
-   ax.plot_coord(diffrot_point[:middle], 'bo', fillstyle='none')
-   ax.plot_coord(diffrot_point[middle+1:], 'bo', fillstyle='none')
-
-   plt.show()
-
-Grid overlay on a Map
-^^^^^^^^^^^^^^^^^^^^^
-
-We can use the ``RotatedSun*`` frame to straightforwardly plot grid overlays.
-Here, we plot normal ``HeliographicStonyhurst`` longitude lines in white and ``RotatedSunHeliographicStonyhurst`` longitude lines (with 27 days of differential rotation) in blue.
-
-.. plot::
-   :include-source:
-
-   import astropy.units as u
-   import matplotlib.pyplot as plt
-
-   from sunpy.coordinates import RotatedSunFrame, HeliographicStonyhurst
-   from sunpy.data.sample import AIA_171_IMAGE
-   from sunpy.map import Map
-
-   m = Map(AIA_171_IMAGE)
-
-   fig = plt.figure()
-   ax = plt.subplot(projection=m)
-   m.plot(clip_interval=(1., 99.95)*u.percent)
-
-   overlay = ax.get_coords_overlay('heliographic_stonyhurst')
-   overlay[0].set_ticks(spacing=15. * u.deg)
-   overlay[1].set_ticks(spacing=90. * u.deg)
-   overlay.grid(ls='-', color='white')
-
-   rs_hgs = RotatedSunFrame(base=HeliographicStonyhurst(obstime=m.date), duration=27*u.day)
-   overlay = ax.get_coords_overlay(rs_hgs)
-   overlay[0].set_ticks(spacing=15. * u.deg)
-   overlay[1].set_ticks(spacing=90. * u.deg)
-   overlay.grid(ls='-', color='blue')
-
-   plt.show()
-
-Be aware that the distorted ``RotatedSunHeliographicStonyhurst`` longitude lines are plotted on the original coordinate frame, and thus use the ``Helioprojective`` coordinate frame for the location of AIA at the original observation time (as opposed to 27 days later).
-
-Differentially rotating a Map
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. note::
-   This example requires `reproject` 0.6 or later to be installed.
-
-Here is an example of reprojecting a map to another time with an observer at a different location.
-To achieve the reprojection, one needs to transform from the original frame to the ``RotatedSun*`` version of the output frame with ``rotated_time`` set to the time of the original frame.
-When reprojecting across a change in time, it is generally advisable to use the `~sunpy.coordinates.transform_with_sun_center` context manager.
-
-.. plot::
-   :include-source:
-
-   from astropy.coordinates import SkyCoord
-   import astropy.units as u
-   from astropy.wcs import WCS
-   import matplotlib.pyplot as plt
-   from reproject import reproject_interp
-
-   from sunpy.coordinates import Helioprojective, RotatedSunFrame, HeliographicStonyhurst, transform_with_sun_center
-   from sunpy.data.sample import AIA_171_IMAGE
-   from sunpy.map import Map, make_fitswcs_header
-
-   # Load the map and define the output time with +5 days of differential rotation
-   m = Map(AIA_171_IMAGE)
-   in_time = m.date
-   out_time = in_time + 5*u.day
-
-   # Define the output real frame with an associated new observer (at Earth)
-   out_frame = Helioprojective(observer='earth', obstime=out_time)
-
-   # Define the output RotatedSunFrame (its `duration` will be -5 days)
-   rot_frame = RotatedSunFrame(base=out_frame, rotated_time=in_time)
-
-   # Construct a WCS object for the output map with the output RotatedSunFrame specified
-   out_shape = m.data.shape
-   out_center = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=out_frame)
-   header = make_fitswcs_header(out_shape, out_center, scale=u.Quantity(m.scale))
-   out_wcs = WCS(header)
-   out_wcs.coordinate_frame = rot_frame
-
-   # Reproject the map from the input frame to the output RotatedSunFrame while following Sun center
-   with transform_with_sun_center():
-       arr, _ = reproject_interp(m, out_wcs, out_shape)
-
-   # Create the output map and preserve the original map's plot settings
-   out_warp = Map(arr, out_wcs)
-   out_warp.plot_settings = m.plot_settings
-
-   # Plot the output map next to the original map
-   fig = plt.figure(figsize=(12, 4))
-
-   ax1 = fig.add_subplot(1, 2, 1, projection=m)
-   m.plot(vmin=0, vmax=20000, title='Original map')
-   plt.colorbar()
-
-   ax2 = fig.add_subplot(1, 2, 2, projection=out_warp)
-   out_warp.plot(vmin=0, vmax=20000,
-                 title=f"Reprojected to an Earth observer {(out_time - in_time).to('day')} later")
-   plt.colorbar()
-
-   plt.show()
-
-Instead of the steps to construct a custom WCS object, one can instead use the WCS from an actual ``Map`` object at the desired output time (e.g., the actual AIA observation at the later time).
+    <div class="sphx-glr-clear"></div>
