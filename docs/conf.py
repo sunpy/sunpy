@@ -137,6 +137,7 @@ project = 'SunPy'
 author = 'The SunPy Community'
 copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 
+fix_circleci = lambda x: None
 try:
     from sunpy_sphinx_theme.conf import *
 except ImportError:
@@ -327,3 +328,6 @@ def setup(app):
 
     # Add the custom directive
     app.add_directive('generate', Generate)
+
+    # The theme conf provides a fix for circle ci redirections
+    fix_circleci(app)
