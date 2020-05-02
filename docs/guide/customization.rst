@@ -18,8 +18,9 @@ in a platform specific directory, which you can see the path for by running::
   >>> sunpy.print_config()   # doctest: +SKIP
 
 To maintain your own customizations place a copy of the default sunpyrc file
-into the *first* path printed above. Do not edit the default file directly as every
-time you install or update SunPy, this file will be overwritten.
+into the *first* path printed above.
+You can use `sunpy.util.config.copy_default_config` to write the default config into the correct place.
+Do not edit the default file directly as every time you install or update SunPy, this file will be overwritten.
 
 See below for the example config file.
 

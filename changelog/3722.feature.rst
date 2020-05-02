@@ -1,0 +1,1 @@
+Added `sunpy.util.config.copy_default_config` that copies the default config file to the user's config directory.
