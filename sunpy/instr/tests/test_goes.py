@@ -239,7 +239,7 @@ def test_goes_chianti_tem_case8():
 def test_calculate_radiative_loss_rate(goeslc):
     # Define input variables.
     not_goeslc = []
-    goeslc_no_em = goes.calculate_temperature_em(goeslc_input)
+    goeslc_no_em = goes.calculate_temperature_em(goeslc)
     del goeslc_no_em.to_dataframe()["em"]
 
     # Check correct exceptions are raised to incorrect inputs
@@ -248,7 +248,7 @@ def test_calculate_radiative_loss_rate(goeslc):
 
     # Check function gives correct results.
     # Test case 1: GOESTimeSeries object with only flux data
-    goeslc_test = goes.calculate_radiative_loss_rate(goeslc_input)
+    goeslc_test = goes.calculate_radiative_loss_rate(goeslc)
     exp_data = np.array([1.78100055e+19, 1.66003113e+19, 1.71993065e+19,
                          1.60171768e+19, 1.71993065e+19])
     np.testing.assert_allclose(goeslc_test.to_dataframe().rad_loss_rate[:5],
