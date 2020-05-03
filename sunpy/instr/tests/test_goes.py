@@ -87,14 +87,14 @@ def test_calculate_temperature_em(goeslc):
         satellite=int(goeslc.meta.metas[0]["TELESCOP"].split()[1]), date="2014-01-01")
     # Check that temperature and EM arrays from _goes_chianti_tem()
     # are same as those in new XRSTimeSeries object.
-    assert goeslc_new.data.temperature.all() == temp.value.all()
-    assert goeslc_new.data.em.all() == em.value.all()
+    assert goeslc_new.to_dataframe().temperature.all() == temp.value.all()
+    assert goeslc_new.to_dataframe().em.all() == em.value.all()
     # Check rest of data frame of new XRSTimeSeries object is same
     # as that in original object.
     goeslc_revert = copy.deepcopy(goeslc_new)
-    del goeslc_revert.data["temperature"]
-    del goeslc_revert.data["em"]
-    assert_frame_equal(goeslc_revert.data, goeslc.data)
+    del goeslc_revert.to_dataframe()["temperature"]
+    del goeslc_revert.to_dataframe()["em"]
+    assert_frame_equal(goeslc_revert.to_dataframe(), goeslc.to_dataframe())
 
 
 @pytest.mark.remote_data
@@ -240,7 +240,7 @@ def test_calculate_radiative_loss_rate(goeslc):
     # Define input variables.
     not_goeslc = []
     goeslc_no_em = goes.calculate_temperature_em(goeslc_input)
-    del goeslc_no_em.data["em"]
+    del goeslc_no_em.to_dataframe()["em"]
 
     # Check correct exceptions are raised to incorrect inputs
     with pytest.raises(TypeError):
@@ -251,7 +251,7 @@ def test_calculate_radiative_loss_rate(goeslc):
     goeslc_test = goes.calculate_radiative_loss_rate(goeslc_input)
     exp_data = np.array([1.78100055e+19, 1.66003113e+19, 1.71993065e+19,
                          1.60171768e+19, 1.71993065e+19])
-    np.testing.assert_allclose(goeslc_test.data.rad_loss_rate[:5],
+    np.testing.assert_allclose(goeslc_test.to_dataframe().rad_loss_rate[:5],
                                exp_data)
 
     # Test case 2: GOESTimeSeries object with flux and temperature
@@ -260,7 +260,7 @@ def test_calculate_radiative_loss_rate(goeslc):
     # we test that the column has been added
     assert "rad_loss_rate" in goes_test.columns
     # Compare every 50th value to save on filesize
-    return np.array(goes_test.data[::50])
+    return np.array(goes_test.to_dataframe()[::50])
 
 
 @pytest.mark.remote_data
