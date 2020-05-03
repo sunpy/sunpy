@@ -118,7 +118,7 @@ def _transformation_debug(description):
 
 def _observers_are_equal(obs_1, obs_2):
     # Note that this also lets pass the situation where both observers are None
-    if obs_1 == obs_2:
+    if obs_1 is obs_2:
         return True
 
     # obs_1 != obs_2
