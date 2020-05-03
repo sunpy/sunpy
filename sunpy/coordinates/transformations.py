@@ -49,7 +49,7 @@ __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
 
 def _observers_are_equal(obs_1, obs_2, string_ok=False):
     if string_ok:
-        if obs_1 == obs_2:
+        if obs_1 is obs_2:
             return True
     if not (isinstance(obs_1, BaseCoordinateFrame) and isinstance(obs_2, BaseCoordinateFrame)):
         raise ValueError("To compare two observers, both must be instances of BaseCoordinateFrame. "
