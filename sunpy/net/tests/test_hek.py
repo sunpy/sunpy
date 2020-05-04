@@ -187,3 +187,16 @@ def test_mixed_results_get_2():
     assert isinstance(result, hek.hek.HEKTable)
     assert len(result) == 19
     assert result[0]["SOL_standard"] == 'SOL2011-08-08T01:30:04L247C075'
+
+
+@pytest.mark.remote_data
+def test_mixed_results_get_angstrom():
+    # To check that the following bug is fixed:
+    # https://github.com/sunpy/sunpy/issues/4087
+    client = hek.HEKClient()
+    tstart = '2014/10/24 20:50'
+    tend = '2014/10/25 00:14'
+    event_type = 'FL'
+    result = client.search(hek.attrs.Time(tstart, tend), hek.attrs.EventType(event_type))
+    assert len(result) == 13
+    assert result[0]["SOL_standard"] == 'SOL2014-10-24T20:53:46L247C106'

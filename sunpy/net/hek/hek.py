@@ -60,13 +60,13 @@ class HEKClient:
         """ Download all data, even if paginated. """
         page = 1
         results = []
-        reader = codecs.getreader("utf-8")
 
         while True:
             data['page'] = page
             fd = urllib.request.urlopen(self.url+urllib.parse.urlencode(data))
             try:
-                result = json.load(fd)
+                result = codecs.decode(fd.read(), encoding='utf-8', errors='replace')
+                result = json.loads(result)
             except Exception as e:
                 raise IOError("Failed to load return from the HEKClient.") from e
             finally:
