@@ -1,8 +1,8 @@
 """
 Facilities to interface with the Heliophysics Events Knowledgebase.
 """
-
 import json
+import codecs
 
 import urllib
 from itertools import chain
@@ -59,7 +59,8 @@ class HEKClient:
             data['page'] = page
             fd = urllib.request.urlopen(self.url+urllib.parse.urlencode(data))
             try:
-                result = json.load(fd)
+                result = codecs.decode(fd.read(), encoding='utf-8', errors='replace')
+                result = json.loads(result)
             except Exception as e:
                 raise IOError("Failed to load return from the HEKClient.") from e
             finally:
