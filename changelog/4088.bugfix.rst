@@ -1,0 +1,1 @@
+Strip out any unknown unicode from the HEK response to prevent it failing to load some results.
