@@ -101,9 +101,10 @@ an error will be raised stating that the units are incorrect or missing::
   astropy.units.core.UnitsError: Argument 'time' to function 'speed' must be in units convertible to 's'.
 
   >>> speed(1*u.m, 10)
+  ...
   Traceback (most recent call last):
   ...
-  TypeError: Argument 'time' to function 'speed' has no 'unit' attribute. You may want to pass in an astropy Quantity instead.
+  TypeError: Argument 'time' to function 'speed' has no 'unit' attribute. ... pass in an astropy Quantity instead.
 
 Note that the units of the inputs do not have to be exactly the same as those in the function definition, as long
 as they can be converted to those units. So for instance, passing in a time in minutes still works even though we
