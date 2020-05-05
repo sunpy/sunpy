@@ -191,8 +191,8 @@ def calculate_temperature_em(goests, abundances="coronal",
         Contains same metadata and data as input timeseries with the
         following two additional data columns:
 
-        | ts_new.data.temperature - Array of temperatures [MK]
-        | ts_new.data.em - Array of volume emission measures [cm**-3]
+        | ts_new.to_dataframe().temperature - Array of temperatures [MK]
+        | ts_new.to_dataframe().em - Array of volume emission measures [cm**-3]
 
     Notes
     -----
@@ -228,8 +228,8 @@ def calculate_temperature_em(goests, abundances="coronal",
     >>> import sunpy.timeseries as ts
     >>> from sunpy.instr.goes import calculate_temperature_em
     >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
-    >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
-    >>> goests.data[0:10]  # doctest: +REMOTE_DATA
+    >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+    >>> goests.to_dataframe()[0:10]  # doctest: +REMOTE_DATA
                                            xrsa          xrsb
     2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07
     2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07
@@ -242,7 +242,7 @@ def calculate_temperature_em(goests, abundances="coronal",
     2011-06-07 00:00:16.344999909  1.000000e-09  1.808400e-07
     2011-06-07 00:00:18.391999960  1.000000e-09  1.834600e-07
     >>> goests_new = calculate_temperature_em(goests)  # doctest: +REMOTE_DATA
-    >>> goests_new.data[0:10]  # doctest: +REMOTE_DATA
+    >>> goests_new.to_dataframe()[0:10]  # doctest: +REMOTE_DATA
                                            xrsa          xrsb  temperature            em
     2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07     3.503510  2.190626e+48
     2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07     3.534262  2.055847e+48
@@ -266,11 +266,11 @@ def calculate_temperature_em(goests, abundances="coronal",
         goests.quantity("xrsb"),
         goests.quantity("xrsa"),
         satellite=goests.meta.metas[0]["TELESCOP"].split()[1],
-        date=goests.data.index[0],
+        date=goests.to_dataframe().index[0],
         abundances=abundances, download=download, download_dir=download_dir)
 
     ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
-                                      data=copy.deepcopy(goests.data),
+                                      data=copy.deepcopy(goests.to_dataframe()),
                                       units=copy.deepcopy(goests.units))
     ts_new = ts_new.add_column("temperature", temp)
     ts_new = ts_new.add_column("em", em)
@@ -774,9 +774,9 @@ def calculate_radiative_loss_rate(goests, force_download=False,
         Contains same metadata and data as input LightCurve with the
         following additional data columns:
 
-        | ts_new.data.temperature - Array of temperature values [MK]
-        | ts_new.data.em - Array of volume emission measure values [cm**-3]
-        | ts_new.data.rad_loss_rate - radiative loss rate of the coronal soft
+        | ts_new.to_dataframe().temperature - Array of temperature values [MK]
+        | ts_new.to_dataframe().em - Array of volume emission measure values [cm**-3]
+        | ts_new.to_dataframe().rad_loss_rate - radiative loss rate of the coronal soft
           X-ray-emitting plasma across all wavelengths [W]
 
     Notes
@@ -800,8 +800,8 @@ def calculate_radiative_loss_rate(goests, force_download=False,
     >>> import sunpy.timeseries as ts
     >>> from sunpy.instr.goes import calculate_radiative_loss_rate
     >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
-    >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
-    >>> goests.data[0:10]  # doctest: +REMOTE_DATA
+    >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+    >>> goests.to_dataframe()[0:10]  # doctest: +REMOTE_DATA
                                            xrsa          xrsb
     2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07
     2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07
@@ -814,7 +814,7 @@ def calculate_radiative_loss_rate(goests, force_download=False,
     2011-06-07 00:00:16.344999909  1.000000e-09  1.808400e-07
     2011-06-07 00:00:18.391999960  1.000000e-09  1.834600e-07
     >>> goests_new = calculate_radiative_loss_rate(goests)  # doctest: +REMOTE_DATA
-    >>> goests_new.data[0:10]   # doctest:  +REMOTE_DATA
+    >>> goests_new.to_dataframe()[0:10]   # doctest:  +REMOTE_DATA
                                            xrsa          xrsb  temperature            em  rad_loss_rate
     2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07     3.503510  2.190626e+48   1.781001e+19
     2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07     3.534262  2.055847e+48   1.660031e+19
@@ -841,13 +841,13 @@ def calculate_radiative_loss_rate(goests, force_download=False,
         # Use copy.deepcopy for replicating meta and data so that input
         # lightcurve is not altered.
         ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
-                                          data=copy.deepcopy(goests.data),
+                                          data=copy.deepcopy(goests.to_dataframe()),
                                           units=copy.deepcopy(goests.units))
     else:
         ts_new = calculate_temperature_em(goests)
-    temp = u.Quantity(np.asarray(ts_new.data.temperature, dtype=np.float64),
+    temp = u.Quantity(np.asarray(ts_new.to_dataframe().temperature, dtype=np.float64),
                       unit=u.MK)
-    em = u.Quantity(np.asarray(ts_new.data.em, dtype=np.float64),
+    em = u.Quantity(np.asarray(ts_new.to_dataframe().em, dtype=np.float64),
                     unit=u.cm**(-3))
 
     # Find radiative loss rate with _calc_rad_loss()
@@ -1040,9 +1040,9 @@ def calculate_xray_luminosity(goests):
         Contains same metadata and data as input LightCurve with the
         following additional data columns;
 
-        | goests_new.data.luminosity_xrsa - Xray luminosity in 0.5-4A channel
+        | goests_new.to_dataframe().luminosity_xrsa - Xray luminosity in 0.5-4A channel
           unit=[W]
-        | goests_new.data.luminosity_xrsb - Xray luminosity in 1-8A channel
+        | goests_new.to_dataframe().luminosity_xrsb - Xray luminosity in 1-8A channel
           unit=[W]
 
     Examples
@@ -1050,8 +1050,8 @@ def calculate_xray_luminosity(goests):
     >>> import sunpy.timeseries as ts
     >>> from sunpy.instr.goes import calculate_xray_luminosity
     >>> from sunpy.data.sample import GOES_XRS_TIMESERIES  # doctest: +REMOTE_DATA
-    >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA
-    >>> goests.data[0:10]  # doctest: +REMOTE_DATA
+    >>> goests = ts.TimeSeries(GOES_XRS_TIMESERIES)  # doctest: +REMOTE_DATA +IGNORE_WARNINGS
+    >>> goests.to_dataframe()[0:10]  # doctest: +REMOTE_DATA
                                            xrsa          xrsb
     2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07
     2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07
@@ -1064,7 +1064,7 @@ def calculate_xray_luminosity(goests):
     2011-06-07 00:00:16.344999909  1.000000e-09  1.808400e-07
     2011-06-07 00:00:18.391999960  1.000000e-09  1.834600e-07
     >>> goests_new = calculate_xray_luminosity(goests)  # doctest: +REMOTE_DATA
-    >>> goests_new.data[0:10]   # doctest:  +REMOTE_DATA
+    >>> goests_new.to_dataframe()[0:10]   # doctest:  +REMOTE_DATA
                                            xrsa          xrsb  luminosity_xrsa  luminosity_xrsb
     2011-06-06 23:59:59.961999893  1.000000e-09  1.887100e-07     2.896209e+14     5.465435e+16
     2011-06-07 00:00:02.008999944  1.000000e-09  1.834600e-07     2.896209e+14     5.313384e+16
@@ -1083,12 +1083,12 @@ def calculate_xray_luminosity(goests):
     # Find temperature and emission measure with _goes_chianti_tem
     lx_out = _goes_lx(goests.quantity("xrsb"),
                       goests.quantity("xrsa"),
-                      date=str(goests.data.index[0]))
+                      date=str(goests.to_dataframe().index[0]))
     # Enter results into new version of GOES LightCurve Object
     # Use copy.deepcopy for replicating meta and data so that input
     # lightcurve is not altered.
     ts_new = timeseries.XRSTimeSeries(meta=copy.deepcopy(goests.meta),
-                                      data=copy.deepcopy(goests.data),
+                                      data=copy.deepcopy(goests.to_dataframe()),
                                       units=copy.deepcopy(goests.units))
     ts_new = ts_new.add_column("luminosity_xrsa", lx_out["shortlum"].to("W"))
     ts_new = ts_new.add_column("luminosity_xrsb", lx_out["longlum"].to("W"))
