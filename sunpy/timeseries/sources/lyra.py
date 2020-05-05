@@ -146,7 +146,7 @@ class LYRATimeSeries(GenericTimeSeries):
 
         for i, col in enumerate(fits_record.columns[1:-1]):
             # temporary patch for big-endian data bug on pandas 0.13
-            if fits_record.field(i+1).dtype.byteorder == '>' and sys.byteorder =='little':
+            if fits_record.field(i+1).dtype.byteorder == '>' and sys.byteorder == 'little':
                 table[col.name] = fits_record.field(i + 1).byteswap().newbyteorder()
             else:
                 table[col.name] = fits_record.field(i + 1)

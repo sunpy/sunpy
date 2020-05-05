@@ -211,9 +211,9 @@ class Resolution(SimpleAttr):
 
         The value can be entered in of three ways:
 
-        # . May be entered as a string or any numeric type for equality matching
-        # . May be a string of the format '(min) - (max)' for range matching
-        # . May be a string of the form '(operator) (number)' where operator is\
+        #. May be entered as a string or any numeric type for equality matching
+        #. May be a string of the format '(min) - (max)' for range matching
+        #. May be a string of the form '(operator) (number)' where operator is\
         one of: lt gt le ge < > <= >=
 
         This attribute is currently implemented for SDO/AIA and HMI only.

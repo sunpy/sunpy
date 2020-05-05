@@ -90,7 +90,7 @@ def diff_rot(duration: u.s, latitude: u.deg, rot_type='howard', frame_time='side
 
     if rot_type not in ['howard', 'allen', 'snodgrass']:
         raise ValueError("rot_type must equal one of "
-                          "{{ {} }}".format(" | ".join(rot_params.keys())))
+                         "{{ {} }}".format(" | ".join(rot_params.keys())))
 
     A, B, C = rot_params[rot_type]
 
@@ -147,7 +147,8 @@ def _get_new_observer(initial_obstime, observer, time):
     """
     # Check the input and create the new observer
     if (observer is not None) and (time is not None):
-        raise ValueError("Either the 'observer' or the 'time' keyword must be specified, but not both simultaneously.")
+        raise ValueError(
+            "Either the 'observer' or the 'time' keyword must be specified, but not both simultaneously.")
     elif observer is not None:
         # Check that the new_observer is specified correctly.
         if not (isinstance(observer, (BaseCoordinateFrame, SkyCoord))):
@@ -419,7 +420,8 @@ def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
 
         heliographic_coordinate = output_hpc_coords.transform_to(HeliographicStonyhurst)
         # Now transform the HGS coordinates to the obstime of the input map (to account for movement of Earth)
-        heliographic_coordinate = heliographic_coordinate.transform_to(HeliographicStonyhurst(obstime=smap.date))
+        heliographic_coordinate = heliographic_coordinate.transform_to(
+            HeliographicStonyhurst(obstime=smap.date))
 
         # Compute the differential rotation.
         drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
@@ -539,25 +541,30 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         # Calculate where the output array moves to.
         # Rotate the top and bottom edges
         rotated_top = _rotate_submap_edge(smap, edges[0], observer=new_observer, **diff_rot_kwargs)
-        rotated_bottom = _rotate_submap_edge(smap, edges[1], observer=new_observer, **diff_rot_kwargs)
+        rotated_bottom = _rotate_submap_edge(
+            smap, edges[1], observer=new_observer, **diff_rot_kwargs)
 
         # Rotate the left and right hand edges
         rotated_lhs = _rotate_submap_edge(smap, edges[2], observer=new_observer, **diff_rot_kwargs)
         rotated_rhs = _rotate_submap_edge(smap, edges[3], observer=new_observer, **diff_rot_kwargs)
 
         # Calculate the bounding box of the rotated map
-        rotated_bl, rotated_tr = _get_bounding_coordinates([rotated_top, rotated_bottom, rotated_lhs, rotated_rhs])
+        rotated_bl, rotated_tr = _get_bounding_coordinates(
+            [rotated_top, rotated_bottom, rotated_lhs, rotated_rhs])
 
         # Calculate the maximum distance in pixels the map has moved by comparing
         # how far the original and rotated bounding boxes have moved.
-        diff_x = [(np.abs(rotated_bl.Tx - bottom_left.Tx)).value, (np.abs(rotated_tr.Tx - top_right.Tx)).value]
+        diff_x = [(np.abs(rotated_bl.Tx - bottom_left.Tx)).value,
+                  (np.abs(rotated_tr.Tx - top_right.Tx)).value]
         deltax = int(np.ceil(np.max(diff_x) / smap.scale.axis1).value)
 
-        diff_y = [(np.abs(rotated_bl.Ty - bottom_left.Ty)).value, (np.abs(rotated_tr.Ty - top_right.Ty)).value]
+        diff_y = [(np.abs(rotated_bl.Ty - bottom_left.Ty)).value,
+                  (np.abs(rotated_tr.Ty - top_right.Ty)).value]
         deltay = int(np.ceil(np.max(diff_y) / smap.scale.axis2).value)
 
         # Create a new `smap` with the padding around it
-        padded_data = np.pad(smap.data, ((deltay, deltay), (deltax, deltax)), 'constant', constant_values=0)
+        padded_data = np.pad(smap.data, ((deltay, deltay), (deltax, deltax)),
+                             'constant', constant_values=0)
         padded_meta = deepcopy(smap.meta)
         padded_meta['naxis2'], padded_meta['naxis1'] = smap.data.shape
 
@@ -600,11 +607,14 @@ def differential_rotate(smap, observer=None, time=None, **diff_rot_kwargs):
         # Define a new reference pixel and the value at the reference pixel.
         # Note that according to the FITS convention the first pixel in the
         # image is at (1.0, 1.0).
-        center_rotated = solar_rotate_coordinate(smap.center, observer=new_observer, **diff_rot_kwargs)
+        center_rotated = solar_rotate_coordinate(
+            smap.center, observer=new_observer, **diff_rot_kwargs)
         out_meta['crval1'] = center_rotated.Tx.value
         out_meta['crval2'] = center_rotated.Ty.value
-        out_meta['crpix1'] = 1 + smap.data.shape[1]/2.0 + ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
-        out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
+        out_meta['crpix1'] = 1 + smap.data.shape[1]/2.0 + \
+            ((center_rotated.Tx - smap.center.Tx)/smap.scale.axis1).value
+        out_meta['crpix2'] = 1 + smap.data.shape[0]/2.0 + \
+            ((center_rotated.Ty - smap.center.Ty)/smap.scale.axis2).value
         return smap._new_instance(out_data, out_meta).submap(rotated_bl, rotated_tr)
     else:
         return smap._new_instance(out_data, out_meta)

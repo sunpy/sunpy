@@ -27,7 +27,7 @@ def mock_query_object(start_date, end_date):
     map_ = {
         'TimeRange': TimeRange(parse_time(start_date), parse_time(end_date)),
         'Time_start': parse_time(start_date),
-        'Time_end':  parse_time(end_date),
+        'Time_end': parse_time(end_date),
         'source': 'sdic',
         'instrument': 'noaa-indices',
         'physobs': 'sunspot number',

@@ -304,7 +304,7 @@ class SRSClient(GenericClient):
             answer as to whether client can service the query
         """
         from sunpy.net import attrs as a
-        if not a.Time in [type(at) for at in query]:
+        if a.Time not in [type(at) for at in query]:
             return False
         for x in query:
             if (x.__class__.__name__ == "Instrument" and

@@ -12,7 +12,7 @@ import sunpy.coordinates.frames as frames
 from sunpy.tests.helpers import asdf_entry_points
 
 asdf = pytest.importorskip('asdf', '2.0.2')
-from asdf.tests.helpers import assert_roundtrip_tree  # isort:skip
+from asdf.tests.helpers import assert_roundtrip_tree  # NOQA isort:skip
 
 sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
 

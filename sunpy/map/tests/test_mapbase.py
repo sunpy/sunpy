@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test Generic Map
 """
@@ -256,6 +255,7 @@ def test_remove_observers(aia171_test_map):
                       match='Missing metadata for observer: assuming Earth-based observer.*'):
         aia171_test_map.observer_coordinate
 
+
 def test_partially_missing_observers(generic_map):
     generic_map.meta['hglt_obs'] = 0
     generic_map.meta['hgln_obs'] = 0
@@ -270,6 +270,8 @@ def test_partially_missing_observers(generic_map):
 # ==============================================================================
 # Test Rotation WCS conversion
 # ==============================================================================
+
+
 def test_rotation_matrix_pci_j(generic_map):
     np.testing.assert_allclose(generic_map.rotation_matrix, np.array([[0., -1.], [1., 0.]]))
 
@@ -926,6 +928,7 @@ def test_quicklook(aia171_test_map):
 
         assert aia171_test_map._repr_html_() in html_string
 
+
 @pytest.fixture
 def generic_map2(generic_map):
     generic_map.meta["CTYPE1"] = "HPLN-TAN"
@@ -942,9 +945,10 @@ def coords(generic_map2):
                         frame=generic_map2.coordinate_frame)
 
     bl_tr_coord = SkyCoord([20, 0], [-10, 10], unit=u.arcsec,
-                            frame=generic_map2.coordinate_frame)
+                           frame=generic_map2.coordinate_frame)
 
     return bl_coord, tr_coord, bl_tr_coord
+
 
 bl_pix = [3, 2] * u.pix
 tr_pix = [5, 4] * u.pix
@@ -952,6 +956,7 @@ width_pix = 2 * u.pix
 height_pix = 2 * u.pix
 width_deg = 20 * u.arcsec
 height_deg = 20 * u.arcsec
+
 
 def test_deprecated_submap_inputs(generic_map2, coords):
     bl_coord, tr_coord, bl_tr_coord = coords
@@ -1020,7 +1025,7 @@ def test_submap_kwarg_only_input_errors(generic_map2, coords):
         dict(top_right=tr_pix, width=width_pix),
         dict(top_right=tr_pix, height=height_pix),
         dict(),  # Only post deprecation
-        )
+    )
     for kwargs in inputs:
         with pytest.raises(ValueError, match="top_right alone or both width and height must be specified."):
             generic_map2.submap(bl_pix, **kwargs)
@@ -1048,7 +1053,8 @@ def test_submap_kwarg_only_input_errors(generic_map2, coords):
     with pytest.raises(ValueError,
                        match="bottom_left and top_right or bottom_left and height and width should be provided."):
         generic_map2.submap(SkyCoord([10, 10, 10]*u.deg, [10, 10, 10]*u.deg,
-                                    frame=generic_map2.coordinate_frame))
+                                     frame=generic_map2.coordinate_frame))
+
 
 def test_submap_inputs(generic_map2, coords):
     bl_coord, tr_coord, bl_tr_coord = coords

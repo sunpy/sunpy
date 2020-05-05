@@ -31,18 +31,23 @@ def createAIAMap(request):
     return aiaobj
 
 # AIA Tests
+
+
 def test_AIAMap(createAIAMap):
     """Tests the creation of AIAMap from AIA_171_IMAGE or through
     use of the JP2 file."""
     assert isinstance(createAIAMap, AIAMap)
 
+
 def test_is_datasource_for(createAIAMap):
     """Tests the is_datasource_for method of AIAMap."""
     assert createAIAMap.is_datasource_for(createAIAMap.data, createAIAMap.meta)
 
+
 def test_observatory(createAIAMap):
     """Tests the observatory property of the AIAMap object."""
     assert createAIAMap.observatory == "SDO"
+
 
 def test_measurement(createAIAMap):
     """Tests the measurement property of the AIAMap object."""
@@ -52,4 +57,4 @@ def test_measurement(createAIAMap):
 
 def test_norm_clip(createAIAMap):
     # Tests that the default normalizer has clipping disabled
-    assert createAIAMap.plot_settings['norm'].clip == False
+    assert not createAIAMap.plot_settings['norm'].clip

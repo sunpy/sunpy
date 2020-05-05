@@ -1,5 +1,4 @@
 """TRACE Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
@@ -60,7 +59,8 @@ class TRACEMap(GenericMap):
         self._nickname = self.detector
         # Colour maps
         self.plot_settings['cmap'] = 'trace' + str(self.meta['WAVE_LEN'])
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, LogStretch()), clip=False)
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, LogStretch()), clip=False)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import pytest
 from hypothesis import given, settings

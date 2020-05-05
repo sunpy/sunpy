@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ==================================================
 Querying the GOES flare event list through the HEK

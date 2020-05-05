@@ -1,5 +1,4 @@
 """Yohkoh SXT Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
@@ -47,7 +46,8 @@ class SXTMap(GenericMap):
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
         self.plot_settings['cmap'] = 'yohkohsxt' + self.measurement[0:2].lower()
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, PowerStretch(0.5)), clip=False)
 
         # 2012/12/19 - the SXT headers do not have a value of the distance from
         # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'

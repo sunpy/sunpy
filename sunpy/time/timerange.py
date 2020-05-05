@@ -55,6 +55,7 @@ class TimeRange:
                34560000.0 seconds
     <BLANKLINE>
     """
+
     def __init__(self, a, b=None, format=None):
         # If a is a TimeRange object, copy attributes to new instance.
         self._t1 = None

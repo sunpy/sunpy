@@ -102,7 +102,7 @@ def _deprecated(since, message='', name='', alternative='', pending=False, remov
         old_doc = textwrap.dedent(old_doc).strip('\n')
         new_doc = (('\n.. deprecated:: {since}'
                     '\n    {message}\n\n'.format(
-                     **{'since': since, 'message': message.strip()})) + old_doc)
+                        **{'since': since, 'message': message.strip()})) + old_doc)
         if not old_doc:
             # This is to prevent a spurious 'unexpected unindent' warning from
             # docutils when the original docstring was blank.
@@ -127,7 +127,7 @@ def _deprecated(since, message='', name='', alternative='', pending=False, remov
         if isinstance(func, method_types):
             func_wrapper = type(func)
         else:
-            func_wrapper = lambda f: f
+            def func_wrapper(f): return f
 
         func = get_function(func)
 
@@ -145,7 +145,7 @@ def _deprecated(since, message='', name='', alternative='', pending=False, remov
         # functools.wraps on it, but we normally don't care.
         # This crazy way to get the type of a wrapper descriptor is
         # straight out of the Python 3.3 inspect module docs.
-        if type(func) is not type(str.__dict__['__add__']):  # nopep8
+        if type(func) is not type(str.__dict__['__add__']):  # NOQA
             deprecated_func = functools.wraps(func)(deprecated_func)
 
         deprecated_func.__doc__ = deprecate_doc(
@@ -267,6 +267,7 @@ class add_common_docstring:
             func.__doc__ = func.__doc__.format(**self.kwargs)
         return func
 
+
 def deprecate_positional_args_since(since, keyword_only=False):
     """
     Parameters
@@ -318,8 +319,8 @@ def deprecate_positional_args_since(since, keyword_only=False):
                 last_supported_version = ".".join(map(str, get_removal_version(since)))
                 warnings.warn(f"Pass {', '.join(args_msg)} as keyword args. "
                               f"From version {last_supported_version} "
-                               "passing these as positional arguments will result in an error.",
-                                SunpyDeprecationWarning)
+                              "passing these as positional arguments will result in an error.",
+                              SunpyDeprecationWarning)
             kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
             return f(**kwargs)
         return inner_f

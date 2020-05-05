@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import logging
 import os.path
@@ -7,7 +6,8 @@ from astropy.logger import AstropyLogger
 
 from sunpy import config, log
 
-level_to_numeric = {'CRITICAL': 50, 'ERROR':40, 'WARNING': 30, 'INFO': 20, 'DEBUG': 10, 'NOTSET': 0}
+level_to_numeric = {'CRITICAL': 50, 'ERROR': 40,
+                    'WARNING': 30, 'INFO': 20, 'DEBUG': 10, 'NOTSET': 0}
 
 
 def test_logger_name():
@@ -40,7 +40,8 @@ def test_is_log_to_file_configed():
         #  there must be two handlers, one streaming and one to file.
         assert len(log.handlers) == 2
         #  one of the handlers must be FileHandler
-        assert isinstance(log.handlers[0], logging.FileHandler) or isinstance(log.handlers[1], logging.FileHandler)
+        assert isinstance(log.handlers[0], logging.FileHandler) or isinstance(
+            log.handlers[1], logging.FileHandler)
         fh = None
         if isinstance(log.handlers[0], logging.FileHandler):
             fh = log.handlers[0]

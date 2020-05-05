@@ -15,6 +15,7 @@ class MetaDict(OrderedDict):
     This class handles everything in lower case. This allows case
     insensitive indexing.
     """
+
     def __init__(self, *args):
         """
         Creates a new MapHeader instance.

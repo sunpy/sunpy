@@ -1,1 +1,1 @@
-from sunpy.io.file_tools import *  # noqa
+from sunpy.io.file_tools import *

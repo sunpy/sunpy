@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import astropy.wcs.utils
 from astropy.wcs import WCS
 
@@ -99,6 +98,7 @@ def solar_frame_to_wcs_mapping(frame, projection='TAN'):
     wcs.wcs.ctype = [xcoord, ycoord]
 
     return wcs
+
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
 astropy.wcs.utils.FRAME_WCS_MAPPINGS.append([solar_frame_to_wcs_mapping])

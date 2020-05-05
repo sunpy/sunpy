@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 #
 # This module was developed with funding provided by
@@ -15,6 +14,8 @@ AND-expression, if you still attempt to do so it is called a collision. For a
 quick example think about how the system should handle Instrument('aia') &
 Instrument('eit').
 """
+
+
 import sys
 import warnings
 from functools import singledispatch as _singledispatch

@@ -67,7 +67,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
         if len(slices) != wcs.pixel_n_dim:
             raise ValueError("slices should be the same length as the number of pixel dimensions.")
         if "x" not in slices:
-            raise ValueError("slices should contain at least 'x' to indicate the axis to plot on the x axis.")
+            raise ValueError(
+                "slices should contain at least 'x' to indicate the axis to plot on the x axis.")
 
         self.plot_dimensionality = 1
 
@@ -78,9 +79,10 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         if self.plot_dimensionality == 1:
             try:
-                from astropy.visualization.wcsaxes.frame import RectangularFrame1D #  NOQA
+                from astropy.visualization.wcsaxes.frame import RectangularFrame1D  # NOQA
             except ImportError as e:
-                raise ImportError("Astropy 4.0 must be installed to do line plotting with WCSAxes.") from e
+                raise ImportError(
+                    "Astropy 4.0 must be installed to do line plotting with WCSAxes.") from e
 
         self.naxis = data.ndim
         self.num_sliders = self.naxis - self.plot_dimensionality
@@ -186,7 +188,8 @@ class ArrayAnimatorWCS(ArrayAnimator):
             ticks = params.get("ticks", None)
             if ticks is not None:
                 if not isinstance(ticks, dict):
-                    raise TypeError("The 'ticks' value in the coord_params dictionary must be a dict.")
+                    raise TypeError(
+                        "The 'ticks' value in the coord_params dictionary must be a dict.")
                 coord.set_ticks(**ticks)
 
     def _get_main_axes(self):

@@ -106,7 +106,7 @@ def _print_client(client, html=False):
     class_name = f"{client.__module__+'.' or ''}{client.__class__.__name__}"
     attrs = client.register_values()
     lines = []
-    t = Table(names=["Attr Type",  "Name", "Description"],
+    t = Table(names=["Attr Type", "Name", "Description"],
               dtype=["U80", "U80", "U80"])
     for client_key in attrs.keys():
         for name, desc in attrs[client_key]:

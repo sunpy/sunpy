@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 =================================
 Finding and masking bright pixels

@@ -81,12 +81,12 @@ coord_params = {
     'hpln': {
         'axislabel': 'Helioprojective Longitude',
         'ticks': {'spacing': 10*u.arcmin, 'color': 'black'}
-        },
+    },
     'hplt': {
         'axislabel': 'Helioprojective Latitude',
         'ticks': {'spacing': 10*u.arcmin, 'color': 'black'}
-        },
-    }
+    },
+}
 
 
 # We have to recreate the visualization since we displayed it earlier.

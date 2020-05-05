@@ -68,7 +68,7 @@ class EITMap(GenericMap):
                                                'unit': u.km,
                                                'representation_type': CartesianRepresentation,
                                                'frame': HeliocentricMeanEcliptic})
-        ] + super()._supported_observer_coordinates
+                ] + super()._supported_observer_coordinates
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -183,7 +183,7 @@ class MDIMap(GenericMap):
                                                     'radius': self.meta.get('obs_dist'),
                                                     'unit': (u.deg, u.deg, u.AU),
                                                     'frame': "heliographic_carrington"}),
-        ] + super()._supported_observer_coordinates
+                ] + super()._supported_observer_coordinates
 
     @property
     def detector(self):
