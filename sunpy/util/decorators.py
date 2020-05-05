@@ -267,46 +267,53 @@ class add_common_docstring:
             func.__doc__ = func.__doc__.format(**self.kwargs)
         return func
 
-
-def deprecate_positional_args(f):
+def deprecate_positional_args_since(since):
     """
-    Decorator for methods that issues warnings for positional arguments
-    Using the keyword-only argument syntax in pep 3102, arguments after the
-    * will issue a warning when passed as a positional argument.
-
     Parameters
     ----------
-    f : function
-        Function to check arguments on.
-
-    References
-    ----------
-    Taken from from `scikit-learn <https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/utils/validation.py#L1271>`__.
-    Licensed under the BSD, see "licenses/SCIKIT-LEARN.rst".
+    since: str
+        Parameter denoting last supported version.
     """
-    sig = signature(f)
-    kwonly_args = []
-    all_args = []
+    def deprecate_positional_args(f):
+        """
+        Decorator for methods that issues warnings for positional arguments
+        Using the keyword-only argument syntax in pep 3102, arguments after the
+        * will issue a warning when passed as a positional argument.
 
-    for name, param in sig.parameters.items():
-        if param.kind == Parameter.POSITIONAL_OR_KEYWORD:
-            all_args.append(name)
-        elif param.kind == Parameter.KEYWORD_ONLY:
-            kwonly_args.append(name)
+        Parameters
+        ----------
+        f: function
+            Function to check arguments on.
 
-    @wraps(f)
-    def inner_f(*args, **kwargs):
-        extra_args = len(args) - len(all_args)
-        if extra_args > 0:
-            # ignore first 'self' argument for instance methods
-            args_msg = [f'{name}={arg}'
-                        for name, arg in zip(kwonly_args[:extra_args],
-                                             args[-extra_args:])]
-            last_supported_version = ".".join(map(str, get_removal_version("2.0")))
-            warnings.warn(f"Pass {", ".join(args_msg)} as keyword args. "
-                          f"From version {last_supported_version} "
-                          "passing these as positional arguments will result in an error.",
-                          FutureWarning)
-        kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
-        return f(**kwargs)
-    return inner_f
+        References
+        ----------
+        Taken from from `scikit-learn <https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/utils/validation.py#L1271>`__.
+        Licensed under the BSD, see "licenses/SCIKIT-LEARN.rst".
+        """
+        sig = signature(f)
+        kwonly_args = []
+        all_args = []
+
+        for name, param in sig.parameters.items():
+            if param.kind == Parameter.POSITIONAL_OR_KEYWORD:
+                all_args.append(name)
+            elif param.kind == Parameter.KEYWORD_ONLY:
+                kwonly_args.append(name)
+
+        @wraps(f)
+        def inner_f(*args, **kwargs):
+            extra_args = len(args) - len(all_args)
+            if extra_args > 0:
+                # ignore first 'self' argument for instance methods
+                args_msg = [f'{name}={arg}'
+                            for name, arg in zip(kwonly_args[:extra_args],
+                                                args[-extra_args:])]
+                last_supported_version = ".".join(map(str, get_removal_version(since)))
+                warnings.warn(f"Pass {', '.join(args_msg)} as keyword args. "
+                              f"From version {last_supported_version} "
+                               "passing these as positional arguments will result in an error.",
+                                FutureWarning)
+            kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
+            return f(**kwargs)
+        return inner_f
+    return deprecate_positional_args
