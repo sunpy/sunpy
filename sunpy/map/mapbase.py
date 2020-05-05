@@ -36,7 +36,7 @@ from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_earth
 from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.util.decorators import deprecate_positional_args
+from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util import expand_list
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -1364,7 +1364,7 @@ class GenericMap(NDData):
 
         return new_map
 
-    @deprecate_positional_args
+    @deprecate_positional_args_since(since='2.0')
     def submap(self, bottom_left, *, top_right=None, width: u.deg=None, height: u.deg=None):
         """
         Returns a submap defined by a rectangle.
@@ -1399,7 +1399,7 @@ class GenericMap(NDData):
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
         >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
-        >>> aia.submap(bl, tr)   # doctest: +REMOTE_DATA
+        >>> aia.submap(bl, top_right=tr)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at 0x...>
         SunPy Map
         ---------
@@ -1712,7 +1712,7 @@ class GenericMap(NDData):
 
         return [circ]
 
-    @deprecate_positional_args
+    @deprecate_positional_args_since(since='2.0')
     @u.quantity_input
     def draw_rectangle(self, bottom_left, *, width: u.deg=None, height: u.deg=None,
                        axes=None, top_right=None, **kwargs):
@@ -1749,14 +1749,13 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
         """
-        if width is None or height is None:
-            bottom_left, top_right = get_rectangle_coordinates(bottom_left,
-                                                               top_right=top_right,
-                                                               width=width,
-                                                               height=height)
+        bottom_left, top_right = get_rectangle_coordinates(bottom_left,
+                                                           top_right=top_right,
+                                                           width=width,
+                                                           height=height)
 
-            width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-            height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
+        width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
+        height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
 
         if not axes:
             axes = plt.gca()
