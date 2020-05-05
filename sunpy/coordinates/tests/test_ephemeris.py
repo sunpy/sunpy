@@ -15,7 +15,7 @@ from sunpy.time import parse_time
 from .strategies import times
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='module')
 def astropy_ephemeris_de432s():
     # Temporarily set Astropy's ephemeris to DE432s
     old_ephemeris = solar_system_ephemeris.get()
