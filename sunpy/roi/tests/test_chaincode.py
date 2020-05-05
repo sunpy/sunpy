@@ -34,7 +34,7 @@ class CCTests(unittest.TestCase):
         self.assertTrue(cc.matchany(second, 2))
 
     def testScaleEnd(self):
-        cc = Chaincode([1.2, 3],"0723", xdelta=2.629, ydelta=2.629)
+        cc = Chaincode([1.2, 3], "0723", xdelta=2.629, ydelta=2.629)
         end = [-1.429, 0.371]
         self.assertTrue(cc.matchany(end, -1))
 
@@ -42,12 +42,12 @@ class CCTests(unittest.TestCase):
         # Let's test that the shape of the array matches the expected
         # To do so we need to use np.array, instead of lists.
         cc = Chaincode([0, 0], "2460")
-        shape = (2,5)
+        shape = (2, 5)
         self.assertTrue(cc.coordinates.shape == shape)
 
-    def testBoundingBox(self): #needs of np.array... I think
+    def testBoundingBox(self):  # needs of np.array... I think
         cc = Chaincode([0, 0], "00033344")
-        boundingbox = [[-3, 2], [-3, 0]] # [[x0,x1],[y0,y1]] (like cc)
+        boundingbox = [[-3, 2], [-3, 0]]  # [[x0,x1],[y0,y1]] (like cc)
         self.assertTrue(np.all(cc.BoundingBox() == np.array(boundingbox)))
 
     def testBoundingBoxFalse(self):

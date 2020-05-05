@@ -65,4 +65,4 @@ diff_map.plot(cmap='Greys_r',
               norm=colors.Normalize(vmin=-50, vmax=50))
 plt.show()
 
-#sphinx_gallery_thumbnail_number = 2
+# sphinx_gallery_thumbnail_number = 2

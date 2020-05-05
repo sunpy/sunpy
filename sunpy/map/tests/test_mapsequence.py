@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test mapsequence functionality
 """
@@ -166,7 +165,8 @@ def test_all_meta(mapsequence_all_the_same):
     meta = mapsequence_all_the_same.all_meta()
     assert len(meta) == 2
     assert np.all(np.asarray([isinstance(h, MetaDict) for h in meta]))
-    assert np.all(np.asarray([meta[i] == mapsequence_all_the_same[i].meta for i in range(0, len(meta))]))
+    assert np.all(np.asarray(
+        [meta[i] == mapsequence_all_the_same[i].meta for i in range(0, len(meta))]))
 
 
 def test_repr(mapsequence_all_the_same, mapsequence_different_maps):

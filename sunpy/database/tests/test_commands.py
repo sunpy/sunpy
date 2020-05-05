@@ -43,8 +43,8 @@ def test_add_entry_repr(session):
     repr_result = repr(AddEntry(session, entry))
     expected_repr_result = (
         '<AddEntry('
-            'session <sqlalchemy.orm.session.Session object at *>, '
-            'entry id 5)>'.format(id(session)))
+        'session <sqlalchemy.orm.session.Session object at *>, '
+        'entry id 5)>'.format(id(session)))
     assert fnmatch.fnmatch(repr_result, expected_repr_result)
 
 
@@ -128,8 +128,8 @@ def test_remove_entry_repr(session):
     entry = DatabaseEntry(id=3)
     expected_repr_result = (
         '<RemoveEntry('
-            'session <sqlalchemy.orm.session.Session object at *>, '
-            'entry <DatabaseEntry(id 3)>)>'.format(id(session)))
+        'session <sqlalchemy.orm.session.Session object at *>, '
+        'entry <DatabaseEntry(id 3)>)>'.format(id(session)))
     assert fnmatch.fnmatch(repr(RemoveEntry(session, entry)), expected_repr_result)
 
 
@@ -164,9 +164,9 @@ def test_add_tag_repr(session):
     tag = Tag('spam')
     expected_repr_result = (
         "<AddTag("
-            "tag 'spam', "
-            "session <sqlalchemy.orm.session.Session object at *>, "
-            "entry id 12)>".format(id(session)))
+        "tag 'spam', "
+        "session <sqlalchemy.orm.session.Session object at *>, "
+        "entry id 12)>".format(id(session)))
     assert fnmatch.fnmatch(repr(AddTag(session, entry, tag)), expected_repr_result)
 
 
@@ -206,9 +206,9 @@ def test_remove_tag_repr(session):
     tag = Tag('foo')
     expected_repr_result = (
         "<RemoveTag("
-            "tag 'foo', "
-            "session <sqlalchemy.orm.session.Session object at *>, "
-            "entry id 8)>".format(id(session)))
+        "tag 'foo', "
+        "session <sqlalchemy.orm.session.Session object at *>, "
+        "entry id 8)>".format(id(session)))
     assert fnmatch.fnmatch(repr(RemoveTag(session, entry, tag)), expected_repr_result)
 
 

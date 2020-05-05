@@ -332,17 +332,17 @@ class SUVIClient(GenericClient):
         for this_wave in waves:
             if level == "2":
                 search_pattern = base_url + \
-                    'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g{goes_number}_s%Y%m%dT%H%M%SZ_.*\.fits'
+                    r'l{level}/data/suvi-l{level}-ci{wave:03}/%Y/%m/%d/dr_suvi-l{level}-ci{wave:03}_g{goes_number}_s%Y%m%dT%H%M%SZ_.*\.fits'
             elif level == "1b":
                 if this_wave in [131, 171, 195, 284]:
                     search_pattern = base_url + \
-                        'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                        r'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
                 elif this_wave == 304:
                     search_pattern = base_url + \
-                        'l{level}/suvi-l{level}-he{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-He{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                        r'l{level}/suvi-l{level}-he{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-He{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
                 elif this_wave == 94:
                     search_pattern = base_url + \
-                        'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
+                        r'l{level}/suvi-l{level}-fe{wave:03}/%Y/%m/%d/OR_SUVI-L{level}-Fe{wave_minus1:03}_G{goes_number}_s%Y%j%H%M%S.*\.fits.gz'
 
             if search_pattern.count('wave_minus1'):
                 scraper = Scraper(search_pattern, level=level, wave=this_wave,
@@ -410,6 +410,6 @@ class SUVIClient(GenericClient):
         from sunpy.net import attrs
         goes_number = [16, 17]
         adict = {attrs.Instrument: [
-            ("SUVI",  "The Geostationary Operational Environmental Satellite Program.")],
+            ("SUVI", "The Geostationary Operational Environmental Satellite Program.")],
             attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
         return adict

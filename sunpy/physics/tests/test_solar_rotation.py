@@ -57,15 +57,19 @@ def known_displacements_layer_index1():
 def test_calculate_solar_rotate_shift(aia171_test_mapsequence, known_displacements_layer_index0, known_displacements_layer_index1):
     # Test that the default works
     test_output = calculate_solar_rotate_shift(aia171_test_mapsequence)
-    assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index0['x'], rtol=5e-2, atol=1e-5)
-    assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index0['y'], rtol=5e-2, atol=1e-5)
+    assert_allclose(test_output['x'].to('arcsec').value,
+                    known_displacements_layer_index0['x'], rtol=5e-2, atol=1e-5)
+    assert_allclose(test_output['y'].to('arcsec').value,
+                    known_displacements_layer_index0['y'], rtol=5e-2, atol=1e-5)
 
     # Test that the rotation relative to a nonzero layer_index works
     test_output = calculate_solar_rotate_shift(aia171_test_mapsequence, layer_index=1)
     print(test_output['x'].to('arcsec').value)
     print(test_output['y'].to('arcsec').value)
-    assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index1['x'], rtol=5e-2, atol=1e-5)
-    assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index1['y'], rtol=5e-2, atol=1e-5)
+    assert_allclose(test_output['x'].to('arcsec').value,
+                    known_displacements_layer_index1['x'], rtol=5e-2, atol=1e-5)
+    assert_allclose(test_output['y'].to('arcsec').value,
+                    known_displacements_layer_index1['y'], rtol=5e-2, atol=1e-5)
 
 
 def test_mapsequence_solar_derotate(aia171_test_mapsequence, aia171_test_submap):
@@ -88,12 +92,14 @@ def test_mapsequence_solar_derotate(aia171_test_mapsequence, aia171_test_submap)
 
     # Test that the returned reference pixels are correctly displaced.
     layer_index = 0
-    derotated = mapsequence_solar_derotate(aia171_test_mapsequence, clip=True, layer_index=layer_index)
+    derotated = mapsequence_solar_derotate(
+        aia171_test_mapsequence, clip=True, layer_index=layer_index)
     tshift = calculate_solar_rotate_shift(aia171_test_mapsequence, layer_index=layer_index)
     derotated_reference_pixel_at_layer_index = derotated[layer_index].reference_pixel
     for i, m_derotated in enumerate(derotated):
         for i_s, s in enumerate(['x', 'y']):
-            diff_in_rotated_reference_pixel = derotated[i].reference_pixel[i_s] - derotated_reference_pixel_at_layer_index[i_s]
+            diff_in_rotated_reference_pixel = derotated[i].reference_pixel[i_s] - \
+                derotated_reference_pixel_at_layer_index[i_s]
             diff_arcsec = tshift[s][i] - tshift[s][layer_index]
             diff_pixel = diff_arcsec / m.scale[0]
             assert_quantity_allclose(diff_in_rotated_reference_pixel, diff_pixel, rtol=5e-2)

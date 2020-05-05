@@ -107,7 +107,8 @@ def download_sample_data(overwrite=False):
     for retry_url in _base_urls[1:]:
         for i, err in enumerate(results.errors):
             file_name = err.filepath_partial().name
-            log.debug(f"Failed to download {_sample_files[file_name]} from {err.url}: {err.exception}")
+            log.debug(
+                f"Failed to download {_sample_files[file_name]} from {err.url}: {err.exception}")
             # Overwrite the parfive error to change the url to a mirror
             new_url = urljoin(retry_url, file_name)
             results._errors[i] = _error(err.filepath_partial,
@@ -122,6 +123,7 @@ def download_sample_data(overwrite=False):
     for err in results.errors:
         file_name = err.filepath_partial().name
         log.debug(f"Failed to download {_sample_files[file_name]} from {err.url}: {err.exception}")
-        log.error(f"Failed to download {_sample_files[file_name]} from all mirrors, the file will not be available.")
+        log.error(
+            f"Failed to download {_sample_files[file_name]} from all mirrors, the file will not be available.")
 
     return results

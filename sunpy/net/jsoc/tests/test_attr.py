@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import pytest
 
 import astropy.units as u
@@ -11,9 +10,9 @@ from sunpy.net.attr import AttrAnd, AttrOr
 
 @pytest.mark.parametrize(("attr1, attr2"),
                          [(attrs.Series('foo'), attrs.Series('boo')),
-                         (attrs.Protocol('a1'), attrs.Protocol('a2')),
-                         (attrs.Notify('email@somemail.com'),
-                          attrs.Notify('someemail@somemail.com'))])
+                          (attrs.Protocol('a1'), attrs.Protocol('a2')),
+                          (attrs.Notify('email@somemail.com'),
+                           attrs.Notify('someemail@somemail.com'))])
 def test_and(attr1, attr2):
     pytest.raises(TypeError, lambda: attr1 & attr2)
 

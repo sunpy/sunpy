@@ -119,7 +119,7 @@ def test_get_dates():
     (tbegin_str, TimeDelta(1*u.day)),
     (tbegin_str, timedelta(days=1)),
     (sunpy.time.TimeRange(tbegin_str, tfin_str))
-    ])
+])
 def test_timerange_input(ainput):
     timerange = sunpy.time.TimeRange(ainput)
     assert isinstance(timerange, sunpy.time.TimeRange)
@@ -132,7 +132,7 @@ def test_timerange_input(ainput):
     (tbegin_str, tfin_str),
     (tfin_str, -dt),
     (tfin_str, tbegin_str)
-    ])
+])
 def test_start_lessthan_end(ainput):
     timerange = sunpy.time.TimeRange(ainput)
     t1 = timerange.start
@@ -156,7 +156,8 @@ def test_split(timerange_a):
               sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/2T00:00:00')]
     split = timerange_a.split(n=2)
     # Doing direct comparisons seem to not work
-    assert all([is_time_equal(wi.start, ex.start) and is_time_equal(wi.end, ex.end) for wi, ex in zip(split, expect)])
+    assert all([is_time_equal(wi.start, ex.start) and is_time_equal(wi.end, ex.end)
+                for wi, ex in zip(split, expect)])
 
 
 def test_split_n_0_error(timerange_a):

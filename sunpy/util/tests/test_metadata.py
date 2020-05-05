@@ -221,8 +221,8 @@ def test_has_key(seas_metadict):
     Test `MetaDict.has_key(...)`
     """
     # MetaDict explicitly supports the 'has_key()' method
-    assert seas_metadict.has_key('LaPteV') is True  # noqa
-    assert seas_metadict.has_key('Beaufort') is False  # noqa
+    assert seas_metadict.has_key('LaPteV') is True  # NOQA
+    assert seas_metadict.has_key('Beaufort') is False  # NOQA
 
 
 def test_pop(seas_metadict):
@@ -348,8 +348,8 @@ def test_key_case_insensitivity(seas_metadict):
     assert seas_metadict.get('labRAdor') == 'americas'
 
     # MetaDict explicitly supports the 'has_key()' method
-    assert seas_metadict.has_key('BALTIC')  # noqa
-    assert seas_metadict.has_key('balTIC')  # noqa
+    assert seas_metadict.has_key('BALTIC')  # NOQA
+    assert seas_metadict.has_key('balTIC')  # NOQA
 
     # This key already exists. It should *not* take on the default value
     seas_metadict.setdefault('norwEgiaN', default='Sweden')

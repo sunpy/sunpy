@@ -126,7 +126,7 @@ def system_info():
         print("OS: Mac OS X {} ({})".format(platform.mac_ver()[0], sys_prop['Processor']))
     elif sys_prop['System'] == "Windows":
         print("OS: Windows {} {} ({})".format(platform.release(), platform.version(),
-                                                 sys_prop['Processor']))
+                                              sys_prop['Processor']))
     else:
         print("Unknown OS ({})".format(sys_prop['Processor']))
 

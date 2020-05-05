@@ -54,6 +54,7 @@ from sunpy.physics.differential_rotation import (
 
 testpath = sunpy.data.test.rootdir
 
+
 @pytest.fixture
 def aia171_test_map():
     return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
@@ -84,7 +85,7 @@ def aia171_test_map_with_mask(aia171_test_map):
 
 @pytest.fixture
 def aia171_test_submap(aia171_test_map):
-    bl = SkyCoord(-512 * u.arcsec,  100 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    bl = SkyCoord(-512 * u.arcsec, 100 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     ur = SkyCoord(-100 * u.arcsec, 400 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     return aia171_test_map.submap(bl, ur)
 
@@ -101,7 +102,7 @@ def test_single(seconds_per_day):
 
 def test_array(seconds_per_day):
     rot = diff_rot(10 * seconds_per_day, np.linspace(-70, 70, 2) * u.deg)
-    assert_quantity_allclose(rot, Longitude(np.array([110.2725,  110.2725]) * u.deg), rtol=1e-3)
+    assert_quantity_allclose(rot, Longitude(np.array([110.2725, 110.2725]) * u.deg), rtol=1e-3)
 
 
 def test_synodic(seconds_per_day):
@@ -138,7 +139,8 @@ def test_solar_rotate_coordinate():
     # Testing along the Sun-Earth line, observer is on the Earth
     obs_time = '2010-09-10 12:34:56'
     observer = get_earth(obs_time)
-    c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obs_time, observer=observer, frame=frames.Helioprojective)
+    c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obs_time,
+                 observer=observer, frame=frames.Helioprojective)
     new_time = '2010-09-11 12:34:56'
     new_observer = get_earth(new_time)
 
@@ -304,7 +306,8 @@ def test_get_extreme_position():
     # Ignore some invalid NaN comparisions within astropy
     # (fixed in astropy 4.0.1 https://github.com/astropy/astropy/pull/9843)
     with np.errstate(invalid='ignore'):
-        coords = SkyCoord([-1, 0, 1, np.nan]*u.arcsec, [-2, 0, 2, -np.nan]*u.arcsec, frame=frames.Helioprojective)
+        coords = SkyCoord([-1, 0, 1, np.nan]*u.arcsec, [-2, 0, 2, -np.nan]
+                          * u.arcsec, frame=frames.Helioprojective)
 
     with pytest.warns(RuntimeWarning, match='All-NaN axis encountered'):
         assert _get_extreme_position(coords, 'Tx', operator=np.nanmin) == -1

@@ -48,7 +48,8 @@ class AIAMap(GenericMap):
         self.meta['detector'] = self.meta.get('detector', "AIA")
         self._nickname = self.detector
         self.plot_settings['cmap'] = self._get_cmap_name()
-        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
+        self.plot_settings['norm'] = ImageNormalize(
+            stretch=source_stretch(self.meta, AsinhStretch(0.01)), clip=False)
 
     @property
     def _supported_observer_coordinates(self):
@@ -58,7 +59,7 @@ class AIAMap(GenericMap):
                                                         'unit': u.m,
                                                         'representation_type': CartesianRepresentation,
                                                         'frame': HeliocentricMeanEcliptic})
-        ] + super()._supported_observer_coordinates
+                ] + super()._supported_observer_coordinates
 
     @property
     def observatory(self):
@@ -91,6 +92,7 @@ class HMIMap(GenericMap):
     * `Instrument Page <http://hmi.stanford.edu>`_
     * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`_
     """
+
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)

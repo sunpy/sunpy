@@ -9,12 +9,12 @@ import pytest
 
 import astropy.units as u
 asdf = pytest.importorskip('asdf', '2.0')
-from asdf.tests.helpers import assert_roundtrip_tree  # noqa
+from asdf.tests.helpers import assert_roundtrip_tree  # NOQA
 
-import sunpy.map  # noqa
-from sunpy.data.test import get_test_filepath  # noqa
-from sunpy.tests.helpers import asdf_entry_points
-from sunpy.io.special.asdf.extension import SunpyExtension  # noqa
+import sunpy.map  # NOQA
+from sunpy.data.test import get_test_filepath  # NOQA
+from sunpy.tests.helpers import asdf_entry_points  # NOQA
+from sunpy.io.special.asdf.extension import SunpyExtension  # NOQA
 
 
 @pytest.fixture

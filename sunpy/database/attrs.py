@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from sqlalchemy import and_, not_, or_
 
 from sunpy.database.tables import DatabaseEntry
@@ -201,7 +200,7 @@ def _create(wlk, root, session):
             if inverted:
                 # pylint: disable=E711
                 query = query.filter(or_(
-                    DatabaseEntry.path != path, DatabaseEntry.path == None))
+                    DatabaseEntry.path != path, DatabaseEntry.path == None))  # NOQA
             else:
                 query = query.filter(DatabaseEntry.path == path)
         elif typ == 'wave':
@@ -216,7 +215,8 @@ def _create(wlk, root, session):
                 DatabaseEntry.observation_time_end > start))
         else:
             if typ.lower() not in SUPPORTED_SIMPLE_VSO_ATTRS.union(SUPPORTED_NONVSO_ATTRS):
-                raise NotImplementedError(f"The attribute {typ!r} is not yet supported to query a database.")
+                raise NotImplementedError(
+                    f"The attribute {typ!r} is not yet supported to query a database.")
             query = query.filter_by(**{typ: value})
     return query.all()
 

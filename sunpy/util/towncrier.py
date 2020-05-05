@@ -35,7 +35,8 @@ def generate_changelog_for_docs(directory, output_filename=None):
 
     print("Loading template...")
     if config["template"] is None:
-        template = pkg_resources.resource_string("towncrier", "templates/template.rst").decode("utf8")
+        template = pkg_resources.resource_string(
+            "towncrier", "templates/template.rst").decode("utf8")
     else:
         with open(config["template"], "rb") as tmpl:
             template = tmpl.read().decode("utf8")

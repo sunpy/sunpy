@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ===========================================
 Drawing the AIA limb on a STEREO EUVI image

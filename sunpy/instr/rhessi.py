@@ -15,7 +15,8 @@ import sunpy.io
 from sunpy.coordinates import sun
 from sunpy.time import TimeRange, parse_time
 
-__all__ = ['parse_observing_summary_hdulist', 'backprojection', 'parse_observing_summary_dbase_file']
+__all__ = ['parse_observing_summary_hdulist',
+           'backprojection', 'parse_observing_summary_dbase_file']
 
 
 # Measured fixed grid parameters

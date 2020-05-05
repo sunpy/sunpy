@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import copy
 from pathlib import Path
 from collections import OrderedDict, namedtuple

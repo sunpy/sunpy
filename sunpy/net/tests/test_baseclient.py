@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import re
 
 import pytest
@@ -19,6 +18,7 @@ CLIENT_LIST.remove(dataretriever.client.GenericClient)
 # We can access the registry directly
 CLIENT_NAMES = base_client.BaseClient._registry.keys()
 CLIENTS_REG = base_client.BaseClient._registry.items()
+
 
 @pytest.mark.parametrize("client", CLIENT_LIST)
 def test_registry(client):

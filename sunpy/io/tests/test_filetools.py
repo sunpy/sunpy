@@ -42,7 +42,8 @@ class TestFiletools:
     def test_read_file_fits_gzip(self):
         # Test read gzipped fits file
         for fits_extension in [".fts", ".fit", ".fits"]:
-            pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir, f"gzip_test{fits_extension}.gz"))
+            pair = sunpy.io.read_file(os.path.join(
+                sunpy.data.test.rootdir, f"gzip_test{fits_extension}.gz"))
             assert isinstance(pair, list)
             assert len(pair) == 1
             assert len(pair[0]) == 2
@@ -73,7 +74,7 @@ class TestFiletools:
     def test_read_file_header_jp2(self):
         # Test jp2
         hlist = sunpy.io.read_file_header(os.path.join(sunpy.data.test.rootdir,
-                                          "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"))
+                                                       "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"))
         assert isinstance(hlist, list)
         assert len(hlist) == 1
         assert isinstance(hlist[0], sunpy.io.header.FileHeader)

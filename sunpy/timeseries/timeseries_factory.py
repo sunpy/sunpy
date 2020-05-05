@@ -46,7 +46,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     Parameters
     ----------
-    \*inputs
+    \\*inputs
         Inputs to parse for timeseries objects. See the example section for a
         detailed list of possible inputs.
 

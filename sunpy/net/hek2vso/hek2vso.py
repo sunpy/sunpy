@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
 # Author:   Michael Malocha <mjm159@humboldt.edu>
 # Last Edit:  August 10th, 2013
 #
 # This module was developed with funding from the GSOC 2013 summer of code
-#
-#pylint: disable=W0142
-
 """
 This module translates the results of a HEK query into a VSO query
 and returns the results from the VSO query to the user.
@@ -94,7 +90,7 @@ def vso_attribute_parse(phrase):
     """
     try:
         query = [a.Time(phrase['event_starttime'],
-                                phrase['event_endtime']),
+                        phrase['event_endtime']),
                  a.vso.Source(phrase['obs_observatory']),
                  a.Instrument(phrase['obs_instrument'])]
         avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])

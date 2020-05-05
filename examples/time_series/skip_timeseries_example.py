@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ============================================
 Interacting with Data Using SunPy TimeSeries

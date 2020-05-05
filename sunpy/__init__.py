@@ -25,6 +25,7 @@ except ImportError:
     print("version.py not found, please reinstall sunpy.")
     __version__ = "unknown"
 
+
 class UnsupportedPythonError(Exception):
     pass
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.
