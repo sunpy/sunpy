@@ -35,18 +35,35 @@ __all__ = ['TimeSeries', 'TimeSeriesFactory', 'NoTimeSeriesFound',
 
 class TimeSeriesFactory(BasicRegistrationFactory):
     """
-    TimeSeries factory class, used to create a variety of `~sunpy.timeseries.TimeSeries` objects.
-    Valid timeseries types are specified by registering them with the factory.
+    A factory for generating solar timeseries objects.
+
+    This factory takes a variety of inputs to generate
+    `~sunpy.timeseries.GenericTimeSeries` objects.
 
     Parameters
     ----------
+    \*inputs
+        Inputs to parse for timeseries objects. See the example section for a
+        detailed list of possible inputs.
+
     source : `str`, optional
         A string to select the observational source of the data, currently
         necessary to define how files should be read for all instruments.
+
     concatenate : `bool`, optional
         Defaults to `False`.
         If set, combine any resulting list of TimeSeries objects into a single
         TimeSeries, using successive concatenate methods.
+
+    Returns
+    -------
+    `sunpy.timeseries.GenericTimeSeries`
+        If the input results in a single timeseries object that will be returned, or if ``concatenate=True``.
+
+    `list` of `~sunpy.timeseries.GenericTimeseries`
+        If multiple inputs are parsed, they will be returned in a list, unless
+        ``concatenate=True`` is set when they will be combined into a single
+        timeseries.
 
     Examples
     --------
