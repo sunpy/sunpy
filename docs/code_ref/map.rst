@@ -70,6 +70,7 @@ All SunPy Maps are derived from `sunpy.map.GenericMap`, all the methods and attr
     :no-main-docstr:
     :no-heading:
     :inherited-members:
+    :include-all-objects:
 
 .. _map-sources:
 
