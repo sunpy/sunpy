@@ -15,6 +15,8 @@ from bs4 import BeautifulSoup
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
+from sunpy.util.exceptions import SunpyUserWarning
+
 __all__ = ['Scraper']
 
 # regular expressions to convert datetime format
@@ -72,7 +74,8 @@ class Scraper:
         if regex:
             self.pattern = pattern
             if kwargs:
-                warnings.warn('regexp being used, the extra arguments passed are being ignored')
+                warnings.warn('regexp being used, the extra arguments passed are being ignored',
+                              SunpyUserWarning)
         else:
             self.pattern = pattern.format(**kwargs)
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
