@@ -10,7 +10,7 @@ import astropy.units as u
 from sunpy.net import Fido, attrs as a
 
 ###############################################################################
-# `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` is the primary
+# `sunpy.net.Fido` is the primary
 # interface to search for and download data and
 # will search the VSO when appropriate. The following example searches for all
 # SOHO/EIT images between the times defined below by defining

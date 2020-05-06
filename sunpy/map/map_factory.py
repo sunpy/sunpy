@@ -50,11 +50,42 @@ __all__ = ['Map', 'MapFactory']
 
 class MapFactory(BasicRegistrationFactory):
     """
-    Map(\\*args, \\*\\*kwargs)
+    A factory for generating coordinate aware 2D images.
 
-    Map factory class.  Used to create a variety of Map objects.  Valid map types
-    are specified by registering them with the factory.
+    This factory takes a variety of inputs, such as file paths, wildcard
+    patterns or (data, header) pairs.
 
+    Depending on the input different return types are possible.
+
+    Parameters
+    ----------
+    \*inputs
+        Inputs to parse for map objects. See the examples section for a
+        detailed list of accepted inputs.
+
+    sequence : `bool`, optional
+        Return a `sunpy.map.MapSequence` object comprised of all the parsed maps.
+
+    composite : `bool`, optional
+        Return a `sunpy.map.CompositeMap` object comprised of all the parsed maps.
+
+    Returns
+    -------
+    `sunpy.map.GenericMap`
+        If the input results in a singular map object, then that is returned.
+
+    `list` of `~sunpy.map.GenericMap`
+        If multiple inputs are given and ``sequence=False`` and ``composite=False``
+        (the default) then a list of `~sunpy.map.GenericMap` objects will be
+        returned.
+
+    `sunpy.map.MapSequence`
+        If the input corresponds to multiple maps and ``sequence=True`` is set,
+        then a `~sunpy.map.MapSequence` object is returned.
+
+    `sunpy.map.CompositeMap`
+        If the input corresponds to multiple maps and ``composite=True`` is set,
+        then a `~sunpy.map.CompositeMap` object is returned.
 
     Examples
     --------

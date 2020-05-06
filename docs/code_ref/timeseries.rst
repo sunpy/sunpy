@@ -37,5 +37,6 @@ instance. The following instrument classes are supported.
 
 .. automodapi:: sunpy.timeseries
     :no-inheritance-diagram:
+    :include-all-objects:
 
 .. automodapi:: sunpy.timeseries.sources

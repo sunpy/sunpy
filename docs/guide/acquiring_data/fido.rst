@@ -1,10 +1,12 @@
+.. _fido_guide:
+
 ---------------------------------------
 Finding and Downloading Data using Fido
 ---------------------------------------
 
 This guide outlines how to search for and download data using SunPy's
 Federated Internet Data Obtainer...or more usually (and sanely) referred to as Fido.
-`Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` is a unified interface for searching
+`~sunpy.net.Fido` is a unified interface for searching
 and fetching solar physics data irrespective of the underlying
 client or webservice through which the data is obtained, e.g. VSO_,
 JSOC_, etc.  It therefore supplies a single, easy and consistent way to
@@ -13,7 +15,7 @@ obtain most forms of solar physics data.
 Import
 ------
 
-The `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` object is in
+The `~sunpy.net.Fido` object is in
 `sunpy.net`. It can be imported as follows::
 
     >>> from sunpy.net import Fido, attrs as a
@@ -55,7 +57,7 @@ variable set to the Fido search, in this case, result::
     <BLANKLINE>
 
 Queries can be made more flexible or specific by adding more attrs objects to
-the `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` search. Specific
+the `~sunpy.net.Fido` search. Specific
 passbands can be searched for by supplying an `~astropy.units.Quantity` to the
 `a.Wavelength <sunpy.net.vso.attrs.Wavelength>` attribute::
 
@@ -81,7 +83,7 @@ search for data at a given cadence use the
 `a.vso.Sample <sunpy.net.vso.attrs.Sample>` is only supported by the
 `sunpy.net.vso.VSOClient` hence it has the ``a.vso`` prefix. Attributes
 like this which are client specific will result in
-`Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` only searching that
+`~sunpy.net.Fido` only searching that
 client for results, in this case VSO.::
 
     >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
