@@ -8,6 +8,7 @@ from ftplib import FTP
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import urlopen
+import warnings
 
 from bs4 import BeautifulSoup
 
@@ -36,6 +37,12 @@ class Scraper:
         A string containing the url with the date encoded as datetime formats,
         and any other parameter as ``kwargs`` as a string format.
 
+    regex : `bool`
+        Set to `True` if parts of the pattern uses regexp symbols. Be careful that
+        periods `.` matches any character and therefore it's better to escape them.
+        If `regexp` is used, other ``kwargs`` are ignored and string replacement is
+        not possible. Default is `False`.
+
     Attributes
     ----------
     pattern : `str`
@@ -61,9 +68,13 @@ class Scraper:
     The ``now`` attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
-
-    def __init__(self, pattern, **kwargs):
-        self.pattern = pattern.format(**kwargs)
+    def __init__(self, pattern, regex=False, **kwargs):
+        if regex:
+            self.pattern = pattern
+            if kwargs:
+                warnings.warn('regexp being used, the extra arguments passed are being ignored')
+        else:
+            self.pattern = pattern.format(**kwargs)
         self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
         milliseconds = re.search(r'\%e', self.pattern)
         if not milliseconds:
