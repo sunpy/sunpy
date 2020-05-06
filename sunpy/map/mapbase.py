@@ -1473,7 +1473,7 @@ class GenericMap(NDData):
         Coordinate System:	 helioprojective
         Scale:			 [2.402792 2.402792] arcsec / pix
         Reference Pixel:	 [126.5 126.5] pix
-        Reference Coord:	 [3.22309951 1.38578135] arcsec                   
+        Reference Coord:	 [3.22309951 1.38578135] arcsec
         array([[565.81494, 585.0416 , 656.4552 , 670.18854],
             [516.1865 , 555.7032 , 634.7365 , 661.90424],
             [620.9256 , 620.9256 , 654.8825 , 596.6707 ],
@@ -1495,7 +1495,7 @@ class GenericMap(NDData):
         Coordinate System:	 helioprojective
         Scale:			 [2.402792 2.402792] arcsec / pix
         Reference Pixel:	 [1.5 1.5] pix
-        Reference Coord:	 [3.22309951 1.38578135] arcsec                   
+        Reference Coord:	 [3.22309951 1.38578135] arcsec
         array([[213.9748 , 256.76974, 244.54262, 356.62466],
             [223.74321, 258.0102 , 292.27716, 340.65408],
             [219.53459, 242.31648, 308.5911 , 331.373  ],
