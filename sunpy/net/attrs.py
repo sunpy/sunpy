@@ -2,7 +2,7 @@
 
 """
 'attrs' are parameters which can be composed together to specify searches to
-`Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`. They can be combined
+`sunpy.net.Fido`. They can be combined
 by using logical and (``&``) and logical or (``|``) operations to construct
 very complex queries.
 
