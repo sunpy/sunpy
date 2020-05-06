@@ -17,6 +17,7 @@ import sunpy.coordinates
 import sunpy.data.test
 from sunpy.tests.helpers import figure_test
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.coordinates.utils import get_rectangle_coordinates
 
 testpath = sunpy.data.test.rootdir
 pytestmark = pytest.mark.filterwarnings('ignore:Missing metadata')
@@ -91,13 +92,24 @@ def test_plot_aia171_nowcsaxes(aia171_test_map):
 
 
 @figure_test
-def test_rectangle_aia171(aia171_test_map):
+def test_rectangle_aia171_width_height(aia171_test_map):
     aia171_test_map.plot()
     bottom_left = SkyCoord(
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     w = 100 * u.arcsec
     h = 100 * u.arcsec
-    aia171_test_map.draw_rectangle(bottom_left, w, h)
+    aia171_test_map.draw_rectangle(bottom_left, width=w, height=h)
+
+
+@figure_test
+def test_rectangle_aia171_top_right(aia171_test_map):
+    aia171_test_map.plot()
+    bottom_left = SkyCoord(
+        0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    w = 100 * u.arcsec
+    h = 100 * u.arcsec
+    bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=w, height=h)
+    aia171_test_map.draw_rectangle(bottom_left, top_right=top_right)
 
 
 @figure_test
@@ -151,13 +163,24 @@ def test_heliographic_peek(heliographic_test_map):
 
 
 @figure_test
-def test_heliographic_rectangle(heliographic_test_map):
+def test_heliographic_rectangle_width_height(heliographic_test_map):
     heliographic_test_map.plot()
-    bottom = SkyCoord(
+    bottom_left = SkyCoord(
         60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
     w = 13 * u.deg
     h = 13 * u.deg
-    heliographic_test_map.draw_rectangle(bottom, w, h, color='cyan')
+    heliographic_test_map.draw_rectangle(bottom_left, width=w, height=h, color='cyan')
+
+
+@figure_test
+def test_heliographic_rectangle_top_right(heliographic_test_map):
+    heliographic_test_map.plot()
+    bottom_left = SkyCoord(
+        60 * u.deg, 50 * u.deg, frame=heliographic_test_map.coordinate_frame)
+    w = 13 * u.deg
+    h = 13 * u.deg
+    bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=w, height=h)
+    heliographic_test_map.draw_rectangle(bottom_left, width=w, height=h, color='cyan')
 
 
 @figure_test

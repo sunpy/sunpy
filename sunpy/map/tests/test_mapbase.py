@@ -819,3 +819,17 @@ def test_quicklook(aia171_test_map):
         html_string = f.read()
 
         assert aia171_test_map._repr_html_() in html_string
+
+
+def test_submap_non_kwarg_parameters(aia171_test_map):
+    bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia171_test_map.coordinate_frame)
+    tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia171_test_map.coordinate_frame)
+
+    with pytest.warns(FutureWarning):
+        aia171_test_map.submap(bl, tr)
+
+    width = 10 * u.arcsec
+    height = 10 * u.arcsec
+
+    with pytest.warns(FutureWarning):
+        aia171_test_map.submap(bl, width, height)
