@@ -168,4 +168,5 @@ class Cache:
             except Exception as e:
                 warn(e, SunpyUserWarning)
         else:
-            raise RuntimeError("Download failed")
+            raise RuntimeError("One or more downloads failed, "
+                               "see above warnings for the errors raised.")
