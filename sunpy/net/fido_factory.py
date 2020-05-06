@@ -215,9 +215,14 @@ def _create_or(walker, query, factory):
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
     """
-    sunpy.net.Fido(\\*args, \\*\\*kwargs)
+    Fido is a unified data search and retrieval tool.
 
-    Search and Download data from a variety of supported sources.
+    It provides simultaneous access to a variety of online data sources, some
+    cover multiple instruments and data products like the Virtual Solar
+    Observatory and some are specific to a single source.
+
+    For details of using `~sunpy.net.Fido` see :ref:`fido_guide`.
+
     """
 
     def search(self, *query):

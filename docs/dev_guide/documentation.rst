@@ -34,28 +34,6 @@ SunPy-Specific Rules
 --------------------
 
 * For **all** RST files, we enforce a one sentence per line rule and ignore the line length.
-
-* Core datatypes are referenced as follows:
-
-.. code-block:: python
-
-    """
-    Parameters
-    ----------
-    smap : `~sunpy.map.GenericMap`
-        A SunPy map.
-    """
-
-* The Factory classes (``Map``, ``Timeseries``, ``Fido``) are referenced as follows:
-
-.. code-block:: python
-
-    """
-    `Map <sunpy.map.map_factory.MapFactory>`
-    `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`
-    `TimeSeries <sunpy.timeseries.timeseries_factory.TimeSeriesFactory>`
-    """
-
 * Standards on docstring length and style are enforced using `docformatter <https://pypi.org/project/docformatter/>`__:
 
 .. code-block:: bash
@@ -113,6 +91,10 @@ This will generate HTML documentation for SunPy in the "docs/_build/html" direct
 You can open the "index.html" file to browse the final product.
 The gallery examples are located under "docs/_build/html/generated/gallery".
 Sphinx builds documentation iteratively, only adding things that have changed.
+
+If you want to build the documentation without building the gallery, i.e. to reduce build times while working on other sections of the documentation you can run::
+
+    $ tox -e build_docs -- -D plot_gallery=0
 
 If you'd like to start from scratch (i.e., remove the tox cache) then run::
 
