@@ -19,7 +19,7 @@ spatially-aware data array, often an image. In order to make it easy to work
 with image data in SunPy, the Map object provides a number of methods for
 commonly performed operations.
 
-2D map objects are subclasses of `~sunpy.map.MapBase` and all Map objects are
+2D map objects are subclasses of `~sunpy.map.GenericMap` and these objects are
 created using the Map factory `~sunpy.map.Map`.
 
 A number of instrument are supported by subclassing this base object. See
