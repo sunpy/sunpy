@@ -1455,12 +1455,65 @@ class GenericMap(NDData):
                 -0.9746264 ],
             [-95.92475   ,   6.028058  ,  -4.9797    ,  -1.0483578 ,
                 -3.9313421 ]], dtype=float32)
+
+        >>> width = 10 * u.arcsec
+        >>> height = 10 * u.arcsec
+        >>> aia.submap(bl, width=width, height=height)   # doctest: +REMOTE_DATA
+        <sunpy.map.sources.sdo.AIAMap object at 0x7f91aecc5438>
+        SunPy Map
+        ---------
+        Observatory:		 SDO
+        Instrument:		 AIA 3
+        Detector:		 AIA
+        Measurement:		 171.0 Angstrom
+        Wavelength:		 171.0 Angstrom
+        Observation Date:	 2011-06-07 06:33:02
+        Exposure Time:		 0.234256 s
+        Dimension:		 [4. 4.] pix
+        Coordinate System:	 helioprojective
+        Scale:			 [2.402792 2.402792] arcsec / pix
+        Reference Pixel:	 [126.5 126.5] pix
+        Reference Coord:	 [3.22309951 1.38578135] arcsec                   
+        array([[565.81494, 585.0416 , 656.4552 , 670.18854],
+            [516.1865 , 555.7032 , 634.7365 , 661.90424],
+            [620.9256 , 620.9256 , 654.8825 , 596.6707 ],
+            [667.5083 , 560.52094, 651.22766, 530.28534]], dtype=float32)
+
+        >>> bottom_left_vector = SkyCoord([0 * u.arcsec, 10 * u.arcsec], [0 * u.arcsec, 10 * u.arcsec], frame='heliographic_stonyhurst')
+        >>> aia.submap(bottom_left_vector)   # doctest: +REMOTE_DATA
+        <sunpy.map.sources.sdo.AIAMap object at 0x7f91aece8be0>
+        SunPy Map
+        ---------
+        Observatory:		 SDO
+        Instrument:		 AIA 3
+        Detector:		 AIA
+        Measurement:		 171.0 Angstrom
+        Wavelength:		 171.0 Angstrom
+        Observation Date:	 2011-06-07 06:33:02
+        Exposure Time:		 0.234256 s
+        Dimension:		 [4. 5.] pix
+        Coordinate System:	 helioprojective
+        Scale:			 [2.402792 2.402792] arcsec / pix
+        Reference Pixel:	 [1.5 1.5] pix
+        Reference Coord:	 [3.22309951 1.38578135] arcsec                   
+        array([[213.9748 , 256.76974, 244.54262, 356.62466],
+            [223.74321, 258.0102 , 292.27716, 340.65408],
+            [219.53459, 242.31648, 308.5911 , 331.373  ],
+            [268.24377, 254.83157, 268.24377, 321.89252],
+            [249.99167, 265.14267, 274.61206, 240.5223 ]], dtype=float32)
         """
         if not isinstance(bottom_left, u.Quantity):
+
+            if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
+                # The decorator assigns the first positional arg to top_right and so on.
+                height = width
+                width = top_right
+                top_right = None
+
             bottom_left, top_right = get_rectangle_coordinates(bottom_left,
-                                                               top_right=top_right,
-                                                               width=width,
-                                                               height=height)
+                                                            top_right=top_right,
+                                                            width=width,
+                                                            height=height)
 
             bottom_left = u.Quantity(self._get_lon_lat(bottom_left))
             top_right = u.Quantity(self._get_lon_lat(top_right))
@@ -1749,10 +1802,16 @@ class GenericMap(NDData):
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
         """
+        if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
+            # The decorator assigns the first positional arg to top_right and so on.
+            height = width
+            width = top_right
+            top_right = None
+
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
-                                                           top_right=top_right,
-                                                           width=width,
-                                                           height=height)
+                                                            top_right=top_right,
+                                                            width=width,
+                                                            height=height)
 
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
         height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
