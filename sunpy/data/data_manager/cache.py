@@ -123,7 +123,7 @@ class Cache:
         Parameters
         ----------
         sha_hash: `str`
-            SHA-1 hash of the file.
+            SHA-256 hash of the file.
         """
         details = self._storage.find_by_key('file_hash', sha_hash)
         return details
