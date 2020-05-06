@@ -1,0 +1,2 @@
+Added `sunpy.data.manager`, `sunpy.data.cache`, `sunpy.net.Fido`, `sunpy.map.Map`,
+and `sunpy.timeseries.TimeSeries` to the docs.
