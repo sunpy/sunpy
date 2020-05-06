@@ -230,9 +230,12 @@ def test_filelist_relative_hrefs():
     # this checks that `scraper.filelist` returns fileurls relative to the domain
     fileurls = s.filelist(timerange)
     assert fileurls[1] == s.domain + 'pub/archive/2016/05/18/bbso_halph_fr_20160518_160033.fts'
-@pytest.mark.parametrize('pattern, check_file', [(r'MyFile_%Y_%M_%e\.(\D){2}\.fits', 'MyFile_2020_55_234.aa.fits'),
-                                                 (r'(\d){5}_(\d){2}\.fts', '01122_25.fts'),
-                                                 ('_%Y%m%d__%ec(\d){5}_(\d){2}\s.fts', '_20201535__012c12345_33 .fts')])
+
+
+@pytest.mark.parametrize('pattern, check_file', [
+    (r'MyFile_%Y_%M_%e\.(\D){2}\.fits', 'MyFile_2020_55_234.aa.fits'),
+    (r'(\d){5}_(\d){2}\.fts', '01122_25.fts'),
+    (r'_%Y%m%d__%ec(\d){5}_(\d){2}\s.fts', '_20201535__012c12345_33 .fts')])
 def test_regex(pattern, check_file):
     s = Scraper(pattern, regex=True)
     assert s._URL_followsPattern(check_file)
@@ -243,6 +246,6 @@ def test_regex_data():
     prefix = r'https://gong2.nso.edu/oQR/zqs/'
     pattern = prefix + r'%Y%m/mrzqs%y%m%d/mrzqs%y%m%dt%H%Mc(\d){4}_(\d){3}\.fits.gz'
     s = Scraper(pattern, regex=True)
-    timerange = TimeRange('2020-01-05','2020-01-06T16:00:00')
+    timerange = TimeRange('2020-01-05', '2020-01-06T16:00:00')
     assert s._URL_followsPattern(prefix + '202001/mrzqs200106/mrzqs200106t1514c2226_297.fits.gz')
     assert len(s.filelist(timerange)) == 37
