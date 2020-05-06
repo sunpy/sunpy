@@ -41,7 +41,7 @@ class DataManager:
         urls: `list` or `str`
             A list of urls to download the file from.
         sha_hash: `str`
-            SHA-1 hash of file.
+            SHA-256 hash of file.
         """
         if isinstance(urls, str):
             urls = [urls]
