@@ -92,6 +92,10 @@ You can open the "index.html" file to browse the final product.
 The gallery examples are located under "docs/_build/html/generated/gallery".
 Sphinx builds documentation iteratively, only adding things that have changed.
 
+If you want to build the documentation without building the gallery, i.e. to reduce build times while working on other sections of the documentation you can run::
+
+    $ tox -e build_docs -- -D plot_gallery=0
+
 If you'd like to start from scratch (i.e., remove the tox cache) then run::
 
     $ tox -e build_docs -- -aE
