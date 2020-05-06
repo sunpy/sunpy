@@ -1,3 +1,5 @@
+.. _fido_guide:
+
 ---------------------------------------
 Finding and Downloading Data using Fido
 ---------------------------------------
