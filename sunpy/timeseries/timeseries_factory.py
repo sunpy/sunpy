@@ -35,8 +35,6 @@ __all__ = ['TimeSeries', 'TimeSeriesFactory', 'NoTimeSeriesFound',
 
 class TimeSeriesFactory(BasicRegistrationFactory):
     """
-    TimeSeries(*args, **kwargs)
-
     TimeSeries factory class, used to create a variety of `~sunpy.timeseries.TimeSeries` objects.
     Valid timeseries types are specified by registering them with the factory.
 

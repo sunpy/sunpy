@@ -1,3 +1,4 @@
+=========
 SunPy net
 =========
 
@@ -14,6 +15,7 @@ is an interface to multiple sources including all the sources implemented in
 
 .. automodapi:: sunpy.net
    :no-heading:
+   :include-all-objects:
 
 .. automodapi:: sunpy.net.attrs
 
@@ -24,10 +26,8 @@ VSO
 ---
 
 .. automodapi:: sunpy.net.vso
-   :headings: ^#
 
 .. automodapi:: sunpy.net.vso.attrs
-   :headings: #~
 
 
 Dataretriever
@@ -35,48 +35,38 @@ Dataretriever
 
 .. automodapi:: sunpy.net.dataretriever
    :allowed-package-names: sources
-   :headings: ^#
 
 .. automodapi:: sunpy.net.dataretriever.sources
-   :headings: #~
 
 .. automodapi:: sunpy.net.dataretriever.attrs.goes
-   :headings: #~
 
 JSOC
 ----
 
 .. automodapi:: sunpy.net.jsoc
-    :headings: ^#
 
 .. automodapi:: sunpy.net.jsoc.attrs
-    :headings: #~
 
 
 HEK
 ---
 
 .. automodapi:: sunpy.net.hek
-    :headings: ^#
 
 .. automodapi:: sunpy.net.hek2vso
-    :headings: ^#
 
 
 HELIO
 -----
 
 .. automodapi:: sunpy.net.helio
-    :headings: ^#
 
 .. automodapi:: sunpy.net.helio.hec
-    :headings: #~
 
 Helioviewer
 -----------
 
 .. automodapi:: sunpy.net.helioviewer
-    :headings: ^#
 
 
 Internal Classes and Functions
@@ -86,7 +76,5 @@ These classes and functions are designed to be used to help develop new clients
 for `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`.
 
 .. automodapi:: sunpy.net.base_client
-   :headings: ^#
 
 .. automodapi:: sunpy.net.attr
-   :headings: ^#
