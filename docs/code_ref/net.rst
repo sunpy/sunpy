@@ -4,10 +4,10 @@ SunPy net
 
 SunPy's net submodule contains a lot of different code for accessing various
 solar physics related web services. This submodule contains many layers. Most
-users should use `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`, which
+users should use `~sunpy.net.Fido`, which
 is an interface to multiple sources including all the sources implemented in
 `~sunpy.net.dataretriever` as well as `~sunpy.net.vso` and `~sunpy.net.jsoc`.
-`Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` can be used like so::
+`~sunpy.net.Fido` can be used like so::
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Instrument('lyra'))  # doctest: +REMOTE_DATA
@@ -73,7 +73,7 @@ Internal Classes and Functions
 ------------------------------
 
 These classes and functions are designed to be used to help develop new clients
-for `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`.
+for `sunpy.net.Fido`.
 
 .. automodapi:: sunpy.net.base_client
 
