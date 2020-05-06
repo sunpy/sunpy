@@ -23,10 +23,10 @@ There are maps for a 2D image, a time series of 2D images or temporally aligned
 SunPy supports many different data products from various sources 'out of the
 box'. We shall use SDO's AIA instrument as an example in this tutorial. The
 general way to create a Map from one of the supported data products is with the
-`Map <sunpy.map.map_factory.MapFactory>` function from the `sunpy.map` submodule.
+`~sunpy.map.Map` function from the `sunpy.map` submodule.
 `Map <sunpy.map.map_factory.MapFactory` takes either a filename, a list of
 filenames or a data array and header. We can test
-`Map <sunpy.map.map_factory.MapFactory>` with:
+`~sunpy.map.Map` with:
 
 
 .. plot::
@@ -104,7 +104,7 @@ labels.
 There is lot going on here, but we will walk you through the example. Briefly,
 the first line is importing SunPy, and the second importing the sample data
 files. On the third line we create a SunPy Map object which is a spatially-aware
-image. On the last line we then plot the `Map <sunpy.map.map_factory.MapFactory>` object, using the built in 'quick plot'
+image. On the last line we then plot the `~sunpy.map.Map` object, using the built in 'quick plot'
 function `~sunpy.map.GenericMap.peek`.
 
 SunPy uses a matplotlib-like interface to it's plotting so more complex
@@ -291,7 +291,7 @@ Obtaining Data
 SunPy supports searching for and fetching data from a variety of sources,
 including the `VSO <https://virtualsolar.org/>`__ and the
 `JSOC <http://jsoc.stanford.edu/>`__. The majority of SunPy's clients can be
-queried using the `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` interface. An example of searching the VSO using this
+queried using the `sunpy.net.Fido` interface. An example of searching the VSO using this
 is below::
 
   >>> from sunpy.net import Fido, attrs as a
