@@ -9,19 +9,11 @@ __all__ = ['BBSOClient']
 
 class BBSOClient(GenericClient):
     """
-    Returns a list of URLS to BBSO files corresponding to value of input
-    timerange. URL source: `http://www.bbso.njit.edu/pub/archive/`.
-    Parameters
-    ----------
-    timerange: sunpy.time.TimeRange
-        time range for which data is to be downloaded.
-        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-    Instrument: Fixed argument = 'bbso'
-    Level: Level can take only 'fl' or 'fr' as arguments.
-    Returns
-    -------
-    urls: list
-    list of urls corresponding to requested time range.
+    Provides access to the Big Bear Solar Observatory (BBSO) data
+    as hosted by `NJIT <http://www.bbso.njit.edu/pub/archive/>`_.
+
+    To use this client you must request Level 'fl' or 'fr' data.
+
     Examples
     --------
     >>> from sunpy.net import Fido
@@ -44,13 +36,15 @@ class BBSOClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Return list of URLS corresponding to value of input timerange.
+
         Parameters
         ----------
         timerange: `sunpy.time.TimeRange`
             time range for which data is to be downloaded.
+
         Returns
         -------
-        urls : list
+        urls : `list`
             list of URLs corresponding to the requested time range
         """
         level = kwargs.get('level', 'fr')
@@ -80,7 +74,7 @@ class BBSOClient(GenericClient):
 
     def _makeimap(self):
         """
-        Helper Function:used to hold information about source.
+        Helper Function: used to hold information about source.
         """
         self.map_['source'] = 'Global Halpha Network'
         self.map_['instrument'] = 'BBSO'
@@ -90,13 +84,17 @@ class BBSOClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Answers whether client can service the query.
+        Answers whether a client can service the query.
+
         Parameters
         ----------
-        query : list of query objects
+        query : `list`
+            A list of of query objects.
+
         Returns
         -------
-        boolean: answer as to whether client can service the query
+        `bool`
+            `True` if this client can service the query, otherwise `False`.
         """
         chk_var = 0
         for x in query:
