@@ -7,17 +7,16 @@ import os
 import re
 import cgi
 import socket
+import inspect
 import datetime
 import warnings
 import itertools
-import inspect
 from functools import partial
 from collections import defaultdict
 from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
 import zeep
-from parfive import Downloader, Results
 from zeep.helpers import serialize_object
 
 import astropy.units as u
@@ -33,10 +32,10 @@ from sunpy.time import TimeRange, parse_time
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import slugify
-
+from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
-from .zeep_plugins import SunPyLoggingZeepPlugin
 from .exceptions import *
+from .zeep_plugins import SunPyLoggingZeepPlugin
 
 TIME_FORMAT = config.get("general", "time_format")
 

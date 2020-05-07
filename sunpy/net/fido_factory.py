@@ -12,17 +12,12 @@ import os
 from pathlib import Path
 from collections.abc import Sequence
 
-from parfive import Downloader, Results
-
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory
-from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.datatype_factory_base import MultipleMatchError
-
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
-from sunpy.net import vso
-
 from sunpy.net import attr
 from sunpy.net import attrs as a
+from sunpy.net import vso
+from sunpy.net.base_client import BaseClient, BaseQueryResponse
+from sunpy.util.datatype_factory_base import BasicRegistrationFactory, MultipleMatchError, NoMatchError
+from sunpy.util.parfive_helpers import Downloader, Results
 
 __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
 

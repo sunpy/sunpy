@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
 import os
+import copy
 import time
 import urllib
 import warnings
-import copy
-from collections.abc import Sequence
 from pathlib import Path
+from collections.abc import Sequence
 
 import drms
 import numpy as np
 import pandas as pd
-import astropy.units as u
-import astropy.time
+
 import astropy.table
+import astropy.time
+import astropy.units as u
 from astropy.utils.misc import isiterable
-from parfive import Downloader, Results
 
 from sunpy import config
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.attr import and_
+from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.jsoc.attrs import walker
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.parfive_helpers import Downloader, Results
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
