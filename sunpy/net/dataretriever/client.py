@@ -4,19 +4,17 @@ from pathlib import Path
 from collections import OrderedDict, namedtuple
 
 import numpy as np
-from parfive import Downloader
 
 import astropy.table
 import astropy.units as u
 
-import parfive
-
 import sunpy
 from sunpy import config
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
-from sunpy.net.attr import Range
 from sunpy.net._attrs import Time, Wavelength
+from sunpy.net.attr import Range
+from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.time import TimeRange
+from sunpy.util.parfive_helpers import Downloader
 
 TIME_FORMAT = config.get("general", "time_format")
 

@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from pathlib import Path
 
-from parfive import Downloader
+from sunpy.util.parfive_helpers import Downloader
 
 __all__ = ['DownloaderBase', 'DownloaderError', 'ParfiveDownloader']
 
