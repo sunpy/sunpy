@@ -127,12 +127,14 @@ class RotatedSunFrame:
     """
     A frame that applies solar rotation to a base coordinate frame.
 
+    .. note::
+
+        See :ref:`sunpy-coordinates-rotatedsunframe` for how to use this class.
+
     In essence, the coordinate axes of the frame are distorted by differential solar rotation.
     This allows using a coordinate representation at one time (at the ``obstime`` of the base
     coordinate frame) to point to a location at a different time that has been differentially
     rotated by the time difference (``duration``).
-
-    See :ref:`sunpy-coordinates-rotatedsunframe` for how to use this class.
 
     Parameters
     ----------
@@ -222,7 +224,7 @@ class RotatedSunFrame:
         Returns a coordinate with the current representation and in the base coordinate frame.
 
         This method can be thought of as "removing" the
-        `~sunpy.coordinates.metaframe.RotatedSunFrame` layer.  Be aware that this method is not
+        `~sunpy.coordinates.metaframes.RotatedSunFrame` layer.  Be aware that this method is not
         merely a coordinate transformation, because this method changes the location in inertial
         space that is being pointed to.
         """
