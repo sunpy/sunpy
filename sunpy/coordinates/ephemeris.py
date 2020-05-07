@@ -72,8 +72,11 @@ def get_body_heliographic_stonyhurst(body, time='now', observer=None):
             light_travel_time = distance / speed_of_light
             emitted_time = obstime - light_travel_time
 
-        log.info(f"Apparent body location accounts for {light_travel_time.to('s').value:.2f}"
-                 " seconds of light travel time")
+        if light_travel_time.isscalar:
+            ltt_string = f"{light_travel_time.to_value('s'):.2f}"
+        else:
+            ltt_string = f"{light_travel_time.to_value('s')}"
+        log.info(f"Apparent body location accounts for {ltt_string} seconds of light travel time")
 
     body_hgs = ICRS(body_icrs).transform_to(HeliographicStonyhurst(obstime=obstime))
 
