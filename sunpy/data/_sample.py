@@ -4,10 +4,9 @@ from pathlib import Path
 from collections import namedtuple
 from urllib.parse import urljoin
 
-import parfive
-
 from sunpy.util.config import get_and_create_sample_dir, _is_writable_dir
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.parfive_helpers import Downloader
 
 _base_urls = (
     'http://data.sunpy.org/sunpy/v1/',
@@ -82,7 +81,7 @@ def download_sample_data(overwrite=False):
         # Creating the directory for sample files to be downloaded
         sampledata_dir = Path(get_and_create_sample_dir())
 
-    dl = parfive.Downloader(overwrite=overwrite)
+    dl = Downloader(overwrite=overwrite)
 
     first_url = _base_urls[0]
 
