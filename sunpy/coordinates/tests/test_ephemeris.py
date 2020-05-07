@@ -27,7 +27,7 @@ def test_get_body_heliographic_stonyhurst():
 
 
 def test_get_body_heliographic_stonyhurst_light_travel_time():
-    # Tests whether the apparent position of the Sun accoutns for light travel time
+    # Tests whether the apparent position of the Sun accounts for light travel time
     t = Time('2012-06-05 22:34:48.350')  # An arbitrary test time
 
     # Use the implemented correction for light travel time
@@ -41,6 +41,23 @@ def test_get_body_heliographic_stonyhurst_light_travel_time():
 
     difference = (implementation_icrs - manual_icrs).norm()
     assert_quantity_allclose(difference, 0*u.m, atol=1*u.m)
+
+
+def test_get_body_heliographic_stonyhurst_light_travel_time_array():
+    # Tests whether requesting an array of locations returns the same answers as individually
+    t1 = Time('2001-02-03 04:05:06')
+    t2 = Time('2011-12-13 14:15:16')
+
+    venus1 = get_body_heliographic_stonyhurst('venus', t1, observer=get_earth(t1))
+    venus2 = get_body_heliographic_stonyhurst('venus', t2, observer=get_earth(t2))
+    both = get_body_heliographic_stonyhurst('venus', [t1, t2], observer=get_earth([t1, t2]))
+
+    assert_quantity_allclose(venus1.lon, both[0].lon)
+    assert_quantity_allclose(venus1.lat, both[0].lat)
+    assert_quantity_allclose(venus1.radius, both[0].radius)
+    assert_quantity_allclose(venus2.lon, both[1].lon)
+    assert_quantity_allclose(venus2.lat, both[1].lat)
+    assert_quantity_allclose(venus2.radius, both[1].radius)
 
 
 def test_get_earth():
