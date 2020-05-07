@@ -13,19 +13,16 @@ __all__ = ['VSMClient']
 
 class VSMClient(GenericClient):
     """
-    Returns a list of URLS to SOLIS VSM files corresponding to value of input
-    timerange. URL source: `http://gong2.nso.edu/pubkeep/`.
-    Parameters
-    ----------
-    timerange: sunpy.time.TimeRange
-        time range for which data is to be downloaded.
-        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-    Instrument: Fixed argument - 'vsm' ,case insensitive.
-    Wavelength: Any of 6302, 8542 or 10830 Angstrom units or equivalent values in different units.
-                Expects a Wavelength object.
-                e.g. 6302*u.AA, 630.2*u.nm etc.
-    Physobs: Optional, includes 'LOS_MAGNETIC_FIELD', "VECTOR_MAGNETIC_FIELD'
-             'EQUIVALENT_WIDTH'.
+    Provides access to SOLIS VSM data corresponding to the input attributes
+    as hosted by `NSO <http://gong2.nso.edu/pubkeep/>`_.
+
+    Wavelength can be any of 6302, 8542 or 10830 Angstrom units
+    or equivalent values in different units.
+
+    Physobs is an optional parameter for querying the VSMClient; it includes
+    'LOS_MAGNETIC_FIELD', "VECTOR_MAGNETIC_FIELD' and 'EQUIVALENT_WIDTH'.
+    All of them can be accessed through the attrs `a.Physobs <sunpy.net.attrs.Physobs>`.
+
     Examples
     --------
     >>> from sunpy.net import Fido
@@ -49,13 +46,15 @@ class VSMClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Return list of URLS corresponding to value of input timerange.
+
         Parameters
         ----------
         timerange: `sunpy.time.TimeRange`
             time range for which data is to be downloaded.
+
         Returns
         -------
-        urls : list
+        urls : `list`
             list of URLs corresponding to the requested time range
         """
         table_physobs = [
@@ -122,7 +121,7 @@ class VSMClient(GenericClient):
 
     def _makeimap(self):
         """
-        Helper Function:used to hold information about source.
+        Helper Function: used to hold information about source.
         """
         self.map_['source'] = 'SOLIS'
         self.map_['instrument'] = 'vsm'
@@ -130,13 +129,17 @@ class VSMClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Answers whether client can service the query.
+        Answers whether a client can service the query.
+
         Parameters
         ----------
-        query : list of query objects
+        query : `list`
+            A list of of query objects.
+
         Returns
         -------
-        boolean: answer as to whether client can service the query
+        `bool`
+            `True` if this client can service the query, otherwise `False`.
         """
         chk_var = 0
         for x in query:
