@@ -1,0 +1,1 @@
+Remove the deprecated ``sunpy.net.vso.vso.VSOClient`` ``.query_legacy`` and ``.latest`` methods.
