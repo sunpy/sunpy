@@ -500,8 +500,8 @@ class DatabaseEntry(DatabaseEntryType, Base):
 def entries_from_query_result(qr, default_waveunit=None):
     """
     Use a query response returned from :meth:`sunpy.net.vso.VSOClient.search`
-    or :meth:`sunpy.net.vso.VSOClient.query_legacy` to generate instances of
-    :class:`DatabaseEntry`. Return an iterator over those instances.
+    to generate instances of :class:`DatabaseEntry`. Return an iterator over
+    those instances.
 
     Parameters
     ----------
