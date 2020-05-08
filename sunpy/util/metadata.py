@@ -1,6 +1,6 @@
 """
 This module provides a generalized dictionary class that deals with header
-parsing and normalization.
+parsing, normalization, and maintaining coherence between keys and keycomments.
 """
 from collections import OrderedDict
 
@@ -14,27 +14,66 @@ class MetaDict(OrderedDict):
 
     This class handles everything in lower case. This allows case
     insensitive indexing.
+
+    If the key 'keycomments' exists, its value must be a dictionary mapping
+    keys in the `MetaDict` to their comments. The casing of keys in the
+    keycomments dictionary is not significant. If a key is removed from the
+    `MetaDict`, it will also be removed from the keycomments dictionary.
+    Additionally, any extraneous keycomments will be removed when the
+    `MetaDict` is instantiated.
     """
 
     def __init__(self, *args):
         """
-        Creates a new MapHeader instance.
+        Creates a new MetaDict instance.
         """
-        # Store all keys as upper-case to allow for case-insensitive indexing
+        # Store all keys as lower-case to allow for case-insensitive indexing
         # OrderedDict can be instantiated from a list of lists or a tuple of tuples
         tags = dict()
         if args:
             args = list(args)
             adict = args[0]
             if isinstance(adict, list) or isinstance(adict, tuple):
-                tags = OrderedDict((k.upper(), v) for k, v in adict)
+                tags = OrderedDict((k.lower(), v) for k, v in adict)
             elif isinstance(adict, dict):
-                tags = OrderedDict((k.upper(), v) for k, v in adict.items())
+                tags = OrderedDict((k.lower(), v) for k, v in adict.items())
             else:
                 raise TypeError("Can not create a MetaDict from this type input")
             args[0] = tags
 
         super().__init__(*args)
+
+        # Use `copy=True` to avoid mutating the caller's keycomments
+        # dictionary (if they provided one).
+        self._prune_keycomments(copy=True)
+
+    def _prune_keycomments(self, copy=False):
+        """
+        Remove keycomments for keys that are not contained in the MetaDict.
+
+        Parameters
+        ----------
+        copy : `bool`, optional
+            Make a copy of the current keycomments dict before removing keys.
+        """
+        if 'keycomments' not in self:
+            return
+
+        keycomments = self['keycomments']
+
+        if not isinstance(keycomments, dict):
+            raise TypeError(
+                "'keycomments' key must have a value of type `dict`. Found "
+                "the following type: %r" % type(keycomments))
+
+        if copy:
+            keycomments = keycomments.copy()
+
+        for key in list(keycomments.keys()):
+            if key not in self:
+                del keycomments[key]
+
+        self['keycomments'] = keycomments
 
     def __contains__(self, key):
         """
@@ -54,6 +93,15 @@ class MetaDict(OrderedDict):
         """
         return OrderedDict.__setitem__(self, key.lower(), value)
 
+    # Note: `OrderedDict.popitem()` does not need to be overridden to prune
+    # keycomments because it calls `__delitem__` internally.
+    def __delitem__(self, key):
+        """
+        Override ``del dict[key]`` key deletion.
+        """
+        OrderedDict.__delitem__(self, key.lower())
+        self._prune_keycomments()
+
     def get(self, key, default=None):
         """
         Override ``.get()`` indexing.
@@ -70,7 +118,11 @@ class MetaDict(OrderedDict):
         """
         Override ``.pop()`` to perform case-insensitively.
         """
-        return OrderedDict.pop(self, key.lower(), default)
+        has_key = key in self
+        result = OrderedDict.pop(self, key.lower(), default)
+        if has_key:
+            self._prune_keycomments()
+        return result
 
     def update(self, d2):
         """
