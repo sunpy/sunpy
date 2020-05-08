@@ -450,6 +450,11 @@ def test_corners(simple_map):
     assert u.allclose(simple_map.bottom_left_coord.Ty, -0.5 * u.arcsec)
 
 
+def test_center(simple_map):
+    assert u.allclose(simple_map.center.Tx, 0 * u.arcsec, atol=1e-26 * u.arcsec)
+    assert u.allclose(simple_map.center.Ty, 0 * u.arcsec)
+
+
 # Check that submap works with units convertable to pix but that aren't pix
 @pytest.mark.parametrize('unit', [u.pix, u.mpix * 1e3])
 def test_submap(generic_map, unit):

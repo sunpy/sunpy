@@ -680,8 +680,11 @@ class GenericMap(NDData):
     def center(self):
         """
         Return a coordinate object for the center pixel of the array.
+
+        If the array has an even number of pixels in a given dimension,
+        the coordinate returned lies on the edge between the two central pixels.
         """
-        center = u.Quantity(self.dimensions) / 2.
+        center = (u.Quantity(self.dimensions) - 1 * u.pix) / 2.
         return self.pixel_to_world(*center)
 
     @property
