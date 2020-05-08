@@ -232,8 +232,11 @@ class Scraper:
                     soup = BeautifulSoup(opn, "html.parser")
                     for link in soup.find_all("a"):
                         href = link.get("href")
-                        if href.endswith(self.pattern.split('.')[-1]):
-                            fullpath = directory + href
+                        if href is not None and href.endswith(self.pattern.split('.')[-1]):
+                            if href[0] == '/':
+                                fullpath = self.domain + href[1:]
+                            else:
+                                fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
                                 if (datehref.to_datetime() >= timerange.start.to_datetime() and
