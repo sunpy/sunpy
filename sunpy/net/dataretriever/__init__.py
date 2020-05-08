@@ -16,7 +16,9 @@ from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
 from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 from .sources.fermi_gbm import GBMClient
+from .sources.kanzelhohe import KANZClient
 
 __all__ = ['QueryResponseBlock', 'QueryResponse', 'GenericClient',
            'EVEClient', 'XRSClient', 'SUVIClient', 'LYRAClient', 'NOAAIndicesClient',
-           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', 'GBMClient']
+           'NOAAPredictClient', 'NoRHClient', 'RHESSIClient', 'SRSClient', 'GBMClient',
+           'KANZClient']
