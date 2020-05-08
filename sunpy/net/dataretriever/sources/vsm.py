@@ -13,7 +13,8 @@ __all__ = ['VSMClient']
 
 class VSMClient(GenericClient):
     """
-    Provides access to SOLIS VSM data corresponding to the input attributes
+    Provides access to Synoptic Optical Long-term Investigations of the Sun (SOLIS)
+    Vector SpecroMagnetograph (VSM) data corresponding to the input attributes
     as hosted by `NSO <http://gong2.nso.edu/pubkeep/>`_.
 
     Wavelength can be any of 6302, 8542 or 10830 Angstrom units

@@ -8,7 +8,11 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 import sunpy.net.dataretriever.sources.vsm as vsm
 
-VClient = vsm.VSMClient()
+
+@pytest.fixture
+def VClient():
+    return vsm.VSMClient()
+
 
 trange = Time('2014/6/1', '2014/6/4')
 
@@ -19,7 +23,7 @@ trange = Time('2014/6/1', '2014/6/4')
 @pytest.mark.parametrize("time, instrument, wavelength, physobs",
                          [(trange, a.Instrument('vsm'), a.Wavelength(6302 * u.AA),
                            Physobs("LOS_MAGNETIC_FIELD"))])
-def test_query(time, instrument, physobs, wavelength):
+def test_query(VClient, time, instrument, physobs, wavelength):
     qr = VClient.search(time, instrument, physobs, wavelength)
     assert len(qr) == 3
 
@@ -31,18 +35,20 @@ def test_query(time, instrument, physobs, wavelength):
      (trange, a.Instrument('vsm'), a.Wavelength(8542 * u.AA), None, True), (
          trange, Instrument('vsm'), a.Wavelength(1083.0 * u.nm),
          a.Physobs('EQUIVALENT_WIDTH'), True)])
-def test_can_handle_query(timerange, instrument, wavelength, physobs,
+def test_can_handle_query(VClient, timerange, instrument, wavelength, physobs,
                           expected):
     assert VClient._can_handle_query(timerange, instrument, wavelength,
                                      physobs) is expected
 
 
 # Because otherwise the `._map` contains the latest Physobs from test_query (last search)
-VClient2 = vsm.VSMClient()
+@pytest.fixture
+def VClient2():
+    return vsm.VSMClient()
 
 
 @pytest.mark.remote_data
-def test_query_2():
+def test_query_2(VClient2):
     qr = VClient2.search(trange, Instrument('vsm'), Wavelength(6302 * u.AA))
     assert len(qr) == 9
     assert qr.time_range().start == datetime.datetime(2014, 6, 1)
