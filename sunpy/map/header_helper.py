@@ -52,8 +52,8 @@ def make_fitswcs_header(data, coordinate,
     data : `~numpy.ndarray` or `tuple`
         Array data of Map for which a header is required, or the shape of the
         data array (in numpy order, i.e. ``(y_size, x_size)``).
-    coordinates : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseFrame`
-        Coordinate object to get meta information for map header.
+    coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseFrame`
+        The coordinate of the reference pixel.
     reference_pixel :`~astropy.units.Quantity` of size 2, optional
         Reference pixel along each axis. These are expected to be Cartestian ordered, i.e
         the first index is the x axis, second index is the y axis. Defaults to
