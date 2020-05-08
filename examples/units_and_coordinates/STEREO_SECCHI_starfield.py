@@ -14,10 +14,11 @@ import matplotlib.pyplot as plt
 # install this package separately.
 from astroquery.vizier import Vizier
 import astropy.units as u
-from astropy.coordinates import SkyCoord, get_body_barycentric
+from astropy.coordinates import Distance, SkyCoord
+from astropy.time import Time
 
 import sunpy.map
-from sunpy.coordinates import get_body_heliographic_stonyhurst, frames
+from sunpy.coordinates import get_body_heliographic_stonyhurst
 from sunpy.net import helioviewer
 
 ###############################################################################
@@ -55,11 +56,20 @@ result = vv.query_region(stereo_to_sun, radius=4 * u.deg, catalog='I/345/gaia2')
 print(len(result[0]))
 
 ###############################################################################
-# Now we load each star into a coordinate and transform it into the COR2
-# image coordinates. Since we don't know the distance to each of these stars
-# we will just put them very far away.
+# Now we load all stars into an array coordinate and transform it into the COR2
+# image coordinates.  The reference epoch for the star positions is J2015.5,
+# so we update these positions to the date of the COR2 observation using
+# :meth:`astropy.coordinates.SkyCoord.apply_space_motion`.
 
-tbl_crds = SkyCoord(result[0]['RA_ICRS'], result[0]['DE_ICRS'], 1000*u.lyr, frame='icrs')
+tbl_crds = SkyCoord(ra=result[0]['RA_ICRS'],
+                    dec=result[0]['DE_ICRS'],
+                    distance=Distance(parallax=u.Quantity(result[0]['Plx'])),
+                    pm_ra_cosdec=result[0]['pmRA'],
+                    pm_dec=result[0]['pmDE'],
+                    radial_velocity=result[0]['RV'],
+                    frame='icrs',
+                    obstime=Time(result[0]['Epoch'], format='jyear'))
+tbl_crds = tbl_crds.apply_space_motion(new_obstime=cor2.date)
 hpc_coords = tbl_crds.transform_to(cor2.coordinate_frame)
 
 ###############################################################################
