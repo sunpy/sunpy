@@ -1473,17 +1473,17 @@ class GenericMap(NDData):
 
             # Round the pixel values, we use floor+1 so that we always have at
             # least one pixel width of data.
-            x_pixels = u.Quantity([np.min(pixel_corners.x), np.max(pixel_corners.x)]).value
+            x_pixels = u.Quantity([np.min(pixel_corners.x), np.max(pixel_corners.x)]).to_value(u.pix)
             x_pixels[0] = np.ceil(x_pixels[0])
             x_pixels[1] = np.floor(x_pixels[1] + 1)
-            y_pixels = u.Quantity([np.min(pixel_corners.y), np.max(pixel_corners.y)]).value
+            y_pixels = u.Quantity([np.min(pixel_corners.y), np.max(pixel_corners.y)]).to_value(u.pix)
             y_pixels[0] = np.ceil(y_pixels[0])
             y_pixels[1] = np.floor(y_pixels[1] + 1)
 
         elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
               isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
-            x_pixels = u.Quantity([bottom_left[0], top_right[0]]).value
-            y_pixels = u.Quantity([top_right[1], bottom_left[1]]).value
+            x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
+            y_pixels = u.Quantity([top_right[1], bottom_left[1]]).to_value(u.pix)
 
         else:
             raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
@@ -1510,8 +1510,8 @@ class GenericMap(NDData):
 
         # Make a copy of the header with updated centering information
         new_meta = self.meta.copy()
-        new_meta['crpix1'] = self.reference_pixel.x.value - x_pixels[0]
-        new_meta['crpix2'] = self.reference_pixel.y.value - y_pixels[0]
+        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) - x_pixels[0]
+        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) - y_pixels[0]
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
 
