@@ -385,13 +385,15 @@ def test_shift_history(generic_map):
     assert resultant_shift[1] == y_shift1 + y_shift2
 
 
-def test_submap(generic_map):
+# Check that submap works with units convertable to pix but that aren't pix
+@pytest.mark.parametrize('unit', [u.pix, u.mpix * 1e3])
+def test_submap(generic_map, unit):
     """Check data and header information for a submap"""
     width = generic_map.data.shape[1]
     height = generic_map.data.shape[0]
 
     # Create a submap of the top-right quadrant of the image
-    submap = generic_map.submap([width / 2., height / 2.] * u.pix, [width, height] * u.pix)
+    submap = generic_map.submap([width / 2., height / 2.] * unit, [width, height] * unit)
 
     # Check to see if submap properties were updated properly
     assert submap.reference_pixel.x.value == generic_map.meta['crpix1'] - width / 2.
