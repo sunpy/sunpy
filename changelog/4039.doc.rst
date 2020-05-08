@@ -1,0 +1,1 @@
+Made improvements to the gallery example :ref:`sphx_glr_generated_gallery_units_and_coordinates_stereo_secchi_starfield.py`.
