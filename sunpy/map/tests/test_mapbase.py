@@ -455,6 +455,10 @@ def test_center(simple_map):
     assert u.allclose(simple_map.center.Ty, 0 * u.arcsec)
 
 
+def test_dimensions(simple_map):
+    assert simple_map.dimensions[0] == 2 * u.pix
+    assert simple_map.dimensions[1] == 2 * u.pix
+
 # Check that submap works with units convertable to pix but that aren't pix
 @pytest.mark.parametrize('unit', [u.pix, u.mpix * 1e3])
 def test_submap(generic_map, unit):
