@@ -673,7 +673,8 @@ class GenericMap(NDData):
         """
         The physical coordinate at the center of the the top left ([-1, -1]) pixel.
         """
-        return self.pixel_to_world(*self.dimensions)
+        top_right = u.Quantity(self.dimensions) - 1 * u.pix
+        return self.pixel_to_world(*top_right)
 
     @property
     def center(self):
