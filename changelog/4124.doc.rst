@@ -1,0 +1,2 @@
+Mini-galleries are now easier to create in the documentation thanks to a custom Sphinx directive (``minigallery``).
+The page :ref:`sunpy-coordinates-rotatedsunframe` has an example of a mini-gallery at the bottom.
