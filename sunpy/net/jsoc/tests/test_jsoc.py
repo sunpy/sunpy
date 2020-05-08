@@ -13,7 +13,10 @@ from sunpy.net.jsoc import JSOCClient, JSOCResponse
 import sunpy.net.attrs as a
 from sunpy.util.exceptions import SunpyUserWarning
 
-client = JSOCClient()
+
+@pytest.fixture
+def client():
+    return JSOCClient()
 
 
 def test_jsocresponse_double():
@@ -41,15 +44,16 @@ def test_empty_jsoc_response():
 
 
 @pytest.mark.remote_data
-def test_return_query_args():
+def test_return_query_args(client):
     res = client.search(a.jsoc.PrimeKey('HARPNUM', 3604),
                         a.jsoc.Series('hmi.sharp_cea_720s'),
                         a.jsoc.Segment('Bp') & a.jsoc.Segment('magnetogram'))
-    #Because res.query_args is list that contains dict
+    # Because res.query_args is list that contains dict
     assert 'primekey' in res.query_args[0]
 
+
 @pytest.mark.remote_data
-def test_query():
+def test_query(client):
     Jresp = client.search(
         a.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
         a.jsoc.Series('hmi.M_45s'), a.Sample(90 * u.second))
@@ -58,7 +62,7 @@ def test_query():
 
 
 @pytest.mark.remote_data
-def test_post_pass():
+def test_post_pass(client):
     responses = client.search(
         a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
@@ -69,7 +73,7 @@ def test_post_pass():
 
 
 @pytest.mark.remote_data
-def test_build_table():
+def test_build_table(client):
     responses = client.search(
         a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
@@ -81,7 +85,7 @@ def test_build_table():
 
 
 @pytest.mark.remote_data
-def test_post_wavelength():
+def test_post_wavelength(client):
     responses = client.search(
         a.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(193 * u.AA) |
@@ -99,7 +103,7 @@ def test_post_wavelength():
 
 
 @pytest.mark.remote_data
-def test_post_notify_fail():
+def test_post_notify_fail(client):
     responses = client.search(
         a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
         a.jsoc.Series('hmi.M_45s'))
@@ -108,7 +112,7 @@ def test_post_notify_fail():
 
 
 @pytest.mark.remote_data()
-def test_post_wave_series():
+def test_post_wave_series(client):
     with pytest.raises(TypeError):
         client.search(
             a.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
@@ -117,7 +121,7 @@ def test_post_wave_series():
 
 
 @pytest.mark.remote_data
-def test_wait_get():
+def test_wait_get(client):
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
@@ -128,7 +132,7 @@ def test_wait_get():
 
 
 @pytest.mark.remote_data
-def test_get_request():
+def test_get_request(client):
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
@@ -140,13 +144,13 @@ def test_get_request():
 
 
 @pytest.mark.remote_data
-def test_invalid_query():
+def test_invalid_query(client):
     with pytest.raises(ValueError):
         client.search(a.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
 
 
 @pytest.mark.remote_data
-def test_lookup_records_errors():
+def test_lookup_records_errors(client):
     d1 = {'end_time': astropy.time.Time('2014-01-01 01:00:35'),
           'start_time': astropy.time.Time('2014-01-01 00:00:35')}
     with pytest.raises(ValueError):          # Series must be specified for a JSOC Query
@@ -182,7 +186,7 @@ def test_lookup_records_errors():
 
 
 @pytest.mark.remote_data
-def test_make_recordset_errors():
+def test_make_recordset_errors(client):
     d1 = {'series': 'aia.lev1_euv_12s'}
     with pytest.raises(ValueError):
         client._make_recordset(**d1)
@@ -208,7 +212,7 @@ def test_make_recordset_errors():
 
 
 @pytest.mark.remote_data
-def test_make_recordset():
+def test_make_recordset(client):
     d1 = {'series': 'aia.lev1_euv_12s',
           'end_time': astropy.time.Time('2014-01-01 01:00:35', scale='tai'),
           'start_time': astropy.time.Time('2014-01-01 00:00:35', scale='tai')
@@ -257,7 +261,7 @@ def test_make_recordset():
 
 
 @pytest.mark.remote_data
-def test_search_metadata():
+def test_search_metadata(client):
     metadata = client.search_metadata(a.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
                                       a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
     assert isinstance(metadata, pd.DataFrame)
@@ -267,7 +271,7 @@ def test_search_metadata():
 
 
 @pytest.mark.remote_data
-def test_request_data_error():
+def test_request_data_error(client):
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
@@ -277,7 +281,7 @@ def test_request_data_error():
 
 
 @pytest.mark.remote_data
-def test_request_data_protocol():
+def test_request_data_protocol(client):
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
@@ -306,7 +310,7 @@ def test_request_data_protocol():
 
 
 @pytest.mark.remote_data
-def test_check_request():
+def test_check_request(client):
     responses = client.search(
         a.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
@@ -317,7 +321,7 @@ def test_check_request():
 
 @pytest.mark.flaky(reruns_delay=30)
 @pytest.mark.remote_data
-def test_results_filenames():
+def test_results_filenames(client):
     responses = client.search(
         a.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'))
@@ -331,7 +335,7 @@ def test_results_filenames():
 
 @pytest.mark.flaky(reruns_delay=30)
 @pytest.mark.remote_data
-def test_results_filenames_as_is(tmp_path):
+def test_results_filenames_as_is(tmp_path, client):
     responses = client.search(
         a.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
@@ -344,14 +348,14 @@ def test_results_filenames_as_is(tmp_path):
         assert os.path.isfile(hmiurl)
 
 
-def test_can_handle_query_no_series():
-    assert not JSOCClient._can_handle_query(a.Time("2020/01/02", "2020/01/03"))
-    assert not JSOCClient._can_handle_query(a.Wavelength(17.1*u.nm))
-    assert JSOCClient._can_handle_query(a.jsoc.Series("hmi.M_45s"))
+def test_can_handle_query_no_series(client):
+    assert not client._can_handle_query(a.Time("2020/01/02", "2020/01/03"))
+    assert not client._can_handle_query(a.Wavelength(17.1*u.nm))
+    assert client._can_handle_query(a.jsoc.Series("hmi.M_45s"))
 
 
 @pytest.mark.remote_data
-def test_max_parallel_connections():
+def test_max_parallel_connections(client):
     responses = client.search(
         a.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
@@ -360,9 +364,9 @@ def test_max_parallel_connections():
     path = tempfile.mkdtemp()
 
     with mock.patch(
-                    "parfive.Downloader.download",
-                    new_callable=mock.MagicMock
-                  ) as download:
+        "parfive.Downloader.download",
+        new_callable=mock.MagicMock
+    ) as download:
 
         download.side_effect = ["Mocked Downloader"]
 
@@ -370,3 +374,16 @@ def test_max_parallel_connections():
             client.fetch(responses, path=path, max_conn=5, max_splits=5)
 
     assert download.called
+
+
+@pytest.mark.remote_data
+def test_jsoc_attrs(client):
+    # Rough test to make sure it works and returns something
+    # This test is very slow ~ 3 minutes.
+    attrs = client.get_jsoc_values()
+    assert a.jsoc.Series in attrs.keys()
+    assert a.jsoc.PrimeKey in attrs.keys()
+    assert a.jsoc.Segment in attrs.keys()
+    assert len(attrs[a.jsoc.Series]) != 0
+    assert len(attrs[a.jsoc.PrimeKey]) != 0
+    assert len(attrs[a.jsoc.Segment]) != 0
