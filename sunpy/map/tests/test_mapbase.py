@@ -67,6 +67,19 @@ def aia171_test_map_with_mask(aia171_test_map):
 
 
 @pytest.fixture
+def simple_map():
+    # A 2x2 map, with it's center at (0, 0), and scaled differently in
+    # each direction
+    data = np.arange(4).reshape((2, 2))
+    ref_coord = SkyCoord(0, 0, frame='helioprojective', obstime='now', unit='deg')
+    ref_pix = [1.5, 1.5] * u.pix
+    scale = [2, 1] * u.arcsec / u.pix
+    header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
+
+    return sunpy.map.Map(data, header)
+
+
+@pytest.fixture
 def generic_map():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
@@ -427,6 +440,14 @@ def test_shift_history(generic_map):
     resultant_shift = final_shifted_map.shifted_value
     assert resultant_shift[0] == x_shift1 + x_shift2
     assert resultant_shift[1] == y_shift1 + y_shift2
+
+
+def test_corners(simple_map):
+    # These are the centers of the corner pixels
+    assert u.allclose(simple_map.top_right_coord.Tx, 1 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Ty, 0.5 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Tx, -1 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Ty, -0.5 * u.arcsec)
 
 
 # Check that submap works with units convertable to pix but that aren't pix
