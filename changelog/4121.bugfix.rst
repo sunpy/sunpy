@@ -1,0 +1,3 @@
+`sunpy.map.GenericMap.top_right_coord` and `~sunpy.map.map.GenericMap.center`
+have had their definitions clarified, and both have had off-by-one indexing
+errors fixed.
