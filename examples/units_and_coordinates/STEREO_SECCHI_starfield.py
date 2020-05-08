@@ -28,21 +28,24 @@ f = hv.download_jp2('2014/05/15 07:54', observatory='STEREO_A', instrument='SECC
 cor2 = sunpy.map.Map(f)
 
 ###############################################################################
-# To efficiently search the star field we need to know what stars are near the
+# To efficiently search the star field, we need to know what stars are near the
 # Sun as observed by STEREO. We need the vector that points from STEREO to the Sun.
-# By converting to HCRS we get the vector from the Sun to STEREO
+# The location of STEREO in HCRS provides the Sun-to-STEREO vector.
+
 sun_to_stereo = cor2.observer_coordinate.transform_to('hcrs')
 
 ###############################################################################
 # We next reflect the vector to get our search vector which points from STEREO
-# to the Sun
-stereo_to_sun = SkyCoord(-sun_to_stereo.data, obstime=sun_to_stereo.obstime, frame='hcrs')
+# to the Sun.
+
+stereo_to_sun = SkyCoord(-sun_to_stereo.spherical, obstime=sun_to_stereo.obstime, frame='hcrs')
 
 ###############################################################################
 # Let's look up bright stars using the Vizier search capability provided by
-# astroquery (note that this is not a required package of SunPy so you will likely
-# need to install it). We will search the GAIA2 star catalog for stars with magnitude
+# astroquery.
+# We will search the GAIA2 star catalog for stars with magnitude
 # brighter than 7.
+
 vv = Vizier(columns=['**'], row_limit=-1, column_filters={'Gmag': '<7'}, timeout=1200)
 vv.ROW_LIMIT = -1
 result = vv.query_region(stereo_to_sun, radius=4 * u.deg, catalog='I/345/gaia2')
@@ -55,17 +58,15 @@ print(len(result[0]))
 # Now we load each star into a coordinate and transform it into the COR2
 # image coordinates. Since we don't know the distance to each of these stars
 # we will just put them very far away.
-hpc_coords = []
-for this_object in result[0]:
-    tbl_crds = SkyCoord(this_object['RA_ICRS'] * u.deg, this_object['DE_ICRS'] * u.deg,
-                        1e12 * u.km, frame='icrs', obstime=cor2.date)
-    hpc_coords.append(tbl_crds.transform_to(cor2.coordinate_frame))
+
+tbl_crds = SkyCoord(result[0]['RA_ICRS'], result[0]['DE_ICRS'], 1000*u.lyr, frame='icrs')
+hpc_coords = tbl_crds.transform_to(cor2.coordinate_frame)
 
 ###############################################################################
-# One of the bright features is actually Mars so let's also get that coordinate.
-# get the location of Mars.
+# One of the bright features is actually Mars, so let's also get that coordinate.
+
 mars = get_body_heliographic_stonyhurst('mars', cor2.date, observer=cor2.observer_coordinate)
-mars_hpc = mars.transform_to(frames.Helioprojective(observer=cor2.observer_coordinate))
+mars_hpc = mars.transform_to(cor2.coordinate_frame)
 
 ###############################################################################
 # Let's plot the results.
@@ -79,10 +80,9 @@ lat.set_major_formatter('d.dd')
 cor2.plot(axes=ax, vmin=0, vmax=600)
 cor2.draw_limb()
 
-# plot the position of Mars
+# Plot the position of Mars
 ax.plot_coord(mars_hpc, 's', color='white', fillstyle='none', markersize=12, label='Mars')
 # Plot all of the stars
-for this_coord in hpc_coords:
-    ax.plot_coord(this_coord, 'o', color='white', fillstyle='none')
+ax.plot_coord(hpc_coords, 'o', color='white', fillstyle='none')
 plt.legend()
 plt.show()
