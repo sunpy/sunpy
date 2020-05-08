@@ -28,15 +28,13 @@ from sunpy import config
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.vso import attrs
-from sunpy.net.vso.attrs import _TIMEFORMAT as TIMEFORMAT
 from sunpy.net.vso.attrs import _walker as walker
 from sunpy.time import TimeRange, parse_time
-from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
-from .exceptions import *
+from .exceptions import NoData, UnknownVersion, DownloadFailed, UnknownMethod, UnknownStatus, MissingInformation, MultipleChoices
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -795,28 +793,57 @@ class VSOClient(BaseClient):
     def __del__(self):
         self.api.transport.session.close()
 
-    def get_vso_values():
-        """
-        This is not used yet since it makes a long network call and then has to iterate
-        through the response.
+    @classmethod
+    def register_values(cls):
+        # We always use the local file for now.
+        return cls.get_vso_values(load=True)
 
+    @staticmethod
+    def get_vso_values(load=False, save=False):
+        """
         Makes a network call to the VSO API that returns what keywords they support.
         We take this list and register all the keywords as corresponding Attrs.
+
+        Parameters
+        ----------
+        load : bool, optional
+            If ``True``, will not do a request but read the local attrs file instead.
+            Defaults to ``False``.
+        save : bool, optional
+            If ``True``, will save a json file from the VSO request (and do the request).
+            Defaults to ``False``.
+
+        Returns
+        -------
+        dict
+            The constructed Attrs dictionary ready to be passed into Attr registry.
         """
         from sunpy.net import attrs as a
 
-        # Keywords we are after
-        keywords = ["+detector", "+instrument", "+source", "+provider", "+physobs", "+level"]
+        here = os.path.dirname(os.path.realpath(__file__))
+        # save or load has to be true.
+        if not save and not load:
+            raise ValueError("One of save or load has to be True.")
 
-        # Construct and format the request
-        keyword_info = {}
-        url = "https://vso1.nascom.nasa.gov/cgi-bin/registry_json.cgi"
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        for keyword in keywords:
-            data = urlencode({'fields': f"['{keyword}']".replace("'", '"')}).encode('ascii')
-            req = Request(url=url, data=data, headers=headers)
-            response = urlopen(req)
-            keyword_info[keyword.replace("+", "")] = json.loads(response.read())
+        if save:
+            # Keywords we are after
+            keywords = ["+detector", "+instrument", "+source", "+provider", "+physobs", "+level"]
+            # Construct and format the request
+            keyword_info = {}
+            url = "https://vso1.nascom.nasa.gov/cgi-bin/registry_json.cgi"
+            headers = {"Content-Type": "application/x-www-form-urlencoded"}
+            for keyword in keywords:
+                data = urlencode({'fields': f"['{keyword}']".replace("'", '"')}).encode('ascii')
+                req = Request(url=url, data=data, headers=headers)
+                response = urlopen(req)
+                keyword_info[keyword.replace("+", "")] = json.loads(response.read())
+
+            with open(os.path.join(here, 'data', 'attrs.txt'), 'w') as attrs_file:
+                json.dump(keyword_info, attrs_file)
+
+        if load:
+            with open(os.path.join(here, 'data', 'attrs.txt'), 'r') as attrs_file:
+                keyword_info = json.load(attrs_file)
 
         # Now to traverse the return and create attrs out of them.
         attrs = {}

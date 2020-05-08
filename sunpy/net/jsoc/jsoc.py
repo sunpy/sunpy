@@ -5,7 +5,7 @@ import time
 import urllib
 import warnings
 from pathlib import Path
-from collections.abc import Sequence
+import json
 
 import drms
 import numpy as np
@@ -901,3 +901,75 @@ class JSOCClient(BaseClient):
     @classmethod
     def _attrs_module(cls):
         return 'jsoc', 'sunpy.net.jsoc.attrs'
+
+    @classmethod
+    def register_values(cls):
+        # We always use the local file for now.
+        return cls.get_jsoc_values(load=True)
+
+    @staticmethod
+    def get_jsoc_values(load=False, save=False):
+        """
+        Makes a network call to the JSOC API (via DRMS) that returns what keywords they support.
+        We take this list and register all the keywords as corresponding Attrs.
+
+        Parameters
+        ----------
+        load : bool, optional
+            If ``True``, will not do a request but read the local attrs file instead.
+            Defaults to ``False``.
+        save : bool, optional
+            If ``True``, will save a json file from the VSO request (and do the request).
+            Defaults to ``False``.
+
+        Returns
+        -------
+        dict
+            The constructed Attrs dictionary ready to be passed into Attr registry.
+        """
+        from sunpy.net import attrs as a
+        from drms import Client
+
+        here = os.path.dirname(os.path.realpath(__file__))
+        # save or load has to be true.
+        if not save and not load:
+            raise ValueError("One of save or load has to be True.")
+
+        if save:
+            c = Client()
+            # Series we are after
+            data_sources = ["hmi", "mdi", "aia"]
+
+            # Now get all the information we want.
+            series_store = []
+            pkeys = []
+            segments = []
+            for series in data_sources:
+                info = c.series(rf'{series}\.')
+                for item in info:
+                    data = c.info(item)
+                    series_store.append((data.name, data.note))
+                    pkeys.extend(data.primekeys)
+                    if not data.segments.empty:
+                        for row in data.segments.iterrows():
+                            segments.append((row[0], row[1][-1]))
+            pkeys = np.unique(pkeys).tolist()
+            pkeys = [(key, "") for key in pkeys]
+            with open(os.path.join(here, 'data', 'attrs.txt'), 'w') as attrs_file:
+                keyword_info = {}
+                keyword_info["series_store"] = series_store
+                keyword_info["segments"] = segments
+                keyword_info["pkeys"] = pkeys
+                json.dump(keyword_info, attrs_file)
+
+        if load:
+            with open(os.path.join(here, 'data', 'attrs.txt'), 'r') as attrs_file:
+                keyword_info = json.load(attrs_file)
+
+        # Create attrs out of them.
+        series_dict = {a.jsoc.Series: keyword_info["series_store"]}
+        segments_dict = {a.jsoc.Segment: keyword_info["segments"]}
+        pkeys_dict = {a.jsoc.PrimeKey: keyword_info["pkeys"]}
+        attrs = {**series_dict, **segments_dict, **pkeys_dict}
+
+        return attrs

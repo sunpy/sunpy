@@ -116,8 +116,12 @@ class GBMClient(GenericClient):
     @classmethod
     def register_values(cls):
         from sunpy.net import attrs
-        adict = {attrs.Instrument: [
-            ('GBM', 'Gamma-Ray Burst Monitor on board the Fermi satellite.')]}
+        adict = {attrs.Instrument: [('GBM', 'Gamma-Ray Burst Monitor on board the Fermi satellite.')],
+                 attrs.Physobs: [('CSPEC', 'counts accumulated every 4.096 seconds in 128 energy channels for each detector.'),
+                                 ('CTIME', 'counts accumulated every 0.256 seconds in 8 energy channels')],
+                 attrs.Resolution: [
+            ('N'+str(x), f"GBM Detector short name for the detector NAI_{x:02}") for x in range(12)]
+        }
         return adict
 
 
