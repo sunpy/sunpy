@@ -51,7 +51,7 @@ class RHESSIClient(GenericClient):
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
     ...                       a.Instrument("RHESSI"), a.Physobs("summary_lightcurve"))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -213,5 +213,5 @@ class RHESSIClient(GenericClient):
         from sunpy.net import attrs
         adict = {attrs.Instrument: [('RHESSI',
                                      'Reuven Ramaty High Energy Solar Spectroscopic Imager.')],
-                attrs.Physobs: [("summary_lightcurve","A summary lightcurve.")]}
+                 attrs.Physobs: [("summary_lightcurve", "A summary lightcurve.")]}
         return adict

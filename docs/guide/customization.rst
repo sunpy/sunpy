@@ -14,8 +14,34 @@ properties. You can control a number of key features of SunPy such as
 where your data will download to. SunPy looks for the ``sunpyrc`` file
 in a platform specific directory, which you can see the path for by running::
 
-  >>> import sunpy # doctest: +SKIP
-  >>> sunpy.print_config()   # doctest: +SKIP
+  >>> import sunpy
+  >>> sunpy.print_config()
+  FILES USED:
+    ...
+  <BLANKLINE>
+  CONFIGURATION:
+    [general]
+    time_format = %Y-%m-%d %H:%M:%S
+    working_dir = ...
+  <BLANKLINE>
+    [downloads]
+    download_dir = ...
+    remote_data_manager_dir = ...
+    cache_expiry = 10
+    sample_dir = ...
+  <BLANKLINE>
+    [database]
+    url = sqlite:////...
+  <BLANKLINE>
+    [logger]
+    log_level = INFO
+    use_color = True
+    log_warnings = True
+    log_exceptions = False
+    log_to_file = False
+    log_file_level = INFO
+    log_file_format = %(asctime)s, %(origin)s, %(levelname)s, %(message)s
+  <BLANKLINE>
 
 To maintain your own customizations place a copy of the default sunpyrc file
 into the *first* path printed above.
