@@ -141,7 +141,7 @@ class JSOCClient(BaseClient):
 
         The response object holds the records that your query will return:
 
-        >>> print(response)   # doctest: +ELLIPSIS  +REMOTE_DATA
+        >>> print(response)   # doctest: +REMOTE_DATA
                 T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
         ----------------------- -------- ---------- -------- -------
         2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145

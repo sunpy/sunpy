@@ -325,7 +325,7 @@ A simple example of this is shown below::
   ...          a.Instrument('AIA'), a.Sample(15*u.min))  # doctest: +REMOTE_DATA
   >>> db.commit()  # doctest: +REMOTE_DATA
 
-  >>> db  # doctest: +SKIP
+  >>> db  # doctest: +REMOTE_DATA
   <Table length=10>
    id  observation_time_start observation_time_end ...    download_time      size
   str2         str19                 str19         ...        str19          str7
@@ -346,7 +346,7 @@ If you then do a second query::
   >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:15:00"),
   ...          a.Instrument('AIA'), a.Sample(15*u.min))  # doctest: +REMOTE_DATA
   >>> db.commit()  # doctest: +REMOTE_DATA
-  >>> db  # doctest: +SKIP
+  >>> db  # doctest: +REMOTE_DATA
   <Table length=12>
    id  observation_time_start observation_time_end ...    download_time      size
   str2         str19                 str19         ...        str19          str7

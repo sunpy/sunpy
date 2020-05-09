@@ -299,7 +299,7 @@ colname is already present. This can take numpy array or preferably an Astropy
 `~astropy.units.quantity.Quantity` value.  For example: ::
 
     >>> values = u.Quantity(my_timeseries.data['xrsa'].values[:-2], my_timeseries.units['xrsa']) * 20.5
-    >>> my_timeseries.add_column('new col', values)  # doctest: +ELLIPSIS
+    >>> my_timeseries.add_column('new col', values)
     <sunpy.timeseries.sources.goes.XRSTimeSeries object at ...>
 
 Note that the values will be converted into the column units if an Astropy

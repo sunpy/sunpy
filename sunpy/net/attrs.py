@@ -13,7 +13,7 @@ specification and a sample cadence using:
 
     >>> import astropy.units as u
     >>> from sunpy.net import Fido, attrs as a
-    >>> Fido.search(a.Time("2011/01/01", "2011/01/02") & (a.Instrument("AIA") | a.Instrument("HMI")) & a.Sample(1*u.day))  # doctest: +SKIP
+    >>> Fido.search(a.Time("2011/01/01", "2011/01/02") & (a.Instrument("AIA") | a.Instrument("HMI")) & a.Sample(1*u.day))  # doctest: +REMOTE_DATA
 
 
 In addition to the core attrs defined here, other sunpy clients also provide
@@ -30,4 +30,5 @@ from ._attrs import Time, Instrument, Wavelength, Level, Sample, Detector, Resol
 for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs):
     _a.__module__ = __name__
 
-__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution', 'Physobs']
+__all__ = ['Time', 'Instrument', 'Wavelength', 'Level',
+           'Sample', 'Detector', 'Resolution', 'Physobs']

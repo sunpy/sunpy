@@ -9,32 +9,103 @@ Federated Internet Data Obtainer...or more usually (and sanely) referred to as F
 `~sunpy.net.Fido` is a unified interface for searching
 and fetching solar physics data irrespective of the underlying
 client or webservice through which the data is obtained, e.g. VSO_,
-JSOC_, etc.  It therefore supplies a single, easy and consistent way to
+JSOC_, etc. It therefore supplies a single, easy and consistent way to
 obtain most forms of solar physics data.
 
 Import
 ------
 
-The `~sunpy.net.Fido` object is in
-`sunpy.net`. It can be imported as follows::
+The `~sunpy.net.Fido` object is in `sunpy.net`.
+It can be imported as follows::
 
     >>> from sunpy.net import Fido, attrs as a
+
+Search Attributes
+-----------------
+
+To search for data with Fido, you need to specify attributes to search against.
+The (partial) range of allowed attributes are found in the `attrs <sunpy.net.attrs>`.
+Examples of these attributes are:
+
+- `a.Time <sunpy.net.attrs.Time>`
+- `a.Instrument <sunpy.net.attrs.Instrument>`
+- `a.Wavelength <sunpy.net.attrs.Wavelength>`
+
+whereas some of these attributes are client specific, and are found under `attrs.vso <sunpy.net.vso.attrs>` and `attrs.jsoc <sunpy.net.jsoc.attrs>`.
+
+In to each attribute you have to procide a value to use::
+
+    >>> a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')
+    (<Time(<Time object: scale='utc' format='isot' value=2012-03-04T00:00:00.000>, <Time object: scale='utc' format='isot' value=2012-03-06T00:00:00.000>, None)>, <sunpy.net.attrs.Instrument: lyra object...>)
+
+For attributes that have no fixed selection of values (``Time`` for example) you will have to provide the range you require.
+However, for attributes that have a fixed range of **known** values, it is possible to list all these values.
+**Please note that each list is not exhaustive.**
+
+Using ``Instrument`` as the first example, if you print the object::
+
+    >>> print(a.Instrument)
+    Instrument
+    <BLANKLINE>
+    Specifies the Instrument name for the search.
+    <BLANKLINE>
+          Attribute Name          Client          Full Name                                                               Description
+    -------------------------- ----------- ------------------------ -----------------------------------------------------------------------------------------------------------------------
+                           aia         VSO                      AIA                                                                                            Atmospheric Imaging Assembly
+                           bbi         VSO                      BBI                                                                                                                    None
+                           bcs         VSO                      BCS                                                                                              Bragg Crystal Spectrometer
+                       bichifi         VSO                 BIC-HIFI                                                                                                                    None
+                       bigbear         VSO                 Big Bear                                                              Big Bear Solar Observatory, California TON and GONG+ sites
+                           cds         VSO                      CDS                                                                                         Coronal Diagnostic Spectrometer
+                        celias         VSO                   CELIAS                                                                            Charge, Element, and Isotope Analysis System
+                   cerrotololo         VSO             Cerro Tololo                                                                                          Cerro Tololo, Chile GONG+ site
+                           chp         VSO                      chp                                                                               Chromospheric Helium-I Imaging Photometer
+    ...
+                           wbs         VSO                      WBS                                                                                                  Wide Band Spectrometer
+                         wispr         VSO                    WISPR                                                                                  Wide-Field Imager for Solar Probe Plus
+                           xrs         XRS                      XRS                                                                                                         GOES X-ray Flux
+                           xrt         VSO                      XRT                                                                                                         X-Ray Telescope
+                        zimpol         VSO                   ZIMPOL                                                                                                                    None
+
+You get a full list of known values, a description and what "Clients" support those values (if you want to use a specific data source).
+This is supported for most attributes including the client specific ones::
+
+    >>> print(a.vso.Provider)
+    Provider
+    <BLANKLINE>
+    Specifies the VSO data provider to search for data for.
+    <BLANKLINE>
+    Attribute Name Client Full Name                                   Description
+    -------------- ------ --------- --------------------------------------------------------------------------------
+               hao    VSO       HAO                                                  High Altitude Observatory, NCAR
+              jsoc    VSO      JSOC                                              SDO Joint Science Operations Center
+               kis    VSO       KIS                                            Kiepenheuer-Institut für Sonnenphysik
+               kso    VSO       KSO                                                     Kanzelhöhe Solar Observatory
+              lasp    VSO      LASP Laboratory for Atmospheric and Space Physics (University of Colorado at Boulder)
+    ...
+
+    >>> print(a.jsoc.Series)
+    Series
+    <BLANKLINE>
+    The JSOC Series to Download.
+    <BLANKLINE>
+            Attribute Name         Client             Full Name                                                                                                              Description
+    ------------------------------ ------ ---------------------------------- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                      aiaflatfield   JSOC                      aia.flatfield                                                                                                                                                                                                AIA flatfield
+                           aialev1   JSOC                           aia.lev1                                                                                                                                                                                                  AIA Level 1
+                     aialev1euv12s   JSOC                   aia.lev1_euv_12s                                                                                                                                                                               AIA Level 1, 12 second cadence
+    ...
+
+Furthermore, you can do tab completion to list all the available names that have been sanatiszed in order to allow them to be Python names.
 
 Searching for Data Using Fido
 -----------------------------
 
-To search for data with Fido, you need to specify attributes to search against.
-The (partial) range of allowed attributes are found in the `vso.attrs <sunpy.net.vso.attrs>`
-and `jsoc.attrs <sunpy.net.jsoc.attrs>`.
-Examples of these attributes are `a.Time <sunpy.net.vso.attrs.Time>`,
-`a.Instrument <sunpy.net.vso.attrs.Instrument>`,
-`a.Wavelength <sunpy.net.vso.attrs.Wavelength>`, some of these attributes are
-client specific, such as `a.vso <sunpy.net.vso.attrs>` or
-`a.jsoc <sunpy.net.jsoc.attrs>`.::
+For example::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
 
-This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
+this returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
 the attrs objects in the above call. It does not download the files. For
 instructions on how to download data using Fido, see :ref:`downloading_data`.
@@ -42,7 +113,7 @@ instructions on how to download data using Fido, see :ref:`downloading_data`.
 To see a summary of results of our query, simple type the name of the
 variable set to the Fido search, in this case, result::
 
-    >>> result  # doctest: +REMOTE_DATA +ELLIPSIS
+    >>> result  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -62,7 +133,7 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
 
     >>> import astropy.units as u
     >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('norh'),
-    ...             a.Wavelength(17*u.GHz))  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...             a.Wavelength(17*u.GHz))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -85,7 +156,7 @@ like this which are client specific will result in
 client for results, in this case VSO.::
 
     >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
-    ...             a.Wavelength(171*u.angstrom), a.Sample(10*u.minute))  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...             a.Wavelength(171*u.angstrom), a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -123,7 +194,7 @@ pipe ``|`` operator. This joins queries together just as the logical ``OR``
 operator would::
 
     >>> Fido.search(a.Time('2012/3/4', '2012/3/4 02:00'),
-    ...             a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...             a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 3 Providers:
     <BLANKLINE>
@@ -168,7 +239,7 @@ If you then wanted to inspect just the LYRA data for the whole time range
 specified in the search, you would index this response to see just the
 results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
 
-    >>> results[0, :]  # doctest: +REMOTE_DATA +ELLIPSIS
+    >>> results[0, :]  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -182,7 +253,7 @@ results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
 
 Or, equivalently::
 
-    >>> results[0]  # doctest: +REMOTE_DATA +ELLIPSIS
+    >>> results[0]  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -257,3 +328,37 @@ the ``.errors`` list with any errors that occurred during the second attempt.
 
 .. _VSO: https://sdac.virtualsolar.org/cgi/search
 .. _JSOC: http://jsoc.stanford.edu/
+
+
+Fido Clients
+------------
+
+Fido essentially masks the clients it uses to search and download data.
+If you want to see the current list of clients you can do:
+
+>>> print(Fido)
+Fido
+<BLANKLINE>
+Fido is a unified data search and retrieval tool.
+<BLANKLINE>
+It provides simultaneous access to a variety of online data sources, some
+cover multiple instruments and data products like the Virtual Solar
+Observatory and some are specific to a single source.
+<BLANKLINE>
+For details of using `~sunpy.net.Fido` see :ref:`fido_guide`.
+<BLANKLINE>
+<BLANKLINE>
+        Client                                                     Description
+----------------- ----------------------------------------------------------------------------------------------------------
+        JSOCClient                                                          This is a client to the JSOC Data Export service.
+        VSOClient                                     Allows queries and downloads from the Virtual Solar Observatory (VSO).
+        EVEClient                         Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
+        LYRAClient                                                           Provides access to the LYRA/Proba2 data archive.
+        XRSClient                                                        Provides access to the GOES XRS fits files archive.
+        SUVIClient                                     Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
+        NoRHClient           Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation    time series data.
+        RHESSIClient                                          Provides access to the RHESSI observing summary time series data.
+NOAAIndicesClient                                                           Provides access to the NOAA solar cycle indices.
+NOAAPredictClient                   Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
+        SRSClient                                                Provides access to the NOAA SWPC solar region summary data.
+        GBMClient Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument    on board the Fermi satellite.
