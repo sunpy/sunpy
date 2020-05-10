@@ -1,0 +1,1 @@
+Improved the text for solar cycle example documentation.
