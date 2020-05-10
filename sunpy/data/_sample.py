@@ -3,6 +3,7 @@ import warnings
 from pathlib import Path
 from collections import namedtuple
 from urllib.parse import urljoin
+from sunpy import log
 
 from sunpy.util.config import get_and_create_sample_dir, _is_writable_dir
 from sunpy.util.exceptions import SunpyUserWarning
@@ -102,6 +103,8 @@ def download_sample_data(overwrite=False):
 
     if not results.errors:
         return results
+    else:
+        log.info('Failed to download sample data, retrying with a mirror.')
 
     for retry_url in _base_urls[1:]:
         for i, err in enumerate(results.errors):
@@ -119,6 +122,8 @@ def download_sample_data(overwrite=False):
 
     for err in results.errors:
         file_name = Path(err.url).name
+        log.info('Failed to download file' + str(err.filepath_partial) +
+                 'from url: ' + str(err.url) + ' with error: ' + str(err.exception))
         warnings.warn(f"File {file_name} not found.", SunpyUserWarning)
 
     return results
