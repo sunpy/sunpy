@@ -852,7 +852,7 @@ def _make_sunpy_graph():
                  'cirs', 'altaz', 'itrs']
 
     global frame_transform_graph
-    backup_graph = deepcopy(frame_transform_graph)
+    backup_graph = frame_transform_graph
 
     small_graph = deepcopy(frame_transform_graph)
     cull_list = [name for name in small_graph.get_names() if name not in keep_list]
