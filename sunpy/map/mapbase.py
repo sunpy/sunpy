@@ -951,7 +951,9 @@ class GenericMap(NDData):
                 * ``'neighbor'`` - Take closest value from original data.
                 * ``'nearest'`` and ``'linear'`` - Use n x 1-D interpolations using
                   `scipy.interpolate.interp1d`.
-                * ``'spline'`` - Use `ndimage.map_coordinates`.
+                * ``'spline'`` - Uses piecewise polynomials (splines) for mapping the input
+                  array to new coordinates by interpolation using
+                  `ndimage.map_coordinates`.
 
         Returns
         -------
