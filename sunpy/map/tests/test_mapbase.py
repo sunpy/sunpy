@@ -468,10 +468,12 @@ def test_submap(simple_map, rect, submap_out):
     # Check that coordinates behave the same way
     corner1 = simple_map.pixel_to_world(*rect[0])
     corner2 = simple_map.pixel_to_world(*rect[1])
+    corners = simple_map.pixel_to_world(u.Quantity([rect[0][0], rect[1][0]]),
+                                        u.Quantity([rect[0][1], rect[1][1]]))
     for r in [(corner1, corner2),
               (corner2, corner1),
-              (SkyCoord([corner1, corner2]), ),
-              (SkyCoord([corner2, corner1]), )]:
+              (corners, ),
+              ]:
         submap = simple_map.submap(*r)
         np.testing.assert_equal(submap.data, submap_out)
 
