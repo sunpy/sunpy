@@ -16,14 +16,18 @@ sunpy.util.multimethod.
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
+import os
 import re
 import keyword
 from collections import defaultdict, namedtuple
 from textwrap import dedent
 import textwrap
+import string
+from shutil import get_terminal_size
 
 from astropy.utils.misc import isiterable
 from astropy.table import Table
+
 
 from sunpy.util.functools import seconddispatch
 
@@ -56,7 +60,7 @@ def strtonum(value):
             'seven', 'eight', 'nine')[value]
 
 
-def _print_attrs(attr):
+def _print_attrs(attr, html=False):
     """
     Given a Attr class will print out each registered attribute.
 
@@ -64,6 +68,8 @@ def _print_attrs(attr):
     ----------
     attr : `sunpy.net.attr.Attr`
         The attr class/type to print for.
+    html : bool
+        Will return a html table instead.
 
     Returns
     -------
@@ -77,18 +83,34 @@ def _print_attrs(attr):
     names_long = [str(x) for _, x in sorted(
         zip(attrs.name, attrs.name_long), key=lambda pair: pair[0])]
     descs = [str(x) for _, x in sorted(zip(attrs.name, attrs.desc), key=lambda pair: pair[0])]
+    # Cut down the text.
+    descs = [x[:77] + '...' if len(x) > 80 else x for x in descs]
     lines = []
     t = Table(names=["Attribute Name", "Client", "Full Name",
-                     "Description"], dtype=["U256", "U256", "U256", "U256"])
+                     "Description"], dtype=["U80", "U80", "U80", "U80"])
     for name, client, name_long, desc in zip(names, clients, names_long, descs):
         t.add_row((name, client, name_long, desc))
-    lines.insert(0, class_name)
+    if html:
+        lines.insert(0, "<p>"+class_name+"</p>")
+    else:
+        lines.insert(0, class_name)
     # If the attr lacks a __doc__ this will error and prevent this from returning anything.
     try:
-        lines.insert(1, dedent(attr.__doc__.partition("\n\n")[0])+"\n")
+        if html:
+            lines.insert(1, "<p>"+dedent(attr.__doc__.partition("\n\n")[0])+"</p>"+"\n")
+        else:
+            lines.insert(1, dedent(attr.__doc__.partition("\n\n")[0])+"\n")
     except AttributeError:
         pass
-    lines.extend(t.pformat_all(show_dtype=False))
+    # If the table is empty, why print it?
+    if len(t) == 0:
+        pass
+    else:
+        if os.environ.get("COLUMNS", None):
+            width = int(os.environ.get("COLUMNS"))
+        else:
+            _, width = get_terminal_size()
+        lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
     return '\n'.join(lines)
 
 
@@ -142,6 +164,12 @@ class AttrMeta(type):
         This enables the "pretty" printing of Attrs.
         """
         return _print_attrs(self)
+
+    def _repr_html_(self):
+        """
+        This enables the "pretty" printing of Attrs with html.
+        """
+        return _print_attrs(self, html=True)
 
 
 class Attr(metaclass=AttrMeta):
@@ -227,36 +255,34 @@ class Attr(metaclass=AttrMeta):
                             if len(pair) == 1:
                                 # Special case handling for * aka all values allowed.
                                 if pair[0] == "*":
+                                    strtonum
                                     pair = ["all", "All values of this type are supported."]
                                 else:
                                     raise ValueError(
                                         f'Invalid value given for * registration: {attr_values}.')
                             else:
                                 raise ValueError(f'Invalid length (!=2) for values: {attr_values}.')
+                        # Sanitize part one: Check if the first letter is a number and
+                        # replace it with a string version
+                        if NUMBER_REGEX.match(pair[0][0]):
+                            # This turns that digit into its name
+                            name = strtonum(pair[0][0])
+                            if pair[0][1:]:
+                                name = name + "_" + pair[0][1:]
+                        else:
+                            name = pair[0]
+                        # Sanitize part two: remove punctuation and replace it with _
+                        name = ''.join(
+                            char if char not in string.punctuation else "_" for char in name).lower()
                         # Sanitize name, we remove all special characters and make it all lower case
-                        name = ''.join(char for char in pair[0] if char.isalnum()).lower()
+                        name = ''.join(char for char in name if char.isidentifier()
+                                       or char.isnumeric()).lower()
                         if keyword.iskeyword(name):
                             # Attribute name has been appended with `_`
                             # to make it a valid identifier since its a python keyword.
                             name = name + '_'
                         if not name.isidentifier():
-                            # This should account for names with one number first.
-                            # We match for single digits at the start only.
-                            if NUMBER_REGEX.match(name[0]):
-                                # This turns that digit into its name
-                                if len(name) == 1:
-                                    name = strtonum(name[0])
-                                else:
-                                    # If the entire name is a number.
-                                    if NUMBER_REGEX.match(name):
-                                        name = attr.__name__[0] + name
-                                    # Since it is too long, we just append the first
-                                    # letter of the attrs class to it.
-                                    else:
-                                        number = strtonum(name[0])
-                                        name = number + ("_" + name[1:] if len(name) > 1 else "")
-                            else:
-                                raise ValueError(f'Unable to figure out {pair}')
+                            raise ValueError(f'Unable to figure out {pair}')
                         cls._attr_registry[attr][0].append(name)
                         cls._attr_registry[attr][1].append(client.__name__.replace("Client", ""))
                         cls._attr_registry[attr][2].append(pair[0])

@@ -942,24 +942,21 @@ class JSOCClient(BaseClient):
 
             # Now get all the information we want.
             series_store = []
-            pkeys = []
             segments = []
             for series in data_sources:
                 info = c.series(rf'{series}\.')
                 for item in info:
                     data = c.info(item)
                     series_store.append((data.name, data.note))
-                    pkeys.extend(data.primekeys)
                     if not data.segments.empty:
                         for row in data.segments.iterrows():
                             segments.append((row[0], row[1][-1]))
-            pkeys = np.unique(pkeys).tolist()
-            pkeys = [(key, "") for key in pkeys]
+            series_store = list(set(series_store))
+            segments = list(set(segments))
             with open(os.path.join(here, 'data', 'attrs.txt'), 'w') as attrs_file:
                 keyword_info = {}
                 keyword_info["series_store"] = series_store
                 keyword_info["segments"] = segments
-                keyword_info["pkeys"] = pkeys
                 json.dump(keyword_info, attrs_file)
 
         if load:
@@ -969,7 +966,6 @@ class JSOCClient(BaseClient):
         # Create attrs out of them.
         series_dict = {a.jsoc.Series: keyword_info["series_store"]}
         segments_dict = {a.jsoc.Segment: keyword_info["segments"]}
-        pkeys_dict = {a.jsoc.PrimeKey: keyword_info["pkeys"]}
-        attrs = {**series_dict, **segments_dict, **pkeys_dict}
+        attrs = {**series_dict, **segments_dict}
 
         return attrs

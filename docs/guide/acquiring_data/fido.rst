@@ -24,7 +24,7 @@ Search Attributes
 -----------------
 
 To search for data with Fido, you need to specify attributes to search against.
-The (partial) range of allowed attributes are found in the `attrs <sunpy.net.attrs>`.
+The range of attributes are found in the `attrs <sunpy.net.attrs>`.
 Examples of these attributes are:
 
 - `a.Time <sunpy.net.attrs.Time>`
@@ -49,26 +49,26 @@ Using ``Instrument`` as the first example, if you print the object::
     <BLANKLINE>
     Specifies the Instrument name for the search.
     <BLANKLINE>
-          Attribute Name          Client          Full Name                                                               Description
-    -------------------------- ----------- ------------------------ -----------------------------------------------------------------------------------------------------------------------
-                           aia         VSO                      AIA                                                                                            Atmospheric Imaging Assembly
-                           bbi         VSO                      BBI                                                                                                                    None
-                           bcs         VSO                      BCS                                                                                              Bragg Crystal Spectrometer
-                       bichifi         VSO                 BIC-HIFI                                                                                                                    None
-                       bigbear         VSO                 Big Bear                                                              Big Bear Solar Observatory, California TON and GONG+ sites
-                           cds         VSO                      CDS                                                                                         Coronal Diagnostic Spectrometer
-                        celias         VSO                   CELIAS                                                                            Charge, Element, and Isotope Analysis System
-                   cerrotololo         VSO             Cerro Tololo                                                                                          Cerro Tololo, Chile GONG+ site
-                           chp         VSO                      chp                                                                               Chromospheric Helium-I Imaging Photometer
+           Attribute Name          Client          Full Name                                           Description
+    --------------------------- ----------- ------------------------ --------------------------------------------------------------------------------
+    aia                         VSO         AIA                      Atmospheric Imaging Assembly
+    bbi                         VSO         BBI                      None
+    bcs                         VSO         BCS                      Bragg Crystal Spectrometer
+    bic_hifi                    VSO         BIC-HIFI                 None
+    bigbear                     VSO         Big Bear                 Big Bear Solar Observatory, California TON and GONG+ sites
+    cds                         VSO         CDS                      Coronal Diagnostic Spectrometer
+    celias                      VSO         CELIAS                   Charge, Element, and Isotope Analysis System
+    cerrotololo                 VSO         Cerro Tololo             Cerro Tololo, Chile GONG+ site
+    chp                         VSO         chp                      Chromospheric Helium-I Imaging Photometer
+    chrotel                     VSO         ChroTel                  Chromospheric Telescope
+    climso                      VSO         CLIMSO                   Christian Latouche IMageur SOlaire
+    costep                      VSO         COSTEP                   Comprehensive Suprathermal and Energetic Particle Analyzer
     ...
-                           wbs         VSO                      WBS                                                                                                  Wide Band Spectrometer
-                         wispr         VSO                    WISPR                                                                                  Wide-Field Imager for Solar Probe Plus
-                           xrs         XRS                      XRS                                                                                                         GOES X-ray Flux
-                           xrt         VSO                      XRT                                                                                                         X-Ray Telescope
-                        zimpol         VSO                   ZIMPOL                                                                                                                    None
 
 You get a full list of known values, a description and what "Clients" support those values (if you want to use a specific data source).
-This is supported for most attributes including the client specific ones::
+This is supported for most attributes including the client specific ones.
+
+For VSO::
 
     >>> print(a.vso.Provider)
     Provider
@@ -77,23 +77,25 @@ This is supported for most attributes including the client specific ones::
     <BLANKLINE>
     Attribute Name Client Full Name                                   Description
     -------------- ------ --------- --------------------------------------------------------------------------------
-               hao    VSO       HAO                                                  High Altitude Observatory, NCAR
-              jsoc    VSO      JSOC                                              SDO Joint Science Operations Center
-               kis    VSO       KIS                                            Kiepenheuer-Institut für Sonnenphysik
-               kso    VSO       KSO                                                     Kanzelhöhe Solar Observatory
-              lasp    VSO      LASP Laboratory for Atmospheric and Space Physics (University of Colorado at Boulder)
+    hao            VSO    HAO       High Altitude Observatory, NCAR
+    jsoc           VSO    JSOC      SDO Joint Science Operations Center
     ...
+
+For JSOC::
 
     >>> print(a.jsoc.Series)
     Series
     <BLANKLINE>
     The JSOC Series to Download.
     <BLANKLINE>
-            Attribute Name         Client             Full Name                                                                                                              Description
-    ------------------------------ ------ ---------------------------------- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                      aiaflatfield   JSOC                      aia.flatfield                                                                                                                                                                                                AIA flatfield
-                           aialev1   JSOC                           aia.lev1                                                                                                                                                                                                  AIA Level 1
-                     aialev1euv12s   JSOC                   aia.lev1_euv_12s                                                                                                                                                                               AIA Level 1, 12 second cadence
+              Attribute Name           Client             Full Name                                                Description
+    ---------------------------------- ------ ---------------------------------- --------------------------------------------------------------------------------
+    aia_flatfield                      JSOC   aia.flatfield                      AIA flatfield
+    aia_lev1                           JSOC   aia.lev1                           AIA Level 1
+    aia_lev1_euv_12s                   JSOC   aia.lev1_euv_12s                   AIA Level 1, 12 second cadence
+    aia_lev1_uv_24s                    JSOC   aia.lev1_uv_24s                    AIA Level 1, 24 second cadence
+    aia_lev1_vis_1h                    JSOC   aia.lev1_vis_1h                    AIA Level 1, 3600 second cadence
+    aia_master_pointing3h              JSOC   aia.master_pointing3h              Master Pointing Parameters
     ...
 
 Furthermore, you can do tab completion to list all the available names that have been sanatiszed in order to allow them to be Python names.
@@ -334,31 +336,31 @@ Fido Clients
 ------------
 
 Fido essentially masks the clients it uses to search and download data.
-If you want to see the current list of clients you can do:
+If you want to see the current list of clients you can do::
 
->>> print(Fido)
-Fido
-<BLANKLINE>
-Fido is a unified data search and retrieval tool.
-<BLANKLINE>
-It provides simultaneous access to a variety of online data sources, some
-cover multiple instruments and data products like the Virtual Solar
-Observatory and some are specific to a single source.
-<BLANKLINE>
-For details of using `~sunpy.net.Fido` see :ref:`fido_guide`.
-<BLANKLINE>
-<BLANKLINE>
-        Client                                                     Description
------------------ ----------------------------------------------------------------------------------------------------------
-        JSOCClient                                                          This is a client to the JSOC Data Export service.
-        VSOClient                                     Allows queries and downloads from the Virtual Solar Observatory (VSO).
-        EVEClient                         Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
-        LYRAClient                                                           Provides access to the LYRA/Proba2 data archive.
-        XRSClient                                                        Provides access to the GOES XRS fits files archive.
-        SUVIClient                                     Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
-        NoRHClient           Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation    time series data.
-        RHESSIClient                                          Provides access to the RHESSI observing summary time series data.
-NOAAIndicesClient                                                           Provides access to the NOAA solar cycle indices.
-NOAAPredictClient                   Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
-        SRSClient                                                Provides access to the NOAA SWPC solar region summary data.
-        GBMClient Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument    on board the Fermi satellite.
+    >>> print(Fido)
+    Fido
+    <BLANKLINE>
+    Fido is a unified data search and retrieval tool.
+    <BLANKLINE>
+    It provides simultaneous access to a variety of online data sources, some
+    cover multiple instruments and data products like the Virtual Solar
+    Observatory and some are specific to a single source.
+    <BLANKLINE>
+    For details of using `~sunpy.net.Fido` see :ref:`fido_guide`.
+    <BLANKLINE>
+    <BLANKLINE>
+          Client                                                    Description
+    ----------------- -------------------------------------------------------------------------------------------------------
+           JSOCClient                                                       This is a client to the JSOC Data Export service.
+            VSOClient                                  Allows queries and downloads from the Virtual Solar Observatory (VSO).
+            EVEClient                      Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
+           LYRAClient                                                        Provides access to the LYRA/Proba2 data archive.
+            XRSClient                                                     Provides access to the GOES XRS fits files archive.
+           SUVIClient                                  Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
+           NoRHClient           Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
+         RHESSIClient                                       Provides access to the RHESSI observing summary time series data.
+    NOAAIndicesClient                                                        Provides access to the NOAA solar cycle indices.
+    NOAAPredictClient                Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
+            SRSClient                                             Provides access to the NOAA SWPC solar region summary data.
+            GBMClient Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
