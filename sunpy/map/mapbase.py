@@ -671,7 +671,7 @@ class GenericMap(NDData):
     @property
     def top_right_coord(self):
         """
-        The physical coordinate at the center of the the top left ([-1, -1]) pixel.
+        The physical coordinate at the center of the the top right ([-1, -1]) pixel.
         """
         top_right = u.Quantity(self.dimensions) - 1 * u.pix
         return self.pixel_to_world(*top_right)
