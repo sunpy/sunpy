@@ -380,7 +380,7 @@ def test_max_parallel_connections(client):
 def test_jsoc_attrs(client):
     # Rough test to make sure it works and returns something
     # This test is very slow ~ 3 minutes.
-    attrs = client.get_jsoc_values()
+    attrs = client.get_jsoc_values(load=True)
     assert a.jsoc.Series in attrs.keys()
     assert a.jsoc.PrimeKey in attrs.keys()
     assert a.jsoc.Segment in attrs.keys()
