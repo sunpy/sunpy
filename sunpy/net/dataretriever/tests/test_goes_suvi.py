@@ -63,7 +63,7 @@ def test_get_url_for_timerange_errors(suvi_client):
         suvi_client._get_url_for_timerange(tr, satellitenumber=1)
 
 
-def mock_querry_object(suvi_client, start, end):
+def mock_querry_object(suvi_client, start, end, wave):
     """
     Creating a Query Response object and prefilling it with some information
     """
@@ -77,7 +77,8 @@ def mock_querry_object(suvi_client, start, end):
         'physobs': 'flux',
         'provider': 'NOAA'
     }
-    results = QueryResponse.create(obj, suvi_client._get_url_for_timerange(TimeRange(start, end)), client=suvi_client)
+    results = QueryResponse.create(obj, suvi_client._get_url_for_timerange(TimeRange(start, end),
+                                   wavelength=wave), client=suvi_client)
     return results
 
 
@@ -89,10 +90,11 @@ def test_fetch_working(suvi_client):
     """
     start = '2019/05/25 00:50'
     end = '2019/05/25 00:52'
-    qr1 = suvi_client.search(a.Time(start, end), a.Instrument('suvi'))
+    wave = 94 * u.Angstrom
+    qr1 = suvi_client.search(a.Time(start, end), a.Instrument('suvi'), a.Wavelength(wave))
 
     # Mock QueryResponse object
-    mock_qr = mock_querry_object(suvi_client, start, end)
+    mock_qr = mock_querry_object(suvi_client, start, end, wave)
 
     # Compare if two objects have the same attribute
 
