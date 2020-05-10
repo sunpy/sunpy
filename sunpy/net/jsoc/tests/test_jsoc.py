@@ -382,8 +382,6 @@ def test_jsoc_attrs(client):
     # This test is very slow ~ 3 minutes.
     attrs = client.get_jsoc_values(load=True)
     assert a.jsoc.Series in attrs.keys()
-    assert a.jsoc.PrimeKey in attrs.keys()
     assert a.jsoc.Segment in attrs.keys()
     assert len(attrs[a.jsoc.Series]) != 0
-    assert len(attrs[a.jsoc.PrimeKey]) != 0
     assert len(attrs[a.jsoc.Segment]) != 0

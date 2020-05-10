@@ -218,7 +218,7 @@ def test_attr_metamagic(AIA, HMI):
         'This is AIA, it takes data', 'This is HMI, it lives next to AIA']
 
     # Tests the print out for the first two inputs only
-    output = 'Instrument\n\nDummy Instrument Class.\n\n\nAttribute Name  Client Full Name            Description           \n-------------- ------- --------- ---------------------------------\n           aia Generic       AIA        This is AIA, it takes data\n           hmi Generic       HMI This is HMI, it lives next to AIA'  # NOQA
+    output = 'Instrument\n\nDummy Instrument Class.\n\n\nAttribute Name  Client Full Name            Description           \n-------------- ------- --------- ---------------------------------\naia            Generic AIA       This is AIA, it takes data       \nhmi            Generic HMI       This is HMI, it lives next to AIA'  # NOQA
     assert str(Instrument) == output
 
 
@@ -245,7 +245,7 @@ def test_attr_sanity():
     attr.Attr.update_values(
         {GenericClient: {Instrument: [('_!£!THIS_NAME!"!ISSPECIAL~~##', 'To test the attribute cleaning.')]}})
     # This checks for sanitization of names.
-    assert 'thisnameisspecial' in attr.Attr._attr_registry[Instrument].name
+    assert '___this_name___isspecial____' in attr.Attr._attr_registry[Instrument].name
     assert '_!£!THIS_NAME!"!ISSPECIAL~~##' in attr.Attr._attr_registry[Instrument].name_long
     assert 'To test the attribute cleaning.' in attr.Attr._attr_registry[Instrument].desc
 

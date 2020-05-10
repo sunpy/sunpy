@@ -172,9 +172,9 @@ def test_srs_current_year():
 
 
 def test_attr_reg():
-    assert a.Instrument.noaaindices == a.Instrument("NOAA-Indices")
-    assert a.Instrument.noaapredict == a.Instrument("NOAA-Predict")
-    assert a.Instrument.srstable == a.Instrument("SRS-Table")
+    assert a.Instrument.noaa_indices == a.Instrument("NOAA-Indices")
+    assert a.Instrument.noaa_predict == a.Instrument("NOAA-Predict")
+    assert a.Instrument.srs_table == a.Instrument("SRS-Table")
     assert a.Instrument.soon == a.Instrument("SOON")
 
 

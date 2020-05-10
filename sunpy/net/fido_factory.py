@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 from collections.abc import Sequence
 from textwrap import dedent
+from shutil import get_terminal_size
 
 from parfive import Downloader, Results
 
@@ -431,14 +432,36 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def __repr__(self):
         return object.__repr__(self) + "\n" + str(self)
 
-    def __str__(self) -> str:
-        t = Table(names=["Client", "Description"], dtype=["U256", "U256"])
+    def __str__(self):
+        """
+        This enables the "pretty" printing of Attrs.
+        """
+        return self._print_clients()
+
+    def _repr_html_(self):
+        """
+        This enables the "pretty" printing of Attrs with html.
+        """
+        return self._print_clients(html=True)
+
+    def _print_clients(self, html=False) -> str:
+        if os.environ.get("COLUMNS", None):
+            width = int(os.environ.get("COLUMNS"))
+        else:
+            _, width = get_terminal_size()
+
+        t = Table(names=["Client", "Description"], dtype=["U80", "U120"])
         lines = []
-        lines.insert(0, "Fido")
-        lines.insert(1, dedent(self.__doc__))
+        if html:
+            lines.insert(0, "<p> Fido </p>")
+            lines.insert(1, "<p>"+dedent(self.__doc__)+"</p>")
+        else:
+            lines.insert(0, "Fido")
+            lines.insert(1, dedent(self.__doc__))
         for key in BaseClient._registry.keys():
-            t.add_row((key.__name__, dedent(key.__doc__.partition("\n\n")[0].replace("\n", ""))))
-        lines.extend(t.pformat_all(show_dtype=False))
+            t.add_row((key.__name__, dedent(
+                key.__doc__.partition("\n\n")[0].replace("\n    ", " "))))
+        lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
         return '\n'.join(lines)
 
 

@@ -502,8 +502,7 @@ def test_slice_jsoc():
         Fido.fetch(res[0, 0:1])
 
 
-@pytest.mark.remote_data
 def test_fido_repr():
     output = repr(Fido)
     assert output[:50] == '<sunpy.net.fido_factory.UnifiedDownloaderFactory o'
-    assert output[-50:] == ' (GBM) instrument    on board the Fermi satellite.'
+    assert output[-50:] == 'tor (GBM) instrument on board the Fermi satellite.'
