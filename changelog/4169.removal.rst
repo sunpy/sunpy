@@ -1,1 +1,2 @@
-Remove the sample datasets NOAAINDICES_TIMESERIES and NOAAPREDICT_TIMESERIES
+Removed the sample datasets NOAAINDICES_TIMESERIES and NOAAPREDICT_TIMESERIES because they will invariably be out of date.
+Up-to-date versions of these NOAA indices can be downloaded using `~sunpy.net.Fido` (see :ref:`sphx_glr_generated_gallery_plotting_solar_cycle_example.py`).

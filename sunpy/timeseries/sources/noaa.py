@@ -32,6 +32,10 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
     * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
+    .. note::
+        See the gallery example :ref:`sphx_glr_generated_gallery_plotting_solar_cycle_example.py`
+        for how to use `~sunpy.net.Fido` to retrieve the data file.
+
     Examples
     --------
     >>> import sunpy.timeseries
@@ -173,6 +177,10 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
       Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
     * The predicted radio flux at 10.7 cm is produced by
       `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+
+    .. note::
+        See the gallery example :ref:`sphx_glr_generated_gallery_plotting_solar_cycle_example.py`
+        for how to use `~sunpy.net.Fido` to retrieve the data file.
 
     Examples
     --------
