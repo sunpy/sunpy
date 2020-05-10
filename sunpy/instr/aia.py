@@ -65,7 +65,8 @@ def aiaprep(aiamap):
     center = np.floor(tempmap.meta['crpix1'])
     range_side = (center + np.array([-1, 1]) * aiamap.data.shape[0] / 2) * u.pix
     newmap = tempmap.submap(u.Quantity([range_side[0], range_side[0]]),
-                            u.Quantity([range_side[1], range_side[1]]))
+                            u.Quantity([range_side[1] - 1 * u.pix,
+                                        range_side[1] - 1 * u.pix]))
 
     newmap.meta['r_sun'] = newmap.meta['rsun_obs'] / newmap.meta['cdelt1']
     newmap.meta['lvl_num'] = 1.5
