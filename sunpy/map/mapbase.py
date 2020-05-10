@@ -1492,8 +1492,8 @@ class GenericMap(NDData):
         x_pixels[0] = np.round(x_pixels[0])
         y_pixels[0] = np.round(y_pixels[0])
         # Round the top right pixel to the nearest integer, then add 1 for array indexing
-        x_pixels[1] = round(x_pixels[1]) + 1
-        y_pixels[1] = round(y_pixels[1]) + 1
+        x_pixels[1] = np.round(x_pixels[1]) + 1
+        y_pixels[1] = np.round(y_pixels[1]) + 1
 
         x_pixels = np.array(x_pixels)
         y_pixels = np.array(y_pixels)
