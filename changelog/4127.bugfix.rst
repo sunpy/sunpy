@@ -1,0 +1,2 @@
+Fixed `sunpy.map.GenericMap.submap()` when scaled pixel units (e.g. ``u.mpix``)
+are used.
