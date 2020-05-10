@@ -1,0 +1,1 @@
+Added log messages when the sample data fails to download.
