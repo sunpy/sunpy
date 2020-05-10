@@ -1,0 +1,3 @@
+`sunpy.map.on_disk_bounding_coordinates` now fully propagates the coordinate
+frame of the input map to the output coordinates. Previously only the observer
+coordinate, and no other frame attributes, were propagated.
