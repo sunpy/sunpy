@@ -296,4 +296,4 @@ def on_disk_bounding_coordinates(smap):
     ty = on_disk_coordinates.Ty.value
     return SkyCoord([np.nanmin(tx), np.nanmax(tx)] * u.arcsec,
                     [np.nanmin(ty), np.nanmax(ty)] * u.arcsec,
-                    frame=Helioprojective, observer=smap.observer_coordinate)
+                    frame=smap.coordinate_frame)
