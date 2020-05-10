@@ -360,7 +360,7 @@ def _get_bounding_coordinates(coords):
     rotated_y_max = _get_extreme_position(coords, "Ty", operator=np.nanmax)
     return SkyCoord([rotated_x_min, rotated_x_max] * u.arcsec,
                     [rotated_y_min, rotated_y_max] * u.arcsec,
-                    frame=Helioprojective, observer=coords[0].observer)
+                    frame=coords[0].frame)
 
 
 def _warp_sun_coordinates(xy, smap, new_observer, **diff_rot_kwargs):
