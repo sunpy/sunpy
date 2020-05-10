@@ -15,7 +15,7 @@ where your data will download to. SunPy looks for the ``sunpyrc`` file
 in a platform specific directory, which you can see the path for by running::
 
   >>> import sunpy
-  >>> sunpy.print_config()
+  >>> sunpy.print_config()  # doctest: +SKIP
   FILES USED:
     ...
   <BLANKLINE>

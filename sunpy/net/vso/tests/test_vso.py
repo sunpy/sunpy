@@ -494,15 +494,6 @@ def test_build_client_params():
 
 
 @pytest.mark.remote_data
-def test_vso_error(client):
-    with pytest.warns(SunpyUserWarning,
-                      match="VSO-C500 :soap:Server.Transport : 404 Not Found"):
-        client.search(
-            core_attrs.Time('2019/12/30', '2019/12/31'),
-            core_attrs.Instrument('ovsa'))
-
-
-@pytest.mark.remote_data
 def test_incorrect_content_disposition(client):
     results = client.search(
         core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
@@ -525,12 +516,11 @@ def test_can_handle_query(query, handle):
 
 
 @pytest.mark.remote_data
-def test_vso_attr():
+def test_vso_attr(client):
     """
     Check that the dict is correctly filled.
     """
-    client = vso.VSOClient()
-    adict = vso.VSOClient.get_vso_values()
+    adict = client.get_vso_values(load=True)
     assert isinstance(adict, dict)
     assert len(adict.keys()) == 6
     for key, value in adict.items():
@@ -543,10 +533,9 @@ def test_vso_attr():
 
 
 @pytest.mark.remote_data
-def test_vso_repr():
+def test_vso_repr(client):
     """
     Repr check (it is really long)
     """
-    client = vso.VSOClient()
     output = str(client)
     assert output[:50] == 'VSOClient\n\nAllows queries and downloads from the V'
