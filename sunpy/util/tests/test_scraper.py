@@ -218,13 +218,15 @@ def test_filelist_url_missing_directory():
     timerange = TimeRange('1960/01/01 00:00:00', '1960/01/02 00:00:00')
     assert len(s.filelist(timerange)) == 0
 
+
 @pytest.mark.remote_data
 def test_filelist_relative_hrefs():
     # the url opened by the scraper from below pattern contains some links which don't have hrefs
     pattern = 'http://www.bbso.njit.edu/pub/archive/%Y/%m/%d/bbso_halph_fr_%Y%m%d_%H%M%S.fts'
     s = Scraper(pattern)
-    timerange = TimeRange('2016/5/18 15:28:00','2016/5/18 16:30:00')
+    timerange = TimeRange('2016/5/18 15:28:00', '2016/5/18 16:30:00')
     assert s.domain == 'http://www.bbso.njit.edu/'
     # hrefs are relative to domain here, not to the directory they are present in
     # this checks that `scraper.filelist` returns fileurls relative to the domain
-    assert s.filelist(timerange)[1] == s.domain + 'pub/archive/2016/05/18/bbso_halph_fr_20160518_160033.fts'
+    fileurls = s.filelist(timerange)
+    assert fileurls[1] == s.domain + 'pub/archive/2016/05/18/bbso_halph_fr_20160518_160033.fts'
