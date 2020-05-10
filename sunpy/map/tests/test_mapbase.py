@@ -446,9 +446,39 @@ def test_dimensions(simple_map):
     assert simple_map.dimensions[0] == 2 * u.pix
     assert simple_map.dimensions[1] == 2 * u.pix
 
+
+@pytest.mark.parametrize('rect, submap_out',
+                         [[([0, 0] * u.pix, [0, 0] * u.pix), np.array([[0]])],
+                          [([-1, -1] * u.pix, [0, 0] * u.pix), np.array([[0]])],
+                          [([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]])],
+                          [([0, 0] * u.pix, [0, 0.51] * u.pix), np.array([[0],
+                                                                          [2]])],
+                          [([0, 0] * u.pix, [0.51, 0] * u.pix), np.array([[0, 1]])],
+                          [([0, 0] * u.pix, [0.51, 0.51] * u.pix), np.array([[0, 1],
+                                                                             [2, 3]])],
+                          [([0, 0] * u.pix, [20, 20] * u.pix), np.array([[0, 1],
+                                                                         [2, 3]])],
+                          ])
+def test_submap(simple_map, rect, submap_out):
+    # Check that result is the same specifying corners either way round
+    for r in [(rect[0], rect[1]), (rect[1], rect[0])]:
+        submap = simple_map.submap(*r)
+        np.testing.assert_equal(submap.data, submap_out)
+
+    # Check that coordinates behave the same way
+    corner1 = simple_map.pixel_to_world(*rect[0])
+    corner2 = simple_map.pixel_to_world(*rect[1])
+    for r in [(corner1, corner2),
+              (corner2, corner1),
+              (SkyCoord([corner1, corner2]), ),
+              (SkyCoord([corner2, corner1]), )]:
+        submap = simple_map.submap(*r)
+        np.testing.assert_equal(submap.data, submap_out)
+
+
 # Check that submap works with units convertable to pix but that aren't pix
 @pytest.mark.parametrize('unit', [u.pix, u.mpix * 1e3])
-def test_submap(generic_map, unit):
+def test_submap_data_header(generic_map, unit):
     """Check data and header information for a submap"""
     width = generic_map.data.shape[1]
     height = generic_map.data.shape[0]
@@ -468,11 +498,6 @@ def test_submap(generic_map, unit):
 
     # Check data
     assert (generic_map.data[height // 2:height, width // 2:width] == submap.data).all()
-
-
-def test_dimensions(simple_map):
-    assert simple_map.dimensions.x == 2 * u.pix
-    assert simple_map.dimensions.y == 2 * u.pix
 
 
 def test_reference_coordinate(simple_map):
