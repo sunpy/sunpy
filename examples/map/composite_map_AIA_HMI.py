@@ -23,10 +23,12 @@ import sunpy.data.sample
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 hmi_map = sunpy.map.Map(sunpy.data.sample.HMI_LOS_IMAGE)
 
-bottom_left = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame=aia_map.coordinate_frame)
-top_right = SkyCoord(800 * u.arcsec, 800 * u.arcsec, frame=aia_map.coordinate_frame)
-aia_smap = aia_map.submap(bottom_left, top_right)
-hmi_smap = hmi_map.submap(bottom_left, top_right)
+bottom_left = [0, 0] * u.arcsec
+top_right = [800, 800] * u.arcsec
+aia_smap = aia_map.submap(SkyCoord(*bottom_left, frame=aia_map.coordinate_frame),
+                          SkyCoord(*top_right, frame=aia_map.coordinate_frame))
+hmi_smap = hmi_map.submap(SkyCoord(*bottom_left, frame=hmi_map.coordinate_frame),
+                          SkyCoord(*top_right, frame=hmi_map.coordinate_frame))
 
 
 ##############################################################################
