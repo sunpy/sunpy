@@ -122,8 +122,7 @@ def download_sample_data(overwrite=False):
 
     for err in results.errors:
         file_name = Path(err.url).name
-        log.info('Failed to download file' + str(err.filepath_partial) +
+        log.error('Failed to download file' + str(err.filepath_partial) +
                  'from url: ' + str(err.url) + ' with error: ' + str(err.exception))
-        warnings.warn(f"File {file_name} not found.", SunpyUserWarning)
 
     return results
