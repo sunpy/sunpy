@@ -927,9 +927,6 @@ def _make_sunpy_graph():
                  'gcrs', 'precessedgeocentric', 'geocentrictrueecliptic', 'geocentricmeanecliptic',
                  'cirs', 'altaz', 'itrs']
 
-    global frame_transform_graph
-    backup_graph = deepcopy(frame_transform_graph)
-
     small_graph = deepcopy(frame_transform_graph)
     cull_list = [name for name in small_graph.get_names() if name not in keep_list]
     cull_frames = [small_graph.lookup_name(name) for name in cull_list]
@@ -951,9 +948,6 @@ def _make_sunpy_graph():
     _add_astropy_node(small_graph)
 
     docstr = make_transform_graph_docs(small_graph)
-
-    # Restore the main transform graph
-    frame_transform_graph = backup_graph
 
     # Make adjustments to the graph
     docstr = _tweak_graph(docstr)
