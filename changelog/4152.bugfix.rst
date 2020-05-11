@@ -1,0 +1,2 @@
+Fix an off-by-one error in the reference pixel returned by
+`sunpy.map.make_fitswcs_header`.
