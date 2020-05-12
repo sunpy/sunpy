@@ -120,8 +120,8 @@ Here's another example of passing ``reference_pixel`` and ``scale`` to the funct
     >>> for key, value in header.items():
     ...     print(f"{key}: {value}")
     wcsaxes: 2
-    crpix1: 5.0
-    crpix2: 5.0
+    crpix1: 6.0
+    crpix2: 6.0
     cdelt1: 2.0
     cdelt2: 2.0
     cunit1: arcsec
