@@ -441,7 +441,7 @@ def test_submap(generic_map, unit):
 
     # Check to see if submap properties were updated properly
     assert submap.reference_pixel.x.value == generic_map.meta['crpix1'] - 1 - width / 2.
-    assert submap.reference_pixel.y.value == generic_map.meta['crpix2'] - 1 -height / 2.
+    assert submap.reference_pixel.y.value == generic_map.meta['crpix2'] - 1 - height / 2.
     assert submap.data.shape[1] == width / 2.
     assert submap.data.shape[0] == height / 2.
 

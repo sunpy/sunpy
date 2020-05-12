@@ -876,7 +876,6 @@ class GenericMap(NDData):
         The pixel returned uses zero-based indexing, so will be 1 pixel less
         than the FITS CRPIX values.
         """
-        #
         return PixelPair((self.meta.get('crpix1',
                                         (self.meta.get('naxis1') + 1) / 2.) - 1) * u.pixel,
                          (self.meta.get('crpix2',
