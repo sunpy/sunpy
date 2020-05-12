@@ -67,19 +67,6 @@ def aia171_test_map_with_mask(aia171_test_map):
 
 
 @pytest.fixture
-def simple_map():
-    # A 2x2 map, with it's center at (0, 0), and scaled differently in
-    # each direction
-    data = np.arange(4).reshape((2, 2))
-    ref_coord = SkyCoord(0, 0, frame='helioprojective', obstime='now', unit='deg')
-    ref_pix = [1.5, 1.5] * u.pix
-    scale = [2, 1] * u.arcsec / u.pix
-    header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
-
-    return sunpy.map.Map(data, header)
-
-
-@pytest.fixture
 def generic_map():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
