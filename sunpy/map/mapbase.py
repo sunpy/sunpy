@@ -1488,12 +1488,14 @@ class GenericMap(NDData):
         x_pixels.sort()
         y_pixels.sort()
 
-        # Round down the lower left pixel to the nearest integer
-        x_pixels[0] = np.round(x_pixels[0])
-        y_pixels[0] = np.round(y_pixels[0])
+        # Round the lower left pixel to the nearest integer
+        # We want 0.5 to be rounded up to 1, so use floor(x + 0.5)
+        x_pixels[0] = np.floor(x_pixels[0] + 0.5)
+        y_pixels[0] = np.floor(y_pixels[0] + 0.5)
         # Round the top right pixel to the nearest integer, then add 1 for array indexing
-        x_pixels[1] = np.round(x_pixels[1]) + 1
-        y_pixels[1] = np.round(y_pixels[1]) + 1
+        # We want e.g. 2.5 to be rounded down to 2, so use ceil(x - 0.5)
+        x_pixels[1] = np.ceil(x_pixels[1] - 0.5) + 1
+        y_pixels[1] = np.ceil(y_pixels[1] - 0.5) + 1
 
         x_pixels = np.array(x_pixels)
         y_pixels = np.array(y_pixels)
