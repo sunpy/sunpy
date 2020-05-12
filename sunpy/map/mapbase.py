@@ -440,7 +440,8 @@ class GenericMap(NDData):
 
             w2 = w2.sub([1, 2])
 
-        w2.wcs.crpix = u.Quantity(self.reference_pixel)
+        # Add one to go from zero-based to one-based indexing
+        w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
         # Make these a quantity array to prevent the numpy setting element of
         # array with sequence error.
         w2.wcs.cdelt = u.Quantity(self.scale)
@@ -869,11 +870,16 @@ class GenericMap(NDData):
 
     @property
     def reference_pixel(self):
-        """Reference point axes in pixels (i.e. crpix1, crpix2)."""
-        return PixelPair(self.meta.get('crpix1',
-                                       (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
-                         self.meta.get('crpix2',
-                                       (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
+        """
+        Pixel of reference coordinate.
+
+        The pixel returned uses zero-based indexing, so will be 1 pixel less
+        than the FITS CRPIX values.
+        """
+        return PixelPair((self.meta.get('crpix1',
+                                        (self.meta.get('naxis1') + 1) / 2.) - 1) * u.pixel,
+                         (self.meta.get('crpix2',
+                                        (self.meta.get('naxis2') + 1) / 2.) - 1) * u.pixel)
 
     @property
     def scale(self):
@@ -1512,8 +1518,9 @@ class GenericMap(NDData):
 
         # Make a copy of the header with updated centering information
         new_meta = self.meta.copy()
-        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) - x_pixels[0]
-        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) - y_pixels[0]
+        # Add one to go from zero-based to one-based indexing
+        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - x_pixels[0]
+        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - y_pixels[0]
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
 

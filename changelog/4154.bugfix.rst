@@ -1,0 +1,2 @@
+`sunpy.map.GenericMap.reference_pixel` now uses zero-based indexing, in order
+to be consistent with the rest of the `sunpy.map` API.
