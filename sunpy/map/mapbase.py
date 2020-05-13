@@ -671,16 +671,20 @@ class GenericMap(NDData):
     @property
     def top_right_coord(self):
         """
-        The physical coordinate at the center of the the top left ([-1, -1]) pixel.
+        The physical coordinate at the center of the the top right ([-1, -1]) pixel.
         """
-        return self.pixel_to_world(*self.dimensions)
+        top_right = u.Quantity(self.dimensions) - 1 * u.pix
+        return self.pixel_to_world(*top_right)
 
     @property
     def center(self):
         """
         Return a coordinate object for the center pixel of the array.
+
+        If the array has an even number of pixels in a given dimension,
+        the coordinate returned lies on the edge between the two central pixels.
         """
-        center = u.Quantity(self.dimensions) / 2.
+        center = (u.Quantity(self.dimensions) - 1 * u.pix) / 2.
         return self.pixel_to_world(*center)
 
     @property
