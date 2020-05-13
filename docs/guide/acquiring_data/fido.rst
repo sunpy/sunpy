@@ -45,7 +45,7 @@ However, for attributes that have a fixed range of **known** values, it is possi
 Using ``Instrument`` as the first example, if you print the object::
 
     >>> print(a.Instrument)
-    Instrument
+    sunpy.net.attrs.Instrument
     <BLANKLINE>
     Specifies the Instrument name for the search.
     <BLANKLINE>
@@ -71,7 +71,7 @@ This is supported for most attributes including the client specific ones.
 For VSO::
 
     >>> print(a.vso.Provider)
-    Provider
+    sunpy.net.vso.attrs.Provider
     <BLANKLINE>
     Specifies the VSO data provider to search for data for.
     <BLANKLINE>
@@ -84,7 +84,7 @@ For VSO::
 For JSOC::
 
     >>> print(a.jsoc.Series)
-    Series
+    sunpy.net.jsoc.attrs.Series
     <BLANKLINE>
     The JSOC Series to Download.
     <BLANKLINE>
@@ -339,7 +339,7 @@ Fido essentially masks the clients it uses to search and download data.
 If you want to see the current list of clients you can do::
 
     >>> print(Fido)
-    Fido
+    sunpy.net.Fido
     <BLANKLINE>
     Fido is a unified data search and retrieval tool.
     <BLANKLINE>
@@ -352,15 +352,15 @@ If you want to see the current list of clients you can do::
     <BLANKLINE>
           Client                                                    Description
     ----------------- -------------------------------------------------------------------------------------------------------
-           JSOCClient                                                       This is a client to the JSOC Data Export service.
-            VSOClient                                  Allows queries and downloads from the Virtual Solar Observatory (VSO).
-            EVEClient                      Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
-           LYRAClient                                                        Provides access to the LYRA/Proba2 data archive.
-            XRSClient                                                     Provides access to the GOES XRS fits files archive.
-           SUVIClient                                  Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
-           NoRHClient           Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
-         RHESSIClient                                       Provides access to the RHESSI observing summary time series data.
-    NOAAIndicesClient                                                        Provides access to the NOAA solar cycle indices.
-    NOAAPredictClient                Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
-            SRSClient                                             Provides access to the NOAA SWPC solar region summary data.
-            GBMClient Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
+    JSOCClient        This is a client to the JSOC Data Export service.
+    VSOClient         Allows queries and downloads from the Virtual Solar Observatory (VSO).
+    EVEClient         Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
+    LYRAClient        Provides access to the LYRA/Proba2 data archive.
+    XRSClient         Provides access to the GOES XRS fits files archive.
+    SUVIClient        Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
+    NoRHClient        Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
+    RHESSIClient      Provides access to the RHESSI observing summary time series data.
+    NOAAIndicesClient Provides access to the NOAA solar cycle indices.
+    NOAAPredictClient Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
+    SRSClient         Provides access to the NOAA SWPC solar region summary data.
+    GBMClient         Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.

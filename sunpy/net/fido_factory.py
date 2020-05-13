@@ -449,14 +449,15 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             width = int(os.environ.get("COLUMNS"))
         else:
             _, width = get_terminal_size()
+        width = -1 if html else width
 
         t = Table(names=["Client", "Description"], dtype=["U80", "U120"])
         lines = []
         if html:
-            lines.insert(0, "<p> Fido </p>")
+            lines.insert(0, "<p> sunpy.net.Fido </p>")
             lines.insert(1, "<p>"+dedent(self.__doc__)+"</p>")
         else:
-            lines.insert(0, "Fido")
+            lines.insert(0, "sunpy.net.Fido")
             lines.insert(1, dedent(self.__doc__))
         for key in BaseClient._registry.keys():
             t.add_row((key.__name__, dedent(
