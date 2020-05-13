@@ -524,7 +524,7 @@ def test_reference_coordinate(simple_map):
 def test_resample(simple_map):
     # Test resampling a 2x2 map
     resampled = simple_map.resample([1, 1] * u.pix)
-    # Should be the mean of [0, 1, 2, 3]
+    # Should be the mean of [0,1,2,3,4,5,6,7,8,9]
     assert resampled.data == np.array([[4]])
     assert resampled.scale.axis1 == 3 * simple_map.scale.axis1
     assert resampled.scale.axis2 == 3 * simple_map.scale.axis2
