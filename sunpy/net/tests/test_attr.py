@@ -218,7 +218,7 @@ def test_attr_metamagic(AIA, HMI):
         'This is AIA, it takes data', 'This is HMI, it lives next to AIA']
 
     # Tests the print out for the first two inputs only
-    output = 'Instrument\n\nDummy Instrument Class.\n\n\nAttribute Name  Client Full Name            Description           \n-------------- ------- --------- ---------------------------------\naia            Generic AIA       This is AIA, it takes data       \nhmi            Generic HMI       This is HMI, it lives next to AIA'  # NOQA
+    output = 'sunpy.net.tests.test_attr.Instrument\n\nDummy Instrument Class.\n\n\nAttribute Name  Client Full Name            Description           \n-------------- ------- --------- ---------------------------------\naia            Generic AIA       This is AIA, it takes data       \nhmi            Generic HMI       This is HMI, it lives next to AIA'  # NOQA
     assert str(Instrument) == output
 
 

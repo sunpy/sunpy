@@ -76,7 +76,7 @@ def _print_attrs(attr, html=False):
     `str`
         String with the registered attributes.
     """
-    class_name = attr.__name__
+    class_name = f"{attr.__module__+'.' or ''}{attr.__name__}"
     attrs = attr._attr_registry[attr]
     names = [str(x) for _, x in sorted(zip(attrs.name, attrs.name), key=lambda pair: pair[0])]
     clients = [str(x) for _, x in sorted(zip(attrs.name, attrs.client), key=lambda pair: pair[0])]
@@ -110,6 +110,7 @@ def _print_attrs(attr, html=False):
             width = int(os.environ.get("COLUMNS"))
         else:
             _, width = get_terminal_size()
+        width = -1 if html else width
         lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
     return '\n'.join(lines)
 
