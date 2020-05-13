@@ -46,7 +46,7 @@ print(downloaded_file)
 # We see that solar North is pointed down instead of up in this image, which is
 # indicated by the coordinates (that range from positive to negative, rather
 # than negative to positive).
-hmi_map = sunpy.map.Map(downloaded_file[0])
+hmi_map = sunpy.map.Map(downloaded_file[0, 0])
 fig = plt.figure()
 hmi_map.plot()
 plt.show()
