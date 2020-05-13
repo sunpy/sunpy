@@ -96,11 +96,11 @@ def generic_map():
 
 @pytest.fixture
 def simple_map():
-    # A 2x2 map, with it's center at (0, 0), and scaled differently in
+    # A 3x3 map, with it's center at (0, 0), and scaled differently in
     # each direction
-    data = np.arange(4).reshape((2, 2))
-    ref_coord = SkyCoord(0, 0, frame='helioprojective', obstime='now', unit='deg')
-    ref_pix = [0.5, 0.5] * u.pix
+    data = np.arange(9).reshape((3, 3))
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='now', unit='deg')
+    ref_pix = [1, 1] * u.pix
     scale = [2, 1] * u.arcsec / u.pix
     header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
 
@@ -431,10 +431,10 @@ def test_shift_history(generic_map):
 
 def test_corners(simple_map):
     # These are the centers of the corner pixels
-    assert u.allclose(simple_map.top_right_coord.Tx, 1 * u.arcsec)
-    assert u.allclose(simple_map.top_right_coord.Ty, 0.5 * u.arcsec)
-    assert u.allclose(simple_map.bottom_left_coord.Tx, -1 * u.arcsec)
-    assert u.allclose(simple_map.bottom_left_coord.Ty, -0.5 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Tx, 2 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Ty, 1 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Tx, -2 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Ty, -1 * u.arcsec)
 
 
 def test_center(simple_map):
@@ -443,30 +443,42 @@ def test_center(simple_map):
 
 
 def test_dimensions(simple_map):
-    assert simple_map.dimensions[0] == 2 * u.pix
-    assert simple_map.dimensions[1] == 2 * u.pix
+    assert simple_map.dimensions[0] == 3 * u.pix
+    assert simple_map.dimensions[1] == 3 * u.pix
 
 
-@pytest.mark.parametrize('rect, submap_out',
-                         [[([0, 0] * u.pix, [0, 0] * u.pix), np.array([[0]])],
-                          [([-1, -1] * u.pix, [0, 0] * u.pix), np.array([[0]])],
-                          # 0.5, 0.5 is the edge of the first pixel, so make sure
-                          # we don't include any other pixels
-                          [([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]])],
-                          [([0, 0] * u.pix, [0, 0.51] * u.pix), np.array([[0],
-                                                                          [2]])],
-                          [([0, 0] * u.pix, [0.51, 0] * u.pix), np.array([[0, 1]])],
-                          [([0, 0] * u.pix, [0.51, 0.51] * u.pix), np.array([[0, 1],
-                                                                             [2, 3]])],
-                          [([0, 0] * u.pix, [20, 20] * u.pix), np.array([[0, 1],
-                                                                         [2, 3]])],
-                          ])
-def test_submap(simple_map, rect, submap_out):
+pixel_corners = [
+    [([0, 0] * u.pix, [0, 0] * u.pix), np.array([[0]])],
+    [([-1, -1] * u.pix, [0, 0] * u.pix), np.array([[0]])],
+    # 0.5, 0.5 is the edge of the first pixel, so make sure
+    # we don't include any other pixels
+    [([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]])],
+    [([0, 0] * u.pix, [0, 0.51] * u.pix), np.array([[0],
+                                                    [3]])],
+    [([0, 0] * u.pix, [0.51, 0] * u.pix), np.array([[0, 1]])],
+    [([0, 0] * u.pix, [0.51, 0.51] * u.pix), np.array([[0, 1],
+                                                       [3, 4]])],
+    [([0.1, 0.1] * u.pix, [1.6, 1.4] * u.pix), np.array([[0, 1, 2],
+                                                         [3, 4, 5]])],
+    [([0, 0] * u.pix, [20, 20] * u.pix), np.array([[0, 1, 2],
+                                                   [3, 4, 5],
+                                                   [6, 7, 8]])],
+]
+
+
+@pytest.mark.parametrize('rect, submap_out', pixel_corners)
+def test_submap_pixel(simple_map, rect, submap_out):
     # Check that result is the same specifying corners either way round
     for r in [(rect[0], rect[1]), (rect[1], rect[0])]:
         submap = simple_map.submap(*r)
         np.testing.assert_equal(submap.data, submap_out)
 
+
+# The (0.5, 0.5) case is skipped as boundary points cannot reliably tested when
+# converting to world coordinates due to round-off error when round-tripping
+# through pixel_to_world -> world_to_pixel
+@pytest.mark.parametrize('rect, submap_out', pixel_corners[:2] + pixel_corners[3:])
+def test_submap_world(simple_map, rect, submap_out):
     # Check that coordinates behave the same way
     corner1 = simple_map.pixel_to_world(*rect[0])
     corner2 = simple_map.pixel_to_world(*rect[1])
@@ -505,17 +517,17 @@ def test_submap_data_header(generic_map, unit):
 
 
 def test_reference_coordinate(simple_map):
-    assert simple_map.reference_pixel.x == 0.5 * u.pix
-    assert simple_map.reference_pixel.y == 0.5 * u.pix
+    assert simple_map.reference_pixel.x == 1 * u.pix
+    assert simple_map.reference_pixel.y == 1 * u.pix
 
 
 def test_resample(simple_map):
     # Test resampling a 2x2 map
     resampled = simple_map.resample([1, 1] * u.pix)
     # Should be the mean of [0, 1, 2, 3]
-    assert resampled.data == np.array([[1.5]])
-    assert resampled.scale.axis1 == 2 * simple_map.scale.axis1
-    assert resampled.scale.axis2 == 2 * simple_map.scale.axis2
+    assert resampled.data == np.array([[4]])
+    assert resampled.scale.axis1 == 3 * simple_map.scale.axis1
+    assert resampled.scale.axis2 == 3 * simple_map.scale.axis2
 
     # Check that the corner coordinates of the input and output are the same
     resampled_lower_left = resampled.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
@@ -524,7 +536,7 @@ def test_resample(simple_map):
     assert resampled_lower_left.Ty == original_lower_left.Ty
 
     resampled_upper_left = resampled.pixel_to_world(0.5 * u.pix, 0.5 * u.pix)
-    original_upper_left = simple_map.pixel_to_world(1.5 * u.pix, 1.5 * u.pix)
+    original_upper_left = simple_map.pixel_to_world(2.5 * u.pix, 2.5 * u.pix)
     assert resampled_upper_left.Tx == original_upper_left.Tx
     assert resampled_upper_left.Ty == original_upper_left.Ty
 
