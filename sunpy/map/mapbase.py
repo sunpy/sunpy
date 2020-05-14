@@ -1364,8 +1364,9 @@ class GenericMap(NDData):
 
         return new_map
 
-    @deprecate_positional_args_since(since='2.0')
-    def submap(self, bottom_left, *, top_right=None, width: u.deg=None, height: u.deg=None):
+    @deprecate_positional_args_since(since='2.0', positional_only=('width', 'height'))
+    @u.quantity_input
+    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix)=None, height: (u.deg, u.pix)=None):
         """
         Returns a submap defined by a rectangle.
 
@@ -1380,9 +1381,9 @@ class GenericMap(NDData):
             The top-right coordinate of the rectangle.
             Passing this as a positional argument is deprecated.
         width : `astropy.units.Quantity`
-            The width of the rectangle. Passing this as a positional argument is deprecated.
+            The width of the rectangle.
         height : `astropy.units.Quantity`
-            The height of the rectangle. Passing this as a positional argument is deprecated.
+            The height of the rectangle.
 
         Returns
         -------
@@ -1502,18 +1503,18 @@ class GenericMap(NDData):
             [268.24377, 254.83157, 268.24377, 321.89252],
             [249.99167, 265.14267, 274.61206, 240.5223 ]], dtype=float32)
         """
+
+        if (top_right is not None) and (width is not None or height is not None):
+            # To be removed post 2.1
+            # This errors if the decorator incorrectly assigns the positional
+            # args to kwargs 
+            raise TypeError("width and height both must provided as key word arguments")
+
         if not isinstance(bottom_left, u.Quantity):
-
-            if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
-                # The decorator assigns the first positional arg to top_right and so on.
-                height = width
-                width = top_right
-                top_right = None
-
             bottom_left, top_right = get_rectangle_coordinates(bottom_left,
-                                                            top_right=top_right,
-                                                            width=width,
-                                                            height=height)
+                                                               top_right=top_right,
+                                                               width=width,
+                                                               height=height)
 
             bottom_left = u.Quantity(self._get_lon_lat(bottom_left))
             top_right = u.Quantity(self._get_lon_lat(top_right))
@@ -1534,10 +1535,21 @@ class GenericMap(NDData):
             y_pixels[0] = np.ceil(y_pixels[0])
             y_pixels[1] = np.floor(y_pixels[1] + 1)
 
-        elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
-              isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
-            x_pixels = u.Quantity([bottom_left[0], top_right[0]]).value
-            y_pixels = u.Quantity([top_right[1], bottom_left[1]]).value
+        elif isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix):
+
+            if isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix):
+
+                if len(bottom_left) != 2 or len(top_right) != 2:
+                    raise TypeError("bottom_left and top_right in pixels must contain both coordinates of the pixel")
+
+                x_pixels = u.Quantity([bottom_left[0], top_right[0]]).value
+                y_pixels = u.Quantity([top_right[1], bottom_left[1]]).value
+
+            elif (isinstance(width, u.Quantity) and width.unit.is_equivalent(u.pix) and
+                  isinstance(height, u.Quantity) and height.unit.is_equivalent(u.pix)):
+
+                x_pixels = u.Quantity([bottom_left[0], bottom_left[0] + width]).value
+                y_pixels = u.Quantity([bottom_left[1], bottom_left[1] + height]).value
 
         else:
             raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
@@ -1774,12 +1786,10 @@ class GenericMap(NDData):
 
         Parameters
         ----------
-        bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
-            The bottom-left coordinate of the rectangle. If a `SkyCoord` it can
-            have shape ``(2,)`` to simultaneously define ``top_right``. If specifying
-            pixel coordinates it must be given as an `~astropy.units.Quantity`
-            object with units of `~astropy.units.pixel`.
-        top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
+        bottom_left : `~astropy.coordinates.SkyCoord`
+            The bottom-left coordinate of the rectangle. It can
+            have shape ``(2,)`` to simultaneously define ``top_right``.
+        top_right : `~astropy.coordinates.SkyCoord`
             The top-right coordinate of the rectangle.
             Passing this as a positional argument is deprecated.
         width : `astropy.units.Quantity`
@@ -1792,7 +1802,6 @@ class GenericMap(NDData):
 
         Returns
         -------
-
         rect : `list`
             A list containing the `~matplotlib.patches.Rectangle` object, after
             it has been added to ``axes``.
@@ -1809,9 +1818,9 @@ class GenericMap(NDData):
             top_right = None
 
         bottom_left, top_right = get_rectangle_coordinates(bottom_left,
-                                                            top_right=top_right,
-                                                            width=width,
-                                                            height=height)
+                                                           top_right=top_right,
+                                                           width=width,
+                                                           height=height)
 
         width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
         height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
