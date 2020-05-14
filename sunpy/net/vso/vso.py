@@ -7,17 +7,16 @@ import os
 import re
 import cgi
 import socket
+import inspect
 import datetime
 import warnings
 import itertools
-import inspect
 from functools import partial
 from collections import defaultdict
 from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
 import zeep
-from parfive import Downloader, Results
 from zeep.helpers import serialize_object
 
 import astropy.units as u
@@ -33,10 +32,10 @@ from sunpy.time import TimeRange, parse_time
 from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import slugify
-
+from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
-from .zeep_plugins import SunPyLoggingZeepPlugin
 from .exceptions import *
+from .zeep_plugins import SunPyLoggingZeepPlugin
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -476,155 +475,6 @@ class VSOClient(BaseClient):
         fname = pattern.format(file=name, **serialize_object(queryresponse))
 
         return fname
-
-    @deprecated("1.0", alternative="sunpy.net.Fido")
-    def query_legacy(self, tstart=None, tend=None, **kwargs):
-        """
-        Query data from the VSO mocking the IDL API as close as possible.
-        Either tstart and tend or date_start and date_end or date have
-        to be supplied.
-
-        Parameters
-        ----------
-        tstart : datetime.datetime
-            Start of the time-range in which records are searched.
-        tend : datetime.datetime
-            Start of the time-range in which records are searched.
-        date : str
-            (start date) - (end date)
-        start_date : datetime
-            the start date
-        end_date : datetime
-            the end date
-        wave : str
-            (min) - (max) (unit)
-        min_wave : str
-            minimum spectral range
-        max_wave : str
-            maximum spectral range
-        unit_wave : str
-            spectral range units (Angstrom, GHz, keV)
-        extent : str
-            VSO 'extent type' ... (FULLDISK, CORONA, LIMB, etc)
-        physobj : str
-            VSO 'physical observable'
-        provider : str
-            VSO ID for the data provider (SDAC, NSO, SHA, MSU, etc)
-        source : str
-            spacecraft or observatory (SOHO, YOHKOH, BBSO, etc)
-            synonyms : spacecraft, observatory
-        instrument : str
-            instrument ID (EIT, SXI-0, SXT, etc)
-            synonyms : telescope, inst
-        detector : str
-            detector ID (C3, EUVI, COR2, etc.)
-        layout : str
-            layout of the data (image, spectrum, time_series, etc.)
-        level : str
-            level of the data product (numeric range, see below)
-        pixels : str
-            number of pixels (numeric range, see below)
-        resolution : str
-            effective resolution (1 = full, 0.5 = 2x2 binned, etc)
-            numeric range, see below.
-        pscale : str
-            pixel scale, in arcseconds (numeric range, see below)
-        near_time : datetime
-            return record closest to the time.  See below.
-        sample : int
-            attempt to return only one record per SAMPLE seconds.  See below.
-
-        Numeric Ranges:
-
-            - May be entered as a string or any numeric type for equality matching
-            - May be a string of the format '(min) - (max)' for range matching
-            - May be a string of the form '(operator) (number)' where operator
-              is one of: lt gt le ge < > <= >=
-
-
-        Examples
-        --------
-        Query all data from eit between 2010-01-01T00:00 and
-        2010-01-01T01:00.
-
-        >>> from datetime import datetime
-        >>> from sunpy.net import vso
-        >>> client = vso.VSOClient()  # doctest: +SKIP
-        >>> qr = client.query_legacy(datetime(2010, 1, 1),
-        ...                          datetime(2010, 1, 1, 1),
-        ...                          instrument='eit')  # doctest: +SKIP
-
-        Returns
-        -------
-        out : :py:class:`QueryResult` (enhanced list)
-            Matched items. Return value is of same type as the one of
-            :py:class:`VSOClient.search`.
-        """
-        def sdk(key): return partial(lambda key, value: {key: value}, key)
-        ALIASES = {
-            'wave_min': sdk('wave_wavemin'),
-            'wave_max': sdk('wave_wavemax'),
-            'wave_type': sdk('wave_wavetype'),
-            'wave_unit': sdk('wave_waveunit'),
-            'min_wave': sdk('wave_wavemin'),
-            'max_wave': sdk('wave_wavemax'),
-            'type_wave': sdk('wave_wavetype'),
-            'unit_wave': sdk('wave_waveunit'),
-            'wave': _parse_waverange,
-            'inst': sdk('instrument'),
-            'telescope': sdk('instrument'),
-            'spacecraft': sdk('source'),
-            'observatory': sdk('source'),
-            'start_date': sdk('time_start'),
-            'end_date': sdk('time_end'),
-            'start': sdk('time_start'),
-            'end': sdk('time_end'),
-            'near_time': sdk('time_near'),
-            'date': _parse_date,
-            'layout': sdk('datatype'),
-        }
-        if tstart is not None:
-            kwargs.update({'time_start': tstart})
-        if tend is not None:
-            kwargs.update({'time_end': tend})
-
-        QueryRequest = self.api.get_type('VSO:QueryRequest')
-        VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
-        block = self.api.get_type('VSO:QueryRequestBlock')()
-
-        for key, value in kwargs.items():
-            for k, v in ALIASES.get(key, sdk(key))(value).items():
-                if k.startswith('time'):
-                    v = parse_time(v).strftime(TIMEFORMAT)
-                attr = k.split('_')
-                lst = attr[-1]
-                rest = attr[:-1]
-
-                for elem in rest:
-                    try:
-                        if block[elem] is None:
-                            block[elem] = {}
-                        block = block[elem]
-                    except KeyError:
-                        raise ValueError(
-                            f"Unexpected argument {key!s}.")
-                if lst in block and block[lst]:
-                    raise ValueError(
-                        f"Got multiple values for {k!s}.")
-                block[lst] = v
-
-        return QueryResponse.create(VSOQueryResponse(
-            self.api.service.Query(QueryRequest(block=block))))
-
-    @deprecated("1.0")
-    def latest(self):
-        """ Return newest record (limited to last week). """
-        from datetime import datetime, timedelta
-        return self.query_legacy(
-            datetime.utcnow() - timedelta(7),
-            datetime.utcnow(),
-            time_near=datetime.utcnow()
-        )
 
     def fetch(self, query_response, path=None, methods=None, site=None,
               progress=True, overwrite=False, downloader=None, wait=True):

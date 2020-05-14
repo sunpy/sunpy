@@ -1,0 +1,3 @@
+Fixed bugs in `~sunpy.util.scraper.Scraper.filelist`
+that resulted in error when the HTML page of URL opened by the scraper contains some "a" tags without "href" attribute
+and resulted in incorrect file urls when any href stores filepath relative to the URL's domain instead of just a filename.

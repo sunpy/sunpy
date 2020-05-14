@@ -83,7 +83,7 @@ def test_mapsequence_solar_derotate(aia171_test_mapsequence, aia171_test_submap)
     assert(isinstance(tmc, sunpy.map.MapSequence))
 
     # Test that the shape of data is correct when clipped
-    clipped_shape = (25, 19)
+    clipped_shape = (26, 20)
     for m in tmc:
         assert(m.data.shape == clipped_shape)
 

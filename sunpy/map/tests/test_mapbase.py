@@ -94,6 +94,19 @@ def generic_map():
     return sunpy.map.Map((data, header))
 
 
+@pytest.fixture
+def simple_map():
+    # A 3x3 map, with it's center at (0, 0), and scaled differently in
+    # each direction
+    data = np.arange(9).reshape((3, 3))
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='now', unit='deg')
+    ref_pix = [1, 1] * u.pix
+    scale = [2, 1] * u.arcsec / u.pix
+    header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
+
+    return sunpy.map.Map(data, header)
+
+
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same in pyfits and SunPy"""
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
@@ -110,7 +123,7 @@ def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
     assert isinstance(wcs, astropy.wcs.WCS)
 
-    assert all(wcs.wcs.crpix ==
+    assert all(wcs.wcs.crpix - 1 ==
                [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
     assert u.allclose(wcs.wcs.cdelt * (u.Unit(wcs.wcs.cunit[0])/u.pix),
                       u.Quantity(aia171_test_map.scale))
@@ -322,7 +335,7 @@ def test_world_to_pixel(generic_map):
     consistent"""
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
         # Note: FITS pixels start from 1,1
-        test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate, origin=1)
+        test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
 
 
@@ -416,17 +429,82 @@ def test_shift_history(generic_map):
     assert resultant_shift[1] == y_shift1 + y_shift2
 
 
-def test_submap(generic_map):
+def test_corners(simple_map):
+    # These are the centers of the corner pixels
+    assert u.allclose(simple_map.top_right_coord.Tx, 2 * u.arcsec)
+    assert u.allclose(simple_map.top_right_coord.Ty, 1 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Tx, -2 * u.arcsec)
+    assert u.allclose(simple_map.bottom_left_coord.Ty, -1 * u.arcsec)
+
+
+def test_center(simple_map):
+    assert u.allclose(simple_map.center.Tx, 0 * u.arcsec, atol=1e-26 * u.arcsec)
+    assert u.allclose(simple_map.center.Ty, 0 * u.arcsec)
+
+
+def test_dimensions(simple_map):
+    assert simple_map.dimensions[0] == 3 * u.pix
+    assert simple_map.dimensions[1] == 3 * u.pix
+
+
+pixel_corners = [
+    [([0, 0] * u.pix, [0, 0] * u.pix), np.array([[0]])],
+    [([-1, -1] * u.pix, [0, 0] * u.pix), np.array([[0]])],
+    # 0.5, 0.5 is the edge of the first pixel, so make sure
+    # we don't include any other pixels
+    [([0, 0] * u.pix, [0.5, 0.5] * u.pix), np.array([[0]])],
+    [([0, 0] * u.pix, [0, 0.51] * u.pix), np.array([[0],
+                                                    [3]])],
+    [([0, 0] * u.pix, [0.51, 0] * u.pix), np.array([[0, 1]])],
+    [([0, 0] * u.pix, [0.51, 0.51] * u.pix), np.array([[0, 1],
+                                                       [3, 4]])],
+    [([0.1, 0.1] * u.pix, [1.6, 1.4] * u.pix), np.array([[0, 1, 2],
+                                                         [3, 4, 5]])],
+    [([0, 0] * u.pix, [20, 20] * u.pix), np.array([[0, 1, 2],
+                                                   [3, 4, 5],
+                                                   [6, 7, 8]])],
+]
+
+
+@pytest.mark.parametrize('rect, submap_out', pixel_corners)
+def test_submap_pixel(simple_map, rect, submap_out):
+    # Check that result is the same specifying corners either way round
+    for r in [(rect[0], rect[1]), (rect[1], rect[0])]:
+        submap = simple_map.submap(*r)
+        np.testing.assert_equal(submap.data, submap_out)
+
+
+# The (0.5, 0.5) case is skipped as boundary points cannot reliably tested when
+# converting to world coordinates due to round-off error when round-tripping
+# through pixel_to_world -> world_to_pixel
+@pytest.mark.parametrize('rect, submap_out', pixel_corners[:2] + pixel_corners[3:])
+def test_submap_world(simple_map, rect, submap_out):
+    # Check that coordinates behave the same way
+    corner1 = simple_map.pixel_to_world(*rect[0])
+    corner2 = simple_map.pixel_to_world(*rect[1])
+    corners = simple_map.pixel_to_world(u.Quantity([rect[0][0], rect[1][0]]),
+                                        u.Quantity([rect[0][1], rect[1][1]]))
+    for r in [(corner1, corner2),
+              (corner2, corner1),
+              (corners, ),
+              ]:
+        submap = simple_map.submap(*r)
+        np.testing.assert_equal(submap.data, submap_out)
+
+
+# Check that submap works with units convertable to pix but that aren't pix
+@pytest.mark.parametrize('unit', [u.pix, u.mpix * 1e3])
+def test_submap_data_header(generic_map, unit):
     """Check data and header information for a submap"""
     width = generic_map.data.shape[1]
     height = generic_map.data.shape[0]
 
     # Create a submap of the top-right quadrant of the image
-    submap = generic_map.submap([width / 2., height / 2.] * u.pix, [width, height] * u.pix)
+    submap = generic_map.submap([width / 2., height / 2.] * unit, [width, height] * unit)
 
     # Check to see if submap properties were updated properly
-    assert submap.reference_pixel.x.value == generic_map.meta['crpix1'] - width / 2.
-    assert submap.reference_pixel.y.value == generic_map.meta['crpix2'] - height / 2.
+    assert submap.reference_pixel.x.value == generic_map.meta['crpix1'] - 1 - width / 2.
+    assert submap.reference_pixel.y.value == generic_map.meta['crpix2'] - 1 - height / 2.
     assert submap.data.shape[1] == width / 2.
     assert submap.data.shape[0] == height / 2.
 
@@ -436,6 +514,31 @@ def test_submap(generic_map):
 
     # Check data
     assert (generic_map.data[height // 2:height, width // 2:width] == submap.data).all()
+
+
+def test_reference_coordinate(simple_map):
+    assert simple_map.reference_pixel.x == 1 * u.pix
+    assert simple_map.reference_pixel.y == 1 * u.pix
+
+
+def test_resample(simple_map):
+    # Test resampling a 2x2 map
+    resampled = simple_map.resample([1, 1] * u.pix)
+    # Should be the mean of [0,1,2,3,4,5,6,7,8,9]
+    assert resampled.data == np.array([[4]])
+    assert resampled.scale.axis1 == 3 * simple_map.scale.axis1
+    assert resampled.scale.axis2 == 3 * simple_map.scale.axis2
+
+    # Check that the corner coordinates of the input and output are the same
+    resampled_lower_left = resampled.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
+    original_lower_left = simple_map.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
+    assert resampled_lower_left.Tx == original_lower_left.Tx
+    assert resampled_lower_left.Ty == original_lower_left.Ty
+
+    resampled_upper_left = resampled.pixel_to_world(0.5 * u.pix, 0.5 * u.pix)
+    original_upper_left = simple_map.pixel_to_world(2.5 * u.pix, 2.5 * u.pix)
+    assert resampled_upper_left.Tx == original_upper_left.Tx
+    assert resampled_upper_left.Ty == original_upper_left.Ty
 
 
 resample_test_data = [('linear', (100, 200) * u.pixel), ('neighbor', (128, 256) * u.pixel),
@@ -575,7 +678,7 @@ def test_rotate_pad_crpix(generic_map):
     # This tests that the reference pixel of the map is in the expected place.
     assert rotated_map.data.shape != generic_map.data.shape
     assert_quantity_allclose(u.Quantity(rotated_map.reference_pixel),
-                             u.Quantity((6.049038105675565, 7.5490381056760265), u.pix))
+                             u.Quantity((5.04903811, 6.54903811), u.pix))
 
 
 def test_rotate_recenter(generic_map):
@@ -584,8 +687,7 @@ def test_rotate_recenter(generic_map):
     pixel_array_center = (np.flipud(rotated_map.data.shape) - 1) / 2.0
 
     assert_quantity_allclose(
-        (pixel_array_center + 1) * u.pix,  # FITS indexes from 1
-        u.Quantity(rotated_map.reference_pixel))
+        pixel_array_center * u.pix, u.Quantity(rotated_map.reference_pixel))
 
 
 def test_rotate_crota_remove(aia171_test_map):
@@ -633,9 +735,9 @@ def test_as_mpl_axes_aia171(aia171_test_map):
 
 def test_pixel_to_world_no_projection(generic_map):
     with pytest.warns(SunpyUserWarning, match='Missing metadata for observer'):
-        out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel)+1*u.pix, origin=1)
-    assert_quantity_allclose(out.Tx, -10*u.arcsec)
-    assert_quantity_allclose(out.Ty, 10*u.arcsec)
+        out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel))
+    assert_quantity_allclose(out.Tx, 0*u.arcsec)
+    assert_quantity_allclose(out.Ty, 0*u.arcsec)
 
 
 def test_validate_meta(generic_map):

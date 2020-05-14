@@ -259,9 +259,4 @@ Example uses of RotatedSunFrame
 
 Here are the examples in our gallery that use `~sunpy.coordinates.metaframes.RotatedSunFrame`:
 
-.. include:: ../../generated/modules/sunpy.coordinates.RotatedSunFrame.examples
-    :start-line: 5
-
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
+.. minigallery:: sunpy.coordinates.RotatedSunFrame

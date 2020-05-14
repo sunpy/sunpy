@@ -52,8 +52,8 @@ def make_fitswcs_header(data, coordinate,
     data : `~numpy.ndarray` or `tuple`
         Array data of Map for which a header is required, or the shape of the
         data array (in numpy order, i.e. ``(y_size, x_size)``).
-    coordinates : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseFrame`
-        Coordinate object to get meta information for map header.
+    coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseFrame`
+        The coordinate of the reference pixel.
     reference_pixel :`~astropy.units.Quantity` of size 2, optional
         Reference pixel along each axis. These are expected to be Cartestian ordered, i.e
         the first index is the x axis, second index is the y axis. Defaults to
@@ -133,15 +133,16 @@ def make_fitswcs_header(data, coordinate,
     meta_wcs.update(meta_instrument)
 
     if reference_pixel is None:
-        reference_pixel = u.Quantity([(shape[1] + 1)/2.*u.pixel, (shape[0] + 1)/2.*u.pixel])
+        reference_pixel = u.Quantity([(shape[1] - 1)/2.*u.pixel, (shape[0] - 1)/2.*u.pixel])
     if scale is None:
         scale = [1., 1.] * (u.arcsec/u.pixel)
 
     meta_wcs['crval1'], meta_wcs['crval2'] = (coordinate.spherical.lon.to_value(meta_wcs['cunit1']),
                                               coordinate.spherical.lat.to_value(meta_wcs['cunit2']))
 
-    meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel),
-                                              reference_pixel[1].to_value(u.pixel))
+    # Add 1 to go from input 0-based indexing to FITS 1-based indexing
+    meta_wcs['crpix1'], meta_wcs['crpix2'] = (reference_pixel[0].to_value(u.pixel) + 1,
+                                              reference_pixel[1].to_value(u.pixel) + 1)
 
     meta_wcs['cdelt1'], meta_wcs['cdelt2'] = (scale[0].to_value(meta_wcs['cunit1']/u.pixel),
                                               scale[1].to_value(meta_wcs['cunit2']/u.pixel))

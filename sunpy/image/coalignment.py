@@ -421,8 +421,9 @@ def apply_shifts(mc, yshift: u.pix, xshift: u.pix, clip=True, **kwargs):
             shifted_data = clip_edges(shifted_data, yclips, xclips)
             new_meta['naxis1'] = shifted_data.shape[1]
             new_meta['naxis2'] = shifted_data.shape[0]
-            new_meta['crpix1'] = m.reference_pixel.x.value + xshift[i].value - xshift[0].value
-            new_meta['crpix2'] = m.reference_pixel.y.value + yshift[i].value - yshift[0].value
+            # Add one to go from zero-based to one-based indexing
+            new_meta['crpix1'] = m.reference_pixel.x.value + 1 + xshift[i].value - xshift[0].value
+            new_meta['crpix2'] = m.reference_pixel.y.value + 1 + yshift[i].value - yshift[0].value
 
         new_map = sunpy.map.Map(shifted_data, new_meta)
 

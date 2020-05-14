@@ -1,6 +1,8 @@
 """
 This module provides fundamental solar physical constants.
 """
+import io
+
 from astropy.table import Table
 from astropy.time import Time
 
@@ -91,19 +93,27 @@ def print_all():
     return t
 
 
-# Add a list of constants to the docs
-_lines = [
-    'The following constants are available:\n',
-    '======================================================= ============== ================ =======================================================',  # NOQA
-    '                          Name                              Value            Unit                                 Description                  ',  # NOQA
-    '======================================================= ============== ================ =======================================================',  # NOQA
-]
-for key, const in constants.items():
-    _lines.append('{:^55} {:^14.9g} {:^16} {:^55}'.format(
-        key, const.value, const._unit_string, const.name))
-_lines.append(_lines[1])
+def _build_docstring():
+    """Build docstring containing RST-formatted table of constants."""
+    lines = ['The following constants are available:\n']
+
+    rows = []
+    for key, const in constants.items():
+        rows.append([key, const.value, const._unit_string, const.name])
+
+    table = Table(rows=rows, names=('Name', 'Value', 'Unit', 'Description'))
+    table['Value'].info.format = '14.9g'
+
+    f = io.StringIO()
+    table.write(f, format='ascii.rst')
+    lines.append(f.getvalue())
+
+    return '\n'.join(lines)
+
+
+# Add a table of constants to the docs
 if __doc__ is not None:
-    __doc__ += '\n'.join(_lines)
+    __doc__ += _build_docstring()
 
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'

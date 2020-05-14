@@ -442,7 +442,8 @@ class GenericMap(NDData):
 
             w2 = w2.sub([1, 2])
 
-        w2.wcs.crpix = u.Quantity(self.reference_pixel)
+        # Add one to go from zero-based to one-based indexing
+        w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
         # Make these a quantity array to prevent the numpy setting element of
         # array with sequence error.
         w2.wcs.cdelt = u.Quantity(self.scale)
@@ -672,16 +673,20 @@ class GenericMap(NDData):
     @property
     def top_right_coord(self):
         """
-        The physical coordinate at the center of the the top left ([-1, -1]) pixel.
+        The physical coordinate at the center of the the top right ([-1, -1]) pixel.
         """
-        return self.pixel_to_world(*self.dimensions)
+        top_right = u.Quantity(self.dimensions) - 1 * u.pix
+        return self.pixel_to_world(*top_right)
 
     @property
     def center(self):
         """
         Return a coordinate object for the center pixel of the array.
+
+        If the array has an even number of pixels in a given dimension,
+        the coordinate returned lies on the edge between the two central pixels.
         """
-        center = u.Quantity(self.dimensions) / 2.
+        center = (u.Quantity(self.dimensions) - 1 * u.pix) / 2.
         return self.pixel_to_world(*center)
 
     @property
@@ -871,11 +876,16 @@ class GenericMap(NDData):
 
     @property
     def reference_pixel(self):
-        """Reference point axes in pixels (i.e. crpix1, crpix2)."""
-        return PixelPair(self.meta.get('crpix1',
-                                       (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
-                         self.meta.get('crpix2',
-                                       (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
+        """
+        Pixel of reference coordinate.
+
+        The pixel returned uses zero-based indexing, so will be 1 pixel less
+        than the FITS CRPIX values.
+        """
+        return PixelPair((self.meta.get('crpix1',
+                                        (self.meta.get('naxis1') + 1) / 2.) - 1) * u.pixel,
+                         (self.meta.get('crpix2',
+                                        (self.meta.get('naxis2') + 1) / 2.) - 1) * u.pixel)
 
     @property
     def scale(self):
@@ -1132,7 +1142,9 @@ class GenericMap(NDData):
                 * ``'neighbor'`` - Take closest value from original data.
                 * ``'nearest'`` and ``'linear'`` - Use n x 1-D interpolations using
                   `scipy.interpolate.interp1d`.
-                * ``'spline'`` - Use `ndimage.map_coordinates`.
+                * ``'spline'`` - Uses piecewise polynomials (splines) for mapping the input
+                  array to new coordinates by interpolation using
+                  `ndimage.map_coordinates`.
 
         Returns
         -------
@@ -1370,6 +1382,9 @@ class GenericMap(NDData):
         """
         Returns a submap defined by a rectangle.
 
+        Any pixels which have at least part of their area inside the rectangle
+        are returned.
+
         Parameters
         ----------
         bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
@@ -1551,23 +1566,32 @@ class GenericMap(NDData):
                 x_pixels = u.Quantity([bottom_left[0], bottom_left[0] + width]).value
                 y_pixels = u.Quantity([bottom_left[1], bottom_left[1] + height]).value
 
-        else:
+        elif not (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
+                  isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
             raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
 
+        x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
+        y_pixels = u.Quantity([top_right[1], bottom_left[1]]).to_value(u.pix)
         # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
         y_pixels.sort()
+
+        # Round the lower left pixel to the nearest integer
+        # We want 0.5 to be rounded up to 1, so use floor(x + 0.5)
+        x_pixels[0] = np.floor(x_pixels[0] + 0.5)
+        y_pixels[0] = np.floor(y_pixels[0] + 0.5)
+        # Round the top right pixel to the nearest integer, then add 1 for array indexing
+        # We want e.g. 2.5 to be rounded down to 2, so use ceil(x - 0.5)
+        x_pixels[1] = np.ceil(x_pixels[1] - 0.5) + 1
+        y_pixels[1] = np.ceil(y_pixels[1] - 0.5) + 1
 
         x_pixels = np.array(x_pixels)
         y_pixels = np.array(y_pixels)
 
         # Clip pixel values to max of array, prevents negative
         # indexing
-        x_pixels[np.less(x_pixels, 0)] = 0
-        x_pixels[np.greater(x_pixels, self.data.shape[1])] = self.data.shape[1]
-
-        y_pixels[np.less(y_pixels, 0)] = 0
-        y_pixels[np.greater(y_pixels, self.data.shape[0])] = self.data.shape[0]
+        x_pixels = np.clip(x_pixels, 0, self.data.shape[1])
+        y_pixels = np.clip(y_pixels, 0, self.data.shape[0])
 
         # Get ndarray representation of submap
         xslice = slice(int(x_pixels[0]), int(x_pixels[1]))
@@ -1576,8 +1600,9 @@ class GenericMap(NDData):
 
         # Make a copy of the header with updated centering information
         new_meta = self.meta.copy()
-        new_meta['crpix1'] = self.reference_pixel.x.value - x_pixels[0]
-        new_meta['crpix2'] = self.reference_pixel.y.value - y_pixels[0]
+        # Add one to go from zero-based to one-based indexing
+        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - x_pixels[0]
+        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - y_pixels[0]
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
 

@@ -3,7 +3,8 @@ import os
 import sys
 from pathlib import Path
 import datetime
-from docutils import nodes
+from docutils import nodes, statemachine
+from docutils.io import FileInput
 from docutils.parsers.rst import Directive, directives
 from io import StringIO
 
@@ -251,6 +252,7 @@ if has_sphinx_gallery:
         'default_thumb_file': path.joinpath('logo', 'sunpy_icon_128x128.png'),
         'abort_on_example_error': False,
         'plot_gallery': True,
+        'remove_config_comments': True,
         'doc_module': ('sunpy')
     }
 
@@ -287,9 +289,7 @@ class Generate(Directive):
     def run(self):
         # Respect the same disabling options as the ``raw`` directive
         if (not self.state.document.settings.raw_enabled
-            or (not self.state.document.settings.file_insertion_enabled
-                and ('file' in self.options
-                     or 'url' in self.options))):
+                or not self.state.document.settings.file_insertion_enabled):
             raise self.warning('"%s" directive disabled.' % self.name)
 
         attributes = {'format': ' '.join(self.arguments[0].lower().split())}
@@ -318,6 +318,45 @@ class Generate(Directive):
             sys.stdout = old_stdout
 
 
+class MiniGallery(Directive):
+    """
+    Custom directive to insert a mini-gallery
+
+    The required argument is the qualified name of the object.  The mini-gallery will be the subset
+    of gallery examples that make use of that object (from that specific namespace).  There can be
+    more than one object named, separated by spaces.
+    """
+    required_arguments = 1
+    optional_arguments = 0
+    final_argument_whitespace = True
+
+    def run(self):
+        # Respect the same disabling options as the ``raw`` directive
+        if (not self.state.document.settings.raw_enabled
+                or not self.state.document.settings.file_insertion_enabled):
+            raise self.warning('"%s" directive disabled.' % self.name)
+
+        obj_list = self.arguments[0].split()
+
+        # Concatenate the backreferences file(s)
+        lines = []
+        for obj in obj_list:
+            path = os.path.join(os.getcwd(), 'generated', 'modules', f'{obj}.examples')
+            lines += (FileInput(source_path=path).readlines())[5:]  # slice removes heading
+
+        # Append the end for the gallery
+        lines += ['\n',
+                  '.. raw:: html\n',
+                  '\n',
+                  '    <div class="sphx-glr-clear"></div>\n']
+        text = ''.join(lines)
+
+        include_lines = statemachine.string2lines(text, convert_whitespace=True)
+        self.state_machine.insert_input(include_lines, path)
+
+        return []
+
+
 def setup(app):
     if not has_sphinx_gallery:
         import warnings
@@ -328,8 +367,9 @@ def setup(app):
     if has_yaml:
         app.connect("source-read", rstjinja)
 
-    # Add the custom directive
+    # Add the custom directives
     app.add_directive('generate', Generate)
+    app.add_directive('minigallery', MiniGallery)
 
     # The theme conf provides a fix for circle ci redirections
     fix_circleci(app)

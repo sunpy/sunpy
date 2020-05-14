@@ -75,21 +75,21 @@ def test_all_coordinates_from_map(sub_smap):
 def test_map_edges(all_off_disk_map):
     edges = map_edges(all_off_disk_map)
     assert type(edges) is tuple
-    assert len(edges[2]) == 11
+    assert len(edges[2]) == 12
     assert np.all(edges[2][0] == [0, 0] * u.pix)
-    assert np.all(edges[2][10] == [0, 10] * u.pix)
+    assert np.all(edges[2][11] == [0, 11] * u.pix)
 
-    assert len(edges[3]) == 11
-    assert np.all(edges[3][0] == [9, 0] * u.pix)
-    assert np.all(edges[3][10] == [9, 10] * u.pix)
+    assert len(edges[3]) == 12
+    assert np.all(edges[3][0] == [10, 0] * u.pix)
+    assert np.all(edges[3][11] == [10, 11] * u.pix)
 
-    assert len(edges[1]) == 10
+    assert len(edges[1]) == 11
     assert np.all(edges[1][0] == [0, 0] * u.pix)
-    assert np.all(edges[1][9] == [9, 0] * u.pix)
+    assert np.all(edges[1][10] == [10, 0] * u.pix)
 
-    assert len(edges[0]) == 10
-    assert np.all(edges[0][0] == [0, 10] * u.pix)
-    assert np.all(edges[0][9] == [9, 10] * u.pix)
+    assert len(edges[0]) == 11
+    assert np.all(edges[0][0] == [0, 11] * u.pix)
+    assert np.all(edges[0][10] == [10, 11] * u.pix)
 
 
 def test_solar_angular_radius(aia171_test_map):

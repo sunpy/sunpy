@@ -3,11 +3,11 @@ import warnings
 from pathlib import Path
 from collections import namedtuple
 from urllib.parse import urljoin
-
-import parfive
+from sunpy import log
 
 from sunpy.util.config import get_and_create_sample_dir, _is_writable_dir
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.parfive_helpers import Downloader
 
 _base_urls = (
     'http://data.sunpy.org/sunpy/v1/',
@@ -82,7 +82,7 @@ def download_sample_data(overwrite=False):
         # Creating the directory for sample files to be downloaded
         sampledata_dir = Path(get_and_create_sample_dir())
 
-    dl = parfive.Downloader(overwrite=overwrite)
+    dl = Downloader(overwrite=overwrite)
 
     first_url = _base_urls[0]
 
@@ -103,10 +103,13 @@ def download_sample_data(overwrite=False):
 
     if not results.errors:
         return results
+    else:
+        log.info('Failed to download one or more sample data files, retrying with a mirror.')
 
     for retry_url in _base_urls[1:]:
         for i, err in enumerate(results.errors):
-            file_name = Path(err.url).name
+            file_name = err.filepath_partial().name
+            log.debug(f"Failed to download {_sample_files[file_name]} from {err.url}: {err.exception}")
             # Overwrite the parfive error to change the url to a mirror
             new_url = urljoin(retry_url, file_name)
             results._errors[i] = _error(err.filepath_partial,
@@ -119,7 +122,8 @@ def download_sample_data(overwrite=False):
             return results
 
     for err in results.errors:
-        file_name = Path(err.url).name
-        warnings.warn(f"File {file_name} not found.", SunpyUserWarning)
+        file_name = err.filepath_partial().name
+        log.debug(f"Failed to download {_sample_files[file_name]} from {err.url}: {err.exception}")
+        log.error(f"Failed to download {_sample_files[file_name]} from all mirrors, the file will not be availible.")
 
     return results
