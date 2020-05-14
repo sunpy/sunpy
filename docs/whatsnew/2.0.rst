@@ -1,0 +1,32 @@
+.. doctest-skip-all
+
+.. _whatsnew-2.0:
+
+************************
+What's New in SunPy 2.0?
+************************
+
+Overview
+========
+
+The SunPy project is pleased to announce the 2.0 release of the sunpy package.
+
+
+.. _whatsnew-2.0-pixels:
+
+Fixes and clarification to pixel indexing
+=========================================
+
+sunpy uses zero-based indexing when referring to pixels, where the center of
+the bottom left pixel of a map is at ``[0, 0] * u.pix``. Several parts of the
+API have been updated to make sure this is consistently the case across the
+pacakge. In particular:
+
+- `sunpy.map.GenericMap.top_right_coord` previously had an off-by-one error
+  in the calculation of the top right coordinate. This has been fixed.
+- `sunpy.map.GenericMap.center` previously had an off-by-one error
+  in the calculation of the coordinate of the center of a map. This has been fixed.
+- `sunpy.map.GenericMap.reference_pixel` now returns a zero-based reference
+  pixel. This is one pixel less than the previously returned value. Note that
+  this means the ``reference_pixel`` now does **not** have the same value as the
+  FITS ``CRPIX`` values, which are one-based indices.
