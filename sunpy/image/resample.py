@@ -103,7 +103,8 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     # Calculate old coords. Add 0.5 to get centers of pixels
     old_coords = [np.arange(i, dtype=np.float) + offset for i in orig.shape]
     scale = (orig.shape - m1) / (dimensions - m1)
-    new_coords = [(np.arange(dimensions[i], dtype=np.float) + offset) * scale[i] for i in range(len(dimensions))]
+    new_coords = [(np.arange(dimensions[i], dtype=np.float) + offset) * scale[i] for i in
+                  range(len(dimensions))]
 
     # first interpolation - for ndims = any
     mint = scipy.interpolate.interp1d(old_coords[-1], orig, bounds_error=False,
