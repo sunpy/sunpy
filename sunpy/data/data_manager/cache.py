@@ -167,5 +167,6 @@ class Cache:
                 return download(url)
             except Exception as e:
                 warn(e, SunpyUserWarning)
+                error = e
         else:
-            raise RuntimeError("Download failed")
+            raise RuntimeError from error

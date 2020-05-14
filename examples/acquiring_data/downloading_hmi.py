@@ -38,7 +38,7 @@ print(result)
 # and then index the file.
 
 # Slice the first record returned by the first client.
-downloaded_file = Fido.fetch(result[0])
+downloaded_file = Fido.fetch(result[0, 0])
 print(downloaded_file)
 
 ###############################################################################

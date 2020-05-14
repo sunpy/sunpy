@@ -13,7 +13,6 @@ from astropy.coordinates import SkyCoord
 
 import sunpy.map
 import sunpy.coordinates
-import sunpy.coordinates.wcs_utils
 from sunpy.net import Fido, attrs as a
 
 
@@ -57,7 +56,8 @@ for i, m in enumerate(maps.values()):
 # We are now going to pick out a region around the south west corner:
 aia_width = 200 * u.arcsec
 aia_height = 250 * u.arcsec
-aia_bottom_left = SkyCoord([[-800, -300]] * u.arcsec,
+aia_bottom_left = SkyCoord(-800 * u.arcsec,
+                           -300 * u.arcsec,
                            frame=maps['AIA'].coordinate_frame)
 aia_top_right = SkyCoord(aia_bottom_left.Tx + aia_width,
                          aia_bottom_left.Ty + aia_height,

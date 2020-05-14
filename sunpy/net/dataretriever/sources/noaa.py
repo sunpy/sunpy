@@ -1,15 +1,14 @@
 # Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
 # This module was developed under funding provided by
 # Google Summer of Code 2014
-import tarfile
 import pathlib
+import tarfile
 from collections import OrderedDict
-
-from parfive import Downloader
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
+from sunpy.util.parfive_helpers import Downloader
 from ..client import GenericClient
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
