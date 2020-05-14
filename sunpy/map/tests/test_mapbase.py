@@ -521,13 +521,17 @@ def test_reference_coordinate(simple_map):
     assert simple_map.reference_pixel.y == 1 * u.pix
 
 
-def test_resample(simple_map):
+@pytest.mark.parametrize('shape', [[1, 1], [6, 6]])
+def test_resample(simple_map, shape):
     # Test resampling a 2x2 map
-    resampled = simple_map.resample([1, 1] * u.pix)
+    resampled = simple_map.resample(shape * u.pix, method='linear')
+    print(resampled)
+    assert np.mean(resampled.data) == np.mean(simple_map.data)
     # Should be the mean of [0,1,2,3,4,5,6,7,8,9]
-    assert resampled.data == np.array([[4]])
-    assert resampled.scale.axis1 == 3 * simple_map.scale.axis1
-    assert resampled.scale.axis2 == 3 * simple_map.scale.axis2
+    if shape == [1, 1]:
+        assert resampled.data == np.array([[4]])
+    assert resampled.scale.axis1 == 3 / shape[0] * simple_map.scale.axis1
+    assert resampled.scale.axis2 == 3 / shape[1] * simple_map.scale.axis2
 
     # Check that the corner coordinates of the input and output are the same
     resampled_lower_left = resampled.pixel_to_world(-0.5 * u.pix, -0.5 * u.pix)
@@ -535,7 +539,8 @@ def test_resample(simple_map):
     assert resampled_lower_left.Tx == original_lower_left.Tx
     assert resampled_lower_left.Ty == original_lower_left.Ty
 
-    resampled_upper_left = resampled.pixel_to_world(0.5 * u.pix, 0.5 * u.pix)
+    resampled_upper_left = resampled.pixel_to_world((shape[0] - 0.5) * u.pix,
+                                                    (shape[1] - 0.5) * u.pix)
     original_upper_left = simple_map.pixel_to_world(2.5 * u.pix, 2.5 * u.pix)
     assert resampled_upper_left.Tx == original_upper_left.Tx
     assert resampled_upper_left.Ty == original_upper_left.Ty
