@@ -1,0 +1,6 @@
+Fixed inconsistencies in how `~sunpy.map.GenericMap.submap` behaves when passed corners in pixel and world coordinates.
+The behavior for submaps specified in pixel coordinates is now well-defined for pixels on the boundary of the rectangle
+and is consistent for all boundaries. Previously pixels on the lower left boundary were included, but excluded on the
+upper and right boundary. This means the shape of a submap may now be 1 pixel larger in each dimension.
+Added several more tests for `~sunpy.map.GenericMap.submap` for a range of cutout sizes in both pixel and world
+coordinates.

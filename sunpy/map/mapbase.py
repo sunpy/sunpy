@@ -1379,6 +1379,9 @@ class GenericMap(NDData):
         Returns a submap of the map defined by the rectangle given by the
         ``[bottom_left, top_right]`` coordinates.
 
+        Any pixels which have at least part of their area inside the rectangle
+        are returned.
+
         Parameters
         ----------
         bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
@@ -1462,58 +1465,45 @@ class GenericMap(NDData):
             [-95.92475   ,   6.028058  ,  -4.9797    ,  -1.0483578 ,
                 -3.9313421 ]], dtype=float32)
         """
-
+        # Convert coordinates to pixels
         if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
                                     astropy.coordinates.BaseCoordinateFrame)):
             if not top_right:
                 if bottom_left.shape[0] != 2:
                     raise ValueError("If top_right is not specified bottom_left must have length two.")
                 else:
-                    lon, lat = self._get_lon_lat(bottom_left)
-                    top_right = u.Quantity([lon[1], lat[1]])
-                    bottom_left = u.Quantity([lon[0], lat[0]])
-            else:
-                bottom_left = u.Quantity(self._get_lon_lat(bottom_left))
-                top_right = u.Quantity(self._get_lon_lat(top_right))
+                    top_right = bottom_left[1]
+                    bottom_left = bottom_left[0]
 
-            top_left = u.Quantity([bottom_left[0], top_right[1]])
-            bottom_right = u.Quantity([top_right[0], bottom_left[1]])
+            bottom_left = self.world_to_pixel(bottom_left)
+            top_right = self.world_to_pixel(top_right)
 
-            corners = u.Quantity([bottom_left, bottom_right, top_left, top_right])
-            coord = SkyCoord(corners, frame=self.coordinate_frame)
-            pixel_corners = self.world_to_pixel(coord)
-
-            # Round the pixel values, we use floor+1 so that we always have at
-            # least one pixel width of data.
-            x_pixels = u.Quantity([np.min(pixel_corners.x), np.max(pixel_corners.x)]).to_value(u.pix)
-            x_pixels[0] = np.ceil(x_pixels[0])
-            x_pixels[1] = np.floor(x_pixels[1] + 1)
-            y_pixels = u.Quantity([np.min(pixel_corners.y), np.max(pixel_corners.y)]).to_value(u.pix)
-            y_pixels[0] = np.ceil(y_pixels[0])
-            y_pixels[1] = np.floor(y_pixels[1] + 1)
-
-        elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
-              isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
-            x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
-            y_pixels = u.Quantity([top_right[1], bottom_left[1]]).to_value(u.pix)
-
-        else:
+        elif not (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
+                  isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
             raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
 
+        x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
+        y_pixels = u.Quantity([top_right[1], bottom_left[1]]).to_value(u.pix)
         # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
         y_pixels.sort()
+
+        # Round the lower left pixel to the nearest integer
+        # We want 0.5 to be rounded up to 1, so use floor(x + 0.5)
+        x_pixels[0] = np.floor(x_pixels[0] + 0.5)
+        y_pixels[0] = np.floor(y_pixels[0] + 0.5)
+        # Round the top right pixel to the nearest integer, then add 1 for array indexing
+        # We want e.g. 2.5 to be rounded down to 2, so use ceil(x - 0.5)
+        x_pixels[1] = np.ceil(x_pixels[1] - 0.5) + 1
+        y_pixels[1] = np.ceil(y_pixels[1] - 0.5) + 1
 
         x_pixels = np.array(x_pixels)
         y_pixels = np.array(y_pixels)
 
         # Clip pixel values to max of array, prevents negative
         # indexing
-        x_pixels[np.less(x_pixels, 0)] = 0
-        x_pixels[np.greater(x_pixels, self.data.shape[1])] = self.data.shape[1]
-
-        y_pixels[np.less(y_pixels, 0)] = 0
-        y_pixels[np.greater(y_pixels, self.data.shape[0])] = self.data.shape[0]
+        x_pixels = np.clip(x_pixels, 0, self.data.shape[1])
+        y_pixels = np.clip(y_pixels, 0, self.data.shape[0])
 
         # Get ndarray representation of submap
         xslice = slice(int(x_pixels[0]), int(x_pixels[1]))
