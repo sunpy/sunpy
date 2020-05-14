@@ -319,7 +319,7 @@ def deprecate_positional_args_since(since, positional_only=False):
                 warnings.warn(f"Pass {', '.join(args_msg)} as keyword args. "
                               f"From version {last_supported_version} "
                                "passing these as positional arguments will result in an error.",
-                                FutureWarning)
+                                SunpyDeprecationWarning)
             kwargs.update({k: arg for k, arg in zip(sig.parameters, args)})
             return f(**kwargs)
         return inner_f

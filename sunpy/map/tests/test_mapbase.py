@@ -27,7 +27,7 @@ import sunpy.data.test
 import sunpy.coordinates
 from sunpy.coordinates import sun
 from sunpy.time import parse_time
-from sunpy.util import SunpyUserWarning
+from sunpy.util import SunpyUserWarning, SunpyDeprecationWarning
 
 testpath = sunpy.data.test.rootdir
 
@@ -469,8 +469,9 @@ pixel_corners = [
 @pytest.mark.parametrize('rect, submap_out', pixel_corners)
 def test_submap_pixel(simple_map, rect, submap_out):
     # Check that result is the same specifying corners either way round
-    for r in [(rect[0], rect[1]), (rect[1], rect[0])]:
-        submap = simple_map.submap(*r)
+    for r in [dict(bottom_left=rect[0], top_right=rect[1]),
+              dict(bottom_left=rect[1], top_right=rect[0])]:
+        submap = simple_map.submap(**r)
         np.testing.assert_equal(submap.data, submap_out)
 
 
@@ -484,11 +485,11 @@ def test_submap_world(simple_map, rect, submap_out):
     corner2 = simple_map.pixel_to_world(*rect[1])
     corners = simple_map.pixel_to_world(u.Quantity([rect[0][0], rect[1][0]]),
                                         u.Quantity([rect[0][1], rect[1][1]]))
-    for r in [(corner1, corner2),
-              (corner2, corner1),
-              (corners, ),
+    for r in [dict(bottom_left=corner1, top_right=corner2),
+              dict(bottom_left=corner2, top_right=corner1),
+              dict(bottom_left=corners, ),
               ]:
-        submap = simple_map.submap(*r)
+        submap = simple_map.submap(**r)
         np.testing.assert_equal(submap.data, submap_out)
 
 
@@ -500,7 +501,7 @@ def test_submap_data_header(generic_map, unit):
     height = generic_map.data.shape[0]
 
     # Create a submap of the top-right quadrant of the image
-    submap = generic_map.submap([width / 2., height / 2.] * unit, [width, height] * unit)
+    submap = generic_map.submap([width / 2., height / 2.] * unit, top_right=[width, height] * unit)
 
     # Check to see if submap properties were updated properly
     assert submap.reference_pixel.x.value == generic_map.meta['crpix1'] - 1 - width / 2.
@@ -922,79 +923,141 @@ def test_quicklook(aia171_test_map):
 
         assert aia171_test_map._repr_html_() in html_string
 
+@pytest.fixture
+def generic_map2(generic_map):
+    generic_map.meta["CTYPE1"] = "HPLN-TAN"
+    generic_map.meta["CTYPE2"] = "HPLT-TAN"
+    return generic_map
 
-def test_submap_inputs(generic_map):
-    bl_pix = [3, 2] * u.pix
+
+@pytest.fixture
+def coords(generic_map2):
     bl_coord = SkyCoord(20, -10, unit=u.arcsec,
-                        frame=generic_map.coordinate_frame)
+                        frame=generic_map2.coordinate_frame)
 
-    tr_pix = [5, 4] * u.pix
     tr_coord = SkyCoord(0, 10, unit=u.arcsec,
-                        frame=generic_map.coordinate_frame)
+                        frame=generic_map2.coordinate_frame)
 
     bl_tr_coord = SkyCoord([20, 0], [-10, 10], unit=u.arcsec,
-                           frame=generic_map.coordinate_frame)
+                            frame=generic_map2.coordinate_frame)
 
-    width_pix = 2 * u.pix
-    height_pix = 2 * u.pix
-    width_deg = 20 * u.arcsec
-    height_deg = 20 * u.arcsec
+    return bl_coord, tr_coord, bl_tr_coord
 
-    # works
-    smap = generic_map.submap(bl_coord, top_right=tr_coord)
-    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
-    smap = generic_map.submap(bl_coord, width=width_deg, height=height_deg)
-    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
-    smap = generic_map.submap(bl_tr_coord)
-    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+bl_pix = [3, 2] * u.pix
+tr_pix = [5, 4] * u.pix
+width_pix = 2 * u.pix
+height_pix = 2 * u.pix
+width_deg = 20 * u.arcsec
+height_deg = 20 * u.arcsec
 
-    # works
-    smap = generic_map.submap(bl_pix, top_right=tr_pix)
-    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
-    smap = generic_map.submap(bl_pix, width=width_pix, height=height_pix)
-    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
-
+def test_deprecated_submap_inputs(generic_map2, coords):
+    bl_coord, tr_coord, bl_tr_coord = coords
     # deprecated
-    with pytest.warns(FutureWarning):
-        smap = generic_map.submap(bl_coord, tr_coord)
-    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    with pytest.warns(SunpyDeprecationWarning):
+        smap = generic_map2.submap(bl_coord, tr_coord)
+    assert u.allclose(smap.dimensions, (3, 3) * u.pix)
 
-    with pytest.warns(FutureWarning):
-        smap = generic_map.submap(bl_pix, tr_pix)
-    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    with pytest.warns(SunpyDeprecationWarning):
+        smap = generic_map2.submap(bl_pix, tr_pix)
+    assert u.allclose(smap.dimensions, (3, 3) * u.pix)
 
-    # # error
-    with pytest.raises(TypeError):
-        generic_map.submap(bl_coord, width_deg, height_deg)
-    with pytest.raises(TypeError):
-        generic_map.submap(bl_pix, width_pix, height_pix)
+    # error
+    with pytest.raises(TypeError, match="width must be specified as a keyword argument"):
+        generic_map2.submap(bl_coord, width_deg, height_deg)
 
-    # # TODO: The error message raised here is poor
-    with pytest.raises(TypeError):
-        generic_map.submap(bl_coord, width_deg, height=height_deg)
+    with pytest.raises(TypeError, match="width must be specified as a keyword argument"):
+        generic_map2.submap(bl_pix, width_pix, height_pix)
 
-    # TODO: The error raised here is completely wrong!
-    with pytest.raises(TypeError):
-        generic_map.submap(bl_pix, width_pix, height=height_pix)
+    with pytest.warns(SunpyDeprecationWarning):
+        with pytest.raises(TypeError,
+                           match="top_right must be of type SkyCoord or BaseCoordinateFrame."):
+            generic_map2.submap(bl_coord, width_deg, height=height_deg)
 
-    # # Invalid
-    with pytest.raises(ValueError):
-        generic_map.submap(10*u.deg, 10*u.deg)
+    with pytest.warns(SunpyDeprecationWarning):
+        with pytest.raises(ValueError,
+                           match="either top_right or both width and height must be specified"):
+            generic_map2.submap(bl_pix, width_pix, height=height_pix)
 
-    with pytest.raises(ValueError):
-        generic_map.submap([10, 10, 10]*u.deg, [10, 10, 10]*u.deg)
+    with pytest.warns(SunpyDeprecationWarning):
+        with pytest.raises(TypeError,
+                           match="top_right must be of type SkyCoord or BaseCoordinateFrame"):
+            generic_map2.submap(bl_coord, width_deg, height=height_deg)
+
+    with pytest.warns(SunpyDeprecationWarning):
+        with pytest.raises(ValueError,
+                           match="either top_right or both width and height must be specified"):
+            generic_map2.submap(bl_pix, width_pix, height=height_pix)
+
+
+@pytest.mark.skip
+def test_submap_kwarg_only_input_errors(generic_map2, coords):
+    """
+    This test replaces the one above when the deprecation period is over.
+    """
+    bl_coord, tr_coord, bl_tr_coord = coords
+    inputs = (
+        ((bl_coord, tr_coord), {}),
+        ((bl_pix, tr_pix), {}),
+        ((bl_coord, width_deg, height_deg), {}),
+        ((bl_pix, width_pix, height_pix), {}),
+        ((bl_coord, width_deg), {'height_deg': height_deg}),
+        ((bl_pix, width_pix), {'height_pix': height_pix}),
+    )
+
+    for args, kwargs in inputs:
+        with pytest.raises(TypeError, match="too many positional arguments"):
+            generic_map2.submap(*args, **kwargs)
+
+
+def test_submap_kwarg_only_input_errors(generic_map2, coords):
+    bl_coord, tr_coord, bl_tr_coord = coords
+
+    inputs = (
+        dict(width=width_pix),
+        dict(top_right=tr_pix, width=width_pix),
+        dict(top_right=tr_pix, height=height_pix),
+        dict(),  # Only post deprecation
+        )
+    for kwargs in inputs:
+        with pytest.raises(ValueError, match="top_right or both width and height must be specified."):
+            generic_map2.submap(bl_pix, **kwargs)
+
+    with pytest.raises(TypeError, match="must be Quantity objects in units of pixels"):
+        generic_map2.submap(bl_pix, width=width_deg, height=height_deg)
+
+    with pytest.raises(TypeError,
+                       match="top_right, width or height .* Quantity objects in units of pixels."):
+        generic_map2.submap(10*u.deg, top_right=10*u.deg)
+
+    with pytest.raises(TypeError,
+                       match="top_right, width or height .* Quantity objects in units of pixels."):
+        generic_map2.submap([10, 10, 10]*u.deg, top_right=[10, 10, 10]*u.deg)
+
+    with pytest.raises(ValueError, match=r"must have shape \(2\,\)"):
+        generic_map2.submap(10*u.pix, top_right=10*u.pix)
+
+    with pytest.raises(ValueError, match=r"must have shape \(2\,\)"):
+        generic_map2.submap([10, 10, 10]*u.pix, top_right=[10, 10, 10]*u.pix)
 
     with pytest.raises(u.UnitsError):
-        generic_map.submap([10, 10]*u.deg, width=10*u.km, height=10*u.J)
+        generic_map2.submap([10, 10]*u.deg, width=10*u.km, height=10*u.J)
 
-    with pytest.raises(ValueError):
-        generic_map.submap(SkyCoord([10, 10, 10]*u.deg, [10, 10, 10]*u.deg,
-                                    frame=generic_map.coordinate_frame))
+    with pytest.raises(ValueError,
+                       match="bottom_left and top_right or bottom_left and height and width should be provided."):
+        generic_map2.submap(SkyCoord([10, 10, 10]*u.deg, [10, 10, 10]*u.deg,
+                                    frame=generic_map2.coordinate_frame))
 
-    # # TODO: This should raise an error about the shape ## Done
-    with pytest.raises(TypeError):
-        generic_map.submap(10*u.pix, 10*u.pix)
+def test_submap_inputs(generic_map2, coords):
+    bl_coord, tr_coord, bl_tr_coord = coords
 
-    # # TODO: This doesn't raise at all and it should ## Done
-    with pytest.raises(TypeError):
-        generic_map.submap([10, 10, 10]*u.pix, [10, 10, 10]*u.pix)
+    inputs = (
+        ((bl_coord,), dict(top_right=tr_coord)),
+        ((bl_coord,), dict(width=width_deg, height=height_deg)),
+        ((bl_tr_coord,), {}),
+        ((bl_pix,), dict(top_right=tr_pix)),
+        ((bl_pix,), dict(width=width_pix, height=height_pix)),
+    )
+
+    for args, kwargs in inputs:
+        smap = generic_map2.submap(*args, **kwargs)
+        assert u.allclose(smap.dimensions, (3, 3) * u.pix)
