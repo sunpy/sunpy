@@ -525,7 +525,6 @@ def test_reference_coordinate(simple_map):
 def test_resample(simple_map, shape):
     # Test resampling a 2x2 map
     resampled = simple_map.resample(shape * u.pix, method='linear')
-    print(resampled)
     assert np.mean(resampled.data) == np.mean(simple_map.data)
     # Should be the mean of [0,1,2,3,4,5,6,7,8,9]
     if shape == [1, 1]:
