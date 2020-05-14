@@ -89,7 +89,13 @@ import numpy as np  # noqa isort:skip
 np.seterr(invalid='ignore')
 
 # -- Download Sample Data -----------------------------------------------------
+# We set the logger to debug so that we can see any sample data download errors
+# in the CI, especially RTD.
+import sunpy  # noqa isort:skip
+ori_level = sunpy.log.level
+sunpy.log.setLevel("DEBUG")
 import sunpy.data.sample  # noqa isort:skip
+sunpy.log.setLevel(ori_level)
 
 # -- General configuration ----------------------------------------------------
 # If your documentation needs a minimal Sphinx version, state it here.
