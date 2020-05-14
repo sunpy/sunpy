@@ -1531,24 +1531,8 @@ class GenericMap(NDData):
                                                                width=width,
                                                                height=height)
 
-            bottom_left = u.Quantity(self._get_lon_lat(bottom_left))
-            top_right = u.Quantity(self._get_lon_lat(top_right))
-
-            top_left = u.Quantity([bottom_left[0], top_right[1]])
-            bottom_right = u.Quantity([top_right[0], bottom_left[1]])
-
-            corners = u.Quantity([bottom_left, bottom_right, top_left, top_right])
-            coord = SkyCoord(corners, frame=self.coordinate_frame)
-            pixel_corners = self.world_to_pixel(coord)
-
-            # Round the pixel values, we use floor+1 so that we always have at
-            # least one pixel width of data.
-            x_pixels = u.Quantity([np.min(pixel_corners.x), np.max(pixel_corners.x)]).value
-            x_pixels[0] = np.ceil(x_pixels[0])
-            x_pixels[1] = np.floor(x_pixels[1] + 1)
-            y_pixels = u.Quantity([np.min(pixel_corners.y), np.max(pixel_corners.y)]).value
-            y_pixels[0] = np.ceil(y_pixels[0])
-            y_pixels[1] = np.floor(y_pixels[1] + 1)
+            bottom_left = self.world_to_pixel(bottom_left)
+            top_right = self.world_to_pixel(top_right)
 
         elif isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix):
 
@@ -1557,17 +1541,13 @@ class GenericMap(NDData):
                 if len(bottom_left) != 2 or len(top_right) != 2:
                     raise TypeError("bottom_left and top_right in pixels must contain both coordinates of the pixel")
 
-                x_pixels = u.Quantity([bottom_left[0], top_right[0]]).value
-                y_pixels = u.Quantity([top_right[1], bottom_left[1]]).value
-
             elif (isinstance(width, u.Quantity) and width.unit.is_equivalent(u.pix) and
                   isinstance(height, u.Quantity) and height.unit.is_equivalent(u.pix)):
 
-                x_pixels = u.Quantity([bottom_left[0], bottom_left[0] + width]).value
-                y_pixels = u.Quantity([bottom_left[1], bottom_left[1] + height]).value
+                x_pixels = u.Quantity([bottom_left[0], bottom_left[0] + width]).to_value(u.pix)
+                y_pixels = u.Quantity([bottom_left[1], bottom_left[1] + height]).to_value(u.pix)
 
-        elif not (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
-                  isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
+        else:
             raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
 
         x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)

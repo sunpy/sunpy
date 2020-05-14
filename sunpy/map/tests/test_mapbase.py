@@ -942,26 +942,26 @@ def test_submap_inputs(generic_map):
 
     # works
     smap = generic_map.submap(bl_coord, top_right=tr_coord)
-    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
     smap = generic_map.submap(bl_coord, width=width_deg, height=height_deg)
-    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
     smap = generic_map.submap(bl_tr_coord)
-    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
 
     # works
     smap = generic_map.submap(bl_pix, top_right=tr_pix)
-    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
     smap = generic_map.submap(bl_pix, width=width_pix, height=height_pix)
-    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
 
     # deprecated
     with pytest.warns(FutureWarning):
         smap = generic_map.submap(bl_coord, tr_coord)
-    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
 
     with pytest.warns(FutureWarning):
         smap = generic_map.submap(bl_pix, tr_pix)
-    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    assert u.allclose(smap.dimensions, (1, 1) * u.pix)
 
     # # error
     with pytest.raises(TypeError):
