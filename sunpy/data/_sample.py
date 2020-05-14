@@ -23,7 +23,7 @@ _base_urls = (
 # All separated by underscores
 
 # the files should include necessary extensions
-_sample_files = {
+_sample_data = {
     # Do roll image first because it's the largest file.
     "AIA_171_ROLL_IMAGE": "aiacalibim5.fits.gz",
     "HMI_LOS_IMAGE": "HMI20110607_063211_los_lowres.fits",
@@ -59,7 +59,7 @@ _sample_files = {
 
 # Reverse the dict because we want to use it backwards, but it is nicer to
 # write the other way around
-_sample_files = {v: k for k, v in _sample_files.items()}
+_sample_files = {v: k for k, v in _sample_data.items()}
 
 _error = namedtuple("error", ("filepath_partial", "url", "response"))
 
@@ -124,6 +124,6 @@ def download_sample_data(overwrite=False):
     for err in results.errors:
         file_name = err.filepath_partial().name
         log.debug(f"Failed to download {_sample_files[file_name]} from {err.url}: {err.exception}")
-        log.error(f"Failed to download {_sample_files[file_name]} from all mirrors, the file will not be availible.")
+        log.error(f"Failed to download {_sample_files[file_name]} from all mirrors, the file will not be available.")
 
     return results
