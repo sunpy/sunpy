@@ -32,10 +32,6 @@ from sunpy.util.metadata import MetaDict
 ts_eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')
 ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
 ts_lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
-ts_noaa_ind = sunpy.timeseries.TimeSeries(
-    sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
-ts_noaa_pre = sunpy.timeseries.TimeSeries(
-    sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')
 ts_norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_TIMESERIES, source='NoRH')
 ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_TIMESERIES, source='RHESSI')
 ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')
