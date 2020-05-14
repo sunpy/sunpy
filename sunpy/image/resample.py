@@ -85,22 +85,21 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
 
     Parameters
     ----------
-    orig :
+    orig : array-like
         Original data.
-    dimensions :
-        Dimensions of resamled data.
-    offset :
+    dimensions : `tuple`
+        Dimensions of resampled data.
+    method : `str`
+        Interpolation method passed to `~scipy.interpolate.interp1d`
+    offset : `float`
         Either 0 or 0.5, depending on whether interpolation is at the edge or
         centers of bins.
-    m1 :
+    m1 : 0 or 1
         For ``orig.shape = (i,j)`` & new dimensions ``= (x,y)``, if set to `False`
         (default) ``orig`` is resampled by factors of ``(i/x) * (j/y)``,
         otherwise ``orig`` is resampled by ``(i-1)/(x-1) * (j-1)/(y-1)``.
         This prevents extrapolation one element beyond bounds of input array.
     """
-    dimlist = []
-
-    # Calculate old coords. Add 0.5 to get centers of pixels
     old_coords = [np.arange(i, dtype=np.float) + offset for i in orig.shape]
     scale = (orig.shape - m1) / (dimensions - m1)
     new_coords = [(np.arange(dimensions[i], dtype=np.float) + offset) * scale[i] for i in
