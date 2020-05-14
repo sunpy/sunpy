@@ -821,15 +821,78 @@ def test_quicklook(aia171_test_map):
         assert aia171_test_map._repr_html_() in html_string
 
 
-def test_submap_non_kwarg_parameters(aia171_test_map):
-    bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia171_test_map.coordinate_frame)
-    tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia171_test_map.coordinate_frame)
+def test_submap_inputs(generic_map):
+    bl_pix = [3, 2] * u.pix
+    bl_coord = SkyCoord(20, -10, unit=u.arcsec,
+                        frame=generic_map.coordinate_frame)
+
+    tr_pix = [5, 4] * u.pix
+    tr_coord = SkyCoord(0, 10, unit=u.arcsec,
+                        frame=generic_map.coordinate_frame)
+
+    bl_tr_coord = SkyCoord([20, 0], [-10, 10], unit=u.arcsec,
+                           frame=generic_map.coordinate_frame)
+
+    width_pix = 2 * u.pix
+    height_pix = 2 * u.pix
+    width_deg = 20 * u.arcsec
+    height_deg = 20 * u.arcsec
+
+    # works
+    smap = generic_map.submap(bl_coord, top_right=tr_coord)
+    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    smap = generic_map.submap(bl_coord, width=width_deg, height=height_deg)
+    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    smap = generic_map.submap(bl_tr_coord)
+    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+
+    # works
+    smap = generic_map.submap(bl_pix, top_right=tr_pix)
+    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+    smap = generic_map.submap(bl_pix, width=width_pix, height=height_pix)
+    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
+
+    # deprecated
+    with pytest.warns(FutureWarning):
+        smap = generic_map.submap(bl_coord, tr_coord)
+    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
 
     with pytest.warns(FutureWarning):
-        aia171_test_map.submap(bl, tr)
+        smap = generic_map.submap(bl_pix, tr_pix)
+    # assert u.allclose(smap.dimensions, (1, 1) * u.pix)
 
-    width = 10 * u.arcsec
-    height = 10 * u.arcsec
+    # # error
+    with pytest.raises(TypeError):
+        generic_map.submap(bl_coord, width_deg, height_deg)
+    with pytest.raises(TypeError):
+        generic_map.submap(bl_pix, width_pix, height_pix)
 
-    with pytest.warns(FutureWarning):
-        aia171_test_map.submap(bl, width, height)
+    # # TODO: The error message raised here is poor
+    with pytest.raises(TypeError):
+        generic_map.submap(bl_coord, width_deg, height=height_deg)
+
+    # TODO: The error raised here is completely wrong!
+    with pytest.raises(TypeError):
+        generic_map.submap(bl_pix, width_pix, height=height_pix)
+
+    # # Invalid
+    with pytest.raises(ValueError):
+        generic_map.submap(10*u.deg, 10*u.deg)
+
+    with pytest.raises(ValueError):
+        generic_map.submap([10, 10, 10]*u.deg, [10, 10, 10]*u.deg)
+
+    with pytest.raises(u.UnitsError):
+        generic_map.submap([10, 10]*u.deg, width=10*u.km, height=10*u.J)
+
+    with pytest.raises(ValueError):
+        generic_map.submap(SkyCoord([10, 10, 10]*u.deg, [10, 10, 10]*u.deg,
+                                    frame=generic_map.coordinate_frame))
+
+    # # TODO: This should raise an error about the shape ## Done
+    with pytest.raises(TypeError):
+        generic_map.submap(10*u.pix, 10*u.pix)
+
+    # # TODO: This doesn't raise at all and it should ## Done
+    with pytest.raises(TypeError):
+        generic_map.submap([10, 10, 10]*u.pix, [10, 10, 10]*u.pix)
