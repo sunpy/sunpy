@@ -35,8 +35,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')  # doctest: +REMOTE_DATA
+    >>> noaa_url = "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
+    >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAIndices')  # doctest: +REMOTE_DATA
     >>> noaa.peek()   # doctest: +SKIP
 
     References
@@ -58,8 +58,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         .. plot::
 
             import sunpy.timeseries
-            import sunpy.data.sample
-            noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
+            noaa_url = "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
+            noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAIndices')
             noaa.peek()
 
         Parameters
@@ -177,8 +177,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> import sunpy.data.sample  # doctest: +REMOTE_DATA
-    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')  # doctest: +REMOTE_DATA
+    >>> noaa_url = 'ftp://ftp.swpc.noaa.gov/pub/weekly/Predict.txt'
+    >>> noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')  # doctest: +REMOTE_DATA
     >>> noaa.peek()   # doctest: +SKIP
 
     References
@@ -201,8 +201,8 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         .. plot::
 
             import sunpy.timeseries
-            import sunpy.data.sample
-            noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')
+            noaa_url = 'ftp://ftp.swpc.noaa.gov/pub/weekly/Predict.txt'
+            noaa = sunpy.timeseries.TimeSeries(noaa_url, source='NOAAPredictIndices')
             noaa.peek()
 
         Parameters
