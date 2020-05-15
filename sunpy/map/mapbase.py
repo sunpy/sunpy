@@ -1495,7 +1495,7 @@ class GenericMap(NDData):
             [620.9256 , 620.9256 , 654.8825 , 596.6707 ],
             [667.5083 , 560.52094, 651.22766, 530.28534]], dtype=float32)
 
-        >>> bottom_left_vector = SkyCoord([0 * u.arcsec, 10 * u.arcsec], [0 * u.arcsec, 10 * u.arcsec], frame='heliographic_stonyhurst')
+        >>> bottom_left_vector = SkyCoord([0, 10]  * u.arcsec, [0, 10] * u.arcsec, frame='heliographic_stonyhurst')
         >>> aia.submap(bottom_left_vector)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at 0x7f91aece8be0>
         SunPy Map
