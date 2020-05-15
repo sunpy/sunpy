@@ -1,0 +1,1 @@
+Remove an Astropy 3.1 comptibility wrapper for ``Quantity.to_string``.
