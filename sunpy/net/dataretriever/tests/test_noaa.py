@@ -183,4 +183,4 @@ def test_client_repr(LCClient):
     Repr check
     """
     output = str(LCClient)
-    assert output[:50] == 'NOAAIndicesClient\n\nProvides access to the NOAA sol'
+    assert output[:50] == 'sunpy.net.dataretriever.sources.noaa.NOAAIndicesCl'

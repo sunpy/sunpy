@@ -2,6 +2,8 @@ import importlib
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from textwrap import dedent
+import os
+from shutil import get_terminal_size
 
 from astropy.table import Table
 
@@ -84,6 +86,48 @@ class BaseQueryResponse(Sequence):
         return self.build_table()._repr_html_()
 
 
+def _print_client(client, html=False):
+    """
+    Given a Client class will print out each registered attribute.
+
+    Parameters
+    ----------
+    client : `sunpy.net.base_client.BaseClient`
+        The client class to print for.
+    html : bool
+        Will return a html table instead.
+
+    Returns
+    -------
+    `str`
+        String with the client.
+    """
+    class_name = f"{client.__module__+'.' or ''}{client.__class__.__name__}"
+    attrs = client.register_values()
+    lines = []
+    t = Table(names=["Attr Type", "Name", "Description"],
+              dtype=["U80", "U80", "U80"])
+    for client_key in attrs.keys():
+        for name, desc in attrs[client_key]:
+            desc = desc[:77] + '...' if len(desc) > 80 else desc
+            t.add_row((client_key.__name__, name, desc))
+    if html:
+        lines.insert(0, "<p>"+class_name+"</p>")
+    else:
+        lines.insert(0, class_name)
+    if html:
+        lines.insert(1, "<p>"+dedent(client.__doc__.partition("\n\n")[0])+"</p>"+"\n")
+    else:
+        lines.insert(1, dedent(client.__doc__.partition("\n\n")[0])+"\n")
+    if os.environ.get("COLUMNS", None):
+        width = int(os.environ.get("COLUMNS"))
+    else:
+        _, width = get_terminal_size()
+    width = -1 if html else width
+    lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+    return '\n'.join(lines)
+
+
 class BaseClient(ABC):
     """
     This defines the Abstract Base Class for each download client.
@@ -150,18 +194,13 @@ class BaseClient(ABC):
         """
         This enables the "pretty" printing of clients.
         """
-        class_name = self.__class__.__name__
-        attrs = self.register_values()
-        lines = []
-        t = Table(names=["Attr Type", "Name", "Description"],
-                  dtype=["U256", "U256", "U256"])
-        for client_key in attrs.keys():
-            for name, desc in attrs[client_key]:
-                t.add_row((client_key.__name__, name, desc))
-        lines.insert(0, class_name)
-        lines.insert(1, dedent(self.__doc__.partition("\n\n")[0])+"\n")
-        lines.extend(t.pformat_all(show_dtype=False))
-        return '\n'.join(lines)
+        return _print_client(self)
+
+    def _repr_html_(self):
+        """
+        This enables the "pretty" printing of Attrs with html.
+        """
+        return _print_client(self, html=True)
 
     @abstractmethod
     def search(self, *args, **kwargs):

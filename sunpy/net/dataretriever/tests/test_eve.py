@@ -125,4 +125,4 @@ def test_client_repr(LCClient):
     Repr check
     """
     output = str(LCClient)
-    assert output[:50] == 'EVEClient\n\nProvides access to Level 0C Extreme ult'
+    assert output[:50] == 'sunpy.net.dataretriever.sources.eve.EVEClient\n\nPro'

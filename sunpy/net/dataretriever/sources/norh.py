@@ -7,8 +7,7 @@ from astropy.time import TimeDelta
 
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
-
-from ..client import GenericClient
+from sunpy.net.dataretriever import GenericClient
 
 __all__ = ['NoRHClient']
 

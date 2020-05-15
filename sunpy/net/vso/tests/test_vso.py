@@ -538,4 +538,4 @@ def test_vso_repr(client):
     Repr check (it is really long)
     """
     output = str(client)
-    assert output[:50] == 'VSOClient\n\nAllows queries and downloads from the V'
+    assert output[:50] == 'sunpy.net.vso.vso.VSOClient\n\nAllows queries and do'
