@@ -267,7 +267,7 @@ class add_common_docstring:
             func.__doc__ = func.__doc__.format(**self.kwargs)
         return func
 
-def deprecate_positional_args_since(since, positional_only=False):
+def deprecate_positional_args_since(since, keyword_only=False):
     """
     Parameters
     ----------
@@ -290,12 +290,12 @@ def deprecate_positional_args_since(since, positional_only=False):
         Taken from from `scikit-learn <https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/utils/validation.py#L1271>`__.
         Licensed under the BSD, see "licenses/SCIKIT-LEARN.rst".
         """
-        nonlocal positional_only
+        nonlocal keyword_only
 
         sig = signature(f)
         kwonly_args = []
         all_args = []
-        positional_only = positional_only or tuple()
+        keyword_only = keyword_only or tuple()
 
         for name, param in sig.parameters.items():
             if param.kind == Parameter.POSITIONAL_OR_KEYWORD:
@@ -308,7 +308,7 @@ def deprecate_positional_args_since(since, positional_only=False):
             extra_args = len(args) - len(all_args)
             if extra_args > 0:
                 for name, arg in zip(kwonly_args[:extra_args], args[-extra_args:]):
-                    if name in positional_only:
+                    if name in keyword_only:
                         raise TypeError(f"{name} must be specified as a keyword argument.")
 
                 # ignore first 'self' argument for instance methods

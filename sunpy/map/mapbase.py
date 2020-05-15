@@ -1376,7 +1376,7 @@ class GenericMap(NDData):
 
         return new_map
 
-    @deprecate_positional_args_since(since='2.0', positional_only=('width', 'height'))
+    @deprecate_positional_args_since(since='2.0', keyword_only=('width', 'height'))
     @u.quantity_input
     def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix)=None, height: (u.deg, u.pix)=None):
         """
