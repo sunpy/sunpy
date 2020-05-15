@@ -1392,13 +1392,15 @@ class GenericMap(NDData):
             have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
             object with units of `~astropy.units.pixel`.
-        top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
-            The top-right coordinate of the rectangle.
-            Passing this as a positional argument is deprecated.
-        width : `astropy.units.Quantity`
-            The width of the rectangle.
+        top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`, optional
+            The top-right coordinate of the rectangle. If ``top_right`` is
+            specified ``width`` and ``height`` must be omitted.
+            Passing this as a positional argument is deprecated, you must pass
+            it as ``top_right=...``.
+        width : `astropy.units.Quantity`, optional
+            The width of the rectangle. Required if ``top_right`` is omitted.
         height : `astropy.units.Quantity`
-            The height of the rectangle.
+            The height of the rectangle. Required if ``top_right`` is omitted.
 
         Returns
         -------
@@ -1790,10 +1792,12 @@ class GenericMap(NDData):
         top_right : `~astropy.coordinates.SkyCoord`
             The top-right coordinate of the rectangle.
             Passing this as a positional argument is deprecated.
-        width : `astropy.units.Quantity`
-            The width of the rectangle. Passing this as a positional argument is deprecated.
+        width : `astropy.units.Quantity`, optional
+            The width of the rectangle. Required if ``top_right`` is omitted.
+            Passing this as a positional argument is deprecated.
         height : `astropy.units.Quantity`
-            The height of the rectangle. Passing this as a positional argument is deprecated.
+            The height of the rectangle. Required if ``top_right`` is omitted.
+            Passing this as a positional argument is deprecated.
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current
             axes.
