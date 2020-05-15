@@ -26,7 +26,7 @@ class NOAAIndicesClient(GenericClient):
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('noaa-indices'))  #doctest: +REMOTE_DATA
+    ...                       a.Instrument.noaa_indices)  #doctest: +REMOTE_DATA
     >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -96,7 +96,7 @@ class NOAAPredictClient(GenericClient):
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('noaa-predict'))  #doctest: +REMOTE_DATA
+    ...                       a.Instrument.noaa_predict)  #doctest: +REMOTE_DATA
     >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -168,7 +168,7 @@ class SRSClient(GenericClient):
     --------
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('SOON'))  #doctest: +REMOTE_DATA
+    ...                       a.Instrument.soon)  #doctest: +REMOTE_DATA
     >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:

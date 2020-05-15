@@ -158,7 +158,7 @@ def test_get_observing_summary_filename_two_days(mock_get_observing_summary_dbas
 
 def test_can_handle_query(LCClient):
     ans1 = LCClient._can_handle_query(
-        a.Time('2012/8/9', '2012/8/9'), a.Instrument('rhessi'))
+        a.Time('2012/8/9', '2012/8/9'), a.Instrument.rhessi)
     assert ans1 is True
     ans2 = LCClient._can_handle_query(a.Time('2013/2/7', '2013/2/7'))
     assert ans2 is False
@@ -170,7 +170,7 @@ def test_can_handle_query(LCClient):
 def test_query(mock_get_observing_summary_dbase_file,
                mock_parse_observing_summary_dbase_file,
                mock_get_base_url, LCClient):
-    qr1 = LCClient.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument('rhessi'))
+    qr1 = LCClient.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument.rhessi)
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 3
     assert qr1.time_range().start.datetime == parse_time('2003/11/01').datetime
@@ -184,13 +184,14 @@ def test_query(mock_get_observing_summary_dbase_file,
 def test_fido_mock(mock_get_observing_summary_dbase_file,
                    mock_parse_observing_summary_dbase_file,
                    mock_get_base_url):
-    qr = Fido.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument('rhessi'))
+    qr = Fido.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument.rhessi)
     assert isinstance(qr, UnifiedResponse)
     assert qr._numfile == 3
 
 
 def test_attr_reg():
     assert a.Instrument.rhessi == a.Instrument('RHESSI')
+    assert a.Physobs.summary_lightcurve == a.Physobs("summary_lightcurve")
 
 
 def test_client_repr(LCClient):

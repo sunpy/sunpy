@@ -507,9 +507,9 @@ def test_incorrect_content_disposition(client):
 
 @pytest.mark.parametrize("query, handle", [
     ((a.Time("2011/01/01", "2011/01/02"),), True),
-    ((a.Physobs("LOS_magnetic_field"),), False),
+    ((a.Physobs.los_magnetic_field,), False),
     ((a.Time("2011/01/01", "2011/01/02"), a.vso.Provider("SDAC"),), True),
-    ((a.jsoc.Series("wibble"), a.Physobs("LOS_magnetic_field"),), False),
+    ((a.jsoc.Series("wibble"), a.Physobs.los_magnetic_field,), False),
 ])
 def test_can_handle_query(query, handle):
     assert VSOClient._can_handle_query(*query) is handle
@@ -520,7 +520,7 @@ def test_vso_attr(client):
     """
     Check that the dict is correctly filled.
     """
-    adict = client.get_vso_values(load=True)
+    adict = client.load_vso_values()
     assert isinstance(adict, dict)
     assert len(adict.keys()) == 6
     for key, value in adict.items():
@@ -528,7 +528,7 @@ def test_vso_attr(client):
         assert isinstance(adict[key], list)
         assert isinstance(value, list)
         for val in value:
-            assert isinstance(val, tuple)
+            assert isinstance(val, list)
             assert len(val) == 2
 
 

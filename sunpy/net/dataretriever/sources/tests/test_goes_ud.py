@@ -67,13 +67,13 @@ def test_no_satellite(LCClient):
 @pytest.mark.remote_data
 def test_fixed_satellite(LCClient):
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
-                           a.Instrument('XRS'))
+                           a.Instrument.xrs)
 
     for resp in ans1:
         assert "go15" in resp.url
 
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
-                           a.Instrument('XRS'),
+                           a.Instrument.xrs,
                            a.goes.SatelliteNumber(13))
 
     for resp in ans1:
@@ -125,7 +125,7 @@ def test_new_logic(LCClient):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument",
-    [(a.Time("2012/10/4", "2012/10/5"), a.Instrument("goes"))])
+    [(a.Time("2012/10/4", "2012/10/5"), a.Instrument.goes)])
 def test_fido(time, instrument):
     qr = Fido.search(time, Instrument('XRS'))
     assert isinstance(qr, UnifiedResponse)
@@ -133,7 +133,7 @@ def test_fido(time, instrument):
     assert len(response) == qr._numfile
 
 
-@settings(deadline=10000, max_examples=1)
+@settings(deadline=10000, max_examples=5)
 @pytest.mark.remote_data
 @given(goes_time())
 def test_time_for_url(LCClient, time):

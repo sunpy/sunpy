@@ -5,9 +5,10 @@ import os
 from itertools import chain, count
 import hashlib
 from collections import UserList
+from shutil import get_terminal_size
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
-           'expand_list_generator', 'dict_keys_same', 'hash_file']
+           'expand_list_generator', 'dict_keys_same', 'hash_file', "get_width"]
 
 
 def unique(itr, key=None):
@@ -195,3 +196,22 @@ def hash_file(path):
             sha256.update(data)
 
     return sha256.hexdigest()
+
+
+def get_width():
+    """
+    Gets the width of the current terminal.
+    Accounts for if the 'COLUMNS' environmental variable is set.
+
+    Returns
+    -------
+    `int`
+        Width of the terminal you are in.
+        Works for IPython notebooks and normal terminals.
+    """
+    width = os.environ.get("COLUMNS", None)
+    if width:
+        width = int(width)
+    else:
+        width, _ = get_terminal_size()
+    return width

@@ -31,13 +31,13 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 
 @given(time_attr())
 def test_can_handle_query(LCClient, time):
-    ans1 = LCClient._can_handle_query(time, a.Instrument('gbm'))
+    ans1 = LCClient._can_handle_query(time, a.Instrument.gbm)
     assert ans1 is True
-    ans2 = LCClient._can_handle_query(time, a.Instrument('gbm'),
-                                      a.Detector('n5'))
+    ans2 = LCClient._can_handle_query(time, a.Instrument.gbm,
+                                      a.Detector.n5)
     assert ans2 is True
-    ans3 = LCClient._can_handle_query(time, a.Instrument('gbm'),
-                                      a.Detector('n5'), a.Resolution('ctime'))
+    ans3 = LCClient._can_handle_query(time, a.Instrument.gbm,
+                                      a.Detector.n5, a.Resolution.ctime)
     assert ans3 is True
     ans4 = LCClient._can_handle_query(time)
     assert ans4 is False
@@ -45,7 +45,7 @@ def test_can_handle_query(LCClient, time):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument", [
-    (a.Time('2012/8/9', '2012/8/9'), a.Instrument('gbm')),
+    (a.Time('2012/8/9', '2012/8/9'), a.Instrument.gbm),
 ])
 def test_query(LCClient, time, instrument):
     qr1 = LCClient.search(time, instrument)
@@ -57,7 +57,7 @@ def test_query(LCClient, time, instrument):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument", [
-    (a.Time('2012/11/27', '2012/11/27'), a.Instrument('gbm')),
+    (a.Time('2012/11/27', '2012/11/27'), a.Instrument.gbm),
 ])
 def test_get(LCClient, time, instrument):
     qr1 = LCClient.search(time, instrument)
@@ -68,7 +68,7 @@ def test_get(LCClient, time, instrument):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     'query',
-    [(a.Time('2012/10/4', '2012/10/5') & a.Instrument('gbm') & a.Detector('n5'))])
+    [(a.Time('2012/10/4', '2012/10/5') & a.Instrument.gbm & a.Detector.n5)])
 def test_fido(LCClient, query):
     qr = Fido.search(query)
     client = qr.get_response(0).client

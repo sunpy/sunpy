@@ -81,7 +81,7 @@ def test_get(LCClient, time, instrument):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     'query',
-    [(a.Time('2012/10/4', '2012/10/5') & a.Instrument('eve') & a.Level(0))])
+    [(a.Time('2012/10/4', '2012/10/5') & a.Instrument.eve & a.Level.zero)])
 def test_fido(LCClient, query):
     qr = Fido.search(query)
     client = qr.get_response(0).client
@@ -100,17 +100,17 @@ def test_levels(time):
     Test the correct handling of level
     Level 0 comes from EVEClient, other levels from EVE.
     """
-    eve_a = a.Instrument('EVE')
+    eve_a = a.Instrument.eve
     qr = Fido.search(time, eve_a)
     clients = {type(a.client) for a in qr.responses}
     assert clients == {VSOClient}
 
-    qr = Fido.search(time, eve_a, a.Level(0))
+    qr = Fido.search(time, eve_a, a.Level.zero)
     clients = {type(a.client) for a in qr.responses}
     assert clients == {eve.EVEClient}
 
     # This is broken because the VSO Eve client doesn't provide a way of allowing Level.
-    #qr = Fido.search(time, eve_a, a.Level(0) | a.Level(1))
+    #qr = Fido.search(time, eve_a, a.Level.zero | a.Level.one)
     #clients = {type(a.client) for a in qr.responses}
     #assert clients == {eve.EVEClient}
 

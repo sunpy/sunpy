@@ -30,6 +30,7 @@ from astropy.table import Table
 
 
 from sunpy.util.functools import seconddispatch
+from sunpy.util.util import get_width
 
 _ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
 # Matches any number.
@@ -83,35 +84,22 @@ def _print_attrs(attr, html=False):
     names_long = [str(x) for _, x in sorted(
         zip(attrs.name, attrs.name_long), key=lambda pair: pair[0])]
     descs = [str(x) for _, x in sorted(zip(attrs.name, attrs.desc), key=lambda pair: pair[0])]
-    # Cut down the text.
     descs = [x[:77] + '...' if len(x) > 80 else x for x in descs]
     lines = []
     t = Table(names=["Attribute Name", "Client", "Full Name",
                      "Description"], dtype=["U80", "U80", "U80", "U80"])
     for name, client, name_long, desc in zip(names, clients, names_long, descs):
         t.add_row((name, client, name_long, desc))
-    if html:
-        lines.insert(0, "<p>"+class_name+"</p>")
-    else:
-        lines.insert(0, class_name)
+    lines.insert(0, class_name)
     # If the attr lacks a __doc__ this will error and prevent this from returning anything.
     try:
-        if html:
-            lines.insert(1, "<p>"+dedent(attr.__doc__.partition("\n\n")[0])+"</p>"+"\n")
-        else:
-            lines.insert(1, dedent(attr.__doc__.partition("\n\n")[0])+"\n")
+        lines.insert(1, dedent(attr.__doc__.partition("\n\n")[0])+"\n")
     except AttributeError:
         pass
-    # If the table is empty, why print it?
-    if len(t) == 0:
-        pass
-    else:
-        if os.environ.get("COLUMNS", None):
-            width = int(os.environ.get("COLUMNS"))
-        else:
-            _, width = get_terminal_size()
-        width = -1 if html else width
-        lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+    if html:
+        lines = [f"<p>{line}</p>" for line in lines]
+    width = -1 if html else get_width()
+    lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
     return '\n'.join(lines)
 
 

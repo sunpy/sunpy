@@ -23,7 +23,7 @@ from sunpy.net import Fido, attrs as a
 start_time = parse_time("2017-01-25")
 end_time = start_time + TimeDelta(23*u.hour + 59*u.minute + 59*u.second)
 results = Fido.search(a.Time(start_time, end_time),
-                      a.Instrument('HMI') & a.Physobs("LOS_magnetic_field"),
+                      a.Instrument.hmi & a.Physobs.los_magnetic_field,
                       a.Sample(60 * u.second))
 
 ##############################################################################
@@ -34,7 +34,7 @@ smap = sunpy.map.Map(file_name)
 
 ##############################################################################
 # Download the SRS file.
-srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument('SRS-TABLE'))
+srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument.srs_table)
 srs_downloaded_files = Fido.fetch(srs_results)
 
 ##############################################################################

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from astropy.time import Time as astropyTime
-
 from sunpy.net._attrs import Wavelength, Time
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr, SimpleAttr
 
@@ -38,8 +35,7 @@ class PrimeKey(DataAttr):
         self.value = value
 
     def __repr__(self):
-        return "<{cname!s}({lab!r},{val!r})>".format(
-            cname=self.__class__.__name__, lab=self.label, val=self.value)
+        return f"{object.__repr__(self)}" + "\n" + f"{self.label, self.value}"
 
     def collides(self, other):
         return False

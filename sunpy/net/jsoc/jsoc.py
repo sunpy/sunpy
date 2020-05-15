@@ -905,22 +905,45 @@ class JSOCClient(BaseClient):
     @classmethod
     def register_values(cls):
         # We always use the local file for now.
-        return cls.get_jsoc_values(load=True)
+        return cls.load_jsoc_values()
 
     @staticmethod
-    def get_jsoc_values(load=False, save=False):
+    def create_parse_jsoc_values():
         """
-        Makes a network call to the JSOC API (via DRMS) that returns what keywords they support.
+        Makes a network call to the VSO API that returns what keywords they support.
         We take this list and register all the keywords as corresponding Attrs.
+        """
+        from drms import Client
 
-        Parameters
-        ----------
-        load : bool, optional
-            If ``True``, will not do a request but read the local attrs file instead.
-            Defaults to ``False``.
-        save : bool, optional
-            If ``True``, will save a json file from the VSO request (and do the request).
-            Defaults to ``False``.
+        here = os.path.dirname(os.path.realpath(__file__))
+
+        c = Client()
+        # Series we are after
+        data_sources = ["hmi", "mdi", "aia"]
+
+        # Now get all the information we want.
+        series_store = []
+        segments = []
+        for series in data_sources:
+            info = c.series(rf'{series}\.')
+            for item in info:
+                data = c.info(item)
+                series_store.append((data.name, data.note))
+                if not data.segments.empty:
+                    for row in data.segments.iterrows():
+                        segments.append((row[0], row[1][-1]))
+        series_store = list(set(series_store))
+        segments = list(set(segments))
+        with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
+            keyword_info = {}
+            keyword_info["series_store"] = series_store
+            keyword_info["segments"] = segments
+            json.dump(keyword_info, attrs_file)
+
+    @staticmethod
+    def load_jsoc_values():
+        """
+        We take this list and register all the keywords as corresponding Attrs.
 
         Returns
         -------
@@ -928,40 +951,10 @@ class JSOCClient(BaseClient):
             The constructed Attrs dictionary ready to be passed into Attr registry.
         """
         from sunpy.net import attrs as a
-        from drms import Client
 
         here = os.path.dirname(os.path.realpath(__file__))
-        # save or load has to be true.
-        if not save and not load:
-            raise ValueError("One of save or load has to be True.")
-
-        if save:
-            c = Client()
-            # Series we are after
-            data_sources = ["hmi", "mdi", "aia"]
-
-            # Now get all the information we want.
-            series_store = []
-            segments = []
-            for series in data_sources:
-                info = c.series(rf'{series}\.')
-                for item in info:
-                    data = c.info(item)
-                    series_store.append((data.name, data.note))
-                    if not data.segments.empty:
-                        for row in data.segments.iterrows():
-                            segments.append((row[0], row[1][-1]))
-            series_store = list(set(series_store))
-            segments = list(set(segments))
-            with open(os.path.join(here, 'data', 'attrs.txt'), 'w') as attrs_file:
-                keyword_info = {}
-                keyword_info["series_store"] = series_store
-                keyword_info["segments"] = segments
-                json.dump(keyword_info, attrs_file)
-
-        if load:
-            with open(os.path.join(here, 'data', 'attrs.txt'), 'r') as attrs_file:
-                keyword_info = json.load(attrs_file)
+        with open(os.path.join(here, 'data', 'attrs.json'), 'r') as attrs_file:
+            keyword_info = json.load(attrs_file)
 
         # Create attrs out of them.
         series_dict = {a.jsoc.Series: keyword_info["series_store"]}

@@ -51,7 +51,7 @@ def online_query(draw, instrument=online_instruments()):
     query = draw(instrument)
 
     if isinstance(query, a.Instrument) and query.value == 'eve':
-        query &= a.Level(0)
+        query &= a.Level.zero
     if isinstance(query, a.Instrument) and query.value == 'norh':
         query &= a.Wavelength(17*u.GHz)
 
@@ -70,9 +70,9 @@ def test_offline_fido(query):
 # Until we get more mocked, we can't really do this to online clients.
 # TODO: Hypothesis this again
 @pytest.mark.parametrize("query", [
-    (a.Instrument('eve') & a.Time('2014/7/7', '2014/7/14') & a.Level(0)),
-    (a.Instrument('rhessi') & a.Time('2014/7/7', '2014/7/14')),
-    (a.Instrument('norh') & a.Time('2014/7/7', '2014/7/14') & a.Wavelength(17*u.GHz)),
+    (a.Instrument.eve & a.Time('2014/7/7', '2014/7/14') & a.Level.zero),
+    (a.Instrument.rhessi & a.Time('2014/7/7', '2014/7/14')),
+    (a.Instrument.norh & a.Time('2014/7/7', '2014/7/14') & a.Wavelength(17*u.GHz)),
 ])
 def test_online_fido(query):
     unifiedresp = Fido.search(query)
@@ -102,7 +102,7 @@ def check_response(query, unifiedresp):
 
 @pytest.mark.remote_data
 def test_save_path(tmpdir):
-    qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
+    qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level.zero)
 
     # Test when path is str
     files = Fido.fetch(qr, path=str(tmpdir / "{instrument}" / "{level}"))
@@ -113,7 +113,7 @@ def test_save_path(tmpdir):
 
 @pytest.mark.remote_data
 def test_save_path_pathlib(tmpdir):
-    qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
+    qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level.zero)
 
     # Test when path is pathlib.Path
     target_dir = tmpdir.mkdir("down")
@@ -126,7 +126,7 @@ def test_save_path_pathlib(tmpdir):
 
 @pytest.mark.remote_data
 def test_save_path_cwd(tmpdir):
-    qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
+    qr = Fido.search(a.Instrument.eve, a.Time("2016/10/01", "2016/10/02"), a.Level.zero)
 
     # Test when path is ./ for current working directory
     os.chdir(tmpdir)  # move into temp directory
@@ -144,7 +144,7 @@ Factory Tests
 def test_unified_response():
     start = parse_time("2012/1/1")
     end = parse_time("2012/1/2")
-    qr = Fido.search(a.Instrument('EVE'), a.Level(0), a.Time(start, end))
+    qr = Fido.search(a.Instrument.eve, a.Level.zero, a.Time(start, end))
     assert qr.file_num == 2
     strings = ['eve', 'SDO', start.strftime(TIMEFORMAT), end.strftime(TIMEFORMAT)]
     assert all(s in qr._repr_html_() for s in strings)
@@ -167,9 +167,9 @@ def test_call_error():
 
 @pytest.mark.remote_data
 def test_fetch():
-    qr = Fido.search(a.Instrument('EVE'),
+    qr = Fido.search(a.Instrument.eve,
                      a.Time("2016/10/01", "2016/10/02"),
-                     a.Level(0))
+                     a.Level.zero)
     res = Fido.fetch(qr)
     assert isinstance(res, Results)
 
@@ -184,7 +184,7 @@ Use LYRA here because it does not use the internet to return results.
 @pytest.mark.remote_data
 def test_unifiedresponse_slicing():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
     assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], UnifiedResponse)
 
@@ -192,7 +192,7 @@ def test_unifiedresponse_slicing():
 @pytest.mark.remote_data
 def test_unifiedresponse_slicing_reverse():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
     assert isinstance(results[::-1], UnifiedResponse)
     assert len(results[::-1]) == len(results)
     assert isinstance(results[0, ::-1], UnifiedResponse)
@@ -202,7 +202,7 @@ def test_unifiedresponse_slicing_reverse():
 @pytest.mark.remote_data
 def test_tables_single_response():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
     tables = results.tables
 
     assert isinstance(tables, list)
@@ -217,7 +217,7 @@ def test_tables_single_response():
 @pytest.mark.remote_data
 def test_tables_multiple_response():
     results = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                          a.Instrument('lyra') | (a.Instrument('rhessi') & a.Physobs("summary_lightcurve")))
+                          a.Instrument.lyra | (a.Instrument.rhessi & a.Physobs.summary_lightcurve))
     tables = results.tables
     assert isinstance(tables, list)
     assert all(isinstance(t, Table) for t in tables)
@@ -234,14 +234,14 @@ def test_tables_multiple_response():
 def test_tables_all_types():
     # Data retriver response objects
     drclient = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                           a.Instrument('lyra') | (a.Instrument('rhessi') & a.Physobs("summary_lightcurve")))
+                           a.Instrument.lyra | (a.Instrument.rhessi & a.Physobs.summary_lightcurve))
     drtables = drclient.tables
     assert isinstance(drtables, list)
     assert isinstance(drtables[0], Table)
 
     # VSO response objects
     vsoclient = Fido.search(a.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
-                            a.Instrument('aia'), a.Wavelength(171 * u.AA))
+                            a.Instrument.aia, a.Wavelength(171 * u.AA))
     vsotables = vsoclient.tables
     assert isinstance(vsotables, list)
     assert isinstance(vsotables[0], Table)
@@ -266,7 +266,7 @@ def test_vso_unifiedresponse(mock_build_client):
 @pytest.mark.remote_data
 def test_responses():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
 
     for i, resp in enumerate(results.responses):
         assert isinstance(resp, QueryResponse)
@@ -277,7 +277,7 @@ def test_responses():
 @pytest.mark.remote_data
 def test_repr():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
 
     rep = repr(results)
     rep = rep.split('\n')
@@ -292,7 +292,7 @@ def filter_queries(queries):
 @pytest.mark.remote_data
 def test_path():
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
 
     Fido.fetch(results, path="notapath/{file}")
 
@@ -301,7 +301,7 @@ def test_path():
 @skip_windows
 def test_path_read_only(tmp_path):
     results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument.lyra)
 
     # chmod dosen't seem to work correctly on the windows CI
     os.chmod(tmp_path, S_IREAD | S_IRGRP | S_IROTH)
@@ -423,7 +423,7 @@ def results_generator(dl):
             return_value=Results([], errors=[DownloadFailed(None)]))
 @mock.patch("parfive.Downloader.download", new=results_generator)
 def test_vso_errors_with_second_client(mock_download_all):
-    query = a.Time("2011/01/01", "2011/01/02") & (a.Instrument("goes") | a.Instrument("EIT"))
+    query = a.Time("2011/01/01", "2011/01/02") & (a.Instrument.goes | a.Instrument.eit)
 
     qr = Fido.search(query)
 
@@ -451,7 +451,7 @@ def test_mixed_retry_error():
 @mock.patch("sunpy.net.dataretriever.sources.goes.XRSClient.fetch",
             return_value=["hello"])
 def test_client_fetch_wrong_type(mock_fetch):
-    query = a.Time("2011/01/01", "2011/01/02") & a.Instrument("goes")
+    query = a.Time("2011/01/01", "2011/01/02") & a.Instrument.goes
 
     qr = Fido.search(query)
 
@@ -464,7 +464,7 @@ def test_vso_fetch_hmi(tmpdir):
     start_time = "2017-01-25"
     end_time = "2017-01-25T23:59:59"
     results = Fido.search(a.Time(start_time, end_time),
-                          a.Instrument('HMI') & a.Physobs("LOS_magnetic_field"),
+                          a.Instrument.hmi & a.Physobs.los_magnetic_field,
                           a.Sample(1 * u.minute))
 
     files = Fido.fetch(results[0, 0], path=tmpdir)
@@ -475,7 +475,7 @@ def test_vso_fetch_hmi(tmpdir):
 def test_unclosedSocket_warning():
     with pytest.warns(None):
         attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
-        result = Fido.search(attrs_time, a.Instrument('eit'))
+        result = Fido.search(attrs_time, a.Instrument.eit)
         Fido.fetch(result)
 
 

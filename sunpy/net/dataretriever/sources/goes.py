@@ -32,7 +32,7 @@ class XRSClient(GenericClient):
     --------
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('XRS'))  #doctest: +REMOTE_DATA
+    ...                       a.Instrument.xrs)  #doctest: +REMOTE_DATA
     >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -411,5 +411,5 @@ class SUVIClient(GenericClient):
         goes_number = [16, 17]
         adict = {attrs.Instrument: [
             ("SUVI",  "The Geostationary Operational Environmental Satellite Program.")],
-            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number for SUVI {x}") for x in goes_number]}
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
         return adict

@@ -376,11 +376,8 @@ def test_max_parallel_connections(client):
     assert download.called
 
 
-@pytest.mark.remote_data
 def test_jsoc_attrs(client):
-    # Rough test to make sure it works and returns something
-    # This test is very slow ~ 3 minutes.
-    attrs = client.get_jsoc_values(load=True)
+    attrs = client.load_jsoc_values()
     assert a.jsoc.Series in attrs.keys()
     assert a.jsoc.Segment in attrs.keys()
     assert len(attrs[a.jsoc.Series]) != 0
