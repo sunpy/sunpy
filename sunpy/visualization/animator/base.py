@@ -620,7 +620,9 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         # Update slider label to reflect real world values in axis_ranges.
         label = self.axis_ranges[ax_ind](ind)
         if isinstance(label, u.Quantity):
-            slider.valtext.set_text(format_quantity_as_string(label))
+            slider.valtext.set_text(label.to_string(precision=5,
+                                                    format='latex',
+                                                    subfmt='inline'))
         elif isinstance(label, str):
             slider.valtext.set_text(label)
         else:
@@ -647,17 +649,3 @@ def edges_to_centers_nd(axis_range, edges_axis):
     lower_edges = axis_range[tuple(lower_edge_indices)]
 
     return (upper_edges - lower_edges) / 2 + lower_edges
-
-
-def format_quantity_as_string(quantity):
-    """
-    An Astropy 3.1 compatibility wrapper for Quantity.to_string.
-    Can be removed when Astropy dependency is >=3.2
-    """
-    to_string = getattr(quantity, "to_string", None)
-    if not to_string:
-        return quantity._repr_latex_()
-    else:
-        return quantity.to_string(precision=5,
-                                  format='latex',
-                                  subfmt='inline')
