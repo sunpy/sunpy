@@ -17,7 +17,7 @@ from sunpy.net import Fido, attrs as a
 # a timerange (`~sunpy.net.attrs.Time`) and
 # the instrument (`~sunpy.net.attrs.Instrument`).
 attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
-result = Fido.search(attrs_time, a.Instrument('eit'))
+result = Fido.search(attrs_time, a.Instrument.eit)
 
 ###############################################################################
 # Let's inspect the results.
@@ -35,6 +35,6 @@ print(downloaded_files)
 # For example, it is possible to query two wavelengths at the same time with
 # the OR operator (|).
 result = Fido.search(a.Time('2012/03/04 00:00', '2012/03/04 00:02'),
-                     a.Instrument('aia'),
+                     a.Instrument.aia,
                      a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))
 print(result)

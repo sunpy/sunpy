@@ -21,7 +21,7 @@ import sunpy.map
 # `sunpy.map.MapSequence`. This could be from any channel of any imager.
 # Here, we use SDO/AIA 304 Å.
 
-instrument = a.Instrument('AIA')
+instrument = a.Instrument.aia
 wave = a.Wavelength(30 * u.nm, 31 * u.nm)
 result = Fido.search(a.Time('2015-06-18T00:00:00', '2015-06-18T00:00:10') |
                      a.Time('2015-06-18T01:03:30', '2015-06-18T01:03:35'),

@@ -14,7 +14,7 @@ from sunpy.net import hek, Fido, attrs as a
 ###############################################################################
 # Let's first grab GOES XRS data for a particular time of interest
 tr = TimeRange(['2011-06-07 04:00', '2011-06-07 12:00'])
-results = Fido.search(a.Time(tr), a.Instrument('XRS'))
+results = Fido.search(a.Time(tr), a.Instrument.xrs)
 
 ###############################################################################
 # Then download the data and load it into a TimeSeries

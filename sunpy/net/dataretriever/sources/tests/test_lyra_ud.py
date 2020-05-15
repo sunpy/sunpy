@@ -71,7 +71,7 @@ def test_get(LCClient, time, instrument):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument",
-    [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('lyra'))])
+    [(a.Time('2012/10/4', '2012/10/6'), a.Instrument.lyra)])
 def test_fido(time, instrument):
     qr = Fido.search(time, instrument)
     assert isinstance(qr, UnifiedResponse)

@@ -45,9 +45,9 @@ def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
 
 @given(time_attr())
 def test_can_handle_query(LCClient, time):
-    ans1 = LCClient._can_handle_query(time, a.Instrument('norh'))
+    ans1 = LCClient._can_handle_query(time, a.Instrument.norh)
     assert ans1 is True
-    ans1 = LCClient._can_handle_query(time, a.Instrument('norh'),
+    ans1 = LCClient._can_handle_query(time, a.Instrument.norh,
                                       a.Wavelength(10*u.GHz))
     assert ans1 is True
     ans2 = LCClient._can_handle_query(time)
@@ -59,7 +59,7 @@ def test_can_handle_query(LCClient, time):
 @given(time=range_time(Time('1992-6-1')))
 @settings(max_examples=2, deadline=50000)
 def test_query(LCClient, time, wave):
-    qr1 = LCClient.search(time, a.Instrument('norh'), wave)
+    qr1 = LCClient.search(time, a.Instrument.norh, wave)
     assert isinstance(qr1, QueryResponse)
     # Not all hypothesis queries are going to produce results, and
     if qr1:
@@ -75,26 +75,26 @@ def test_query(LCClient, time, wave):
 # Don't use time_attr here for speed.
 def test_query_no_wave(LCClient):
     with pytest.raises(ValueError):
-        LCClient.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'))
+        LCClient.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh)
 
 
 def test_wavelength_range(LCClient):
     with pytest.raises(ValueError):
         LCClient.search(
-            a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'),
+            a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh,
             a.Wavelength(17 * u.GHz, 34 * u.GHz))
 
 
 def test_query_wrong_wave(LCClient):
     with pytest.raises(ValueError):
-        LCClient.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'),
+        LCClient.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh,
                         a.Wavelength(50*u.GHz))
 
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument,wave", [
-    (a.Time('2012/10/4', '2012/10/4'), a.Instrument('norh'), a.Wavelength(17*u.GHz)),
-    (a.Time('2012/10/4', '2012/10/4'), a.Instrument('norh'), a.Wavelength(34*u.GHz))])
+    (a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(17*u.GHz)),
+    (a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(34*u.GHz))])
 def test_get(LCClient, time, instrument, wave):
     qr1 = LCClient.search(time, instrument, wave)
     download_list = LCClient.fetch(qr1)
@@ -104,7 +104,7 @@ def test_get(LCClient, time, instrument, wave):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument, wave",
-    [(a.Time('2012/10/4', '2012/10/4'), a.Instrument('norh'), a.Wavelength(17*u.GHz) | a.Wavelength(34*u.GHz))])
+    [(a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(17*u.GHz) | a.Wavelength(34*u.GHz))])
 def test_fido(time, instrument, wave):
     qr = Fido.search(time, instrument, wave)
     assert isinstance(qr, UnifiedResponse)

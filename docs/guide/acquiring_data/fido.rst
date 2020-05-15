@@ -23,8 +23,8 @@ It can be imported as follows::
 Search Attributes
 -----------------
 
-To search for data with Fido, you need to specify attributes to search against.
-The range of attributes are found in the `attrs <sunpy.net.attrs>`.
+To search for data with `~sunpy.net.Fido, you need to specify attributes to search against.
+The range of attributes are found in the `attrs <sunpy.net.attrs>` submodule.
 Examples of these attributes are:
 
 - `a.Time <sunpy.net.attrs.Time>`
@@ -33,10 +33,12 @@ Examples of these attributes are:
 
 whereas some of these attributes are client specific, and are found under `attrs.vso <sunpy.net.vso.attrs>` and `attrs.jsoc <sunpy.net.jsoc.attrs>`.
 
-In to each attribute you have to procide a value to use::
+In to each attribute you have to provide a value to use::
 
-    >>> a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')
-    (<Time(<Time object: scale='utc' format='isot' value=2012-03-04T00:00:00.000>, <Time object: scale='utc' format='isot' value=2012-03-06T00:00:00.000>, None)>, <sunpy.net.attrs.Instrument: lyra object...>)
+    >>> a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra
+    (< Time(2012-03-04 00:00:00.000, 2012-03-06 00:00:00.000, ) >, <sunpy.net.attrs.Instrument(LYRA: Lyman Alpha Radiometer is the solar UV radiometer on board
+    Proba-2.) object at ...>)
+
 
 For attributes that have no fixed selection of values (``Time`` for example) you will have to provide the range you require.
 However, for attributes that have a fixed range of **known** values, it is possible to list all these values.
@@ -56,13 +58,6 @@ Using ``Instrument`` as the first example, if you print the object::
     bcs                         VSO         BCS                      Bragg Crystal Spectrometer
     bic_hifi                    VSO         BIC-HIFI                 None
     bigbear                     VSO         Big Bear                 Big Bear Solar Observatory, California TON and GONG+ sites
-    cds                         VSO         CDS                      Coronal Diagnostic Spectrometer
-    celias                      VSO         CELIAS                   Charge, Element, and Isotope Analysis System
-    cerrotololo                 VSO         Cerro Tololo             Cerro Tololo, Chile GONG+ site
-    chp                         VSO         chp                      Chromospheric Helium-I Imaging Photometer
-    chrotel                     VSO         ChroTel                  Chromospheric Telescope
-    climso                      VSO         CLIMSO                   Christian Latouche IMageur SOlaire
-    costep                      VSO         COSTEP                   Comprehensive Suprathermal and Energetic Particle Analyzer
     ...
 
 You get a full list of known values, a description and what "Clients" support those values (if you want to use a specific data source).
@@ -79,6 +74,7 @@ For VSO::
     -------------- ------ --------- --------------------------------------------------------------------------------
     hao            VSO    HAO       High Altitude Observatory, NCAR
     jsoc           VSO    JSOC      SDO Joint Science Operations Center
+    kis            VSO    KIS       Kiepenheuer-Institut für Sonnenphysik
     ...
 
 For JSOC::
@@ -94,18 +90,16 @@ For JSOC::
     aia_lev1                           JSOC   aia.lev1                           AIA Level 1
     aia_lev1_euv_12s                   JSOC   aia.lev1_euv_12s                   AIA Level 1, 12 second cadence
     aia_lev1_uv_24s                    JSOC   aia.lev1_uv_24s                    AIA Level 1, 24 second cadence
-    aia_lev1_vis_1h                    JSOC   aia.lev1_vis_1h                    AIA Level 1, 3600 second cadence
-    aia_master_pointing3h              JSOC   aia.master_pointing3h              Master Pointing Parameters
     ...
 
-Furthermore, you can do tab completion to list all the available names that have been sanatiszed in order to allow them to be Python names.
+Furthermore, you can use tab completion to auto-fill the attribute name, for example by typing ``a.jsoc.aia_f<TAB>``.
 
 Searching for Data Using Fido
 -----------------------------
 
 For example::
 
-    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
+    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra) # doctest: +REMOTE_DATA
 
 this returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
@@ -134,7 +128,7 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
 `a.Wavelength <sunpy.net.attrs.Wavelength>` attribute::
 
     >>> import astropy.units as u
-    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('norh'),
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.norh,
     ...             a.Wavelength(17*u.GHz))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -157,7 +151,7 @@ like this which are client specific will result in
 `~sunpy.net.Fido` only searching that
 client for results, in this case VSO.::
 
-    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
+    >>> Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.aia,
     ...             a.Wavelength(171*u.angstrom), a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
@@ -196,7 +190,7 @@ pipe ``|`` operator. This joins queries together just as the logical ``OR``
 operator would::
 
     >>> Fido.search(a.Time('2012/3/4', '2012/3/4 02:00'),
-    ...             a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
+    ...             a.Instrument.lyra | a.Instrument.rhessi)  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 3 Providers:
     <BLANKLINE>
@@ -235,7 +229,7 @@ the `~sunpy.net.dataretriever.sources.LYRAClient`, and EVE data from the
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"),
-    ...                       a.Instrument("lyra") | a.Instrument("eve"))  # doctest: +REMOTE_DATA
+    ...                       a.Instrument.lyra | a.Instrument.eve)  # doctest: +REMOTE_DATA
 
 If you then wanted to inspect just the LYRA data for the whole time range
 specified in the search, you would index this response to see just the
@@ -335,7 +329,7 @@ the ``.errors`` list with any errors that occurred during the second attempt.
 Fido Clients
 ------------
 
-Fido essentially masks the clients it uses to search and download data.
+`~sunpy.net.Fido` provides access to many sources of data via "clients", these clients can be defined inside sunpy or in other packages.
 If you want to see the current list of clients you can do::
 
     >>> print(Fido)

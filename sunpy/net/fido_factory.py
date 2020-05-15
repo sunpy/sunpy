@@ -12,8 +12,6 @@ import os
 from pathlib import Path
 from collections.abc import Sequence
 from textwrap import dedent
-from shutil import get_terminal_size
-
 from parfive import Downloader, Results
 
 from astropy.table import Table
@@ -23,11 +21,8 @@ from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net import vso
 from sunpy.net import attr
-from sunpy.net import attrs as a
-from sunpy.net import vso
-from sunpy.net.base_client import BaseClient, BaseQueryResponse
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory, MultipleMatchError, NoMatchError
 from sunpy.util.parfive_helpers import Downloader, Results
+from sunpy.util.util import get_width
 
 __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
 
@@ -241,19 +236,19 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         >>> from sunpy.net import Fido, attrs as a
         >>> import astropy.units as u
-        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra) # doctest: +REMOTE_DATA
 
         Query for data from Nobeyama Radioheliograph and RHESSI
 
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-        ...     (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
+        ...     (a.Instrument.norh & a.Wavelength(17*u.GHz)) | a.Instrument.rhessi)  # doctest: +REMOTE_DATA
 
         Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
 
         >>> import astropy.units as u
         >>> from sunpy.net import Fido, attrs as a
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-        ...                        a.Instrument('AIA'),
+        ...                        a.Instrument.aia,
         ...                        a.Wavelength(304*u.angstrom, 304*u.angstrom),
         ...                        a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
 
@@ -434,31 +429,23 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     def __str__(self):
         """
-        This enables the "pretty" printing of Attrs.
+        This enables the "pretty" printing of the Fido Clients.
         """
         return self._print_clients()
 
     def _repr_html_(self):
         """
-        This enables the "pretty" printing of Attrs with html.
+        This enables the "pretty" printing of the Fido Clients with html.
         """
         return self._print_clients(html=True)
 
     def _print_clients(self, html=False) -> str:
-        if os.environ.get("COLUMNS", None):
-            width = int(os.environ.get("COLUMNS"))
-        else:
-            _, width = get_terminal_size()
-        width = -1 if html else width
+        width = -1 if html else get_width()
 
         t = Table(names=["Client", "Description"], dtype=["U80", "U120"])
-        lines = []
+        lines = ["sunpy.net.Fido", dedent(self.__doc__)]
         if html:
-            lines.insert(0, "<p> sunpy.net.Fido </p>")
-            lines.insert(1, "<p>"+dedent(self.__doc__)+"</p>")
-        else:
-            lines.insert(0, "sunpy.net.Fido")
-            lines.insert(1, dedent(self.__doc__))
+            lines = [f"<p>{line}</p>" for line in lines]
         for key in BaseClient._registry.keys():
             t.add_row((key.__name__, dedent(
                 key.__doc__.partition("\n\n")[0].replace("\n    ", " "))))

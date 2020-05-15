@@ -10,7 +10,7 @@ is an interface to multiple sources including all the sources implemented in
 `~sunpy.net.Fido` can be used like so::
 
     >>> from sunpy.net import Fido, attrs as a
-    >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Instrument('lyra'))  # doctest: +REMOTE_DATA
+    >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)  # doctest: +REMOTE_DATA
     >>> files = Fido.fetch(results)  # doctest: +SKIP
 
 .. automodapi:: sunpy.net

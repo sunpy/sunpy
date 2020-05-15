@@ -19,7 +19,7 @@ from sunpy.coordinates import get_body_heliographic_stonyhurst
 ###############################################################################
 # Let's download an image of the Venus transit.
 result = Fido.search(a.Time('2012/06/06 04:07:25', '2012/06/06 04:07:35'),
-                     a.Instrument('aia'),
+                     a.Instrument.aia,
                      a.Wavelength(1600*u.angstrom))
 files = Fido.fetch(result)
 aiamap = sunpy.map.Map(files[0])

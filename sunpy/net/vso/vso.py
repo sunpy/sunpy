@@ -353,7 +353,7 @@ class VSOClient(BaseClient):
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> client.search(
         ...    a.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    a.Instrument('eit') | a.Instrument('aia'))   # doctest:  +REMOTE_DATA
+        ...    a.Instrument.eit | a.Instrument.aia)   # doctest:  +REMOTE_DATA
         <sunpy.net.vso.vso.QueryResponse object at ...>
            Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
                                                        ...             Angstrom
@@ -796,22 +796,12 @@ class VSOClient(BaseClient):
     @classmethod
     def register_values(cls):
         # We always use the local file for now.
-        return cls.get_vso_values(load=True)
+        return cls.load_vso_values()
 
     @staticmethod
-    def get_vso_values(load=False, save=False):
+    def load_vso_values():
         """
-        Makes a network call to the VSO API that returns what keywords they support.
         We take this list and register all the keywords as corresponding Attrs.
-
-        Parameters
-        ----------
-        load : bool, optional
-            If ``True``, will not do a request but read the local attrs file instead.
-            Defaults to ``False``.
-        save : bool, optional
-            If ``True``, will save a json file from the VSO request (and do the request).
-            Defaults to ``False``.
 
         Returns
         -------
@@ -821,41 +811,48 @@ class VSOClient(BaseClient):
         from sunpy.net import attrs as a
 
         here = os.path.dirname(os.path.realpath(__file__))
-        # save or load has to be true.
-        if not save and not load:
-            raise ValueError("One of save or load has to be True.")
+        with open(os.path.join(here, 'data', 'attrs.json'), 'r') as attrs_file:
+            keyword_info = json.load(attrs_file)
 
-        if save:
-            # Keywords we are after
-            keywords = ["+detector", "+instrument", "+source", "+provider", "+physobs", "+level"]
-            # Construct and format the request
-            keyword_info = {}
-            url = "https://vso1.nascom.nasa.gov/cgi-bin/registry_json.cgi"
-            headers = {"Content-Type": "application/x-www-form-urlencoded"}
-            for keyword in keywords:
-                data = urlencode({'fields': f"['{keyword}']".replace("'", '"')}).encode('ascii')
-                req = Request(url=url, data=data, headers=headers)
-                response = urlopen(req)
-                keyword_info[keyword.replace("+", "")] = json.loads(response.read())
-
-            with open(os.path.join(here, 'data', 'attrs.txt'), 'w') as attrs_file:
-                json.dump(keyword_info, attrs_file)
-
-        if load:
-            with open(os.path.join(here, 'data', 'attrs.txt'), 'r') as attrs_file:
-                keyword_info = json.load(attrs_file)
-
-        # Now to traverse the return and create attrs out of them.
+        # Now to traverse the saved dict and give them attr keys.
         attrs = {}
         for key, value in keyword_info.items():
             attr = getattr(a, key.capitalize(), None)
             if attr is None:
                 attr = getattr(a.vso, key.capitalize())
-            attrs[attr] = []
+            attrs[attr] = value
+        return attrs
+
+    @staticmethod
+    def create_parse_vso_values():
+        """
+        Makes a network call to the VSO API that returns what keywords they support.
+        We take this list and register all the keywords as corresponding Attrs.
+        """
+        here = os.path.dirname(os.path.realpath(__file__))
+
+        # Keywords we are after
+        keywords = ["+detector", "+instrument", "+source", "+provider", "+physobs", "+level"]
+        # Construct and format the request
+        keyword_info = {}
+        url = "https://vso1.nascom.nasa.gov/cgi-bin/registry_json.cgi"
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        for keyword in keywords:
+            data = urlencode({'fields': f"['{keyword}']".replace("'", '"')}).encode('ascii')
+            req = Request(url=url, data=data, headers=headers)
+            response = urlopen(req)
+            keyword_info[keyword.replace("+", "")] = json.loads(response.read())
+
+        # Now to traverse the return and create attrs out of them.
+        attrs = {}
+        for key, value in keyword_info.items():
+            attrs[key] = []
             for item in value:
                 if item:
                     if key == "level":
-                        attrs[attr].append((str(item[key]), str(item[key])))
+                        attrs[key].append((str(item[key]), str(item[key])))
                     else:
-                        attrs[attr].append((str(item[key]), str(item[key+"_long"])))
-        return attrs
+                        attrs[key].append((str(item[key]), str(item[key+"_long"])))
+
+        with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
+            json.dump(attrs, attrs_file)

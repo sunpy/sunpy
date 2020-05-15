@@ -2,10 +2,10 @@ import importlib
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from textwrap import dedent
-import os
-from shutil import get_terminal_size
 
 from astropy.table import Table
+
+from sunpy.util.util import get_width
 
 __all__ = ['BaseQueryResponse', 'BaseClient']
 
@@ -88,12 +88,12 @@ class BaseQueryResponse(Sequence):
 
 def _print_client(client, html=False):
     """
-    Given a Client class will print out each registered attribute.
+    Given a BaseClient instance will print out each registered attribute.
 
     Parameters
     ----------
     client : `sunpy.net.base_client.BaseClient`
-        The client class to print for.
+        The instance class to print for.
     html : bool
         Will return a html table instead.
 
@@ -102,28 +102,18 @@ def _print_client(client, html=False):
     `str`
         String with the client.
     """
+    width = -1 if html else get_width()
     class_name = f"{client.__module__+'.' or ''}{client.__class__.__name__}"
     attrs = client.register_values()
     lines = []
-    t = Table(names=["Attr Type", "Name", "Description"],
+    t = Table(names=["Attr Type",  "Name", "Description"],
               dtype=["U80", "U80", "U80"])
     for client_key in attrs.keys():
         for name, desc in attrs[client_key]:
-            desc = desc[:77] + '...' if len(desc) > 80 else desc
             t.add_row((client_key.__name__, name, desc))
+    lines = [class_name, dedent(client.__doc__.partition("\n\n")[0])]
     if html:
-        lines.insert(0, "<p>"+class_name+"</p>")
-    else:
-        lines.insert(0, class_name)
-    if html:
-        lines.insert(1, "<p>"+dedent(client.__doc__.partition("\n\n")[0])+"</p>"+"\n")
-    else:
-        lines.insert(1, dedent(client.__doc__.partition("\n\n")[0])+"\n")
-    if os.environ.get("COLUMNS", None):
-        width = int(os.environ.get("COLUMNS"))
-    else:
-        _, width = get_terminal_size()
-    width = -1 if html else width
+        lines = [f"<p>{line}</p>" for line in lines]
     lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
     return '\n'.join(lines)
 
@@ -192,13 +182,13 @@ class BaseClient(ABC):
 
     def __str__(self):
         """
-        This enables the "pretty" printing of clients.
+        This enables the "pretty" printing of BaseClient.
         """
         return _print_client(self)
 
     def _repr_html_(self):
         """
-        This enables the "pretty" printing of Attrs with html.
+        This enables the "pretty" printing of the BaseClient with html.
         """
         return _print_client(self, html=True)
 

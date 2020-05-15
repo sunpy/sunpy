@@ -120,8 +120,7 @@ pass an Astropy Time object, like::
 Then, the Time attribute can be passed as::
 
     >>> a.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'), astropy.time.Time('2014-01-01T01:00:00', scale='tai'))
-    <Time(<Time object: scale='tai' format='isot' value=2014-01-01T00:00:00.000>,
-    <Time object: scale='tai' format='isot' value=2014-01-01T01:00:00.000>, None)>
+    < Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000, ) >
 
 The second argument::
 
@@ -160,20 +159,22 @@ Note that, only Time and Wavelength are in-built attributes here. If you need to
 it should be passed like this::
 
     >>> a.jsoc.PrimeKey('HARPNUM', '4864')
-    <PrimeKey('HARPNUM','4864')>
+    <sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('HARPNUM', '4864')
 
 If 2 or more PrimeKeys need to be passed together::
 
     >>> a.jsoc.PrimeKey('HARPNUM', '4864') & a.jsoc.PrimeKey('CAMERA', '2')
-    <AttrAnd([<PrimeKey('HARPNUM','4864')>, <PrimeKey('CAMERA','2')>])>
+    <AttrAnd([<sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('HARPNUM', '4864'), <sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('CAMERA', '2')])>
 
 Also, note that the pre-defined primekeys, Time and Wavelength can also be passed as above, but you need to
 specify the exact keyword for it. For e.g. by::
 
     >>> a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')
-    (<Time(<Time object: scale='utc' format='isot' value=2014-01-01T00:00:00.000>,
-    <Time object: scale='utc' format='isot' value=2014-01-01T01:00:00.000>, None)>,
-    <PrimeKey('WAVELNTH','161')>)
+    (< Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000, ) >, <sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('WAVELNTH', '161'))
 
 If the correct keyword is not specified, or the passed PrimeKey is not supported by the given series, a
 meaningful error will be thrown, which will give you the PrimeKeys supported by that series. Hence, by looking

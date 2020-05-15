@@ -30,10 +30,10 @@ from sunpy.net import attrs as a
 ######################################################################
 # To get started, let's download the data:
 
-stereo = (a.Instrument('EUVI') &
+stereo = (a.Instrument("EUVI") &
           a.Time('2011-11-01', '2011-11-01T00:10:00'))
 
-aia = (a.Instrument('AIA') &
+aia = (a.Instrument.aia &
        a.Sample(24 * u.hour) &
        a.Time('2011-11-01', '2011-11-02'))
 

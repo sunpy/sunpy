@@ -29,7 +29,7 @@ class EVEClient(GenericClient):
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('EVE'), a.Level(0))  #doctest: +REMOTE_DATA
+    ...                       a.Instrument.eve, a.Level.zero)  #doctest: +REMOTE_DATA
     >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
