@@ -975,7 +975,7 @@ def test_deprecated_submap_inputs(generic_map2, coords):
 
     with pytest.warns(SunpyDeprecationWarning):
         with pytest.raises(ValueError,
-                           match="either top_right or both width and height must be specified"):
+                           match="either top_right alone or both width and height must be specified"):
             generic_map2.submap(bl_pix, width_pix, height=height_pix)
 
     with pytest.warns(SunpyDeprecationWarning):
@@ -985,7 +985,7 @@ def test_deprecated_submap_inputs(generic_map2, coords):
 
     with pytest.warns(SunpyDeprecationWarning):
         with pytest.raises(ValueError,
-                           match="either top_right or both width and height must be specified"):
+                           match="either top_right alone or both width and height must be specified"):
             generic_map2.submap(bl_pix, width_pix, height=height_pix)
 
 
@@ -1019,7 +1019,7 @@ def test_submap_kwarg_only_input_errors(generic_map2, coords):
         dict(),  # Only post deprecation
         )
     for kwargs in inputs:
-        with pytest.raises(ValueError, match="top_right or both width and height must be specified."):
+        with pytest.raises(ValueError, match="top_right alone or both width and height must be specified."):
             generic_map2.submap(bl_pix, **kwargs)
 
     with pytest.raises(TypeError, match="must be Quantity objects in units of pixels"):

@@ -1527,29 +1527,17 @@ class GenericMap(NDData):
             bottom_left = self.world_to_pixel(bottom_left)
             top_right = self.world_to_pixel(top_right)
 
-        elif (
-                # You haven't given top_right or both width and height
-                (top_right is None and (width is None or height is None)) or
-                # You have given top_right but you have also given width and height
-                (top_right is not None and (width is not None or height is not None)) or
-                # You haven't given top_right, width or height
-                (top_right is None and width is None and height is None)
-        ):
-            raise ValueError("If bottom_left is not a SkyCoord either top_right or "
+        elif ([arg is not None for arg in (top_right, width, height)]
+              not in [[True, False, False], [False, True, True]]):
+            raise ValueError("If bottom_left is not a SkyCoord either top_right alone or "
                              "both width and height must be specified.")
-        elif (
-                # bottom_left is not a Quantity in pixels
-                (not isinstance(bottom_left, u.Quantity) or not bottom_left.unit.is_equivalent(u.pix)) or
-                # You gave top_right but it's not a Quantity in pixels
-                (top_right is not None and (not isinstance(top_right, u.Quantity) or not top_right.unit.is_equivalent(u.pix))) or
-                # You didn't give top_right and width and height aren't both quantities in pixels
-                (top_right is None and ((not isinstance(width, u.Quantity) or not width.unit.is_equivalent(u.pix)) and
-                                        (not isinstance(height, u.Quantity) or not height.unit.is_equivalent(u.pix))))
-        ):
-            raise TypeError("When bottom_left is not a SkyCoord any values of top_right, "
+
+        elif (not all([arg is None or (isinstance(arg, u.Quantity) and arg.unit.is_equivalent(u.pix))
+                       for arg in (bottom_left, top_right, width, height)])):
+            raise TypeError("When bottom_left is not a SkyCoord, any values of top_right, "
                              "width or height specified must be Quantity objects in units of pixels.")
 
-        elif bottom_left.shape != (2,) and (top_right is None or top_right.shape != (2,)):
+        elif bottom_left.shape != (2,) or (top_right is not None and top_right.shape != (2,)):
             raise ValueError("Both bottom_left and top_right when specified as Quantity objects must have shape (2,)")
 
         elif height is not None and width is not None:
