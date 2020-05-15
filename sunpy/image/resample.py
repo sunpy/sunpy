@@ -82,31 +82,43 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     """
     Resample Map using either linear or nearest interpolation.
+
+    Parameters
+    ----------
+    orig : array-like
+        Original data.
+    dimensions : `tuple`
+        Dimensions of resampled data.
+    method : `str`
+        Interpolation method passed to `~scipy.interpolate.interp1d`
+    offset : `float`
+        Either 0 or 0.5, depending on whether interpolation is at the edge or
+        centers of bins.
+    m1 : 0 or 1
+        For ``orig.shape = (i,j)`` & new dimensions ``= (x,y)``, if set to `False`
+        (default) ``orig`` is resampled by factors of ``(i/x) * (j/y)``,
+        otherwise ``orig`` is resampled by ``(i-1)/(x-1) * (j-1)/(y-1)``.
+        This prevents extrapolation one element beyond bounds of input array.
     """
-    dimlist = []
-
-    # calculate new dims
-    for i in range(orig.ndim):
-        base = np.arange(dimensions[i])
-        dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
-                       (base + offset) - offset)
-
-    # specify old coordinates
-    old_coords = [np.arange(i, dtype=np.float) for i in orig.shape]
+    old_coords = [np.arange(i, dtype=np.float) + offset for i in orig.shape]
+    scale = (orig.shape - m1) / (dimensions - m1)
+    new_coords = [(np.arange(dimensions[i], dtype=np.float) + offset) * scale[i] for i in
+                  range(len(dimensions))]
 
     # first interpolation - for ndims = any
     mint = scipy.interpolate.interp1d(old_coords[-1], orig, bounds_error=False,
-                                      fill_value=min(old_coords[-1]), kind=method)
+                                      fill_value='extrapolate', kind=method)
 
-    new_data = mint(dimlist[-1])
+    new_data = mint(new_coords[-1])
 
     trorder = [orig.ndim - 1] + list(range(orig.ndim - 1))
     for i in range(orig.ndim - 2, -1, -1):
         new_data = new_data.transpose(trorder)
-
         mint = scipy.interpolate.interp1d(old_coords[i], new_data,
-                                          bounds_error=False, fill_value=min(old_coords[i]), kind=method)
-        new_data = mint(dimlist[i])
+                                          bounds_error=False,
+                                          fill_value='extrapolate',
+                                          kind=method)
+        new_data = mint(new_coords[i])
 
     if orig.ndim > 1:
         # need one more transpose to return to original dimensions
