@@ -1,0 +1,4 @@
+Previously `sunpy.map.GenericMap.resample` with ``method='linear'`` was
+using an incorrect and constant value to fill edges when upsampling a map. Values
+near the edges are now correctly extrapolated using the ``fill_value=extrapolate``
+option to `scipy.interpolate.interp1d`.
