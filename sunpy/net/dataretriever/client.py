@@ -203,7 +203,6 @@ class GenericClient(BaseClient):
         ----------
         timerange: `sunpy.time.TimeRange`
              The timerange to extract the URLs for.
-
         \\*\\*kwargs: `dict`
              Any extra keywords to refine the search. Generated from the
              attributes passed to
@@ -237,10 +236,8 @@ class GenericClient(BaseClient):
         ----------
         qres : `~sunpy.net.dataretriever.QueryResponse`
             Results to download.
-
         filenames : list
             List of base filenames (ex - "xyz.txt")
-
         path : str
             Path to download files to
 
@@ -307,32 +304,26 @@ class GenericClient(BaseClient):
         ----------
         qres : `~sunpy.net.dataretriever.QueryResponse`
             Results to download.
-
         path : `str` or `pathlib.Path`, optional
             Path to the download directory, or file template including the
             ``{file}`` string which will be replaced with the filename.
-
         overwrite : `bool` or `str`, optional
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
             and the existing file will be overwritten, if `'unique'` the filename
             will be modified to be unique.
-
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
             have been downloaded. If `False`, no progress bar will be shown.
-
         downloader : `parfive.Downloader`, optional
             The download manager to use.
-
         wait : `bool`, optional
            If `False` ``downloader.download()`` will not be called. Only has
            any effect if `downloader` is not `None`.
 
         Returns
         -------
-
         results: `parfive.Results`
 
         """

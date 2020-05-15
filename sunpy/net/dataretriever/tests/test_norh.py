@@ -121,4 +121,4 @@ def test_client_repr(LCClient):
     Repr check
     """
     output = str(LCClient)
-    assert output[:50] == 'NoRHClient\n\nProvides access to the Nobeyama RadioH'
+    assert output[:50] == 'sunpy.net.dataretriever.sources.norh.NoRHClient\n\nP'

@@ -87,4 +87,4 @@ def test_client_repr(LCClient):
     Repr check
     """
     output = str(LCClient)
-    assert output[:50] == 'GBMClient\n\nProvides access to data from the Gamma-'
+    assert output[:50] == 'sunpy.net.dataretriever.sources.fermi_gbm.GBMClien'

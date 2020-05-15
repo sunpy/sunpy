@@ -198,4 +198,4 @@ def test_client_repr(LCClient):
     Repr check
     """
     output = str(LCClient)
-    assert output[:50] == 'RHESSIClient\n\nProvides access to the RHESSI observ'
+    assert output[:50] == 'sunpy.net.dataretriever.sources.rhessi.RHESSIClien'

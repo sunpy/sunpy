@@ -91,4 +91,4 @@ def test_client_repr(LCClient):
     Repr check
     """
     output = str(LCClient)
-    assert output[:50] == 'LYRAClient\n\nProvides access to the LYRA/Proba2 dat'
+    assert output[:50] == 'sunpy.net.dataretriever.sources.lyra.LYRAClient\n\nP'

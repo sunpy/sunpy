@@ -15,8 +15,7 @@ from sunpy.time import TimeRange, parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 from sunpy.util.scraper import Scraper
-
-from ..client import GenericClient
+from sunpy.net.dataretriever import GenericClient
 
 TIME_FORMAT = config.get("general", "time_format")
 

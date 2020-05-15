@@ -1,6 +1,5 @@
 from sunpy.util.scraper import Scraper
-from ..client import GenericClient
-
+from sunpy.net.dataretriever import GenericClient
 
 __all__ = ['GBMClient']
 

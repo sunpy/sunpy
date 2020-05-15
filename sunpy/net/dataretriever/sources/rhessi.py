@@ -14,7 +14,7 @@ import astropy.units as u
 from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
 
-from ..client import GenericClient
+from sunpy.net.dataretriever import GenericClient
 
 __all__ = ['RHESSIClient']
 

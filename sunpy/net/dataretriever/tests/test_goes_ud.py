@@ -157,4 +157,4 @@ def test_client_repr(LCClient):
     Repr check
     """
     output = str(LCClient)
-    assert output[:50] == 'XRSClient\n\nProvides access to the GOES XRS fits fi'
+    assert output[:50] == 'sunpy.net.dataretriever.sources.goes.XRSClient\n\nPr'
