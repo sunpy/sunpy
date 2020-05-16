@@ -138,10 +138,6 @@ workflows:
     jobs:
       - pip-install
 
-  build-32:
-    jobs:
-      - 32bit
-
   figure-tests:
     jobs:
       - figure-tests-36
