@@ -14,7 +14,7 @@ from sunpy.io.file_tools import read_file
 
 ###############################################################################
 # In order to download the required data, we use
-# `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`, a downloader client.
+# `sunpy.net.Fido`, a downloader client.
 # We define two search variables:
 # a timerange and the instrument.
 timerange = a.Time('2002/05/24 11:06', '2002/05/24 11:07')
