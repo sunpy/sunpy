@@ -6,5 +6,5 @@ from .dataretriever.attrs import goes
 
 from .vso.attrs import Time, Instrument, Wavelength, Level, Sample, Detector, Resolution
 
-__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution' 'vso',
-           'jsoc', 'goes']
+__all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution',
+           'jsoc', 'goes', 'vso']
