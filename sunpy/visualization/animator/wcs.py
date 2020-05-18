@@ -8,7 +8,6 @@ from astropy.wcs.wcsapi import BaseLowLevelWCS
 from sunpy.extern import modest_image
 from sunpy.visualization.animator.base import ArrayAnimator
 
-
 __all__ = ['ArrayAnimatorWCS']
 
 
@@ -79,7 +78,7 @@ class ArrayAnimatorWCS(ArrayAnimator):
 
         if self.plot_dimensionality == 1:
             try:
-                from astropy.visualization.wcsaxes.frame import RectangularFrame1D
+                from astropy.visualization.wcsaxes.frame import RectangularFrame1D #  NOQA
             except ImportError as e:
                 raise ImportError("Astropy 4.0 must be installed to do line plotting with WCSAxes.") from e
 

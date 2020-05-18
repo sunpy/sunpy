@@ -3,19 +3,17 @@ Facilities to interface with the Heliophysics Events Knowledgebase.
 """
 import json
 import codecs
-
 import urllib
 from itertools import chain
 
-from astropy.table import Table, Row, Column
+from astropy.table import Column, Row, Table
 from astropy.time import Time
 
-from sunpy.net import attr
-from sunpy.util import dict_keys_same, unique
-from sunpy.net.hek import attrs
 import sunpy.net._attrs as core_attrs
+from sunpy.net import attr
+from sunpy.net.hek import attrs
+from sunpy.util import dict_keys_same, unique
 from sunpy.util.xml import xml_to_dict
-
 
 __all__ = ['HEKClient']
 

@@ -6,9 +6,9 @@ Masking out the solar disk
 
 How to mask out all emission from the solar disk.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 import numpy.ma as ma
-import matplotlib.pyplot as plt
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE

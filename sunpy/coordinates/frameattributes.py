@@ -2,8 +2,8 @@
 import datetime
 
 import astropy.units as u
+from astropy.coordinates import CoordinateAttribute, TimeAttribute
 from astropy.time import Time
-from astropy.coordinates import TimeAttribute, CoordinateAttribute
 
 from sunpy.time import parse_time
 
@@ -112,7 +112,6 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
         """
 
         # Import here to prevent circular import
-        from .frames import HeliographicStonyhurst
         from .ephemeris import get_body_heliographic_stonyhurst
 
         obscoord = get_body_heliographic_stonyhurst(out, obstime)

@@ -7,7 +7,6 @@ This example shows how to create a simple visualization using
 `~sunpy.visualization.animator.ArrayAnimatorWCS`.
 """
 # Start by importing the necessary modules.
-from itertools import product
 
 import matplotlib.pyplot as plt
 

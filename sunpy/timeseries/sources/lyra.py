@@ -5,7 +5,6 @@ import sys
 from collections import OrderedDict
 
 import pandas
-import matplotlib as mpl
 from matplotlib import pyplot as plt
 
 import astropy.units as u

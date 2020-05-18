@@ -1,13 +1,16 @@
-import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.pyplot as plt
 import pylab
-import sunpy.map
-import sunpy.data.sample
-import sunpy.timeseries as ts
-from sunpy.time import parse_time
+
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+
+import sunpy.data.sample
+import sunpy.map
+import sunpy.timeseries as ts
 from sunpy.net import hek
+from sunpy.time import parse_time
+
 client = hek.HEKClient()
 
 # GOES data for timeseries

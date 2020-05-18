@@ -1,12 +1,10 @@
 import os
-import warnings
 from pathlib import Path
 from collections import namedtuple
 from urllib.parse import urljoin
-from sunpy import log
 
-from sunpy.util.config import get_and_create_sample_dir, _is_writable_dir
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy import log
+from sunpy.util.config import _is_writable_dir, get_and_create_sample_dir
 from sunpy.util.parfive_helpers import Downloader
 
 _base_urls = (

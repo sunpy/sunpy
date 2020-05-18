@@ -2,8 +2,8 @@ import matplotlib as mpl
 
 from astropy.wcs.wcsapi import BaseLowLevelWCS
 
-from sunpy.visualization.animator.base import ArrayAnimator
 from sunpy.util.decorators import deprecated
+from sunpy.visualization.animator.base import ArrayAnimator
 
 __all__ = ['ImageAnimator', 'ImageAnimatorWCS']
 

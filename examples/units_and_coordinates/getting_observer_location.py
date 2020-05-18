@@ -7,11 +7,12 @@ How to access the observer location from a `~sunpy.map.Map` and interpret it.
 """
 import matplotlib.pyplot as plt
 import numpy as np
+
 from astropy.constants import R_earth
 
-from sunpy.data.sample import AIA_171_IMAGE
-from sunpy.coordinates import get_body_heliographic_stonyhurst
 import sunpy.map
+from sunpy.coordinates import get_body_heliographic_stonyhurst
+from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################
 # We use the SunPy sample data.

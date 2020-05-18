@@ -11,26 +11,35 @@ import configparser
 
 import pytest
 import sqlalchemy
+from parfive.downloader import Downloader
+from parfive.results import Results
 
 from astropy import units
 from astropy.utils.exceptions import AstropyUserWarning
 
-from parfive.downloader import Downloader
-from parfive.results import Results
-
 import sunpy
 import sunpy.data.test
-from sunpy.io import fits
-from sunpy.net import Fido, hek, vso
-from sunpy.net import attrs as net_attrs
-from sunpy.database import tables
-from sunpy.database import (Database, NoSuchTagError, EntryNotFoundError, EntryAlreadyAddedError,
-                            TagAlreadyAssignedError, EntryAlreadyStarredError,
-                            EntryAlreadyUnstarredError, attrs, disable_undo, split_database)
-from sunpy.database.tables import Tag, JSONDump, DatabaseEntry, FitsKeyComment, FitsHeaderEntry
-from sunpy.database.caching import LFUCache, LRUCache
-from sunpy.database.commands import NoSuchEntryError, EmptyCommandStackError
 from sunpy.data.test.waveunit import waveunitdir
+from sunpy.database import (
+    Database,
+    EntryAlreadyAddedError,
+    EntryAlreadyStarredError,
+    EntryAlreadyUnstarredError,
+    EntryNotFoundError,
+    NoSuchTagError,
+    TagAlreadyAssignedError,
+    attrs,
+    disable_undo,
+    split_database,
+    tables,
+)
+from sunpy.database.caching import LFUCache, LRUCache
+from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
+from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, FitsKeyComment, JSONDump, Tag
+from sunpy.io import fits
+from sunpy.net import Fido
+from sunpy.net import attrs as net_attrs
+from sunpy.net import hek, vso
 
 testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')

@@ -8,13 +8,13 @@ How to inspect the histogram of the data of a map.
 """
 # sphinx_gallery_thumbnail_number = 2
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
 import sunpy.map
-from astropy.coordinates import SkyCoord
 from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################

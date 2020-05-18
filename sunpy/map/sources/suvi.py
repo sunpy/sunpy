@@ -1,24 +1,22 @@
 """SUVI Map subclass definitions"""
-from __future__ import absolute_import, print_function, division
+import astropy.units as u
+from astropy.coordinates import CartesianRepresentation
+from astropy.visualization import AsinhStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
 
-# pylint: disable=W0221,W0222,E1101,E1121
+from sunpy.map import GenericMap
+from sunpy.map.sources.source_type import source_stretch
 
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
-from astropy.coordinates import CartesianRepresentation
-import astropy.units as u
-from astropy.visualization.mpl_normalize import ImageNormalize
-from astropy.visualization import AsinhStretch
-
-from sunpy.map import GenericMap
-from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ["SUVIMap"]
 
 
 class SUVIMap(GenericMap):
-    """SUVI Image Map.
+    """
+    SUVI Image Map.
 
     The Solar Ultraviolet Imager (SUVI) is a normal-incidence Cassegrain EUV
     telescope on board the latest of the Geostationary Operational Environmental

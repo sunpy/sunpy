@@ -1,6 +1,6 @@
+import astropy.units as u
 from astropy.coordinates import Longitude
 from astropy.tests.helper import assert_quantity_allclose
-import astropy.units as u
 
 
 def assert_longitude_allclose(actual, desired, atol=None):

@@ -6,9 +6,9 @@ Edge Enhancing Coronal Loops
 
 How to edge enhance coronal loops in an SDO/AIA image.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import ndimage
-import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord

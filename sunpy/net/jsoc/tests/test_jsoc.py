@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 import os
 import tempfile
+from unittest import mock
+
 import pandas as pd
+import pytest
+from parfive import Results
+
 import astropy.table
 import astropy.time
 import astropy.units as u
-import pytest
-from parfive import Results
-from unittest import mock
 
-from sunpy.net.jsoc import JSOCClient, JSOCResponse
 import sunpy.net.attrs as a
+from sunpy.net.jsoc import JSOCClient, JSOCResponse
 from sunpy.util.exceptions import SunpyUserWarning
 
 
@@ -277,7 +279,7 @@ def test_request_data_error(client):
         a.jsoc.Series('hmi.M_45s'), a.jsoc.Notify('jsoc@cadair.com'),
         a.jsoc.Protocol('foo'))
     with pytest.raises(TypeError):
-        req = client.request_data(responses)
+        client.request_data(responses)
 
 
 @pytest.mark.remote_data

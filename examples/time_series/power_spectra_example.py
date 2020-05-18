@@ -7,6 +7,7 @@ How to estimate the power spectrum of a TimeSeries.
 """
 import matplotlib.pyplot as plt
 from scipy import signal
+
 import astropy.units as u
 
 import sunpy.timeseries

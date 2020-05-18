@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import astropy.units as u
+
 from sunpy.visualization.colormaps import color_tables as ct
 
 __all__ = ['show_colormaps', 'cmlist']

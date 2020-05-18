@@ -9,8 +9,8 @@ count the approximate number of regions of interest using ndimage.
 """
 # sphinx_gallery_thumbnail_number = 2
 
-from scipy import ndimage
 import matplotlib.pyplot as plt
+from scipy import ndimage
 
 import sunpy.map
 from sunpy.data.sample import AIA_193_IMAGE

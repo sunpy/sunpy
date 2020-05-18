@@ -11,12 +11,10 @@ to find those regions in the map data where the intensity values form a local ma
 Then we plot those peaks in the original AIA plot.
 """
 
-import numpy as np
-import astropy.units as u
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
-from mpl_toolkits.mplot3d import Axes3D
 from skimage.feature import peak_local_max
+
+import astropy.units as u
 
 import sunpy.map
 from sunpy.data.sample import AIA_193_IMAGE

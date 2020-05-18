@@ -1,14 +1,14 @@
+import numpy as np
 import pytest
 from hypothesis import given, settings
-import numpy as np
 
 import astropy.units as u
-from astropy.tests.helper import assert_quantity_allclose
 from astropy.coordinates import SkyCoord, SkyOffsetFrame
+from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.coordinates import NorthOffsetFrame
 from .helpers import assert_longitude_allclose
-from .strategies import longitudes, latitudes
+from .strategies import latitudes, longitudes
 
 
 def test_null():

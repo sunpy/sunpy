@@ -5,13 +5,22 @@
 
 import fnmatch
 
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import pytest
 
-from sunpy.database.commands import AddEntry, RemoveEntry, EditEntry,\
-    AddTag, RemoveTag, NoSuchEntryError, NonRemovableTagError,\
-    EmptyCommandStackError, CommandManager, CompositeOperation
+from sunpy.database.commands import (
+    AddEntry,
+    AddTag,
+    CommandManager,
+    CompositeOperation,
+    EditEntry,
+    EmptyCommandStackError,
+    NonRemovableTagError,
+    NoSuchEntryError,
+    RemoveEntry,
+    RemoveTag,
+)
 from sunpy.database.tables import DatabaseEntry, Tag
 
 

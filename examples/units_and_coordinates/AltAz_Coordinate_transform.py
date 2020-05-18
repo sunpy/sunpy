@@ -6,10 +6,11 @@ Converting between Helioprojective and AltAz Coordinate
 
 How to find the Sun in the sky as viewed from a particular location.
 """
-from astropy.coordinates import EarthLocation, AltAz, SkyCoord
-from astropy.time import Time
-from sunpy.coordinates import frames, sun
 import astropy.units as u
+from astropy.coordinates import AltAz, EarthLocation, SkyCoord
+from astropy.time import Time
+
+from sunpy.coordinates import frames, sun
 
 ######################################################################################
 # We use `~astropy.coordinates.SkyCoord` to define the center of the Sun

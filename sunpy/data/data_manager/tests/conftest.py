@@ -1,8 +1,7 @@
 import csv
-import shutil
 import tempfile
-from unittest import mock
 from pathlib import Path
+from unittest import mock
 
 import pytest
 
@@ -10,7 +9,6 @@ from sunpy.data.data_manager.cache import Cache
 from sunpy.data.data_manager.manager import DataManager
 from sunpy.data.data_manager.storage import InMemStorage, SqliteStorage
 from sunpy.data.data_manager.tests import mocks
-
 
 DB_TESTDATA_FILE = Path(__file__).parent / 'db_testdata.csv'
 

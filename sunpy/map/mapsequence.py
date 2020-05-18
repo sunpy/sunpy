@@ -1,24 +1,23 @@
 """A Python MapSequence Object"""
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
-from copy import deepcopy
 import html
-from tempfile import NamedTemporaryFile
 import textwrap
 import warnings
 import webbrowser
+from copy import deepcopy
+from tempfile import NamedTemporaryFile
 
-import numpy as np
 import matplotlib.animation
+import numpy as np
 import numpy.ma as ma
 
 import astropy.units as u
 
 from sunpy.map import GenericMap
+from sunpy.util import SunpyUserWarning, expand_list
+from sunpy.visualization import axis_labels_from_ctype, wcsaxes_compat
 from sunpy.visualization.animator.mapsequenceanimator import MapSequenceAnimator
-from sunpy.visualization import wcsaxes_compat
-from sunpy.visualization import axis_labels_from_ctype
-from sunpy.util import expand_list, SunpyUserWarning
 
 __all__ = ['MapSequence']
 

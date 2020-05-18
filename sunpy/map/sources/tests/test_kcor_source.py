@@ -9,9 +9,9 @@ import pytest
 
 import astropy.units as u
 
-from sunpy.map.sources.mlso import KCorMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.mlso import KCorMap
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "20181209_180305_kcor_l1.5_rebinned.fits"))

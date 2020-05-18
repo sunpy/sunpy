@@ -18,11 +18,12 @@ to construct queries of almost arbitrary complexity. Note that complex queries
 result in multiple requests to the server which might make them less efficient.
 """
 
+from datetime import datetime
 from __future__ import absolute_import
 
-from datetime import datetime
 from sunpy.net import attr
 from sunpy.time import parse_time
+
 
 class _ParamAttr(attr.Attr):
     """ A _ParamAttr is used to represent equality or inequality checks

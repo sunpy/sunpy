@@ -6,12 +6,13 @@ This particular test file pertains to SOTMap.
 import os
 import glob
 
-import astropy.units as u
 import pytest
 
-from sunpy.map.sources.hinode import SOTMap
-from sunpy.map import Map
+import astropy.units as u
+
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.hinode import SOTMap
 from sunpy.util.exceptions import SunpyUserWarning
 
 

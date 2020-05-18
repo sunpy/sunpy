@@ -14,15 +14,15 @@ This example illustrates solar differential rotation.
 """
 # sphinx_gallery_thumbnail_number = 2
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.time import TimeDelta
 
-import sunpy.map
 import sunpy.data.sample
+import sunpy.map
 from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate
 
 ##############################################################################

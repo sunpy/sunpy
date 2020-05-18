@@ -18,18 +18,18 @@ the same form as they were saved.
 
 """
 
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize
-import matplotlib.pyplot as plt
 
 import asdf
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.map
-from sunpy.sun import constants
 from sunpy.coordinates import frames
 from sunpy.data.sample import AIA_171_IMAGE
+from sunpy.sun import constants
 
 ################################################################################
 # To get started let's use a function to get the coordinates of a semi-circular

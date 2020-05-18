@@ -3,7 +3,7 @@ from collections import defaultdict
 import pytest
 
 from sunpy.net import attr
-from sunpy.net.attr import make_tuple, AttrMeta
+from sunpy.net.attr import AttrMeta, make_tuple
 from sunpy.net.dataretriever import GenericClient
 
 

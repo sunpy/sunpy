@@ -3,9 +3,9 @@ This module provies a non-comprehensive collection of solar physical constants.
 """
 # TODO: Need better sources for some constants as well as error values.
 import astropy.constants.astropyconst20 as astrocon
+import astropy.units as u
 from astropy.constants import Constant
 from astropy.time import Time
-import astropy.units as u
 
 __all__ = ['physical_constants']
 

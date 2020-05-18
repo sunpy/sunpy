@@ -10,10 +10,11 @@ metaframe in `sunpy.coordinates` to apply differential rotation to a
 coordinate.  See :ref:`sunpy-coordinates-rotatedsunframe` for more details on
 using `~sunpy.coordinates.metaframes.RotatedSunFrame`.
 """
-from astropy.coordinates import SkyCoord
-import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
+
+import astropy.units as u
+from astropy.coordinates import SkyCoord
 
 import sunpy.map
 from sunpy.coordinates import RotatedSunFrame

@@ -1,11 +1,11 @@
 from textwrap import dedent
 
-import pytest
 import numpy as np
+import pytest
 
 import astropy.units as u
-from astropy.wcs import WCS
 from astropy.io import fits
+from astropy.wcs import WCS
 
 from sunpy.tests.helpers import figure_test
 from sunpy.visualization.animator.wcs import ArrayAnimatorWCS
