@@ -1,0 +1,1 @@
+Added `sunpy.visualization.colormaps.color_tables` to the docs.
