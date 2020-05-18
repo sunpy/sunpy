@@ -1,0 +1,1 @@
+Change the APIs for :meth:`sunpy.map.GenericMap.draw_rectangle` and :meth:`sunpy.map.GenericMap.submap` to be consistent with each other and to use keyword-only arguments for specifying the bounding box.
