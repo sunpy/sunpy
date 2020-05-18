@@ -14,6 +14,7 @@ class SA2(attr.SimpleAttr):
 class SA3(SA2):
     pass
 
+
 class RA1(attr.Range):
     pass
 

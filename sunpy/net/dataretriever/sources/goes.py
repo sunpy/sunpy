@@ -15,8 +15,7 @@ from sunpy.time import TimeRange, parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 from sunpy.util.scraper import Scraper
-
-from ..client import GenericClient
+from sunpy.net.dataretriever import GenericClient
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -25,17 +24,16 @@ __all__ = ["XRSClient", "SUVIClient"]
 
 class XRSClient(GenericClient):
     """
-    Provides access to the GOES XRS fits files
-    `archive <https://umbra.nascom.nasa.gov/goes/fits/>`__ hosted
-    by the `Solar Data Analysis Center <https://umbra.nascom.nasa.gov/index.html/>`__.
+    Provides access to the GOES XRS fits files archive.
+
+    Searches data hosted by the `Solar Data Analysis Center <https://umbra.nascom.nasa.gov/goes/fits/>`__.
 
     Examples
     --------
-
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('XRS'))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    ...                       a.Instrument.xrs)  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -55,7 +53,6 @@ class XRSClient(GenericClient):
 
         Parameters
         ----------
-
         date : `astropy.time.Time`
             The date to determine which satellite is active.
         """
@@ -118,6 +115,7 @@ class XRSClient(GenericClient):
         ----------
         timerange : `~sunpy.time.TimeRange`
             The time range you want the files for.
+
         Returns
         -------
         `list`
@@ -193,6 +191,16 @@ class XRSClient(GenericClient):
     @classmethod
     def _attrs_module(cls):
         return 'goes', 'sunpy.net.dataretriever.attrs.goes'
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        goes_number = [2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        adict = {attrs.Instrument: [
+            ("GOES", "The Geostationary Operational Environmental Satellite Program."),
+            ("XRS", "GOES X-ray Flux")],
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
+        return adict
 
 
 class SUVIClient(GenericClient):
@@ -396,3 +404,12 @@ class SUVIClient(GenericClient):
     @classmethod
     def _attrs_module(cls):
         return 'goes', 'sunpy.net.dataretriever.attrs.goes'
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        goes_number = [16, 17]
+        adict = {attrs.Instrument: [
+            ("SUVI",  "The Geostationary Operational Environmental Satellite Program.")],
+            attrs.goes.SatelliteNumber: [(str(x), f"GOES Satellite Number {x}") for x in goes_number]}
+        return adict

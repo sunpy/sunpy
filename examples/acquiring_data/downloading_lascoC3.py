@@ -18,8 +18,8 @@ from sunpy.io.file_tools import read_file
 # We define two search variables:
 # a timerange and the instrument.
 timerange = a.Time('2002/05/24 11:06', '2002/05/24 11:07')
-instrument = a.Instrument('LASCO')
-detector = a.Detector('C3')
+instrument = a.Instrument.lasco
+detector = a.Detector.c3
 result = Fido.search(timerange, instrument)
 
 ###############################################################################

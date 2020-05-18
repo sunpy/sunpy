@@ -7,8 +7,7 @@ from astropy.time import TimeDelta
 
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
-
-from ..client import GenericClient
+from sunpy.net.dataretriever import GenericClient
 
 __all__ = ['NoRHClient']
 
@@ -18,20 +17,19 @@ BASEURL = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 class NoRHClient(GenericClient):
     """
     Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation
-    time series data from the
-    `ftp archive <ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/>`__
-    as hosted by the
-    `NoRH Science Center <https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html>`__.
+    time series data.
+
+    Uses this `ftp archive <ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/>`__
+    hosted by the `NoRH Science Center <https://solar.nro.nao.ac.jp/norh/doc/manuale/node1.html>`__.
 
     Queries to NoRH should specify either 17GHz or 34GHz as a Wavelength.
 
     Examples
     --------
-
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('NoRH'), a.Wavelength(17*u.GHz))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    ...                       a.Instrument.norh, a.Wavelength(17*u.GHz))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -144,3 +142,11 @@ class NoRHClient(GenericClient):
                 return True
 
         return False
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [('NORH',
+                                     ('Nobeyama Radio Heliograph is an imaging radio telescope at 17 '
+                                      'or 34GHz located at the Nobeyama Solar Radio Observatory.'))]}
+        return adict

@@ -5,7 +5,7 @@ import time
 import urllib
 import warnings
 from pathlib import Path
-from collections.abc import Sequence
+import json
 
 import drms
 import numpy as np
@@ -98,7 +98,7 @@ class JSOCResponse(BaseQueryResponse):
 
 class JSOCClient(BaseClient):
     """
-    This is a Client to the JSOC Data Export service.
+    This is a client to the JSOC Data Export service.
 
     It exposes a similar API to the VSO client, although the underlying model
     is more complex. The JSOC stages data before you can download it, so a JSOC
@@ -141,7 +141,7 @@ class JSOCClient(BaseClient):
 
         The response object holds the records that your query will return:
 
-        >>> print(response)   # doctest: +ELLIPSIS  +REMOTE_DATA
+        >>> print(response)   # doctest: +REMOTE_DATA
                 T_REC          TELESCOP  INSTRUME  WAVELNTH CAR_ROT
         ----------------------- -------- ---------- -------- -------
         2014.01.01_00:00:45_TAI  SDO/HMI HMI_FRONT2   6173.0    2145
@@ -717,9 +717,9 @@ class JSOCClient(BaseClient):
             # either through PrimeKey() attribute or Time() attribute.
             if not any(x in PKEY_LIST_TIME for x in primekey):
                 timestr = '{start}-{end}{sample}'.format(
-                        start=start_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                        end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                        sample=sample)
+                    start=start_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                    end=end_time.tai.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                    sample=sample)
             else:
                 error_message = "Time attribute has been passed both as a Time()"\
                                 " and PrimeKey(). Please provide any one of them"\
@@ -901,3 +901,64 @@ class JSOCClient(BaseClient):
     @classmethod
     def _attrs_module(cls):
         return 'jsoc', 'sunpy.net.jsoc.attrs'
+
+    @classmethod
+    def register_values(cls):
+        # We always use the local file for now.
+        return cls.load_jsoc_values()
+
+    @staticmethod
+    def create_parse_jsoc_values():
+        """
+        Makes a network call to the VSO API that returns what keywords they support.
+        We take this list and register all the keywords as corresponding Attrs.
+        """
+        from drms import Client
+
+        here = os.path.dirname(os.path.realpath(__file__))
+
+        c = Client()
+        # Series we are after
+        data_sources = ["hmi", "mdi", "aia"]
+
+        # Now get all the information we want.
+        series_store = []
+        segments = []
+        for series in data_sources:
+            info = c.series(rf'{series}\.')
+            for item in info:
+                data = c.info(item)
+                series_store.append((data.name, data.note))
+                if not data.segments.empty:
+                    for row in data.segments.iterrows():
+                        segments.append((row[0], row[1][-1]))
+        series_store = list(set(series_store))
+        segments = list(set(segments))
+        with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
+            keyword_info = {}
+            keyword_info["series_store"] = series_store
+            keyword_info["segments"] = segments
+            json.dump(keyword_info, attrs_file)
+
+    @staticmethod
+    def load_jsoc_values():
+        """
+        We take this list and register all the keywords as corresponding Attrs.
+
+        Returns
+        -------
+        dict
+            The constructed Attrs dictionary ready to be passed into Attr registry.
+        """
+        from sunpy.net import attrs as a
+
+        here = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(here, 'data', 'attrs.json'), 'r') as attrs_file:
+            keyword_info = json.load(attrs_file)
+
+        # Create attrs out of them.
+        series_dict = {a.jsoc.Series: keyword_info["series_store"]}
+        segments_dict = {a.jsoc.Segment: keyword_info["segments"]}
+        attrs = {**series_dict, **segments_dict}
+
+        return attrs

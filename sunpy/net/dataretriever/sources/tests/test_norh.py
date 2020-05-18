@@ -16,6 +16,11 @@ from hypothesis import given, settings
 from sunpy.net.tests.strategies import time_attr, range_time
 
 
+@pytest.fixture
+def LCClient():
+    return norh.NoRHClient()
+
+
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/4/21', '2012/4/21'),
@@ -31,21 +36,21 @@ from sunpy.net.tests.strategies import time_attr, range_time
      'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120314'
      )
 ])
-def test_get_url_for_time_range(timerange, url_start, url_end):
-    urls = norh.NoRHClient()._get_url_for_timerange(timerange, wavelength=17*u.GHz)
+def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
+    urls = LCClient._get_url_for_timerange(timerange, wavelength=17*u.GHz)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
 
 @given(time_attr())
-def test_can_handle_query(time):
-    ans1 = norh.NoRHClient._can_handle_query(time, a.Instrument('norh'))
+def test_can_handle_query(LCClient, time):
+    ans1 = LCClient._can_handle_query(time, a.Instrument.norh)
     assert ans1 is True
-    ans1 = norh.NoRHClient._can_handle_query(time, a.Instrument('norh'),
-                                             a.Wavelength(10*u.GHz))
+    ans1 = LCClient._can_handle_query(time, a.Instrument.norh,
+                                      a.Wavelength(10*u.GHz))
     assert ans1 is True
-    ans2 = norh.NoRHClient._can_handle_query(time)
+    ans2 = LCClient._can_handle_query(time)
     assert ans2 is False
 
 
@@ -53,8 +58,8 @@ def test_can_handle_query(time):
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
 @given(time=range_time(Time('1992-6-1')))
 @settings(max_examples=2, deadline=50000)
-def test_query(time, wave):
-    qr1 = norh.NoRHClient().search(time, a.Instrument('norh'), wave)
+def test_query(LCClient, time, wave):
+    qr1 = LCClient.search(time, a.Instrument.norh, wave)
     assert isinstance(qr1, QueryResponse)
     # Not all hypothesis queries are going to produce results, and
     if qr1:
@@ -68,32 +73,29 @@ def test_query(time, wave):
 
 
 # Don't use time_attr here for speed.
-def test_query_no_wave():
-    c = norh.NoRHClient()
+def test_query_no_wave(LCClient):
     with pytest.raises(ValueError):
-        c.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'))
+        LCClient.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh)
 
 
-def test_wavelength_range():
+def test_wavelength_range(LCClient):
     with pytest.raises(ValueError):
-        norh.NoRHClient().search(
-            a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'),
+        LCClient.search(
+            a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh,
             a.Wavelength(17 * u.GHz, 34 * u.GHz))
 
 
-def test_query_wrong_wave():
-    c = norh.NoRHClient()
+def test_query_wrong_wave(LCClient):
     with pytest.raises(ValueError):
-        c.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'),
-                 a.Wavelength(50*u.GHz))
+        LCClient.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument.norh,
+                        a.Wavelength(50*u.GHz))
 
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument,wave", [
-    (a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz)),
-    (a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'), a.Wavelength(34*u.GHz))])
-def test_get(time, instrument, wave):
-    LCClient = norh.NoRHClient()
+    (a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(17*u.GHz)),
+    (a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(34*u.GHz))])
+def test_get(LCClient, time, instrument, wave):
     qr1 = LCClient.search(time, instrument, wave)
     download_list = LCClient.fetch(qr1)
     assert len(download_list) == len(qr1)
@@ -102,10 +104,21 @@ def test_get(time, instrument, wave):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument, wave",
-    [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz)),
-     (a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'), a.Wavelength(34*u.GHz))])
+    [(a.Time('2012/10/4', '2012/10/4'), a.Instrument.norh, a.Wavelength(17*u.GHz) | a.Wavelength(34*u.GHz))])
 def test_fido(time, instrument, wave):
     qr = Fido.search(time, instrument, wave)
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
-    assert len(response) == qr._numfile
+    assert len(response) == qr[0]._numfile + qr[1]._numfile
+
+
+def test_attr_reg():
+    assert a.Instrument.norh == a.Instrument('NORH')
+
+
+def test_client_repr(LCClient):
+    """
+    Repr check
+    """
+    output = str(LCClient)
+    assert output[:50] == 'sunpy.net.dataretriever.sources.norh.NoRHClient\n\nP'

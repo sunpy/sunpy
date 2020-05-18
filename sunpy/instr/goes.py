@@ -200,7 +200,7 @@ def calculate_temperature_em(goests, abundances="coronal",
     using the methods of White et al. (2005) who used the
     CHIANTI atomic physics database to model the response of the ratio
     of the short (0.5-4 angstrom) to long (1-8 angstrom) channels of the
-    XRSs onboard various GOES satellites. This method assumes an
+    XRSs on board various GOES satellites. This method assumes an
     isothermal plasma, the ionization equilibria of
     [2]_, and a constant density of 10**10 cm**-3.
     (See [1]_ for justification of this last assumption.)
@@ -338,7 +338,7 @@ def _goes_chianti_tem(longflux: u.W/u.m/u.m, shortflux: u.W/u.m/u.m, satellite=8
     using the methods of [1]_ who used the
     CHIANTI atomic physics database to model the response of the ratio
     of the short (0.5-4 angstrom) to long (1-8 angstrom) channels of the
-    XRSs onboard various GOES satellites.  This method assumes an
+    XRSs on board various GOES satellites.  This method assumes an
     isothermal plasma, the ionisation equilibria of
     [2]_, and a constant density of 10**10 cm**-3.
     (See White et al. 2005 for justification of this last assumption.)
@@ -490,7 +490,7 @@ def _goes_get_chianti_temp(fluxratio: u.one, satellite=8, abundances="coronal",
     These files were calculated using the methods of [1]_
     who used the CHIANTI atomic physics database to model the response
     of the ratio of the short (0.5-4 angstrom) to long (1-8 angstrom)
-    channels of the XRSs onboard various GOES satellites.  This method
+    channels of the XRSs on board various GOES satellites.  This method
     assumes an isothermal plasma, the ionisation equilibria of
 
     (See White et al. 2005 for justification of this last assumption.)
@@ -640,7 +640,7 @@ def _goes_get_chianti_em(longflux: u.W/u.m/u.m, temp: u.MK, satellite=8,
     These files were calculated using the methods of White et al. (2005)
     who used the CHIANTI atomic physics database and GOES transfer
     functions to model the response of the long channel to the
-    temperature of the emitting plasma for XRSs onboard various GOES
+    temperature of the emitting plasma for XRSs on board various GOES
     satellites.  The emission measure can then be found by scaling the
     ratio of these two properties.  This method assumes an isothermal
     plasma, the ionisation equilibria of Mazzotta et al. (1998), and

@@ -24,7 +24,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     """
     Fermi/GBM Summary lightcurve TimeSeries.
 
-    The Gamma-ray Burst Monitor (GBM) is an instrument aboard Fermi.
+    The Gamma-ray Burst Monitor (GBM) is an instrument on board Fermi.
     It is meant to detect gamma-ray bursts but also detects solar flares.
     It consists of 12 Sodium Iodide (NaI) scintillation detectors and 2 Bismuth Germanate (BGO) scintillation detectors.
     The NaI detectors cover from a few keV to about 1 MeV and provide burst triggers and locations.

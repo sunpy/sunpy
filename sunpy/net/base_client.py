@@ -1,6 +1,11 @@
 import importlib
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from textwrap import dedent
+
+from astropy.table import Table
+
+from sunpy.util.util import get_width
 
 __all__ = ['BaseQueryResponse', 'BaseClient']
 
@@ -81,6 +86,38 @@ class BaseQueryResponse(Sequence):
         return self.build_table()._repr_html_()
 
 
+def _print_client(client, html=False):
+    """
+    Given a BaseClient instance will print out each registered attribute.
+
+    Parameters
+    ----------
+    client : `sunpy.net.base_client.BaseClient`
+        The instance class to print for.
+    html : bool
+        Will return a html table instead.
+
+    Returns
+    -------
+    `str`
+        String with the client.
+    """
+    width = -1 if html else get_width()
+    class_name = f"{client.__module__+'.' or ''}{client.__class__.__name__}"
+    attrs = client.register_values()
+    lines = []
+    t = Table(names=["Attr Type",  "Name", "Description"],
+              dtype=["U80", "U80", "U80"])
+    for client_key in attrs.keys():
+        for name, desc in attrs[client_key]:
+            t.add_row((client_key.__name__, name, desc))
+    lines = [class_name, dedent(client.__doc__.partition("\n\n")[0])]
+    if html:
+        lines = [f"<p>{line}</p>" for line in lines]
+    lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+    return '\n'.join(lines)
+
+
 class BaseClient(ABC):
     """
     This defines the Abstract Base Class for each download client.
@@ -130,6 +167,31 @@ class BaseClient(ABC):
             if name not in attrs.__all__:
                 attrs.__all__.append(name)
 
+        # Register client attrs after it has regsitered its own attrs
+        from sunpy.net import attr
+        values = cls.register_values()
+        # If the client has no support, we won't try to register attrs
+        if values:
+            attr.Attr.update_values({cls: values})
+
+    def __repr__(self):
+        """
+        Returns the normal repr plus the pretty client __str__.
+        """
+        return object.__repr__(self) + "\n" + str(self)
+
+    def __str__(self):
+        """
+        This enables the "pretty" printing of BaseClient.
+        """
+        return _print_client(self)
+
+    def _repr_html_(self):
+        """
+        This enables the "pretty" printing of the BaseClient with html.
+        """
+        return _print_client(self, html=True)
+
     @abstractmethod
     def search(self, *args, **kwargs):
         """
@@ -152,10 +214,8 @@ class BaseClient(ABC):
             Path to the download directory
         overwrite : `bool`, optional
             Replace files with the same name if True.
-
         progress : `bool`, optional
             Print progress info to terminal.
-
         max_conns : `int`, optional
             Maximum number of download connections.
         downloader : `parfive.Downloader`, optional
@@ -174,7 +234,8 @@ class BaseClient(ABC):
     @abstractmethod
     def _can_handle_query(cls, *query):
         """
-        This enables the client to register what kind of searches it can handle, to prevent Fido using the incorrect client.
+        This enables the client to register what kind of searches it can handle, to prevent Fido
+        using the incorrect client.
         """
 
     @staticmethod
@@ -189,3 +250,16 @@ class BaseClient(ABC):
         all_attrs = required_attrs.union(optional_attrs)
 
         return required_attrs.issubset(query_attrs) and query_attrs.issubset(all_attrs)
+
+    @classmethod
+    def register_values(cls, *query):
+        """
+        This enables the client to register what kind of Attrs it can use directly.
+
+        Returns
+        -------
+        `dict`
+            A dictionary with key values of Attrs and the values are a tuple of
+            ("Attr Type", "Name", "Description").
+        """
+        return {}

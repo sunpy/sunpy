@@ -49,7 +49,7 @@ def vso_session():
     client = vso.VSOClient()
     qr = client.search(
         a.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
-        a.Instrument('RHESSI'))
+        a.Instrument.rhessi)
     entries = tables.entries_from_query_result(qr)
     database = Database('sqlite:///:memory:')
     for entry in entries:
@@ -404,7 +404,7 @@ def test_walker_create_fitsheader_inverted(session):
 
 @pytest.mark.remote_data
 def test_walker_create_vso_instrument(vso_session):
-    entries = walker.create(a.Instrument('RHESSI'), vso_session)
+    entries = walker.create(a.Instrument.rhessi, vso_session)
     expected = [tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
                                      physobs=u'intensity',
                                      fileid=u'/hessidata/2011/09/19/hsi_20110919_233340_002.fits',

@@ -8,7 +8,7 @@ import astropy.units as u
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
 
-from ..client import GenericClient
+from sunpy.net.dataretriever import GenericClient
 
 
 __all__ = ['EVEClient']
@@ -19,18 +19,18 @@ BASEURL = ('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
 
 class EVEClient(GenericClient):
     """
-    Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data
-    as hosted by `LASP <http://lasp.colorado.edu/home/eve/data/data-access/>`_.
+    Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
 
     To use this client you must request Level 0 data.
+    It is hosted by `LASP <http://lasp.colorado.edu/home/eve/data/data-access/>`__.
 
     Examples
     --------
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('EVE'), a.Level(0))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    ...                       a.Instrument.eve, a.Level.zero)  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -130,3 +130,10 @@ class EVEClient(GenericClient):
                     matches = False
 
         return matches
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [('EVE', 'Extreme ultraviolet Variability Experiment, which is part of the NASA Solar Dynamics Observatory mission.')],
+                 attrs.Level: [('0', 'EVE: The specific EVE client can only return Level 0C data. Any other number will use the VSO Client.')]}
+        return adict

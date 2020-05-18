@@ -11,13 +11,18 @@ This module provides the `Fido
 import os
 from pathlib import Path
 from collections.abc import Sequence
+from textwrap import dedent
+from parfive import Downloader, Results
 
-from sunpy.net import attr
-from sunpy.net import attrs as a
-from sunpy.net import vso
+from astropy.table import Table
+
+from sunpy.util.datatype_factory_base import BasicRegistrationFactory
+from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory, MultipleMatchError, NoMatchError
+from sunpy.net import vso
+from sunpy.net import attr
 from sunpy.util.parfive_helpers import Downloader, Results
+from sunpy.util.util import get_width
 
 __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory']
 
@@ -46,7 +51,8 @@ class UnifiedResponse(Sequence):
         self._numfile = 0
         for result in results:
             if not isinstance(result, BaseQueryResponse):
-                raise TypeError(f"{type(result)} is not derived from sunpy.net.base_client.BaseQueryResponse")
+                raise TypeError(
+                    f"{type(result)} is not derived from sunpy.net.base_client.BaseQueryResponse")
 
             self._list.append(result)
             self._numfile = len(result)
@@ -230,19 +236,19 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         >>> from sunpy.net import Fido, attrs as a
         >>> import astropy.units as u
-        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra) # doctest: +REMOTE_DATA
 
         Query for data from Nobeyama Radioheliograph and RHESSI
 
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-        ...     (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
+        ...     (a.Instrument.norh & a.Wavelength(17*u.GHz)) | a.Instrument.rhessi)  # doctest: +REMOTE_DATA
 
         Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
 
         >>> import astropy.units as u
         >>> from sunpy.net import Fido, attrs as a
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-        ...                        a.Instrument('AIA'),
+        ...                        a.Instrument.aia,
         ...                        a.Wavelength(304*u.angstrom, 304*u.angstrom),
         ...                        a.Sample(10*u.minute))  # doctest: +REMOTE_DATA
 
@@ -291,27 +297,22 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         ----------
         query_results : `sunpy.net.fido_factory.UnifiedResponse`
             Container returned by query method, or multiple.
-
         path : `str`
             The directory to retrieve the files into. Can refer to any fields
             in `UnifiedResponse.response_block_properties` via string formatting,
             moreover the file-name of the file downloaded can be referred to as file,
             e.g. "{source}/{instrument}/{time.start}/{file}".
-
         max_conn : `int`, optional
             The number of parallel download slots.
-
         progress : `bool`, optional
             If `True` show a progress bar showing how many of the total files
             have been downloaded. If `False`, no progress bars will be shown at all.
-
         overwrite : `bool` or `str`, optional
             Determine how to handle downloading if a file already exists with the
             same name. If `False` the file download will be skipped and the path
             returned to the existing file, if `True` the file will be downloaded
             and the existing file will be overwritten, if `'unique'` the filename
             will be modified to be unique.
-
         downloader : `parfive.Downloader`, optional
             The download manager to use. If specified the ``max_conn``,
             ``progress`` and ``overwrite`` arguments are ignored.
@@ -422,6 +423,34 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # This method is called by `search` and the results are fed into a
         # UnifiedResponse object.
         return results
+
+    def __repr__(self):
+        return object.__repr__(self) + "\n" + str(self)
+
+    def __str__(self):
+        """
+        This enables the "pretty" printing of the Fido Clients.
+        """
+        return self._print_clients()
+
+    def _repr_html_(self):
+        """
+        This enables the "pretty" printing of the Fido Clients with html.
+        """
+        return self._print_clients(html=True)
+
+    def _print_clients(self, html=False) -> str:
+        width = -1 if html else get_width()
+
+        t = Table(names=["Client", "Description"], dtype=["U80", "U120"])
+        lines = ["sunpy.net.Fido", dedent(self.__doc__)]
+        if html:
+            lines = [f"<p>{line}</p>" for line in lines]
+        for key in BaseClient._registry.keys():
+            t.add_row((key.__name__, dedent(
+                key.__doc__.partition("\n\n")[0].replace("\n    ", " "))))
+        lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+        return '\n'.join(lines)
 
 
 Fido = UnifiedDownloaderFactory(

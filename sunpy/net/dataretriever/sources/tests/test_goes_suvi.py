@@ -21,20 +21,20 @@ def suvi_client():
 
 @given(time_attr())
 def test_can_handle_query(suvi_client, time):
-    ans1 = suvi_client._can_handle_query(time, a.Instrument('suvi'))
+    ans1 = suvi_client._can_handle_query(time, a.Instrument.suvi)
     assert ans1 is True
-    ans2 = suvi_client._can_handle_query(time, a.Instrument('suvi'),
+    ans2 = suvi_client._can_handle_query(time, a.Instrument.suvi,
                                          a.Wavelength(131 * u.Angstrom))
     assert ans2 is True
-    ans3 = suvi_client._can_handle_query(time, a.Instrument('suvi'),
+    ans3 = suvi_client._can_handle_query(time, a.Instrument.suvi,
                                          a.Wavelength(131 * u.Angstrom),
-                                         a.Level(2))
+                                         a.Level.two)
     assert ans3 is True
     ans4 = suvi_client._can_handle_query(time)
     assert ans4 is False
-    ans5 = suvi_client._can_handle_query(time, a.Instrument('aia'))
+    ans5 = suvi_client._can_handle_query(time, a.Instrument.aia)
     assert ans5 is False
-    ans6 = suvi_client._can_handle_query(time, a.Instrument('suvi'),
+    ans6 = suvi_client._can_handle_query(time, a.Instrument.suvi,
                                          a.goes.SatelliteNumber(16))
     assert ans6 is True
 
@@ -78,8 +78,13 @@ def mock_querry_object(suvi_client, start, end, wave):
         'provider': 'NOAA'
     }
     results = QueryResponse.create(obj, suvi_client._get_url_for_timerange(TimeRange(start, end),
-                                   wavelength=wave), client=suvi_client)
+                                                                           wavelength=wave), client=suvi_client)
     return results
+
+
+def test_attr_reg():
+    a.Instrument.suvi = a.Instrument("SUVI")
+    a.goes.SatelliteNumber.A16 = a.goes.SatelliteNumber("16")
 
 
 @pytest.mark.remote_data
@@ -91,7 +96,7 @@ def test_fetch_working(suvi_client):
     start = '2019/05/25 00:50'
     end = '2019/05/25 00:52'
     wave = 94 * u.Angstrom
-    qr1 = suvi_client.search(a.Time(start, end), a.Instrument('suvi'), a.Wavelength(wave))
+    qr1 = suvi_client.search(a.Time(start, end), a.Instrument.suvi, a.Wavelength(wave))
 
     # Mock QueryResponse object
     mock_qr = mock_querry_object(suvi_client, start, end, wave)
@@ -171,7 +176,7 @@ def test_get_url_for_time_range_level1b(suvi_client, start, end, wave, expected_
                           ('2019/05/25 00:50', '2019/05/25 00:54', 304, 4)]
                          )
 def test_fido_onewave_level1b(start, end, wave, expected_num_files):
-    result = Fido.search(a.Time(start, end), a.Instrument('suvi'),
+    result = Fido.search(a.Time(start, end), a.Instrument.suvi,
                          a.Wavelength(wave * u.Angstrom), a.Level('1b'))
     assert result.file_num == expected_num_files
 
@@ -187,7 +192,7 @@ def test_fido_onewave_level1b(start, end, wave, expected_num_files):
                          )
 def test_fido_waverange_level1b(start, end, wave1, wave2, expected_num_files):
     """check that we get all wavelengths if no wavelength is given"""
-    result = Fido.search(a.Time(start, end), a.Instrument('suvi'),
+    result = Fido.search(a.Time(start, end), a.Instrument.suvi,
                          a.Wavelength(wave1 * u.Angstrom, wave2 * u.Angstrom),
                          a.Level('1b'))
     assert result.file_num == expected_num_files
@@ -198,7 +203,7 @@ def test_fido_waverange_level1b(start, end, wave1, wave2, expected_num_files):
                          [('2019/05/25 00:50', '2019/05/25 00:52', 6)]
                          )
 def test_query(suvi_client, start, end, expected_num_files):
-    qr1 = suvi_client.search(a.Time(start, end), a.Instrument('suvi'))
+    qr1 = suvi_client.search(a.Time(start, end), a.Instrument.suvi)
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == expected_num_files
     assert qr1.time_range().start == parse_time('2019/05/25 00:52')

@@ -69,6 +69,7 @@ class BaseFuncAnimator:
     -----
     Extra keywords are passed to `matplotlib.pyplot.imshow`.
     """
+
     def __init__(self, data, slider_functions, slider_ranges, fig=None,
                  interval=200, colorbar=False, button_func=None, button_labels=None,
                  start_image_func=None, slider_labels=None, **kwargs):
@@ -463,7 +464,7 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
         base_kwargs = {
             'slider_functions': ([self.update_plot] * self.num_sliders) + slider_functions,
             'slider_ranges': [[0, dim] for dim in np.array(data.shape)[self.slider_axes]] + slider_ranges
-            }
+        }
         self.num_sliders = len(base_kwargs["slider_functions"])
         base_kwargs.update(kwargs)
         super().__init__(data, **base_kwargs)
@@ -521,16 +522,16 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
             raise ValueError("Length of axis_ranges must equal number of axes")
 
         # Define error message for incompatible axis_range input.
-        incompatible_axis_ranges_error_message = lambda j: \
-        (f"Unrecognized format for {j}th entry in axis_ranges: {axis_ranges[j]}"
-         "axis_ranges must be None, a ``[min, max]`` pair, or "
-         "an array-like giving the edge values of each pixel, "
-         "i.e. length must be length of axis + 1.")
+        def incompatible_axis_ranges_error_message(j): return \
+            (f"Unrecognized format for {j}th entry in axis_ranges: {axis_ranges[j]}"
+             "axis_ranges must be None, a ``[min, max]`` pair, or "
+             "an array-like giving the edge values of each pixel, "
+             "i.e. length must be length of axis + 1.")
 
         # If axis range not given, define a function such that the range goes
         # from -0.5 to number of pixels-0.5.  Thus, the center of the pixels
         # along the axis will correspond to integer values.
-        none_image_axis_range = lambda j: [-0.5, data_shape[j]-0.5]
+        def none_image_axis_range(j): return [-0.5, data_shape[j]-0.5]
 
         # For each axis validate and translate the axis_ranges. For image axes,
         # also determine the plot extent.  To do this, iterate through image and slider
@@ -581,7 +582,8 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
 
                     axis_ranges[sidx] = np.linspace(axis_ranges[sidx][0], axis_ranges[sidx][-1],
                                                     data_shape[sidx]+1)
-                    axis_ranges[sidx] = get_pixel_to_world_callable(edges_to_centers_nd(axis_ranges[sidx], sidx))
+                    axis_ranges[sidx] = get_pixel_to_world_callable(
+                        edges_to_centers_nd(axis_ranges[sidx], sidx))
                 elif axis_ranges[sidx].ndim == 1 and len(axis_ranges[sidx]) == data_shape[sidx]+1:
                     # If axis range given as 1D array of pixel edges (i.e. axis is independent),
                     # derive pixel centers.
@@ -606,7 +608,6 @@ class ArrayAnimator(BaseFuncAnimator, metaclass=abc.ABCMeta):
 
         Must exist here but be defined in subclass.
         """
-        raise NotImplementedError(f"Must be defined and used by subclasses of {self.__class__}.")
 
     @abc.abstractmethod
     def update_plot(self, val, artist, slider):

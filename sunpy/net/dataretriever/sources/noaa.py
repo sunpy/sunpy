@@ -9,16 +9,16 @@ import astropy.units as u
 from astropy.time import Time, TimeDelta
 
 from sunpy.util.parfive_helpers import Downloader
-from ..client import GenericClient
+from sunpy.net.dataretriever import GenericClient
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
 
 class NOAAIndicesClient(GenericClient):
     """
-    Provides access to the NOAA solar cycle indices
-    from the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/weekly/>`__.
+    Provides access to the NOAA solar cycle indices.
 
+    Uses the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/weekly/>`__.
     This is a fixed dataset so the result is independent of the time range.
 
     Examples
@@ -26,8 +26,8 @@ class NOAAIndicesClient(GenericClient):
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('noaa-indices'))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    ...                       a.Instrument.noaa_indices)  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -76,13 +76,19 @@ class NOAAIndicesClient(GenericClient):
                 return all(chklist)
         return False
 
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [
+            ('NOAA-Indices', 'Recent Solar Indices of Observed Monthly Mean Values')]}
+        return adict
+
 
 class NOAAPredictClient(GenericClient):
     """
-    Provides access to the `NOAA SWPC <https://www.swpc.noaa.gov>`__
-    predicted sunspot Number and 10.7 cm radio flux values
-    from the `ftp archive <http://services.swpc.noaa.gov/text/>`__.
+    Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
 
+    Uses this `ftp archive <http://services.swpc.noaa.gov/text/>`__.
     This is a fixed prediction so the result is independent of the time range.
 
     Examples
@@ -90,8 +96,8 @@ class NOAAPredictClient(GenericClient):
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('noaa-predict'))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    ...                       a.Instrument.noaa_predict)  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -144,19 +150,26 @@ class NOAAPredictClient(GenericClient):
                 return all(chklist)
         return False
 
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [
+            ('NOAA-Predict', 'Predicted Sunspot Number And Radio Flux Values With Expected Ranges.')]}
+        return adict
+
 
 class SRSClient(GenericClient):
     """
-    Provides access to the `NOAA SWPC <https://www.swpc.noaa.gov>`__
-    solar region summary data from the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/warehouse/>`__.
+    Provides access to the NOAA SWPC solar region summary data.
+
+    Uses the `ftp archive <ftp://ftp.swpc.noaa.gov/pub/warehouse/>`__.
 
     Examples
     --------
-
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('SOON'))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    ...                       a.Instrument.soon)  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -295,6 +308,13 @@ class SRSClient(GenericClient):
             return False
         for x in query:
             if (x.__class__.__name__ == "Instrument" and
-                    str(x.value).lower() in ["soon", "srs_table"]):
+                    str(x.value).lower() in ["soon", "srs-table"]):
                 return True
         return False
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [("SOON", "Solar Region Summary."),
+                                    ("SRS-Table", "Solar Region Summary.")]}
+        return adict

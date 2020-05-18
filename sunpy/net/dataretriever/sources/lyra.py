@@ -2,25 +2,24 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-from urllib.parse import urljoin
+from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
-from ..client import GenericClient
 
 __all__ = ['LYRAClient']
 
 
 class LYRAClient(GenericClient):
     """
-    Provides access to the LYRA/Proba2 data `archive <http://proba2.oma.be/lyra/data/bsd/>`__
-    hosted by the `PROBA2 Science Center <http://proba2.oma.be>`__.
+    Provides access to the LYRA/Proba2 data archive.
+
+    Hosted by the `PROBA2 Science Center <http://proba2.oma.be/lyra/data/bsd/>`__.
 
     Examples
     --------
-
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-    ...                       a.Instrument('LYRA'))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    ...                       a.Instrument.lyra)  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -84,3 +83,13 @@ class LYRAClient(GenericClient):
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'lyra':
                 return all(chklist)
         return False
+
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [('LYRA',
+                                     'Lyman Alpha Radiometer is the solar UV radiometer on board Proba-2.')],
+                 attrs.Level: [('1', 'LYRA: Metadata and uncalibrated data daily fits.'),
+                               ('2', 'LYRA: Calibrated data, provided as daily fits.'),
+                               ('3', 'LYRA: Same as level 2 but the calibrated data is averaged over 1 min.')]}
+        return adict

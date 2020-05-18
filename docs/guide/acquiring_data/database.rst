@@ -277,7 +277,7 @@ After initialising the VSO client:
 
     >>> qr = client.search(
     ...     a.Time('2011-05-08', '2011-05-08 00:00:05'),
-    ...     a.Instrument('AIA'))  # doctest: +REMOTE_DATA
+    ...     a.Instrument.aia)  # doctest: +REMOTE_DATA
     >>> len(qr)  # doctest: +REMOTE_DATA
     4
     >>> database.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
@@ -309,7 +309,7 @@ has not been downloaded before.
 
     >>> entries = database.fetch(
     ...     a.Time('2012-08-05', '2012-08-05 00:00:05'),
-    ...     a.Instrument('AIA'))  # doctest: +REMOTE_DATA
+    ...     a.Instrument.aia)  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
     67
 
@@ -318,7 +318,7 @@ because they have already been downloaded.
 
     >>> entries = database.fetch(
     ...     a.Time('2012-08-05', '2012-08-05 00:00:05'),
-    ...     a.Instrument('AIA'))  # doctest: +REMOTE_DATA
+    ...     a.Instrument.aia)  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
     67
 
@@ -327,7 +327,7 @@ new date range whose files have not been downloaded yet.
 
     >>> entries = database.fetch(
     ...     a.Time('2013-08-05', '2013-08-05 00:00:05'),
-    ...     a.Instrument('AIA'))  # doctest: +REMOTE_DATA
+    ...     a.Instrument.aia)  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
     71
 
@@ -338,7 +338,7 @@ downloaded. This means no new files are downloaded.
 
     >>> entries = database.fetch(
     ...     a.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
-    ...     a.Instrument('AIA'))  # doctest: +REMOTE_DATA
+    ...     a.Instrument.aia)  # doctest: +REMOTE_DATA
     >>> len(database)  # doctest: +REMOTE_DATA
     71
 
@@ -676,7 +676,7 @@ method accepts any number of ORed query attributes (using \|) and
 combines them using AND. It returns a list of matched database entries.
 The special thing about querying databases is that all attributes support
 the unary operator ``~`` to negate specific attributes. Example: the query
-``~Instrument('EIT')`` returns all entries that have *not* been observed
+``~Instrument.eit`` returns all entries that have *not* been observed
 with the EIT.
 
 7.1 Using VSO attributes
@@ -693,7 +693,7 @@ the simple attributes and the Time attribute work exactly as you expect.
 The following query returns the data that was added in section 2.3.2:
 
     >>> print(display_entries(
-    ...     database.search(a.Time('2012-08-05', '2012-08-05 00:00:05'), a.Instrument('AIA')),
+    ...     database.search(a.Time('2012-08-05', '2012-08-05 00:00:05'), a.Instrument.aia),
     ...     ['id', 'observation_time_start', 'observation_time_end',
     ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest:  +REMOTE_DATA
      id observation_time_start observation_time_end instrument wavemin wavemax

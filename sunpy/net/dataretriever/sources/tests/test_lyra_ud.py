@@ -1,7 +1,6 @@
 import pytest
 
 from sunpy.time.timerange import TimeRange
-from sunpy.time import parse_time
 from sunpy.net._attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.lyra as lyra
@@ -12,7 +11,10 @@ from sunpy.net import attrs as a
 from hypothesis import given, settings
 from sunpy.net.tests.strategies import range_time
 
-LCClient = lyra.LYRAClient()
+
+@pytest.fixture
+def LCClient():
+    return lyra.LYRAClient()
 
 
 @pytest.mark.remote_data
@@ -30,7 +32,7 @@ LCClient = lyra.LYRAClient()
      'http://proba2.oma.be/lyra/data/bsd/2012/04/14/lyra_20120414-000000_lev2_std.fits'
      )
 ])
-def test_get_url_for_time_range(timerange, url_start, url_end):
+def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
     assert urls[0] == url_start
@@ -38,11 +40,11 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
 
 
 @given(range_time('2010-01-06'))
-def test_can_handle_query(time):
-    ans1 = lyra.LYRAClient._can_handle_query(
+def test_can_handle_query(LCClient, time):
+    ans1 = LCClient._can_handle_query(
         time, Instrument('lyra'))
     assert ans1 is True
-    ans2 = lyra.LYRAClient._can_handle_query(time)
+    ans2 = LCClient._can_handle_query(time)
     assert ans2 is False
 
 
@@ -50,7 +52,7 @@ def test_can_handle_query(time):
     Time('2015/8/27', '2015/8/27'),
     Time('2016/2/4', '2016/2/6')])
 @pytest.mark.remote_data
-def test_query(time):
+def test_query(LCClient, time):
     qr1 = LCClient.search(time, Instrument('lyra'))
     assert isinstance(qr1, QueryResponse)
     assert qr1.time_range().start == time.start
@@ -59,10 +61,8 @@ def test_query(time):
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument", [
-    (Time('2013/8/27', '2013/8/27'), Instrument('lyra')),
-    (Time('2013/2/4', '2013/2/6'), Instrument('lyra')),
-])
-def test_get(time, instrument):
+    (Time('2013/8/27', '2013/8/27'), Instrument('lyra'))])
+def test_get(LCClient, time, instrument):
     qr1 = LCClient.search(time, instrument)
     download_list = LCClient.fetch(qr1)
     assert len(download_list) == len(qr1)
@@ -71,10 +71,24 @@ def test_get(time, instrument):
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument",
-    [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('lyra')),
-     (a.Time('2013/10/5', '2013/10/7'), a.Instrument('lyra'))])
+    [(a.Time('2012/10/4', '2012/10/6'), a.Instrument.lyra)])
 def test_fido(time, instrument):
     qr = Fido.search(time, instrument)
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
+
+
+def test_attr_reg():
+    assert a.Instrument.lyra == a.Instrument('LYRA')
+    assert a.Level.one == a.Level('1')
+    assert a.Level.two == a.Level('2')
+    assert a.Level.three == a.Level('3')
+
+
+def test_client_repr(LCClient):
+    """
+    Repr check
+    """
+    output = str(LCClient)
+    assert output[:50] == 'sunpy.net.dataretriever.sources.lyra.LYRAClient\n\nP'
