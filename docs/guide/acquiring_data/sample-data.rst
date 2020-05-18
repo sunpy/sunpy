@@ -1,8 +1,8 @@
 .. _sample-data:
 
------------------------
+***********************
 Downloading Sample Data
------------------------
+***********************
 
 SunPy provides a number of sample data files which are referenced in the
 documentation and examples. These files are available to download onto your

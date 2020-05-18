@@ -1,5 +1,5 @@
 SunPy util
-==========
+**********
 
 .. automodapi:: sunpy.util
 

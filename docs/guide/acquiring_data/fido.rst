@@ -1,8 +1,8 @@
 .. _fido_guide:
 
----------------------------------------
+***************************************
 Finding and Downloading Data using Fido
----------------------------------------
+***************************************
 
 This guide outlines how to search for and download data using SunPy's
 Federated Internet Data Obtainer...or more usually (and sanely) referred to as Fido.
@@ -13,7 +13,7 @@ JSOC_, etc. It therefore supplies a single, easy and consistent way to
 obtain most forms of solar physics data.
 
 Import
-------
+******
 
 The `~sunpy.net.Fido` object is in `sunpy.net`.
 It can be imported as follows::
@@ -21,7 +21,7 @@ It can be imported as follows::
     >>> from sunpy.net import Fido, attrs as a
 
 Search Attributes
------------------
+*****************
 
 To search for data with `~sunpy.net.Fido, you need to specify attributes to search against.
 The range of attributes are found in the `attrs <sunpy.net.attrs>` submodule.
@@ -95,7 +95,7 @@ For JSOC::
 Furthermore, you can use tab completion to auto-fill the attribute name, for example by typing ``a.jsoc.aia_f<TAB>``.
 
 Searching for Data Using Fido
------------------------------
+*****************************
 
 For example::
 
@@ -215,7 +215,7 @@ operator would::
     <BLANKLINE>
 
 Indexing search results
------------------------
+***********************
 
 The `~sunpy.net.fido_factory.UnifiedResponse` that Fido returns can be
 indexed to access a subset of the search results. When doing this, the
@@ -275,7 +275,7 @@ same as ``results``).
 .. _downloading_data:
 
 Downloading data
-----------------
+****************
 Once you have located your files via a
 `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>`, you can
 download them via `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`::
@@ -303,7 +303,7 @@ You can see the list of options that can be specified in path for all the files
 to be downloaded with ``results.response_block_properties``.
 
 Retrying Downloads
-^^^^^^^^^^^^^^^^^^
+==================
 
 If any files failed to download, the progress bar will show an incomplete number
 of files (i.e. 100/150) and the `parfive.Results` object will contain a list of
@@ -327,7 +327,7 @@ the ``.errors`` list with any errors that occurred during the second attempt.
 
 
 Fido Clients
-------------
+************
 
 `~sunpy.net.Fido` provides access to many sources of data via "clients", these clients can be defined inside sunpy or in other packages.
 If you want to see the current list of clients you can do::

@@ -6,9 +6,9 @@
 
 .. _database_guide:
 
---------------------------
+**************************
 Using the database package
---------------------------
+**************************
 .. currentmodule:: sunpy.database
 
 The database package offers the possibility to save retrieved data (e.g.
@@ -23,7 +23,7 @@ instead of downloading it again from a remote server.
 The package :mod:`sunpy.database` was developed as part of Google Summer of Code (GSOC) 2013.
 
 1. Connecting and initializing the database
--------------------------------------------
+*******************************************
 To start a connection to an existing or a new database, create
 a :class:`Database` object:
 
@@ -60,7 +60,7 @@ can also be committed explicitly using the :meth:`Database.commit` method.
 
 
 2. Adding new entries
----------------------
+*********************
 Each entry in a database is an instance of the class
 :class:`tables.DatabaseEntry` with the following attributes:
 
@@ -124,7 +124,7 @@ tags                   A list of :class:`tables.Tag` instances.
   :meth:`Database.add_from_file`.
 
 2.1 Adding entries from one FITS file
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=====================================
 The method :meth:`Database.add_from_file` receives one positional argument
 (either a string or a file-like object) which is used to add at least one
 new entry from the given FITS file to the database. Why "at least one" and
@@ -227,7 +227,7 @@ In section 3, more advanced formats of the slicing syntax are introduced.
         binary table extension
 
 2.2 Adding entries from a directory of FITS files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=================================================
 Adding all FITS files from a directory works by calling the method
 :meth:`Database.add_from_dir` and passing the desired directory to it. By
 setting the keyword argument ``ignore_already_added`` to ``True``, no
@@ -246,10 +246,10 @@ in the directory ``sampledata_dir``
     59
 
 2.3 Adding entries using the VSO interface
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+==========================================
 
 2.3.1 Adding entries from a VSO query result
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------------
 The number of database entries that will be added from a VSO query result
 is equal to the value of ``len(qr)`` in the following code snippet. Note that
 :meth:`Database.add_from_vso_query_result` does not download any files,
@@ -285,7 +285,7 @@ After initialising the VSO client:
     63
 
 2.3.2 "Clever" Fetching
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 The method :meth:`Database.fetch` checks if the given query has already been
 used once to add entries to the database. Otherwise, the query is used to
@@ -343,7 +343,7 @@ downloaded. This means no new files are downloaded.
     71
 
 2.4 Adding entries manually
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+===========================
 Although usually not required, it is also possible to add database entries
 by specifying the parameters manually. To do so pass the
 values as keyword arguments to :class:`tables.DatabaseEntry` as follows:
@@ -363,7 +363,7 @@ Note that the `in` operator only works as expected after the
 :meth:`Database.commit` method has been called!
 
 3. Displaying entries in a table
---------------------------------
+********************************
 In the previous code snippets 71 entries have been added,
 all of them saving a lot of data. To display the database in a table format
 there is a helper function. :func:`tables.display_entries` takes two
@@ -430,7 +430,7 @@ for more information.
      70    2013-08-05 00:00:02  2013-08-05 00:00:03        AIA    33.5    33.5
 
 4. Removing entries
--------------------
+*******************
 `database.remove()` can be used to remove database entries from the SunPy
 database. It takes a ``tables.DatabaseEntry`` object as argument.
 
@@ -476,10 +476,10 @@ method to remove those where there is no time set:
     Length = 39 rows
 
 5. Editing entries
-------------------
+******************
 
 5.1 Starring and unstarring entries
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+===================================
 The database package supports marking certain entries as "starred" using the
 :meth:`Database.star` method. For example, to star
 all values that have a wavelength of 20nm or higher:
@@ -508,7 +508,7 @@ To remove the star from these entries, the :meth:`Database.unstar` method
 works the same way.
 
 5.2 Setting and removing tags
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=============================
 To add some more information by assigning tags to entries, the database package
 also supports *tags*. The ``tags`` property of a database object holds all tags
 that are saved in the database. For example, to assign the tag *spring* to all
@@ -534,7 +534,7 @@ year:
      63    2011-05-08 00:00:03  2011-05-08 00:00:04        AIA    33.5    33.5
 
 5.3 Manually changing attributes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+================================
 Attributes for entries in the database can be manually edited. The
 :meth:`Database.edit` method receives the database entry to be edited and any
 number of keyword arguments to describe which values to change and how. For
@@ -581,7 +581,7 @@ but it has one major disadvantage: this operation cannot be undone.
 See section 6 to see how undoing and redoing works.
 
 6. Undoing and redoing operations
----------------------------------
+*********************************
 A very handy feature of the database package is that every operation that
 changes the database in some way can be reverted. The Database class has
 the methods :meth:`Database.undo` and :meth:`Database.redo` to undo
@@ -669,7 +669,7 @@ stored end of observation time.
     Length = 39 rows
 
 7. Querying the database
-------------------------
+************************
 The API for querying databases is similar to querying the VSO using the
 method :meth:`sunpy.net.vso.VSOClient.search`. The :meth:`Database.search`
 method accepts any number of ORed query attributes (using \|) and
@@ -680,7 +680,7 @@ the unary operator ``~`` to negate specific attributes. Example: the query
 with the EIT.
 
 7.1 Using VSO attributes
-~~~~~~~~~~~~~~~~~~~~~~~~
+========================
 Using the attributes from :mod:`sunpy.net.attrs` is quite intuitive:
 the simple attributes and the Time attribute work exactly as you expect.
 
@@ -735,7 +735,7 @@ check `astropy.units`.
       9    2011-06-07 06:33:07 ...               19.3               19.3
 
 7.2 Database-specific attributes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+================================
 There are 5 additional query attributes supported by the database package.
 They can be imported from the submodule :mod:`sunpy.database.attrs` and are in
 particular:
@@ -773,7 +773,7 @@ with the value 'Angstrom':
 
 
 8. Caching
-----------
+**********
 All entries that are saved in the database are also saved in a cache
 in-memory. The type of the cache is determined at the initialization of
 the database object and cannot be changed after that. The default type is

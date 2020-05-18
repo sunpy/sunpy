@@ -1,5 +1,5 @@
 SunPy physics
-=============
+*************
 
 The physics submodule contains routines to calculate various physical parameters
 and models for the Sun.

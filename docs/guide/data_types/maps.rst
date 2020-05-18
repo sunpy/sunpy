@@ -1,6 +1,6 @@
-====
+****
 Maps
-====
+****
 
 Maps in SunPy are are 2-dimensional data associated with a coordinate system. In
 this guide, we will cover some of the basic functionality of maps. Once you've
@@ -9,7 +9,7 @@ at SunPy maps. There you can see what instruments are currently supported or you
 can access the code reference for each instrument-specific map subclass.
 
 Creating maps
--------------
+=============
 To make things easy, SunPy can download several example files which are used
 throughout the docs. These files have names like
 `~sunpy.data.sample.AIA_171_IMAGE` and `~sunpy.data.sample.RHESSI_IMAGE`. To
@@ -36,7 +36,7 @@ may vary. SunPy can also create maps from the jpg2000 files from
 `helioviewer.org <https://helioviewer.org/>`_.
 
 Creating Custom Maps
---------------------
+====================
 It is also possible to create maps using custom data (e.g. from a simulation or an observation
 from a data source that is not explicitly supported in SunPy.) To do this you need to provide
 `sunpy.map.Map` with both the data array as well as appropriate
@@ -186,7 +186,7 @@ From these header MetaDict's that are generated, we can now create a custom map:
     >>> my_map.peek() # doctest: +SKIP
 
 Inspecting maps
----------------
+===============
 A map contains a number of data-associated attributes. To get a quick look at
 your map simply type::
 
@@ -246,7 +246,7 @@ This references the meta data dictionary with the header information as read
 from the source file.
 
 Getting at the data
--------------------
+===================
 The data in a SunPy Map object is accessible through the
 `~sunpy.map.GenericMap.data` attribute.  The data is implemented as a
 NumPy `~numpy.ndarray`, so for example, to get
@@ -300,7 +300,7 @@ but accessing the data array directly. For example::
     826.41016
 
 Plotting
---------
+========
 As is true of all of the SunPy data objects, the SunPy `~sunpy.map.GenericMap`
 object (and all of its instrument-specific sub-classes) has its
 own built-in plot methods so that it is easy to quickly view your map.
@@ -326,7 +326,7 @@ examples see :ref:`plotting`.
    `~sunpy.map.GenericMap.rotate()` before you plot the Map.
 
 Plotting Keywords
-*****************
+-----------------
 
 For Map `~matplotlib.pyplot.imshow` does most of the heavy
 lifting in the background while SunPy makes a number of choices for you so that
@@ -368,7 +368,7 @@ dictionary. In the following example we change the title of the plot by changing
 
 
 Colormaps and Normalization
-***************************
+---------------------------
 
 Image data is generally shown in false color in order to better identify it or
 to better visualize structures in the image. Matplotlib handles this colormapping
@@ -474,7 +474,7 @@ the same colormap while the data values associated with each color do because
 the normalization is different.
 
 Masking and Clipping Data
--------------------------
+=========================
 It is often necessary for the purposes of display or otherwise to ignore certain
 data in an image. For example, a large data value could be due to
 cosmic ray hits and should be ignored. The most straightforward way to ignore
@@ -631,7 +631,7 @@ See `this example <https://docs.sunpy.org/en/stable/generated/gallery/computer_v
 
 
 Composite Maps and Overlaying Maps
-----------------------------------
+==================================
 
 The `~sunpy.map.Map` method described above can also handle a list of maps. If a series of maps
 are supplied as inputs, `~sunpy.map.Map` will return a list of maps as the output.  However,
@@ -667,7 +667,7 @@ map, and then plots the result.
 This is not a particularly pretty plot but it shows what SunPy can do!
 
 Working with your map
----------------------
+=====================
 Part of the philosophy of the map object is to provide most of the basic
 functionality that a scientist would want therefore a map also contains a number
 of map-specific methods such as resizing a map or grabbing a subview. To get
@@ -678,7 +678,7 @@ a list of the methods available for a map type::
 and check out the methods section!
 
 MapSequences
-------------
+============
 A `~sunpy.map.MapSequence` is an ordered list of maps.  By default, the maps are ordered by
 their observation date, from earlier maps to later maps. A `~sunpy.map.MapSequence` can be
 created by supplying multiple existing maps::
@@ -724,7 +724,7 @@ This returns a list of map meta objects that have the same order as
 the maps in the `~sunpy.map.MapSequence`.
 
 Coalignment of MapSequences
----------------------------
+===========================
 A typical data preparation step when dealing with time series of images is to
 coalign images taken at different times so that features in different images
 remain in the same place.  A common approach to this problem is
@@ -765,7 +765,7 @@ to the coalignment function.
 
 
 Compensating for solar rotation in MapSequences
------------------------------------------------
+===============================================
 Often a set of solar image data consists of fixing the pointing of a
 field of view for some time and observing.  Features on the Sun will
 rotate according to the Sun's rotation.

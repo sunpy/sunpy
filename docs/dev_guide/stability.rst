@@ -1,5 +1,5 @@
 Current status of sub-packages
-==============================
+******************************
 
 SunPy has in variations in stability across sub-packages.
 This document summarizes the current status of the SunPy sub-packages, so that users understand where they might expect changes in future, and which sub-packages they can safely use for production code.

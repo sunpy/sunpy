@@ -1,7 +1,7 @@
 .. _units-coordinates-sunpy:
 
 Units and Coordinates in SunPy
-==============================
+******************************
 
 This section of the guide will talk about representing physical units and
 physical coordinates in SunPy. SunPy makes use of :ref:`Astropy <astropy:astropy-coordinates>` for
@@ -9,7 +9,7 @@ both these tasks.
 
 
 Units in SunPy
---------------
+==============
 
 All functions in SunPy that accept or return numbers associated with physcial
 quantities accept and return `~astropy.units.Quantity` objects. These objects
@@ -73,7 +73,7 @@ However, operations which do not make physical sense for the units specified wil
 
 
 Quantities as function arguments
---------------------------------
+================================
 
 An extremely useful addition to the base functionality of Quanitities is the ``@u.quantity_input`` decorator.
 This allows you to specify required units for function arguments to ensure that the calculation within that
@@ -127,7 +127,7 @@ have the same units on the output from this function::
   <Quantity 0.01666667 m / s>
 
 Physical Coordinates in SunPy
------------------------------
+=============================
 
 In much the same way as `~astropy.units` are used for representing physical
 quantities, SunPy uses `astropy.coordinates` to represent points in physical
@@ -170,7 +170,7 @@ frames defined in Astropy, for example `~astropy.coordimates.ICRS`.
 
 
 Observer Location
-^^^^^^^^^^^^^^^^^
+-----------------
 
 Both `~sunpy.coordinates.frames.Helioprojective` and
 `~sunpy.coordinates.frames.Heliocentric` frames are defined based on the
@@ -195,7 +195,7 @@ one observer to a coordinate seen by another::
 
 
 Using Coordinates with SunPy Map
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 .. plot::
    :include-source:

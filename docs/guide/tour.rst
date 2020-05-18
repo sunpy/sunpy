@@ -1,5 +1,5 @@
 A brief tour of SunPy
-=====================
+*********************
 
 This brief tutorial will walk you through some
 of the functionality offered by SunPy. Start by reading this tutorial
@@ -8,12 +8,12 @@ tutorial check out the rest of the :doc:`User Guide </guide/index>` for a more
 thorough look at the functionality available.
 
 Sample Data
------------
+===========
 This tour makes use of a number of sample data files which you will need to
 download. This will happen when the sample data is imported for the first time.
 
 Maps
-----
+====
 Maps are the primary data type in SunPy. They are spatially aware data arrays.
 There are maps for a 2D image, a time series of 2D images or temporally aligned
 2D images.
@@ -43,7 +43,7 @@ For more information about maps checkout the :doc:`map guide <data_types/maps>`
 and the :ref:`map`.
 
 TimeSeries
-----------
+==========
 
 SunPy handles time series data, fundamental to the study of any real world
 phenomenon, by creating a TimeSeries object. A timeseries consists of two parts;
@@ -75,7 +75,7 @@ For more information about TimeSeries, check out the
 and the :ref:`timeseries_code_ref`.
 
 Plotting
---------
+========
 
 SunPy uses a matplotlib-like interface to its plotting so more complex plots can
 be built by combining SunPy with matplotlib. If you're not familiar with
@@ -132,7 +132,7 @@ plots can be built by combining SunPy with matplotlib.
 For more information check out :ref:`plotting`.
 
 Solar Physical Constants
-------------------------
+========================
 
 SunPy contains a convenient list of solar-related physical constants. Here is
 a short bit of code to get you started: ::
@@ -179,7 +179,7 @@ available. These constants are provided as a convenience so that everyone is usi
 (accepted) values. For more information check out :ref:`sun_code_ref`.
 
 Quantities and Units
---------------------
+====================
 
 Many capabilities in SunPy make use of physical quantities that are specified
 with units. SunPy uses `~astropy.units` to implement this functionality.
@@ -259,7 +259,7 @@ the `the astropy tutorial <http://learn.astropy.org/Quantities.html>`__ and
 
 
 Working with Times
-------------------
+==================
 
 SunPy also contains a number of convenience functions for working with dates
 and times. Here is a short example: ::
@@ -286,7 +286,7 @@ For more information about working with time in SunPy checkout the :doc:`time gu
 
 
 Obtaining Data
---------------
+==============
 
 SunPy supports searching for and fetching data from a variety of sources,
 including the `VSO <https://virtualsolar.org/>`__ and the
@@ -307,7 +307,7 @@ is below::
 For more information and examples of downloading data with SunPy see :ref:`acquiring_data`.
 
 Database Package
-----------------
+================
 
 The database package can be used to keep a local record of all files downloaded
 from the VSO, this means that two searches of the VSO which overlap will not
