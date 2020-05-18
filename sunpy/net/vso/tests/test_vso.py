@@ -252,8 +252,8 @@ def test_wave_repr():
     """Tests the __repr__ method of class vso.attrs.Wave"""
     wav = core_attrs.Wavelength(12 * u.AA, 16 * u.AA)
     moarwav = core_attrs.Wavelength(15 * u.AA, 12 * u.AA)
-    assert repr(wav) == "<Wavelength(12.0, 16.0, 'Angstrom')>"
-    assert repr(moarwav) == "<Wavelength(12.0, 15.0, 'Angstrom')>"
+    assert repr(wav) == "<sunpy.net.attrs.Wavelength(12.0, 16.0, 'Angstrom')>"
+    assert repr(moarwav) == "<sunpy.net.attrs.Wavelength(12.0, 15.0, 'Angstrom')>"
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
