@@ -319,6 +319,11 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = Non
     >>> height = 10 * u.arcsec
     >>> bottom_left, top_right = get_rectangle_coordinates(bottom_left, width=width, height=height)
 
+    Notes
+    -----
+    This function does not check whether ``top_right`` is above and to the right of ``bottom_left``
+    in coordinate space. Whether this condition holds when plotting a rectangle depends on the
+    orientation of the axes, and therefore needs a WCS for context.
     """
     if not (hasattr(bottom_left, 'transform_to') and
             hasattr(bottom_left, 'shape') and
