@@ -265,14 +265,14 @@ class BaseFuncAnimator:
         pad_size = Size.Fraction(pad, Size.AxesX(self.axes))
         large_pad_size = Size.Fraction(0.1, Size.AxesY(self.axes))
 
-        # Define size of useful axes cells, 50% each in x 20% for buttons in y.
-        small_x = Size.Fraction((1.-2.*pad)/10, Size.AxesX(self.axes))
-        ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(self.axes))
-
         button_grid = max((7, self.num_buttons))
+
+        # Define size of useful axes cells, 50% each in x 20% for buttons in y.
+        ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(self.axes))
+        xsize = Size.Fraction((1.-2.*pad)/button_grid, Size.AxesX(self.axes))
+
         # Set up grid, 3x3 with cells for padding.
         if self.num_buttons > 0:
-            xsize = Size.Fraction((1.-2.*pad)/button_grid, Size.AxesX(self.axes))
             horiz = [xsize] + [pad_size, xsize]*(button_grid-1)
             vert = [ysize, pad_size] * self.num_sliders + \
                    [large_pad_size, large_pad_size, Size.AxesY(self.axes)]

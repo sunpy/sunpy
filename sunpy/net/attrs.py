@@ -23,7 +23,7 @@ attrs specific to them, under:
 * `a.goes <sunpy.net.dataretriever.attrs.goes>`
 
 """
-from ._attrs import Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs
+from ._attrs import Detector, Instrument, Level, Physobs, Resolution, Sample, Time, Wavelength
 
 # Trick the docs into thinking these attrs are defined in here.
 for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution, Physobs):

@@ -8,9 +8,9 @@ from sunpy.net import attrs as a
 from sunpy.net._attrs import Instrument, Time
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources import noaa
+from sunpy.tests.helpers import no_vso
 from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
-from sunpy.tests.helpers import no_vso
 
 
 @pytest.fixture

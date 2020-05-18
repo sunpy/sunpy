@@ -10,11 +10,14 @@ you're subtracting the previous image or the first image in a sequence.
 """
 ###########################################################################
 
-import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+import matplotlib.pyplot as plt
+
 import astropy.units as u
-from sunpy.net import Fido, attrs as a
+
 import sunpy.map
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 ###########################################################################
 # First we'll download a couple images and store them in a

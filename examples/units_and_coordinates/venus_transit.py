@@ -9,12 +9,12 @@ of the Sun as observed by SDO/AIA.
 import matplotlib.pyplot as plt
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord
-from astropy.coordinates import solar_system_ephemeris
+from astropy.coordinates import SkyCoord, solar_system_ephemeris
 
-from sunpy.net import Fido, attrs as a
 import sunpy.map
 from sunpy.coordinates import get_body_heliographic_stonyhurst
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 ###############################################################################
 # Let's download an image of the Venus transit.

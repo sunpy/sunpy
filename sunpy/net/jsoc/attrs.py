@@ -1,6 +1,5 @@
-from sunpy.net._attrs import Wavelength, Time
-from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, DataAttr, SimpleAttr
-
+from sunpy.net._attrs import Time, Wavelength
+from sunpy.net.attr import AttrAnd, AttrOr, AttrWalker, DataAttr, SimpleAttr
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 

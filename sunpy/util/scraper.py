@@ -6,8 +6,8 @@ import re
 import datetime
 from ftplib import FTP
 from urllib.error import HTTPError
-from urllib.request import urlopen
 from urllib.parse import urlsplit
+from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 

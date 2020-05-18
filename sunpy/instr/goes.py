@@ -48,7 +48,6 @@ References
 import csv
 import copy
 import socket
-import os.path
 import datetime
 from itertools import dropwhile
 from urllib.parse import urljoin

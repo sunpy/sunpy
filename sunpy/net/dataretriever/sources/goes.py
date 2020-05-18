@@ -3,19 +3,19 @@
 # Google Summer of Code 2014
 
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from itertools import compress
 from urllib.parse import urlsplit
 
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
-from sunpy import config, log
+from sunpy import config
+from sunpy.net.dataretriever import GenericClient
 from sunpy.time import TimeRange, parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
 from sunpy.util.scraper import Scraper
-from sunpy.net.dataretriever import GenericClient
 
 TIME_FORMAT = config.get("general", "time_format")
 

@@ -1,7 +1,8 @@
 import warnings
+
 import pytest
 
-from sunpy.util.decorators import get_removal_version, deprecated
+from sunpy.util.decorators import deprecated, get_removal_version
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning
 
 

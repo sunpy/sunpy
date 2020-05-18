@@ -5,9 +5,9 @@ This particular test file pertains to HIMap.
 import os
 import glob
 
-from sunpy.map.sources.stereo import HIMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.stereo import HIMap
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path,"hi_20110910_114721_s7h2A.fts"))

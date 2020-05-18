@@ -6,7 +6,6 @@ from collections import OrderedDict
 
 import matplotlib.dates
 import numpy as np
-import matplotlib as mpl
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 

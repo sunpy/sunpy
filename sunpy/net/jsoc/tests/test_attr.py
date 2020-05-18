@@ -5,10 +5,8 @@ import astropy.units as u
 
 import sunpy.net.jsoc as jsoc
 import sunpy.net.jsoc.attrs as attrs
-import sunpy.net.vso.attrs as vso_attrs
 from sunpy.net import _attrs as core_attrs
-
-from sunpy.net.attr import AttrOr, AttrAnd
+from sunpy.net.attr import AttrAnd, AttrOr
 
 
 @pytest.mark.parametrize(("attr1, attr2"),
@@ -51,11 +49,11 @@ def test_complexquery():
 
 def test_wavelength_error():
     with pytest.raises(TypeError):
-        w1 = attrs.Wavelength('wobble')
+        attrs.Wavelength('wobble')
     with pytest.raises(TypeError):
-        w1 = attrs.Wavelength(3.24)
+        attrs.Wavelength(3.24)
     with pytest.raises(TypeError):
-        w1 = attrs.Wavelength((3, 3))
+        attrs.Wavelength((3, 3))
 
 
 def test_wave_self():

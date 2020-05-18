@@ -16,18 +16,15 @@ sunpy.util.multimethod.
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
-import os
 import re
-import keyword
-from collections import defaultdict, namedtuple
-from textwrap import dedent
-import textwrap
 import string
-from shutil import get_terminal_size
+import keyword
+import textwrap
+from textwrap import dedent
+from collections import namedtuple, defaultdict
 
-from astropy.utils.misc import isiterable
 from astropy.table import Table
-
+from astropy.utils.misc import isiterable
 
 from sunpy.util.functools import seconddispatch
 from sunpy.util.util import get_width

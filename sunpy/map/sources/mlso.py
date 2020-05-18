@@ -1,10 +1,10 @@
-from astropy.visualization.mpl_normalize import ImageNormalize
-from astropy.visualization import PowerStretch
 import astropy.units as u
+from astropy.visualization import PowerStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
 
+from sunpy.coordinates import sun
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
-from sunpy.coordinates import sun
 
 __all__ = ['KCorMap']
 

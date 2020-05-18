@@ -5,20 +5,18 @@ Created on Fri Jun 21 15:05:09 2013
 @author: stuart
 """
 import os
-import tempfile
 import pathlib
+import tempfile
 
-import pytest
 import numpy as np
+import pytest
+
 from astropy.io import fits
 from astropy.wcs import WCS
 
 import sunpy
-import sunpy.map
 import sunpy.data.test
-from sunpy.util import SunpyUserWarning
-from sunpy.io.file_tools import UnrecognizedFileTypeError
-
+import sunpy.map
 
 filepath = pathlib.Path(sunpy.data.test.rootdir)
 a_list_of_many = [os.fspath(f) for f in pathlib.Path(filepath, "EIT").glob("*")]
@@ -205,7 +203,7 @@ class TestMap:
 
     # requires sqlalchemy to run properly
     def test_databaseentry(self):
-        sqlalchemy = pytest.importorskip('sqlalchemy')
+        pytest.importorskip('sqlalchemy')
         sunpy_database = pytest.importorskip('sunpy.database')
         db = sunpy_database.Database(url='sqlite://', default_waveunit='angstrom')
         db.add_from_file(a_fname)

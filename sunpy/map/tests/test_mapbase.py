@@ -5,29 +5,28 @@ Test Generic Map
 import os
 import tempfile
 from unittest import mock
-import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-import matplotlib.pyplot as plt
 
-import astropy.wcs
 import astropy.units as u
+import astropy.wcs
+from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
-from astropy.time import Time
-from astropy.coordinates import SkyCoord
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import Time
 from astropy.visualization import wcsaxes
 
 import sunpy
+import sunpy.coordinates
+import sunpy.data.test
 import sunpy.map
 import sunpy.sun
-import sunpy.data.test
-import sunpy.coordinates
 from sunpy.coordinates import sun
 from sunpy.time import parse_time
-from sunpy.util import SunpyUserWarning, SunpyDeprecationWarning
+from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning
 
 testpath = sunpy.data.test.rootdir
 
@@ -137,7 +136,7 @@ def test_wcs(aia171_test_map):
 def test_header_immutability(aia171_test_map):
     # Check that accessing the wcs of a map doesn't modify the meta data
     assert 'KEYCOMMENTS' in aia171_test_map.meta
-    wcs = aia171_test_map.wcs
+    aia171_test_map.wcs
     assert 'KEYCOMMENTS' in aia171_test_map.meta
 
 
@@ -769,7 +768,7 @@ def test_validate_meta(generic_map):
             'wavelnth': 10,
             'waveunit': 'ANGSTROM'
         }
-        bad_map = sunpy.map.Map((generic_map.data, bad_header))
+        sunpy.map.Map((generic_map.data, bad_header))
 
     assert 'waveunit'.upper() in str(w[0].message)
 

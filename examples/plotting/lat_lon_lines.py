@@ -5,10 +5,10 @@ Drawing heliographic longitude and latitude lines
 
 How to draw your own (Stonyhurst) longitude and latitude lines
 """
-import numpy as np
-import astropy.units as u
 import matplotlib.pyplot as plt
+import numpy as np
 
+import astropy.units as u
 from astropy.coordinates import SkyCoord
 
 import sunpy.map

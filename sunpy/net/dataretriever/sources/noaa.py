@@ -8,8 +8,8 @@ from collections import OrderedDict
 import astropy.units as u
 from astropy.time import Time, TimeDelta
 
-from sunpy.util.parfive_helpers import Downloader
 from sunpy.net.dataretriever import GenericClient
+from sunpy.util.parfive_helpers import Downloader
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 

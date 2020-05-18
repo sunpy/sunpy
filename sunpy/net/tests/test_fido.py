@@ -1,5 +1,4 @@
 import os
-import copy
 import pathlib
 from stat import S_IREAD, S_IRGRP, S_IROTH
 from unittest import mock
@@ -15,19 +14,18 @@ import astropy.units as u
 from astropy.table import Table
 
 from sunpy import config
-from sunpy.net import Fido, attr, jsoc
+from sunpy.net import Fido, attr
 from sunpy.net import attrs as a
-from sunpy.net.base_client import BaseClient
+from sunpy.net import jsoc
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.sources.goes import XRSClient
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.tests.strategies import goes_time, offline_instruments, online_instruments, time_attr
-from sunpy.net.vso import QueryResponse as vsoQueryResponse, attrs as va
+from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.vso.vso import DownloadFailed
+from sunpy.tests.helpers import no_vso, skip_windows
 from sunpy.time import TimeRange, parse_time
-from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.exceptions import SunpyUserWarning
-from sunpy.tests.helpers import skip_windows, no_vso
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -505,4 +503,4 @@ def test_slice_jsoc():
 def test_fido_repr():
     output = repr(Fido)
     assert output[:50] == '<sunpy.net.fido_factory.UnifiedDownloaderFactory o'
-    assert output[-50:] == 'tor (GBM) instrument on board the Fermi satellite.'
+    assert 'tor (GBM) instrument on board the Fermi satellite.' in output

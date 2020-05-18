@@ -18,12 +18,11 @@ below (see `astropy.coordinates.builtin_frames`).
 
 """
 
+from . import sun
+from .ephemeris import *
 from .frames import *
 from .metaframes import *
-from .transformations import transform_with_sun_center, _make_sunpy_graph
-from .ephemeris import *
-from . import sun
-
+from .transformations import _make_sunpy_graph, transform_with_sun_center
 from .wcs_utils import *
 
 __doc__ += _make_sunpy_graph()

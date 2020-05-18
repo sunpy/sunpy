@@ -7,14 +7,13 @@ from datetime import datetime
 from urllib.error import URLError
 from urllib.request import urlopen, urlretrieve
 
-from dateutil.rrule import rrule, MONTHLY
+from dateutil.rrule import MONTHLY, rrule
 
 import astropy.units as u
 
-from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
-
 from sunpy.net.dataretriever import GenericClient
+from sunpy.time import TimeRange, parse_time
 
 __all__ = ['RHESSIClient']
 

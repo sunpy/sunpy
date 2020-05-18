@@ -1,7 +1,7 @@
 import importlib
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
 from textwrap import dedent
+from collections.abc import Sequence
 
 from astropy.table import Table
 

@@ -11,22 +11,22 @@ of the final implementation. Much of the code will be changes as the class is
 developed.
 """
 import datetime
-import copy
 from collections import OrderedDict
 
+import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
-import matplotlib.pyplot as plt
 
 import astropy.units as u
-from astropy.time import Time, TimeDelta
 from astropy.table import Table
+from astropy.time import Time, TimeDelta
 
 import sunpy.data.sample
 import sunpy.timeseries
-from sunpy.util.metadata import MetaDict
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 from sunpy.time import TimeRange, parse_time
-from sunpy.net import Fido, attrs as a
+from sunpy.util.metadata import MetaDict
 
 ##############################################################################
 # Creating a TimeSeries from a file can be done using the factory.

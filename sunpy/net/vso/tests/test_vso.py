@@ -7,15 +7,15 @@ from parfive import Results
 
 import astropy.units as u
 
-from sunpy.net import attrs as a
 from sunpy.net import _attrs as core_attrs
-from sunpy.net import attr, vso
+from sunpy.net import attr
+from sunpy.net import attrs as a
+from sunpy.net import vso
 from sunpy.net.vso import QueryResponse
 from sunpy.net.vso import attrs as va
 from sunpy.net.vso.vso import VSOClient, build_client, get_online_vso_url
 from sunpy.tests.mocks import MockObject
 from sunpy.time import TimeRange, parse_time
-from sunpy.util.exceptions import SunpyUserWarning
 
 
 class MockQRRecord:
@@ -301,7 +301,7 @@ def test_no_download(client):
             pass
 
         def download(self, *args, **kwargs):
-            download_called = True
+            self.download_called = True
 
     # this should fail
     stereo = (core_attrs.Detector('STEREO_B') &

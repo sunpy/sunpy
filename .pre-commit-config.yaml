@@ -24,7 +24,19 @@ repos:
     hooks:
       - id: flake8
         args: ['--count', '--select', 'E101,W191,W291,W292,W293,W391,E111,E112,E113,E303,E304,E306,E502,E722,E901,E902,F822,F823']
-
+        exclude: ".*(.fits|.fts|.fit|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern)$"
+  - repo: https://github.com/humitos/mirrors-autoflake
+    rev: v1.3
+    hooks:
+      - id: autoflake
+        args: ['--in-place', '--remove-all-unused-imports', '--remove-unused-variable']
+        exclude: ".*(.fits|.fts|.fit|.txt|tca.*|extern.*|.rst|.md|__init__.py|sunpy/extern|docs/conf.py)$"
+  - repo: https://github.com/timothycrosley/isort
+    rev: 4.3.21-2
+    hooks:
+      - id: isort
+        args: ['-sp','setup.cfg','-rc']
+        exclude: ".*(.fits|.fts|.fit|.txt|tca.*|extern.*|.rst|.md|cm/__init__.py|sunpy/extern|docs/conf.py)$"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
     hooks:

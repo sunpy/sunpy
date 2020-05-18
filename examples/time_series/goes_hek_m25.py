@@ -7,9 +7,11 @@ How to plot flare times as provided by the HEK on a GOES XRS plot.
 """
 import matplotlib.pyplot as plt
 
-from sunpy.timeseries import TimeSeries
+from sunpy.net import Fido
+from sunpy.net import attrs as a
+from sunpy.net import hek
 from sunpy.time import TimeRange, parse_time
-from sunpy.net import hek, Fido, attrs as a
+from sunpy.timeseries import TimeSeries
 
 ###############################################################################
 # Let's first grab GOES XRS data for a particular time of interest

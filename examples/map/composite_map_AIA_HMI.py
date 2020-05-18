@@ -9,11 +9,11 @@ compare features.
 """
 import matplotlib.pyplot as plt
 
-from astropy.coordinates import SkyCoord
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
-import sunpy.map
 import sunpy.data.sample
+import sunpy.map
 
 ###############################################################################
 # We start with the sample data. HMI shows the line-of-sight magnetic field at

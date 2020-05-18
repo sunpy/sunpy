@@ -8,9 +8,17 @@ import pytest
 import sunpy
 from sunpy import config
 from sunpy.util import SunpyUserWarning
-from sunpy.util.config import (get_and_create_sample_dir, get_and_create_download_dir,
-                               CONFIG_DIR, print_config, _find_config_files, dirs,
-                               _get_user_configdir, _is_writable_dir, copy_default_config)
+from sunpy.util.config import (
+    CONFIG_DIR,
+    _find_config_files,
+    _get_user_configdir,
+    _is_writable_dir,
+    copy_default_config,
+    dirs,
+    get_and_create_download_dir,
+    get_and_create_sample_dir,
+    print_config,
+)
 
 USER = os.path.expanduser('~')
 

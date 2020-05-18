@@ -10,9 +10,9 @@ import astropy.units as u
 
 import sunpy.data.sample
 import sunpy.timeseries
-from sunpy.net import Fido, attrs as a
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 from sunpy.time import TimeRange, parse_time
-
 
 ##############################################################################
 # Search for Data

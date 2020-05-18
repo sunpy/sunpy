@@ -8,10 +8,9 @@ import glob
 
 import pytest
 
+import sunpy.data.test
 from sunpy.map import Map
 from sunpy.map.sources.iris import SJIMap
-from sunpy.map.mapbase import GenericMap
-import sunpy.data.test
 from sunpy.util.exceptions import SunpyUserWarning
 
 

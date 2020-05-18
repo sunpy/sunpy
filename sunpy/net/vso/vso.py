@@ -6,6 +6,7 @@ This module provides a wrapper around the VSO API.
 import os
 import re
 import cgi
+import json
 import socket
 import inspect
 import datetime
@@ -14,9 +15,8 @@ import itertools
 from functools import partial
 from collections import defaultdict
 from urllib.error import URLError, HTTPError
-from urllib.request import urlopen, Request
 from urllib.parse import urlencode
-import json
+from urllib.request import Request, urlopen
 
 import zeep
 from zeep.helpers import serialize_object
@@ -34,7 +34,15 @@ from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
-from .exceptions import NoData, UnknownVersion, DownloadFailed, UnknownMethod, UnknownStatus, MissingInformation, MultipleChoices
+from .exceptions import (
+    DownloadFailed,
+    MissingInformation,
+    MultipleChoices,
+    NoData,
+    UnknownMethod,
+    UnknownStatus,
+    UnknownVersion,
+)
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -51,7 +59,6 @@ class _Str(str):
 
     """ Subclass of string that contains a meta attribute for the
     record_item associated with the file. """
-    pass
 
 
 # ----------------------------------------
@@ -797,7 +804,7 @@ class VSOClient(BaseClient):
         try:
             self.api.transport.session.close()
         except Exception as e:
-            log.debug("Failed to close VSO API connection with: {e}")
+            log.debug(f"Failed to close VSO API connection with: {e}")
 
     @classmethod
     def register_values(cls):

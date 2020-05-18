@@ -4,10 +4,12 @@ Test cases distinguishing the source types.
 
 import os
 import glob
+
 from astropy.visualization import LinearStretch
-from sunpy.map.sources.source_type import from_helioviewer_project, source_stretch
-from sunpy.map import Map
+
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.source_type import from_helioviewer_project, source_stretch
 from sunpy.tests.helpers import skip_glymur
 
 path = sunpy.data.test.rootdir

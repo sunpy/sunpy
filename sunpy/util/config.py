@@ -2,15 +2,14 @@
 This module provides SunPy's configuration file functionality.
 """
 import os
-import configparser
-from pathlib import Path
 import shutil
 import warnings
+import configparser
+from pathlib import Path
 
 import sunpy
 from sunpy.extern.appdirs import AppDirs
 from sunpy.util.exceptions import SunpyUserWarning
-
 
 __all__ = ['load_config', 'copy_default_config', 'print_config', 'CONFIG_DIR']
 

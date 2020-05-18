@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 from setuptools import setup  # isort:skip
+import os
+import sys
+from itertools import chain
+
 from extension_helpers import get_extensions
 from setuptools.config import read_configuration
-from itertools import chain
-import sys
-import os
 
 ################################################################################
 # Raise helpful messages for test and build_docs commands

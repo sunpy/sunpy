@@ -5,7 +5,6 @@ import datetime
 from collections import OrderedDict
 
 import matplotlib.dates
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from pandas import DataFrame
 

@@ -4,7 +4,6 @@ This file defines wrappers and variants of things in the functools standard lib.
 
 import functools
 
-
 __all__ = ['seconddispatch']
 
 
