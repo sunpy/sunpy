@@ -1,5 +1,5 @@
 SunPy time
-==========
+**********
 
 The time submodule contains helpers for converting strings to
 `astropy.time.Time` objects and handling common operations on these objects. As

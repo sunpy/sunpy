@@ -1,7 +1,7 @@
 .. _sunpy-coordinates:
 
 SunPy coordinates
-=================
+*****************
 
 This sub-package contains:
 
@@ -13,7 +13,7 @@ The SunPy coordinate framework extends the
 :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
 
 Supported Coordinate Systems
-----------------------------
+============================
 
 .. list-table::
    :widths: auto
@@ -84,7 +84,7 @@ and `Franz & Harper (2002) <https://doi.org/10.1016/S0032-0633(01)00119-2>`_
 
 
 Getting Started
----------------
+===============
 
 The easiest interface to work with coordinates is through the `~astropy.coordinates.SkyCoord` class::
 
@@ -132,14 +132,14 @@ than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
 
 
 Accessing Coordinates
-^^^^^^^^^^^^^^^^^^^^^
+---------------------
 
 Individual coordinates can be accessed via attributes on the SkyCoord object,
 but the names of the components of the coordinates can depend on the the frame and the chosen
 representation (e.g., Cartesian versus spherical).
 
 `~sunpy.coordinates.Helioprojective`
-####################################
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 For the helioprojective frame, the theta_x and theta_y components are accessed as
 ``Tx`` and ``Ty``, respectively::
@@ -151,7 +151,7 @@ For the helioprojective frame, the theta_x and theta_y components are accessed a
   <Latitude 100. arcsec>
 
 `~sunpy.coordinates.Heliocentric`
-#################################
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Heliocentric is typically used with Cartesian components::
 
@@ -164,7 +164,7 @@ Heliocentric is typically used with Cartesian components::
   <Quantity 589951.4 km>
 
 `~sunpy.coordinates.HeliographicStonyhurst` and `~sunpy.coordinates.HeliographicCarrington`
-###########################################################################################
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Both of the heliographic frames have the components of latitude, longitude and radius::
 
@@ -190,7 +190,7 @@ Earth Equatorial (HEEQ).  Here's an example of how to use
   <Quantity 589951.4 km>
 
 Transforming Between Coordinate Frames
---------------------------------------
+======================================
 
 Both `~astropy.coordinates.SkyCoord` and
 `~astropy.coordinates.BaseCoordinateFrame` instances have a
@@ -223,7 +223,7 @@ It is also possible to transform to any coordinate system implemented in Astropy
 
 
 Observer Location Information
------------------------------
+=============================
 
 The `~sunpy.coordinates.frames.Helioprojective`, `~sunpy.coordinates.frames.Heliocentric`
 and `~sunpy.coordinates.frames.HeliographicCarrington` frames are defined by the location of
@@ -264,7 +264,7 @@ An example with two maps, named ``aia`` and ``stereo``::
 
 
 Design of the Coordinates Sub-Package
--------------------------------------
+=====================================
 
 This sub-package works by defining a collection of ``Frames``
 (`sunpy.coordinates.frames`), which exists on a transformation graph, where the
@@ -284,7 +284,7 @@ system see :ref:`astropy-coordinates-overview`
 
 
 Frames and SkyCoord
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 The `~astropy.coordinates.SkyCoord` class is a high level wrapper around the
 `astropy.coordinates` sub-package. It provides an easier way to create and transform
@@ -311,7 +311,7 @@ match the ``radius`` coordinate in the Heliographic frame. This is because you m
 mean to be describing a point above the defined 'surface' of the Sun.
 
 More Detailed Information
--------------------------
+=========================
 
 .. toctree::
    :maxdepth: 1
@@ -323,24 +323,20 @@ More Detailed Information
 
 
 Reference/API
--------------
+=============
 
 .. automodapi:: sunpy.coordinates
-    :headings: ^#
 
 .. automodapi:: sunpy.coordinates.ephemeris
-    :headings: ^#
 
 .. automodapi:: sunpy.coordinates.sun
-    :headings: ^#
 
 .. automodapi:: sunpy.coordinates.utils
-    :headings: ^#
     :no-inheritance-diagram:
 
 
 Attribution
------------
+===========
 
 Some of this documentation was adapted from Astropy under the terms of the `BSD
 License

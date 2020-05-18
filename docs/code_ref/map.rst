@@ -1,8 +1,8 @@
 .. _map:
 
-=========
+*********
 SunPy map
-=========
+*********
 
 .. module:: sunpy.map
 
@@ -13,7 +13,7 @@ SunPy map
 .. currentmodule:: sunpy.map
 
 Overview
---------
+========
 One of core classes in SunPy is a Map. A SunPy Map object is simply a
 spatially-aware data array, often an image. In order to make it easy to work
 with image data in SunPy, the Map object provides a number of methods for
@@ -33,7 +33,7 @@ available. See :ref:`map-classes`.
 
 
 Creating Map Objects
---------------------
+====================
 SunPy Map objects are constructed using the special factory
 class `~sunpy.map.Map`: ::
 
@@ -46,7 +46,7 @@ e.g. `~sunpy.map.sources.sdo.AIAMap` or `~sunpy.map.sources.soho.LASCOMap`
 instrument matches, a 2D map `~sunpy.map.mapbase.GenericMap`.
 
 Fixing map metadata
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 If you need to fix the metadata of a fits file before it is handed to `Map`, this can be done as
 follows:
@@ -62,20 +62,19 @@ follows:
 .. _map-classes:
 
 sunpy.map Package
------------------
+=================
 
 All SunPy Maps are derived from `sunpy.map.GenericMap`, all the methods and attributes are documented in that class.
 
 .. automodapi:: sunpy.map
     :no-main-docstr:
-    :no-heading:
     :inherited-members:
     :include-all-objects:
 
 .. _map-sources:
 
 Instrument Map Classes
-----------------------
+======================
 Defined in `sunpy.map.sources` are a set of `~sunpy.map.GenericMap` subclasses
 which convert the specific metadata and other differences in each instruments
 data to the standard `~sunpy.map.GenericMap` interface.
@@ -86,11 +85,10 @@ which data and metadata pairs match its instrument.
 
 .. automodapi:: sunpy.map.sources
     :no-main-docstr:
-    :no-heading:
 
 
 Writing a new Instrument Map Class
-----------------------------------
+==================================
 
 Any subclass of `~sunpy.map.GenericMap` which defines a method named
 `~sunpy.map.GenericMap.is_datasource_for` will automatically be registered with

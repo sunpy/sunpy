@@ -1,5 +1,5 @@
 SunPy instr
-===========
+***********
 
 The ``instr`` submodule contains instrument specific routines, generally this
 submodule is focused on routines that process calibrated data.

@@ -1,15 +1,15 @@
 .. _plotting:
 
------------------
+*****************
 Plotting in SunPy
------------------
+*****************
 
 SunPy makes use of `matplotlib <https://matplotlib.org/>`_ for all of its
 plotting - as such, it tries to follow the matplotlib plotting philosophy. It is
 therefore useful to go over how matplotlib works as background.
 
 1. Matplotlib Tutorial
-----------------------
+**********************
 
 The tutorial provided here is a summary of one that can be found in the `matplotlib
 usage documentation <https://matplotlib.org/faq/usage_faq.html>`_.
@@ -28,7 +28,7 @@ interactive capabilities turned on and numpy and matplotlib imported into the ma
 namespace.
 
 2. Pyplot
----------
+*********
 Here is a simple example of pyplot usage.
 
 .. plot::
@@ -71,7 +71,7 @@ command. The following command ::
 turns off interactivity.
 
 3. Advanced Pyplot
-------------------
+******************
 If you need more fine-grained control over plots the recommended path is to use pyplot
 and access the figures and axes objects. This is shown in the following example.
 
@@ -97,7 +97,7 @@ In the previous section, pyplot took care of creating these
 objects for you so you didn't have to worry about creating them yourself.
 
 4. SunPy Plotting Convention
-----------------------------
+****************************
 
 To be consistent with matplotlib, SunPy has developed a standard plotting policy
 which supports both simple and advanced matplotlib usage. The following examples
@@ -105,7 +105,7 @@ focus on the map object but they should be applicable across all of the data
 objects.
 
 4.1 peek()
-----------
+**********
 
 For quick and easy access to a plot all SunPy base objects (i.e. maps, spectra,
 timeseries) define their own `~sunpy.map.mapbase.GenericMap.peek` command which
@@ -126,7 +126,7 @@ the map data defined by the contents of the map. In non-interactive mode the
 plot window blocks the command line terminal and must be closed before doing anything else.
 
 4.2 plot()
-----------
+**********
 
 For more advanced plotting the base SunPy objects also provide a
 `~sunpy.map.mapbase.GenericMap.plot` command. This command is similar to the
@@ -238,7 +238,7 @@ rotation and plotting in different coordinate systems.
 .. _wcsaxes-plotting:
 
 Plotting Maps with wcsaxes
---------------------------
+**************************
 
 By default :ref:`map` uses the `astropy.visualization.wcsaxes` module to improve
 the representation of world coordinates, and calling

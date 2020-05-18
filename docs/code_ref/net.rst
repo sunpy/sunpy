@@ -1,6 +1,6 @@
-=========
+*********
 SunPy net
-=========
+*********
 
 SunPy's net submodule contains a lot of different code for accessing various
 solar physics related web services. This submodule contains many layers. Most
@@ -14,7 +14,6 @@ is an interface to multiple sources including all the sources implemented in
     >>> files = Fido.fetch(results)  # doctest: +SKIP
 
 .. automodapi:: sunpy.net
-   :no-heading:
    :include-all-objects:
 
 .. automodapi:: sunpy.net.attrs
@@ -31,7 +30,7 @@ VSO
 
 
 Dataretriever
--------------
+=============
 
 .. automodapi:: sunpy.net.dataretriever
    :allowed-package-names: sources
@@ -41,7 +40,7 @@ Dataretriever
 .. automodapi:: sunpy.net.dataretriever.attrs.goes
 
 JSOC
-----
+====
 
 .. automodapi:: sunpy.net.jsoc
 
@@ -57,20 +56,20 @@ HEK
 
 
 HELIO
------
+=====
 
 .. automodapi:: sunpy.net.helio
 
 .. automodapi:: sunpy.net.helio.hec
 
 Helioviewer
------------
+===========
 
 .. automodapi:: sunpy.net.helioviewer
 
 
 Internal Classes and Functions
-------------------------------
+==============================
 
 These classes and functions are designed to be used to help develop new clients
 for `sunpy.net.Fido`.
