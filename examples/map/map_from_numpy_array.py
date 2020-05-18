@@ -6,15 +6,14 @@ Generating a map from data array
 
 A simple demonstration of creating a map from a numpy array of data.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.map import header_helper
-from sunpy.coordinates import frames
 import sunpy.map
+from sunpy.coordinates import frames
 
 ##############################################################################
 # Let's create some data

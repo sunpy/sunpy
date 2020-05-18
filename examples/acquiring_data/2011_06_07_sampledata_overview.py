@@ -7,11 +7,12 @@ Sample data set overview
 An overview of the coordinated sample data set.
 """
 import matplotlib.pyplot as plt
+
 import astropy.units as u
 
+import sunpy.data.sample as sample_data
 import sunpy.map
 import sunpy.timeseries
-import sunpy.data.sample as sample_data
 
 ###############################################################################
 # On 2011 June 7, various solar instruments observed a spectacular solar

@@ -2,16 +2,18 @@
 """
 Test mapsequence functionality
 """
+import os
 from unittest import mock
 
 import numpy as np
+import pytest
+
 import astropy.units as u
+
 import sunpy
+import sunpy.data.test
 import sunpy.map
 from sunpy.util.metadata import MetaDict
-import pytest
-import os
-import sunpy.data.test
 
 
 @pytest.fixture

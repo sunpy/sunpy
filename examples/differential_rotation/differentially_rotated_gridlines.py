@@ -10,11 +10,12 @@ metaframe in `sunpy.coordinates` to overlay differentially rotated gridlines on
 a Map.  See :ref:`sunpy-coordinates-rotatedsunframe` for more details on using
 `~sunpy.coordinates.metaframes.RotatedSunFrame`.
 """
-import astropy.units as u
 import matplotlib.pyplot as plt
 
+import astropy.units as u
+
 import sunpy.map
-from sunpy.coordinates import RotatedSunFrame, HeliographicStonyhurst
+from sunpy.coordinates import HeliographicStonyhurst, RotatedSunFrame
 from sunpy.data.sample import AIA_171_IMAGE
 
 ##############################################################################

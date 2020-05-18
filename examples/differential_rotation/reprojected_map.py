@@ -14,16 +14,15 @@ using `~sunpy.coordinates.metaframes.RotatedSunFrame`.
    This example requires `reproject` 0.6 or later to be installed.
 
 """
-from astropy.coordinates import SkyCoord
-import astropy.units as u
-from astropy.wcs import WCS
 import matplotlib.pyplot as plt
-import numpy as np
 from reproject import reproject_interp
 
+import astropy.units as u
+from astropy.coordinates import SkyCoord
+from astropy.wcs import WCS
+
 import sunpy.map
-from sunpy.coordinates import (Helioprojective, RotatedSunFrame,
-                               transform_with_sun_center)
+from sunpy.coordinates import Helioprojective, RotatedSunFrame, transform_with_sun_center
 from sunpy.data.sample import AIA_171_IMAGE
 
 ##############################################################################

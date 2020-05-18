@@ -30,12 +30,8 @@ barring like.
 # XXX: Maybe split into three modules and import them all into one so
 # we do not need a template but generate one module in its entirety.
 
-from __future__ import absolute_import
-
-import shutil
-import sys
 import os
-
+import sys
 from collections import defaultdict
 
 EVENTS = [

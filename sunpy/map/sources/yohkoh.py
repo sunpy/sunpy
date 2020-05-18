@@ -10,8 +10,8 @@ from astropy.visualization import PowerStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
-from sunpy.sun import constants
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.sun import constants
 
 __all__ = ['SXTMap']
 

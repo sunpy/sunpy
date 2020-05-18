@@ -9,14 +9,13 @@ objects from various other time objects and strings.
 """
 ##############################################################################
 # Import the required modules.
-from datetime import datetime, date
 import time
+from datetime import date, datetime
 
 import numpy as np
 import pandas
 
 from sunpy.time import parse_time
-
 
 ##############################################################################
 # Suppose you want to parse some strings, ``parse_time`` can do that.

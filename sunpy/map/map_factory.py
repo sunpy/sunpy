@@ -1,34 +1,32 @@
 import os
-from collections import OrderedDict
-import warnings
-import pathlib
 import glob
-from urllib.request import urlopen, Request
+import pathlib
+import warnings
+from collections import OrderedDict
+from urllib.request import Request, urlopen
 
 import numpy as np
+
 import astropy.io.fits
 from astropy.wcs import WCS
 
 from sunpy import log
-from sunpy.map.mapbase import GenericMap, MapMetaValidationError
-from sunpy.map.compositemap import CompositeMap
-from sunpy.map.mapsequence import MapSequence
-
 from sunpy.data import cache
-
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
-
+from sunpy.map.compositemap import CompositeMap
+from sunpy.map.mapbase import GenericMap, MapMetaValidationError
+from sunpy.map.mapsequence import MapSequence
 from sunpy.util import expand_list
-from sunpy.util import SunpyUserWarning
+from sunpy.util.datatype_factory_base import (
+    BasicRegistrationFactory,
+    MultipleMatchError,
+    NoMatchError,
+    ValidationFunctionError,
+)
+from sunpy.util.functools import seconddispatch
 from sunpy.util.metadata import MetaDict
 from sunpy.util.types import DatabaseEntryType
-from sunpy.util.functools import seconddispatch
-
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory
-from sunpy.util.datatype_factory_base import NoMatchError
-from sunpy.util.datatype_factory_base import MultipleMatchError
-from sunpy.util.datatype_factory_base import ValidationFunctionError
 
 SUPPORTED_ARRAY_TYPES = (np.ndarray,)
 try:
@@ -429,19 +427,16 @@ def _is_dir(path):
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
     not point to a valid Map input file."""
-    pass
 
 
 class InvalidMapType(ValueError):
     """Exception to raise when an invalid type of map is requested with Map
     """
-    pass
 
 
 class NoMapsFound(ValueError):
     """Exception to raise when input does not point to any valid maps or files
     """
-    pass
 
 
 Map = MapFactory(registry=GenericMap._registry, default_widget_type=GenericMap,

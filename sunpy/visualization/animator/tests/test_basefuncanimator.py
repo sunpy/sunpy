@@ -16,9 +16,8 @@ import sunpy.data.test
 import sunpy.map
 from sunpy.tests.helpers import figure_test
 from sunpy.time import parse_time
-from sunpy.visualization.animator import (ArrayAnimator, BaseFuncAnimator,
-                                          ImageAnimatorWCS, LineAnimator, base)
 from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.visualization.animator import ArrayAnimator, BaseFuncAnimator, ImageAnimatorWCS, LineAnimator, base
 
 
 class FuncAnimatorTest(BaseFuncAnimator):

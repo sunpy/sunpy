@@ -5,12 +5,12 @@ from astropy.io.misc.asdf.tags.coordinates.frames import BaseCoordType
 from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.coordinates import frames
+from ...types import SunPyType
 
 sunpy_frames = list(map(lambda name: getattr(frames, name), frames.__all__))
 # Handle HeliographicCarrington separately because it has multiple schema versions
 sunpy_frames.remove(frames.HeliographicCarrington)
 
-from ...types import SunPyType
 
 __all__ = ['SunPyCoordType', 'HeliographicCarringtonCoordType']
 

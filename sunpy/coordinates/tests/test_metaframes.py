@@ -1,9 +1,8 @@
-from hypothesis import given, settings
 import pytest
+from hypothesis import given, settings
 
 import astropy.units as u
-from astropy.coordinates import (BaseCoordinateFrame, SkyCoord, frame_transform_graph,
-                                 Longitude)
+from astropy.coordinates import BaseCoordinateFrame, SkyCoord, frame_transform_graph
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.time import Time
 
@@ -11,8 +10,7 @@ import sunpy.coordinates.frames as f
 from sunpy.coordinates.metaframes import RotatedSunFrame, _rotatedsun_cache
 from sunpy.physics.differential_rotation import diff_rot
 from .helpers import assert_longitude_allclose
-from .strategies import longitudes, latitudes, times
-
+from .strategies import latitudes, longitudes, times
 
 # NorthOffsetFrame is tested in test_offset_frame.py
 

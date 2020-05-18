@@ -4,12 +4,13 @@ Helioviewer Client tests
 import os
 import urllib
 from collections import OrderedDict
+
 import pytest
 
 import sunpy
 import sunpy.map
-from sunpy.tests.helpers import skip_glymur
 from sunpy.net.helioviewer import HelioviewerClient
+from sunpy.tests.helpers import skip_glymur
 
 
 @pytest.fixture(scope="function")

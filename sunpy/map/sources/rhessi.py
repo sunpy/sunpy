@@ -6,7 +6,6 @@ __email__ = "steven.d.christe@nasa.gov"
 
 from sunpy.map import GenericMap
 
-
 __all__ = ['RHESSIMap']
 
 

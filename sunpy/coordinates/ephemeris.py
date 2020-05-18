@@ -4,18 +4,15 @@ Ephemeris calculations using SunPy coordinate frames
 """
 import numpy as np
 
-from astropy.coordinates import (SkyCoord, get_body_barycentric,
-                                 ICRS, HeliocentricEclipticIAU76)
-from astropy.coordinates.representation import CartesianRepresentation
-from astropy.constants import c as speed_of_light
-from astropy.time import Time
 import astropy.units as u
+from astropy.constants import c as speed_of_light
+from astropy.coordinates import ICRS, HeliocentricEclipticIAU76, SkyCoord, get_body_barycentric
+from astropy.coordinates.representation import CartesianRepresentation
 
 from sunpy import log
 from sunpy.time import parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
 from sunpy.util.decorators import add_common_docstring
-
 from .frames import HeliographicStonyhurst
 
 __author__ = "Albert Y. Shih"

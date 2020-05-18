@@ -8,10 +8,11 @@ kernel from `~astropy.convolution` and `~astropy.convolution.convolve`
 function.
 """
 import matplotlib.pyplot as plt
-from astropy.convolution import convolve, Box1DKernel
 
-from sunpy.timeseries import TimeSeries
+from astropy.convolution import Box1DKernel, convolve
+
 from sunpy.data.sample import NOAAINDICES_TIMESERIES as noaa_ind
+from sunpy.timeseries import TimeSeries
 
 ###############################################################################
 # Let's first create a TimeSeries from sample data

@@ -8,12 +8,10 @@ import collections
 
 import astropy.units as u
 
-from sunpy.time import parse_time, TimeRange
-
-from .attr import Range, SimpleAttr
-
-from sunpy.util.decorators import add_common_docstring
+from sunpy.time import TimeRange, parse_time
 from sunpy.time.time import _variables_for_parse_time_docstring
+from sunpy.util.decorators import add_common_docstring
+from .attr import Range, SimpleAttr
 
 __all__ = ['Physobs', 'Resolution', 'Detector', 'Sample',
            'Level', 'Instrument', 'Wavelength', 'Time']
@@ -176,7 +174,6 @@ class Level(SimpleAttr):
         one of: lt gt le ge < > <= >=
 
     """
-    pass
 
 
 class Sample(SimpleAttr):
@@ -202,7 +199,6 @@ class Detector(SimpleAttr):
     ----------
     value : `str`
     """
-    pass
 
 
 class Resolution(SimpleAttr):
@@ -230,7 +226,6 @@ class Resolution(SimpleAttr):
     ----------
     Documentation in SSWIDL routine vso_search.pro.
     """
-    pass
 
 
 class Physobs(SimpleAttr):

@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 
 import astropy.units as u
 
-import sunpy.map
 import sunpy.data.sample
+import sunpy.map
 
 ###############################################################################
 # We start with the sample data

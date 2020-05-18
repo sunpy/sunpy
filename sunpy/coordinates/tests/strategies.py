@@ -2,10 +2,9 @@
 Provide a set of hypothesis strategies for various coordinates-related tests.
 """
 import hypothesis.strategies as st
-from hypothesis import given, settings
 
-from astropy.coordinates import Longitude, Latitude
 import astropy.units as u
+from astropy.coordinates import Latitude, Longitude
 
 from sunpy.time import parse_time
 

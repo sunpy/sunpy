@@ -1,9 +1,8 @@
 import os
 import pathlib
 
-import pytest
-
 import numpy as np
+import pytest
 
 import sunpy
 import sunpy.data.test

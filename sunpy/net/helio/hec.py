@@ -8,8 +8,8 @@ from lxml import etree
 
 from astropy.io.votable.table import parse_single_table
 
-from sunpy.time import parse_time
 from sunpy.net.helio import parser
+from sunpy.time import parse_time
 
 __all__ = ['HECClient']
 

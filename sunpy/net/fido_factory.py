@@ -10,17 +10,16 @@ This module provides the `Fido
 """
 import os
 from pathlib import Path
-from collections.abc import Sequence
 from textwrap import dedent
+from collections.abc import Sequence
+
 from parfive import Downloader, Results
 
 from astropy.table import Table
 
-from sunpy.util.datatype_factory_base import BasicRegistrationFactory
-from sunpy.util.datatype_factory_base import NoMatchError
+from sunpy.net import attr, vso
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
-from sunpy.net import vso
-from sunpy.net import attr
+from sunpy.util.datatype_factory_base import BasicRegistrationFactory, NoMatchError
 from sunpy.util.parfive_helpers import Downloader, Results
 from sunpy.util.util import get_width
 

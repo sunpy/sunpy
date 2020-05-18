@@ -1,5 +1,5 @@
-from sunpy.time import parse_time
 from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.time import parse_time
 
 
 def test_reprs():

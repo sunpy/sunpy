@@ -3,10 +3,10 @@ Provide a set of Hypothesis Strategies for various Fido related tests.
 """
 import datetime
 
-import numpy as np
 import hypothesis.strategies as st
+import numpy as np
 from hypothesis import assume
-from hypothesis.strategies import one_of, datetimes, sampled_from
+from hypothesis.strategies import datetimes, one_of, sampled_from
 
 import astropy.time
 from astropy.time import Time
@@ -34,7 +34,7 @@ def TimeDelta(draw):
     Timedelta strategy that limits the maximum timedelta to being positive and
     abs max is about 10 weeks + 10 days + 10 hours + 10 minutes + a bit
     """
-    keys = st.sampled_from(['weeks', 'days', 'hours', 'minutes', 'seconds'])
+    st.sampled_from(['weeks', 'days', 'hours', 'minutes', 'seconds'])
     values = st.floats(min_value=1, max_value=10)
     time_dict = {'days': st.floats(min_value=1, max_value=8),
                  'hours': st.floats(min_value=1, max_value=12),
