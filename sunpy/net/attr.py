@@ -79,11 +79,11 @@ def _print_attrs(attr, html=False):
     """
     class_name = f"{attr.__module__+'.' or ''}{attr.__name__}"
     attrs = attr._attr_registry[attr]
-    sorted_attrs = tuple(zip(*sorted(zip(*attrs))))
-    names = sorted_attrs[0]
-    clients = sorted_attrs[1]
-    names_long = sorted_attrs[2]
-    descs = sorted_attrs[3]
+    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs))))
+    names = sorted_attrs.name
+    clients = sorted_attrs.client
+    names_long = sorted_attrs.name_long
+    descs = sorted_attrs.desc
     descs = [x[:77] + '...' if len(x) > 80 else x for x in descs]
     lines = []
     t = Table(names=["Attribute Name", "Client", "Full Name",
