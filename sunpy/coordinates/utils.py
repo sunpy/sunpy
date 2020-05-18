@@ -275,12 +275,13 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = Non
     Parameters
     ----------
     bottom_left : `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
-        The bottom-left coordinate of the rectangle.
-        Supports passing both the bottom left and top right coordinates by passing with a shape of ``(2,)``.
+        The bottom-left coordinate of the rectangle. Supports passing both the
+        bottom left and top right coordinates by passing with a shape of ``(2,)``.
     top_right : `~astropy.coordinates.BaseCoordinateFrame` or `~astropy.coordinates.SkyCoord`
         The top-right coordinate of the rectangle.
-        If in a different frame than ``bottom_left`` and all required metadata for frame conversion is present,
-        ``top_right`` will be transformed to ``bottom_left`` frame.
+        If in a different frame than ``bottom_left`` and all required metadata
+        for frame conversion is present, ``top_right`` will be transformed to
+        ``bottom_left`` frame.
     width : `~astropy.units.Quantity`
         The width of the rectangle.
         Must be omitted if the coordinates of both corners have been specified.
@@ -373,14 +374,5 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = Non
 
         if isinstance(bottom_left, BaseCoordinateFrame):
             top_right = top_right.frame
-
-    if top_right.spherical.lon < bottom_left.spherical.lon:
-        warnings.warn("The rectangle is inverted in the left/right (longitude) direction, possibly "
-                      f"due to the longitude wrap angle ({bottom_left.spherical.lon.wrap_angle}), "
-                      "and may lead to unintended behavior.", SunpyUserWarning)
-
-    if top_right.spherical.lat < bottom_left.spherical.lat:
-        warnings.warn("The rectangle is inverted in the bottom/top (latitude) direction "
-                      "and may lead to unintended behavior.", SunpyUserWarning)
 
     return bottom_left, top_right
