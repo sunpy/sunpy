@@ -98,8 +98,7 @@ def test_fitsheader():
         for ffile in Path(testpath).glob(f"*.{ext}*"):
             fits_file = fits.open(ffile)
             fits_file.verify("fix")
-            _, header = fits_file[0].data, fits_file[0].header
-            meta_header = MetaDict(OrderedDict(header))
+            meta_header = MetaDict(OrderedDict(fits_file[0].header))
             sunpy.io.fits.header_to_fits(meta_header)
             fits_file.close()
 
