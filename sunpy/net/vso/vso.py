@@ -14,7 +14,9 @@ import itertools
 from functools import partial
 from collections import defaultdict
 from urllib.error import URLError, HTTPError
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
+from urllib.parse import urlencode
+import json
 
 import zeep
 from zeep.helpers import serialize_object
@@ -22,19 +24,17 @@ from zeep.helpers import serialize_object
 import astropy.units as u
 from astropy.table import QTable as Table
 
-from sunpy import config
+from sunpy import config, log
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.vso import attrs
-from sunpy.net.vso.attrs import _TIMEFORMAT as TIMEFORMAT
 from sunpy.net.vso.attrs import _walker as walker
 from sunpy.time import TimeRange, parse_time
-from sunpy.util.decorators import deprecated
 from sunpy.util.exceptions import SunpyUserWarning
 from sunpy.util.net import slugify
 from sunpy.util.parfive_helpers import Downloader, Results
 from .. import _attrs as core_attrs
-from .exceptions import *
+from .exceptions import NoData, UnknownVersion, DownloadFailed, UnknownMethod, UnknownStatus, MissingInformation, MultipleChoices
 from .zeep_plugins import SunPyLoggingZeepPlugin
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -305,7 +305,7 @@ class QueryResponse(BaseQueryResponse):
 
 class VSOClient(BaseClient):
     """
-    VSO Client
+    Allows queries and downloads from the Virtual Solar Observatory (VSO).
 
     Parameters
     ----------
@@ -353,7 +353,7 @@ class VSOClient(BaseClient):
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> client.search(
         ...    a.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    a.Instrument('eit') | a.Instrument('aia'))   # doctest:  +REMOTE_DATA
+        ...    a.Instrument.eit | a.Instrument.aia)   # doctest:  +REMOTE_DATA
         <sunpy.net.vso.vso.QueryResponse object at ...>
            Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
                                                        ...             Angstrom
@@ -378,13 +378,13 @@ class VSOClient(BaseClient):
             try:
                 query_response = self.api.service.Query(
                     QueryRequest(block=block)
-                    )
+                )
                 for resp in query_response:
                     if resp["error"]:
                         warnings.warn(resp["error"], SunpyUserWarning)
                 responses.append(
                     VSOQueryResponse(query_response)
-                    )
+                )
             except Exception as ex:
                 response = QueryResponse.create(self.merge(responses))
                 response.add_error(ex)
@@ -605,7 +605,7 @@ class VSOClient(BaseClient):
 
         return self.create_getdatarequest(
             {k: [x.fileid for x in v]
-                 for k, v in self.by_provider(response).items()},
+             for k, v in self.by_provider(response).items()},
             methods, info
         )
 
@@ -791,4 +791,74 @@ class VSOClient(BaseClient):
         return 'vso', 'sunpy.net.vso.attrs'
 
     def __del__(self):
-        self.api.transport.session.close()
+        """
+        Attempt to close the connection, but if it fails, continue.
+        """
+        try:
+            self.api.transport.session.close()
+        except Exception as e:
+            log.debug("Failed to close VSO API connection with: {e}")
+
+    @classmethod
+    def register_values(cls):
+        # We always use the local file for now.
+        return cls.load_vso_values()
+
+    @staticmethod
+    def load_vso_values():
+        """
+        We take this list and register all the keywords as corresponding Attrs.
+
+        Returns
+        -------
+        dict
+            The constructed Attrs dictionary ready to be passed into Attr registry.
+        """
+        from sunpy.net import attrs as a
+
+        here = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(here, 'data', 'attrs.json'), 'r') as attrs_file:
+            keyword_info = json.load(attrs_file)
+
+        # Now to traverse the saved dict and give them attr keys.
+        attrs = {}
+        for key, value in keyword_info.items():
+            attr = getattr(a, key.capitalize(), None)
+            if attr is None:
+                attr = getattr(a.vso, key.capitalize())
+            attrs[attr] = value
+        return attrs
+
+    @staticmethod
+    def create_parse_vso_values():
+        """
+        Makes a network call to the VSO API that returns what keywords they support.
+        We take this list and register all the keywords as corresponding Attrs.
+        """
+        here = os.path.dirname(os.path.realpath(__file__))
+
+        # Keywords we are after
+        keywords = ["+detector", "+instrument", "+source", "+provider", "+physobs", "+level"]
+        # Construct and format the request
+        keyword_info = {}
+        url = "https://vso1.nascom.nasa.gov/cgi-bin/registry_json.cgi"
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        for keyword in keywords:
+            data = urlencode({'fields': f"['{keyword}']".replace("'", '"')}).encode('ascii')
+            req = Request(url=url, data=data, headers=headers)
+            response = urlopen(req)
+            keyword_info[keyword.replace("+", "")] = json.loads(response.read())
+
+        # Now to traverse the return and create attrs out of them.
+        attrs = {}
+        for key, value in keyword_info.items():
+            attrs[key] = []
+            for item in value:
+                if item:
+                    if key == "level":
+                        attrs[key].append((str(item[key]), str(item[key])))
+                    else:
+                        attrs[key].append((str(item[key]), str(item[key+"_long"])))
+
+        with open(os.path.join(here, 'data', 'attrs.json'), 'w') as attrs_file:
+            json.dump(attrs, attrs_file)

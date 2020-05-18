@@ -23,10 +23,10 @@ from sunpy.net import Fido, attrs as a
 # early 2011 when the STEREO spacecraft were roughly 90 deg separated from the
 # Earth.
 stereo = (a.vso.Source('STEREO_B') &
-          a.Instrument('EUVI') &
+          a.Instrument("EUVI") &
           a.Time('2011-01-01', '2011-01-01T00:10:00'))
 
-aia = (a.Instrument('AIA') &
+aia = (a.Instrument.aia &
        a.Sample(24 * u.hour) &
        a.Time('2011-01-01', '2011-01-02'))
 

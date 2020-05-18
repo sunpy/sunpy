@@ -1,0 +1,1 @@
+Printing `sunpy.net.Fido` will print out all the clients that Fido can use.

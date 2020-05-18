@@ -16,24 +16,32 @@ sunpy.util.multimethod.
 Please note that & is evaluated first, so A & B | C is equivalent to
 (A & B) | C.
 """
+import os
 import re
 import keyword
-import warnings
 from collections import defaultdict, namedtuple
+from textwrap import dedent
+import textwrap
+import string
+from shutil import get_terminal_size
 
 from astropy.utils.misc import isiterable
+from astropy.table import Table
+
 
 from sunpy.util.functools import seconddispatch
+from sunpy.util.util import get_width
 
-_ATTR_TUPLE = namedtuple("attr", "name name_long desc")
-_REGEX = re.compile(r"^[\d]([^\d].*)?$")
+_ATTR_TUPLE = namedtuple("attr", "name client name_long desc")
+# Matches any number.
+NUMBER_REGEX = re.compile(r"^[-+]?[0-9]+$")
 
 __all__ = ['Attr', 'DummyAttr', 'SimpleAttr', 'Range', 'AttrAnd', 'AttrOr',
            'ValueAttr', 'and_', 'or_', 'AttrWalker']
 
 
 def make_tuple():
-    return _ATTR_TUPLE([], [], [])
+    return _ATTR_TUPLE([], [], [], [])
 
 
 def strtonum(value):
@@ -51,6 +59,48 @@ def strtonum(value):
         return str(value)
     return ('zero', 'one', 'two', 'three', 'four', 'five', 'six',
             'seven', 'eight', 'nine')[value]
+
+
+def _print_attrs(attr, html=False):
+    """
+    Given a Attr class will print out each registered attribute.
+
+    Parameters
+    ----------
+    attr : `sunpy.net.attr.Attr`
+        The attr class/type to print for.
+    html : bool
+        Will return a html table instead.
+
+    Returns
+    -------
+    `str`
+        String with the registered attributes.
+    """
+    class_name = f"{attr.__module__+'.' or ''}{attr.__name__}"
+    attrs = attr._attr_registry[attr]
+    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs))))
+    names = sorted_attrs.name
+    clients = sorted_attrs.client
+    names_long = sorted_attrs.name_long
+    descs = sorted_attrs.desc
+    descs = [x[:77] + '...' if len(x) > 80 else x for x in descs]
+    lines = []
+    t = Table(names=["Attribute Name", "Client", "Full Name",
+                     "Description"], dtype=["U80", "U80", "U80", "U80"])
+    for name, client, name_long, desc in zip(names, clients, names_long, descs):
+        t.add_row((name, client, name_long, desc))
+    lines.insert(0, class_name)
+    # If the attr lacks a __doc__ this will error and prevent this from returning anything.
+    try:
+        lines.insert(1, dedent(attr.__doc__.partition("\n\n")[0])+"\n")
+    except AttributeError:
+        pass
+    if html:
+        lines = [f"<p>{line}</p>" for line in lines]
+    width = -1 if html else get_width()
+    lines.extend(t.pformat_all(show_dtype=False, max_width=width, align="<", html=html))
+    return '\n'.join(lines)
 
 
 class AttrMeta(type):
@@ -92,24 +142,28 @@ class AttrMeta(type):
         """
         return super().__dir__() + self._attr_registry[self].name
 
+    def __repr__(self):
+        """
+        Returns the normal repr plus the pretty attr __str__.
+        """
+        return type.__repr__(self) + "\n" + str(self)
+
     def __str__(self):
         """
         This enables the "pretty" printing of Attrs.
         """
-        name = ['Attribute Name'] + self._attr_registry[self].name
-        name_long = ['Full Name'] + self._attr_registry[self].name_long
-        desc = ['Description'] + self._attr_registry[self].desc
-        pad_name = max(len(elm) for elm in name)
-        pad_long = max(len(elm) for elm in name_long)
-        pad_desc = max(len(elm) for elm in desc)
-        fmt = f"%-{pad_name}s | %-{pad_long}s | %-{pad_desc}s"
-        lines = [fmt % elm for elm in zip(name, name_long, desc)]
-        lines.insert(1, '-' * (pad_name + 1) + '+' + '-' * (pad_long + 2) + '+' + '-' * (pad_desc + 1))
-        return "\n".join(lines)
+        return _print_attrs(self)
+
+    def _repr_html_(self):
+        """
+        This enables the "pretty" printing of Attrs with html.
+        """
+        return _print_attrs(self, html=True)
 
 
 class Attr(metaclass=AttrMeta):
     """This is the base for all attributes."""
+
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
@@ -141,8 +195,9 @@ class Attr(metaclass=AttrMeta):
         """
         Clients will use this method to register their values for subclasses of `~sunpy.net.attr.Attr`.
 
-        The input has be a dictionary, with each key being a subclass of Attr.
-        The value for each key should be a list of tuples with each tuple of the form (`Name`, `Description`).
+        The input has to be a dictionary, with each key being an instance of a client.
+        The value for each client has to be a dictionary with each key being a subclass of Attr.
+        The value for each Attr key should be a list of tuples with each tuple of the form (`Name`, `Description`).
         If you do not want to add a description, you can put `None` or an empty string.
         We sanitize the name you provide by removing all special characters and making it all lower case.
         If it still invalid we will append to the start of the name to make it a valid attribute name.
@@ -152,9 +207,9 @@ class Attr(metaclass=AttrMeta):
 
         Parameters
         ----------
-
-        adcit : `dict`
-            A dictionary that has keys of `~sunpy.net.attr.Attr`.
+        adict : `dict`
+            The keys for this dictionary have to be an instance of a downloader client.
+            The values for each client are a dictionary that has keys of `~sunpy.net.attr.Attr`.
             Each key should have a list of tuples as it value.
             Each tuple should be a pair of strings.
             First string is the attribute name you want to register
@@ -162,47 +217,68 @@ class Attr(metaclass=AttrMeta):
 
         Example
         -------
-        >>> from sunpy.net import attr, attrs # doctest: +SKIP
-        >>> attr.Attr.update_values({attrs.Instrument: [('AIA', 'AIA is in Space.'),
-        ...                         ('HMI', 'HMI is next to AIA.')]}) # doctest: +SKIP
-        >>> attr.Attr._attr_registry[attrs.Instrument] # doctest: +SKIP
-        attr(name=['aia', 'hmi'], name_long=['AIA', 'HMI'],
-            desc=['AIA is in Space.', 'HMI is next to AIA.'])
-        >>> attr.Attr._attr_registry[attrs.Instrument].name # doctest: +SKIP
+        # The first import is to make this example work, it should not be used otherwise
+        >>> from sunpy.net.dataretriever import GenericClient
+        >>> from sunpy.net import attr, attrs
+        >>> attr.Attr.update_values({GenericClient : {
+        ...                          attrs.Instrument: [('AIA', 'AIA is in Space.'),
+        ...                                             ('HMI', 'HMI is next to AIA.')]}})   # doctest: +SKIP
+        >>> attr.Attr._attr_registry[attrs.Instrument]  # doctest: +SKIP
+        attr(name=['aia', 'hmi'], client=['Generic', 'Generic'], name_long=['AIA', 'HMI'],
+        desc=['AIA is in Space.', 'HMI is next to AIA.'])
+        >>> attr.Attr._attr_registry[attrs.Instrument].name  # doctest: +SKIP
         ['aia', 'hmi']
-        >>> attr.Attr._attr_registry[attrs.Instrument].name_long # doctest: +SKIP
+        >>> attr.Attr._attr_registry[attrs.Instrument].name_long  # doctest: +SKIP
         ['AIA', 'HMI']
-        >>> attr.Attr._attr_registry[attrs.Instrument].desc # doctest: +SKIP
+        >>> attr.Attr._attr_registry[attrs.Instrument].desc  # doctest: +SKIP
         ['AIA is in Space.', 'HMI is next to AIA.']
-        >>> attrs.Instrument.aia, attrs.Instrument.hmi # doctest: +SKIP
-        (<Instrument('AIA')>, <Instrument('HMI')>)
+        >>> attrs.Instrument.aia, attrs.Instrument.hmi  # doctest: +SKIP
+        (<sunpy.net.attrs.Instrument(AIA: AIA is in Space.) object at 0x...>,
+        <sunpy.net.attrs.Instrument(HMI: HMI is next to AIA.) object at 0x...>)
         """
-
-        for key, value in adict.items():
-            if isiterable(value) and not isinstance(value, str):
-                for pair in value:
-                    if len(pair) != 2:
-                        raise ValueError(f'Invalid length (!=2) for values: {value}.')
-                    else:
+        for client in adict.keys():
+            for attr, attr_values in adict[client].items():
+                if isiterable(attr_values) and not isinstance(attr_values, str):
+                    for pair in attr_values:
+                        if len(pair) != 2:
+                            if len(pair) == 1:
+                                # Special case handling for * aka all values allowed.
+                                if pair[0] == "*":
+                                    strtonum
+                                    pair = ["all", "All values of this type are supported."]
+                                else:
+                                    raise ValueError(
+                                        f'Invalid value given for * registration: {attr_values}.')
+                            else:
+                                raise ValueError(f'Invalid length (!=2) for values: {attr_values}.')
+                        # Sanitize part one: Check if the first letter is a number and
+                        # replace it with a string version
+                        if NUMBER_REGEX.match(pair[0][0]):
+                            # This turns that digit into its name
+                            name = strtonum(pair[0][0])
+                            if pair[0][1:]:
+                                name = name + "_" + pair[0][1:]
+                        else:
+                            name = pair[0]
+                        # Sanitize part two: remove punctuation and replace it with _
+                        name = ''.join(
+                            char if char not in string.punctuation else "_" for char in name).lower()
                         # Sanitize name, we remove all special characters and make it all lower case
-                        name = ''.join(char for char in pair[0] if char.isalnum()).lower()
+                        name = ''.join(char for char in name if char.isidentifier()
+                                       or char.isnumeric()).lower()
                         if keyword.iskeyword(name):
                             # Attribute name has been appended with `_`
                             # to make it a valid identifier since its a python keyword.
                             name = name + '_'
                         if not name.isidentifier():
-                            # This should account for names with one number first.
-                            # We match for single digits at the start only.
-                            if _REGEX.match(name):
-                                # This turns that digit into its name
-                                number = strtonum(name[0])
-                                name = number + ("_" + name[1:] if len(name) > 1 else "")
-                        cls._attr_registry[key][0].append(name)
-                        cls._attr_registry[key][1].append(pair[0])
-                        cls._attr_registry[key][2].append(pair[1])
-            else:
-                raise ValueError(f"Invalid input value: {value} for key: {repr(key)}. "
-                                  "The value is not iterable or just a string.")
+                            raise ValueError(f'Unable to figure out {pair}')
+                        cls._attr_registry[attr][0].append(name)
+                        cls._attr_registry[attr][1].append(client.__name__.replace("Client", ""))
+                        cls._attr_registry[attr][2].append(pair[0])
+                        cls._attr_registry[attr][3].append(pair[1])
+                else:
+                    raise ValueError(f"Invalid input value: {attr_values} for key: {repr(attr)}. "
+                                     "The value is not iterable or just a string.")
 
 
 class DataAttr(Attr):
@@ -237,6 +313,7 @@ class DummyAttr(Attr):
        for from, to in times:
            attr |= Time(from, to)
     """
+
     def __and__(self, other):
         return other
 
@@ -265,6 +342,7 @@ class SimpleAttr(DataAttr):
     value : `object`
        The value for the attribute to hold.
     """
+
     def __init__(self, value):
         super().__init__()
         self.value = value
@@ -273,8 +351,17 @@ class SimpleAttr(DataAttr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<{cname!s}({val!r})>".format(
-            cname=self.__class__.__name__, val=self.value)
+        attr_reg = AttrMeta._attr_registry[self.__class__]
+        new_repr = object.__repr__(self).split(" object ")
+        # If somehow the idx isn't in the attr reg, we still want it to print it
+        # repr without error.
+        try:
+            idx = attr_reg.name_long.index(self.value)
+            new_repr.insert(1, f"({self.value}: {attr_reg.desc[idx]})")
+        except ValueError:
+            new_repr.insert(1, f": {self.value}")
+        new_repr.insert(2, " object ")
+        return textwrap.fill("".join(new_repr), 100)
 
 
 class Range(DataAttr):
@@ -291,6 +378,7 @@ class Range(DataAttr):
     max_ : `object`
         The upper bound of the range.
     """
+
     def __init__(self, min_, max_):
         self.min = min_
         self.max = max_
@@ -317,6 +405,7 @@ class Range(DataAttr):
 
 class AttrAnd(Attr):
     """ Attribute representing attributes ANDed together. """
+
     def __init__(self, attrs):
         super().__init__()
         self.attrs = attrs
@@ -349,6 +438,7 @@ class AttrAnd(Attr):
 
 class AttrOr(Attr):
     """ Attribute representing attributes ORed together. """
+
     def __init__(self, attrs):
         super().__init__()
         self.attrs = attrs
@@ -444,6 +534,7 @@ class AttrWalker:
       type and return a different one.
 
     """
+
     def __repr__(self):
         creators = list(self.createmm.registry.keys())
         appliers = list(self.applymm.registry.keys())
@@ -453,7 +544,8 @@ Registered appliers: {appliers}"""
 
     @staticmethod
     def _unknown_type(*args, **kwargs):
-        raise TypeError(f"{args[1]} or any of its parents have not been registered with the AttrWalker")
+        raise TypeError(
+            f"{args[1]} or any of its parents have not been registered with the AttrWalker")
 
     def __init__(self):
         self.applymm = seconddispatch(self._unknown_type)

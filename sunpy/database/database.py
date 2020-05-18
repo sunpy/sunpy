@@ -154,7 +154,7 @@ def split_database(source_database, destination_database, *query_string):
     >>> qr = client.search(a.Time('2011-05-08', '2011-05-08 00:00:05'))  # doctest: +REMOTE_DATA
     >>> database1.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
     >>> database1, database2 = split_database(database1, database2,
-    ...            a.Instrument('AIA') | a.Instrument('ERNE'))  # doctest: +REMOTE_DATA
+    ...            a.Instrument.aia | a.Instrument.erne)  # doctest: +REMOTE_DATA
     """
 
     query_string = and_(*query_string)
@@ -501,7 +501,7 @@ class Database:
         >>> from sunpy.net import vso, attrs as a
         >>> database = Database('sqlite:///:memory:')
         >>> database.fetch(a.Time('2012-08-05', '2012-08-05 00:00:05'),
-        ...                a.Instrument('AIA'))  # doctest: +REMOTE_DATA
+        ...                a.Instrument.aia)  # doctest: +REMOTE_DATA
         >>> print(display_entries(database,
         ...                       ['id', 'observation_time_start', 'observation_time_end',
         ...                        'instrument', 'wavemin', 'wavemax']))  # doctest: +REMOTE_DATA
@@ -512,7 +512,7 @@ class Database:
               3    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
               4    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
         >>> database.fetch(a.Time('2012-08-05', '2012-08-05 00:00:01'),
-        ...                a.Instrument('AIA'), overwrite=True)  # doctest: +REMOTE_DATA
+        ...                a.Instrument.aia, overwrite=True)  # doctest: +REMOTE_DATA
         >>> print(display_entries(database,
         ...                       ['id', 'observation_time_start', 'observation_time_end',
         ...                        'instrument', 'wavemin', 'wavemax']))  # doctest: +REMOTE_DATA

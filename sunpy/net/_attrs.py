@@ -15,7 +15,8 @@ from .attr import Range, SimpleAttr
 from sunpy.util.decorators import add_common_docstring
 from sunpy.time.time import _variables_for_parse_time_docstring
 
-__all__ = ['Physobs', 'Resolution', 'Detector', 'Sample', 'Level', 'Instrument', 'Wavelength', 'Time']
+__all__ = ['Physobs', 'Resolution', 'Detector', 'Sample',
+           'Level', 'Instrument', 'Wavelength', 'Time']
 
 
 @add_common_docstring(**_variables_for_parse_time_docstring())
@@ -36,6 +37,7 @@ class Time(Range):
         functionality.
 
     """
+
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
@@ -78,7 +80,7 @@ class Time(Range):
         return type(self)(self.start - timedelta, self.start + timedelta)
 
     def __repr__(self):
-        return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)
+        return f'<sunpy.net.attrs.Time({self.start.iso}, {self.end.iso}, {self.near.iso if self.near else ""})>'
 
 
 class Wavelength(Range):
@@ -132,9 +134,7 @@ class Wavelength(Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<Wavelength({!r}, {!r}, '{!s}')>".format(self.min.value,
-                                                            self.max.value,
-                                                            self.unit)
+        return f"<sunpy.net.attrs.Wavelength({self.min.value}, {self.max.value}, '{self.unit}')>"
 
 
 class Instrument(SimpleAttr):
@@ -151,6 +151,7 @@ class Instrument(SimpleAttr):
     within the VSO Registry. For a list of instruments see
     https://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
+
     def __init__(self, value):
         if not isinstance(value, str):
             raise ValueError("Instrument names must be strings")
@@ -169,9 +170,9 @@ class Level(SimpleAttr):
 
         The value can be entered in of three ways:
 
-        #. May be entered as a string or any numeric type for equality matching
-        #. May be a string of the format '(min) - (max)' for range matching
-        #. May be a string of the form '(operator) (number)' where operator is\
+        # . May be entered as a string or any numeric type for equality matching
+        # . May be a string of the format '(min) - (max)' for range matching
+        # . May be a string of the form '(operator) (number)' where operator is\
         one of: lt gt le ge < > <= >=
 
     """
@@ -214,9 +215,9 @@ class Resolution(SimpleAttr):
 
         The value can be entered in of three ways:
 
-        #. May be entered as a string or any numeric type for equality matching
-        #. May be a string of the format '(min) - (max)' for range matching
-        #. May be a string of the form '(operator) (number)' where operator is\
+        # . May be entered as a string or any numeric type for equality matching
+        # . May be a string of the format '(min) - (max)' for range matching
+        # . May be a string of the form '(operator) (number)' where operator is\
         one of: lt gt le ge < > <= >=
 
         This attribute is currently implemented for SDO/AIA and HMI only.

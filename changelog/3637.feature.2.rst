@@ -1,0 +1,1 @@
+Printing `sunpy.net.attr.Instrument` or other "attrs" will show all attributes that exist under the corresponding "attr".

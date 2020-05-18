@@ -40,6 +40,7 @@ class MockQRResponse:
     >>> res.provideritem[1].record.recorditem  # doctest: +SKIP
     [2]
     """
+
     def __init__(self, records=None, errors=None):
 
         self.provideritem = list()
@@ -56,15 +57,15 @@ def mock_response():
     # defining unsorted queryresult to mock test `iter_sort_response()`.
     # Incorporated cases with no None start time and without time attribute too.
     recs = [MockObject(record=MockObject(recorditem=[
-                                          MockObject(time=MockObject(start=4), fileid='t4'),
-                                          MockObject(time=MockObject(start=1), fileid='t1'),
-                                          MockObject(time=MockObject(start=2), fileid='t2')
-                                          ]))]
+        MockObject(time=MockObject(start=4), fileid='t4'),
+        MockObject(time=MockObject(start=1), fileid='t1'),
+        MockObject(time=MockObject(start=2), fileid='t2')
+    ]))]
     rec = MockObject(record=MockObject(recorditem=[
-                                        MockObject(time=MockObject(start=None), fileid='f1'),
-                                        MockObject(fileid='f2'),
-                                        MockObject(time=MockObject(start=3), fileid='t3')
-                                        ]))
+        MockObject(time=MockObject(start=None), fileid='f1'),
+        MockObject(fileid='f2'),
+        MockObject(time=MockObject(start=3), fileid='t3')
+    ]))
     recs.append(rec)
     return MockQRResponse(records=recs, errors=['FAILED'])
 
@@ -251,8 +252,8 @@ def test_wave_repr():
     """Tests the __repr__ method of class vso.attrs.Wave"""
     wav = core_attrs.Wavelength(12 * u.AA, 16 * u.AA)
     moarwav = core_attrs.Wavelength(15 * u.AA, 12 * u.AA)
-    assert repr(wav) == "<Wavelength(12.0, 16.0, 'Angstrom')>"
-    assert repr(moarwav) == "<Wavelength(12.0, 15.0, 'Angstrom')>"
+    assert repr(wav) == "<sunpy.net.attrs.Wavelength(12.0, 16.0, 'Angstrom')>"
+    assert repr(moarwav) == "<sunpy.net.attrs.Wavelength(12.0, 15.0, 'Angstrom')>"
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
@@ -374,11 +375,11 @@ def test_QueryResponse_build_table_defaults(mock_build_client):
     # Check values we did set by default in 'MockQRRecord'
     source_ = table['Source'].data
     assert len(source_) == 1
-    assert source_[0] == str(va.Source('SOHO'))
+    assert source_[0][:-16] == str(va.Source('SOHO'))[:-16]
 
     instrument_ = table['Instrument'].data
     assert len(instrument_) == 1
-    assert instrument_[0] == str(core_attrs.Instrument('aia'))
+    assert instrument_[0][:-16] == str(core_attrs.Instrument('aia'))[:-16]
 
 
 @mock.patch("sunpy.net.vso.vso.build_client", return_value=True)
@@ -493,15 +494,6 @@ def test_build_client_params():
 
 
 @pytest.mark.remote_data
-def test_vso_error(client):
-    with pytest.warns(SunpyUserWarning,
-        match="VSO-C500 :soap:Server.Transport : 404 Not Found"):
-        client.search(
-            core_attrs.Time('2019/12/30', '2019/12/31'),
-            core_attrs.Instrument('ovsa'))
-
-
-@pytest.mark.remote_data
 def test_incorrect_content_disposition(client):
     results = client.search(
         core_attrs.Time('2011/1/1 01:00', '2011/1/1 01:02'),
@@ -515,9 +507,35 @@ def test_incorrect_content_disposition(client):
 
 @pytest.mark.parametrize("query, handle", [
     ((a.Time("2011/01/01", "2011/01/02"),), True),
-    ((a.Physobs("LOS_magnetic_field"),), False),
+    ((a.Physobs.los_magnetic_field,), False),
     ((a.Time("2011/01/01", "2011/01/02"), a.vso.Provider("SDAC"),), True),
-    ((a.jsoc.Series("wibble"), a.Physobs("LOS_magnetic_field"),), False),
-    ])
+    ((a.jsoc.Series("wibble"), a.Physobs.los_magnetic_field,), False),
+])
 def test_can_handle_query(query, handle):
     assert VSOClient._can_handle_query(*query) is handle
+
+
+@pytest.mark.remote_data
+def test_vso_attr(client):
+    """
+    Check that the dict is correctly filled.
+    """
+    adict = client.load_vso_values()
+    assert isinstance(adict, dict)
+    assert len(adict.keys()) == 6
+    for key, value in adict.items():
+        assert isinstance(key, attr.AttrMeta)
+        assert isinstance(adict[key], list)
+        assert isinstance(value, list)
+        for val in value:
+            assert isinstance(val, list)
+            assert len(val) == 2
+
+
+@pytest.mark.remote_data
+def test_vso_repr(client):
+    """
+    Repr check (it is really long)
+    """
+    output = str(client)
+    assert output[:50] == 'sunpy.net.vso.vso.VSOClient\n\nAllows queries and do'

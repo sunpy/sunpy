@@ -43,7 +43,6 @@ class StorageProviderBase(metaclass=ABCMeta):
         ``KeyError``
              KeyError is raised if key does not exist.
         """
-        raise NotImplementedError
 
     @abstractmethod
     def delete_by_key(self, key, value):
@@ -62,7 +61,6 @@ class StorageProviderBase(metaclass=ABCMeta):
         ``KeyError``
              KeyError is raised if key does not exist.
         """
-        raise NotImplementedError
 
     @abstractmethod
     def store(self, details):
@@ -74,7 +72,6 @@ class StorageProviderBase(metaclass=ABCMeta):
         details: `dict`
             Details to be stored.
         """
-        raise NotImplementedError
 
 
 class InMemStorage(StorageProviderBase):

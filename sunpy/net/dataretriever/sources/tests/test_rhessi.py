@@ -1,5 +1,4 @@
 import socket
-from datetime import datetime
 from urllib.error import URLError
 from urllib.request import urlretrieve
 
@@ -15,7 +14,10 @@ from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.tests.helpers import no_vso
 
-LCClient = rhessi.RHESSIClient()
+
+@pytest.fixture
+def LCClient():
+    return rhessi.RHESSIClient()
 
 
 @pytest.fixture
@@ -28,7 +30,7 @@ def two_days_timerange():
     return TimeRange(("2016/01/15", "2016/01/17"))
 
 
-def test_get_observing_summary_dbase_file_with_unsupported_start_time():
+def test_get_observing_summary_dbase_file_with_unsupported_start_time(LCClient):
     """
     RHESSI summary files are not available for before 2002-02-01, ensure
     `ValueError` is raised.
@@ -40,7 +42,7 @@ def test_get_observing_summary_dbase_file_with_unsupported_start_time():
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.urlretrieve', return_value=None)
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
 def test_get_observing_summary_dbase_file_build_correct_url(mock_get_base_url, mock_urlretrieve,
-                                                            one_day_timerange):
+                                                            one_day_timerange, LCClient):
     """
     This test ensures that we build the correct url which is then used
     to get the database file.
@@ -127,7 +129,7 @@ def test_parsed_dbase():
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase_file,
                                                 mock_parse_observing_summary_dbase_file,
-                                                mock_get_base_url):
+                                                mock_get_base_url, LCClient):
     """
     Given a time range of one day, make sure we get one days data back, i.e. one file.
     """
@@ -142,7 +144,7 @@ def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_get_observing_summary_filename_two_days(mock_get_observing_summary_dbase_file,
                                                  mock_parse_observing_summary_dbase_file,
-                                                 mock_get_base_url):
+                                                 mock_get_base_url, LCClient):
     """
     Given a time range of two days, make sure we get two files back, one
     for each day.
@@ -154,11 +156,11 @@ def test_get_observing_summary_filename_two_days(mock_get_observing_summary_dbas
     assert filenames[1] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031102_161.fits'
 
 
-def test_can_handle_query():
-    ans1 = rhessi.RHESSIClient._can_handle_query(
-        a.Time('2012/8/9', '2012/8/9'), a.Instrument('rhessi'))
+def test_can_handle_query(LCClient):
+    ans1 = LCClient._can_handle_query(
+        a.Time('2012/8/9', '2012/8/9'), a.Instrument.rhessi)
     assert ans1 is True
-    ans2 = rhessi.RHESSIClient._can_handle_query(a.Time('2013/2/7', '2013/2/7'))
+    ans2 = LCClient._can_handle_query(a.Time('2013/2/7', '2013/2/7'))
     assert ans2 is False
 
 
@@ -167,8 +169,8 @@ def test_can_handle_query():
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_query(mock_get_observing_summary_dbase_file,
                mock_parse_observing_summary_dbase_file,
-               mock_get_base_url):
-    qr1 = LCClient.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument('rhessi'))
+               mock_get_base_url, LCClient):
+    qr1 = LCClient.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument.rhessi)
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 3
     assert qr1.time_range().start.datetime == parse_time('2003/11/01').datetime
@@ -182,6 +184,19 @@ def test_query(mock_get_observing_summary_dbase_file,
 def test_fido_mock(mock_get_observing_summary_dbase_file,
                    mock_parse_observing_summary_dbase_file,
                    mock_get_base_url):
-    qr = Fido.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument('rhessi'))
+    qr = Fido.search(a.Time('2003-11-01', '2003-11-03'), a.Instrument.rhessi)
     assert isinstance(qr, UnifiedResponse)
     assert qr._numfile == 3
+
+
+def test_attr_reg():
+    assert a.Instrument.rhessi == a.Instrument('RHESSI')
+    assert a.Physobs.summary_lightcurve == a.Physobs("summary_lightcurve")
+
+
+def test_client_repr(LCClient):
+    """
+    Repr check
+    """
+    output = str(LCClient)
+    assert output[:50] == 'sunpy.net.dataretriever.sources.rhessi.RHESSIClien'

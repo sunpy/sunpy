@@ -297,7 +297,7 @@ is below::
   >>> from sunpy.net import Fido, attrs as a
 
   >>> results = Fido.search(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
-  ...                       a.Instrument('EIT'))   # doctest:  +REMOTE_DATA
+  ...                       a.Instrument.eit)   # doctest:  +REMOTE_DATA
   >>> Fido.fetch(results, path="./directory/")  # doctest: +SKIP
   ['./directory/efz20110920.010015',
    './directory/efz20110920.010613',
@@ -322,10 +322,10 @@ A simple example of this is shown below::
 
   >>> db = Database()
   >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
-  ...          a.Instrument('AIA'), a.Sample(15*u.min))  # doctest: +REMOTE_DATA
+  ...          a.Instrument.aia, a.Sample(15*u.min))  # doctest: +REMOTE_DATA
   >>> db.commit()  # doctest: +REMOTE_DATA
 
-  >>> db  # doctest: +SKIP
+  >>> db  # doctest: +REMOTE_DATA
   <Table length=10>
    id  observation_time_start observation_time_end ...    download_time      size
   str2         str19                 str19         ...        str19          str7
@@ -344,9 +344,9 @@ A simple example of this is shown below::
 If you then do a second query::
 
   >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:15:00"),
-  ...          a.Instrument('AIA'), a.Sample(15*u.min))  # doctest: +REMOTE_DATA
+  ...          a.Instrument.aia, a.Sample(15*u.min))  # doctest: +REMOTE_DATA
   >>> db.commit()  # doctest: +REMOTE_DATA
-  >>> db  # doctest: +SKIP
+  >>> db  # doctest: +REMOTE_DATA
   <Table length=12>
    id  observation_time_start observation_time_end ...    download_time      size
   str2         str19                 str19         ...        str19          str7
@@ -367,7 +367,7 @@ If you then do a second query::
 
 A query can then be performed against the database to get the records.
 
-  >>> entries = db.search(a.Time("2011-09-20T01:45:00", "2011-09-20T02:15:00"), a.Instrument('AIA'))  # doctest: +REMOTE_DATA
+  >>> entries = db.search(a.Time("2011-09-20T01:45:00", "2011-09-20T02:15:00"), a.Instrument.aia)  # doctest: +REMOTE_DATA
   >>> len(entries)  # doctest: +REMOTE_DATA
   4
 

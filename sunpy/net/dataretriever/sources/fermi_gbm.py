@@ -1,5 +1,5 @@
 from sunpy.util.scraper import Scraper
-from ..client import GenericClient
+from sunpy.net.dataretriever import GenericClient
 
 __all__ = ['GBMClient']
 
@@ -7,9 +7,10 @@ __all__ = ['GBMClient']
 class GBMClient(GenericClient):
     """
     Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument
-    aboard the Fermi satellite. Although GBMs primary objective is to
-    detect gamma-ray bursts, it provides high quality high energy solar
-    flare observations.
+    on board the Fermi satellite.
+
+    Although GBMs primary objective is to detect gamma-ray bursts,
+    it provides high quality high energy solar flare observations.
 
     The instrument consists of 12 Sodium Iodide (NaI) scintillation
     detectors, which are sensitive to an energy range of 4keV to 1MeV.
@@ -30,8 +31,8 @@ class GBMClient(GenericClient):
     --------
     >>> from sunpy.net import Fido, attrs as a
     >>> res = Fido.search(a.Time('2015-06-21 00:00', '2015-06-23 23:59'),
-    ...                   a.Instrument('gbm'), a.Detector('n3'),
-    ...                   a.Resolution('ctime')) #doctest: +REMOTE_DATA
+    ...                   a.Instrument.gbm, a.Detector.n3,
+    ...                   a.Resolution.ctime) #doctest: +REMOTE_DATA
     >>> print(res) #doctest: +REMOTE_DATA
     Results from 1 Provider:
     <BLANKLINE>
@@ -111,6 +112,20 @@ class GBMClient(GenericClient):
                 return all(chklist)
         return False
 
+    @classmethod
+    def register_values(cls):
+        from sunpy.net import attrs
+        adict = {attrs.Instrument: [('GBM', 'Gamma-Ray Burst Monitor on board the Fermi satellite.')],
+                 attrs.Physobs: [('CSPEC', 'counts accumulated every 4.096 seconds in 128 energy channels for each detector.'),
+                                 ('CTIME', 'counts accumulated every 0.256 seconds in 8 energy channels')],
+                 attrs.Detector: [
+            (f"N{x}", f"GBM Detector short name for the detector NAI_{x:02}") for x in range(12)],
+            attrs.Resolution: [
+            ("CSPEC", "CSPEC 128 channel spectra every 4.096 seconds."),
+            ("CTIME", "CTIME provides 8 channel spectra every 0.256 seconds")]
+        }
+        return adict
+
 
 def _check_detector(detector, **kwargs):
     """
@@ -118,8 +133,7 @@ def _check_detector(detector, **kwargs):
     """
     detector_numbers = [str(i) for i in range(12)]
     detector_list = ['n' + i for i in detector_numbers]
-
-    if detector in detector_list:
+    if detector.lower() in detector_list:
         return detector
     elif detector in detector_numbers:
         return 'n' + detector

@@ -25,7 +25,7 @@ The following example shows how this works and includes a sample doc string that
     class NextGenerationTelescopeMap(sunpy.map.GenericMap):
       "NextGenerationTelescope Map.
 
-      The Next Generation Telescope is a type A telescope onboard the XYZ mission.
+      The Next Generation Telescope is a type A telescope on board the XYZ mission.
       It operates in low Earth orbit with an altitude of 600 kmn and an inclination of 28.5 degrees.
       It is designed to observe the aliens on the Sun that are responsible for triggering the impulsive release of magnetic energy in the solar corona.
       It observes in the following 3 different passband in visible light, wavelength A, wavelength B, wavelength C.

@@ -26,16 +26,16 @@ from sunpy.util.types import DatabaseEntryType
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_HEADER = FileHeader([('SIMPLE', True),
-            ('BITPIX', 8),
-            ('NAXIS', 0),
-            ('EXTEND', True),
-            ('COMMENT', ''),
-            ('HISTORY', ''),
-            ('KEYCOMMENTS',
-            {'SIMPLE': 'conforms to FITS standard',
-            'BITPIX': 'array data type',
-            'NAXIS': 'number of array dimensions'}),
-            ('WAVEUNIT', None)])
+                             ('BITPIX', 8),
+                             ('NAXIS', 0),
+                             ('EXTEND', True),
+                             ('COMMENT', ''),
+                             ('HISTORY', ''),
+                             ('KEYCOMMENTS',
+                              {'SIMPLE': 'conforms to FITS standard',
+                               'BITPIX': 'array data type',
+                               'NAXIS': 'number of array dimensions'}),
+                             ('WAVEUNIT', None)])
 
 
 __all__ = [
@@ -291,7 +291,7 @@ class DatabaseEntry(DatabaseEntryType, Base):
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> qr = client.search(
         ...     a.Time('2001/1/1', '2001/1/2'),
-        ...     a.Instrument('eit'))  # doctest: +REMOTE_DATA
+        ...     a.Instrument.eit)  # doctest: +REMOTE_DATA
         >>> entry = DatabaseEntry._from_query_result_block(qr.blocks[0])  # doctest: +REMOTE_DATA
         >>> entry.source  # doctest: +REMOTE_DATA
         'SOHO'
@@ -518,7 +518,7 @@ def entries_from_query_result(qr, default_waveunit=None):
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
     >>> qr = client.search(
     ...     a.Time('2001/1/1', '2001/1/2'),
-    ...     a.Instrument('eit'))  # doctest: +REMOTE_DATA
+    ...     a.Instrument.eit)  # doctest: +REMOTE_DATA
     >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
     >>> entry = next(entries)  # doctest: +REMOTE_DATA
     >>> entry.source  # doctest: +REMOTE_DATA

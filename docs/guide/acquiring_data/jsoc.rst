@@ -26,7 +26,7 @@ staged for download and then you can download them. Fido combines the stages int
 Setup
 -----
 
-SunPy's Fido module is in `sunpy.net`.  It can be imported as follows:
+SunPy's Fido module is in `sunpy.net`. It can be imported as follows:
 
     >>> from sunpy.net import Fido, attrs as a
 
@@ -74,7 +74,7 @@ the attrs objects in the above call. It does not download the files.
 To see a summary of results of our query, simply type the name of the
 variable set to the Fido search, in this case, res::
 
-    >>> res  # doctest: +REMOTE_DATA +ELLIPSIS
+    >>> res  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -119,11 +119,13 @@ pass an Astropy Time object, like::
 
 Then, the Time attribute can be passed as::
 
-    >>> a.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'), astropy.time.Time('2014-01-01T01:00:00', scale='tai'))  # doctest: +SKIP
+    >>> a.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'), astropy.time.Time('2014-01-01T01:00:00', scale='tai'))
+    <sunpy.net.attrs.Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000, )>
 
 The second argument::
 
-    >>> a.jsoc.Series('hmi.v_45s')  # doctest: +SKIP
+    >>> a.jsoc.Series('hmi.v_45s')
+    <sunpy.net.jsoc.attrs.Series(hmi.v_45s: Dopplergrams with a cadence of 45 seconds) object ...>
 
 sets the series we are looking for.
 
@@ -136,7 +138,8 @@ at least one PrimeKey must be passed (generally ``a.Time()``).
 
 The third argument::
 
-    >>> a.jsoc.Notify('sunpy@sunpy.org')  # doctest: +SKIP
+    >>> a.jsoc.Notify('sunpy@sunpy.org')
+    <sunpy.net.jsoc.attrs.Notify: sunpy@sunpy.org object ...>
 
 tells JSOC what email address you are registered with and to email when your request is ready to download.
 
@@ -155,16 +158,23 @@ In case of AIA series, ``a.jsoc.Wavelength()`` can be passed as a PrimeKey::
 Note that, only Time and Wavelength are in-built attributes here. If you need to pass any other PrimeKey,
 it should be passed like this::
 
-    >>> a.jsoc.PrimeKey('HARPNUM', '4864')  # doctest: +SKIP
+    >>> a.jsoc.PrimeKey('HARPNUM', '4864')
+    <sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('HARPNUM', '4864')
 
 If 2 or more PrimeKeys need to be passed together::
 
-    >>> a.jsoc.PrimeKey('HARPNUM', '4864') & a.jsoc.PrimeKey('CAMERA', '2')  # doctest: +SKIP
+    >>> a.jsoc.PrimeKey('HARPNUM', '4864') & a.jsoc.PrimeKey('CAMERA', '2')
+    <AttrAnd([<sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('HARPNUM', '4864'), <sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('CAMERA', '2')])>
 
 Also, note that the pre-defined primekeys, Time and Wavelength can also be passed as above, but you need to
 specify the exact keyword for it. For e.g. by::
 
-    >>> a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')  # doctest: +SKIP
+    >>> a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')
+    (<sunpy.net.attrs.Time(2014-01-01 00:00:00.000, 2014-01-01 01:00:00.000, )>, <sunpy.net.jsoc.attrs.PrimeKey object at ...>
+    ('WAVELNTH', '161'))
 
 If the correct keyword is not specified, or the passed PrimeKey is not supported by the given series, a
 meaningful error will be thrown, which will give you the PrimeKeys supported by that series. Hence, by looking
@@ -238,7 +248,7 @@ To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...             a.jsoc.Series('hmi.sharp_720s'), a.jsoc.Notify('sunpy@sunpy.org'),
-    ...             a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...             a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -279,7 +289,7 @@ between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
 
     >>> import astropy.units as u
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
-    ...             a.jsoc.Series('hmi.v_45s'), a.Sample(10*u.min))  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...             a.jsoc.Series('hmi.v_45s'), a.Sample(10*u.min))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
     <BLANKLINE>
@@ -307,7 +317,7 @@ Complex queries can be built using ``OR`` operators.
 Let's look for 2 different series data at the same time::
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Notify('sunpy@sunpy.org'),
-    ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...             a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
@@ -372,7 +382,7 @@ of conditions which get passed to the JSOC.  Let's say you want all the
 
     >>> Fido.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
     ...             a.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
-    ...             a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA +ELLIPSIS
+    ...             a.jsoc.Series('hmi.v_45s'), a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
     <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 2 Providers:
     <BLANKLINE>
