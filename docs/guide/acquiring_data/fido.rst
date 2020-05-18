@@ -36,7 +36,7 @@ whereas some of these attributes are client specific, and are found under `attrs
 In to each attribute you have to provide a value to use::
 
     >>> a.Time('2012/3/4', '2012/3/6'), a.Instrument.lyra
-    (< Time(2012-03-04 00:00:00.000, 2012-03-06 00:00:00.000, ) >, <sunpy.net.attrs.Instrument(LYRA: Lyman Alpha Radiometer is the solar UV radiometer on board
+    (<sunpy.net.attrs.Time(2012-03-04 00:00:00.000, 2012-03-06 00:00:00.000, )>, <sunpy.net.attrs.Instrument(LYRA: Lyman Alpha Radiometer is the solar UV radiometer on board
     Proba-2.) object at ...>)
 
 

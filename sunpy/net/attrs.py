@@ -15,7 +15,6 @@ specification and a sample cadence using:
     >>> from sunpy.net import Fido, attrs as a
     >>> Fido.search(a.Time("2011/01/01", "2011/01/02") & (a.Instrument.aia | a.Instrument.hmi) & a.Sample(1*u.day))  # doctest: +REMOTE_DATA
 
-
 In addition to the core attrs defined here, other sunpy clients also provide
 attrs specific to them, under:
 

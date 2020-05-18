@@ -80,7 +80,7 @@ class Time(Range):
         return type(self)(self.start - timedelta, self.start + timedelta)
 
     def __repr__(self):
-        return f'< Time({self.start.iso}, {self.end.iso}, {self.near.iso if self.near else ""}) >'
+        return f'<sunpy.net.attrs.Time({self.start.iso}, {self.end.iso}, {self.near.iso if self.near else ""})>'
 
 
 class Wavelength(Range):
@@ -134,9 +134,7 @@ class Wavelength(Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<Wavelength({!r}, {!r}, '{!s}')>".format(self.min.value,
-                                                         self.max.value,
-                                                         self.unit)
+        return f"<sunpy.net.attrs.Wavelength({self.min.value}, {self.max.value}, '{self.unit}')>"
 
 
 class Instrument(SimpleAttr):
@@ -172,9 +170,9 @@ class Level(SimpleAttr):
 
         The value can be entered in of three ways:
 
-        #. May be entered as a string or any numeric type for equality matching
-        #. May be a string of the format '(min) - (max)' for range matching
-        #. May be a string of the form '(operator) (number)' where operator is\
+        # . May be entered as a string or any numeric type for equality matching
+        # . May be a string of the format '(min) - (max)' for range matching
+        # . May be a string of the form '(operator) (number)' where operator is\
         one of: lt gt le ge < > <= >=
 
     """
@@ -217,9 +215,9 @@ class Resolution(SimpleAttr):
 
         The value can be entered in of three ways:
 
-        #. May be entered as a string or any numeric type for equality matching
-        #. May be a string of the format '(min) - (max)' for range matching
-        #. May be a string of the form '(operator) (number)' where operator is\
+        # . May be entered as a string or any numeric type for equality matching
+        # . May be a string of the format '(min) - (max)' for range matching
+        # . May be a string of the form '(operator) (number)' where operator is\
         one of: lt gt le ge < > <= >=
 
         This attribute is currently implemented for SDO/AIA and HMI only.
