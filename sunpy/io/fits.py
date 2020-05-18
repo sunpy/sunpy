@@ -48,7 +48,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
     ----------
     filepath : `str`
         The fits file to be read.
-    hdu: `int` or iterable
+    hdus: `int` or iterable
         The HDU indexes to read from the file.
 
     Returns
@@ -71,7 +71,8 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
             elif isinstance(hdus, collections.Iterable):
                 hdulist = [hdulist[i] for i in hdus]
 
-        hdulist.verify('silentfix+warn')
+        hdulist = fits.hdu.HDUList(hdulist)
+        [h.verify('silentfix+warn') for h in hdulist]
 
         headers = get_header(hdulist)
         pairs = []
