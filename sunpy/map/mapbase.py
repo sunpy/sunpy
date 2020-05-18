@@ -21,7 +21,7 @@ import astropy.wcs
 import astropy.units as u
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
-from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
+from astropy.coordinates import SkyCoord, UnitSphericalRepresentation, Longitude, Latitude
 
 import sunpy.io as io
 # The next two are not used but are called to register functions with external modules
@@ -35,6 +35,8 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.resample import resample as sunpy_image_resample
 from sunpy.coordinates import get_earth
+from sunpy.coordinates.utils import get_rectangle_coordinates
+from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util import expand_list
 from sunpy.util.exceptions import SunpyUserWarning
 
@@ -1374,10 +1376,11 @@ class GenericMap(NDData):
 
         return new_map
 
-    def submap(self, bottom_left, top_right=None):
+    @deprecate_positional_args_since(since='2.0', keyword_only=('width', 'height'))
+    @u.quantity_input
+    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix)=None, height: (u.deg, u.pix)=None):
         """
-        Returns a submap of the map defined by the rectangle given by the
-        ``[bottom_left, top_right]`` coordinates.
+        Returns a submap defined by a rectangle.
 
         Any pixels which have at least part of their area inside the rectangle
         are returned.
@@ -1385,13 +1388,19 @@ class GenericMap(NDData):
         Parameters
         ----------
         bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
-            The bottom_left coordinate of the rectangle. If a `SkyCoord` it can
-            have shape ``(2,)`` and also define ``top_right``. If specifying
+            The bottom-left coordinate of the rectangle. If a `SkyCoord` it can
+            have shape ``(2,)`` and simultaneously define ``top_right``. If specifying
             pixel coordinates it must be given as an `~astropy.units.Quantity`
             object with units of `~astropy.units.pixel`.
-        top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
-            The top_right coordinate of the rectangle. Can only be omitted if
-            ``bottom_left`` has shape ``(2,)``.
+        top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`, optional
+            The top-right coordinate of the rectangle. If ``top_right`` is
+            specified ``width`` and ``height`` must be omitted.
+            Passing this as a positional argument is deprecated, you must pass
+            it as ``top_right=...``.
+        width : `astropy.units.Quantity`, optional
+            The width of the rectangle. Required if ``top_right`` is omitted.
+        height : `astropy.units.Quantity`
+            The height of the rectangle. Required if ``top_right`` is omitted.
 
         Returns
         -------
@@ -1408,7 +1417,7 @@ class GenericMap(NDData):
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)  # doctest: +REMOTE_DATA
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
         >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)  # doctest: +REMOTE_DATA
-        >>> aia.submap(bl, tr)   # doctest: +REMOTE_DATA
+        >>> aia.submap(bl, top_right=tr)   # doctest: +REMOTE_DATA
         <sunpy.map.sources.sdo.AIAMap object at 0x...>
         SunPy Map
         ---------
@@ -1464,23 +1473,77 @@ class GenericMap(NDData):
                 -0.9746264 ],
             [-95.92475   ,   6.028058  ,  -4.9797    ,  -1.0483578 ,
                 -3.9313421 ]], dtype=float32)
+
+        >>> width = 10 * u.arcsec
+        >>> height = 10 * u.arcsec
+        >>> aia.submap(bl, width=width, height=height)   # doctest: +REMOTE_DATA
+        <sunpy.map.sources.sdo.AIAMap object at 0x7f91aecc5438>
+        SunPy Map
+        ---------
+        Observatory:		 SDO
+        Instrument:		 AIA 3
+        Detector:		 AIA
+        Measurement:		 171.0 Angstrom
+        Wavelength:		 171.0 Angstrom
+        Observation Date:	 2011-06-07 06:33:02
+        Exposure Time:		 0.234256 s
+        Dimension:		 [4. 4.] pix
+        Coordinate System:	 helioprojective
+        Scale:			 [2.402792 2.402792] arcsec / pix
+        Reference Pixel:	 [126.5 126.5] pix
+        Reference Coord:	 [3.22309951 1.38578135] arcsec
+        array([[565.81494, 585.0416 , 656.4552 , 670.18854],
+            [516.1865 , 555.7032 , 634.7365 , 661.90424],
+            [620.9256 , 620.9256 , 654.8825 , 596.6707 ],
+            [667.5083 , 560.52094, 651.22766, 530.28534]], dtype=float32)
+
+        >>> bottom_left_vector = SkyCoord([0, 10]  * u.arcsec, [0, 10] * u.arcsec, frame='heliographic_stonyhurst')
+        >>> aia.submap(bottom_left_vector)   # doctest: +REMOTE_DATA
+        <sunpy.map.sources.sdo.AIAMap object at 0x7f91aece8be0>
+        SunPy Map
+        ---------
+        Observatory:		 SDO
+        Instrument:		 AIA 3
+        Detector:		 AIA
+        Measurement:		 171.0 Angstrom
+        Wavelength:		 171.0 Angstrom
+        Observation Date:	 2011-06-07 06:33:02
+        Exposure Time:		 0.234256 s
+        Dimension:		 [4. 5.] pix
+        Coordinate System:	 helioprojective
+        Scale:			 [2.402792 2.402792] arcsec / pix
+        Reference Pixel:	 [1.5 1.5] pix
+        Reference Coord:	 [3.22309951 1.38578135] arcsec
+        array([[213.9748 , 256.76974, 244.54262, 356.62466],
+            [223.74321, 258.0102 , 292.27716, 340.65408],
+            [219.53459, 242.31648, 308.5911 , 331.373  ],
+            [268.24377, 254.83157, 268.24377, 321.89252],
+            [249.99167, 265.14267, 274.61206, 240.5223 ]], dtype=float32)
         """
-        # Convert coordinates to pixels
-        if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
-                                    astropy.coordinates.BaseCoordinateFrame)):
-            if not top_right:
-                if bottom_left.shape[0] != 2:
-                    raise ValueError("If top_right is not specified bottom_left must have length two.")
-                else:
-                    top_right = bottom_left[1]
-                    bottom_left = bottom_left[0]
+        if not isinstance(bottom_left, u.Quantity):
+            bottom_left, top_right = get_rectangle_coordinates(bottom_left,
+                                                               top_right=top_right,
+                                                               width=width,
+                                                               height=height)
 
             bottom_left = self.world_to_pixel(bottom_left)
             top_right = self.world_to_pixel(top_right)
 
-        elif not (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
-                  isinstance(top_right, u.Quantity) and top_right.unit.is_equivalent(u.pix)):
-            raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
+        elif ([arg is not None for arg in (top_right, width, height)]
+              not in [[True, False, False], [False, True, True]]):
+            raise ValueError("If bottom_left is not a SkyCoord either top_right alone or "
+                             "both width and height must be specified.")
+
+        elif (not all([arg is None or (isinstance(arg, u.Quantity) and arg.unit.is_equivalent(u.pix))
+                       for arg in (bottom_left, top_right, width, height)])):
+            raise TypeError("When bottom_left is not a SkyCoord, any values of top_right, "
+                             "width or height specified must be Quantity objects in units of pixels.")
+
+        elif bottom_left.shape != (2,) or (top_right is not None and top_right.shape != (2,)):
+            raise ValueError("Both bottom_left and top_right when specified as Quantity objects must have shape (2,)")
+
+        elif height is not None and width is not None:
+            top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
 
         x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
         y_pixels = u.Quantity([top_right[1], bottom_left[1]]).to_value(u.pix)
@@ -1714,66 +1777,74 @@ class GenericMap(NDData):
 
         return [circ]
 
+    @deprecate_positional_args_since(since='2.0')
     @u.quantity_input
-    def draw_rectangle(self, bottom_left, width: u.deg, height: u.deg, axes=None, **kwargs):
+    def draw_rectangle(self, bottom_left, *, width: u.deg=None, height: u.deg=None,
+                       axes=None, top_right=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
 
         Parameters
         ----------
-
-        bottom_left : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
-            The bottom left corner of the rectangle.
-
-        width : `astropy.units.Quantity`
-            The width of the rectangle.
-
+        bottom_left : `~astropy.coordinates.SkyCoord`
+            The bottom-left coordinate of the rectangle. It can
+            have shape ``(2,)`` to simultaneously define ``top_right``.
+        top_right : `~astropy.coordinates.SkyCoord`
+            The top-right coordinate of the rectangle.
+            Passing this as a positional argument is deprecated.
+        width : `astropy.units.Quantity`, optional
+            The width of the rectangle. Required if ``top_right`` is omitted.
+            Passing this as a positional argument is deprecated.
         height : `astropy.units.Quantity`
-            The height of the rectangle.
-
+            The height of the rectangle. Required if ``top_right`` is omitted.
+            Passing this as a positional argument is deprecated.
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current
             axes.
 
         Returns
         -------
-
         rect : `list`
             A list containing the `~matplotlib.patches.Rectangle` object, after
             it has been added to ``axes``.
 
         Notes
         -----
-
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.patches.Rectangle` instance.
-
         """
+        if isinstance(top_right, u.Quantity) and isinstance(width, u.Quantity):
+            # The decorator assigns the first positional arg to top_right and so on.
+            height = width
+            width = top_right
+            top_right = None
+
+        bottom_left, top_right = get_rectangle_coordinates(bottom_left,
+                                                           top_right=top_right,
+                                                           width=width,
+                                                           height=height)
+
+        width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
+        height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
 
         if not axes:
             axes = plt.gca()
-
         if wcsaxes_compat.is_wcsaxes(axes):
             axes_unit = u.deg
         else:
             axes_unit = self.spatial_units[0]
 
         coord = bottom_left.transform_to(self.coordinate_frame)
-        bottom_left = u.Quantity((coord.data.lon, coord.data.lat),
-                                 unit=axes_unit).value
+        bottom_left = u.Quantity((coord.spherical.lon, coord.spherical.lat), unit=axes_unit).value
 
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
-
         kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
                   'color': 'white',
                   'fill': False}
         kwergs.update(kwargs)
-
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
-
         axes.add_artist(rect)
-
         return [rect]
 
     @u.quantity_input
