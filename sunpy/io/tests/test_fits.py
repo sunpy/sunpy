@@ -21,76 +21,36 @@ AIA_171_IMAGE = os.path.join(testpath, 'aia_171_level1.fits')
 SWAP_LEVEL1_IMAGE = os.path.join(testpath, 'SWAP/resampled1_swap.fits')
 
 
-def read_hdus():
-    pairs = sunpy.io.fits.read(RHESSI_IMAGE)
-    assert len(pairs) == 4
+@pytest.mark.parametrize(
+    'fname, hdus, length',
+    [(RHESSI_IMAGE, None, 4),
+     (RHESSI_IMAGE, 1, 1),
+     (RHESSI_IMAGE, [1, 2], 2),
+     (RHESSI_IMAGE, range(0, 1), 2)]
+)
+def read_hdus(fname, hdus, length):
+    pairs = sunpy.io.fits.read(fname, hdus=hdus)
+    assert len(pairs) == length
 
 
-def read_hdu_int():
-    pairs = sunpy.io.fits.read(RHESSI_IMAGE, hdus=1)
-    assert len(pairs) == 1
-
-
-def read_hdus_list():
-    pairs = sunpy.io.fits.read(RHESSI_IMAGE, hdus=[1, 2])
-    assert len(pairs) == 2
-
-
-def read_hdus_gen():
-    pairs = sunpy.io.fits.read(RHESSI_IMAGE, hdus=range(0, 1))
-    assert len(pairs) == 2
-
-
-def test_extract_waveunit_missing_waveunit_key_and_missing_wavelnth_comment():
-    waveunit = extract_waveunit(get_header(RHESSI_IMAGE)[0])
-    assert waveunit is None
-
-
-def test_missing_waveunit_in_wavelnth_comment():
-    # the comment of the key WAVELNTH has the value
-    # '171 = Fe IX/X, 195 = Fe XII,' which contains no unit information
-    waveunit = extract_waveunit(get_header(EIT_195_IMAGE)[0])
-    assert waveunit is None
-
-
-def test_extract_waveunit_from_waveunit_key():
-    # the key WAVEUNIT can be accessed and returned directly
-    waveunit = extract_waveunit(get_header(AIA_171_IMAGE)[0])
-    assert waveunit == 'angstrom'
-
-
-def test_extract_waveunit_minus9():
-    # value of WAVEUNIT is -9
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        waveunit = extract_waveunit(get_header(MEDN_IMAGE)[0])
-    assert waveunit == 'nm'
-
-
-def test_extract_waveunit_minus10():
-    # value of WAVEUNIT is -10
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        waveunit = extract_waveunit(get_header(MQ_IMAGE)[0])
-    assert waveunit == 'angstrom'
-
-
-def test_extract_waveunit_waveunitcomment():
-    # comment of WAVEUNIT is: "in meters"
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        waveunit = extract_waveunit(get_header(NA_IMAGE)[0])
-    assert waveunit == 'm'
-
-
-def test_extract_waveunit_wavelnthcomment_brackets():
-    # WAVELNTH comment is: "[Angstrom] bandpass peak response"
-    waveunit = extract_waveunit(get_header(SWAP_LEVEL1_IMAGE)[0])
-    assert waveunit == 'angstrom'
-
-
-def test_extract_waveunit_wavelnthcomment_parentheses():
-    # WAVELNTH comment is: "Observed wavelength (nm)"
-    with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
-        waveunit = extract_waveunit(get_header(SVSM_IMAGE)[0])
-    assert waveunit == 'nm'
+@pytest.mark.parametrize(
+    'fname, waveunit, warn',
+    [(RHESSI_IMAGE, None, False),
+     (EIT_195_IMAGE, None, False),
+     (AIA_171_IMAGE, 'angstrom', False),
+     (MEDN_IMAGE, 'nm', True),
+     (MQ_IMAGE, 'angstrom', True),
+     (NA_IMAGE, 'm', True),
+     (SWAP_LEVEL1_IMAGE, 'angstrom', False),
+     (SVSM_IMAGE, 'nm', True)]
+)
+def test_extract_waveunit(fname, waveunit, warn):
+    if warn:
+        with pytest.warns(AstropyUserWarning, match='File may have been truncated'):
+            waveunit = extract_waveunit(get_header(fname)[0])
+    else:
+        waveunit = extract_waveunit(get_header(fname)[0])
+    assert waveunit is waveunit
 
 
 def test_simple_write(tmpdir):
@@ -134,7 +94,7 @@ def test_fitsheader():
         for ffile in Path(testpath).glob(f"*.{ext}*"):
             fits_file = fits.open(ffile)
             fits_file.verify("fix")
-            data, header = fits_file[0].data, fits_file[0].header
+            _, header = fits_file[0].data, fits_file[0].header
             meta_header = MetaDict(OrderedDict(header))
             sunpy.io.fits.header_to_fits(meta_header)
 
