@@ -72,7 +72,8 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
                 hdulist = [hdulist[i] for i in hdus]
 
         hdulist = fits.hdu.HDUList(hdulist)
-        [h.verify('silentfix+warn') for h in hdulist]
+        for h in hdulist:
+            h.verify('silentfix+warn')
 
         headers = get_header(hdulist)
         pairs = []
