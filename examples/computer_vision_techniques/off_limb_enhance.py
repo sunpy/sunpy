@@ -6,9 +6,8 @@ Enhancing off-disk emission
 
 How to enhance emission above the limb.
 """
-import numpy as np
-
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
 from astropy.visualization.mpl_normalize import ImageNormalize

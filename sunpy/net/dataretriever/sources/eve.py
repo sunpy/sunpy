@@ -2,14 +2,12 @@
 # This module was developed under funding by
 # Google Summer of Code 2014
 
-from astropy.time import TimeDelta
 import astropy.units as u
-
-from sunpy.time import TimeRange
-from sunpy.util.scraper import Scraper
+from astropy.time import TimeDelta
 
 from sunpy.net.dataretriever import GenericClient
-
+from sunpy.time import TimeRange
+from sunpy.util.scraper import Scraper
 
 __all__ = ['EVEClient']
 

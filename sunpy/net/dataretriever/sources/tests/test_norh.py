@@ -1,19 +1,16 @@
 import pytest
-
-import astropy.units as u
-from astropy.time import TimeDelta
-from astropy.time import Time
-
-from sunpy.time.timerange import TimeRange
-from sunpy.net.dataretriever.client import QueryResponse
-import sunpy.net.dataretriever.sources.norh as norh
-from sunpy.net.fido_factory import UnifiedResponse
-from sunpy.net import Fido
-from sunpy.net import attrs as a
-
 from hypothesis import given, settings
 
-from sunpy.net.tests.strategies import time_attr, range_time
+import astropy.units as u
+from astropy.time import Time, TimeDelta
+
+import sunpy.net.dataretriever.sources.norh as norh
+from sunpy.net import Fido
+from sunpy.net import attrs as a
+from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.fido_factory import UnifiedResponse
+from sunpy.net.tests.strategies import range_time, time_attr
+from sunpy.time.timerange import TimeRange
 
 
 @pytest.fixture

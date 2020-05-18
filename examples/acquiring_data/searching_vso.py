@@ -7,7 +7,9 @@ Searching and downloading from the VSO
 How to download data from the VSO with Fido.
 """
 import astropy.units as u
-from sunpy.net import Fido, attrs as a
+
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 ###############################################################################
 # `sunpy.net.Fido` is the primary

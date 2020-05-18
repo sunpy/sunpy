@@ -7,20 +7,20 @@ import fnmatch
 from datetime import datetime
 
 import numpy as np
-from sqlalchemy import Float, Table, Column, String, Boolean, Integer, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 import astropy.table
 from astropy.time import Time
-from astropy.units import Unit, nm, quantity, equivalencies
-
+from astropy.units import Unit, equivalencies, nm, quantity
 
 import sunpy
 from sunpy import config
-from sunpy.time import parse_time
+from sunpy.io import file_tools as sunpy_filetools
+from sunpy.io import fits
 from sunpy.io.header import FileHeader
-from sunpy.io import fits, file_tools as sunpy_filetools
+from sunpy.time import parse_time
 from sunpy.util.types import DatabaseEntryType
 
 TIME_FORMAT = config.get("general", "time_format")

@@ -7,11 +7,11 @@ How to find minimum or maximum peaks in a TimeSeries.
 Note: Peak finding is a complex problem that has many potential solutions and
 this example is just one method of many.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-from sunpy.timeseries import TimeSeries
 from sunpy.data.sample import NOAAINDICES_TIMESERIES as noaa_ind
+from sunpy.timeseries import TimeSeries
 
 ##############################################################################
 # We will now create a TimeSeries object from an observational data source,

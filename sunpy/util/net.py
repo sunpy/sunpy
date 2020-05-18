@@ -10,8 +10,7 @@ from email.parser import FeedParser
 from urllib.parse import urljoin, urlparse
 from urllib.request import urlopen
 
-from sunpy.util import replacement_filename
-from sunpy.util import deprecated
+from sunpy.util import deprecated, replacement_filename
 
 __all__ = ['slugify', 'get_content_disposition', 'get_filename', 'get_system_filename',
            'download_file', 'download_fileobj', 'check_download_file']

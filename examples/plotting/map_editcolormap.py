@@ -6,8 +6,8 @@ Editing the colormap and normalization of a Map
 
 How to edit the display of a map.
 """
-import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+import matplotlib.pyplot as plt
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE

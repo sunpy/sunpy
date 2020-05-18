@@ -8,7 +8,8 @@ This example shows how to download a HMI magnetogram data with Fido and make a p
 import matplotlib.pyplot as plt
 
 import sunpy.map
-from sunpy.net import Fido, attrs as a
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 ###############################################################################
 # To download the required data, we use

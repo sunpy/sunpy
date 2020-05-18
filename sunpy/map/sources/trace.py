@@ -6,6 +6,7 @@ __email__ = "jack.ireland@nasa.gov"
 
 from astropy.visualization import LogStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
+
 from sunpy.map import GenericMap
 from sunpy.map.sources.source_type import source_stretch
 

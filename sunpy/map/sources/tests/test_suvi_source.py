@@ -7,9 +7,9 @@ import glob
 
 import pytest
 
-from sunpy.map.sources.suvi import SUVIMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.suvi import SUVIMap
 
 
 @pytest.fixture()

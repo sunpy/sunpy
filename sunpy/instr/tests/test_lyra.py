@@ -1,6 +1,5 @@
 import os.path
 import datetime
-import tempfile
 
 import numpy as np
 import pandas

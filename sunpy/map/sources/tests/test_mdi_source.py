@@ -10,10 +10,10 @@ import pytest
 
 import astropy.units as u
 
-from sunpy.coordinates import frames
-from sunpy.map.sources.soho import MDIMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.coordinates import frames
+from sunpy.map import Map
+from sunpy.map.sources.soho import MDIMap
 
 
 @pytest.fixture

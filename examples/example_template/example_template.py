@@ -9,8 +9,8 @@ The example uses <packages> to <do something> and <other package> to <do other
 thing>. Include links to referenced packages like this: `sunpy.io.fits` to
 show the sunpy.io.fits or like this `~sunpy.io.fits`to show just 'fits'
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 ##############################################################################
 # This code block is executed, although it produces no output. Lines starting
@@ -61,7 +61,6 @@ def dummy():
     """
     Dummy function to make sure docstrings don't get rendered as text.
     """
-    pass
 
 # Code comments not preceded by the hash splitter are left in code blocks.
 

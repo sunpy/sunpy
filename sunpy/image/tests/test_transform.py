@@ -6,7 +6,6 @@ from skimage import transform as tf
 from sunpy.image.transform import affine_transform
 from sunpy.util import SunpyUserWarning
 
-
 # Tolerance for tests
 RTOL = 1.0e-15
 

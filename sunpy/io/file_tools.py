@@ -2,8 +2,8 @@
 This module provides a generic file reader.
 """
 import os
-import pathlib
 import re
+import pathlib
 
 try:
     from . import fits

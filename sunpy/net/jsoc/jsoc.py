@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
 import copy
+import json
 import time
 import urllib
 import warnings
 from pathlib import Path
-import json
 
 import drms
 import numpy as np

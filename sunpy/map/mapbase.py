@@ -1,46 +1,44 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
-from base64 import b64encode
 import copy
 import html
-from io import BytesIO
-from tempfile import NamedTemporaryFile
+import textwrap
 import warnings
 import webbrowser
+from io import BytesIO
+from base64 import b64encode
+from tempfile import NamedTemporaryFile
 from collections import namedtuple
-import textwrap
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib import cm
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
-import astropy.wcs
 import astropy.units as u
+import astropy.wcs
+from astropy.coordinates import Latitude, Longitude, SkyCoord, UnitSphericalRepresentation
+from astropy.nddata import NDData
 from astropy.visualization import AsymmetricPercentileInterval, HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
-from astropy.coordinates import SkyCoord, UnitSphericalRepresentation, Longitude, Latitude
 
-import sunpy.io as io
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
+import sunpy.io as io
 import sunpy.visualization.colormaps
 from sunpy import config
-from sunpy.visualization import wcsaxes_compat, axis_labels_from_ctype, peek_show
-from sunpy.sun import constants
-from sunpy.coordinates import sun, HeliographicCarrington, HeliographicStonyhurst
-from sunpy.time import parse_time, is_time
-from sunpy.image.resample import reshape_image_to_4d_superpixel
-from sunpy.image.resample import resample as sunpy_image_resample
-from sunpy.coordinates import get_earth
+from sunpy.coordinates import HeliographicCarrington, HeliographicStonyhurst, get_earth, sun
 from sunpy.coordinates.utils import get_rectangle_coordinates
-from sunpy.util.decorators import deprecate_positional_args_since
+from sunpy.image.resample import resample as sunpy_image_resample
+from sunpy.image.resample import reshape_image_to_4d_superpixel
+from sunpy.sun import constants
+from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
+from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.exceptions import SunpyUserWarning
-
-from astropy.nddata import NDData
+from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
@@ -484,7 +482,7 @@ class GenericMap(NDData):
         try:
             return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
         except ValueError as e:
-            warnings.warn(f'Could not determine coordinate frame from map metadata',
+            warnings.warn(f'Could not determine coordinate frame from map metadata.\n{e}',
                           SunpyUserWarning)
             return None
 
@@ -2053,7 +2051,6 @@ class GenericMap(NDData):
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
-    pass
 
 
 def _figure_to_base64(fig):

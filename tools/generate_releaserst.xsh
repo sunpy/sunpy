@@ -18,13 +18,13 @@ Options:
 """
 # The GitHub stuff is lovingly stolen from astropy-procedures
 
-import netrc
-import getpass
-import warnings
-import argparse
 import os
 import json
+import netrc
+import getpass
+import argparse
 import datetime
+import warnings
 
 import docopt
 import requests

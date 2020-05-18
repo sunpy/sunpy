@@ -9,8 +9,16 @@ import os
 from functools import partial
 
 import pkg_resources
-from towncrier import (_get_date, append_to_newsfile, find_fragments, get_project_name,
-                       get_version, load_config, render_fragments, split_fragments)
+from towncrier import (
+    _get_date,
+    append_to_newsfile,
+    find_fragments,
+    get_project_name,
+    get_version,
+    load_config,
+    render_fragments,
+    split_fragments,
+)
 
 __all__ = ["generate_changelog_for_docs"]
 

@@ -5,9 +5,9 @@
 import astropy.units as u
 from astropy.time import TimeDelta
 
+from sunpy.net.dataretriever import GenericClient
 from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
-from sunpy.net.dataretriever import GenericClient
 
 __all__ = ['NoRHClient']
 

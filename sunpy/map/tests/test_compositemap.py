@@ -2,11 +2,11 @@
 Test Composite Map
 """
 import os
+
 import pytest
 
-
-import sunpy.map
 import sunpy.data.test
+import sunpy.map
 from sunpy.tests.helpers import figure_test
 
 testpath = sunpy.data.test.rootdir

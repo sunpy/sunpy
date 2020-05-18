@@ -7,13 +7,12 @@ Imshow and maps coordinates
 How to use imshow with a map and overplot points specified by pixel coordinates
 and map coordinates.
 """
-import numpy as np
 import matplotlib.pyplot as plt
 
 import astropy.units as u
+from astropy.coordinates import SkyCoord
 
 import sunpy.map
-from astropy.coordinates import SkyCoord
 from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################

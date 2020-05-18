@@ -5,20 +5,19 @@ Overplotting HEK feature/event polygons on a map
 
 How to overplot HEK outlines on a map.
 """
-import numpy as np
-
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.time import TimeDelta
 
-import sunpy.map
 import sunpy.data.sample
-from sunpy.net import hek
-from sunpy.time import parse_time
+import sunpy.map
 from sunpy.coordinates import frames
+from sunpy.net import hek
 from sunpy.physics.differential_rotation import solar_rotate_coordinate
+from sunpy.time import parse_time
 
 ###############################################################################
 # We start with the sample data

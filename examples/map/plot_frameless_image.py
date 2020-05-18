@@ -6,10 +6,11 @@ Plotting a Map without any Axes
 This examples shows you how to plot a Map without any annotations at all, i.e.
 to save as an image.
 """
+import matplotlib.pyplot as plt
+
 ##############################################################################
 # Start by importing the necessary modules.
 import astropy.units as u
-import matplotlib.pyplot as plt
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE

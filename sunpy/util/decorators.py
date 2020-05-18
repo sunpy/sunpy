@@ -6,7 +6,7 @@ import inspect
 import textwrap
 import warnings
 import functools
-from inspect import signature, isclass, Parameter
+from inspect import Parameter, signature
 from functools import wraps
 
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyPendingDeprecationWarning

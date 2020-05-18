@@ -11,10 +11,10 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
-import sunpy.map
 import sunpy.coordinates
-from sunpy.net import Fido, attrs as a
-
+import sunpy.map
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 ###############################################################################
 # The first step is to download some data, we are going to get an image from

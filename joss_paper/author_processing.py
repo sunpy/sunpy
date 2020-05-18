@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from ruamel.yaml import YAML
+
 yaml = YAML()
 
 with open("metadata.yml") as fd:

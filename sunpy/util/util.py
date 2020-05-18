@@ -2,10 +2,10 @@
 This module provides general utility functions.
 """
 import os
-from itertools import chain, count
 import hashlib
-from collections import UserList
 from shutil import get_terminal_size
+from itertools import chain, count
+from collections import UserList
 
 __all__ = ['unique', 'replacement_filename', 'expand_list',
            'expand_list_generator', 'dict_keys_same', 'hash_file', "get_width"]

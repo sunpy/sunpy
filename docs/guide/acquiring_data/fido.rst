@@ -346,15 +346,15 @@ If you want to see the current list of clients you can do::
     <BLANKLINE>
           Client                                                    Description
     ----------------- -------------------------------------------------------------------------------------------------------
-    JSOCClient        This is a client to the JSOC Data Export service.
-    VSOClient         Allows queries and downloads from the Virtual Solar Observatory (VSO).
     EVEClient         Provides access to Level 0C Extreme ultraviolet Variability Experiment (EVE) data.
-    LYRAClient        Provides access to the LYRA/Proba2 data archive.
+    GBMClient         Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
     XRSClient         Provides access to the GOES XRS fits files archive.
     SUVIClient        Provides access to data from the GOES Solar Ultraviolet Imager (SUVI).
-    NoRHClient        Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
-    RHESSIClient      Provides access to the RHESSI observing summary time series data.
+    LYRAClient        Provides access to the LYRA/Proba2 data archive.
     NOAAIndicesClient Provides access to the NOAA solar cycle indices.
     NOAAPredictClient Provides access to the NOAA SWPC predicted sunspot Number and 10.7 cm radio flux values.
     SRSClient         Provides access to the NOAA SWPC solar region summary data.
-    GBMClient         Provides access to data from the Gamma-Ray Burst Monitor (GBM) instrument on board the Fermi satellite.
+    NoRHClient        Provides access to the Nobeyama RadioHeliograph (NoRH) averaged correlation time series data.
+    RHESSIClient      Provides access to the RHESSI observing summary time series data.
+    JSOCClient        This is a client to the JSOC Data Export service.
+    VSOClient         Allows queries and downloads from the Virtual Solar Observatory (VSO).

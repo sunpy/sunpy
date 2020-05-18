@@ -3,8 +3,8 @@ import sys
 
 import pytest
 
-from sunpy.util.multimethod import FAIL, WARN, MultiMethod, TypeWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.multimethod import FAIL, WARN, MultiMethod, TypeWarning
 
 
 @pytest.fixture

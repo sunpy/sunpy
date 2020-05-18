@@ -5,18 +5,19 @@ Overplotting SRS active region locations on a magnetograms
 
 How to find and plot the location of an active region on an HMI magnetogram.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.time import TimeDelta
 
-import sunpy.map
 import sunpy.coordinates
+import sunpy.map
 from sunpy.io.special import srs
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 from sunpy.time import parse_time
-from sunpy.net import Fido, attrs as a
 
 ##############################################################################
 # For this example, we will search for and download a single HMI using Fido.

@@ -3,11 +3,10 @@ Storage module contains the abstract implementation of storage
 for `sunpy.data.data_manager.Cache` and a concrete implementation
 using sqlite.
 """
-import os
 import sqlite3
 from abc import ABCMeta, abstractmethod
-from contextlib import contextmanager
 from pathlib import Path
+from contextlib import contextmanager
 
 __all__ = [
     'StorageProviderBase',

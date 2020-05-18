@@ -9,8 +9,8 @@ data is an interesting demonstration of SunPy's Map class as it is not in the
 more common Helioprojective coordinate system, it is in Heliographic Carrington
 coordinates and in a non-trivial Cylindrical Equal Area projection.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 from astropy.utils.data import download_file
 

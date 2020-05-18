@@ -5,16 +5,14 @@ This particular test file pertains to XRTMap.
 
 import os
 import glob
-import numpy as np
-from matplotlib import colors
+
 import pytest
 
-import astropy.units as u
 from astropy.utils.exceptions import AstropyUserWarning
 
-from sunpy.map.sources.hinode import XRTMap
-from sunpy.map import Map
 import sunpy.data.test
+from sunpy.map import Map
+from sunpy.map.sources.hinode import XRTMap
 
 
 @pytest.fixture

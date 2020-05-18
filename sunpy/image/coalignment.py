@@ -16,8 +16,8 @@ References
    Processing and Pattern Recognition Society, Quebec City, Canada, May 15-19,
    1995, p. 120-123 http://www.scribblethink.org/Work/nvisionInterface/vi95_lewis.pdf.
 """
-from copy import deepcopy
 import warnings
+from copy import deepcopy
 
 import numpy as np
 from scipy.ndimage.interpolation import shift
@@ -27,7 +27,7 @@ import astropy.units as u
 
 import sunpy.map
 from sunpy.map.mapbase import GenericMap
-from sunpy.util import (SunpyUserWarning, SunpyDeprecationWarning, deprecated)
+from sunpy.util import SunpyDeprecationWarning, SunpyUserWarning, deprecated
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',

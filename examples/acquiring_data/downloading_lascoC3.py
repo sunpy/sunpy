@@ -8,9 +8,10 @@ How to download SOHO/LASCO C3 data with Fido and make a plot.
 """
 import matplotlib.pyplot as plt
 
-from sunpy.net import Fido, attrs as a
 import sunpy.map
 from sunpy.io.file_tools import read_file
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 ###############################################################################
 # In order to download the required data, we use
