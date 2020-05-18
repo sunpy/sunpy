@@ -24,7 +24,7 @@ from zeep.helpers import serialize_object
 import astropy.units as u
 from astropy.table import QTable as Table
 
-from sunpy import config
+from sunpy import config, log
 from sunpy.net.attr import and_
 from sunpy.net.base_client import BaseClient, BaseQueryResponse
 from sunpy.net.vso import attrs
@@ -791,7 +791,13 @@ class VSOClient(BaseClient):
         return 'vso', 'sunpy.net.vso.attrs'
 
     def __del__(self):
-        self.api.transport.session.close()
+        """
+        Attempt to close the connection, but if it fails, continue.
+        """
+        try:
+            self.api.transport.session.close()
+        except Exception as e:
+            log.debug("Failed to close VSO API connection with: {e}")
 
     @classmethod
     def register_values(cls):
