@@ -1,8 +1,8 @@
 .. _time-in-sunpy:
 
-=============
+*************
 Time in SunPy
-=============
+*************
 
 Working with times and time ranges is a standard task in solar data analysis and as such
 SunPy strives to provide convenient and easy methods to do the simple stuff. Python
@@ -14,14 +14,14 @@ which allows us to provide a superior user experience.
 .. _parse-time:
 
 1. Parsing Times
-----------------
+================
 
 Solar data is associated with a number of different time formats. SunPy provides a simple
 parsing function which can deal with most every format that a user may encounter. Called
 `sunpy.time.parse_time()`, this function can take a variety of inputs.
 
 Strings
-^^^^^^^
+-------
 
 The most commonly used are strings and we support a selection of formats
 which are matched using regrex. We currently support the following style of string formats::
@@ -75,7 +75,7 @@ Same as Unix time but this starts 9 years later. The parse_time function also ac
     <Time object: scale='utc' format='utime' value=894316092.0>
 
 Other formats
-^^^^^^^^^^^^^
+-------------
 
 `sunpy.time.parse_time()` understands more than just a string.
 For example::
@@ -107,7 +107,7 @@ For example::
     <Time object: scale='utc' format='isot' value=['2007-05-03T00:00:00.000']>
 
 `astropy.time.Time` API comparision
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------
 
 `sunpy.time.parse_time` is a wrapper around `astropy.time.Time`. The API is
 nearly identical as `~astropy.time.Time` but supports more time input formats.
@@ -121,7 +121,7 @@ as you would do with `~astropy.time.Time`. An example::
 Please be aware that all SunPy functions which require time as an input sanitize the input using `~sunpy.time.parse_time`.
 
 2. Time Ranges
---------------
+==============
 
 A very standard task in data analysis is to have to deal with pairs of times or time
 ranges. This occurs very often with plotting or when searching for data. To deal with

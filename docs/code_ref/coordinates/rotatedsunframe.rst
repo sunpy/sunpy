@@ -1,7 +1,7 @@
 .. _sunpy-coordinates-rotatedsunframe:
 
 Differential rotation using coordinate frames
-=============================================
+*********************************************
 
 Normally, coordinates refer to a point in inertial space (relative to the barycenter of the solar system).
 Transforming to a different observation time does not move the point at all, but rather only updates the coordinate representation as needed for the origin and axis orientations at the new observation time.
@@ -15,7 +15,7 @@ Multiple models for differential rotation are supported (see :func:`~sunpy.physi
 In addition, one may want to account for the translational motion of the Sun as well, and that can be achieved by also using the context manager :func:`~sunpy.coordinates.transform_with_sun_center` for desired coordinate transformations.
 
 Basics of the RotatedSunFrame class
------------------------------------
+===================================
 In a nutshell, the `~sunpy.coordinates.metaframes.RotatedSunFrame` class allows one to specify coordinates in a coordinate frame prior to an amount of solar (differential) rotation being applied.
 That is, the coordinate will point to a location in inertial space at some time, but will use a coordinate system at a *different* time to refer to that point, while accounting for the differential rotation between those two times.
 
@@ -24,7 +24,7 @@ A new frame class is created on the fly corresponding to each base coordinate fr
 This tutorial will refer to these new classes as ``RotatedSun*`` frames.
 
 Creating coordinates
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 `~sunpy.coordinates.metaframes.RotatedSunFrame` requires two inputs: the base coordinate frame and the duration of solar rotation.
 The base coordinate frame needs to be fully specified, which means a defined ``obstime`` and, if relevant, a defined ``observer``.
@@ -81,7 +81,7 @@ Note the slight difference in the "real" longitude compared to the output above:
       (45.22266666, 20., 695700.)>
 
 Transforming coordinate arrays
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 For another transformation example, we define a meridan with a Carrington longitude of 100 degrees, plus 1 day of differential rotation.
 Again, the coordinates are already differentially rotated in inertial space; the ``RotatedSun*`` frame allows one to represent the coordinates in a frame *prior* to the differential rotation::
 
@@ -158,7 +158,7 @@ Using the context manager, the ``radius`` component stays as the solar radius as
 
 
 Transforming multiple durations of rotation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------
 
 Another common use case for differential rotation is to track a solar feature over a sequence of time steps.
 Let's track an active region that starts at `~sunpy.coordinates.frames.Helioprojective` coordinates (-123 arcsec, 456 arcsec), as seen from Earth, and we will look both backwards and forwards in time.
@@ -221,7 +221,7 @@ Note that the active region moves slightly slower across the disk of the Sun bec
        ( 731.76302454, 440.43591752, 0.98107395)]>
 
 Transforming into RotatedSun frames
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------
 
 So far, all of the examples show transformations with the ``RotatedSun*`` frame as the starting frame.
 The ``RotatedSun*`` frame can also be the destination frame, which can be more intuitive in some situations and even necessary in some others (due to API limitations).
@@ -255,7 +255,7 @@ Essentially, the component values have been copied from one coordinate frame to 
       (10., 20., 695700.)>
 
 Example uses of RotatedSunFrame
--------------------------------
+===============================
 
 Here are the examples in our gallery that use `~sunpy.coordinates.metaframes.RotatedSunFrame`:
 

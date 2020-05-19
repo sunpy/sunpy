@@ -1,6 +1,6 @@
----------------------------------------
+***************************************
 Querying and Downloading Data from JSOC
----------------------------------------
+***************************************
 
 Joint Science Operations Center (JSOC) contains data products from the Solar Dynamics Observatory,
 as well as certain other missions and instruments. These data are available from the JSOC database,
@@ -24,7 +24,7 @@ staged for download and then you can download them. Fido combines the stages int
 `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`.
 
 Setup
------
+*****
 
 SunPy's Fido module is in `sunpy.net`. It can be imported as follows:
 
@@ -39,7 +39,7 @@ the data provider is downloaded to your computer.
     See `this <http://jsoc.stanford.edu/ajax/register_email.html>`__ to register your email address.
 
 Querying the JSOC
------------------
+*****************
 
 To search for data in JSOC, your query needs at minimum, a Series name and a PrimeKey.
 Different PrimeKeys are supported by different Series, and you can find out the PrimeKeys
@@ -57,7 +57,7 @@ Other PrimeKeys which need to be passed should be manually passed in
 `~sunpy.net.jsoc.attrs.PrimeKey`. This will be explained later in detail.
 
 Constructing a Basic Query
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+==========================
 
 Let's start with a very simple query.  We could ask for all ``hmi.v_45s`` series data
 between January 1st from 00:00 to 01:00, 2014.
@@ -144,7 +144,7 @@ The third argument::
 tells JSOC what email address you are registered with and to email when your request is ready to download.
 
 Querying with other PrimeKeys
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=============================
 
 Other than Time, one other PrimeKey is supported with in-built attribute.
 In case of AIA series, ``a.jsoc.Wavelength()`` can be passed as a PrimeKey::
@@ -188,7 +188,7 @@ other PrimeKey values passed through PrimeKey attribute, must be passed as a str
 
 
 Manually specifying keyword data to fetch
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=========================================
 
 Upon doing ``Fido.search()`` as described above, only a limited set of keywords are returned in the response
 object. These default keywords are ``'DATE'``, ``'TELESCOP'``, ``'INSTRUME'``, ``'T_OBS'`` and ``'WAVELNTH'``.
@@ -214,7 +214,7 @@ or alternatively pass ``a.jsoc.Keys('***ALL***')`` with the series name and Prim
 
 
 Using Segments
-^^^^^^^^^^^^^^
+==============
 In some cases, more than 1 file are present for the same set of query. These data are distinguished by what are called
 Segments. It is necessary to specify the "Segment" which you need to download. Providing a segment won't have any affect
 on the response object returned, but this will be required later, while making an export request.
@@ -282,7 +282,7 @@ To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`
 
 
 Using Sample
-^^^^^^^^^^^^
+============
 In case you need to query for data, at some interval of time, say every 10 min, you can pass it
 using `~sunpy.net.attrs.Sample`. In other words, if you need to query for ``hmi.v_45s`` series data
 between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do::
@@ -310,7 +310,7 @@ Note that the argument passed in ``a.Sample()`` must be an Astropy quantity, con
 into seconds.
 
 Constructing complex queries
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+============================
 
 Complex queries can be built using ``OR`` operators.
 
@@ -448,7 +448,7 @@ support "&" are `~sunpy.net.jsoc.attrs.PrimeKey` and `~sunpy.net.jsoc.attrs.Segm
 Using "&" with any other attributes will throw an error.
 
 Downloading data
-----------------
+****************
 
 To download the files located by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search`,
 you can download them by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch`::
@@ -456,7 +456,7 @@ you can download them by `~sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch
     >>> downloaded_files = Fido.fetch(res)  # doctest: +SKIP
 
 Using JSOCClient for complex usage
-----------------------------------
+**********************************
 
 Fido interface uses `~sunpy.net.jsoc.JSOCClient` in its backend, and combines
 the last 2 stages the JSOC process into one. You can directly use the JSOC
@@ -465,7 +465,7 @@ separate the 3 stages of the JSOC process, and perform it individually, hence
 allowing a greater control over the whole process.
 
 Setup
-^^^^^
+=====
 
 SunPy's JSOC module is in `~sunpy.net`.  It can be imported as follows::
 
@@ -476,7 +476,7 @@ This creates your client object.
 
 
 Making a query
-^^^^^^^^^^^^^^
+==============
 
 Querying JSOC using the JSOC client is very similar to what we were doing with Fido.
 As above, we have to make sure we have an email address registered with JSOC before you are allowed to make a request.
@@ -494,7 +494,7 @@ Apart from the function name, everything is the same. You need to pass the same 
 Complex queries can be built in a similar way, and all other things are the same.
 
 Staging the request
-^^^^^^^^^^^^^^^^^^^
+===================
 
 JSOC is a 3-stage process, and after getting the query results, we need to stage a request for the data to be
 downloaded. Only then, can we download them. The download request can be staged like this::
@@ -518,7 +518,7 @@ list elements accordingly. You can get the id and status of the request (if it i
 
 
 Downloading data
-^^^^^^^^^^^^^^^^
+================
 
 Once the status code is 0 you can download the data using the
 `~sunpy.net.jsoc.JSOCClient.get_request` method::

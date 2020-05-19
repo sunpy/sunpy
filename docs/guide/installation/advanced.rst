@@ -1,7 +1,7 @@
 .. _advanced-install:
 
 Advanced Installation Instructions
-----------------------------------
+**********************************
 
 This document provides details on things you need to know to install and manage your own scientific Python + SunPy installation.
 If you have never installed or used scientific Python we recommend that you follow the :ref:`Anaconda installation instructions <main-install>`.
@@ -12,7 +12,7 @@ Installing SunPy on top of an existing Scientific Python Environment
 These instructions assume you have a scientific Python distribution with access to the `pip` command installed.
 
 Prerequisites
-#############
+-------------
 
 You will need a compiler suite and the development headers for Python and numpy in order to build SunPy.
 On Linux, using the package manager for your distribution will usually be the easiest route, while on MacOS X you will need the XCode command line tools.
@@ -20,7 +20,7 @@ On Linux, using the package manager for your distribution will usually be the ea
 The `instructions for building Numpy from source <https://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good resource for setting up your environment to build Python packages.
 
 Using `pip`
-###########
+-----------
 
 .. warning::
     Users of the Anaconda python distribution should follow the instructions for :ref:`anaconda_install`.
@@ -71,7 +71,7 @@ to install all the packages needed to run and develop SunPy.
 .. _testing-sunpy:
 
 Testing SunPy
--------------
+*************
 
 .. warning::
     The tests will fail if you do not install all the optional dependencies.
@@ -86,7 +86,7 @@ which will run many of the SunPy tests.
 The tests should run and print out any failures, which you can report at the `SunPy issue tracker <https://github.com/sunpy/sunpy/issues>`__.
 
 SunPy's Requirements
---------------------
+********************
 
 SunPy has the following strict requirements:
 
