@@ -1,6 +1,7 @@
 """
 isort:skip_file.
 """
+# flake8: noqa: E402
 import platform
 from distutils.version import LooseVersion
 
@@ -9,12 +10,12 @@ import pytest
 
 import astropy.units as u
 asdf = pytest.importorskip('asdf', '2.0')
-from asdf.tests.helpers import assert_roundtrip_tree  # NOQA
+from asdf.tests.helpers import assert_roundtrip_tree
 
-import sunpy.map  # NOQA
-from sunpy.data.test import get_test_filepath  # NOQA
-from sunpy.tests.helpers import asdf_entry_points  # NOQA
-from sunpy.io.special.asdf.extension import SunpyExtension  # NOQA
+import sunpy.map
+from sunpy.data.test import get_test_filepath
+from sunpy.tests.helpers import asdf_entry_points
+from sunpy.io.special.asdf.extension import SunpyExtension
 
 
 @pytest.fixture
