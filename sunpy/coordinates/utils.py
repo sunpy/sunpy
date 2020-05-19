@@ -268,7 +268,8 @@ class GreatArc:
                         frame=Heliocentric).transform_to(self.start_frame)
 
 
-def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = None, height: u.deg = None):
+def get_rectangle_coordinates(bottom_left, *, top_right=None,
+                              width: u.deg = None, height: u.deg = None):
     """
     Specify a rectangular region of interest in longitude and latitude in a given coordinate frame.
 
