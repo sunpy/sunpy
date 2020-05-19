@@ -1534,14 +1534,17 @@ class GenericMap(NDData):
             raise ValueError("If bottom_left is not a SkyCoord either top_right alone or "
                              "both width and height must be specified.")
 
-        elif (not all([arg is None or (isinstance(arg, u.Quantity) and arg.unit.is_equivalent(u.pix))
-                       for arg in (bottom_left, top_right, width, height)])):
+        elif (not all([arg is None or (isinstance(arg, u.Quantity) and
+              arg.unit.is_equivalent(u.pix))
+                for arg in (bottom_left, top_right, width, height)])):
             raise TypeError("When bottom_left is not a SkyCoord, any values of top_right, "
-                            "width or height specified must be Quantity objects in units of pixels.")
+                            "width or height specified must be Quantity objects in "
+                            "units of pixels.")
 
         elif bottom_left.shape != (2,) or (top_right is not None and top_right.shape != (2,)):
             raise ValueError(
-                "Both bottom_left and top_right when specified as Quantity objects must have shape (2,)")
+                "Both bottom_left and top_right when specified as Quantity objects "
+                "must have shape (2,)")
 
         elif height is not None and width is not None:
             top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
