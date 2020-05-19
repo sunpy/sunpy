@@ -1,12 +1,15 @@
-# flake8: NOQA
+"""
+isort:skip_file
+"""
+# flake8: NOQA: E402
 import os
 import sys
-from pathlib import Path
 import datetime
+from io import StringIO
+from pathlib import Path
 from docutils import nodes, statemachine
 from docutils.io import FileInput
 from docutils.parsers.rst import Directive, directives
-from io import StringIO
 
 # -- Import base config from sphinx-astropy ------------------------------------
 try:
@@ -77,7 +80,7 @@ except ImportError as e:
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 # The short X.Y version.
-from sunpy import __version__  # NOQA isort:skip
+from sunpy import __version__
 version = '.'.join(__version__.split('.')[:3])
 # The full version, including alpha/beta/rc tags.
 release = __version__
@@ -85,16 +88,16 @@ release = __version__
 is_development = '.dev' in release
 
 # -- Shut up numpy warnings from WCSAxes --------------------------------------
-import numpy as np  # NOQA isort:skip
+import numpy as np
 np.seterr(invalid='ignore')
 
 # -- Download Sample Data -----------------------------------------------------
 # We set the logger to debug so that we can see any sample data download errors
 # in the CI, especially RTD.
-import sunpy  # NOQA isort:skip
+import sunpy
 ori_level = sunpy.log.level
 sunpy.log.setLevel("DEBUG")
-import sunpy.data.sample  # NOQA isort:skip
+import sunpy.data.sample
 sunpy.log.setLevel(ori_level)
 
 # -- General configuration ----------------------------------------------------
@@ -223,7 +226,7 @@ extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphin
 # -- Options for the edit_on_github extension ---------------------------------
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
-from sunpy import __version__  # NOQA isort:skip
+from sunpy import __version__
 edit_on_github_project = "sunpy/sunpy"
 if 'dev' not in release:
     edit_on_github_branch = f"{version.split('.')[0]}.{version.split('.')[1]}"
