@@ -3,7 +3,6 @@
 # This module was developed with funding provided by
 # the ESA Summer of Code (2011).
 #
-# pylint: disable=C0103,R0903
 """
 Attributes that can be used to construct VSO queries.
 
@@ -51,7 +50,6 @@ class Extent(_attr.DataAttr):
     the Extent attribute is not used.
 
     """
-    # pylint: disable=R0913
 
     def __init__(self, x, y, width, length, atype):
         super().__init__()
@@ -186,7 +184,6 @@ _walker = _attr.AttrWalker()
 
 
 @_walker.add_creator(_attr.ValueAttr, _attr.AttrAnd)
-# pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """ Implementation detail. """
     api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
@@ -196,7 +193,6 @@ def _create(wlk, root, api):
 
 
 @_walker.add_applier(_attr.ValueAttr)
-# pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, block):
     """ Implementation detail. """
     for k, v in root.attrs.items():
@@ -217,7 +213,6 @@ def _apply(wlk, root, api, block):
 
 
 @_walker.add_applier(_attr.AttrAnd)
-# pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
     for attr in root.attrs:
@@ -225,7 +220,6 @@ def _apply(wlk, root, api, queryblock):
 
 
 @_walker.add_creator(_attr.AttrOr)
-# pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """ Implementation detail. """
     blocks = []
