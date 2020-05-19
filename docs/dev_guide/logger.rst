@@ -5,7 +5,7 @@ Logging, Warnings, and Exceptions
 *********************************
 
 Overview
---------
+========
 
 SunPy makes use of a logging system to deal with messages (see :ref:`logger`). This provides the users and
 developers the ability to decide which messages to show, to capture them, and to optionally also send
@@ -50,7 +50,7 @@ Regardless of the type (log message or warning or exception) messages should be 
 that fully describe the issue and end with a period.
 
 Issuing Warnings
-----------------
+================
 SunPy warnings are provided by the `sunpy.util` module. The primary warning which
 should be used is `sunpy.util.exceptions.SunpyUserWarning`. For deprecation use `sunpy.util.exceptions.SunpyDeprecationWarning` or
 `sunpy.util.exceptions.SunpyPendingDeprecationWarning`.
@@ -65,7 +65,7 @@ A warning can be issued in the following way::
 See the section above for a discussion about the distinction between `log.warn()` and `warnings.warn()`.
 
 Raising Exceptions
-------------------
+==================
 Raising errors causes the program to halt. Likely the primary error that a sunpy developer will
 want to use is
 

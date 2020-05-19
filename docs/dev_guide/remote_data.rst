@@ -14,7 +14,7 @@ If the file has changed on disk, data manager will redownload the file after war
 Also in `sunpy.util`, there is a `~sunpy.util.hash_file` function.
 
 Usage
------
+=====
 
 The manager has to be imported before it is used::
 
@@ -34,7 +34,7 @@ The following example will show how this function can be implemented::
         return file_path
 
 Cache
-=====
+-----
 
 Remote files sometimes have to be cached.
 This is to ensure that the files are not redownloaded frequently, thus saving users' disk space and well as internet bandwidth.
@@ -42,7 +42,7 @@ The cache has an expiry time which is set by the ``sunpyrc`` config file.
 To change this please see :ref:`customizing-sunpy`.
 
 Usage
------
+=====
 
 The following example shows how cache can be used::
 
@@ -58,7 +58,7 @@ The following example shows how cache can be used::
 
 
 Testing
--------
+=======
 
 A pytest fixture is provided for ease of mocking network requests when using cache.
 The following example demonstates the usage of the fixture.::

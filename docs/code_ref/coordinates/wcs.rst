@@ -1,7 +1,7 @@
 .. _sunpy-coordinates-wcs:
 
 Coordinates and WCS
-===================
+*******************
 
 The `sunpy.coordinates` sub-package provides a mapping between FITS-WCS CTYPE
 convention and the coordinate frames as defined in `sunpy.coordinates`. This is

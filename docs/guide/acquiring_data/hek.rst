@@ -1,6 +1,6 @@
-------------------------
+************************
 Using SunPy's HEK module
-------------------------
+************************
 
 The Heliophysics Event Knowledgebase (HEK) is a repository of feature
 and event information about the Sun.  Entries are generated both
@@ -10,7 +10,7 @@ support from the European Space Agency Summer of Code in Space
 (ESA-SOCIS) 2011.
 
 1. Setting up the client
-------------------------
+************************
 
 SunPy's HEK module is in sunpy.net.  It can be imported into your
 session as follows:
@@ -21,7 +21,7 @@ session as follows:
 This creates a client that we will use to interact with the HEK.
 
 2. A simple query
------------------
+*****************
 
 To search the HEK, you need a start time, an end time, and an event
 type.  Times are specified as strings or Python datetime objects.  Event types
@@ -61,7 +61,7 @@ guide.
 
 
 3. The result
--------------
+*************
 
 So, how many flare detections did the query turn up?
 
@@ -113,7 +113,7 @@ It is likely each flare on the Sun was actually detected multiple
 times by many different methods.
 
 4. More complex queries
------------------------
+***********************
 
 The HEK client allows you to make more complex queries.  There are two
 key features you need to know in order to make use of the full power
@@ -262,7 +262,7 @@ cases the client returns only those results from the HEK that
 definitely satisfy the criteria passed to it.
 
 5. Getting data for your event
-------------------------------
+******************************
 
 The 'hek2vso' module allows you to take an HEK event and acquire VSO
 records specific to that event.

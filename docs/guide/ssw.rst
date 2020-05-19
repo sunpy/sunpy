@@ -1,6 +1,6 @@
-========================
+************************
 SSWIDL/SunPy Cheat Sheet
-========================
+************************
 
 `SolarSoft (SSWIDL) <https://sohowww.nascom.nasa.gov/solarsoft/>`_ is a
 popular IDL software library for solar data analysis, and in fact, many parts
