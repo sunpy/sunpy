@@ -40,7 +40,7 @@ def test_get_observing_summary_dbase_file_with_unsupported_start_time(LCClient):
 
 
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.urlretrieve', return_value=None)
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
 def test_get_observing_summary_dbase_file_build_correct_url(mock_get_base_url, mock_urlretrieve,
                                                             one_day_timerange, LCClient):
     """
@@ -124,7 +124,7 @@ def test_parsed_dbase():
     assert rows == parsed_dbase()
 
 
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
 @mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase_file,
@@ -139,7 +139,7 @@ def test_get_observing_summary_filename_one_day(mock_get_observing_summary_dbase
     assert filename[0] == 'http://www.example.com/metadata/catalog/hsi_obssumm_20031101_157.fits'
 
 
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
 @mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_get_observing_summary_filename_two_days(mock_get_observing_summary_dbase_file,
@@ -164,7 +164,7 @@ def test_can_handle_query(LCClient):
     assert ans2 is False
 
 
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
 @mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_query(mock_get_observing_summary_dbase_file,
@@ -178,7 +178,7 @@ def test_query(mock_get_observing_summary_dbase_file,
 
 
 @no_vso
-@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com')
+@mock.patch('sunpy.net.dataretriever.sources.rhessi.get_base_url', return_value='http://www.example.com/')
 @mock.patch('sunpy.instr.rhessi.parse_observing_summary_dbase_file', return_value=parsed_dbase())
 @mock.patch('sunpy.net.dataretriever.sources.rhessi.RHESSIClient.get_observing_summary_dbase_file', return_value=('', {}))
 def test_fido_mock(mock_get_observing_summary_dbase_file,
