@@ -91,8 +91,8 @@ def aia_color_table(wavelength: u.angstrom):
     Based on aia_lct.pro part of SDO/AIA on SSWIDL written by Karel
     Schrijver (2010/04/12).
 
-    Parmeters
-    ---------
+    Parameters
+    ----------
     wavelength : `~astropy.units.quantity`
         Wavelength for the desired AIA color table.
     """
