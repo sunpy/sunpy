@@ -1,7 +1,6 @@
 """
 Miscellaneous utilities related to coordinates
 """
-import warnings
 
 import numpy as np
 
@@ -9,7 +8,6 @@ import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord
 
 from sunpy.coordinates import Heliocentric
-from sunpy.util.exceptions import SunpyUserWarning
 
 __all__ = ['GreatArc', 'get_rectangle_coordinates']
 
