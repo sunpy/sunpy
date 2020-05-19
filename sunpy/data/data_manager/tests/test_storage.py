@@ -40,4 +40,4 @@ def test_insert(sqlstorage):
 def test_delete(sqlstorage):
     sqlstorage.delete_by_key('file_hash', 'hash1')
     details = sqlstorage.find_by_key('file_hash', 'hash1')
-    assert details == None
+    assert details is None

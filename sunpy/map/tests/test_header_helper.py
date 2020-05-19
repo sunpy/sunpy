@@ -109,9 +109,11 @@ def test_make_fits_header(map_data, hpc_test_header, hgc_test_header,
 
     # Check arguments of reference_pixel and scale have to be given in astropy units of pix, and arcsec/pix
     with pytest.raises(u.UnitsError):
-        header = sunpy.map.make_fitswcs_header(map_data, hpc_test_header, reference_pixel=u.Quantity([0, 0]))
+        header = sunpy.map.make_fitswcs_header(
+            map_data, hpc_test_header, reference_pixel=u.Quantity([0, 0]))
         header = sunpy.map.make_fitswcs_header(map_data, hpc_test_header, scale=u.Quantity([0, 0]))
-        header = sunpy.map.make_fitswcs_header(map_data, hpc_test_header, scale=u.Quantity([0, 0]*u.arcsec))
+        header = sunpy.map.make_fitswcs_header(
+            map_data, hpc_test_header, scale=u.Quantity([0, 0]*u.arcsec))
 
     # Check keyword helper arguments
     header = sunpy.map.make_fitswcs_header(map_data, hpc_test_header, instrument='test name')

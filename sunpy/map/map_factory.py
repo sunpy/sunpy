@@ -49,7 +49,7 @@ class MapFactory(BasicRegistrationFactory):
 
     Parameters
     ----------
-    \*inputs
+    \\*inputs
         Inputs to parse for map objects. See the examples section for a
         detailed list of accepted inputs.
 
@@ -146,7 +146,7 @@ class MapFactory(BasicRegistrationFactory):
     * Any mixture of the above not in a list
 
     >>> mymap = sunpy.map.Map(((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits'))  # doctest: +SKIP
-    """  # noqa
+    """
 
     def _read_file(self, fname, **kwargs):
         """

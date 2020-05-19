@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Author: Michael Malocha
 # e-mail: mmalocha13@gmail.com
 # Version: June 11th, 2013

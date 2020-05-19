@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 # Import and register the clients but we do not want them in the namespace, we import them as _
 from sunpy.net import base_client as _

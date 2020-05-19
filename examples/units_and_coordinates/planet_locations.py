@@ -17,7 +17,8 @@ from sunpy.coordinates import get_body_heliographic_stonyhurst
 # coordinates.
 obstime = Time('2014-05-15T07:54:00.005')
 planet_list = ['earth', 'venus', 'mars', 'mercury', 'jupiter', 'neptune', 'uranus', 'sun']
-planet_coord = [get_body_heliographic_stonyhurst(this_planet, time=obstime) for this_planet in planet_list]
+planet_coord = [get_body_heliographic_stonyhurst(
+    this_planet, time=obstime) for this_planet in planet_list]
 
 ##############################################################################
 # Let's plot the results. Remember the Sun is at the center of this coordinate

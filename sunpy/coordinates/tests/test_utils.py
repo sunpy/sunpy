@@ -299,7 +299,8 @@ def test_rectangle_top_right(rectangle_args):
 def test_rectangle_bottom_left_different_types(rectangle_args):
     bottom_left, top_right, width, height = rectangle_args
 
-    bottom_left_1, top_right_1 = get_rectangle_coordinates(bottom_left.frame, width=width, height=height)
+    bottom_left_1, top_right_1 = get_rectangle_coordinates(
+        bottom_left.frame, width=width, height=height)
 
     assert bottom_left.spherical.lon + width == top_right_1.spherical.lon
     assert bottom_left.spherical.lat + height == top_right_1.spherical.lat

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 #
 # This module was developed with funding provided by
@@ -30,6 +29,7 @@ class _ParamAttr(attr.Attr):
     """ A _ParamAttr is used to represent equality or inequality checks
     for certain parameters. It stores the attribute's name, the operator to
     compare with, and the value to compare to. """
+
     def __init__(self, name, op, value):
         attr.Attr.__init__(self)
         self.name = name
@@ -61,6 +61,7 @@ class _ListAttr(attr.Attr):
     """ A _ListAttr is used when the server expects a list of things with
     the name (GET parameter name) key. By adding the _ListAttr to the query,
     item is added to that list. """
+
     def __init__(self, key, item):
         attr.Attr.__init__(self)
 
@@ -97,6 +98,7 @@ class EventType(attr.Attr):
 # XXX: XOR
 class Time(attr.Attr):
     """ Restrict query to time range between start and end. """
+
     def __init__(self, start, end):
         attr.Attr.__init__(self)
         self.start = start
@@ -196,11 +198,12 @@ class _NumberParamAttrWrapper(_ComparisonParamAttrWrapper):
 # a dictionary of GET parameters to be sent to the server.
 walker = attr.AttrWalker()
 
+
 @walker.add_applier(Contains)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     dct['type'] = 'contains'
-    if not Contains in state:
+    if Contains not in state:
         state[Contains] = 1
 
     nid = state[Contains]
@@ -218,12 +221,14 @@ def _c(wlk, root, state):
     wlk.apply(root, state, value)
     return [value]
 
+
 @walker.add_applier(Time)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     dct['event_starttime'] = parse_time(root.start).strftime('%Y-%m-%dT%H:%M:%S')
     dct['event_endtime'] = parse_time(root.end).strftime('%Y-%m-%dT%H:%M:%S')
     return dct
+
 
 @walker.add_applier(SpatialRegion)
 # pylint: disable=E0102,C0103,W0613
@@ -235,6 +240,7 @@ def _a(wlk, root, state, dct):
     dct['event_coordsys'] = root.sys
     return dct
 
+
 @walker.add_applier(EventType)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
@@ -243,10 +249,11 @@ def _a(wlk, root, state, dct):
     dct['event_type'] = root.item
     return dct
 
+
 @walker.add_applier(_ParamAttr)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
-    if not _ParamAttr in state:
+    if _ParamAttr not in state:
         state[_ParamAttr] = 0
 
     nid = state[_ParamAttr]
@@ -256,11 +263,13 @@ def _a(wlk, root, state, dct):
     state[_ParamAttr] += 1
     return dct
 
+
 @walker.add_applier(attr.AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     for attribute in root.attrs:
         wlk.apply(attribute, state, dct)
+
 
 @walker.add_creator(attr.AttrOr)
 # pylint: disable=E0102,C0103,W0613
@@ -296,8 +305,10 @@ class AR(EventType):
     SpotAreaReprUncert = _StringParamAttrWrapper('AR_SpotAreaReprUncert')
     SpotAreaReprUnit = _StringParamAttrWrapper('AR_SpotAreaReprUnit')
     ZurichCls = _StringParamAttrWrapper('AR_ZurichCls')
+
     def __init__(self):
         EventType.__init__(self, 'ar')
+
 
 @apply
 class CE(EventType):
@@ -315,8 +326,10 @@ class CE(EventType):
     RadialLinVelStddev = _StringParamAttrWrapper('CME_RadialLinVelStddev')
     RadialLinVelUncert = _StringParamAttrWrapper('CME_RadialLinVelUncert')
     RadialLinVelUnit = _StringParamAttrWrapper('CME_RadialLinVelUnit')
+
     def __init__(self):
         EventType.__init__(self, 'ce')
+
 
 @apply
 class CD(EventType):
@@ -329,12 +342,15 @@ class CD(EventType):
     Volume = _StringParamAttrWrapper('CD_Volume')
     VolumeUncert = _StringParamAttrWrapper('CD_VolumeUncert')
     VolumeUnit = _StringParamAttrWrapper('CD_VolumeUnit')
+
     def __init__(self):
         EventType.__init__(self, 'cd')
+
 
 CH = EventType('ch')
 
 CW = EventType('cw')
+
 
 @apply
 class FI(EventType):
@@ -345,12 +361,15 @@ class FI(EventType):
     Length = _StringParamAttrWrapper('FI_Length')
     LengthUnit = _StringParamAttrWrapper('FI_LengthUnit')
     Tilt = _StringParamAttrWrapper('FI_Tilt')
+
     def __init__(self):
         EventType.__init__(self, 'fi')
+
 
 FE = EventType('fe')
 
 FA = EventType('fa')
+
 
 @apply
 class FL(EventType):
@@ -365,19 +384,24 @@ class FL(EventType):
     PeakFluxUnit = _StringParamAttrWrapper('FL_PeakFluxUnit')
     PeakTemp = _StringParamAttrWrapper('FL_PeakTemp')
     PeakTempUnit = _StringParamAttrWrapper('FL_PeakTempUnit')
+
     def __init__(self):
         EventType.__init__(self, 'fl')
+
 
 LP = EventType('lp')
 
 OS = EventType('os')
 
+
 @apply
 class SS(EventType):
     SpinRate = _StringParamAttrWrapper('SS_SpinRate')
     SpinRateUnit = _StringParamAttrWrapper('SS_SpinRateUnit')
+
     def __init__(self):
         EventType.__init__(self, 'ss')
+
 
 @apply
 class EF(EventType):
@@ -395,8 +419,10 @@ class EF(EventType):
     ProximityRatio = _StringParamAttrWrapper('EF_ProximityRatio')
     SumNegSignedFlux = _StringParamAttrWrapper('EF_SumNegSignedFlux')
     SumPosSignedFlux = _StringParamAttrWrapper('EF_SumPosSignedFlux')
+
     def __init__(self):
         EventType.__init__(self, 'ef')
+
 
 CJ = EventType('cj')
 
@@ -406,6 +432,7 @@ OT = EventType('ot')
 
 NR = EventType('nr')
 
+
 @apply
 class SG(EventType):
     AspectRatio = _StringParamAttrWrapper('SG_AspectRatio')
@@ -414,12 +441,15 @@ class SG(EventType):
     Orientation = _StringParamAttrWrapper('SG_Orientation')
     PeakContrast = _StringParamAttrWrapper('SG_PeakContrast')
     Shape = _StringParamAttrWrapper('SG_Shape')
+
     def __init__(self):
         EventType.__init__(self, 'sg')
+
 
 SP = EventType('sp')
 
 CR = EventType('cr')
+
 
 @apply
 class CC(EventType):
@@ -428,16 +458,21 @@ class CC(EventType):
     MinorAxis = _StringParamAttrWrapper('CC_MinorAxis')
     TiltAngleMajorFromRadial = _StringParamAttrWrapper('CC_TiltAngleMajorFromRadial')
     TiltAngleUnit = _StringParamAttrWrapper('CC_TiltAngleUnit')
+
     def __init__(self):
         EventType.__init__(self, 'cc')
 
+
 ER = EventType('er')
+
 
 @apply
 class TO(EventType):
     Shape = _StringParamAttrWrapper('TO_Shape')
+
     def __init__(self):
         EventType.__init__(self, 'to')
+
 
 @apply
 class Wave:

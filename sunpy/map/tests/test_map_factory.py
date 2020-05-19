@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Fri Jun 21 15:05:09 2013
 
@@ -52,6 +51,8 @@ def test_two_map_inputs(args1, args2):
 # ==============================================================================
 # Map Factory Tests
 # ==============================================================================
+
+
 class TestMap:
     def test_mapsequence(self):
         # Test making a MapSequence
@@ -239,7 +240,7 @@ def test_map_list_urls_cache():
 
 # TODO: Test HMIMap, SXTMap
 @pytest.mark.parametrize('file, mapcls',
-                         [[filepath / 'EIT' / "efz20040301.000010_s.fits",  sunpy.map.sources.EITMap],
+                         [[filepath / 'EIT' / "efz20040301.000010_s.fits", sunpy.map.sources.EITMap],
                           [filepath / "lasco_c2_25299383_s.fts", sunpy.map.sources.LASCOMap],
                           [filepath / "mdi_fd_Ic_6h_01d.5871.0000_s.fits", sunpy.map.sources.MDIMap],
                           [filepath / "mdi_fd_M_96m_01d.5874.0005_s.fits", sunpy.map.sources.MDIMap],

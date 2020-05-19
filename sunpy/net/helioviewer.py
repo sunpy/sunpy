@@ -20,6 +20,7 @@ __all__ = ['HelioviewerClient']
 
 class HelioviewerClient:
     """Helioviewer.org Client"""
+
     def __init__(self, url="https://api.helioviewer.org/"):
         """
         Parameters
@@ -51,7 +52,8 @@ class HelioviewerClient:
                             data_sources_dict[(name, inst, None, wavelength)] = params['sourceId']
                         else:
                             for wave, adict in params.items():
-                                data_sources_dict[(name, inst, wavelength, wave)] = adict['sourceId']
+                                data_sources_dict[(name, inst, wavelength, wave)
+                                                  ] = adict['sourceId']
 
         # Sort the output for printing purposes
         return OrderedDict(sorted(data_sources_dict.items(), key=lambda x: x[1]))
@@ -240,11 +242,12 @@ class HelioviewerClient:
         >>> helioviewer_meta_data = header['helioviewer']  # doctest: +REMOTE_DATA
         """
         if jp2_id is None:
-            jp2_id = self.get_closest_image(date, observatory, instrument, detector, measurement)['id']
+            jp2_id = self.get_closest_image(
+                date, observatory, instrument, detector, measurement)['id']
 
         params = {
             "action": "getJP2Header",
-            "id" : jp2_id,
+            "id": jp2_id,
         }
 
         responses = self._request(params)

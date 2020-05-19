@@ -708,6 +708,7 @@ def test_eve_invalid_peek(eve_test_ts):
     with pytest.raises(ValueError):
         empty_ts.peek()
 
+
 def test_esp_invalid_peek(esp_test_ts):
     a = esp_test_ts.time_range.start - TimeDelta(2*u.day)
     b = esp_test_ts.time_range.start - TimeDelta(1*u.day)

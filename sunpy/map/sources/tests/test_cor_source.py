@@ -15,9 +15,12 @@ fitspath = glob.glob(os.path.join(path, "cor1_20090615_000500_s4c1A.fts"))
 cor = Map(fitspath)
 
 # COR Tests
+
+
 def test_fitstoEIT():
     """Tests the creation of CORMap using FITS."""
     assert isinstance(cor, CORMap)
+
 
 def test_is_datasource_for():
     """Test the is_datasource_for method of CORMap.
@@ -25,9 +28,11 @@ def test_is_datasource_for():
     can be a MetaDict object."""
     assert cor.is_datasource_for(cor.data, cor.meta)
 
+
 def test_measurement():
     """Tests the measurement property of the CORMap object."""
     assert cor.measurement == "white-light"
+
 
 def test_observatory():
     """Tests the observatory property of the CORMap object."""
@@ -36,4 +41,4 @@ def test_observatory():
 
 def test_norm_clip():
     # Tests that the default normalizer has clipping disabled
-    assert cor.plot_settings['norm'].clip == False
+    assert not cor.plot_settings['norm'].clip

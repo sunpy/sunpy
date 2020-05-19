@@ -270,7 +270,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         ie. query is now of form A & B or ((A & B) | (C & D))
         This helps in modularising query into parts and handling each of the
         parts individually.
-        """  # noqa
+        """
         query = attr.and_(*query)
         results = query_walker.create(query, self)
 

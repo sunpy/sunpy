@@ -70,7 +70,7 @@ def mock_querry_object(suvi_client, start, end, wave):
     obj = {
         'TimeRange': TimeRange(parse_time(start), parse_time(end)),
         'Time_start': parse_time(start),
-        'Time_end':  parse_time(end),
+        'Time_end': parse_time(end),
         'source': 'GOES',
         'instrument': 'SUVI',
         'physobs': 'flux',

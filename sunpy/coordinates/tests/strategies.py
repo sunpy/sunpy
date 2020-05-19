@@ -21,7 +21,7 @@ def latitudes(draw, min_lat: u.deg = -90*u.deg, max_lat: u.deg = 90*u.deg):
 @u.quantity_input
 @st.composite
 def longitudes(draw, min_lon: u.deg = -180*u.deg, max_lon: u.deg = 180*u.deg,
-        wrap_angle: u.deg = 180*u.deg):
+               wrap_angle: u.deg = 180*u.deg):
     lon = st.floats(min_value=min_lon.to_value(u.deg),
                     max_value=max_lon.to_value(u.deg),
                     allow_nan=False, allow_infinity=False)

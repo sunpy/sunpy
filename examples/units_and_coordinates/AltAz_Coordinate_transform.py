@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 =======================================================
 Converting between Helioprojective and AltAz Coordinate

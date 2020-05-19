@@ -176,7 +176,7 @@ class BaseHeliographic(SunPyBaseCoordinateFrame):
 
         # Make 3D if specified as 2D
         if (self._data is not None and self._data.norm().unit is u.one
-            and u.allclose(self._data.norm(), 1*u.one)):
+                and u.allclose(self._data.norm(), 1*u.one)):
 
             self._data *= _RSUN.to(u.km)
 

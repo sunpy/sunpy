@@ -41,6 +41,7 @@ class ImageAnimator(ArrayAnimator):
     -----
     Extra keywords are passed to `~sunpy.visualization.animator.ArrayAnimator`.
     """
+
     def __init__(self, data, image_axes=[-2, -1], axis_ranges=None, **kwargs):
         # Check that number of axes is 2.
         if len(image_axes) != 2:
@@ -84,7 +85,8 @@ class ImageAnimator(ArrayAnimator):
             # Initialize a NonUniformImage with the relevant data and axis values and
             # add the image to the axes.
             im = mpl.image.NonUniformImage(ax, **imshow_args)
-            im.set_data(self.axis_ranges[self.image_axes[0]], self.axis_ranges[self.image_axes[1]], data)
+            im.set_data(self.axis_ranges[self.image_axes[0]],
+                        self.axis_ranges[self.image_axes[1]], data)
             ax.add_image(im)
             # Define the xlim and ylim from the pixel edges.
             ax.set_xlim(self.extent[0], self.extent[1])
@@ -160,6 +162,7 @@ class ImageAnimatorWCS(ImageAnimator):
     -----
     Extra keywords are passed to `~sunpy.visualization.animator.ArrayAnimator`.
     """
+
     def __init__(self, data, wcs, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
                  axis_ranges=None, **kwargs):
         if not isinstance(wcs, BaseLowLevelWCS):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This module provides a wrapper around the VSO API.
 """
