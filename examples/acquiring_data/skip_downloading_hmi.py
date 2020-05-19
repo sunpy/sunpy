@@ -12,7 +12,7 @@ from sunpy.net import Fido, attrs as a
 
 ###############################################################################
 # To download the required data, we use
-# `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>`, a downloader client,
+# `sunpy.net.Fido`, a downloader client,
 # to query the Joint Science Operations Center, or JSOC, where HMI data are stored.
 # First define the search variables, a timerange,
 # a `data series <http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>`_,
@@ -38,7 +38,7 @@ print(result)
 # and then index the file.
 
 # Slice the first record returned by the first client.
-downloaded_file = Fido.fetch(result[0])
+downloaded_file = Fido.fetch(result[0, 0])
 print(downloaded_file)
 
 ###############################################################################

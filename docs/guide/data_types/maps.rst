@@ -13,7 +13,7 @@ Creating maps
 To make things easy, SunPy can download several example files which are used
 throughout the docs. These files have names like
 `~sunpy.data.sample.AIA_171_IMAGE` and `~sunpy.data.sample.RHESSI_IMAGE`. To
-create a `Map <sunpy.map.map_factory.MapFactory>` from the the sample AIA image
+create a `~sunpy.map.Map` from the the sample AIA image
 type the following into your Python shell::
 
     >>> import sunpy
@@ -39,17 +39,17 @@ Creating Custom Maps
 --------------------
 It is also possible to create maps using custom data (e.g. from a simulation or an observation
 from a data source that is not explicitly supported in SunPy.) To do this you need to provide
-`sunpy.map.Map <sunpy.map.map_factory.MapFactory>` with both the data array as well as appropriate
-meta information. The meta information is important as it informs the `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`
+`sunpy.map.Map` with both the data array as well as appropriate
+meta information. The meta information is important as it informs the `sunpy.map.Map`
 of the correct coordinate information associated with the data array. The meta information should be provided to
-`sunpy.map.Map <sunpy.map.map_factory.MapFactory>` in the form of a header as a `dict` or `MetaDict <sunpy.util.MetaDict>`.
+`sunpy.map.Map` in the form of a header as a `dict` or `MetaDict <sunpy.util.MetaDict>`.
 
 The keys that are required for the header information follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_. SunPy now provides a map header helper function to assist the user in creating a header that contains the correct meta information
-to generate a `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`.
+to generate a `sunpy.map.Map`.
 
 The helper functionality includes a `meta_keywords <sunpy.map.header_helper.meta_keywords>` function
 that will return a `dict` of all the current meta keywords and their descriptions currently used by
-`sunpy.map.Map <sunpy.map.map_factory.MapFactory>` to make a map::
+`sunpy.map.Map` to make a map::
 
     >>> from sunpy.map import header_helper
 
@@ -641,8 +641,8 @@ See `this example <https://docs.sunpy.org/en/stable/generated/gallery/computer_v
 Composite Maps and Overlaying Maps
 ----------------------------------
 
-The `Map <sunpy.map.map_factory.MapFactory>` method described above can also handle a list of maps. If a series of maps
-are supplied as inputs, `Map <sunpy.map.map_factory.MapFactory>` will return a list of maps as the output.  However,
+The `~sunpy.map.Map` method described above can also handle a list of maps. If a series of maps
+are supplied as inputs, `~sunpy.map.Map` will return a list of maps as the output.  However,
 if the 'composite' keyword is set to True, then a `~sunpy.map.CompositeMap` object is
 returned.  This is useful if the maps are of a different type (e.g. different
 instruments).  For example, to create a simple composite map::
