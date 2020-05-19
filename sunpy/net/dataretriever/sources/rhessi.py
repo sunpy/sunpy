@@ -133,8 +133,7 @@ class RHESSIClient(GenericClient):
         Examples
         --------
         >>> from sunpy.net.dataretriever.sources.rhessi import RHESSIClient
-        # doctest: +REMOTE_DATA
-        >>> fname, headers = RHESSIClient.get_observing_summary_dbase_file('2011/04/04')
+        >>> fname, headers = RHESSIClient.get_observing_summary_dbase_file('2011/04/04')  # doctest: +REMOTE_DATA
 
         References
         ----------

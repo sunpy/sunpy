@@ -6,8 +6,6 @@ Helioviewer JPEG2000 files have stretched images compared to the FITS data.
 """
 from astropy.visualization import LinearStretch
 
-# pylint: disable=W0221,W0222,E1121
-
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
