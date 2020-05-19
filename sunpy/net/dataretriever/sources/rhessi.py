@@ -2,7 +2,6 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 import socket
-import posixpath
 from datetime import datetime
 from urllib.error import URLError
 from urllib.request import urlopen, urlretrieve
@@ -108,8 +107,8 @@ class RHESSIClient(GenericClient):
                 d[0:20], 'hsi_obssumm_%Y%m%d') for d in this_month_obssumm_filenames]
             for i, this_date in enumerate(daily_filenames_dates):
                 if dt.start <= this_date <= dt.end:
-                    filenames.append(posixpath.join(get_base_url(), 'metadata',
-                                                    'catalog', this_month_obssumm_filenames[i] + 's'))
+                    filenames.append(
+                        get_base_url()+f'metadata/catalog/{this_month_obssumm_filenames[i]}s')
 
         return filenames
 
@@ -134,7 +133,8 @@ class RHESSIClient(GenericClient):
         Examples
         --------
         >>> from sunpy.net.dataretriever.sources.rhessi import RHESSIClient
-        >>> fname, headers = RHESSIClient.get_observing_summary_dbase_file('2011/04/04')   # doctest: +REMOTE_DATA
+        # doctest: +REMOTE_DATA
+        >>> fname, headers = RHESSIClient.get_observing_summary_dbase_file('2011/04/04')
 
         References
         ----------
@@ -149,7 +149,7 @@ class RHESSIClient(GenericClient):
         if _time < parse_time("2002/02/01"):
             raise ValueError("RHESSI summary files are not available before 2002-02-01")
 
-        url = posixpath.join(get_base_url(), 'dbase', _time.strftime("hsi_obssumm_filedb_%Y%m.txt"))
+        url = get_base_url() + f'dbase/{_time.strftime("hsi_obssumm_filedb_%Y%m.txt")}'
         return urlretrieve(url)
 
     def _get_url_for_timerange(self, timerange, **kwargs):
