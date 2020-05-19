@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 #
 # This module was developed with funding provided by
@@ -237,13 +236,15 @@ fields = {
     'WavelUnit': '_StringParamAttrWrapper'
 }
 
+
 def mk_gen(rest):
     """ Generate Misc class. """
     ret = ''
     ret += '@apply\nclass Misc(object):\n'
     for elem in sorted(rest):
-        ret += '    %s = %s(%r)\n' %(elem, fields[elem], elem)
+        ret += '    %s = %s(%r)\n' % (elem, fields[elem], elem)
     return ret
+
 
 def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'):
     if name is None:
@@ -265,6 +266,7 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'
         ret += '''    def __init__(self):
         EventType.__init__(self, %r)''' % name.lower()
     return ret
+
 
 if __name__ == '__main__':
     BUFFER = 4096

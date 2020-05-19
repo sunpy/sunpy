@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 """
 'attrs' are parameters which can be composed together to specify searches to

@@ -38,6 +38,7 @@ class roi:
     >>> result = roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'], description='UV occult.',source='LYRA LYTAF')
     >>> result = roi(times='2013-05-12 03:12:00')
     """
+
     def __init__(self, times=None, description=None, source=None):
         # time could be a list with one or two elements
         if times and type(times) == list:

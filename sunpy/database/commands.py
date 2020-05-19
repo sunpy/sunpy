@@ -22,6 +22,7 @@ class NoSuchEntryError(Exception):
     though it does not exist in the database.
 
     """
+
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
@@ -36,6 +37,7 @@ class NonRemovableTagError(Exception):
     database entry even though it is not saved in this entry.
 
     """
+
     def __init__(self, database_entry, tag):
         self.database_entry = tag
         self.tag = tag
@@ -85,7 +87,10 @@ class CompositeOperation(DatabaseOperation):
         for operation in self._operations:
             # FIXME: What follows is the worst hack of my life. Enjoy.
             # Without it, the test test_clear_database would fail.
-            f = open(os.devnull, 'w'); f.write(repr(operation)); f.flush(); f.close()
+            f = open(os.devnull, 'w')
+            f.write(repr(operation))
+            f.flush()
+            f.close()
             operation()
 
     def undo(self):
@@ -102,6 +107,7 @@ class AddEntry(DatabaseOperation):
     the caller. The ``undo`` method removes the entry from the session again.
 
     """
+
     def __init__(self, session, database_entry):
         self.session = session
         self.database_entry = database_entry
@@ -137,6 +143,7 @@ class RemoveEntry(DatabaseOperation):
     the database entry back into the session object.
 
     """
+
     def __init__(self, session, entry):
         self.session = session
         self.entry = entry
@@ -166,6 +173,7 @@ class EditEntry(DatabaseOperation):
     ``entry`` to the value ``'bar'``.
 
     """
+
     def __init__(self, database_entry, **kwargs):
         self.database_entry = database_entry
         if not kwargs:
@@ -229,6 +237,7 @@ class RemoveTag(DatabaseOperation):
     puts the removed tag back into the tag list of the database entry.
 
     """
+
     def __init__(self, session, database_entry, tag):
         self.session = session
         self.database_entry = database_entry
@@ -281,6 +290,7 @@ class CommandManager:
     ``push_redo_command``, and ``pop_redo_command``, respectively.
 
     """
+
     def __init__(self):
         self.undo_commands = []
         self.redo_commands = []

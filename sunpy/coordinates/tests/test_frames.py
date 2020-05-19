@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 import warnings
 
@@ -337,6 +336,7 @@ def test_hgs_wrapping_off():
     hpc1 = HeliographicStonyhurst(350*u.deg, 10*u.deg, wrap_longitude=False)
     assert_quantity_allclose(hpc1.lon, 350*u.deg)
     assert_quantity_allclose(hpc1.lon.wrap_angle, 360*u.deg)
+
 
 def test_hgc_wrapping_360():
     hpc1 = HeliographicCarrington(350*u.deg, 10*u.deg)

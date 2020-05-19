@@ -543,6 +543,7 @@ class cached_property(object):
     underlying function and sets the value in `__dict__` so future accesses
     will not re-call the property.
     """
+
     def __init__(self, f):
         self._fname = f.__name__
         self._f = f
@@ -720,7 +721,7 @@ class LinuxDistribution(object):
                 or self.lsb_release_attr('description')
             if not name:
                 name = self.distro_release_attr('name') \
-                       or self.uname_attr('name')
+                    or self.uname_attr('name')
                 version = self.version(pretty=True)
                 if version:
                     name = name + ' ' + version

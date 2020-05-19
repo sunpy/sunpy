@@ -27,11 +27,11 @@ my_submap = my_map.submap(bottom_left, top_right)
 
 
 # plot figure
-fig = plt.figure(figsize=(13,6))
+fig = plt.figure(figsize=(13, 6))
 
 ax0 = pylab.axes([0.05, 0.09, 0.42, 0.8])
-ax0.plot(goes.data['xrsb'], color='r',label='1-8 $\mathrm{\AA}$')
-ax0.plot(goes.data['xrsa'], color='b',label='0.5-4 $\mathrm{\AA}$')
+ax0.plot(goes.data['xrsb'], color='r', label=r'1-8 $\mathrm{\AA}$')
+ax0.plot(goes.data['xrsa'], color='b', label=r'0.5-4 $\mathrm{\AA}$')
 
 ax0.set_yscale('log')
 ax0.set_ylim(1e-9, 1e-3)
@@ -39,7 +39,8 @@ ax0.set_ylabel('Watts m$^{-2}$')
 ax0.set_xlabel('Time (UT) 2011-06-07')
 ax0.set_title('GOES X-ray flux')
 
-ax0.axvline(parse_time(flares_hek[0].get('event_peaktime')).to_datetime(), ls='dashed', color='grey', label='Flare peak')
+ax0.axvline(parse_time(flares_hek[0].get('event_peaktime')
+                       ).to_datetime(), ls='dashed', color='grey', label='Flare peak')
 
 ax0.yaxis.grid(True, 'major')
 ax0.xaxis.grid(False, 'major')
@@ -64,5 +65,5 @@ cbar_ax = plt.gcf().add_axes([0.97, 0.08, 0.01, 0.82])
 plt.colorbar(cax=cbar_ax)
 
 
-plt.savefig('joss_paper_plot.pdf', dpi = 200)
+plt.savefig('joss_paper_plot.pdf', dpi=200)
 plt.close()

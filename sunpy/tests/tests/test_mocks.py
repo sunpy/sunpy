@@ -191,7 +191,7 @@ def test_repr_MockOpenTextFile():
     Test ``MockOpenTextFile.__repr__``.
     """
     mo_p = re.compile(r"^(?P<_><)sunpy\.tests\.mocks\.MockOpenTextFile file \'a\' "
-                       "mode \'r\' at 0x[0-9A-Fa-f]+L?(?(_)>|)$")
+                      "mode \'r\' at 0x[0-9A-Fa-f]+L?(?(_)>|)$")
 
     assert mo_p.match(repr(MockOpenTextFile('a', 'r'))) is not None
 

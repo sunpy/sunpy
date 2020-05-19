@@ -19,7 +19,6 @@ fitspath = glob.glob(os.path.join(path, "20181209_180305_kcor_l1.5_rebinned.fits
 
 @pytest.fixture()
 def kcor():
-
     """Creates an KCorMap from a FITS file."""
     return Map(fitspath)
 
@@ -49,4 +48,4 @@ def test_observatory(kcor):
 
 def test_norm_clip(kcor):
     # Tests that the default normalizer has clipping disabled
-    assert kcor.plot_settings['norm'].clip == False
+    assert not kcor.plot_settings['norm'].clip

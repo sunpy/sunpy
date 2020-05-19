@@ -43,6 +43,7 @@ class MockObject(MutableMapping):
     >>> m.start
     'Thursday'
     """
+
     def __init__(self, *args, **kwargs):
         self._datastore = dict()
         self.prohibited_attrs = set(dir(self))
@@ -114,6 +115,7 @@ class MockHTTPResponse(MockObject):
     >>> result.headers.get('Content-Type')
     'text/html'
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -155,6 +157,7 @@ class MockOpenTextFile(MockObject):
     >>> named_read = MockOpenTextFile('b.txt')
     >>> named_rd_wr = MockOpenTextFile('c.txt', 'r+', data='Hello, world')
     """
+
     def __init__(self, *args, **kwargs):
         # Positional and/or keyword args can be used for the 'file' & 'mode'
         # parameters. Could do a lot more checking to make sure all required

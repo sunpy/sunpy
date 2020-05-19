@@ -17,7 +17,8 @@ from sunpy.util.exceptions import SunpyUserWarning
 @pytest.fixture
 def irismap():
     path = sunpy.data.test.rootdir
-    fitspath = glob.glob(os.path.join(path, "iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits"))
+    fitspath = glob.glob(os.path.join(
+        path, "iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits"))
     with pytest.warns(SunpyUserWarning, match='This file contains more than 2 dimensions'):
         return Map(fitspath, silence_errors=True)
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Allow representation of queries as logic expressions. This module makes
 sure that attributes that are combined using the two logic operations AND (&)

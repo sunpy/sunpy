@@ -31,7 +31,7 @@ def compare_results(expect, result, allclose=True):
     res = result[1:-1, 1:-1]
     t1 = abs(exp.mean() - res.mean()) <= RTOL*exp.mean()
 
-    #Don't do the allclose test for scipy as the bicubic algorithm has edge effects
+    # Don't do the allclose test for scipy as the bicubic algorithm has edge effects
     if allclose:
         t2 = np.allclose(exp, res, rtol=RTOL)  # TODO: Develop a better way of testing this
     else:
@@ -50,7 +50,7 @@ def test_rotation(original, angle, k):
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
 
-    #Run the tests at order 4 as it produces more accurate 90 deg rotations
+    # Run the tests at order 4 as it produces more accurate 90 deg rotations
     rot = affine_transform(original, order=4, rmatrix=rmatrix)
     assert compare_results(expected, rot)
 
@@ -168,7 +168,7 @@ def test_all(original, angle, dx, dy, scale_factor):
     shift = np.roll(np.roll(rot, dx, axis=1), dy, axis=0)
     expected = shift
     rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor,
-                        recenter=True, image_center=rcen)
+                                     recenter=True, image_center=rcen)
     w = np.array(expected.shape[0])/2.0 - 0.5
     new_c = (np.array(rotscaleshift.shape[0])/2.0 - 0.5)
     upper = int(w+new_c+1)
@@ -182,12 +182,12 @@ def test_all(original, angle, dx, dy, scale_factor):
 
     # Check a rotated/shifted and restored image against original
     transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, recenter=True,
-                      image_center=rcen)
+                                   image_center=rcen)
     rcen = image_center - np.dot(rmatrix, np.array([dx, dy]))
     dx, dy = np.asarray(np.dot(rmatrix, disp), dtype=int)
     rmatrix = np.array([[c, s], [-s, c]])
     inverse = affine_transform(transformed, rmatrix=rmatrix, scale=1.0, recenter=True,
-                  image_center=rcen)
+                               image_center=rcen)
 
     # Need to ignore the portion of the image cut off by the first shift
     # (which isn't the portion you'd expect, because of the rotation)

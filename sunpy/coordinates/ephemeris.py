@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Ephemeris calculations using SunPy coordinate frames
 """

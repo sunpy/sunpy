@@ -22,7 +22,7 @@ class TestSingleDispatch(unittest.TestCase):
         g.register(int, g_int)
         self.assertEqual(g(None, "str"), "base")
         self.assertEqual(g(None, 1), "integer")
-        self.assertEqual(g(None, [1,2,3]), "base")
+        self.assertEqual(g(None, [1, 2, 3]), "base")
 
     def test_mro(self):
 

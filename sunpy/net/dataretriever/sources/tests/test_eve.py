@@ -110,9 +110,9 @@ def test_levels(time):
     assert clients == {eve.EVEClient}
 
     # This is broken because the VSO Eve client doesn't provide a way of allowing Level.
-    #qr = Fido.search(time, eve_a, a.Level.zero | a.Level.one)
-    #clients = {type(a.client) for a in qr.responses}
-    #assert clients == {eve.EVEClient}
+    # qr = Fido.search(time, eve_a, a.Level.zero | a.Level.one)
+    # clients = {type(a.client) for a in qr.responses}
+    # assert clients == {eve.EVEClient}
 
 
 def test_attr_reg():

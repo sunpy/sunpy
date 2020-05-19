@@ -775,7 +775,7 @@ class GenericMap(NDData):
                                                         'lat': self.meta.get('crlt_obs'),
                                                         'radius': self.meta.get('dsun_obs'),
                                                         'unit': (u.deg, u.deg, u.m),
-                                                        'frame': "heliographic_carrington"}),]
+                                                        'frame': "heliographic_carrington"}), ]
 
     def _remove_existing_observer_location(self):
         """
@@ -819,7 +819,8 @@ class GenericMap(NDData):
                     kwargs['frame'] = kwargs['frame'].name
                 missing_meta[kwargs['frame']] = set(keys).difference(self.meta.keys())
 
-        warning_message = "".join([f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
+        warning_message = "".join(
+            [f"For frame '{frame}' the following metadata is missing: {','.join(keys)}\n" for frame, keys in missing_meta.items()])
         warning_message = "Missing metadata for observer: assuming Earth-based observer.\n" + warning_message
         warnings.warn(warning_message, SunpyUserWarning)
 
@@ -1013,7 +1014,7 @@ class GenericMap(NDData):
                 warnings.warn(f"Unknown value for {meta_property.upper()}.", SunpyUserWarning)
 
         if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
-            self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
+                self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
             warnings.warn("SunPy Map does not support three dimensional data "
                           "and therefore cannot represent heliocentric coordinates. Proceed at your own risk.",
                           SunpyUserWarning)
@@ -1045,7 +1046,8 @@ class GenericMap(NDData):
         """
         if not isinstance(coordinate, (SkyCoord,
                                        astropy.coordinates.BaseCoordinateFrame)):
-            raise ValueError("world_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
+            raise ValueError(
+                "world_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
 
         native_frame = coordinate.transform_to(self.coordinate_frame)
         lon, lat = u.Quantity(self._get_lon_lat(native_frame)).to(u.deg)
@@ -1376,7 +1378,7 @@ class GenericMap(NDData):
 
     @deprecate_positional_args_since(since='2.0', keyword_only=('width', 'height'))
     @u.quantity_input
-    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix)=None, height: (u.deg, u.pix)=None):
+    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None):
         """
         Returns a submap defined by a rectangle.
 
@@ -1535,10 +1537,11 @@ class GenericMap(NDData):
         elif (not all([arg is None or (isinstance(arg, u.Quantity) and arg.unit.is_equivalent(u.pix))
                        for arg in (bottom_left, top_right, width, height)])):
             raise TypeError("When bottom_left is not a SkyCoord, any values of top_right, "
-                             "width or height specified must be Quantity objects in units of pixels.")
+                            "width or height specified must be Quantity objects in units of pixels.")
 
         elif bottom_left.shape != (2,) or (top_right is not None and top_right.shape != (2,)):
-            raise ValueError("Both bottom_left and top_right when specified as Quantity objects must have shape (2,)")
+            raise ValueError(
+                "Both bottom_left and top_right when specified as Quantity objects must have shape (2,)")
 
         elif height is not None and width is not None:
             top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
@@ -1590,7 +1593,7 @@ class GenericMap(NDData):
         return new_map
 
     @u.quantity_input
-    def superpixel(self, dimensions: u.pixel, offset: u.pixel=(0, 0)*u.pixel, func=np.sum):
+    def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
@@ -1662,8 +1665,10 @@ class GenericMap(NDData):
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
         lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5*(offset[0]*self.scale[0]).to(self.spatial_units[0]).value
-        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5*(offset[1]*self.scale[1]).to(self.spatial_units[1]).value
+        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5 * \
+            (offset[0]*self.scale[0]).to(self.spatial_units[0]).value
+        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5 * \
+            (offset[1]*self.scale[1]).to(self.spatial_units[1]).value
 
         # Create new map instance
         if self.mask is not None:
@@ -1777,7 +1782,7 @@ class GenericMap(NDData):
 
     @deprecate_positional_args_since(since='2.0')
     @u.quantity_input
-    def draw_rectangle(self, bottom_left, *, width: u.deg=None, height: u.deg=None,
+    def draw_rectangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
                        axes=None, top_right=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.

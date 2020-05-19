@@ -37,8 +37,8 @@ def make_fitswcs_header(data, coordinate,
                         instrument=None,
                         telescope=None,
                         observatory=None,
-                        wavelength: u.angstrom=None,
-                        exposure: u.s=None,
+                        wavelength: u.angstrom = None,
+                        exposure: u.s = None,
                         projection_code="TAN"):
     """
     Function to create a FITS-WCS header from a coordinate object

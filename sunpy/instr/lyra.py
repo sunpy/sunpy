@@ -109,7 +109,8 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
     """
     # Check that input argument is of correct type
     if lytaf_path:
-        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
+        warn('lytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.',
+             SunpyDeprecationWarning)
     # Remove artifacts from time series
     data_columns = ts.data.columns
     time, channels, artifact_status = _remove_lytaf_events(
@@ -122,7 +123,7 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
     ts_new = copy.deepcopy(ts)
     ts_new.data = pandas.DataFrame(
         index=time, data={col: channels[i]
-                              for i, col in enumerate(data_columns)})
+                          for i, col in enumerate(data_columns)})
     if return_artifacts:
         return ts_new, artifact_status
     else:
@@ -228,7 +229,8 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     """
     # Check inputs
     if lytaf_path:
-        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
+        warn('lytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.',
+             SunpyDeprecationWarning)
     if channels and type(channels) is not list:
         raise TypeError("channels must be None or a list of numpy arrays "
                         "of dtype 'float64'.")
@@ -372,7 +374,8 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     # Check inputs
     # Check lytaf path
     if lytaf_path:
-        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
+        warn('lytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.',
+             SunpyDeprecationWarning)
     # Parse start_time and end_time
     start_time = parse_time(start_time)
     end_time = parse_time(end_time)
@@ -453,13 +456,13 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
             id_index = eventType_id.index(event_row[4])
             lytaf = np.append(lytaf,
                               np.array((Time(datetime.datetime.utcfromtimestamp(event_row[0]),
-                                        format='datetime'),
+                                             format='datetime'),
                                         Time(datetime.datetime.utcfromtimestamp(event_row[1]),
-                                        format='datetime'),
+                                             format='datetime'),
                                         Time(datetime.datetime.utcfromtimestamp(event_row[2]),
-                                        format='datetime'),
+                                             format='datetime'),
                                         Time(datetime.datetime.utcfromtimestamp(event_row[3]),
-                                        format='datetime'),
+                                             format='datetime'),
                                         eventType_type[id_index],
                                         eventType_definition[id_index]), dtype=lytaf.dtype))
         # Close file
@@ -509,7 +512,8 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     """
     # Set lytaf_path is not done by user
     if lytaf_path:
-        warn('laytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.', SunpyDeprecationWarning)
+        warn('lytaf_path is deprecated, has no effect and will be removed in SunPy 2.1.',
+             SunpyDeprecationWarning)
     suffixes = ["lyra", "manual", "ppt", "science"]
     all_event_types = []
     # For each database file extract the event types and print them.
@@ -536,6 +540,7 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     all_event_types = [event_type[0] for event_types in all_event_types
                        for event_type in event_types]
     return all_event_types
+
 
 @deprecated("1.1")
 def download_lytaf_database(lytaf_dir=''):

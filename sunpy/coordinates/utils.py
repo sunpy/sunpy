@@ -268,7 +268,7 @@ class GreatArc:
                         frame=Heliocentric).transform_to(self.start_frame)
 
 
-def get_rectangle_coordinates(bottom_left, *, top_right = None, width: u.deg = None, height: u.deg = None):
+def get_rectangle_coordinates(bottom_left, *, top_right=None, width: u.deg = None, height: u.deg = None):
     """
     Specify a rectangular region of interest in longitude and latitude in a given coordinate frame.
 
@@ -322,7 +322,8 @@ def get_rectangle_coordinates(bottom_left, *, top_right = None, width: u.deg = N
     if not (hasattr(bottom_left, 'transform_to') and
             hasattr(bottom_left, 'shape') and
             hasattr(bottom_left, 'spherical')):
-        raise TypeError("Invalid input, bottom_left must be of type SkyCoord or BaseCoordinateFrame.")
+        raise TypeError(
+            "Invalid input, bottom_left must be of type SkyCoord or BaseCoordinateFrame.")
 
     if (top_right is not None and not ((hasattr(top_right, 'transform_to') and
                                         hasattr(top_right, 'shape') and
@@ -367,8 +368,8 @@ def get_rectangle_coordinates(bottom_left, *, top_right = None, width: u.deg = N
         # frame. This is done to ensure that the output coordinates
         # are of the same type.
         top_right = SkyCoord(bottom_left.spherical.lon + width,
-                            bottom_left.spherical.lat + height,
-                            frame=bottom_left)
+                             bottom_left.spherical.lat + height,
+                             frame=bottom_left)
 
         if isinstance(bottom_left, BaseCoordinateFrame):
             top_right = top_right.frame
