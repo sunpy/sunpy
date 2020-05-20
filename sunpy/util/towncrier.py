@@ -32,6 +32,8 @@ def generate_changelog_for_docs(directory, output_filename=None):
     directory = os.path.abspath(directory)
     _join_dir = partial(os.path.join, directory)
     config = load_config(directory)
+    if not config:
+        raise FileNotFoundError(f"Could not locate the towncrier config file at path {directory}.")
 
     print("Loading template...")
     if config["template"] is None:
