@@ -320,9 +320,13 @@ def get_rectangle_coordinates(bottom_left, *, top_right=None,
 
     Notes
     -----
-    This function does not check whether ``top_right`` is above and to the right of ``bottom_left``
-    in coordinate space. Whether this condition holds when plotting a rectangle depends on the
-    orientation of the axes, and therefore needs a WCS for context.
+    ``width`` is always treated as an increase in longitude, but ``bottom_left`` may have a higher
+    value of longitude than ``top_right`` due to the wrapping of the longitude angle.  Appropriate
+    care should be taken when using this function's output to define a range of longitudes.
+
+    ``height`` is always treated as an increase in latitude, but this function does not enforce
+    that ``bottom_left`` has a lower value of latitude than ``top_right``, in case that orientation
+    is valid for the intended use.
     """
     if not (hasattr(bottom_left, 'transform_to') and
             hasattr(bottom_left, 'shape') and
