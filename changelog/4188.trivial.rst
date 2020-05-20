@@ -1,0 +1,2 @@
+Refactor the sphinx config to no longer depend on astropy-sphinx and more
+closely match the new sunpy package template
