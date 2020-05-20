@@ -45,7 +45,6 @@ from sphinx_gallery.sorting import ExampleTitleSortKey
 
 import sunpy
 from sunpy import __version__
-from sunpy.util.sphinx.directives import Generate, MiniGallery
 
 # -- Project information -------------------------------------------------------
 
@@ -103,10 +102,11 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx_automodapi.automodapi',
     'sphinx_automodapi.smart_resolver',
-    'sunpy.util.sphinx.doctest',
     'sphinx_gallery.gen_gallery',
-    'matplotlib.sphinxext.plot_directive',
     'sunpy.util.sphinx.doctest',
+    'matplotlib.sphinxext.plot_directive',
+    'sunpy.util.sphinx.minigallery',
+    'sunpy.util.sphinx.generate',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -241,10 +241,6 @@ def rstjinja(app, docname, source):
 def setup(app):
     # Generate the stability page
     app.connect("source-read", rstjinja)
-
-    # Add the custom directives
-    app.add_directive('generate', Generate)
-    app.add_directive('minigallery', MiniGallery)
 
     # The theme conf provides a fix for circle ci redirections
     fix_circleci(app)
