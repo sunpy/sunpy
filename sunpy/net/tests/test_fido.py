@@ -503,4 +503,3 @@ def test_slice_jsoc():
 def test_fido_repr():
     output = repr(Fido)
     assert output[:50] == '<sunpy.net.fido_factory.UnifiedDownloaderFactory o'
-    assert 'tor (GBM) instrument on board the Fermi satellite.' in output
