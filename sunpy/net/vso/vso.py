@@ -599,7 +599,6 @@ class VSOClient(BaseClient):
                 item = _Str(maps[record_item.fileid]['path'])
             except KeyError:
                 continue
-            # pylint: disable=W0201
             item.meta = record_item
             ret.append(item)
         return ret
@@ -655,7 +654,6 @@ class VSOClient(BaseClient):
 
         return self.make('VSOGetDataRequest', request=request)
 
-    # pylint: disable=R0913,R0912
     def download_all(self, response, methods, downloader, path, qr, info=None):
         results = Results()
         GET_VERSION = [
@@ -674,7 +672,6 @@ class VSOClient(BaseClient):
 
             # If from_ and to are uninitialized, the else block of the loop
             # continues the outer loop and thus this code is never reached.
-            # pylint: disable=W0631
             code = (
                 dresponse.status[from_:to]
                 if getattr(dresponse, 'status', None) else '200'
@@ -764,7 +761,6 @@ class VSOClient(BaseClient):
             record.fileid: record for record in response
         }
 
-    # pylint: disable=W0613
     def multiple_choices(self, choices, response):
         """ Override to pick between multiple download choices. """
         for elem in self.method_order:
@@ -772,12 +768,10 @@ class VSOClient(BaseClient):
                 return [elem]
         raise NoData
 
-    # pylint: disable=W0613
     def missing_information(self, info, field):
         """ Override to provide missing information. """
         raise NoData
 
-    # pylint: disable=W0613
     def unknown_method(self, response):
         """ Override to pick a new method if the current one is unknown. """
         raise NoData

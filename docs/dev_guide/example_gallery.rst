@@ -20,7 +20,7 @@ Contribution Guidelines
 
 * The examples must be compatible with the versions supported by the last major release of the SunPy core package (i.e., Python >= 3.6).
 
-* All the examples must be fully PEP8 compliant, we recommend using one of the many PEP8 linters that are available (autopep8, pylint, flake8 as some examples).
+* All the examples must be fully PEP8 compliant, we recommend using one of the many PEP8 linters that are available (autopep8, flake8 as some examples).
 
 * Wherever possible, the examples should include linked references with links pointing to the appropriate `DOI <https://zenodo.org/record/2551710>`_ or `ADS <https://ui.adsabs.harvard.edu/>`_ entry.
 
