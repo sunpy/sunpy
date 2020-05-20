@@ -4,5 +4,5 @@
 Full Changelog
 **************
 
-.. include:: latest_changelog.txt
+.. changelog:: ../
 .. include:: ../../CHANGELOG.rst
