@@ -28,7 +28,7 @@ class Generate(Directive):
         # Respect the same disabling options as the ``raw`` directive
         if (not self.state.document.settings.raw_enabled
                 or not self.state.document.settings.file_insertion_enabled):
-            raise self.warning('"%s" directive disabled.' % self.name)
+            raise self.warning(f'"{self.name}" directive disabled.')
 
         attributes = {'format': ' '.join(self.arguments[0].lower().split())}
 
