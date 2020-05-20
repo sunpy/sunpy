@@ -5,6 +5,8 @@ from docutils.parsers.rst import Directive
 
 from sunpy.util.towncrier import generate_changelog_for_docs
 
+__all__ = ['ChangeLog']
+
 
 class ChangeLog(Directive):
     """
@@ -23,6 +25,7 @@ class ChangeLog(Directive):
     --------
 
     .. code-block:: rst
+
         .. changelog::
     """
     required_arguments = 0
