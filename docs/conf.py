@@ -130,6 +130,12 @@ master_doc = 'index'
 # documents. Set to the "smart" one.
 default_role = 'obj'
 
+# Disable having a separate return type row
+napoleon_use_rtype = False
+
+# Disable google style docstrings
+napoleon_google_docstring = False
+
 # -- Options for intersphinx extension -----------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
