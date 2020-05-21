@@ -1785,7 +1785,10 @@ class GenericMap(NDData):
     def draw_rectangle(self, bottom_left, *, width: u.deg = None, height: u.deg = None,
                        axes=None, top_right=None, **kwargs):
         """
-        Draw a rectangle defined in world coordinates on the plot.
+        Draw a rectangle, with corners defined in world coordinates.
+
+        This draws a rectangle that has corners at ``(bottom_left, top_right)``,
+        and that has sides parallel to the x and y axes of the plot.
 
         Parameters
         ----------
@@ -1826,24 +1829,23 @@ class GenericMap(NDData):
                                                            top_right=top_right,
                                                            width=width,
                                                            height=height)
+        bottom_left = self.world_to_pixel(bottom_left)
+        top_right = self.world_to_pixel(top_right)
+        width = top_right[0] - bottom_left[0]
+        height = top_right[1] - bottom_left[1]
 
-        width = Longitude(top_right.spherical.lon - bottom_left.spherical.lon)
-        height = Latitude(top_right.spherical.lat - bottom_left.spherical.lat)
+        if width < 0:
+            warnings.warn("The rectangle is inverted along the x-axis,  "
+                          "which may lead to unintended behavior.", SunpyUserWarning)
+
+        if height < 0:
+            warnings.warn("The rectangle is inverted along the y-axis, "
+                          "which may lead to unintended behavior.", SunpyUserWarning)
 
         if not axes:
             axes = plt.gca()
-        if wcsaxes_compat.is_wcsaxes(axes):
-            axes_unit = u.deg
-        else:
-            axes_unit = self.spatial_units[0]
 
-        coord = bottom_left.transform_to(self.coordinate_frame)
-        bottom_left = u.Quantity((coord.spherical.lon, coord.spherical.lat), unit=axes_unit).value
-
-        width = width.to(axes_unit).value
-        height = height.to(axes_unit).value
-        kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
-                  'color': 'white',
+        kwergs = {'color': 'white',
                   'fill': False}
         kwergs.update(kwargs)
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
