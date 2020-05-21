@@ -1790,6 +1790,13 @@ class GenericMap(NDData):
         This draws a rectangle that has corners at ``(bottom_left, top_right)``,
         and that has sides parallel to the x and y axes of the plot.
 
+        If ``width`` and ``height`` are specified, they are respectively added to the
+        longitude and latitude of the ``bottom_left`` coordinate to calculate a
+        ``top_right`` coordinate. This means that ``width`` and ``height`` will only
+        correspond to the width and height of the draw rectangle if the longitude
+        and latitude coordiante axes are parallel with the x and y axes of the pixels
+        that comprise the map.
+
         Parameters
         ----------
         bottom_left : `~astropy.coordinates.SkyCoord`
