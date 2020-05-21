@@ -1836,8 +1836,8 @@ class GenericMap(NDData):
                                                            top_right=top_right,
                                                            width=width,
                                                            height=height)
-        bottom_left = self.world_to_pixel(bottom_left)
-        top_right = self.world_to_pixel(top_right)
+        bottom_left = self.world_to_pixel(bottom_left).to_value(u.pix)
+        top_right = self.world_to_pixel(top_right).to_value(u.pix)
         width = top_right[0] - bottom_left[0]
         height = top_right[1] - bottom_left[1]
 
