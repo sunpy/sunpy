@@ -38,6 +38,7 @@ from sunpy.time import is_time, parse_time
 from sunpy.util import expand_list
 from sunpy.util.decorators import deprecate_positional_args_since
 from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.functools import seconddispatch
 from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -1520,34 +1521,18 @@ class GenericMap(NDData):
             [268.24377, 254.83157, 268.24377, 321.89252],
             [249.99167, 265.14267, 274.61206, 240.5223 ]], dtype=float32)
         """
-        if not isinstance(bottom_left, u.Quantity):
-            bottom_left, top_right = get_rectangle_coordinates(bottom_left,
-                                                               top_right=top_right,
-                                                               width=width,
-                                                               height=height)
+        # Handle the case where bottom_left and top_right are really in bottom_left
+        if isinstance(bottom_left, SkyCoord) and bottom_left.shape == (2,):
+            top_right = bottom_left[1]
+            bottom_left = bottom_left[0]
 
-            bottom_left = self.world_to_pixel(bottom_left)
-            top_right = self.world_to_pixel(top_right)
-
-        elif ([arg is not None for arg in (top_right, width, height)]
-              not in [[True, False, False], [False, True, True]]):
+        # Check that we have been given a valid combination of inputs
+        if ([arg is not None for arg in (top_right, width, height)]
+                not in [[True, False, False], [False, True, True]]):
             raise ValueError("If bottom_left is not a SkyCoord either top_right alone or "
                              "both width and height must be specified.")
-
-        elif (not all([arg is None or (isinstance(arg, u.Quantity) and
-              arg.unit.is_equivalent(u.pix))
-                for arg in (bottom_left, top_right, width, height)])):
-            raise TypeError("When bottom_left is not a SkyCoord, any values of top_right, "
-                            "width or height specified must be Quantity objects in "
-                            "units of pixels.")
-
-        elif bottom_left.shape != (2,) or (top_right is not None and top_right.shape != (2,)):
-            raise ValueError(
-                "Both bottom_left and top_right when specified as Quantity objects "
-                "must have shape (2,)")
-
-        elif height is not None and width is not None:
-            top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
+        # parse input arguments
+        bottom_left, top_right = self._parse_submap_input(bottom_left, top_right, width, height)
 
         x_pixels = u.Quantity([bottom_left[0], top_right[0]]).to_value(u.pix)
         y_pixels = u.Quantity([top_right[1], bottom_left[1]]).to_value(u.pix)
@@ -1601,6 +1586,56 @@ class GenericMap(NDData):
         # Create new map with the modification
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
+
+    @seconddispatch
+    def _parse_submap_input(self, bottom_left, top_right, width, height):
+        """
+        Should take any valid input to submap() and return bottom_left and
+        top_right in pixel coordinates.
+        """
+        pass
+
+    @_parse_submap_input.register
+    def _parse_submap_quantity_input(self, bottom_left: u.Quantity, top_right, width, height):
+        if bottom_left.shape != (2, ):
+            raise ValueError('bottom_left must have shape (2, ) when specified as a Quantity')
+        if top_right is not None:
+            if top_right.shape != (2, ):
+                raise ValueError('top_right must have shape (2, ) when specified as a Quantity')
+            if not top_right.unit.is_equivalent(u.pix):
+                raise TypeError("When bottom_left is a Quantity, top_right "
+                                "must be a Quantity in units of pixels.")
+            # Have bottom_left and top_right in pixels already, so no need to do
+            # anything else
+        else:
+            if not (width.unit.is_equivalent(u.pix) and
+                    height.unit.is_equivalent(u.pix)):
+                raise TypeError("When bottom_left is a Quantity, width and height "
+                                "must be a Quantity in units of pixels.")
+            # Add width and height to get top_right
+            top_right = u.Quantity([bottom_left[0] + width, bottom_left[1] + height])
+        return bottom_left, top_right
+
+    @_parse_submap_input.register
+    def _parse_submap_coord_input(self, bottom_left: SkyCoord, top_right, width, height):
+        if top_right is not None:
+            if not isinstance(top_right, SkyCoord):
+                raise TypeError("When bottom_left is a SkyCoord, top_right "
+                                "must also be a SkyCoord.")
+        else:
+            if not (width.unit.is_equivalent(u.deg) and
+                    height.unit.is_equivalent(u.deg)):
+                raise TypeError("When bottom_left is a SkyCoord, width and height "
+                                "must both be a Quantity in units convertable to degrees.")
+        # Use helper function to get top_right as a SkyCoord
+        bottom_left, top_right = get_rectangle_coordinates(bottom_left,
+                                                           top_right=top_right,
+                                                           width=width,
+                                                           height=height)
+        # Convert cordinates to pixels
+        bottom_left = self.world_to_pixel(bottom_left)
+        top_right = self.world_to_pixel(top_right)
+        return bottom_left, top_right
 
     @u.quantity_input
     def superpixel(self, dimensions: u.pixel, offset: u.pixel = (0, 0)*u.pixel, func=np.sum):
