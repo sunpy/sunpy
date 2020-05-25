@@ -75,7 +75,10 @@ def _print_attrs(attr, html=False):
     """
     class_name = f"{attr.__module__+'.' or ''}{attr.__name__}"
     attrs = attr._attr_registry[attr]
-    sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs))))
+    sorted_attrs = make_tuple()
+    # Only sort the attrs if any have been registered
+    if attrs.name:
+        sorted_attrs = _ATTR_TUPLE(*zip(*sorted(zip(*attrs))))
     names = sorted_attrs.name
     clients = sorted_attrs.client
     names_long = sorted_attrs.name_long
