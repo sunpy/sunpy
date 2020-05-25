@@ -1,0 +1,1 @@
+Fix attr printing when the attr registry is empty for that attr

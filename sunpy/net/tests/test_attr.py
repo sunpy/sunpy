@@ -69,6 +69,13 @@ class SA3(attr.SimpleAttr):
     pass
 
 
+def test_empty():
+    class TestAttr(attr.Attr):
+        pass
+
+    assert repr(TestAttr)
+
+
 def test_attr_and():
     a1 = SA1(1)
     a2 = SA2(2)
